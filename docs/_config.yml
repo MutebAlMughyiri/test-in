@@ -4,7 +4,7 @@
 #
 # Enable it once, in the repository: Settings -> Pages -> Source: Deploy from a
 # branch -> Branch: main, folder: /docs. The site is then served at
-# https://mtb550.github.io/test-in/
+# https://mutebalmughyiri.github.io/test-in/
 #
 # docs/README.md becomes the site's front page. Links between .md files keep
 # working in both places: GitHub Pages runs jekyll-relative-links, which

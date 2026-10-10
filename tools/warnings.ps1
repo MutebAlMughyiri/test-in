@@ -63,7 +63,7 @@ function Get-LastRun
     }
     try
     {
-        $json = & $gh run list --repo mtb550/test-in --workflow $Workflow --limit 1 --json databaseId,conclusion,status,headSha 2> $null
+        $json = & $gh run list --repo MutebAlMughyiri/test-in --workflow $Workflow --limit 1 --json databaseId,conclusion,status,headSha 2> $null
         if (-not $json)
         {
             return $null

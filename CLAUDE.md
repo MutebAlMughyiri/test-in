@@ -278,10 +278,10 @@ silently has no effect costs more than the setting it was meant to hold.
   when no rule exists yet, and when a method needs no marker are in the
   `code-cites-its-rule` skill under `.claude/skills/`. That skill is the
   authority; do not restate it here.
-- **GitHub is the source of truth**: stories/bugs live in `mtb550/test-in`
+- **GitHub is the source of truth**: stories/bugs live in `MutebAlMughyiri/test-in`
   issues, not local files. Muteb works across several machines.
 - Write new stories straight to an issue with `gh`; update an existing one with
-  `gh issue edit <n> --repo mtb550/test-in --body-file ...` instead of opening a
+  `gh issue edit <n> --repo MutebAlMughyiri/test-in --body-file ...` instead of opening a
   duplicate. Read current state with `gh issue view` before assuming anything.
 - **A feature a tester will see is designed before it is built**, with the
   `feature-design` plugin's `/feature-design:design`, and implemented only after

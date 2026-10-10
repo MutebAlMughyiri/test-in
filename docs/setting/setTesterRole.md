@@ -7,7 +7,7 @@ engineer.
 
 The row takes a value and stores it. Nothing in Testin reads it yet, and the
 row is kept for the thing that will: role-based permissions,
-[#14](https://github.com/mtb550/test-in/issues/14).
+[#14](https://github.com/MutebAlMughyiri/test-in/issues/14).
 
 There is no key for this. It is the **Tester role** row.
 
@@ -60,7 +60,7 @@ A tester who fills this row in expects to see the role somewhere. It is
 nowhere. The row is kept anyway, because role-based permissions will read it to
 decide who may approve a test case and who may remove a test project. That is
 answered on [the product page](../product.md) and tracked in
-[#14](https://github.com/mtb550/test-in/issues/14). What is still open is the
+[#14](https://github.com/MutebAlMughyiri/test-in/issues/14). What is still open is the
 list of roles: free text cannot answer *may this person approve*.
 
 ---

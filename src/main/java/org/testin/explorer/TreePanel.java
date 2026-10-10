@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 Muteb Almughyiri
+ * Copyright 2026 Muteb AlMughyiri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ public final class TreePanel implements Disposable {
     private static final int INLINE_CHOICES = 6;
 
     private static final @NotNull
-    @NlsSafe String AUTHOR = "Muteb Almughyiri";
+    @NlsSafe String AUTHOR = "Muteb AlMughyiri";
     private final @NotNull Project p;
     private final @NotNull TestinRoot testinRoot;
     private final @NotNull ProjectIndexer indexer;

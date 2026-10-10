@@ -359,7 +359,7 @@ and the shortcut menu. Rule-INTERNAL-053 to Rule-INTERNAL-061 do not reach them.
 They behave the same way by hand, which is the problem: each is a copy that can
 drift. That is difference 6 on
 [the Inside Testin page](main.md#where-the-plugin-breaks-its-own-rules), and
-[#69](https://github.com/mtb550/test-in/issues/69).
+[#69](https://github.com/MutebAlMughyiri/test-in/issues/69).
 
 **The test case create and update dialogs are built on the shell**, like every
 other. The shell owns the popup, the title, the strip, the sizing and the

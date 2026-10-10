@@ -355,7 +355,7 @@ cannot be mistaken for one.
 **An unknown enum constant fails that file's read.** It is not defaulted,
 because a status quietly becoming `PENDING` loses a tester's decision without
 saying so. This is the one incompatibility that needs a conversion story before
-it ships. [#91 and #92](https://github.com/mtb550/test-in/issues/91) exist
+it ships. [#91 and #92](https://github.com/MutebAlMughyiri/test-in/issues/91) exist
 because a format changed and the rule for old data had to be decided after the
 fact. That is the thing this page is here to prevent.
 

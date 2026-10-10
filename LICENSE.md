@@ -11,4 +11,4 @@ from the JetBrains Marketplace.
 |-------------------------|-----------------------------------------|
 | The source              | Apache License 2.0 — [LICENSE](LICENSE) |
 | The plugin as installed | [EULA.md](EULA.md)                      |
-| Copyright               | 2026 Muteb Almughyiri                   |
+| Copyright               | 2026 Muteb AlMughyiri                   |

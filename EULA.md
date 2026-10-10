@@ -3,7 +3,7 @@
 > for the plugin as distributed through JetBrains Marketplace, and applies only
 > if and when Testin is offered there as a paid or freemium plugin. It grants
 > nothing over the source and takes nothing away from the Apache license
-> ([#121](https://github.com/mtb550/test-in/issues/121)).
+> ([#121](https://github.com/MutebAlMughyiri/test-in/issues/121)).
 
 ### Developer End User License Agreement (EULA)
 
@@ -17,7 +17,7 @@ party to this EULA or any contractual relationship established by it.
 
 * **“Confirmation”** means an email from JetBrains confirming Your rights to use a Paid Plugin and containing important
   information about Your license or Subscription.
-* **"Developer"** means Muteb Almughyiri.
+* **"Developer"** means Muteb AlMughyiri.
 * **“Documentation”** means the latest versions of all online technical documentation available for a Plugin at
   JetBrains Marketplace and any other relevant Plugin documentation provided either by JetBrains or the Developer that
   applies to the Plugin.

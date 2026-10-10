@@ -112,7 +112,7 @@ the whole gesture rather than once per test case.
 
 It does not write the steps. The body is one comment, exactly as it is for a
 test case created here, and filling it in is the tester's — or a later feature's,
-which is [#3](https://github.com/mtb550/test-in/issues/3). What this gives the
+which is [#3](https://github.com/MutebAlMughyiri/test-in/issues/3). What this gives the
 tester is the method their test case should have had, in the class it belongs
 in, ready to be filled.
 

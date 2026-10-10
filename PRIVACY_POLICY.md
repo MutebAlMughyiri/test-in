@@ -2,7 +2,7 @@
 
 **Effective Date: September 24, 2026**
 
-This Privacy Policy describes how the "Test in" plugin (the "Plugin"), developed by Muteb Almughyiri (the "Developer"),
+This Privacy Policy describes how the "Test in" plugin (the "Plugin"), developed by Muteb AlMughyiri (the "Developer"),
 collects, uses, and protects your information when you use the Plugin within JetBrains Integrated Development
 Environments (IDEs).
 

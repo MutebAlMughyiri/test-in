@@ -111,7 +111,7 @@ nothing. It is written on
 │  The new awesome test management tool                                      │
 │                                                                            │
 │  By                                                                        │
-│  Muteb Almughyiri                                                          │
+│  Muteb AlMughyiri                                                          │
 │                                                                            │
 │                                                                            │
 │  [gear]  Configure Testin settings                                 (1)     │

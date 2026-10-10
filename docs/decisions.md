@@ -162,7 +162,7 @@ the IDE's tab list holds nothing of ours and nobody asks.
 **If you are about to reverse it.** "Deprecated" here names the base class, not
 a scheduled removal, and the obvious improvement — making `findFileByPath`
 answer — was measured and refused in
-[#160](https://github.com/mtb550/test-in/issues/160). The IDE asks for the file
+[#160](https://github.com/MutebAlMughyiri/test-in/issues/160). The IDE asks for the file
 about twenty seconds before the index exists.
 
 ---

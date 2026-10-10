@@ -1,22 +1,22 @@
 ---
 name: testin-story
-description: Write or update a Testin backlog item as a GitHub issue on mtb550/test-in in the house format, grounded in the code and carrying measured statistics. Use when the user describes a feature, bug, refactor or chore for the Testin plugin and wants it captured, or asks to rewrite/tidy an existing issue. Triggers on "make this a story", "open an issue for this", "add to the backlog", "write this up".
+description: Write or update a Testin backlog item as a GitHub issue on MutebAlMughyiri/test-in in the house format, grounded in the code and carrying measured statistics. Use when the user describes a feature, bug, refactor or chore for the Testin plugin and wants it captured, or asks to rewrite/tidy an existing issue. Triggers on "make this a story", "open an issue for this", "add to the backlog", "write this up".
 allowed-tools: Bash(gh issue create:*), Bash(gh issue edit:*), Bash(gh issue view:*), Bash(gh issue list:*), Bash(gh search issues:*), Read, Grep, Glob, Write
 ---
 
 # Testin story format
 
-Backlog items for Testin live as GitHub issues on `mtb550/test-in`. Never write
+Backlog items for Testin live as GitHub issues on `MutebAlMughyiri/test-in`. Never write
 them to a local file — Muteb works across several machines and a local file does
 not travel.
 
-Pass `--repo mtb550/test-in` explicitly. `gh` can infer it from the remote, but
+Pass `--repo MutebAlMughyiri/test-in` explicitly. `gh` can infer it from the remote, but
 these commands are run from other directories often enough that being explicit
 is cheaper than being wrong.
 
 ## Before writing
 
-1. `gh issue list --repo mtb550/test-in --state open --limit 100` — check whether
+1. `gh issue list --repo MutebAlMughyiri/test-in --state open --limit 100` — check whether
    this already exists. If it does, edit that issue rather than opening a second.
 2. Ground what you write in the code. Read the classes involved and name real
    paths; an issue that names a class that does not exist costs more time than it
@@ -152,8 +152,8 @@ trusted. Add the groups up.
 Stage the body in a scratch file, then:
 
 ```bash
-gh issue create --repo mtb550/test-in --title "<title>" --body-file <path>
-gh issue edit <n> --repo mtb550/test-in --body-file <path>
+gh issue create --repo MutebAlMughyiri/test-in --title "<title>" --body-file <path>
+gh issue edit <n> --repo MutebAlMughyiri/test-in --body-file <path>
 ```
 
 Titles are a specific claim, not a category: "Grid rows render oversized in all

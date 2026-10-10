@@ -9,7 +9,7 @@
     <!-- ================================================================== -->
     <id>org.testin</id>
     <name>Testin</name>
-    <vendor email="mtb550@gmail.com" url="https://github.com/mtb550/test-in">Muteb Almughyiri</vendor>
+    <vendor email="mtb550@gmail.com" url="https://github.com/MutebAlMughyiri/test-in">Muteb AlMughyiri</vendor>
     <resource-bundle>messages</resource-bundle>
     <description><![CDATA[
     <b>Testin</b> brings test case management into the IDE. Design test cases, run them, and report on the results in the same window as the code they cover.
@@ -58,9 +58,9 @@
 
     <b>Support</b>
     <ul>
-        <li>How Testin works: <a href="https://mtb550.github.io/test-in/">mtb550.github.io/test-in</a> &mdash; what it does, how each screen works and the rules it keeps</li>
-        <li>Questions and ideas: <a href="https://github.com/mtb550/test-in/discussions">github.com/mtb550/test-in/discussions</a></li>
-        <li>Issues and feature requests: <a href="https://github.com/mtb550/test-in/issues">github.com/mtb550/test-in/issues</a></li>
+        <li>How Testin works: <a href="https://mutebalmughyiri.github.io/test-in/">mutebalmughyiri.github.io/test-in</a> &mdash; what it does, how each screen works and the rules it keeps</li>
+        <li>Questions and ideas: <a href="https://github.com/MutebAlMughyiri/test-in/discussions">github.com/MutebAlMughyiri/test-in/discussions</a></li>
+        <li>Issues and feature requests: <a href="https://github.com/MutebAlMughyiri/test-in/issues">github.com/MutebAlMughyiri/test-in/issues</a></li>
     </ul>
 ]]></description>
 

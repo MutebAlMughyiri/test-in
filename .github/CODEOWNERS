@@ -1,10 +1,10 @@
-# Every file in this repository is owned by @mtb550.
+# Every file in this repository is owned by @MutebAlMughyiri.
 #
 # The protect-main ruleset requires a code owner's approval on every pull
 # request into main, so this file is what decides who that is: one person, for
 # the whole tree, whoever else holds write access. Without it "one approving
 # review" means any collaborator, and today that is only true by headcount.
 #
-# @mtb550 keeps the admin bypass, so pushing straight to main still works for
-# the owner. Everyone else goes through a pull request that @mtb550 approves.
-* @mtb550
+# @MutebAlMughyiri keeps the admin bypass, so pushing straight to main still works for
+# the owner. Everyone else goes through a pull request that @MutebAlMughyiri approves.
+* @MutebAlMughyiri

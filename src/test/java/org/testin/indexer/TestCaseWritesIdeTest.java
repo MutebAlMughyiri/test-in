@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 Muteb Almughyiri
+ * Copyright 2026 Muteb AlMughyiri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,7 +84,7 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
     private static void asTester(final @NotNull Runnable work) {
         final @NotNull AppSettingsState settings = Services.getInstance(AppSettingsState.class);
         final @NotNull String was = settings.testerName;
-        settings.testerName = "Muteb Almughyiri";
+        settings.testerName = "Muteb AlMughyiri";
         try {
             work.run();
         } finally {
@@ -372,10 +372,10 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
 
         final @NotNull TestCaseDto edited = indexedTestCases().findTestCase(known.getId()).orElseThrow();
         assertEquals("a save of a test case the index knows took a new creator", "Mohammed AlZamil", edited.getCreatedBy());
-        assertEquals("a save of a test case the index knows did not record who changed it", "Muteb Almughyiri", edited.getUpdatedBy());
+        assertEquals("a save of a test case the index knows did not record who changed it", "Muteb AlMughyiri", edited.getUpdatedBy());
 
         final @NotNull TestCaseDto created = indexedTestCases().findTestCase(fresh.getId()).orElseThrow();
-        assertEquals("a save of a test case the index has never seen was not stamped as created", "Muteb Almughyiri", created.getCreatedBy());
+        assertEquals("a save of a test case the index has never seen was not stamped as created", "Muteb AlMughyiri", created.getCreatedBy());
         assertEquals("a save of a test case the index has never seen was recorded as a change", "", created.getUpdatedBy());
     }
 }

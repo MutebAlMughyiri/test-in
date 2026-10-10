@@ -16,7 +16,7 @@ windows.
 | **Part of Testin**  | The editor panel. Light mode is one of its windows                                                                                                                                                               |
 | **Answers for**     | This one window. The rest of the editor panel is [on its own pages](main.md)                                                                                                                                     |
 | **Answers**         | Why this window is shaped the way it is, and what every part of it does                                                                                                                                          |
-| **State**           | **Written.** Built and shipped — [#13](https://github.com/mtb550/test-in/issues/13), closed                                                                                                                      |
+| **State**           | **Written.** Built and shipped — [#13](https://github.com/MutebAlMughyiri/test-in/issues/13), closed                                                                                                             |
 | **Checked against** | `main` at `1270e599`, 20 September 2026 — every message, key, strip and drawn part read against the code again                                                                                                   |
 | **Numbering**       | `UC-EDITOR-PANEL-046`. Rules `Rule-EDITOR-PANEL-201` to `Rule-EDITOR-PANEL-204` say how the window moves; the rest of this page was written before the part was numbered and its statements are not numbered yet |
 
@@ -51,7 +51,7 @@ The design asked for a picture of a window holding a smaller window in its
 corner. The IDE has no ready-made icon for that. The two that came closest were
 both wrong. One points its arrow the wrong way. The other is drawn so faintly
 that it would have looked switched off. So the icon is borrowed rather than
-drawn. That is what [#123](https://github.com/mtb550/test-in/issues/123)
+drawn. That is what [#123](https://github.com/MutebAlMughyiri/test-in/issues/123)
 tracks.
 
 The button is a **toggle**. The tester presses it to open light mode. They press
@@ -239,7 +239,7 @@ clock is a stopwatch, and a tester watching a number climb hurries.
 **They carry no labels.** The right-hand figure is always the larger of the two.
 That tells the tester which is which faster than a word would. A label that
 never changes is noise. Both figures come from the execution timer
-[#27](https://github.com/mtb550/test-in/issues/27) already built. Both are
+[#27](https://github.com/MutebAlMughyiri/test-in/issues/27) already built. Both are
 recorded whether they are shown or not, so nothing is lost by showing them
 softly.
 
@@ -330,7 +330,7 @@ Three buttons, each printing its own key, all in one color. `P`, `F` and `B` are
 not new keys. The three run item statuses already answer to them everywhere else
 in Testin. That is why a fourth run item status will appear here without this
 window changing. The fourth is Out Of Scope, once
-[#10](https://github.com/mtb550/test-in/issues/10) is done. The words tell the
+[#10](https://github.com/MutebAlMughyiri/test-in/issues/10) is done. The words tell the
 three apart. Color would only say "button".
 
 ---
@@ -773,7 +773,7 @@ offer run item statuses that nothing could take.
 
 ### The view menu chooses parts, not fields
 
-[#13](https://github.com/mtb550/test-in/issues/13) asks for a control over which
+[#13](https://github.com/MutebAlMughyiri/test-in/issues/13) asks for a control over which
 test case fields appear. The menu chooses between the things the window itself
 holds instead. What sits behind Details stays fixed: the badges, the steps, the
 test data and the pre-conditions. Switches over parts of a window cannot grow
@@ -813,7 +813,7 @@ holds, so a very long description at a large size makes a window taller than
 the screen. Stopping it would cut the test case off, which is worse. Letting it
 scroll puts a scrollbar in the one window built so nothing has to be scrolled.
 So it is written down rather than fixed, as finding 54 in
-[#66](https://github.com/mtb550/test-in/issues/66).
+[#66](https://github.com/MutebAlMughyiri/test-in/issues/66).
 
 ### This window keeps its own zoom
 

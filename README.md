@@ -104,7 +104,7 @@ delete the findings list. Neither is committed.
 
 ## License and privacy
 
-Testin is built and maintained by [Muteb Almughyiri](https://github.com/mtb550).
+Testin is built and maintained by [Muteb AlMughyiri](https://github.com/MutebAlMughyiri).
 The source is licensed under the **Apache License 2.0** — see
 [LICENSE](LICENSE). [EULA.md](EULA.md) is the end user agreement for the plugin
 as distributed through JetBrains Marketplace, and applies only if and when it is
@@ -120,7 +120,7 @@ full statement is in [PRIVACY_POLICY.md](PRIVACY_POLICY.md).
 
 ## Documentation
 
-Read it on the web at **[mtb550.github.io/test-in](https://mtb550.github.io/test-in/)**,
+Read it on the web at **[mutebalmughyiri.github.io/test-in](https://mutebalmughyiri.github.io/test-in/)**,
 or in this repository under [`docs/`](docs/README.md).
 
 New to the idea rather than the reference? **[Testin - New IntelliJ plugin to
@@ -150,7 +150,7 @@ together](docs/ARCHITECTURE.md), [the product](docs/product.md) and [how a
 document is written](docs/standard.md).
 
 Questions, ideas and feedback are welcome in
-[Discussions](https://github.com/mtb550/test-in/discussions).
+[Discussions](https://github.com/MutebAlMughyiri/test-in/discussions).
 
 ## Contributing
 
@@ -162,4 +162,4 @@ The four architecture rules — all test data file access through the indexer, t
 VFS before the cache, Swing on the EDT, formatting display-only — are in
 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), with the layer map and two
 operations traced class by class. Issues and plans live in
-[GitHub issues](https://github.com/mtb550/test-in/issues).
+[GitHub issues](https://github.com/MutebAlMughyiri/test-in/issues).

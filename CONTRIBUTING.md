@@ -16,7 +16,7 @@ Nothing else. There is no local database, no service to start, no account.
 ## From clone to a running plugin
 
 ```bash
-git clone https://github.com/mtb550/test-in.git
+git clone https://github.com/MutebAlMughyiri/test-in.git
 cd test-in
 ./gradlew compileJava test      # must be green
 ./gradlew runIde                # a sandbox IDE with Testin installed
@@ -419,7 +419,7 @@ Three that catch people out:
 
 ## Issues
 
-Work lives in [GitHub issues](https://github.com/mtb550/test-in/issues), never in
+Work lives in [GitHub issues](https://github.com/MutebAlMughyiri/test-in/issues), never in
 a local file — this is developed across more than one machine.
 
 **Every issue carries statistics, measured rather than estimated.** "Several call

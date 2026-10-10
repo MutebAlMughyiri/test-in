@@ -277,7 +277,7 @@ particular thing is on screen.
 | `Ctrl+D` `Ctrl+E` `Ctrl+M` `Ctrl+S` `Ctrl+T` `Ctrl+B` `Ctrl+G` `Ctrl+P` | The create and update test case dialogs        | Each opens one field of the dialog in front of the tester. Outside it there is no field to open. The top of this page names their Mac keys                                          |
 | `Tab` `Shift+Tab` `Up` `Down` `Space`                                   | Any dialog                                     | Moving between fields and choices is the platform's own gesture, not a command                                                                                                      |
 | `Tab` `Shift+Tab`                                                       | The view panel                                 | Moving between its two tabs, which exist only there                                                                                                                                 |
-| `Enter` `Escape`                                                        | Any dialog, and the grid                       | Confirm and cancel. Every dialog has them, so they belong to the dialog framework rather than to any one action ([#11](https://github.com/mtb550/test-in/issues/11))                |
+| `Enter` `Escape`                                                        | Any dialog, and the grid                       | Confirm and cancel. Every dialog has them, so they belong to the dialog framework rather than to any one action ([#11](https://github.com/MutebAlMughyiri/test-in/issues/11))       |
 | `Ctrl+Space`                                                            | Any dialog field that completes                | The platform's own completion gesture, on a Mac too                                                                                                                                 |
 | `Ctrl+Enter`                                                            | A grid cell, a long field                      | A line break where `Enter` saves                                                                                                                                                    |
 | `Ctrl+Shift+A`, `Shift+Delete`                                          | The bulk editors                               | Caret on every value, and remove an item — both about the editor on screen                                                                                                          |
@@ -293,7 +293,7 @@ particular thing is on screen.
 they are not in Find Action and their keys cannot be rebound: **Generate Report**
 (`Ctrl+P`), **Undo** (`Ctrl+Z`), **Redo** (`Ctrl+Y`), and **Set Status** on a
 test run. Each of them is one action shown on several surfaces with different
-things behind it, which is the part of [#119](https://github.com/mtb550/test-in/issues/119)
+things behind it, which is the part of [#119](https://github.com/MutebAlMughyiri/test-in/issues/119)
 that is not finished.
 
 ## Every key on this page is bound
@@ -305,7 +305,7 @@ one again.
 priority, and nothing answered to any of them. They were removed rather than
 bound: at the time the letters matched no word a tester could see, and `E` named
 a choice the failure dialog does not offer at all. Choosing a priority is the mouse or the arrow keys, which is what the hint
-beside it now says. [#283](https://github.com/mtb550/test-in/issues/283).
+beside it now says. [#283](https://github.com/MutebAlMughyiri/test-in/issues/283).
 
 **A key is drawn only where pressing it does that thing.** Both directions of
 that matter: a capability shown without its key is

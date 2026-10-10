@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 Muteb Almughyiri
+ * Copyright 2026 Muteb AlMughyiri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ public class IndexerBudgetTest {
                       "id" : "%s",
                       "status" : "%s",
                       "duration" : 4.125,
-                      "executedBy" : "Muteb Almughyiri",
+                      "executedBy" : "Muteb AlMughyiri",
                       "executedAt" : "Monday 14-09-2026 At 10:22:05 [Asia/Riyadh]",
                       "actualResult" : "The dashboard opened and the header showed the account name",
                       "stacktrace" : "",
