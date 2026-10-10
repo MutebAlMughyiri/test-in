@@ -39,7 +39,7 @@ It holds for the documentation and for issues as well: *test case id*, never *ca
 **And for every sentence written to Muteb** - chat, a design, an `AskUserQuestion`
 brief and its options. A question that says "the run" or "run the tests" was sent
 back unanswered on 10 October 2026: *"resend this question with selection by use our
-names based on code and business, dont say run, say test run or run item"*.
+names based on code and business, don't say run, say test run or run item"*.
 
 | Not this, in any sentence                    | This                                                                                  |
 |----------------------------------------------|---------------------------------------------------------------------------------------|
