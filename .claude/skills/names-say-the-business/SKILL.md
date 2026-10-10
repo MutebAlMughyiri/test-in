@@ -36,6 +36,20 @@ name should match our correct names in business."*
 
 It holds for the documentation and for issues as well: *test case id*, never *case id*; *run item*, never *item*.
 
+**And for every sentence written to Muteb** - chat, a design, an `AskUserQuestion`
+brief and its options. A question that says "the run" or "run the tests" was sent
+back unanswered on 10 October 2026: *"resend this question with selection by use our
+names based on code and business, dont say run, say test run or run item"*.
+
+| Not this, in any sentence                    | This                                                                                  |
+|----------------------------------------------|---------------------------------------------------------------------------------------|
+| the run, a run, open a run, complete the run | the test run, open a test run, set the test run Completed                             |
+| run the tests, runs TestNG                   | execute the automation, executes the TestNG methods                                   |
+| results, test results                        | run items, run item statuses (TestNG's own file keeps its name, `testng-results.xml`) |
+| the cases                                    | the test cases                                                                        |
+
+Before sending any message about test runs, read it once for the bare word *run*.
+
 ## Name the container, and name the thing
 
 > *"test set has many test case, test run has many run items, so we can not say
