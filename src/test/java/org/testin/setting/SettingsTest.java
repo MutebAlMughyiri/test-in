@@ -86,7 +86,7 @@ public class SettingsTest {
     // Rule-SETTING-046
     @Test
     public void aStoredFolderThatIsNotAFullPathIsReadAsNotSet() {
-        assertEquals(TestinRoot.stored("C:SERSMTBDOWNLOADSTESTIN"), TestinRoot.NONE, "a drive-relative path was read as a folder");
+        assertEquals(TestinRoot.stored("C:Downloads"), TestinRoot.NONE, "a drive-relative path was read as a folder");
         assertEquals(TestinRoot.stored("Downloads/Testin"), TestinRoot.NONE, "a relative path was read as a folder");
         assertEquals(TestinRoot.stored("C:/Tes" + (char) 0 + "tin"), TestinRoot.NONE, "a value that is not a path was read as a folder");
         assertEquals(TestinRoot.stored(null), TestinRoot.NONE);

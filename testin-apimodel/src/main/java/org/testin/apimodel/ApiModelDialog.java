@@ -138,8 +138,10 @@ final class ApiModelDialog extends AbstractFrameworkDialog {
         }
 
         final @NotNull Map<String, String> files = new LinkedHashMap<>();
-        if (refused(files, name + REQUEST, requestBody, Bundle.message("dialog.api.model.request"), JavaModelText::requestClass)) return;
-        if (refused(files, name + RESPONSE, responseBody, Bundle.message("dialog.api.model.response"), JavaModelText::responseRecord)) return;
+        if (refused(files, name + REQUEST, requestBody, Bundle.message("dialog.api.model.request"), JavaModelText::requestClass))
+            return;
+        if (refused(files, name + RESPONSE, responseBody, Bundle.message("dialog.api.model.response"), JavaModelText::responseRecord))
+            return;
 
         final @NotNull List<PsiFile> written = write(files);
         if (written.isEmpty()) return;
@@ -160,20 +162,25 @@ final class ApiModelDialog extends AbstractFrameworkDialog {
         Logger.debug("API model, " + kind + " as pasted:\n" + body);
         final @NotNull Optional<JsonNode> json = JsonModel.read(body);
         final @NotNull Optional<Refused> refusal = json.map(JsonModel::refusalOf).orElse(Optional.of(Refused.NOT_JSON));
-        if (refusal.isPresent()) return refuse(refusal.orElseThrow(), kind);
+        if (refusal.isPresent()) {
+            refuse(refusal.orElseThrow(), kind);
+            return true;
+        }
 
         final @NotNull String fileName = typeName + ".java";
-        if (Optional.ofNullable(directory.findFile(fileName)).isPresent()) return refuse(Refused.ALREADY_EXISTS, fileName);
+        if (Optional.ofNullable(directory.findFile(fileName)).isPresent()) {
+            refuse(Refused.ALREADY_EXISTS, fileName);
+            return true;
+        }
 
         files.put(fileName, text.apply(packageName, JsonModel.of(typeName, json.orElseThrow())));
         return false;
     }
 
     // Rule-CODEGEN-099, Rule-CODEGEN-108
-    private boolean refuse(final @NotNull Refused refusal, final @NotNull String about) {
+    private void refuse(final @NotNull Refused refusal, final @NotNull String about) {
         Logger.debug("API model refused: " + refusal.about(about));
         notifier.softRefuse(p, refusal, about);
-        return true;
     }
 
     // Rule-CODEGEN-006, Rule-CODEGEN-105

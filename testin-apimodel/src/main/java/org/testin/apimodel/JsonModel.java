@@ -152,7 +152,8 @@ public final class JsonModel {
         if (known.stream().allMatch(JsonNode::isObject)) return mergedObjects(known);
         if (known.stream().allMatch(JsonNode::isArray)) return mergedLists(known);
         if (known.stream().allMatch(JsonNode::isNumber)) return widest(known);
-        if (known.stream().allMatch(JsonNode::isTextual) || known.stream().allMatch(JsonNode::isBoolean)) return known.getFirst();
+        if (known.stream().allMatch(JsonNode::isTextual) || known.stream().allMatch(JsonNode::isBoolean))
+            return known.getFirst();
 
         return MissingNode.getInstance();
     }
@@ -177,8 +178,10 @@ public final class JsonModel {
     // Rule-CODEGEN-102
     private static @NotNull JsonNode widest(final @NotNull List<JsonNode> numbers) {
         if (numbers.stream().anyMatch(JsonNode::isFloatingPointNumber)) return DoubleNode.valueOf(0);
-        if (numbers.stream().anyMatch(JsonNode::isBigInteger)) return numbers.stream().filter(JsonNode::isBigInteger).findFirst().orElseThrow();
-        if (numbers.stream().anyMatch(JsonNode::isLong)) return numbers.stream().filter(JsonNode::isLong).findFirst().orElseThrow();
+        if (numbers.stream().anyMatch(JsonNode::isBigInteger))
+            return numbers.stream().filter(JsonNode::isBigInteger).findFirst().orElseThrow();
+        if (numbers.stream().anyMatch(JsonNode::isLong))
+            return numbers.stream().filter(JsonNode::isLong).findFirst().orElseThrow();
 
         return numbers.getFirst();
     }

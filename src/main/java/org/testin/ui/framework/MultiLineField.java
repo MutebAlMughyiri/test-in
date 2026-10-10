@@ -104,7 +104,8 @@ public final class MultiLineField implements DialogComponent {
             // Rule-INTERNAL-102
             editor.setVerticalScrollbarVisible(true);
             // Rule-INTERNAL-136
-            if (maximumLines == NO_LIMIT && editor.getScrollPane() instanceof JBScrollPane pane) pane.setOverlappingScrollBar(true);
+            if (maximumLines == NO_LIMIT && editor.getScrollPane() instanceof JBScrollPane pane)
+                pane.setOverlappingScrollBar(true);
             // Rule-INTERNAL-103
             editor.getSettings().setShowIntentionBulb(false);
 

@@ -41,7 +41,8 @@ public final class JavaModelText {
     public static @NotNull String requestClass(final @NotNull String packageName, final @NotNull ModelType root) {
         final @NotNull Set<String> imports = importsOf(root);
         imports.addAll(LOMBOK_ON_EVERY_CLASS);
-        if (root.withAllNested().anyMatch(type -> !type.fields().isEmpty())) imports.addAll(LOMBOK_ON_A_CLASS_WITH_FIELDS);
+        if (root.withAllNested().anyMatch(type -> !type.fields().isEmpty()))
+            imports.addAll(LOMBOK_ON_A_CLASS_WITH_FIELDS);
 
         final @NotNull List<String> lines = new ArrayList<>(head(packageName, imports));
         lines.addAll(classLines(root, "", "public class "));
