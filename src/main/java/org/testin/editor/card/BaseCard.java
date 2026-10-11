@@ -147,9 +147,11 @@ public abstract class BaseCard extends JBPanel<BaseCard> {
         layOutTitle();
     }
 
+    // Rule-EDITOR-PANEL-003
     private void layOutTitle() {
         titleArea.setText(plainTitle);
         titleArea.setSize(Math.min(titleColumnWidth, Short.MAX_VALUE), Short.MAX_VALUE);
+        UIUtil.uiParents(titleArea, false).takeWhile(part -> SwingUtilities.isDescendingFrom(part, this)).forEach(Component::invalidate);
     }
 
     // Rule-INTERNAL-122, Rule-EDITOR-PANEL-267, Rule-EDITOR-PANEL-269, Rule-INTERNAL-132
