@@ -226,8 +226,10 @@ buttons do.
 Run claims the test case for this test run first, as the card's Run does (Rule-EDITOR-PANEL-180), so its run item status
 comes back here. When it does,
 the walk moves on exactly as after the tester's own run item status (Rule-EDITOR-PANEL-242).
-An attempt TestNG skips is not one: TestNG may retry it, so the window stays on
-the test case until the last attempt comes back (Rule-CODEGEN-110).
+A result TestNG may follow with another is not one: a skipped attempt may be
+retried, and a method with an invocation count runs several times, so the window
+stays on the test case until TestNG moves on or the execution ends
+(Rule-CODEGEN-110).
 
 ### 7. The two clocks
 

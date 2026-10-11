@@ -164,8 +164,13 @@ public final class TestNGExecution implements Disposable {
     }
 
     // UC-CODEGEN-008
-    void reported(final @NotNull UUID id, final @NotNull ExecutionStatus status, final @NotNull Failure failure) {
-        registry.reported(id, status, failure);
+    void reported(final @NotNull UUID id, final @NotNull ExecutionStatus status) {
+        registry.reported(id, status);
+    }
+
+    // Rule-CODEGEN-110
+    @NotNull Map<UUID, Attempt> attempted(final @NotNull UUID id, final @NotNull Attempt attempt) {
+        return registry.attempted(id, attempt);
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-037
@@ -190,14 +195,14 @@ public final class TestNGExecution implements Disposable {
 
     // UC-CODEGEN-008, Rule-CODEGEN-092, Rule-CODEGEN-110
     private void ended(final @NotNull ExecutionEnvironment env) {
-        final @NotNull String testRunName = env.getRunProfile().getName();
-        final @NotNull List<UUID> abandoned = registry.ended(testRunName);
-        if (abandoned.isEmpty()) return;
+        ApplicationManager.getApplication().invokeLater(() -> {
+            final @NotNull String testRunName = env.getRunProfile().getName();
+            final @NotNull List<UUID> open = registry.ended(testRunName);
+            if (open.isEmpty()) return;
 
-        Logger.info("'" + testRunName + "' ended with " + abandoned.size() + " test case(s) that never reported");
-        ApplicationManager.getApplication().invokeLater(() -> abandoned.forEach(id -> registry.lastSkip(id).ifPresentOrElse(
-                skip -> TestCaseExecutionListener.broadcast(p, key(id), ExecutionStatus.FAILED, Duration.ZERO, skip),
-                () -> TestCaseExecutionListener.broadcast(p, key(id), ExecutionStatus.IDLE, Duration.ZERO, Failure.NONE))));
+            Logger.info("'" + testRunName + "' ended with " + open.size() + " test case(s) still open");
+            open.forEach(id -> TestCaseExecutionListener.broadcast(p, key(id), ExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
+        });
     }
 
     private void kill(final @NotNull ProcessHandler handler, final @NotNull String testRunName) {

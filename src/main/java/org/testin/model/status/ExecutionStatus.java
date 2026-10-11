@@ -65,9 +65,8 @@ public enum ExecutionStatus {
 
     private final @NotNull Optional<RunItemStatus> runItemStatus;
 
-    // Rule-CODEGEN-110
     public boolean stillGoing() {
-        return this == RUNNING || this == SKIPPED;
+        return this == RUNNING;
     }
 
     public boolean hasBadge() {

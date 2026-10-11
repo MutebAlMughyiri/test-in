@@ -63,19 +63,23 @@ public final class TestCaseExecutionSubscriber implements Disposable {
     private void record(final @NotNull String testName, final @NotNull ExecutionStatus status, final @NotNull Duration duration, final @NotNull Failure failure) {
         Logger.debug("Execution report: testName='" + testName + "', status='" + status + "'");
 
-        TestName.testCaseId(testName).flatMap(Services.getInstance(p, TestCases.class)::findTestCase).ifPresentOrElse(
-                tc -> report(tc, status, duration, failure),
+        final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
+
+        TestName.testCaseId(testName).flatMap(testCases::findTestCase).ifPresentOrElse(
+                tc -> Services.getInstance(p, TestNGExecution.class).attempted(tc.getId(), new Attempt(status, duration, failure))
+                        .forEach((id, decided) -> testCases.findTestCase(id).ifPresent(decidedTc -> report(decidedTc, decided))),
                 () -> Logger.debug("  '" + testName + "' is not a generated test case - reported against none"));
     }
 
-    private void report(final @NotNull TestCaseDto tc, final @NotNull ExecutionStatus status, final @NotNull Duration duration, final @NotNull Failure failure) {
-        final @NotNull ExecutionStatus reportedStatus = runItemStatusFor(tc, status);
+    // Rule-CODEGEN-110
+    private void report(final @NotNull TestCaseDto tc, final @NotNull Attempt decided) {
+        final @NotNull ExecutionStatus reportedStatus = runItemStatusFor(tc, decided.status());
 
-        Logger.debug("  reporting on '" + tc.getDescription() + "': " + reportedStatus + " " + failure.message());
+        Logger.debug("  reporting on '" + tc.getDescription() + "': " + reportedStatus + " " + decided.failure().message());
 
-        Services.getInstance(p, TestNGExecution.class).reported(tc.getId(), reportedStatus, failure);
+        Services.getInstance(p, TestNGExecution.class).reported(tc.getId(), reportedStatus);
 
-        surfaces.forEach(surface -> surface.accept(tc, reportedStatus, duration, failure));
+        surfaces.forEach(surface -> surface.accept(tc, reportedStatus, decided.duration(), decided.failure()));
     }
 
     @Override

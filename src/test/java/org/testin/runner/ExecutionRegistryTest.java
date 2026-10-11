@@ -22,8 +22,10 @@ import org.testin.model.status.ExecutionStatus;
 import org.testin.model.testrun.Failure;
 import org.testng.annotations.Test;
 
+import java.time.Duration;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -44,6 +46,16 @@ public class ExecutionRegistryTest {
 
     private static @NotNull TestCaseDto aTestCase(final String description) {
         return TestCaseDto.builder().description(description).build();
+    }
+
+    private static @NotNull Attempt attempt(final ExecutionStatus status, final String message) {
+        return new Attempt(status, Duration.ZERO, new Failure(message, ""));
+    }
+
+    private static @NotNull ExecutionRegistry launchedWith(final TestCaseDto... testCases) {
+        final ExecutionRegistry registry = new ExecutionRegistry();
+        registry.launched(Arrays.stream(testCases).map(TestCaseDto::getId).toList(), RUN);
+        return registry;
     }
 
     @Test
@@ -100,7 +112,7 @@ public class ExecutionRegistryTest {
         final TestCaseDto stillGoing = aTestCase("still going");
 
         registry.launched(List.of(finished.getId(), stillGoing.getId()), RUN);
-        registry.reported(finished.getId(), ExecutionStatus.PASSED, Failure.NONE);
+        registry.reported(finished.getId(), ExecutionStatus.PASSED);
 
         final Stop stop = registry.stopping(List.of(stillGoing.getId()));
 
@@ -138,7 +150,7 @@ public class ExecutionRegistryTest {
         final TestCaseDto original = aTestCase("passes");
 
         registry.launched(List.of(original.getId()), RUN);
-        registry.reported(original.getId(), ExecutionStatus.PASSED, Failure.NONE);
+        registry.reported(original.getId(), ExecutionStatus.PASSED);
 
         assertEquals(registry.statusOf(reloaded(original).getId()), ExecutionStatus.PASSED,
                 "the green badge does not vanish at the tester's next keystroke");
@@ -149,9 +161,9 @@ public class ExecutionRegistryTest {
         final ExecutionRegistry registry = new ExecutionRegistry();
         final TestCaseDto tc = aTestCase("passed earlier, run again during indexing");
 
-        registry.reported(tc.getId(), ExecutionStatus.PASSED, Failure.NONE);
+        registry.reported(tc.getId(), ExecutionStatus.PASSED);
         registry.notStarting(tc.getId());
-        registry.reported(tc.getId(), ExecutionStatus.IDLE, Failure.NONE);
+        registry.reported(tc.getId(), ExecutionStatus.IDLE);
 
         assertEquals(registry.statusOf(tc.getId()), ExecutionStatus.PASSED, "an execution that never started wiped the last run item status");
     }
@@ -161,12 +173,12 @@ public class ExecutionRegistryTest {
         final ExecutionRegistry registry = new ExecutionRegistry();
         final TestCaseDto tc = aTestCase("passed earlier, stopped this time");
 
-        registry.reported(tc.getId(), ExecutionStatus.PASSED, Failure.NONE);
+        registry.reported(tc.getId(), ExecutionStatus.PASSED);
         registry.starting(tc.getId());
         registry.take(tc.getId());
         registry.launched(List.of(tc.getId()), RUN);
         registry.stopping(List.of(tc.getId()));
-        registry.reported(tc.getId(), ExecutionStatus.IDLE, Failure.NONE);
+        registry.reported(tc.getId(), ExecutionStatus.IDLE);
 
         assertEquals(registry.statusOf(tc.getId()), ExecutionStatus.IDLE, "a stopped test case kept the run item status of the execution before");
     }
@@ -187,7 +199,7 @@ public class ExecutionRegistryTest {
         final ExecutionRegistry registry = new ExecutionRegistry();
         final TestCaseDto tc = aTestCase("failed once, running again");
 
-        registry.reported(tc.getId(), ExecutionStatus.FAILED, Failure.NONE);
+        registry.reported(tc.getId(), ExecutionStatus.FAILED);
         registry.starting(tc.getId());
 
         assertEquals(registry.statusOf(tc.getId()), ExecutionStatus.RUNNING, "the card shows what it is doing now");
@@ -199,38 +211,62 @@ public class ExecutionRegistryTest {
         final TestCaseDto tc = aTestCase("reports itself started");
 
         registry.launched(List.of(tc.getId()), RUN);
-        registry.reported(tc.getId(), ExecutionStatus.RUNNING, Failure.NONE);
+        registry.reported(tc.getId(), ExecutionStatus.RUNNING);
 
         assertTrue(registry.isRunning(tc.getId()), "a test case does not stop running by saying that it is");
     }
 
     // Rule-CODEGEN-110
     @Test
-    public void aSkippedAttemptKeepsTheTestCaseRunningAndRemembersWhy() {
-        final ExecutionRegistry registry = new ExecutionRegistry();
-        final TestCaseDto tc = aTestCase("fails once, retried");
-        final Failure skip = new Failure("expected true", "");
+    public void aResultIsHeldUntilTestNGMovesToAnotherTestCase() {
+        final TestCaseDto retried = aTestCase("fails once, passes on the retry");
+        final TestCaseDto next = aTestCase("runs after it");
+        final ExecutionRegistry registry = launchedWith(retried, next);
 
-        registry.launched(List.of(tc.getId()), RUN);
-        registry.reported(tc.getId(), ExecutionStatus.SKIPPED, skip);
+        assertTrue(registry.attempted(retried.getId(), attempt(ExecutionStatus.SKIPPED, "expected true")).isEmpty(), "a skipped attempt may be retried");
+        registry.attempted(retried.getId(), attempt(ExecutionStatus.RUNNING, ""));
+        assertTrue(registry.attempted(retried.getId(), attempt(ExecutionStatus.PASSED, "")).isEmpty(), "and the pass may be followed by another invocation");
 
-        assertTrue(registry.isRunning(tc.getId()), "TestNG may retry a skipped attempt, so it is not the test case's result");
-        assertEquals(registry.lastSkip(tc.getId()), Optional.of(skip), "and if no attempt follows, the skip is what gets recorded");
+        final Map<UUID, Attempt> decided = registry.attempted(next.getId(), attempt(ExecutionStatus.RUNNING, ""));
+
+        assertEquals(decided.get(retried.getId()), attempt(ExecutionStatus.PASSED, ""), "TestNG moved on, so the retry that passed is the result");
+        assertTrue(registry.isRunning(retried.getId()), "it stays running until the decided result is reported");
     }
 
     // Rule-CODEGEN-110
     @Test
-    public void theRetryThatPassesIsTheResult() {
-        final ExecutionRegistry registry = new ExecutionRegistry();
-        final TestCaseDto tc = aTestCase("fails once, passes on the retry");
+    public void anyFailedInvocationFailsTheTestCase() {
+        final TestCaseDto invoked = aTestCase("invocationCount = 4");
+        final ExecutionRegistry registry = launchedWith(invoked);
 
-        registry.launched(List.of(tc.getId()), RUN);
-        registry.reported(tc.getId(), ExecutionStatus.SKIPPED, new Failure("expected true", ""));
-        registry.reported(tc.getId(), ExecutionStatus.RUNNING, Failure.NONE);
-        registry.reported(tc.getId(), ExecutionStatus.PASSED, Failure.NONE);
+        registry.attempted(invoked.getId(), attempt(ExecutionStatus.PASSED, ""));
+        registry.attempted(invoked.getId(), attempt(ExecutionStatus.FAILED, "the second invocation failed"));
+        registry.attempted(invoked.getId(), attempt(ExecutionStatus.PASSED, ""));
 
-        assertEquals(registry.statusOf(tc.getId()), ExecutionStatus.PASSED, "the attempt TestNG retried does not decide the run item status");
-        assertTrue(registry.lastSkip(tc.getId()).isEmpty(), "and its skip is forgotten once a later attempt starts");
+        assertEquals(registry.attempted(invoked.getId(), attempt(ExecutionStatus.IDLE, "")).get(invoked.getId()), attempt(ExecutionStatus.FAILED, "the second invocation failed"),
+                "a later pass does not hide an earlier failure");
+    }
+
+    // Rule-CODEGEN-075, Rule-CODEGEN-110
+    @Test
+    public void aSkipNoAttemptFollowsIsAFailureWhenTheExecutionEnds() {
+        final TestCaseDto skipped = aTestCase("its dependency failed");
+        final ExecutionRegistry registry = launchedWith(skipped);
+
+        registry.attempted(skipped.getId(), attempt(ExecutionStatus.SKIPPED, "Skipped/Terminated"));
+        registry.ended(RUN);
+
+        assertEquals(registry.attempted(skipped.getId(), attempt(ExecutionStatus.IDLE, "")).get(skipped.getId()), attempt(ExecutionStatus.FAILED, "Skipped/Terminated"));
+    }
+
+    // Rule-CODEGEN-110
+    @Test
+    public void aTestCaseThisPluginDidNotStartIsDecidedAtOnce() {
+        final TestCaseDto fromTheGutter = aTestCase("run from the class");
+
+        final Map<UUID, Attempt> decided = new ExecutionRegistry().attempted(fromTheGutter.getId(), attempt(ExecutionStatus.FAILED, "expected true"));
+
+        assertEquals(decided.get(fromTheGutter.getId()), attempt(ExecutionStatus.FAILED, "expected true"), "nothing groups its results, so the first one is its result, as before");
     }
 
     @Test
@@ -254,7 +290,7 @@ public class ExecutionRegistryTest {
         final TestCaseDto tc = aTestCase("passes");
 
         registry.launched(List.of(tc.getId()), RUN);
-        registry.reported(tc.getId(), ExecutionStatus.PASSED, Failure.NONE);
+        registry.reported(tc.getId(), ExecutionStatus.PASSED);
 
         assertTrue(registry.ended(RUN).isEmpty(), "nothing to put back, so no card is repainted");
         assertEquals(registry.statusOf(tc.getId()), ExecutionStatus.PASSED, "and the run item status is untouched by the execution ending");

@@ -62,14 +62,17 @@ The code runs, and Testin writes down whether each test case passed.
   module does not start, because one execution runs on one module's classpath.
   Testin names the modules, so the tester runs each module's test cases on their
   own.
-- **Rule-CODEGEN-110** — An attempt TestNG skips is not yet the test case's
-  result, because TestNG skips an attempt it is about to retry exactly as it
-  skips a test whose dependency failed. The test case stays running, and light
-  mode and the walk stay on its run item: the attempt after it is the result,
-  and a skip no attempt follows is recorded when the execution ends, as
-  Rule-CODEGEN-075 says. So a test that fails and passes on a retry is recorded
-  Passed, and one that fails every attempt is recorded Failed with its last
-  failure.
+- **Rule-CODEGEN-110** — A test case's result is decided when TestNG moves on
+  to another test case, or when the execution ends - not at its first result.
+  TestNG may run one method several times in a row: an attempt it skips may be
+  retried, exactly as it skips a test whose dependency failed, and a method with
+  an invocation count runs that many times. The run item takes the worst of
+  them: Failed if any attempt failed, with that failure; Passed if they all
+  passed; and, when TestNG only skipped it, Failed with Skipped/Terminated, as
+  Rule-CODEGEN-075 says. A skipped attempt that a retry follows does not count.
+  Until then the test case stays running, and light mode and the walk stay on
+  its run item. So a test that fails and passes on a retry is recorded Passed,
+  and one of four invocations failing records Failed.
 
 ## The four ways in
 
@@ -126,7 +129,7 @@ records its run item status under the execution it actually belongs to.
 its actual result reads *Skipped/Terminated*. A dependency that failed, an
 excluded group, a disabled test and a terminated execution all arrive the same
 way: the framework says the test did not pass and gives no run item status.
-A skip is recorded once no attempt follows it, because TestNG skips an attempt
+A skip is recorded once TestNG has moved on, because TestNG skips an attempt
 it is about to retry the same way: a retry that passes is recorded **Passed**.
 Leaving it Pending would report the cycle as finished when part of it never ran.
 

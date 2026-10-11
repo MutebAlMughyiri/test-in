@@ -18,10 +18,10 @@ package org.testin.runner;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.status.ExecutionStatus;
-import org.testin.model.testrun.Failure;
 import org.testin.util.Bundle;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -43,7 +43,7 @@ final class ExecutionRegistry {
 
     private final @NotNull Map<UUID, ExecutionStatus> runItemStatus = new ConcurrentHashMap<>();
 
-    private final @NotNull Map<UUID, Failure> lastSkip = new ConcurrentHashMap<>();
+    private final @NotNull Map<UUID, Attempt> held = new ConcurrentHashMap<>();
 
     void starting(final @NotNull UUID id) {
         pending.add(id);
@@ -92,12 +92,36 @@ final class ExecutionRegistry {
         return isRunning(id) ? ExecutionStatus.RUNNING : runItemStatus.getOrDefault(id, ExecutionStatus.IDLE);
     }
 
-    // UC-CODEGEN-009, Rule-CODEGEN-038, Rule-CODEGEN-110
-    void reported(final @NotNull UUID id, final @NotNull ExecutionStatus status, final @NotNull Failure failure) {
-        if (status == ExecutionStatus.SKIPPED) lastSkip.put(id, failure);
-        else lastSkip.remove(id);
+    // Rule-CODEGEN-110
+    @NotNull Map<UUID, Attempt> attempted(final @NotNull UUID id, final @NotNull Attempt attempt) {
+        if (attempt.status() == ExecutionStatus.IDLE && held.containsKey(id)) return decide(List.of(id));
+        if (!configOf.containsKey(id)) return Map.of(id, attempt.decided());
+        if (attempt.status() == ExecutionStatus.RUNNING) return decidedBefore(id, attempt);
 
-        if (status.stillGoing()) return;
+        held.merge(id, attempt, Attempt::then);
+        return Map.of();
+    }
+
+    private @NotNull Map<UUID, Attempt> decidedBefore(final @NotNull UUID id, final @NotNull Attempt running) {
+        final @NotNull String execution = configOf.getOrDefault(id, "");
+        final @NotNull Map<UUID, Attempt> decided = decide(held.keySet().stream()
+                .filter(other -> !other.equals(id) && execution.equals(configOf.get(other)))
+                .toList());
+
+        decided.put(id, running);
+        return decided;
+    }
+
+    private @NotNull Map<UUID, Attempt> decide(final @NotNull List<UUID> ids) {
+        final @NotNull Map<UUID, Attempt> decided = new LinkedHashMap<>();
+
+        ids.forEach(id -> Optional.ofNullable(held.remove(id)).ifPresent(attempt -> decided.put(id, attempt.decided())));
+        return decided;
+    }
+
+    // UC-CODEGEN-009, Rule-CODEGEN-038
+    void reported(final @NotNull UUID id, final @NotNull ExecutionStatus status) {
+        if (status == ExecutionStatus.RUNNING) return;
 
         pending.remove(id);
         configOf.remove(id);
@@ -126,15 +150,11 @@ final class ExecutionRegistry {
         testCases.forEach(id -> {
             pending.remove(id);
             configOf.remove(id);
+            held.remove(id);
             stopped.add(id);
         });
 
         return new Stop(testRuns, testCases);
-    }
-
-    // Rule-CODEGEN-110
-    @NotNull Optional<Failure> lastSkip(final @NotNull UUID id) {
-        return Optional.ofNullable(lastSkip.get(id));
     }
 
     @NotNull List<UUID> ended(final @NotNull String testRunName) {
