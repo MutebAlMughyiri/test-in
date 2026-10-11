@@ -25,6 +25,7 @@ import com.intellij.execution.executors.DefaultRunExecutor;
 import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
@@ -163,8 +164,8 @@ public final class TestNGExecution implements Disposable {
     }
 
     // UC-CODEGEN-008
-    void reported(final @NotNull UUID id, final @NotNull ExecutionStatus status) {
-        registry.reported(id, status);
+    void reported(final @NotNull UUID id, final @NotNull ExecutionStatus status, final @NotNull Failure failure) {
+        registry.reported(id, status, failure);
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-037
@@ -187,14 +188,16 @@ public final class TestNGExecution implements Disposable {
         return stop.testCases().size();
     }
 
-    // UC-CODEGEN-008, Rule-CODEGEN-092
+    // UC-CODEGEN-008, Rule-CODEGEN-092, Rule-CODEGEN-110
     private void ended(final @NotNull ExecutionEnvironment env) {
         final @NotNull String testRunName = env.getRunProfile().getName();
         final @NotNull List<UUID> abandoned = registry.ended(testRunName);
         if (abandoned.isEmpty()) return;
 
         Logger.info("'" + testRunName + "' ended with " + abandoned.size() + " test case(s) that never reported");
-        abandoned.forEach(id -> TestCaseExecutionListener.broadcast(p, key(id), ExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
+        ApplicationManager.getApplication().invokeLater(() -> abandoned.forEach(id -> registry.lastSkip(id).ifPresentOrElse(
+                skip -> TestCaseExecutionListener.broadcast(p, key(id), ExecutionStatus.FAILED, Duration.ZERO, skip),
+                () -> TestCaseExecutionListener.broadcast(p, key(id), ExecutionStatus.IDLE, Duration.ZERO, Failure.NONE))));
     }
 
     private void kill(final @NotNull ProcessHandler handler, final @NotNull String testRunName) {

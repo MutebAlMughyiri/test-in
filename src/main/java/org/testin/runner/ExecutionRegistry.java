@@ -18,11 +18,13 @@ package org.testin.runner;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.status.ExecutionStatus;
+import org.testin.model.testrun.Failure;
 import org.testin.util.Bundle;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,6 +42,8 @@ final class ExecutionRegistry {
     private final @NotNull Set<UUID> stopped = ConcurrentHashMap.newKeySet();
 
     private final @NotNull Map<UUID, ExecutionStatus> runItemStatus = new ConcurrentHashMap<>();
+
+    private final @NotNull Map<UUID, Failure> lastSkip = new ConcurrentHashMap<>();
 
     void starting(final @NotNull UUID id) {
         pending.add(id);
@@ -88,9 +92,12 @@ final class ExecutionRegistry {
         return isRunning(id) ? ExecutionStatus.RUNNING : runItemStatus.getOrDefault(id, ExecutionStatus.IDLE);
     }
 
-    // UC-CODEGEN-009, Rule-CODEGEN-038
-    void reported(final @NotNull UUID id, final @NotNull ExecutionStatus status) {
-        if (status == ExecutionStatus.RUNNING) return;
+    // UC-CODEGEN-009, Rule-CODEGEN-038, Rule-CODEGEN-110
+    void reported(final @NotNull UUID id, final @NotNull ExecutionStatus status, final @NotNull Failure failure) {
+        if (status == ExecutionStatus.SKIPPED) lastSkip.put(id, failure);
+        else lastSkip.remove(id);
+
+        if (status.stillGoing()) return;
 
         pending.remove(id);
         configOf.remove(id);
@@ -123,6 +130,11 @@ final class ExecutionRegistry {
         });
 
         return new Stop(testRuns, testCases);
+    }
+
+    // Rule-CODEGEN-110
+    @NotNull Optional<Failure> lastSkip(final @NotNull UUID id) {
+        return Optional.ofNullable(lastSkip.get(id));
     }
 
     @NotNull List<UUID> ended(final @NotNull String testRunName) {

@@ -18,6 +18,7 @@ package org.testin.runner;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.status.ExecutionStatus;
+import org.testin.model.testrun.Failure;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -65,7 +66,7 @@ public class StopTest {
     public void aPassedTestCaseKeepsItsRunItemStatusThroughAStop() {
         final ExecutionRegistry registry = new ExecutionRegistry();
         registry.launched(List.of(ONE, TWO), "cycle 1");
-        registry.reported(ONE, ExecutionStatus.PASSED);
+        registry.reported(ONE, ExecutionStatus.PASSED, Failure.NONE);
 
         final Stop stop = registry.stopping(List.of(TWO));
 

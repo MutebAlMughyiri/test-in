@@ -44,12 +44,12 @@ public class SkippedOrTerminatedIdeTest extends BasePlatformTestCase {
         return recorded.getOrDefault(test.getPresentableName(), "nothing");
     }
 
-    // Rule-CODEGEN-075
-    public void testASkippedTestIsRecordedFailedSayingItWasSkipped() {
+    // Rule-CODEGEN-075, Rule-CODEGEN-110
+    public void testASkippedAttemptIsNotYetTheResultBecauseTestNGMayRetryIt() {
         final @NotNull SMTestProxy test = started("skippedbyadependency");
         test.setTestIgnored("", "");
 
-        assertEquals("a skipped test was recorded with no actual result", ExecutionStatus.FAILED + ": " + Bundle.message("runner.skipped"), finished(test));
+        assertEquals("a skipped attempt was recorded before TestNG said whether it retries it", ExecutionStatus.SKIPPED + ": " + Bundle.message("runner.skipped"), finished(test));
     }
 
     // Rule-CODEGEN-075

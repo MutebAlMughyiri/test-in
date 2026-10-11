@@ -28,10 +28,11 @@ import static org.testng.Assert.assertTrue;
 public class ExecutionStatusReportTest {
 
     @Test
-    public void onlyRunningSaysTheTestCaseIsStillGoing() {
+    public void onlyRunningAndSkippedSayTheTestCaseIsStillGoing() {
         assertTrue(ExecutionStatus.RUNNING.stillGoing());
+        assertTrue(ExecutionStatus.SKIPPED.stillGoing(), "TestNG may retry a skipped attempt");
 
-        assertEquals(Arrays.stream(ExecutionStatus.values()).filter(ExecutionStatus::stillGoing).count(), 1);
+        assertEquals(Arrays.stream(ExecutionStatus.values()).filter(ExecutionStatus::stillGoing).count(), 2);
     }
 
     @Test

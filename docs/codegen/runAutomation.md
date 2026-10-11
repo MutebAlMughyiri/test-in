@@ -62,6 +62,14 @@ The code runs, and Testin writes down whether each test case passed.
   module does not start, because one execution runs on one module's classpath.
   Testin names the modules, so the tester runs each module's test cases on their
   own.
+- **Rule-CODEGEN-110** — An attempt TestNG skips is not yet the test case's
+  result, because TestNG skips an attempt it is about to retry exactly as it
+  skips a test whose dependency failed. The test case stays running, and light
+  mode and the walk stay on its run item: the attempt after it is the result,
+  and a skip no attempt follows is recorded when the execution ends, as
+  Rule-CODEGEN-075 says. So a test that fails and passes on a retry is recorded
+  Passed, and one that fails every attempt is recorded Failed with its last
+  failure.
 
 ## The four ways in
 
@@ -118,6 +126,8 @@ records its run item status under the execution it actually belongs to.
 its actual result reads *Skipped/Terminated*. A dependency that failed, an
 excluded group, a disabled test and a terminated execution all arrive the same
 way: the framework says the test did not pass and gives no run item status.
+A skip is recorded once no attempt follows it, because TestNG skips an attempt
+it is about to retry the same way: a retry that passes is recorded **Passed**.
 Leaving it Pending would report the cycle as finished when part of it never ran.
 
 **If the IDE is indexing** — every test case is put back and a message reads *Tests cannot run while the IDE is

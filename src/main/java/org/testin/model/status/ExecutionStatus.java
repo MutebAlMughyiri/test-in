@@ -51,6 +51,12 @@ public enum ExecutionStatus {
             AllIcons.Actions.Suspend,
             new ExecutionStatusBadge(Bundle.message("execution.status.running"), JBColor.ORANGE),
             Optional.empty()
+    ),
+
+    SKIPPED(
+            AllIcons.Actions.Suspend,
+            new ExecutionStatusBadge(Bundle.message("execution.status.running"), JBColor.ORANGE),
+            Optional.empty()
     );
 
     private final @NotNull Icon icon;
@@ -59,8 +65,9 @@ public enum ExecutionStatus {
 
     private final @NotNull Optional<RunItemStatus> runItemStatus;
 
+    // Rule-CODEGEN-110
     public boolean stillGoing() {
-        return this == RUNNING;
+        return this == RUNNING || this == SKIPPED;
     }
 
     public boolean hasBadge() {

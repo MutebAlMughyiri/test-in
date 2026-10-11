@@ -73,7 +73,7 @@ public final class TestCaseExecutionSubscriber implements Disposable {
 
         Logger.debug("  reporting on '" + tc.getDescription() + "': " + reportedStatus + " " + failure.message());
 
-        Services.getInstance(p, TestNGExecution.class).reported(tc.getId(), reportedStatus);
+        Services.getInstance(p, TestNGExecution.class).reported(tc.getId(), reportedStatus, failure);
 
         surfaces.forEach(surface -> surface.accept(tc, reportedStatus, duration, failure));
     }
