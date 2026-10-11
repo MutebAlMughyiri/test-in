@@ -23,9 +23,12 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.Icon;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.geom.RoundRectangle2D;
 
 // Rule-VIEW-PANEL-086
 public record Framed(@NotNull String text, @NotNull Icon icon, @NotNull String tooltip) implements Badge {
+    private static final float HALF_LINE = 0.5f;
+
     @Override
     public @NotNull Color ink() {
         return UIUtil.getLabelForeground();
@@ -45,6 +48,6 @@ public record Framed(@NotNull String text, @NotNull Icon icon, @NotNull String t
     @Override
     public void paint(final @NotNull Graphics2D g2, final int width, final int height) {
         g2.setColor(JBColor.border());
-        g2.drawRoundRect(0, 0, width - 1, height - 1, Badges.BADGE_RADIUS, Badges.BADGE_RADIUS);
+        g2.draw(new RoundRectangle2D.Float(HALF_LINE, HALF_LINE, width - 2 * HALF_LINE, height - 2 * HALF_LINE, Badges.BADGE_RADIUS, Badges.BADGE_RADIUS));
     }
 }
