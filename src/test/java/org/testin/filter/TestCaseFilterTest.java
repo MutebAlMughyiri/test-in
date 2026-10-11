@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.model.Priority;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestSetNode;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.status.TestCaseStatus;
@@ -68,7 +69,7 @@ public class TestCaseFilterTest {
         final TestCaseDto missing = TestCaseDto.builder().description("missing").build();
         final RunItem runItem = RunItem.builder()
                 .id(passed.getId())
-                .status(RunItemStatus.PASSED)
+                .executions(List.of(Execution.builder().status(RunItemStatus.PASSED).build()))
                 .build()
                 .showing(Optional.of(passed), Optional.empty(), Optional.empty(), false);
 

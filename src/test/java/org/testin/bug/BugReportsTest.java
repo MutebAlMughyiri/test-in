@@ -17,12 +17,14 @@
 package org.testin.bug;
 
 import org.jetbrains.annotations.NotNull;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.util.Bundle;
 import org.testng.annotations.Test;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -36,7 +38,7 @@ public class BugReportsTest {
     private static final RunItemPath SAME_TEST_CASE_OTHER_RUN = new RunItemPath(Path.of("NAFATH", "Test Runs", "Sprint 8"), RUN_ITEM_PATH.id());
 
     private static @NotNull RunItem failed() {
-        return RunItem.builder().id(RUN_ITEM_PATH.id()).status(RunItemStatus.FAILED).build();
+        return RunItem.builder().id(RUN_ITEM_PATH.id()).executions(List.of(Execution.builder().status(RunItemStatus.FAILED).build())).build();
     }
 
     // Rule-VIEW-PANEL-072
@@ -65,7 +67,7 @@ public class BugReportsTest {
     @Test
     public void aReportedBugKeepsReportBugOff() {
         final BugReports reports = new BugReports();
-        final RunItem reported = RunItem.builder().id(RUN_ITEM_PATH.id()).status(RunItemStatus.FAILED).bugIssueUrl("https://github.com/mtb550/test-in/issues/412").build();
+        final RunItem reported = RunItem.builder().id(RUN_ITEM_PATH.id()).bugIssueUrl("https://github.com/mtb550/test-in/issues/412").executions(List.of(Execution.builder().status(RunItemStatus.FAILED).build())).build();
 
         assertEquals(reports.whyReportBugIsOff(RUN_ITEM_PATH, reported), Optional.of(Bundle.message("bug.already.reported")));
     }

@@ -29,6 +29,7 @@ import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.services.Services;
@@ -75,7 +76,7 @@ public class BugFilingIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull RunItemPath runItemPathOf(final UUID testCaseId, final RunItemStatus status) {
-        final RunItem runItem = RunItem.builder().id(testCaseId).status(status).build();
+        final RunItem runItem = RunItem.builder().id(testCaseId).executions(List.of(Execution.builder().status(status).build())).build();
         indexedTestRuns().putRunItems(sprint7TestRunPath(), RunItems.builder().all(new ArrayList<>(List.of(runItem))).build());
         return new RunItemPath(sprint7TestRunPath(), testCaseId);
     }
@@ -126,12 +127,6 @@ public class BugFilingIdeTest extends AbstractTempRootIdeTest {
 
         assertEquals(Optional.of(Bundle.message("bug.not.stored.moved")), BugFiling.store(getProject(), gone, ISSUE));
         assertTrue("storing on the old path registered the test run again", indexedTestRuns().findRunItems(sprint7TestRunPath()).isEmpty());
-    }
-
-    public void testARemovedRunItemIsNotWritten() {
-        final RunItemPath runItemPath = indexedRunItemPath(RunItemStatus.REMOVED);
-
-        assertEquals(Optional.of(Bundle.message("bug.not.stored.moved")), BugFiling.store(getProject(), runItemPath, ISSUE));
     }
 
     public void testARunItemWhoseTestCaseIsGoneIsNotWritten() {

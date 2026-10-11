@@ -42,6 +42,7 @@ import org.testin.model.bug.BugSeverity;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.services.Services;
@@ -61,7 +62,7 @@ public class HistoryTabIdeTest extends AbstractTempRootIdeTest {
     private final @NotNull JBPanel<?> tab = new JBPanel<>(new BorderLayout());
 
     private static @NotNull RunItem failed(final @NotNull TestCaseDto tc) {
-        return RunItem.builder().id(tc.getId()).status(RunItemStatus.FAILED).actualResult("The basket was emptied").bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl("https://github.com/mtb550/test-in/issues/412").build();
+        return RunItem.builder().id(tc.getId()).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl("https://github.com/mtb550/test-in/issues/412").executions(List.of(Execution.builder().status(RunItemStatus.FAILED).actualResult("The basket was emptied").build())).build();
     }
 
     private @NotNull TestCaseDto aTestCase() {

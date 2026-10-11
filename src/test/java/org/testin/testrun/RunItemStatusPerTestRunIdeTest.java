@@ -27,9 +27,11 @@ import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
+import org.testin.model.testrun.Failure;
 import org.testin.services.Services;
 
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -67,8 +69,8 @@ public class RunItemStatusPerTestRunIdeTest extends AbstractTempRootIdeTest {
         final @NotNull Path cycle1 = aTestRunOver(tp, "Cycle-1");
         final @NotNull Path cycle2 = aTestRunOver(tp, "Cycle-2");
 
-        indexedTestRuns().changeRunItem(cycle1, testCaseId, result -> result.recordRunItemStatus(RunItemStatus.FAILED, "Sara"));
-        indexedTestRuns().changeRunItem(cycle2, testCaseId, result -> result.recordRunItemStatus(RunItemStatus.PASSED, "Omar"));
+        indexedTestRuns().changeRunItem(cycle1, testCaseId, result -> result.recordRunItemStatus(RunItemStatus.FAILED, "Sara", Duration.ZERO, Failure.NONE));
+        indexedTestRuns().changeRunItem(cycle2, testCaseId, result -> result.recordRunItemStatus(RunItemStatus.PASSED, "Omar", Duration.ZERO, Failure.NONE));
 
         assertEquals(RunItemStatus.FAILED, statusIn(cycle1));
         assertEquals("passing the test case in one test run changed what another recorded", RunItemStatus.PASSED, statusIn(cycle2));

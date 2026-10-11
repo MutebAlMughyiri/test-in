@@ -33,6 +33,7 @@ import org.testin.model.bug.BugPriority;
 import org.testin.model.bug.BugSeverity;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.notifications.Done;
@@ -140,7 +141,7 @@ public class ReportBugFromThePanelIdeTest extends AbstractTempRootIdeTest {
 
         final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
         tc = EditorFixtures.testCase(getProject(), EditorFixtures.testSet(getProject(), tp, "Login"), "Log in with a valid user", "a");
-        failed = RunItem.builder().id(tc.getId()).status(RunItemStatus.FAILED).actualResult("The session was dropped").bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).build();
+        failed = RunItem.builder().id(tc.getId()).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).executions(List.of(Execution.builder().status(RunItemStatus.FAILED).actualResult("The session was dropped").build())).build();
         tr = EditorFixtures.testRun(getProject(), tp, List.of(failed));
         runItemPath = new RunItemPath(tr.getPath(), tc.getId());
     }

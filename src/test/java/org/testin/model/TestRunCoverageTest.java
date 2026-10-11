@@ -23,6 +23,7 @@ import org.testin.model.markers.TestRunMarker;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.testrun.TestRunResultAnalysis;
 import org.testin.model.testrun.TestRunConfiguration;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testng.annotations.Test;
@@ -52,14 +53,16 @@ public class TestRunCoverageTest {
     private static @NotNull RunItem executed() {
         return new RunItem()
                 .setId(EXECUTED)
-                .setStatus(RunItemStatus.FAILED)
-                .setActualResult("The lockout counter reset on reload")
                 .setBugSeverity(BugSeverity.MAJOR)
                 .setBugPriority(BugPriority.HIGH)
-                .setDuration(Duration.ofSeconds(252))
-                .setExecutedBy("Muteb")
-                .setExecutedAt(ZonedDateTime.now(ZoneId.systemDefault()))
-                .setStacktrace("java.lang.AssertionError: expected locked");
+                .setExecutions(List.of(Execution.builder()
+                        .status(RunItemStatus.FAILED)
+                        .actualResult("The lockout counter reset on reload")
+                        .duration(Duration.ofSeconds(252))
+                        .executedBy("Muteb")
+                        .executedAt(ZonedDateTime.now(ZoneId.systemDefault()))
+                        .stacktrace("java.lang.AssertionError: expected locked")
+                        .build()));
     }
 
     private static @NotNull RunItems aTestRunOf(final @NotNull RunItem... items) {

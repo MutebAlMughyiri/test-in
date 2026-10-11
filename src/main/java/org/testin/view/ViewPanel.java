@@ -53,6 +53,10 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public class ViewPanel implements Disposable {
+    public static final int THE_DEFAULT = -1;
+
+    private int shownLine = THE_DEFAULT;
+
     @Getter
     private final @NotNull JBPanel<?> detailsTab;
     @Getter
@@ -105,7 +109,7 @@ public class ViewPanel implements Disposable {
 
         refreshCurrentView();
 
-        TestCaseExecutionSubscriber.onReported(p, this, (tc, _, _, _) -> refreshIfShowing(List.of(tc)));
+        TestCaseExecutionSubscriber.onReported(p, this, (tc, _, _, _, _) -> refreshIfShowing(List.of(tc)));
     }
 
     private @NotNull Stream<JPanel> tabs() {
@@ -196,8 +200,20 @@ public class ViewPanel implements Disposable {
     }
 
     public void updateList(final @NotNull List<TestCaseDto> testCases, final @NotNull List<String> path) {
+        shownLine = THE_DEFAULT;
         this.page.updateList(testCases, path);
         this.refreshCurrentView();
+    }
+
+    // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-122
+    int shownLine() {
+        return shownLine;
+    }
+
+    // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-122
+    void showExecution(final int line) {
+        shownLine = line;
+        refreshCurrentView();
     }
 
     // Rule-VIEW-PANEL-008

@@ -36,14 +36,11 @@ duration.
   reported rather than brought into view.
 - **Rule-EDITOR-PANEL-010** — While a grid cell is open for editing, every key
   that would act on the row is refused.
-- **Rule-EDITOR-PANEL-136** — A run item status records what it was, who
-  recorded it, and when, to the second.
+- **Rule-EDITOR-PANEL-136** — A run item status is recorded as an execution of
+  its own: what it was, who recorded it, and when, to the second. A run item
+  keeps every execution, in the order they happened.
 - **Rule-EDITOR-PANEL-137** — A run item status recorded on the test case the
   walk is timing also records how long it took.
-- **Rule-EDITOR-PANEL-138** — Recording a pass clears the actual result, the
-  error, the screenshots and the bug issue link, and puts the bug severity and
-  priority back to Enhancement and Low. A test case that passed has nothing to
-  explain.
 - **Rule-EDITOR-PANEL-139** — The walk then moves to the next test case and
   starts timing it.
 - **Rule-EDITOR-PANEL-140** — One test case is one message. Several at once is
@@ -58,8 +55,9 @@ duration.
   selection color while it is selected, and in nothing else. The pointer passing
   over it changes nothing.
 - **Rule-EDITOR-PANEL-251** — When the status bar is too narrow for everything,
-  the figures on the right give way first, then the sentence on the left down to
-  a short floor, and the page arrows keep their width to the last.
+  nothing on it gives way or is cut short: it scrolls sideways, as the toolbar
+  does (Rule-EDITOR-PANEL-257), so the page size field can always be reached.
+  Where there is room, the page arrows sit in the middle of the bar.
 - **Rule-EDITOR-PANEL-252** — A badge's words are printed white or dark,
   whichever reads on its color, so a pale badge never carries white text.
 - **Rule-EDITOR-PANEL-257** — An editor narrower than its toolbar or its status
@@ -80,7 +78,8 @@ A small message appears at the bottom of the IDE and fades. It reads *Passed*.
 1. The walk has selected a test case and is timing it.
 2. The tester tries it in the application under test.
 3. The tester presses `P`.
-4. Testin records **Passed**, the tester's name, the time, and how long it took.
+4. Testin records **Passed**, the tester's name, the time, and how long it
+   took, as one more execution of the run item.
 5. The test run is written to disk at once.
 6. A message reads *Passed*.
 7. The walk moves to the next test case.
@@ -96,21 +95,8 @@ written. A Completed or Closed test run still records it (Rule-TREE-PANEL-009).
 **If the test case was deleted from its test set** — a message reads *The test
 case was removed - the test run keeps what it recorded.* Nothing is written.
 
-**If the test case already holds failure detail** — a confirmation opens first,
-and names which of the six it is about to clear. That is
-[UC-EDITOR-PANEL-038](correctRunItemStatus.md).
-
 **If a grid cell is open for editing** — the key belongs to the cell, and does
 nothing else.
-
-## Where the plugin breaks its own rules
-
-**An automated pass destroys a tester's notes without asking.** The confirmation
-in Rule-EDITOR-PANEL-138 is only on the keyboard path. A test case is failed and
-written up by hand. Automation re-runs it later and it passes. The actual
-result, the error, the screenshots and the bug issue link all go, and the
-severity and priority go back to Enhancement and Low, with no dialog. A message
-titled *Failure detail cleared* names them afterward. That is difference 26.
 
 ---
 

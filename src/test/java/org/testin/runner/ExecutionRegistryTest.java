@@ -17,6 +17,7 @@
 package org.testin.runner;
 
 import org.jetbrains.annotations.NotNull;
+import org.testin.model.Config;
 import org.testin.model.TestCaseDto;
 import org.testin.model.status.ExecutionStatus;
 import org.testin.model.testrun.Failure;
@@ -26,6 +27,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -49,7 +51,11 @@ public class ExecutionRegistryTest {
     }
 
     private static @NotNull Attempt attempt(final ExecutionStatus status, final String message) {
-        return new Attempt(status, Duration.ZERO, new Failure(message, ""));
+        return new Attempt(status, Duration.ZERO, new Failure(message, "", List.of()), "", Config.NOT_EXECUTED);
+    }
+
+    private static @NotNull ExecutionStatus statusIn(final Map<UUID, Attempts> decided, final TestCaseDto tc) {
+        return Optional.ofNullable(decided.get(tc.getId())).map(Attempts::status).orElse(ExecutionStatus.IDLE);
     }
 
     private static @NotNull ExecutionRegistry launchedWith(final TestCaseDto... testCases) {
@@ -227,10 +233,34 @@ public class ExecutionRegistryTest {
         registry.attempted(retried.getId(), attempt(ExecutionStatus.RUNNING, ""));
         assertTrue(registry.attempted(retried.getId(), attempt(ExecutionStatus.PASSED, "")).isEmpty(), "and the pass may be followed by another invocation");
 
-        final Map<UUID, Attempt> decided = registry.attempted(next.getId(), attempt(ExecutionStatus.RUNNING, ""));
+        final Map<UUID, Attempts> decided = registry.attempted(next.getId(), attempt(ExecutionStatus.RUNNING, ""));
 
-        assertEquals(decided.get(retried.getId()), attempt(ExecutionStatus.PASSED, ""), "TestNG moved on, so the retry that passed is the result");
+        assertEquals(statusIn(decided, retried), ExecutionStatus.PASSED, "TestNG moved on, so the retry that passed is the result");
+        assertEquals(Optional.ofNullable(decided.get(retried.getId())).map(attempts -> attempts.all().size()).orElse(0), 2, "and both attempts are kept");
         assertTrue(registry.isRunning(retried.getId()), "it stays running until the decided result is reported");
+    }
+
+    // Rule-CODEGEN-111
+    @Test
+    public void eachAttemptIsShownTheMomentItArrivesAndOnlyOnce() {
+        final TestCaseDto invoked = aTestCase("invocationCount = 2");
+        final TestCaseDto next = aTestCase("runs after it");
+        final ExecutionRegistry registry = launchedWith(invoked, next);
+
+        registry.attempted(invoked.getId(), attempt(ExecutionStatus.PASSED, ""));
+        final Attempts first = registry.unwritten(invoked.getId()).orElseThrow();
+        assertEquals(first.executions().size(), 1, "the first invocation is shown before TestNG moves on");
+        assertEquals(first.written(), 0);
+        assertTrue(registry.unwritten(invoked.getId()).isEmpty(), "and it is not shown a second time");
+
+        registry.attempted(invoked.getId(), attempt(ExecutionStatus.FAILED, "the second invocation failed"));
+        final Attempts second = registry.unwritten(invoked.getId()).orElseThrow();
+        assertEquals(second.executions().size(), 2);
+        assertEquals(second.written(), 1, "it replaces the one already shown, whose label may have changed");
+
+        final Attempts decided = Optional.ofNullable(registry.attempted(next.getId(), attempt(ExecutionStatus.RUNNING, "")).get(invoked.getId())).orElseThrow();
+        assertEquals(decided.written(), 2, "the decision rewrites only what was shown, and picks the default");
+        assertEquals(decided.deciding(), 1);
     }
 
     // Rule-CODEGEN-110
@@ -243,7 +273,7 @@ public class ExecutionRegistryTest {
         registry.attempted(invoked.getId(), attempt(ExecutionStatus.FAILED, "the second invocation failed"));
         registry.attempted(invoked.getId(), attempt(ExecutionStatus.PASSED, ""));
 
-        assertEquals(registry.attempted(invoked.getId(), attempt(ExecutionStatus.IDLE, "")).get(invoked.getId()), attempt(ExecutionStatus.FAILED, "the second invocation failed"),
+        assertEquals(statusIn(registry.attempted(invoked.getId(), attempt(ExecutionStatus.IDLE, "")), invoked), ExecutionStatus.FAILED,
                 "a later pass does not hide an earlier failure");
     }
 
@@ -256,7 +286,7 @@ public class ExecutionRegistryTest {
         registry.attempted(skipped.getId(), attempt(ExecutionStatus.SKIPPED, "Skipped/Terminated"));
         registry.ended(RUN);
 
-        assertEquals(registry.attempted(skipped.getId(), attempt(ExecutionStatus.IDLE, "")).get(skipped.getId()), attempt(ExecutionStatus.FAILED, "Skipped/Terminated"));
+        assertEquals(statusIn(registry.attempted(skipped.getId(), attempt(ExecutionStatus.IDLE, "")), skipped), ExecutionStatus.FAILED);
     }
 
     // Rule-CODEGEN-110
@@ -264,9 +294,9 @@ public class ExecutionRegistryTest {
     public void aTestCaseThisPluginDidNotStartIsDecidedAtOnce() {
         final TestCaseDto fromTheGutter = aTestCase("run from the class");
 
-        final Map<UUID, Attempt> decided = new ExecutionRegistry().attempted(fromTheGutter.getId(), attempt(ExecutionStatus.FAILED, "expected true"));
+        final Map<UUID, Attempts> decided = new ExecutionRegistry().attempted(fromTheGutter.getId(), attempt(ExecutionStatus.FAILED, "expected true"));
 
-        assertEquals(decided.get(fromTheGutter.getId()), attempt(ExecutionStatus.FAILED, "expected true"), "nothing groups its results, so the first one is its result, as before");
+        assertEquals(statusIn(decided, fromTheGutter), ExecutionStatus.FAILED, "nothing groups its results, so the first one is its result, as before");
     }
 
     @Test

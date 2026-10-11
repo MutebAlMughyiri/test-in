@@ -43,10 +43,9 @@ There is no key for this. The button's tooltip reads **Start Manual Execution**.
   stamps when execution began. That stamp is set once and never overwritten.
 - **Rule-EDITOR-PANEL-132** — The clock starts on the test case the walk lands
   on, and ticks once a second. It stops the moment that test case has a run item
-  status, and what it counted is the duration the test run keeps: a tester who
-  read for ten seconds and then ran the automation spent twenty, and twenty is
-  what the row says. A test case no clock was counting takes the automation's
-  own measure instead, so a row run from its card is still timed.
+  status, and what it counted is the duration of the run item status the tester
+  records. A run item status the automation records keeps the framework's own
+  times instead (Rule-EDITOR-PANEL-183).
 - **Rule-EDITOR-PANEL-133** — The button becomes **Stop Execution** while the
   walk is going.
 - **Rule-EDITOR-PANEL-134** — Reaching the end of the list ends the walk, and
@@ -77,8 +76,9 @@ There is no key for this. The button's tooltip reads **Start Manual Execution**.
   selection color while it is selected, and in nothing else. The pointer passing
   over it changes nothing.
 - **Rule-EDITOR-PANEL-251** — When the status bar is too narrow for everything,
-  the figures on the right give way first, then the sentence on the left down to
-  a short floor, and the page arrows keep their width to the last.
+  nothing on it gives way or is cut short: it scrolls sideways, as the toolbar
+  does (Rule-EDITOR-PANEL-257), so the page size field can always be reached.
+  Where there is room, the page arrows sit in the middle of the bar.
 - **Rule-EDITOR-PANEL-252** — A badge's words are printed white or dark,
   whichever reads on its color, so a pale badge never carries white text.
 - **Rule-EDITOR-PANEL-257** — An editor narrower than its toolbar or its status

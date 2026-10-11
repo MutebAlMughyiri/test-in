@@ -19,6 +19,7 @@ package org.testin.git.change;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.bug.BugPriority;
 import org.testin.model.bug.BugSeverity;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.testrun.TestRunEditorAttributes;
@@ -29,6 +30,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
@@ -41,18 +43,18 @@ public class RunItemChangeComparatorTest {
     private static final ZonedDateTime EXECUTED_AT =
             ZonedDateTime.of(2026, 9, 20, 11, 30, 0, 0, ZoneId.of("Asia/Riyadh"));
 
+    private static @NotNull RunItem changed(final @NotNull Consumer<Execution> change) {
+        final @NotNull RunItem after = base();
+        after.defaultExecution().ifPresent(change);
+        return after;
+    }
+
     private static @NotNull RunItem base() {
         return RunItem.builder()
                 .id(JUDGED_TEST_CASE)
-                .status(RunItemStatus.FAILED)
-                .actualResult("The dashboard never opened")
-                .stacktrace("java.lang.AssertionError: no dashboard")
                 .bugSeverity(BugSeverity.MAJOR)
                 .bugPriority(BugPriority.HIGH)
-                .bugIssueUrl("https://github.com/mtb550/test-in/issues/305")
-                .executedBy("Mohammed AlZamil")
-                .executedAt(EXECUTED_AT)
-                .screenshots(List.of("a1b2c.png"))
+                .bugIssueUrl("https://github.com/mtb550/test-in/issues/305").executions(List.of(Execution.builder().status(RunItemStatus.FAILED).actualResult("The dashboard never opened").stacktrace("java.lang.AssertionError: no dashboard").executedBy("Mohammed AlZamil").executedAt(EXECUTED_AT).screenshots(List.of("a1b2c.png")).build()))
                 .build();
     }
 
@@ -74,7 +76,7 @@ public class RunItemChangeComparatorTest {
 
     @Test
     public void aRunItemStatusChangeShowsTheLabels() {
-        final FieldChange change = onlyChange(base().setStatus(RunItemStatus.PASSED));
+        final FieldChange change = onlyChange(changed(execution -> execution.setStatus(RunItemStatus.PASSED)));
 
         assertEquals(change.fieldName(), TestRunEditorAttributes.RUN_STATUS.getName());
         assertEquals(change.oldValue(), RunItemStatus.FAILED.getLabel());
@@ -83,7 +85,7 @@ public class RunItemChangeComparatorTest {
 
     @Test
     public void aRunItemThatChangedNothingThisReadsStillGetsASelectableRow() {
-        final FieldChange change = onlyChange(base().setDuration(Duration.ofSeconds(12)));
+        final FieldChange change = onlyChange(changed(execution -> execution.setDuration(Duration.ofSeconds(12))));
 
         assertEquals(change.changeType(), ChangeType.CHANGE_RUN_ITEM);
         assertFalse(change.newValue().isBlank(), "a row with nothing in it says nothing: " + change);
@@ -95,7 +97,7 @@ public class RunItemChangeComparatorTest {
 
     @Test
     public void theScreenshotsAreNamedRatherThanCounted() {
-        final FieldChange change = onlyChange(base().setScreenshots(List.of("a1b2c.png", "d3e4f.png")));
+        final FieldChange change = onlyChange(changed(execution -> execution.setScreenshots(List.of("a1b2c.png", "d3e4f.png"))));
 
         assertEquals(change.oldValue(), "a1b2c.png");
         assertEquals(change.newValue(), "a1b2c.png, d3e4f.png");
@@ -106,7 +108,10 @@ public class RunItemChangeComparatorTest {
         assertEquals(RunItemChangeComparator.summary(base()),
                 RunItemStatus.FAILED.getLabel() + " - The dashboard never opened");
 
-        assertEquals(RunItemChangeComparator.summary(base().setStatus(RunItemStatus.PASSED).setActualResult("")),
+        assertEquals(RunItemChangeComparator.summary(changed(execution -> {
+            execution.setStatus(RunItemStatus.PASSED);
+            execution.setActualResult("");
+        })),
                 RunItemStatus.PASSED.getLabel());
     }
 }

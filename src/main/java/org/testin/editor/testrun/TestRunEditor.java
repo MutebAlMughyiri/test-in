@@ -448,9 +448,10 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
         lightMode.tick(parent);
     }
 
+    // UC-EDITOR-PANEL-042, Rule-EDITOR-PANEL-288
     public @NotNull Duration getElapsed() {
         return runItemsById.values().stream()
-                .map(RunItem::getDuration)
+                .map(RunItem::timeSpent)
                 .reduce(Duration.ZERO, Duration::plus);
     }
 

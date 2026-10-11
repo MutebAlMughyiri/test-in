@@ -21,18 +21,7 @@ import org.testin.model.status.ExecutionStatus;
 import org.testin.model.testrun.Failure;
 
 import java.time.Duration;
-import java.util.List;
+import java.time.ZonedDateTime;
 
-record Attempt(@NotNull ExecutionStatus status, @NotNull Duration duration, @NotNull Failure failure) {
-    private static final @NotNull List<ExecutionStatus> FROM_BEST_TO_WORST = List.of(ExecutionStatus.SKIPPED, ExecutionStatus.PASSED, ExecutionStatus.FAILED);
-
-    // Rule-CODEGEN-110
-    @NotNull Attempt then(final @NotNull Attempt later) {
-        return FROM_BEST_TO_WORST.indexOf(later.status) >= FROM_BEST_TO_WORST.indexOf(status) ? later : this;
-    }
-
-    // Rule-CODEGEN-075, Rule-CODEGEN-110
-    @NotNull Attempt decided() {
-        return status == ExecutionStatus.SKIPPED ? new Attempt(ExecutionStatus.FAILED, duration, failure) : this;
-    }
+record Attempt(@NotNull ExecutionStatus status, @NotNull Duration duration, @NotNull Failure failure, @NotNull String parameters, @NotNull ZonedDateTime at) {
 }

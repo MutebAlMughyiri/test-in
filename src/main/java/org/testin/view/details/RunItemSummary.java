@@ -16,6 +16,7 @@
 
 package org.testin.view.details;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
@@ -23,33 +24,49 @@ import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.testin.editor.card.HoverButton;
+import org.testin.logger.Logger;
 import org.testin.model.TestCaseDto;
+import org.testin.model.status.RunItemStatus;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
+import org.testin.runner.TestNGExecution;
+import org.testin.services.Services;
 import org.testin.testrun.ChangedSinceCommit;
+import org.testin.testrun.RunItemStatusService;
 import org.testin.testrun.TestRunEditorAttributes;
 import org.testin.ui.Badge;
 import org.testin.ui.Badges;
 import org.testin.ui.Pill;
+import org.testin.ui.Tooltip;
 import org.testin.util.Bundle;
+import org.testin.util.Display;
+import org.testin.view.ViewPanel;
 
+import javax.swing.SwingUtilities;
+import java.awt.CardLayout;
+import java.awt.Cursor;
 import java.awt.GridBagConstraints;
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.IntConsumer;
 
 @AllArgsConstructor
 public final class RunItemSummary extends AbstractDetails {
     private static final int GAP = 6;
     private static final int INSETS_TOP = 8;
     private static final int INSETS_SIDE = 16;
+    private static final int RETRY_INDENT = 24;
+    private static final @NotNull String ACTIONS_SHOWN = "shown";
+    private static final @NotNull String ACTIONS_HIDDEN = "hidden";
 
     private final @NotNull RunItem runItem;
     private final @NotNull List<String> currentPath;
-
-    private static @NotNull JBPanel<?> line() {
-        final @NotNull JBPanel<?> line = row(GAP);
-
-        return line;
-    }
+    private final @NotNull IntConsumer showExecution;
 
     // Rule-EDITOR-PANEL-263
     private static @NotNull JBLabel changedSince() {
@@ -58,28 +75,118 @@ public final class RunItemSummary extends AbstractDetails {
         return label;
     }
 
-    // UC-VIEW-PANEL-005, Rule-VIEW-PANEL-086
+    // Rule-CODEGEN-112
+    private static @NotNull String whatItWas(final @NotNull Execution execution) {
+        final @NotNull String kind = !execution.getParameters().isBlank() ? execution.getParameters()
+                : execution.getRetry() > 0 ? Bundle.message("execution.retry", String.valueOf(execution.getRetry()))
+                : execution.getInvocation() > 0 ? Bundle.message("execution.invocation", String.valueOf(execution.getInvocation()))
+                : "";
+        return execution.isRetried() ? (kind + " " + Bundle.message("execution.retried")).strip() : kind;
+    }
+
+    // UC-VIEW-PANEL-005, Rule-VIEW-PANEL-086, Rule-VIEW-PANEL-123
     @Override
     public int render(final @NotNull Project p, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto dto, final int currentRow) {
-        final @NotNull JBPanel<?> line = line();
-        final @NotNull JBPanel<?> pills = line();
+        int row = currentRow;
+        if (runItem.getExecutions().size() <= 1) {
+            final @NotNull JBPanel<?> line = row(GAP);
+            line.add(pills(runItem.shownStatus(), TestRunEditorAttributes.DURATION.gridValue(runItem)));
+            Bug.of(p, runItem, currentPath, dto).ifPresent(line::add);
+            row = addFullWidthRow(panel, gbc, line, JBUI.insets(INSETS_TOP, INSETS_SIDE, 0, INSETS_SIDE), row);
+        } else {
+            final @NotNull List<Runnable> hideEveryLine = new ArrayList<>();
+            for (int at = 0; at < runItem.getExecutions().size(); at++) {
+                final @NotNull Execution execution = runItem.getExecutions().get(at);
+                final int indent = execution.getRetry() > 0 ? RETRY_INDENT : 0;
+                row = addFullWidthRow(panel, gbc, executionLine(p, dto, at, hideEveryLine), JBUI.insets(INSETS_TOP, INSETS_SIDE + indent, 0, INSETS_SIDE), row);
+            }
+        }
 
-        Badges.showBadges(pills, facts());
-        line.add(pills);
+        return ChangedSinceCommit.of(runItem) ? addFullWidthRow(panel, gbc, changedSince(), JBUI.insets(GAP, INSETS_SIDE, 0, INSETS_SIDE), row) : row;
+    }
 
-        Bug.of(p, runItem, currentPath, dto).ifPresent(line::add);
+    // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-086, Rule-VIEW-PANEL-119, Rule-VIEW-PANEL-120, Rule-VIEW-PANEL-121, Rule-VIEW-PANEL-122
+    private @NotNull JBPanel<?> executionLine(final @NotNull Project p, final @NotNull TestCaseDto dto, final int at, final @NotNull List<Runnable> hideEveryLine) {
+        final @NotNull Execution execution = runItem.getExecutions().get(at);
+        final boolean isDefault = at == runItem.defaultIndex();
 
-        final int next = addFullWidthRow(panel, gbc, line, JBUI.insets(INSETS_TOP, INSETS_SIDE, 0, INSETS_SIDE), currentRow);
-        return ChangedSinceCommit.of(runItem) ? addFullWidthRow(panel, gbc, changedSince(), JBUI.insets(GAP, INSETS_SIDE, 0, INSETS_SIDE), next) : next;
+        final @NotNull JBPanel<?> line = row(GAP);
+        line.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        line.add(pills(execution.getStatus(), Display.formatDuration(execution.getDuration())));
+
+        final @NotNull JBLabel what = new JBLabel(whatItWas(execution));
+        if (execution.isRetried()) what.setForeground(UIUtil.getContextHelpForeground());
+        line.add(what);
+
+        if (isDefault) {
+            final @NotNull JBLabel star = new JBLabel(AllIcons.Nodes.Favorite);
+            Tooltip.set(star, Bundle.message("execution.default"), "");
+            line.add(star);
+            Bug.of(p, runItem, currentPath, dto).ifPresent(line::add);
+        }
+
+        final @NotNull JBPanel<?> actions = row(0);
+        testRunOf(p, currentPath).ifPresent(testRun -> {
+            final @NotNull Optional<String> whyNot = testRun.whySignedOff()
+                    .or(() -> Services.getInstance(p, TestNGExecution.class).isRunning(runItem.getId()) ? Optional.of(Bundle.message("execution.still.running")) : Optional.empty());
+            if (!isDefault) {
+                actions.add(HoverButton.of(p, whyNot, AllIcons.Nodes.NotFavoriteOnHover, Bundle.message("execution.set.default"), "", () -> {
+                    if (Services.getInstance(p, RunItemStatusService.class).chooseExecution(testRun.getPath(), runItem.getId(), at)) redraw(p, dto, testRun);
+                }));
+            }
+            actions.add(HoverButton.of(p, whyNot, AllIcons.Actions.Close, Bundle.message("execution.remove"), "", () -> {
+                if (!Services.getInstance(p, RunItemStatusService.class).removeExecution(testRun.getPath(), runItem.getId(), at)) return;
+
+                showExecution.accept(ViewPanel.THE_DEFAULT);
+                redraw(p, dto, testRun);
+            }));
+        });
+        final @NotNull CardLayout slots = new CardLayout();
+        final @NotNull JBPanel<?> slot = new JBPanel<>(slots).andTransparent();
+        slot.add(actions, ACTIONS_SHOWN);
+        slot.add(new JBPanel<>().andTransparent(), ACTIONS_HIDDEN);
+        slots.show(slot, ACTIONS_HIDDEN);
+        line.add(slot);
+        hideEveryLine.add(() -> slots.show(slot, ACTIONS_HIDDEN));
+
+        final @NotNull MouseAdapter hover = new MouseAdapter() {
+            // Rule-VIEW-PANEL-120
+            @Override
+            public void mouseEntered(final MouseEvent e) {
+                hideEveryLine.forEach(Runnable::run);
+                slots.show(slot, ACTIONS_SHOWN);
+                Logger.debug("Execution line " + at + " entered on " + e.getComponent().getClass().getSimpleName());
+            }
+
+            @Override
+            public void mouseExited(final MouseEvent e) {
+                final @NotNull Point left = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), line);
+                if (!line.contains(left)) slots.show(slot, ACTIONS_HIDDEN);
+                Logger.debug("Execution line " + at + " exited on " + e.getComponent().getClass().getSimpleName() + " at " + left + (line.contains(left) ? ", still inside" : ", hidden"));
+            }
+        };
+        final @NotNull MouseAdapter click = new MouseAdapter() {
+            // Rule-VIEW-PANEL-122
+            @Override
+            public void mouseClicked(final MouseEvent e) {
+                showExecution.accept(at);
+            }
+        };
+        UIUtil.uiTraverser(line).forEach(part -> part.addMouseListener(hover));
+        UIUtil.uiTraverser(line).filter(part -> !SwingUtilities.isDescendingFrom(part, actions)).forEach(part -> part.addMouseListener(click));
+
+        return line;
     }
 
     // UC-VIEW-PANEL-005, Rule-VIEW-PANEL-086
-    private @NotNull List<Badge> facts() {
+    private static @NotNull JBPanel<?> pills(final @NotNull RunItemStatus status, final @NotNull String duration) {
         final @NotNull List<Badge> badges = new ArrayList<>();
-        badges.add(new Pill(runItem.shownStatus().getLabel(), runItem.shownStatus().getRowColor()));
+        badges.add(new Pill(status.getLabel(), status.getRowColor()));
+        Badges.addDurationBadge(badges, duration);
 
-        Badges.addDurationBadge(badges, TestRunEditorAttributes.DURATION.gridValue(runItem));
-
-        return badges;
+        final @NotNull JBPanel<?> pills = row(GAP);
+        Badges.showBadges(pills, badges);
+        return pills;
     }
 }

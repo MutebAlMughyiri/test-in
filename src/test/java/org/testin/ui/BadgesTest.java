@@ -20,6 +20,7 @@ import org.testin.model.Priority;
 import org.testin.model.TestCaseDto;
 import org.testin.model.bug.BugPriority;
 import org.testin.model.bug.BugSeverity;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.testcase.TestSetEditorAttributes;
@@ -76,7 +77,7 @@ public class BadgesTest {
     // Rule-EDITOR-PANEL-253
     @Test
     public void aTestCaseThatNeverFailedDrawsNoPill() {
-        final List<Badge> badges = bugBadges(RunItem.builder().status(RunItemStatus.PASSED).build());
+        final List<Badge> badges = bugBadges(RunItem.builder().executions(List.of(Execution.builder().status(RunItemStatus.PASSED).build())).build());
 
         assertEquals(badges.size(), 0, "a severity is shown only on a failure, so a pass draws no badge");
     }
@@ -84,7 +85,7 @@ public class BadgesTest {
     // Rule-EDITOR-PANEL-147
     @Test
     public void aFailureTheTesterDidNotTriageDrawsItsDefaults() {
-        final List<Badge> badges = bugBadges(RunItem.builder().status(RunItemStatus.FAILED).build());
+        final List<Badge> badges = bugBadges(RunItem.builder().executions(List.of(Execution.builder().status(RunItemStatus.FAILED).build())).build());
 
         assertEquals(badges.size(), 1);
         assertTrue(badges.getFirst() instanceof BugBadge bug && bug.text().equals("Enhancement / Low"),
@@ -211,7 +212,7 @@ public class BadgesTest {
         final List<Badge> badges = new ArrayList<>();
         final Map<String, String> details = new HashMap<>();
 
-        TestRunEditorAttributes.DURATION.applyToUI(RunItem.builder().status(RunItemStatus.PASSED).duration(Duration.ofSeconds(42)).build(), badges, details);
+        TestRunEditorAttributes.DURATION.applyToUI(RunItem.builder().executions(List.of(Execution.builder().status(RunItemStatus.PASSED).duration(Duration.ofSeconds(42)).build())).build(), badges, details);
 
         assertEquals(badges.size(), 1, "the duration is not one badge");
         assertTrue(badges.getFirst() instanceof Framed framed && framed.text().equals(Display.formatDuration(Duration.ofSeconds(42))), "the badge does not show the duration");
@@ -224,7 +225,7 @@ public class BadgesTest {
     public void aRunItemNotRunYetHasNoDurationBadge() {
         final List<Badge> badges = new ArrayList<>();
 
-        TestRunEditorAttributes.DURATION.applyToUI(RunItem.builder().status(RunItemStatus.PASSED).build(), badges, new HashMap<>());
+        TestRunEditorAttributes.DURATION.applyToUI(RunItem.builder().executions(List.of(Execution.builder().status(RunItemStatus.PASSED).build())).build(), badges, new HashMap<>());
 
         assertTrue(badges.isEmpty(), "a run item with no duration drew a badge");
     }

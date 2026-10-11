@@ -360,12 +360,10 @@ final class LightModeWindow {
 
     private void saveCapture() {
         capture.ifPresent(form -> {
-            // Rule-EDITOR-PANEL-225
-            if (!form.save()) return;
+            // Rule-EDITOR-PANEL-225, Rule-EDITOR-PANEL-285
+            if (!runItemStatusService.executeFailed(editor, form.fields())) return;
 
             capture = Optional.empty();
-
-            record(RunItemStatus.FAILED);
             refresh();
         });
     }

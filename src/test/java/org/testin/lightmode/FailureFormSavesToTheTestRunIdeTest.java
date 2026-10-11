@@ -27,9 +27,11 @@ import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.services.Services;
+import org.testin.testrun.RunItemStatusService;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -61,7 +63,7 @@ public class FailureFormSavesToTheTestRunIdeTest extends AbstractTempRootIdeTest
         });
 
         indexedTestRuns().putRunItems(testRunPath, new RunItems().setAll(List.of(
-                new RunItem().setId(FAILED_TEST_CASE).setStatus(RunItemStatus.FAILED))));
+                new RunItem().setId(FAILED_TEST_CASE).setExecutions(List.of(Execution.builder().status(RunItemStatus.FAILED).build())))));
         return testRunPath;
     }
 
@@ -71,13 +73,14 @@ public class FailureFormSavesToTheTestRunIdeTest extends AbstractTempRootIdeTest
         assertTrue("the test run was not indexed", indexedTestRuns().findRunItems(testRunPath).isPresent());
         assertTrue("the test run does not cover the test case", indexedTestRuns().getRunItems(testRunPath).runItemOf(FAILED_TEST_CASE).isPresent());
 
-        final @NotNull RunItem editorsOwnRow = new RunItem().setId(FAILED_TEST_CASE).setStatus(RunItemStatus.FAILED).setActualResult(TYPED);
+        final @NotNull RunItem editorsOwnRow = new RunItem().setId(FAILED_TEST_CASE).setExecutions(List.of(Execution.builder().status(RunItemStatus.FAILED).actualResult(TYPED).build()));
 
         final @NotNull FailureForm form = new FailureForm(getProject(), testRunPath, editorsOwnRow, 1f, () -> {
         }, () -> {
         });
 
-        assertTrue("the form refused to save a failure the test run covers", form.save());
+        assertTrue("the form refused to save a failure the test run covers",
+                Services.getInstance(getProject(), RunItemStatusService.class).reviseFailure(testRunPath, FAILED_TEST_CASE, form.fields()));
         assertEquals("the failure was written somewhere other than the test run the index holds", TYPED,
                 indexedTestRuns().getRunItems(testRunPath).runItemOf(FAILED_TEST_CASE).map(RunItem::getActualResult).orElse(""));
     }

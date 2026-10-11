@@ -20,24 +20,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public record Failure(@NotNull String message, @NotNull String stacktrace) {
-    public static final @NotNull Failure NONE = new Failure("", "");
-
-    // UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-220
-    public void recordOn(final @NotNull RunItem runItem) {
-        if (isNothing()) return;
-
-        FailureDetail.clear(runItem, FailureDetail.WHAT_HAPPENED);
-        runItem.setActualResult(message);
-        runItem.setStacktrace(stacktrace);
-    }
-
-    // UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-220
-    public @NotNull List<String> wouldClear(final @NotNull RunItem runItem) {
-        return isNothing() ? List.of() : FailureDetail.filledIn(runItem, FailureDetail.WHAT_HAPPENED);
-    }
-
-    private boolean isNothing() {
-        return message.isBlank() && stacktrace.isBlank();
-    }
+// UC-EDITOR-PANEL-034, UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-285
+public record Failure(@NotNull String message, @NotNull String stacktrace, @NotNull List<String> screenshots) {
+    public static final @NotNull Failure NONE = new Failure("", "", List.of());
 }

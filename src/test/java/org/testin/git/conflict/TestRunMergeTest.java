@@ -24,24 +24,24 @@ import static org.testng.Assert.assertTrue;
 
 public class TestRunMergeTest {
 
-    private static final String MINE_ITEM = """
-            {
-              "id" : "11111111-1111-4111-8111-111111111101",
-              "status" : "PASSED",
-              "actualResult" : "Signed in",
-              "executedBy" : "Muteb",
-              "executedAt" : "Monday 14-09-2026 At 10:00:00 [Asia/Riyadh]"
-            }""";
+    private static String runItem(final String severity, final String... executions) {
+        return """
+                { "id" : "11111111-1111-4111-8111-111111111101", "bugSeverity" : "%s", "executions" : [ %s ] }""".formatted(severity, String.join(", ", executions));
+    }
 
-    private static final String THEIRS_ITEM = """
-            {
-              "id" : "11111111-1111-4111-8111-111111111101",
-              "status" : "FAILED",
-              "actualResult" : "The lockout counter never reset",
-              "stacktrace" : "boom",
-              "executedBy" : "Sara",
-              "executedAt" : "Monday 14-09-2026 At 11:30:00 [Asia/Riyadh]"
-            }""";
+    private static final String EARLY = """
+            { "status" : "PASSED", "actualResult" : "Signed in", "executedBy" : "Muteb", "executedAt" : "Monday 14-09-2026 At 10:00:00 [Asia/Riyadh]" }""";
+
+    private static final String LATE = """
+            { "status" : "FAILED", "actualResult" : "The lockout counter never reset", "stacktrace" : "boom", "executedBy" : "Sara", "executedAt" : "Monday 14-09-2026 At 11:30:00 [Asia/Riyadh]" }""";
+
+    private static final String BOTH = """
+            { "status" : "BLOCKED", "executedBy" : "Omar", "executedAt" : "Monday 14-09-2026 At 09:00:00 [Asia/Riyadh]" }""";
+
+    private static final String MINE_ITEM = runItem("MINOR", BOTH, EARLY);
+
+    private static final String THEIRS_ITEM = runItem("MAJOR", BOTH, LATE);
+
     private static final String BASE_MARKER = """
             {
               "createdBy" : "Muteb",
@@ -74,31 +74,44 @@ public class TestRunMergeTest {
 
     // Rule-SHARE-080, Rule-SHARE-081
     @Test
-    public void theLaterRunItemStatusWinsWhole() {
+    public void bothSidesExecutionsAreJoinedInTimeOrder() {
         final Merge merge = RunItemMerge.of(RealMapper.build(), MINE_ITEM, THEIRS_ITEM);
 
-        assertTrue(merge.isSettled(), "a run item status is settled by rule, never by asking");
-        assertEquals(merge.merged().path("status").asText(), "FAILED");
-        assertEquals(merge.merged().path("executedBy").asText(), "Sara");
-        assertEquals(merge.merged().path("stacktrace").asText(), "boom", "the failure's evidence comes with it");
+        assertTrue(merge.isSettled(), "a run item is settled by rule, never by asking");
+        assertEquals(merge.merged().path("executions").size(), 3, "the execution both sides hold is kept once: " + merge.merged());
+        assertEquals(merge.merged().path("executions").get(0).path("executedBy").asText(), "Omar");
+        assertEquals(merge.merged().path("executions").get(1).path("executedBy").asText(), "Muteb");
+        assertEquals(merge.merged().path("executions").get(2).path("stacktrace").asText(), "boom", "each execution keeps its own evidence");
         assertEquals(merge.settled().size(), 1, "and the tester is told a choice was made: " + merge.settled());
     }
 
+    // Rule-SHARE-081
     @Test
-    public void theEarlierRunItemStatusLosesWhole() {
-        final Merge merge = RunItemMerge.of(RealMapper.build(), THEIRS_ITEM, MINE_ITEM);
+    public void theBugFieldsComeFromWhoeverRecordedLastWhicheverSideIsMine() {
+        assertEquals(RunItemMerge.of(RealMapper.build(), MINE_ITEM, THEIRS_ITEM).merged().path("bugSeverity").asText(), "MAJOR");
+        assertEquals(RunItemMerge.of(RealMapper.build(), THEIRS_ITEM, MINE_ITEM).merged().path("bugSeverity").asText(), "MAJOR");
+    }
 
-        assertEquals(merge.merged().path("status").asText(), "FAILED", "which side is mine does not decide it");
-        assertEquals(merge.merged().path("executedBy").asText(), "Sara");
+    // Rule-SHARE-081, Rule-VIEW-PANEL-119
+    @Test
+    public void onlyTheLaterSidesChosenDefaultStays() {
+        final String chosenEarly = runItem("MINOR", BOTH.replace("{", "{ \"default\" : true,"), EARLY);
+        final String chosenLate = runItem("MAJOR", BOTH, LATE.replace("{", "{ \"default\" : true,"));
+
+        final Merge merge = RunItemMerge.of(RealMapper.build(), chosenEarly, chosenLate);
+
+        assertEquals(merge.merged().path("executions").size(), 3, "a flag does not make the same execution a second one");
+        assertTrue(merge.merged().path("executions").get(2).path("default").asBoolean(), "the later side's choice stays: " + merge.merged());
+        assertEquals(merge.merged().findValues("default").size(), 1, "and it is the only one");
     }
 
     @Test
-    public void twoIdenticalRunItemStatusesAreNoDisagreement() {
+    public void twoIdenticalRunItemsAreNoDisagreement() {
         final Merge merge = RunItemMerge.of(RealMapper.build(), MINE_ITEM, MINE_ITEM);
 
         assertTrue(merge.isSettled());
         assertTrue(merge.settled().isEmpty(), "nothing was decided, because nothing differed");
-        assertEquals(merge.merged().path("status").asText(), "PASSED");
+        assertEquals(merge.merged().path("executions").size(), 2);
     }
 
     // Rule-SHARE-080

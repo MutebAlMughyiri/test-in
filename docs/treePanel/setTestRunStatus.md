@@ -56,8 +56,9 @@ The status says how far the test run has got.
   because "Active" on every name is a word read a hundred times and needed
   never. A test run always says its status, because where a cycle stands is what
   the tree is read for.
-- **Rule-TREE-PANEL-067** — **Completed** and **Closed** are final. The test run
-  accepts no more run item statuses. Every test case still **Pending** becomes **Untested**. (Rule-TREE-PANEL-009)
+- **Rule-TREE-PANEL-067** — Completing or closing a test run turns every test
+  case still **Pending** into **Untested**. Its run item statuses can still be
+  given and corrected until it is **Committed** (Rule-TREE-PANEL-009).
 - **Rule-TREE-PANEL-068** — A tester sets **Assigned**, **Completed** and **Closed**. **Created** and **In Progress**
   are the test run's own record of
   itself.

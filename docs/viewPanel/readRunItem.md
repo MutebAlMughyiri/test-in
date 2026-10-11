@@ -105,6 +105,32 @@ badges and above **Test case** (Rule-VIEW-PANEL-085).
 8. **Test case** — folded, because a tester reading a failure is
    reading the failure. Clicking its name opens every field the test case has (Rule-VIEW-PANEL-087).
 
+## When it was executed more than once
+
+Each execution is a line of its own, the oldest first (Rule-VIEW-PANEL-086).
+
+```
+│   EXECUTION RESULT ────────────────────────────────────────────────────  │
+│   ( Blocked )                                                            │
+│   ( Passed ) ( 00:01 )  Invocation 1                                     │
+│   ( Failed ) ( 00:01 )  Invocation 2 retried                             │
+│     ( Passed ) ( 00:00 )  ↳ Retry 1  ★                         ☆  ×      │
+│   ACTUAL RESULT                                                          │
+```
+
+1. **★** — the default: its status is the run item status everywhere, and the
+   bug chip sits on its line (Rule-VIEW-PANEL-119). It is the last execution
+   unless a tester chose another.
+2. **☆ and ×** — shown only while the pointer is on a line, over its right
+   end. ☆ makes that execution the default; × removes it at once and says
+   *Removed* (Rule-VIEW-PANEL-120, Rule-VIEW-PANEL-121). A Committed test run
+   draws both gray, with the reason.
+3. **Clicking a line** — the rows below show that execution's actual result,
+   stacktrace and who ran it. The band opens on the default
+   (Rule-VIEW-PANEL-122).
+4. **Executed once** — one line, no ★ and nothing to hover, as above
+   (Rule-VIEW-PANEL-123).
+
 ## The band, in order
 
 | Where it is       | What it holds                                                                                                                                                                                                            |
@@ -136,10 +162,9 @@ drawn.
 The test case is drawn on its own. It then looks like a test case nobody has run.
 That is question 3 on [the view panel page](main.md#not-decided).
 
-**If the test case passed** — three values were cleared when the pass was
-recorded: the actual result, the stacktrace and the bug issue link. The bug
-severity and priority went back to Enhancement and Low, and a pass draws no bug
-chip. The band is left holding the run item status and the duration.
+**If the test case passed** — a pass draws no bug chip, and has no actual
+result or stacktrace of its own. What an earlier failed execution recorded is
+still there: clicking its line shows it (Rule-EDITOR-PANEL-284).
 
 **If nothing was timed** — the duration badge disappears and what is beside it
 closes the gap. A run item status recorded from the menu, or on several test

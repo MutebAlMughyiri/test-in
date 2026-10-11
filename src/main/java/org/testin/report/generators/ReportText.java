@@ -19,6 +19,7 @@ package org.testin.report.generators;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.testin.model.testrun.RunItem;
 import org.testin.util.Bundle;
 
 import java.util.Arrays;
@@ -31,6 +32,15 @@ public final class ReportText {
 
     public static @NotNull String footerLead() {
         return Bundle.message("report.footer.prefix") + " ";
+    }
+
+    // UC-REPORT-001, Rule-REPORT-027
+    public static @NotNull String otherExecutions(final @NotNull RunItem runItem) {
+        return runItem.otherFailuresAndBlocks().entrySet().stream()
+                .map(other -> other.getValue() == 1
+                        ? Bundle.message("report.other.execution", other.getKey().getLabel())
+                        : Bundle.message("report.other.executions", other.getKey().getLabel(), String.valueOf(other.getValue())))
+                .collect(Collectors.joining(", "));
     }
 
     public static @NotNull String joined(final @NotNull String separator, final String @NotNull ... parts) {

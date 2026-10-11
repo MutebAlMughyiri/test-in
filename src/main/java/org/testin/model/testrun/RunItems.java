@@ -27,7 +27,6 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.status.RunItemStatus;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -65,7 +64,7 @@ public class RunItems {
 
         wanted.stream()
                 .filter(id -> !held.containsKey(id))
-                .forEach(id -> covered.add(new RunItem().setId(id).setStatus(RunItemStatus.PENDING)));
+                .forEach(id -> covered.add(new RunItem().setId(id)));
 
         return new RunItems().setAll(covered);
     }

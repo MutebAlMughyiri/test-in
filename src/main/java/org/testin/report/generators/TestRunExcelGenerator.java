@@ -122,7 +122,8 @@ public final class TestRunExcelGenerator {
             ws.value(row, 0, id.toString());
             ws.value(row, 1, orNotAvailable(details.getDescription()));
             ws.value(row, 2, runItem.shownStatus().getLabel());
-            ws.value(row, 3, runItem.getActualResult());
+            // Rule-REPORT-027
+            ws.value(row, 3, ReportText.joined("\n", runItem.getActualResult(), ReportText.otherExecutions(runItem)));
             ws.value(row, 4, TestRunEditorAttributes.BUG_SEVERITY.getRunItemValueExtractor().apply(runItem));
             ws.value(row, 5, TestRunEditorAttributes.BUG_PRIORITY.getRunItemValueExtractor().apply(runItem));
             ws.value(row, 6, Display.formatDuration(runItem.getDuration()));

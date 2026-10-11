@@ -16,20 +16,24 @@
 
 package org.testin.ui.framework;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.ui.CheckboxTree;
 import com.intellij.ui.CheckboxTreeBase;
 import com.intellij.ui.CheckboxTreeListener;
 import com.intellij.ui.CheckedTreeNode;
 import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.components.JBLabel;
+import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.tree.TreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.ui.Caption;
 import org.testin.ui.dialogs.DialogStyle;
+import org.testin.util.Bundle;
 import org.testin.util.Fonts;
 
 import javax.swing.JComponent;
 import javax.swing.tree.DefaultTreeModel;
+import java.awt.FlowLayout;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -45,6 +49,7 @@ public final class SelectionTree implements DialogComponent {
     private final @NotNull Set<Object> chosen = new LinkedHashSet<>();
     private final @NotNull List<Runnable> changed = new ArrayList<>();
     private final @NotNull JComponent panel;
+    private final @NotNull AbstractIconButton tickAll = AbstractIconButton.of(Bundle.message("selection.tick.all"), AllIcons.Actions.Selectall, this::flipTicks);
 
     public SelectionTree(final @NotNull String caption, final @NotNull CheckedTreeNode root, final @NotNull CheckboxTree.CheckboxTreeCellRenderer renderer, final @NotNull Optional<JComponent> trailing) {
         this.full = root;
@@ -61,6 +66,8 @@ public final class SelectionTree implements DialogComponent {
             @Override
             public void nodeStateChanged(final @NotNull CheckedTreeNode node) {
                 keepTicks();
+                tree.repaint();
+                showTickAll();
                 changed.forEach(Runnable::run);
             }
         });
@@ -69,8 +76,13 @@ public final class SelectionTree implements DialogComponent {
         // Rule-INTERNAL-122
         title.setLabelFor(tree);
 
+        final @NotNull JBPanel<?> buttons = new JBPanel<>(new FlowLayout(FlowLayout.RIGHT, 0, 0)).andTransparent();
+        buttons.add(tickAll);
+        trailing.ifPresent(buttons::add);
+        showTickAll();
+
         // Rule-INTERNAL-087, Rule-INTERNAL-099
-        panel = DialogStyle.section(Caption.header(title, trailing), ScrollPaneFactory.createScrollPane(tree, true));
+        panel = DialogStyle.section(Caption.header(title, Optional.of(buttons)), ScrollPaneFactory.createScrollPane(tree, true));
     }
 
     private static boolean allChecked(final @NotNull CheckedTreeNode node) {
@@ -85,7 +97,25 @@ public final class SelectionTree implements DialogComponent {
     public void show(final @NotNull Predicate<Object> leafShown) {
         tree.setModel(new DefaultTreeModel(copyShown(full, leafShown)));
         TreeUtil.expandAll(tree);
+        showTickAll();
         changed.forEach(Runnable::run);
+    }
+
+    // Rule-TREE-PANEL-140
+    private void flipTicks() {
+        tree.setNodeState(shownRoot(), !everyShownTicked());
+    }
+
+    // Rule-TREE-PANEL-140, Rule-INTERNAL-137
+    private void showTickAll() {
+        if (everyShownTicked()) tickAll.show(Bundle.message("selection.untick.all"), AllIcons.Actions.Unselectall);
+        else tickAll.show(Bundle.message("selection.tick.all"), AllIcons.Actions.Selectall);
+    }
+
+    // Rule-TREE-PANEL-140, Rule-TREE-PANEL-138
+    private boolean everyShownTicked() {
+        final @NotNull List<CheckedTreeNode> tickable = leafNodesOf(shownRoot()).stream().filter(CheckedTreeNode::isEnabled).toList();
+        return !tickable.isEmpty() && tickable.stream().allMatch(leaf -> chosen.contains(leaf.getUserObject()));
     }
 
     // Rule-TREE-PANEL-130
@@ -122,16 +152,18 @@ public final class SelectionTree implements DialogComponent {
         return (CheckedTreeNode) tree.getModel().getRoot();
     }
 
-    // Rule-TREE-PANEL-131
+    // Rule-TREE-PANEL-131, Rule-TREE-PANEL-138, Rule-TREE-PANEL-139
     private void keepTicks() {
         for (final CheckedTreeNode leaf : leafNodesOf(shownRoot())) {
-            if (leaf.isChecked()) chosen.add(leaf.getUserObject());
+            if (!leaf.isEnabled()) leaf.setChecked(chosen.contains(leaf.getUserObject()));
+            else if (leaf.isChecked()) chosen.add(leaf.getUserObject());
             else chosen.remove(leaf.getUserObject());
         }
     }
 
     private @NotNull CheckedTreeNode copyShown(final @NotNull CheckedTreeNode node, final @NotNull Predicate<Object> leafShown) {
         final @NotNull CheckedTreeNode copy = new CheckedTreeNode(node.getUserObject());
+        copy.setEnabled(node.isEnabled());
 
         if (isLeaf(node)) {
             copy.setChecked(chosen.contains(node.getUserObject()));

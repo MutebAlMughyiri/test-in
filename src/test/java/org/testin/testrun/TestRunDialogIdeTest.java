@@ -45,6 +45,7 @@ import org.testin.model.node.TestRunPackageNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
 import org.testin.model.testrun.TestRunConfiguration;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.PackageStatus;
 import org.testin.model.status.RunItemStatus;
@@ -269,7 +270,7 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
     // Rule-TREE-PANEL-076, Rule-TREE-PANEL-134
     public void testSavingTheEditKeepsWhatTheDialogDoesNotShowAndTheDeletedTestCasesLeftTicked() {
         final @NotNull UUID deleted = UUID.randomUUID();
-        final @NotNull TestRunNode testRun = cycle1In(tp.getTestRunsFolder(), List.of(new RunItem().setId(first.getId()), new RunItem().setId(inOld.getId()).setStatus(RunItemStatus.FAILED), new RunItem().setId(deleted).setStatus(RunItemStatus.PASSED)));
+        final @NotNull TestRunNode testRun = cycle1In(tp.getTestRunsFolder(), List.of(new RunItem().setId(first.getId()), new RunItem().setId(inOld.getId()).setExecutions(List.of(Execution.builder().status(RunItemStatus.FAILED).build())), new RunItem().setId(deleted).setExecutions(List.of(Execution.builder().status(RunItemStatus.PASSED).build()))));
 
         indexedTestRuns().changeTestRunMarker(testRun.getPath(), marker -> marker.configure(everyQuestionAnswered()));
         theEditDialogOpenedOn(testRun);
@@ -290,7 +291,7 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
     // Rule-TREE-PANEL-134
     public void testUntickingADeletedTestCaseAndSavingRemovesItFromTheTestRun() {
         final @NotNull UUID deleted = UUID.randomUUID();
-        final @NotNull TestRunNode testRun = cycle1In(tp.getTestRunsFolder(), List.of(new RunItem().setId(first.getId()), new RunItem().setId(deleted).setStatus(RunItemStatus.PASSED)));
+        final @NotNull TestRunNode testRun = cycle1In(tp.getTestRunsFolder(), List.of(new RunItem().setId(first.getId()), new RunItem().setId(deleted).setExecutions(List.of(Execution.builder().status(RunItemStatus.PASSED).build()))));
         indexedTestRuns().changeTestRunMarker(testRun.getPath(), marker -> marker.configure(everyQuestionAnswered()));
         theEditDialogOpenedOn(testRun);
 
@@ -308,7 +309,7 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
             nodes().addTestRunPackage(made);
             return made;
         });
-        final @NotNull TestRunNode source = cycle1In(sprint, List.of(new RunItem().setId(first.getId()).setStatus(RunItemStatus.FAILED).setDuration(Duration.ofSeconds(5)).setActualResult("The dashboard never opened").setStacktrace("java.lang.AssertionError")));
+        final @NotNull TestRunNode source = cycle1In(sprint, List.of(new RunItem().setId(first.getId()).setExecutions(List.of(Execution.builder().status(RunItemStatus.FAILED).duration(Duration.ofSeconds(5)).actualResult("The dashboard never opened").stacktrace("java.lang.AssertionError").build()))));
         final @NotNull Map<TestRunConfiguration, String> configuration = everyQuestionAnswered();
         configuration.put(TestRunConfiguration.TEST_TYPE, TestRunConfiguration.TEST_TYPE.getOptions().get(1));
         indexedTestRuns().changeTestRunMarker(source.getPath(), marker -> marker.configure(configuration));

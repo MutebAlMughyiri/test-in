@@ -1,11 +1,13 @@
 {
   "id" : "11111111-1111-4111-8111-111111111103",
-  "status" : "FAILED",
-  "actualResult" : "The sixth attempt was accepted. Reloading the page reset the counter to zero.",
   "bugSeverity" : "MAJOR",
   "bugPriority" : "HIGH",
-  "duration" : 12.905,
-  "executedBy" : "Testin Sample",
-  "executedAt" : "Wednesday 07-01-2026 At 10:05:30 [UTC]",
-  "stacktrace" : "java.lang.AssertionError: expected the account to be locked\n\tat org.example.LoginTest.locksAfterFiveRefusals(LoginTest.java:64)"
+  "executions" : [ {
+    "status" : "FAILED",
+    "duration" : 12.905,
+    "executedBy" : "Testin Sample",
+    "executedAt" : "Wednesday 07-01-2026 At 10:05:30 [UTC]",
+    "actualResult" : "The sixth attempt was accepted. Reloading the page reset the counter to zero.",
+    "stacktrace" : "java.lang.AssertionError: expected the account to be locked\n\tat org.example.LoginTest.locksAfterFiveRefusals(LoginTest.java:64)"
+  } ]
 }

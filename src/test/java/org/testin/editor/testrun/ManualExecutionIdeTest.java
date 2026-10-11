@@ -37,7 +37,7 @@ import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
-import org.testin.model.testrun.Failure;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.status.TestRunStatus;
@@ -145,8 +145,8 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-130, Rule-EDITOR-PANEL-139, Rule-EDITOR-PANEL-153
     public void testTheWalkLandsOnlyOnTestCasesWaitingForARunItemStatus() {
         final @NotNull List<TestCaseDto> testCases = createdTestCases(4);
-        final @NotNull RunItem judgedBySomeoneElse = EditorFixtures.pending(testCases.getFirst()).setStatus(RunItemStatus.FAILED).setExecutedBy("Sara");
-        final @NotNull RunItem judgedInTheFirstSitting = EditorFixtures.pending(testCases.get(2)).setStatus(RunItemStatus.PASSED);
+        final @NotNull RunItem judgedBySomeoneElse = EditorFixtures.pending(testCases.getFirst()).setExecutions(List.of(Execution.builder().status(RunItemStatus.FAILED).executedBy("Sara").build()));
+        final @NotNull RunItem judgedInTheFirstSitting = EditorFixtures.pending(testCases.get(2)).setExecutions(List.of(Execution.builder().status(RunItemStatus.PASSED).build()));
         final @NotNull TestRunEditor editor = opened(aTestRunOver(List.of(judgedBySomeoneElse, EditorFixtures.pending(testCases.get(1)), judgedInTheFirstSitting, EditorFixtures.pending(testCases.get(3)))));
         try {
             editor.onStartExecutionClicked();
@@ -236,8 +236,8 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
     public void testStartIsGrayWhenEveryTestCaseHasBeenJudged() {
         final @NotNull List<TestCaseDto> testCases = createdTestCases(2);
         final @NotNull TestRunEditor editor = opened(aTestRunOver(List.of(
-                EditorFixtures.pending(testCases.getFirst()).setStatus(RunItemStatus.PASSED),
-                EditorFixtures.pending(testCases.get(1)).setStatus(RunItemStatus.BLOCKED))));
+                EditorFixtures.pending(testCases.getFirst()).setExecutions(List.of(Execution.builder().status(RunItemStatus.PASSED).build())),
+                EditorFixtures.pending(testCases.get(1)).setExecutions(List.of(Execution.builder().status(RunItemStatus.BLOCKED).build())))));
         try {
             assertFalse("Start is offered on a test run with nothing to walk", editor.getToolBar().getToolbarItem(StartExecutionBtn.class).isEnabled());
 
@@ -316,7 +316,7 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestRunNode tr = aTestRunOver(List.of(
                 EditorFixtures.pending(testCases.getFirst()),
                 EditorFixtures.pending(testCases.get(1)),
-                EditorFixtures.pending(testCases.get(2)).setDuration(Duration.ofSeconds(7))));
+                EditorFixtures.pending(testCases.get(2)).setClock(Duration.ofSeconds(7))));
         final @NotNull TestRunEditor editor = opened(tr);
         try {
             editor.onStartExecutionClicked();
@@ -405,7 +405,7 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
     public void testOpeningATestRunNeverRewritesIt() {
         final @NotNull List<TestCaseDto> testCases = createdTestCases(3);
         final @NotNull TestRunNode tr = aTestRunOver(List.of(
-                EditorFixtures.pending(testCases.getFirst()).setStatus(RunItemStatus.PASSED),
+                EditorFixtures.pending(testCases.getFirst()).setExecutions(List.of(Execution.builder().status(RunItemStatus.PASSED).build())),
                 EditorFixtures.pending(testCases.get(1)),
                 EditorFixtures.pending(testCases.get(2))));
         final @NotNull List<String> before = everyFileOf(tr);
@@ -478,7 +478,7 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
             editor.onStartExecutionClicked();
             awaitWalkOn(editor, testCases.getFirst());
 
-            runItemStatuses().recordReported(editor, testCases.getFirst(), RunItemStatus.PASSED, Duration.ofMillis(84), Failure.NONE);
+            runItemStatuses().recordReported(editor, testCases.getFirst(), RunItemStatus.PASSED, List.of(Execution.builder().status(RunItemStatus.PASSED).duration(Duration.ofMillis(84)).build()), 0, 0);
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
             assertEquals(RunItemStatus.PASSED, statusOf(tr, testCases.getFirst()));

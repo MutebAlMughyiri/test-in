@@ -55,8 +55,6 @@ import java.util.Objects;
 public class StatusBar extends JBPanel<StatusBar> {
     private static final int EDGE = 2;
 
-    private static final int SENTENCE_CHARACTERS = 13;
-
     private final @NotNull JBLabel statusLabel = new JBLabel();
 
     private final @NotNull JBLabel testRunStatusLabel = new JBLabel();
@@ -124,14 +122,8 @@ public class StatusBar extends JBPanel<StatusBar> {
     }
 
     // Rule-EDITOR-PANEL-251
-    static @NotNull Widths budget(final int inner, final int sentenceFloor, final int arrowsWanted, final int figuresWanted) {
-        final int arrows = Math.clamp(arrowsWanted, 0, inner);
-        final int floor = Math.clamp(sentenceFloor, 0, inner - arrows);
-        final int figures = Math.clamp(figuresWanted, 0, inner - arrows - floor);
-
-        final int centered = (inner - arrows) / 2;
-
-        return new Widths(arrows, Math.clamp(centered, floor, inner - figures - arrows), figures);
+    static int arrowsAt(final int inner, final int sentence, final int arrows, final int figures) {
+        return Math.clamp((inner - arrows) / 2, sentence, Math.max(sentence, inner - figures - arrows));
     }
 
     private static @NotNull JBPanel<?> centeredRow(final @NotNull JComponent... items) {
@@ -180,11 +172,6 @@ public class StatusBar extends JBPanel<StatusBar> {
         return "";
     }
 
-    // Rule-EDITOR-PANEL-251
-    private int sentenceFloor() {
-        return statusLabel.getFontMetrics(statusLabel.getFont()).charWidth('m') * SENTENCE_CHARACTERS;
-    }
-
     @Override
     public void doLayout() {
         final @NotNull Insets insets = getInsets();
@@ -193,11 +180,13 @@ public class StatusBar extends JBPanel<StatusBar> {
         final int left = insets.left;
         final int right = getWidth() - insets.right;
 
-        final @NotNull Widths widths = budget(Math.max(0, right - left), sentenceFloor(), navigationRow.getPreferredSize().width, rightRow.getPreferredSize().width);
+        final int arrows = navigationRow.getPreferredSize().width;
+        final int figures = rightRow.getPreferredSize().width;
+        final int arrowsAt = arrowsAt(right - left, statusLabel.getPreferredSize().width, arrows, figures);
 
-        rightRow.setBounds(right - widths.figures(), top, widths.figures(), height);
-        navigationRow.setBounds(left + widths.arrowsAt(), top, widths.arrows(), height);
-        statusLabel.setBounds(left, top, widths.arrowsAt(), height);
+        rightRow.setBounds(right - figures, top, figures, height);
+        navigationRow.setBounds(left + arrowsAt, top, arrows, height);
+        statusLabel.setBounds(left, top, arrowsAt, height);
     }
 
     @Override
@@ -216,12 +205,10 @@ public class StatusBar extends JBPanel<StatusBar> {
         return new Dimension(width + insets.left + insets.right, AbstractToolbarPanel.barHeight(height + insets.top + insets.bottom));
     }
 
-    // Rule-EDITOR-PANEL-251
+    // Rule-EDITOR-PANEL-251, Rule-EDITOR-PANEL-257
     @Override
     public @NotNull Dimension getMinimumSize() {
-        final @NotNull Insets insets = getInsets();
-
-        return new Dimension(sentenceFloor() + navigationRow.getPreferredSize().width + insets.left + insets.right, getPreferredSize().height);
+        return getPreferredSize();
     }
 
     // UC-EDITOR-PANEL-042, Rule-EDITOR-PANEL-178

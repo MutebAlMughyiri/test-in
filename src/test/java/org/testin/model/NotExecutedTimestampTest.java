@@ -19,9 +19,11 @@ package org.testin.model;
 import org.testin.model.markers.TestRunMarker;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
+import org.testin.model.testrun.Failure;
 import org.testin.util.Display;
 import org.testng.annotations.Test;
 
+import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -44,7 +46,7 @@ public class NotExecutedTimestampTest {
     public void aRunItemStatusGivesTheTestCaseARealTime() {
         final RunItem runItem = RunItem.builder().id(UUID.randomUUID()).build();
 
-        runItem.recordRunItemStatus(RunItemStatus.PASSED, "tester");
+        runItem.recordRunItemStatus(RunItemStatus.PASSED, "tester", Duration.ZERO, Failure.NONE);
 
         assertFalse(Config.isNotExecuted(runItem.getExecutedAt()));
         assertFalse(Display.formatDate(runItem.getExecutedAt()).isEmpty());

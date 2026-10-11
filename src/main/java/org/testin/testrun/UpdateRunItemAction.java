@@ -64,7 +64,7 @@ public class UpdateRunItemAction extends AbstractAnyProjectAction {
         Logger.trace("update test run item for: " + testCase.getDescription());
 
         new FailureDetailDialog(p, testRunEditor.getParent().getPath(), runItem, fields -> {
-            if (!Services.getInstance(p, RunItemStatusService.class).recordFailureDetails(testRunEditor.getParent().getPath(), testCase.getId(), fields))
+            if (!Services.getInstance(p, RunItemStatusService.class).reviseFailure(testRunEditor.getParent().getPath(), testCase.getId(), fields))
                 return;
 
             ApplicationManager.getApplication().invokeLater(() -> {

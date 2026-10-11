@@ -24,11 +24,14 @@ import org.testin.indexer.TestRuns;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
+import org.testin.model.testrun.Failure;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -158,7 +161,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
     // Rule-VIEW-PANEL-014
     public void testTheFolderThePanelWasOpenedFromDecidesWhetherTheTestRunIsDrawn() {
         final @NotNull TestCaseDto tc = threeTestCases().getFirst();
-        final @NotNull TestRunNode tr = aTestRun(List.of(RunItem.builder().id(tc.getId()).status(RunItemStatus.FAILED).build()));
+        final @NotNull TestRunNode tr = aTestRun(List.of(RunItem.builder().id(tc.getId()).executions(List.of(Execution.builder().status(RunItemStatus.FAILED).build())).build()));
 
         view.getPanel().show(List.of(tc), pathOf(tr));
         assertTrue("opened from the test run, the panel drew no test run band: " + details(), details().contains(RUN_BAND));
@@ -188,7 +191,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
     // Rule-VIEW-PANEL-029
     public void testTheTestRunBandIsDrawnOnlyWhenTheTestRunHoldsTheTestCase() {
         final @NotNull List<TestCaseDto> handed = threeTestCases();
-        final @NotNull TestRunNode tr = aTestRun(List.of(RunItem.builder().id(handed.getFirst().getId()).status(RunItemStatus.FAILED).build()));
+        final @NotNull TestRunNode tr = aTestRun(List.of(RunItem.builder().id(handed.getFirst().getId()).executions(List.of(Execution.builder().status(RunItemStatus.FAILED).build())).build()));
 
         view.getPanel().show(List.of(handed.get(1)), pathOf(tr));
         assertFalse("the test run band was drawn for a test case the test run does not hold: " + details(), details().contains(RUN_BAND));
@@ -207,8 +210,8 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
 
         final @NotNull TestRuns testRuns = Services.getInstance(getProject(), TestRuns.class);
         testRuns.changeRunItem(tr.getPath(), tc.getId(), result -> {
-            result.setStatus(RunItemStatus.FAILED);
-            result.setActualResult("The session was dropped");
+            result.setExecutions(List.of(Execution.builder().status(RunItemStatus.FAILED).build()));
+            result.recordActualResult("The session was dropped");
         });
         view.getPanel().refreshIfShowing(List.of(tc));
 
@@ -222,14 +225,14 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
     public void testOpenedFromATestRunThePanelShowsTheTestCaseAsTheRowShowsIt() {
         final @NotNull TestCaseDto tc = threeTestCases().getFirst();
         final @NotNull RunItem row = EditorFixtures.pending(tc);
-        row.recordRunItemStatus(RunItemStatus.FAILED, "muteb");
+        row.recordRunItemStatus(RunItemStatus.FAILED, "muteb", Duration.ZERO, Failure.NONE);
         final @NotNull TestRunNode tr = aTestRun(List.of(row));
 
         view.getPanel().show(List.of(handedCopy(tc, "The copy the editor handed over")), pathOf(tr));
         assertTrue("the panel did not show the test case as the test run's run item shows it: " + details(), holds(details(), tc.getDescription()));
         assertFalse("the panel showed the copy it was handed: " + details(), holds(details(), "The copy the editor handed over"));
 
-        Services.getInstance(getProject(), TestRuns.class).changeRunItem(tr.getPath(), tc.getId(), result -> result.recordRunItemStatus(RunItemStatus.PASSED, "muteb"));
+        Services.getInstance(getProject(), TestRuns.class).changeRunItem(tr.getPath(), tc.getId(), result -> result.recordRunItemStatus(RunItemStatus.PASSED, "muteb", Duration.ZERO, Failure.NONE));
         view.getPanel().refreshCurrentView();
 
         assertTrue("the panel did not read the run item again when it refreshed: " + details(), holds(details(), RunItemStatus.PASSED.getLabel()));

@@ -89,6 +89,16 @@ A test run is one round of testing, with a run item status for each test case.
   run, and the line beside the button counts it as hidden.
 - **Rule-TREE-PANEL-131** — Ticking a row while a filter is on ticks only the
   test cases it shows.
+- **Rule-TREE-PANEL-138** — A **Disabled** test case is shown in the test cases
+  grayed, with Disabled beside its description, and its box cannot be ticked, so
+  a new test run never covers it. Ticking its test set leaves it out, and
+  Re-create leaves out one the source test run covered. Its method carries
+  enabled = false, so TestNG would never run it (Rule-CODEGEN-047).
+- **Rule-TREE-PANEL-140** — Beside the filter, one button ticks every test case
+  the filter shows, or unticks them all once every one of them is ticked, and
+  its picture and tooltip say which it will do. A Disabled test case keeps its
+  tick (Rule-TREE-PANEL-138), and a test case the filter hides keeps its own
+  (Rule-TREE-PANEL-131).
 
 Rule-TREE-PANEL-032 holds here too. It says what can be created under **Test
 Runs**, and it is on [UC-TREE-PANEL-010](createTestRunPackage.md).

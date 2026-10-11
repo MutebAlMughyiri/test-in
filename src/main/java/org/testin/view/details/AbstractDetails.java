@@ -21,14 +21,23 @@ import com.intellij.ui.components.ActionLink;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
+import org.testin.editor.open.TestinEditors;
+import org.testin.editor.testrun.TestRunEditor;
+import org.testin.indexer.Nodes;
 import org.testin.model.TestCaseDto;
+import org.testin.model.node.TestRunNode;
+import org.testin.services.Services;
+import org.testin.setting.TestinRoot;
 import org.testin.util.Fonts;
+import org.testin.view.ViewToolWindowFactory;
 
 import javax.swing.JComponent;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.Optional;
 
 public abstract class AbstractDetails {
     // Rule-VIEW-PANEL-080, Rule-VIEW-PANEL-082
@@ -47,6 +56,19 @@ public abstract class AbstractDetails {
         link.setFocusable(false);
         link.setFont(Fonts.body());
         return link;
+    }
+
+    // UC-VIEW-PANEL-005
+    static @NotNull Optional<TestRunNode> testRunOf(final @NotNull Project p, final @NotNull List<String> currentPath) {
+        return Services.getInstance(p, Nodes.class).find(Services.getInstance(p, TestinRoot.class).resolve(currentPath))
+                .filter(TestRunNode.class::isInstance)
+                .map(TestRunNode.class::cast);
+    }
+
+    // UC-VIEW-PANEL-016, UC-VIEW-PANEL-004
+    static void redraw(final @NotNull Project p, final @NotNull TestCaseDto dto, final @NotNull TestRunNode testRunNode) {
+        ViewToolWindowFactory.refreshIfShowing(p, List.of(dto));
+        Services.getInstance(p, TestinEditors.class).testRunEditorFor(testRunNode).ifPresent(TestRunEditor::refreshView);
     }
 
     public abstract int render(final @NotNull Project p, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto dto, final int currentRow);

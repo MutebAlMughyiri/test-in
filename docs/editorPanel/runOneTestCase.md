@@ -43,17 +43,12 @@ press `P` or `F`.
   is not already.
 - **Rule-EDITOR-PANEL-182** — A run item status from the automation is written
   the same way a run item status set from the keyboard is.
-- **Rule-EDITOR-PANEL-183** — The framework's own timing is the duration only of
-  a test case no clock was counting. Where the clock was counting, it stops the
-  moment the automation sets the run item status, and what it counted is kept,
-  as Rule-EDITOR-PANEL-132 says.
-- **Rule-EDITOR-PANEL-220** — A failure from the automation clears what the last
-  failure said happened - the actual result, the error and its screenshots -
-  before it writes its own, and keeps the bug severity, the bug priority and the
-  bug issue link. The message that names what a pass cleared names what it
-  cleared too.
-- **Rule-EDITOR-PANEL-241** — A run item can be run again until its test run is
-  Committed, and the new run item status is recorded.
+- **Rule-EDITOR-PANEL-183** — A run item status the automation records keeps the
+  framework's own time for every attempt, whether the walk's clock was counting
+  or not. The clock stops, and what it counted is not kept, so no second is
+  counted twice in the test run's clock (Rule-EDITOR-PANEL-288).
+- **Rule-EDITOR-PANEL-241** — A run item can be executed again while its test
+  run takes run item statuses, and the new result is one more execution.
 - **Rule-EDITOR-PANEL-242** — A status from the automation for the test case the
   walk is on moves the walk to the next test case waiting for a run item status. The tester's own run item status does
   exactly the same, and execution goes on. Until
@@ -68,8 +63,9 @@ press `P` or `F`.
   selection color while it is selected, and in nothing else. The pointer passing
   over it changes nothing.
 - **Rule-EDITOR-PANEL-251** — When the status bar is too narrow for everything,
-  the figures on the right give way first, then the sentence on the left down to
-  a short floor, and the page arrows keep their width to the last.
+  nothing on it gives way or is cut short: it scrolls sideways, as the toolbar
+  does (Rule-EDITOR-PANEL-257), so the page size field can always be reached.
+  Where there is room, the page arrows sit in the middle of the bar.
 - **Rule-EDITOR-PANEL-252** — A badge's words are printed white or dark,
   whichever reads on its color, so a pale badge never carries white text.
 - **Rule-EDITOR-PANEL-257** — An editor narrower than its toolbar or its status
@@ -107,7 +103,7 @@ differently.
 case the walk is on keeps the walk there, its clock counting, until the status
 comes back. The status then moves the walk to the next test case waiting for a
 run item status, as the tester's own run item status does, and execution goes on (Rule-EDITOR-PANEL-242). The time
-recorded is still the framework's own (Rule-EDITOR-PANEL-183).
+recorded is the framework's own (Rule-EDITOR-PANEL-183).
 
 Everything about how the execution is built and named is on
 [UC-CODEGEN-008](../codegen/runAutomation.md).
@@ -121,14 +117,12 @@ Everything about how the execution is built and named is on
 | The actual result and the error | The framework's message and stacktrace         |
 | Who ran it, and when            | The name on the settings page, and now         |
 
-A failure clears what the last failure said happened first: the actual result,
-the error and the screenshots pasted with it. It keeps the bug severity, the bug
-priority and the bug issue link, because the same test case failing again is
-most often the same bug. A message titled **Failure detail cleared** names what
-went, as it does for a pass.
-
-A result with no message and no error does not clear what the tester wrote by
-hand.
+Each result is one more execution of the run item, carrying its own actual
+result and error, so nothing an earlier execution recorded is cleared: what a
+tester wrote about a failure stays with that failure. A method TestNG retried or
+ran more than once records every attempt (Rule-CODEGEN-111). The bug severity,
+the bug priority and the bug issue link stay on the run item, because the same
+test case failing again is most often the same bug.
 
 ## What Testin refuses
 
@@ -141,12 +135,6 @@ test run still records it (Rule-TREE-PANEL-009).
 so. The others still run.
 
 ## Where the plugin breaks its own rules
-
-**An automated run item status still clears the tester's notes.** A pass clears
-all of them and a failure clears what happened. Each now says so afterward, in a
-message titled **Failure detail cleared** that names what went and stays in the
-notification list. The dialog that asks first is still on the keyboard path
-only. That is difference 26.
 
 **Closing the tab stops the automation this editor started.** It is the same
 gesture as pressing **Stop Execution**, so the results of tests still running

@@ -38,6 +38,7 @@ import org.testin.editor.statusbar.StatusBar;
 import org.testin.editor.testrun.RunItemCard;
 import org.testin.explorer.tree.TreePanelTree;
 import org.testin.model.TestCaseDto;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.testcase.TestSetEditorAttributes;
@@ -112,7 +113,7 @@ public class ScreenReaderNamesIdeTest extends BasePlatformTestCase {
     // Rule-INTERNAL-122
     public void testACardSaysItsTitleThenTheRunItemStatusItShows() {
         final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
-        final @NotNull RunItem runItem = new RunItem().setId(tc.getId()).setStatus(RunItemStatus.FAILED).showing(Optional.of(tc), Optional.empty(), Optional.empty(), false);
+        final @NotNull RunItem runItem = new RunItem().setId(tc.getId()).setExecutions(List.of(Execution.builder().status(RunItemStatus.FAILED).build())).showing(Optional.of(tc), Optional.empty(), Optional.empty(), false);
         final @NotNull RunItemCard card = new RunItemCard(getProject());
 
         final @NotNull CardView view = CardPanelBuilder.build(getProject(), getTestRootDisposable(), StandIn.of(TestinEditor.class));

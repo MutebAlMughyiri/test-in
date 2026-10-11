@@ -64,6 +64,11 @@ public enum Done {
             Bundle.message("done.removed")
     ),
 
+    // Rule-VIEW-PANEL-120
+    CHOSEN(
+            Bundle.message("done.chosen")
+    ),
+
     UPDATED(
             Bundle.message("done.updated")
     ),

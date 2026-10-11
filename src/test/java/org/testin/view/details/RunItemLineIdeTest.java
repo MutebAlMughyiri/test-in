@@ -26,6 +26,7 @@ import org.testin.model.TestCaseDto;
 import org.testin.model.bug.BugPriority;
 import org.testin.model.bug.BugSeverity;
 import org.testin.model.node.TestProjectNode;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.services.Services;
@@ -52,7 +53,7 @@ public class RunItemLineIdeTest extends AbstractTempRootIdeTest {
     }
 
     private static @NotNull RunItem failed(final @NotNull String bugIssueUrl) {
-        return RunItem.builder().id(TEST_CASE_ID).status(RunItemStatus.FAILED).duration(Duration.ofSeconds(134)).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).stacktrace("java.lang.AssertionError: expected [true]").bugIssueUrl(bugIssueUrl).build();
+        return RunItem.builder().id(TEST_CASE_ID).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl(bugIssueUrl).executions(List.of(Execution.builder().status(RunItemStatus.FAILED).duration(Duration.ofSeconds(134)).stacktrace("java.lang.AssertionError: expected [true]").build())).build();
     }
 
     private static @NotNull Component rowOf(final @NotNull Component drawn) {
@@ -103,7 +104,7 @@ public class RunItemLineIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-VIEW-PANEL-031
     public void testAnEmptyTestRunValueIsNotDrawn() {
-        final @NotNull List<String> words = Drawn.words(drawn(RunItem.builder().id(TEST_CASE_ID).status(RunItemStatus.PASSED).build(), shownTestRunPath()));
+        final @NotNull List<String> words = Drawn.words(drawn(RunItem.builder().id(TEST_CASE_ID).executions(List.of(Execution.builder().status(RunItemStatus.PASSED).build())).build(), shownTestRunPath()));
 
         assertFalse("an empty actual result was drawn: " + words, words.contains(Bundle.message("attribute.run.item.actual.result").toUpperCase(Locale.ROOT)));
         assertFalse("an empty executed by was drawn: " + words, words.contains(Bundle.message("attribute.run.item.executed.by").toUpperCase(Locale.ROOT)));

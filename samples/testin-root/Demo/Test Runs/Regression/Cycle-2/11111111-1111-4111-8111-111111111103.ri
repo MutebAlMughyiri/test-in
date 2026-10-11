@@ -1,11 +1,10 @@
 {
   "id" : "11111111-1111-4111-8111-111111111103",
-  "status" : "PASSED",
-  "actualResult" : "The account locked on the sixth attempt and stayed locked after a reload.",
-  "bugSeverity" : "ENHANCEMENT",
-  "bugPriority" : "LOW",
-  "duration" : 11.402,
-  "executedBy" : "Testin Sample",
-  "executedAt" : "Thursday 08-01-2026 At 09:16:20 [UTC]",
-  "stacktrace" : ""
+  "executions" : [ {
+    "status" : "PASSED",
+    "duration" : 11.402,
+    "executedBy" : "Testin Sample",
+    "executedAt" : "Thursday 08-01-2026 At 09:16:20 [UTC]",
+    "actualResult" : "The account locked on the sixth attempt and stayed locked after a reload."
+  } ]
 }

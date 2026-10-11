@@ -38,8 +38,8 @@ Select several test cases, then `P`, `F` or `B`.
   that would act on the row is refused.
 - **Rule-EDITOR-PANEL-163** — Every selected test case gets the run item status.
   Test cases that were removed from their test set are skipped and not counted.
-- **Rule-EDITOR-PANEL-164** — Nothing is timed. Every one of them gets no
-  duration.
+- **Rule-EDITOR-PANEL-164** — Nothing is timed. Each run item gets one more
+  execution, with no duration.
 - **Rule-EDITOR-PANEL-165** — One message with a count, however many were
   recorded.
 - **Rule-EDITOR-PANEL-166** — Failing several does not open the failure dialog.
@@ -54,8 +54,9 @@ Select several test cases, then `P`, `F` or `B`.
   selection color while it is selected, and in nothing else. The pointer passing
   over it changes nothing.
 - **Rule-EDITOR-PANEL-251** — When the status bar is too narrow for everything,
-  the figures on the right give way first, then the sentence on the left down to
-  a short floor, and the page arrows keep their width to the last.
+  nothing on it gives way or is cut short: it scrolls sideways, as the toolbar
+  does (Rule-EDITOR-PANEL-257), so the page size field can always be reached.
+  Where there is room, the page arrows sit in the middle of the bar.
 - **Rule-EDITOR-PANEL-252** — A badge's words are printed white or dark,
   whichever reads on its color, so a pale badge never carries white text.
 - **Rule-EDITOR-PANEL-257** — An editor narrower than its toolbar or its status
@@ -75,14 +76,12 @@ item status, then the count, such as *Blocked 12*.
 
 1. The tester selects twelve test cases that all need the same environment.
 2. The tester presses `B`.
-3. All twelve are recorded as **Blocked**, with the tester's name and the time.
+3. All twelve are recorded as **Blocked**, each as one more execution, with
+   the tester's name and the time.
 4. The test run is written to disk once.
 5. One message reads *Blocked 12*.
 
 ## What Testin refuses
-
-**If some of the selected test cases would lose something** — the confirmation
-is asked once for the whole selection, not once each.
 
 **If every selected test case was removed from its test set** — nothing is
 recorded and no message is raised.

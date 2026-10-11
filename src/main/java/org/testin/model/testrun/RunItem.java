@@ -16,7 +16,6 @@
 
 package org.testin.model.testrun;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -36,12 +35,16 @@ import org.testin.model.bug.BugSeverity;
 import org.testin.model.status.RunItemStatus;
 
 import java.time.Duration;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 @Setter
 @Getter
@@ -77,45 +80,32 @@ public class RunItem {
     private UUID id = new UUID(0L, 0L);
     @NotNull
     @Builder.Default
-    private RunItemStatus status = RunItemStatus.PENDING;
-    @NotNull
-    @Builder.Default
-    private String actualResult = "";
-    @NotNull
-    @Builder.Default
     private BugSeverity bugSeverity = BugSeverity.DEFAULT;
     @NotNull
     @Builder.Default
     private BugPriority bugPriority = BugPriority.DEFAULT;
     @NotNull
     @Builder.Default
-    private Duration duration = Duration.ZERO;
-    @NotNull
-    @Builder.Default
-    private String executedBy = "";
-    @NotNull
-    @Builder.Default
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Config.DATE_FORMAT_PATTERN, locale = Config.DATE_FORMAT_LOCALE)
-    private ZonedDateTime executedAt = Config.NOT_EXECUTED;
-    @NotNull
-    @Builder.Default
-    private String stacktrace = "";
-    // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-219
-    @NotNull
-    @Builder.Default
-    private List<String> screenshots = List.of();
-    @NotNull
-    @Builder.Default
     private String bugIssueUrl = "";
+    // UC-TREE-PANEL-020, Rule-TREE-PANEL-067
+    private boolean untested;
+    // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-132
+    @NotNull
+    @Builder.Default
+    private Duration clock = Duration.ZERO;
+    // UC-EDITOR-PANEL-041, Rule-EDITOR-PANEL-172
+    @NotNull
+    @Builder.Default
+    private String unrecordedActualResult = "";
+    // UC-EDITOR-PANEL-032, Rule-EDITOR-PANEL-136
+    @NotNull
+    @Builder.Default
+    private List<Execution> executions = List.of();
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-126
     @JsonIgnore
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private boolean removed;
-
-    private static boolean clears(final @NotNull RunItemStatus next) {
-        return next == RunItemStatus.PASSED;
-    }
 
     // UC-EDITOR-PANEL-030
     public static @NotNull RunItem pendingFor(final @NotNull TestCaseDto tc) {
@@ -134,12 +124,99 @@ public class RunItem {
 
     @JsonIgnore
     public boolean isRemoved() {
-        return removed || status == RunItemStatus.REMOVED;
+        return removed;
     }
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-126, Rule-EDITOR-PANEL-239
     public @NotNull RunItemStatus shownStatus() {
-        return isRemoved() ? RunItemStatus.REMOVED : status;
+        return isRemoved() ? RunItemStatus.REMOVED : getStatus();
+    }
+
+    // Rule-VIEW-PANEL-119
+    public @NotNull Optional<Execution> defaultExecution() {
+        return executions.isEmpty() ? Optional.empty() : Optional.of(executions.get(defaultIndex()));
+    }
+
+    // Rule-VIEW-PANEL-119
+    public int defaultIndex() {
+        return IntStream.range(0, executions.size()).filter(at -> executions.get(at).isChosen()).findFirst().orElse(executions.size() - 1);
+    }
+
+    // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-122
+    public @NotNull Optional<Execution> shownExecution(final int line) {
+        return line >= 0 && line < executions.size() ? Optional.of(executions.get(line)) : defaultExecution();
+    }
+
+    // Rule-VIEW-PANEL-119
+    @JsonIgnore
+    public @NotNull RunItemStatus getStatus() {
+        return defaultExecution().map(Execution::getStatus).orElse(untested ? RunItemStatus.UNTESTED : RunItemStatus.PENDING);
+    }
+
+    // Rule-VIEW-PANEL-119, Rule-EDITOR-PANEL-132
+    @JsonIgnore
+    public @NotNull Duration getDuration() {
+        return defaultExecution().map(Execution::getDuration).orElse(clock);
+    }
+
+    @JsonIgnore
+    public @NotNull String getExecutedBy() {
+        return defaultExecution().map(Execution::getExecutedBy).orElse("");
+    }
+
+    @JsonIgnore
+    public @NotNull ZonedDateTime getExecutedAt() {
+        return defaultExecution().map(Execution::getExecutedAt).orElse(Config.NOT_EXECUTED);
+    }
+
+    @JsonIgnore
+    public @NotNull String getActualResult() {
+        return defaultExecution().map(Execution::getActualResult).orElse(unrecordedActualResult);
+    }
+
+    // UC-EDITOR-PANEL-041, Rule-EDITOR-PANEL-172
+    public void recordActualResult(final @NotNull String actual) {
+        defaultExecution().ifPresentOrElse(execution -> execution.setActualResult(actual), () -> unrecordedActualResult = actual);
+    }
+
+    // Rule-VIEW-PANEL-105
+    @JsonIgnore
+    public boolean recordsABug() {
+        return isFailed() || !bugIssueUrl.isBlank();
+    }
+
+    @JsonIgnore
+    public @NotNull String getStacktrace() {
+        return defaultExecution().map(Execution::getStacktrace).orElse("");
+    }
+
+    @JsonIgnore
+    public @NotNull List<String> getScreenshots() {
+        return defaultExecution().map(Execution::getScreenshots).orElse(List.of());
+    }
+
+    // UC-EDITOR-PANEL-042, Rule-EDITOR-PANEL-288
+    @JsonIgnore
+    public @NotNull Duration timeSpent() {
+        return executions.stream().map(Execution::getDuration).reduce(clock, Duration::plus);
+    }
+
+    // Rule-REPORT-027
+    @JsonIgnore
+    public @NotNull Map<RunItemStatus, Long> otherFailuresAndBlocks() {
+        final int chosen = defaultIndex();
+
+        return IntStream.range(0, executions.size())
+                .filter(at -> at != chosen)
+                .mapToObj(at -> executions.get(at).getStatus())
+                .filter(status -> status == RunItemStatus.FAILED || status == RunItemStatus.BLOCKED)
+                .collect(Collectors.groupingBy(Function.identity(), () -> new EnumMap<>(RunItemStatus.class), Collectors.counting()));
+    }
+
+    // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-219, Rule-EDITOR-PANEL-284
+    @JsonIgnore
+    public @NotNull List<String> allScreenshots() {
+        return executions.stream().flatMap(execution -> execution.getScreenshots().stream()).toList();
     }
 
     // Rule-EDITOR-PANEL-253, Rule-VIEW-PANEL-105
@@ -157,57 +234,82 @@ public class RunItem {
         bugIssueUrl = url;
     }
 
-    // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-145, Rule-INTERNAL-117
-    public void recordFailure(final @NotNull String actual, final @NotNull BugSeverity severity, final @NotNull BugPriority priority, final @NotNull String trace, final @NotNull List<String> screenshotNames) {
-        actualResult = actual;
+    // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-147, Rule-INTERNAL-117
+    public void recordBug(final @NotNull BugSeverity severity, final @NotNull BugPriority priority) {
         bugSeverity = severity;
         bugPriority = priority;
-        stacktrace = trace;
-        screenshots = screenshotNames;
     }
 
-    // UC-EDITOR-PANEL-041, Rule-INTERNAL-117
-    public void recordActualResult(final @NotNull String actual) {
-        actualResult = actual;
+    // UC-EDITOR-PANEL-040, Rule-EDITOR-PANEL-286, Rule-INTERNAL-117
+    public void reviseFailure(final @NotNull Failure failure) {
+        defaultExecution().ifPresent(execution -> execution.revise(failure));
     }
 
-    // UC-TREE-PANEL-020, Rule-INTERNAL-117
+    // UC-TREE-PANEL-020, Rule-TREE-PANEL-067, Rule-INTERNAL-117
     public boolean markUntestedIfPending() {
         if (shownStatus() != RunItemStatus.PENDING) return false;
 
-        status = RunItemStatus.UNTESTED;
+        untested = true;
         return true;
-    }
-
-    public void recordDuration(final @NotNull Duration measured) {
-        if (measured.isZero()) return;
-
-        duration = measured;
     }
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-132
     public void recordClock(final @NotNull Duration onTheClock) {
         if (isJudged()) return;
 
-        duration = onTheClock;
+        clock = onTheClock;
     }
 
     @JsonIgnore
     public boolean isJudged() {
-        return status.isRunItemStatus() || isRemoved();
+        return getStatus().isRunItemStatus() || isRemoved();
     }
 
-    // UC-EDITOR-PANEL-031, UC-EDITOR-PANEL-038, UC-EDITOR-PANEL-039, UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-238, Rule-EDITOR-PANEL-240, Rule-EDITOR-PANEL-241
-    public void recordRunItemStatus(final @NotNull RunItemStatus next, final @NotNull String tester) {
-        if (clears(next)) FailureDetail.clearAll(this);
-
-        status = next;
-        executedAt = ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS);
-        executedBy = tester;
+    // UC-EDITOR-PANEL-031, UC-EDITOR-PANEL-038, UC-EDITOR-PANEL-039, UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-159, Rule-EDITOR-PANEL-160, Rule-EDITOR-PANEL-284
+    public void recordRunItemStatus(final @NotNull RunItemStatus next, final @NotNull String tester, final @NotNull Duration duration, final @NotNull Failure failure) {
+        record(List.of(Execution.recorded(next, tester, duration, failure)));
     }
 
-    public @NotNull List<String> wouldClear(final @NotNull RunItemStatus next, final @NotNull Failure failure) {
-        return clears(next) ? FailureDetail.filledIn(this) : failure.wouldClear(this);
+    // UC-CODEGEN-008, Rule-CODEGEN-111
+    public void showAttempts(final @NotNull List<Execution> attempts, final int written, final @NotNull String tester) {
+        replaceAttempts(attempts, written, tester);
+        chooseExecution(executions.size() - 1);
+    }
+
+    // UC-CODEGEN-008, Rule-CODEGEN-111, Rule-EDITOR-PANEL-183
+    public void recordAutomated(final @NotNull List<Execution> attempts, final int written, final int deciding, final @NotNull String tester) {
+        if (attempts.isEmpty()) return;
+
+        if (attempts.getLast().getActualResult().isBlank()) attempts.getLast().setActualResult(unrecordedActualResult);
+        replaceAttempts(attempts, written, tester);
+        chooseExecution(executions.size() - attempts.size() + deciding);
+        clock = Duration.ZERO;
+        unrecordedActualResult = "";
+    }
+
+    private void replaceAttempts(final @NotNull List<Execution> attempts, final int written, final @NotNull String tester) {
+        attempts.forEach(attempt -> attempt.setExecutedBy(tester));
+        executions = Stream.concat(executions.stream().limit(Math.max(0, executions.size() - written)), attempts.stream()).toList();
+    }
+
+    // Rule-VIEW-PANEL-119, Rule-CODEGEN-111
+    private void record(final @NotNull List<Execution> recorded) {
+        executions.forEach(execution -> execution.setChosen(false));
+        if (!recorded.isEmpty() && recorded.getLast().getActualResult().isBlank()) recorded.getLast().setActualResult(unrecordedActualResult);
+
+        executions = Stream.concat(executions.stream(), recorded.stream()).toList();
+        clock = Duration.ZERO;
+        unrecordedActualResult = "";
+    }
+
+    // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-120
+    public void chooseExecution(final int index) {
+        IntStream.range(0, executions.size()).forEach(at -> executions.get(at).setChosen(at == index && index != executions.size() - 1));
+    }
+
+    // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-121
+    public void removeExecution(final int index) {
+        executions = IntStream.range(0, executions.size()).filter(at -> at != index).mapToObj(executions::get).toList();
     }
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-239, Rule-REPORT-021, Rule-VIEW-PANEL-083

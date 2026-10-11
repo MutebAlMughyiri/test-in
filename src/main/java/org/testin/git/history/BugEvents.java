@@ -21,7 +21,6 @@ import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.git.change.FieldChange;
 import org.testin.git.change.RunItemChangeComparator;
-import org.testin.model.testrun.FailureDetail;
 import org.testin.model.testrun.RunItem;
 import org.testin.testrun.TestRunEditorAttributes;
 
@@ -43,8 +42,8 @@ final class BugEvents {
 
     // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-105, Rule-VIEW-PANEL-106, Rule-VIEW-PANEL-108
     static @NotNull Optional<BugEvent> between(final @NotNull Path testRun, final @NotNull Optional<RunItem> before, final @NotNull Optional<RunItem> after) {
-        final @NotNull Optional<RunItem> bugBefore = before.filter(FailureDetail::recordsABug);
-        final @NotNull Optional<RunItem> bugAfter = after.filter(FailureDetail::recordsABug);
+        final @NotNull Optional<RunItem> bugBefore = before.filter(RunItem::recordsABug);
+        final @NotNull Optional<RunItem> bugAfter = after.filter(RunItem::recordsABug);
 
         if (bugBefore.isEmpty())
             return bugAfter.map(runItem -> new BugEvent(BugEventKind.RECORDED, testRun, runItem, List.of()));

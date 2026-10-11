@@ -130,9 +130,9 @@ public class PendingChangeFactoryTest {
     public void aRunItemIsItsOwnKindOfChange() {
         final UUID testCaseId = UUID.randomUUID();
         final String before = """
-                {"id":"%s","status":"PENDING"}""".formatted(testCaseId);
+                {"id":"%s"}""".formatted(testCaseId);
         final String after = """
-                {"id":"%s","status":"PASSED","actualResult":"Signed in"}""".formatted(testCaseId);
+                {"id":"%s","executions":[{"status":"PASSED","actualResult":"Signed in"}]}""".formatted(testCaseId);
 
         final PendingChange change = PendingChangeFactory.fromFile(
                 DiffType.MODIFIED, before, after, Path.of("Test Runs", "cycle 4", testCaseId + ".ri"), RealMapper.build(), _ -> Optional.empty());

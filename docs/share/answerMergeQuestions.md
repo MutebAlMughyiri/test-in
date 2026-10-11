@@ -12,10 +12,11 @@ shows both and lets the tester pick.
 about a field both sides rewrote. A test run's own `.tr` asks about a key both
 sides wrote differently into its configuration or its result analysis. The row
 is named as the tester already knows that key - **Platform**, or the heading the
-analysis was written under. A result - one test case's run item status - is
-never asked about at all: it is kept whole from whoever gave it last, because
-the status, the actual result, the stacktrace and the screenshots are one
-account of one execution and travel together ([UC-SHARE-017](resolveConflicts.md)).
+analysis was written under. A run item is
+never asked about at all: both sides' executions are joined in time order,
+because each execution is one account of one attempt - its status, actual
+result, stacktrace and screenshots travel together - and neither side's
+attempt is wrong ([UC-SHARE-017](resolveConflicts.md)).
 
 There is no key that opens this. It opens during a merge.
 
@@ -38,12 +39,13 @@ There is no key that opens this. It opens during a merge.
 - **Rule-SHARE-080** — Only what both sides really changed is asked about, and
   only where an answer is the tester's to give. Everything else is merged
   without a question: a field one side left alone, a test run's start and end
-  and status, and a whole result.
+  and status, and a run item's executions.
 - **Rule-SHARE-081** — One window for each conflicted file, holding one question
   for each thing that disagrees: a field of a test case, or a key both sides
-  wrote differently into a test run's own marker. A result raises no question,
-  because a run item status is kept whole from whoever gave it last rather than
-  merged piece by piece.
+  wrote differently into a test run's own marker. A run item raises no
+  question: both sides' executions are joined in time order, an execution both
+  hold is kept once, and the default chosen and the bug fields come from the
+  side that executed last.
 - **Rule-SHARE-082** — The tester's own value is chosen to start with.
 - **Rule-SHARE-083** — A value is shown on one line, cut at 70 characters. An
   empty one says that it is empty rather than showing nothing.

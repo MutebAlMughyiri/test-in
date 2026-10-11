@@ -41,7 +41,9 @@ public final class TestRunTreeCellRenderer {
                         getTextRenderer().append(dir.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
                     } else if (node.getUserObject() instanceof TestCaseDto tc) {
                         getTextRenderer().setIcon(Icons.TEST_CASE_LETTER);
-                        getTextRenderer().append(tc.getDescription(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
+                        getTextRenderer().append(tc.getDescription(), node.isEnabled() ? SimpleTextAttributes.REGULAR_ATTRIBUTES : SimpleTextAttributes.GRAYED_ATTRIBUTES);
+                        // Rule-TREE-PANEL-138
+                        if (!node.isEnabled()) getTextRenderer().append("  " + tc.getStatus().getLabel(), SimpleTextAttributes.GRAYED_ITALIC_ATTRIBUTES);
                     } else if (node.getUserObject() instanceof String folder) {
                         // Rule-TREE-PANEL-134
                         getTextRenderer().setIcon(AllIcons.Nodes.Folder);

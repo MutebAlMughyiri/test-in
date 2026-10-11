@@ -22,7 +22,7 @@ import org.testin.logger.Logger;
 import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.markers.TestRunMarker;
-import org.testin.model.testrun.Failure;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.TestRunResultAnalysis;
 import org.testin.model.testrun.Segment;
 import org.testin.model.testrun.RunItem;
@@ -38,12 +38,9 @@ import org.testin.runner.TestNGExecution;
 import org.testin.services.Services;
 import org.testin.testrun.RunItemStatusService;
 import org.testin.testrun.TestRunStatusChange;
-import org.testin.util.Bundle;
-import org.testin.util.Display;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -190,7 +187,7 @@ public final class TestRunWalk {
     }
 
     // UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-182
-    void executionReported(final @NotNull TestCaseDto tc, final @NotNull ExecutionStatus status, final @NotNull Duration duration, final @NotNull Failure failure) {
+    void executionReported(final @NotNull TestCaseDto tc, final @NotNull ExecutionStatus status, final @NotNull List<Execution> executions, final int written, final int deciding) {
         if (!launchedHere.contains(tc.getId())) return;
 
         if (!status.stillGoing()) launchedHere.remove(tc.getId());
@@ -199,10 +196,10 @@ public final class TestRunWalk {
 
         if (!editor.getParent().takesRunItemStatuses()) return;
 
-        status.getRunItemStatus().ifPresent(runItemStatus -> {
-            sayWhatTheRunItemStatusCleared(tc, runItemStatus, failure);
+        if (status.stillGoing() && !executions.isEmpty()) runItemStatusService.showAttempts(editor, tc, executions, written);
 
-            runItemStatusService.recordReported(editor, tc, runItemStatus, duration, failure);
+        status.getRunItemStatus().ifPresent(runItemStatus -> {
+            runItemStatusService.recordReported(editor, tc, runItemStatus, executions, written, deciding);
 
             if (launchedHere.isEmpty()) sayWhatTheTestRunRecorded();
         });
@@ -213,16 +210,6 @@ public final class TestRunWalk {
         editor.onExecutionStateChanged();
 
         finishIfEverythingIsJudged();
-    }
-
-    // UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-182, Rule-EDITOR-PANEL-220
-    private void sayWhatTheRunItemStatusCleared(final @NotNull TestCaseDto tc, final @NotNull RunItemStatus runItemStatus, final @NotNull Failure failure) {
-        final @NotNull List<String> cleared = editor.runItem(tc.getId()).map(runItem -> runItem.wouldClear(runItemStatus, failure)).orElseGet(List::of);
-        if (cleared.isEmpty()) return;
-
-        notifier.info(p, Bundle.message("editor.cleared.title"),
-                Bundle.message("editor.cleared.message", tc.getDescription(),
-                        runItemStatus.getLabel().toLowerCase(Locale.ROOT), Display.andJoin(cleared)));
     }
 
     // UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-008
@@ -236,7 +223,7 @@ public final class TestRunWalk {
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-134
     public void finishIfEverythingIsJudged() {
-        if (!editor.getParent().isOpen()) return;
+        if (!editor.getParent().isOpen() || !launchedHere.isEmpty()) return;
 
         if (editor.loadedRunItems().filter(RunItems::isFullyJudged).isEmpty()) return;
 

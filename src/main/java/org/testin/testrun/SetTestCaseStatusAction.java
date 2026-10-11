@@ -63,11 +63,8 @@ public class SetTestCaseStatusAction extends AbstractAnyProjectAction {
             return;
         }
 
-        new FailureDetailDialog(p, editor.getParent().getPath(), runItem.orElseThrow(), fields -> {
-            if (Services.getInstance(p, RunItemStatusService.class).recordFailureDetails(editor.getParent().getPath(), selectedItems.getFirst().getId(), fields)) {
-                applyStatus(p, editor, selectedItems);
-            }
-        }).show();
+        new FailureDetailDialog(p, editor.getParent().getPath(), runItem.orElseThrow(),
+                fields -> Services.getInstance(p, RunItemStatusService.class).applyFailure(editor, selectedItems.getFirst(), fields)).show();
     }
 
     // UC-EDITOR-PANEL-034

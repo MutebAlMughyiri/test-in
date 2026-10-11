@@ -43,7 +43,7 @@ final class ExecutionRegistry {
 
     private final @NotNull Map<UUID, ExecutionStatus> runItemStatus = new ConcurrentHashMap<>();
 
-    private final @NotNull Map<UUID, Attempt> held = new ConcurrentHashMap<>();
+    private final @NotNull Map<UUID, Attempts> held = new ConcurrentHashMap<>();
 
     void starting(final @NotNull UUID id) {
         pending.add(id);
@@ -93,29 +93,36 @@ final class ExecutionRegistry {
     }
 
     // Rule-CODEGEN-110
-    @NotNull Map<UUID, Attempt> attempted(final @NotNull UUID id, final @NotNull Attempt attempt) {
+    @NotNull Map<UUID, Attempts> attempted(final @NotNull UUID id, final @NotNull Attempt attempt) {
         if (attempt.status() == ExecutionStatus.IDLE && held.containsKey(id)) return decide(List.of(id));
-        if (!configOf.containsKey(id)) return Map.of(id, attempt.decided());
+        if (!configOf.containsKey(id)) return Map.of(id, Attempts.of(attempt));
         if (attempt.status() == ExecutionStatus.RUNNING) return decidedBefore(id, attempt);
 
-        held.merge(id, attempt, Attempt::then);
+        held.merge(id, Attempts.of(attempt), Attempts::then);
         return Map.of();
     }
 
-    private @NotNull Map<UUID, Attempt> decidedBefore(final @NotNull UUID id, final @NotNull Attempt running) {
+    // Rule-CODEGEN-111
+    @NotNull Optional<Attempts> unwritten(final @NotNull UUID id) {
+        final @NotNull Optional<Attempts> live = Optional.ofNullable(held.get(id)).filter(attempts -> attempts.written() < attempts.executions().size());
+        live.ifPresent(attempts -> held.put(id, attempts.allWritten()));
+        return live;
+    }
+
+    private @NotNull Map<UUID, Attempts> decidedBefore(final @NotNull UUID id, final @NotNull Attempt running) {
         final @NotNull String execution = configOf.getOrDefault(id, "");
-        final @NotNull Map<UUID, Attempt> decided = decide(held.keySet().stream()
+        final @NotNull Map<UUID, Attempts> decided = decide(held.keySet().stream()
                 .filter(other -> !other.equals(id) && execution.equals(configOf.get(other)))
                 .toList());
 
-        decided.put(id, running);
+        decided.put(id, Attempts.of(running));
         return decided;
     }
 
-    private @NotNull Map<UUID, Attempt> decide(final @NotNull List<UUID> ids) {
-        final @NotNull Map<UUID, Attempt> decided = new LinkedHashMap<>();
+    private @NotNull Map<UUID, Attempts> decide(final @NotNull List<UUID> ids) {
+        final @NotNull Map<UUID, Attempts> decided = new LinkedHashMap<>();
 
-        ids.forEach(id -> Optional.ofNullable(held.remove(id)).ifPresent(attempt -> decided.put(id, attempt.decided())));
+        ids.forEach(id -> Optional.ofNullable(held.remove(id)).ifPresent(attempts -> decided.put(id, attempts)));
         return decided;
     }
 

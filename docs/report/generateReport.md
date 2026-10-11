@@ -71,6 +71,10 @@ cannot.
   changing it once changes every report.
 - **Rule-REPORT-026** — A report lists a test run's run items in the test run's
   order, the order its editor draws them in.
+- **Rule-REPORT-027** — A run item is reported by its default execution, as
+  before. When another of its executions failed or was blocked, one line under
+  it says so - *Failed in another execution*, *Blocked in 2 other executions* -
+  in the same words in every format.
 
 ## The screen
 

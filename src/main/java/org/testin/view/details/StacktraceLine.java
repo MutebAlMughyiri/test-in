@@ -27,7 +27,7 @@ import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.TestRuns;
 import org.testin.model.TestCaseDto;
-import org.testin.model.testrun.RunItem;
+import org.testin.model.testrun.Execution;
 import org.testin.services.Services;
 import org.testin.setting.TestinRoot;
 import org.testin.ui.Tooltip;
@@ -43,6 +43,7 @@ import java.awt.event.MouseEvent;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 public final class StacktraceLine extends AbstractDetails {
@@ -50,7 +51,7 @@ public final class StacktraceLine extends AbstractDetails {
     private static final int INSETS_TOP = 8;
     private static final int INSETS_SIDE = 16;
 
-    private final @NotNull RunItem runItem;
+    private final @NotNull Optional<Execution> shown;
 
     private final @NotNull List<String> currentPath;
 
@@ -66,8 +67,8 @@ public final class StacktraceLine extends AbstractDetails {
     // UC-VIEW-PANEL-006, Rule-VIEW-PANEL-034, Rule-VIEW-PANEL-081
     @Override
     public int render(final @NotNull Project p, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto dto, final int currentRow) {
-        final @NotNull String stacktrace = runItem.getStacktrace();
-        final @NotNull List<String> screenshots = runItem.getScreenshots();
+        final @NotNull String stacktrace = shown.map(Execution::getStacktrace).orElse("");
+        final @NotNull List<String> screenshots = shown.map(Execution::getScreenshots).orElse(List.of());
         final boolean link = !stacktrace.isBlank();
         if (!link && screenshots.isEmpty()) return currentRow;
 
@@ -84,7 +85,7 @@ public final class StacktraceLine extends AbstractDetails {
     // UC-VIEW-PANEL-006, Rule-VIEW-PANEL-034
     private @NotNull ActionLink stacktraceLink(final @NotNull Project p, final @NotNull TestCaseDto dto, final @NotNull String stacktrace) {
         return link(Bundle.message("view.stacktrace.link"),
-                _ -> new StacktraceDialog(p, dto, runItem.getActualResult(), stacktrace).show());
+                _ -> new StacktraceDialog(p, dto, shown.map(Execution::getActualResult).orElse(""), stacktrace).show());
     }
 
     // UC-VIEW-PANEL-006, Rule-VIEW-PANEL-081

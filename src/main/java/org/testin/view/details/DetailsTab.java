@@ -26,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.ExecutionPosition;
 import org.testin.editor.WheelForwarding;
 import org.testin.model.TestCaseDto;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.testcase.TestCaseOrder;
 import org.testin.testcase.TestSetEditorAttributes;
@@ -43,6 +44,7 @@ import java.awt.GridBagLayout;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.IntConsumer;
 
 public class DetailsTab {
     static final @NotNull String TEST_CASE_OPEN = "testin.viewPanel.testCaseOpen";
@@ -53,12 +55,15 @@ public class DetailsTab {
     final double SPACER_WEIGHT_Y = 1.0;
 
     // UC-VIEW-PANEL-005, Rule-VIEW-PANEL-061, Rule-VIEW-PANEL-085, Rule-VIEW-PANEL-086, Rule-VIEW-PANEL-103
-    private static @NotNull Band testRunBand(final @NotNull RunItem runItem, final @NotNull List<String> currentPath) {
+    private static @NotNull Band testRunBand(final @NotNull RunItem runItem, final @NotNull List<String> currentPath, final int shownLine, final @NotNull IntConsumer showExecution) {
+        // Rule-VIEW-PANEL-122
+        final @NotNull Optional<Execution> shown = runItem.shownExecution(shownLine);
+
         return Band.of(Bundle.message("details.band.run"), List.of(
-                new RunItemSummary(runItem, currentPath),
-                new RunItemAttributeRow(TestRunEditorAttributes.ACTUAL_RESULT, runItem),
-                new StacktraceLine(runItem, currentPath),
-                new AttributeRow(TestRunEditorAttributes.EXECUTED_BY.getName(), (_, _) -> Display.whoAndWhen(runItem.getExecutedBy(), runItem.getExecutedAt()))));
+                new RunItemSummary(runItem, currentPath, showExecution),
+                new AttributeRow(TestRunEditorAttributes.ACTUAL_RESULT.getName(), (_, _) -> shown.map(Execution::getActualResult).orElseGet(runItem::getActualResult)),
+                new StacktraceLine(shown, currentPath),
+                new AttributeRow(TestRunEditorAttributes.EXECUTED_BY.getName(), (_, _) -> shown.map(execution -> Display.whoAndWhen(execution.getExecutedBy(), execution.getExecutedAt())).orElse(""))));
     }
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-087, Rule-VIEW-PANEL-103
@@ -76,24 +81,24 @@ public class DetailsTab {
     }
 
     // UC-VIEW-PANEL-004
-    public void load(final @NotNull Project p, final @NotNull JBPanel<?> detailsTab, final @NotNull Optional<TestCaseDto> dto, final @NotNull Optional<RunItem> runItem, final @NotNull List<String> currentPath) {
+    public void load(final @NotNull Project p, final @NotNull JBPanel<?> detailsTab, final @NotNull Optional<TestCaseDto> dto, final @NotNull Optional<RunItem> runItem, final @NotNull List<String> currentPath, final int shownLine, final @NotNull IntConsumer showExecution) {
         detailsTab.removeAll();
         detailsTab.setLayout(new BorderLayout());
         detailsTab.setBorder(BorderFactory.createEmptyBorder());
 
         dto.ifPresentOrElse(
-                testCase -> renderTestCase(p, detailsTab, testCase, runItem, currentPath),
+                testCase -> renderTestCase(p, detailsTab, testCase, runItem, currentPath, shownLine, showExecution),
                 () -> renderPlaceholder(detailsTab));
 
         detailsTab.revalidate();
         detailsTab.repaint();
     }
 
-    private void renderTestCase(final @NotNull Project p, final @NotNull JBPanel<?> detailsTab, final @NotNull TestCaseDto dto, final @NotNull Optional<RunItem> runItem, final @NotNull List<String> currentPath) {
+    private void renderTestCase(final @NotNull Project p, final @NotNull JBPanel<?> detailsTab, final @NotNull TestCaseDto dto, final @NotNull Optional<RunItem> runItem, final @NotNull List<String> currentPath, final int shownLine, final @NotNull IntConsumer showExecution) {
         final @NotNull JBPanel<?> contentPanel = new JBPanel<>(new GridBagLayout());
         contentPanel.setOpaque(false);
 
-        renderRows(p, contentPanel, dto, runItem, currentPath);
+        renderRows(p, contentPanel, dto, runItem, currentPath, shownLine, showExecution);
 
         final @NotNull JBScrollPane scrollPane = new JBScrollPane(contentPanel);
         scrollPane.setBorder(null);
@@ -117,32 +122,32 @@ public class DetailsTab {
         panel.add(placeholder, BorderLayout.NORTH);
     }
 
-    private void renderRows(final @NotNull Project p, final @NotNull JBPanel<?> panel, final @NotNull TestCaseDto dto, final @NotNull Optional<RunItem> runItem, final @NotNull List<String> currentPath) {
+    private void renderRows(final @NotNull Project p, final @NotNull JBPanel<?> panel, final @NotNull TestCaseDto dto, final @NotNull Optional<RunItem> runItem, final @NotNull List<String> currentPath, final int shownLine, final @NotNull IntConsumer showExecution) {
         final @NotNull GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = JBUI.insets(INSETS_DEFAULT);
         gbc.anchor = GridBagConstraints.NORTHWEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = WEIGHT_X;
 
-        final int row = setupFixedRows(p, panel, gbc, dto, runItem, currentPath);
+        final int row = setupFixedRows(p, panel, gbc, dto, runItem, currentPath, shownLine, showExecution);
         addVerticalSpacer(panel, row);
     }
 
     // UC-VIEW-PANEL-004, UC-VIEW-PANEL-005, Rule-VIEW-PANEL-085, Rule-VIEW-PANEL-087
-    private @NotNull List<AbstractDetails> detailRows(final @NotNull Optional<RunItem> runItem, final @NotNull List<String> currentPath) {
+    private @NotNull List<AbstractDetails> detailRows(final @NotNull Optional<RunItem> runItem, final @NotNull List<String> currentPath, final int shownLine, final @NotNull IntConsumer showExecution) {
         final @NotNull List<AbstractDetails> rows = new ArrayList<>(List.of(new Breadcrumb(currentPath), new Title(), new BadgesAndActions(currentPath)));
 
         runItem.ifPresentOrElse(shown -> {
-            rows.add(testRunBand(shown, currentPath));
+            rows.add(testRunBand(shown, currentPath, shownLine, showExecution));
             rows.add(Band.folding(Bundle.message("details.band.test.case"), TEST_CASE_OPEN, testCaseFields()));
         }, () -> rows.addAll(testCaseFields()));
 
         return List.copyOf(rows);
     }
 
-    private int setupFixedRows(final @NotNull Project p, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto dto, final @NotNull Optional<RunItem> runItem, final @NotNull List<String> currentPath) {
+    private int setupFixedRows(final @NotNull Project p, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto dto, final @NotNull Optional<RunItem> runItem, final @NotNull List<String> currentPath, final int shownLine, final @NotNull IntConsumer showExecution) {
         int row = 0;
-        for (final AbstractDetails component : detailRows(runItem, currentPath)) {
+        for (final AbstractDetails component : detailRows(runItem, currentPath, shownLine, showExecution)) {
             row = component.render(p, panel, (GridBagConstraints) gbc.clone(), dto, row);
         }
         return row;

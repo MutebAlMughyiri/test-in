@@ -28,6 +28,7 @@ import org.testin.ui.Badge;
 import org.testin.util.Bundle;
 import org.testin.util.Fonts;
 
+import javax.swing.SwingConstants;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -67,6 +68,9 @@ public class RunItemCard extends BaseCard {
         Optional.ofNullable(attributeLabels.get(TestRunEditorAttributes.RUN_STATUS.getName())).ifPresent(statusLabel -> {
             statusLabel.setFont(Fonts.strong());
             statusLabel.setForeground(runItem.shownStatus().getRowColor());
+            // Rule-EDITOR-PANEL-287
+            statusLabel.setIcon(ExecutionDots.of(runItem, statusLabel.getFont()));
+            statusLabel.setHorizontalTextPosition(SwingConstants.LEADING);
         });
     }
 }

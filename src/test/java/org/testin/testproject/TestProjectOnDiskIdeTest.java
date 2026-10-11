@@ -26,6 +26,7 @@ import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.services.Services;
@@ -87,7 +88,7 @@ public class TestProjectOnDiskIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestCaseDto tc = onDisk.testCase(login);
         final @NotNull TestRunNode testRun = onDisk.testRun(testProject.getTestRunsFolder(), "Cycle-1");
         final @NotNull TestRuns testRuns = Services.getInstance(getProject(), TestRuns.class);
-        testRuns.putRunItems(testRun.getPath(), new RunItems().setAll(new ArrayList<>(List.of(new RunItem().setId(tc.getId()).setStatus(RunItemStatus.PASSED)))));
+        testRuns.putRunItems(testRun.getPath(), new RunItems().setAll(new ArrayList<>(List.of(new RunItem().setId(tc.getId()).setExecutions(List.of(Execution.builder().status(RunItemStatus.PASSED).build()))))));
         testRuns.awaitWrites();
         return tc;
     }

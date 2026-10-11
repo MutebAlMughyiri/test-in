@@ -30,7 +30,7 @@ import org.testin.services.ProjectLifetime;
 import org.testin.util.Bundle;
 
 import java.time.Duration;
-import java.util.Locale;
+import java.util.List;
 import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -39,7 +39,7 @@ public final class TestCaseExecutionTracker {
         p.getMessageBus().connect(ProjectLifetime.of(p)).subscribe(SMTRunnerEventsListener.TEST_STATUS, new SMTRunnerEventsAdapter() {
             @Override
             public void onTestStarted(final @NotNull SMTestProxy test) {
-                TestCaseExecutionListener.broadcast(p, test.getPresentableName().toLowerCase(Locale.ROOT), ExecutionStatus.RUNNING, Duration.ZERO, Failure.NONE);
+                TestCaseExecutionListener.broadcast(p, test.getPresentableName(), ExecutionStatus.RUNNING, Duration.ZERO, Failure.NONE);
             }
 
             @Override
@@ -51,7 +51,7 @@ public final class TestCaseExecutionTracker {
 
     // UC-CODEGEN-008, Rule-CODEGEN-075, Rule-CODEGEN-110
     static void finished(final @NotNull Project p, final @NotNull SMTestProxy test) {
-        final @NotNull String testName = test.getPresentableName().toLowerCase(Locale.ROOT);
+        final @NotNull String testName = test.getPresentableName();
 
         if (test.isPassed()) {
             TestCaseExecutionListener.broadcast(p, testName, ExecutionStatus.PASSED, durationOf(test), Failure.NONE);
@@ -74,7 +74,7 @@ public final class TestCaseExecutionTracker {
     }
 
     private static @NotNull Failure failureOf(final @NotNull SMTestProxy test, final @NotNull String fallback) {
-        return new Failure(messageOf(test, fallback), Objects.toString(test.getStacktrace(), "").strip());
+        return new Failure(messageOf(test, fallback), Objects.toString(test.getStacktrace(), "").strip(), List.of());
     }
 
     private static @NotNull String messageOf(final @NotNull SMTestProxy test, final @NotNull String fallback) {

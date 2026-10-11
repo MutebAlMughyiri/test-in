@@ -55,14 +55,17 @@ run item status is not touched.
   selection color while it is selected, and in nothing else. The pointer passing
   over it changes nothing.
 - **Rule-EDITOR-PANEL-251** — When the status bar is too narrow for everything,
-  the figures on the right give way first, then the sentence on the left down to
-  a short floor, and the page arrows keep their width to the last.
+  nothing on it gives way or is cut short: it scrolls sideways, as the toolbar
+  does (Rule-EDITOR-PANEL-257), so the page size field can always be reached.
+  Where there is room, the page arrows sit in the middle of the bar.
 - **Rule-EDITOR-PANEL-252** — A badge's words are printed white or dark,
   whichever reads on its color, so a pale badge never carries white text.
 - **Rule-EDITOR-PANEL-257** — An editor narrower than its toolbar or its status
   bar scrolls that bar sideways under the pointer, with the mouse wheel or a
   touchpad. No scrollbar is shown and the bar keeps its height, so nothing on it
   is cut off and the editor below does not move.
+- **Rule-EDITOR-PANEL-286** — Changing the failure details changes the run
+  item's default execution and adds none.
 
 ## The screen
 
@@ -115,7 +118,8 @@ The same dialog the `F` key opens, with what was written already in it.
 3. The tester selects the test case and presses `F2`.
 4. The **Failed Test Case Details** dialog opens with what was already written.
 5. The tester pastes the error into the big box and presses `Enter`.
-6. The four fields are written. The run item status stays **Failed**.
+6. The four fields are written onto the default execution and the run item,
+   and no execution is added. The run item status stays **Failed**.
 7. The test run is written to disk.
 8. A message reads *Details updated*.
 

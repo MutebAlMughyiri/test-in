@@ -39,8 +39,10 @@ public class RunItemsSurviveRenameTest {
     private static final @NotNull String A_RESULT = """
             {
               "id" : "11111111-1111-4111-8111-111111111101",
-              "status" : "PASSED",
-              "actualResult" : "Signed in and reached the dashboard."
+              "executions" : [ {
+                "status" : "PASSED",
+                "actualResult" : "Signed in and reached the dashboard."
+              } ]
             }""";
 
     private static @NotNull Path createTestRun(final @NotNull Path folder) {

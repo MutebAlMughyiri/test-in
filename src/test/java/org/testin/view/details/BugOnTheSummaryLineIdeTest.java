@@ -22,6 +22,7 @@ import org.testin.model.TestCaseDto;
 import org.testin.model.bug.BugPriority;
 import org.testin.model.bug.BugSeverity;
 import org.testin.model.node.TestRunNode;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.util.Bundle;
@@ -42,7 +43,7 @@ public class BugOnTheSummaryLineIdeTest extends AbstractViewPanelIdeTest {
     private TestRunNode tr;
 
     private static @NotNull RunItem recorded(final @NotNull TestCaseDto tc, final @NotNull RunItemStatus status, final @NotNull String bugIssueUrl) {
-        return RunItem.builder().id(tc.getId()).status(status).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl(bugIssueUrl).build();
+        return RunItem.builder().id(tc.getId()).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl(bugIssueUrl).executions(List.of(Execution.builder().status(status).build())).build();
     }
 
     private static @NotNull Component rowOf(final @NotNull Component drawn) {

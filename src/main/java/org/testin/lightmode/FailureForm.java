@@ -26,8 +26,6 @@ import com.intellij.util.ui.ComponentWithEmptyText;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.testrun.RunItem;
-import org.testin.services.Services;
-import org.testin.testrun.RunItemStatusService;
 import org.testin.testrun.failure.FailureFields;
 import org.testin.ui.framework.ComponentDialogBase;
 import org.testin.ui.framework.DialogHost;
@@ -47,18 +45,12 @@ import java.util.Map;
 
 class FailureForm extends JBPanel<FailureForm> implements DialogHost {
     private final @NotNull FailureFields fields;
-    private final @NotNull RunItem runItem;
-    private final @NotNull Path testRunPath;
-    private final @NotNull RunItemStatusService runItemStatusService;
     private final @NotNull Map<Component, Font> baseFonts = new HashMap<>();
     private final @NotNull Runnable resized;
     private final @NotNull Runnable onEnter;
 
     // UC-EDITOR-PANEL-046, Rule-EDITOR-PANEL-202
     FailureForm(final @NotNull Project p, final @NotNull Path testRunPath, final @NotNull RunItem runItem, final float zoom, final @NotNull Runnable resized, final @NotNull Runnable onEnter) {
-        this.testRunPath = testRunPath;
-        this.runItemStatusService = Services.getInstance(p, RunItemStatusService.class);
-        this.runItem = runItem;
         this.fields = new FailureFields(p, testRunPath, runItem);
         this.resized = resized;
         this.onEnter = onEnter;
@@ -75,7 +67,7 @@ class FailureForm extends JBPanel<FailureForm> implements DialogHost {
             add(panel);
 
             // Rule-EDITOR-PANEL-219, Rule-INTERNAL-097
-            component.getComponent().hostedBy(this, this::save);
+            component.getComponent().hostedBy(this, onEnter);
         }
 
         remember(this);
@@ -124,8 +116,8 @@ class FailureForm extends JBPanel<FailureForm> implements DialogHost {
     }
 
     // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-145, Rule-EDITOR-PANEL-219, Rule-EDITOR-PANEL-256
-    boolean save() {
-        return runItemStatusService.recordFailureDetails(testRunPath, runItem.getId(), fields);
+    @NotNull FailureFields fields() {
+        return fields;
     }
 
     void focusFirstField() {

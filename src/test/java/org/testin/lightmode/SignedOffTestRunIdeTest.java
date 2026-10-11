@@ -22,6 +22,7 @@ import org.testin.NodesOnDisk;
 import org.testin.indexer.TestRuns;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestProjectNode;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.status.TestRunStatus;
@@ -54,15 +55,16 @@ public class SignedOffTestRunIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull Path aTestRunWithOneFailure() {
         indexedTestRuns().putRunItems(cycle, new RunItems().setAll(List.of(
-                new RunItem().setId(failed).setStatus(RunItemStatus.FAILED).setActualResult(RECORDED))));
+                new RunItem().setId(failed).setExecutions(List.of(Execution.builder().status(RunItemStatus.FAILED).actualResult(RECORDED).build())))));
         return cycle;
     }
 
     private boolean saveAFailureOnto(final @NotNull Path testRunPath) {
-        final @NotNull RunItem row = new RunItem().setId(failed).setStatus(RunItemStatus.FAILED).setActualResult("Typed after the sign-off");
-        return new FailureForm(getProject(), testRunPath, row, 1f, () -> {
+        final @NotNull RunItem row = new RunItem().setId(failed).setExecutions(List.of(Execution.builder().status(RunItemStatus.FAILED).actualResult("Typed after the sign-off").build()));
+        final @NotNull FailureForm form = new FailureForm(getProject(), testRunPath, row, 1f, () -> {
         }, () -> {
-        }).save();
+        });
+        return Services.getInstance(getProject(), RunItemStatusService.class).reviseFailure(testRunPath, failed, form.fields());
     }
 
     private @NotNull String recordedOn(final @NotNull Path testRunPath) {

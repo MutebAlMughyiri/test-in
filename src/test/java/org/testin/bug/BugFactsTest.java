@@ -21,6 +21,7 @@ import org.testin.model.bug.BugPriority;
 import org.testin.model.bug.BugSeverity;
 import org.testin.model.markers.TestRunMarker;
 import org.testin.model.testrun.TestRunConfiguration;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testng.annotations.Test;
@@ -42,9 +43,8 @@ public class BugFactsTest {
         final UUID id = UUID.randomUUID();
         final TestCaseDto tc = TestCaseDto.builder().id(id).description("  Log in with a valid user ").expectedResult("Welcome")
                 .steps(List.of("Open", "Log in")).testData("user=a").build();
-        final RunItem runItem = RunItem.builder().id(id).status(RunItemStatus.FAILED).actualResult("Error page")
-                .bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).stacktrace("boom")
-                .executedBy("Muteb").executedAt(ZonedDateTime.of(2026, 9, 13, 14, 14, 0, 0, ZoneId.of("Asia/Riyadh"))).build();
+        final RunItem runItem = RunItem.builder().id(id)
+                .bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).executions(List.of(Execution.builder().status(RunItemStatus.FAILED).actualResult("Error page").stacktrace("boom").executedBy("Muteb").executedAt(ZonedDateTime.of(2026, 9, 13, 14, 14, 0, 0, ZoneId.of("Asia/Riyadh"))).build())).build();
         final TestRunMarker testRunMarker = new TestRunMarker();
         testRunMarker.setConfiguration(new EnumMap<>(Map.of(
                 TestRunConfiguration.PLATFORM, "Web",

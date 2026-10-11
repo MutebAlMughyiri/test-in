@@ -122,7 +122,7 @@ own file:
 
 | Field                | Type   | Required                   | Meaning                                                                                                                                                                                  |
 |----------------------|--------|----------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `configuration`      | map    | no, **omitted when empty** | What the test run was executed against. Keys are `TEST_TYPE` `CHANGE_LOG` `COMMIT_ID` `PLATFORM` `COMPONENT` `LANGUAGE` `BROWSER` `DEVICE_TYPE`; values are free text                    |
+| `configuration`      | map    | no, **omitted when empty** | What the test run was executed against. Keys are `TEST_TYPE` `CHANGE_LOG` `COMMIT` `PLATFORM` `COMPONENT` `LANGUAGE` `BROWSER` `DEVICE_TYPE`; values are free text                       |
 | `resultAnalysis`     | map    | no, **omitted when empty** | What the tester wrote about each group of run item statuses. Keys are `PASSED` `FAILED` `BLOCKED` `UNTESTED`; values are free text                                                       |
 | `executionStartedAt` | date   | no, defaults to the epoch  | When Start Execution was first pressed. Kept: a test run resumed next week still started when it started                                                                                 |
 | `executionEndedAt`   | date   | no, defaults to the epoch  | When execution last stopped                                                                                                                                                              |
@@ -253,25 +253,44 @@ and moves one that no run item of the test run names anymore to the recycle bin
 after the next write. Any PNG in a test run folder named that way is taken for a
 screenshot, so one put there by hand under such a name goes too.
 
-| Field          | Type             | Meaning                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-|----------------|------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `id`           | UUID string      | The test case this run item is about - the same id the file is named by, which is what decides it (Rule-INTERNAL-012). Written so the file says what it is about on its own                                                                                                                                                                                                                                                                                                                         |
-| `status`       | enum             | `PASSED` `FAILED` `BLOCKED` as a tester or the automation judged it; `PENDING` until then; `UNTESTED` for a test case still pending when the test run completed or closed. A result whose test case was deleted since keeps its status here; it is shown as Removed while the test run is not Committed, and with the status its commit recorded once it is (Rule-EDITOR-PANEL-126); `REMOVED` is no longer written, and a file written by 2.11.0-alpha or earlier that holds it is read as removed |
-| `duration`     | number, seconds  | Nanosecond precision, written as a decimal                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `executedBy`   | string           |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `executedAt`   | date             |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `actualResult` | string           | Empty unless the test case failed                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `stacktrace`   | string           | Empty unless the test case failed. Text only: a pasted screenshot is never in it                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| `screenshots`  | array of strings | The file names of the screenshots pasted with the failure, beside this file, in the order they were pasted. Left out when there are none; cleared by a pass and by an automated failure, and their files go with the next write                                                                                                                                                                                                                                                                     |
-| `bugSeverity`  | enum             | `BLOCKER` `MAJOR` `MINOR` `ENHANCEMENT`. `ENHANCEMENT` until the tester chooses another, and again after a pass (Rule-EDITOR-PANEL-147)                                                                                                                                                                                                                                                                                                                                                             |
-| `bugPriority`  | enum             | `HIGH` `MEDIUM` `LOW`. `LOW` until the tester chooses another, and again after a pass (Rule-EDITOR-PANEL-147)                                                                                                                                                                                                                                                                                                                                                                                       |
-| `bugIssueUrl`  | string           | The GitHub issue the failure was reported as, written by [Report Bug](viewPanel/reportBug.md). Empty until then; cleared by a pass, kept by an automated failure                                                                                                                                                                                                                                                                                                                                    |
+| Field                    | Type             | Meaning                                                                                                                                                                                   |
+|--------------------------|------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `id`                     | UUID string      | The test case this run item is about - the same id the file is named by, which is what decides it (Rule-INTERNAL-012). Written so the file says what it is about on its own               |
+| `bugSeverity`            | enum             | `BLOCKER` `MAJOR` `MINOR` `ENHANCEMENT`. `ENHANCEMENT` until the tester chooses another (Rule-EDITOR-PANEL-147). A later execution never resets it (Rule-EDITOR-PANEL-284)                |
+| `bugPriority`            | enum             | `HIGH` `MEDIUM` `LOW`. `LOW` until the tester chooses another (Rule-EDITOR-PANEL-147). A later execution never resets it                                                                  |
+| `bugIssueUrl`            | string           | The GitHub issue the failure was reported as, written by [Report Bug](viewPanel/reportBug.md). Empty until then, and kept by every later execution                                        |
+| `untested`               | boolean          | `true` for a test case still pending when the test run completed or closed (Rule-TREE-PANEL-067). Left out otherwise                                                                      |
+| `clock`                  | number, seconds  | What the walk's clock counted on this test case before a run item status was recorded, so a walk that pauses picks it up again (Rule-EDITOR-PANEL-132). Left out when nothing was counted |
+| `unrecordedActualResult` | string           | An actual result typed before the test case was executed. The next execution takes it (Rule-EDITOR-PANEL-172). Left out when there is none                                                |
+| `executions`             | array of objects | Every execution of this test case in this test run, the oldest first (Rule-EDITOR-PANEL-136). Left out until the first; with none, the run item is Pending. Each is in the table below    |
+
+An execution:
+
+| Field          | Type             | Meaning                                                                                                                                                                                                                      |
+|----------------|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `status`       | enum             | `PASSED` `FAILED` `BLOCKED`, as a tester or the automation judged it                                                                                                                                                         |
+| `duration`     | number, seconds  | Nanosecond precision, written as a decimal. Left out when nothing was timed                                                                                                                                                  |
+| `executedBy`   | string           |                                                                                                                                                                                                                              |
+| `executedAt`   | date             |                                                                                                                                                                                                                              |
+| `actualResult` | string           | What happened. Left out when nothing was written                                                                                                                                                                             |
+| `stacktrace`   | string           | The error. Text only: a pasted screenshot is never in it                                                                                                                                                                     |
+| `screenshots`  | array of strings | The file names of the screenshots pasted with the failure, beside this file, in the order they were pasted. Left out when there are none; their files go with the next write after the last execution naming them is removed |
+| `invocation`   | number           | Which invocation of the method this was, from 1, when the automation ran it more than once (Rule-CODEGEN-112). Left out otherwise                                                                                            |
+| `retry`        | number           | Which retry of its invocation this was, from 1. Left out for the first attempt                                                                                                                                               |
+| `retried`      | boolean          | `true` for an attempt TestNG skipped and ran again. It is recorded as Failed and never decides (Rule-CODEGEN-111)                                                                                                            |
+| `parameters`   | string           | The data provider row this attempt ran, such as `[1234]`. Left out for a method with no data provider                                                                                                                        |
+| `default`      | boolean          | `true` on the execution a tester chose with ☆ (Rule-VIEW-PANEL-119). Written only when that is not the last; with none flagged, the last is the default                                                                      |
+
+The run item status is the default execution's status. A run item with no
+executions is Pending, or Untested when `untested` says so; one whose test case
+was deleted since is shown as Removed while the test run is not Committed, and
+with the status its commit recorded once it is (Rule-EDITOR-PANEL-126).
 
 A run item keeps no copy of its test case (Rule-EDITOR-PANEL-238): a test run
 that is not Committed shows each test case as it is now, and a Committed one reads
 it from its `commit`. A `testCase` object an earlier version wrote is not read.
 
-A severity and a priority are never missing. A passed test case carries
+A severity and a priority are never missing. A run item nobody triaged carries
 `"bugSeverity" : "ENHANCEMENT"`, and only a failure shows it. A file that still
 holds `"EMPTY"`, which earlier versions wrote, cannot be read.
 
@@ -321,7 +340,7 @@ That is the trade — forward compatibility is a *read*, not a round trip.
 stored type carries `@JsonInclude(NON_DEFAULT)`, so a value equal to what a
 newly made test case, run item or marker holds is left out, and a missing key
 reads back as exactly that value: an empty field, a default bug severity, a
-passed run item's cleared failure detail. `createdAt` is the one exception and
+execution's empty failure detail. `createdAt` is the one exception and
 is always written, because a fresh object holds the moment it was made. The
 price is that **changing a field's default is a format change**: every file
 that left the key out would silently take the new default.
@@ -335,13 +354,18 @@ became `groups`, because it holds a list. The two fixed folders' markers became
 `.tcf` and `.trf` - Test Cases Folder and Test Runs Folder - instead of `.tcd`
 and `.trd`.
 
+Format 4 keeps every execution of a run item: the top-level `status`,
+`duration`, `executedBy`, `executedAt`, `actualResult`, `stacktrace` and
+`screenshots` moved into `executions`, and the run item gained `untested`,
+`clock` and `unrecordedActualResult` (#415).
+
 **The project says which format its files are in**, in its `.tp`: `format`, and
-3 is the format this page describes. A project without the number, or with a
+4 is the format this page describes. A project without the number, or with a
 lower one, is not read at all: it is shown refused, and the tester removes it
 and creates it again, because nothing converts it ([UC-INTERNAL-002](internal/readTestProject.md), Rule-INTERNAL-091).
 A project
 with a **higher** number is not read at all: a format this build does not know is
-refused rather than guessed at, because reading it as format 3 would delete what
+refused rather than guessed at, because reading it as format 4 would delete what
 this build cannot see.
 
 **A file whose shape changed structurally is not read at all.** A test run
@@ -367,5 +391,5 @@ nobody writes anymore.
 **The one exception was the conversion to format 2**, which 2.13.0-alpha carried
 because the plugin is public. Test cases and markers were brought forward, and
 only the test runs were removed (#305, D4). The conversion code was deleted in
-2.14.0-alpha. Format 3 has no conversion at all: a format 2 project is refused
-and created again.
+2.14.0-alpha. Formats 3 and 4 have no conversion at all: a project in an older
+format is refused and created again.

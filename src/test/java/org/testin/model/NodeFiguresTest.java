@@ -18,6 +18,7 @@ package org.testin.model;
 
 
 import org.jetbrains.annotations.NotNull;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.TestRunSummary;
 import org.testin.model.status.RunItemStatus;
@@ -32,7 +33,7 @@ import static org.testng.Assert.assertSame;
 public class NodeFiguresTest {
 
     private static @NotNull RunItem runItem(final RunItemStatus status) {
-        return RunItem.builder().id(UUID.randomUUID()).status(status).build();
+        return RunItem.builder().id(UUID.randomUUID()).executions(List.of(Execution.builder().status(status).build())).build();
     }
 
     // Rule-INTERNAL-049

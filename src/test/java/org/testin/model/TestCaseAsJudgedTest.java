@@ -20,10 +20,12 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
+import org.testin.model.testrun.Failure;
 import org.testin.util.Mapper;
 import org.testin.util.RealMapper;
 import org.testng.annotations.Test;
 
+import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -41,7 +43,7 @@ public class TestCaseAsJudgedTest {
 
     private static @NotNull RunItem passed(final UUID id) {
         final RunItem runItem = RunItem.builder().id(id).build();
-        runItem.recordRunItemStatus(RunItemStatus.PASSED, "tester");
+        runItem.recordRunItemStatus(RunItemStatus.PASSED, "tester", Duration.ZERO, Failure.NONE);
         return runItem;
     }
 
@@ -75,7 +77,7 @@ public class TestCaseAsJudgedTest {
         final RunItem runItem = passed(id);
         runItem.showing(Optional.of(testCaseReading(id, "now")), Optional.empty(), Optional.empty(), false);
 
-        runItem.recordRunItemStatus(RunItemStatus.FAILED, "other tester");
+        runItem.recordRunItemStatus(RunItemStatus.FAILED, "other tester", Duration.ZERO, Failure.NONE);
 
         assertEquals(runItem.getStatus(), RunItemStatus.FAILED);
         assertEquals(runItem.getExecutedBy(), "other tester");
@@ -147,7 +149,7 @@ public class TestCaseAsJudgedTest {
     @Test
     public void aRunItemWrittenWithACopyIsReadWithoutIt() {
         final UUID id = UUID.randomUUID();
-        final RunItem read = MAPPER.readValue("{\"id\":\"" + id + "\",\"status\":\"PASSED\",\"testCase\":{\"id\":\"" + id + "\",\"description\":\"old copy\"}}", RunItem.class);
+        final RunItem read = MAPPER.readValue("{\"id\":\"" + id + "\",\"executions\":[{\"status\":\"PASSED\"}],\"testCase\":{\"id\":\"" + id + "\",\"description\":\"old copy\"}}", RunItem.class);
 
         read.showing(Optional.of(testCaseReading(id, "live")), Optional.empty(), Optional.empty(), false);
 

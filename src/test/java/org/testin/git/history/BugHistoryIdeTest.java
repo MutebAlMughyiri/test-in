@@ -23,6 +23,7 @@ import org.testin.indexer.TestCaseFile;
 import org.testin.indexer.TestRuns;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.bug.BugSeverity;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.services.Services;
@@ -43,7 +44,7 @@ public class BugHistoryIdeTest extends AbstractGitRemoteIdeTest {
     private static final @NotNull String RUN_ITEM = ID + ".ri";
 
     private static @NotNull RunItem runItem(final @NotNull RunItemStatus status, final @NotNull BugSeverity severity) {
-        return RunItem.builder().id(ID).status(status).bugSeverity(severity).actualResult("The basket was emptied").executedBy("Sara").build();
+        return RunItem.builder().id(ID).bugSeverity(severity).executions(List.of(Execution.builder().status(status).actualResult("The basket was emptied").executedBy("Sara").build())).build();
     }
 
     private static @NotNull List<String> told(final @NotNull List<BugCard> bugs) {
@@ -74,7 +75,7 @@ public class BugHistoryIdeTest extends AbstractGitRemoteIdeTest {
         save("Cycle 5", runItem(RunItemStatus.PASSED, BugSeverity.MINOR));
         commitAll(work, "Cycle 3 results");
         save("Cycle 3", runItem(RunItemStatus.FAILED, BugSeverity.MAJOR));
-        save("Cycle 5", RunItem.builder().id(ID).status(RunItemStatus.PASSED).executedBy("Muteb").build());
+        save("Cycle 5", RunItem.builder().id(ID).executions(List.of(Execution.builder().status(RunItemStatus.PASSED).executedBy("Muteb").build())).build());
         commitAll(work, "Severity");
         save("Cycle 3", runItem(RunItemStatus.PASSED, BugSeverity.MAJOR));
         mustGit(work, "rm", "-q", "Test Runs/Cycle 4/" + RUN_ITEM);
@@ -86,7 +87,7 @@ public class BugHistoryIdeTest extends AbstractGitRemoteIdeTest {
         mustGit(work, "checkout", "-q", MAIN);
 
         holdsNow(work, "Cycle 3", runItem(RunItemStatus.FAILED, BugSeverity.MAJOR));
-        holdsNow(work, "Cycle 5", RunItem.builder().id(ID).status(RunItemStatus.PASSED).executedBy("Muteb").build());
+        holdsNow(work, "Cycle 5", RunItem.builder().id(ID).executions(List.of(Execution.builder().status(RunItemStatus.PASSED).executedBy("Muteb").build())).build());
 
         final @NotNull List<BugCard> bugs = bugsOf(work);
 

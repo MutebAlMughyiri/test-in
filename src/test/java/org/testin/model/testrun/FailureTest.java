@@ -18,10 +18,10 @@ package org.testin.model.testrun;
 
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.bug.BugSeverity;
 import org.testin.model.status.RunItemStatus;
 import org.testng.annotations.Test;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,102 +30,66 @@ import static org.testng.Assert.assertTrue;
 
 public class FailureTest {
 
+    private static final @NotNull String ISSUE = "https://github.com/acme/cases/issues/7";
+
     private static @NotNull RunItem row() {
         return RunItem.builder().id(UUID.randomUUID()).build();
     }
 
+    // Rule-EDITOR-PANEL-285, Rule-CODEGEN-111
     @Test
-    public void aReportedFailureFillsTheTwoFieldsATesterWouldHaveTyped() {
+    public void aReportedFailureIsWhatItsExecutionSays() {
         final RunItem runItem = row();
 
-        new Failure("expected [true] but found [false]", "at testProject.SPTestTest.check(SPTestTest.java:42)").recordOn(runItem);
+        runItem.recordRunItemStatus(RunItemStatus.FAILED, "tester", Duration.ZERO,
+                new Failure("expected [true] but found [false]", "at testProject.SPTestTest.check(SPTestTest.java:42)", List.of()));
 
         assertEquals(runItem.getActualResult(), "expected [true] but found [false]");
-        assertTrue(runItem.getStacktrace().contains("SPTestTest.java:42"));
+        assertEquals(runItem.getStacktrace(), "at testProject.SPTestTest.check(SPTestTest.java:42)");
     }
 
-    @Test
-    public void nothingWentWrongLeavesWhatTheTesterTypedAlone() {
-        final RunItem runItem = row();
-        runItem.setActualResult("the dialog never opened");
-        runItem.setStacktrace("pasted by hand");
-
-        Failure.NONE.recordOn(runItem);
-
-        assertEquals(runItem.getActualResult(), "the dialog never opened", "a manual run item status must not erase this");
-        assertEquals(runItem.getStacktrace(), "pasted by hand");
-    }
-
-    // Rule-EDITOR-PANEL-220
+    // Rule-EDITOR-PANEL-284
     @Test
     public void aFailureWithNoStacktraceDoesNotInheritTheLastExecutionsOne() {
         final RunItem runItem = row();
-        runItem.setStacktrace("at testProject.SPTestTest.check(SPTestTest.java:42)");
+        runItem.recordRunItemStatus(RunItemStatus.FAILED, "tester", Duration.ZERO, new Failure("first", "at Login.click", List.of()));
 
-        new Failure("Skipped/Terminated", "").recordOn(runItem);
+        runItem.recordRunItemStatus(RunItemStatus.FAILED, "tester", Duration.ZERO, new Failure("Skipped/Terminated", "", List.of()));
 
-        assertEquals(runItem.getStacktrace(), "",
-                "the row describes this execution, and an older stacktrace would read as the explanation of this one");
+        assertEquals(runItem.getStacktrace(), "", "the new execution says what it says");
+        assertEquals(runItem.getExecutions().getFirst().getStacktrace(), "at Login.click", "and the first still says what it said");
     }
 
-    @Test
-    public void passingAfterwardsClearsWhatTheFailureRecorded() {
-        final RunItem runItem = row();
-
-        new Failure("expected [true] but found [false]", "at testProject.SPTestTest.check").recordOn(runItem);
-        runItem.recordRunItemStatus(RunItemStatus.PASSED, "tester");
-
-        assertEquals(runItem.getActualResult(), "", "a test case that passed has nothing to explain");
-        assertEquals(runItem.getStacktrace(), "");
-    }
-
-    @Test
-    public void failingKeepsIt() {
-        final RunItem runItem = row();
-
-        new Failure("expected [true] but found [false]", "at testProject.SPTestTest.check").recordOn(runItem);
-        runItem.recordRunItemStatus(RunItemStatus.FAILED, "tester");
-
-        assertEquals(runItem.getActualResult(), "expected [true] but found [false]");
-        assertEquals(runItem.getExecutedBy(), "tester");
-    }
-
-    // Rule-EDITOR-PANEL-220
+    // Rule-EDITOR-PANEL-284
     @Test
     public void anAutomatedFailureKeepsTheBugIssueLink() {
-        final RunItem runItem = row().setBugIssueUrl("https://github.com/mtb550/product/issues/123");
+        final RunItem runItem = row().setBugIssueUrl(ISSUE);
 
-        new Failure("expected [true] but found [false]", "at testProject.SPTestTest.check").recordOn(runItem);
-        runItem.recordRunItemStatus(RunItemStatus.FAILED, "tester");
+        runItem.recordRunItemStatus(RunItemStatus.FAILED, "tester", Duration.ZERO, new Failure("boom", "", List.of()));
 
-        assertEquals(runItem.getBugIssueUrl(), "https://github.com/mtb550/product/issues/123");
+        assertEquals(runItem.getBugIssueUrl(), ISSUE);
     }
 
-    // Rule-EDITOR-PANEL-220
+    // Rule-EDITOR-PANEL-219, Rule-EDITOR-PANEL-285
     @Test
-    public void aReportedFailureClearsTheScreenshotsOfTheLastOne() {
-        final RunItem runItem = row().setScreenshots(List.of("k3f9a.png"));
+    public void aFailureCarriesItsScreenshotsIntoItsOwnExecution() {
+        final RunItem runItem = row();
+        runItem.recordRunItemStatus(RunItemStatus.FAILED, "tester", Duration.ZERO, new Failure("first", "", List.of("k3f9a.png")));
 
-        new Failure("expected [true] but found [false]", "at testProject.SPTestTest.check").recordOn(runItem);
+        runItem.recordRunItemStatus(RunItemStatus.FAILED, "tester", Duration.ZERO, new Failure("second", "", List.of("m2p7q.png")));
 
-        assertTrue(runItem.getScreenshots().isEmpty(), "a picture of the last failure would read as a picture of this one (#50)");
+        assertEquals(runItem.getScreenshots(), List.of("m2p7q.png"));
+        assertTrue(runItem.allScreenshots().contains("k3f9a.png"), "the first failure's screenshot is still in use");
     }
 
     @Test
-    public void nothingWentWrongLeavesTheScreenshotsAlone() {
-        final RunItem runItem = row().setScreenshots(List.of("k3f9a.png"));
+    public void nothingWentWrongRecordsNoDetail() {
+        final RunItem runItem = row();
 
-        Failure.NONE.recordOn(runItem);
+        runItem.recordRunItemStatus(RunItemStatus.PASSED, "tester", Duration.ZERO, Failure.NONE);
 
-        assertEquals(runItem.getScreenshots().size(), 1, "a manual run item status must not erase them");
-    }
-
-    // Rule-EDITOR-PANEL-220
-    @Test
-    public void aReportedFailureNamesWhatHappenedAndNotTheBug() {
-        final RunItem runItem = row().setActualResult("typed by hand").setScreenshots(List.of("k3f9a.png")).setBugSeverity(BugSeverity.MAJOR);
-
-        assertEquals(new Failure("boom", "").wouldClear(runItem), List.of("the actual result", "the screenshots"));
-        assertEquals(Failure.NONE.wouldClear(runItem), List.of(), "a run item status given by hand clears nothing");
+        assertEquals(runItem.getActualResult(), "");
+        assertEquals(runItem.getStacktrace(), "");
+        assertTrue(runItem.getScreenshots().isEmpty());
     }
 }

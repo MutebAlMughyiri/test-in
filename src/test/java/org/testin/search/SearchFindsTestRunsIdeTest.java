@@ -27,6 +27,7 @@ import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.services.Services;
@@ -103,7 +104,7 @@ public class SearchFindsTestRunsIdeTest extends AbstractTempRootIdeTest {
             return path;
         });
 
-        indexedTestRuns().putRunItems(testRunPath, new RunItems().setAll(List.of(new RunItem().setId(testCaseId).setStatus(RunItemStatus.PASSED))));
+        indexedTestRuns().putRunItems(testRunPath, new RunItems().setAll(List.of(new RunItem().setId(testCaseId).setExecutions(List.of(Execution.builder().status(RunItemStatus.PASSED).build())))));
         return testRunPath;
     }
 

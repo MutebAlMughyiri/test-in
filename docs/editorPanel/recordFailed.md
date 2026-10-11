@@ -82,14 +82,20 @@ a small form before it records anything.
   selection color while it is selected, and in nothing else. The pointer passing
   over it changes nothing.
 - **Rule-EDITOR-PANEL-251** — When the status bar is too narrow for everything,
-  the figures on the right give way first, then the sentence on the left down to
-  a short floor, and the page arrows keep their width to the last.
+  nothing on it gives way or is cut short: it scrolls sideways, as the toolbar
+  does (Rule-EDITOR-PANEL-257), so the page size field can always be reached.
+  Where there is room, the page arrows sit in the middle of the bar.
 - **Rule-EDITOR-PANEL-252** — A badge's words are printed white or dark,
   whichever reads on its color, so a pale badge never carries white text.
 - **Rule-EDITOR-PANEL-257** — An editor narrower than its toolbar or its status
   bar scrolls that bar sideways under the pointer, with the mouse wheel or a
   touchpad. No scrollbar is shown and the bar keeps its height, so nothing on it
   is cut off and the editor below does not move.
+- **Rule-EDITOR-PANEL-285** — A failure is recorded in one step: the Failed
+  execution carries the actual result, the error and the screenshots the form
+  collected, and the bug severity and priority go on the run item. Nothing is
+  written before the form is saved, and nothing an earlier execution recorded
+  changes.
 
 ## The screen
 
@@ -163,11 +169,11 @@ a small form before it records anything.
 4. The tester types what happened, picks a severity and a priority, and pastes
    the error.
 5. The tester presses `Enter`.
-6. The four fields are written onto the test run.
-7. Only then is **Failed** recorded, with the tester's name, the time and the
-   duration.
-8. A message reads *Failed*.
-9. The walk moves to the next test case.
+6. **Failed** is recorded as one more execution, carrying the actual result,
+   the error and the screenshots, with the tester's name, the time and the
+   duration. The bug severity and priority go on the run item.
+7. A message reads *Failed*.
+8. The walk moves to the next test case.
 
 ## What Testin refuses
 

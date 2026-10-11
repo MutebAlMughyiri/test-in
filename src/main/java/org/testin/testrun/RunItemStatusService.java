@@ -30,16 +30,16 @@ import org.testin.logger.Logger;
 import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestRunNode;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.Failure;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
+import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.setting.AppSettingsState;
 import org.testin.testrun.failure.FailureFields;
-import org.testin.ui.framework.ConfirmDialog;
 import org.testin.util.Bundle;
-import org.testin.util.Display;
 
 import java.nio.file.Path;
 import java.time.Duration;
@@ -56,30 +56,61 @@ public final class RunItemStatusService {
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-130, Rule-EDITOR-PANEL-137
     public void executeNext(final @NotNull TestRunEditor editor, final @NotNull RunItemStatus status) {
+        executeNext(editor, status, recording(status));
+    }
+
+    // UC-EDITOR-PANEL-034, UC-EDITOR-PANEL-046, Rule-EDITOR-PANEL-285
+    public boolean executeFailed(final @NotNull TestRunEditor editor, final @NotNull FailureFields fields) {
+        return executeNext(editor, RunItemStatus.FAILED, failing(editor.getParent().getPath(), fields));
+    }
+
+    // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-130, Rule-EDITOR-PANEL-137
+    private boolean executeNext(final @NotNull TestRunEditor editor, final @NotNull RunItemStatus status, final @NotNull Consumer<RunItem> recording) {
         final int executingIndex = editor.getWalk().getCurrentlyExecutingIndex();
         if (executingIndex == -1) {
             // Rule-EDITOR-PANEL-227
             if (editor.getWalk().executingTestCaseIsHidden())
                 Services.getInstance(p, Notifier.class).softRefuse(p, Bundle.message("run.item.status.executing.hidden"));
-            return;
+            return false;
         }
 
         final @NotNull TestCaseDto currentTc = editor.getCurrentTestCases().get(executingIndex);
         if (editor.runItem(currentTc.getId()).filter(RunItem::isRemoved).isPresent()) {
             passDeleted(editor, executingIndex);
-            return;
+            return false;
         }
 
-        final @NotNull String tester = Services.getInstance(p, AppSettingsState.class).testerName;
         if (!recordOn(editor, currentTc.getId(), status, runItem -> {
             editor.getWalk().stopTheClock();
-            runItem.recordRunItemStatus(status, tester);
-        })) return;
+            recording.accept(runItem);
+        })) return false;
 
         confirmRunItemStatus(status, 1);
 
         // Rule-EDITOR-PANEL-130
         ApplicationManager.getApplication().invokeLater(() -> editor.getWalk().startTimerForIndex(executingIndex));
+        return true;
+    }
+
+    // UC-EDITOR-PANEL-032, Rule-EDITOR-PANEL-136, Rule-EDITOR-PANEL-284
+    private @NotNull Consumer<RunItem> recording(final @NotNull RunItemStatus status) {
+        final @NotNull String tester = tester();
+        return runItem -> runItem.recordRunItemStatus(status, tester, runItem.getClock(), Failure.NONE);
+    }
+
+    // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-219, Rule-EDITOR-PANEL-285
+    private @NotNull Consumer<RunItem> failing(final @NotNull Path testRunPath, final @NotNull FailureFields fields) {
+        fields.storePasted(pasted -> Services.getInstance(p, TestRuns.class).storeScreenshots(testRunPath, pasted));
+
+        final @NotNull String tester = tester();
+        return runItem -> {
+            fields.applyBugTo(runItem);
+            runItem.recordRunItemStatus(RunItemStatus.FAILED, tester, runItem.getClock(), fields.failure());
+        };
+    }
+
+    private @NotNull String tester() {
+        return Services.getInstance(p, AppSettingsState.class).testerName;
     }
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-264
@@ -90,26 +121,30 @@ public final class RunItemStatusService {
     }
 
     // UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-183, Rule-EDITOR-PANEL-241, Rule-EDITOR-PANEL-242
-    public void recordReported(final @NotNull TestRunEditor editor, final @NotNull TestCaseDto tc, final @NotNull RunItemStatus status, final @NotNull Duration duration, final @NotNull Failure failure) {
-        final boolean clockCounted = editor.getWalk().clockIsOn(tc.getId());
-        if (clockCounted) editor.getWalk().stopTheClock();
+    public void recordReported(final @NotNull TestRunEditor editor, final @NotNull TestCaseDto tc, final @NotNull RunItemStatus status, final @NotNull List<Execution> executions, final int written, final int deciding) {
+        if (editor.getWalk().clockIsOn(tc.getId())) editor.getWalk().stopTheClock();
 
         if (editor.getWalk().isExecuting(tc.getId())) {
             editor.getWalk().startTimerForIndex(editor.getWalk().getCurrentlyExecutingIndex() + 1);
         }
 
-        final @NotNull String tester = Services.getInstance(p, AppSettingsState.class).testerName;
-        recordOn(editor, tc.getId(), status, runItem -> {
-            if (!clockCounted) runItem.recordDuration(duration);
-            failure.recordOn(runItem);
-            runItem.recordRunItemStatus(status, tester);
-        });
+        final @NotNull String tester = tester();
+        recordOn(editor, tc.getId(), status, runItem -> runItem.recordAutomated(executions, written, deciding, tester));
     }
 
-    // UC-EDITOR-PANEL-038, Rule-EDITOR-PANEL-240
-    private boolean correct(final @NotNull TestRunEditor editor, final @NotNull TestCaseDto tc, final @NotNull RunItemStatus status) {
-        final @NotNull String tester = Services.getInstance(p, AppSettingsState.class).testerName;
-        return recordOn(editor, tc.getId(), status, runItem -> runItem.recordRunItemStatus(status, tester));
+    // UC-EDITOR-PANEL-043, Rule-CODEGEN-111
+    public void showAttempts(final @NotNull TestRunEditor editor, final @NotNull TestCaseDto tc, final @NotNull List<Execution> executions, final int written) {
+        final @NotNull Path testRunPath = editor.getParent().getPath();
+        final @NotNull Optional<RunItems> held = heldTestRun(testRunPath);
+        if (held.isEmpty() || liveItem(held.orElseThrow(), testRunPath, tc.getId()).isEmpty()) return;
+
+        final @NotNull String tester = tester();
+        Services.getInstance(p, TestRuns.class).changeRunItem(testRunPath, tc.getId(), runItem -> runItem.showAttempts(executions, written, tester));
+    }
+
+    // UC-EDITOR-PANEL-038, Rule-EDITOR-PANEL-159, Rule-EDITOR-PANEL-240
+    private boolean correct(final @NotNull TestRunEditor editor, final @NotNull TestCaseDto tc, final @NotNull RunItemStatus status, final @NotNull Consumer<RunItem> recording) {
+        return recordOn(editor, tc.getId(), status, recording);
     }
 
     // Rule-EDITOR-PANEL-225
@@ -127,8 +162,28 @@ public final class RunItemStatusService {
         return true;
     }
 
-    // UC-EDITOR-PANEL-040, Rule-EDITOR-PANEL-167, Rule-EDITOR-PANEL-256
-    public boolean recordFailureDetails(final @NotNull Path testRunPath, final @NotNull UUID testCaseId, final @NotNull FailureFields fields) {
+    // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-120
+    public boolean chooseExecution(final @NotNull Path testRunPath, final @NotNull UUID testCaseId, final int index) {
+        return changeExecutions(testRunPath, testCaseId, runItem -> runItem.chooseExecution(index), Done.CHOSEN);
+    }
+
+    // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-121
+    public boolean removeExecution(final @NotNull Path testRunPath, final @NotNull UUID testCaseId, final int index) {
+        return changeExecutions(testRunPath, testCaseId, runItem -> runItem.removeExecution(index), Done.REMOVED);
+    }
+
+    // Rule-VIEW-PANEL-121, Rule-TREE-PANEL-009
+    private boolean changeExecutions(final @NotNull Path testRunPath, final @NotNull UUID testCaseId, final @NotNull Consumer<RunItem> change, final @NotNull Done done) {
+        final @NotNull Optional<RunItems> held = heldTestRun(testRunPath);
+        if (held.isEmpty() || liveItem(held.orElseThrow(), testRunPath, testCaseId).isEmpty()) return false;
+
+        Services.getInstance(p, TestRuns.class).changeRunItem(testRunPath, testCaseId, change);
+        Services.getInstance(p, Notifier.class).softShow(p, done);
+        return true;
+    }
+
+    // UC-EDITOR-PANEL-040, Rule-EDITOR-PANEL-167, Rule-EDITOR-PANEL-256, Rule-EDITOR-PANEL-286
+    public boolean reviseFailure(final @NotNull Path testRunPath, final @NotNull UUID testCaseId, final @NotNull FailureFields fields) {
         final @NotNull TestRuns testRuns = Services.getInstance(p, TestRuns.class);
         final @NotNull Optional<RunItems> runItems = heldTestRun(testRunPath);
         if (runItems.isEmpty()) return false;
@@ -137,7 +192,10 @@ public final class RunItemStatusService {
 
         fields.storePasted(pasted -> testRuns.storeScreenshots(testRunPath, pasted));
 
-        testRuns.changeRunItem(testRunPath, testCaseId, fields::applyTo);
+        testRuns.changeRunItem(testRunPath, testCaseId, runItem -> {
+            fields.applyBugTo(runItem);
+            runItem.reviseFailure(fields.failure());
+        });
 
         return true;
     }
@@ -191,50 +249,27 @@ public final class RunItemStatusService {
         Services.getInstance(p, Notifier.class).softRefuse(p, Bundle.message("run.item.status.test.case.removed"));
     }
 
+    // UC-EDITOR-PANEL-032, UC-EDITOR-PANEL-038, UC-EDITOR-PANEL-039, Rule-EDITOR-PANEL-284
     public void applyStatus(final @NotNull TestRunEditor editor, final @NotNull List<TestCaseDto> selectedItems, final @NotNull RunItemStatus status) {
         if (selectedItems.isEmpty()) return;
 
-        final @NotNull List<String> losing = wouldBeErased(editor, selectedItems, status);
-        if (losing.isEmpty()) {
-            record(status, editor, selectedItems);
-            return;
-        }
-
-        new ConfirmDialog(p, status.getLabel(), erasureWarning(losing, selectedItems.size()), "", "",
-                status.getLabel(), () -> record(status, editor, selectedItems)).show();
-    }
-
-    private @NotNull List<String> wouldBeErased(final @NotNull TestRunEditor editor, final @NotNull List<TestCaseDto> selected, final @NotNull RunItemStatus status) {
-        return selected.stream()
-                .map(tc -> editor.runItem(tc.getId()))
-                .flatMap(Optional::stream)
-                .filter(runItem -> !runItem.isRemoved())
-                .flatMap(runItem -> runItem.wouldClear(status, Failure.NONE).stream())
-                .distinct()
-                .toList();
-    }
-
-    private @NotNull String erasureWarning(final @NotNull List<String> losing, final int rows) {
-        final @NotNull String where = rows == 1
-                ? Bundle.message("run.item.status.this.test.case")
-                : Bundle.message("run.item.status.these.test.cases", String.valueOf(rows));
-
-        return Bundle.message("run.item.status.passing.clears", where, Display.andJoin(losing));
-    }
-
-    private void record(final @NotNull RunItemStatus status, final @NotNull TestRunEditor editor, final @NotNull List<TestCaseDto> selectedItems) {
-        if (selectedItems.size() == 1) recordOne(status, editor, selectedItems.getFirst());
+        if (selectedItems.size() == 1) recordOne(status, editor, selectedItems.getFirst(), recording(status));
         else recordMany(status, editor, selectedItems);
     }
 
-    private void recordOne(final @NotNull RunItemStatus status, final @NotNull TestRunEditor editor, final @NotNull TestCaseDto tc) {
+    // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-285
+    public void applyFailure(final @NotNull TestRunEditor editor, final @NotNull TestCaseDto tc, final @NotNull FailureFields fields) {
+        recordOne(RunItemStatus.FAILED, editor, tc, failing(editor.getParent().getPath(), fields));
+    }
+
+    private void recordOne(final @NotNull RunItemStatus status, final @NotNull TestRunEditor editor, final @NotNull TestCaseDto tc, final @NotNull Consumer<RunItem> recording) {
         if (editor.runItem(tc.getId()).filter(RunItem::isRemoved).isPresent()) {
             refuseRemoved();
             return;
         }
 
-        if (editor.getWalk().isExecuting(tc.getId())) executeNext(editor, status);
-        else if (correct(editor, tc, status)) confirmRunItemStatus(status, 1);
+        if (editor.getWalk().isExecuting(tc.getId())) executeNext(editor, status, recording);
+        else if (correct(editor, tc, status, recording)) confirmRunItemStatus(status, 1);
 
         editor.getWalk().finishIfEverythingIsJudged();
     }
@@ -253,9 +288,10 @@ public final class RunItemStatusService {
             if (editor.getWalk().isExecuting(tc.getId())) editor.getWalk().stopExecutionUntimed();
         }
 
-        final @NotNull String tester = Services.getInstance(p, AppSettingsState.class).testerName;
+        final @NotNull String tester = tester();
         final @NotNull TestRuns testRuns = Services.getInstance(p, TestRuns.class);
-        judged.forEach(id -> testRuns.changeRunItem(editor.getParent().getPath(), id, runItem -> runItem.recordRunItemStatus(status, tester)));
+        // Rule-EDITOR-PANEL-164
+        judged.forEach(id -> testRuns.changeRunItem(editor.getParent().getPath(), id, runItem -> runItem.recordRunItemStatus(status, tester, Duration.ZERO, Failure.NONE)));
         if (!judged.isEmpty()) offerBugReports(status);
         triggerFilterRefresh(editor);
 

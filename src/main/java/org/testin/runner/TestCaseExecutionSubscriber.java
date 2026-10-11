@@ -26,11 +26,15 @@ import org.testin.codegen.TestName;
 import org.testin.indexer.TestCases;
 import org.testin.logger.Logger;
 import org.testin.model.TestCaseDto;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.Failure;
 import org.testin.model.status.ExecutionStatus;
 import org.testin.services.Services;
 
 import java.time.Duration;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -65,21 +69,34 @@ public final class TestCaseExecutionSubscriber implements Disposable {
 
         final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
 
+        final @NotNull Attempt attempt = new Attempt(status, duration, failure, TestName.parameters(testName), ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS));
+
         TestName.testCaseId(testName).flatMap(testCases::findTestCase).ifPresentOrElse(
-                tc -> Services.getInstance(p, TestNGExecution.class).attempted(tc.getId(), new Attempt(status, duration, failure))
-                        .forEach((id, decided) -> testCases.findTestCase(id).ifPresent(decidedTc -> report(decidedTc, decided))),
+                tc -> {
+                    final @NotNull TestNGExecution execution = Services.getInstance(p, TestNGExecution.class);
+                    execution.attempted(tc.getId(), attempt).forEach((id, decided) -> testCases.findTestCase(id).ifPresent(decidedTc -> report(decidedTc, decided)));
+                    execution.unwritten(tc.getId()).ifPresent(live -> show(tc, live));
+                },
                 () -> Logger.debug("  '" + testName + "' is not a generated test case - reported against none"));
     }
 
-    // Rule-CODEGEN-110
-    private void report(final @NotNull TestCaseDto tc, final @NotNull Attempt decided) {
-        final @NotNull ExecutionStatus reportedStatus = runItemStatusFor(tc, decided.status());
+    // Rule-CODEGEN-111
+    private void show(final @NotNull TestCaseDto tc, final @NotNull Attempts live) {
+        final @NotNull List<Execution> executions = live.executions();
 
-        Logger.debug("  reporting on '" + tc.getDescription() + "': " + reportedStatus + " " + decided.failure().message());
+        surfaces.forEach(surface -> surface.accept(tc, ExecutionStatus.RUNNING, executions, live.written(), executions.size() - 1));
+    }
+
+    // Rule-CODEGEN-110, Rule-CODEGEN-111
+    private void report(final @NotNull TestCaseDto tc, final @NotNull Attempts decided) {
+        final @NotNull ExecutionStatus reportedStatus = runItemStatusFor(tc, decided.status());
+        final @NotNull List<Execution> executions = reportedStatus == ExecutionStatus.IDLE ? List.of() : decided.executions();
+
+        Logger.debug("  reporting on '" + tc.getDescription() + "': " + reportedStatus + " from " + decided.all().size() + " attempt(s)");
 
         Services.getInstance(p, TestNGExecution.class).reported(tc.getId(), reportedStatus);
 
-        surfaces.forEach(surface -> surface.accept(tc, reportedStatus, decided.duration(), decided.failure()));
+        surfaces.forEach(surface -> surface.accept(tc, reportedStatus, executions, decided.written(), decided.deciding()));
     }
 
     @Override
@@ -97,6 +114,6 @@ public final class TestCaseExecutionSubscriber implements Disposable {
 
     @FunctionalInterface
     public interface Reported {
-        void accept(final @NotNull TestCaseDto tc, final @NotNull ExecutionStatus status, final @NotNull Duration duration, final @NotNull Failure failure);
+        void accept(final @NotNull TestCaseDto tc, final @NotNull ExecutionStatus status, final @NotNull List<Execution> executions, final int written, final int deciding);
     }
 }

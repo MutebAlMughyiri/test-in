@@ -86,6 +86,9 @@ This changes a test run that is not signed off yet.
 - **Rule-TREE-PANEL-134** — Edit Test Run lists the run items whose test case
   was deleted under a Deleted test cases folder, ticked; unticking one and
   saving removes it from the test run.
+- **Rule-TREE-PANEL-139** — A **Disabled** test case is shown grayed and its box
+  cannot be changed. One the test run already covers stays in it, so editing
+  never throws away what it recorded; one it does not cover cannot be added.
 
 ## What the tester sees
 

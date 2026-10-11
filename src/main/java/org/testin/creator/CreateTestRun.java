@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.editor.open.TestinEditors;
 import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
+import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
 import org.testin.logger.Logger;
 import org.testin.model.testrun.RunItems;
@@ -41,11 +42,13 @@ import org.testin.ui.framework.SelectionTree;
 import org.testin.util.Bundle;
 
 import java.nio.file.Path;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class CreateTestRun implements NodeCreator {
     private final @NotNull Project p;
@@ -76,9 +79,14 @@ public class CreateTestRun implements NodeCreator {
         return Optional.empty();
     }
 
-    // UC-TREE-PANEL-009, UC-TREE-PANEL-021
+    // UC-TREE-PANEL-009, UC-TREE-PANEL-021, Rule-TREE-PANEL-138
     public void configureTestRun(final @NotNull Node testCasesRoot, final @NotNull String name, final @NotNull Node parentNode, final @NotNull Set<UUID> sourceTestCases, final @NotNull Map<TestRunConfiguration, String> sourceConfiguration) {
-        new TestRunForm(p).open(testCasesRoot, name, sourceTestCases, List.of(), sourceConfiguration,
+        final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
+        final @NotNull Set<UUID> enabled = sourceTestCases.stream()
+                .filter(id -> testCases.findTestCase(id).map(tc -> tc.getStatus().isEnabled()).orElse(true))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        new TestRunForm(p).open(testCasesRoot, name, enabled, List.of(), sourceConfiguration,
                 new TestRunFormAction(Bundle.message("test.run.create.title"), Bundle.message("test.run.create.button"), (form, selection) -> create(form, selection, parentNode)));
     }
 

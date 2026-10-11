@@ -19,6 +19,7 @@ package org.testin.report.generators;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.ReportColor;
 import org.testin.model.testrun.TestRunResultAnalysis;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.TestRunSummary;
 import org.testin.model.status.RunItemStatus;
@@ -145,7 +146,7 @@ public class ReportSectionTest {
     private @NotNull RunItem runItem(final RunItemStatus status) {
         final RunItem runItem = new RunItem();
         runItem.setId(UUID.randomUUID());
-        runItem.setStatus(status);
+        runItem.setExecutions(List.of(Execution.builder().status(status).build()));
         return runItem;
     }
 }

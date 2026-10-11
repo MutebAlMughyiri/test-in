@@ -18,6 +18,7 @@ package org.testin.codegen;
 
 import org.testng.annotations.Test;
 
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -44,5 +45,19 @@ public class TestNameTest {
     public void aNameThatIsNotAnIdNamesNoTestCase() {
         assertTrue(TestName.testCaseId("logsIn").isEmpty());
         assertTrue(TestName.testCaseId(ID + " (one)").isEmpty());
+    }
+
+    // Rule-CODEGEN-112
+    @Test
+    public void aDataProviderRowNamesTheSameTestCaseAndKeepsItsRow() {
+        assertEquals(TestName.testCaseId(ID + "[1234]"), Optional.of(ID));
+        assertEquals(TestName.testCaseId(ID + "[0000] (1)"), Optional.of(ID), "a later row is numbered like any other start");
+        assertEquals(TestName.parameters(ID + "[0000] (1)"), "[0000]");
+        assertEquals(TestName.parameters(ID + " (2)"), "", "a retry or an invocation has no row");
+    }
+
+    @Test
+    public void anIdInCapitalsIsTheSameTestCase() {
+        assertEquals(TestName.testCaseId(ID.toString().toUpperCase(Locale.ROOT)), Optional.of(ID), "the IDE's name is no longer lowercased");
     }
 }

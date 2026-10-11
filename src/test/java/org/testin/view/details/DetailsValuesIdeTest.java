@@ -28,6 +28,7 @@ import org.testin.model.bug.BugPriority;
 import org.testin.model.bug.BugSeverity;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.services.Services;
@@ -73,8 +74,8 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
     }
 
     private static @NotNull RunItem failedWith(final @NotNull TestCaseDto tc, final @NotNull List<String> screenshots) {
-        return RunItem.builder().id(tc.getId()).status(RunItemStatus.FAILED).actualResult("The session was dropped").duration(Duration.ofSeconds(134)).executedBy("muteb")
-                .bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).stacktrace("java.lang.AssertionError: expected [true]").screenshots(screenshots).build();
+        return RunItem.builder().id(tc.getId())
+                .bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).executions(List.of(Execution.builder().status(RunItemStatus.FAILED).actualResult("The session was dropped").duration(Duration.ofSeconds(134)).executedBy("muteb").stacktrace("java.lang.AssertionError: expected [true]").screenshots(screenshots).build())).build();
     }
 
     private static byte @NotNull [] aScreenshot(final int width, final int height) {

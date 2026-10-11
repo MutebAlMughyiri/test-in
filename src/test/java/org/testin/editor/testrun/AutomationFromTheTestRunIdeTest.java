@@ -37,6 +37,7 @@ import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.ExecutionStatus;
 import org.testin.model.status.RunItemStatus;
@@ -162,7 +163,7 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
     }
 
     // Rule-EDITOR-PANEL-183
-    public void testTheClockThatWasCountingKeepsItsTimeWhenTheAutomationSetsTheRunItemStatus() {
+    public void testTheAutomationKeepsTheFrameworksTimeEvenWhileTheClockWasCounting() {
         final @NotNull List<TestCaseDto> testCases = automatedTestCases(2);
         final @NotNull TestRunNode tr = aTestRun("Cycle-1", testCases.stream().map(EditorFixtures::pending).toList());
         final @NotNull TestRunEditor editor = opened(tr);
@@ -179,8 +180,7 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
             reported(testCases.getFirst(), ExecutionStatus.PASSED, Duration.ofMillis(84));
 
             Await.until("the automation's run item status was not recorded", () -> runItemOf(tr, testCases.getFirst()).getStatus() == RunItemStatus.PASSED);
-            final @NotNull Duration kept = runItemOf(tr, testCases.getFirst()).getDuration();
-            assertTrue("the framework's 84 ms replaced the time the clock counted: " + kept, kept.compareTo(Duration.ofMillis(1200)) >= 0);
+            assertEquals("the clock's count replaced the framework's own time", Duration.ofMillis(84), runItemOf(tr, testCases.getFirst()).getDuration());
         } finally {
             Disposer.dispose(editor);
         }
@@ -219,9 +219,9 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
     public void testRunningTheWholeTestRunHandsOnlyThePendingOnesOverAsOneExecution() {
         final @NotNull List<TestCaseDto> testCases = automatedTestCases(4);
         final @NotNull TestRunNode tr = aTestRun("Cycle-1", List.of(
-                EditorFixtures.pending(testCases.getFirst()).setStatus(RunItemStatus.PASSED),
+                EditorFixtures.pending(testCases.getFirst()).setExecutions(List.of(Execution.builder().status(RunItemStatus.PASSED).build())),
                 EditorFixtures.pending(testCases.get(1)),
-                EditorFixtures.pending(testCases.get(2)).setStatus(RunItemStatus.FAILED),
+                EditorFixtures.pending(testCases.get(2)).setExecutions(List.of(Execution.builder().status(RunItemStatus.FAILED).build())),
                 EditorFixtures.pending(testCases.get(3))));
         final @NotNull TestRunEditor editor = opened(tr);
         try {

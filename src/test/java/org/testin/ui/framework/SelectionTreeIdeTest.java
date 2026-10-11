@@ -20,6 +20,7 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.ui.CheckboxTree;
 import com.intellij.ui.CheckedTreeNode;
 import org.jetbrains.annotations.NotNull;
+import org.testin.util.Bundle;
 import org.testin.view.Drawn;
 
 import java.util.ArrayList;
@@ -81,6 +82,68 @@ public class SelectionTreeIdeTest extends BasePlatformTestCase {
 
         assertEquals("a ticked test case the filter hides left the test run", List.of(REFUND), ticked(selection));
         assertEquals("the hidden ticked test case is not counted as hidden", 1, selection.hiddenChecked());
+    }
+
+    private static @NotNull CheckedTreeNode disabled(final @NotNull CheckedTreeNode leaf) {
+        leaf.setEnabled(false);
+        return leaf;
+    }
+
+    private static @NotNull SelectionTree withADisabledTestCase(final boolean ticked) {
+        final @NotNull CheckedTreeNode root = new CheckedTreeNode("Test Cases");
+        root.add(aTestSet("Login", aTestCase(LOGIN_VALID, false), disabled(aTestCase(LOGIN_LOCKED, ticked))));
+
+        return new SelectionTree("Test cases", root, new CheckboxTree.CheckboxTreeCellRenderer() {
+        }, Optional.empty());
+    }
+
+    private static @NotNull AbstractIconButton tickAll(final @NotNull SelectionTree selection) {
+        return Drawn.components(selection.getPanel()).stream()
+                .filter(AbstractIconButton.class::isInstance)
+                .map(AbstractIconButton.class::cast)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("the selection offers no select all"));
+    }
+
+    // Rule-TREE-PANEL-140, Rule-TREE-PANEL-131
+    public void testSelectAllTicksOnlyWhatTheFilterShowsAndThenUnticksIt() {
+        final @NotNull SelectionTree selection = selection(true);
+        selection.show(SelectionTreeIdeTest::inLogin);
+
+        tickAll(selection).doClick();
+        assertEquals("select all ticked what the filter hides, or missed what it shows", List.of(LOGIN_VALID, LOGIN_LOCKED, REFUND), ticked(selection));
+
+        tickAll(selection).doClick();
+        assertEquals("unselect all touched a test case the filter hides", List.of(REFUND), ticked(selection));
+    }
+
+    // Rule-TREE-PANEL-140, Rule-TREE-PANEL-138
+    public void testSelectAllLeavesADisabledTestCaseAsItWas() {
+        final @NotNull SelectionTree selection = withADisabledTestCase(false);
+
+        tickAll(selection).doClick();
+        assertEquals("select all ticked a disabled test case", List.of(LOGIN_VALID), ticked(selection));
+        assertEquals("with every test case it can tick ticked, the button does not offer to untick", Bundle.message("selection.untick.all"), tickAll(selection).getAccessibleContext().getAccessibleName());
+    }
+
+    // Rule-TREE-PANEL-138
+    public void testTickingATestSetLeavesItsDisabledTestCaseOut() {
+        final @NotNull SelectionTree selection = withADisabledTestCase(false);
+
+        final @NotNull CheckboxTree tree = drawnTree(selection);
+        tree.setNodeState((CheckedTreeNode) tree.getModel().getRoot(), true);
+
+        assertEquals("a disabled test case was ticked with its test set", List.of(LOGIN_VALID), ticked(selection));
+    }
+
+    // Rule-TREE-PANEL-139
+    public void testADisabledTestCaseTheTestRunCoversStaysTicked() {
+        final @NotNull SelectionTree selection = withADisabledTestCase(true);
+
+        final @NotNull CheckboxTree tree = drawnTree(selection);
+        tree.setNodeState((CheckedTreeNode) tree.getModel().getRoot(), false);
+
+        assertEquals("unticking the test set removed a disabled test case the test run covers", List.of(LOGIN_LOCKED), ticked(selection));
     }
 
     // Rule-TREE-PANEL-131

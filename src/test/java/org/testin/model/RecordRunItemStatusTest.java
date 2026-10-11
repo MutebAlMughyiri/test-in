@@ -20,12 +20,13 @@ package org.testin.model;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.bug.BugPriority;
 import org.testin.model.bug.BugSeverity;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.Failure;
-import org.testin.model.testrun.FailureDetail;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testng.annotations.Test;
 
+import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -43,56 +44,61 @@ public class RecordRunItemStatusTest {
     private static @NotNull RunItem failedWithBug() {
         return RunItem.builder()
                 .id(UUID.randomUUID())
-                .status(RunItemStatus.FAILED)
                 .bugSeverity(BugSeverity.MAJOR)
                 .bugPriority(BugPriority.HIGH)
-                .actualResult("NPE on the login button")
-                .stacktrace("java.lang.NullPointerException at Login.click(Login.java:42)")
-                .screenshots(List.of("k3f9a.png"))
                 .bugIssueUrl(ISSUE)
+                .executions(List.of(Execution.builder()
+                        .status(RunItemStatus.FAILED)
+                        .actualResult("NPE on the login button")
+                        .stacktrace("java.lang.NullPointerException at Login.click(Login.java:42)")
+                        .screenshots(List.of("k3f9a.png"))
+                        .build()))
                 .build();
     }
 
-    // Rule-VIEW-PANEL-032, Rule-EDITOR-PANEL-138, Rule-EDITOR-PANEL-161
-    @Test
-    public void passingAFailedTestCaseClearsEverythingTheFailureDescribed() {
-        final RunItem runItem = failedWithBug();
-
-        runItem.recordRunItemStatus(RunItemStatus.PASSED, "tester");
-
-        assertEquals(runItem.getStatus(), RunItemStatus.PASSED);
-        assertEquals(runItem.getBugSeverity(), BugSeverity.ENHANCEMENT);
-        assertEquals(runItem.getBugPriority(), BugPriority.LOW);
-        assertEquals(runItem.getActualResult(), "", "the failure text describes a failure that no longer exists");
-        assertEquals(runItem.getStacktrace(), "", "likewise the stacktrace");
-        assertTrue(runItem.getScreenshots().isEmpty(), "and the screenshots pasted with it (#50)");
-        assertEquals(runItem.getBugIssueUrl(), "", "and the bug it was reported as: a later failure can be reported again (#28)");
+    private static void record(final @NotNull RunItem runItem, final @NotNull RunItemStatus status, final @NotNull String tester) {
+        runItem.recordRunItemStatus(status, tester, Duration.ZERO, Failure.NONE);
     }
 
-    // Rule-EDITOR-PANEL-162
+    // Rule-EDITOR-PANEL-284
     @Test
-    public void failingAgainKeepsTheBugTheDialogJustCollected() {
+    public void passingAFailedTestCaseErasesNothingTheFailureDescribed() {
         final RunItem runItem = failedWithBug();
 
-        runItem.recordRunItemStatus(RunItemStatus.FAILED, "tester");
+        record(runItem, RunItemStatus.PASSED, "tester");
 
-        assertEquals(runItem.getBugSeverity(), BugSeverity.MAJOR, "re-failing must not wipe the details");
+        assertEquals(runItem.getStatus(), RunItemStatus.PASSED, "the pass is the newest execution, so it decides");
+        assertEquals(runItem.getExecutions().size(), 2, "the pass is added beside the failure, not written over it");
+
+        final @NotNull Execution failure = runItem.getExecutions().getFirst();
+        assertEquals(failure.getActualResult(), "NPE on the login button", "the failure still says what happened");
+        assertFalse(failure.getStacktrace().isEmpty());
+        assertEquals(failure.getScreenshots(), List.of("k3f9a.png"));
+        assertEquals(runItem.getBugSeverity(), BugSeverity.MAJOR, "the bug stays on the run item");
         assertEquals(runItem.getBugPriority(), BugPriority.HIGH);
-        assertEquals(runItem.getActualResult(), "NPE on the login button");
-        assertEquals(runItem.getScreenshots().size(), 1);
         assertEquals(runItem.getBugIssueUrl(), ISSUE);
     }
 
+    // Rule-EDITOR-PANEL-159, Rule-EDITOR-PANEL-284
     @Test
-    public void passingATestCaseThatNeverFailedChangesNothingElse() {
-        final RunItem runItem = RunItem.builder()
-                .id(UUID.randomUUID())
-                .status(RunItemStatus.PENDING)
-                .build();
+    public void failingAgainAddsAnExecutionAndKeepsTheFirst() {
+        final RunItem runItem = failedWithBug();
 
-        runItem.recordRunItemStatus(RunItemStatus.PASSED, "tester");
+        runItem.recordRunItemStatus(RunItemStatus.FAILED, "tester", Duration.ZERO, new Failure("A timeout this time", "", List.of()));
+
+        assertEquals(runItem.getExecutions().size(), 2);
+        assertEquals(runItem.getActualResult(), "A timeout this time", "the run item reads its newest execution");
+        assertEquals(runItem.getExecutions().getFirst().getActualResult(), "NPE on the login button", "and the first keeps its own");
+    }
+
+    @Test
+    public void passingATestCaseThatNeverRanChangesNothingElse() {
+        final RunItem runItem = RunItem.builder().id(UUID.randomUUID()).build();
+
+        record(runItem, RunItemStatus.PASSED, "tester");
 
         assertEquals(runItem.getStatus(), RunItemStatus.PASSED);
+        assertEquals(runItem.getExecutions().size(), 1);
         assertEquals(runItem.getBugSeverity(), BugSeverity.ENHANCEMENT);
         assertEquals(runItem.getBugPriority(), BugPriority.LOW);
     }
@@ -102,7 +108,7 @@ public class RecordRunItemStatusTest {
     public void everyRunItemStatusRecordsWhoAndWhen() {
         final RunItem runItem = failedWithBug();
 
-        runItem.recordRunItemStatus(RunItemStatus.BLOCKED, "muteb");
+        record(runItem, RunItemStatus.BLOCKED, "muteb");
 
         assertEquals(runItem.getStatus(), RunItemStatus.BLOCKED, "what it was");
         assertEquals(runItem.getExecutedBy(), "muteb");
@@ -110,70 +116,29 @@ public class RecordRunItemStatusTest {
     }
 
     @Test
-    public void aTestCaseBlockedInBetweenStillClearsWhenItFinallyPasses() {
-        final RunItem runItem = failedWithBug();
-
-        runItem.recordRunItemStatus(RunItemStatus.BLOCKED, "tester");
-        runItem.recordRunItemStatus(RunItemStatus.PASSED, "tester");
-
-        assertEquals(runItem.getBugSeverity(), BugSeverity.ENHANCEMENT);
-        assertEquals(runItem.getBugPriority(), BugPriority.LOW);
-        assertEquals(runItem.getActualResult(), "");
-        assertEquals(runItem.getStacktrace(), "");
-        assertEquals(runItem.getBugIssueUrl(), "");
-    }
-
-    // Rule-EDITOR-PANEL-142, Rule-EDITOR-PANEL-162
-    @Test
-    public void blockingAFailedTestCaseKeepsTheDetails() {
-        final RunItem runItem = failedWithBug();
-
-        runItem.recordRunItemStatus(RunItemStatus.BLOCKED, "tester");
-
-        assertEquals(runItem.getBugSeverity(), BugSeverity.MAJOR);
-        assertEquals(runItem.getBugPriority(), BugPriority.HIGH);
-        assertEquals(runItem.getActualResult(), "NPE on the login button");
-        assertFalse(runItem.getStacktrace().isEmpty());
-        assertEquals(runItem.getBugIssueUrl(), ISSUE);
-    }
-
-    // Rule-EDITOR-PANEL-161
-    @Test
-    public void whatEachRunItemStatusWouldClearIsNamedBeforeItClears() {
-        final RunItem runItem = failedWithBug();
-
-        assertEquals(runItem.wouldClear(RunItemStatus.PASSED, Failure.NONE),
-                List.of("the actual result", "the stacktrace", "the screenshots", "the bug severity", "the bug priority", "the bug issue link"));
-        assertEquals(runItem.wouldClear(RunItemStatus.FAILED, new Failure("boom", "at Login.click")),
-                List.of("the actual result", "the stacktrace", "the screenshots"));
-        assertEquals(runItem.wouldClear(RunItemStatus.FAILED, Failure.NONE), List.of(), "the keyboard's F asks nothing");
-    }
-
-    @Test
     public void everyFailureRecordsABug() {
-        final RunItem failed = RunItem.builder().id(UUID.randomUUID()).status(RunItemStatus.FAILED).build();
-        final RunItem blocked = RunItem.builder().id(UUID.randomUUID()).status(RunItemStatus.BLOCKED).build();
+        final RunItem failed = RunItem.builder().id(UUID.randomUUID()).executions(List.of(Execution.builder().status(RunItemStatus.FAILED).build())).build();
+        final RunItem blocked = RunItem.builder().id(UUID.randomUUID()).executions(List.of(Execution.builder().status(RunItemStatus.BLOCKED).build())).build();
 
-        assertTrue(FailureDetail.recordsABug(failed), "a failure is Enhancement / Low until the tester says otherwise");
-        assertFalse(FailureDetail.recordsABug(blocked), "a result that is not a failure records no bug");
-        assertTrue(FailureDetail.recordsABug(blocked.setBugIssueUrl(ISSUE)), "unless an issue was filed for it");
+        assertTrue(failed.recordsABug(), "a failure is Enhancement / Low until the tester says otherwise");
+        assertFalse(blocked.recordsABug(), "a result that is not a failure records no bug");
+        assertTrue(blocked.setBugIssueUrl(ISSUE).recordsABug(), "unless an issue was filed for it");
     }
 
     // Rule-EDITOR-PANEL-160, Rule-EDITOR-PANEL-159
     @Test
-    public void correctingARunItemStatusReStampsWhoAndWhen() {
+    public void recordingAgainKeepsWhoRecordedTheFirstAndWhen() {
         final @NotNull ZonedDateTime firstTime = ZonedDateTime.now(ZoneId.systemDefault()).minusDays(3).truncatedTo(ChronoUnit.SECONDS);
         final @NotNull RunItem runItem = RunItem.builder()
                 .id(UUID.randomUUID())
-                .status(RunItemStatus.FAILED)
-                .executedBy("Sara")
-                .executedAt(firstTime)
+                .executions(List.of(Execution.builder().status(RunItemStatus.FAILED).executedBy("Sara").executedAt(firstTime).build()))
                 .build();
 
-        runItem.recordRunItemStatus(RunItemStatus.PASSED, "Omar");
+        record(runItem, RunItemStatus.PASSED, "Omar");
 
-        assertEquals(runItem.getStatus(), RunItemStatus.PASSED, "the run item status is simply written over");
-        assertEquals(runItem.getExecutedBy(), "Omar", "the original tester is gone");
-        assertTrue(runItem.getExecutedAt().isAfter(firstTime), "the original time is gone");
+        assertEquals(runItem.getStatus(), RunItemStatus.PASSED, "the newest recording decides");
+        assertEquals(runItem.getExecutedBy(), "Omar");
+        assertEquals(runItem.getExecutions().getFirst().getExecutedBy(), "Sara", "the first tester stays in the list");
+        assertEquals(runItem.getExecutions().getFirst().getExecutedAt(), firstTime, "and so does the first time");
     }
 }

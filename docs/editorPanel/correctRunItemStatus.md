@@ -5,8 +5,9 @@
 **As a** tester, **I want** to change a run item status I recorded by mistake, **so that** the test run says what really
 happened.
 
-There is no special gesture. The tester records the right run item status, and
-it is written over the wrong one.
+There is no special gesture. The tester records the right run item status. It
+is added as one more execution and becomes the run item status, and the wrong
+one stays in the list until × removes it in the view panel.
 
 Press the key for the right run item status on the test case.
 
@@ -36,19 +37,14 @@ Press the key for the right run item status on the test case.
   reported rather than brought into view.
 - **Rule-EDITOR-PANEL-010** — While a grid cell is open for editing, every key
   that would act on the row is refused.
-- **Rule-EDITOR-PANEL-159** — A run item status is simply written over. There is
-  no separate gesture for correcting one.
-- **Rule-EDITOR-PANEL-160** — Correcting a run item status re-stamps who
-  recorded it and when. The original tester and the original time are gone.
-- **Rule-EDITOR-PANEL-161** — Changing a failed test case to passed asks first,
-  because it clears the actual result, the error, the screenshots and the bug
-  issue link. It also puts a bug severity or priority the tester chose back to
-  Enhancement and Low.
-- **Rule-EDITOR-PANEL-162** — Only passing clears anything. Failing and blocking
-  clear nothing.
-- **Rule-EDITOR-PANEL-240** — A run item status can be corrected until its test
-  run is Committed. Only three things change: the run item status, who gave it
-  and when.
+- **Rule-EDITOR-PANEL-159** — A run item status is never written over. Recording
+  another one adds an execution, which becomes the run item status. There is no
+  separate gesture for correcting one, and a mistaken execution is removed with
+  × in the view panel (Rule-VIEW-PANEL-121).
+- **Rule-EDITOR-PANEL-160** — Recording again keeps the earlier execution: its
+  tester, its time and what it said stay in the list.
+- **Rule-EDITOR-PANEL-240** — Executions can be added, chosen as the default and
+  removed while the test run takes run item statuses (Rule-TREE-PANEL-009).
 - **Rule-EDITOR-PANEL-248** — A button that turns gray while the pointer is on
   it loses its hover look at once, so a control that has stopped working never
   looks ready to press.
@@ -59,70 +55,48 @@ Press the key for the right run item status on the test case.
   selection color while it is selected, and in nothing else. The pointer passing
   over it changes nothing.
 - **Rule-EDITOR-PANEL-251** — When the status bar is too narrow for everything,
-  the figures on the right give way first, then the sentence on the left down to
-  a short floor, and the page arrows keep their width to the last.
+  nothing on it gives way or is cut short: it scrolls sideways, as the toolbar
+  does (Rule-EDITOR-PANEL-257), so the page size field can always be reached.
+  Where there is room, the page arrows sit in the middle of the bar.
 - **Rule-EDITOR-PANEL-252** — A badge's words are printed white or dark,
   whichever reads on its color, so a pale badge never carries white text.
 - **Rule-EDITOR-PANEL-257** — An editor narrower than its toolbar or its status
   bar scrolls that bar sideways under the pointer, with the mouse wheel or a
   touchpad. No scrollbar is shown and the bar keeps its height, so nothing on it
   is cut off and the editor below does not move.
-
-## The screen
-
-```
-┌──────────────────────────────────────────────────────────────┐
-│  Passed                                                      │
-├──────────────────────────────────────────────────────────────┤
-│                                                              │
-│  Passing this test case clears the actual result and the     │
-│  stacktrace, because a test case that passed has nothing     │
-│  to explain. There is no copy of it anywhere else.           │
-│                                                              │
-├──────────────────────────────────────────────────────────────┤
-│  [k]  Enter Passed       Escape Cancel                       │
-└──────────────────────────────────────────────────────────────┘
-```
-
-1. **The title** — the run item status being recorded.
-2. **The message** — names exactly what will be cleared, from the six.
-3. **The confirmation word** — the run item status, again.
+- **Rule-EDITOR-PANEL-284** — Recording a run item status never erases what an
+  earlier execution recorded. Its actual result, error, screenshots and duration
+  stay with it, so passing a failed test case asks nothing first. The bug
+  severity, priority and issue link stay on the run item.
 
 ## Main flow
 
 1. A test case is recorded as **Failed**, with an actual result and an error.
 2. The tester realizes it really passed.
 3. The tester selects it and presses `P`.
-4. The confirmation opens, naming what will be cleared.
-5. The tester presses `Enter`.
-6. **Passed** is recorded, and everything the message named is cleared.
-7. A message reads *Passed*.
+4. **Passed** is recorded as one more execution and becomes the run item
+   status. The failed execution keeps its actual result and its error.
+5. A message reads *Passed*.
+6. To drop the mistaken execution, the tester hovers its line under
+   **Execution result** in the view panel and clicks × (Rule-VIEW-PANEL-121).
 
 ## What Testin refuses
 
-**If nothing would be cleared** — no confirmation is shown. The run item status
-is simply written over.
+**If several test cases are selected** — each of them gets one more execution,
+and nothing is asked.
 
-**If the tester presses `Escape`** — nothing is changed at all.
-
-**If several test cases are selected** — the confirmation is asked once for the
-whole selection. Its message says *these*, then the count, then *test cases*.
+**If the test run is Committed** — the key is gray, and ☆
+and × in the view panel are gray and say why (Rule-TREE-PANEL-009).
 
 ## What cannot be undone
 
 There is no undo for a run item status inside the test run editor. `Ctrl+Z`
-there belongs to the test cases, not to the test run. A run item status written
-over is gone. So is anything that clearing it removed.
+there belongs to the test cases, not to the test run. An execution removed with
+× is gone.
 
 **There is no way to clear a run item status back to nothing.** **Pending**, **Untested** and **Removed** have no key
 and are on
 no menu.
-
-## Where the plugin breaks its own rules
-
-**The warning is only on this path.** An automated pass clears the same six
-things with no dialog at all. That is difference 26 on
-[the editor panel page](main.md#where-the-plugin-breaks-its-own-rules-executing-a-test-run).
 
 ---
 

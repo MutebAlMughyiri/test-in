@@ -1,11 +1,10 @@
 {
   "id" : "22222222-2222-4222-8222-222222222201",
-  "status" : "PASSED",
-  "actualResult" : "Order confirmed, confirmation number shown.",
-  "bugSeverity" : "ENHANCEMENT",
-  "bugPriority" : "LOW",
-  "duration" : 8.771,
-  "executedBy" : "Testin Sample",
-  "executedAt" : "Wednesday 07-01-2026 At 10:08:02 [UTC]",
-  "stacktrace" : ""
+  "executions" : [ {
+    "status" : "PASSED",
+    "duration" : 8.771,
+    "executedBy" : "Testin Sample",
+    "executedAt" : "Wednesday 07-01-2026 At 10:08:02 [UTC]",
+    "actualResult" : "Order confirmed, confirmation number shown."
+  } ]
 }

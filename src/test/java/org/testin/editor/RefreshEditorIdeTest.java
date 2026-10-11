@@ -41,6 +41,7 @@ import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.notifications.Done;
@@ -238,7 +239,7 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
 
             Services.getInstance(getProject(), TestRuns.class).putRunItems(tr.getPath(), new RunItems().setAll(new ArrayList<>(List.of(
                     EditorFixtures.pending(testCases.getFirst()),
-                    EditorFixtures.pending(testCases.get(1)).setStatus(RunItemStatus.PASSED)))));
+                    EditorFixtures.pending(testCases.get(1)).setExecutions(List.of(Execution.builder().status(RunItemStatus.PASSED).build()))))));
 
             pressRefresh(editor);
 

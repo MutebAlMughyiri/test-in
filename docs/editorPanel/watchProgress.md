@@ -55,8 +55,9 @@ There is no key for this. The figures are in the status bar.
   selection color while it is selected, and in nothing else. The pointer passing
   over it changes nothing.
 - **Rule-EDITOR-PANEL-251** — When the status bar is too narrow for everything,
-  the figures on the right give way first, then the sentence on the left down to
-  a short floor, and the page arrows keep their width to the last.
+  nothing on it gives way or is cut short: it scrolls sideways, as the toolbar
+  does (Rule-EDITOR-PANEL-257), so the page size field can always be reached.
+  Where there is room, the page arrows sit in the middle of the bar.
 - **Rule-EDITOR-PANEL-252** — A badge's words are printed white or dark,
   whichever reads on its color, so a pale badge never carries white text.
 - **Rule-EDITOR-PANEL-257** — An editor narrower than its toolbar or its status
@@ -67,6 +68,10 @@ There is no key for this. The figures are in the status bar.
   alone, with the status named when the pointer rests on it. Beside the icon it
   shows the tester an Assigned test run is assigned to, and the commit a
   Committed test run was recorded in; any other status shows the icon only.
+- **Rule-EDITOR-PANEL-288** — The clock adds up every execution of every run
+  item, retries and re-runs included, and what the walk is counting on the test
+  case it is on, so it says what the test run really cost. A card and the grid
+  show the default execution's own duration.
 
 ## The screen
 
@@ -83,8 +88,9 @@ There is no key for this. The figures are in the status bar.
    **Committed**, nothing otherwise (Rule-EDITOR-PANEL-265).
 2. **The figures** — one for each run item status any test case carries, each
    in that run item status's own color, separated by a dot. Their tooltip reads *How this test run is going*.
-3. **The clock** — how long this test run has been executing. It ticks once a
-   second while a test case is being timed. Its tooltip reads *Time spent
+3. **The clock** — how long this test run has been executing: every execution
+   of every run item, retries and re-runs included (Rule-EDITOR-PANEL-288). It
+   ticks once a second while a test case is being timed. Its tooltip reads *Time spent
    executing this test run*.
 4. **The page size** — how many test cases a page holds.
 

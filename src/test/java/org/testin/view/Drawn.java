@@ -42,8 +42,13 @@ import java.util.function.Predicate;
 public final class Drawn {
 
     public static @NotNull JBPanel<?> detailsTab(final @NotNull Project p, final @NotNull TestCaseDto tc, final @NotNull Optional<RunItem> runItem, final @NotNull List<String> currentPath) {
+        return detailsTab(p, tc, runItem, currentPath, ViewPanel.THE_DEFAULT);
+    }
+
+    public static @NotNull JBPanel<?> detailsTab(final @NotNull Project p, final @NotNull TestCaseDto tc, final @NotNull Optional<RunItem> runItem, final @NotNull List<String> currentPath, final int shownLine) {
         final @NotNull JBPanel<?> tab = new JBPanel<>();
-        new DetailsTab().load(p, tab, Optional.of(tc), runItem, currentPath);
+        new DetailsTab().load(p, tab, Optional.of(tc), runItem, currentPath, shownLine, _ -> {
+        });
         return tab;
     }
 

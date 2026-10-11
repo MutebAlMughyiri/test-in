@@ -17,6 +17,7 @@
 package org.testin.model;
 
 import org.testin.model.node.TestRunNode;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.util.RealMapper;
 import org.testng.annotations.Test;
@@ -38,7 +39,7 @@ public class RunItemScreenshotsJsonTest {
 
     @Test
     public void theTestRunFileNamesTheScreenshotsAndHoldsNoPicture() {
-        final RunItem written = RunItem.builder().id(UUID.randomUUID()).stacktrace("boom").screenshots(List.of(NAME)).build();
+        final RunItem written = RunItem.builder().id(UUID.randomUUID()).executions(List.of(Execution.builder().stacktrace("boom").screenshots(List.of(NAME)).build())).build();
 
         try {
             final String json = new String(RealMapper.build().writeValueAsBytes(written), StandardCharsets.UTF_8);

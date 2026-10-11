@@ -43,6 +43,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -169,8 +170,13 @@ public final class TestNGExecution implements Disposable {
     }
 
     // Rule-CODEGEN-110
-    @NotNull Map<UUID, Attempt> attempted(final @NotNull UUID id, final @NotNull Attempt attempt) {
+    @NotNull Map<UUID, Attempts> attempted(final @NotNull UUID id, final @NotNull Attempt attempt) {
         return registry.attempted(id, attempt);
+    }
+
+    // Rule-CODEGEN-111
+    @NotNull Optional<Attempts> unwritten(final @NotNull UUID id) {
+        return registry.unwritten(id);
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-037

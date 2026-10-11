@@ -45,10 +45,13 @@ The code runs, and Testin writes down whether each test case passed.
   cards in front of the tester.
 - **Rule-CODEGEN-075** — A test the framework does not run to a run item status
   is recorded as Failed, with Skipped/Terminated as its actual result. TestNG
-  skips a test whose dependency failed, whose group is excluded or that is
-  disabled, and stops the rest when the execution is terminated: all of them
-  come back as a defect with no run item status, and an execution that quietly
-  left them Pending would report a cycle as finished when part of it never ran.
+  skips a test whose dependency failed or whose group is excluded, and stops the
+  rest when the execution is terminated: all of them come back as a defect with
+  no run item status, and an execution that quietly left them Pending would
+  report a cycle as finished when part of it never ran. A disabled method is
+  different: TestNG never reports it at all, so it is taken out of Running with
+  nothing recorded (Rule-CODEGEN-092), and a Disabled test case cannot be added
+  to a test run (Rule-TREE-PANEL-138).
 - **Rule-CODEGEN-076** — A second execution started while the first is still
   going gets a name of its own - the same name with a number after it, such as
   Testin: LoginTest (2). The two executions are then separate everywhere: each has its
@@ -73,6 +76,20 @@ The code runs, and Testin writes down whether each test case passed.
   Until then the test case stays running, and light mode and the walk stay on
   its run item. So a test that fails and passes on a retry is recorded Passed,
   and one of four invocations failing records Failed.
+- **Rule-CODEGEN-111** — Every attempt TestNG reports for a test case is
+  recorded as an execution the moment it is reported: each retry, each
+  invocation and each data provider row, so the card and the view panel grow one
+  by one while the method runs. Until TestNG moves on, the last attempt so far
+  is the default, and an attempt's label may change when the next one arrives.
+  Once its result is decided (Rule-CODEGEN-110), the one that decides is made
+  the default: the last failed invocation or row if one failed, otherwise the
+  last attempt, and never an attempt TestNG retried.
+- **Rule-CODEGEN-112** — An automated execution says what it was, read from the
+  order the IDE reported it. An attempt reported as skipped that its test case
+  starts again after was retried, and the start after it is *Retry 1*, *Retry
+  2*... under the same invocation. A start after a passed or failed result is
+  the next invocation, numbered *Invocation 1*, *Invocation 2*... only when the
+  method ran more than once. A data provider row is named by its row.
 
 ## The four ways in
 
@@ -102,7 +119,8 @@ opens underneath and shows what TestNG is doing.
 4. The three are handed to TestNG as one configuration.
 5. A message reads *Running 3* — the number that started, said once Testin
    knows it.
-6. Each result comes back and is recorded against the test case.
+6. Each result comes back and is recorded against the test case, as one more
+   execution of its run item.
 
 ## What Testin refuses
 
@@ -127,11 +145,14 @@ records its run item status under the execution it actually belongs to.
 
 **If the framework skips a test** - the test case is recorded as **Failed**, and
 its actual result reads *Skipped/Terminated*. A dependency that failed, an
-excluded group, a disabled test and a terminated execution all arrive the same
+excluded group and a terminated execution all arrive the same
 way: the framework says the test did not pass and gives no run item status.
 A skip is recorded once TestNG has moved on, because TestNG skips an attempt
 it is about to retry the same way: a retry that passes is recorded **Passed**.
-Leaving it Pending would report the cycle as finished when part of it never ran.
+Every attempt is kept as an execution of its own - the retried one too, as a
+failure marked *retried* - and the one that decided is the default
+(Rule-CODEGEN-111). Leaving it Pending would report the cycle as finished when
+part of it never ran.
 
 **If the IDE is indexing** — every test case is put back and a message reads *Tests cannot run while the IDE is
 indexing. Wait a moment and run them again.*

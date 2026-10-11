@@ -28,6 +28,7 @@ import org.testin.editor.toolbar.TestRunResultAnalysisBtn;
 import org.testin.model.TestCaseDto;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.status.TestRunStatus;
+import org.testin.model.testrun.Execution;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.util.Shortcuts;
 import org.testin.view.Drawn;
@@ -80,7 +81,7 @@ public class TestRunResultAnalysisIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull TestRunFixture aJudgedTestRunIn(final @NotNull TestRunStatus status) {
         final @NotNull List<TestCaseDto> testCases = TestRunFixture.testCasesIn(getProject(), root, 2);
-        final @NotNull TestRunFixture fixture = TestRunFixture.of(getProject(), root, testCases.stream().map(tc -> EditorFixtures.pending(tc).setStatus(RunItemStatus.PASSED)).toList(), testCases);
+        final @NotNull TestRunFixture fixture = TestRunFixture.of(getProject(), root, testCases.stream().map(tc -> EditorFixtures.pending(tc).setExecutions(List.of(Execution.builder().status(RunItemStatus.PASSED).build()))).toList(), testCases);
         fixture.testRun().getMarker().changeStatus(status);
         return fixture;
     }

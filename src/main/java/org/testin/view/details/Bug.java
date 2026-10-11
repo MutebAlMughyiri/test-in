@@ -25,20 +25,15 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.bug.BugReports;
 import org.testin.bug.ReportBug;
 import org.testin.bug.RunItemPath;
-import org.testin.editor.open.TestinEditors;
-import org.testin.editor.testrun.TestRunEditor;
-import org.testin.indexer.Nodes;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.testrun.RunItem;
 import org.testin.services.Services;
-import org.testin.setting.TestinRoot;
 import org.testin.testrun.TestRunEditorAttributes;
 import org.testin.ui.Badge;
 import org.testin.ui.Badges;
 import org.testin.ui.Tooltip;
 import org.testin.util.Bundle;
-import org.testin.view.ViewToolWindowFactory;
 
 import javax.swing.JComponent;
 import java.util.ArrayList;
@@ -54,10 +49,7 @@ public final class Bug {
         final @NotNull Optional<String> bugIssue = runItem.bugIssue();
         if (!runItem.isFailed() && bugIssue.isEmpty()) return Optional.empty();
 
-        return Services.getInstance(p, Nodes.class).find(Services.getInstance(p, TestinRoot.class).resolve(currentPath))
-                .filter(TestRunNode.class::isInstance)
-                .map(TestRunNode.class::cast)
-                .map(testRunNode -> drawn(p, runItem, dto, bugIssue, testRunNode));
+        return AbstractDetails.testRunOf(p, currentPath).map(testRunNode -> drawn(p, runItem, dto, bugIssue, testRunNode));
     }
 
     // UC-VIEW-PANEL-005, UC-VIEW-PANEL-016, Rule-VIEW-PANEL-066, Rule-VIEW-PANEL-075, Rule-VIEW-PANEL-086
@@ -78,7 +70,7 @@ public final class Bug {
                 .whyReportBugIsOff(new RunItemPath(testRunNode.getPath(), runItem.getId()), runItem);
 
         final @NotNull ActionLink report = AbstractDetails.link(Bundle.message("bug.dialog.title"),
-                _ -> ReportBug.start(p, testRunNode, runItem.getId(), dto, () -> redraw(p, dto, testRunNode)));
+                _ -> ReportBug.start(p, testRunNode, runItem.getId(), dto, () -> AbstractDetails.redraw(p, dto, testRunNode)));
 
         report.setEnabled(off.isEmpty());
         Tooltip.set(report, off.orElse(""));
@@ -98,10 +90,5 @@ public final class Bug {
         Badges.showBadges(holder, bug);
 
         return Optional.of(holder);
-    }
-
-    private static void redraw(final @NotNull Project p, final @NotNull TestCaseDto dto, final @NotNull TestRunNode testRunNode) {
-        ViewToolWindowFactory.refreshIfShowing(p, List.of(dto));
-        Services.getInstance(p, TestinEditors.class).testRunEditorFor(testRunNode).ifPresent(TestRunEditor::refreshView);
     }
 }

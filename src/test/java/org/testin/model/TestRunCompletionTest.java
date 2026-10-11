@@ -18,6 +18,7 @@ package org.testin.model;
 
 
 import org.jetbrains.annotations.NotNull;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.testrun.RunItems;
@@ -32,7 +33,7 @@ import static org.testng.Assert.assertTrue;
 public class TestRunCompletionTest {
 
     private static @NotNull RunItem runItem(final RunItemStatus status) {
-        return RunItem.builder().id(UUID.randomUUID()).status(status).build();
+        return RunItem.builder().id(UUID.randomUUID()).executions(List.of(Execution.builder().status(status).build())).build();
     }
 
     private static @NotNull RunItems testRunOf(final RunItem... items) {
@@ -57,7 +58,7 @@ public class TestRunCompletionTest {
 
     @Test
     public void aDeletedTestCaseDoesNotHoldItOpenForever() {
-        assertTrue(testRunOf(runItem(RunItemStatus.PASSED), runItem(RunItemStatus.REMOVED)).isFullyJudged());
+        assertTrue(testRunOf(runItem(RunItemStatus.PASSED), RunItem.builder().id(UUID.randomUUID()).removed(true).build()).isFullyJudged());
     }
 
     @Test

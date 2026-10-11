@@ -69,7 +69,7 @@ public abstract class AbstractReadTheRootIdeTest extends AbstractTempRootIdeTest
     }
 
     protected static void resultIn(final @NotNull Path testRun, final @NotNull String fileName, final @NotNull UUID testCaseId) {
-        SyntheticTree.write(testRun.resolve(fileName), "{ \"id\" : \"" + testCaseId + "\", \"status\" : \"PASSED\" }");
+        SyntheticTree.write(testRun.resolve(fileName), "{ \"id\" : \"" + testCaseId + "\", \"executions\" : [ { \"status\" : \"PASSED\" } ] }");
     }
 
     protected static boolean names(final @NotNull List<String> messages, final @NotNull String words) {

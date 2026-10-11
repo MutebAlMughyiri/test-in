@@ -18,11 +18,7 @@ package org.testin.model;
 
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.bug.BugPriority;
-import org.testin.model.bug.BugSeverity;
-import org.testin.model.testrun.Failure;
 import org.testin.model.testrun.RunItem;
-import org.testin.model.status.RunItemStatus;
 import org.testin.testrun.TestRunEditorAttributes;
 import org.testng.annotations.Test;
 
@@ -32,7 +28,6 @@ import java.util.UUID;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
 
 public class TestRunGridEditingTest {
 
@@ -68,85 +63,5 @@ public class TestRunGridEditingTest {
         TestRunEditorAttributes.ACTUAL_RESULT.getRunItemValueSetter().execute(row, "The balance showed 0.00");
 
         assertEquals(row.getActualResult(), "The balance showed 0.00");
-    }
-
-    @Test
-    public void aRowWithNothingTypedLosesNothingByPassing() {
-        assertEquals(runItem().wouldClear(RunItemStatus.PASSED, Failure.NONE), List.of(),
-                "the ordinary case asks the tester nothing");
-    }
-
-    @Test
-    public void passingNamesEverythingItWouldErase() {
-        final RunItem row = runItem();
-        row.setActualResult("The balance showed 0.00");
-        row.setStacktrace("java.lang.AssertionError");
-        row.setBugSeverity(BugSeverity.MAJOR);
-        row.setBugPriority(BugPriority.HIGH);
-
-        assertEquals(row.wouldClear(RunItemStatus.PASSED, Failure.NONE),
-                List.of("the actual result", "the stacktrace", "the bug severity", "the bug priority"));
-    }
-
-    @Test
-    public void onlyWhatIsActuallyFilledInIsNamed() {
-        final RunItem row = runItem();
-        row.setActualResult("The balance showed 0.00");
-
-        assertEquals(row.wouldClear(RunItemStatus.PASSED, Failure.NONE), List.of("the actual result"),
-                "warning about three empty fields teaches the tester to dismiss the warning");
-    }
-
-    @Test
-    public void aRunItemStatusThatErasesNothingAsksNothing() {
-        final RunItem row = runItem();
-        row.setActualResult("The balance showed 0.00");
-
-        assertEquals(row.wouldClear(RunItemStatus.FAILED, Failure.NONE), List.of(),
-                "a failing test case still has something to explain, so nothing is cleared");
-        assertEquals(row.wouldClear(RunItemStatus.BLOCKED, Failure.NONE), List.of());
-    }
-
-    @Test
-    public void passingStillClearsWhatItAlwaysCleared() {
-        final RunItem row = runItem();
-        row.setActualResult("The balance showed 0.00");
-        row.setStacktrace("java.lang.AssertionError");
-        row.setBugSeverity(BugSeverity.MAJOR);
-        row.setBugPriority(BugPriority.HIGH);
-
-        row.recordRunItemStatus(RunItemStatus.PASSED, "mtb");
-
-        assertEquals(row.getActualResult(), "");
-        assertEquals(row.getStacktrace(), "");
-        assertEquals(row.getBugSeverity(), BugSeverity.ENHANCEMENT);
-        assertEquals(row.getBugPriority(), BugPriority.LOW);
-        assertEquals(row.getStatus(), RunItemStatus.PASSED);
-        assertEquals(row.getExecutedBy(), "mtb");
-    }
-
-    @Test
-    public void failingKeepsWhatTheTesterTyped() {
-        final RunItem row = runItem();
-        row.setActualResult("The balance showed 0.00");
-
-        row.recordRunItemStatus(RunItemStatus.FAILED, "mtb");
-
-        assertEquals(row.getActualResult(), "The balance showed 0.00",
-                "the actual result is the point of a failure");
-    }
-
-    @Test
-    public void whatAPassClearsAndWhatItWarnsAboutAreTheOneList() {
-        final RunItem row = runItem();
-        row.setActualResult("The balance showed 0.00");
-        row.setBugSeverity(BugSeverity.MAJOR);
-
-        final List<String> warned = row.wouldClear(RunItemStatus.PASSED, Failure.NONE);
-        row.recordRunItemStatus(RunItemStatus.PASSED, "mtb");
-
-        assertTrue(row.wouldClear(RunItemStatus.PASSED, Failure.NONE).isEmpty(),
-                "everything named in the warning is gone afterward, or the warning was wrong: " + warned);
-        assertEquals(warned.size(), 2);
     }
 }

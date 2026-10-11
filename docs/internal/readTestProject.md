@@ -15,7 +15,7 @@ There is no key for this. It starts on its own.
 - **Rule-INTERNAL-003** — A folder is a test project only if it holds a file
   named `.tp`.
 - **Rule-INTERNAL-091** — A test project says which format its files are in, in
-  its `.tp`. This build reads format 3 and nothing else: a project without the
+  its `.tp`. This build reads format 4 and nothing else: a project without the
   number, or with a lower one, is shown refused as written by an older Testin,
   to be removed and created again, because nothing converts it; a project with
   a higher number is refused as written by a newer Testin. A refused project is not read and not

@@ -18,6 +18,7 @@ package org.testin.model;
 
 
 import org.jetbrains.annotations.NotNull;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.testrun.RunItems;
@@ -36,9 +37,7 @@ public class DeletedTestCaseInATestRunTest {
 
     private static @NotNull RunItem removedItem(final UUID id) {
         return RunItem.builder()
-                .id(id)
-                .status(RunItemStatus.REMOVED)
-                .executedAt(Config.NOT_EXECUTED)
+                .id(id).removed(true)
                 .build();
     }
 
@@ -72,7 +71,6 @@ public class DeletedTestCaseInATestRunTest {
     public void aRowNeverJudgedOfADeletedTestCaseIsShownRemoved() {
         final RunItem runItem = RunItem.builder()
                 .id(UUID.randomUUID())
-                .status(RunItemStatus.PENDING)
                 .removed(true)
                 .build();
 
@@ -84,8 +82,7 @@ public class DeletedTestCaseInATestRunTest {
     public void aJudgedRunItemOfADeletedTestCaseShowsRemovedAndKeepsItsRunItemStatusInTheFile() {
         final RunItem runItem = RunItem.builder()
                 .id(UUID.randomUUID())
-                .status(RunItemStatus.PASSED)
-                .removed(true)
+                .removed(true).executions(List.of(Execution.builder().status(RunItemStatus.PASSED).build()))
                 .build();
 
         assertTrue(runItem.isRemoved(), "the run item status path, the details editor and the walker refuse it");

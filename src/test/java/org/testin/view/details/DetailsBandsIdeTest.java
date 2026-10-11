@@ -20,6 +20,7 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.ui.components.JBPanel;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCaseDto;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.ui.dialogs.DialogStyle;
@@ -57,7 +58,7 @@ public class DetailsBandsIdeTest extends BasePlatformTestCase {
     }
 
     private static @NotNull RunItem failed() {
-        return RunItem.builder().id(ID).status(RunItemStatus.FAILED).actualResult("The session was dropped").duration(Duration.ofSeconds(134)).executedBy("muteb").stacktrace(STACKTRACE).build();
+        return RunItem.builder().id(ID).executions(List.of(Execution.builder().status(RunItemStatus.FAILED).actualResult("The session was dropped").duration(Duration.ofSeconds(134)).executedBy("muteb").stacktrace(STACKTRACE).build())).build();
     }
 
     private @NotNull List<String> shown(final @NotNull Optional<RunItem> runItem) {

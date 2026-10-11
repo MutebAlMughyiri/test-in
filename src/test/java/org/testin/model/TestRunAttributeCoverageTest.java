@@ -16,33 +16,15 @@
 
 package org.testin.model;
 
-import org.testin.model.testrun.FailureDetail;
 import org.testin.testrun.TestRunEditorAttributes;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
 
 public class TestRunAttributeCoverageTest {
-
-    @Test
-    public void everyFailureDetailIsAlsoATestRunAttribute() {
-        assertEquals(FailureDetail.values().length, 6,
-                "a seventh thing a failure records needs a TestRunEditorAttributes constant too, "
-                        + "or it is stored, cleared on a pass, and shown nowhere");
-
-        final List<String> named = Arrays.stream(TestRunEditorAttributes.values())
-                .map(TestRunEditorAttributes::getName)
-                .toList();
-
-        for (final String expected : List.of("Actual Result", "Stacktrace", "Bug Severity", "Bug Priority", "Bug Issue")) {
-            assertTrue(named.contains(expected), expected + " is recorded on a test run row but has no attribute: " + named);
-        }
-    }
 
     @Test
     public void theStacktraceIsReadOnlyAndOffByDefault() {

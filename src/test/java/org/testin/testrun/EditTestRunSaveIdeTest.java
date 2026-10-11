@@ -26,6 +26,7 @@ import org.testin.indexer.TestRuns;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.status.TestRunStatus;
@@ -60,8 +61,8 @@ public class EditTestRunSaveIdeTest extends AbstractTempRootIdeTest {
         });
 
         indexedTestRuns().putRunItems(testRun.getPath(), new RunItems().setAll(List.of(
-                new RunItem().setId(JUDGED_WHILE_OPEN).setStatus(RunItemStatus.PENDING),
-                new RunItem().setId(STILL_PENDING).setStatus(RunItemStatus.PENDING))));
+                new RunItem().setId(JUDGED_WHILE_OPEN),
+                new RunItem().setId(STILL_PENDING))));
         return testRun;
     }
 
@@ -80,7 +81,7 @@ public class EditTestRunSaveIdeTest extends AbstractTempRootIdeTest {
     public void testSavingKeepsARunItemStatusThatArrivedWhileTheDialogWasOpen() {
         final @NotNull TestRunNode testRun = anOpenTestRun();
 
-        indexedTestRuns().changeRunItems(testRun.getPath(), held -> held.runItemOf(JUDGED_WHILE_OPEN).ifPresent(result -> result.setStatus(RunItemStatus.FAILED)));
+        indexedTestRuns().changeRunItems(testRun.getPath(), held -> held.runItemOf(JUDGED_WHILE_OPEN).ifPresent(result -> result.setExecutions(List.of(Execution.builder().status(RunItemStatus.FAILED).build()))));
 
         assertTrue("the edit was refused", save(testRun));
         assertEquals("the run item status that arrived while the dialog was open was replaced", RunItemStatus.FAILED, statusOf(testRun, JUDGED_WHILE_OPEN));

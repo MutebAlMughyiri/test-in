@@ -62,7 +62,7 @@ final class RunItemWriter {
 
     private static @NotNull Set<String> namedScreenshots(final @NotNull RunItems runItems) {
         return runItems.getAll().stream()
-                .flatMap(runItem -> runItem.getScreenshots().stream())
+                .flatMap(runItem -> runItem.allScreenshots().stream())
                 .collect(Collectors.toSet());
     }
 

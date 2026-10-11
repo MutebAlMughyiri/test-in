@@ -35,6 +35,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Optional;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HoverButton {
@@ -43,18 +44,24 @@ public final class HoverButton {
 
     // UC-VIEW-PANEL-012, UC-VIEW-PANEL-014, UC-EDITOR-PANEL-046, Rule-VIEW-PANEL-056, Rule-EDITOR-PANEL-243
     public static @NotNull JComponent of(final @NotNull Project p, final @NotNull Offered offered, final @NotNull Icon drawn, final @NotNull String name, final @NotNull Runnable press) {
-        final @NotNull JBLabel label = new JBLabel();
-        final @NotNull Icon shown = offered.works() ? drawn : IconLoader.getDisabledIcon(drawn);
-        final @NotNull Icon base = IconUtil.scale(shown, label, BASE_SCALE);
-        final @NotNull Icon hover = IconUtil.scale(shown, label, offered.works() ? HOVER_SCALE : BASE_SCALE);
-        label.setIcon(base);
-        label.setCursor(Cursor.getPredefinedCursor(offered.works() ? Cursor.HAND_CURSOR : Cursor.DEFAULT_CURSOR));
+        return of(p, offered.whyNot(), drawn, name, offered.works() ? Declared.shortcutText(offered.action().getActionId()) : "", press);
+    }
 
-        Tooltip.set(label, offered.whyNot().orElse(name), offered.works() ? Declared.shortcutText(offered.action().getActionId()) : "");
+    // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-120, Rule-VIEW-PANEL-121
+    public static @NotNull JComponent of(final @NotNull Project p, final @NotNull Optional<String> whyNot, final @NotNull Icon drawn, final @NotNull String name, final @NotNull String shortcut, final @NotNull Runnable press) {
+        final boolean works = whyNot.isEmpty();
+        final @NotNull JBLabel label = new JBLabel();
+        final @NotNull Icon shown = works ? drawn : IconLoader.getDisabledIcon(drawn);
+        final @NotNull Icon base = IconUtil.scale(shown, label, BASE_SCALE);
+        final @NotNull Icon hover = IconUtil.scale(shown, label, works ? HOVER_SCALE : BASE_SCALE);
+        label.setIcon(base);
+        label.setCursor(Cursor.getPredefinedCursor(works ? Cursor.HAND_CURSOR : Cursor.DEFAULT_CURSOR));
+
+        Tooltip.set(label, whyNot.orElse(name), shortcut);
 
         // Rule-INTERNAL-122
         label.getAccessibleContext().setAccessibleName(name);
-        offered.whyNot().ifPresent(reason -> label.getAccessibleContext().setAccessibleDescription(reason));
+        whyNot.ifPresent(reason -> label.getAccessibleContext().setAccessibleDescription(reason));
 
         label.setPreferredSize(new Dimension(hover.getIconWidth(), hover.getIconHeight()));
         label.setHorizontalAlignment(SwingConstants.CENTER);
@@ -75,7 +82,7 @@ public final class HoverButton {
             // UC-VIEW-PANEL-012, UC-VIEW-PANEL-014
             @Override
             public void mouseClicked(final MouseEvent e) {
-                offered.whyNot().ifPresentOrElse(reason -> Services.getInstance(p, Notifier.class).softRefuse(p, reason), press);
+                whyNot.ifPresentOrElse(reason -> Services.getInstance(p, Notifier.class).softRefuse(p, reason), press);
             }
         });
 

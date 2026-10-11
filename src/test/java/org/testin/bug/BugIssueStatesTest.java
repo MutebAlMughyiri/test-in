@@ -18,6 +18,7 @@ package org.testin.bug;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.testrun.RunItems;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testng.annotations.Test;
@@ -36,7 +37,7 @@ public class BugIssueStatesTest {
     private static @NotNull RunItems filed(final @NotNull String... bugIssueUrls) {
         final @NotNull List<RunItem> runItems = new ArrayList<>();
         for (final String url : bugIssueUrls) {
-            runItems.add(RunItem.builder().id(UUID.randomUUID()).status(RunItemStatus.FAILED).bugIssueUrl(url).build());
+            runItems.add(RunItem.builder().id(UUID.randomUUID()).bugIssueUrl(url).executions(List.of(Execution.builder().status(RunItemStatus.FAILED).build())).build());
         }
         return RunItems.builder().all(runItems).build();
     }

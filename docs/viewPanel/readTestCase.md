@@ -68,14 +68,17 @@ There is no key for this. It is what the **Details** tab shows.
   middle of the words. A band with nothing to show is not drawn at all, and
   where only one band has anything to show its name is not drawn either: a
   heading over the whole panel names nothing.
-- **Rule-VIEW-PANEL-086** — What a test run recorded is one line under the
-  band's name: the run item status in its own color, how long it took, the bug's
-  severity and priority as one chip, which names each half on hover as a test
-  run's card does, then the issue and the link that raises one. The duration carries a clock and a plain frame with nothing filled in, so
-  it reads as a measurement rather than a run item status, and it is not the
-  notched shape a group badge uses. Who ran it and when close the band as a row of their own, in
-  the words **Created** already uses (Rule-VIEW-PANEL-061), because a name and a
-  date are read after the failure rather than glanced at before it.
+- **Rule-VIEW-PANEL-086** — What a test run recorded is one line per execution
+  under the band's name, the oldest first: the run item status in its own color
+  and how long it took, then, when the automation ran the method more than once,
+  what it was - *Invocation n*, *↳ Retry n* under the attempt it retried, or the
+  data provider row; an attempt TestNG retried is dimmed. The bug's severity and
+  priority chip, the issue and the link that raises one stay on the default's
+  line, and hovering the chip names each half as a test run's card does. The
+  duration carries a clock and a plain frame, so it reads as a measurement
+  rather than a run item status. Who ran the execution shown below and when
+  close the band as a row of their own, in the words **Created** already uses
+  (Rule-VIEW-PANEL-061).
 - **Rule-VIEW-PANEL-087** — The test case's band folds only where a test run
   stands above it, and there it is folded when a tester first meets it: its name
   carries the arrow that opens it, and opening it shows every field the test
@@ -86,6 +89,25 @@ There is no key for this. It is what the **Details** tab shows.
 - **Rule-VIEW-PANEL-114** — The priority badge says High or Medium, and hovering
   it says Priority: High or Priority: Medium, so it is not read as the bug's
   priority, which uses the same words.
+- **Rule-VIEW-PANEL-119** — One execution is the run item's default: its status
+  is the run item status on the card, in the grid, in the totals and in the
+  reports, and it carries a ★. It is the execution a tester chose with ☆, or the
+  last one when none was chosen. A tester's new recording becomes the default,
+  and so does the one the automation picked (Rule-CODEGEN-111).
+- **Rule-VIEW-PANEL-120** — Hovering an execution's line shows ☆ and × over its
+  right end, as a card shows its hover actions, taking no room of their own. ☆
+  makes that execution the default, and the run item status follows at once.
+- **Rule-VIEW-PANEL-121** — × removes that execution at once, asks nothing, and
+  says *Removed*. If it was the default, the last one left becomes the default;
+  with none left, the run item is Pending again. ☆ and × are gray, and say why,
+  once the test run is Committed (Rule-TREE-PANEL-009), and while the automation
+  is still running that test case, because its attempts are still being written
+  (Rule-CODEGEN-111).
+- **Rule-VIEW-PANEL-122** — Clicking an execution's line shows that execution's
+  actual result, error, screenshots and who ran it in the rows below, and
+  changes nothing else. The panel opens on the default.
+- **Rule-VIEW-PANEL-123** — A run item executed once reads as it did before
+  executions were kept: one line, no ★, nothing to hover.
 
 ## The screen
 

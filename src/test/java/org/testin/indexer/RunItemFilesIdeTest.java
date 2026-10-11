@@ -24,6 +24,7 @@ import org.testin.model.FileKind;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.services.Services;
@@ -46,8 +47,10 @@ public class RunItemFilesIdeTest extends AbstractTempRootIdeTest {
     private static final String A_PULLED_RESULT = """
             {
               "id" : "11111111-1111-4111-8111-111111111103",
-              "status" : "PASSED",
-              "actualResult" : "Judged on the other machine"
+              "executions" : [ {
+                "status" : "PASSED",
+                "actualResult" : "Judged on the other machine"
+              } ]
             }""";
 
     private static @NotNull Path runItemOf(final Path testRunPath, final UUID testCaseId) {
@@ -98,7 +101,7 @@ public class RunItemFilesIdeTest extends AbstractTempRootIdeTest {
 
         final List<RunItem> runItems = new ArrayList<>();
         for (final UUID testCaseId : List.of(JUDGED_TEST_CASE, UNTICKED_TEST_CASE)) {
-            runItems.add(new RunItem().setId(testCaseId).setStatus(RunItemStatus.PASSED));
+            runItems.add(new RunItem().setId(testCaseId).setExecutions(List.of(Execution.builder().status(RunItemStatus.PASSED).build())));
         }
 
         indexedTestRuns().putRunItems(testRunPath, new RunItems().setAll(runItems));
@@ -141,8 +144,8 @@ public class RunItemFilesIdeTest extends AbstractTempRootIdeTest {
         awaitFile(runItemOf(testRun, UNTICKED_TEST_CASE), "the test run's results never reached disk");
         final String untouched = read(runItemOf(testRun, UNTICKED_TEST_CASE));
 
-        indexedTestRuns().findRunItems(testRun).orElseThrow().runItemOf(UNTICKED_TEST_CASE).orElseThrow().setActualResult("Not saved yet");
-        indexedTestRuns().changeRunItem(testRun, JUDGED_TEST_CASE, runItem -> runItem.setStatus(RunItemStatus.FAILED));
+        indexedTestRuns().findRunItems(testRun).orElseThrow().runItemOf(UNTICKED_TEST_CASE).orElseThrow().setUnrecordedActualResult("Not saved yet");
+        indexedTestRuns().changeRunItem(testRun, JUDGED_TEST_CASE, runItem -> runItem.setExecutions(List.of(Execution.builder().status(RunItemStatus.FAILED).build())));
 
         Await.until("the run item status never reached its result file", () -> read(runItemOf(testRun, JUDGED_TEST_CASE)).contains("FAILED"));
         assertEquals("a run item status on one test case rewrote the result of another", untouched, read(runItemOf(testRun, UNTICKED_TEST_CASE)));

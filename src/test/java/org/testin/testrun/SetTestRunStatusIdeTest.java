@@ -25,6 +25,7 @@ import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
+import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.status.TestRunStatus;
@@ -48,9 +49,9 @@ public class SetTestRunStatusIdeTest extends AbstractTempRootIdeTest {
 
         final @NotNull TestRunNode testRun = made.testRun(tp.getTestRunsFolder(), "Cycle-1");
         indexedTestRuns().putRunItems(testRun.getPath(), new RunItems().setAll(List.of(
-                new RunItem().setId(passed).setStatus(RunItemStatus.PASSED),
-                new RunItem().setId(stillPending).setStatus(RunItemStatus.PENDING),
-                new RunItem().setId(alsoPending).setStatus(RunItemStatus.PENDING))));
+                new RunItem().setId(passed).setExecutions(List.of(Execution.builder().status(RunItemStatus.PASSED).build())),
+                new RunItem().setId(stillPending),
+                new RunItem().setId(alsoPending))));
 
         new TestRunStatusChange(getProject()).apply(testRun, finalStatus);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();

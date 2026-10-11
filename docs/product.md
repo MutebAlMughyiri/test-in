@@ -557,7 +557,7 @@ answered.
 | **Pending**         | This test run holds the test case and has not reached it yet                                    |
 | **Untested**        | The test run ended without ever reaching the test case                                          |
 | **Removed**         | The test case has been deleted. The test run keeps what it recorded                             |
-| **Signed off**      | Completed or Closed. A signed-off test run records nothing further, apart from a bug issue link |
+| **Signed off**      | Committed. A signed-off test run records nothing further, apart from a bug issue link           |
 | **Deprecated**      | A test set kept for its history but no longer offered for new test runs                         |
 | **Archived**        | A package kept but moved out of the way                                                         |
 | **Automation**      | The generated test method that executes a test case without a person                            |
