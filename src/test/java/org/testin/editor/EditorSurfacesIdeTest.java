@@ -21,6 +21,7 @@ import com.intellij.openapi.util.Disposer;
 import com.intellij.testFramework.PlatformTestUtil;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
+import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
@@ -43,7 +44,6 @@ import javax.swing.Icon;
 import javax.swing.JFrame;
 import javax.swing.JViewport;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingUtilities;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.KeyboardFocusManager;
@@ -143,7 +143,7 @@ public class EditorSurfacesIdeTest extends AbstractTempRootIdeTest {
             grid.changeSelection(0, description, false, false);
             assertTrue(grid.editCellAt(0, description));
             grid.getEditorComponent().requestFocus();
-            Await.until("the open cell never took the keyboard", () -> SwingUtilities.isDescendingFrom(KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner(), grid));
+            Await.until("the open cell never took the keyboard", () -> UIUtil.isFocusAncestor(grid));
 
             editor.refreshView();
 

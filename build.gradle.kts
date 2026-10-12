@@ -576,9 +576,19 @@ intellijPlatformTesting {
      * they come from. What is added here is the runner and which classes it
      * takes, because BasePlatformTestCase is a JUnit TestCase and the TestNG
      * runner that runs everything else would never see one.
+     *
+     * Code Provenance is off in them: it starts chatter.exe inside a test's
+     * temporary folder, and on Windows the platform then cannot delete that
+     * folder, which failed a test at teardown on CI.
      */
     testIde {
-        ideTestShares.keys.forEach { register(it) }
+        ideTestShares.keys.forEach {
+            register(it) {
+                plugins {
+                    disablePlugin("com.intellij.code.provenance")
+                }
+            }
+        }
     }
 
     runIde {
