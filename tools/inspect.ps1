@@ -1946,8 +1946,8 @@ function Read-ComplexMethods
 {
     <#
         What pmdMain reports: a production method over the cognitive complexity
-        or if-nesting limit (#378), one finding per method, under PMD's own
-        rule name.
+        or if-nesting limit (#378), one finding per method, under the rule
+        name PMD gives it.
 
         CI's Build runs pmdMain before the IDE tests, and a quick run did not,
         so fa0c95529 pushed a breach nothing local reported. Build stayed red

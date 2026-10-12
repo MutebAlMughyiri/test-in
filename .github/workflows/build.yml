@@ -92,12 +92,12 @@ jobs:
         shell: pwsh
         run: Add-MpPreference -ExclusionPath "${{ github.workspace }}", "$env:TEMP", "$env:USERPROFILE\.gradle"
 
-      # One invocation, so it stops at the first thing that is wrong. The
-      # reports below are uploaded either way.
+      # One invocation that runs every gate, failing at the end if any failed.
+      # The reports below are uploaded either way.
       #
-      # verifyPlugin here means IntelliJ IDEA, which is the only one of the four
-      # whose result is news - build.gradle.kts records why, and how to run the
-      # full sweep by hand.
+      # verifyPlugin here means IntelliJ IDEA, PyCharm and Rider, each at the
+      # build this compiles against and the oldest it claims - build.gradle.kts
+      # records why. verify.yml adds GoLand and WebStorm.
       #
       # ideTest runs the tests that need a running IDE: the indexer, the tree,
       # an undo across two test sets, filing a bug. The unit tests cannot reach
