@@ -1,12 +1,11 @@
 [Documentation](../README.md) › [The editor panel](main.md) › UC-EDITOR-PANEL-044
 
-# UC-EDITOR-PANEL-044: Run everything not yet judged
+# UC-EDITOR-PANEL-044: Run every automated test case
 
-**As a** tester, **I want** to set the whole test run going and come back later, **so that** a regression test run of
-200 test cases happens while I do something
-else.
+**As a** tester, **I want** to set the whole test run's automation going and come back later, **so that** a regression
+test run of 200 test cases executes while I do something else. The test cases that already have a result run again too.
 
-Testin runs every test case that has no run item status yet, in one go.
+Testin runs every test case that has a generated method, in one go, judged or not.
 
 There is no key and no button in the editor. It starts from the tree, with **Run Tests** on the test run.
 
@@ -36,8 +35,9 @@ There is no key and no button in the editor. It starts from the tree, with **Run
   reported rather than brought into view.
 - **Rule-EDITOR-PANEL-010** — While a grid cell is open for editing, every key
   that would act on the row is refused.
-- **Rule-EDITOR-PANEL-184** — Only test cases with no run item status are run. A
-  test case already judged is never run again.
+- **Rule-EDITOR-PANEL-184** — Every test case with a generated method is run,
+  judged or not, and each run adds one more execution (Rule-EDITOR-PANEL-136). A
+  test case without one stays as it is.
 - **Rule-EDITOR-PANEL-185** — The whole set is one configuration and one
   process.
 - **Rule-EDITOR-PANEL-186** — A test run in which every test case has been
@@ -65,15 +65,21 @@ There is no key and no button in the editor. It starts from the tree, with **Run
   bar scrolls that bar sideways under the pointer, with the mouse wheel or a
   touchpad. No scrollbar is shown and the bar keeps its height, so nothing on it
   is cut off and the editor below does not move.
+- **Rule-EDITOR-PANEL-289** — While Run Tests executes, the selection moves to
+  each run item as TestNG starts executing it, so the tester watches the test
+  run go by. A click or a key in the list does not stop it: the next run item
+  TestNG starts takes the selection again, until Run Tests ends.
 
 ## What the tester sees
 
 This opens no screen of Testin's own. The test run's editor opens or comes to
-the front, every pending card turns to running, and the IDE's own run window
-opens below it.
+the front, a dot blinks after the description of the test case TestNG is
+executing, and the IDE's own run window opens below it. Start Execution turns gray and says
+Run Tests is executing.
 
-Results land one at a time, and nothing is said per test case. When the last one
-is in, one small message appears at the bottom of the IDE and fades. It reads a
+Results land one at a time, and nothing is said per test case. The selection
+moves to each run item as TestNG starts executing it, whatever the tester clicks
+in between. When the last one is in, one small message appears at the bottom of the IDE and fades. It reads a
 figure for each run item status the test run now carries, such as *Passed 42,
 Failed 8*.
 
@@ -81,10 +87,11 @@ Failed 8*.
 
 1. The tester right-clicks the test run in the tree and chooses **Run Tests**.
 2. The test run's editor opens, or comes to the front.
-3. Testin gathers every test case with no run item status yet.
+3. Testin gathers every test case in the test run, judged or not.
 4. All of them are claimed by this editor.
-5. They are handed to TestNG as one configuration.
-6. Results come back one at a time and are written into the test run, silently.
+5. They are handed to TestNG as one configuration; a test case with no generated method is dropped.
+6. Results come back one at a time and are written into the test run, silently, each as one more execution. The
+   selection moves to each run item as TestNG starts it.
 7. When the last one lands, one message reads the test run's figures, such as *Passed 42, Failed 8*, and the test run is
    marked **Completed**.
 
@@ -92,13 +99,14 @@ Failed 8*.
 
 **If the test run is completed or closed** — the tree entry is gray.
 
-**If the test run is already running** — a message reads the test run's name,
-then *is already running*.
+**If Run Tests is already executing** — the tree entry is gray, and says *Run
+Tests is executing; stop it first*.
 
-**If nothing is pending** — a message reads the test run's name, then *has no
-test cases to run*.
+**If the tester is executing it by hand** — the tree entry is gray, and says
+*Start Execution is on; stop it first*.
 
-**If the tester is executing it by hand** — the same refusal as already running.
+**If nothing is left to run** — a message reads the test run's name, then *has
+no test cases to run*.
 
 **If the IDE has no TestNG plugin** — nothing is offered.
 

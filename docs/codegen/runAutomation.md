@@ -36,8 +36,8 @@ The code runs, and Testin writes down whether each test case passed.
 - **Rule-CODEGEN-033** — One message with a count, however many test cases
   started, and it counts the ones that actually started. It appears once Testin
   has found their methods, not when the key was pressed.
-- **Rule-CODEGEN-034** — A card turns to running the moment the tester presses
-  the key, before the process exists.
+- **Rule-CODEGEN-034** — A card's run button becomes its stop button the moment
+  the tester presses the key, before the process exists.
 - **Rule-CODEGEN-035** — The order the methods run in is the order of the test
   cases in their test set.
 - **Rule-CODEGEN-074** — A test case that cannot run is reported once. One says
@@ -100,13 +100,13 @@ The code runs, and Testin writes down whether each test case passed.
 | Clicks the run button                 | A card under the pointer, or the view panel                               |
 | Presses `F5` or clicks the run button | [Light mode](../editorPanel/lightMode.md), on the test case it is showing |
 
-Running everything a test run has not judged yet is different, and is
+Running every automated test case in a test run is different, and is
 [UC-EDITOR-PANEL-044](../editorPanel/runWholeTestRun.md).
 
 ## What the tester sees
 
-Every selected card turns to running at once, and its run button becomes a stop
-button. That is the answer to the key; the message comes a moment later, once
+Every selected card's run button becomes a stop button at once, and a dot blinks
+after the description of the one TestNG is executing. That is the answer to the key; the message comes a moment later, once
 Testin has found the methods. It appears near the bottom right of the IDE,
 reading *Running* and then how many actually started. The IDE's own run window
 opens underneath and shows what TestNG is doing.
@@ -114,12 +114,14 @@ opens underneath and shows what TestNG is doing.
 ## Main flow
 
 1. The tester selects three test cases and presses `F5`.
-2. Every card turns to running at once.
+2. Every card's run button becomes a stop button at once.
 3. Testin finds the method for each test case by its identity.
 4. The three are handed to TestNG as one configuration.
 5. A message reads *Running 3* — the number that started, said once Testin
    knows it.
-6. Each result comes back and is recorded against the test case, as one more
+6. While TestNG executes a test case, a dot blinks after its description
+   (Rule-EDITOR-PANEL-291).
+7. Each result comes back and is recorded against the test case, as one more
    execution of its run item.
 
 ## What Testin refuses

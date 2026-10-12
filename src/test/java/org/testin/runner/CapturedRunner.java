@@ -42,6 +42,11 @@ public final class CapturedRunner implements TestRunner {
         TestCaseExecutionListener.broadcast(p, tc.getId().toString(), status, duration, Failure.NONE);
     }
 
+    public static void startedByTestNg(final @NotNull Project p, final @NotNull TestCaseDto tc) {
+        Services.getInstance(p, TestNGExecution.class).launched(List.of(tc), "Testin: captured");
+        reports(p, tc, ExecutionStatus.RUNNING, Duration.ZERO);
+    }
+
     public @NotNull List<List<TestCaseDto>> runs() {
         return List.copyOf(runs);
     }

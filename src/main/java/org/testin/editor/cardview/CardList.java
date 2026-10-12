@@ -18,6 +18,8 @@ package org.testin.editor.cardview;
 
 import com.intellij.openapi.actionSystem.DataSink;
 import com.intellij.openapi.actionSystem.UiDataProvider;
+import com.intellij.ui.AnimatedIcon;
+import com.intellij.ui.ClientProperty;
 import com.intellij.ui.CollectionListModel;
 import com.intellij.ui.components.JBList;
 import org.jetbrains.annotations.NotNull;
@@ -32,6 +34,9 @@ public class CardList extends JBList<TestCaseDto> implements UiDataProvider {
     public CardList(final @NotNull CollectionListModel<TestCaseDto> model, final @NotNull TestinEditor editor) {
         super(model);
         this.editor = editor;
+
+        // Rule-EDITOR-PANEL-291
+        ClientProperty.put(this, AnimatedIcon.ANIMATION_IN_RENDERER_ALLOWED, true);
     }
 
     @Override

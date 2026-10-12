@@ -216,7 +216,7 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
     }
 
     // Rule-EDITOR-PANEL-184, Rule-EDITOR-PANEL-185
-    public void testRunningTheWholeTestRunHandsOnlyThePendingOnesOverAsOneExecution() {
+    public void testRunningTheWholeTestRunHandsEveryTestCaseOverJudgedOrNotAsOneExecution() {
         final @NotNull List<TestCaseDto> testCases = automatedTestCases(4);
         final @NotNull TestRunNode tr = aTestRun("Cycle-1", List.of(
                 EditorFixtures.pending(testCases.getFirst()).setExecutions(List.of(Execution.builder().status(RunItemStatus.PASSED).build())),
@@ -228,10 +228,11 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
             editor.runWhenLoaded();
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
-            assertEquals("the whole test run was not one execution of the pending test cases only", List.of(List.of(testCases.get(1), testCases.get(3))), runner.runs());
+            assertEquals("the whole test run was not one execution of every test case, judged or not", List.of(testCases), runner.runs());
 
             reported(testCases.getFirst(), ExecutionStatus.FAILED, Duration.ofMillis(5));
-            assertEquals("a test case already judged was run again", RunItemStatus.PASSED, runItemOf(tr, testCases.getFirst()).getStatus());
+            Await.until("the second run of a judged test case was not recorded", () -> runItemOf(tr, testCases.getFirst()).getExecutions().size() == 2);
+            assertEquals("the new run did not decide the run item status", RunItemStatus.FAILED, runItemOf(tr, testCases.getFirst()).getStatus());
         } finally {
             Disposer.dispose(editor);
         }

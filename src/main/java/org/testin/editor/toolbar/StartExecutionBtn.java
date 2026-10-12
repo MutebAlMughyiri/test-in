@@ -18,6 +18,7 @@ package org.testin.editor.toolbar;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.testrun.ExecutionControl;
+import org.testin.editor.testrun.ExecutionMode;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.model.status.TestRunStatus;
 import org.testin.ui.framework.AbstractIconButton;
@@ -33,9 +34,10 @@ public class StartExecutionBtn extends AbstractIconButton implements ToolbarItem
         addActionListener(_ -> onStartExecutionClicked.run());
     }
 
-    // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-135
+    // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-135, Rule-EDITOR-PANEL-290
     public static @NotNull String tooltipFor(final @NotNull TestRunEditor editor) {
-        if (editor.getWalk().isExecuting()) return Bundle.message("toolbar.executing");
+        final @NotNull ExecutionMode mode = editor.getWalk().mode();
+        if (mode != ExecutionMode.IDLE) return mode.getRefusal();
 
         final @NotNull TestRunStatus status = editor.getParent().getMarker().getStatus();
         if (status.isTerminal()) return Bundle.message("toolbar.execution.disabled", status.getLabel());

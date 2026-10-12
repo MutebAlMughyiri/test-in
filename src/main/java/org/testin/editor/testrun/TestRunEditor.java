@@ -410,7 +410,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
         if (!startWhenLoaded || !loaded) return;
 
         startWhenLoaded = false;
-        walk.runPending();
+        walk.runAll();
     }
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-130
@@ -423,8 +423,16 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
         list.ensureIndexIsVisible(localIndex);
     }
 
-    void repaint(final @NotNull TestCaseDto tc) {
-        if (model.contains(tc)) model.contentsChanged(tc);
+    // UC-EDITOR-PANEL-044, Rule-EDITOR-PANEL-289
+    void showRunItem(final @NotNull TestCaseDto tc) {
+        final int index = getCurrentTestCases().indexOf(tc);
+        if (index >= 0) showExecuting(index);
+    }
+
+    // Rule-EDITOR-PANEL-291
+    @Override
+    public boolean walksOn(final @NotNull UUID testCaseId) {
+        return walk.walksOn(testCaseId);
     }
 
     @NotNull List<RunItem> runItems() {
@@ -461,17 +469,17 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
         return walk.isExecuting() || super.isBusy();
     }
 
-    // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-133
+    // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-133, Rule-EDITOR-PANEL-290
     public void onExecutionStateChanged() {
         if (isDisposed()) return;
 
-        final boolean executing = walk.isExecuting();
+        final @NotNull ExecutionMode mode = walk.mode();
 
         final @NotNull StartExecutionBtn startBtn = toolBar.getToolbarItem(StartExecutionBtn.class);
         final @NotNull StopExecutionBtn stopBtn = toolBar.getToolbarItem(StopExecutionBtn.class);
 
-        startBtn.setVisible(!executing);
-        stopBtn.setVisible(executing);
+        startBtn.setVisible(mode.showsStart());
+        stopBtn.setVisible(mode.showsStop());
         startBtn.updateEnabledState();
         toolBar.getToolbarItem(TestRunResultAnalysisBtn.class).updateEnabledState();
         toolBar.getToolbarItem(GenerateReportBtn.class).updateEnabledState();

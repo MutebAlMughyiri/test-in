@@ -69,7 +69,7 @@ public class CardTitleWrapIdeTest extends BasePlatformTestCase {
     public void testTheIconsStillFitAfterATitleThatFillsTheColumn() {
         final @NotNull List<Offered> buttons = everyButton();
         final int column = CardTitle.titleColumnWidth(900, buttons.size());
-        final @NotNull List<Slot> slots = CardTitle.descriptionActionIcons(column, buttons).slots();
+        final @NotNull List<Slot> slots = CardTitle.descriptionActionIcons(column, buttons, false).slots();
 
         assertTrue("a 900px list must give a bounded column, got " + column, column > 0 && column < 900);
         assertEquals("every button gets a slot", buttons.size(), slots.size());
@@ -78,8 +78,8 @@ public class CardTitleWrapIdeTest extends BasePlatformTestCase {
 
     // Rule-EDITOR-PANEL-235
     public void testTheNewButtonGoesLastAndMovesNeitherOfTheOthers() {
-        final @NotNull List<Slot> before = CardTitle.descriptionActionIcons(200, offered(CardHoverAction.NAVIGATE_TO_TEST_METHOD, CardHoverAction.RUN_TEST_METHOD)).slots();
-        final @NotNull List<Slot> now = CardTitle.descriptionActionIcons(200, everyButton()).slots();
+        final @NotNull List<Slot> before = CardTitle.descriptionActionIcons(200, offered(CardHoverAction.NAVIGATE_TO_TEST_METHOD, CardHoverAction.RUN_TEST_METHOD), false).slots();
+        final @NotNull List<Slot> now = CardTitle.descriptionActionIcons(200, everyButton(), false).slots();
 
         assertEquals("the method button moved", before.getFirst().at(), now.getFirst().at());
         assertEquals("the run button moved", before.get(1).at(), now.get(1).at());
@@ -89,7 +89,7 @@ public class CardTitleWrapIdeTest extends BasePlatformTestCase {
     }
 
     public void testAClickLandsOnTheButtonDrawnThere() {
-        final @NotNull TitleActionIcons icons = CardTitle.descriptionActionIcons(200, everyButton());
+        final @NotNull TitleActionIcons icons = CardTitle.descriptionActionIcons(200, everyButton(), false);
 
         for (final Slot slot : icons.slots()) {
             assertEquals(slot.button(), icons.at((int) slot.at().getCenterX(), (int) slot.at().getCenterY()).orElseThrow());

@@ -113,6 +113,9 @@ There is no key for this. It is what the **Details** tab shows.
   second row. Making the panel narrower never cuts anything off at the right or
   makes it scroll sideways. The History tab keeps each card's lines whole
   instead, and scrolls sideways when they are wider than the panel.
+- **Rule-VIEW-PANEL-125** — While the test case shown is executing, by hand or
+  by automation, a dot blinks right after its title, as on its card
+  (Rule-EDITOR-PANEL-291).
 
 ## The screen
 
@@ -140,7 +143,8 @@ There is no key for this. It is what the **Details** tab shows.
 ```
 
 1. **The top part** — the breadcrumb, then the title, then one line carrying the
-   badges and the three icons (Rule-VIEW-PANEL-085). Each one is numbered on
+   badges and the three icons (Rule-VIEW-PANEL-085). While the test case
+   executes, a dot blinks right after the title (Rule-VIEW-PANEL-125). Each one is numbered on
    [the view panel page](main.md#the-panel).
 2. **No heading, and nothing to open** — in the test set editor the fields are
    the only thing on the panel, so they are drawn straight under the identity

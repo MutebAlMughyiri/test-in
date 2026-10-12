@@ -29,6 +29,7 @@ import org.testin.editor.card.BaseCard;
 import org.testin.editor.card.CardHoverAction;
 import org.testin.editor.card.CardTitle;
 import org.testin.editor.card.Offered;
+import org.testin.editor.testrun.ExecutingNow;
 import org.testin.logger.Logger;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.Node;
@@ -193,9 +194,10 @@ public class CardMouseListener extends MouseAdapter {
 
         final @NotNull TestCaseDto tc = list.getModel().getElementAt(index);
         final @NotNull List<Offered> buttons = CardHoverAction.onCard(p, editor.getParent(), tc);
-        final int titleWidth = CardTitle.titleWidth(list, editor.cardTitle(tc), buttons.size());
+        final boolean executing = ExecutingNow.is(p, tc.getId());
+        final int titleWidth = CardTitle.titleWidth(list, editor.cardTitle(tc), CardTitle.slotCount(buttons, executing));
 
-        return CardTitle.descriptionActionIcons(titleWidth, buttons).at(xInCell, yInCell);
+        return CardTitle.descriptionActionIcons(titleWidth, buttons, executing).at(xInCell, yInCell);
     }
 
     // Rule-EDITOR-PANEL-267, Rule-EDITOR-PANEL-269, Rule-EDITOR-PANEL-270

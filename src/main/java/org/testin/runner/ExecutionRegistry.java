@@ -45,6 +45,8 @@ final class ExecutionRegistry {
 
     private final @NotNull Map<UUID, Attempts> held = new ConcurrentHashMap<>();
 
+    private final @NotNull Set<UUID> executingNow = ConcurrentHashMap.newKeySet();
+
     void starting(final @NotNull UUID id) {
         pending.add(id);
         stopped.remove(id);
@@ -88,6 +90,11 @@ final class ExecutionRegistry {
         return pending.contains(id) || configOf.containsKey(id);
     }
 
+    // Rule-EDITOR-PANEL-291
+    boolean isExecutingNow(final @NotNull UUID id) {
+        return executingNow.contains(id);
+    }
+
     @NotNull ExecutionStatus statusOf(final @NotNull UUID id) {
         return isRunning(id) ? ExecutionStatus.RUNNING : runItemStatus.getOrDefault(id, ExecutionStatus.IDLE);
     }
@@ -96,8 +103,12 @@ final class ExecutionRegistry {
     @NotNull Map<UUID, Attempts> attempted(final @NotNull UUID id, final @NotNull Attempt attempt) {
         if (attempt.status() == ExecutionStatus.IDLE && held.containsKey(id)) return decide(List.of(id));
         if (!configOf.containsKey(id)) return Map.of(id, Attempts.of(attempt));
-        if (attempt.status() == ExecutionStatus.RUNNING) return decidedBefore(id, attempt);
+        if (attempt.status() == ExecutionStatus.RUNNING) {
+            executingNow.add(id);
+            return decidedBefore(id, attempt);
+        }
 
+        executingNow.remove(id);
         held.merge(id, Attempts.of(attempt), Attempts::then);
         return Map.of();
     }
@@ -132,6 +143,7 @@ final class ExecutionRegistry {
 
         pending.remove(id);
         configOf.remove(id);
+        executingNow.remove(id);
 
         if (status == ExecutionStatus.IDLE && !stopped.contains(id)) return;
 
@@ -158,6 +170,7 @@ final class ExecutionRegistry {
             pending.remove(id);
             configOf.remove(id);
             held.remove(id);
+            executingNow.remove(id);
             stopped.add(id);
         });
 
@@ -175,6 +188,7 @@ final class ExecutionRegistry {
         abandoned.forEach(id -> {
             pending.remove(id);
             configOf.remove(id);
+            executingNow.remove(id);
         });
 
         return abandoned;

@@ -58,6 +58,7 @@ public final class TestRunWalk {
 
     private final @NotNull TestRunExecutionTimer executionTimer = new TestRunExecutionTimer();
     private final @NotNull Set<UUID> launchedHere = ConcurrentHashMap.newKeySet();
+    private final @NotNull Set<UUID> launchedByRunTests = ConcurrentHashMap.newKeySet();
 
     private @NotNull Optional<UUID> executingTestCase = Optional.empty();
 
@@ -83,9 +84,23 @@ public final class TestRunWalk {
         }).orElse(-1);
     }
 
+    // Rule-EDITOR-PANEL-291
+    boolean walksOn(final @NotNull UUID testCaseId) {
+        return executingTestCase.filter(testCaseId::equals).isPresent();
+    }
+
+    // Rule-EDITOR-PANEL-291
+    private void walkTo(final @NotNull Optional<UUID> testCaseId) {
+        final @NotNull Optional<UUID> left = executingTestCase;
+        executingTestCase = testCaseId;
+
+        left.ifPresent(id -> ExecutingNow.changed(p, id));
+        testCaseId.ifPresent(id -> ExecutingNow.changed(p, id));
+    }
+
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-227
     public boolean isExecuting(final @NotNull UUID testCaseId) {
-        return executingTestCase.filter(testCaseId::equals).isPresent() && getCurrentlyExecutingIndex() != -1;
+        return walksOn(testCaseId) && getCurrentlyExecutingIndex() != -1;
     }
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-227
@@ -106,12 +121,12 @@ public final class TestRunWalk {
         }
 
         final @NotNull TestCaseDto currentTc = shown.get(globalIndex);
-        executingTestCase = Optional.of(currentTc.getId());
+        walkTo(Optional.of(currentTc.getId()));
 
         editor.showExecuting(globalIndex);
 
         editor.runItem(currentTc.getId()).ifPresent(runItem -> executionTimer.start(runItem, () -> {
-            editor.repaint(currentTc);
+            editor.repaint(currentTc.getId());
             editor.showElapsed();
         }));
 
@@ -161,36 +176,40 @@ public final class TestRunWalk {
         testRunStatusChange.apply(editor.getParent(), TestRunStatus.IN_PROGRESS);
     }
 
-    // UC-EDITOR-PANEL-044, Rule-EDITOR-PANEL-184
-    void runPending() {
-        if (!canStartExecution()) {
-            if (isExecuting())
-                notifier.softRefuse(p, Refused.ALREADY_RUNNING, editor.getParent().getName());
-            return;
-        }
+    // UC-EDITOR-PANEL-044, Rule-EDITOR-PANEL-184, Rule-EDITOR-PANEL-290
+    void runAll() {
+        if (refusedByTheMode()) return;
 
-        final @NotNull List<TestCaseDto> pending = editor.snapshotOfAll().stream()
-                .filter(tc -> editor.runItem(tc.getId()).filter(runItem -> runItem.shownStatus() == RunItemStatus.PENDING).isPresent())
+        if (!editor.getParent().isOpen()) return;
+
+        final @NotNull List<TestCaseDto> automated = editor.snapshotOfAll().stream()
+                .filter(tc -> editor.runItem(tc.getId()).filter(runItem -> !runItem.isRemoved()).isPresent())
                 .filter(tc -> !testNGExecution.isRunning(tc.getId()))
                 .toList();
 
-        if (pending.isEmpty()) {
+        if (automated.isEmpty()) {
             notifier.softRefuse(p, Refused.NOTHING_TO_RUN, editor.getParent().getName());
             return;
         }
 
-        Logger.info("Running " + editor.getParent().getName() + " with " + pending.size() + " pending test case(s)");
+        Logger.info("Running " + editor.getParent().getName() + " with " + automated.size() + " test case(s)");
 
-        pending.forEach(tc -> launching(tc.getId()));
+        automated.forEach(tc -> {
+            launchedByRunTests.add(tc.getId());
+            launching(tc.getId());
+        });
 
-        ExecuteTestCases.run(p, pending);
+        ExecuteTestCases.run(p, automated);
     }
 
-    // UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-182
+    // UC-EDITOR-PANEL-043, UC-EDITOR-PANEL-044, Rule-EDITOR-PANEL-182, Rule-EDITOR-PANEL-289
     void executionReported(final @NotNull TestCaseDto tc, final @NotNull ExecutionStatus status, final @NotNull List<Execution> executions, final int written) {
         if (!launchedHere.contains(tc.getId())) return;
 
-        if (!status.stillGoing()) launchedHere.remove(tc.getId());
+        if (!status.stillGoing()) {
+            launchedHere.remove(tc.getId());
+            launchedByRunTests.remove(tc.getId());
+        }
 
         if (editor.runItem(tc.getId()).filter(runItem -> !runItem.isRemoved()).isEmpty()) return;
 
@@ -205,7 +224,10 @@ public final class TestRunWalk {
             if (launchedHere.isEmpty()) sayWhatTheTestRunRecorded();
         });
 
-        editor.repaint(tc);
+        if (launchedByRunTests.contains(tc.getId()) && testNGExecution.isExecutingNow(tc.getId()))
+            editor.showRunItem(tc);
+
+        editor.repaint(tc.getId());
         editor.showTestRunTotals();
 
         editor.onExecutionStateChanged();
@@ -239,15 +261,22 @@ public final class TestRunWalk {
     }
 
     public boolean isExecuting() {
-        return executingTestCase.isPresent() || isAutomationRunning();
+        return executingTestCase.isPresent() || launchedHere.stream().anyMatch(testNGExecution::isRunning);
     }
 
-    private boolean isAutomationRunning() {
-        return launchedHere.stream().anyMatch(testNGExecution::isRunning);
+    // Rule-EDITOR-PANEL-290
+    private boolean refusedByTheMode() {
+        if (mode() == ExecutionMode.IDLE) return false;
+
+        notifier.softRefuse(p, mode().getRefusal());
+        return true;
     }
 
-    private boolean canStartExecution() {
-        return !isExecuting() && editor.getParent().isOpen();
+    // UC-EDITOR-PANEL-031, UC-EDITOR-PANEL-044, Rule-EDITOR-PANEL-290
+    public @NotNull ExecutionMode mode() {
+        if (executingTestCase.isPresent()) return ExecutionMode.WALK;
+
+        return launchedByRunTests.stream().anyMatch(testNGExecution::isRunning) ? ExecutionMode.AUTOMATION : ExecutionMode.IDLE;
     }
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-135
@@ -257,7 +286,7 @@ public final class TestRunWalk {
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-135
     public boolean canStartManualExecution() {
-        return canStartExecution() && hasSomethingToWalk();
+        return mode() == ExecutionMode.IDLE && editor.getParent().isOpen() && hasSomethingToWalk();
     }
 
     // UC-EDITOR-PANEL-035, Rule-EDITOR-PANEL-151
@@ -286,7 +315,7 @@ public final class TestRunWalk {
     // UC-EDITOR-PANEL-035, Rule-EDITOR-PANEL-150
     private void halt() {
         executionTimer.stop();
-        executingTestCase = Optional.empty();
+        walkTo(Optional.empty());
         editor.onExecutionStateChanged();
     }
 
@@ -309,9 +338,11 @@ public final class TestRunWalk {
         testRuns.saveRunItems(editor.getParent().getPath());
     }
 
-    // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-135
+    // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-135, Rule-EDITOR-PANEL-290
     void start() {
         if (editor.loadedRunItems().isEmpty()) return;
+
+        if (refusedByTheMode()) return;
 
         if (!hasSomethingToWalk()) {
             notifier.softRefuse(p, Refused.NOTHING_SHOWING, editor.getParent().getName());

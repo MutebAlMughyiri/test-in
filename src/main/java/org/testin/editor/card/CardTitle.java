@@ -36,16 +36,31 @@ import java.util.stream.IntStream;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CardTitle {
-    // UC-EDITOR-PANEL-048, Rule-EDITOR-PANEL-235
-    public static @NotNull TitleActionIcons descriptionActionIcons(final int titleWidth, final @NotNull List<Offered> buttons) {
+    // UC-EDITOR-PANEL-048, Rule-EDITOR-PANEL-235, Rule-EDITOR-PANEL-291
+    public static @NotNull TitleActionIcons descriptionActionIcons(final int titleWidth, final @NotNull List<Offered> buttons, final boolean executing) {
+        final int afterDot = executing ? 1 : 0;
+
+        return new TitleActionIcons(IntStream.range(0, buttons.size())
+                .mapToObj(i -> new Slot(buttons.get(i), slot(titleWidth, afterDot + i)))
+                .toList());
+    }
+
+    // Rule-EDITOR-PANEL-291
+    public static @NotNull Rectangle executingDot(final int titleWidth) {
+        return slot(titleWidth, 0);
+    }
+
+    // Rule-EDITOR-PANEL-235, Rule-EDITOR-PANEL-291
+    public static int slotCount(final @NotNull List<Offered> buttons, final boolean executing) {
+        return buttons.size() + (executing ? 1 : 0);
+    }
+
+    private static @NotNull Rectangle slot(final int titleWidth, final int place) {
         final @NotNull Icon slot = Icons.TEST_CASE;
         final int first = JBUI.scale(16) + titleWidth + JBUI.scale(10);
         final int step = slot.getIconWidth() + JBUI.scale(8);
-        final int y = JBUI.scale(12);
 
-        return new TitleActionIcons(IntStream.range(0, buttons.size())
-                .mapToObj(i -> new Slot(buttons.get(i), new Rectangle(first + i * step, y, slot.getIconWidth(), slot.getIconHeight())))
-                .toList());
+        return new Rectangle(first + place * step, JBUI.scale(12), slot.getIconWidth(), slot.getIconHeight());
     }
 
     // Rule-EDITOR-PANEL-003, Rule-EDITOR-PANEL-235
@@ -61,8 +76,8 @@ public final class CardTitle {
         return column > forIcons ? column : Integer.MAX_VALUE;
     }
 
-    public static void drawDescriptionActionIcons(final @NotNull Component c, final @NotNull Graphics g, final int titleWidth, final @NotNull String hoveredAction, final @NotNull List<Offered> buttons, final @NotNull Automated automation) {
-        descriptionActionIcons(titleWidth, buttons).slots()
+    public static void drawDescriptionActionIcons(final @NotNull Component c, final @NotNull Graphics g, final int titleWidth, final @NotNull String hoveredAction, final @NotNull List<Offered> buttons, final @NotNull Automated automation, final boolean executing) {
+        descriptionActionIcons(titleWidth, buttons, executing).slots()
                 .forEach(slot -> draw(c, g, slot.button(), slot.button().action().iconOn(automation), slot.at(), hoveredAction));
     }
 

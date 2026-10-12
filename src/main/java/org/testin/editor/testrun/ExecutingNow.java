@@ -1,0 +1,42 @@
+/*
+ * Copyright 2026 Muteb AlMughyiri
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.testin.editor.testrun;
+
+import com.intellij.openapi.project.Project;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
+import org.testin.editor.open.TestinEditors;
+import org.testin.runner.TestNGExecution;
+import org.testin.services.Services;
+import org.testin.view.ViewToolWindowFactory;
+
+import java.util.UUID;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ExecutingNow {
+    // Rule-EDITOR-PANEL-291, Rule-VIEW-PANEL-125
+    public static boolean is(final @NotNull Project p, final @NotNull UUID testCaseId) {
+        return Services.getInstance(p, TestNGExecution.class).isExecutingNow(testCaseId)
+                || Services.getInstance(p, TestinEditors.class).walking(testCaseId);
+    }
+
+    // Rule-EDITOR-PANEL-291, Rule-VIEW-PANEL-125
+    public static void changed(final @NotNull Project p, final @NotNull UUID testCaseId) {
+        Services.getInstance(p, TestinEditors.class).repaint(testCaseId);
+        ViewToolWindowFactory.panel(p).ifPresent(view -> view.reloadDetailsIfShowing(testCaseId));
+    }
+}

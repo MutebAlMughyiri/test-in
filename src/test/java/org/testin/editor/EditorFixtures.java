@@ -24,6 +24,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.Await;
+import org.testin.editor.open.TestinEditors;
 import org.testin.editor.open.UnifiedVirtualFile;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.testrun.TestRunEditor;
@@ -86,6 +87,17 @@ public final class EditorFixtures {
 
         Services.getInstance(p, TestRuns.class).putRunItems(tr.getPath(), new RunItems().setAll(new ArrayList<>(runItems)));
         return tr;
+    }
+
+    public static @NotNull TestRunNode testRunOver(final @NotNull Project p, final @NotNull Path root, final @NotNull List<TestCaseDto> testCases) {
+        return testRun(p, testProject(p, root), testCases.stream().map(EditorFixtures::pending).toList());
+    }
+
+    public static @NotNull TestRunEditor openTestRunInTheIde(final @NotNull Project p, final @NotNull TestRunNode tr) {
+        final @NotNull TestinEditors editors = Services.getInstance(p, TestinEditors.class);
+        editors.open(tr);
+        Await.until("the test run never opened in its editor", () -> editors.testRunEditorFor(tr).filter(editor -> editor.loadedRunItems().isPresent()).isPresent());
+        return editors.testRunEditorFor(tr).orElseThrow();
     }
 
     public static @NotNull RunItem pending(final @NotNull TestCaseDto tc) {

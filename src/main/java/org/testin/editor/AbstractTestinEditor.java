@@ -253,6 +253,15 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ToolBarAttribute,
         model.allContentsChanged();
     }
 
+    // Rule-EDITOR-PANEL-291
+    @Override
+    public void repaint(final @NotNull UUID testCaseId) {
+        model.getItems().stream()
+                .filter(tc -> tc.getId().equals(testCaseId))
+                .findFirst()
+                .ifPresent(model::contentsChanged);
+    }
+
     // UC-EDITOR-PANEL-019, Rule-EDITOR-PANEL-092
     @Override
     public void onToolBarSearchValueChanged() {

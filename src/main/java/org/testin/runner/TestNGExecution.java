@@ -36,6 +36,7 @@ import org.testin.model.status.ExecutionStatus;
 import org.testin.notifications.Notifier;
 import org.testin.notifications.Refused;
 import org.testin.services.Services;
+import org.testin.util.Bundle;
 import org.testin.util.FromContentModule;
 
 import java.time.Duration;
@@ -112,10 +113,14 @@ public final class TestNGExecution implements Disposable {
     // UC-CODEGEN-008, Rule-CODEGEN-031
     @FromContentModule
     public void launch(final @NotNull List<TestCaseDto> testCases, final @NotNull RunnerAndConfigurationSettings settings) {
-        registry.launched(testCases.stream().map(TestCaseDto::getId).toList(), settings.getName());
+        launched(testCases, settings.getName());
 
         Logger.info("Starting " + settings.getName() + " with " + testCases.size() + " test case(s)");
         ProgramRunnerUtil.executeConfiguration(settings, DefaultRunExecutor.getRunExecutorInstance());
+    }
+
+    void launched(final @NotNull List<TestCaseDto> testCases, final @NotNull String testRunName) {
+        registry.launched(testCases.stream().map(TestCaseDto::getId).toList(), testRunName);
     }
 
     // UC-CODEGEN-008, Rule-CODEGEN-097
@@ -142,7 +147,7 @@ public final class TestNGExecution implements Disposable {
     // UC-CODEGEN-008, Rule-CODEGEN-033, Rule-CODEGEN-074, Rule-CODEGEN-034
     @FromContentModule
     public void started(final @NotNull List<TestCaseDto> running, final @NotNull List<TestCaseDto> withoutCode) {
-        notifier.softShowCounted(p, ExecutionStatus.RUNNING.getBadge().label(), running.size());
+        notifier.softShowCounted(p, Bundle.message("execution.status.running"), running.size());
         if (withoutCode.isEmpty()) return;
 
         final boolean one = withoutCode.size() == 1;
@@ -158,6 +163,11 @@ public final class TestNGExecution implements Disposable {
     // UC-CODEGEN-009, Rule-CODEGEN-036
     public boolean isRunning(final @NotNull UUID id) {
         return registry.isRunning(id);
+    }
+
+    // Rule-EDITOR-PANEL-291
+    public boolean isExecutingNow(final @NotNull UUID id) {
+        return registry.isExecutingNow(id);
     }
 
     public @NotNull ExecutionStatus statusOf(final @NotNull TestCaseDto tc) {

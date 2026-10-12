@@ -19,9 +19,12 @@ package org.testin.util;
 import com.google.errorprone.annotations.Immutable;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.ui.AnimatedIcon;
 import com.intellij.ui.scale.JBUIScale;
 import com.intellij.util.IconUtil;
+import com.intellij.util.ui.EmptyIcon;
 import com.intellij.util.ui.JBUI;
+import com.intellij.util.ui.UIUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -52,8 +55,12 @@ public final class Icons {
     public static final @NotNull Icon TEST_CASE_LETTER = fieldLetter("tc", GREEN);
     public static final @NotNull Icon PLUGIN = IconLoader.getIcon("/icons/pluginIcon.svg", Icons.class);
 
+    // Rule-EDITOR-PANEL-291, Rule-VIEW-PANEL-125
+    public static final @NotNull Icon EXECUTING = blinking(dot(UIUtil.getLabelForeground()));
+
     private static final float SCALE_FACTOR = 1.3f;
     private static final int DOT_SIZE = 10;
+    private static final int BLINK_MILLIS = 500;
 
     public static @NotNull LetterIcon fieldLetter(final @NotNull String letter, final @NotNull Color color) {
         final @NotNull Font font = Fonts.iconLetter();
@@ -102,6 +109,10 @@ public final class Icons {
 
     public static @NotNull Icon zoomStandardIcon(final @NotNull Icon icon, final @NotNull Component contextComponent) {
         return IconUtil.scale(icon, contextComponent, SCALE_FACTOR);
+    }
+
+    private static @NotNull Icon blinking(final @NotNull Icon shown) {
+        return new AnimatedIcon(BLINK_MILLIS, shown, EmptyIcon.create(shown));
     }
 
     public static @NotNull Icon dot(final @NotNull Color color) {

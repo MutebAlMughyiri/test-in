@@ -16,22 +16,48 @@
 
 package org.testin.ui.framework;
 
+import com.intellij.util.ui.EmptyIcon;
+import com.intellij.util.ui.JBUI;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.testin.logger.Logger;
 
+import javax.swing.Icon;
 import javax.swing.JTextArea;
+import javax.swing.text.BadLocationException;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.util.Optional;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Prose {
     public static @NotNull JTextArea of(final @NotNull String text) {
+        return of(text, EmptyIcon.ICON_0);
+    }
+
+    // Rule-VIEW-PANEL-125
+    public static @NotNull JTextArea of(final @NotNull String text, final @NotNull Icon ending) {
         final @NotNull JTextArea area = new JTextArea(text) {
             // Rule-VIEW-PANEL-124
             @Override
             public void scrollRectToVisible(final @NotNull Rectangle shown) {
+            }
+
+            // Rule-VIEW-PANEL-125
+            @Override
+            protected void paintComponent(final @NotNull Graphics g) {
+                super.paintComponent(g);
+                if (ending.getIconWidth() == 0) return;
+
+                try {
+                    Optional.ofNullable(modelToView2D(getDocument().getLength())).ifPresent(end ->
+                            ending.paintIcon(this, g, (int) end.getMaxX() + endingGap(), (int) end.getCenterY() - ending.getIconHeight() / 2));
+                } catch (final BadLocationException e) {
+                    Logger.warn("Could not find the end of the text to draw its mark after: " + e.getMessage());
+                }
             }
         };
         area.setLineWrap(true);
@@ -39,9 +65,13 @@ public final class Prose {
         area.setOpaque(false);
         area.setEditable(false);
         area.setFocusable(false);
-        area.setBorder(null);
+        area.setBorder(ending.getIconWidth() == 0 ? null : JBUI.Borders.emptyRight(endingGap() + ending.getIconWidth()));
 
         return area;
+    }
+
+    private static int endingGap() {
+        return JBUI.scale(6);
     }
 
     public static @NotNull JTextArea of(final @NotNull Font font, final @NotNull Color color) {

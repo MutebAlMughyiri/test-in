@@ -65,10 +65,6 @@ public enum Refused {
             Bundle.message("refused.hidden.by.the.filter")
     ),
 
-    ALREADY_RUNNING(
-            Bundle.message("refused.already.running")
-    ),
-
     // UC-CODEGEN-019, Rule-CODEGEN-005, Rule-CODEGEN-004
     WHILE_INDEXING(
             Bundle.message("refused.while.indexing")

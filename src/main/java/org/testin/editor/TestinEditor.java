@@ -124,6 +124,14 @@ public interface TestinEditor extends Disposable {
 
     void refreshView();
 
+    // Rule-EDITOR-PANEL-291
+    void repaint(final @NotNull UUID testCaseId);
+
+    // Rule-EDITOR-PANEL-291
+    default boolean walksOn(final @NotNull UUID testCaseId) {
+        return false;
+    }
+
     // UC-EDITOR-PANEL-027, Rule-EDITOR-PANEL-117
     void reloadData();
 

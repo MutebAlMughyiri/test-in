@@ -41,6 +41,7 @@ import org.testin.services.Services;
 import org.testin.setting.AppSettingsState;
 import org.testin.testrun.failure.FailureFields;
 import org.testin.util.Bundle;
+import org.testin.view.ViewToolWindowFactory;
 
 import java.nio.file.Path;
 import java.time.Duration;
@@ -163,7 +164,7 @@ public final class RunItemStatusService {
 
         Logger.trace("[RunItemStatusService]: Status updated -> " + testCaseId + " = " + status);
 
-        triggerFilterRefresh(editor);
+        showRecorded(editor, List.of(testCaseId));
         return true;
     }
 
@@ -298,7 +299,7 @@ public final class RunItemStatusService {
         // Rule-EDITOR-PANEL-164
         judged.forEach(id -> testRuns.changeRunItem(editor.getParent().getPath(), id, runItem -> runItem.recordRunItemStatus(status, tester, Duration.ZERO, Failure.NONE)));
         if (!judged.isEmpty()) offerBugReports(status);
-        triggerFilterRefresh(editor);
+        showRecorded(editor, judged);
 
         confirmRunItemStatus(status, judged.size());
 
@@ -309,7 +310,11 @@ public final class RunItemStatusService {
         Services.getInstance(p, Notifier.class).softShowCounted(p, status.getLabel(), count);
     }
 
-    private void triggerFilterRefresh(final @NotNull TestRunEditor editor) {
-        ApplicationManager.getApplication().invokeLater(editor::refreshView);
+    // Rule-VIEW-PANEL-005
+    private void showRecorded(final @NotNull TestRunEditor editor, final @NotNull List<UUID> recorded) {
+        ApplicationManager.getApplication().invokeLater(() -> {
+            editor.refreshView();
+            ViewToolWindowFactory.panel(p).ifPresent(view -> recorded.forEach(view::reloadDetailsIfShowing));
+        });
     }
 }

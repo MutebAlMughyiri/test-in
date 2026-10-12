@@ -17,11 +17,9 @@
 package org.testin.model.status;
 
 import com.intellij.icons.AllIcons;
-import com.intellij.ui.JBColor;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import org.testin.util.Bundle;
 
 import javax.swing.Icon;
 import java.util.Optional;
@@ -47,15 +45,16 @@ public enum ExecutionStatus {
             Optional.of(RunItemStatus.FAILED)
     ),
 
+    // Rule-EDITOR-PANEL-291
     RUNNING(
             AllIcons.Actions.Suspend,
-            new ExecutionStatusBadge(Bundle.message("execution.status.running"), JBColor.ORANGE),
+            ExecutionStatusBadge.NONE,
             Optional.empty()
     ),
 
     SKIPPED(
             AllIcons.Actions.Suspend,
-            new ExecutionStatusBadge(Bundle.message("execution.status.running"), JBColor.ORANGE),
+            ExecutionStatusBadge.NONE,
             Optional.empty()
     );
 

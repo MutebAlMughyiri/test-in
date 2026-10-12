@@ -18,12 +18,16 @@ package org.testin.view.details;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBPanel;
+import com.intellij.util.ui.EmptyIcon;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
+import org.testin.editor.testrun.ExecutingNow;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.TestSetEditorAttributes;
 import org.testin.ui.framework.Prose;
+import org.testin.util.Bundle;
 import org.testin.util.Fonts;
+import org.testin.util.Icons;
 
 import javax.swing.JTextArea;
 import java.awt.GridBagConstraints;
@@ -34,13 +38,16 @@ public class Title extends AbstractDetails {
     final int INSETS_BOTTOM = 0;
     final int INSETS_RIGHT = 16;
 
-    // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-025
+    // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-025, Rule-VIEW-PANEL-125
     @Override
     public int render(final @NotNull Project p, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto dto, final int currentRow) {
         final @NotNull String titleText = TestSetEditorAttributes.DESCRIPTION.displayValue(dto);
         final @NotNull String finalValue = titleText.trim().isEmpty() ? "-" : titleText;
 
-        final @NotNull JTextArea mainTitleArea = Prose.of(finalValue);
+        final boolean executing = ExecutingNow.is(p, dto.getId());
+        final @NotNull JTextArea mainTitleArea = Prose.of(finalValue, executing ? Icons.EXECUTING : EmptyIcon.ICON_0);
+        if (executing)
+            mainTitleArea.getAccessibleContext().setAccessibleDescription(Bundle.message("execution.executing"));
 
         mainTitleArea.setFont(Fonts.title());
 

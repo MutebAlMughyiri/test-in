@@ -69,6 +69,9 @@ Testin hands the test cases to the IDE's own test runner.
   not worth the walk.
 - **Rule-TREE-PANEL-104** — A menu entry that cannot work on the selected row is
   gray, and says why when the pointer rests on it.
+- **Rule-TREE-PANEL-141** — Run Tests on a test run is gray, and says why, while
+  that test run's Start Execution is on or its Run Tests is already executing
+  (Rule-EDITOR-PANEL-290).
 
 ## What the tester sees
 
@@ -95,15 +98,16 @@ opens at the bottom, on a test configuration named after the generated class.
 
 1. The tester selects a test run and chooses **Run Tests**.
 2. Its test run editor opens, or comes forward if it is already open.
-3. Only the test cases still **Pending** in that test run are run.
+3. Every test case in that test run with a generated method is run, judged or not (Rule-EDITOR-PANEL-184).
 
 ## What Testin refuses
 
 **If the node holds no test case that can run** — nothing runs, and *\<name\>
-has no test cases to run* is shown in red. A test run with nothing left **Pending** says the same.
+has no test cases to run* is shown in red.
 
-**If the test run is already running** — *\<name\> is already running* is shown
-in red.
+**If the test run's Start Execution is on, or its Run Tests is executing** — the
+entry is gray, and says *Start Execution is on; stop it first* or *Run Tests is
+executing; stop it first* (Rule-TREE-PANEL-141).
 
 **If a test case has no generated automation code** — it is dropped, and Testin
 names it: *\<test case\> has no generated code yet*. The rest still run. If none

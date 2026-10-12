@@ -40,7 +40,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Service(Service.Level.PROJECT)
@@ -64,9 +66,7 @@ public final class TestinEditors {
 
     // UC-TREE-PANEL-011, Rule-TREE-PANEL-111
     public boolean busyUnder(final @NotNull Node dir) {
-        return openFilesUnder(dir.getPath()).stream()
-                .flatMap(open -> Arrays.stream(FileEditorManager.getInstance(p).getAllEditors(open)))
-                .anyMatch(tab -> tab instanceof UnifiedFileEditor unified && unified.getEditor().isBusy());
+        return editorsOf(openFilesUnder(dir.getPath()).stream()).anyMatch(TestinEditor::isBusy);
     }
 
     private @NotNull List<VirtualFile> openFilesUnder(final @NotNull Path path) {
@@ -138,10 +138,7 @@ public final class TestinEditors {
     }
 
     private @NotNull Optional<TestinEditor> editorAt(final @NotNull Path path) {
-        return openFileAt(path).flatMap(open -> Arrays.stream(FileEditorManager.getInstance(p).getAllEditors(open))
-                .filter(UnifiedFileEditor.class::isInstance)
-                .map(tab -> ((UnifiedFileEditor) tab).getEditor())
-                .findFirst());
+        return editorsOf(openFileAt(path).stream()).findFirst();
     }
 
     public void closeThenOpen(final @NotNull Node dir) {
@@ -181,6 +178,28 @@ public final class TestinEditors {
         fed.openFile(new UnifiedVirtualFile(dir), focus);
 
         return true;
+    }
+
+    // Rule-EDITOR-PANEL-291
+    public boolean walking(final @NotNull UUID testCaseId) {
+        return openEditors().anyMatch(editor -> editor.walksOn(testCaseId));
+    }
+
+    // Rule-EDITOR-PANEL-291
+    public void repaint(final @NotNull UUID testCaseId) {
+        openEditors().forEach(editor -> editor.repaint(testCaseId));
+    }
+
+    private @NotNull Stream<TestinEditor> openEditors() {
+        return editorsOf(Arrays.stream(FileEditorManager.getInstance(p).getOpenFiles()));
+    }
+
+    private @NotNull Stream<TestinEditor> editorsOf(final @NotNull Stream<VirtualFile> files) {
+        final @NotNull FileEditorManager fed = FileEditorManager.getInstance(p);
+
+        return files.flatMap(open -> Arrays.stream(fed.getAllEditors(open)))
+                .filter(UnifiedFileEditor.class::isInstance)
+                .map(tab -> ((UnifiedFileEditor) tab).getEditor());
     }
 
     public @NotNull List<Path> openNodePaths() {

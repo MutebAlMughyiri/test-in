@@ -182,8 +182,9 @@ final class LightModeWindow {
         testCaseView.setVisible(executing);
         footer.setVisible(executing);
 
-        start.setVisible(!editor.getWalk().isExecuting());
-        stop.setVisible(editor.getWalk().isExecuting());
+        // Rule-EDITOR-PANEL-290
+        start.setVisible(editor.getWalk().mode().showsStart());
+        stop.setVisible(editor.getWalk().mode().showsStop());
 
         // Rule-EDITOR-PANEL-135
         start.setEnabled(editor.getWalk().canStartManualExecution());

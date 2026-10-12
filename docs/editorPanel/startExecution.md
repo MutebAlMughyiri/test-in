@@ -92,6 +92,11 @@ There is no key for this. The button's tooltip reads **Start Manual Execution**.
   cases as shown, the sort included. Under a sort by Run Item Status, Executed
   At or Duration a judged test case moves to where the sort places it, and the
   walk goes on to the next one waiting.
+- **Rule-EDITOR-PANEL-290** — A test run executes in one mode at a time: the
+  walk Start Execution begins, or the automation Run Tests begins. While one is
+  on, the other is gray and says why, and Stop Execution ends whichever is on. A
+  single test case's ▶ is neither: it runs alongside either and leaves both
+  available.
 
 ## What the tester sees
 
@@ -118,7 +123,9 @@ second. A small message appears at the bottom of the IDE and fades, reading *In 
 
 ## What Testin refuses
 
-**If a walk is already going** — the button is gray, and its tooltip reads *Execution in progress*.
+**If Run Tests is executing** — the button is gray beside **Stop Execution**,
+and its tooltip reads *Run Tests is executing; stop it first*
+(Rule-EDITOR-PANEL-290). A single test case's run button grays nothing.
 
 **If the test run is completed or closed** — the button is gray, and its tooltip
 reads *Execution disabled — test run status is*, then the status.

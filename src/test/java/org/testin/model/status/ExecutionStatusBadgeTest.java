@@ -18,6 +18,8 @@ package org.testin.model.status;
 
 import org.testng.annotations.Test;
 
+import java.util.List;
+
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
@@ -34,10 +36,14 @@ public class ExecutionStatusBadgeTest {
     }
 
     @Test
-    public void everyOtherStatusDrawsOne() {
-        for (final ExecutionStatus status : ExecutionStatus.values()) {
-            if (status == ExecutionStatus.IDLE) continue;
+    public void aRunningTestCaseDrawsNoBadgeBecauseItsDotSaysSo() {
+        assertFalse(ExecutionStatus.RUNNING.hasBadge(), "a running test case shows its blinking dot instead");
+        assertFalse(ExecutionStatus.SKIPPED.hasBadge(), "a skipped attempt is still going and shows the dot too");
+    }
 
+    @Test
+    public void aDecidedStatusDrawsOne() {
+        for (final ExecutionStatus status : List.of(ExecutionStatus.PASSED, ExecutionStatus.FAILED)) {
             assertTrue(status.hasBadge(), status + " should draw a badge");
 
             final ExecutionStatusBadge badge = status.getBadge();
@@ -50,7 +56,6 @@ public class ExecutionStatusBadgeTest {
     public void theLabelsAreTheOnesTheCardShows() {
         assertEquals(ExecutionStatus.PASSED.getBadge().label(), "Passed");
         assertEquals(ExecutionStatus.FAILED.getBadge().label(), "Failed");
-        assertEquals(ExecutionStatus.RUNNING.getBadge().label(), "Running");
     }
 
     @Test

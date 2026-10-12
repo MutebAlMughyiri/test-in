@@ -18,7 +18,6 @@ package org.testin.editor.cardview;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.editor.card.CardHoverAction;
 import org.testin.editor.testrun.RunItemCard;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.model.TestCaseDto;
@@ -41,7 +40,7 @@ public class RunItemCardRenderer extends AbstractCardRenderer<TestRunEditor> {
                 .orElseGet(() -> RunItem.pendingFor(tc));
 
         card.updateData(row, editor.getSelectedDetails(), runItem, editor.cardTitle(tc));
-        card.setHoverButtons(CardHoverAction.onCard(editor.getProject(), editor.getParent(), tc));
+        card.showTitleIcons(editor.getParent(), tc);
         card.setActionsState(isSelected, isRowHovered, hover);
         card.applyCardViewLayout(list);
 

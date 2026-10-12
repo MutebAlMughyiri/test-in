@@ -24,12 +24,14 @@ import com.intellij.util.ui.EmptyIcon;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.util.ui.components.BorderLayoutPanel;
-import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.AutomationState;
 import org.testin.editor.EditorColors;
+import org.testin.editor.testrun.ExecutingNow;
 import org.testin.model.Automated;
 import org.testin.model.Priority;
+import org.testin.model.TestCaseDto;
+import org.testin.model.node.Node;
 import org.testin.services.Services;
 import org.testin.testcase.TestCaseOrder;
 import org.testin.testcase.UpdateTestCaseFields;
@@ -38,8 +40,10 @@ import org.testin.ui.Badges;
 import org.testin.ui.framework.CardEdge;
 import org.testin.ui.framework.Prose;
 import org.testin.ui.framework.RowStripe;
+import org.testin.util.Bundle;
 import org.testin.util.Display;
 import org.testin.util.Fonts;
+import org.testin.util.Icons;
 
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
@@ -78,8 +82,8 @@ public abstract class BaseCard extends JBPanel<BaseCard> {
     private static final @NotNull Border UNSELECTED_BORDER = JBUI.Borders.empty(1);
 
     protected @NotNull Priority priority = Priority.DEFAULT;
-    @Setter
     private @NotNull List<Offered> hoverButtons = List.of();
+    private boolean executing;
     private @NotNull String plainTitle = "";
     private @NotNull List<Badge> shownBadges = List.of();
     private int titleColumnWidth = Integer.MAX_VALUE;
@@ -130,6 +134,12 @@ public abstract class BaseCard extends JBPanel<BaseCard> {
         return label;
     }
 
+    // UC-EDITOR-PANEL-047, Rule-EDITOR-PANEL-235, Rule-EDITOR-PANEL-291
+    public void showTitleIcons(final @NotNull Node parent, final @NotNull TestCaseDto tc) {
+        hoverButtons = CardHoverAction.onCard(p, parent, tc);
+        executing = ExecutingNow.is(p, tc.getId());
+    }
+
     // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-003
     public void applyCardViewLayout(final @NotNull JList<?> list) {
         titleArea.setFont(Fonts.title());
@@ -142,8 +152,9 @@ public abstract class BaseCard extends JBPanel<BaseCard> {
             c.setFont(Fonts.badge());
         }
 
-        titleColumnWidth = CardTitle.titleColumnWidth(list.getWidth(), hoverButtons.size());
-        titleWidth = CardTitle.titleWidth(list, plainTitle, hoverButtons.size());
+        final int slots = CardTitle.slotCount(hoverButtons, executing);
+        titleColumnWidth = CardTitle.titleColumnWidth(list.getWidth(), slots);
+        titleWidth = CardTitle.titleWidth(list, plainTitle, slots);
         layOutTitle();
     }
 
@@ -186,7 +197,7 @@ public abstract class BaseCard extends JBPanel<BaseCard> {
             spoken.add(attrName + ": " + value);
         });
 
-        getAccessibleContext().setAccessibleName(title);
+        getAccessibleContext().setAccessibleName(executing ? title + ", " + Bundle.message("execution.executing") : title);
         getAccessibleContext().setAccessibleDescription(String.join(", ", spoken));
 
         badgePanel.revalidate();
@@ -203,12 +214,16 @@ public abstract class BaseCard extends JBPanel<BaseCard> {
         }
     }
 
-    // UC-EDITOR-PANEL-047, Rule-EDITOR-PANEL-195, Rule-EDITOR-PANEL-267
+    // UC-EDITOR-PANEL-047, Rule-EDITOR-PANEL-195, Rule-EDITOR-PANEL-267, Rule-EDITOR-PANEL-291
     @Override
     protected void paintChildren(final Graphics g) {
         super.paintChildren(g);
+        if (executing) {
+            final @NotNull Rectangle dot = CardTitle.executingDot(titleWidth);
+            Icons.EXECUTING.paintIcon(this, g, dot.x, dot.y);
+        }
         if (isRowHovered) {
-            CardTitle.drawDescriptionActionIcons(this, g, titleWidth, hoveredAction, hoverButtons, automation);
+            CardTitle.drawDescriptionActionIcons(this, g, titleWidth, hoveredAction, hoverButtons, automation, executing);
         }
     }
 
@@ -216,6 +231,8 @@ public abstract class BaseCard extends JBPanel<BaseCard> {
     public @NotNull String tooltipAt(final @NotNull Point at, final @NotNull Dimension cell) {
         if (CardTitle.priorityMargin(cell.height).contains(at))
             return priority == Priority.DEFAULT ? "" : priority.tooltip();
+
+        if (executing && CardTitle.executingDot(titleWidth).contains(at)) return Bundle.message("execution.executing");
 
         layOutAs(cell);
         for (int i = 0; i < shownBadges.size(); i++) {

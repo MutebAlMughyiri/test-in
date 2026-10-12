@@ -15,10 +15,14 @@
  */
 package org.testin.view;
 
+import com.intellij.openapi.util.Disposer;
+import com.intellij.testFramework.PlatformTestUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.Await;
+import org.testin.Gestures;
 import org.testin.Said;
 import org.testin.editor.EditorFixtures;
+import org.testin.editor.testrun.TestRunEditor;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
 import org.testin.model.TestCaseDto;
@@ -29,6 +33,7 @@ import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.testrun.Failure;
 import org.testin.services.Services;
+import org.testin.testrun.TestRunFixture;
 import org.testin.util.Bundle;
 
 import java.time.Duration;
@@ -219,6 +224,26 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
         assertTrue("the band does not show the run item status the test run holds: " + details(), details().contains(recorded.shownStatus().getLabel()));
         assertTrue("the band does not show the actual result the test run holds: " + details(), holds(details(), recorded.getActualResult()));
         assertFalse("the band still shows what it drew before the test run changed: " + details(), details().contains(RunItemStatus.PENDING.getLabel()));
+    }
+
+    // Rule-VIEW-PANEL-005
+    public void testAStatusSetInTheEditorShowsInThePanelAtOnce() {
+        final @NotNull TestCaseDto tc = threeTestCases().getFirst();
+        final @NotNull TestRunNode tr = aTestRun(List.of(EditorFixtures.pending(tc)));
+        final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), tr, getTestRootDisposable());
+        try {
+            editor.getList().setSelectedIndex(0);
+            view.getPanel().show(List.of(tc), pathOf(tr));
+            assertTrue(details().contains(RunItemStatus.PENDING.getLabel()));
+
+            Gestures.press(getProject(), TestRunFixture.keyFor(editor, RunItemStatus.PASSED), editor.getList());
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+            assertTrue("the status just set did not reach the panel: " + details(), holds(details(), RunItemStatus.PASSED.getLabel()));
+            assertFalse("the panel still shows the status from before: " + details(), details().contains(RunItemStatus.PENDING.getLabel()));
+        } finally {
+            Disposer.dispose(editor);
+        }
     }
 
     // Rule-VIEW-PANEL-083

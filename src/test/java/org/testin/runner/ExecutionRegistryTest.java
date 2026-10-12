@@ -64,6 +64,35 @@ public class ExecutionRegistryTest {
         return registry;
     }
 
+    // Rule-EDITOR-PANEL-291
+    @Test
+    public void onlyTheTestCaseTestNgHasStartedIsExecutingNow() {
+        final TestCaseDto first = aTestCase("Log in with Nafath");
+        final TestCaseDto waiting = aTestCase("Log out from the profile page");
+        final ExecutionRegistry registry = launchedWith(first, waiting);
+
+        assertFalse(registry.isExecutingNow(first.getId()), "a test case handed over and waiting its turn is not executing");
+
+        registry.attempted(first.getId(), attempt(ExecutionStatus.RUNNING, ""));
+        assertTrue(registry.isExecutingNow(first.getId()), "the test case TestNG started is executing");
+        assertFalse(registry.isExecutingNow(waiting.getId()), "the one after it is still waiting");
+
+        registry.attempted(first.getId(), attempt(ExecutionStatus.PASSED, ""));
+        assertFalse(registry.isExecutingNow(first.getId()), "a finished test case is no longer executing");
+    }
+
+    // Rule-EDITOR-PANEL-291
+    @Test
+    public void aStoppedTestCaseIsNoLongerExecuting() {
+        final TestCaseDto started = aTestCase("Pay with a saved card");
+        final ExecutionRegistry registry = launchedWith(started);
+
+        registry.attempted(started.getId(), attempt(ExecutionStatus.RUNNING, ""));
+        registry.stopping(List.of(started.getId()));
+
+        assertFalse(registry.isExecutingNow(started.getId()), "a stopped test case still shows as executing");
+    }
+
     @Test
     public void aStopReachesATestCaseThroughAnyNumberOfReloads() {
         final ExecutionRegistry registry = new ExecutionRegistry();

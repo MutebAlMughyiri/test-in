@@ -24,6 +24,7 @@ import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.TestinData;
 import org.testin.codegen.CodeOn;
 import org.testin.editor.TestinEditor;
+import org.testin.editor.testrun.ExecutionMode;
 import org.testin.editor.open.TestinEditors;
 import org.testin.indexer.TestCases;
 import org.testin.logger.Logger;
@@ -39,13 +40,28 @@ import java.util.List;
 import java.util.Optional;
 
 public class ExecuteTestsAction extends AbstractAnyProjectAction {
-    // Rule-TREE-PANEL-079
+    // Rule-TREE-PANEL-079, Rule-TREE-PANEL-141
     @Override
     protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
         if (CodeOn.grayedWithReason(this, e, p)) return;
         if (OptionalPlugin.TESTNG.grayedWithReason(this, e.getPresentation())) return;
 
-        e.getPresentation().setEnabled(runnable(e).isPresent() || selectedTestRun(e).isPresent());
+        final @NotNull Optional<TestRunNode> testRun = selectedTestRun(e);
+        final @NotNull ExecutionMode mode = testRun.map(selected -> modeOf(p, selected)).orElse(ExecutionMode.IDLE);
+        if (mode != ExecutionMode.IDLE) {
+            e.getPresentation().setEnabled(false);
+            e.getPresentation().setDescription(mode.getRefusal());
+            return;
+        }
+
+        e.getPresentation().setEnabled(runnable(e).isPresent() || testRun.isPresent());
+    }
+
+    // UC-TREE-PANEL-023, Rule-TREE-PANEL-141
+    private @NotNull ExecutionMode modeOf(final @NotNull Project p, final @NotNull TestRunNode testRun) {
+        return Services.getInstance(p, TestinEditors.class).testRunEditorFor(testRun)
+                .map(editor -> editor.getWalk().mode())
+                .orElse(ExecutionMode.IDLE);
     }
 
     @Override

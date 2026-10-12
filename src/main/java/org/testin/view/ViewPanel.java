@@ -51,6 +51,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 public class ViewPanel implements Disposable {
@@ -219,10 +220,17 @@ public class ViewPanel implements Disposable {
 
     // Rule-VIEW-PANEL-005, Rule-CODEGEN-111
     private void executionReported(final @NotNull TestCaseDto tc, final @NotNull ExecutionStatus status) {
-        getCurrentTestCase().filter(current -> current.getId().equals(tc.getId())).ifPresent(_ -> {
-            if (status.stillGoing()) ViewTab.DETAILS.load(this);
-            else refreshCurrentView();
-        });
+        if (status.stillGoing()) reloadDetailsIfShowing(tc.getId());
+        else if (shows(tc.getId())) refreshCurrentView();
+    }
+
+    // Rule-VIEW-PANEL-005, Rule-VIEW-PANEL-125
+    public void reloadDetailsIfShowing(final @NotNull UUID testCaseId) {
+        if (shows(testCaseId)) ViewTab.DETAILS.load(this);
+    }
+
+    private boolean shows(final @NotNull UUID testCaseId) {
+        return getCurrentTestCase().filter(current -> current.getId().equals(testCaseId)).isPresent();
     }
 
     // Rule-VIEW-PANEL-008
