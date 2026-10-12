@@ -97,7 +97,7 @@ jobs:
       #
       # verifyPlugin here means IntelliJ IDEA, PyCharm and Rider, each at the
       # build this compiles against and the oldest it claims - build.gradle.kts
-      # records why. verify.yml adds GoLand and WebStorm.
+      # records why. verify.yml verifies every product the Marketplace lists.
       #
       # ideTest runs the tests that need a running IDE: the indexer, the tree,
       # an undo across two test sets, filing a bug. The unit tests cannot reach

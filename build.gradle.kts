@@ -366,17 +366,18 @@ intellijPlatform {
         // plugin page names it as somewhere Testin runs. A claim nothing checks
         // is the kind that is true until the day it is not.
         //
-        // GoLand and WebStorm stay behind the flag. Nothing targets them, they
-        // are the same shape of IDE as PyCharm - the platform without Java - and
-        // two more is two more downloads on every sweep.
+        // Every other product the Marketplace names as compatible is verified by
+        // verify.yml, one job per product, which names it here with
+        // -PverifyIde=<IntelliJPlatformType> and, where its versions are not
+        // the two below, -PverifyVersions=<a,b>. That workflow is the one list
+        // of the products and their versions; this only verifies what it names.
         //
-        // The full sweep is still one command away:
+        //     gradlew verifyPlugin -PverifyIde=GoLand
+        //     gradlew verifyPlugin -PverifyIde=AndroidStudio -PverifyVersions=2026.2.1.8
         //
-        //     gradlew verifyPlugin -PverifyAllIdes
-        //
-        // It adds GoLand and WebStorm, which report what the verifier cannot
-        // prove about an IDE nothing targets - the report is what the sweep is
-        // for.
+        // JetBrains Client is in no releases listing the Gradle plugin reads, so
+        // its version cannot be resolved. verify.yml downloads and unpacks it
+        // and names the folders with -PverifyLocal=<dir,dir> instead.
         ides {
             // Two versions, not one. sinceBuild is 262 with no untilBuild, so
             // the plugin claims every build from 262 onward - and that is what
@@ -386,21 +387,15 @@ intellijPlatform {
             // against 261, could not see. The same trap sits inside a branch,
             // so the first release of it is verified as well as the build this
             // compiles against.
-            listOf(
-                IntelliJPlatformType.IntellijIdea,
-                IntelliJPlatformType.PyCharm,
-                IntelliJPlatformType.Rider
-            ).forEach { ide ->
-                create(ide, providers.gradleProperty("intellij.version"))
-                create(ide, oldestBranch)
-            }
+            val versions = providers.gradleProperty("verifyVersions").map { it.split(",") }
+                .orElse(providers.gradleProperty("intellij.version").map { listOf(it, oldestBranch) }).get()
+            val products = providers.gradleProperty("verifyIde").map { listOf(IntelliJPlatformType.valueOf(it)) }
+                .getOrElse(listOf(IntelliJPlatformType.IntellijIdea, IntelliJPlatformType.PyCharm, IntelliJPlatformType.Rider))
 
-            if (providers.gradleProperty("verifyAllIdes").isPresent) {
-                listOf(IntelliJPlatformType.GoLand, IntelliJPlatformType.WebStorm).forEach { ide ->
-                    create(ide, providers.gradleProperty("intellij.version"))
-                    create(ide, oldestBranch)
-                }
-            }
+            val unpacked = providers.gradleProperty("verifyLocal").map { it.split(",") }
+
+            if (unpacked.isPresent) unpacked.get().forEach { local(layout.projectDirectory.dir(it)) }
+            else products.forEach { ide -> versions.forEach { create(ide, it) } }
         }
 
         // Eleven of the twelve levels the verifier offers, so the gate fails on

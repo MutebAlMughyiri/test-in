@@ -1,11 +1,15 @@
-# The Plugin Verifier against every IDE the plugin claims to run in, on every
-# push to main.
+# The Plugin Verifier against every product the JetBrains Marketplace names as
+# compatible with the plugin, on every push to main.
 #
-# build.yml verifies against IntelliJ IDEA only, because that is the one result
-# that can turn a pull request red for a real reason. This is the other half:
-# what the JetBrains Marketplace will say about the plugin when it is published.
-# The Marketplace runs this same verifier and shows its findings on the plugin
-# page, so the number here is the number a tester sees before installing.
+# build.yml verifies against IntelliJ IDEA, PyCharm and Rider. This verifies
+# every product the plugin page lists, so it is what the Marketplace will say
+# about the plugin when it is published. The Marketplace runs this same
+# verifier and shows its findings on the plugin page, so the answer here is the
+# answer a tester sees before installing.
+#
+# One job per product, side by side, each downloading only its own IDE: fifteen
+# products at two versions in one job took hours and more disk than a runner
+# has. A product shows red or green on its own.
 #
 # Every target reports zero problems, so any problem on any of them fails the
 # run. It was compared against a baseline of known problems until they reached
@@ -43,47 +47,93 @@ permissions:
 
 jobs:
   verify:
-    name: Verify against every target IDE
-    runs-on: windows-latest
-    # Four IDEs to download and analyze. The first run took eighteen minutes
-    # with nothing cached.
-    timeout-minutes: 120
+    name: Verify against ${{ matrix.ide }}
+    runs-on: ${{ matrix.os || 'windows-latest' }}
+    timeout-minutes: 60
+
+    # The one list of the products verified and their versions. A product with
+    # no versions is verified at the first release of the branch sinceBuild
+    # names and at the build this compiles against (build.gradle.kts). A
+    # product with no release on that branch carries the reason instead, and
+    # its job says so on the run page rather than failing or passing.
+    #
+    # Code With Me's guest is JetBrains Client, so it has no line of its own.
+    # JetBrains Client is in no releases listing the Gradle plugin reads, so it
+    # is downloaded here by build number - the builds IntelliJ IDEA 2026.2 and
+    # 2026.2.1 carry - and verified from the unpacked folders. Only a .tar.gz
+    # of it exists, and its symlinks unpack on Linux and not on Windows, so it
+    # runs on Linux, and it reports 4 compatibility problems until #419 is
+    # fixed. Android Studio has one release on 262.
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - ide: IntellijIdea
+          - ide: AndroidStudio
+            versions: 2026.2.1.8
+          - ide: CLion
+          - ide: DataGrip
+          - ide: DataSpell
+            unreleased: DataSpell has no release on build 262 yet (its newest is 2026.1.3), so Testin cannot be installed in it
+          - ide: GoLand
+          - ide: JetBrainsClient
+            os: ubuntu-latest
+            download: 262.8665.258 262.9437.185
+          - ide: Gateway
+          - ide: MPS
+            unreleased: MPS has only a 2026.2 EAP on build 262, so no release of it can install Testin yet
+          - ide: PhpStorm
+          - ide: PyCharm
+          - ide: Rider
+          - ide: RubyMine
+          - ide: RustRover
+          - ide: WebStorm
 
     steps:
+      - name: Say why it is not verified
+        if: matrix.unreleased
+        shell: bash
+        run: echo "::notice title=${{ matrix.ide }} not verified::${{ matrix.unreleased }}"
+
       - name: Check out the commit
+        if: ${{ !matrix.unreleased }}
         uses: actions/checkout@v7
 
       - name: Java 25
+        if: ${{ !matrix.unreleased }}
         uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: 25
 
       - name: Gradle
+        if: ${{ !matrix.unreleased }}
         uses: gradle/actions/setup-gradle@v6
 
-      # Roughly 3 GB across the four. Keyed on the file that names their
-      # versions, so the cache is rebuilt only when a version changes.
-      - name: Cache the IDEs the verifier runs against
-        uses: actions/cache@v6
-        with:
-          path: ~/.pluginVerifier
-          key: plugin-verifier-all-${{ hashFiles('build.gradle.kts', 'gradle.properties') }}
-          restore-keys: plugin-verifier-all-
-
-      # -PverifyAllIdes adds PyCharm, GoLand and WebStorm to the IntelliJ IDEA
-      # that build.gradle.kts verifies by default. Every target reports zero
-      # problems, so the step fails the run on the first new one. It used to
-      # be let through and compared against a baseline while 159 known
-      # problems stood; they are gone, and the baseline went with them.
-      - name: Verify against all IDEs
+      - name: Download JetBrains Client
+        if: matrix.download
         shell: bash
-        run: ./gradlew verifyPlugin -PverifyAllIdes
+        run: |
+          folders=()
+          for build in ${{ matrix.download }}; do
+            mkdir -p "build/client/$build"
+            curl -fsSL "https://download.jetbrains.com/idea/code-with-me/JetBrainsClient-$build.tar.gz" | tar -xz -C "build/client/$build" --strip-components=1
+            folders+=("build/client/$build")
+          done
+          echo "VERIFY_LOCAL=-PverifyLocal=$(IFS=,; echo "${folders[*]}")" >> "$GITHUB_ENV"
 
-      - name: Keep the verification reports
-        if: always()
+      # No cache for the IDEs: fifteen products at about 3 GB each is far past
+      # the repository's 10 GB, and filling it would push out the Gradle cache
+      # build.yml lives on. Each job downloads its own from JetBrains.
+      - name: Verify
+        if: ${{ !matrix.unreleased }}
+        shell: bash
+        run: ./gradlew verifyPlugin -PverifyIde=${{ matrix.ide }} ${{ matrix.versions && format('-PverifyVersions={0}', matrix.versions) || '' }} $VERIFY_LOCAL
+
+      - name: Keep the verification report
+        if: ${{ always() && !matrix.unreleased }}
         uses: actions/upload-artifact@v7
         with:
-          name: verification
+          name: verification-${{ matrix.ide }}
           if-no-files-found: ignore
           path: build/reports/pluginVerifier
