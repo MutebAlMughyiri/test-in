@@ -55,7 +55,6 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.ui.framework.DialogComponent;
 import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.util.Json;
-import org.testin.util.Shortcuts;
 
 import javax.swing.JComponent;
 import javax.swing.Timer;
@@ -63,7 +62,6 @@ import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.IntFunction;
 
@@ -377,19 +375,12 @@ final class BulkJsonEditors implements DialogComponent {
         return false;
     }
 
+    // UC-EDITOR-PANEL-007
     void bindKeysToEditor(final @NotNull List<StatusBarShortcut> shortcuts) {
         final @NotNull JComponent target = rightEditor.getContentComponent();
 
         for (final StatusBarShortcut shortcut : shortcuts) {
-            if (!shortcut.isBindable()) continue;
-
-            final @NotNull Shortcuts key = Objects.requireNonNull(shortcut.shortcut());
-            final @NotNull Runnable action = Objects.requireNonNull(shortcut.action());
-            register(action, key.getCustomShortcut(), target);
-
-            if (key == Shortcuts.Enter) {
-                register(action, Shortcuts.ConfirmAlternative.getCustomShortcut(), target);
-            }
+            if (shortcut.isBindable()) register(shortcut.action(), shortcut.shortcut().getCustomShortcut(), target);
         }
     }
 

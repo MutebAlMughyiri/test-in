@@ -102,7 +102,7 @@ Select several test cases, then `F2` or the field's own letter.
 │ 9    }                           │ 9    }                                  │
 │10  ]                             │10  ]                                    │
 ├──────────────────────────────────┴─────────────────────────────────────────┤
-│  [k] Enter Save   Shift+Enter Save   Tab Next   Shift+Tab Previous         │
+│  [k] Enter Save   Tab Next   Shift+Tab Previous                            │
 │      Down Next   Up Previous   Ctrl+Shift+A All Carets                     │
 │      Ctrl+Click Multi-Caret   Escape Cancel                                │
 └────────────────────────────────────────────────────────────────────────────┘
@@ -164,10 +164,6 @@ nearest place the tester can type. No message is shown.
 
 **If a key would change the locked text** — nothing happens. The platform's own
 warning is hidden.
-
-**`Shift+Enter` also saves**, and the strip names it. It is there because the
-gesture that normally inserts a line break must not put a newline inside a value
-the shape says is one line.
 
 ---
 
