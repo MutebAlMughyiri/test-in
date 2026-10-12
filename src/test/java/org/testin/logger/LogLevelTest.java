@@ -27,24 +27,24 @@ import java.util.stream.Collectors;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
-public class LevelTest {
+public class LogLevelTest {
 
     @Test
     public void everyLevelIsPrintedTheSameWidth() {
-        final @NotNull Set<Integer> widths = Arrays.stream(Level.values())
+        final @NotNull Set<Integer> widths = Arrays.stream(LogLevel.values())
                 .map(level -> level.paddedName.length())
                 .collect(Collectors.toSet());
 
         assertEquals(widths, Set.of(5),
                 "the levels are not all printed the same width, so a log line's columns no longer line up: "
-                        + Arrays.stream(Level.values())
+                        + Arrays.stream(LogLevel.values())
                         .map(level -> level.name() + "='" + level.paddedName + "'")
                         .collect(Collectors.joining(", ")));
     }
 
     @Test
     public void loudnessRisesWithTheDeclarationOrder() {
-        final @NotNull List<Level> levels = List.of(Level.values());
+        final @NotNull List<LogLevel> levels = List.of(LogLevel.values());
 
         for (int i = 1; i < levels.size(); i++) {
             assertTrue(levels.get(i).priority > levels.get(i - 1).priority,
@@ -55,21 +55,21 @@ public class LevelTest {
 
     @Test
     public void offIsQuieterThanAnythingThatWrites() {
-        assertEquals(Level.DISABLED.priority, -1, "DISABLED is not below the levels it disables");
+        assertEquals(LogLevel.DISABLED.priority, -1, "DISABLED is not below the levels it disables");
 
-        assertTrue(Arrays.stream(Level.values())
-                        .filter(level -> level != Level.DISABLED)
+        assertTrue(Arrays.stream(LogLevel.values())
+                        .filter(level -> level != LogLevel.DISABLED)
                         .allMatch(level -> level.priority >= 0),
                 "a level that writes is at or below DISABLED, so turning the log off would not turn it off");
     }
 
     @Test
     public void aStoredLevelThatNamesNothingIsRead() {
-        for (final Level level : Level.values())
-            assertEquals(Level.known(level.name()), level.name(), "a level this enum declares is kept as it was stored");
+        for (final LogLevel level : LogLevel.values())
+            assertEquals(LogLevel.known(level.name()), level.name(), "a level this enum declares is kept as it was stored");
 
-        assertEquals(Level.known("VERBOSE"), Level.INFO.name(), "a level from another build does not stop the project opening");
-        assertEquals(Level.known("info"), Level.INFO.name(), "the stored form is the constant's own name, so case matters and a mismatch is unknown");
-        assertEquals(Level.known(""), Level.INFO.name(), "nothing stored is nothing to parse");
+        assertEquals(LogLevel.known("VERBOSE"), LogLevel.INFO.name(), "a level from another build does not stop the project opening");
+        assertEquals(LogLevel.known("info"), LogLevel.INFO.name(), "the stored form is the constant's own name, so case matters and a mismatch is unknown");
+        assertEquals(LogLevel.known(""), LogLevel.INFO.name(), "nothing stored is nothing to parse");
     }
 }

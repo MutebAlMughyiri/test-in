@@ -27,7 +27,7 @@ import org.testin.Await;
 import org.testin.Said;
 import org.testin.editor.EditorFixtures;
 import org.testin.explorer.TreePanel;
-import org.testin.importexport.FileTypes;
+import org.testin.importexport.FileFormat;
 import org.testin.importexport.imports.SourceSection;
 import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
@@ -152,7 +152,7 @@ public class TestinFolderIdeTest extends AbstractTempRootIdeTest {
         settings().rootTestinPath = "";
         indexer().resetForReindex();
 
-        StartupActivity.execute(getProject());
+        TestinStartup.execute(getProject());
         indexer().awaitIndexing();
 
         assertTrue("with no folder set, Testin never finished reading", indexer().isIndexed());
@@ -166,8 +166,8 @@ public class TestinFolderIdeTest extends AbstractTempRootIdeTest {
         final @NotNull Path downloads = folder("downloads");
         settings().defaultDownloadFolder = downloads.toString();
 
-        assertEquals("saving a report does not start in the download folder", downloads.toString(), folderShownBy(DestinationForm.stacked(getProject(), new FileTypes[]{FileTypes.PDF}, FileTypes.PDF, "report", "Folder", "Choose").getPanel()));
-        assertEquals("saving an export does not start in the download folder", downloads.toString(), folderShownBy(DestinationForm.inSection(getProject(), new FileTypes[]{FileTypes.CSV}, FileTypes.CSV, "export", "Folder", "Choose", "Destination").getPanel()));
+        assertEquals("saving a report does not start in the download folder", downloads.toString(), folderShownBy(DestinationForm.stacked(getProject(), new FileFormat[]{FileFormat.PDF}, FileFormat.PDF, "report", "Folder", "Choose").getPanel()));
+        assertEquals("saving an export does not start in the download folder", downloads.toString(), folderShownBy(DestinationForm.inSection(getProject(), new FileFormat[]{FileFormat.CSV}, FileFormat.CSV, "export", "Folder", "Choose", "Destination").getPanel()));
         assertEquals("choosing a file to import does not start in the download folder", downloads.toString(), SourceSection.of(getProject()).field().getText());
     }
 
@@ -175,7 +175,7 @@ public class TestinFolderIdeTest extends AbstractTempRootIdeTest {
     public void testTheDownloadFolderIsAStartingPointAndAnyFolderCanBeChosen() {
         settings().defaultDownloadFolder = folder("downloads").toString();
         final @NotNull Path elsewhere = folder("elsewhere");
-        final @NotNull DestinationForm form = DestinationForm.stacked(getProject(), new FileTypes[]{FileTypes.PDF}, FileTypes.PDF, "report", "Folder", "Choose");
+        final @NotNull DestinationForm form = DestinationForm.stacked(getProject(), new FileFormat[]{FileFormat.PDF}, FileFormat.PDF, "report", "Folder", "Choose");
 
         Drawn.components(form.getPanel()).stream()
                 .filter(JTextComponent.class::isInstance)

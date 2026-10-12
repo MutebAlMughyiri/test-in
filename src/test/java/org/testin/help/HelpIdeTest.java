@@ -39,9 +39,9 @@ public class HelpIdeTest extends BasePlatformTestCase {
     public void testAFiredHintWaitsUntilItsStepIsCleared() {
         final @NotNull Hints hints = nothingWaits();
 
-        hints.fire(Hint.of(SetupStep.BUG_FILING, "Add bugRepoUrl to testin.yml"));
-        hints.fire(Hint.of(SetupStep.BUG_FILING, "Not signed in to github.com"));
-        assertEquals("a second hint on one step did not replace the first", List.of("Not signed in to github.com"), hints.waiting().stream().map(Hint::text).toList());
+        hints.fire(SetupHint.of(SetupStep.BUG_FILING, "Add bugRepoUrl to testin.yml"));
+        hints.fire(SetupHint.of(SetupStep.BUG_FILING, "Not signed in to github.com"));
+        assertEquals("a second hint on one step did not replace the first", List.of("Not signed in to github.com"), hints.waiting().stream().map(SetupHint::text).toList());
 
         hints.clear(SetupStep.BUG_FILING);
         assertTrue("a cleared hint still waits", hints.waiting().isEmpty());
@@ -51,11 +51,11 @@ public class HelpIdeTest extends BasePlatformTestCase {
     public void testStepsThatShareAGuideWaitAndClearApart() {
         final @NotNull Hints hints = nothingWaits();
 
-        hints.fire(Hint.of(SetupStep.BUG_FILING, "Add bugRepoUrl to testin.yml"));
-        hints.fire(Hint.of(SetupStep.BOARD_COLUMNS, "Run gh auth refresh -s read:project"));
+        hints.fire(SetupHint.of(SetupStep.BUG_FILING, "Add bugRepoUrl to testin.yml"));
+        hints.fire(SetupHint.of(SetupStep.BOARD_COLUMNS, "Run gh auth refresh -s read:project"));
         hints.clear(SetupStep.BUG_FILING);
 
-        assertEquals("a ready Send cleared the board hint too", List.of(SetupStep.BOARD_COLUMNS), hints.waiting().stream().map(Hint::step).toList());
+        assertEquals("a ready Send cleared the board hint too", List.of(SetupStep.BOARD_COLUMNS), hints.waiting().stream().map(SetupHint::step).toList());
         hints.clear(SetupStep.BOARD_COLUMNS);
     }
 
@@ -63,7 +63,7 @@ public class HelpIdeTest extends BasePlatformTestCase {
     public void testAFiredHintOffersItsGuide() {
         final @NotNull Hints hints = nothingWaits();
 
-        hints.fire(Hint.of(SetupStep.TESTIN_FOLDER, "Please set the Testin folder"));
+        hints.fire(SetupHint.of(SetupStep.TESTIN_FOLDER, "Please set the Testin folder"));
 
         assertEquals(List.of(Guide.SET_UP_THIS_MACHINE), Services.getInstance(getProject(), Guides.class).offered());
         hints.clear(SetupStep.TESTIN_FOLDER);
@@ -72,7 +72,7 @@ public class HelpIdeTest extends BasePlatformTestCase {
     // Rule-INTERNAL-127
     public void testALinkFormRunsItsFix() {
         final @NotNull AtomicInteger fixed = new AtomicInteger();
-        final @NotNull Hint hint = Hint.of(SetupStep.TEST_PROJECT_LINK, "testin.yml does not name this test project", "Save to testin.yml", fixed::incrementAndGet);
+        final @NotNull SetupHint hint = SetupHint.of(SetupStep.TEST_PROJECT_LINK, "testin.yml does not name this test project", "Save to testin.yml", fixed::incrementAndGet);
 
         final @NotNull ActionLink link = (ActionLink) hint.form().orElseThrow().get();
         link.doClick();

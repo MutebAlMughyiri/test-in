@@ -17,7 +17,7 @@
 package org.testin.config;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 
 import java.util.Locale;
 
@@ -34,7 +34,7 @@ public enum TestinLocation {
             if (location.name().equalsIgnoreCase(value.trim())) return location;
         }
 
-        Logger.warn("location is not 'local' or 'remote' and was read as local: " + value);
+        TestinLogger.warn("location is not 'local' or 'remote' and was read as local: " + value);
         return LOCAL;
     }
 

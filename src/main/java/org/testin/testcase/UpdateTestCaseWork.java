@@ -21,7 +21,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.TestinEditor;
 import org.testin.indexer.TestCases;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
@@ -45,7 +45,7 @@ record UpdateTestCaseWork(@NotNull Project p, @NotNull TestinEditor editor, @Not
 
         final @NotNull Path path = editor.getParent().getPath();
 
-        Logger.trace("update test cases: " + selectedItems.stream().map(TestCaseDto::getDescription).collect(Collectors.joining(", ")));
+        TestinLogger.trace("update test cases: " + selectedItems.stream().map(TestCaseDto::getDescription).collect(Collectors.joining(", ")));
 
         final @NotNull List<UUID> ids = TestCaseSnapshot.idsOf(selectedItems);
         final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(p, path, ids);

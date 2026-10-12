@@ -99,7 +99,7 @@
     <!-- ================================================================== -->
     <extensionPoints>
         <extensionPoint name="testRunners"
-                        interface="org.testin.runner.TestRunner"
+                        interface="org.testin.runner.AutomationExecutor"
                         dynamic="true"/>
         <extensionPoint name="codeGenerators"
                         interface="org.testin.codegen.CodeGenerators"
@@ -126,7 +126,7 @@
 
         <!-- First run activity -->
         <postStartupActivity
-                implementation="org.testin.setting.StartupActivity"
+                implementation="org.testin.setting.TestinStartup"
         />
 
 

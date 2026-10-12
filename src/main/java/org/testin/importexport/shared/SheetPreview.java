@@ -21,7 +21,7 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTabbedPane;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.TestSetEditorAttributes;
 import org.testin.ui.framework.DialogComponent;
@@ -47,7 +47,7 @@ public final class SheetPreview implements DialogComponent {
 
     // UC-SHARE-007, Rule-SHARE-036
     public void show(final @NotNull Map<String, List<TestCaseDto>> newSheets) {
-        Logger.debug("Import preview: showing " + newSheets.values().stream().mapToInt(List::size).sum()
+        TestinLogger.debug("Import preview: showing " + newSheets.values().stream().mapToInt(List::size).sum()
                 + " test cases in " + newSheets.size() + " sheet(s), replacing " + sheets.size() + " sheet(s)");
         sheets = newSheets;
 
@@ -85,7 +85,7 @@ public final class SheetPreview implements DialogComponent {
                 if (Boolean.TRUE.equals(model.getValueAt(row, 0))) selected.add(testCasesInSheet.get(row));
             }
 
-            Logger.info("Import preview: sheet '" + entry.getKey() + "' holds " + testCasesInSheet.size()
+            TestinLogger.info("Import preview: sheet '" + entry.getKey() + "' holds " + testCasesInSheet.size()
                     + " test cases, table has " + model.getRowCount() + " rows, " + selected.size() + " ticked");
 
             if (!selected.isEmpty()) selectedBySheet.put(entry.getKey(), selected);

@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.util.Bundle;
 
 import java.util.Locale;
@@ -46,7 +46,8 @@ record TestinProjectConfig(@NotNull TestinLocation location, @NotNull String rep
 
     // UC-TREE-PANEL-001, Rule-TREE-PANEL-124
     private static void report(final @NotNull TestinLocation location, final @NotNull String repoUrl) {
-        if (location.isRemote() && repoUrl.isEmpty()) Logger.warn(Bundle.message("config.warn.remote.no.repo.url"));
+        if (location.isRemote() && repoUrl.isEmpty())
+            TestinLogger.warn(Bundle.message("config.warn.remote.no.repo.url"));
     }
 
     @JsonCreator

@@ -31,7 +31,7 @@ import org.testin.editor.grid.NotWhileEditing;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.Node;
 import org.testin.ui.ActionsMenu;
-import org.testin.undo.UndoAction;
+import org.testin.undo.TestinUndoAction;
 import org.testin.undo.UndoDirection;
 import org.testin.undo.UndoScope;
 
@@ -76,8 +76,8 @@ public abstract class AbstractEditorContextMenu extends DefaultActionGroup {
 
         actions.addSeparator();
 
-        actions.add(new UndoAction(p, list, UndoScope.of(dir.getPath()), UndoDirection.UNDO));
-        actions.add(new UndoAction(p, list, UndoScope.of(dir.getPath()), UndoDirection.REDO));
+        actions.add(new TestinUndoAction(p, list, UndoScope.of(dir.getPath()), UndoDirection.UNDO));
+        actions.add(new TestinUndoAction(p, list, UndoScope.of(dir.getPath()), UndoDirection.REDO));
 
         return actions;
     }

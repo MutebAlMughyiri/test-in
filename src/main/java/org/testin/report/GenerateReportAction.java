@@ -29,7 +29,7 @@ import org.testin.actions.GrayWithReason;
 import org.testin.editor.TestinEditor;
 import org.testin.explorer.tree.TreeValues;
 import org.testin.git.history.TestRunFromGit;
-import org.testin.importexport.FileTypes;
+import org.testin.importexport.FileFormat;
 import org.testin.importexport.exports.ExportNotice;
 import org.testin.indexer.TestRuns;
 import org.testin.model.TestCaseDto;
@@ -112,12 +112,12 @@ public class GenerateReportAction extends AbstractProjectAction {
     }
 
     // UC-REPORT-001, Rule-REPORT-003
-    private void processAndSave(final @NotNull TestRunNode tr, final @NotNull FileTypes format, final @NotNull File outputFile) {
+    private void processAndSave(final @NotNull TestRunNode tr, final @NotNull FileFormat format, final @NotNull File outputFile) {
         BackgroundWork.run(p, Bundle.message("report.task.generating", format.getLabel(), tr.getName()), Bundle.message("report.failed.title", format.getLabel()), indicator -> writeReport(tr, format, outputFile, indicator));
     }
 
     // UC-REPORT-001, Rule-REPORT-003
-    void writeReport(final @NotNull TestRunNode tr, final @NotNull FileTypes format, final @NotNull File outputFile, final @NotNull ProgressIndicator indicator) {
+    void writeReport(final @NotNull TestRunNode tr, final @NotNull FileFormat format, final @NotNull File outputFile, final @NotNull ProgressIndicator indicator) {
         final @NotNull Path dirPath = tr.getPath();
 
         // Rule-EDITOR-PANEL-239

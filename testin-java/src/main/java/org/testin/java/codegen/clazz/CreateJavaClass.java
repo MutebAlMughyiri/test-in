@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.Fqcn;
 import org.testin.codegen.GenAction;
 import org.testin.codegen.JavaSourceRoot;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.node.Node;
 
 import java.util.List;
@@ -36,7 +36,7 @@ public class CreateJavaClass implements GenAction<Node> {
         final @NotNull List<String> packageSegments = fqcn.subList(0, fqcn.size() - 1);
         final @NotNull String className = fqcn.getLast();
 
-        Logger.info("Ready to generate Test Class: " + className + " in package: " + fqcn);
+        TestinLogger.info("Ready to generate Test Class: " + className + " in package: " + fqcn);
 
         JavaSourceRoot.writeInRootOrWarn(p, className,
                 root -> JavaSourceRoot.classFile(root, packageSegments, className));

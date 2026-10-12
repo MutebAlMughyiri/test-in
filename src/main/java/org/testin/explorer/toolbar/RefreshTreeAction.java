@@ -27,7 +27,7 @@ import org.testin.bug.BugIssueStates;
 import org.testin.editor.open.TestinEditors;
 import org.testin.explorer.TreePanel;
 import org.testin.indexer.ProjectIndexer;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
@@ -40,7 +40,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class RefreshAction extends AbstractProjectAction {
+public class RefreshTreeAction extends AbstractProjectAction {
     private static final @NotNull String REFRESHED = Done.REFRESHED.getOutcome();
 
     private final @NotNull TreePanel tp;
@@ -58,7 +58,7 @@ public class RefreshAction extends AbstractProjectAction {
     // UC-TREE-PANEL-025, UC-TREE-PANEL-026, Rule-TREE-PANEL-081
     private final @NotNull AtomicReference<Optional<String>> queued = new AtomicReference<>(Optional.empty());
 
-    public RefreshAction(final @NotNull Project p, final @NotNull TreePanel tp) {
+    public RefreshTreeAction(final @NotNull Project p, final @NotNull TreePanel tp) {
         super(p, Bundle.message("toolbar.refresh"), Bundle.message("toolbar.refresh.description"), AllIcons.Actions.Refresh);
         this.tp = tp;
         this.boundTestProject = Services.getInstance(p, BoundTestProject.class);
@@ -76,11 +76,11 @@ public class RefreshAction extends AbstractProjectAction {
     public void execute(final @NotNull String outcome) {
         if (!refreshGuard.compareAndSet(false, true)) {
             queued.set(Optional.of(outcome));
-            Logger.info("Refresh: already in progress, so this one waits for it - " + outcome);
+            TestinLogger.info("Refresh: already in progress, so this one waits for it - " + outcome);
             return;
         }
 
-        Logger.info("Refresh: re-indexing started");
+        TestinLogger.info("Refresh: re-indexing started");
 
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             try {
@@ -90,12 +90,12 @@ public class RefreshAction extends AbstractProjectAction {
                 indexer.indexWithProgress();
                 indexer.awaitIndexing();
 
-                Logger.info("Refresh: re-indexing complete, rebuilding tree");
+                TestinLogger.info("Refresh: re-indexing complete, rebuilding tree");
 
                 ApplicationManager.getApplication().invokeLater(() -> rebuildTree(outcome));
 
             } catch (final Exception ex) {
-                Logger.error("Refresh: re-indexing failed - " + FailureText.of(ex));
+                TestinLogger.error("Refresh: re-indexing failed - " + FailureText.of(ex));
                 releaseAndRunWhatWaited();
                 notifier.error(p, Bundle.message("toolbar.refresh.failed.title"), FailureText.of(ex));
             }
@@ -111,7 +111,7 @@ public class RefreshAction extends AbstractProjectAction {
 
             tp.refresh();
             Services.getInstance(p, BugIssueStates.class).readAll(() -> ViewToolWindowFactory.refreshShown(p));
-            Logger.info("Refresh: tree rebuilt");
+            TestinLogger.info("Refresh: tree rebuilt");
 
             tp.fetchBranches();
 

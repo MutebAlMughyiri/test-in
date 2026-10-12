@@ -228,7 +228,7 @@ silently has no effect costs more than the setting it was meant to hold.
   rather than a cleanup because it does not stay fixed otherwise: #48 normalized
   28 of them, and the next few comments written put six back.
 - A method handles its own failures: no `throws` on the signature. Catch inside,
-  log through `Logger`, and notify when a tester action triggered it — a catch
+  log through `TestinLogger`, and notify when a tester action triggered it — a catch
   that does neither is worse than the `throws` it replaced. **This applies to
   `src/test` too.** A test that cannot run wraps its body and throws an
   `AssertionError` carrying the cause; a test that skips itself does that check

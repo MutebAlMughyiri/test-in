@@ -35,7 +35,7 @@ import org.testin.codegen.GenType;
 import org.testin.java.codegen.GeneratedClass;
 import org.testin.java.codegen.GeneratedMethod;
 import org.testin.java.codegen.JavaLiteral;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.notifications.Notifier;
 import org.testin.notifications.Refused;
@@ -60,7 +60,7 @@ public class UpdateTestBase {
     }
 
     private static void keptItsName(final @NotNull Project p, final @NotNull PsiMethod pm, final @NotNull String why) {
-        Logger.warn("Kept the name of " + pm.getName() + ": " + why);
+        TestinLogger.warn("Kept the name of " + pm.getName() + ": " + why);
 
         Services.getInstance(p, Notifier.class).softRefuse(p, Bundle.message("codegen.rename.kept.title"), why);
     }
@@ -83,7 +83,7 @@ public class UpdateTestBase {
 
         final PsiAnnotationMemberValue value = parsed.findDeclaredAttributeValue("v");
         if (value == null) {
-            Logger.warn("Could not read '" + newValue + "' as a value for " + attrName);
+            TestinLogger.warn("Could not read '" + newValue + "' as a value for " + attrName);
             return;
         }
 
@@ -128,7 +128,7 @@ public class UpdateTestBase {
     protected void updateTestAnnotationAttribute(final @NotNull Project p, final @NotNull PsiMethod pm, final @NotNull String attrName, final @NotNull String newValue) {
         getTestAnnotation(pm).ifPresentOrElse(testAnnotation ->
                         updateAnnotationAttribute(JavaPsiFacade.getElementFactory(p), testAnnotation, attrName, newValue),
-                () -> Logger.warn("Update: method has no @Test annotation"));
+                () -> TestinLogger.warn("Update: method has no @Test annotation"));
     }
 
     protected void reformat(final @NotNull Project p, final @NotNull PsiElement element) {
@@ -137,11 +137,11 @@ public class UpdateTestBase {
 
     protected void removeTestAnnotationAttribute(final @NotNull PsiMethod pm, final @NotNull String attrName) {
         getTestAnnotation(pm).ifPresentOrElse(testAnnotation -> testAnnotation.setDeclaredAttributeValue(attrName, null),
-                () -> Logger.warn("Update: method has no @Test annotation"));
+                () -> TestinLogger.warn("Update: method has no @Test annotation"));
     }
 
     private void noCodeToUpdate(final @NotNull Project p, final @NotNull TestCaseDto tc, final @NotNull String detail) {
-        Logger.warn("Update: " + detail);
+        TestinLogger.warn("Update: " + detail);
 
         Services.getInstance(p, Notifier.class).softRefuse(p, Refused.NO_GENERATED_CODE, tc.getDescription());
     }
@@ -153,7 +153,7 @@ public class UpdateTestBase {
     // UC-CODEGEN-003, Rule-CODEGEN-019
     protected void applyOrCreate(final @NotNull Project p, final @NotNull TestCaseDto tc, final @NotNull String title, final @NotNull Consumer<PsiMethod> updater) {
         applyToMethod(p, tc, title, updater, detail -> {
-            Logger.info("Writing the method for '" + tc.getDescription() + "' now that it has a name: " + detail);
+            TestinLogger.info("Writing the method for '" + tc.getDescription() + "' now that it has a name: " + detail);
             GenType.CREATE_TEST_CASE.execute(p, tc);
         });
     }
@@ -175,7 +175,7 @@ public class UpdateTestBase {
         final @NotNull Optional<PsiClass> target = GeneratedClass.byName(p, path);
 
         if (target.isEmpty()) {
-            Logger.warn("Update: class not found: " + path);
+            TestinLogger.warn("Update: class not found: " + path);
             return;
         }
 

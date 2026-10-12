@@ -19,7 +19,7 @@ package org.testin.editor;
 import com.intellij.ui.components.JBPanel;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 
 import javax.swing.JComponent;
 import java.awt.BorderLayout;
@@ -32,7 +32,7 @@ public final class EditorCenter {
     private @NotNull Optional<JComponent> current = Optional.empty();
 
     public void set(final @NotNull JComponent component) {
-        Logger.debug("[center] setCenter -> " + component.getClass().getSimpleName()
+        TestinLogger.debug("[center] setCenter -> " + component.getClass().getSimpleName()
                 + " (had center=" + current.isPresent() + ")");
 
         current.ifPresent(panel::remove);

@@ -28,7 +28,7 @@ import org.testin.git.GitRefs;
 import org.testin.help.Hints;
 import org.testin.help.SetupStep;
 import org.testin.indexer.Nodes;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.status.ProjectStatus;
 import org.testin.services.Services;
@@ -96,7 +96,7 @@ public final class BoundTestProject {
 
     // UC-TREE-PANEL-004, Rule-TREE-PANEL-106
     public void choose(final @NotNull String projectName) {
-        Logger.info("Chose test project '" + projectName + "' for " + p.getName() + " on this machine");
+        TestinLogger.info("Chose test project '" + projectName + "' for " + p.getName() + " on this machine");
 
         PropertiesComponent.getInstance(p).setList(CHOICE, List.of(projectName, TestinYml.projectName(p)));
         refreshGutter();

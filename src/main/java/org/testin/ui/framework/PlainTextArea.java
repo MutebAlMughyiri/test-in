@@ -28,11 +28,11 @@ import javax.swing.JComponent;
 import javax.swing.event.DocumentEvent;
 import java.awt.KeyboardFocusManager;
 
-public final class TextArea implements DialogComponent {
+public final class PlainTextArea implements DialogComponent {
     private final @NotNull JBTextArea area;
     private final @NotNull JComponent panel;
 
-    TextArea(final @NotNull String placeholder, final @NotNull String value, final int rows, final boolean readOnly) {
+    PlainTextArea(final @NotNull String placeholder, final @NotNull String value, final int rows, final boolean readOnly) {
         area = new JBTextArea(value);
         DialogStyle.asField(area);
         area.setEditable(!readOnly);

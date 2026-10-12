@@ -21,7 +21,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.GenType;
 import org.testin.indexer.TestCases;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.notifications.Refused;
 import org.testin.services.Services;
@@ -104,7 +104,7 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
     // UC-EDITOR-PANEL-008, Rule-EDITOR-PANEL-053
     private void persistAndGenerate(final @NotNull TestCaseDto edited, final @NotNull TestSetEditorAttributes attr, final @NotNull TestCaseSnapshot undoFrom) {
         if (testSetPath.toString().isEmpty()) {
-            Logger.warn("[grid] edit not persisted - the editor has no test set path");
+            TestinLogger.warn("[grid] edit not persisted - the editor has no test set path");
             return;
         }
 

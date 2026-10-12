@@ -22,7 +22,7 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
 import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.RunItems;
@@ -98,7 +98,7 @@ final class IndexerDataStore {
     private static @NotNull RunItems indexed(final @Nullable RunItems node, final @NotNull Path path) {
         if (node != null) return node;
 
-        Logger.error("No test run indexed at " + path);
+        TestinLogger.error("No test run indexed at " + path);
         throw new IllegalStateException("No test run indexed at " + path);
     }
 
@@ -300,7 +300,7 @@ final class IndexerDataStore {
         removeTestRunsUnder(path);
         childrenIndex.invalidate();
 
-        Logger.info("Test project dropped from the index: " + pathStr);
+        TestinLogger.info("Test project dropped from the index: " + pathStr);
     }
 
     private void removeTestSetPackagesUnder(final @NotNull Path path) {
@@ -343,7 +343,7 @@ final class IndexerDataStore {
         testSetNodesByPath.remove(pathStr);
         testCaseStore.removeForTestSet(pathStr);
         childrenIndex.invalidate();
-        Logger.info("Removed test set at: " + pathStr);
+        TestinLogger.info("Removed test set at: " + pathStr);
     }
 
     void removeTestRun(final @NotNull Path path) {
@@ -351,7 +351,7 @@ final class IndexerDataStore {
         testRunNodesByPath.remove(pathStr);
         runItemsByPath.remove(pathStr);
         childrenIndex.invalidate();
-        Logger.info("Removed test run at: " + pathStr);
+        TestinLogger.info("Removed test run at: " + pathStr);
     }
 
     void removeTestSetPackage(final @NotNull Path path) {
@@ -362,7 +362,7 @@ final class IndexerDataStore {
         removeTestSetsUnder(path);
         childrenIndex.invalidate();
 
-        Logger.info("Removed test set package at: " + pathStr);
+        TestinLogger.info("Removed test set package at: " + pathStr);
     }
 
     void removeTestRunPackage(final @NotNull Path path) {
@@ -373,7 +373,7 @@ final class IndexerDataStore {
         removeTestRunsUnder(path);
         childrenIndex.invalidate();
 
-        Logger.info("Removed test run package at: " + pathStr);
+        TestinLogger.info("Removed test run package at: " + pathStr);
     }
 
     boolean addTestProject(final @NotNull TestProjectNode tp) {
@@ -493,6 +493,6 @@ final class IndexerDataStore {
         runItemsByPath.clear();
         childrenIndex.clear();
 
-        Logger.info("IndexerDataStore: all maps cleared");
+        TestinLogger.info("IndexerDataStore: all maps cleared");
     }
 }

@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.TestinData;
 import org.testin.editor.open.TestinEditors;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.node.Node;
 import org.testin.services.Services;
 
@@ -36,7 +36,7 @@ public class OpenAction extends AbstractAnyProjectAction {
         selected.stream()
                 .filter(Node::isOpenableInEditor)
                 .forEach(dir -> {
-                    Logger.info("open: " + dir.getPath());
+                    TestinLogger.info("open: " + dir.getPath());
                     Services.getInstance(p, TestinEditors.class).open(dir);
                 });
     }

@@ -24,7 +24,7 @@ import org.testin.git.GitFailed;
 import org.testin.git.GitRepositoryService;
 import org.testin.indexer.TestRuns;
 import org.testin.indexer.WatchedPath;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
 import org.testin.model.FileKind;
 import org.testin.model.TestCaseDto;
@@ -75,7 +75,7 @@ public final class TestRunFromGit {
             final @NotNull String record = git.log(testProject, "-1", "--format=%H", "-G\"commit\"", "--", marker).strip();
             return record.isEmpty() ? commit : record + "^";
         } catch (final GitFailed ex) {
-            Logger.info("The commit that recorded " + testRunPath.getFileName() + " could not be found, so its commit id is read as written: " + FailureText.of(ex));
+            TestinLogger.info("The commit that recorded " + testRunPath.getFileName() + " could not be found, so its commit id is read as written: " + FailureText.of(ex));
             return commit;
         }
     }
@@ -114,7 +114,7 @@ public final class TestRunFromGit {
             files.forEach((path, json) -> testCases.put(wanted.get(fileName(path)), parsed(p, json)));
             testRuns.rememberRecorded(commit, testCases);
         } catch (final GitFailed ex) {
-            Logger.info("The test cases of commit " + commit + " could not be read, so the test cases are shown as they are now: " + FailureText.of(ex));
+            TestinLogger.info("The test cases of commit " + commit + " could not be read, so the test cases are shown as they are now: " + FailureText.of(ex));
         }
     }
 
@@ -133,7 +133,7 @@ public final class TestRunFromGit {
                     parsed(p, json).ifPresent(tc -> testCases.put(lastVersions.get(objectName), tc)));
             Services.getInstance(p, TestRuns.class).rememberLastInGit(testCases);
         } catch (final GitFailed ex) {
-            Logger.info("The deleted test cases could not be read from Git, so they show as deleted: " + FailureText.of(ex));
+            TestinLogger.info("The deleted test cases could not be read from Git, so they show as deleted: " + FailureText.of(ex));
         }
     }
 

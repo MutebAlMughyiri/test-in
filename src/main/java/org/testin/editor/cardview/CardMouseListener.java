@@ -30,7 +30,7 @@ import org.testin.editor.card.CardHoverAction;
 import org.testin.editor.card.CardTitle;
 import org.testin.editor.card.Offered;
 import org.testin.editor.testrun.ExecutingNow;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.Node;
 import org.testin.notifications.Notifier;
@@ -111,7 +111,7 @@ public class CardMouseListener extends MouseAdapter {
         getActionAtPoint(index, e.getX() - bounds.x, e.getY() - bounds.y).ifPresent(button -> {
             final @NotNull TestCaseDto tc = list.getModel().getElementAt(index);
 
-            Logger.trace(button.action().getTooltip() + ", tc: " + tc.getDescription());
+            TestinLogger.trace(button.action().getTooltip() + ", tc: " + tc.getDescription());
 
             if (!button.works()) {
                 notifier.softRefuse(p, button.hintText());

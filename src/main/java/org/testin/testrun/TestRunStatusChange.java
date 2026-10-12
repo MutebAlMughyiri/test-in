@@ -26,7 +26,7 @@ import org.testin.git.GitRepositoryService;
 import org.testin.git.review.ViewPendingCommitsWork;
 import org.testin.indexer.TestRuns;
 import org.testin.indexer.WatchedPath;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.markers.TestRunMarker;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.testrun.RunItem;
@@ -60,7 +60,7 @@ public final class TestRunStatusChange {
     public void apply(final @NotNull TestRunNode testRun, final @NotNull TestRunStatus newStatus) {
         final @NotNull Optional<TestRunEditor> open = editors.testRunEditorFor(testRun);
 
-        Logger.trace("Test run status changed: " + testRun.getName() + " = " + newStatus.getLabel());
+        TestinLogger.trace("Test run status changed: " + testRun.getName() + " = " + newStatus.getLabel());
 
         if (newStatus.stopsExecution()) open.ifPresent(editor -> editor.getWalk().stopExecution());
 
@@ -105,7 +105,7 @@ public final class TestRunStatusChange {
             }
 
             if (closed > 0)
-                Logger.info("Test run finished with " + closed + " test case(s) not executed; marked untested: " + testRunPath);
+                TestinLogger.info("Test run finished with " + closed + " test case(s) not executed; marked untested: " + testRunPath);
         });
 
         testRuns.changeTestRunMarker(testRunPath, TestRunMarker::markExecutionEnded);

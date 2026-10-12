@@ -28,7 +28,7 @@ import org.testin.git.GitRefs;
 import org.testin.git.GitRepositoryService;
 import org.testin.git.review.ViewPendingCommitsAction;
 import org.testin.indexer.Nodes;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.node.TestProjectNode;
 import org.testin.notifications.Notifier;
 import org.testin.services.BackgroundWork;
@@ -254,7 +254,7 @@ public class BranchSelector {
 
             ApplicationManager.getApplication().invokeLater(() -> showBranches(branches));
         } catch (final Exception ex) {
-            Logger.error("Could not read branches: " + FailureText.of(ex));
+            TestinLogger.error("Could not read branches: " + FailureText.of(ex));
             ApplicationManager.getApplication().invokeLater(() -> {
                 showPlaceholder(Bundle.message("branch.load.failed"));
                 GitFailure.show(p, Bundle.message("git.error.title"), Bundle.message("branch.load.failed.message", FailureText.of(ex)));
@@ -267,7 +267,7 @@ public class BranchSelector {
         try {
             git.fetchRemoteBranches(repositoryPath);
         } catch (final Exception fetchError) {
-            Logger.error("Could not refresh remote branches: " + FailureText.of(fetchError));
+            TestinLogger.error("Could not refresh remote branches: " + FailureText.of(fetchError));
             ApplicationManager.getApplication().invokeLater(() ->
                     notifier.warn(p, Bundle.message("branch.fetch.warning.title"),
                             Bundle.message("branch.fetch.warning.message", FailureText.of(fetchError))));

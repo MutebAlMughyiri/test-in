@@ -134,14 +134,14 @@ public final class HelpMark implements CustomStatusBarWidget {
 
     // UC-INTERNAL-009, Rule-INTERNAL-127
     private void redraw() {
-        final @NotNull List<Hint> hints = Services.getInstance(p, Hints.class).waiting();
+        final @NotNull List<SetupHint> hints = Services.getInstance(p, Hints.class).waiting();
         entry.setIcon(hints.isEmpty() ? QUIET : WAITING);
         Tooltip.set(entry, hints.isEmpty() ? Bundle.message("help.title") : hints.getFirst().text());
     }
 
     // UC-INTERNAL-009, Rule-INTERNAL-128
     private void showPopup() {
-        final @NotNull List<Hint> hints = Services.getInstance(p, Hints.class).waiting();
+        final @NotNull List<SetupHint> hints = Services.getInstance(p, Hints.class).waiting();
         final @NotNull List<Guide> guides = Services.getInstance(p, Guides.class).offered();
         if (hints.isEmpty() && guides.isEmpty()) {
             Services.getInstance(p, Notifier.class).softShow(p, Bundle.message("help.nothing"));
@@ -174,9 +174,9 @@ public final class HelpMark implements CustomStatusBarWidget {
     }
 
     // UC-INTERNAL-009, Rule-INTERNAL-127, Rule-INTERNAL-128
-    private @NotNull JComponent hintsPage(final @NotNull List<Hint> hints, final int hintWidth) {
+    private @NotNull JComponent hintsPage(final @NotNull List<SetupHint> hints, final int hintWidth) {
         final @NotNull JBPanel<?> page = page();
-        for (final Hint hint : hints) {
+        for (final SetupHint hint : hints) {
             if (page.getComponentCount() > 0) page.add(Box.createVerticalStrut(JBUI.scale(GAP * 2)));
 
             final @NotNull Optional<JComponent> row = hint.form().map(Supplier::get);

@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.VisibleForTesting;
 import org.testin.indexer.TestRuns;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.bug.BugIssueUrl;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
@@ -85,7 +85,7 @@ public final class BugFiling {
             return Optional.of(Bundle.message("bug.not.stored.no.longer.failed"));
 
         testRuns.changeRunItems(runItemPath.testRunPath(), testRun -> runItemPath.failedIn(testRun).ifPresentOrElse(result -> result.linkBug(url),
-                () -> Logger.warn("The test run a sync brought in no longer has this failure, so its bug link was not stored: " + url)));
+                () -> TestinLogger.warn("The test run a sync brought in no longer has this failure, so its bug link was not stored: " + url)));
         return Optional.empty();
     }
 }

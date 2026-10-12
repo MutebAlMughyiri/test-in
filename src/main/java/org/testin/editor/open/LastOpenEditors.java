@@ -23,7 +23,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.Nodes;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.node.Node;
 import org.testin.services.Services;
 import org.testin.util.FailureText;
@@ -49,7 +49,7 @@ public final class LastOpenEditors {
                     entries.isEmpty() ? null : String.join(";", entries));
 
         } catch (final Exception ex) {
-            Logger.error("Failed to save open editors: " + FailureText.of(ex));
+            TestinLogger.error("Failed to save open editors: " + FailureText.of(ex));
         }
     }
 
@@ -70,22 +70,22 @@ public final class LastOpenEditors {
                     PropertiesComponent.getInstance(p).getValue(OPEN_EDITORS_KEY), "");
 
             if (saved.isEmpty()) {
-                Logger.debug("No saved editors to restore");
+                TestinLogger.debug("No saved editors to restore");
                 return;
             }
 
             final String @NotNull [] entries = saved.split(";");
             if (entries.length == 0) return;
 
-            Logger.info("restoring " + entries.length + " open editors");
+            TestinLogger.info("restoring " + entries.length + " open editors");
 
             openAll(stillIndexed(entries));
 
             PropertiesComponent.getInstance(p).setValue(OPEN_EDITORS_KEY, null);
-            Logger.info("cleared saved editor state");
+            TestinLogger.info("cleared saved editor state");
 
         } catch (final Exception ex) {
-            Logger.error("Failed to restore open editors: " + FailureText.of(ex));
+            TestinLogger.error("Failed to restore open editors: " + FailureText.of(ex));
         }
     }
 
@@ -96,10 +96,10 @@ public final class LastOpenEditors {
         for (final String entry : entries) {
             nodes.find(Path.of(entry)).ifPresentOrElse(
                     dir -> {
-                        Logger.debug("restoring editor for '" + entry + "' -> found");
+                        TestinLogger.debug("restoring editor for '" + entry + "' -> found");
                         found.add(dir);
                     },
-                    () -> Logger.debug("restoring editor for '" + entry + "' -> not indexed"));
+                    () -> TestinLogger.debug("restoring editor for '" + entry + "' -> not indexed"));
         }
 
         return found;

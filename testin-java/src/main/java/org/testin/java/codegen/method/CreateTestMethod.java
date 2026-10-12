@@ -39,7 +39,7 @@ import org.testin.codegen.JavaSourceRoot;
 import org.testin.java.codegen.GeneratedClass;
 import org.testin.java.codegen.GeneratedMethod;
 import org.testin.java.codegen.JavaLiteral;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
@@ -137,8 +137,8 @@ public class CreateTestMethod implements GenAction<TestCaseDto> {
     }
 
     private void noMethodFor(final @NotNull TestCaseDto tc, final @NotNull List<String> fqcn) {
-        if (fqcn.isEmpty()) Logger.debug("No description yet, so no method to write for " + tc.getId());
-        else Logger.error("FQCN list is too short to generate a method: " + fqcn);
+        if (fqcn.isEmpty()) TestinLogger.debug("No description yet, so no method to write for " + tc.getId());
+        else TestinLogger.error("FQCN list is too short to generate a method: " + fqcn);
     }
 
     private void createMethods(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases) {
@@ -146,7 +146,7 @@ public class CreateTestMethod implements GenAction<TestCaseDto> {
         if (first.isEmpty()) return;
 
         final @NotNull Target target = first.orElseThrow();
-        Logger.info("Creating " + testMethods(testCases.size()) + " in " + target.path());
+        TestinLogger.info("Creating " + testMethods(testCases.size()) + " in " + target.path());
 
         GeneratedClass.findOrWrite(p, target.packageList(), target.className()).ifPresentOrElse(
                 targetClass -> injectAsText(p, targetClass, testCases),
@@ -211,12 +211,12 @@ public class CreateTestMethod implements GenAction<TestCaseDto> {
         }
 
         if (alreadyThere > 0) {
-            Logger.info(alreadyThere + " of " + testMethods(testCases.size())
+            TestinLogger.info(alreadyThere + " of " + testMethods(testCases.size())
                     + " already in " + targetClass.getQualifiedName());
         }
 
         if (adopted > 0) {
-            Logger.info("Linked " + adopted + " hand-written method(s) in "
+            TestinLogger.info("Linked " + adopted + " hand-written method(s) in "
                     + targetClass.getQualifiedName() + " to the test cases that describe them");
         }
 
@@ -252,7 +252,7 @@ public class CreateTestMethod implements GenAction<TestCaseDto> {
     private void reportCannotBeNamed(final @NotNull Project p, final @NotNull PsiClass targetClass, final @NotNull List<TestCaseDto> cannotBeNamed) {
         if (cannotBeNamed.isEmpty()) return;
 
-        Logger.warn("No method for " + cannotBeNamed.size() + " test case(s) in " + targetClass.getQualifiedName()
+        TestinLogger.warn("No method for " + cannotBeNamed.size() + " test case(s) in " + targetClass.getQualifiedName()
                 + ": the description cannot name a Java method");
 
         Services.getInstance(p, Notifier.class).warn(p, noMethodTitle(cannotBeNamed),
@@ -263,7 +263,7 @@ public class CreateTestMethod implements GenAction<TestCaseDto> {
     private void reportLostTheName(final @NotNull Project p, final @NotNull PsiClass targetClass, final @NotNull List<TestCaseDto> lost) {
         if (lost.isEmpty()) return;
 
-        Logger.warn("No method for " + lost.size() + " test case(s) in " + targetClass.getQualifiedName()
+        TestinLogger.warn("No method for " + lost.size() + " test case(s) in " + targetClass.getQualifiedName()
                 + ": the name is already taken by another method");
 
         Services.getInstance(p, Notifier.class).warn(p, noMethodTitle(lost),
@@ -271,7 +271,7 @@ public class CreateTestMethod implements GenAction<TestCaseDto> {
     }
 
     private void oneAtATime(final @NotNull Project p, final @NotNull PsiClass targetClass, final @NotNull List<TestCaseDto> testCases, final @NotNull String reason) {
-        Logger.warn("Writing " + testCases.size() + " methods one at a time into "
+        TestinLogger.warn("Writing " + testCases.size() + " methods one at a time into "
                 + targetClass.getQualifiedName() + ": " + reason);
 
         int written = 0;
@@ -285,7 +285,7 @@ public class CreateTestMethod implements GenAction<TestCaseDto> {
     private void retryInjectPhysically(final @NotNull Project p, final @NotNull List<String> packageList, final @NotNull String className, final @NotNull String methodName, final @NotNull TestCaseDto tc) {
         JavaSourceRoot.find(p).ifPresentOrElse(
                 sourceRoot -> injectIntoFile(p, sourceRoot, packageList, className, methodName, tc),
-                () -> Logger.error("retryInjectPhysically: no Java test source root, cannot inject method '"
+                () -> TestinLogger.error("retryInjectPhysically: no Java test source root, cannot inject method '"
                         + methodName + "'"));
     }
 
@@ -294,18 +294,18 @@ public class CreateTestMethod implements GenAction<TestCaseDto> {
             final @NotNull String relativePath = String.join("/", packageList) + "/" + className + ".java";
             final @NotNull Optional<VirtualFile> found = JavaSourceRoot.under(sourceRoot, relativePath);
             if (found.isEmpty()) {
-                Logger.error("retryInjectPhysically: file not found at " + relativePath + " for method '" + methodName + "'");
+                TestinLogger.error("retryInjectPhysically: file not found at " + relativePath + " for method '" + methodName + "'");
                 return;
             }
 
             if (!(PsiManager.getInstance(p).findFile(found.orElseThrow()) instanceof PsiJavaFile javaPsiFile)) {
-                Logger.error("retryInjectPhysically: file " + className + ".java is not a valid Java file for method '" + methodName + "'");
+                TestinLogger.error("retryInjectPhysically: file " + className + ".java is not a valid Java file for method '" + methodName + "'");
                 return;
             }
 
             final PsiClass @NotNull [] classes = javaPsiFile.getClasses();
             if (classes.length == 0) {
-                Logger.error("retryInjectPhysically: no classes found in " + className + ".java for method '" + methodName + "'");
+                TestinLogger.error("retryInjectPhysically: no classes found in " + className + ".java for method '" + methodName + "'");
                 return;
             }
 
@@ -313,7 +313,7 @@ public class CreateTestMethod implements GenAction<TestCaseDto> {
                     .ifPresent(added -> CodeStyleManager.getInstance(p).reformat(added));
 
         } catch (final Exception ex) {
-            Logger.error("retryInjectPhysically failed for method '" + methodName + "': " + FailureText.of(ex));
+            TestinLogger.error("retryInjectPhysically failed for method '" + methodName + "': " + FailureText.of(ex));
         }
     }
 
@@ -326,7 +326,7 @@ public class CreateTestMethod implements GenAction<TestCaseDto> {
             GeneratedMethod.importTest(p, file);
 
             if (GeneratedMethod.forTestCase(targetClass, tc).isPresent()) {
-                Logger.info("Method already exists: " + methodName);
+                TestinLogger.info("Method already exists: " + methodName);
                 return Optional.empty();
             }
 
@@ -339,7 +339,7 @@ public class CreateTestMethod implements GenAction<TestCaseDto> {
                 if (GeneratedMethod.testCaseIdOf(sameName.orElseThrow()).isPresent() || GeneratedMethod.testAnnotationOf(sameName.orElseThrow()).isEmpty())
                     reportLostTheName(p, targetClass, List.of(tc));
                 else
-                    Logger.info("Method already exists: " + methodName);
+                    TestinLogger.info("Method already exists: " + methodName);
 
                 return Optional.empty();
             }
@@ -354,11 +354,11 @@ public class CreateTestMethod implements GenAction<TestCaseDto> {
             final @NotNull PsiMethod newMethod = factory.createMethodFromText(methodText(methodName, tc, ExecutionPosition.of(p, tc)), targetClass);
             final @NotNull PsiElement addedElement = targetClass.add(newMethod);
 
-            Logger.info("Injected method: " + methodName + " with Priority: " + tc.getPriority().getLabel());
+            TestinLogger.info("Injected method: " + methodName + " with Priority: " + tc.getPriority().getLabel());
             return Optional.of(addedElement);
 
         } catch (final Exception ex) {
-            Logger.error("injectMethod failed for '" + methodName + "': " + FailureText.of(ex));
+            TestinLogger.error("injectMethod failed for '" + methodName + "': " + FailureText.of(ex));
             return Optional.empty();
         }
     }

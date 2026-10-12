@@ -30,7 +30,7 @@ import org.testin.codegen.agent.WriteBodies;
 import org.testin.editor.TestinEditor;
 import org.testin.help.Guide;
 import org.testin.help.Guides;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.navigate.CodeNavigation;
 import org.testin.notifications.Done;
@@ -50,7 +50,7 @@ public class AutomateTestCaseAction extends AbstractAnyProjectAction {
         try {
             return ApplicationManager.getApplication().runReadAction((Computable<Integer>) () -> CodeNavigation.available().methodsFor(p, asked).size());
         } catch (final Exception ex) {
-            Logger.warn("Could not count the methods Automate Test Case wrote: " + FailureText.of(ex));
+            TestinLogger.warn("Could not count the methods Automate Test Case wrote: " + FailureText.of(ex));
             return 0;
         }
     }

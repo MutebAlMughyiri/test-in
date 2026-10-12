@@ -23,7 +23,7 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.ui.DocumentAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.ui.Caption;
 import org.testin.util.FailureText;
 
@@ -69,7 +69,7 @@ public final class TextInput implements DialogComponent, TextValue {
                 try {
                     super.insertString(bypass, offset, text, attributes);
                 } catch (final BadLocationException ex) {
-                    Logger.warn("Could not insert at " + offset + ": " + FailureText.of(ex));
+                    TestinLogger.warn("Could not insert at " + offset + ": " + FailureText.of(ex));
                 }
             }
 
@@ -80,7 +80,7 @@ public final class TextInput implements DialogComponent, TextValue {
                 try {
                     super.replace(bypass, offset, length, text, attributes);
                 } catch (final BadLocationException ex) {
-                    Logger.warn("Could not replace " + length + " at " + offset + ": " + FailureText.of(ex));
+                    TestinLogger.warn("Could not replace " + length + " at " + offset + ": " + FailureText.of(ex));
                 }
             }
 
@@ -89,7 +89,7 @@ public final class TextInput implements DialogComponent, TextValue {
                 try {
                     current = bypass.getDocument().getText(0, bypass.getDocument().getLength());
                 } catch (final BadLocationException ex) {
-                    Logger.warn("Could not read the field to check it: " + FailureText.of(ex));
+                    TestinLogger.warn("Could not read the field to check it: " + FailureText.of(ex));
                     return false;
                 }
 

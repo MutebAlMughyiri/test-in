@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @AllArgsConstructor
-public enum FileTypes {
+public enum FileFormat {
     XLS(
             "XLS",
             ".xls",
@@ -119,7 +119,7 @@ public enum FileTypes {
     private final @NotNull ImportHandler importHandler;
     private final @NotNull ReportHandler reportHandler;
 
-    public static @NotNull Optional<FileTypes> importerFor(final @NotNull String fileName) {
+    public static @NotNull Optional<FileFormat> importerFor(final @NotNull String fileName) {
         return Arrays.stream(values())
                 .filter(type -> type.isImportable() && fileName.endsWith(type.getExtension()))
                 .findFirst();
@@ -127,14 +127,14 @@ public enum FileTypes {
 
     public static @NotNull String importableExtensions() {
         return Arrays.stream(values())
-                .filter(FileTypes::isImportable)
-                .map(FileTypes::getExtension)
+                .filter(FileFormat::isImportable)
+                .map(FileFormat::getExtension)
                 .collect(Collectors.joining(", "));
     }
 
     public static String @NotNull [] importableExtensionsForChooser() {
         return Arrays.stream(values())
-                .filter(FileTypes::isImportable)
+                .filter(FileFormat::isImportable)
                 .map(type -> type.getExtension().substring(1))
                 .toArray(String[]::new);
     }

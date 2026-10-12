@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.editor.EditorColors;
 import org.testin.editor.toolbar.AbstractToolbarPanel;
 import org.testin.git.history.HistoryCard;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.Automated;
 import org.testin.model.markers.TestRunMarker;
 import org.testin.model.testrun.Segment;
@@ -52,7 +52,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-public class StatusBar extends JBPanel<StatusBar> {
+public class EditorStatusBar extends JBPanel<EditorStatusBar> {
     private static final int EDGE = 2;
 
     private final @NotNull JBLabel statusLabel = new JBLabel();
@@ -75,7 +75,7 @@ public class StatusBar extends JBPanel<StatusBar> {
     private final @NotNull JBPanel<?> navigationRow;
     private final @NotNull JBPanel<?> rightRow;
 
-    public StatusBar() {
+    public EditorStatusBar() {
         super(null);
 
         setBorder(JBUI.Borders.compound(
@@ -222,7 +222,7 @@ public class StatusBar extends JBPanel<StatusBar> {
         automatedLabel.setText(Bundle.message("statusbar.automated.count", Automated.WRITTEN.getLabel(), String.valueOf(written), String.valueOf(known)));
         automatedLabel.setVisible(known > 0);
 
-        Logger.debug("Automated count: written=" + written + " known=" + known
+        TestinLogger.debug("Automated count: written=" + written + " known=" + known
                 + " shown=" + automatedLabel.isVisible() + " text='" + automatedLabel.getText() + "'");
 
         revalidate();

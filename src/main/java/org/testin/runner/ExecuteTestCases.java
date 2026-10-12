@@ -48,6 +48,6 @@ public final class ExecuteTestCases {
 
         if (starting.isEmpty()) return;
 
-        TestRunner.available().run(p, starting);
+        AutomationExecutor.available().run(p, starting);
     }
 }

@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.services.Services;
 import org.testin.setting.AppSettingsState;
-import org.testin.setting.StartupActivity;
+import org.testin.setting.TestinStartup;
 
 import java.nio.file.Path;
 
@@ -54,14 +54,14 @@ public class ReadAfterTheFolderIsSetIdeTest extends AbstractTempRootIdeTest {
     }
 
     public void testTheFolderSetAfterStartupIsReadWhenTheTreeOpens() {
-        StartupActivity.execute(getProject());
+        TestinStartup.execute(getProject());
 
         assertTrue("with no folder set there is nothing to read", indexer().testProjects().isEmpty());
 
         final Path project = SyntheticTree.write(root, 1, 1);
         settings().rootTestinPath = root.toString();
 
-        StartupActivity.execute(getProject());
+        TestinStartup.execute(getProject());
 
         assertTrue("the folder was set after the startup pass, and opening the tree read nothing: it asked"
                         + " for the one-time wiring and was turned away with it",

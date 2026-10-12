@@ -27,7 +27,7 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.content.Content;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import org.testin.actions.EscapeAction;
+import org.testin.actions.TestinEscapeAction;
 import org.testin.editor.WheelForwarding;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
@@ -97,8 +97,8 @@ public class ViewPanel implements Disposable {
         historyScrollPane = createScrollPane(historyTab);
 
         // Rule-VIEW-PANEL-058
-        new EscapeAction(p, detailsTab);
-        new EscapeAction(p, historyTab);
+        new TestinEscapeAction(p, detailsTab);
+        new TestinEscapeAction(p, historyTab);
 
         for (final ViewTab tab : ViewTab.values()) takesTheKeyboard(tab);
         IdeEventQueue.getInstance().addPostprocessor(event -> {

@@ -24,7 +24,7 @@ import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.Node;
 import org.testin.model.node.TestRunNode;
@@ -74,7 +74,7 @@ public class CreateTestRun implements NodeCreator {
     public @NotNull Optional<Node> execute(final @NotNull String name, final @NotNull Node parentNode, final @NotNull Path newDirPath) {
         boundTestProject.get().ifPresentOrElse(
                 tp -> configureTestRun(tp.getTestCasesFolder(), name, parentNode, Set.of(), Map.of()),
-                () -> Logger.warn("Create test run: no test project is bound to " + p.getName()));
+                () -> TestinLogger.warn("Create test run: no test project is bound to " + p.getName()));
 
         return Optional.empty();
     }

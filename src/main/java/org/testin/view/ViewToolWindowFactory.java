@@ -25,10 +25,10 @@ import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.services.Services;
-import org.testin.setting.StartupActivity;
+import org.testin.setting.TestinStartup;
 
 import java.util.Collection;
 import java.util.List;
@@ -75,7 +75,7 @@ public class ViewToolWindowFactory implements ToolWindowFactory, DumbAware {
     // Rule-VIEW-PANEL-008
     @Override
     public void createToolWindowContent(final @NotNull Project p, final @NotNull ToolWindow toolWindow) {
-        Logger.info("ViewToolWindowFactory.createToolWindowContent()");
+        TestinLogger.info("ViewToolWindowFactory.createToolWindowContent()");
 
         final @NotNull ViewPanel panel = new ViewPanel(p);
         Services.getInstance(p, ViewPanelHolder.class).hold(panel);
@@ -93,7 +93,7 @@ public class ViewToolWindowFactory implements ToolWindowFactory, DumbAware {
         toolWindow.setTitleActions(new ViewPanelActions().create(panel, toolWindow.getComponent()));
 
         ApplicationManager.getApplication().invokeLater(() -> {
-            if (!p.isDisposed()) StartupActivity.execute(p);
+            if (!p.isDisposed()) TestinStartup.execute(p);
         });
     }
 }

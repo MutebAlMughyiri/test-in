@@ -21,7 +21,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
-import org.testin.actions.EscapeAction;
+import org.testin.actions.TestinEscapeAction;
 import org.testin.actions.TestinData;
 import org.testin.editor.grid.GridContextMenuListener;
 import org.testin.editor.grid.GridEnterAction;
@@ -29,7 +29,7 @@ import org.testin.editor.grid.GridPanelBuilder;
 import org.testin.editor.grid.GridSelectionListener;
 import org.testin.editor.grid.GridView;
 import org.testin.editor.statusbar.PageAction;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.model.ToolBarAttribute;
 import org.testin.open.OpenContextMenuAction;
@@ -85,7 +85,7 @@ final class EditorGrid<A extends Enum<A> & ToolBarAttribute> {
 
         final @NotNull List<TestCaseDto> pageItems = showOnGrid(editor.getCurrentPageItems());
         final @NotNull Set<A> attributes = editor.getSelectedDetails();
-        Logger.debug("[grid] rebuildGrid start, pageItems=" + pageItems.size() + ", details=" + attributes);
+        TestinLogger.debug("[grid] rebuildGrid start, pageItems=" + pageItems.size() + ", details=" + attributes);
         final @NotNull Disposable fontSync = Disposer.newDisposable(editor.projectDisposable, "testin." + editor.getClass().getSimpleName() + ".gridFontSync");
         try {
             final @NotNull JBTable table = editor.buildTable(editor.gridRows(pageItems), attributes);
@@ -93,7 +93,7 @@ final class EditorGrid<A extends Enum<A> & ToolBarAttribute> {
 
             table.getSelectionModel().addListSelectionListener(new GridSelectionListener(editor, table, editor.list, pageItems));
             editor.installEditListener(table, pageItems);
-            new EscapeAction(editor.p, table);
+            new TestinEscapeAction(editor.p, table);
             new GridEnterAction(editor, table, pageItems, editor.parent.getPath2());
             table.addMouseListener(new GridContextMenuListener(table, editor.list, editor.contextMenu, pageItems));
             editor.contextMenu.bindShortcutsTo(table);
@@ -105,9 +105,9 @@ final class EditorGrid<A extends Enum<A> & ToolBarAttribute> {
 
             previous.ifPresent(old -> Disposer.dispose(old.fontSync()));
 
-            Logger.debug("[grid] rebuildGrid done, rows=" + table.getRowCount() + ", cols=" + table.getColumnCount());
+            TestinLogger.debug("[grid] rebuildGrid done, rows=" + table.getRowCount() + ", cols=" + table.getColumnCount());
         } catch (final Exception ex) {
-            Logger.error("[grid] rebuildGrid FAILED: " + ex);
+            TestinLogger.error("[grid] rebuildGrid FAILED: " + ex);
             Disposer.dispose(fontSync);
 
             // Rule-EDITOR-PANEL-229

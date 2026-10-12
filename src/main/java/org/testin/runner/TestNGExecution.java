@@ -29,7 +29,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.Failure;
 import org.testin.model.status.ExecutionStatus;
@@ -115,7 +115,7 @@ public final class TestNGExecution implements Disposable {
     public void launch(final @NotNull List<TestCaseDto> testCases, final @NotNull RunnerAndConfigurationSettings settings) {
         launched(testCases, settings.getName());
 
-        Logger.info("Starting " + settings.getName() + " with " + testCases.size() + " test case(s)");
+        TestinLogger.info("Starting " + settings.getName() + " with " + testCases.size() + " test case(s)");
         ProgramRunnerUtil.executeConfiguration(settings, DefaultRunExecutor.getRunExecutorInstance());
     }
 
@@ -126,7 +126,7 @@ public final class TestNGExecution implements Disposable {
     // UC-CODEGEN-008, Rule-CODEGEN-097
     @FromContentModule
     public void acrossModules(final @NotNull List<TestCaseDto> testCases, final @NotNull List<String> modules) {
-        Logger.warn("Not running " + testCases.size() + " test case(s): their methods live in the modules " + modules);
+        TestinLogger.warn("Not running " + testCases.size() + " test case(s): their methods live in the modules " + modules);
         testCases.forEach(this::notStarting);
         notifier.softRefuse(p, Refused.ACROSS_MODULES, String.join(", ", modules));
     }
@@ -140,7 +140,7 @@ public final class TestNGExecution implements Disposable {
     // UC-CODEGEN-008
     @FromContentModule
     public void noGeneratedCode(final @NotNull TestCaseDto tc) {
-        Logger.warn("Not running '" + tc.getDescription() + "': it has no generated code");
+        TestinLogger.warn("Not running '" + tc.getDescription() + "': it has no generated code");
         notStarting(tc);
     }
 
@@ -200,7 +200,7 @@ public final class TestNGExecution implements Disposable {
         if (stop.testCases().isEmpty()) return 0;
 
         final @NotNull Map<ProcessHandler, String> theirs = running(stop.executions());
-        Logger.info("Stopping " + stop.testCases().size() + " test case(s) in " + stop.executions().size()
+        TestinLogger.info("Stopping " + stop.testCases().size() + " test case(s) in " + stop.executions().size()
                 + " execution(s): " + theirs.size() + " had reached a process");
 
         theirs.forEach(this::kill);
@@ -216,7 +216,7 @@ public final class TestNGExecution implements Disposable {
             final @NotNull List<UUID> open = registry.ended(testRunName);
             if (open.isEmpty()) return;
 
-            Logger.info("'" + testRunName + "' ended with " + open.size() + " test case(s) still open");
+            TestinLogger.info("'" + testRunName + "' ended with " + open.size() + " test case(s) still open");
             open.forEach(id -> TestCaseExecutionListener.broadcast(p, key(id), ExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
         });
     }
@@ -225,11 +225,11 @@ public final class TestNGExecution implements Disposable {
         handler.putUserData(ProcessHandler.TERMINATION_REQUESTED, Boolean.TRUE);
 
         if (handler instanceof KillableProcess killable && killable.canKillProcess()) {
-            Logger.info("Killing '" + testRunName + "'");
+            TestinLogger.info("Killing '" + testRunName + "'");
             killable.killProcess();
 
         } else {
-            Logger.info("Destroying '" + testRunName + "', which cannot be killed");
+            TestinLogger.info("Destroying '" + testRunName + "', which cannot be killed");
             handler.destroyProcess();
         }
     }

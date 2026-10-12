@@ -25,7 +25,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
-import org.testin.help.Hint;
+import org.testin.help.SetupHint;
 import org.testin.help.Hints;
 import org.testin.help.SetupStep;
 import org.testin.notifications.Notifier;
@@ -97,7 +97,7 @@ public enum OptionalPlugin {
     }
 
     private void hint(final @NotNull Project p) {
-        Services.getInstance(p, Hints.class).fire(Hint.of(step, requirement));
+        Services.getInstance(p, Hints.class).fire(SetupHint.of(step, requirement));
     }
 
     // UC-SHARE-010, Rule-SHARE-105

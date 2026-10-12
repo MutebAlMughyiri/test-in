@@ -19,7 +19,7 @@ package org.testin.indexer;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
 import org.testin.model.markers.AbstractMarker;
 import org.testin.model.markers.Marker;
@@ -59,7 +59,7 @@ public final class Nodes {
         try {
             return Files.isSameFile(one, other);
         } catch (final IOException ex) {
-            Logger.warn("Could not compare " + one + " with " + other + ": " + FailureText.of(ex));
+            TestinLogger.warn("Could not compare " + one + " with " + other + ": " + FailureText.of(ex));
             return false;
         }
     }
@@ -114,7 +114,7 @@ public final class Nodes {
 
     // UC-TREE-PANEL-012, Rule-TREE-PANEL-042
     public void refuseRemove(final @NotNull Path path, final @NotNull Consumer<@NotNull Boolean> onRemoved) {
-        Logger.info("Not removed: " + path.getFileName() + " is not removable from the tree");
+        TestinLogger.info("Not removed: " + path.getFileName() + " is not removable from the tree");
         onRemoved.accept(false);
     }
 

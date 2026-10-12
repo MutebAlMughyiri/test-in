@@ -34,8 +34,8 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.explorer.TreePanel;
 import org.testin.help.Guide;
 import org.testin.help.Guides;
-import org.testin.logger.Level;
-import org.testin.logger.Logger;
+import org.testin.logger.LogLevel;
+import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
 import org.testin.services.Services;
 import org.testin.setting.dialogs.TestinPathPanel;
@@ -64,7 +64,7 @@ public final class SettingsConfigurable implements SearchableConfigurable {
 
     public SettingsConfigurable() {
         testinPathPanel = new TestinPathPanel();
-        this.logLevelComboBox = new ComboBox<>(Arrays.stream(Level.values()).map(Level::name).toArray(String[]::new));
+        this.logLevelComboBox = new ComboBox<>(Arrays.stream(LogLevel.values()).map(LogLevel::name).toArray(String[]::new));
     }
 
     // UC-SETTING-007, Rule-INTERNAL-129
@@ -143,7 +143,7 @@ public final class SettingsConfigurable implements SearchableConfigurable {
         try {
             root = Path.of(typed);
         } catch (final InvalidPathException notAPath) {
-            Logger.info("The Testin folder typed is not a path: " + FailureText.of(notAPath));
+            TestinLogger.info("The Testin folder typed is not a path: " + FailureText.of(notAPath));
             return Optional.of(new ConfigurationException(Bundle.message("settings.no.folder", typed), Bundle.message("settings.no.folder.title")));
         }
 
@@ -171,7 +171,7 @@ public final class SettingsConfigurable implements SearchableConfigurable {
         if (refusal.isPresent()) throw refusal.get();
 
         final boolean rootChanged = TestinRoot.isRootChanged(settings.rootTestinPath, testinPathPanel.getPathText());
-        final @NotNull String level = Objects.requireNonNullElse((String) logLevelComboBox.getSelectedItem(), Level.INFO.name());
+        final @NotNull String level = Objects.requireNonNullElse((String) logLevelComboBox.getSelectedItem(), LogLevel.INFO.name());
         final boolean levelChanged = !level.equals(settings.logLevel);
 
         settings.rootTestinPath = testinPathPanel.getPathText().trim();
@@ -181,7 +181,7 @@ public final class SettingsConfigurable implements SearchableConfigurable {
         settings.defaultDownloadFolder = downloadFolderField.getText().trim();
         settings.showShortcutHints = showShortcutHintsBox.isSelected();
 
-        Logger.setLogLevel(Level.valueOf(settings.logLevel));
+        TestinLogger.setLogLevel(LogLevel.valueOf(settings.logLevel));
 
         if (rootChanged) refreshEveryOpenProject();
         if (levelChanged) offerTheLogsGuide();
@@ -191,7 +191,7 @@ public final class SettingsConfigurable implements SearchableConfigurable {
         for (final Project open : ProjectManager.getInstance().getOpenProjects()) {
             if (open.isDisposed()) continue;
 
-            StartupActivity.hintTestinFolder(open);
+            TestinStartup.hintTestinFolder(open);
             if (Services.isNotCreated(open, TreePanel.class)) continue;
 
             Services.getInstance(open, TreePanel.class).reindex();

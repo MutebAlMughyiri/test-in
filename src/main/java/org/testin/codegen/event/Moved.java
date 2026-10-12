@@ -20,7 +20,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.Fqcn;
 import org.testin.indexer.Nodes;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.node.Node;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
@@ -51,7 +51,7 @@ public record Moved(@NotNull Node dir, @NotNull List<String> from, @NotNull Path
     // UC-CODEGEN-016, Rule-CODEGEN-055
     @FromContentModule
     public void reportCodeLeftBehind(final @NotNull Project p, final @NotNull String fullName) {
-        Logger.warn("Destination is not indexed, so " + fullName + " is left where it is");
+        TestinLogger.warn("Destination is not indexed, so " + fullName + " is left where it is");
 
         Services.getInstance(p, Notifier.class).warn(p,
                 Bundle.message("codegen.moved.title", dir.getName()),

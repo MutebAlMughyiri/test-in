@@ -17,7 +17,7 @@
 package org.testin;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ public class EnumNullContractTest {
             final List<Class<?>> enums = findEnums();
             if (enums.isEmpty())
                 fail("No enums found in src/main/java: the scan is looking in the wrong place");
-            Logger.info("Checked " + enums.size() + " enums");
+            TestinLogger.info("Checked " + enums.size() + " enums");
 
             for (final Class<?> type : enums) {
                 try {
@@ -66,8 +66,8 @@ public class EnumNullContractTest {
             }
 
             if (!skipped.isEmpty()) {
-                Logger.info("Enums that could not initialize for reasons unrelated to nullability:");
-                skipped.forEach(s -> Logger.info("  " + s));
+                TestinLogger.info("Enums that could not initialize for reasons unrelated to nullability:");
+                skipped.forEach(s -> TestinLogger.info("  " + s));
             }
 
             if (!breaches.isEmpty()) {

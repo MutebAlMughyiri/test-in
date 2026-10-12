@@ -25,7 +25,7 @@ import org.testin.codegen.GenAction;
 import org.testin.codegen.JavaSourceRoot;
 import org.testin.codegen.event.Renamed;
 import org.testin.java.codegen.PackageDeclarations;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.util.Bundle;
 import org.testin.util.FailureText;
 
@@ -41,14 +41,14 @@ public class RenameJavaPackage implements GenAction<Renamed> {
 
         JavaSourceRoot.find(p).ifPresentOrElse(
                 testSourceRoot -> renameUnder(p, testSourceRoot, fqcn, renamed.newPackage()),
-                () -> Logger.info("Could not find Test Source Root in the project modules."));
+                () -> TestinLogger.info("Could not find Test Source Root in the project modules."));
     }
 
     private void renameUnder(final @NotNull Project p, final @NotNull VirtualFile testSourceRoot, final @NotNull List<String> fqcn, final @NotNull String newTop) {
         final @NotNull Optional<VirtualFile> found = JavaSourceRoot.under(testSourceRoot, String.join("/", fqcn))
                 .filter(VirtualFile::isDirectory);
         if (found.isEmpty()) {
-            Logger.info("Package not found for rename: " + String.join(".", fqcn));
+            TestinLogger.info("Package not found for rename: " + String.join(".", fqcn));
             return;
         }
 
@@ -59,9 +59,9 @@ public class RenameJavaPackage implements GenAction<Renamed> {
                 pkgDir.rename(this, newTop);
 
                 PackageDeclarations.retarget(p, testSourceRoot, pkgDir);
-                Logger.info("Package renamed to: " + newTop);
+                TestinLogger.info("Package renamed to: " + newTop);
             } catch (final IOException ex) {
-                Logger.info("Error renaming package: " + FailureText.of(ex));
+                TestinLogger.info("Error renaming package: " + FailureText.of(ex));
             }
         });
     }

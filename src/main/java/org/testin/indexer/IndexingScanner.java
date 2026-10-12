@@ -20,7 +20,7 @@ import com.intellij.openapi.progress.EmptyProgressIndicator;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
 import org.testin.model.FileKind;
 import org.testin.model.TestCaseDto;
@@ -86,7 +86,7 @@ final class IndexingScanner {
             final @NotNull UUID fromName = fromTheName.orElseThrow();
 
             if (!fromName.equals(tc.getId())) {
-                Logger.warn("Test case " + filePath.getFileName() + " says its id is " + tc.getId()
+                TestinLogger.warn("Test case " + filePath.getFileName() + " says its id is " + tc.getId()
                         + "; the file name is the identity, so it is read as " + fromName);
             }
             return fromName;
@@ -120,7 +120,7 @@ final class IndexingScanner {
             // Rule-INTERNAL-091
             final @NotNull Optional<String> refused = tp.getMarker().whyNotReadable();
             if (refused.isPresent()) {
-                Logger.warn("Not reading " + projectPath.getFileName() + ": " + refused.orElseThrow());
+                TestinLogger.warn("Not reading " + projectPath.getFileName() + ": " + refused.orElseThrow());
 
                 store.refuse(projectPath, refused.orElseThrow());
                 store.swapIn(projectPath, scannedNode(projectPath, tp));
@@ -135,7 +135,7 @@ final class IndexingScanner {
 
             // UC-TREE-PANEL-001, Rule-TREE-PANEL-100
             if (!tp.getMarker().getStatus().isActive()) {
-                Logger.info("Inactive project, indexed without its contents: " + projectPath.getFileName());
+                TestinLogger.info("Inactive project, indexed without its contents: " + projectPath.getFileName());
                 store.swapIn(projectPath, scanned);
                 indicator.setFraction(1.0);
                 return Optional.empty();
@@ -158,7 +158,7 @@ final class IndexingScanner {
             scanTestRunNodes(testRunsFolder.getPath(), testRunsFolder, indicator, unread, scanned);
 
             if (indicator.isCanceled()) {
-                Logger.info("Scan canceled, so the index was left as it was: " + projectPath.getFileName());
+                TestinLogger.info("Scan canceled, so the index was left as it was: " + projectPath.getFileName());
                 return Optional.empty();
             }
 
@@ -174,7 +174,7 @@ final class IndexingScanner {
             problems.clashingTestCases(tp.getName(), List.copyOf(scanned.getClashingTestCases()));
             return Optional.empty();
         } catch (final Exception ex) {
-            Logger.error("Failed to scan project: " + projectPath.getFileName() + " - " + FailureText.of(ex));
+            TestinLogger.error("Failed to scan project: " + projectPath.getFileName() + " - " + FailureText.of(ex));
             return Optional.of(FailureText.of(ex));
         }
     }
@@ -190,7 +190,7 @@ final class IndexingScanner {
                 scanTestSetOrPackage(dirPath, parent, indicator, unread, scanned);
             }
         } catch (final NoSuchFileException absent) {
-            Logger.info("No test sets to read: " + tcDir);
+            TestinLogger.info("No test sets to read: " + tcDir);
         } catch (final IOException ex) {
             throw new UncheckedIOException("the folder " + tcDir.getFileName() + " could not be listed: " + FailureText.of(ex), ex);
         }
@@ -219,7 +219,7 @@ final class IndexingScanner {
             }
 
         } catch (final IOException | UncheckedIOException ex) {
-            Logger.error("Failed to scan test set package: " + path.getFileName() + ": " + FailureText.of(ex));
+            TestinLogger.error("Failed to scan test set package: " + path.getFileName() + ": " + FailureText.of(ex));
         }
     }
 
@@ -254,7 +254,7 @@ final class IndexingScanner {
 
                                 testCaseIds.add(tc.getId());
                             } catch (final IOException | UncheckedIOException ex) {
-                                Logger.error("Failed to read test case '" + filePath.toAbsolutePath() +
+                                TestinLogger.error("Failed to read test case '" + filePath.toAbsolutePath() +
                                         "': " + FailureText.of(ex));
 
                                 scanned.getUnreadableTestCases().computeIfAbsent(path.toString(), _ -> ConcurrentHashMap.newKeySet())
@@ -268,7 +268,7 @@ final class IndexingScanner {
             indicator.setText(Bundle.message("indexer.progress.test.set", ts.getName(), String.valueOf(testCaseIds.size())));
 
         } catch (final IOException | UncheckedIOException ex) {
-            Logger.error("Failed to scan test set '" +
+            TestinLogger.error("Failed to scan test set '" +
                     path.getFileName().toString() + "': " + FailureText.of(ex));
         }
     }
@@ -284,7 +284,7 @@ final class IndexingScanner {
                 scanTestRunOrPackage(dirPath, parent, indicator, unread, scanned);
             }
         } catch (final NoSuchFileException absent) {
-            Logger.info("No test runs to read: " + trDir);
+            TestinLogger.info("No test runs to read: " + trDir);
         } catch (final IOException ex) {
             throw new UncheckedIOException("the folder " + trDir.getFileName() + " could not be listed: " + FailureText.of(ex), ex);
         }
@@ -313,13 +313,13 @@ final class IndexingScanner {
             }
 
         } catch (final IOException | UncheckedIOException ex) {
-            Logger.error("Failed to scan test run package: " + path.getFileName() + ": " + FailureText.of(ex));
+            TestinLogger.error("Failed to scan test run package: " + path.getFileName() + ": " + FailureText.of(ex));
         }
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-015
     private void skipped(final @NotNull Path dirPath, final @NotNull List<NodeType> family, final @NotNull List<Path> unread) {
-        Logger.warn("Skipping unmarked directory (missing " + NodeType.markerNames(family) + "): " + dirPath);
+        TestinLogger.warn("Skipping unmarked directory (missing " + NodeType.markerNames(family) + "): " + dirPath);
 
         if (holdsTestCases(dirPath)) unread.add(dirPath);
     }
@@ -362,7 +362,7 @@ final class IndexingScanner {
                 read.add(runItem);
 
             } catch (final IOException | UncheckedIOException ex) {
-                Logger.error("Failed to read the run item '" + file.toAbsolutePath() + "': " + FailureText.of(ex));
+                TestinLogger.error("Failed to read the run item '" + file.toAbsolutePath() + "': " + FailureText.of(ex));
                 scanned.getUnreadableRunItems().add(testRunPath.getFileName() + "/" + file.getFileName());
             }
         }

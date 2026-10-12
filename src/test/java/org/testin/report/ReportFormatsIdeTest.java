@@ -32,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
 import org.testin.Said;
-import org.testin.importexport.FileTypes;
+import org.testin.importexport.FileFormat;
 import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
@@ -160,16 +160,16 @@ public class ReportFormatsIdeTest extends AbstractTempRootIdeTest {
         return Services.getInstance(getProject(), TestRuns.class).getRunItems(testRun.getPath());
     }
 
-    private byte @NotNull [] report(final @NotNull FileTypes format, final @NotNull TestRunNode testRun) {
+    private byte @NotNull [] report(final @NotNull FileFormat format, final @NotNull TestRunNode testRun) {
         return format.generateReport(getProject(), testRun, resultsOf(testRun));
     }
 
     private @NotNull String html(final @NotNull TestRunNode testRun) {
-        return new String(report(FileTypes.HTML, testRun), StandardCharsets.UTF_8);
+        return new String(report(FileFormat.HTML, testRun), StandardCharsets.UTF_8);
     }
 
     private @NotNull String pdf(final @NotNull TestRunNode testRun) {
-        try (PdfDocument document = new PdfDocument(new PdfReader(new ByteArrayInputStream(report(FileTypes.PDF, testRun))))) {
+        try (PdfDocument document = new PdfDocument(new PdfReader(new ByteArrayInputStream(report(FileFormat.PDF, testRun))))) {
             final @NotNull StringBuilder text = new StringBuilder();
             for (int page = 1; page <= document.getNumberOfPages(); page++)
                 text.append(PdfTextExtractor.getTextFromPage(document.getPage(page))).append('\n');
@@ -180,7 +180,7 @@ public class ReportFormatsIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull String word(final @NotNull TestRunNode testRun) {
-        try (XWPFWordExtractor extractor = new XWPFWordExtractor(new XWPFDocument(new ByteArrayInputStream(report(FileTypes.WORD, testRun))))) {
+        try (XWPFWordExtractor extractor = new XWPFWordExtractor(new XWPFDocument(new ByteArrayInputStream(report(FileFormat.WORD, testRun))))) {
             return extractor.getText();
         } catch (final IOException ex) {
             throw new AssertionError("Could not read the Word document back: " + ex.getMessage(), ex);
@@ -188,7 +188,7 @@ public class ReportFormatsIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull List<List<List<String>>> sheets(final @NotNull TestRunNode testRun) {
-        try (XSSFWorkbook workbook = new XSSFWorkbook(new ByteArrayInputStream(report(FileTypes.XLSX, testRun)))) {
+        try (XSSFWorkbook workbook = new XSSFWorkbook(new ByteArrayInputStream(report(FileFormat.XLSX, testRun)))) {
             final @NotNull DataFormatter formatter = new DataFormatter();
             final @NotNull List<List<List<String>>> sheets = new ArrayList<>();
 
@@ -208,7 +208,7 @@ public class ReportFormatsIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull List<String> sheetNames(final @NotNull TestRunNode testRun) {
-        try (XSSFWorkbook workbook = new XSSFWorkbook(new ByteArrayInputStream(report(FileTypes.XLSX, testRun)))) {
+        try (XSSFWorkbook workbook = new XSSFWorkbook(new ByteArrayInputStream(report(FileFormat.XLSX, testRun)))) {
             final @NotNull List<String> names = new ArrayList<>();
             for (final Sheet sheet : workbook) names.add(sheet.getSheetName());
             return names;
@@ -268,7 +268,7 @@ public class ReportFormatsIdeTest extends AbstractTempRootIdeTest {
 
         final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
 
-        report(FileTypes.PDF, testRun);
+        report(FileFormat.PDF, testRun);
 
         Await.until("the PDF left Arabic out and said nothing", () -> said.stream().anyMatch(n -> n.getTitle().equals(Bundle.message("report.pdf.left.out.title"))));
     }

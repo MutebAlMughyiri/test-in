@@ -33,7 +33,7 @@ import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
 import org.testin.ui.framework.ConfirmDialog;
 import org.testin.ui.framework.ShownDialog;
-import org.testin.undo.UndoAction;
+import org.testin.undo.TestinUndoAction;
 import org.testin.undo.UndoDirection;
 import org.testin.undo.UndoHistories;
 import org.testin.undo.UndoScope;
@@ -108,7 +108,7 @@ public class KeepRemovedNodeIdeTest extends AbstractReadTheRootIdeTest {
     }
 
     private void pressedCtrlZ() {
-        final @NotNull UndoAction undo = new UndoAction(getProject(), new JPanel(), UndoScope.TREE, UndoDirection.UNDO);
+        final @NotNull TestinUndoAction undo = new TestinUndoAction(getProject(), new JPanel(), UndoScope.TREE, UndoDirection.UNDO);
         undo.actionPerformed(TestActionEvent.createTestEvent(undo));
     }
 

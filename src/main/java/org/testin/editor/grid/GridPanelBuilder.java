@@ -33,7 +33,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.editor.EditorColors;
 import org.testin.editor.WheelForwarding;
 import org.testin.editor.open.EditorKind;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.model.ToolBarAttribute;
 import org.testin.testcase.Can;
@@ -324,7 +324,7 @@ public class GridPanelBuilder {
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-020, Rule-TREE-PANEL-009
     public @NotNull JBTable buildTestRunTable(final @NotNull List<String[]> rows, final @NotNull Set<TestRunEditorAttributes> attributes, final @NotNull BooleanSupplier stillOpen) {
-        Logger.debug("[GridPanelBuilder] buildRunTable: rows=" + rows.size() + ", attributes=" + attributes);
+        TestinLogger.debug("[GridPanelBuilder] buildRunTable: rows=" + rows.size() + ", attributes=" + attributes);
         final @NotNull List<TestRunEditorAttributes> ordered = TestRunEditorAttributes.COLUMNS;
 
         final @NotNull JBTable table = buildTable(buildColumns(ordered), rows, column -> stillOpen.getAsBoolean() && ordered.get(column).isEdited(), EditorKind.TEST_RUN);
@@ -334,7 +334,7 @@ public class GridPanelBuilder {
 
     // UC-EDITOR-PANEL-002, Rule-EDITOR-PANEL-020
     public @NotNull JBTable buildTestTable(final @NotNull List<String[]> rows, final @NotNull Set<TestSetEditorAttributes> attributes) {
-        Logger.debug("[GridPanelBuilder] buildTestTable: rows=" + rows.size() + ", attributes=" + attributes);
+        TestinLogger.debug("[GridPanelBuilder] buildTestTable: rows=" + rows.size() + ", attributes=" + attributes);
         final @NotNull List<TestSetEditorAttributes> ordered = TestSetEditorAttributes.COLUMNS;
 
         final @NotNull JBTable table = buildTable(buildColumns(ordered), rows, column -> ordered.get(column).can(Can.EDIT), EditorKind.TEST_SET);

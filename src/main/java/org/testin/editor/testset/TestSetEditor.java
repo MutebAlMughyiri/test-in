@@ -39,7 +39,7 @@ import org.testin.filter.FilterSelection;
 import org.testin.filter.TestCaseFilter;
 import org.testin.help.Guide;
 import org.testin.help.Guides;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.Modules;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestSetNode;
@@ -153,7 +153,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes,
             });
 
         } catch (final Exception ex) {
-            Logger.error("Failed to load test set data from disk: " + FailureText.of(ex));
+            TestinLogger.error("Failed to load test set data from disk: " + FailureText.of(ex));
             ApplicationManager.getApplication().invokeLater(() -> {
                 if (generation != modelGeneration.get()) return;
 
@@ -183,7 +183,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes,
                 final @NotNull List<TestCaseDto> moved = TestCaseOrder.place(snapshot);
 
                 if (!testCases.updateSequence(dirPath, snapshot, moved)) {
-                    Logger.warn("Not every test case of the new order was written: " + dirPath);
+                    TestinLogger.warn("Not every test case of the new order was written: " + dirPath);
                     ApplicationManager.getApplication().invokeLater(this::refuseSequence);
                     return;
                 }
@@ -195,7 +195,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes,
                 ApplicationManager.getApplication().invokeLater(this::refreshView);
 
             } catch (final Exception ex) {
-                Logger.error("Failed to save the test case sequence: " + FailureText.of(ex));
+                TestinLogger.error("Failed to save the test case sequence: " + FailureText.of(ex));
                 ApplicationManager.getApplication().invokeLater(this::refuseSequence);
             }
         });

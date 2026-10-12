@@ -21,7 +21,7 @@ import com.intellij.util.diff.FilesTooBigForDiffException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.Groups;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.TestSetEditorAttributes;
@@ -71,7 +71,7 @@ public final class TestCaseChangeComparator {
                 added.addAll(numbered(now, change.line1, change.line1 + change.inserted));
             }
         } catch (final FilesTooBigForDiffException tooMany) {
-            Logger.warn("Too many steps to compare one by one, so every step is named: " + FailureText.of(tooMany));
+            TestinLogger.warn("Too many steps to compare one by one, so every step is named: " + FailureText.of(tooMany));
             removed.addAll(numbered(was, 0, was.size()));
             added.addAll(numbered(now, 0, now.size()));
         }

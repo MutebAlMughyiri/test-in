@@ -174,8 +174,8 @@ level a tester can turn up to TRACE. Writing that through the platform's own
 logger puts it in `idea.log` at whatever level the IDE is set to.
 
 **Decision.** `LogWriter` is an application service holding a bounded queue
-and one daemon thread named `Testin-Async-Logger`, writing to
-`PathManager.getLogPath()/testin.log` and rolling at 5 MB. `Logger` is the
+and one daemon thread named `Testin-Async-TestinLogger`, writing to
+`PathManager.getLogPath()/testin.log` and rolling at 5 MB. `TestinLogger` is the
 static front door and reads the caller's class name from a `StackWalker`.
 
 **Consequences.** *Help → Show Log in Explorer* finds it and *Collect Logs and
@@ -183,9 +183,9 @@ Diagnostic Data* bundles it, because it sits beside `idea.log`. The location
 never depends on an open project. Nothing on a caller's thread waits for the
 log to be written.
 
-**If you are about to reverse it.** `Level.FATAL` and `Logger.fatal` have no
+**If you are about to reverse it.** `LogLevel.FATAL` and `TestinLogger.fatal` have no
 callers and are kept on purpose: the settings combo is built from
-`Level.values()` and stores the choice by name, so deleting the constant makes a
+`LogLevel.values()` and stores the choice by name, so deleting the constant makes a
 stored setting fail to parse on the next start.
 
 ---

@@ -29,7 +29,7 @@ import com.intellij.util.ui.tree.TreeUtil;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.Declared;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.node.Node;
 import org.testin.model.node.TestProjectNode;
 import org.testin.services.BackgroundWork;
@@ -93,7 +93,7 @@ public class TreePanelTree implements Disposable {
         mainTree.setAutoscrolls(true);
 
         final @NotNull Set<Path> sharedCutNodes = new HashSet<>();
-        mainTree.setCellRenderer(new TreeCellRenderer(sharedCutNodes));
+        mainTree.setCellRenderer(new TreePanelCellRenderer(sharedCutNodes));
 
         final @NotNull TreeTransferHandler transferHandler = new TreeTransferHandler(p, mainTree, sharedCutNodes, this::revealAfterRefresh);
         mainTree.setTransferHandler(transferHandler);
@@ -186,7 +186,7 @@ public class TreePanelTree implements Disposable {
 
         BackgroundWork.logged(structureModel.invalidateAsync().thenRun(() -> {
             if (disposed) return;
-            Logger.debug("Tree rebuilt in " + millisSince(started) + " ms");
+            TestinLogger.debug("Tree rebuilt in " + millisSince(started) + " ms");
 
             ApplicationManager.getApplication().invokeLater(() -> expandAfterRebuild(projectChanged, started));
         }), "Rebuilding the tree");
@@ -198,7 +198,7 @@ public class TreePanelTree implements Disposable {
         if (projectChanged) TreeUtil.promiseExpandAll(mainTree);
 
         consumePendingReveal();
-        Logger.debug("Tree refreshed and expanded in " + millisSince(started) + " ms");
+        TestinLogger.debug("Tree refreshed and expanded in " + millisSince(started) + " ms");
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-114
@@ -231,7 +231,7 @@ public class TreePanelTree implements Disposable {
             if (disposed) return;
 
             consumePendingReveal();
-            Logger.debug("Tree redrew " + redrawn.length + " folder(s) in " + millisSince(started) + " ms");
+            TestinLogger.debug("Tree redrew " + redrawn.length + " folder(s) in " + millisSince(started) + " ms");
         })), "Redrawing the changed folders");
     }
 

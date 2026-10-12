@@ -19,7 +19,7 @@ package org.testin.codegen;
 import com.intellij.openapi.project.Project;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 
 @AllArgsConstructor
 public final class NoJavaCode<T> implements GenAction<T> {
@@ -28,7 +28,7 @@ public final class NoJavaCode<T> implements GenAction<T> {
     // UC-CODEGEN-004
     @Override
     public void execute(final @NotNull Project p, final @NotNull T payload) {
-        Logger.debug(nodeType + " generates no Java code");
+        TestinLogger.debug(nodeType + " generates no Java code");
     }
 
     @Override

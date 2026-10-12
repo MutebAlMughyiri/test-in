@@ -19,8 +19,8 @@ package org.testin.importexport.shared;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.importexport.FileTypes;
-import org.testin.logger.Logger;
+import org.testin.importexport.FileFormat;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.notifications.Notifier;
 import org.testin.services.BackgroundWork;
@@ -48,12 +48,12 @@ public class PreviewLoader {
 
     private final @NotNull Consumer<String> onStatus;
 
-    private final @NotNull BiConsumer<FileTypes, Map<String, List<TestCaseDto>>> onDataLoaded;
-    private final @NotNull BiFunction<File, FileTypes, Map<String, List<TestCaseDto>>> importLoader;
+    private final @NotNull BiConsumer<FileFormat, Map<String, List<TestCaseDto>>> onDataLoaded;
+    private final @NotNull BiFunction<File, FileFormat, Map<String, List<TestCaseDto>>> importLoader;
 
     private final @NotNull AtomicReference<String> awaiting = new AtomicReference<>("");
 
-    public PreviewLoader(final @NotNull TextValue fileField, final @NotNull Project p, final @NotNull Consumer<String> onStatus, final @NotNull BiConsumer<FileTypes, Map<String, List<TestCaseDto>>> onDataLoaded, final @NotNull BiFunction<File, FileTypes, Map<String, List<TestCaseDto>>> importLoader) {
+    public PreviewLoader(final @NotNull TextValue fileField, final @NotNull Project p, final @NotNull Consumer<String> onStatus, final @NotNull BiConsumer<FileFormat, Map<String, List<TestCaseDto>>> onDataLoaded, final @NotNull BiFunction<File, FileFormat, Map<String, List<TestCaseDto>>> importLoader) {
         this.fileField = fileField;
         this.p = p;
         this.notifier = Services.getInstance(p, Notifier.class);
@@ -90,14 +90,14 @@ public class PreviewLoader {
     }
 
     private void loadFile(final @NotNull File importFile, final @NotNull String typed) {
-        FileTypes.importerFor(importFile.getName().toLowerCase(Locale.ROOT))
+        FileFormat.importerFor(importFile.getName().toLowerCase(Locale.ROOT))
                 .ifPresentOrElse(format -> loadFile(importFile, format, typed),
                         () -> notifier.softRefuse(p, Bundle.message("import.cannot.title"),
-                                Bundle.message("import.cannot.message", importFile.getName(), FileTypes.importableExtensions())));
+                                Bundle.message("import.cannot.message", importFile.getName(), FileFormat.importableExtensions())));
     }
 
     // UC-SHARE-005, Rule-SHARE-107
-    private void loadFile(final @NotNull File importFile, final @NotNull FileTypes format, final @NotNull String typed) {
+    private void loadFile(final @NotNull File importFile, final @NotNull FileFormat format, final @NotNull String typed) {
         onStatus.accept(Bundle.message("import.reading", importFile.getName()));
 
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
@@ -117,7 +117,7 @@ public class PreviewLoader {
                 });
 
             } catch (final Exception ex) {
-                Logger.error("Import parse failed: " + FailureText.of(ex));
+                TestinLogger.error("Import parse failed: " + FailureText.of(ex));
                 ApplicationManager.getApplication().invokeLater(() -> {
                     onStatus.accept("");
 

@@ -24,7 +24,7 @@ import org.testin.ui.framework.AbstractFrameworkDialog;
 import org.testin.ui.framework.ComponentDialogBase;
 import org.testin.ui.framework.DialogSize;
 import org.testin.ui.framework.StatusBarShortcut;
-import org.testin.ui.framework.TextArea;
+import org.testin.ui.framework.PlainTextArea;
 import org.testin.util.Bundle;
 
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public final class TestRunResultAnalysisDialog extends AbstractFrameworkDialog {
-    private final @NotNull Map<TestRunResultAnalysis, TextArea> written = new EnumMap<>(TestRunResultAnalysis.class);
+    private final @NotNull Map<TestRunResultAnalysis, PlainTextArea> written = new EnumMap<>(TestRunResultAnalysis.class);
     private final @NotNull Consumer<@NotNull Map<TestRunResultAnalysis, String>> onSave;
     private final boolean readOnly;
 
@@ -54,7 +54,7 @@ public final class TestRunResultAnalysisDialog extends AbstractFrameworkDialog {
                     .placeholder(Bundle.message("dialog.analysis.placeholder", section.getLabel().toLowerCase(Locale.ROOT)))
                     .value(section.writtenIn(current))
                     .rows(3);
-            final @NotNull ComponentDialogBase<TextArea> area = (readOnly ? builder.readOnly() : builder).build();
+            final @NotNull ComponentDialogBase<PlainTextArea> area = (readOnly ? builder.readOnly() : builder).build();
 
             written.put(section, area.getComponent());
 

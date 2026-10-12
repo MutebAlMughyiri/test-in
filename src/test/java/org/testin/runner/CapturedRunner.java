@@ -29,12 +29,12 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public final class CapturedRunner implements TestRunner {
+public final class CapturedRunner implements AutomationExecutor {
     private final @NotNull List<List<TestCaseDto>> runs = new CopyOnWriteArrayList<>();
 
     public static @NotNull CapturedRunner installed(final @NotNull Disposable owner) {
         final @NotNull CapturedRunner runner = new CapturedRunner();
-        ExtensionTestUtil.maskExtensions(TestRunner.EP, List.of(runner), owner);
+        ExtensionTestUtil.maskExtensions(AutomationExecutor.EP, List.of(runner), owner);
         return runner;
     }
 

@@ -25,7 +25,7 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.util.concurrency.ThreadingAssertions;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.util.Bundle;
 import org.testin.util.FailureText;
 import org.testin.util.Mapper;
@@ -64,7 +64,7 @@ public final class GitHubCli {
     }
 
     private static @NotNull IssueCreation notWritten(final @NotNull IOException ex) {
-        Logger.warn("A bug report could not be written for gh: " + FailureText.of(ex));
+        TestinLogger.warn("A bug report could not be written for gh: " + FailureText.of(ex));
         return IssueCreation.failed(Bundle.message("bug.send.not.written", FailureText.of(ex)));
     }
 
@@ -118,7 +118,7 @@ public final class GitHubCli {
         try {
             return Optional.of(new CapturingProcessHandler(command).runProcessWithProgressIndicator(indicator, (int) TIMEOUT.toMillis()));
         } catch (final ExecutionException ex) {
-            Logger.warn("gh could not be started: " + FailureText.of(ex));
+            TestinLogger.warn("gh could not be started: " + FailureText.of(ex));
             return Optional.empty();
         }
     }

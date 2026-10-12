@@ -20,7 +20,7 @@ import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
 
-public class StatusBarWidthsTest {
+public class EditorStatusBarWidthsTest {
     private static final int SENTENCE = 150;
     private static final int ARROWS = 160;
     private static final int FIGURES = 420;
@@ -28,14 +28,14 @@ public class StatusBarWidthsTest {
 
     @Test
     public void aWideBarCentersTheArrows() {
-        assertEquals(StatusBar.arrowsAt(1200, SENTENCE, ARROWS, FIGURES), (1200 - ARROWS) / 2, "centered in the bar, not between the two ends");
+        assertEquals(EditorStatusBar.arrowsAt(1200, SENTENCE, ARROWS, FIGURES), (1200 - ARROWS) / 2, "centered in the bar, not between the two ends");
     }
 
     // Rule-EDITOR-PANEL-251
     @Test
     public void theArrowsNeverCoverTheSentenceOrTheFigures() {
         for (int inner = CONTENT; inner <= 1400; inner++) {
-            final int at = StatusBar.arrowsAt(inner, SENTENCE, ARROWS, FIGURES);
+            final int at = EditorStatusBar.arrowsAt(inner, SENTENCE, ARROWS, FIGURES);
 
             assertEquals(Math.max(at, SENTENCE), at, "the arrows sit over the sentence at inner=" + inner);
             assertEquals(Math.min(at + ARROWS, inner - FIGURES), at + ARROWS, "the arrows run into the figures at inner=" + inner);
@@ -45,6 +45,6 @@ public class StatusBarWidthsTest {
     // Rule-EDITOR-PANEL-251, Rule-EDITOR-PANEL-257
     @Test
     public void aBarJustWideEnoughPlacesEverythingSideBySide() {
-        assertEquals(StatusBar.arrowsAt(CONTENT, SENTENCE, ARROWS, FIGURES), SENTENCE, "nothing is cut short when the bar is exactly as wide as what it holds");
+        assertEquals(EditorStatusBar.arrowsAt(CONTENT, SENTENCE, ARROWS, FIGURES), SENTENCE, "nothing is cut short when the bar is exactly as wide as what it holds");
     }
 }

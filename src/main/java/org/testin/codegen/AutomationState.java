@@ -26,7 +26,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.util.PsiModificationTracker;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.Automated;
 import org.testin.model.TestCaseDto;
 import org.testin.navigate.CodeNavigation;
@@ -76,7 +76,7 @@ public final class AutomationState implements Disposable {
         } catch (final ProcessCanceledException cancelled) {
             throw cancelled;
         } catch (final Exception ex) {
-            Logger.warn("Could not read the automation state of " + testCases.size() + " test case(s): " + FailureText.of(ex));
+            TestinLogger.warn("Could not read the automation state of " + testCases.size() + " test case(s): " + FailureText.of(ex));
         }
 
         return new Answer(answers, found, codeVersion);
@@ -141,7 +141,7 @@ public final class AutomationState implements Disposable {
 
         if (answer.states().equals(asking)) return;
 
-        Logger.debug("Automation state read: " + answer.states().size() + " test case(s), "
+        TestinLogger.debug("Automation state read: " + answer.states().size() + " test case(s), "
                 + answer.states().values().stream().filter(state -> state == Automated.WRITTEN).count() + " automated");
 
         onAnswered.run();

@@ -26,7 +26,7 @@ import org.testin.codegen.GenType;
 import org.testin.codegen.JavaSourceRoot;
 import org.testin.codegen.event.Moved;
 import org.testin.java.codegen.PackageDeclarations;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 
 import java.util.List;
 import java.util.Optional;
@@ -50,7 +50,7 @@ public class MoveJavaPackage implements GenAction<Moved> {
                     .filter(VirtualFile::isDirectory);
 
             if (found.isEmpty()) {
-                Logger.info("Package not found for move: " + String.join(".", fqcn));
+                TestinLogger.info("Package not found for move: " + String.join(".", fqcn));
                 return;
             }
 
@@ -65,7 +65,7 @@ public class MoveJavaPackage implements GenAction<Moved> {
 
             PackageDeclarations.retarget(p, sourceRoot, folder);
 
-            Logger.info("Moved package " + folder.getName() + " into: " + String.join(".", destination));
+            TestinLogger.info("Moved package " + folder.getName() + " into: " + String.join(".", destination));
         });
     }
 }

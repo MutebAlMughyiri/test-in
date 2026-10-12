@@ -23,12 +23,12 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.treeStructure.SimpleTree;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.Declared;
-import org.testin.actions.EscapeAction;
+import org.testin.actions.TestinEscapeAction;
 import org.testin.open.OpenContextMenuAction;
 import org.testin.report.GenerateReportAction;
 import org.testin.testrun.SetTestRunStatusAction;
 import org.testin.ui.ActionsMenu;
-import org.testin.undo.UndoAction;
+import org.testin.undo.TestinUndoAction;
 import org.testin.undo.UndoDirection;
 import org.testin.undo.UndoScope;
 
@@ -48,8 +48,8 @@ public class TreeContextMenu extends DefaultActionGroup {
 
         add(actionsSubMenu(List.of(
                 Declared.forMenu("Testin.UpdateStatus")), List.of(
-                new UndoAction(p, tree, UndoScope.TREE, UndoDirection.UNDO),
-                new UndoAction(p, tree, UndoScope.TREE, UndoDirection.REDO),
+                new TestinUndoAction(p, tree, UndoScope.TREE, UndoDirection.UNDO),
+                new TestinUndoAction(p, tree, UndoScope.TREE, UndoDirection.REDO),
                 Declared.forMenu("Testin.ReCreateTestRun"),
                 Declared.forMenu("Testin.RemoveNode"),
                 Declared.forMenu("Testin.Rename"),
@@ -89,7 +89,7 @@ public class TreeContextMenu extends DefaultActionGroup {
     }
 
     public void registerShortcuts(final @NotNull SimpleTree tree, final @NotNull TreeTransferHandler transferHandler) {
-        new EscapeAction(p, tree, transferHandler);
+        new TestinEscapeAction(p, tree, transferHandler);
         new OpenContextMenuAction(tree, this);
     }
 

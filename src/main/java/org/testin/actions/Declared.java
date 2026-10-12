@@ -26,7 +26,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.util.Shortcuts;
 
 import javax.swing.JComponent;
@@ -50,7 +50,7 @@ public final class Declared {
         final @Nullable AnAction action = ActionManager.getInstance().getAction(id);
 
         if (action == null) {
-            Logger.error("No action is registered as '" + id + "', so a menu is missing an entry");
+            TestinLogger.error("No action is registered as '" + id + "', so a menu is missing an entry");
             throw new IllegalStateException("No action is registered as '" + id + "'");
         }
 

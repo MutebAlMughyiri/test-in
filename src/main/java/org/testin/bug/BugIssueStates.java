@@ -25,7 +25,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
-import org.testin.help.Hint;
+import org.testin.help.SetupHint;
 import org.testin.help.Hints;
 import org.testin.help.SetupStep;
 import org.testin.indexer.TestRuns;
@@ -121,7 +121,7 @@ public final class BugIssueStates {
 
         if (!said.problem().isEmpty()) {
             raised.add(SetupStep.BUG_STATES);
-            Services.getInstance(p, Hints.class).fire(Hint.of(SetupStep.BUG_STATES, said.problem()));
+            Services.getInstance(p, Hints.class).fire(SetupHint.of(SetupStep.BUG_STATES, said.problem()));
             return false;
         }
 
@@ -137,7 +137,7 @@ public final class BugIssueStates {
 
     // Rule-VIEW-PANEL-094, Rule-INTERNAL-127
     private @NotNull IssueStates withoutBoards(final @NotNull GitHubCli cli, final @NotNull Mapper mapper, final @NotNull BugRepository repository, final @NotNull Set<Integer> numbers) {
-        Services.getInstance(p, Hints.class).fire(Hint.of(SetupStep.BOARD_COLUMNS, Bundle.message("bug.states.board.message", repository.host())));
+        Services.getInstance(p, Hints.class).fire(SetupHint.of(SetupStep.BOARD_COLUMNS, Bundle.message("bug.states.board.message", repository.host())));
         return cli.states(mapper, repository, numbers, false);
     }
 

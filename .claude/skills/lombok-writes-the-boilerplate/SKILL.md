@@ -54,7 +54,7 @@ also the odd file out.
   `@NotNull` / `@Nullable`, which the IDE instruments. Two annotations meaning
   the same thing in one signature is worse than either.
 - **`@SneakyThrows` is not used.** A method handles its own failures — catch
-  inside, log through `Logger`, notify when a tester action triggered it. There
+  inside, log through `TestinLogger`, notify when a tester action triggered it. There
   are zero in the tree; keep it that way.
 - **`@Data` is not used.** It bundles decisions nobody made — a setter for every
   field, `equals` on a mutable object. Say which ones you want.

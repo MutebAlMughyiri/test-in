@@ -21,7 +21,7 @@ import com.intellij.util.ui.JBUI;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 
 import javax.swing.Icon;
 import javax.swing.JTextArea;
@@ -56,7 +56,7 @@ public final class Prose {
                     Optional.ofNullable(modelToView2D(getDocument().getLength())).ifPresent(end ->
                             ending.paintIcon(this, g, (int) end.getMaxX() + endingGap(), (int) end.getCenterY() - ending.getIconHeight() / 2));
                 } catch (final BadLocationException e) {
-                    Logger.warn("Could not find the end of the text to draw its mark after: " + e.getMessage());
+                    TestinLogger.warn("Could not find the end of the text to draw its mark after: " + e.getMessage());
                 }
             }
         };

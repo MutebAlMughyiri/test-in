@@ -39,7 +39,7 @@ import org.testin.codegen.TestName;
 import org.testin.indexer.ProjectIndexer;
 import org.testin.indexer.TestCases;
 import org.testin.java.codegen.GeneratedMethod;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.notifications.Notifier;
 import org.testin.notifications.Refused;
 import org.testin.services.Services;
@@ -83,7 +83,7 @@ public class TestMethodGutter extends RelatedItemLineMarkerProvider implements D
 
     // UC-CODEGEN-007, Rule-CODEGEN-069
     private static void refuseMissingTestCase(final @NotNull Project p, final @NotNull UUID uuid, final @NotNull String methodName) {
-        Logger.info("No test case behind " + methodName + ": " + uuid);
+        TestinLogger.info("No test case behind " + methodName + ": " + uuid);
 
         ApplicationManager.getApplication().invokeLater(() ->
                 Services.getInstance(p, Notifier.class).softRefuse(p, Refused.NO_TEST_CASE_BEHIND_IT, methodName));
@@ -116,7 +116,7 @@ public class TestMethodGutter extends RelatedItemLineMarkerProvider implements D
 
     // UC-CODEGEN-007, Rule-CODEGEN-030, Rule-CODEGEN-069
     private void openViewPanel(final @NotNull Project p, final @NotNull UUID uuid, final @NotNull String methodName) {
-        Logger.info("Searching for UUID: " + uuid);
+        TestinLogger.info("Searching for UUID: " + uuid);
 
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             try {
@@ -126,7 +126,7 @@ public class TestMethodGutter extends RelatedItemLineMarkerProvider implements D
 
                 testCases.findTestCase(uuid).ifPresentOrElse(
                         dto -> {
-                            Logger.info("Found in indexer: " + dto.getDescription());
+                            TestinLogger.info("Found in indexer: " + dto.getDescription());
 
                             ApplicationManager.getApplication().invokeLater(() ->
                                     ViewToolWindowFactory.showPanel(p, List.of(dto), dto.getParent().getPath2(), ViewPanel::focusDetailsTab));
@@ -134,7 +134,7 @@ public class TestMethodGutter extends RelatedItemLineMarkerProvider implements D
                         () -> refuseMissingTestCase(p, uuid, methodName));
 
             } catch (final Exception ex) {
-                Logger.error("Could not open the test case behind this mark: " + FailureText.of(ex));
+                TestinLogger.error("Could not open the test case behind this mark: " + FailureText.of(ex));
                 ApplicationManager.getApplication().invokeLater(() ->
                         Services.getInstance(p, Notifier.class).error(p, Bundle.message("gutter.not.opened.title"), Bundle.message("gutter.not.opened.message", FailureText.of(ex)))
                 );

@@ -18,7 +18,7 @@ package org.testin.navigate;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 
 import java.util.List;
@@ -30,12 +30,12 @@ import java.util.UUID;
 public final class NoCodeNavigation implements CodeNavigation {
     @Override
     public void toCode(final @NotNull Project p, final @NotNull TestCaseDto tc) {
-        Logger.debug("No code navigation in this IDE; nothing opened for '" + tc.getDescription() + "'");
+        TestinLogger.debug("No code navigation in this IDE; nothing opened for '" + tc.getDescription() + "'");
     }
 
     @Override
     public @NotNull Map<UUID, Boolean> methodsFor(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases) {
-        Logger.debug("No code navigation in this IDE; no generated methods for " + testCases.size() + " test case(s)");
+        TestinLogger.debug("No code navigation in this IDE; no generated methods for " + testCases.size() + " test case(s)");
 
         return Map.of();
     }
@@ -47,7 +47,7 @@ public final class NoCodeNavigation implements CodeNavigation {
 
     @Override
     public @NotNull Optional<String> fillBody(final @NotNull Project p, final @NotNull TestCaseDto tc, final @NotNull String statements) {
-        Logger.debug("No code navigation in this IDE; no body written for '" + tc.getDescription() + "'");
+        TestinLogger.debug("No code navigation in this IDE; no body written for '" + tc.getDescription() + "'");
 
         return Optional.empty();
     }
@@ -59,7 +59,7 @@ public final class NoCodeNavigation implements CodeNavigation {
 
     @Override
     public @NotNull Map<UUID, List<String>> methodFqcnsOf(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases) {
-        Logger.debug("No code navigation in this IDE; no generated methods for " + testCases.size() + " test case(s)");
+        TestinLogger.debug("No code navigation in this IDE; no generated methods for " + testCases.size() + " test case(s)");
 
         return Map.of();
     }

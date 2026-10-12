@@ -26,7 +26,7 @@ import com.intellij.psi.PsiManager;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 
 import java.util.Objects;
 
@@ -53,7 +53,7 @@ public final class PackageDeclarations {
         if (declared.equals(javaFile.getPackageName())) return;
 
         javaFile.setPackageName(declared);
-        Logger.info("Package of " + file.getName() + " is now: " + (declared.isEmpty() ? "<default>" : declared));
+        TestinLogger.info("Package of " + file.getName() + " is now: " + (declared.isEmpty() ? "<default>" : declared));
     }
 
     public static @NotNull String packageOf(final @NotNull VirtualFile sourceRoot, final @NotNull VirtualFile dir) {

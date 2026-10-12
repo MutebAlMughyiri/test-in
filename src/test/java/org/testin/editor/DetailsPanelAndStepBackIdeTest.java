@@ -25,7 +25,7 @@ import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
 import org.testin.Gestures;
 import org.testin.Said;
-import org.testin.actions.EscapeAction;
+import org.testin.actions.TestinEscapeAction;
 import org.testin.clipboard.CutState;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.toolbar.GridViewBtn;
@@ -74,7 +74,7 @@ public class DetailsPanelAndStepBackIdeTest extends AbstractTempRootIdeTest {
     }
 
     private void pressEscapeOn(final @NotNull TestSetEditor editor) {
-        Gestures.press(getProject(), editor.getList(), EscapeAction.class);
+        Gestures.press(getProject(), editor.getList(), TestinEscapeAction.class);
     }
 
     // Rule-EDITOR-PANEL-112
@@ -164,7 +164,7 @@ public class DetailsPanelAndStepBackIdeTest extends AbstractTempRootIdeTest {
             assertTrue("the cell did not open", table.editCellAt(0, column));
             ((JTextComponent) table.getEditorComponent()).setText("typed and thrown away");
 
-            Gestures.press(getProject(), table, EscapeAction.class);
+            Gestures.press(getProject(), table, TestinEscapeAction.class);
 
             assertFalse("the press did not close the open cell", table.isEditing());
             assertEquals("cancelling the edit kept what was typed", before, table.getValueAt(0, column));

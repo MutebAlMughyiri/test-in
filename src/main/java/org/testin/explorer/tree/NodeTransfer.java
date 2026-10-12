@@ -23,7 +23,7 @@ import org.testin.codegen.JavaCode;
 import org.testin.codegen.SubtreeCode;
 import org.testin.codegen.event.Moved;
 import org.testin.indexer.Nodes;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.node.Node;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
@@ -146,7 +146,7 @@ final class NodeTransfer {
 
     // UC-TREE-PANEL-016, Rule-TREE-PANEL-098
     private void putCodeBack(final @NotNull Path source, final @NotNull Path destination) {
-        Logger.warn("Move refused for " + source.getFileName() + "; putting its generated code back.");
+        TestinLogger.warn("Move refused for " + source.getFileName() + "; putting its generated code back.");
 
         WriteCommandAction.runWriteCommandAction(p, Bundle.message("transfer.move.code.command"), null, () ->
                 moved(source, destination).flatMap(moved -> moved.back(p)).ifPresent(this::moveCode));

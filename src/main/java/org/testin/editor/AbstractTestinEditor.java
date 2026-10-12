@@ -37,7 +37,7 @@ import org.testin.editor.grid.GridPanelBuilder;
 import org.testin.editor.cardview.CardPanelBuilder;
 import org.testin.editor.cardview.CardView;
 import org.testin.editor.statusbar.PageAction;
-import org.testin.editor.statusbar.StatusBar;
+import org.testin.editor.statusbar.EditorStatusBar;
 import org.testin.editor.toolbar.AbstractToolbarPanel;
 import org.testin.editor.toolbar.Toolbar;
 import org.testin.filter.FilterPopupBtn;
@@ -45,7 +45,7 @@ import org.testin.filter.SortPopupBtn;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.ProjectIndexer;
 import org.testin.indexer.TestCases;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.model.ToolBarAttribute;
 import org.testin.model.node.Node;
@@ -92,7 +92,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ToolBarAttribute,
     protected final @NotNull CardView cardView;
     protected final @NotNull AbstractEditorContextMenu contextMenu;
     @Getter
-    protected final @NotNull StatusBar statusBar = new StatusBar();
+    protected final @NotNull EditorStatusBar statusBar = new EditorStatusBar();
     // UC-EDITOR-PANEL-023, Rule-EDITOR-PANEL-222
     protected final @NotNull EditorPaging paging = new EditorPaging(TestinEditor.pageSizeOf(PropertiesComponent.getInstance().getValue(TestinEditor.PAGE_SIZE_KEY, "")));
     private final @NotNull UndoHistories undoHistories;
@@ -292,10 +292,10 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ToolBarAttribute,
     // UC-EDITOR-PANEL-003, Rule-EDITOR-PANEL-021
     @Override
     public void onToolBarDetailsSelectionChanged() {
-        Logger.debug("[details] selectedDetails changed -> " + getSelectedDetails());
+        TestinLogger.debug("[details] selectedDetails changed -> " + getSelectedDetails());
 
         if (getToolBar().getCurrentView() == ViewMode.GRID_VIEW) {
-            Logger.debug("[details] grid active -> toggling column visibility");
+            TestinLogger.debug("[details] grid active -> toggling column visibility");
             grid.updateColumns();
         } else {
             refreshCards();
@@ -305,7 +305,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ToolBarAttribute,
     // UC-EDITOR-PANEL-002, Rule-EDITOR-PANEL-018
     @Override
     public void onToolBarSwitchedToCardView() {
-        Logger.debug("[switch] -> LIST view, currentView=" + getToolBar().getCurrentView());
+        TestinLogger.debug("[switch] -> LIST view, currentView=" + getToolBar().getCurrentView());
         center.set(scrollPane);
 
         refreshCards();
@@ -314,7 +314,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ToolBarAttribute,
     // UC-EDITOR-PANEL-002, Rule-EDITOR-PANEL-002
     @Override
     public void onToolBarSwitchedToGridView() {
-        Logger.debug("[switch] -> GRID view, currentView=" + getToolBar().getCurrentView());
+        TestinLogger.debug("[switch] -> GRID view, currentView=" + getToolBar().getCurrentView());
         grid.rebuild();
         grid.view().ifPresent(view -> {
             center.set(view.scrollPane());
@@ -373,7 +373,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ToolBarAttribute,
     // UC-EDITOR-PANEL-027, Rule-EDITOR-PANEL-117
     @Override
     public void onToolBarRefreshButtonClicked() {
-        Logger.debug("[refresh] clicked, currentView=" + getToolBar().getCurrentView());
+        TestinLogger.debug("[refresh] clicked, currentView=" + getToolBar().getCurrentView());
         getToolBar().getToolbarItem(FilterPopupBtn.class).clearFilters();
         getToolBar().getToolbarItem(SortPopupBtn.class).reset();
 
@@ -495,7 +495,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ToolBarAttribute,
         afterSelectionShown();
 
         if (getToolBar().getCurrentView() == ViewMode.GRID_VIEW) {
-            Logger.debug("[refreshView] grid active -> redrawing grid");
+            TestinLogger.debug("[refreshView] grid active -> redrawing grid");
             grid.redraw();
             grid.view().ifPresent(view -> center.set(view.scrollPane()));
         }
@@ -552,7 +552,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ToolBarAttribute,
 
                 TestinEditor.super::dispose);
 
-        Logger.debug("dispose " + getClass().getSimpleName() + ": " + parent.getName() + " - " + parent.getPath());
+        TestinLogger.debug("dispose " + getClass().getSimpleName() + ": " + parent.getName() + " - " + parent.getPath());
     }
 
     protected final void teardown(final @NotNull Runnable... steps) {
@@ -560,7 +560,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ToolBarAttribute,
             try {
                 step.run();
             } catch (final Exception ex) {
-                Logger.warn("Teardown step failed in " + getClass().getSimpleName() + ", the rest still ran: " + ex);
+                TestinLogger.warn("Teardown step failed in " + getClass().getSimpleName() + ", the rest still ran: " + ex);
             }
         }
     }

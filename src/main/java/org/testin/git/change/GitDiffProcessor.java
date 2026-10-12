@@ -24,7 +24,7 @@ import org.testin.git.GitRefs;
 import org.testin.git.GitRepositoryService;
 import org.testin.git.StatusEntry;
 import org.testin.indexer.TestCases;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
 import org.testin.model.FileKind;
 import org.testin.model.TestCaseDto;
@@ -84,7 +84,7 @@ public final class GitDiffProcessor {
                         testCases));
 
             } catch (final RuntimeException ex) {
-                Logger.warn("Listing " + relativePath + " without detail: " + FailureText.of(ex));
+                TestinLogger.warn("Listing " + relativePath + " without detail: " + FailureText.of(ex));
                 result.add(PendingChangeFactory.unreadable(entry.type(), relativePath));
             }
         }
@@ -96,7 +96,7 @@ public final class GitDiffProcessor {
         if (FileKind.of(relativePath, folderKindOf(root, relativePath)) == FileKind.SCREENSHOT) return false;
 
         if (!entry.type().hasBefore() && !Files.exists(root.resolve(relativePath))) {
-            Logger.warn("Skipping " + relativePath + ": Git listed it as new, and it is gone");
+            TestinLogger.warn("Skipping " + relativePath + ": Git listed it as new, and it is gone");
             return false;
         }
         return true;
@@ -117,7 +117,7 @@ public final class GitDiffProcessor {
         try {
             return Files.readString(file, StandardCharsets.UTF_8);
         } catch (final IOException ex) {
-            Logger.warn("Could not read changed file " + file + ": " + FailureText.of(ex));
+            TestinLogger.warn("Could not read changed file " + file + ": " + FailureText.of(ex));
             throw new IllegalStateException("Could not read " + relativePath, ex);
         }
     }

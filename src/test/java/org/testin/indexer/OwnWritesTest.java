@@ -17,7 +17,7 @@
 package org.testin.indexer;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -59,7 +59,7 @@ public class OwnWritesTest {
         try {
             Files.deleteIfExists(file);
         } catch (final IOException ex) {
-            Logger.warn("Could not clean up " + file + ": " + ex.getMessage());
+            TestinLogger.warn("Could not clean up " + file + ": " + ex.getMessage());
         }
     }
 

@@ -22,7 +22,7 @@ import com.intellij.openapi.actionSystem.CommonShortcuts;
 import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.util.ui.components.BorderLayoutPanel;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.ui.Caption;
 import org.testin.util.ClipboardContents;
 import org.testin.util.FailureText;
@@ -95,7 +95,7 @@ public final class Screenshots implements DialogComponent {
             final byte @NotNull [] png = Picture.toPng((Image) contents.getTransferData(DataFlavor.imageFlavor));
             if (png.length > 0) strip.add(png);
         } catch (final UnsupportedFlavorException | IOException ex) {
-            Logger.warn("Could not read the pasted image: " + FailureText.of(ex));
+            TestinLogger.warn("Could not read the pasted image: " + FailureText.of(ex));
         }
     }
 

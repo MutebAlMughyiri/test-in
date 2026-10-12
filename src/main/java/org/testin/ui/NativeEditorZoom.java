@@ -23,7 +23,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.editor.Editor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.services.Services;
 import org.testin.util.FailureText;
 
@@ -68,7 +68,7 @@ public final class NativeEditorZoom implements Disposable {
             wheeled.filter(editor -> !editor.isDisposed())
                     .ifPresent(editor -> FontSync.applyGlobally(editor.getColorsScheme().getEditorFontSize()));
         } catch (final Exception ex) {
-            Logger.error("Following the editor zoom failed: " + FailureText.of(ex));
+            TestinLogger.error("Following the editor zoom failed: " + FailureText.of(ex));
         }
     }
 

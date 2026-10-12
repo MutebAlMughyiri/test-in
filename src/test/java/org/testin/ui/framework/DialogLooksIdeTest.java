@@ -294,7 +294,7 @@ public class DialogLooksIdeTest extends BasePlatformTestCase {
     // UC-INTERNAL-007, Rule-INTERNAL-096
     public void testEveryTypingSurfaceIsInTheFrameAndSizeOfATextField() {
         final @NotNull Component field = ComponentDialogBase.textField().placeholder("set name..").build().getComponent().getFocusComponent();
-        final @NotNull TextArea area = ComponentDialogBase.textArea().placeholder("paste the failure..").build().getComponent();
+        final @NotNull PlainTextArea area = ComponentDialogBase.textArea().placeholder("paste the failure..").build().getComponent();
         final @NotNull JScrollPane well = drawn(area.getPanel(), JScrollPane.class).getFirst();
         final @NotNull JComponent value = drawn(ComponentDialogBase.details().row("Description", "Log in with a valid user").build().getComponent().getPanel(), JLabel.class).stream()
                 .filter(label -> label.getText().contains("Log in with a valid user")).findFirst().orElseThrow();

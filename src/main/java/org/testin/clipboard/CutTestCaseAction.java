@@ -25,7 +25,7 @@ import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.GrayWithReason;
 import org.testin.actions.TestinData;
 import org.testin.editor.TestinEditor;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
@@ -60,7 +60,7 @@ public class CutTestCaseAction extends AbstractAnyProjectAction {
                 Services.getInstance(p, Notifier.class).softShowCounted(p, Done.CUT, selectedTestCases.size());
 
             } catch (final Exception ex) {
-                Logger.error("Cut Node failed: " + FailureText.of(ex));
+                TestinLogger.error("Cut Node failed: " + FailureText.of(ex));
                 Services.getInstance(p, Notifier.class).softRefuse(p, Bundle.message("clipboard.cut.failed.title"), FailureText.of(ex));
             }
         }

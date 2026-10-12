@@ -25,7 +25,7 @@ import org.testin.codegen.GenAction;
 import org.testin.codegen.GenType;
 import org.testin.codegen.event.Renamed;
 import org.testin.java.codegen.GeneratedClass;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.util.NameSanitizer;
 
 import java.util.List;
@@ -43,7 +43,7 @@ public class RenameJavaClass implements GenAction<Renamed> {
         WriteCommandAction.runWriteCommandAction(p, GenType.RENAME_TEST_SET.description(), null, () -> {
             final @NotNull Optional<PsiClass> found = GeneratedClass.byName(p, path);
             if (found.isEmpty()) {
-                Logger.warn("RenameJavaClass: class not found: " + path);
+                TestinLogger.warn("RenameJavaClass: class not found: " + path);
                 return;
             }
 
@@ -52,7 +52,7 @@ public class RenameJavaClass implements GenAction<Renamed> {
             if (!newClassName.equals(targetClass.getName())) {
                 targetClass.setName(newClassName);
             }
-            Logger.info("Renamed test class to: " + newClassName);
+            TestinLogger.info("Renamed test class to: " + newClassName);
         });
     }
 }

@@ -46,7 +46,7 @@ import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
 import org.testin.Notified;
 import org.testin.Said;
-import org.testin.importexport.FileTypes;
+import org.testin.importexport.FileFormat;
 import org.testin.importexport.exports.ExportNotice;
 import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
@@ -238,7 +238,7 @@ public class ReportDeliveryIdeTest extends AbstractTempRootIdeTest {
         return new GenerateReportAction(getProject(), new SimpleTree());
     }
 
-    private @NotNull File aReportWritten(final @NotNull FileTypes format, final @NotNull String name) {
+    private @NotNull File aReportWritten(final @NotNull FileFormat format, final @NotNull String name) {
         final @NotNull File file = folder("reports").resolve(name).toFile();
         theAction().writeReport(theTestRun(), format, file, new EmptyProgressIndicator());
         return file;
@@ -259,7 +259,7 @@ public class ReportDeliveryIdeTest extends AbstractTempRootIdeTest {
         aTestCase(UUID.randomUUID(), "Reset a forgotten password");
         final @NotNull TestRunNode other = aTestRun("Cycle-2", List.of(new RunItem().setId(locks).setExecutions(List.of(Execution.builder().status(RunItemStatus.BLOCKED).build()))));
 
-        final @NotNull String html = new String(FileTypes.HTML.generateReport(getProject(), chosen, resultsOf(chosen)), StandardCharsets.UTF_8);
+        final @NotNull String html = new String(FileFormat.HTML.generateReport(getProject(), chosen, resultsOf(chosen)), StandardCharsets.UTF_8);
 
         assertTrue("the report does not name its test run", html.contains(chosen.getName()));
         assertFalse("the report names a second test run", html.contains(other.getName()));
@@ -273,7 +273,7 @@ public class ReportDeliveryIdeTest extends AbstractTempRootIdeTest {
         stopped.cancel();
 
         try {
-            theAction().writeReport(theTestRun(), FileTypes.PDF, file, stopped);
+            theAction().writeReport(theTestRun(), FileFormat.PDF, file, stopped);
             fail("the report went on after it was stopped");
         } catch (final ProcessCanceledException expected) {
             assertFalse("a stopped report left a file behind", file.exists());
@@ -288,7 +288,7 @@ public class ReportDeliveryIdeTest extends AbstractTempRootIdeTest {
         final @NotNull List<Path> before = everythingUnder(testin);
         final @NotNull File file = folder("reports").resolve("Cycle-1.pdf").toFile();
 
-        theAction().writeReport(testRun, FileTypes.PDF, file, new EmptyProgressIndicator());
+        theAction().writeReport(testRun, FileFormat.PDF, file, new EmptyProgressIndicator());
 
         assertTrue("the report is not where the tester chose", file.isFile());
         assertEquals("the report put something under the Testin folder", before, everythingUnder(testin));
@@ -310,7 +310,7 @@ public class ReportDeliveryIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-REPORT-010
     public void testTheLinkIsOnTheMessageThatSaysTheReportWasWrittenAndTheMessageStaysInTheList() {
-        aReportWritten(FileTypes.PDF, "Cycle-1.pdf");
+        aReportWritten(FileFormat.PDF, "Cycle-1.pdf");
         final @NotNull Notification message = theReportMessage();
 
         theLink(message, Bundle.message("report.open"));
@@ -320,7 +320,7 @@ public class ReportDeliveryIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-REPORT-011
     public void testClickingOpenMakesTheMessageGo() {
-        final @NotNull File file = aReportWritten(FileTypes.PDF, "Cycle-1.pdf");
+        final @NotNull File file = aReportWritten(FileFormat.PDF, "Cycle-1.pdf");
         final @NotNull Notification message = theReportMessage();
         assertTrue("could not take the report away so that clicking Open launches nothing", file.delete());
 
@@ -353,7 +353,7 @@ public class ReportDeliveryIdeTest extends AbstractTempRootIdeTest {
                 handedOver.add(url);
             }
         }, getTestRootDisposable());
-        final @NotNull File file = aReportWritten(FileTypes.HTML, "Cycle-1.html");
+        final @NotNull File file = aReportWritten(FileFormat.HTML, "Cycle-1.html");
         final @NotNull Notification message = theReportMessage();
 
         clicked(message, theLink(message, Bundle.message("report.open")));
@@ -364,7 +364,7 @@ public class ReportDeliveryIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-REPORT-013, Rule-REPORT-011
     public void testCopyPathCopiesTheWholePathAndMakesTheMessageGo() {
-        final @NotNull File file = aReportWritten(FileTypes.PDF, "Cycle-1.pdf");
+        final @NotNull File file = aReportWritten(FileFormat.PDF, "Cycle-1.pdf");
         final @NotNull Notification message = theReportMessage();
 
         clicked(message, theLink(message, Bundle.message("notification.copy.path")));
@@ -375,7 +375,7 @@ public class ReportDeliveryIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-REPORT-015
     public void testTheReportMessageOffersTheSameCopyLinkAsEveryFileTestinWrote() {
-        final @NotNull File file = aReportWritten(FileTypes.PDF, "Cycle-1.pdf");
+        final @NotNull File file = aReportWritten(FileFormat.PDF, "Cycle-1.pdf");
         final @NotNull AnAction shared = ExportNotice.copyPath(getProject(), file);
 
         final @NotNull AnAction offered = theLink(theReportMessage(), Bundle.message("notification.copy.path"));
@@ -388,12 +388,12 @@ public class ReportDeliveryIdeTest extends AbstractTempRootIdeTest {
     public void testTheNumberAndTheRunItemStatusTakeOnlyTheirOwnWidthAndTheDescriptionTheRest() {
         final @NotNull TestRunNode testRun = theTestRun();
 
-        final @NotNull String html = new String(FileTypes.HTML.generateReport(getProject(), testRun, resultsOf(testRun)), StandardCharsets.UTF_8);
+        final @NotNull String html = new String(FileFormat.HTML.generateReport(getProject(), testRun, resultsOf(testRun)), StandardCharsets.UTF_8);
         assertTrue("the web page does not give the number only its own width", html.contains(".detail-table td.seq, .detail-table th.seq { width: 1%; white-space: nowrap; }") && html.contains("<th class='seq'>#</th>"));
         assertTrue("the web page does not give the run item status only its own width", html.contains(".detail-table td.run-item-status, .detail-table th.run-item-status { width: 1%; white-space: nowrap; }") && html.contains("<th class='run-item-status'>"));
         assertTrue("the web page fixes a width on the description", html.contains("<th>" + Bundle.message("caption.test.case") + "</th>"));
 
-        final @NotNull List<Float> widths = pdfColumnWidths(FileTypes.PDF.generateReport(getProject(), testRun, resultsOf(testRun)));
+        final @NotNull List<Float> widths = pdfColumnWidths(FileFormat.PDF.generateReport(getProject(), testRun, resultsOf(testRun)));
         assertEquals("the PDF's failed test case table does not have its four columns: " + widths, 4, widths.size());
         final float number = widths.getFirst();
         final float description = widths.get(1);

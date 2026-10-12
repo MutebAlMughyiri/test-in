@@ -20,7 +20,7 @@ import com.intellij.ui.SimpleColoredComponent;
 import com.intellij.ui.components.JBList;
 import org.jetbrains.annotations.NotNull;
 import org.testin.NodesOnDisk;
-import org.testin.explorer.tree.TreeCellRenderer;
+import org.testin.explorer.tree.TreePanelCellRenderer;
 import org.testin.indexer.AbstractReadTheRootIdeTest;
 import org.testin.model.node.Node;
 import org.testin.model.node.TestProjectNode;
@@ -76,7 +76,7 @@ public class SearchRowsIdeTest extends AbstractReadTheRootIdeTest {
     }
 
     private @NotNull Icon drawnInTheTree(final @NotNull Node node) {
-        final @NotNull TreeCellRenderer tree = new TreeCellRenderer(Set.of());
+        final @NotNull TreePanelCellRenderer tree = new TreePanelCellRenderer(Set.of());
         tree.customizeCellRenderer(new JTree(), node, false, false, true, 0, false);
         return tree.getIcon();
     }

@@ -35,9 +35,9 @@ import org.testin.AbstractTempRootIdeTest;
 import org.testin.TestinLog;
 import org.testin.explorer.TreePanel;
 import org.testin.explorer.TreePanelActions;
-import org.testin.logger.Level;
+import org.testin.logger.LogLevel;
 import org.testin.logger.LogWriter;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
 import org.testin.view.Drawn;
@@ -92,7 +92,7 @@ public class SettingsPageRulesIdeTest extends AbstractTempRootIdeTest {
     protected void tearDown() {
         try {
             XmlSerializerUtil.copyBean(wasStored, settings());
-            Logger.setLogLevel(Level.valueOf(wasStored.logLevel));
+            TestinLogger.setLogLevel(LogLevel.valueOf(wasStored.logLevel));
         } finally {
             super.tearDown();
         }
@@ -150,7 +150,7 @@ public class SettingsPageRulesIdeTest extends AbstractTempRootIdeTest {
         Disposer.register(getTestRootDisposable(), treePanel);
 
         final @NotNull AnAction gear = new TreePanelActions().create(getProject(), treePanel).stream()
-                .filter(OpenSettingsAction.class::isInstance)
+                .filter(OpenTestinSettingsAction.class::isInstance)
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("the tree panel has no gear button"));
         ActionUtil.performAction(gear, TestActionEvent.createTestEvent(gear));
@@ -162,24 +162,24 @@ public class SettingsPageRulesIdeTest extends AbstractTempRootIdeTest {
     public void testTheLogLevelTakesEffectTheMomentApplyIsPressed() {
         final @NotNull LogWriter log = Services.getInstance(LogWriter.class);
         final @NotNull SettingsConfigurable page = new SettingsConfigurable();
-        settings().logLevel = Level.WARN.name();
-        Logger.setLogLevel(Level.WARN);
+        settings().logLevel = LogLevel.WARN.name();
+        TestinLogger.setLogLevel(LogLevel.WARN);
         page.reset();
-        assertFalse("debug lines are written before the level is changed, so this proves nothing", log.writes(Level.DEBUG));
+        assertFalse("debug lines are written before the level is changed, so this proves nothing", log.writes(LogLevel.DEBUG));
 
-        settings().logLevel = Level.DEBUG.name();
+        settings().logLevel = LogLevel.DEBUG.name();
         page.reset();
-        settings().logLevel = Level.WARN.name();
+        settings().logLevel = LogLevel.WARN.name();
         applied(page);
 
-        assertTrue("the new level waited for the IDE to restart", log.writes(Level.DEBUG));
+        assertTrue("the new level waited for the IDE to restart", log.writes(LogLevel.DEBUG));
     }
 
     // Rule-SETTING-026
     public void testTheLogSitsBesideTheIdesOwnLog() {
         final @NotNull TestinLog log = TestinLog.fromNow(getTestRootDisposable());
         final @NotNull String line = "beside the IDE's own log " + UUID.randomUUID();
-        Logger.info(line);
+        TestinLogger.info(line);
 
         assertTrue("Testin's log is not in the IDE's log folder " + PathManager.getLogPath(), log.lines().stream().anyMatch(written -> written.contains(line)));
     }

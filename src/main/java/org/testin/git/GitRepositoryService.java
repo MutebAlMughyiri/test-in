@@ -21,7 +21,7 @@ import git4idea.GitUtil;
 import git4idea.commands.GitCommand;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.services.OptionalPlugin;
 import org.testin.util.FailureText;
 
@@ -188,7 +188,7 @@ public final class GitRepositoryService {
         try {
             return GitCommandRunner.readObjects(p, path, revision, relativePaths);
         } catch (final GitFailed ex) {
-            Logger.warn("Could not read " + relativePaths.size() + " files at " + revision + " in " + path + ": " + FailureText.of(ex));
+            TestinLogger.warn("Could not read " + relativePaths.size() + " files at " + revision + " in " + path + ": " + FailureText.of(ex));
             return Map.of();
         }
     }
@@ -215,7 +215,7 @@ public final class GitRepositoryService {
         try {
             return OptionalInt.of(Integer.parseInt(counted));
         } catch (final NumberFormatException ex) {
-            Logger.debug("Could not read the unpushed count in " + path + ": " + counted);
+            TestinLogger.debug("Could not read the unpushed count in " + path + ": " + counted);
             return OptionalInt.empty();
         }
     }
@@ -242,7 +242,7 @@ public final class GitRepositoryService {
         try {
             return Optional.of(GitCommandRunner.execute(p, path, command, parameters));
         } catch (final GitFailed ex) {
-            Logger.debug("git " + command.name() + " " + GitSafeText.withoutCredentials(String.join(" ", parameters))
+            TestinLogger.debug("git " + command.name() + " " + GitSafeText.withoutCredentials(String.join(" ", parameters))
                     + " failed in " + path + ": " + FailureText.of(ex));
             return Optional.empty();
         }

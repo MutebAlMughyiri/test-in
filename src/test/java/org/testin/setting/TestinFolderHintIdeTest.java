@@ -21,7 +21,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Said;
-import org.testin.help.Hint;
+import org.testin.help.SetupHint;
 import org.testin.help.Hints;
 import org.testin.help.SetupStep;
 import org.testin.services.Services;
@@ -38,7 +38,7 @@ public class TestinFolderHintIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull List<String> waiting() {
-        return Services.getInstance(getProject(), Hints.class).waiting().stream().filter(hint -> hint.step() == SetupStep.TESTIN_FOLDER).map(Hint::text).toList();
+        return Services.getInstance(getProject(), Hints.class).waiting().stream().filter(hint -> hint.step() == SetupStep.TESTIN_FOLDER).map(SetupHint::text).toList();
     }
 
     @Override
@@ -61,13 +61,13 @@ public class TestinFolderHintIdeTest extends AbstractTempRootIdeTest {
     public void testNoTestinFolderIsAHintNotAMessageAndSettingOneClearsIt() {
         settings().rootTestinPath = "";
 
-        final @NotNull List<String> said = Said.during(getProject(), () -> StartupActivity.hintTestinFolder(getProject()));
+        final @NotNull List<String> said = Said.during(getProject(), () -> TestinStartup.hintTestinFolder(getProject()));
 
         assertEquals("a message was raised for the Testin folder", List.of(), said);
         assertEquals(List.of(Bundle.message("startup.setup.message")), waiting());
 
         settings().rootTestinPath = root.toString();
-        StartupActivity.hintTestinFolder(getProject());
+        TestinStartup.hintTestinFolder(getProject());
         assertEquals("setting the folder left its hint waiting", List.of(), waiting());
     }
 }

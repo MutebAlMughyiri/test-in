@@ -24,7 +24,7 @@ import com.intellij.openapi.util.Disposer;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.TestName;
 import org.testin.indexer.TestCases;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.Failure;
@@ -65,7 +65,7 @@ public final class TestCaseExecutionSubscriber implements Disposable {
     }
 
     private void record(final @NotNull String testName, final @NotNull ExecutionStatus status, final @NotNull Duration duration, final @NotNull Failure failure) {
-        Logger.debug("Execution report: testName='" + testName + "', status='" + status + "'");
+        TestinLogger.debug("Execution report: testName='" + testName + "', status='" + status + "'");
 
         final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
 
@@ -77,7 +77,7 @@ public final class TestCaseExecutionSubscriber implements Disposable {
                     execution.attempted(tc.getId(), attempt).forEach((id, decided) -> testCases.findTestCase(id).ifPresent(decidedTc -> report(decidedTc, decided)));
                     execution.takeUnwritten(tc.getId()).ifPresent(live -> show(tc, live));
                 },
-                () -> Logger.debug("  '" + testName + "' is not a generated test case - reported against none"));
+                () -> TestinLogger.debug("  '" + testName + "' is not a generated test case - reported against none"));
     }
 
     // Rule-CODEGEN-111
@@ -92,7 +92,7 @@ public final class TestCaseExecutionSubscriber implements Disposable {
         final @NotNull ExecutionStatus reportedStatus = runItemStatusFor(tc, decided.status());
         final @NotNull List<Execution> executions = reportedStatus == ExecutionStatus.IDLE ? List.of() : decided.decidedExecutions();
 
-        Logger.debug("  reporting on '" + tc.getDescription() + "': " + reportedStatus + " from " + decided.all().size() + " attempt(s)");
+        TestinLogger.debug("  reporting on '" + tc.getDescription() + "': " + reportedStatus + " from " + decided.all().size() + " attempt(s)");
 
         Services.getInstance(p, TestNGExecution.class).reported(tc.getId(), reportedStatus);
 

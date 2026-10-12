@@ -38,7 +38,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 import org.testin.help.Guide;
 import org.testin.help.Guides;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.services.Services;
 import org.testin.util.Html;
 
@@ -115,7 +115,7 @@ public final class Notifier {
                                     statusBarComponent.getHeight() / 2);
                             balloon.show(new RelativePoint(statusBarComponent, targetPoint), Balloon.Position.above);
                         },
-                        () -> Logger.info("Nowhere to show this, so it is only here: " + htmlContent)));
+                        () -> TestinLogger.info("Nowhere to show this, so it is only here: " + htmlContent)));
     }
 
     public void error(final @NotNull Project p, final @NotNull String message) {

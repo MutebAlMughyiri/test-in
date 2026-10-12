@@ -29,7 +29,7 @@ import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.notifications.Done;
 import org.testin.notifications.Refused;
 import org.testin.ui.framework.AbstractFrameworkDialog;
@@ -148,10 +148,10 @@ final class ApiModelDialog extends AbstractFrameworkDialog {
 
         closeOk();
         written.forEach(file -> {
-            Logger.debug("API model written as " + file.getName() + ":\n" + file.getText());
+            TestinLogger.debug("API model written as " + file.getName() + ":\n" + file.getText());
             file.navigate(true);
         });
-        Logger.info("API model written: " + String.join(", ", files.keySet()));
+        TestinLogger.info("API model written: " + String.join(", ", files.keySet()));
         notifier.softShow(p, Done.CREATED);
     }
 
@@ -159,7 +159,7 @@ final class ApiModelDialog extends AbstractFrameworkDialog {
     private boolean refused(final @NotNull Map<String, String> files, final @NotNull String typeName, final @NotNull String body, final @NotNull String kind, final @NotNull BiFunction<String, ModelType, String> text) {
         if (body.isBlank()) return false;
 
-        Logger.debug("API model, " + kind + " as pasted:\n" + body);
+        TestinLogger.debug("API model, " + kind + " as pasted:\n" + body);
         final @NotNull Optional<JsonNode> json = JsonModel.read(body);
         final @NotNull Optional<Refused> refusal = json.map(JsonModel::refusalOf).orElse(Optional.of(Refused.NOT_JSON));
         if (refusal.isPresent()) {
@@ -179,7 +179,7 @@ final class ApiModelDialog extends AbstractFrameworkDialog {
 
     // Rule-CODEGEN-099, Rule-CODEGEN-108
     private void refuse(final @NotNull Refused refusal, final @NotNull String about) {
-        Logger.debug("API model refused: " + refusal.about(about));
+        TestinLogger.debug("API model refused: " + refusal.about(about));
         notifier.softRefuse(p, refusal, about);
     }
 
@@ -194,7 +194,7 @@ final class ApiModelDialog extends AbstractFrameworkDialog {
                 }
             }));
         } catch (final IncorrectOperationException ex) {
-            Logger.error("The API model could not be written into " + directory.getVirtualFile().getPath() + ": " + FailureText.of(ex));
+            TestinLogger.error("The API model could not be written into " + directory.getVirtualFile().getPath() + ": " + FailureText.of(ex));
             return List.of();
         }
         return written;

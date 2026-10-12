@@ -23,7 +23,7 @@ import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
 import org.testin.Said;
 import org.testin.editor.statusbar.PageStep;
-import org.testin.editor.statusbar.StatusBar;
+import org.testin.editor.statusbar.EditorStatusBar;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.model.TestCaseDto;
@@ -128,7 +128,7 @@ public class PagingIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-102
     public void testAnArrowWithNowhereToGoIsGray() {
         final @NotNull TestSetEditor editor = opened(aLongTestSet());
-        final @NotNull StatusBar bar = editor.getStatusBar();
+        final @NotNull EditorStatusBar bar = editor.getStatusBar();
 
         assertFalse("First is not gray on the first page", bar.button(PageStep.FIRST).isEnabled());
         assertFalse("Previous is not gray on the first page", bar.button(PageStep.PREVIOUS).isEnabled());

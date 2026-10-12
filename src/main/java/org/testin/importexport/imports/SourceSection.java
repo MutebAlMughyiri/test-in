@@ -20,7 +20,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.importexport.FileTypes;
+import org.testin.importexport.FileFormat;
 import org.testin.ui.dialogs.DownloadFolder;
 import org.testin.ui.framework.ComponentDialogBase;
 import org.testin.ui.framework.TextInput;
@@ -33,7 +33,7 @@ public record SourceSection(@NotNull TextInput field) {
     // Rule-INTERNAL-095, Rule-INTERNAL-096, Rule-INTERNAL-118, Rule-SETTING-021
     public static @NotNull SourceSection of(final @NotNull Project p) {
         final @NotNull FileChooserDescriptor descriptor = new FileChooserDescriptor(true, false, false, false, false, false)
-                .withExtensionFilter("", FileTypes.importableExtensionsForChooser())
+                .withExtensionFilter("", FileFormat.importableExtensionsForChooser())
                 .withTitle(Bundle.message("import.file.title"))
                 .withDescription(Bundle.message("import.file.description"));
 

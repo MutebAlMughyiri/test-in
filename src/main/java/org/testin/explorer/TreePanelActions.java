@@ -20,11 +20,11 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.creator.CreateTestProjectAction;
-import org.testin.explorer.toolbar.CollapseAllAction;
-import org.testin.explorer.toolbar.ExpandAllAction;
+import org.testin.explorer.toolbar.CollapseTreeAction;
+import org.testin.explorer.toolbar.ExpandTreeAction;
 import org.testin.explorer.toolbar.SaveTestinYmlAction;
 import org.testin.search.GlobalSearchAction;
-import org.testin.setting.OpenSettingsAction;
+import org.testin.setting.OpenTestinSettingsAction;
 import org.testin.testproject.SelectTestProjectAction;
 
 import java.util.List;
@@ -34,9 +34,9 @@ public class TreePanelActions {
     public @NotNull List<AnAction> create(final @NotNull Project p, final @NotNull TreePanel tp) {
         return List.of(
                 GlobalSearchAction.registered(),
-                new OpenSettingsAction(p),
-                new ExpandAllAction(tp),
-                new CollapseAllAction(tp),
+                new OpenTestinSettingsAction(p),
+                new ExpandTreeAction(tp),
+                new CollapseTreeAction(tp),
                 tp.getRefreshAction(),
                 new SelectTestProjectAction(p, tp),
                 new CreateTestProjectAction(p, tp),

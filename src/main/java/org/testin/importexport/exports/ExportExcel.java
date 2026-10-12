@@ -25,7 +25,7 @@ import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.Can;
 import org.testin.testcase.TestSetEditorAttributes;
@@ -97,7 +97,7 @@ public class ExportExcel {
                 workbook.write(fos);
             }
         } catch (final IOException ex) {
-            Logger.error(FailureText.of(ex));
+            TestinLogger.error(FailureText.of(ex));
             throw new RuntimeException(ex);
         }
     }

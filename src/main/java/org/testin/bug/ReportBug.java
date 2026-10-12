@@ -22,7 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.config.TestinYml;
-import org.testin.help.Hint;
+import org.testin.help.SetupHint;
 import org.testin.help.Hints;
 import org.testin.help.SetupStep;
 import org.testin.indexer.TestCaseFile;
@@ -77,8 +77,8 @@ public final class ReportBug {
         indicator.checkCanceled();
         final @NotNull Hints hints = Services.getInstance(p, Hints.class);
         whyNotReady.ifPresentOrElse(reason -> hints.fire(BugRepository.of(bugRepoUrl).isEmpty()
-                ? Hint.of(SetupStep.BUG_FILING, reason, () -> BugRepoUrlForm.of(p))
-                : Hint.of(SetupStep.BUG_FILING, reason)), () -> hints.clear(SetupStep.BUG_FILING));
+                ? SetupHint.of(SetupStep.BUG_FILING, reason, () -> BugRepoUrlForm.of(p))
+                : SetupHint.of(SetupStep.BUG_FILING, reason)), () -> hints.clear(SetupStep.BUG_FILING));
 
         return new PreparedBug(facts, BugTemplate.body(facts, link), BugRepository.of(bugRepoUrl), whyNotReady);
     }

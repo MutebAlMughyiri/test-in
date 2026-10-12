@@ -18,7 +18,7 @@ package org.testin.report;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.importexport.FileTypes;
+import org.testin.importexport.FileFormat;
 import org.testin.ui.dialogs.DestinationForm;
 import org.testin.ui.framework.AbstractFrameworkDialog;
 import org.testin.ui.framework.ComponentDialogBase;
@@ -34,18 +34,18 @@ import java.util.function.BiConsumer;
 public final class GenerateReportDialog extends AbstractFrameworkDialog {
     private final @NotNull DestinationForm form;
 
-    private final @NotNull BiConsumer<@NotNull FileTypes, @NotNull File> onGenerate;
+    private final @NotNull BiConsumer<@NotNull FileFormat, @NotNull File> onGenerate;
 
     // UC-REPORT-001
-    public GenerateReportDialog(final @NotNull Project p, final @NotNull String suggestedFileName, final @NotNull BiConsumer<@NotNull FileTypes, @NotNull File> onGenerate) {
+    public GenerateReportDialog(final @NotNull Project p, final @NotNull String suggestedFileName, final @NotNull BiConsumer<@NotNull FileFormat, @NotNull File> onGenerate) {
         super(p);
         this.onGenerate = onGenerate;
 
         title = Bundle.message("dialog.report.title");
 
         form = DestinationForm.stacked(p,
-                Arrays.stream(FileTypes.values()).filter(FileTypes::isReportable).toArray(FileTypes[]::new),
-                FileTypes.PDF,
+                Arrays.stream(FileFormat.values()).filter(FileFormat::isReportable).toArray(FileFormat[]::new),
+                FileFormat.PDF,
                 suggestedFileName,
                 Bundle.message("dialog.report.folder.title"),
                 Bundle.message("dialog.report.folder.message"));

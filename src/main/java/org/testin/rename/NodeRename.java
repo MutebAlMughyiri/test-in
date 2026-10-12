@@ -26,7 +26,7 @@ import org.testin.codegen.event.Renamed;
 import org.testin.config.TestinYml;
 import org.testin.editor.open.TestinEditors;
 import org.testin.indexer.Nodes;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.node.Node;
 import org.testin.model.node.TestProjectNode;
 import org.testin.notifications.Notifier;
@@ -60,7 +60,7 @@ public final class NodeRename {
         Services.getInstance(p, Nodes.class).renameNode(oldPath, newPath, () -> {
             if (dir instanceof TestProjectNode) projectFollows(p, oldName, newName);
 
-            Logger.info("Success! Renamed to: " + newName);
+            TestinLogger.info("Success! Renamed to: " + newName);
 
             onDone.run();
         }, () -> putBack(p, renamed, followed));
@@ -72,7 +72,7 @@ public final class NodeRename {
         JavaCode.of(renamed.dir().getType()).getRenamed().execute(p, back);
         if (followed) Services.getInstance(p, BoundTestProject.class).follow(renamed.newName(), back.newName());
 
-        Logger.warn("The folder of '" + back.newName() + "' could not be renamed to '" + renamed.newName() + "', so its code and name were put back");
+        TestinLogger.warn("The folder of '" + back.newName() + "' could not be renamed to '" + renamed.newName() + "', so its code and name were put back");
     }
 
     // UC-TREE-PANEL-011, Rule-TREE-PANEL-004, Rule-CODEGEN-080, Rule-CODEGEN-081

@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.node.Node;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
@@ -40,7 +40,7 @@ public final class SubtreeCode {
         final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
         final @NotNull Nodes nodes = Services.getInstance(p, Nodes.class);
 
-        Logger.info("Generating code for " + dir.getName());
+        TestinLogger.info("Generating code for " + dir.getName());
         JavaCode.of(dir.getType()).getCreated().execute(p, dir);
 
         GenType.CREATE_TEST_CASE.executeAllNow(p, testCases.getTestCasesForTestSet(dir.getPath()));

@@ -22,7 +22,7 @@ import com.intellij.ui.SimpleTextAttributes;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
 import org.testin.model.node.Node;
 import org.testin.util.Bundle;
@@ -35,7 +35,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @AllArgsConstructor
-public class TreeCellRenderer extends ColoredTreeCellRenderer {
+public class TreePanelCellRenderer extends ColoredTreeCellRenderer {
     private final @NotNull Set<Path> selectedNodes;
 
     // Rule-TREE-PANEL-008
@@ -66,7 +66,7 @@ public class TreeCellRenderer extends ColoredTreeCellRenderer {
             if (!status.isEmpty()) append(" " + status, SimpleTextAttributes.GRAY_ATTRIBUTES);
 
         } catch (final Exception ex) {
-            Logger.error("Error rendering tree node: " + FailureText.of(ex));
+            TestinLogger.error("Error rendering tree node: " + FailureText.of(ex));
             setIcon(AllIcons.General.Error);
             append(Objects.toString(value, Bundle.message("tree.render.error")), SimpleTextAttributes.ERROR_ATTRIBUTES);
         }

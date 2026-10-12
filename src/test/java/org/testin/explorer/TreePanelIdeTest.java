@@ -32,8 +32,8 @@ import org.testin.Await;
 import org.testin.Said;
 import org.testin.TreeGesture;
 import org.testin.creator.CreateTestProjectAction;
-import org.testin.explorer.toolbar.CollapseAllAction;
-import org.testin.explorer.toolbar.ExpandAllAction;
+import org.testin.explorer.toolbar.CollapseTreeAction;
+import org.testin.explorer.toolbar.ExpandTreeAction;
 import org.testin.explorer.toolbar.SaveTestinYmlAction;
 import org.testin.explorer.tree.TreeValues;
 import org.testin.indexer.AbstractReadTheRootIdeTest;
@@ -183,7 +183,7 @@ public class TreePanelIdeTest extends AbstractReadTheRootIdeTest {
         panel.showIn(content);
 
         assertSame("under the welcome screen the title bar aims at a hidden component", panel.getPanel(), content.getPreferredFocusableComponent());
-        for (final AnAction treeOnly : List.of(new ExpandAllAction(panel), new CollapseAllAction(panel))) {
+        for (final AnAction treeOnly : List.of(new ExpandTreeAction(panel), new CollapseTreeAction(panel))) {
             final @NotNull Presentation shown = updated(treeOnly);
             assertFalse(treeOnly.getClass().getSimpleName() + " works with no tree to act on", shown.isEnabled());
             assertEquals(treeOnly.getClass().getSimpleName() + " does not say why it is gray", Bundle.message("toolbar.tree.hidden.description"), shown.getDescription());
@@ -197,7 +197,7 @@ public class TreePanelIdeTest extends AbstractReadTheRootIdeTest {
         bound().choose("Checkout");
         final @NotNull TreePanel panel = aPanelShowingTheTree();
 
-        for (final AnAction treeOnly : List.of(new ExpandAllAction(panel), new CollapseAllAction(panel))) {
+        for (final AnAction treeOnly : List.of(new ExpandTreeAction(panel), new CollapseTreeAction(panel))) {
             assertTrue(treeOnly.getClass().getSimpleName() + " is gray with the tree shown", updated(treeOnly).isEnabled());
         }
     }
@@ -225,7 +225,7 @@ public class TreePanelIdeTest extends AbstractReadTheRootIdeTest {
 
         for (final AnAction button : titleBarOf(panel)) {
             if (button instanceof SelectTestProjectAction || button instanceof CreateTestProjectAction || button instanceof SaveTestinYmlAction
-                    || button instanceof ExpandAllAction || button instanceof CollapseAllAction) continue;
+                    || button instanceof ExpandTreeAction || button instanceof CollapseTreeAction) continue;
             assertTrue(button.getClass().getSimpleName() + " is gray", updated(button).isEnabled());
         }
     }

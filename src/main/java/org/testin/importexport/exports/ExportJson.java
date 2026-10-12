@@ -19,7 +19,7 @@ package org.testin.importexport.exports;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtil;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.services.Services;
 import org.testin.util.FailureText;
@@ -39,7 +39,7 @@ public class ExportJson {
 
             Files.write(destFile.toPath(), Services.getInstance(p, Mapper.class).writeValueAsBytes(sheetsData));
         } catch (final IOException ex) {
-            Logger.error("export failed: " + destFile + " - " + FailureText.of(ex));
+            TestinLogger.error("export failed: " + destFile + " - " + FailureText.of(ex));
             throw new RuntimeException(ex);
         }
     }

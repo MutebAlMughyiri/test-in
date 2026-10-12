@@ -25,7 +25,7 @@ import org.testin.codegen.GenAction;
 import org.testin.codegen.event.CopiedTestCase;
 import org.testin.java.codegen.GeneratedMethod;
 import org.testin.java.codegen.method.update.UpdateTestBase;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 
 import java.util.List;
@@ -57,7 +57,7 @@ public class CopyTestMethod extends UpdateTestBase implements GenAction<CopiedTe
 
         if (carried > 0) {
             reformat(p, target);
-            Logger.info("Carried " + carried + " test method body(s) into " + target.getQualifiedName());
+            TestinLogger.info("Carried " + carried + " test method body(s) into " + target.getQualifiedName());
         }
     }
 
@@ -65,13 +65,13 @@ public class CopyTestMethod extends UpdateTestBase implements GenAction<CopiedTe
         final @NotNull TestCaseDto original = copied.original();
 
         if (original.getParent().getPath().toString().isEmpty()) {
-            Logger.debug("Nothing to carry into the copy of '" + original.getDescription() + "': its test set is not known");
+            TestinLogger.debug("Nothing to carry into the copy of '" + original.getDescription() + "': its test set is not known");
             return false;
         }
 
         final @NotNull Optional<PsiClass> from = classOf(p, original);
         if (from.isEmpty()) {
-            Logger.debug("Nothing to carry into the copy of '" + original.getDescription() + "': its test set has no class");
+            TestinLogger.debug("Nothing to carry into the copy of '" + original.getDescription() + "': its test set has no class");
             return false;
         }
 
@@ -79,7 +79,7 @@ public class CopyTestMethod extends UpdateTestBase implements GenAction<CopiedTe
                 .map(PsiMethod::getBody);
 
         if (body.isEmpty()) {
-            Logger.debug("Nothing to carry into the copy of '" + original.getDescription() + "': it has no method with a body");
+            TestinLogger.debug("Nothing to carry into the copy of '" + original.getDescription() + "': it has no method with a body");
             return false;
         }
 
@@ -87,7 +87,7 @@ public class CopyTestMethod extends UpdateTestBase implements GenAction<CopiedTe
                 .map(PsiMethod::getBody);
 
         if (written.isEmpty()) {
-            Logger.debug("No method to fill for the copy of '" + original.getDescription() + "'");
+            TestinLogger.debug("No method to fill for the copy of '" + original.getDescription() + "'");
             return false;
         }
 

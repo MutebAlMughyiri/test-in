@@ -33,7 +33,7 @@ import org.testin.git.change.PendingChange;
 import org.testin.git.conflict.ConflictResolution;
 import org.testin.git.conflict.GitConflictOffer;
 import org.testin.git.conflict.RebaseEnd;
-import org.testin.help.Hint;
+import org.testin.help.SetupHint;
 import org.testin.help.Hints;
 import org.testin.help.SetupStep;
 import org.testin.indexer.Nodes;
@@ -82,7 +82,7 @@ public record ViewPendingCommitsWork(@NotNull Project p, @NotNull GitRepositoryS
 
     // UC-SHARE-009, Rule-SHARE-042, Rule-INTERNAL-127
     public void hintNotUnderGit(final @NotNull Path path) {
-        Services.getInstance(p, Hints.class).fire(Hint.of(SetupStep.GIT_REPOSITORY, Bundle.message("git.no.repository.message", path.getFileName()),
+        Services.getInstance(p, Hints.class).fire(SetupHint.of(SetupStep.GIT_REPOSITORY, Bundle.message("git.no.repository.message", path.getFileName()),
                 Bundle.message("git.no.repository.action"), () -> initializeGitRepository(path)).about(path));
     }
 

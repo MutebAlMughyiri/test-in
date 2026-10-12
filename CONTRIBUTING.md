@@ -41,7 +41,7 @@ Both together, deliberately: `testin.log` is written to `PathManager.getLogPath(
 so *Help → Collect Logs and Diagnostic Data* bundles it with `idea.log`.
 
 The plugin's log level defaults to **INFO**, and most of what is worth tracing is
-`Logger.debug` and `Logger.trace`. Set **Settings → Testin → Log Level → TRACE**
+`TestinLogger.debug` and `TestinLogger.trace`. Set **Settings → Testin → Log Level → TRACE**
 in the sandbox before a session that matters, or the log will be nearly empty for
 the paths you care about.
 

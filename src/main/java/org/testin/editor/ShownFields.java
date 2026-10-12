@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.open.EditorKind;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.ToolBarAttribute;
 import org.testin.util.FailureText;
 
@@ -50,7 +50,7 @@ public final class ShownFields {
             try {
                 chosen.add(Enum.valueOf(attributes, s));
             } catch (final IllegalArgumentException ex) {
-                Logger.error("Invalid editor attribute '" + s + "' for " + propertyKey + ": " + FailureText.of(ex));
+                TestinLogger.error("Invalid editor attribute '" + s + "' for " + propertyKey + ": " + FailureText.of(ex));
             }
         }
 

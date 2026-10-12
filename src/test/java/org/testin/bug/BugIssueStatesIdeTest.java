@@ -25,7 +25,7 @@ import org.testin.Said;
 import org.testin.git.history.BugCard;
 import org.testin.git.history.BugHistory;
 import org.testin.git.history.History;
-import org.testin.help.Hint;
+import org.testin.help.SetupHint;
 import org.testin.help.Hints;
 import org.testin.help.SetupStep;
 import org.testin.indexer.TestCaseFile;
@@ -122,7 +122,7 @@ public class BugIssueStatesIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull List<String> hintsFor(final @NotNull SetupStep step) {
-        return Services.getInstance(getProject(), Hints.class).waiting().stream().filter(hint -> hint.step() == step).map(Hint::text).toList();
+        return Services.getInstance(getProject(), Hints.class).waiting().stream().filter(hint -> hint.step() == step).map(SetupHint::text).toList();
     }
 
     private void nothingWaits() {

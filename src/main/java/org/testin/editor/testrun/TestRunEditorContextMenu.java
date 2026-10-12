@@ -20,7 +20,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBList;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.Declared;
-import org.testin.actions.EscapeAction;
+import org.testin.actions.TestinEscapeAction;
 import org.testin.editor.AbstractEditorContextMenu;
 import org.testin.editor.TestinEditor;
 import org.testin.model.TestCaseDto;
@@ -56,7 +56,7 @@ public class TestRunEditorContextMenu extends AbstractEditorContextMenu {
     // UC-EDITOR-PANEL-026, UC-EDITOR-PANEL-029
     @Override
     public void registerShortcuts(final @NotNull JBList<TestCaseDto> list) {
-        new EscapeAction(p, list);
+        new TestinEscapeAction(p, list);
         new OpenContextMenuAction(list, this);
         new GenerateReportAction(p, ui, list);
 

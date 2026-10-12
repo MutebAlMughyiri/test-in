@@ -28,10 +28,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jps.model.java.JavaSourceRootType;
-import org.testin.help.Hint;
+import org.testin.help.SetupHint;
 import org.testin.help.Hints;
 import org.testin.help.SetupStep;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
 import org.testin.util.FailureText;
@@ -56,13 +56,13 @@ public final class JavaSourceRoot {
                     .getSourceRoots(JavaSourceRootType.TEST_SOURCE);
 
             if (!sourceRoots.isEmpty()) {
-                Logger.debug("Found test source root: " + sourceRoots.getFirst());
+                TestinLogger.debug("Found test source root: " + sourceRoots.getFirst());
                 remembered.set(sourceRoots.getFirst());
                 return Optional.of(sourceRoots.getFirst());
             }
         }
 
-        Logger.warn("No Java test source root found in the project.");
+        TestinLogger.warn("No Java test source root found in the project.");
         return Optional.empty();
     }
 
@@ -72,7 +72,7 @@ public final class JavaSourceRoot {
         final @NotNull Hints hints = Services.getInstance(p, Hints.class);
 
         root.ifPresentOrElse(_ -> hints.clear(SetupStep.TEST_SOURCE_FOLDER),
-                () -> hints.fire(Hint.of(SetupStep.TEST_SOURCE_FOLDER, Bundle.message("codegen.no.source.root.message", className))));
+                () -> hints.fire(SetupHint.of(SetupStep.TEST_SOURCE_FOLDER, Bundle.message("codegen.no.source.root.message", className))));
         return root;
     }
 
@@ -90,9 +90,9 @@ public final class JavaSourceRoot {
 
         try {
             target.delete(requestor);
-            Logger.info("Removed generated code at: " + target.getPath());
+            TestinLogger.info("Removed generated code at: " + target.getPath());
         } catch (final IOException ex) {
-            Logger.error("Could not remove generated code at " + target.getPath() + ": " + FailureText.of(ex));
+            TestinLogger.error("Could not remove generated code at " + target.getPath() + ": " + FailureText.of(ex));
         }
     }
 
@@ -104,11 +104,11 @@ public final class JavaSourceRoot {
         try {
             folder = Optional.ofNullable(VfsUtil.createDirectoryIfMissing(root, relative));
         } catch (final IOException ex) {
-            Logger.error("Could not create the package folder " + relative + ": " + FailureText.of(ex));
+            TestinLogger.error("Could not create the package folder " + relative + ": " + FailureText.of(ex));
             return Optional.empty();
         }
 
-        if (folder.isEmpty()) Logger.error("Could not create the package folder: " + relative);
+        if (folder.isEmpty()) TestinLogger.error("Could not create the package folder: " + relative);
         return folder;
     }
 
@@ -122,7 +122,7 @@ public final class JavaSourceRoot {
         final @NotNull Optional<VirtualFile> existing = Optional.ofNullable(folder.get().findChild(fileName));
 
         if (existing.isPresent()) {
-            Logger.info("Test class already exists: " + existing.get().getPath());
+            TestinLogger.info("Test class already exists: " + existing.get().getPath());
             return existing;
         }
 
@@ -139,10 +139,10 @@ public final class JavaSourceRoot {
                     }
                     """.formatted(className));
 
-            Logger.info("Test class created at: " + file.getPath());
+            TestinLogger.info("Test class created at: " + file.getPath());
             return Optional.of(file);
         } catch (final IOException ex) {
-            Logger.error("Could not create the test class " + fileName + ": " + FailureText.of(ex));
+            TestinLogger.error("Could not create the test class " + fileName + ": " + FailureText.of(ex));
             return Optional.empty();
         }
     }
@@ -154,7 +154,7 @@ public final class JavaSourceRoot {
             file.move(requestor, target);
             return true;
         } catch (final IOException ex) {
-            Logger.error("Could not move generated code at " + file.getPath() + " to " + target.getPath() + ": " + FailureText.of(ex));
+            TestinLogger.error("Could not move generated code at " + file.getPath() + " to " + target.getPath() + ": " + FailureText.of(ex));
             return false;
         }
     }

@@ -18,7 +18,7 @@ package org.testin.creator;
 
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.node.Node;
 
 import java.nio.file.Path;
@@ -31,7 +31,7 @@ public final class NotCreatableFromTree implements NodeCreator {
     // Rule-TREE-PANEL-002
     @Override
     public @NotNull Optional<Node> execute(final @NotNull String name, final @NotNull Node parentNode, final @NotNull Path newDirPath) {
-        Logger.info(nodeType + " is not created from the tree");
+        TestinLogger.info(nodeType + " is not created from the tree");
         return Optional.empty();
     }
 }

@@ -22,7 +22,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.event.CodeUpdate;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.notifications.Notifier;
 import org.testin.notifications.Refused;
 import org.testin.services.Services;
@@ -46,7 +46,7 @@ public enum JavaCodeUpdate implements CodeUpdate {
             DumbService.getInstance(p).runWhenSmart(() -> p.putUserData(INDEXING_SAID, null));
         }
 
-        Logger.info("Skipped " + description + ": the IDE is indexing");
+        TestinLogger.info("Skipped " + description + ": the IDE is indexing");
         return true;
     }
 

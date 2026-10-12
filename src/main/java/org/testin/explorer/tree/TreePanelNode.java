@@ -25,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.ProjectIndexer;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.node.Node;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.status.ProjectStatus;
@@ -92,7 +92,7 @@ public final class TreePanelNode extends AbstractTreeNode<Object> {
             throw cancelled;
         } catch (final Exception ex) {
             final @NotNull String message = "Could not load '" + directory.getName() + "'";
-            Logger.error(message + ": " + FailureText.of(ex));
+            TestinLogger.error(message + ": " + FailureText.of(ex));
             return List.of(child(new TreeLoadError(message)));
         }
     }

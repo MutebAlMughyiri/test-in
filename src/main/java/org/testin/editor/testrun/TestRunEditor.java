@@ -47,7 +47,7 @@ import org.testin.help.Guide;
 import org.testin.help.Guides;
 import org.testin.indexer.TestRuns;
 import org.testin.lightmode.LightMode;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.Modules;
 import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.RunItems;
@@ -160,7 +160,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
                     Services.getInstance(p, BugIssueStates.class).readAll(() -> ViewToolWindowFactory.refreshShown(p));
                 });
             } catch (final Exception ex) {
-                Logger.error("Failed to load Test Run data from disk: " + FailureText.of(ex));
+                TestinLogger.error("Failed to load Test Run data from disk: " + FailureText.of(ex));
                 ApplicationManager.getApplication().invokeLater(() -> {
                     if (generation != loadGeneration.get()) return;
 

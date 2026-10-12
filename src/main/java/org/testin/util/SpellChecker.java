@@ -33,7 +33,7 @@ import com.intellij.util.textCompletion.TextCompletionUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +65,7 @@ public final class SpellChecker {
 
         psiFile.ifPresentOrElse(
                 file -> TextCompletionUtil.installProvider(file, provider, true),
-                () -> Logger.warn("Completion not installed: the field has no PSI file"));
+                () -> TestinLogger.warn("Completion not installed: the field has no PSI file"));
 
         field.setText(text);
         return field;

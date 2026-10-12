@@ -22,8 +22,8 @@ import com.intellij.openapi.util.text.HtmlChunk;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
-import org.testin.logger.Level;
-import org.testin.logger.Logger;
+import org.testin.logger.LogLevel;
+import org.testin.logger.TestinLogger;
 import org.testin.services.Services;
 import org.testin.model.NodeType;
 import org.testin.util.Bundle;
@@ -59,7 +59,7 @@ public class SettingsPageIdeTest extends AbstractTempRootIdeTest {
     @Override
     protected void tearDown() {
         XmlSerializerUtil.copyBean(wasStored, settings());
-        Logger.setLogLevel(Level.valueOf(wasStored.logLevel));
+        TestinLogger.setLogLevel(LogLevel.valueOf(wasStored.logLevel));
         super.tearDown();
     }
 
@@ -100,7 +100,7 @@ public class SettingsPageIdeTest extends AbstractTempRootIdeTest {
     // Rule-SETTING-009
     public void testApplyWritesEveryFieldAtOnce() {
         final @NotNull AppSettingsState typed = values(root.toString(), "Omar");
-        typed.logLevel = Level.DEBUG.name();
+        typed.logLevel = LogLevel.DEBUG.name();
         typed.testerRole = "Test Lead";
         typed.defaultDownloadFolder = root.resolve("downloads").toString();
         typed.showShortcutHints = false;

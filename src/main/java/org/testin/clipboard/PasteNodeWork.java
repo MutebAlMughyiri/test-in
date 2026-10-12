@@ -20,7 +20,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.explorer.tree.TreeTransferHandler;
 import org.testin.explorer.tree.TreeTransferPayload;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.node.Node;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
@@ -74,7 +74,7 @@ record PasteNodeWork(@NotNull Project p, @NotNull TreeTransferHandler transferHa
             ).show();
 
         } catch (final Exception ex) {
-            Logger.error("Paste Node failed: " + FailureText.of(ex));
+            TestinLogger.error("Paste Node failed: " + FailureText.of(ex));
             notifier.softRefuse(p, Bundle.message("clipboard.paste.failed.title"), FailureText.of(ex));
         }
     }

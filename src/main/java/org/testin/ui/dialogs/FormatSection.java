@@ -17,7 +17,7 @@
 package org.testin.ui.dialogs;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.importexport.FileTypes;
+import org.testin.importexport.FileFormat;
 import org.testin.ui.framework.ComponentDialogBase;
 import org.testin.ui.framework.RadioSelection;
 import org.testin.util.Bundle;
@@ -25,11 +25,11 @@ import org.testin.util.Bundle;
 import javax.swing.JComponent;
 import java.util.List;
 
-public record FormatSection(@NotNull RadioSelection<FileTypes> choice) {
+public record FormatSection(@NotNull RadioSelection<FileFormat> choice) {
     // Rule-INTERNAL-107
-    public static @NotNull FormatSection of(final FileTypes @NotNull [] formats, final @NotNull FileTypes defaultFormat) {
-        return new FormatSection(ComponentDialogBase.<FileTypes>radios(Bundle.message("destination.caption.format"))
-                .options(List.of(formats), FileTypes::getLabel)
+    public static @NotNull FormatSection of(final FileFormat @NotNull [] formats, final @NotNull FileFormat defaultFormat) {
+        return new FormatSection(ComponentDialogBase.<FileFormat>radios(Bundle.message("destination.caption.format"))
+                .options(List.of(formats), FileFormat::getLabel)
                 .select(defaultFormat)
                 .build()
                 .getComponent());
@@ -40,7 +40,7 @@ public record FormatSection(@NotNull RadioSelection<FileTypes> choice) {
     }
 
     // Rule-INTERNAL-107
-    public @NotNull FileTypes chosen() {
+    public @NotNull FileFormat chosen() {
         return choice.getSelected();
     }
 }

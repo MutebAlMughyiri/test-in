@@ -28,7 +28,7 @@ import git4idea.commands.GitLineHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.util.Bundle;
 import org.testin.util.FailureText;
 
@@ -70,7 +70,7 @@ final class GitCommandRunner {
             try {
                 Files.deleteIfExists(pathspec);
             } catch (final IOException ex) {
-                Logger.warn("Could not delete the pathspec file " + pathspec + ": " + FailureText.of(ex));
+                TestinLogger.warn("Could not delete the pathspec file " + pathspec + ": " + FailureText.of(ex));
             }
         }
     }
@@ -81,7 +81,7 @@ final class GitCommandRunner {
             Files.write(file, pathspecBytes(paths));
             return file;
         } catch (final IOException ex) {
-            Logger.error("Could not write the Git pathspec file: " + FailureText.of(ex));
+            TestinLogger.error("Could not write the Git pathspec file: " + FailureText.of(ex));
             throw new UncheckedIOException(ex);
         }
     }
@@ -117,7 +117,7 @@ final class GitCommandRunner {
             throw inSafeMode(safeMode);
         } catch (final VcsException ex) {
             final @NotNull String details = GitSafeText.withoutCredentials(FailureText.of(ex));
-            Logger.error("Git command failed: " + details);
+            TestinLogger.error("Git command failed: " + details);
             throw new GitFailed(Bundle.message("git.command.failed", details));
         }
     }
@@ -154,7 +154,7 @@ final class GitCommandRunner {
 
     // Rule-SHARE-132
     private static @NotNull GitFailed inSafeMode(final @NotNull IllegalStateException safeMode) {
-        Logger.warn("Git refused to run in a project in safe mode: " + safeMode.getMessage());
+        TestinLogger.warn("Git refused to run in a project in safe mode: " + safeMode.getMessage());
         return new GitFailed(Bundle.message("git.safe.mode"));
     }
 
@@ -186,7 +186,7 @@ final class GitCommandRunner {
                             ? result.getOutputAsJoinedString()
                             : result.getErrorOutputAsJoinedString());
 
-            Logger.error("Git command failed: " + details);
+            TestinLogger.error("Git command failed: " + details);
             throw new GitFailed(Bundle.message("git.command.failed", details));
         }
         return result.getOutputAsJoinedString();

@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.GrayWithReason;
 import org.testin.actions.TestinData;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
@@ -50,7 +50,7 @@ public class CopyTestCaseAction extends AbstractAnyProjectAction {
                 Services.getInstance(p, Notifier.class).softShowCounted(p, Done.COPIED, tcs.size());
 
             } catch (final Exception ex) {
-                Logger.error("Copy Node failed: " + FailureText.of(ex));
+                TestinLogger.error("Copy Node failed: " + FailureText.of(ex));
                 Services.getInstance(p, Notifier.class).softRefuse(p, Bundle.message("clipboard.copy.failed.title"), FailureText.of(ex));
             }
         }

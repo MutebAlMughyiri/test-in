@@ -19,7 +19,7 @@ package org.testin.help;
 
 import com.intellij.markdown.utils.MarkdownToHtmlConverterKt;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.util.Bundle;
 import org.testin.util.FailureText;
 import org.testin.util.Html;
@@ -52,12 +52,12 @@ public record BundledPage(@NotNull String path) {
     @NotNull Optional<String> markdown() {
         try (final InputStream in = BundledPage.class.getResourceAsStream(ROOT + path)) {
             if (in == null) {
-                Logger.warn("No bundled documentation page at " + path);
+                TestinLogger.warn("No bundled documentation page at " + path);
                 return Optional.empty();
             }
             return Optional.of(new String(in.readAllBytes(), StandardCharsets.UTF_8));
         } catch (final IOException ex) {
-            Logger.error("Could not read the bundled documentation page " + path + ": " + FailureText.of(ex));
+            TestinLogger.error("Could not read the bundled documentation page " + path + ": " + FailureText.of(ex));
             return Optional.empty();
         }
     }

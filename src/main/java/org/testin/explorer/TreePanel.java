@@ -34,13 +34,13 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.creator.CreateTestProjectAction;
 import org.testin.explorer.toolbar.BranchSelector;
-import org.testin.explorer.toolbar.RefreshAction;
+import org.testin.explorer.toolbar.RefreshTreeAction;
 import org.testin.explorer.tree.TreePanelTree;
 import org.testin.help.Guide;
 import org.testin.help.Guides;
 import org.testin.indexer.IndexChanged;
 import org.testin.indexer.ProjectIndexer;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.status.ProjectStatus;
 import org.testin.services.OptionalPlugin;
@@ -76,7 +76,7 @@ public final class TreePanel implements Disposable {
     private final @NotNull BranchSelector branchSelector;
 
     @Getter
-    private final @NotNull RefreshAction refreshAction;
+    private final @NotNull RefreshTreeAction refreshAction;
 
     @Getter
     private final @NotNull TreePanelTree projectTree;
@@ -89,9 +89,9 @@ public final class TreePanel implements Disposable {
         this.testinRoot = Services.getInstance(p, TestinRoot.class);
         this.indexer = Services.getInstance(p, ProjectIndexer.class);
         this.boundTestProject = Services.getInstance(p, BoundTestProject.class);
-        Logger.info("TreePanel.TreePanel()");
+        TestinLogger.info("TreePanel.TreePanel()");
 
-        refreshAction = new RefreshAction(p, this);
+        refreshAction = new RefreshTreeAction(p, this);
         branchSelector = new BranchSelector(p, this, bound());
         projectTree = new TreePanelTree(p);
         Disposer.register(this, projectTree);
@@ -208,7 +208,7 @@ public final class TreePanel implements Disposable {
         final @NotNull String only = projects.keySet().iterator().next();
         boundTestProject.choose(only);
 
-        Logger.info("Chose the only test project under the root: " + only);
+        TestinLogger.info("Chose the only test project under the root: " + only);
         return true;
     }
 
@@ -226,7 +226,7 @@ public final class TreePanel implements Disposable {
 
     // UC-TREE-PANEL-001
     private void showTree(final @NotNull TestProjectNode tp) {
-        Logger.info("TreePanel.refresh(): showing '" + tp.getName() + "'");
+        TestinLogger.info("TreePanel.refresh(): showing '" + tp.getName() + "'");
 
         projectTree.refresh();
         branchSelector.updateProject(Optional.of(tp));

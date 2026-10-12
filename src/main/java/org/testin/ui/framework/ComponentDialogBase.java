@@ -220,8 +220,8 @@ public final class ComponentDialogBase<C extends DialogComponent> {
             return this;
         }
 
-        public @NotNull ComponentDialogBase<TextArea> build() {
-            return new ComponentDialogBase<>(new TextArea(placeholder, value, rows, readOnly));
+        public @NotNull ComponentDialogBase<PlainTextArea> build() {
+            return new ComponentDialogBase<>(new PlainTextArea(placeholder, value, rows, readOnly));
         }
     }
 

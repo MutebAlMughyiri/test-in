@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.testin.actions.TestinData;
 import org.testin.indexer.Nodes;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.node.Node;
 import org.testin.model.node.TestProjectNode;
 import org.testin.notifications.Done;
@@ -124,7 +124,7 @@ public class TreeTransferHandler extends TransferHandler {
         try {
             return Optional.of((TreeTransferPayload) contents.getTransferData(NODE_FLAVOR));
         } catch (final UnsupportedFlavorException | IOException ex) {
-            Logger.debug("Clipboard no longer holds tree nodes: " + FailureText.of(ex));
+            TestinLogger.debug("Clipboard no longer holds tree nodes: " + FailureText.of(ex));
             return Optional.empty();
         }
     }
@@ -259,7 +259,7 @@ public class TreeTransferHandler extends TransferHandler {
             transfer.carryOut(action, sources, target);
             return true;
         } catch (final Exception ex) {
-            Logger.error("Tree transfer failed: " + FailureText.of(ex));
+            TestinLogger.error("Tree transfer failed: " + FailureText.of(ex));
             return false;
         }
     }

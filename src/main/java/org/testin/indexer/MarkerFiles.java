@@ -18,7 +18,7 @@ package org.testin.indexer;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
 import org.testin.model.markers.AbstractMarker;
 import org.testin.model.markers.Marker;
@@ -64,7 +64,7 @@ final class MarkerFiles {
             return mapper.readValue(Files.readAllBytes(markerFile), markerClass);
 
         } catch (final IOException | UncheckedIOException ex) {
-            Logger.warn("Unreadable " + kind.getMarkerKind() + " marker " + markerFile + ", using defaults: " + FailureText.of(ex));
+            TestinLogger.warn("Unreadable " + kind.getMarkerKind() + " marker " + markerFile + ", using defaults: " + FailureText.of(ex));
 
             damaged.add(dirPath);
             return defaultFor(markerClass, kind);
@@ -79,7 +79,7 @@ final class MarkerFiles {
             if (!Files.exists(file)) {
                 marker.stampCreated(tester());
             } else if (!parses(file, marker.getClass())) {
-                Logger.warn("Left the unreadable marker " + file + " as it is rather than writing defaults over it");
+                TestinLogger.warn("Left the unreadable marker " + file + " as it is rather than writing defaults over it");
                 return false;
             }
         }
@@ -102,7 +102,7 @@ final class MarkerFiles {
             return testDataFiles.write(markerFile, marker);
 
         } catch (final IOException | UncheckedIOException ex) {
-            Logger.warn("Left the copied marker " + markerFile + " without an id of its own: " + FailureText.of(ex));
+            TestinLogger.warn("Left the copied marker " + markerFile + " without an id of its own: " + FailureText.of(ex));
             return false;
         }
     }

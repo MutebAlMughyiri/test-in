@@ -28,13 +28,13 @@ import org.testin.util.Shortcuts;
 
 import javax.swing.JComponent;
 
-public class UndoAction extends AbstractProjectAction {
+public class TestinUndoAction extends AbstractProjectAction {
     private final @NotNull UndoDirection direction;
     private final @NotNull UndoScope scope;
     private final @NotNull UndoHistories undoHistories = Services.getInstance(p, UndoHistories.class);
     private final @NotNull Notifier notifier = Services.getInstance(p, Notifier.class);
 
-    public UndoAction(final @NotNull Project p, final @NotNull JComponent on, final @NotNull UndoScope scope, final @NotNull UndoDirection direction) {
+    public TestinUndoAction(final @NotNull Project p, final @NotNull JComponent on, final @NotNull UndoScope scope, final @NotNull UndoDirection direction) {
         super(p, direction.getTitle(), Bundle.message("undo.action.description", direction.getTitle()), direction.getIcon());
         this.direction = direction;
         this.scope = scope;

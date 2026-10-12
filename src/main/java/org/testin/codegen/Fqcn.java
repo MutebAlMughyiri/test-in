@@ -19,7 +19,7 @@ package org.testin.codegen;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.Node;
@@ -87,7 +87,7 @@ public final class Fqcn {
         final @NotNull List<String> generatedFqcn = withoutTestCasesDir(path2);
 
         if (generatedFqcn.isEmpty()) {
-            Logger.info("No class name for '" + String.join("/", path2) + "': it is the test cases directory itself");
+            TestinLogger.info("No class name for '" + String.join("/", path2) + "': it is the test cases directory itself");
             return List.of();
         }
 

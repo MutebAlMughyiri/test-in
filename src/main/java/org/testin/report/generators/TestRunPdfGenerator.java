@@ -40,7 +40,7 @@ import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.itextpdf.layout.properties.VerticalAlignment;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.ReportColor;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.bug.BugIssueUrl;
@@ -209,7 +209,7 @@ public final class TestRunPdfGenerator {
             return baos.toByteArray();
 
         } catch (final IOException ex) {
-            Logger.error("PDF generation failed: " + FailureText.of(ex));
+            TestinLogger.error("PDF generation failed: " + FailureText.of(ex));
             throw new UncheckedIOException(ex);
         }
     }
@@ -419,7 +419,7 @@ public final class TestRunPdfGenerator {
                 : Bundle.message("report.pdf.left.out.many", String.valueOf(leftOut.size()));
         final @NotNull String example = StringUtil.shortenTextWithEllipsis(leftOut.iterator().next().strip(), 60, 0);
 
-        Logger.warn("The PDF left characters out of " + leftOut.size() + " text(s) its font cannot print");
+        TestinLogger.warn("The PDF left characters out of " + leftOut.size() + " text(s) its font cannot print");
         Services.getInstance(p, Notifier.class).warn(p, Bundle.message("report.pdf.left.out.title"),
                 Bundle.message("report.pdf.left.out.message", howMuch, example));
     }

@@ -21,7 +21,7 @@ import com.intellij.util.TimeoutUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
-import org.testin.importexport.FileTypes;
+import org.testin.importexport.FileFormat;
 import org.testin.model.TestCaseDto;
 import org.testin.ui.framework.TextValue;
 import org.testin.util.Bundle;
@@ -100,7 +100,7 @@ public class PreviewLoaderIdeTest extends AbstractTempRootIdeTest {
         waitLongerThanThePause();
         assertEquals("a file Testin cannot import is not read", List.of(), read);
 
-        type(loader, file("test cases" + FileTypes.CSV.getExtension()));
+        type(loader, file("test cases" + FileFormat.CSV.getExtension()));
         Await.until("the CSV file was not read", () -> !loaded.isEmpty());
         assertEquals(List.of("test cases.csv"), loaded);
     }

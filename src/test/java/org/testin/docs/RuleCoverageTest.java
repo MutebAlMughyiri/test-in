@@ -17,7 +17,7 @@
 package org.testin.docs;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -146,6 +146,6 @@ public class RuleCoverageTest {
                 # The rules no test proves
                 %s""".formatted(summary, parts, unproven));
 
-        Logger.info(summary + " - the rules no test proves are listed in " + REPORT);
+        TestinLogger.info(summary + " - the rules no test proves are listed in " + REPORT);
     }
 }

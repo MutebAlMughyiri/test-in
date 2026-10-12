@@ -22,7 +22,7 @@ import org.dhatim.fastexcel.HyperLink;
 import org.dhatim.fastexcel.Workbook;
 import org.dhatim.fastexcel.Worksheet;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.ReportColor;
 import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.RunItems;
@@ -165,7 +165,7 @@ public final class TestRunExcelGenerator {
 
             return os.toByteArray();
         } catch (final IOException ex) {
-            Logger.error("Excel report generation failed: " + FailureText.of(ex));
+            TestinLogger.error("Excel report generation failed: " + FailureText.of(ex));
             throw new RuntimeException(ex);
         }
     }

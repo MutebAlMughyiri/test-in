@@ -24,7 +24,7 @@ import org.testin.Await;
 import org.testin.FilesUnder;
 import org.testin.config.TestinYml;
 import org.testin.editor.EditorFixtures;
-import org.testin.editor.statusbar.StatusBar;
+import org.testin.editor.statusbar.EditorStatusBar;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.model.Automated;
 import org.testin.model.TestCaseDto;
@@ -44,7 +44,7 @@ public class AutomatedStateIdeTest extends AbstractCodegenIdeTest {
 
     private @NotNull TestSetNode testSet = new TestSetNode();
 
-    private static @NotNull JComponent automatedCount(final @NotNull StatusBar bar) {
+    private static @NotNull JComponent automatedCount(final @NotNull EditorStatusBar bar) {
         return (JComponent) ((Container) bar.getComponent(2)).getComponent(3);
     }
 
@@ -129,7 +129,7 @@ public class AutomatedStateIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-EDITOR-PANEL-211
     public void testTheCountSaysNothingUntilAnAnswerIsInAndNothingWhereNoneCanBeRead() {
-        final @NotNull StatusBar bar = new StatusBar();
+        final @NotNull EditorStatusBar bar = new EditorStatusBar();
         bar.showAutomated(0, 0);
         assertFalse("nobody has looked yet, and the count says none are automated", automatedCount(bar).isVisible());
         bar.showAutomated(0, 2);

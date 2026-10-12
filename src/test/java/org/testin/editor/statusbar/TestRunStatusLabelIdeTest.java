@@ -38,7 +38,7 @@ public class TestRunStatusLabelIdeTest extends BasePlatformTestCase {
         final @NotNull String was = settings.testerName;
         settings.testerName = "Sara";
         try {
-            assertEquals("Sara", StatusBar.besideTheIcon(aTestRunMarkerIn(TestRunStatus.ASSIGNED)));
+            assertEquals("Sara", EditorStatusBar.besideTheIcon(aTestRunMarkerIn(TestRunStatus.ASSIGNED)));
         } finally {
             settings.testerName = was;
         }
@@ -49,13 +49,13 @@ public class TestRunStatusLabelIdeTest extends BasePlatformTestCase {
         final @NotNull TestRunMarker marker = new TestRunMarker();
         marker.recordCommit("ea9a50107afbbaa1831909436b781f0e3c2d1a55");
 
-        assertEquals("ea9a501", StatusBar.besideTheIcon(marker));
+        assertEquals("ea9a501", EditorStatusBar.besideTheIcon(marker));
     }
 
     // Rule-EDITOR-PANEL-265
     public void testEveryOtherStatusShowsTheIconAlone() {
         for (final TestRunStatus status : List.of(TestRunStatus.CREATED, TestRunStatus.IN_PROGRESS, TestRunStatus.COMPLETED, TestRunStatus.CLOSED)) {
-            assertEquals("a " + status + " test run showed text beside its icon", "", StatusBar.besideTheIcon(aTestRunMarkerIn(status)));
+            assertEquals("a " + status + " test run showed text beside its icon", "", EditorStatusBar.besideTheIcon(aTestRunMarkerIn(status)));
         }
     }
 }

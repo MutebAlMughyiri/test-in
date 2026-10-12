@@ -21,7 +21,7 @@ import com.intellij.openapi.project.Project;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
 import org.testin.model.markers.TestCasesFolderMarker;
 import org.testin.model.markers.TestProjectMarker;
@@ -84,7 +84,7 @@ public final class NodeMapper {
         tp.setTestCasesFolder(testCasesFolder);
         tp.setTestRunsFolder(testRunsFolder);
 
-        Logger.info("retrieve the project directory: " + tp);
+        TestinLogger.info("retrieve the project directory: " + tp);
         return tp;
     }
 
@@ -122,7 +122,7 @@ public final class NodeMapper {
                 .marker(Services.getInstance(p, Nodes.class).readMarker(path, NodeType.TSP, TestSetPackageMarker.class))
                 .build();
 
-        Logger.info("retrieve the test set package directory: " + testSetPackageNode);
+        TestinLogger.info("retrieve the test set package directory: " + testSetPackageNode);
         return testSetPackageNode;
     }
 
@@ -138,7 +138,7 @@ public final class NodeMapper {
                 .marker(Services.getInstance(p, Nodes.class).readMarker(path, NodeType.TRP, TestRunPackageMarker.class))
                 .build();
 
-        Logger.info("retrieve the test run package directory: " + testRunPackageNode);
+        TestinLogger.info("retrieve the test run package directory: " + testRunPackageNode);
         return testRunPackageNode;
     }
 
@@ -154,7 +154,7 @@ public final class NodeMapper {
                 .marker(Services.getInstance(p, Nodes.class).readMarker(path, NodeType.TS, TestSetMarker.class))
                 .build();
 
-        Logger.info("retrieve the test set directory: " + testSetNode);
+        TestinLogger.info("retrieve the test set directory: " + testSetNode);
         return testSetNode;
     }
 
@@ -180,7 +180,7 @@ public final class NodeMapper {
         builder.marker(marker);
 
         final @NotNull TestRunNode testRunNode = builder.build();
-        Logger.info("retrieve the test run directory: " + testRunNode);
+        TestinLogger.info("retrieve the test run directory: " + testRunNode);
         return testRunNode;
     }
 }

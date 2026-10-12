@@ -26,7 +26,7 @@ import org.testin.codegen.WaitForIndexing;
 import org.testin.editor.open.TestinEditors;
 import org.testin.indexer.NodeCounter;
 import org.testin.indexer.Nodes;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.node.Node;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
@@ -97,7 +97,7 @@ record RemoveWork(@NotNull Project p, @NotNull Nodes nodes, @NotNull TestinEdito
         }
 
         removeEach(nodesToRemove, went -> {
-            Logger.info("Removed " + went.size() + " of " + nodesToRemove.size() + " node(s).");
+            TestinLogger.info("Removed " + went.size() + " of " + nodesToRemove.size() + " node(s).");
 
             final @NotNull List<Kept> undoable = kept.stream().filter(one -> went.contains(one.dto())).toList();
             kept.stream().filter(one -> !went.contains(one.dto())).forEach(one -> nodes.forgetKept(one.copy()));
@@ -171,6 +171,6 @@ record RemoveWork(@NotNull Project p, @NotNull Nodes nodes, @NotNull TestinEdito
 
     // UC-TREE-PANEL-017
     private void removeAll(final @NotNull List<Kept> kept) {
-        removeEach(kept.stream().map(Kept::dto).toList(), went -> Logger.info("Removed " + went.size() + " node(s) again."));
+        removeEach(kept.stream().map(Kept::dto).toList(), went -> TestinLogger.info("Removed " + went.size() + " node(s) again."));
     }
 }

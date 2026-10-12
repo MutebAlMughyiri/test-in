@@ -20,7 +20,7 @@ package org.testin.services;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.jetbrains.annotations.NotNull;
 import org.testin.Said;
-import org.testin.help.Hint;
+import org.testin.help.SetupHint;
 import org.testin.help.Hints;
 import org.testin.help.SetupStep;
 import org.testin.util.Bundle;
@@ -30,7 +30,7 @@ import java.util.List;
 public class PluginHintIdeTest extends BasePlatformTestCase {
 
     private @NotNull List<String> hintsFor(final @NotNull SetupStep step) {
-        return Services.getInstance(getProject(), Hints.class).waiting().stream().filter(hint -> hint.step() == step).map(Hint::text).toList();
+        return Services.getInstance(getProject(), Hints.class).waiting().stream().filter(hint -> hint.step() == step).map(SetupHint::text).toList();
     }
 
     // Rule-CODEGEN-005, Rule-INTERNAL-127

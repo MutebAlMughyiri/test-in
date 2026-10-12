@@ -37,7 +37,7 @@ import org.jetbrains.annotations.Nullable;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
 import org.testin.NodesOnDisk;
-import org.testin.importexport.FileTypes;
+import org.testin.importexport.FileFormat;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestSetNode;
 import org.testin.ui.framework.ShownDialog;
@@ -74,7 +74,7 @@ public class ChooseAFileIdeTest extends AbstractTempRootIdeTest {
     // UC-SHARE-007, Rule-SHARE-035
     public void testTheTableIsEmptyUntilAFileIsChosen() {
         final @NotNull File plan = root.resolve("Plan.json").toFile();
-        FileTypes.JSON.exportToFile(getProject(), plan, Map.of("Login", List.of(TestCaseDto.builder().description("log in with a valid user").build())));
+        FileFormat.JSON.exportToFile(getProject(), plan, Map.of("Login", List.of(TestCaseDto.builder().description("log in with a valid user").build())));
         final @NotNull VirtualFile chosen = Optional.ofNullable(LocalFileSystem.getInstance().refreshAndFindFileByIoFile(plan)).orElseThrow(() -> new AssertionError("the plan was not written: " + plan));
         final @NotNull TestSetNode login = new NodesOnDisk(getProject()).testSet(new NodesOnDisk(getProject()).testProject(root.resolve("Demo")).getTestCasesFolder(), "Login");
 

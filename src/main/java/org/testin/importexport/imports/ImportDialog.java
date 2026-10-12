@@ -18,7 +18,7 @@ package org.testin.importexport.imports;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.importexport.FileTypes;
+import org.testin.importexport.FileFormat;
 import org.testin.importexport.shared.SheetPreview;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.TestSetEditorAttributes;
@@ -42,7 +42,7 @@ public final class ImportDialog extends AbstractFrameworkDialog {
 
     private final @NotNull SheetPreview preview;
 
-    public ImportDialog(final @NotNull Project p, final @NotNull List<TestSetEditorAttributes> importAttributes, final @NotNull BiFunction<File, FileTypes, Map<String, List<TestCaseDto>>> importLoader, final @NotNull Consumer<@NotNull Map<String, List<TestCaseDto>>> onImport) {
+    public ImportDialog(final @NotNull Project p, final @NotNull List<TestSetEditorAttributes> importAttributes, final @NotNull BiFunction<File, FileFormat, Map<String, List<TestCaseDto>>> importLoader, final @NotNull Consumer<@NotNull Map<String, List<TestCaseDto>>> onImport) {
         super(p);
         this.onImport = onImport;
 

@@ -49,9 +49,9 @@ public class ExportThenImportIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull Map<String, List<TestCaseDto>> roundTrip(final @NotNull Map<String, List<TestCaseDto>> sheets) {
         final @NotNull File file = root.resolve("export.xlsx").toFile();
-        FileTypes.XLSX.exportToFile(getProject(), file, sheets);
+        FileFormat.XLSX.exportToFile(getProject(), file, sheets);
 
-        return FileTypes.XLSX.importToFile(getProject(), file);
+        return FileFormat.XLSX.importToFile(getProject(), file);
     }
 
     // UC-SHARE-002, Rule-SHARE-007, Rule-SHARE-012

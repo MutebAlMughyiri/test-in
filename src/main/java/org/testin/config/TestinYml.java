@@ -41,7 +41,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.git.GitRefs;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
@@ -74,12 +74,12 @@ public final class TestinYml {
             .addHandler(new DeserializationProblemHandler() {
                 @Override
                 public boolean handleUnknownProperty(final @NotNull DeserializationContext context, final @NotNull JsonParser parser, final @NotNull JsonDeserializer<?> deserializer, final @NotNull Object beanOrClass, final @NotNull String key) {
-                    Logger.warn("Unknown key in testin.yml, ignored: " + key);
+                    TestinLogger.warn("Unknown key in testin.yml, ignored: " + key);
 
                     try {
                         parser.skipChildren();
                     } catch (final IOException ex) {
-                        Logger.warn("Could not skip past " + key + " in testin.yml: " + FailureText.of(ex));
+                        TestinLogger.warn("Could not skip past " + key + " in testin.yml: " + FailureText.of(ex));
                     }
 
                     return true;
@@ -186,7 +186,7 @@ public final class TestinYml {
         final @NotNull Optional<Path> path = savePath(p);
         final @NotNull Optional<VirtualFile> folder = path.map(Path::getParent).map(LocalFileSystem.getInstance()::refreshAndFindFileByNioFile);
         if (folder.isEmpty()) {
-            Logger.warn("No folder to save testin.yml in for " + p.getName());
+            TestinLogger.warn("No folder to save testin.yml in for " + p.getName());
             return false;
         }
 
@@ -216,10 +216,10 @@ public final class TestinYml {
                 VfsUtil.saveText(file, withLines(VfsUtilCore.loadText(file), owned));
             }
 
-            Logger.info("Saved " + file.getPath() + ": " + owned);
+            TestinLogger.info("Saved " + file.getPath() + ": " + owned);
             return true;
         } catch (final IOException ex) {
-            Logger.warn("Could not save testin.yml in " + folder.getPath() + ": " + FailureText.of(ex));
+            TestinLogger.warn("Could not save testin.yml in " + folder.getPath() + ": " + FailureText.of(ex));
             return false;
         }
     }
@@ -260,7 +260,7 @@ public final class TestinYml {
             keys.stream().filter(read::containsKey).forEach(key -> values.put(key, Objects.toString(read.get(key), "")));
             return values;
         } catch (final IOException ex) {
-            Logger.warn("Could not read the values in testin.yml: " + FailureText.of(ex));
+            TestinLogger.warn("Could not read the values in testin.yml: " + FailureText.of(ex));
             return Map.of();
         }
     }
@@ -287,7 +287,7 @@ public final class TestinYml {
         try {
             return Files.readString(file);
         } catch (final IOException ex) {
-            Logger.warn("Could not read " + file + ": " + FailureText.of(ex));
+            TestinLogger.warn("Could not read " + file + ": " + FailureText.of(ex));
             return "";
         }
     }
@@ -296,7 +296,7 @@ public final class TestinYml {
     public static void openInEditor(final @NotNull Project p) {
         file(p).flatMap(path -> Optional.ofNullable(LocalFileSystem.getInstance().findFileByNioFile(path)))
                 .ifPresentOrElse(found -> FileEditorManager.getInstance(p).openFile(found, true),
-                        () -> Logger.warn("No testin.yml to open in " + p.getName()));
+                        () -> TestinLogger.warn("No testin.yml to open in " + p.getName()));
     }
 
     private static @NotNull TestinProjectConfig config(final @NotNull Project p) {
@@ -315,7 +315,7 @@ public final class TestinYml {
         final @NotNull Parsed parsed = file(p)
                 .map(TestinYml::read)
                 .orElseGet(() -> {
-                    Logger.info("No testin.yml in " + p.getName() + "; Testin goes on without it");
+                    TestinLogger.info("No testin.yml in " + p.getName() + "; Testin goes on without it");
                     return NOTHING_SAID;
                 });
 
@@ -339,7 +339,7 @@ public final class TestinYml {
         try {
             return parsed(Files.readString(file), file.toString());
         } catch (final IOException ex) {
-            Logger.warn("Could not read " + file + ": " + FailureText.of(ex));
+            TestinLogger.warn("Could not read " + file + ": " + FailureText.of(ex));
             return NOTHING_SAID;
         }
     }
@@ -351,17 +351,17 @@ public final class TestinYml {
     // UC-TREE-PANEL-001, Rule-TREE-PANEL-119
     static @NotNull Parsed parsed(final @NotNull String yaml, final @NotNull String source) {
         if (yaml.isBlank()) {
-            Logger.warn("Empty testin.yml: " + source);
+            TestinLogger.warn("Empty testin.yml: " + source);
             return NOTHING_SAID;
         }
 
         try {
             final @NotNull TestinProjectConfig config = YAML.readValue(yaml, TestinProjectConfig.class);
-            Logger.info("Read " + source + ": test project '" + config.projectName() + "'");
+            TestinLogger.info("Read " + source + ": test project '" + config.projectName() + "'");
             return new Parsed(config, true);
 
         } catch (final JsonProcessingException ex) {
-            Logger.warn("Malformed " + source + ", ignored: " + FailureText.of(ex));
+            TestinLogger.warn("Malformed " + source + ", ignored: " + FailureText.of(ex));
             return new Parsed(TestinProjectConfig.EMPTY, false);
         }
     }

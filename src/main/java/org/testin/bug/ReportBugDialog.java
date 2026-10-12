@@ -26,7 +26,7 @@ import org.testin.ui.framework.AbstractFrameworkDialog;
 import org.testin.ui.framework.ComponentDialogBase;
 import org.testin.ui.framework.DialogButton;
 import org.testin.ui.framework.StatusBarShortcut;
-import org.testin.ui.framework.TextArea;
+import org.testin.ui.framework.PlainTextArea;
 import org.testin.ui.framework.TextInput;
 import org.testin.util.Bundle;
 
@@ -41,7 +41,7 @@ final class ReportBugDialog extends AbstractFrameworkDialog {
     private final @NotNull TestRuns testRuns = Services.getInstance(p, TestRuns.class);
 
     private final @NotNull ComponentDialogBase<TextInput> titleField;
-    private final @NotNull ComponentDialogBase<TextArea> bodyArea;
+    private final @NotNull ComponentDialogBase<PlainTextArea> bodyArea;
     private final @NotNull ComponentDialogBase<DialogButton> sendButton;
 
     private boolean sent;

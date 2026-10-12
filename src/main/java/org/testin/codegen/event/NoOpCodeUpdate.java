@@ -19,7 +19,7 @@ package org.testin.codegen.event;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.GenType;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 
 import java.util.List;
 
@@ -27,11 +27,11 @@ public record NoOpCodeUpdate(@NotNull String fieldName) implements CodeUpdate {
     // Rule-CODEGEN-003
     @Override
     public <T> void execute(final @NotNull GenType<T> type, final @NotNull Project p, final @NotNull T payload) {
-        Logger.info("Update " + fieldName + ": data-only field, no Java code change");
+        TestinLogger.info("Update " + fieldName + ": data-only field, no Java code change");
     }
 
     @Override
     public <T> void executeAll(final @NotNull GenType<T> type, final @NotNull Project p, final @NotNull List<? extends T> items, final @NotNull String undoGroup) {
-        Logger.info("Update " + fieldName + " on " + items.size() + ": data-only field, no Java code change");
+        TestinLogger.info("Update " + fieldName + " on " + items.size() + ": data-only field, no Java code change");
     }
 }

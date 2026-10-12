@@ -23,7 +23,7 @@ import com.intellij.util.ui.ImageUtil;
 import com.intellij.util.ui.JBImageIcon;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.util.FailureText;
 
 import javax.imageio.ImageIO;
@@ -54,7 +54,7 @@ public final class Picture implements DialogComponent {
 
             return out.toByteArray();
         } catch (final IOException ex) {
-            Logger.error("Could not encode a pasted image as PNG: " + FailureText.of(ex));
+            TestinLogger.error("Could not encode a pasted image as PNG: " + FailureText.of(ex));
             return new byte[0];
         }
     }
@@ -62,10 +62,11 @@ public final class Picture implements DialogComponent {
     static @NotNull Optional<BufferedImage> read(final byte @NotNull [] png) {
         try {
             final @NotNull Optional<BufferedImage> image = Optional.ofNullable(ImageIO.read(new ByteArrayInputStream(png)));
-            if (image.isEmpty()) Logger.warn("A stored screenshot is not a picture; it stays saved and is drawn empty");
+            if (image.isEmpty())
+                TestinLogger.warn("A stored screenshot is not a picture; it stays saved and is drawn empty");
             return image;
         } catch (final IOException ex) {
-            Logger.warn("A stored screenshot could not be read, so it is drawn empty: " + FailureText.of(ex));
+            TestinLogger.warn("A stored screenshot could not be read, so it is drawn empty: " + FailureText.of(ex));
             return Optional.empty();
         }
     }

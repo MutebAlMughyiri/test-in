@@ -20,7 +20,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestCasesFolderNode;
 import org.testin.model.node.TestProjectNode;
@@ -151,7 +151,7 @@ public final class TestRuns {
             gone.removeAll(runItems.coveredIds());
 
             runItemWriter().persist(testRunPath, runItems, gone);
-        }, () -> Logger.warn("Test run no longer indexed, so a change to it was dropped: " + testRunPath.getFileName()));
+        }, () -> TestinLogger.warn("Test run no longer indexed, so a change to it was dropped: " + testRunPath.getFileName()));
     }
 
     // Rule-INTERNAL-011
@@ -159,8 +159,8 @@ public final class TestRuns {
         findRunItems(testRunPath).ifPresentOrElse(runItems -> runItems.runItemOf(testCaseId).ifPresentOrElse(runItem -> {
                     change.accept(runItem);
                     runItemWriter().persistRunItem(testRunPath, runItems, runItem);
-                }, () -> Logger.warn("'" + testRunPath.getFileName() + "' no longer covers " + testCaseId + ", so a change to its run item was dropped")),
-                () -> Logger.warn("Test run no longer indexed, so a change to it was dropped: " + testRunPath.getFileName()));
+                }, () -> TestinLogger.warn("'" + testRunPath.getFileName() + "' no longer covers " + testCaseId + ", so a change to its run item was dropped")),
+                () -> TestinLogger.warn("Test run no longer indexed, so a change to it was dropped: " + testRunPath.getFileName()));
     }
 
     public void changeTestRunMarker(final @NotNull Path testRunPath, final @NotNull Consumer<TestRunMarker> change) {
@@ -169,7 +169,7 @@ public final class TestRuns {
             change.accept(marker);
             runItemWriter().persistMarker(testRunPath, () -> notSaved(testRunPath));
             indexer.announce(testRunPath);
-        }, () -> Logger.warn("Test run no longer indexed, so a change to its marker was dropped: " + testRunPath.getFileName()));
+        }, () -> TestinLogger.warn("Test run no longer indexed, so a change to its marker was dropped: " + testRunPath.getFileName()));
     }
 
     // Rule-INTERNAL-123

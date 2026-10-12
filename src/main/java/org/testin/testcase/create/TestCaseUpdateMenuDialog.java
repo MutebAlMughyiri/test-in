@@ -20,7 +20,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.GenType;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.UpdateTestCaseFields;
 import org.testin.testcase.update.UpdateTestCaseDialog;
@@ -46,7 +46,7 @@ public class TestCaseUpdateMenuDialog {
     public static void applyAftermath(final @NotNull Project p, final @NotNull List<TestCaseDto> updated, final @NotNull GenType<TestCaseDto> gt) {
         ViewToolWindowFactory.refreshIfShowing(p, updated);
 
-        Logger.trace("Generating automation code for " + updated.size() + ": " + gt);
+        TestinLogger.trace("Generating automation code for " + updated.size() + ": " + gt);
 
         // UC-CODEGEN-003, Rule-CODEGEN-019
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
@@ -71,11 +71,11 @@ public class TestCaseUpdateMenuDialog {
     // UC-EDITOR-PANEL-006, UC-EDITOR-PANEL-007
     public void open(final @NotNull UpdateTestCaseFields field) {
         final @NotNull GenType<TestCaseDto> gt = field.getGt();
-        Logger.trace("Update field -> " + field.getName() + " | changeType = " + gt);
+        TestinLogger.trace("Update field -> " + field.getName() + " | changeType = " + gt);
 
         if (items.size() == 1) {
             new UpdateTestCaseDialog(p, items.getFirst(), field, edited -> {
-                Logger.trace("Single Edit Save -> changeType = " + gt);
+                TestinLogger.trace("Single Edit Save -> changeType = " + gt);
                 updatedItems.accept(List.of(edited), field);
             }).show();
 
@@ -83,7 +83,7 @@ public class TestCaseUpdateMenuDialog {
         }
 
         field.getBulkAction().execute(p, items, list -> {
-            Logger.trace("Bulk Edit Save -> changeType = " + gt);
+            TestinLogger.trace("Bulk Edit Save -> changeType = " + gt);
             updatedItems.accept(list, field);
         });
     }

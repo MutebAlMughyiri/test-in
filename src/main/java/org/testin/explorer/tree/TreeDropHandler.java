@@ -24,7 +24,7 @@ import kotlin.coroutines.Continuation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.testin.editor.open.TestinEditors;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.node.Node;
 import org.testin.services.Services;
 import org.testin.util.FailureText;
@@ -48,14 +48,14 @@ public class TreeDropHandler implements FileDropHandler {
                 for (final Node node : payload.nodes()) {
                     if (!node.isOpenableInEditor()) continue;
 
-                    Logger.info("dragged " + node.getType().getMarkerKind() + ": " + node.getName());
+                    TestinLogger.info("dragged " + node.getType().getMarkerKind() + ": " + node.getName());
                     Services.getInstance(p, TestinEditors.class).open(node);
                 }
             });
             return true;
 
         } catch (final Exception ex) {
-            Logger.error("Exception: " + FailureText.of(ex));
+            TestinLogger.error("Exception: " + FailureText.of(ex));
             return false;
         }
     }

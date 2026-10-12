@@ -20,7 +20,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.util.FailureText;
 
 import java.io.IOException;
@@ -172,9 +172,9 @@ public final class BugTemplate {
             if (template != null)
                 return new String(template.readAllBytes(), StandardCharsets.UTF_8).replace("\r\n", "\n");
 
-            Logger.error("The bug report template is not in the plugin: " + RESOURCE);
+            TestinLogger.error("The bug report template is not in the plugin: " + RESOURCE);
         } catch (final IOException ex) {
-            Logger.error("The bug report template could not be read: " + FailureText.of(ex));
+            TestinLogger.error("The bug report template could not be read: " + FailureText.of(ex));
         }
         return "";
     }

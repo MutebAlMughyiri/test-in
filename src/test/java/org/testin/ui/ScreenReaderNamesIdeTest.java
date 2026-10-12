@@ -34,7 +34,7 @@ import org.testin.editor.grid.GridPanelBuilder;
 import org.testin.editor.cardview.CardPanelBuilder;
 import org.testin.editor.cardview.CardView;
 import org.testin.editor.statusbar.PageStep;
-import org.testin.editor.statusbar.StatusBar;
+import org.testin.editor.statusbar.EditorStatusBar;
 import org.testin.editor.testrun.RunItemCard;
 import org.testin.explorer.tree.TreePanelTree;
 import org.testin.model.TestCaseDto;
@@ -146,7 +146,7 @@ public class ScreenReaderNamesIdeTest extends BasePlatformTestCase {
 
     // Rule-INTERNAL-122
     public void testTheStatusBarNamesItsFieldAndItsIconButtons() {
-        final @NotNull StatusBar bar = new StatusBar();
+        final @NotNull EditorStatusBar bar = new EditorStatusBar();
 
         assertEveryStopIsNamed("the status bar", bar);
         for (final PageStep step : PageStep.values()) {

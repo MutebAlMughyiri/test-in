@@ -27,7 +27,7 @@ import org.testin.editor.TestinEditor;
 import org.testin.editor.testrun.ExecutionMode;
 import org.testin.editor.open.TestinEditors;
 import org.testin.indexer.TestCases;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.Node;
 import org.testin.model.node.TestRunNode;
@@ -91,7 +91,7 @@ public class ExecuteTestsAction extends AbstractAnyProjectAction {
             return;
         }
 
-        Logger.info("Running " + dir.getName() + " with " + testCases.size() + " test case(s)");
+        TestinLogger.info("Running " + dir.getName() + " with " + testCases.size() + " test case(s)");
 
         ExecuteTestCases.run(p, testCases);
     }

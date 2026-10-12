@@ -22,7 +22,7 @@ import org.testin.creator.CreateTestRun;
 import org.testin.explorer.tree.TreeValues;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestRuns;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.node.Node;
 import org.testin.model.node.TestRunNode;
 import org.testin.services.Services;
@@ -55,6 +55,6 @@ record ReCreateTestRunWork(@NotNull Project p, @NotNull TestRuns testRuns, @NotN
 
         boundTestProject.get().ifPresentOrElse(
                 tp -> new CreateTestRun(p).configureTestRun(tp.getTestCasesFolder(), NextTestRunName.after(source.getName(), taken), parent, testCases, source.getMarker().getConfiguration()),
-                () -> Logger.warn("Re-create test run: no test project is bound to " + p.getName()));
+                () -> TestinLogger.warn("Re-create test run: no test project is bound to " + p.getName()));
     }
 }

@@ -19,8 +19,8 @@ package org.testin.editor;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.editor.statusbar.StatusBar;
-import org.testin.logger.Logger;
+import org.testin.editor.statusbar.EditorStatusBar;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.Node;
 import org.testin.model.node.TestRunNode;
@@ -59,7 +59,7 @@ public interface TestinEditor extends Disposable {
 
     @NotNull Node getParent();
 
-    @NotNull StatusBar getStatusBar();
+    @NotNull EditorStatusBar getStatusBar();
 
     int getCurrentPage();
 
@@ -152,7 +152,7 @@ public interface TestinEditor extends Disposable {
 
     // UC-EDITOR-PANEL-005
     default void appendNewTestCase(final @NotNull TestCaseDto tc, final @NotNull Runnable onPersisted) {
-        Logger.debug("This editor does not create test cases; '" + tc.getDescription() + "' was not added");
+        TestinLogger.debug("This editor does not create test cases; '" + tc.getDescription() + "' was not added");
     }
 
     @NotNull JComponent getComponent();

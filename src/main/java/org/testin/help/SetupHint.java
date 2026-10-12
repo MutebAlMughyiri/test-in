@@ -24,24 +24,24 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public record Hint(@NotNull SetupStep step, @NotNull String text, @NotNull Optional<Supplier<JComponent>> form, @NotNull String subject) {
+public record SetupHint(@NotNull SetupStep step, @NotNull String text, @NotNull Optional<Supplier<JComponent>> form, @NotNull String subject) {
     // UC-INTERNAL-009, Rule-INTERNAL-127
-    public static @NotNull Hint of(final @NotNull SetupStep step, final @NotNull String text) {
-        return new Hint(step, text, Optional.empty(), "");
+    public static @NotNull SetupHint of(final @NotNull SetupStep step, final @NotNull String text) {
+        return new SetupHint(step, text, Optional.empty(), "");
     }
 
     // UC-INTERNAL-009, Rule-INTERNAL-127
-    public static @NotNull Hint of(final @NotNull SetupStep step, final @NotNull String text, final @NotNull Supplier<JComponent> form) {
-        return new Hint(step, text, Optional.of(form), "");
+    public static @NotNull SetupHint of(final @NotNull SetupStep step, final @NotNull String text, final @NotNull Supplier<JComponent> form) {
+        return new SetupHint(step, text, Optional.of(form), "");
     }
 
     // UC-INTERNAL-009, Rule-INTERNAL-127
-    public @NotNull Hint about(final @NotNull Path subject) {
-        return new Hint(step, text, form, subject.toString());
+    public @NotNull SetupHint about(final @NotNull Path subject) {
+        return new SetupHint(step, text, form, subject.toString());
     }
 
     // UC-INTERNAL-009, Rule-INTERNAL-127
-    public static @NotNull Hint of(final @NotNull SetupStep step, final @NotNull String text, final @NotNull String link, final @NotNull Runnable fix) {
+    public static @NotNull SetupHint of(final @NotNull SetupStep step, final @NotNull String text, final @NotNull String link, final @NotNull Runnable fix) {
         return of(step, text, () -> PopupLink.of(link, fix));
     }
 }

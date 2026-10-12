@@ -32,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
 import org.jetbrains.concurrency.Promise;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.notifications.Notifier;
 import org.testin.util.FailureText;
 
@@ -139,7 +139,7 @@ public final class BackgroundWork {
                     failed = true;
 
                     final @NotNull String reason = FailureText.of(ex);
-                    Logger.error(whatFailed + ": " + reason);
+                    TestinLogger.error(whatFailed + ": " + reason);
                     Services.getInstance(p, Notifier.class).error(p, whatFailed, reason);
                 }
             }
@@ -168,7 +168,7 @@ public final class BackgroundWork {
         final @NotNull Throwable reason = cause instanceof CompletionException wrapped ? Optional.ofNullable(wrapped.getCause()).orElse(cause) : cause;
         if (reason instanceof CancellationException) return;
 
-        Logger.error(what + " failed: " + FailureText.of(reason));
+        TestinLogger.error(what + " failed: " + FailureText.of(reason));
     }
 
     public static void after(final long millis, final @NotNull Runnable work, final @NotNull String what) {

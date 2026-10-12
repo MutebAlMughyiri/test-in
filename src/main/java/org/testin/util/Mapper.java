@@ -28,7 +28,7 @@ import com.intellij.openapi.components.Service;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -100,7 +100,7 @@ public final class Mapper {
             final @NotNull JsonNode node = mapper.readTree(content);
             return node instanceof ObjectNode object ? object : mapper.createObjectNode();
         } catch (final JsonProcessingException ex) {
-            Logger.debug("Mapper.readTree() could not parse the content: " + FailureText.of(ex));
+            TestinLogger.debug("Mapper.readTree() could not parse the content: " + FailureText.of(ex));
             return mapper.createObjectNode();
         }
     }

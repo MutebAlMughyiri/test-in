@@ -19,7 +19,7 @@ package org.testin.indexer;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.FileKind;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestRunNode;
@@ -73,7 +73,7 @@ final class RunItemWriter {
 
     void persist(final @NotNull Path testRunPath, final @NotNull RunItems runItems, final @NotNull Set<UUID> gone) {
         if (store.findRunItems(testRunPath).isEmpty()) {
-            Logger.info("Test run no longer indexed, so it was not written back: " + testRunPath.getFileName());
+            TestinLogger.info("Test run no longer indexed, so it was not written back: " + testRunPath.getFileName());
             return;
         }
 
@@ -98,7 +98,7 @@ final class RunItemWriter {
         queue.execute(() -> {
             try {
                 if (store.findRunItems(testRunPath).isEmpty()) {
-                    Logger.info("Test run removed before its run items were written, so nothing was written: " + testRunPath.getFileName());
+                    TestinLogger.info("Test run removed before its run items were written, so nothing was written: " + testRunPath.getFileName());
                     return;
                 }
 
@@ -106,13 +106,13 @@ final class RunItemWriter {
                     if (files.alreadyHolds(file, bytes)) return;
 
                     files.write(file, bytes);
-                    Logger.trace("Run item written for " + testRunPath.getFileName() + ": " + file.getFileName());
+                    TestinLogger.trace("Run item written for " + testRunPath.getFileName() + ": " + file.getFileName());
                 });
 
                 removeRunItemsOf(testRunPath, gone);
                 sweepScreenshots(testRunPath, named);
             } catch (final Exception ex) {
-                Logger.error("Failed to persist test run data: " + FailureText.of(ex));
+                TestinLogger.error("Failed to persist test run data: " + FailureText.of(ex));
             }
         });
     }
@@ -123,7 +123,7 @@ final class RunItemWriter {
             final @NotNull Path file = testRunPath.resolve(FileKind.RUN_ITEM.fileName(id));
             if (!Files.exists(file)) continue;
 
-            Logger.info("Removing the run item of a test case the test run no longer covers: " + file.getFileName());
+            TestinLogger.info("Removing the run item of a test case the test run no longer covers: " + file.getFileName());
             files.delete(file);
         }
     }
@@ -150,13 +150,13 @@ final class RunItemWriter {
         if (!byName.isEmpty()) queue.execute(() -> {
             try {
                 if (store.findRunItems(testRunPath).isEmpty()) {
-                    Logger.info("Test run removed before its screenshots were written, so nothing was written: " + testRunPath.getFileName());
+                    TestinLogger.info("Test run removed before its screenshots were written, so nothing was written: " + testRunPath.getFileName());
                     return;
                 }
 
                 byName.forEach((name, png) -> files.write(TestRunNode.screenshotFile(testRunPath, name), png));
             } catch (final Exception ex) {
-                Logger.error("Failed to write the screenshots of " + testRunPath.getFileName() + ": " + FailureText.of(ex));
+                TestinLogger.error("Failed to write the screenshots of " + testRunPath.getFileName() + ": " + FailureText.of(ex));
             } finally {
                 byName.forEach((name, png) -> unwritten.remove(TestRunNode.screenshotFile(testRunPath, name), png));
             }
@@ -178,17 +178,17 @@ final class RunItemWriter {
         queue.execute(() -> {
             try {
                 if (store.findRunItems(testRunPath).isEmpty()) {
-                    Logger.info("Test run removed before its marker was written, so nothing was written: " + testRunPath.getFileName());
+                    TestinLogger.info("Test run removed before its marker was written, so nothing was written: " + testRunPath.getFileName());
                     return;
                 }
 
                 if (store.persistTestRunMarker(testRunPath)) {
-                    Logger.trace("Marker persisted for " + testRunPath.getFileName());
+                    TestinLogger.trace("Marker persisted for " + testRunPath.getFileName());
                     return;
                 }
-                Logger.warn("The marker of " + testRunPath.getFileName() + " was not written");
+                TestinLogger.warn("The marker of " + testRunPath.getFileName() + " was not written");
             } catch (final Exception ex) {
-                Logger.error("Failed to persist marker: " + FailureText.of(ex));
+                TestinLogger.error("Failed to persist marker: " + FailureText.of(ex));
             }
             onFailed.run();
         });
@@ -210,7 +210,7 @@ final class RunItemWriter {
         try {
             return Optional.of(mapper.writeValueAsBytes(runItem));
         } catch (final Exception ex) {
-            Logger.error("Failed to snapshot run item: " + FailureText.of(ex));
+            TestinLogger.error("Failed to snapshot run item: " + FailureText.of(ex));
             return Optional.empty();
         }
     }

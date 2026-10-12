@@ -26,7 +26,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.open.LastOpenEditors;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
 import org.testin.model.FileKind;
 import org.testin.model.status.ProjectStatus;
@@ -112,19 +112,19 @@ public final class ProjectIndexer {
             final @NotNull List<Path> validProjects = boundOnly(collectValidProjects(absoluteRoot));
             if (validProjects.isEmpty()) {
                 finishWithNothingToIndex();
-                Logger.warn("No valid projects found at '" + absoluteRoot.toAbsolutePath() + "'");
+                TestinLogger.warn("No valid projects found at '" + absoluteRoot.toAbsolutePath() + "'");
                 return;
             }
 
             final @NotNull AtomicInteger projectsLeft = new AtomicInteger(validProjects.size());
             final @NotNull AtomicBoolean allRead = new AtomicBoolean(true);
             final @NotNull CountDownLatch passLatch = indexingLatch;
-            Logger.info("Indexing " + validProjects.size() + " projects..");
+            TestinLogger.info("Indexing " + validProjects.size() + " projects..");
 
             for (final Path projectPath : validProjects)
                 indexInBackground(projectPath, projectsLeft, allRead, passLatch);
         } catch (final Exception ex) {
-            Logger.error("indexWithProgress: " + FailureText.of(ex));
+            TestinLogger.error("indexWithProgress: " + FailureText.of(ex));
             indexing.set(false);
 
             indexingLatch.countDown();
@@ -150,7 +150,7 @@ public final class ProjectIndexer {
 
                 final long started = System.nanoTime();
                 final @NotNull Optional<String> failure = scanCoordinator.scan(projectPath, indicator);
-                Logger.info("Reading '" + projectName + "' took " + TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - started) + " ms");
+                TestinLogger.info("Reading '" + projectName + "' took " + TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - started) + " ms");
                 failure.ifPresent(why -> {
                     allRead.set(false);
                     problems.projectNotRead(projectName, why);
@@ -162,13 +162,13 @@ public final class ProjectIndexer {
 
             @Override
             public void onCancel() {
-                Logger.info("Reading '" + projectName + "' was canceled, so it is read again on the next request.");
+                TestinLogger.info("Reading '" + projectName + "' was canceled, so it is read again on the next request.");
                 allRead.set(false);
             }
 
             @Override
             public void onThrowable(final @NotNull Throwable error) {
-                Logger.error("Error indexing '" + projectName + "': " + FailureText.of(error));
+                TestinLogger.error("Error indexing '" + projectName + "': " + FailureText.of(error));
                 allRead.set(false);
             }
 
@@ -206,16 +206,16 @@ public final class ProjectIndexer {
     // UC-INTERNAL-002
     private void finishWithFailure() {
         indexing.set(false);
-        Logger.warn("Indexing finished with errors; will retry on the next request.");
+        TestinLogger.warn("Indexing finished with errors; will retry on the next request.");
     }
 
     private void restoreOpenEditorsOnce() {
         ApplicationManager.getApplication().invokeLater(() -> {
             if (restoreEditorsOnComplete.getAndSet(false)) {
-                Logger.info("Indexing finished, restoring open editors.");
+                TestinLogger.info("Indexing finished, restoring open editors.");
                 lastOpenEditors.reopen();
             } else {
-                Logger.info("Indexing finished, skipping editor restore.");
+                TestinLogger.info("Indexing finished, skipping editor restore.");
             }
         });
     }
@@ -232,7 +232,7 @@ public final class ProjectIndexer {
         indexWithProgress();
 
         if (ApplicationManager.getApplication().isReadAccessAllowed()) {
-            Logger.error("awaitIndexing() called while holding a read action - "
+            TestinLogger.error("awaitIndexing() called while holding a read action - "
                     + "this blocks every write action in the IDE. Returning without waiting.");
             return;
         }
@@ -251,7 +251,7 @@ public final class ProjectIndexer {
             indexed.set(false);
             indexing.set(false);
             indexingLatch = new CountDownLatch(1);
-            Logger.info("Indexer reset for re-indexing");
+            TestinLogger.info("Indexer reset for re-indexing");
         });
     }
 
@@ -294,11 +294,11 @@ public final class ProjectIndexer {
                 .toList();
 
         if (scoped.isEmpty()) {
-            Logger.warn("This repository's test project '" + bound + "' is not a test project under the root");
+            TestinLogger.warn("This repository's test project '" + bound + "' is not a test project under the root");
             return scoped;
         }
 
-        Logger.info("Indexing only the bound project '" + bound + "'");
+        TestinLogger.info("Indexing only the bound project '" + bound + "'");
         return scoped;
     }
 
@@ -327,7 +327,7 @@ public final class ProjectIndexer {
         try (Stream<Path> dirs = Files.list(rootPath)) {
             projectPaths = dirs.filter(Files::isDirectory).toArray(Path[]::new);
         } catch (final IOException | UncheckedIOException ex) {
-            Logger.error("Failed to list root directory: " + FailureText.of(ex));
+            TestinLogger.error("Failed to list root directory: " + FailureText.of(ex));
             return List.of();
         }
 
@@ -337,7 +337,7 @@ public final class ProjectIndexer {
     private boolean isListedTestProject(final @NotNull Path folder) {
         final boolean marked = isTestProjectFolder(folder);
         if (!marked)
-            Logger.warn("Skipping directory without a " + NodeType.TP.getMarker() + " marker (not a test project): " + folder);
+            TestinLogger.warn("Skipping directory without a " + NodeType.TP.getMarker() + " marker (not a test project): " + folder);
         return marked;
     }
 
@@ -346,7 +346,7 @@ public final class ProjectIndexer {
     }
 
     private void logSummary() {
-        Logger.info("Indexing complete: " +
+        TestinLogger.info("Indexing complete: " +
                 store.getTestCasesById().size() + " test cases, " +
                 store.getRunItemsByPath().size() + " test runs, " +
                 store.getTestProjectsByPath().size() + " projects, " +
@@ -374,7 +374,7 @@ public final class ProjectIndexer {
             return;
         }
 
-        Logger.info("Not a test project Testin reads, so not scanned: " + projectPath);
+        TestinLogger.info("Not a test project Testin reads, so not scanned: " + projectPath);
         store.removeTestProject(projectPath);
         store.invalidateChildrenIndex();
         announceReadAgain();
@@ -386,7 +386,7 @@ public final class ProjectIndexer {
 
     // UC-INTERNAL-003, Rule-INTERNAL-021
     public void scanSingleProject(final @NotNull Path projectPath, final @NotNull ProgressIndicator indicator) {
-        Logger.info("Scanning single project: " + projectPath.getFileName());
+        TestinLogger.info("Scanning single project: " + projectPath.getFileName());
         rescan.coveredByAScan(projectPath);
         scanCoordinator.scan(projectPath, indicator).ifPresent(why -> problems.projectNotRead(projectPath.getFileName().toString(), why));
 

@@ -25,7 +25,7 @@ import org.testin.codegen.GenType;
 import org.testin.codegen.JavaSourceRoot;
 import org.testin.codegen.event.Moved;
 import org.testin.java.codegen.PackageDeclarations;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 
 import java.util.List;
 import java.util.Optional;
@@ -51,7 +51,7 @@ public class MoveJavaClass implements GenAction<Moved> {
                     Optional.ofNullable(sourceRoot.findFileByRelativePath(String.join("/", fqcn) + ".java"));
 
             if (file.isEmpty()) {
-                Logger.info("Class not found for move: " + String.join(".", fqcn));
+                TestinLogger.info("Class not found for move: " + String.join(".", fqcn));
                 return;
             }
 
@@ -63,7 +63,7 @@ public class MoveJavaClass implements GenAction<Moved> {
 
             PackageDeclarations.retarget(p, sourceRoot, file.get(), target.get());
 
-            Logger.info("Moved " + fileName + " to package: " + String.join(".", destination));
+            TestinLogger.info("Moved " + fileName + " to package: " + String.join(".", destination));
         });
     }
 }

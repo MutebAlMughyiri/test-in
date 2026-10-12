@@ -23,8 +23,8 @@ import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.testin.logger.Level;
-import org.testin.logger.Logger;
+import org.testin.logger.LogLevel;
+import org.testin.logger.TestinLogger;
 
 import java.util.Objects;
 
@@ -62,7 +62,7 @@ public final class AppSettingsState implements PersistentStateComponent<AppSetti
         XmlSerializerUtil.copyBean(state, this);
 
         rootTestinPath = orEmpty(rootTestinPath);
-        logLevel = Level.known(orEmpty(logLevel));
+        logLevel = LogLevel.known(orEmpty(logLevel));
         defaultDownloadFolder = orEmpty(defaultDownloadFolder);
         testerName = orEmpty(testerName);
         testerRole = orEmpty(testerRole);
@@ -77,7 +77,7 @@ public final class AppSettingsState implements PersistentStateComponent<AppSetti
 
     // UC-SETTING-007, Rule-SETTING-024
     private void applyLogLevel() {
-        Logger.setLogLevel(Level.valueOf(logLevel));
+        TestinLogger.setLogLevel(LogLevel.valueOf(logLevel));
     }
 
     @Override

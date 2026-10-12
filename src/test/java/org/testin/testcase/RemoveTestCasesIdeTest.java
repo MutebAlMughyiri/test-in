@@ -37,7 +37,7 @@ import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
 import org.testin.ui.framework.ConfirmDialog;
 import org.testin.ui.framework.ShownDialog;
-import org.testin.undo.UndoAction;
+import org.testin.undo.TestinUndoAction;
 import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
 import org.testin.view.Drawn;
@@ -55,7 +55,7 @@ public class RemoveTestCasesIdeTest extends AbstractTempRootIdeTest {
     private static @NotNull AnAction undoOn(final @NotNull TestSetEditor editor) {
         final @NotNull KeyStroke controlZ = KeyStroke.getKeyStroke(KeyEvent.VK_Z, Shortcuts.menuMask());
         return ActionUtil.getActions(editor.getList()).stream()
-                .filter(UndoAction.class::isInstance)
+                .filter(TestinUndoAction.class::isInstance)
                 .filter(action -> Stream.of(action.getShortcutSet().getShortcuts()).anyMatch(shortcut -> shortcut instanceof final KeyboardShortcut key && controlZ.equals(key.getFirstKeyStroke())))
                 .findFirst().orElseThrow(() -> new AssertionError("nothing on the cards takes a change back on Ctrl+Z"));
     }

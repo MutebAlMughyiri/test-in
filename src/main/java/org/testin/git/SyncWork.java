@@ -23,10 +23,10 @@ import org.testin.git.conflict.ConflictResolution;
 import org.testin.git.conflict.GitConflictOffer;
 import org.testin.git.conflict.RebaseEnd;
 import org.testin.git.review.ViewPendingCommitsWork;
-import org.testin.help.Hint;
+import org.testin.help.SetupHint;
 import org.testin.help.Hints;
 import org.testin.help.SetupStep;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
@@ -73,7 +73,7 @@ record SyncWork(@NotNull Project p, @NotNull GitRepositoryService git, @NotNull 
 
                     final @NotNull Hints hints = Services.getInstance(p, Hints.class);
                     if (remoteUrl.isEmpty()) {
-                        hints.fire(Hint.of(SetupStep.GIT_REMOTE, Bundle.message("git.sync.aborted.message")).about(repoPath));
+                        hints.fire(SetupHint.of(SetupStep.GIT_REMOTE, Bundle.message("git.sync.aborted.message")).about(repoPath));
                         ApplicationManager.getApplication().invokeLater(() ->
                                 notifier.softRefuse(p, Bundle.message("git.sync.aborted.title"), Bundle.message("git.sync.aborted.message"))
                         );
@@ -103,7 +103,7 @@ record SyncWork(@NotNull Project p, @NotNull GitRepositoryService git, @NotNull 
 
                 },
                 ex -> {
-                    Logger.error(FailureText.of(ex));
+                    TestinLogger.error(FailureText.of(ex));
                     GitConflictOffer.showIfConflicting(p, git, repoPath,
                             conflicting -> showConflictActions(repoPath, conflicting),
                             () -> reportSyncFailure(FailureText.of(ex)));
@@ -146,7 +146,7 @@ record SyncWork(@NotNull Project p, @NotNull GitRepositoryService git, @NotNull 
                     else finishSyncInBackground(repoPath);
                 },
                 ex -> {
-                    Logger.error(FailureText.of(ex));
+                    TestinLogger.error(FailureText.of(ex));
                     GitConflictOffer.showIfConflicting(p, git, repoPath,
                             conflicting -> showConflictActions(repoPath, conflicting),
                             () -> notifier.error(p, Bundle.message("git.conflict.operation.failed.title"), end.getFailure()));
@@ -162,7 +162,7 @@ record SyncWork(@NotNull Project p, @NotNull GitRepositoryService git, @NotNull 
                         final @NotNull String remoteName = git.getRemoteName(repoPath);
                         pushed = pushUnpushed(repoPath, remoteName, git.getRemoteUrl(repoPath, remoteName), git.syncBranch(repoPath));
                     } catch (final Exception ex) {
-                        Logger.error("Could not push after resolving: " + FailureText.of(ex));
+                        TestinLogger.error("Could not push after resolving: " + FailureText.of(ex));
                         ApplicationManager.getApplication().invokeLater(() ->
                                 GitFailure.show(p, Bundle.message("git.push.failed.title"),
                                         Bundle.message("git.push.failed.after.resolve", FailureText.of(ex))));
@@ -176,7 +176,7 @@ record SyncWork(@NotNull Project p, @NotNull GitRepositoryService git, @NotNull 
                     refreshAfterSync(repoPath, pushed);
                 },
                 ex -> {
-                    Logger.error(FailureText.of(ex));
+                    TestinLogger.error(FailureText.of(ex));
                     ApplicationManager.getApplication().invokeLater(() ->
                             reportSyncFailure(Bundle.message("git.sync.did.not.finish", FailureText.of(ex))));
                 });

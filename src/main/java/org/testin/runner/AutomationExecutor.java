@@ -19,19 +19,19 @@ package org.testin.runner;
 import com.intellij.openapi.extensions.ExtensionPointName;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.util.Bundle;
 
 import java.util.List;
 
-public interface TestRunner {
-    @NotNull ExtensionPointName<TestRunner> EP = ExtensionPointName.create("org.testin.testRunners");
+public interface AutomationExecutor {
+    @NotNull ExtensionPointName<AutomationExecutor> EP = ExtensionPointName.create("org.testin.testRunners");
 
-    static @NotNull TestRunner available() {
+    static @NotNull AutomationExecutor available() {
         return EP.getExtensionList().stream()
                 .findFirst()
-                .orElseGet(() -> (_, testCases) -> Logger.debug(
+                .orElseGet(() -> (_, testCases) -> TestinLogger.debug(
                         Bundle.message("runner.none", String.valueOf(testCases.size()))));
     }
 

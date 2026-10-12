@@ -20,7 +20,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.GenAction;
 import org.testin.java.codegen.method.update.UpdateTestBase;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 
 public class RemoveTestMethod extends UpdateTestBase implements GenAction<TestCaseDto> {
@@ -30,7 +30,7 @@ public class RemoveTestMethod extends UpdateTestBase implements GenAction<TestCa
         applyToMethod(p, tc, "Remove Test Method", pm -> {
             final @NotNull String name = pm.getName();
             pm.delete();
-            Logger.info("Removed test method: " + name);
-        }, detail -> Logger.debug("No generated method for '" + tc.getDescription() + "': " + detail));
+            TestinLogger.info("Removed test method: " + name);
+        }, detail -> TestinLogger.debug("No generated method for '" + tc.getDescription() + "': " + detail));
     }
 }

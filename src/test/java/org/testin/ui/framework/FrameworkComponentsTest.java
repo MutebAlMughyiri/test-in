@@ -203,7 +203,7 @@ public class FrameworkComponentsTest {
 
     @Test
     public void textAreaKeepsValueAndClaimsTheSpace() {
-        final TextArea area = ComponentDialogBase.textArea()
+        final PlainTextArea area = ComponentDialogBase.textArea()
                 .placeholder("paste error or exception or screenshot..")
                 .value("java.lang.RuntimeException")
                 .build()
@@ -262,7 +262,7 @@ public class FrameworkComponentsTest {
     @Test
     public void everythingElseCanTakeTheSpaceWhenNothingClaimsIt() {
         final TextInput input = ComponentDialogBase.textField().value("name").build().getComponent();
-        final TextArea area = ComponentDialogBase.textArea().value("x").build().getComponent();
+        final PlainTextArea area = ComponentDialogBase.textArea().value("x").build().getComponent();
 
         assertTrue(input.canFillSpace(), "a field is a reasonable fallback filler");
         assertTrue(area.canFillSpace());

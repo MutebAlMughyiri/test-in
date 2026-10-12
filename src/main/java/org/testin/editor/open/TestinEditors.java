@@ -29,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.editor.TestinEditor;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.indexer.Nodes;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.Node;
 import org.testin.model.node.TestRunNode;
@@ -92,7 +92,7 @@ public final class TestinEditors {
             if (!(open instanceof UnifiedVirtualFile testinFile)) continue;
 
             if (!isIndexed(testinFile)) {
-                Logger.info("Closing the editor for a node that is no longer indexed: " + testinFile.getName());
+                TestinLogger.info("Closing the editor for a node that is no longer indexed: " + testinFile.getName());
                 fed.closeFile(testinFile);
                 continue;
             }
@@ -102,7 +102,7 @@ public final class TestinEditors {
 
                 final @NotNull TestinEditor editor = unified.getEditor();
                 if (editor.isBusy()) {
-                    Logger.info("Leaving a busy editor as it is rather than reloading under the tester: "
+                    TestinLogger.info("Leaving a busy editor as it is rather than reloading under the tester: "
                             + testinFile.getName());
                     editor.followTheIndex();
                     continue;
@@ -164,17 +164,17 @@ public final class TestinEditors {
 
         final @NotNull Optional<VirtualFile> already = openFileAt(dir.getPath());
         if (already.isPresent()) {
-            Logger.info("Editor already open, focusing: " + dir.getName());
+            TestinLogger.info("Editor already open, focusing: " + dir.getName());
             fed.openFile(already.orElseThrow(), focus);
             return true;
         }
 
         if (!dir.isOpenableInEditor()) {
-            Logger.info("Nothing to open for " + dir.getName() + " - it holds nodes rather than test cases");
+            TestinLogger.info("Nothing to open for " + dir.getName() + " - it holds nodes rather than test cases");
             return false;
         }
 
-        Logger.info("Opening Editor: " + dir.getPath());
+        TestinLogger.info("Opening Editor: " + dir.getPath());
         fed.openFile(new UnifiedVirtualFile(dir), focus);
 
         return true;

@@ -21,7 +21,7 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.jetbrains.annotations.NotNull;
 import org.testin.Said;
 import org.testin.config.TestinYml;
-import org.testin.help.Hint;
+import org.testin.help.SetupHint;
 import org.testin.help.Hints;
 import org.testin.help.SetupStep;
 import org.testin.services.Services;
@@ -34,7 +34,7 @@ import java.util.List;
 
 public class CodeOffHintIdeTest extends BasePlatformTestCase {
 
-    private @NotNull List<Hint> waiting() {
+    private @NotNull List<SetupHint> waiting() {
         return Services.getInstance(getProject(), Hints.class).waiting().stream().filter(hint -> hint.step() == SetupStep.TEST_PROJECT_LINK).toList();
     }
 

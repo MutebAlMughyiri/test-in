@@ -31,7 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.Fqcn;
 import org.testin.java.codegen.GeneratedClass;
 import org.testin.java.codegen.GeneratedMethod;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.navigate.CodeNavigation;
 import org.testin.notifications.Notifier;
@@ -64,12 +64,13 @@ public final class CodeNavigator implements CodeNavigation {
         final @NotNull Optional<PsiClass> owner = GeneratedClass.byName(p, classFqcn);
 
         if (owner.isEmpty()) {
-            Logger.warn("No generated class " + classFqcn + " for '" + tc.getDescription() + "'");
+            TestinLogger.warn("No generated class " + classFqcn + " for '" + tc.getDescription() + "'");
             return Optional.empty();
         }
 
         final @NotNull Optional<PsiMethod> method = GeneratedMethod.forTestCase(owner.orElseThrow(), tc);
-        if (method.isEmpty()) Logger.warn("No generated method for '" + tc.getDescription() + "' in " + classFqcn);
+        if (method.isEmpty())
+            TestinLogger.warn("No generated method for '" + tc.getDescription() + "' in " + classFqcn);
 
         return method;
     }
@@ -149,7 +150,7 @@ public final class CodeNavigator implements CodeNavigation {
             Optional.ofNullable(method.orElseThrow().getBody()).ifPresent(body -> body.replace(written));
             return Optional.of(statements);
         } catch (final IncorrectOperationException notJava) {
-            Logger.warn("The agent's answer for '" + tc.getDescription() + "' is not Java and was dropped: " + FailureText.of(notJava));
+            TestinLogger.warn("The agent's answer for '" + tc.getDescription() + "' is not Java and was dropped: " + FailureText.of(notJava));
             return Optional.empty();
         }
     }
@@ -175,10 +176,10 @@ public final class CodeNavigator implements CodeNavigation {
     // UC-CODEGEN-006, Rule-CODEGEN-001
     @Override
     public void toCode(final @NotNull Project p, final @NotNull TestCaseDto tc) {
-        Logger.trace("navigate to the method of '" + tc.getDescription() + "'");
+        TestinLogger.trace("navigate to the method of '" + tc.getDescription() + "'");
 
         if (DumbService.isDumb(p)) {
-            Logger.trace("dumb mode detected, deferring navigation");
+            TestinLogger.trace("dumb mode detected, deferring navigation");
             DumbService.getInstance(p).runWhenSmart(() -> toCode(p, tc));
             return;
         }
@@ -200,7 +201,7 @@ public final class CodeNavigator implements CodeNavigation {
                         });
 
                     } catch (final IndexNotReadyException ex) {
-                        Logger.trace("index not ready, deferring navigation");
+                        TestinLogger.trace("index not ready, deferring navigation");
                         ApplicationManager.getApplication().invokeLater(() ->
                                 Services.getInstance(p, Notifier.class).softShow(p, Bundle.message("navigate.waiting.for.indexing")));
                         DumbService.getInstance(p).runWhenSmart(() -> toCode(p, tc));

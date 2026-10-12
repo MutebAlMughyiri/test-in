@@ -52,7 +52,7 @@ public final class LogWriter implements Disposable {
     private final @NotNull Path logFile = Path.of(PathManager.getLogPath(), "testin.log");
     private final @NotNull AtomicBoolean dropping = new AtomicBoolean();
     private volatile boolean isRunning = true;
-    private volatile @NotNull Level currentLogLevel = Level.DISABLED;
+    private volatile @NotNull LogLevel currentLogLevel = LogLevel.DISABLED;
     private @NotNull Optional<Thread> writerThread = Optional.empty();
 
     public LogWriter() {
@@ -66,7 +66,7 @@ public final class LogWriter implements Disposable {
     }
 
     // UC-SETTING-007, Rule-SETTING-024
-    public void setLogLevel(final @NotNull Level level) {
+    public void setLogLevel(final @NotNull LogLevel level) {
         this.currentLogLevel = level;
     }
 
@@ -130,11 +130,11 @@ public final class LogWriter implements Disposable {
         }
     }
 
-    public boolean writes(final @NotNull Level level) {
-        return isRunning && currentLogLevel != Level.DISABLED && level.priority >= currentLogLevel.priority;
+    public boolean writes(final @NotNull LogLevel level) {
+        return isRunning && currentLogLevel != LogLevel.DISABLED && level.priority >= currentLogLevel.priority;
     }
 
-    public void log(final @NotNull Level level, final @NotNull String callerClass, final @NotNull String message) {
+    public void log(final @NotNull LogLevel level, final @NotNull String callerClass, final @NotNull String message) {
         if (!writes(level)) return;
 
         final @NotNull String formattedMessage = "[" + LocalDateTime.now(ZoneId.systemDefault()).format(formatter) + "] " + "[" + level.paddedName + "] " + "[" + callerClass + "] " + message;

@@ -26,7 +26,7 @@ import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
 import org.testin.NodesOnDisk;
 import org.testin.Said;
-import org.testin.importexport.FileTypes;
+import org.testin.importexport.FileFormat;
 import org.testin.indexer.ProjectIndexer;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCaseDto;
@@ -221,10 +221,10 @@ public class ExportFlowIdeTest extends AbstractTempRootIdeTest {
         button(dialog, ExportAction.NAME).doClick();
         exported(said, 1);
 
-        final @NotNull Path written = downloads.resolve("Login" + FileTypes.XLSX.getExtension());
+        final @NotNull Path written = downloads.resolve("Login" + FileFormat.XLSX.getExtension());
         assertTrue("the export is not in the folder the tester chose", Files.isRegularFile(written));
         assertEquals("something was written under the Testin folder", testinBefore, everythingUnder(root.resolve("testin")));
-        assertEquals("the export holds what was chosen", Set.of("Login"), FileTypes.XLSX.importToFile(getProject(), written.toFile()).keySet());
+        assertEquals("the export holds what was chosen", Set.of("Login"), FileFormat.XLSX.importToFile(getProject(), written.toFile()).keySet());
     }
 
     // UC-SHARE-001, Rule-SHARE-005
@@ -243,7 +243,7 @@ public class ExportFlowIdeTest extends AbstractTempRootIdeTest {
 
         final @NotNull List<String> titles = started.stream().map(Task::getTitle).toList();
         assertTrue(titles.toString(), titles.contains(Bundle.message("export.task.reading", "Login")));
-        assertTrue(titles.toString(), titles.contains(Bundle.message("export.task.writing", "1", "Login" + FileTypes.XLSX.getExtension())));
+        assertTrue(titles.toString(), titles.contains(Bundle.message("export.task.writing", "1", "Login" + FileFormat.XLSX.getExtension())));
         assertTrue("an export step could not be canceled", started.stream().allMatch(Task::isCancellable));
     }
 

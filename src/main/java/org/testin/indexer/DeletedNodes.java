@@ -22,7 +22,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtil;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.services.Services;
 import org.testin.util.FailureText;
 
@@ -49,8 +49,9 @@ public final class DeletedNodes {
         if (!swept.compareAndSet(false, true)) return;
         if (!Files.isDirectory(staging)) return;
 
-        if (FileUtil.delete(staging.toFile())) Logger.info("Cleared the copies kept for undo by the previous session.");
-        else Logger.warn("Could not clear " + staging + "; copies from the previous session are still there.");
+        if (FileUtil.delete(staging.toFile()))
+            TestinLogger.info("Cleared the copies kept for undo by the previous session.");
+        else TestinLogger.warn("Could not clear " + staging + "; copies from the previous session are still there.");
     }
 
     // UC-INTERNAL-005, Rule-INTERNAL-037, Rule-INTERNAL-039, Rule-INTERNAL-041
@@ -68,7 +69,7 @@ public final class DeletedNodes {
             return Optional.of(kept);
 
         } catch (final IOException ex) {
-            Logger.warn("Could not keep " + node + " aside, so removing it will not be undoable: " + FailureText.of(ex));
+            TestinLogger.warn("Could not keep " + node + " aside, so removing it will not be undoable: " + FailureText.of(ex));
             return Optional.empty();
         }
     }
@@ -76,7 +77,7 @@ public final class DeletedNodes {
     // UC-INTERNAL-005, Rule-INTERNAL-042, Rule-INTERNAL-113
     public boolean putBack(final @NotNull Project p, final @NotNull Path kept, final @NotNull Path original) {
         if (Files.exists(original)) {
-            Logger.warn("Not restoring " + original + ": something is there already.");
+            TestinLogger.warn("Not restoring " + original + ": something is there already.");
             return false;
         }
 
@@ -90,7 +91,7 @@ public final class DeletedNodes {
             return true;
 
         } catch (final IOException ex) {
-            Logger.error("Could not restore " + original + " from " + kept + ": " + FailureText.of(ex));
+            TestinLogger.error("Could not restore " + original + " from " + kept + ": " + FailureText.of(ex));
             return false;
         }
     }
@@ -99,6 +100,6 @@ public final class DeletedNodes {
     public void forget(final @NotNull Path kept) {
         final @NotNull Path keptIn = Objects.requireNonNull(kept.getParent(), kept.toString());
         if (!FileUtil.delete(keptIn.toFile()))
-            Logger.warn("Left a kept copy of a removed node behind at " + keptIn);
+            TestinLogger.warn("Left a kept copy of a removed node behind at " + keptIn);
     }
 }

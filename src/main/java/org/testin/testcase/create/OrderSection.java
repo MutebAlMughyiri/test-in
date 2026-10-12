@@ -27,7 +27,7 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.ExecutionPosition;
 import org.testin.indexer.TestCases;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
@@ -138,7 +138,7 @@ public class OrderSection implements CreateTestCaseSection {
                 .toList();
 
         if (!ranked.isEmpty()) {
-            Logger.info("Ranking " + ranked.size() + " test case(s) that had no place, so a typed position means something");
+            TestinLogger.info("Ranking " + ranked.size() + " test case(s) that had no place, so a typed position means something");
 
             final @NotNull Path setPath = dto.getParent().getPath();
             ApplicationManager.getApplication().executeOnPooledThread(() ->

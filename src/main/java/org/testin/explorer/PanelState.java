@@ -19,7 +19,7 @@ package org.testin.explorer;
 import com.intellij.util.ui.StatusText;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 
 import java.util.function.BiConsumer;
 
@@ -47,7 +47,7 @@ public enum PanelState {
     ),
 
     TREE(
-            (_, _) -> Logger.warn("Welcome screen asked to draw a resolved project")
+            (_, _) -> TestinLogger.warn("Welcome screen asked to draw a resolved project")
     );
 
     private final @NotNull BiConsumer<TreePanel, StatusText> welcome;

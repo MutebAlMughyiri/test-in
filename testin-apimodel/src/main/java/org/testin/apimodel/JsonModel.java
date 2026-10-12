@@ -30,7 +30,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.notifications.Refused;
 import org.testin.util.FailureText;
 import org.testin.util.NameSanitizer;
@@ -60,7 +60,7 @@ public final class JsonModel {
             final @NotNull JsonNode json = READER.readTree(pasted);
             return json.isMissingNode() ? Optional.empty() : Optional.of(json);
         } catch (final JsonProcessingException notJson) {
-            Logger.debug("The pasted text is not JSON: " + FailureText.of(notJson));
+            TestinLogger.debug("The pasted text is not JSON: " + FailureText.of(notJson));
             return Optional.empty();
         }
     }

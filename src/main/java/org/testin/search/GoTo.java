@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.editor.open.TestinEditors;
 import org.testin.explorer.TreePanel;
 import org.testin.explorer.tree.TreePanelTree;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.services.Services;
 import org.testin.view.ViewToolWindowFactory;
@@ -42,7 +42,7 @@ public final class GoTo {
 
     // UC-INTERNAL-001, Rule-INTERNAL-002
     public static void the(final @NotNull Project p, final @NotNull Hit hit) {
-        Logger.info("Going to " + hit.name() + " in " + hit.where());
+        TestinLogger.info("Going to " + hit.name() + " in " + hit.where());
 
         hit.testCase().ifPresentOrElse(tc -> toTestCase(p, hit, tc), () -> toNode(p, hit));
     }
@@ -68,6 +68,6 @@ public final class GoTo {
                 .ifPresentOrElse(
                         tw -> tw.activate(() -> onShown.accept(
                                 Services.getInstance(p, TreePanel.class).getProjectTree()), withFocus),
-                        () -> Logger.warn("The Testin tool window is not registered, so there is no tree to reveal in"));
+                        () -> TestinLogger.warn("The Testin tool window is not registered, so there is no tree to reveal in"));
     }
 }

@@ -28,7 +28,7 @@ import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 import org.testin.explorer.TreePanel;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.services.BackgroundWork;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
@@ -76,7 +76,7 @@ public final class Rescan {
         testProjects.forEach(waiting::remove);
         if (testProjects.isEmpty()) return;
 
-        Logger.info("Something changed on disk in " + testProjects.size()
+        TestinLogger.info("Something changed on disk in " + testProjects.size()
                 + (testProjects.size() == 1 ? " test project" : " test projects") + ", reading them again");
 
         ApplicationManager.getApplication().invokeLater(() -> {

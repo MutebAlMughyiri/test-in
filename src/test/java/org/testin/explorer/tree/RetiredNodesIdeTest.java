@@ -46,7 +46,7 @@ import java.util.Set;
 public class RetiredNodesIdeTest extends AbstractTempRootIdeTest {
 
     private static @NotNull List<String> drawn(final @NotNull Node node) {
-        final @NotNull TreeCellRenderer renderer = new TreeCellRenderer(Set.of());
+        final @NotNull TreePanelCellRenderer renderer = new TreePanelCellRenderer(Set.of());
         renderer.getTreeCellRendererComponent(new JTree(), new DefaultMutableTreeNode(node), false, false, true, 0, false);
 
         final @NotNull List<String> fragments = new ArrayList<>();

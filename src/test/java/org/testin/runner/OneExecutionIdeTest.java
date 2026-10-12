@@ -137,7 +137,7 @@ public class OneExecutionIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestSetNode login = createdTestSet("Login");
         final @NotNull List<TestCaseDto> selected = theTestCases(List.of(createdTestCase(login, "Log in", "b"), createdTestCase(login, "Log out", "c"), createdTestCase(createdTestSet("Payment"), "Pay", "b")));
         final @NotNull List<List<TestCaseDto>> handedOver = new ArrayList<>();
-        ExtensionTestUtil.maskExtensions(TestRunner.EP, List.of((_, testCases) -> handedOver.add(testCases)), getTestRootDisposable());
+        ExtensionTestUtil.maskExtensions(AutomationExecutor.EP, List.of((_, testCases) -> handedOver.add(testCases)), getTestRootDisposable());
 
         ExecuteTestCases.run(getProject(), selected);
 

@@ -17,9 +17,9 @@
 package org.testin.ui.dialogs;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.importexport.FileTypes;
+import org.testin.importexport.FileFormat;
 
 import java.io.File;
 
-public record Destination(@NotNull File file, @NotNull FileTypes format) {
+public record Destination(@NotNull File file, @NotNull FileFormat format) {
 }

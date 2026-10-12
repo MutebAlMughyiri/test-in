@@ -24,41 +24,41 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class Logger {
+public final class TestinLogger {
     private static final @NotNull StackWalker WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
 
-    public static void setLogLevel(final @NotNull Level level) {
+    public static void setLogLevel(final @NotNull LogLevel level) {
         getService().ifPresent(service -> service.setLogLevel(level));
     }
 
     public static void trace(final @NotNull String message) {
-        log(Level.TRACE, message);
+        log(LogLevel.TRACE, message);
     }
 
     public static void debug(final @NotNull String message) {
-        log(Level.DEBUG, message);
+        log(LogLevel.DEBUG, message);
     }
 
     public static void info(final @NotNull String message) {
-        log(Level.INFO, message);
+        log(LogLevel.INFO, message);
     }
 
     public static void warn(final @NotNull String message) {
-        log(Level.WARN, message);
+        log(LogLevel.WARN, message);
     }
 
     public static void error(final @NotNull String message) {
-        log(Level.ERROR, message);
+        log(LogLevel.ERROR, message);
     }
 
-    private static void log(final @NotNull Level level, final @NotNull String message) {
+    private static void log(final @NotNull LogLevel level, final @NotNull String message) {
         final @NotNull Optional<LogWriter> service = getService();
         if (!service.map(writer -> writer.writes(level)).orElse(true)) return;
 
         final @NotNull String callerClass = WALKER.walk(frames -> frames.skip(2).findFirst()).orElseThrow().getDeclaringClass().getSimpleName();
         service.ifPresentOrElse(
                 writer -> writer.log(level, callerClass, message),
-                () -> System.getLogger(Logger.class.getName()).log(System.Logger.Level.INFO, "[" + level.paddedName + "] [" + callerClass + "] " + message));
+                () -> System.getLogger(TestinLogger.class.getName()).log(System.Logger.Level.INFO, "[" + level.paddedName + "] [" + callerClass + "] " + message));
     }
 
     private static @NotNull Optional<LogWriter> getService() {

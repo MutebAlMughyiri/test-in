@@ -46,11 +46,11 @@ public class ReadOnOpenIdeTest extends AbstractReadTheRootIdeTest {
     @Override
     protected void setUp() {
         super.setUp();
-        StartupActivity.forgetTheRead(getProject());
+        TestinStartup.forgetTheRead(getProject());
     }
 
     private void theCodeProjectOpens() {
-        new StartupActivity().execute(getProject(), NO_ONE_WAITS);
+        new TestinStartup().execute(getProject(), NO_ONE_WAITS);
 
         final long until = System.currentTimeMillis() + 1_000;
         while (System.currentTimeMillis() < until) {

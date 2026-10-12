@@ -22,7 +22,7 @@ import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.grid.GridPanelBuilder;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.Priority;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.TestSetEditorAttributes;
@@ -111,7 +111,7 @@ public class TablePanelBuilder {
             final @NotNull TableColumn groupCol = table.getColumn(TestSetEditorAttributes.GROUP.getName());
             groupCol.setCellEditor(new GroupMultiSelectEditor(p));
         } catch (final IllegalArgumentException ex) {
-            Logger.error(FailureText.of(ex));
+            TestinLogger.error(FailureText.of(ex));
         }
 
         GridPanelBuilder.autoSizeColumns(table);

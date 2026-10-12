@@ -5,8 +5,8 @@ description: What "testin review" means - Muteb's own review of a change before 
 
 # Testin review
 
-> *"testin review means our review that i told you many times. simple code,
-> clean, well structured, no customization and every thing based on business.
+> *"testin review means our review that I told you many times. simple code,
+> clean, well-structured, no customization and every thing based on business.
 > no redundant as possible unless it required to make code simpler. rules and
 > use cases added to each method and class."*
 >

@@ -20,7 +20,7 @@ import com.intellij.openapi.project.Project;
 import git4idea.commands.GitCommand;
 import org.jetbrains.annotations.NotNull;
 import org.testin.git.change.PendingChange;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
 import org.testin.model.FileKind;
 import org.testin.util.Bundle;
@@ -115,7 +115,7 @@ public final class GitCommits {
         try {
             return GitCommandRunner.execute(p, repositoryPath, GitCommand.REV_PARSE, "--short", "HEAD").trim();
         } catch (final GitFailed ex) {
-            Logger.warn("Could not read the commit: " + FailureText.of(ex));
+            TestinLogger.warn("Could not read the commit: " + FailureText.of(ex));
             return "";
         }
     }
@@ -129,7 +129,7 @@ public final class GitCommits {
     // UC-SHARE-016, Rule-SHARE-069, Rule-SHARE-120
     public void pullWhereTheRemoteHasBranch(final @NotNull Path repositoryPath, final @NotNull String remote, final @NotNull String remoteUrl, final @NotNull String branch) {
         if (!remoteHasBranch(repositoryPath, remote, remoteUrl, branch)) {
-            Logger.info("Remote " + remote + " has no branch " + branch + " yet; pushing without pulling first");
+            TestinLogger.info("Remote " + remote + " has no branch " + branch + " yet; pushing without pulling first");
             return;
         }
 
@@ -161,6 +161,6 @@ public final class GitCommits {
         if (remote.isBlank()) throw new IllegalStateException(Bundle.message("git.error.no.remote"));
 
         GitCommandRunner.executeRemote(p, repositoryPath, remoteUrl, GitCommand.PUSH, "-u", remote, branch);
-        Logger.info("Git push completed for " + repositoryPath);
+        TestinLogger.info("Git push completed for " + repositoryPath);
     }
 }

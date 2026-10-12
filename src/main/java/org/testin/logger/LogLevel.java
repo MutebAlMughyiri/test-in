@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 
 @AllArgsConstructor
-public enum Level {
+public enum LogLevel {
     DISABLED(
             -1,
             "OFF  "
@@ -63,6 +63,6 @@ public enum Level {
 
     // UC-SETTING-007, Rule-SETTING-025
     public static @NotNull String known(final @NotNull String stored) {
-        return Arrays.stream(values()).map(Level::name).filter(stored::equals).findFirst().orElse(INFO.name());
+        return Arrays.stream(values()).map(LogLevel::name).filter(stored::equals).findFirst().orElse(INFO.name());
     }
 }

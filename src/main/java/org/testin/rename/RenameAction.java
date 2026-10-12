@@ -25,7 +25,7 @@ import org.testin.actions.GrayWithReason;
 import org.testin.actions.TestinData;
 import org.testin.editor.open.TestinEditors;
 import org.testin.indexer.Nodes;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.node.Node;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
@@ -62,7 +62,7 @@ public class RenameAction extends AbstractAnyProjectAction {
         if (newName.isBlank() || newName.equals(dir.getName())) return;
 
         if (Optional.ofNullable(dir.getPath().getParent()).isEmpty()) {
-            Logger.warn("Rename refused, no parent directory: " + dir.getPath());
+            TestinLogger.warn("Rename refused, no parent directory: " + dir.getPath());
             return;
         }
 
@@ -88,7 +88,7 @@ public class RenameAction extends AbstractAnyProjectAction {
     private boolean applyRename(final @NotNull Project p, final @NotNull Path path, final @NotNull String newName) {
         final @NotNull Optional<Node> node = Services.getInstance(p, Nodes.class).find(path);
         if (node.isEmpty()) {
-            Logger.warn("Nothing to rename at " + path + ", so the step is refused");
+            TestinLogger.warn("Nothing to rename at " + path + ", so the step is refused");
             return false;
         }
 

@@ -45,7 +45,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTcPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STBorder;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STTblLayoutType;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STTblWidth;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.ReportColor;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.bug.BugIssueUrl;
@@ -165,7 +165,7 @@ public final class TestRunWordGenerator {
             return baos.toByteArray();
 
         } catch (final IOException ex) {
-            Logger.error("Word generation failed: " + FailureText.of(ex));
+            TestinLogger.error("Word generation failed: " + FailureText.of(ex));
             throw new RuntimeException(ex);
         }
     }

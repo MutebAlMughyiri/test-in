@@ -22,9 +22,9 @@ import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.testFramework.PlatformTestUtil;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Level;
+import org.testin.logger.LogLevel;
 import org.testin.logger.LogWriter;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -40,13 +40,13 @@ public final class TestinLog {
     private final @NotNull String start = "a test reads the Testin log from here: " + UUID.randomUUID();
 
     private TestinLog() {
-        Logger.info(start);
+        TestinLogger.info(start);
     }
 
     public static @NotNull TestinLog fromNow(final @NotNull Disposable owner) {
-        final @NotNull Level before = levelNow();
-        Logger.setLogLevel(Level.INFO);
-        Disposer.register(owner, () -> Logger.setLogLevel(before));
+        final @NotNull LogLevel before = levelNow();
+        TestinLogger.setLogLevel(LogLevel.INFO);
+        Disposer.register(owner, () -> TestinLogger.setLogLevel(before));
         return new TestinLog();
     }
 
@@ -69,9 +69,9 @@ public final class TestinLog {
         }
     }
 
-    private static @NotNull Level levelNow() {
+    private static @NotNull LogLevel levelNow() {
         final @NotNull LogWriter writer = ApplicationManager.getApplication().getService(LogWriter.class);
-        return Arrays.stream(Level.values()).filter(level -> level != Level.DISABLED && writer.writes(level)).findFirst().orElse(Level.DISABLED);
+        return Arrays.stream(LogLevel.values()).filter(level -> level != LogLevel.DISABLED && writer.writes(level)).findFirst().orElse(LogLevel.DISABLED);
     }
 
     public @NotNull List<String> lines() {
@@ -81,7 +81,7 @@ public final class TestinLog {
     public @NotNull String written() {
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
         final @NotNull String upTo = "a test read the Testin log up to here: " + UUID.randomUUID();
-        Logger.info(upTo);
+        TestinLogger.info(upTo);
         Await.until("the Testin log never caught up with what the test wrote to it", () -> everything().contains(upTo));
 
         final @NotNull String everything = everything();

@@ -26,7 +26,7 @@ import org.testin.editor.testrun.TestRunEditor;
 import org.testin.help.Guide;
 import org.testin.help.Guides;
 import org.testin.indexer.TestRuns;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestRunNode;
@@ -162,7 +162,7 @@ public final class RunItemStatusService {
         Services.getInstance(p, TestRuns.class).changeRunItem(testRunPath, testCaseId, runItemStatus);
         offerBugReports(status);
 
-        Logger.trace("[RunItemStatusService]: Status updated -> " + testCaseId + " = " + status);
+        TestinLogger.trace("[RunItemStatusService]: Status updated -> " + testCaseId + " = " + status);
 
         showRecorded(editor, List.of(testCaseId));
         return true;
@@ -212,14 +212,14 @@ public final class RunItemStatusService {
         final @NotNull Optional<RunItems> runItems = testRuns.findRunItems(testRunPath);
 
         if (runItems.isEmpty()) {
-            Logger.warn("[RunItemStatusService]: '" + testRunPath.getFileName() + "' is no longer indexed - nothing recorded");
+            TestinLogger.warn("[RunItemStatusService]: '" + testRunPath.getFileName() + "' is no longer indexed - nothing recorded");
             Services.getInstance(p, Notifier.class).softRefuse(p, Bundle.message("run.item.status.test.run.gone"));
             return runItems;
         }
 
         final @NotNull Optional<String> signedOff = testRuns.findTestRunNode(testRunPath).flatMap(TestRunNode::whySignedOff);
         if (signedOff.isPresent()) {
-            Logger.info("[RunItemStatusService]: '" + testRunPath.getFileName() + "' is signed off - nothing recorded");
+            TestinLogger.info("[RunItemStatusService]: '" + testRunPath.getFileName() + "' is signed off - nothing recorded");
             Services.getInstance(p, Notifier.class).softRefuse(p, signedOff.orElseThrow());
             return Optional.empty();
         }
@@ -231,7 +231,7 @@ public final class RunItemStatusService {
         final @NotNull Optional<RunItem> found = runItems.runItemOf(testCaseId);
 
         if (found.isEmpty()) {
-            Logger.warn("[RunItemStatusService]: '" + testRunPath.getFileName() + "' does not cover " + testCaseId + " - nothing recorded");
+            TestinLogger.warn("[RunItemStatusService]: '" + testRunPath.getFileName() + "' does not cover " + testCaseId + " - nothing recorded");
 
             // Rule-EDITOR-PANEL-225
             Services.getInstance(p, Notifier.class).softRefuse(p, Bundle.message("run.item.status.test.case.not.covered"));

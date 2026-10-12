@@ -18,7 +18,7 @@ package org.testin.editor.testrun;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.TestRuns;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.markers.TestRunMarker;
@@ -192,7 +192,7 @@ public final class TestRunWalk {
             return;
         }
 
-        Logger.info("Running " + editor.getParent().getName() + " with " + automated.size() + " test case(s)");
+        TestinLogger.info("Running " + editor.getParent().getName() + " with " + automated.size() + " test case(s)");
 
         automated.forEach(tc -> {
             launchedByRunTests.add(tc.getId());
@@ -309,7 +309,7 @@ public final class TestRunWalk {
         final int stopped = testNGExecution.stopTestCases(launchedHere);
         if (stopped == 0) return;
 
-        Logger.info("Stopped " + stopped + " test case(s) running from '" + editor.getParent().getName() + "'");
+        TestinLogger.info("Stopped " + stopped + " test case(s) running from '" + editor.getParent().getName() + "'");
     }
 
     // UC-EDITOR-PANEL-035, Rule-EDITOR-PANEL-150

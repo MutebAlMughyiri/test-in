@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.Await;
 import org.testin.Said;
 import org.testin.git.review.ViewPendingCommitsWork;
-import org.testin.help.Hint;
+import org.testin.help.SetupHint;
 import org.testin.help.Hints;
 import org.testin.help.SetupStep;
 import org.testin.services.Services;
@@ -36,7 +36,7 @@ import static org.testin.git.LocalGit.mustGit;
 
 public class GitSetupHintsIdeTest extends AbstractGitRemoteIdeTest {
 
-    private @NotNull List<Hint> hintsFor(final @NotNull SetupStep step) {
+    private @NotNull List<SetupHint> hintsFor(final @NotNull SetupStep step) {
         return Services.getInstance(getProject(), Hints.class).waiting().stream().filter(hint -> hint.step() == step).toList();
     }
 

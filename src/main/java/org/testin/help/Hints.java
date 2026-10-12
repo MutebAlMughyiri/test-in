@@ -32,14 +32,14 @@ import java.util.Optional;
 public final class Hints {
     private final @NotNull Project p;
 
-    private final @NotNull Map<SetupStep, Hint> waiting = new EnumMap<>(SetupStep.class);
+    private final @NotNull Map<SetupStep, SetupHint> waiting = new EnumMap<>(SetupStep.class);
 
     public Hints(final @NotNull Project p) {
         this.p = p;
     }
 
     // UC-INTERNAL-009, Rule-INTERNAL-127, Rule-INTERNAL-129
-    public synchronized void fire(final @NotNull Hint hint) {
+    public synchronized void fire(final @NotNull SetupHint hint) {
         waiting.put(hint.step(), hint);
         Services.getInstance(p, Guides.class).add(hint.step().getGuide());
         HelpMark.redraw(p);
@@ -58,7 +58,7 @@ public final class Hints {
                 .ifPresent(_ -> clear(step));
     }
 
-    public synchronized @NotNull List<Hint> waiting() {
+    public synchronized @NotNull List<SetupHint> waiting() {
         return List.copyOf(waiting.values());
     }
 }

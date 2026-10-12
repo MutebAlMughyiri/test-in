@@ -26,7 +26,7 @@ import org.testin.Await;
 import org.testin.FilesUnder;
 import org.testin.Said;
 import org.testin.editor.EditorFixtures;
-import org.testin.editor.statusbar.StatusBar;
+import org.testin.editor.statusbar.EditorStatusBar;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.toolbar.GridViewBtn;
 import org.testin.indexer.TestRuns;
@@ -63,7 +63,7 @@ public class TestRunProgressIdeTest extends AbstractTempRootIdeTest {
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
 
-    private static @NotNull List<JComponent> theThreeTestRunLabels(final @NotNull StatusBar bar) {
+    private static @NotNull List<JComponent> theThreeTestRunLabels(final @NotNull EditorStatusBar bar) {
         final @NotNull Container figures = (Container) bar.getComponent(2);
         return List.of((JComponent) figures.getComponent(0), (JComponent) figures.getComponent(1), (JComponent) figures.getComponent(2));
     }
@@ -158,7 +158,7 @@ public class TestRunProgressIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-179
     public void testTheThreeTestRunLabelsAreHiddenWithNothingToSayAndNeverInATestSetEditor() {
-        for (final JComponent label : theThreeTestRunLabels(new StatusBar()))
+        for (final JComponent label : theThreeTestRunLabels(new EditorStatusBar()))
             assertFalse("a test run label shows on a fresh status bar", label.isVisible());
 
         final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);

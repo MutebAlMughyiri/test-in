@@ -18,7 +18,7 @@ package org.testin;
 
 import com.intellij.openapi.components.Service;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testng.annotations.Test;
 
 import java.lang.reflect.Constructor;
@@ -57,7 +57,7 @@ public class LightServiceContractTest {
                 fail("No @Service classes found in src/main/java: the scan is looking in the wrong place");
             }
 
-            Logger.info("Checked " + services.size() + " light services");
+            TestinLogger.info("Checked " + services.size() + " light services");
 
             final List<String> breaches = new ArrayList<>();
 

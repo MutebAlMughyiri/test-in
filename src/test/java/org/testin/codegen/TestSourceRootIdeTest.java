@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jps.model.java.JavaSourceRootType;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.Said;
-import org.testin.help.Hint;
+import org.testin.help.SetupHint;
 import org.testin.help.Hints;
 import org.testin.help.SetupStep;
 import org.testin.services.Services;
@@ -108,7 +108,7 @@ public class TestSourceRootIdeTest extends AbstractCodegenIdeTest {
     }
 
     private @NotNull List<String> folderHint() {
-        return Services.getInstance(getProject(), Hints.class).waiting().stream().filter(hint -> hint.step() == SetupStep.TEST_SOURCE_FOLDER).map(Hint::text).toList();
+        return Services.getInstance(getProject(), Hints.class).waiting().stream().filter(hint -> hint.step() == SetupStep.TEST_SOURCE_FOLDER).map(SetupHint::text).toList();
     }
 
     // Rule-CODEGEN-065, Rule-CODEGEN-072, Rule-INTERNAL-127

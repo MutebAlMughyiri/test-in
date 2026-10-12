@@ -24,10 +24,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.config.TestinYml;
-import org.testin.help.Hint;
+import org.testin.help.SetupHint;
 import org.testin.help.Hints;
 import org.testin.help.SetupStep;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.notifications.Notifier;
 import org.testin.services.OptionalPlugin;
 import org.testin.services.Services;
@@ -73,7 +73,7 @@ public final class CodeOn {
         if (!OptionalPlugin.JAVA.isAvailableOrHinted(p)) return false;
 
         final @NotNull Optional<String> why = hinted(p);
-        why.ifPresent(reason -> Logger.debug("Automation code left as it is: " + reason));
+        why.ifPresent(reason -> TestinLogger.debug("Automation code left as it is: " + reason));
         return why.isEmpty();
     }
 
@@ -81,7 +81,7 @@ public final class CodeOn {
     private static @NotNull Optional<String> hinted(final @NotNull Project p) {
         final @NotNull Optional<String> why = whyOff(p);
         final @NotNull Hints hints = Services.getInstance(p, Hints.class);
-        why.ifPresentOrElse(reason -> hints.fire(Hint.of(SetupStep.TEST_PROJECT_LINK, reason, Bundle.message("yml.save.name", TestinYml.fileName()), () -> SaveTestinYml.start(p))),
+        why.ifPresentOrElse(reason -> hints.fire(SetupHint.of(SetupStep.TEST_PROJECT_LINK, reason, Bundle.message("yml.save.name", TestinYml.fileName()), () -> SaveTestinYml.start(p))),
                 () -> hints.clear(SetupStep.TEST_PROJECT_LINK));
         return why;
     }

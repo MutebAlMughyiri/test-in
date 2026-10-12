@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.jetbrains.annotations.NotNull;
 import org.testin.TempTree;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.RunItem;
 import org.testng.SkipException;
@@ -175,7 +175,7 @@ public class IndexerBudgetTest {
 
         final double micros = fastest / 1_000.0 / TEST_CASES;
 
-        Logger.info(String.format(
+        TestinLogger.info(String.format(
                 "Indexer budget: parsed %,d test cases in %,.0f ms (%.1f us/case), slowest of %d passes %,.0f ms, holding %,d KB",
                 TEST_CASES, fastest / 1e6, micros, PASSES, slowest / 1e6, heldKilobytes(documents)));
 
@@ -208,7 +208,7 @@ public class IndexerBudgetTest {
 
         final double micros = fastest / 1_000.0 / RESULTS;
 
-        Logger.info(String.format(
+        TestinLogger.info(String.format(
                 "Indexer budget: parsed %,d run results in %,.0f ms (%.1f us/result), slowest of %d passes %,.0f ms",
                 RESULTS, fastest / 1e6, micros, PASSES, slowest / 1e6));
 
@@ -232,7 +232,7 @@ public class IndexerBudgetTest {
             final long cold = timeWalk(project, testCases);
             final long warm = timeWalk(project, testCases);
 
-            Logger.info(String.format("Indexer budget: %,d cases on disk · cold %,.0f ms (%.1f us/case) · warm %,.0f ms (%.1f us/case)",
+            TestinLogger.info(String.format("Indexer budget: %,d cases on disk · cold %,.0f ms (%.1f us/case) · warm %,.0f ms (%.1f us/case)",
                     testCases, cold / 1e6, cold / 1_000.0 / testCases, warm / 1e6, warm / 1_000.0 / testCases));
         } finally {
             TempTree.delete(root);

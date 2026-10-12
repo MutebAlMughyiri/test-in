@@ -47,7 +47,7 @@ public class UndoMenuIdeTest extends AbstractTempRootIdeTest {
 
     private static @NotNull AnAction entry(final @NotNull TestSetEditor editor, final @NotNull UndoDirection direction) {
         return ActionUtil.getActions(editor.getList()).stream()
-                .filter(UndoAction.class::isInstance)
+                .filter(TestinUndoAction.class::isInstance)
                 .filter(action -> direction.getTitle().equals(action.getTemplatePresentation().getText()))
                 .findFirst().orElseThrow(() -> new AssertionError("the editor's menu has no " + direction.getTitle()));
     }

@@ -22,7 +22,7 @@ import com.intellij.openapi.util.Key;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
@@ -52,7 +52,7 @@ final class Trash {
     // UC-INTERNAL-005, Rule-INTERNAL-036
     static boolean movedToTheBin(final @NotNull Path path) {
         if (!Desktop.isDesktopSupported() || !Desktop.getDesktop().isSupported(Desktop.Action.MOVE_TO_TRASH)) {
-            Logger.debug("This desktop has no recycle bin; deleting " + path + " outright.");
+            TestinLogger.debug("This desktop has no recycle bin; deleting " + path + " outright.");
             return false;
         }
 
@@ -64,11 +64,11 @@ final class Trash {
         try {
             if (bin.test(path.toFile())) return true;
 
-            Logger.warn("The recycle bin refused " + path + ", deleting it instead.");
+            TestinLogger.warn("The recycle bin refused " + path + ", deleting it instead.");
             return false;
 
         } catch (final Exception ex) {
-            Logger.warn("Could not move " + path + " to the recycle bin, deleting it instead: " + FailureText.of(ex));
+            TestinLogger.warn("Could not move " + path + " to the recycle bin, deleting it instead: " + FailureText.of(ex));
             return false;
         }
     }

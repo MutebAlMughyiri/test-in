@@ -23,7 +23,7 @@ import org.testin.editor.open.TestinEditors;
 import org.testin.explorer.tree.TreeValues;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestRuns;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestRunNode;
@@ -67,7 +67,7 @@ record EditTestRunWork(@NotNull Project p, @NotNull TestRuns testRuns, @NotNull 
 
         boundTestProject.get().ifPresentOrElse(
                 tp -> new TestRunForm(p).open(tp.getTestCasesFolder(), testRun.getName(), held.coveredIds(), deleted, testRun.getMarker().getConfiguration(), saves(testRun)),
-                () -> Logger.warn("Edit test run: no test project is bound to " + p.getName()));
+                () -> TestinLogger.warn("Edit test run: no test project is bound to " + p.getName()));
     }
 
     private @NotNull TestRunFormAction saves(final @NotNull TestRunNode testRun) {

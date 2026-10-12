@@ -18,7 +18,7 @@ package org.testin.importexport.exports;
 
 import com.intellij.openapi.util.text.StringUtil;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.ReportColor;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.Can;
@@ -45,7 +45,7 @@ public class ExportHtml {
         try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(destFile), StandardCharsets.UTF_8))) {
             writeHtmlDocument(writer, sheetsData);
         } catch (final IOException ex) {
-            Logger.error(FailureText.of(ex));
+            TestinLogger.error(FailureText.of(ex));
             throw new RuntimeException(ex);
         }
     }
@@ -137,7 +137,7 @@ public class ExportHtml {
             writer.write("</html>");
             writer.newLine();
         } catch (final IOException ex) {
-            Logger.error(FailureText.of(ex));
+            TestinLogger.error(FailureText.of(ex));
             throw new RuntimeException(ex);
         }
     }

@@ -39,9 +39,9 @@ of adding an import during a small edit, which is exactly when it slips in.
 Qualify only when an import is impossible because the simple name already means
 something else in that file. There is one such place in `src`:
 
-| File                    | Qualified                                | Why an import cannot be used                                                        |
-|-------------------------|------------------------------------------|-------------------------------------------------------------------------------------|
-| `logger/LogWriter.java` | `com.intellij.openapi.diagnostic.Logger` | Testin's own `Logger` sits in the same package, so the simple name already means it |
+| File                    | Qualified                                | Why an import cannot be used                                                              |
+|-------------------------|------------------------------------------|-------------------------------------------------------------------------------------------|
+| `logger/LogWriter.java` | `com.intellij.openapi.diagnostic.Logger` | Testin's own `TestinLogger` sits in the same package, so the simple name already means it |
 
 Anything else is not an exception. A wildcard import that also offers the name,
 `com.itextpdf.layout.element.*` beside `java.util.List`, is resolved by a
@@ -87,7 +87,7 @@ Three things are not code, and the rule skips them:
 ## The one exception, and how it is marked
 
 A simple name that already means another class in that file. `org.testin.logger`
-has Testin's own `Logger`, so the platform's has to be written out - Java has no
+has Testin's own `TestinLogger`, so the platform's has to be written out - Java has no
 import alias. That line carries the marker, written here as text rather than as
 Java, because it is an example of a suppression and a suppression is reported:
 

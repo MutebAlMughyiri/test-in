@@ -34,7 +34,7 @@ import org.testin.editor.grid.NotWhileEditing;
 import org.testin.editor.open.UnifiedEditorProvider;
 import org.testin.editor.open.UnifiedFileEditor;
 import org.testin.editor.open.UnifiedVirtualFile;
-import org.testin.editor.statusbar.StatusBar;
+import org.testin.editor.statusbar.EditorStatusBar;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.editor.toolbar.AbstractToolbarPanel;
@@ -170,7 +170,7 @@ public class EditorViewsIdeTest extends AbstractTempRootIdeTest {
                 final @NotNull AbstractTestinEditor<?, ?> editor = (AbstractTestinEditor<?, ?>) opened;
                 assertTrue("the toolbar is not on top of " + opened.getClass().getSimpleName(), holds(at(editor, BorderLayout.NORTH), AbstractToolbarPanel.class));
                 assertTrue("the rows are not in the middle of " + opened.getClass().getSimpleName(), holds(at(editor, BorderLayout.CENTER), JBList.class));
-                assertTrue("the status bar is not at the bottom of " + opened.getClass().getSimpleName(), holds(at(editor, BorderLayout.SOUTH), StatusBar.class));
+                assertTrue("the status bar is not at the bottom of " + opened.getClass().getSimpleName(), holds(at(editor, BorderLayout.SOUTH), EditorStatusBar.class));
             }
         } finally {
             testSetTab.dispose();

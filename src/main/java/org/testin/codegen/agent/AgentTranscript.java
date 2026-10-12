@@ -17,7 +17,7 @@
 package org.testin.codegen.agent;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.util.Bundle;
 
@@ -32,7 +32,7 @@ public final class AgentTranscript {
     // UC-CODEGEN-021, Rule-CODEGEN-090
     public void record(final @NotNull TestCaseDto tc, final @NotNull String prompt, final @NotNull String said, final boolean bodyLanded, final @NotNull String outcome) {
         if (bodyLanded) landed++;
-        Logger.debug("""
+        TestinLogger.debug("""
                 Agent asked for '%s':
                 %s
                 and said:

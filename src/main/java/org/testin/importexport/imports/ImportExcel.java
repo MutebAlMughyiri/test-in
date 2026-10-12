@@ -24,7 +24,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.Can;
 import org.testin.testcase.ImportedRow;
@@ -53,7 +53,7 @@ public class ImportExcel {
     public @NotNull Map<String, List<TestCaseDto>> processImport(final @NotNull Project p, final @NotNull File file) {
         final @NotNull Map<String, List<TestCaseDto>> result = new LinkedHashMap<>(parseFile(p, file));
 
-        Logger.info("Import: parsed " + result.values().stream().mapToInt(List::size).sum()
+        TestinLogger.info("Import: parsed " + result.values().stream().mapToInt(List::size).sum()
                 + " test cases from " + result.size() + " sheet(s) of " + file.getName());
         return result;
     }
@@ -64,7 +64,7 @@ public class ImportExcel {
             parseWorkbook(workbook, p, result);
 
         } catch (final IOException ex) {
-            Logger.error(FailureText.of(ex));
+            TestinLogger.error(FailureText.of(ex));
             throw new RuntimeException(ex);
         }
         return result;

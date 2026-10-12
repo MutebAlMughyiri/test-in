@@ -19,7 +19,7 @@ package org.testin.importexport.exports;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
-import org.testin.importexport.FileTypes;
+import org.testin.importexport.FileFormat;
 import org.testin.importexport.shared.SheetPreview;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.TestSetEditorAttributes;
@@ -51,8 +51,8 @@ public final class ExportDialog extends AbstractFrameworkDialog {
         title = Bundle.message("dialog.export.title");
 
         form = DestinationForm.inSection(p,
-                Arrays.stream(FileTypes.values()).filter(FileTypes::isExportable).toArray(FileTypes[]::new),
-                FileTypes.XLSX,
+                Arrays.stream(FileFormat.values()).filter(FileFormat::isExportable).toArray(FileFormat[]::new),
+                FileFormat.XLSX,
                 exportTarget.getName(),
                 Bundle.message("dialog.export.folder.title"),
                 Bundle.message("dialog.export.folder.message"),

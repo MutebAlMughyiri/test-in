@@ -24,7 +24,7 @@ import org.testin.git.GitFailed;
 import org.testin.git.GitRepositoryService;
 import org.testin.indexer.TestCaseFile;
 import org.testin.indexer.TestRuns;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
 import org.testin.model.FileKind;
 import org.testin.model.testrun.RunItem;
@@ -77,7 +77,7 @@ public final class BugHistory {
             commits.forEach(commit -> commit.files().forEach(changed -> card(testProject, commit, changed, versions, mapper).ifPresent(cards::add)));
             return history.with(cards, commits.stream().map(BugCommit::hash).toList());
         } catch (final GitFailed ex) {
-            Logger.warn("Could not read the bugs of " + testCaseId + " from Git: " + FailureText.of(ex));
+            TestinLogger.warn("Could not read the bugs of " + testCaseId + " from Git: " + FailureText.of(ex));
             return history.withoutBugs(FailureText.of(ex));
         }
     }

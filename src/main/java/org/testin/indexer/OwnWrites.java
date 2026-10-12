@@ -22,7 +22,7 @@ import com.intellij.openapi.util.SystemInfo;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.util.FailureText;
 
 import java.io.IOException;
@@ -48,7 +48,7 @@ public final class OwnWrites {
         try {
             return ByteBuffer.wrap(Files.readAllBytes(path)).equals(ourContent);
         } catch (final IOException stillSettling) {
-            Logger.debug("Could not read " + path.getFileName() + " to tell our write from an edit: " + FailureText.of(stillSettling));
+            TestinLogger.debug("Could not read " + path.getFileName() + " to tell our write from an edit: " + FailureText.of(stillSettling));
             return true;
         }
     }

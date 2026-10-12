@@ -21,7 +21,7 @@ import com.intellij.ui.components.JBList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.testin.editor.TestinEditor;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
@@ -163,7 +163,7 @@ public class TestCaseTransferHandler extends TransferHandler {
         } catch (final Exception ex) {
             putBack(orderBefore);
 
-            Logger.error("Reordering the test cases failed: " + FailureText.of(ex));
+            TestinLogger.error("Reordering the test cases failed: " + FailureText.of(ex));
             notifier.softRefuse(p, Bundle.message("save.failed"));
             return false;
         }

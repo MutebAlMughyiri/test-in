@@ -23,7 +23,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.git.GitRepositoryService;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
 import org.testin.model.FileKind;
 import org.testin.notifications.Notifier;
@@ -71,7 +71,7 @@ public final class ConflictResolution {
 
         final @NotNull List<String> stillConflicting = git.conflictingPaths(repositoryPath);
         if (stillConflicting.isEmpty()) {
-            Logger.warn("The rebase could not continue, and nothing is left conflicting");
+            TestinLogger.warn("The rebase could not continue, and nothing is left conflicting");
             ApplicationManager.getApplication().invokeLater(() ->
                     Services.getInstance(p, Notifier.class).error(p, Bundle.message("git.conflict.operation.failed.title"),
                             Bundle.message("git.error.continue.rebase")));
@@ -80,7 +80,7 @@ public final class ConflictResolution {
 
         final int stepNow = git.rebaseStep(repositoryPath);
         if (stepNow <= stepBefore) {
-            Logger.warn("The rebase did not move past commit " + stepNow + "; leaving it to the tester");
+            TestinLogger.warn("The rebase did not move past commit " + stepNow + "; leaving it to the tester");
             ApplicationManager.getApplication().invokeLater(() -> onStuck.accept(stillConflicting));
             return;
         }
@@ -196,7 +196,7 @@ public final class ConflictResolution {
             Files.writeString(repositoryPath.resolve(relativePath), merged.toPrettyString(), StandardCharsets.UTF_8);
 
         } catch (final IOException ex) {
-            Logger.error("Could not write the merged test case " + relativePath + ": " + FailureText.of(ex));
+            TestinLogger.error("Could not write the merged test case " + relativePath + ": " + FailureText.of(ex));
             Services.getInstance(p, Notifier.class).error(p, Bundle.message("git.merge.failed.title"),
                     Bundle.message("git.merge.failed.message", relativePath, FailureText.of(ex)));
             return false;
@@ -204,7 +204,7 @@ public final class ConflictResolution {
 
         if (git.stageResolved(repositoryPath, relativePath)) return true;
 
-        Logger.error("Merged but could not stage " + relativePath);
+        TestinLogger.error("Merged but could not stage " + relativePath);
         Services.getInstance(p, Notifier.class).error(p, Bundle.message("git.merge.not.accepted.title"),
                 Bundle.message("git.merge.not.accepted.message", relativePath));
         return false;

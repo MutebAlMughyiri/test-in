@@ -32,11 +32,11 @@ import com.theoryinpractice.testng.configuration.TestNGConfiguration;
 import com.theoryinpractice.testng.configuration.TestNGConfigurationType;
 import com.theoryinpractice.testng.model.TestType;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.navigate.CodeNavigation;
 import org.testin.runner.TestNGExecution;
-import org.testin.runner.TestRunner;
+import org.testin.runner.AutomationExecutor;
 import org.testin.services.BackgroundWork;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
@@ -50,7 +50,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-public final class TestNGRunner implements TestRunner {
+public final class TestNGRunner implements AutomationExecutor {
     private static @NotNull Optional<Module> moduleOf(final @NotNull Project p, final @NotNull List<String> fqcn) {
         final @NotNull String classFqcn = String.join(".", fqcn.subList(0, fqcn.size() - 1));
 
@@ -142,7 +142,7 @@ public final class TestNGRunner implements TestRunner {
 
         final @NotNull Set<TestCaseDto> stillWanted = new HashSet<>(execution.stillWanted(found.stream().map(Generated::tc).toList()));
         if (stillWanted.isEmpty()) {
-            Logger.info("Not starting: every test case in the execution was stopped before it began");
+            TestinLogger.info("Not starting: every test case in the execution was stopped before it began");
             return;
         }
 
@@ -165,7 +165,7 @@ public final class TestNGRunner implements TestRunner {
                 });
 
         if (!(settings.getConfiguration() instanceof TestNGConfiguration configuration)) {
-            Logger.warn("'" + name + "' is not a TestNG configuration, so the execution was not started");
+            TestinLogger.warn("'" + name + "' is not a TestNG configuration, so the execution was not started");
             return;
         }
 
@@ -178,7 +178,7 @@ public final class TestNGRunner implements TestRunner {
         runManager.setTemporaryConfiguration(settings);
         runManager.setSelectedConfiguration(settings);
 
-        Logger.info("Running as '" + name + "': " + patterns);
+        TestinLogger.info("Running as '" + name + "': " + patterns);
 
         // Rule-CODEGEN-033
         execution.started(testCases, List.of());

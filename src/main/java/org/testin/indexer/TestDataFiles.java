@@ -23,7 +23,7 @@ import com.intellij.util.TimeoutUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
 import org.testin.model.FileKind;
 import org.testin.notifications.Notifier;
@@ -62,7 +62,7 @@ final class TestDataFiles {
         try {
             Files.deleteIfExists(beside);
         } catch (final IOException ex) {
-            Logger.warn("Could not remove " + beside + " after a write that failed: " + FailureText.of(ex));
+            TestinLogger.warn("Could not remove " + beside + " after a write that failed: " + FailureText.of(ex));
         }
     }
 
@@ -95,7 +95,7 @@ final class TestDataFiles {
         try {
             return Files.readAllBytes(path);
         } catch (final IOException missingOrUnreadable) {
-            Logger.warn("Could not read " + path + ": " + FailureText.of(missingOrUnreadable));
+            TestinLogger.warn("Could not read " + path + ": " + FailureText.of(missingOrUnreadable));
             return new byte[0];
         }
     }
@@ -105,7 +105,7 @@ final class TestDataFiles {
         try (Stream<Path> inside = Files.list(testRunPath)) {
             return inside.filter(file -> FileKind.of(file) == FileKind.RUN_ITEM).toList();
         } catch (final IOException ex) {
-            Logger.warn("Could not list the results in " + testRunPath + ": " + FailureText.of(ex));
+            TestinLogger.warn("Could not list the results in " + testRunPath + ": " + FailureText.of(ex));
             return List.of();
         }
     }
@@ -114,7 +114,7 @@ final class TestDataFiles {
         try (Stream<Path> inside = Files.list(testRunPath)) {
             return inside.filter(file -> FileKind.of(file, NodeType.TR) == FileKind.SCREENSHOT).toList();
         } catch (final IOException ex) {
-            Logger.warn("Could not list the screenshots in " + testRunPath + ": " + FailureText.of(ex));
+            TestinLogger.warn("Could not list the screenshots in " + testRunPath + ": " + FailureText.of(ex));
             return List.of();
         }
     }
@@ -122,7 +122,7 @@ final class TestDataFiles {
     // UC-INTERNAL-003, Rule-INTERNAL-019, Rule-INTERNAL-113, Rule-INTERNAL-125
     private boolean writeBytes(final @NotNull Path path, final byte @NotNull [] jsonBytes) {
         if (jsonBytes.length == 0) {
-            Logger.error("Refusing to write an empty file, which would erase it: " + path);
+            TestinLogger.error("Refusing to write an empty file, which would erase it: " + path);
             Services.getInstance(p, Notifier.class).error(p, Bundle.message("files.nothing.written", path.getFileName()));
             return false;
         }
@@ -153,7 +153,7 @@ final class TestDataFiles {
     private boolean movedInto(final @NotNull Path beside, final @NotNull Path path) {
         @NotNull Optional<IOException> failure = moveOnce(beside, path);
         for (int attempt = 1; attempt < MOVE_ATTEMPTS && isHeldByAReader(failure); attempt++) {
-            Logger.debug("Writing " + path.getFileName() + " waits for a reader to let go of it, attempt " + attempt);
+            TestinLogger.debug("Writing " + path.getFileName() + " waits for a reader to let go of it, attempt " + attempt);
             TimeoutUtil.sleep(MOVE_PAUSE_MILLIS * attempt);
             failure = moveOnce(beside, path);
         }
@@ -216,12 +216,12 @@ final class TestDataFiles {
 
     private void reportRemoveFailure(final @NotNull Path path, final @NotNull IOException ex) {
         Services.getInstance(p, Notifier.class).error(p, Bundle.message("files.unable.to.remove", FailureText.of(ex)));
-        Logger.error("unable to remove " + path + ": " + FailureText.of(ex));
+        TestinLogger.error("unable to remove " + path + ": " + FailureText.of(ex));
     }
 
     private void reportWriteFailure(final @NotNull Path path, final @NotNull IOException ex) {
         Services.getInstance(p, Notifier.class).error(p, Bundle.message("files.unable.to.write", FailureText.of(ex)));
-        Logger.error("unable to write content: " + FailureText.of(ex));
-        Logger.error("path" + path);
+        TestinLogger.error("unable to write content: " + FailureText.of(ex));
+        TestinLogger.error("path" + path);
     }
 }

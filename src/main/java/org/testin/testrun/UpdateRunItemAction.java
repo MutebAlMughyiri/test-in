@@ -25,7 +25,7 @@ import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.GrayWithReason;
 import org.testin.actions.TestinData;
 import org.testin.editor.testrun.TestRunEditor;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.RunItem;
 import org.testin.notifications.Notifier;
@@ -61,7 +61,7 @@ public class UpdateRunItemAction extends AbstractAnyProjectAction {
             return;
         }
 
-        Logger.trace("update test run item for: " + testCase.getDescription());
+        TestinLogger.trace("update test run item for: " + testCase.getDescription());
 
         new FailureDetailDialog(p, testRunEditor.getParent().getPath(), runItem, fields -> {
             if (!Services.getInstance(p, RunItemStatusService.class).reviseFailure(testRunEditor.getParent().getPath(), testCase.getId(), fields))

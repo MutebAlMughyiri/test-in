@@ -21,7 +21,7 @@ import com.intellij.openapi.project.Project;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.services.Services;
 import org.testin.util.ClipboardContents;
@@ -54,7 +54,7 @@ public final class CopiedTestCases {
 
             return parsed.stream().filter(Objects::nonNull).toList();
         } catch (final UnsupportedFlavorException | IOException | UncheckedIOException ex) {
-            Logger.warn("[WARNING] Failed to parse clipboard JSON: " + FailureText.of(ex));
+            TestinLogger.warn("[WARNING] Failed to parse clipboard JSON: " + FailureText.of(ex));
             return List.of();
         }
     }

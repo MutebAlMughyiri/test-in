@@ -23,7 +23,7 @@ import com.intellij.util.ui.JBUI;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.ViewMode;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 
 import javax.swing.JComponent;
 import java.awt.Dimension;
@@ -60,7 +60,7 @@ public abstract class AbstractToolbarPanel extends JBPanel<AbstractToolbarPanel>
     private void addItems(final @NotNull List<ToolbarItem> items, final @NotNull GridBagConstraints gbc) {
         for (final ToolbarItem item : items) {
             if (!(item instanceof JComponent component)) {
-                Logger.error(item.getClass().getSimpleName() + " is a toolbar item but not a Swing component, so it was left off the toolbar");
+                TestinLogger.error(item.getClass().getSimpleName() + " is a toolbar item but not a Swing component, so it was left off the toolbar");
                 continue;
             }
 

@@ -18,7 +18,7 @@ package org.testin.importexport.imports;
 
 import com.intellij.ui.components.JBLabel;
 import org.jetbrains.annotations.NotNull;
-import org.testin.importexport.FileTypes;
+import org.testin.importexport.FileFormat;
 import org.testin.testcase.Can;
 import org.testin.testcase.TestSetEditorAttributes;
 import org.testin.ui.dialogs.DialogStyle;
@@ -47,7 +47,7 @@ public record FileTypeHint(@NotNull JBLabel label, @NotNull List<TestSetEditorAt
     }
 
     // UC-SHARE-005
-    public void showFor(final @NotNull FileTypes format) {
+    public void showFor(final @NotNull FileFormat format) {
         final @NotNull String columns = attributes.stream()
                 .filter(attribute -> attribute.can(Can.IMPORT))
                 .map(TestSetEditorAttributes::getName)

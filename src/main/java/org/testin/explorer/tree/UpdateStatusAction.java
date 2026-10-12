@@ -25,7 +25,7 @@ import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.GrayWithReason;
 import org.testin.actions.TestinData;
 import org.testin.indexer.Nodes;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.node.Node;
 import org.testin.model.status.NodeStatus;
 import org.testin.notifications.Notifier;
@@ -61,7 +61,7 @@ public class UpdateStatusAction extends AbstractAnyProjectAction {
             Services.getInstance(p, Notifier.class).softShow(p, status.getLabel());
 
         } catch (final Exception ex) {
-            Logger.error("Unable to mark '" + dir.getName() + "' " + status.getLabel() + ": " + FailureText.of(ex));
+            TestinLogger.error("Unable to mark '" + dir.getName() + "' " + status.getLabel() + ": " + FailureText.of(ex));
             Services.getInstance(p, Notifier.class).error(p, Bundle.message("status.failed", status.getLabel()));
         }
     }

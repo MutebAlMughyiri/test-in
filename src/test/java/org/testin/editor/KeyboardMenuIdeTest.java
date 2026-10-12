@@ -43,7 +43,7 @@ import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.testcase.RemoveTestCaseAction;
-import org.testin.undo.UndoAction;
+import org.testin.undo.TestinUndoAction;
 import org.testin.util.Bundle;
 
 import javax.swing.JComponent;
@@ -208,7 +208,7 @@ public class KeyboardMenuIdeTest extends AbstractTempRootIdeTest {
                 final @NotNull List<AnAction> entries = new ArrayList<>(childrenOf(editor.contextMenu));
                 entries.addAll(childrenOf(actionsEntryOf(editor)));
                 for (final AnAction entry : entries) {
-                    if (entry instanceof DefaultActionGroup || unwrapped(entry) instanceof UndoAction) continue;
+                    if (entry instanceof DefaultActionGroup || unwrapped(entry) instanceof TestinUndoAction) continue;
 
                     final @NotNull Presentation shown = updated(editor, entry);
                     if (shown.isEnabled()) continue;

@@ -30,7 +30,7 @@ import org.testin.creator.CreateTestSet;
 import org.testin.editor.open.TestinEditors;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.Node;
@@ -68,7 +68,7 @@ record ImportWork(@NotNull Project p, @NotNull Notifier notifier, @NotNull Testi
 
     private static void report(final int testCases, final long startedAt, final long readyAt) {
         final long finishedAt = System.currentTimeMillis();
-        Logger.info("Import: " + testCases + " test cases in " + (finishedAt - startedAt) + "ms"
+        TestinLogger.info("Import: " + testCases + " test cases in " + (finishedAt - startedAt) + "ms"
                 + " (waiting for the index " + (readyAt - startedAt) + "ms,"
                 + " writing and generating " + (finishedAt - readyAt) + "ms)");
     }
@@ -146,7 +146,7 @@ record ImportWork(@NotNull Project p, @NotNull Notifier notifier, @NotNull Testi
             }
         } catch (final Exception ex) {
             // UC-SHARE-007, Rule-SHARE-037
-            Logger.error("Import failed after at least " + imported + " of " + total + ": " + FailureText.of(ex));
+            TestinLogger.error("Import failed after at least " + imported + " of " + total + ": " + FailureText.of(ex));
 
             notifier.error(p, Bundle.message("import.failed.title"),
                     Bundle.message("import.failed.partial", String.valueOf(imported), String.valueOf(total), FailureText.of(ex)));
@@ -210,7 +210,7 @@ record ImportWork(@NotNull Project p, @NotNull Notifier notifier, @NotNull Testi
                 try {
                     JavaCode.of(NodeType.TS).getCreated().execute(p, made);
                 } catch (final Exception ex) {
-                    Logger.error("Failed to create Java class: " + FailureText.of(ex));
+                    TestinLogger.error("Failed to create Java class: " + FailureText.of(ex));
                 }
 
                 return made;
@@ -221,7 +221,7 @@ record ImportWork(@NotNull Project p, @NotNull Notifier notifier, @NotNull Testi
     }
 
     void generateTestMethods(final @NotNull List<TestCaseDto> testCases, final @NotNull String targetName, final @NotNull ProgressIndicator indicator) {
-        Logger.info("Import: generating test methods for '" + targetName + "' with " + testCases.size() + " cases");
+        TestinLogger.info("Import: generating test methods for '" + targetName + "' with " + testCases.size() + " cases");
         final long startedAt = System.currentTimeMillis();
         // Rule-CODEGEN-018
         final @NotNull String oneUndo = UUID.randomUUID().toString();
@@ -235,7 +235,7 @@ record ImportWork(@NotNull Project p, @NotNull Notifier notifier, @NotNull Testi
             onEdt(() -> GenType.CREATE_TEST_CASE.executeAllNow(p, batch, oneUndo));
         }
 
-        Logger.info("Import: generated " + testCases.size() + " test methods in "
+        TestinLogger.info("Import: generated " + testCases.size() + " test methods in "
                 + (System.currentTimeMillis() - startedAt) + "ms");
     }
 

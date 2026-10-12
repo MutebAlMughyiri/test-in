@@ -20,7 +20,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
 import org.testin.model.FileKind;
 import org.testin.model.TestCaseDto;
@@ -76,7 +76,7 @@ final class NodeFiles {
     void move(final @NotNull Path oldPath, final @NotNull Path newPath, final @NotNull Consumer<@NotNull Boolean> onFinished) {
         final @NotNull Optional<Path> found = Optional.ofNullable(newPath.getParent());
         if (found.isEmpty()) {
-            Logger.warn("Move refused, target has no parent directory: " + newPath);
+            TestinLogger.warn("Move refused, target has no parent directory: " + newPath);
             onFinished.accept(false);
             return;
         }
@@ -87,11 +87,11 @@ final class NodeFiles {
             try {
                 sourceVf.move(indexer, targetVf);
             } catch (final IOException ex) {
-                Logger.error(FailureText.of(ex));
+                TestinLogger.error(FailureText.of(ex));
                 throw new RuntimeException(ex);
             }
         }, () -> followOnDisk(oldPath, newPath, () -> {
-            Logger.info("Moved successfully to: " + newPath);
+            TestinLogger.info("Moved successfully to: " + newPath);
             onFinished.accept(true);
         }), () -> onFinished.accept(false));
     }
@@ -143,7 +143,7 @@ final class NodeFiles {
                 try {
                     sourceVf.copy(indexer, targetVf, sourceVf.getName());
                 } catch (final IOException ex) {
-                    Logger.error(FailureText.of(ex));
+                    TestinLogger.error(FailureText.of(ex));
                     throw new RuntimeException(ex);
                 }
             }, copySucceeded, operationFinished);
@@ -155,7 +155,7 @@ final class NodeFiles {
             try {
                 vf.rename(indexer, newPath.getFileName().toString());
             } catch (final IOException ex) {
-                Logger.error(FailureText.of(ex));
+                TestinLogger.error(FailureText.of(ex));
                 throw new RuntimeException(ex);
             }
 
@@ -180,16 +180,16 @@ final class NodeFiles {
                     .toList();
 
         } catch (final IOException ex) {
-            Logger.error("Could not read the copied nodes at " + copiedRoot + ": " + FailureText.of(ex));
+            TestinLogger.error("Could not read the copied nodes at " + copiedRoot + ": " + FailureText.of(ex));
             return;
         }
 
         final long given = testCaseFiles.stream().filter(this::reidentify).count();
-        Logger.info("Gave " + given + " of " + testCaseFiles.size() + " copied test case(s) new ids under " + copiedRoot.getFileName());
+        TestinLogger.info("Gave " + given + " of " + testCaseFiles.size() + " copied test case(s) new ids under " + copiedRoot.getFileName());
 
         // Rule-INTERNAL-090
         final long folders = markerFiles.stream().filter(store::giveFreshMarkerId).count();
-        Logger.info("Gave " + folders + " of " + markerFiles.size() + " copied folder(s) ids of their own under " + copiedRoot.getFileName());
+        TestinLogger.info("Gave " + folders + " of " + markerFiles.size() + " copied folder(s) ids of their own under " + copiedRoot.getFileName());
     }
 
     // UC-TREE-PANEL-014, Rule-TREE-PANEL-051, Rule-INTERNAL-113
@@ -207,7 +207,7 @@ final class NodeFiles {
             return true;
 
         } catch (final IOException | UncheckedIOException ex) {
-            Logger.error("Could not give the copied test case " + testCaseFile.getFileName() + " a new id: " + FailureText.of(ex));
+            TestinLogger.error("Could not give the copied test case " + testCaseFile.getFileName() + " a new id: " + FailureText.of(ex));
             return false;
         }
     }

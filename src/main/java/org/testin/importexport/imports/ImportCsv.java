@@ -18,7 +18,7 @@ package org.testin.importexport.imports;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.Can;
 import org.testin.testcase.ImportedRow;
@@ -103,7 +103,7 @@ public class ImportCsv {
                     .filter(fields -> !fields.stream().allMatch(String::isEmpty))
                     .toList();
         } catch (final IOException ex) {
-            Logger.error("CSV parse failed: " + FailureText.of(ex));
+            TestinLogger.error("CSV parse failed: " + FailureText.of(ex));
             throw new RuntimeException(ex);
         }
     }

@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.git.GitRepositoryService;
 import org.testin.indexer.TestCaseFile;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.services.OptionalPlugin;
 import org.testin.util.FailureText;
 
@@ -67,7 +67,7 @@ public final class TestCaseLink {
                     .replace("(", "%28")
                     .replace(")", "%29"));
         } catch (final URISyntaxException ex) {
-            Logger.warn("No link to the test case's file could be built from " + path + ": " + FailureText.of(ex));
+            TestinLogger.warn("No link to the test case's file could be built from " + path + ": " + FailureText.of(ex));
             return Optional.empty();
         }
     }

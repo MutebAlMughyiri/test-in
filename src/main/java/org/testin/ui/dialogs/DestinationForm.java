@@ -19,7 +19,7 @@ package org.testin.ui.dialogs;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.importexport.FileTypes;
+import org.testin.importexport.FileFormat;
 import org.testin.ui.framework.ComponentDialogBase;
 import org.testin.ui.framework.DialogComponent;
 import org.testin.ui.framework.TextInput;
@@ -38,7 +38,7 @@ public final class DestinationForm implements DialogComponent {
     private final @NotNull FormatSection format;
     private final @NotNull JComponent panel;
 
-    private DestinationForm(final @NotNull Project p, final FileTypes @NotNull [] formats, final @NotNull FileTypes defaultFormat, final @NotNull String suggestedName, final @NotNull String chooserTitle, final @NotNull String chooserDescription, final @NotNull String section) {
+    private DestinationForm(final @NotNull Project p, final FileFormat @NotNull [] formats, final @NotNull FileFormat defaultFormat, final @NotNull String suggestedName, final @NotNull String chooserTitle, final @NotNull String chooserDescription, final @NotNull String section) {
         folder = ComponentDialogBase.textField()
                 .caption(Bundle.message("destination.caption.folder"))
                 .placeholder(Bundle.message("destination.choose.folder"))
@@ -63,12 +63,12 @@ public final class DestinationForm implements DialogComponent {
     }
 
     // UC-REPORT-001, Rule-INTERNAL-099
-    public static @NotNull DestinationForm stacked(final @NotNull Project p, final FileTypes @NotNull [] formats, final @NotNull FileTypes defaultFormat, final @NotNull String suggestedName, final @NotNull String chooserTitle, final @NotNull String chooserDescription) {
+    public static @NotNull DestinationForm stacked(final @NotNull Project p, final FileFormat @NotNull [] formats, final @NotNull FileFormat defaultFormat, final @NotNull String suggestedName, final @NotNull String chooserTitle, final @NotNull String chooserDescription) {
         return new DestinationForm(p, formats, defaultFormat, suggestedName, chooserTitle, chooserDescription, "");
     }
 
     // UC-SHARE-001, Rule-INTERNAL-099
-    public static @NotNull DestinationForm inSection(final @NotNull Project p, final FileTypes @NotNull [] formats, final @NotNull FileTypes defaultFormat, final @NotNull String suggestedName, final @NotNull String chooserTitle, final @NotNull String chooserDescription, final @NotNull String section) {
+    public static @NotNull DestinationForm inSection(final @NotNull Project p, final FileFormat @NotNull [] formats, final @NotNull FileFormat defaultFormat, final @NotNull String suggestedName, final @NotNull String chooserTitle, final @NotNull String chooserDescription, final @NotNull String section) {
         return new DestinationForm(p, formats, defaultFormat, suggestedName, chooserTitle, chooserDescription, section);
     }
 
@@ -79,7 +79,7 @@ public final class DestinationForm implements DialogComponent {
         if (dot < 0) return fileName + extension;
 
         final @NotNull String tail = fileName.substring(dot);
-        final boolean tailIsAnExtension = Arrays.stream(FileTypes.values())
+        final boolean tailIsAnExtension = Arrays.stream(FileFormat.values())
                 .anyMatch(type -> type.getExtension().equalsIgnoreCase(tail));
 
         return tailIsAnExtension ? fileName.substring(0, dot) + extension : fileName + extension;
@@ -93,7 +93,7 @@ public final class DestinationForm implements DialogComponent {
         final @NotNull String chosenFolder = folder.accepted();
         if (chosenFolder.isEmpty()) return Optional.empty();
 
-        final @NotNull FileTypes chosen = format.chosen();
+        final @NotNull FileFormat chosen = format.chosen();
 
         return Optional.of(new Destination(new File(chosenFolder, withExtension(named, chosen.getExtension())), chosen));
     }

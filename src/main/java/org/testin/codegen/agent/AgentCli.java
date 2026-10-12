@@ -25,7 +25,7 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.util.SystemInfo;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.util.FailureText;
 
 import java.io.File;
@@ -89,12 +89,12 @@ public final class AgentCli {
                 .withCharset(StandardCharsets.UTF_8)
                 .withInput(input.map(Path::toFile).orElse(null));
 
-        Logger.debug("Asking the agent: " + line.getCommandLineString());
+        TestinLogger.debug("Asking the agent: " + line.getCommandLineString());
 
         try {
             return Optional.of(new CapturingProcessHandler(line).runProcessWithProgressIndicator(indicator, (int) timeout.toMillis()));
         } catch (final ExecutionException ex) {
-            Logger.warn("The agent '" + command + "' could not be started: " + FailureText.of(ex));
+            TestinLogger.warn("The agent '" + command + "' could not be started: " + FailureText.of(ex));
             return Optional.empty();
         }
     }
@@ -107,7 +107,7 @@ public final class AgentCli {
 
             return Optional.of(written);
         } catch (final IOException ex) {
-            Logger.warn("The prompt could not be written for the agent: " + FailureText.of(ex));
+            TestinLogger.warn("The prompt could not be written for the agent: " + FailureText.of(ex));
             return Optional.empty();
         }
     }
@@ -116,7 +116,7 @@ public final class AgentCli {
         try {
             Files.deleteIfExists(written);
         } catch (final IOException ex) {
-            Logger.warn("The prompt file stayed behind at " + written + ": " + FailureText.of(ex));
+            TestinLogger.warn("The prompt file stayed behind at " + written + ": " + FailureText.of(ex));
         }
     }
 
@@ -146,7 +146,7 @@ public final class AgentCli {
     private @NotNull Optional<String> said(final @NotNull String command, final @NotNull List<String> arguments, final @NotNull Optional<Path> input, final @NotNull Duration timeout) {
         return launcher.run(command, arguments, input, timeout).map(output -> {
             if (output.getExitCode() != 0)
-                Logger.warn("The agent '" + command + "' ended with " + output.getExitCode() + ": " + output.getStderr().strip());
+                TestinLogger.warn("The agent '" + command + "' ended with " + output.getExitCode() + ": " + output.getStderr().strip());
 
             return output.getStdout().strip();
         });

@@ -27,12 +27,12 @@ import org.jetbrains.annotations.TestOnly;
 import org.testin.clipboard.CutState;
 import org.testin.help.Guide;
 import org.testin.help.Guides;
-import org.testin.help.Hint;
+import org.testin.help.SetupHint;
 import org.testin.help.Hints;
 import org.testin.help.SetupStep;
 import org.testin.indexer.DeletedNodes;
 import org.testin.indexer.ProjectIndexer;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.runner.TestCaseExecutionSubscriber;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
@@ -41,7 +41,7 @@ import org.testin.util.Once;
 
 import java.nio.file.Path;
 
-public final class StartupActivity implements ProjectActivity {
+public final class TestinStartup implements ProjectActivity {
     private static final @NotNull Key<Boolean> STARTED = Key.create("testin.started");
     private static final @NotNull Key<Boolean> READ = Key.create("testin.read");
 
@@ -53,7 +53,7 @@ public final class StartupActivity implements ProjectActivity {
     }
 
     private static void wire(final @NotNull Project p) {
-        Logger.info("StartupActivity.execute()");
+        TestinLogger.info("TestinStartup.execute()");
 
         Services.getInstance(DeletedNodes.class).sweep();
 
@@ -68,14 +68,14 @@ public final class StartupActivity implements ProjectActivity {
         final @NotNull Path testinPath = TestinRoot.stored(stored);
 
         if (!TestinRoot.isConfigured(testinPath)) {
-            Logger.info(stored.isBlank() ? "No Testin folder is set yet, so nothing is read until one is"
+            TestinLogger.info(stored.isBlank() ? "No Testin folder is set yet, so nothing is read until one is"
                     : "The stored Testin folder '" + stored + "' is not a full path, so it is read as not set");
             return;
         }
 
         if (!Once.claim(p, READ)) return;
 
-        Logger.info("testin Path: " + testinPath);
+        TestinLogger.info("testin Path: " + testinPath);
         Services.getInstance(p, ProjectIndexer.class).indexWithProgress();
     }
 
@@ -88,7 +88,7 @@ public final class StartupActivity implements ProjectActivity {
         }
 
         Services.getInstance(p, Guides.class).add(Guide.GETTING_STARTED);
-        hints.fire(Hint.of(SetupStep.TESTIN_FOLDER, Bundle.message("startup.setup.message"), Bundle.message("startup.setup.action"),
+        hints.fire(SetupHint.of(SetupStep.TESTIN_FOLDER, Bundle.message("startup.setup.message"), Bundle.message("startup.setup.action"),
                 () -> ShowSettingsUtil.getInstance().showSettingsDialog(p, SettingsConfigurable.class)));
     }
 
@@ -104,10 +104,10 @@ public final class StartupActivity implements ProjectActivity {
 
         final @NotNull BoundTestProject bound = Services.getInstance(p, BoundTestProject.class);
         if (bound.isNamed()) {
-            Logger.info("Test project for this repository: '" + bound.name() + "'");
+            TestinLogger.info("Test project for this repository: '" + bound.name() + "'");
             readTheFolder(p);
         } else {
-            Logger.info("No test project chosen for " + p.getName() + ", so nothing is read until something needs it");
+            TestinLogger.info("No test project chosen for " + p.getName() + ", so nothing is read until something needs it");
         }
 
         hintTestinFolder(p);

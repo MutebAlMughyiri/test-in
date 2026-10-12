@@ -29,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.clipboard.CopiedTestCases;
 import org.testin.clipboard.CutState;
 import org.testin.explorer.tree.TreeTransferHandler;
-import org.testin.logger.Logger;
+import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
@@ -40,33 +40,33 @@ import org.testin.view.ViewToolWindowFactory;
 import javax.swing.JPanel;
 import java.awt.datatransfer.StringSelection;
 
-public class EscapeAction extends AbstractProjectAction {
+public class TestinEscapeAction extends AbstractProjectAction {
     private static final @NotNull String TITLE = Bundle.message("escape.title");
 
     private final @NotNull CutState cutState = Services.getInstance(p, CutState.class);
 
     private final @NotNull Runnable onEscape;
 
-    public EscapeAction(final @NotNull Project p, final @NotNull SimpleTree tree, final @NotNull TreeTransferHandler transferHandler) {
+    public TestinEscapeAction(final @NotNull Project p, final @NotNull SimpleTree tree, final @NotNull TreeTransferHandler transferHandler) {
         super(p, TITLE, Bundle.message("escape.tree"), AllIcons.Actions.InlayGear);
         this.onEscape = () -> clearTreeTransfer(transferHandler);
         this.registerCustomShortcutSet(Shortcuts.Escape.getCustomShortcut(), tree);
     }
 
-    public EscapeAction(final @NotNull Project p, final @NotNull JBList<TestCaseDto> list) {
+    public TestinEscapeAction(final @NotNull Project p, final @NotNull JBList<TestCaseDto> list) {
         super(p, TITLE, Bundle.message("escape.editor"), AllIcons.Actions.InlayGear);
         this.onEscape = () -> stepBack(list::clearSelection);
         this.registerCustomShortcutSet(Shortcuts.Escape.getCustomShortcut(), list);
     }
 
     // UC-VIEW-PANEL-015, Rule-VIEW-PANEL-088
-    public EscapeAction(final @NotNull Project p, final @NotNull JPanel tab) {
+    public TestinEscapeAction(final @NotNull Project p, final @NotNull JPanel tab) {
         super(p, TITLE, Bundle.message("escape.panel"), AllIcons.Actions.InlayGear);
         this.onEscape = this::giveTheKeyboardBack;
         this.registerCustomShortcutSet(Shortcuts.Escape.getCustomShortcut(), tab);
     }
 
-    public EscapeAction(final @NotNull Project p, final @NotNull JBTable table) {
+    public TestinEscapeAction(final @NotNull Project p, final @NotNull JBTable table) {
         super(p, TITLE, Bundle.message("escape.grid"), AllIcons.Actions.InlayGear);
         this.onEscape = () -> escapeInGrid(table);
         this.registerCustomShortcutSet(Shortcuts.Escape.getCustomShortcut(), table);
@@ -81,7 +81,7 @@ public class EscapeAction extends AbstractProjectAction {
     // UC-TREE-PANEL-013, Rule-TREE-PANEL-050
     private void clearTreeTransfer(final @NotNull TreeTransferHandler transferHandler) {
         transferHandler.clearClipboard();
-        Logger.info("Clipboard/Cut state cleared via ESC.");
+        TestinLogger.info("Clipboard/Cut state cleared via ESC.");
     }
 
     // UC-EDITOR-PANEL-026, Rule-EDITOR-PANEL-115

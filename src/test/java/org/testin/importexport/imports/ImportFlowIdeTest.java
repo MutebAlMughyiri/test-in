@@ -37,7 +37,7 @@ import org.testin.Await;
 import org.testin.NodesOnDisk;
 import org.testin.Said;
 import org.testin.editor.open.UnifiedVirtualFile;
-import org.testin.importexport.FileTypes;
+import org.testin.importexport.FileFormat;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.Node;
@@ -145,12 +145,12 @@ public class ImportFlowIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull File aFile(final @NotNull String name, final @NotNull Map<String, List<TestCaseDto>> sheets) {
         final @NotNull File file = root.resolve(name).toFile();
-        FileTypes.JSON.exportToFile(getProject(), file, sheets);
+        FileFormat.JSON.exportToFile(getProject(), file, sheets);
         return file;
     }
 
     private @NotNull Map<String, List<TestCaseDto>> read(final @NotNull File file) {
-        return FileTypes.JSON.importToFile(getProject(), file);
+        return FileFormat.JSON.importToFile(getProject(), file);
     }
 
     private void imported(final @NotNull Node into, final @NotNull Map<String, List<TestCaseDto>> sheets) {
