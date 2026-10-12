@@ -29,7 +29,7 @@ import org.testin.services.Services;
 import java.nio.file.Path;
 
 // UC-TREE-PANEL-002
-public final class NewTestProject {
+public final class CreateTestProject {
     private final @NotNull Project p;
     private final @NotNull TreePanel tp;
     private final @NotNull String tpName;
@@ -38,7 +38,7 @@ public final class NewTestProject {
     private final @NotNull BoundTestProject boundTestProject;
     private final @NotNull Notifier notifier;
 
-    public NewTestProject(final @NotNull Project p, final @NotNull TreePanel tp, final @NotNull String tpName) {
+    public CreateTestProject(final @NotNull Project p, final @NotNull TreePanel tp, final @NotNull String tpName) {
         this.p = p;
         this.tp = tp;
         this.tpName = tpName;

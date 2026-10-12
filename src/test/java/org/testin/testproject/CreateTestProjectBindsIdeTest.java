@@ -23,7 +23,7 @@ import org.testin.explorer.TreePanel;
 import org.testin.indexer.AbstractReadTheRootIdeTest;
 import org.testin.services.Services;
 
-public class NewTestProjectBindsIdeTest extends AbstractReadTheRootIdeTest {
+public class CreateTestProjectBindsIdeTest extends AbstractReadTheRootIdeTest {
 
     // Rule-TREE-PANEL-017
     public void testCreatingATestProjectBindsThisCodeProjectToIt() {
@@ -35,7 +35,7 @@ public class NewTestProjectBindsIdeTest extends AbstractReadTheRootIdeTest {
         final @NotNull BoundTestProject bound = Services.getInstance(getProject(), BoundTestProject.class);
         assertEquals("nothing should be bound among two test projects", "", bound.name());
 
-        new NewTestProject(getProject(), panel, "Mobile").execute();
+        new CreateTestProject(getProject(), panel, "Mobile").execute();
 
         assertEquals("creating a test project did not bind this code project to it", "Mobile", bound.name());
         Await.until("the panel did not open the test project it created", () -> panel.showsTree() && bound.get().isPresent());

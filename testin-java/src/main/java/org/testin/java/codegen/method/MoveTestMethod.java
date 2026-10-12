@@ -31,7 +31,7 @@ import org.testin.codegen.event.MovedTestCase;
 import org.testin.java.codegen.GeneratedClass;
 import org.testin.java.codegen.GeneratedMethod;
 import org.testin.java.codegen.method.update.UpdateTestBase;
-import org.testin.java.codegen.method.update.UpdateTestOrder;
+import org.testin.java.codegen.method.update.UpdateTestMethodOrder;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 
@@ -60,7 +60,7 @@ public class MoveTestMethod extends UpdateTestBase implements GenAction<MovedTes
                     moves.forEach(moved -> move(p, moved).ifPresent(left::add));
                     left.forEach(pc -> reformat(p, pc));
 
-                    new UpdateTestOrder().executeAll(p, moves.stream().map(MovedTestCase::tc).toList());
+                    new UpdateTestMethodOrder().executeAll(p, moves.stream().map(MovedTestCase::tc).toList());
                 });
 
         if (CommandProcessor.getInstance().getCurrentCommand() != null) inCommand.run();

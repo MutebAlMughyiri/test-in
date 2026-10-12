@@ -44,7 +44,7 @@ public final class BugFiling {
     static @NotNull Function<ProgressIndicator, GitHubCli> ghOnThisMachine = GitHubCli::onPath;
 
     // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-073, Rule-VIEW-PANEL-077
-    public static void send(final @NotNull Project p, final @NotNull RunItemPath runItemPath, final @NotNull BugRepository repository, final @NotNull Edits edits, final @NotNull List<byte[]> screenshots, final @NotNull Runnable redraw) {
+    public static void send(final @NotNull Project p, final @NotNull RunItemPath runItemPath, final @NotNull BugRepository repository, final @NotNull BugReportEdits edits, final @NotNull List<byte[]> screenshots, final @NotNull Runnable redraw) {
         final @NotNull OpenBugReports reports = Services.getInstance(p, OpenBugReports.class);
         reports.keep(runItemPath, edits);
         reports.moveTo(runItemPath, Stage.SENDING);

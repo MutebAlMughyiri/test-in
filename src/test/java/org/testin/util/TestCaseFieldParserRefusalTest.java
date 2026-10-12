@@ -25,50 +25,50 @@ import java.util.List;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
-public class TestDataParserRefusalTest {
+public class TestCaseFieldParserRefusalTest {
 
     // Rule-SHARE-106
     @Test
     public void aPriorityItCannotReadIsRefused() {
-        assertTrue(TestDataParser.priority("Urgent", Priority.HIGH).isEmpty(),
+        assertTrue(TestCaseFieldParser.priority("Urgent", Priority.HIGH).isEmpty(),
                 "answering Low is how 200 imported test cases all became the lowest priority");
     }
 
     // Rule-SHARE-106
     @Test
     public void aBlankPriorityKeepsWhatTheTestCaseHad() {
-        assertEquals(TestDataParser.priority("  ", Priority.HIGH).orElseThrow(), Priority.HIGH,
+        assertEquals(TestCaseFieldParser.priority("  ", Priority.HIGH).orElseThrow(), Priority.HIGH,
                 "a priority has no empty form, so a blank cell says nothing rather than saying Low");
     }
 
     @Test
     public void aPriorityIsReadByItsWordInAnyCase() {
-        assertEquals(TestDataParser.priority(Priority.HIGH.getLabel(), Priority.LOW).orElseThrow(), Priority.HIGH,
+        assertEquals(TestCaseFieldParser.priority(Priority.HIGH.getLabel(), Priority.LOW).orElseThrow(), Priority.HIGH,
                 "the word is what the column shows, so it is what a tester retypes");
-        assertEquals(TestDataParser.priority("high", Priority.LOW).orElseThrow(), Priority.HIGH,
+        assertEquals(TestCaseFieldParser.priority("high", Priority.LOW).orElseThrow(), Priority.HIGH,
                 "a tester typing the word in lower case is still understood");
     }
 
     @Test
     public void aGroupNobodyHasUsedBeforeIsTaken() {
-        assertEquals(TestDataParser.groups("Regression, Payments").orElseThrow(), List.of("Regression", "Payments"));
+        assertEquals(TestCaseFieldParser.groups("Regression, Payments").orElseThrow(), List.of("Regression", "Payments"));
     }
 
     @Test
     public void aGroupNamedTwiceIsNamedOnce() {
-        assertEquals(TestDataParser.groups("Regression, Regression").orElseThrow(), List.of("Regression"),
+        assertEquals(TestCaseFieldParser.groups("Regression, Regression").orElseThrow(), List.of("Regression"),
                 "the bulk editor deduplicated and the grid did not, so one cell had two answers (#295)");
     }
 
     // Rule-SHARE-106
     @Test
     public void aBlankCellIsNoGroupsAtAll() {
-        assertTrue(TestDataParser.groups("   ").orElseThrow().isEmpty(),
+        assertTrue(TestCaseFieldParser.groups("   ").orElseThrow().isEmpty(),
                 "groups have an empty form, so a blank cell clears them");
     }
 
     @Test
     public void theNoGroupWordIsNoGroupsEither() {
-        assertTrue(TestDataParser.groups(Groups.NONE).orElseThrow().isEmpty());
+        assertTrue(TestCaseFieldParser.groups(Groups.NONE).orElseThrow().isEmpty());
     }
 }

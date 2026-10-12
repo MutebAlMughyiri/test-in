@@ -73,7 +73,7 @@ public record TestRunFixture(@NotNull Project p, @NotNull List<TestCaseDto> test
 
     public static @NotNull AnAction keyFor(final @NotNull TestRunEditor editor, final @NotNull RunItemStatus status) {
         return ActionUtil.getActions(editor.getList()).stream()
-                .filter(action -> action instanceof final SetTestCaseStatusAction key && key.getStatus() == status)
+                .filter(action -> action instanceof final SetRunItemStatusAction key && key.getStatus() == status)
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("no key records " + status));
     }

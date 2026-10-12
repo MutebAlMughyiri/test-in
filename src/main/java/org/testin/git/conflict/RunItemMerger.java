@@ -25,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.model.Config;
 import org.testin.util.Bundle;
 import org.testin.util.Mapper;
-import org.testin.util.TestDataParser;
+import org.testin.util.TestCaseFieldParser;
 
 import java.time.ZonedDateTime;
 import java.util.Comparator;
@@ -74,7 +74,7 @@ final class RunItemMerger {
     }
 
     private static @NotNull ZonedDateTime executedAt(final @NotNull JsonNode execution) {
-        return TestDataParser.date(execution.path(EXECUTED_AT).asText("")).orElse(Config.NOT_EXECUTED);
+        return TestCaseFieldParser.date(execution.path(EXECUTED_AT).asText("")).orElse(Config.NOT_EXECUTED);
     }
 
     private static @NotNull ZonedDateTime lastRecorded(final @NotNull ObjectNode runItem) {

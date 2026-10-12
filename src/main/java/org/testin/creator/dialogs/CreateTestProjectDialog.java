@@ -30,13 +30,13 @@ import org.testin.util.Bundle;
 import java.util.List;
 import java.util.function.Consumer;
 
-public final class CreateProjectDialog extends AbstractFrameworkDialog {
+public final class CreateTestProjectDialog extends AbstractFrameworkDialog {
     private final @NotNull TextInput nameInput;
 
     private final @NotNull Consumer<@NotNull String> onCreate;
 
     // UC-TREE-PANEL-002, UC-TREE-PANEL-003
-    public CreateProjectDialog(final @NotNull Project p, final @NotNull Consumer<@NotNull String> onCreate) {
+    public CreateTestProjectDialog(final @NotNull Project p, final @NotNull Consumer<@NotNull String> onCreate) {
         super(p);
         this.onCreate = onCreate;
 
@@ -62,7 +62,7 @@ public final class CreateProjectDialog extends AbstractFrameworkDialog {
     // UC-TREE-PANEL-002, Rule-TREE-PANEL-005, Rule-TREE-PANEL-095
     @Override
     protected void submit() {
-        final @NotNull String name = accepted(nameInput, CreateProjectDialog::isNameOrUrl, Refused.NOT_A_JAVA_NAME);
+        final @NotNull String name = accepted(nameInput, CreateTestProjectDialog::isNameOrUrl, Refused.NOT_A_JAVA_NAME);
         if (name.isEmpty()) return;
 
         onCreate.accept(name);

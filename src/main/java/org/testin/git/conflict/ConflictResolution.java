@@ -108,7 +108,7 @@ public final class ConflictResolution {
         final @NotNull Mapper mapper = Services.getInstance(p, Mapper.class);
 
         final @NotNull List<String> leftOver = new ArrayList<>();
-        final @NotNull List<Pending> pending = new ArrayList<>();
+        final @NotNull List<UnansweredConflict> pending = new ArrayList<>();
         final @NotNull List<String> settledQuietly = new ArrayList<>();
 
         final @NotNull List<String> mergeable = conflicting.stream().filter(relativePath -> mergerFor(relativePath).isPresent()).toList();
@@ -135,7 +135,7 @@ public final class ConflictResolution {
             final @NotNull MergeOutcome merge = merger.orElseThrow().merge(mapper, base, mine, theirs);
 
             if (!merge.isSettled()) {
-                pending.add(new Pending(relativePath, name(mapper, mine, relativePath), merge.merged(),
+                pending.add(new UnansweredConflict(relativePath, name(mapper, mine, relativePath), merge.merged(),
                         merge.questions(), merge.settled(), theirs));
                 continue;
             }
@@ -156,15 +156,15 @@ public final class ConflictResolution {
     }
 
     // UC-SHARE-018, Rule-SHARE-081
-    private static void ask(final @NotNull Project p, final @NotNull GitRepositoryService git, final @NotNull Mapper mapper, final @NotNull Path repositoryPath, final @NotNull List<Pending> pending, final @NotNull List<String> leftOver, final @NotNull Runnable onResolved, final @NotNull Consumer<List<String>> onLeftOver) {
+    private static void ask(final @NotNull Project p, final @NotNull GitRepositoryService git, final @NotNull Mapper mapper, final @NotNull Path repositoryPath, final @NotNull List<UnansweredConflict> pending, final @NotNull List<String> leftOver, final @NotNull Runnable onResolved, final @NotNull Consumer<List<String>> onLeftOver) {
         if (pending.isEmpty()) {
             if (leftOver.isEmpty()) onResolved.run();
             else onLeftOver.accept(List.copyOf(leftOver));
             return;
         }
 
-        final @NotNull Pending next = pending.getFirst();
-        final @NotNull List<Pending> rest = pending.subList(1, pending.size());
+        final @NotNull UnansweredConflict next = pending.getFirst();
+        final @NotNull List<UnansweredConflict> rest = pending.subList(1, pending.size());
 
         final @NotNull Runnable skipped = () -> {
             final @NotNull List<String> stillLeft = new ArrayList<>(leftOver);

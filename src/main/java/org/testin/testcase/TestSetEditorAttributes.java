@@ -38,7 +38,7 @@ import org.testin.ui.Badges;
 import org.testin.util.Bundle;
 import org.testin.util.Display;
 import org.testin.util.NameSanitizer;
-import org.testin.util.TestDataParser;
+import org.testin.util.TestCaseFieldParser;
 
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -113,7 +113,7 @@ public enum TestSetEditorAttributes implements ToolBarAttribute {
             Bundle.message("attribute.steps"),
             ToolBarDefault.OFF,
             tc -> String.join(", ", tc.getSteps()),
-            always((draft, v) -> draft.steps(TestDataParser.steps(v))),
+            always((draft, v) -> draft.steps(TestCaseFieldParser.steps(v))),
             GenType.UPDATE_TEST_CASE_STEPS,
             Can.EDIT, Can.IMPORT, Can.COPY, Can.EXPORT
     ),
@@ -122,7 +122,7 @@ public enum TestSetEditorAttributes implements ToolBarAttribute {
             Bundle.message("attribute.priority"),
             ToolBarDefault.ON,
             tc -> tc.getPriority().getLabel(),
-            (_, tc, v) -> TestDataParser.priority(v, tc.getPriority()).map(priority -> tc.edit().priority(priority).build()),
+            (_, tc, v) -> TestCaseFieldParser.priority(v, tc.getPriority()).map(priority -> tc.edit().priority(priority).build()),
             GenType.UPDATE_TEST_CASE_PRIORITY,
             Can.EDIT, Can.IMPORT, Can.COPY, Can.EXPORT
     ) {
@@ -171,7 +171,7 @@ public enum TestSetEditorAttributes implements ToolBarAttribute {
             Bundle.message("attribute.group"),
             ToolBarDefault.ON,
             tc -> Groups.text(tc.getGroups()),
-            (_, tc, v) -> TestDataParser.groups(v).map(groups -> tc.edit().groups(groups).build()),
+            (_, tc, v) -> TestCaseFieldParser.groups(v).map(groups -> tc.edit().groups(groups).build()),
             GenType.UPDATE_TEST_CASE_GROUP,
             Can.EDIT, Can.IMPORT, Can.COPY, Can.EXPORT
     ) {
@@ -203,7 +203,7 @@ public enum TestSetEditorAttributes implements ToolBarAttribute {
             Bundle.message("attribute.status"),
             ToolBarDefault.OFF,
             tc -> tc.getStatus().getLabel(),
-            (_, tc, v) -> TestDataParser.testCaseStatus(v, tc.getStatus()).map(status -> tc.edit().status(status).build()),
+            (_, tc, v) -> TestCaseFieldParser.testCaseStatus(v, tc.getStatus()).map(status -> tc.edit().status(status).build()),
             GenType.UPDATE_TEST_CASE_STATUS,
             Can.EDIT, Can.COPY, Can.EXPORT
     ),
@@ -230,7 +230,7 @@ public enum TestSetEditorAttributes implements ToolBarAttribute {
             Bundle.message("attribute.created.at"),
             ToolBarDefault.OFF,
             tc -> Display.formatDate(tc.getCreatedAt()),
-            (_, tc, v) -> TestDataParser.date(v).map(at -> tc.edit().createdAt(at).build()),
+            (_, tc, v) -> TestCaseFieldParser.date(v).map(at -> tc.edit().createdAt(at).build()),
             GenType.NO_CODE_CHANGE,
             Can.IMPORT, Can.EXPORT
     ),
@@ -239,7 +239,7 @@ public enum TestSetEditorAttributes implements ToolBarAttribute {
             Bundle.message("attribute.updated.at"),
             ToolBarDefault.OFF,
             tc -> Display.formatDate(tc.getUpdatedAt()),
-            (_, tc, v) -> TestDataParser.date(v).map(at -> tc.edit().updatedAt(at).build()),
+            (_, tc, v) -> TestCaseFieldParser.date(v).map(at -> tc.edit().updatedAt(at).build()),
             GenType.NO_CODE_CHANGE,
             Can.IMPORT, Can.EXPORT
     );
@@ -318,7 +318,7 @@ public enum TestSetEditorAttributes implements ToolBarAttribute {
     public boolean isColumn(final @NotNull String header) {
         final @NotNull String wanted = header.trim();
 
-        return name.equalsIgnoreCase(wanted) || TestDataParser.namesConstant(this, wanted);
+        return name.equalsIgnoreCase(wanted) || TestCaseFieldParser.namesConstant(this, wanted);
     }
 
     // Rule-EDITOR-PANEL-020

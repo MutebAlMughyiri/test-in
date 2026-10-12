@@ -27,26 +27,26 @@ public class TestCaseStatusParseTest {
     @Test
     public void everyStatusCanBeTypedBackExactlyAsItIsShown() {
         for (final TestCaseStatus status : TestCaseStatus.values()) {
-            assertEquals(TestDataParser.testCaseStatus(status.getLabel(), TestCaseStatus.PENDING).orElseThrow(), status,
+            assertEquals(TestCaseFieldParser.testCaseStatus(status.getLabel(), TestCaseStatus.PENDING).orElseThrow(), status,
                     status.getLabel() + " is what the cell prints, so it has to be what the cell accepts");
         }
     }
 
     @Test
     public void theConstantNameIsAcceptedToo() {
-        assertEquals(TestDataParser.testCaseStatus("TO_BE_UPDATED", TestCaseStatus.PENDING).orElseThrow(), TestCaseStatus.TO_BE_UPDATED);
+        assertEquals(TestCaseFieldParser.testCaseStatus("TO_BE_UPDATED", TestCaseStatus.PENDING).orElseThrow(), TestCaseStatus.TO_BE_UPDATED);
     }
 
     @Test
     public void caseAndSurroundingSpaceDoNotMatter() {
-        assertEquals(TestDataParser.testCaseStatus("  reviewed  ", TestCaseStatus.PENDING).orElseThrow(), TestCaseStatus.REVIEWED);
+        assertEquals(TestCaseFieldParser.testCaseStatus("  reviewed  ", TestCaseStatus.PENDING).orElseThrow(), TestCaseStatus.REVIEWED);
     }
 
     // Rule-SHARE-106
     @Test
     public void anythingElseKeepsTheStatusTheTestCaseAlreadyHad() {
-        assertTrue(TestDataParser.testCaseStatus("Nonsense", TestCaseStatus.REVIEWED).isEmpty(), "a word Testin cannot read is refused, so the caller can say so");
-        assertEquals(TestDataParser.testCaseStatus("", TestCaseStatus.DISABLED).orElseThrow(), TestCaseStatus.DISABLED);
-        assertEquals(TestDataParser.testCaseStatus("   ", TestCaseStatus.TO_BE_UPDATED).orElseThrow(), TestCaseStatus.TO_BE_UPDATED);
+        assertTrue(TestCaseFieldParser.testCaseStatus("Nonsense", TestCaseStatus.REVIEWED).isEmpty(), "a word Testin cannot read is refused, so the caller can say so");
+        assertEquals(TestCaseFieldParser.testCaseStatus("", TestCaseStatus.DISABLED).orElseThrow(), TestCaseStatus.DISABLED);
+        assertEquals(TestCaseFieldParser.testCaseStatus("   ", TestCaseStatus.TO_BE_UPDATED).orElseThrow(), TestCaseStatus.TO_BE_UPDATED);
     }
 }

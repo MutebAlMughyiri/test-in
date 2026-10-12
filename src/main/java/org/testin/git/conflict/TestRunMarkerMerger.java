@@ -25,7 +25,7 @@ import org.testin.model.Config;
 import org.testin.model.status.TestRunStatus;
 import org.testin.util.Bundle;
 import org.testin.util.Mapper;
-import org.testin.util.TestDataParser;
+import org.testin.util.TestCaseFieldParser;
 
 import java.time.ZonedDateTime;
 import java.util.LinkedHashSet;
@@ -127,6 +127,6 @@ final class TestRunMarkerMerger {
     }
 
     private static @NotNull ZonedDateTime stamp(final @NotNull ObjectNode marker, final @NotNull String field) {
-        return TestDataParser.date(marker.path(field).asText("")).orElse(Config.NOT_EXECUTED);
+        return TestCaseFieldParser.date(marker.path(field).asText("")).orElse(Config.NOT_EXECUTED);
     }
 }

@@ -35,14 +35,14 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Locale;
 
-class KeyBtn extends JBPanel<KeyBtn> {
+class RunItemStatusBtn extends JBPanel<RunItemStatusBtn> {
     private static final int PADDING = 9;
 
     private final @NotNull Runnable onClick;
 
     private boolean hovered;
 
-    KeyBtn(final @NotNull String key, final @NotNull String text, final @NotNull Runnable onClick) {
+    RunItemStatusBtn(final @NotNull String key, final @NotNull String text, final @NotNull Runnable onClick) {
         super(new FlowLayout(FlowLayout.CENTER, JBUI.scale(6), JBUI.scale(PADDING)));
         this.onClick = onClick;
 

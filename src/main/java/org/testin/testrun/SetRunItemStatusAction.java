@@ -35,11 +35,11 @@ import org.testin.util.Bundle;
 import java.util.List;
 import java.util.Optional;
 
-public class SetTestCaseStatusAction extends AbstractAnyProjectAction {
+public class SetRunItemStatusAction extends AbstractAnyProjectAction {
     @Getter
     private final @NotNull RunItemStatus status;
 
-    public SetTestCaseStatusAction(final @NotNull RunItemStatus status) {
+    public SetRunItemStatusAction(final @NotNull RunItemStatus status) {
         super(status.getLabel());
         this.status = status;
 

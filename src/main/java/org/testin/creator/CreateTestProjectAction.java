@@ -23,14 +23,14 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractBoundProjectAction;
 import org.testin.actions.GrayWithReason;
-import org.testin.creator.dialogs.CreateProjectDialog;
+import org.testin.creator.dialogs.CreateTestProjectDialog;
 import org.testin.explorer.TreePanel;
 import org.testin.git.GitRefs;
 import org.testin.services.OptionalPlugin;
 import org.testin.services.Services;
 import org.testin.setting.TestinRoot;
 import org.testin.testproject.CloneTestProject;
-import org.testin.testproject.NewTestProject;
+import org.testin.testproject.CreateTestProject;
 import org.testin.testproject.TestProjectFolder;
 import org.testin.util.Bundle;
 
@@ -52,9 +52,9 @@ public class CreateTestProjectAction extends AbstractBoundProjectAction {
 
     // UC-TREE-PANEL-002, UC-TREE-PANEL-003, Rule-TREE-PANEL-107
     public void execute() {
-        new CreateProjectDialog(p, name -> {
+        new CreateTestProjectDialog(p, name -> {
             if (!GitRefs.isRepositoryUrl(name)) {
-                new NewTestProject(p, tp, name).execute();
+                new CreateTestProject(p, tp, name).execute();
                 return;
             }
 

@@ -553,7 +553,7 @@ final class LightModeScreen {
         for (final RunItemStatus status : RunItemStatus.values()) {
             if (!status.isRunItemStatus()) continue;
 
-            runItemStatuses.add(new KeyBtn(keyOf(status), status.getLabel(), () -> judge(status)));
+            runItemStatuses.add(new RunItemStatusBtn(keyOf(status), status.getLabel(), () -> judge(status)));
         }
 
         return runItemStatuses;

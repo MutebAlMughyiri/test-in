@@ -27,7 +27,7 @@ import org.testin.model.TestCaseDto;
 import org.testin.model.node.Node;
 import org.testin.open.OpenContextMenuAction;
 import org.testin.report.GenerateReportAction;
-import org.testin.testrun.SetTestCaseStatusGroup;
+import org.testin.testrun.SetRunItemStatusGroup;
 
 public class TestRunEditorContextMenu extends AbstractEditorContextMenu {
     private final @NotNull Project p;
@@ -60,6 +60,6 @@ public class TestRunEditorContextMenu extends AbstractEditorContextMenu {
         new OpenContextMenuAction(list, this);
         new GenerateReportAction(p, ui, list);
 
-        SetTestCaseStatusGroup.bindLettersTo(list);
+        SetRunItemStatusGroup.bindLettersTo(list);
     }
 }

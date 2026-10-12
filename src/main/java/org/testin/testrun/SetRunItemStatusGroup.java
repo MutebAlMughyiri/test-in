@@ -26,9 +26,9 @@ import javax.swing.JComponent;
 import java.util.Arrays;
 import java.util.List;
 
-public class SetTestCaseStatusGroup extends DefaultActionGroup {
+public class SetRunItemStatusGroup extends DefaultActionGroup {
     // UC-EDITOR-PANEL-032
-    public SetTestCaseStatusGroup() {
+    public SetRunItemStatusGroup() {
         super(runItemStatuses());
     }
 
@@ -38,11 +38,11 @@ public class SetTestCaseStatusGroup extends DefaultActionGroup {
     }
 
     // UC-EDITOR-PANEL-032, Rule-EDITOR-PANEL-213
-    private static @NotNull List<SetTestCaseStatusAction> runItemStatuses() {
+    private static @NotNull List<SetRunItemStatusAction> runItemStatuses() {
         return Arrays.stream(RunItemStatus.values())
                 .filter(RunItemStatus::isRunItemStatus)
                 .map(status -> {
-                    final @NotNull SetTestCaseStatusAction action = new SetTestCaseStatusAction(status);
+                    final @NotNull SetRunItemStatusAction action = new SetRunItemStatusAction(status);
 
                     action.registerCustomShortcutSet(Shortcuts.customShortcut(status.getMenuEntry().shortcut()), null);
                     return action;

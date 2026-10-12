@@ -28,7 +28,7 @@ import java.util.Optional;
 @Service(Service.Level.PROJECT)
 public final class OpenBugReports {
     private final @NotNull Map<RunItemPath, Stage> onTheWay = new HashMap<>();
-    private final @NotNull Map<RunItemPath, Edits> unsent = new HashMap<>();
+    private final @NotNull Map<RunItemPath, BugReportEdits> unsent = new HashMap<>();
 
     void begin(final @NotNull RunItemPath runItemPath) {
         onTheWay.put(runItemPath, Stage.PREPARING);
@@ -46,11 +46,11 @@ public final class OpenBugReports {
         return onTheWay.entrySet().stream().anyMatch(entry -> entry.getValue() == Stage.OPEN && !entry.getKey().equals(runItemPath));
     }
 
-    void keep(final @NotNull RunItemPath runItemPath, final @NotNull Edits edits) {
+    void keep(final @NotNull RunItemPath runItemPath, final @NotNull BugReportEdits edits) {
         unsent.put(runItemPath, edits);
     }
 
-    @NotNull Optional<Edits> unsent(final @NotNull RunItemPath runItemPath) {
+    @NotNull Optional<BugReportEdits> unsent(final @NotNull RunItemPath runItemPath) {
         return Optional.ofNullable(unsent.get(runItemPath));
     }
 

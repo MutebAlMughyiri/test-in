@@ -56,7 +56,7 @@ public class ReconcileTestMethod extends UpdateTestBase implements GenAction<Tes
         final @NotNull Runnable inCommand = () ->
                 WriteCommandAction.runWriteCommandAction(p, GenType.RECONCILE_TEST_CASE.description(), null, () -> {
                     byClass.values().forEach(inClass -> rewrite(p, inClass));
-                    new UpdateTestOrder().executeAll(p, testCases);
+                    new UpdateTestMethodOrder().executeAll(p, testCases);
                 });
 
         if (CommandProcessor.getInstance().getCurrentCommand() != null) inCommand.run();

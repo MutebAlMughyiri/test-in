@@ -67,7 +67,7 @@ public class TestNGEventRelayTest {
     // Rule-CODEGEN-075
     @Test
     public void aPassedTestCarriesNoFailure() {
-        final @NotNull SMTestProxy test = started("logsin");
+        final @NotNull SMTestProxy test = started("logsIn");
         test.setFinished();
 
         assertEquals(finished(test), ExecutionStatus.PASSED + ": ");

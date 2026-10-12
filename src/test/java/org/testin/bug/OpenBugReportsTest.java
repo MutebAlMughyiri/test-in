@@ -89,7 +89,7 @@ public class OpenBugReportsTest {
     @Test
     public void unsentEditsAreKeptUntilDiscarded() {
         final OpenBugReports reports = new OpenBugReports();
-        final Edits edits = new Edits("Log in fails", "body");
+        final BugReportEdits edits = new BugReportEdits("Log in fails", "body");
 
         reports.keep(RUN_ITEM_PATH, edits);
         assertEquals(reports.unsent(RUN_ITEM_PATH), Optional.of(edits), "a failed send reopens with them");

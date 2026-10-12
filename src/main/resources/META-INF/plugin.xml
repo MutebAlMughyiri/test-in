@@ -286,7 +286,7 @@
              (#119). -->
         <group
                 id="Testin.SetTestCaseStatus"
-                class="org.testin.testrun.SetTestCaseStatusGroup"
+                class="org.testin.testrun.SetRunItemStatusGroup"
                 popup="false"
         />
 

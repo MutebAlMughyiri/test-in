@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-package org.testin.testcase;
+package org.testin.git.conflict;
 
-import com.google.errorprone.annotations.Immutable;
-import com.intellij.openapi.project.Project;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
 
 import java.util.List;
-import java.util.function.Consumer;
 
-@FunctionalInterface
-@Immutable
-public interface BulkEditorAction {
-    void execute(final @NotNull Project p, final @NotNull List<TestCaseDto> items, final @NotNull Consumer<List<TestCaseDto>> updatedItems);
+record UnansweredConflict(@NotNull String relativePath, @NotNull String name, @NotNull ObjectNode merged, @NotNull List<Question> questions, @NotNull List<String> settled, @NotNull String theirs) {
 }

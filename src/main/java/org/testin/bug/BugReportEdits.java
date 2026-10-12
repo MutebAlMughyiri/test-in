@@ -18,5 +18,5 @@ package org.testin.bug;
 
 import org.jetbrains.annotations.NotNull;
 
-public record Edits(@NotNull String title, @NotNull String body) {
+public record BugReportEdits(@NotNull String title, @NotNull String body) {
 }

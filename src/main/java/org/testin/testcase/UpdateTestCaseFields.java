@@ -189,7 +189,7 @@ public enum UpdateTestCaseFields implements MenuItem {
     private final @NotNull Icon icon;
     private final @NotNull GenType<TestCaseDto> gt;
     private final @NotNull Done done;
-    private final @NotNull BulkEditorAction bulkAction;
+    private final @NotNull BulkDialogOpener bulkAction;
     private final @NotNull Function<TestCaseBaseDialog, CreateTestCaseSection> sectionExtractor;
 
     private final @NotNull ImmutableList<TestCaseDialogKey> ownKeys;

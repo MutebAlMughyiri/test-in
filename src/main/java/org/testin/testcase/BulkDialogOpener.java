@@ -14,28 +14,18 @@
  * limitations under the License.
  */
 
-package org.testin.java.codegen.method.update;
+package org.testin.testcase;
 
+import com.google.errorprone.annotations.Immutable;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.codegen.GenAction;
-import org.testin.codegen.GenType;
 import org.testin.model.TestCaseDto;
 
 import java.util.List;
+import java.util.function.Consumer;
 
-public class UpdateTestGroup extends UpdateTestBase implements GenAction<TestCaseDto> {
-    // UC-CODEGEN-012, Rule-CODEGEN-045
-    @Override
-    public void execute(final @NotNull Project p, final @NotNull TestCaseDto tc) {
-        applyUpdate(p, tc, GenType.UPDATE_TEST_CASE_GROUP.description(), pm -> {
-            writeGroups(p, pm, tc);
-            reformat(p, pm);
-        });
-    }
-
-    @Override
-    public void executeAll(final @NotNull Project p, final @NotNull List<? extends TestCaseDto> items) {
-        applyToEach(p, items, GenType.UPDATE_TEST_CASE_GROUP.description(), (pm, tc) -> writeGroups(p, pm, tc));
-    }
+@FunctionalInterface
+@Immutable
+public interface BulkDialogOpener {
+    void execute(final @NotNull Project p, final @NotNull List<TestCaseDto> items, final @NotNull Consumer<List<TestCaseDto>> updatedItems);
 }
