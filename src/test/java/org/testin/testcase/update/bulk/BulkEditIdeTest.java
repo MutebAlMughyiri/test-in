@@ -139,6 +139,13 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
         ShownDialog.press(getProject(), ModuleBulkSectionDialog.class, Shortcuts.Enter.getKey());
     }
 
+    private @NotNull List<String> whatTheSaveSaid() {
+        final @NotNull Said balloons = Said.listening(getProject(), getTestRootDisposable());
+        save();
+        Await.until("the save never said what it did", () -> !balloons.shown().isEmpty());
+        return balloons.shown();
+    }
+
     private @NotNull List<String> everyFile() {
         try (final Stream<Path> files = Files.list(testSet.getPath())) {
             return files.filter(Files::isRegularFile).sorted().map(file -> file + "@" + file.toFile().lastModified() + "=" + read(file)).toList();
@@ -168,9 +175,9 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
         assertEquals("the test case with no module has no line of its own", startOfValue(values().getDocument(), 1), endOfValue(values().getDocument(), 1));
 
         type(1, "Basket");
-        save();
+        whatTheSaveSaid();
 
-        Await.until("the value typed on the empty line was never written", () -> moduleOf(testCases.get(1)).equals("Basket"));
+        assertEquals("the value typed on the empty line was never written", "Basket", moduleOf(testCases.get(1)));
     }
 
     // Rule-EDITOR-PANEL-041, Rule-EDITOR-PANEL-042
@@ -180,9 +187,9 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
         bulkEditTheModules();
 
         type(1, "  Basket  ");
-        save();
+        whatTheSaveSaid();
 
-        Await.until("the edited row was never written trimmed", () -> moduleOf(testCases.get(1)).equals("Basket"));
+        assertEquals("the edited row was not written trimmed", "Basket", moduleOf(testCases.get(1)));
         assertEquals("a row the tester did not touch was trimmed", "  Payments  ", moduleOf(testCases.getFirst()));
         assertTrue("a row the tester did not touch had its file written", everyFile().contains(untouched));
     }
@@ -212,16 +219,15 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
         final @NotNull List<TestCaseDto> testCases = aTestSetWithModules("Payments", "Cart", "Search");
         final @NotNull UndoScope scope = UndoScope.of(testSet.getPath());
         bulkEditTheModules();
-        final @NotNull Said balloons = Said.listening(getProject(), getTestRootDisposable());
 
         type(0, "Billing");
         type(1, "Basket");
         type(2, "Find");
-        save();
+        final @NotNull List<String> said = whatTheSaveSaid();
 
-        Await.until("the gesture never reached the undo history", () -> undoHistories().canUndo(scope));
+        assertTrue("the gesture never reached the undo history", undoHistories().canUndo(scope));
         assertEquals(Bundle.message("snapshot.undo.many", Bundle.message("snapshot.verb.update"), "3"), undoHistories().undoDescription(scope));
-        assertEquals("the change to three test cases did not say so once, with a count", List.of(Done.counted(Done.UPDATED.getOutcome(), 3)), balloons.shown());
+        assertEquals("the change to three test cases did not say so once, with a count", List.of(Done.counted(Done.UPDATED.getOutcome(), 3)), said);
 
         assertTrue("the gesture could not be taken back", undoHistories().undo(scope));
         assertEquals(List.of("Payments", "Cart", "Search"), testCases.stream().map(this::moduleOf).toList());
