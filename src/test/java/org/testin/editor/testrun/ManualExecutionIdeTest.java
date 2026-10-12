@@ -478,7 +478,7 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
             editor.onStartExecutionClicked();
             awaitWalkOn(editor, testCases.getFirst());
 
-            runItemStatuses().recordReported(editor, testCases.getFirst(), RunItemStatus.PASSED, List.of(Execution.builder().status(RunItemStatus.PASSED).duration(Duration.ofMillis(84)).build()), 0, 0);
+            runItemStatuses().recordReported(editor, testCases.getFirst(), RunItemStatus.PASSED, List.of(Execution.builder().status(RunItemStatus.PASSED).duration(Duration.ofMillis(84)).build()), 0);
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
             assertEquals(RunItemStatus.PASSED, statusOf(tr, testCases.getFirst()));

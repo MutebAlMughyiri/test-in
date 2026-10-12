@@ -24,6 +24,7 @@ import org.testin.util.Bundle;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.testng.Assert.assertEquals;
@@ -39,28 +40,28 @@ public class ReportWarningTest {
     // Rule-REPORT-027
     @Test
     public void aRunItemExecutedOnceSaysNothingMore() {
-        assertEquals(ReportText.otherExecutions(executed(RunItemStatus.FAILED)), "");
+        assertEquals(ReportText.otherExecutions(executed(RunItemStatus.FAILED)), Optional.empty());
     }
 
     // Rule-REPORT-027
     @Test
     public void aPassThatFailedBeforeSaysSo() {
         assertEquals(ReportText.otherExecutions(executed(RunItemStatus.FAILED, RunItemStatus.PASSED)),
-                Bundle.message("report.other.execution", RunItemStatus.FAILED.getLabel()));
+                Optional.of(Bundle.message("report.other.execution", RunItemStatus.FAILED.getLabel())));
     }
 
     // Rule-REPORT-027
     @Test
     public void severalOthersAreCountedByStatusInOneLine() {
         assertEquals(ReportText.otherExecutions(executed(RunItemStatus.BLOCKED, RunItemStatus.FAILED, RunItemStatus.FAILED, RunItemStatus.PASSED)),
-                Bundle.message("report.other.executions", RunItemStatus.FAILED.getLabel(), "2") + ", "
-                        + Bundle.message("report.other.execution", RunItemStatus.BLOCKED.getLabel()));
+                Optional.of(Bundle.message("report.other.executions", RunItemStatus.FAILED.getLabel(), "2") + ", "
+                        + Bundle.message("report.other.execution", RunItemStatus.BLOCKED.getLabel())));
     }
 
     // Rule-REPORT-027
     @Test
     public void theDefaultsOwnFailureAndOtherPassesAreNotWarnedAbout() {
-        assertEquals(ReportText.otherExecutions(executed(RunItemStatus.PASSED, RunItemStatus.PASSED, RunItemStatus.FAILED)), "",
+        assertEquals(ReportText.otherExecutions(executed(RunItemStatus.PASSED, RunItemStatus.PASSED, RunItemStatus.FAILED)), Optional.empty(),
                 "the run item is already Failed, and the passes are not a warning");
     }
 }

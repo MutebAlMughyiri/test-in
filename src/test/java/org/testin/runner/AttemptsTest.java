@@ -98,6 +98,24 @@ public class AttemptsTest {
         assertEquals(attempts.executions().get(attempts.deciding()).getParameters(), "[0000]", "the failing row decides");
     }
 
+    // Rule-CODEGEN-111, Rule-VIEW-PANEL-119
+    @Test
+    public void theDecidingExecutionIsTheDefaultEvenWhenAStopCameFirst() {
+        final @NotNull List<Execution> decided = held(ExecutionStatus.IDLE, ExecutionStatus.FAILED, ExecutionStatus.PASSED).decidedExecutions();
+
+        assertEquals(decided.stream().map(Execution::getStatus).toList(), List.of(RunItemStatus.FAILED, RunItemStatus.PASSED));
+        assertEquals(decided.stream().map(Execution::isChosen).toList(), List.of(true, false), "the failed invocation decides, not the one after it");
+    }
+
+    // Rule-CODEGEN-111
+    @Test
+    public void aDecidingLastAttemptCarriesNoFlagAndALiveOneNeverDoes() {
+        assertEquals(held(ExecutionStatus.PASSED, ExecutionStatus.FAILED).decidedExecutions().stream().map(Execution::isChosen).toList(), List.of(false, false),
+                "the last execution is the default without a flag");
+        assertEquals(held(ExecutionStatus.FAILED, ExecutionStatus.PASSED).executions().stream().map(Execution::isChosen).toList(), List.of(false, false),
+                "attempts shown while TestNG runs choose nothing");
+    }
+
     @Test
     public void aStartOrAStopIsNotAnExecution() {
         assertTrue(held(ExecutionStatus.RUNNING).executions().isEmpty());

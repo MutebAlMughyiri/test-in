@@ -108,6 +108,11 @@ There is no key for this. It is what the **Details** tab shows.
   changes nothing else. The panel opens on the default.
 - **Rule-VIEW-PANEL-123** — A run item executed once reads as it did before
   executions were kept: one line, no ★, nothing to hover.
+- **Rule-VIEW-PANEL-124** — Everything on the Details tab wraps to the panel's
+  width: a value onto more lines, and a row of badges, chips and links onto a
+  second row. Making the panel narrower never cuts anything off at the right or
+  makes it scroll sideways. The History tab keeps each card's lines whole
+  instead, and scrolls sideways when they are wider than the panel.
 
 ## The screen
 

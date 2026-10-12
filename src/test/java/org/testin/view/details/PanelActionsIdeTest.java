@@ -120,7 +120,10 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("the panel drew no button that opens the test case: " + Drawn.words(tab)))
                 .getParent();
-        return Arrays.stream(actions.getComponents()).filter(JBLabel.class::isInstance).map(JBLabel.class::cast).toList();
+        final @NotNull Set<String> actionNames = Arrays.stream(CardHoverAction.values()).map(CardHoverAction::getTooltip).collect(Collectors.toSet());
+        return Arrays.stream(actions.getComponents()).filter(JBLabel.class::isInstance).map(JBLabel.class::cast)
+                .filter(label -> actionNames.contains(nameOf(label)))
+                .toList();
     }
 
     private void codeIsOff() {

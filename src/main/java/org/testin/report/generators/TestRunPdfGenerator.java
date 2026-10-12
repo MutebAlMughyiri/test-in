@@ -304,9 +304,7 @@ public final class TestRunPdfGenerator {
                     .setMarginBottom(0));
 
             // Rule-REPORT-027
-            final @NotNull String others = ReportText.otherExecutions(runItem);
-            if (!others.isEmpty())
-                testCaseCell.add(para(others).setFont(regularFont).setFontSize(ReportFont.SMALL.pt()).setFontColor(DARK_GRAY));
+            ReportText.otherExecutions(runItem).ifPresent(others -> testCaseCell.add(para(others).setFont(regularFont).setFontSize(ReportFont.SMALL.pt()).setFontColor(DARK_GRAY)));
             table.addCell(testCaseCell);
 
             if (section.isWithFailureDetail())

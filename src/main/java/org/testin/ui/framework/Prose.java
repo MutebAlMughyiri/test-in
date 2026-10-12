@@ -23,11 +23,17 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.JTextArea;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Rectangle;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Prose {
     public static @NotNull JTextArea of(final @NotNull String text) {
-        final @NotNull JTextArea area = new JTextArea(text);
+        final @NotNull JTextArea area = new JTextArea(text) {
+            // Rule-VIEW-PANEL-124
+            @Override
+            public void scrollRectToVisible(final @NotNull Rectangle shown) {
+            }
+        };
         area.setLineWrap(true);
         area.setWrapStyleWord(true);
         area.setOpaque(false);

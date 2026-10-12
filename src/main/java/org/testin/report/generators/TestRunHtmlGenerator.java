@@ -174,8 +174,7 @@ public final class TestRunHtmlGenerator {
                             .append("<td>").append(StringUtil.escapeXmlEntities(desc.isEmpty() ? "—" : desc));
 
                     // Rule-REPORT-027
-                    final @NotNull String others = ReportText.otherExecutions(runItem);
-                    if (!others.isEmpty()) html.append("<div class='actual'>").append(StringUtil.escapeXmlEntities(others)).append("</div>");
+                    ReportText.otherExecutions(runItem).ifPresent(others -> html.append("<div class='actual'>").append(StringUtil.escapeXmlEntities(others)).append("</div>"));
 
                     if (section.isWithFailureDetail()) appendFailureDetail(html, runItem);
                     else html.append("</td>");

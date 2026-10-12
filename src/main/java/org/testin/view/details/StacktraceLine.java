@@ -21,7 +21,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.ActionLink;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
-import com.intellij.ui.components.panels.HorizontalLayout;
 import com.intellij.util.ui.JBUI;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -43,7 +42,6 @@ import java.awt.event.MouseEvent;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @AllArgsConstructor
 public final class StacktraceLine extends AbstractDetails {
@@ -51,24 +49,21 @@ public final class StacktraceLine extends AbstractDetails {
     private static final int INSETS_TOP = 8;
     private static final int INSETS_SIDE = 16;
 
-    private final @NotNull Optional<Execution> shown;
+    private final @NotNull Execution shown;
 
     private final @NotNull List<String> currentPath;
 
     private static @NotNull JBPanel<?> line(final @NotNull List<? extends JComponent> parts) {
-        final @NotNull JBPanel<?> line = new JBPanel<>(new HorizontalLayout(JBUI.scale(GAP)));
-        line.setOpaque(false);
-
+        final @NotNull JBPanel<?> line = line(GAP);
         parts.forEach(line::add);
-
         return line;
     }
 
     // UC-VIEW-PANEL-006, Rule-VIEW-PANEL-034, Rule-VIEW-PANEL-081
     @Override
     public int render(final @NotNull Project p, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto dto, final int currentRow) {
-        final @NotNull String stacktrace = shown.map(Execution::getStacktrace).orElse("");
-        final @NotNull List<String> screenshots = shown.map(Execution::getScreenshots).orElse(List.of());
+        final @NotNull String stacktrace = shown.getStacktrace();
+        final @NotNull List<String> screenshots = shown.getScreenshots();
         final boolean link = !stacktrace.isBlank();
         if (!link && screenshots.isEmpty()) return currentRow;
 
@@ -85,7 +80,7 @@ public final class StacktraceLine extends AbstractDetails {
     // UC-VIEW-PANEL-006, Rule-VIEW-PANEL-034
     private @NotNull ActionLink stacktraceLink(final @NotNull Project p, final @NotNull TestCaseDto dto, final @NotNull String stacktrace) {
         return link(Bundle.message("view.stacktrace.link"),
-                _ -> new StacktraceDialog(p, dto, shown.map(Execution::getActualResult).orElse(""), stacktrace).show());
+                _ -> new StacktraceDialog(p, dto, shown.getActualResult(), stacktrace).show());
     }
 
     // UC-VIEW-PANEL-006, Rule-VIEW-PANEL-081

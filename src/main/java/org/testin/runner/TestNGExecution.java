@@ -175,8 +175,8 @@ public final class TestNGExecution implements Disposable {
     }
 
     // Rule-CODEGEN-111
-    @NotNull Optional<Attempts> unwritten(final @NotNull UUID id) {
-        return registry.unwritten(id);
+    @NotNull Optional<Attempts> takeUnwritten(final @NotNull UUID id) {
+        return registry.takeUnwritten(id);
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-037

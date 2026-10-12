@@ -23,6 +23,7 @@ import org.testin.model.testrun.RunItem;
 import org.testin.util.Bundle;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -35,12 +36,13 @@ public final class ReportText {
     }
 
     // UC-REPORT-001, Rule-REPORT-027
-    public static @NotNull String otherExecutions(final @NotNull RunItem runItem) {
-        return runItem.otherFailuresAndBlocks().entrySet().stream()
+    public static @NotNull Optional<String> otherExecutions(final @NotNull RunItem runItem) {
+        final @NotNull String others = runItem.otherFailuresAndBlocks().entrySet().stream()
                 .map(other -> other.getValue() == 1
                         ? Bundle.message("report.other.execution", other.getKey().getLabel())
                         : Bundle.message("report.other.executions", other.getKey().getLabel(), String.valueOf(other.getValue())))
                 .collect(Collectors.joining(", "));
+        return others.isEmpty() ? Optional.empty() : Optional.of(others);
     }
 
     public static @NotNull String joined(final @NotNull String separator, final String @NotNull ... parts) {

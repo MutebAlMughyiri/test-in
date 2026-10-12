@@ -20,10 +20,11 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.ActionLink;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.JBUI;
+import com.intellij.util.ui.WrapLayout;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.open.TestinEditors;
 import org.testin.editor.testrun.TestRunEditor;
-import org.testin.indexer.Nodes;
+import org.testin.indexer.TestRuns;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestRunNode;
 import org.testin.services.Services;
@@ -40,6 +41,8 @@ import java.util.List;
 import java.util.Optional;
 
 public abstract class AbstractDetails {
+    private static final int ROW_GAP = 4;
+
     // Rule-VIEW-PANEL-080, Rule-VIEW-PANEL-082
     static @NotNull JBPanel<?> row(final int gap) {
         final @NotNull JBPanel<?> row = new JBPanel<>(new FlowLayout(FlowLayout.LEFT, JBUI.scale(gap), 0));
@@ -47,6 +50,16 @@ public abstract class AbstractDetails {
         row.setOpaque(false);
 
         return row;
+    }
+
+    // Rule-VIEW-PANEL-124
+    static @NotNull JBPanel<?> line(final int gap) {
+        final @NotNull JBPanel<?> line = new JBPanel<>(new WrapLayout(FlowLayout.LEFT, JBUI.scale(gap), JBUI.scale(ROW_GAP)));
+
+        line.setBorder(JBUI.Borders.empty(-ROW_GAP, 0));
+        line.setOpaque(false);
+
+        return line;
     }
 
     // Rule-VIEW-PANEL-080
@@ -60,9 +73,7 @@ public abstract class AbstractDetails {
 
     // UC-VIEW-PANEL-005
     static @NotNull Optional<TestRunNode> testRunOf(final @NotNull Project p, final @NotNull List<String> currentPath) {
-        return Services.getInstance(p, Nodes.class).find(Services.getInstance(p, TestinRoot.class).resolve(currentPath))
-                .filter(TestRunNode.class::isInstance)
-                .map(TestRunNode.class::cast);
+        return Services.getInstance(p, TestRuns.class).findTestRunNode(Services.getInstance(p, TestinRoot.class).resolve(currentPath));
     }
 
     // UC-VIEW-PANEL-016, UC-VIEW-PANEL-004
@@ -81,20 +92,8 @@ public abstract class AbstractDetails {
         return CaptionValueRow.add(panel, gbc, caption, value, row);
     }
 
+    // Rule-VIEW-PANEL-085, Rule-VIEW-PANEL-124
     protected int addFullWidthRow(final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull JComponent component, final @NotNull Insets insets, final int row) {
-        gbc.gridx = 0;
-        gbc.gridy = row;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = insets;
-
-        panel.add(component, gbc);
-
-        return row + 1;
-    }
-
-    // Rule-VIEW-PANEL-085
-    protected int addStretchedRow(final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull JComponent component, final @NotNull Insets insets, final int row) {
         gbc.gridx = 0;
         gbc.gridy = row;
         gbc.weightx = 1.0;

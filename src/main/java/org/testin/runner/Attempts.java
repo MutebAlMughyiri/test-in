@@ -21,6 +21,7 @@ import org.testin.model.status.ExecutionStatus;
 import org.testin.model.testrun.Execution;
 
 import java.util.List;
+import java.util.function.IntPredicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -35,7 +36,12 @@ record Attempts(@NotNull List<Attempt> all, int written) {
 
     // Rule-CODEGEN-111
     @NotNull Attempts allWritten() {
-        return new Attempts(all, executions().size());
+        return new Attempts(all, executionCount());
+    }
+
+    // Rule-CODEGEN-111
+    int executionCount() {
+        return (int) IntStream.range(0, all.size()).filter(this::isExecution).count();
     }
 
     // Rule-CODEGEN-075, Rule-CODEGEN-111
@@ -50,8 +56,20 @@ record Attempts(@NotNull List<Attempt> all, int written) {
         return lastAttempts.stream().filter(at -> statusAt(at) == ExecutionStatus.FAILED).reduce((_, last) -> last).orElse(lastAttempts.getLast());
     }
 
-    // Rule-CODEGEN-111, Rule-CODEGEN-112
+    // Rule-CODEGEN-111
     @NotNull List<Execution> executions() {
+        return executions(_ -> false);
+    }
+
+    // Rule-CODEGEN-111, Rule-VIEW-PANEL-119
+    @NotNull List<Execution> decidedExecutions() {
+        final int deciding = deciding();
+        final int last = IntStream.range(0, all.size()).filter(this::isExecution).max().orElse(deciding);
+        return executions(at -> at == deciding && at != last);
+    }
+
+    // Rule-CODEGEN-111, Rule-CODEGEN-112
+    private @NotNull List<Execution> executions(final @NotNull IntPredicate chosen) {
         final int[] invocation = new int[all.size()];
         final int[] retry = new int[all.size()];
         for (int at = 0; at < all.size(); at++) {
@@ -59,23 +77,23 @@ record Attempts(@NotNull List<Attempt> all, int written) {
             invocation[at] = at == 0 ? 1 : invocation[at - 1] + (aRetry ? 0 : 1);
             retry[at] = aRetry ? retry[at - 1] + 1 : 0;
         }
-        final boolean invokedMoreThanOnce = all.isEmpty() || invocation[all.size() - 1] > 1;
+        final boolean invokedMoreThanOnce = invocation[all.size() - 1] > 1;
 
         return IntStream.range(0, all.size())
-                .filter(at -> statusAt(at).getRunItemStatus().isPresent())
-                .mapToObj(at -> Execution.builder()
-                        .status(statusAt(at).getRunItemStatus().orElseThrow())
-                        .duration(all.get(at).duration())
+                .filter(this::isExecution)
+                .mapToObj(at -> Execution.from(statusAt(at).getRunItemStatus().orElseThrow(), all.get(at).duration(), all.get(at).failure())
                         .executedAt(all.get(at).at())
-                        .actualResult(all.get(at).failure().message())
-                        .stacktrace(all.get(at).failure().stacktrace())
-                        .screenshots(all.get(at).failure().screenshots())
                         .invocation(invokedMoreThanOnce ? invocation[at] : 0)
                         .retry(retry[at])
                         .retried(retriedAt(at))
                         .parameters(all.get(at).parameters())
+                        .chosen(chosen.test(at))
                         .build())
                 .toList();
+    }
+
+    private boolean isExecution(final int at) {
+        return statusAt(at).getRunItemStatus().isPresent();
     }
 
     // Rule-CODEGEN-110

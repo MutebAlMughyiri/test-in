@@ -92,7 +92,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes,
         mainPanel.add(SideScroll.of(statusBar), BorderLayout.SOUTH);
         StatusBarListener.attach(this);
 
-        TestCaseExecutionSubscriber.onReported(p, projectDisposable, (_, _, _, _, _) -> list.repaint());
+        TestCaseExecutionSubscriber.onReported(p, projectDisposable, (_, _, _, _) -> list.repaint());
 
         onToolBarSwitchedToCardView();
 

@@ -248,13 +248,13 @@ public class ExecutionRegistryTest {
         final ExecutionRegistry registry = launchedWith(invoked, next);
 
         registry.attempted(invoked.getId(), attempt(ExecutionStatus.PASSED, ""));
-        final Attempts first = registry.unwritten(invoked.getId()).orElseThrow();
+        final Attempts first = registry.takeUnwritten(invoked.getId()).orElseThrow();
         assertEquals(first.executions().size(), 1, "the first invocation is shown before TestNG moves on");
         assertEquals(first.written(), 0);
-        assertTrue(registry.unwritten(invoked.getId()).isEmpty(), "and it is not shown a second time");
+        assertTrue(registry.takeUnwritten(invoked.getId()).isEmpty(), "and it is not shown a second time");
 
         registry.attempted(invoked.getId(), attempt(ExecutionStatus.FAILED, "the second invocation failed"));
-        final Attempts second = registry.unwritten(invoked.getId()).orElseThrow();
+        final Attempts second = registry.takeUnwritten(invoked.getId()).orElseThrow();
         assertEquals(second.executions().size(), 2);
         assertEquals(second.written(), 1, "it replaces the one already shown, whose label may have changed");
 

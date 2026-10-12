@@ -33,6 +33,7 @@ import org.testin.view.Drawn;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 
 public class ExecutionLinesIdeTest extends AbstractViewPanelIdeTest {
 
@@ -92,7 +93,7 @@ public class ExecutionLinesIdeTest extends AbstractViewPanelIdeTest {
         final @NotNull TestRunNode tr = aTestRun(List.of(RunItem.builder().id(tc.getId()).build()));
 
         final @NotNull List<String> byDefault = Drawn.words(Drawn.detailsTab(getProject(), tc, Optional.of(invokedThreeTimes()), tr.getPath2()));
-        final @NotNull List<String> clicked = Drawn.words(Drawn.detailsTab(getProject(), tc, Optional.of(invokedThreeTimes()), tr.getPath2(), 1));
+        final @NotNull List<String> clicked = Drawn.words(Drawn.detailsTab(getProject(), tc, Optional.of(invokedThreeTimes()), tr.getPath2(), OptionalInt.of(1)));
 
         assertTrue("the default's actual result is not shown: " + byDefault, Drawn.holds(byDefault, "Stayed signed in"));
         assertTrue("the clicked execution's actual result is not shown: " + clicked, Drawn.holds(clicked, "The session ended early"));

@@ -81,16 +81,21 @@ public class Execution {
     @JsonProperty("default")
     private boolean chosen;
 
-    // UC-EDITOR-PANEL-032, Rule-EDITOR-PANEL-136
-    public static @NotNull Execution recorded(final @NotNull RunItemStatus status, final @NotNull String tester, final @NotNull Duration duration, final @NotNull Failure failure) {
+    // UC-EDITOR-PANEL-032, UC-CODEGEN-008, Rule-EDITOR-PANEL-136
+    public static @NotNull ExecutionBuilder from(final @NotNull RunItemStatus status, final @NotNull Duration duration, final @NotNull Failure failure) {
         return Execution.builder()
                 .status(status)
                 .duration(duration)
-                .executedBy(tester)
-                .executedAt(ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS))
                 .actualResult(failure.message())
                 .stacktrace(failure.stacktrace())
-                .screenshots(failure.screenshots())
+                .screenshots(failure.screenshots());
+    }
+
+    // UC-EDITOR-PANEL-032, Rule-EDITOR-PANEL-136
+    public static @NotNull Execution recorded(final @NotNull RunItemStatus status, final @NotNull String tester, final @NotNull Duration duration, final @NotNull Failure failure) {
+        return from(status, duration, failure)
+                .executedBy(tester)
+                .executedAt(ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS))
                 .build();
     }
 

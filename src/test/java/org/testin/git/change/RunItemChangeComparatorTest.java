@@ -109,9 +109,9 @@ public class RunItemChangeComparatorTest {
                 RunItemStatus.FAILED.getLabel() + " - The dashboard never opened");
 
         assertEquals(RunItemChangeComparator.summary(changed(execution -> {
-            execution.setStatus(RunItemStatus.PASSED);
-            execution.setActualResult("");
-        })),
+                    execution.setStatus(RunItemStatus.PASSED);
+                    execution.setActualResult("");
+                })),
                 RunItemStatus.PASSED.getLabel());
     }
 }

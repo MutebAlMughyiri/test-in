@@ -47,7 +47,7 @@ public final class Bug {
     // UC-VIEW-PANEL-005, UC-VIEW-PANEL-016, Rule-VIEW-PANEL-031, Rule-VIEW-PANEL-086
     public static @NotNull Optional<JComponent> of(final @NotNull Project p, final @NotNull RunItem runItem, final @NotNull List<String> currentPath, final @NotNull TestCaseDto dto) {
         final @NotNull Optional<String> bugIssue = runItem.bugIssue();
-        if (!runItem.isFailed() && bugIssue.isEmpty()) return Optional.empty();
+        if (!runItem.recordsABug()) return Optional.empty();
 
         return AbstractDetails.testRunOf(p, currentPath).map(testRunNode -> drawn(p, runItem, dto, bugIssue, testRunNode));
     }

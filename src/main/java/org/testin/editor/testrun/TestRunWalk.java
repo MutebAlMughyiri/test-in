@@ -187,7 +187,7 @@ public final class TestRunWalk {
     }
 
     // UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-182
-    void executionReported(final @NotNull TestCaseDto tc, final @NotNull ExecutionStatus status, final @NotNull List<Execution> executions, final int written, final int deciding) {
+    void executionReported(final @NotNull TestCaseDto tc, final @NotNull ExecutionStatus status, final @NotNull List<Execution> executions, final int written) {
         if (!launchedHere.contains(tc.getId())) return;
 
         if (!status.stillGoing()) launchedHere.remove(tc.getId());
@@ -196,10 +196,11 @@ public final class TestRunWalk {
 
         if (!editor.getParent().takesRunItemStatuses()) return;
 
-        if (status.stillGoing() && !executions.isEmpty()) runItemStatusService.showAttempts(editor, tc, executions, written);
+        if (status.stillGoing() && !executions.isEmpty())
+            runItemStatusService.showAttempts(editor, tc, executions, written);
 
         status.getRunItemStatus().ifPresent(runItemStatus -> {
-            runItemStatusService.recordReported(editor, tc, runItemStatus, executions, written, deciding);
+            runItemStatusService.recordReported(editor, tc, runItemStatus, executions, written);
 
             if (launchedHere.isEmpty()) sayWhatTheTestRunRecorded();
         });

@@ -33,7 +33,6 @@ import org.testin.util.Fonts;
 
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.event.MouseAdapter;
@@ -49,22 +48,17 @@ public class Breadcrumb extends AbstractDetails {
     final @NotNull Color DEFAULT_TEXT_COLOR = JBUI.CurrentTheme.ContextHelp.FOREGROUND;
     final int SEPARATOR_BORDER_V = 0;
     final int SEPARATOR_BORDER_H = 6;
-    final int PANEL_BORDER_TOP = 10;
-    final int PANEL_BORDER_LEFT = 16;
-    final int PANEL_BORDER_BOTTOM = 5;
-    final int PANEL_BORDER_RIGHT = 0;
-    final int GBC_INSETS_TOP = 12;
-    final int GBC_INSETS_LEFT = 16;
-    final int GBC_INSETS_BOTTOM = 0;
-    final int GBC_INSETS_RIGHT = 16;
+    final int INSETS_TOP = 22;
+    final int INSETS_LEFT = 32;
+    final int INSETS_BOTTOM = 5;
+    final int INSETS_RIGHT = 16;
 
     private final @NotNull List<String> currentPath;
 
     // UC-VIEW-PANEL-010, Rule-VIEW-PANEL-041
     @Override
     public int render(final @NotNull Project p, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto dto, final int currentRow) {
-        final @NotNull JBPanel<?> pathPanel = new JBPanel<>(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        pathPanel.setOpaque(false);
+        final @NotNull JBPanel<?> pathPanel = line(0);
 
         {
             for (int i = 0; i < currentPath.size(); i++) {
@@ -109,12 +103,10 @@ public class Breadcrumb extends AbstractDetails {
             }
         }
 
-        pathPanel.setBorder(JBUI.Borders.empty(PANEL_BORDER_TOP, PANEL_BORDER_LEFT, PANEL_BORDER_BOTTOM, PANEL_BORDER_RIGHT));
-
         gbc.gridx = 0;
         gbc.gridy = currentRow;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = JBUI.insets(GBC_INSETS_TOP, GBC_INSETS_LEFT, GBC_INSETS_BOTTOM, GBC_INSETS_RIGHT);
+        gbc.insets = JBUI.insets(INSETS_TOP, INSETS_LEFT, INSETS_BOTTOM, INSETS_RIGHT);
 
         panel.add(pathPanel, gbc);
 

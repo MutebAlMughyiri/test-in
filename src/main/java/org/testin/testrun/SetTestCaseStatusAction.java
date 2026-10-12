@@ -59,7 +59,7 @@ public class SetTestCaseStatusAction extends AbstractAnyProjectAction {
     private void record(final @NotNull Project p, final @NotNull TestRunEditor editor, final @NotNull List<TestCaseDto> selectedItems) {
         final @NotNull Optional<RunItem> runItem = askingForFailureDetails(editor, selectedItems);
         if (runItem.isEmpty()) {
-            applyStatus(p, editor, selectedItems);
+            Services.getInstance(p, RunItemStatusService.class).applyStatus(editor, selectedItems, status);
             return;
         }
 
@@ -72,10 +72,6 @@ public class SetTestCaseStatusAction extends AbstractAnyProjectAction {
         if (!status.isCollectsFailureDetails() || selectedItems.size() != 1) return Optional.empty();
 
         return editor.runItem(selectedItems.getFirst().getId()).filter(runItem -> !runItem.isRemoved());
-    }
-
-    private void applyStatus(final @NotNull Project p, final @NotNull TestRunEditor editor, final @NotNull List<TestCaseDto> selectedItems) {
-        Services.getInstance(p, RunItemStatusService.class).applyStatus(editor, selectedItems, status);
     }
 
     // UC-EDITOR-PANEL-032, Rule-TREE-PANEL-009

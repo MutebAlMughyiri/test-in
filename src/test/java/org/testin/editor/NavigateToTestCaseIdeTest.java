@@ -42,7 +42,6 @@ import org.testin.services.Services;
 import org.testin.util.Bundle;
 import org.testin.view.details.ActionIcons;
 
-import javax.swing.JComponent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -155,9 +154,7 @@ public class NavigateToTestCaseIdeTest extends AbstractCodegenIdeTest {
         assertEquals("the card's buttons are named otherwise", List.of(TO_THE_METHOD, RUN, TO_THE_TEST_CASE),
                 Arrays.asList(CardHoverAction.NAVIGATE_TO_TEST_METHOD.getTooltip(), CardHoverAction.RUN_TEST_METHOD.getTooltip(), CardHoverAction.NAVIGATE_TO_TEST_CASE.getTooltip()));
 
-        final @NotNull JComponent viewPanel = ActionIcons.of(getProject(), testCases.getFirst(), Optional.empty());
-        final @NotNull List<String> named = Arrays.stream(viewPanel.getComponents())
-                .filter(JComponent.class::isInstance).map(JComponent.class::cast)
+        final @NotNull List<String> named = ActionIcons.of(getProject(), testCases.getFirst(), Optional.empty()).stream()
                 .map(button -> Objects.requireNonNullElse(button.getAccessibleContext().getAccessibleName(), ""))
                 .filter(name -> !name.isEmpty())
                 .toList();

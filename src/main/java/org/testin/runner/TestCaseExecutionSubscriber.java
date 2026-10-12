@@ -75,7 +75,7 @@ public final class TestCaseExecutionSubscriber implements Disposable {
                 tc -> {
                     final @NotNull TestNGExecution execution = Services.getInstance(p, TestNGExecution.class);
                     execution.attempted(tc.getId(), attempt).forEach((id, decided) -> testCases.findTestCase(id).ifPresent(decidedTc -> report(decidedTc, decided)));
-                    execution.unwritten(tc.getId()).ifPresent(live -> show(tc, live));
+                    execution.takeUnwritten(tc.getId()).ifPresent(live -> show(tc, live));
                 },
                 () -> Logger.debug("  '" + testName + "' is not a generated test case - reported against none"));
     }
@@ -84,19 +84,19 @@ public final class TestCaseExecutionSubscriber implements Disposable {
     private void show(final @NotNull TestCaseDto tc, final @NotNull Attempts live) {
         final @NotNull List<Execution> executions = live.executions();
 
-        surfaces.forEach(surface -> surface.accept(tc, ExecutionStatus.RUNNING, executions, live.written(), executions.size() - 1));
+        surfaces.forEach(surface -> surface.accept(tc, ExecutionStatus.RUNNING, executions, live.written()));
     }
 
     // Rule-CODEGEN-110, Rule-CODEGEN-111
     private void report(final @NotNull TestCaseDto tc, final @NotNull Attempts decided) {
         final @NotNull ExecutionStatus reportedStatus = runItemStatusFor(tc, decided.status());
-        final @NotNull List<Execution> executions = reportedStatus == ExecutionStatus.IDLE ? List.of() : decided.executions();
+        final @NotNull List<Execution> executions = reportedStatus == ExecutionStatus.IDLE ? List.of() : decided.decidedExecutions();
 
         Logger.debug("  reporting on '" + tc.getDescription() + "': " + reportedStatus + " from " + decided.all().size() + " attempt(s)");
 
         Services.getInstance(p, TestNGExecution.class).reported(tc.getId(), reportedStatus);
 
-        surfaces.forEach(surface -> surface.accept(tc, reportedStatus, executions, decided.written(), decided.deciding()));
+        surfaces.forEach(surface -> surface.accept(tc, reportedStatus, executions, decided.written()));
     }
 
     @Override
@@ -114,6 +114,6 @@ public final class TestCaseExecutionSubscriber implements Disposable {
 
     @FunctionalInterface
     public interface Reported {
-        void accept(final @NotNull TestCaseDto tc, final @NotNull ExecutionStatus status, final @NotNull List<Execution> executions, final int written, final int deciding);
+        void accept(final @NotNull TestCaseDto tc, final @NotNull ExecutionStatus status, final @NotNull List<Execution> executions, final int written);
     }
 }

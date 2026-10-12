@@ -17,7 +17,6 @@
 package org.testin.view.details;
 
 import com.intellij.openapi.project.Project;
-import com.intellij.ui.components.JBPanel;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCaseDto;
 import org.testin.model.status.ExecutionStatus;
@@ -30,19 +29,13 @@ import javax.swing.JComponent;
 import java.util.List;
 
 public final class TestCaseBadges {
-    private static final int FLOW_GAP = 6;
-
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-085
-    public static @NotNull JComponent of(final @NotNull Project p, final @NotNull TestCaseDto dto) {
-        final @NotNull JBPanel<?> badgesPanel = AbstractDetails.row(FLOW_GAP);
-
+    public static @NotNull List<JComponent> of(final @NotNull Project p, final @NotNull TestCaseDto dto) {
         final @NotNull List<Badge> badges = Badges.testCaseBadges(dto);
 
         final @NotNull ExecutionStatus tempStatus = Services.getInstance(p, TestNGExecution.class).statusOf(dto);
         if (tempStatus.hasBadge()) badges.add(Badges.createExecutionStatusBadge(tempStatus.getBadge()));
 
-        Badges.showBadges(badgesPanel, badges);
-
-        return badgesPanel;
+        return Badges.pills(badges);
     }
 }

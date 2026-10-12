@@ -61,7 +61,7 @@ public final class Band extends AbstractDetails {
     // UC-VIEW-PANEL-004, UC-VIEW-PANEL-005, Rule-VIEW-PANEL-085, Rule-VIEW-PANEL-087
     @Override
     public int render(final @NotNull Project p, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto dto, final int currentRow) {
-        int row = addStretchedRow(panel, (GridBagConstraints) gbc.clone(), heading(p), JBUI.insets(INSETS_TOP, INSETS_SIDE, 0, INSETS_SIDE), currentRow);
+        int row = addFullWidthRow(panel, (GridBagConstraints) gbc.clone(), heading(p), JBUI.insets(INSETS_TOP, INSETS_SIDE, 0, INSETS_SIDE), currentRow);
 
         if (!isOpen()) return row;
 

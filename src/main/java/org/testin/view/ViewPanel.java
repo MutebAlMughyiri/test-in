@@ -19,7 +19,6 @@ package org.testin.view;
 import com.intellij.ide.IdeEventQueue;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.ui.componentsList.components.ScrollablePanel;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.openapi.wm.ToolWindow;
@@ -33,11 +32,13 @@ import org.testin.editor.WheelForwarding;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
 import org.testin.model.TestCaseDto;
+import org.testin.model.status.ExecutionStatus;
 import org.testin.model.testrun.RunItem;
 import org.testin.runner.TestCaseExecutionSubscriber;
 import org.testin.services.ProjectLifetime;
 import org.testin.services.Services;
 import org.testin.setting.TestinRoot;
+import org.testin.ui.FollowsWidth;
 import org.testin.ui.FontSync;
 
 import javax.swing.JComponent;
@@ -45,17 +46,16 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.stream.Stream;
 
 public class ViewPanel implements Disposable {
-    public static final int THE_DEFAULT = -1;
 
-    private int shownLine = THE_DEFAULT;
+    private @NotNull OptionalInt shownLine = OptionalInt.empty();
 
     @Getter
     private final @NotNull JBPanel<?> detailsTab;
@@ -84,7 +84,7 @@ public class ViewPanel implements Disposable {
         this.testinRoot = Services.getInstance(p, TestinRoot.class);
         Disposer.register(ProjectLifetime.of(p), this);
         detailsTab = new JBPanel<>(new BorderLayout());
-        historyTab = new ScrollablePanel(new BorderLayout());
+        historyTab = new JBPanel<>(new BorderLayout());
 
         FontSync.syncWithNativeEditor(p, detailsTab, this);
         FontSync.syncWithNativeEditor(p, historyTab, this);
@@ -92,7 +92,7 @@ public class ViewPanel implements Disposable {
         // Rule-SETTING-039
         tabs().forEach(tab -> tab.addMouseWheelListener(WheelForwarding::forwardWheelToScrollPane));
 
-        detailsScrollPane = createScrollPane(detailsTab);
+        detailsScrollPane = createScrollPane(FollowsWidth.of(detailsTab));
         historyScrollPane = createScrollPane(historyTab);
 
         // Rule-VIEW-PANEL-058
@@ -109,7 +109,7 @@ public class ViewPanel implements Disposable {
 
         refreshCurrentView();
 
-        TestCaseExecutionSubscriber.onReported(p, this, (tc, _, _, _, _) -> refreshIfShowing(List.of(tc)));
+        TestCaseExecutionSubscriber.onReported(p, this, (tc, status, _, _) -> executionReported(tc, status));
     }
 
     private @NotNull Stream<JPanel> tabs() {
@@ -136,7 +136,8 @@ public class ViewPanel implements Disposable {
                 .ifPresent(tab -> IdeFocusManager.getInstance(p).requestFocus(tab, true));
     }
 
-    private @NotNull JBScrollPane createScrollPane(final @NotNull Component view) {
+    // Rule-VIEW-PANEL-124
+    private @NotNull JBScrollPane createScrollPane(final @NotNull JComponent view) {
         final @NotNull JBScrollPane sp = new JBScrollPane(view);
         sp.setBorder(null);
         sp.setViewportBorder(null);
@@ -200,20 +201,28 @@ public class ViewPanel implements Disposable {
     }
 
     public void updateList(final @NotNull List<TestCaseDto> testCases, final @NotNull List<String> path) {
-        shownLine = THE_DEFAULT;
+        shownLine = OptionalInt.empty();
         this.page.updateList(testCases, path);
         this.refreshCurrentView();
     }
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-122
-    int shownLine() {
+    @NotNull OptionalInt shownLine() {
         return shownLine;
     }
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-122
-    void showExecution(final int line) {
+    void showExecution(final @NotNull OptionalInt line) {
         shownLine = line;
-        refreshCurrentView();
+        ViewTab.DETAILS.load(this);
+    }
+
+    // Rule-VIEW-PANEL-005, Rule-CODEGEN-111
+    private void executionReported(final @NotNull TestCaseDto tc, final @NotNull ExecutionStatus status) {
+        getCurrentTestCase().filter(current -> current.getId().equals(tc.getId())).ifPresent(_ -> {
+            if (status.stillGoing()) ViewTab.DETAILS.load(this);
+            else refreshCurrentView();
+        });
     }
 
     // Rule-VIEW-PANEL-008

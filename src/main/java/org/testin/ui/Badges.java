@@ -33,6 +33,7 @@ import org.testin.util.FixedColors;
 import org.testin.util.Fonts;
 
 import javax.swing.Icon;
+import javax.swing.JComponent;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -119,6 +120,15 @@ public final class Badges {
             if (i < badges.size()) pill.show(badges.get(i));
             else pill.setVisible(false);
         }
+    }
+
+    // Rule-VIEW-PANEL-085, Rule-VIEW-PANEL-124
+    public static @NotNull List<JComponent> pills(final @NotNull List<Badge> badges) {
+        return badges.stream().map(badge -> {
+            final @NotNull BadgePill pill = new BadgePill();
+            pill.show(badge);
+            return (JComponent) pill;
+        }).toList();
     }
 
     static boolean isLight(final @NotNull Color bg) {

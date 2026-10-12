@@ -128,13 +128,15 @@ public class RunItemTest {
     public void attemptsShownLiveAreReplacedByTheDecisionAndKeepWhatCameBefore() {
         final @NotNull RunItem runItem = withExecutions(execution(RunItemStatus.BLOCKED, "by hand"));
 
-        runItem.showAttempts(List.of(execution(RunItemStatus.PASSED, "")), 0, "Muteb");
+        runItem.showExecutions(List.of(execution(RunItemStatus.PASSED, "")), 0, "Muteb");
         assertEquals(runItem.getStatus(), RunItemStatus.PASSED, "the last attempt so far is the default while TestNG runs");
 
-        runItem.showAttempts(List.of(execution(RunItemStatus.PASSED, ""), execution(RunItemStatus.FAILED, "invocation 2")), 1, "Muteb");
+        runItem.showExecutions(List.of(execution(RunItemStatus.PASSED, ""), execution(RunItemStatus.FAILED, "invocation 2")), 1, "Muteb");
         assertEquals(runItem.getExecutions().size(), 3, "the attempt already shown is replaced, not added twice");
 
-        runItem.recordAutomated(List.of(execution(RunItemStatus.PASSED, ""), execution(RunItemStatus.FAILED, "invocation 2"), execution(RunItemStatus.PASSED, "")), 2, 1, "Muteb");
+        final @NotNull Execution decides = execution(RunItemStatus.FAILED, "invocation 2");
+        decides.setChosen(true);
+        runItem.recordExecutions(List.of(execution(RunItemStatus.PASSED, ""), decides, execution(RunItemStatus.PASSED, "")), 2, "Muteb");
         assertEquals(runItem.getExecutions().size(), 4);
         assertEquals(runItem.getExecutions().getFirst().getActualResult(), "by hand", "an earlier execution is never touched");
         assertEquals(runItem.getStatus(), RunItemStatus.FAILED, "the failed invocation decides");

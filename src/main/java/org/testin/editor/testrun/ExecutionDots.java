@@ -32,34 +32,31 @@ import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
 import java.util.List;
 
-record ExecutionDots(@NotNull List<Color> colors, int ringed, int older, @NotNull Font font) implements Icon {
+record ExecutionDots(@NotNull List<Color> colors, int ringed, int older, int olderWidth, @NotNull Font font) implements Icon {
     private static final int SHOWN = 8;
     private static final @NotNull FontRenderContext MEASURE = new FontRenderContext(new AffineTransform(), true, true);
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-287
     static @NotNull Icon of(final @NotNull RunItem runItem, final @NotNull Font font) {
         final @NotNull List<Execution> executions = runItem.getExecutions();
-        if (executions.size() <= 1) return EmptyIcon.ICON_0;
+        if (runItem.executedAtMostOnce()) return EmptyIcon.ICON_0;
 
         final int from = Math.max(0, executions.size() - SHOWN);
-        return new ExecutionDots(executions.subList(from, executions.size()).stream().map(execution -> execution.getStatus().getRowColor()).toList(), runItem.defaultIndex() - from, from, font);
+        return new ExecutionDots(executions.subList(from, executions.size()).stream().map(execution -> execution.getStatus().getRowColor()).toList(), runItem.defaultIndex() - from, from,
+                (int) Math.ceil(font.getStringBounds(olderText(from), MEASURE).getWidth()), font);
     }
 
     private int dot() {
         return Math.max(2, font.getSize() / 2);
     }
 
-    private @NotNull String olderText() {
+    private static @NotNull String olderText(final int older) {
         return older > 0 ? "+" + older + " " : "";
-    }
-
-    private int olderWidth() {
-        return (int) Math.ceil(font.getStringBounds(olderText(), MEASURE).getWidth());
     }
 
     @Override
     public int getIconWidth() {
-        return olderWidth() + colors.size() * dot() * 3 / 2;
+        return olderWidth + colors.size() * dot() * 3 / 2;
     }
 
     @Override
@@ -75,12 +72,12 @@ record ExecutionDots(@NotNull List<Color> colors, int ringed, int older, @NotNul
 
         g2.setFont(font);
         g2.setColor(c.getForeground());
-        g2.drawString(olderText(), x, y + font.getSize() - 1);
+        g2.drawString(olderText(older), x, y + font.getSize() - 1);
 
         final int dot = dot();
         final int top = y + (font.getSize() - dot) / 2;
         for (int at = 0; at < colors.size(); at++) {
-            final int left = x + olderWidth() + at * dot * 3 / 2;
+            final int left = x + olderWidth + at * dot * 3 / 2;
             g2.setColor(colors.get(at));
             if (at == ringed) g2.drawOval(left, top, dot - 1, dot - 1);
             else g2.fillOval(left, top, dot, dot);

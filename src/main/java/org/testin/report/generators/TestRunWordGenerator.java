@@ -296,8 +296,7 @@ public final class TestRunWordGenerator {
             setCellText(tcCell, tcName, ReportFont.BODY.ptRounded(), false, BLACK);
 
             // Rule-REPORT-027
-            final @NotNull String others = ReportText.otherExecutions(runItem);
-            if (!others.isEmpty()) styledRun(tcCell.addParagraph().createRun(), others, ReportFont.SMALL, DARK_GRAY);
+            ReportText.otherExecutions(runItem).ifPresent(others -> styledRun(tcCell.addParagraph().createRun(), others, ReportFont.SMALL, DARK_GRAY));
 
             if (section.isWithFailureDetail()) addFailureDetail(row, runItem, rowBg);
 

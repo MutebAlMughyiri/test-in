@@ -279,7 +279,7 @@ An execution:
 | `retry`        | number           | Which retry of its invocation this was, from 1. Left out for the first attempt                                                                                                                                               |
 | `retried`      | boolean          | `true` for an attempt TestNG skipped and ran again. It is recorded as Failed and never decides (Rule-CODEGEN-111)                                                                                                            |
 | `parameters`   | string           | The data provider row this attempt ran, such as `[1234]`. Left out for a method with no data provider                                                                                                                        |
-| `default`      | boolean          | `true` on the execution a tester chose with ☆ (Rule-VIEW-PANEL-119). Written only when that is not the last; with none flagged, the last is the default                                                                      |
+| `default`      | boolean          | `true` on the execution a tester chose as the default (Rule-VIEW-PANEL-119). Written only when that is not the last; with none flagged, the last is the default                                                              |
 
 The run item status is the default execution's status. A run item with no
 executions is Pending, or Untested when `untested` says so; one whose test case
@@ -339,7 +339,7 @@ That is the trade — forward compatibility is a *read*, not a round trip.
 **A file holds only what differs from a fresh one** (Rule-INTERNAL-135). Every
 stored type carries `@JsonInclude(NON_DEFAULT)`, so a value equal to what a
 newly made test case, run item or marker holds is left out, and a missing key
-reads back as exactly that value: an empty field, a default bug severity, a
+reads back as exactly that value: an empty field, a default bug severity, an
 execution's empty failure detail. `createdAt` is the one exception and
 is always written, because a fresh object holds the moment it was made. The
 price is that **changing a field's default is a format change**: every file

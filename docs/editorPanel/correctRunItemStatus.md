@@ -41,8 +41,8 @@ Press the key for the right run item status on the test case.
   another one adds an execution, which becomes the run item status. There is no
   separate gesture for correcting one, and a mistaken execution is removed with
   × in the view panel (Rule-VIEW-PANEL-121).
-- **Rule-EDITOR-PANEL-160** — Recording again keeps the earlier execution: its
-  tester, its time and what it said stay in the list.
+- **Rule-EDITOR-PANEL-160** — Recording again keeps the earlier execution in the
+  list, with the tester who recorded it, the time and what it said.
 - **Rule-EDITOR-PANEL-240** — Executions can be added, chosen as the default and
   removed while the test run takes run item statuses (Rule-TREE-PANEL-009).
 - **Rule-EDITOR-PANEL-248** — A button that turns gray while the pointer is on

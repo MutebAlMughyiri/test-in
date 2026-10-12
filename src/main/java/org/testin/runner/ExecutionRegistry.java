@@ -103,8 +103,8 @@ final class ExecutionRegistry {
     }
 
     // Rule-CODEGEN-111
-    @NotNull Optional<Attempts> unwritten(final @NotNull UUID id) {
-        final @NotNull Optional<Attempts> live = Optional.ofNullable(held.get(id)).filter(attempts -> attempts.written() < attempts.executions().size());
+    @NotNull Optional<Attempts> takeUnwritten(final @NotNull UUID id) {
+        final @NotNull Optional<Attempts> live = Optional.ofNullable(held.get(id)).filter(attempts -> attempts.written() < attempts.executionCount());
         live.ifPresent(attempts -> held.put(id, attempts.allWritten()));
         return live;
     }

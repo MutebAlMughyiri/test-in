@@ -28,7 +28,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.Config;
 import org.testin.model.TestCaseDto;
 import org.testin.model.bug.BugPriority;
 import org.testin.model.bug.BugSeverity;
@@ -40,6 +39,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -139,39 +139,58 @@ public class RunItem {
 
     // Rule-VIEW-PANEL-119
     public int defaultIndex() {
-        return IntStream.range(0, executions.size()).filter(at -> executions.get(at).isChosen()).findFirst().orElse(executions.size() - 1);
+        for (int at = 0; at < executions.size(); at++) {
+            if (executions.get(at).isChosen()) return at;
+        }
+        return executions.size() - 1;
+    }
+
+    // Rule-VIEW-PANEL-119, Rule-VIEW-PANEL-123
+    @JsonIgnore
+    public boolean executedAtMostOnce() {
+        return executions.size() <= 1;
     }
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-122
-    public @NotNull Optional<Execution> shownExecution(final int line) {
-        return line >= 0 && line < executions.size() ? Optional.of(executions.get(line)) : defaultExecution();
+    public @NotNull Execution shownExecution(final @NotNull OptionalInt line) {
+        return line.isPresent() && line.getAsInt() < executions.size() ? executions.get(line.getAsInt()) : shown();
+    }
+
+    // Rule-VIEW-PANEL-119
+    private @NotNull Execution shown() {
+        return executions.isEmpty() ? notYetExecuted() : executions.get(defaultIndex());
+    }
+
+    // Rule-TREE-PANEL-067, Rule-EDITOR-PANEL-132, Rule-EDITOR-PANEL-172
+    private @NotNull Execution notYetExecuted() {
+        return Execution.builder().status(untested ? RunItemStatus.UNTESTED : RunItemStatus.PENDING).duration(clock).actualResult(unrecordedActualResult).build();
     }
 
     // Rule-VIEW-PANEL-119
     @JsonIgnore
     public @NotNull RunItemStatus getStatus() {
-        return defaultExecution().map(Execution::getStatus).orElse(untested ? RunItemStatus.UNTESTED : RunItemStatus.PENDING);
+        return shown().getStatus();
     }
 
     // Rule-VIEW-PANEL-119, Rule-EDITOR-PANEL-132
     @JsonIgnore
     public @NotNull Duration getDuration() {
-        return defaultExecution().map(Execution::getDuration).orElse(clock);
+        return shown().getDuration();
     }
 
     @JsonIgnore
     public @NotNull String getExecutedBy() {
-        return defaultExecution().map(Execution::getExecutedBy).orElse("");
+        return shown().getExecutedBy();
     }
 
     @JsonIgnore
     public @NotNull ZonedDateTime getExecutedAt() {
-        return defaultExecution().map(Execution::getExecutedAt).orElse(Config.NOT_EXECUTED);
+        return shown().getExecutedAt();
     }
 
     @JsonIgnore
     public @NotNull String getActualResult() {
-        return defaultExecution().map(Execution::getActualResult).orElse(unrecordedActualResult);
+        return shown().getActualResult();
     }
 
     // UC-EDITOR-PANEL-041, Rule-EDITOR-PANEL-172
@@ -187,12 +206,12 @@ public class RunItem {
 
     @JsonIgnore
     public @NotNull String getStacktrace() {
-        return defaultExecution().map(Execution::getStacktrace).orElse("");
+        return shown().getStacktrace();
     }
 
     @JsonIgnore
     public @NotNull List<String> getScreenshots() {
-        return defaultExecution().map(Execution::getScreenshots).orElse(List.of());
+        return shown().getScreenshots();
     }
 
     // UC-EDITOR-PANEL-042, Rule-EDITOR-PANEL-288
@@ -267,39 +286,30 @@ public class RunItem {
 
     // UC-EDITOR-PANEL-031, UC-EDITOR-PANEL-038, UC-EDITOR-PANEL-039, UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-159, Rule-EDITOR-PANEL-160, Rule-EDITOR-PANEL-284
     public void recordRunItemStatus(final @NotNull RunItemStatus next, final @NotNull String tester, final @NotNull Duration duration, final @NotNull Failure failure) {
-        record(List.of(Execution.recorded(next, tester, duration, failure)));
+        recordExecutions(List.of(Execution.recorded(next, tester, duration, failure)), 0, tester);
     }
 
     // UC-CODEGEN-008, Rule-CODEGEN-111
-    public void showAttempts(final @NotNull List<Execution> attempts, final int written, final @NotNull String tester) {
-        replaceAttempts(attempts, written, tester);
-        chooseExecution(executions.size() - 1);
+    public void showExecutions(final @NotNull List<Execution> attempts, final int written, final @NotNull String tester) {
+        replaceExecutions(attempts, written, tester);
     }
 
-    // UC-CODEGEN-008, Rule-CODEGEN-111, Rule-EDITOR-PANEL-183
-    public void recordAutomated(final @NotNull List<Execution> attempts, final int written, final int deciding, final @NotNull String tester) {
-        if (attempts.isEmpty()) return;
+    // UC-CODEGEN-008, Rule-CODEGEN-111, Rule-EDITOR-PANEL-183, Rule-EDITOR-PANEL-172
+    public void recordExecutions(final @NotNull List<Execution> recorded, final int written, final @NotNull String tester) {
+        if (recorded.isEmpty()) return;
 
-        if (attempts.getLast().getActualResult().isBlank()) attempts.getLast().setActualResult(unrecordedActualResult);
-        replaceAttempts(attempts, written, tester);
-        chooseExecution(executions.size() - attempts.size() + deciding);
+        if (recorded.getLast().getActualResult().isBlank()) recorded.getLast().setActualResult(unrecordedActualResult);
+        replaceExecutions(recorded, written, tester);
         clock = Duration.ZERO;
         unrecordedActualResult = "";
-    }
-
-    private void replaceAttempts(final @NotNull List<Execution> attempts, final int written, final @NotNull String tester) {
-        attempts.forEach(attempt -> attempt.setExecutedBy(tester));
-        executions = Stream.concat(executions.stream().limit(Math.max(0, executions.size() - written)), attempts.stream()).toList();
     }
 
     // Rule-VIEW-PANEL-119, Rule-CODEGEN-111
-    private void record(final @NotNull List<Execution> recorded) {
-        executions.forEach(execution -> execution.setChosen(false));
-        if (!recorded.isEmpty() && recorded.getLast().getActualResult().isBlank()) recorded.getLast().setActualResult(unrecordedActualResult);
-
-        executions = Stream.concat(executions.stream(), recorded.stream()).toList();
-        clock = Duration.ZERO;
-        unrecordedActualResult = "";
+    private void replaceExecutions(final @NotNull List<Execution> replacing, final int written, final @NotNull String tester) {
+        final @NotNull List<Execution> kept = executions.subList(0, Math.max(0, executions.size() - written));
+        kept.forEach(execution -> execution.setChosen(false));
+        replacing.forEach(execution -> execution.setExecutedBy(tester));
+        executions = Stream.concat(kept.stream(), replacing.stream()).toList();
     }
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-120
