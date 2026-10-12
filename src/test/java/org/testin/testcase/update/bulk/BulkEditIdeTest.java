@@ -16,12 +16,14 @@
 
 package org.testin.testcase.update.bulk;
 
+import com.intellij.lang.Language;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.diff.DiffColors;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.colors.EditorColorsScheme;
+import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.impl.EditorComponentImpl;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
 import com.intellij.testFramework.PlatformTestUtil;
@@ -42,6 +44,7 @@ import org.testin.ui.framework.ShownDialog;
 import org.testin.undo.UndoHistories;
 import org.testin.undo.UndoScope;
 import org.testin.util.Bundle;
+import org.testin.util.Json;
 import org.testin.util.Shortcuts;
 import org.testin.view.Drawn;
 
@@ -232,6 +235,18 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
         assertTrue("the gesture could not be taken back", undoHistories().undo(scope));
         assertEquals(List.of("Payments", "Cart", "Search"), testCases.stream().map(this::moduleOf).toList());
         assertFalse("one gesture made more than one undo entry", undoHistories().canUndo(scope));
+    }
+
+    // Rule-EDITOR-PANEL-292
+    public void testBothSidesShowTheListInJsonColors() {
+        aTestSetWithModules("Payments", "Cart");
+        bulkEditTheModules();
+
+        assertEquals("the bulk editor is not two editors", 2, editors().size());
+        for (final Editor editor : editors()) {
+            final @NotNull Language colored = ((EditorEx) editor).getHighlighter().createIterator(startOfValue(editor.getDocument(), 0)).getTokenType().getLanguage();
+            assertEquals("a value is not colored as JSON", Json.language(), colored);
+        }
     }
 
     // Rule-EDITOR-PANEL-006

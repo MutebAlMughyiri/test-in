@@ -80,6 +80,10 @@ Select several test cases, then `F2` or the field's own letter.
   bar scrolls that bar sideways under the pointer, with the mouse wheel or a
   touchpad. No scrollbar is shown and the bar keeps its height, so nothing on it
   is cut off and the editor below does not move.
+- **Rule-EDITOR-PANEL-292** — The list is JSON, and both sides color it as the
+  IDE's editor colors JSON text: strings, numbers and punctuation each in their
+  color. A key takes the string color, as its value does. In an IDE without
+  JSON support it shows as plain text.
 
 ## The screen
 

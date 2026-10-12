@@ -179,7 +179,7 @@ public abstract class JsonArraySplitBulkSectionDialog extends AbstractFrameworkD
         for (int span = 0; span < spanOwners.size() && span < editors.valueCount(); span++) {
             final int[] owner = spanOwners.get(span);
             editors.valueAt(span).ifPresent(text ->
-                    activeValues.get(owner[0]).set(owner[1], BulkJsonEditor.unescapeJson(text)));
+                    activeValues.get(owner[0]).set(owner[1], BulkValueText.unescape(text)));
         }
     }
 
@@ -192,8 +192,8 @@ public abstract class JsonArraySplitBulkSectionDialog extends AbstractFrameworkD
 
         for (int i = 0; i < selectedItems.size(); i++) {
             final @NotNull TestCaseDto tc = selectedItems.get(i);
-            final @NotNull String prefix = "  {\n    \"id\": \"" + BulkJsonEditor.escapeJson(tc.getId().toString())
-                    + "\",\n    \"description\": \"" + BulkJsonEditor.escapeJson(tc.getDescription())
+            final @NotNull String prefix = "  {\n    \"id\": \"" + BulkValueText.escape(tc.getId().toString())
+                    + "\",\n    \"description\": \"" + BulkValueText.escape(tc.getDescription())
                     + "\",\n    \"" + getArrayFieldName() + "\": [\n";
             left.append(prefix);
             right.append(prefix);
@@ -221,7 +221,7 @@ public abstract class JsonArraySplitBulkSectionDialog extends AbstractFrameworkD
             out.append("      \"");
 
             final int start = out.length();
-            out.append(BulkJsonEditor.escapeJson(items.get(j)));
+            out.append(BulkValueText.escape(items.get(j)));
 
             recorder.record(start, out.length(), testCaseIndex, j);
 
@@ -245,7 +245,7 @@ public abstract class JsonArraySplitBulkSectionDialog extends AbstractFrameworkD
         final int[] owner = spanOwners.get(span);
         final @NotNull List<String> original = originalValues.get(owner[0]);
 
-        return owner[1] < original.size() ? BulkJsonEditor.escapeJson(original.get(owner[1])) : "";
+        return owner[1] < original.size() ? BulkValueText.escape(original.get(owner[1])) : "";
     }
 
     @FunctionalInterface

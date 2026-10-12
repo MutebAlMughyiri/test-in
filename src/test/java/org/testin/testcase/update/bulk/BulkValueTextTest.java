@@ -21,27 +21,27 @@ import org.testng.annotations.Test;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotEquals;
 
-public class BulkJsonEditorTest {
+public class BulkValueTextTest {
 
     @Test
     public void plainTextIsUnchanged() {
-        assertEquals(BulkJsonEditor.escapeJson("Login with a valid user"), "Login with a valid user");
+        assertEquals(BulkValueText.escape("Login with a valid user"), "Login with a valid user");
     }
 
     @Test
     public void quotesAndBackslashesAreEscapedAndComeBack() {
         final String original = "He said \"go\" then C:\\temp\\file";
 
-        final String escaped = BulkJsonEditor.escapeJson(original);
+        final String escaped = BulkValueText.escape(original);
         assertEquals(escaped, "He said \\\"go\\\" then C:\\\\temp\\\\file");
-        assertEquals(BulkJsonEditor.unescapeJson(escaped), original);
+        assertEquals(BulkValueText.unescape(escaped), original);
     }
 
     @Test
     public void aBackslashBeforeAQuoteSurvivesTheRoundTrip() {
         final String original = "ends with a backslash \\ then \"quoted\"";
 
-        assertEquals(BulkJsonEditor.unescapeJson(BulkJsonEditor.escapeJson(original)), original);
+        assertEquals(BulkValueText.unescape(BulkValueText.escape(original)), original);
     }
 
     // Rule-EDITOR-PANEL-044
@@ -49,36 +49,36 @@ public class BulkJsonEditorTest {
     public void newlinesSurviveTheRoundTrip() {
         final String original = "first line\nsecond line";
 
-        final String escaped = BulkJsonEditor.escapeJson(original);
+        final String escaped = BulkValueText.escape(original);
         assertEquals(escaped, "first line\\nsecond line", "a line break is written as an escape, on one editor line");
-        assertEquals(BulkJsonEditor.unescapeJson(escaped), original);
+        assertEquals(BulkValueText.unescape(escaped), original);
     }
 
     @Test
     public void aBackslashFollowedByAnNIsNotALineBreak() {
         final String original = "a windows path C:\\next and a real\nbreak";
 
-        final String escaped = BulkJsonEditor.escapeJson(original);
-        assertEquals(BulkJsonEditor.unescapeJson(escaped), original);
-        assertNotEquals(BulkJsonEditor.unescapeJson("C:\\\\next"), "C:\\\next");
+        final String escaped = BulkValueText.escape(original);
+        assertEquals(BulkValueText.unescape(escaped), original);
+        assertNotEquals(BulkValueText.unescape("C:\\\\next"), "C:\\\next");
     }
 
     @Test
     public void carriageReturnsAreDropped() {
-        assertEquals(BulkJsonEditor.escapeJson("first\r\nsecond"), "first\\nsecond");
+        assertEquals(BulkValueText.escape("first\r\nsecond"), "first\\nsecond");
     }
 
     @Test
     public void anUntouchedValueComparesEqualToItsEscapedSelf() {
         for (final String value : new String[]{"", "plain", "with \"quotes\"", "with \\ backslash", "trailing ", "two\nlines", "a \\n that is not a break"}) {
-            final String escaped = BulkJsonEditor.escapeJson(value);
-            assertEquals(BulkJsonEditor.escapeJson(BulkJsonEditor.unescapeJson(escaped)), escaped, "for: " + value);
+            final String escaped = BulkValueText.escape(value);
+            assertEquals(BulkValueText.escape(BulkValueText.unescape(escaped)), escaped, "for: " + value);
         }
     }
 
     @Test
     public void anEmptyValueEscapesToNothing() {
-        assertEquals(BulkJsonEditor.escapeJson(""), "");
-        assertEquals(BulkJsonEditor.unescapeJson(""), "");
+        assertEquals(BulkValueText.escape(""), "");
+        assertEquals(BulkValueText.unescape(""), "");
     }
 }

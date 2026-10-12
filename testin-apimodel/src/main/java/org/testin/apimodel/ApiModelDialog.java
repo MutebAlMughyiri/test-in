@@ -17,7 +17,6 @@
 package org.testin.apimodel;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.intellij.json.JsonLanguage;
 import com.intellij.ide.highlighter.JavaFileType;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.project.Project;
@@ -41,6 +40,7 @@ import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.ui.framework.TextInput;
 import org.testin.util.Bundle;
 import org.testin.util.FailureText;
+import org.testin.util.Json;
 import org.testin.util.Shortcuts;
 
 import javax.swing.JComponent;
@@ -82,8 +82,8 @@ final class ApiModelDialog extends AbstractFrameworkDialog {
                 .accepting("[A-Za-z][A-Za-z0-9]*")
                 .build()
                 .getComponent();
-        request = ComponentDialogBase.multiLineField(p, "", Bundle.message("dialog.api.model.request.placeholder"), EMPTY_LINES, MultiLineField.NO_LIMIT, JsonLanguage.INSTANCE, false).getComponent();
-        response = ComponentDialogBase.multiLineField(p, "", Bundle.message("dialog.api.model.response.placeholder"), EMPTY_LINES, MultiLineField.NO_LIMIT, JsonLanguage.INSTANCE, false).getComponent();
+        request = ComponentDialogBase.multiLineField(p, "", Bundle.message("dialog.api.model.request.placeholder"), EMPTY_LINES, MultiLineField.NO_LIMIT, Json.language(), false).getComponent();
+        response = ComponentDialogBase.multiLineField(p, "", Bundle.message("dialog.api.model.response.placeholder"), EMPTY_LINES, MultiLineField.NO_LIMIT, Json.language(), false).getComponent();
         pair = ComponentDialogBase.fieldPair(p, REMEMBERED_LAYOUT, requestTitle, request, responseTitle, response).getComponent();
 
         components = List.of(

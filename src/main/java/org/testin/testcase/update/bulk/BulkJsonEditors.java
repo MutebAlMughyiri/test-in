@@ -28,10 +28,13 @@ import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.openapi.editor.EditorSettings;
+import com.intellij.openapi.editor.LogicalPosition;
 import com.intellij.openapi.editor.RangeMarker;
 import com.intellij.openapi.editor.VisualPosition;
 import com.intellij.openapi.editor.actionSystem.EditorActionManager;
 import com.intellij.openapi.editor.colors.EditorColors;
+import com.intellij.openapi.editor.colors.EditorColorsScheme;
 import com.intellij.openapi.editor.event.CaretEvent;
 import com.intellij.openapi.editor.event.CaretListener;
 import com.intellij.openapi.editor.event.DocumentEvent;
@@ -51,6 +54,7 @@ import com.intellij.ui.JBSplitter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.ui.framework.DialogComponent;
 import org.testin.ui.framework.StatusBarShortcut;
+import org.testin.util.Json;
 import org.testin.util.Shortcuts;
 
 import javax.swing.JComponent;
@@ -64,6 +68,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.IntFunction;
 
+// UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-292
 final class BulkJsonEditors implements DialogComponent {
     private static final int TYPING_SETTLES_MILLIS = 150;
 
@@ -83,12 +88,13 @@ final class BulkJsonEditors implements DialogComponent {
 
     private @NotNull IntFunction<String> originalTextAt = _ -> "";
 
+    // Rule-EDITOR-PANEL-292
     BulkJsonEditors(final @NotNull Project p) {
         this.p = p;
 
         leftDoc = EditorFactory.getInstance().createDocument("");
-        leftEditor = EditorFactory.getInstance().createViewer(leftDoc, p);
-        BulkJsonEditor.setupEditorAppearance(leftEditor, p);
+        leftEditor = EditorFactory.getInstance().createEditor(leftDoc, p, Json.fileType(), true);
+        setupEditorAppearance(leftEditor);
         leftEditor.getContentComponent().setFocusable(false);
         leftEditor.getSettings().setCaretRowShown(false);
         leftEditor.addEditorMouseListener(new EditorMouseListener() {
@@ -101,8 +107,8 @@ final class BulkJsonEditors implements DialogComponent {
         rightDoc = EditorFactory.getInstance().createDocument("");
         EditorActionManager.getInstance().setReadonlyFragmentModificationHandler(rightDoc, _ -> {
         });
-        rightEditor = EditorFactory.getInstance().createEditor(rightDoc, p);
-        BulkJsonEditor.setupEditorAppearance(rightEditor, p);
+        rightEditor = EditorFactory.getInstance().createEditor(rightDoc, p, Json.fileType(), false);
+        setupEditorAppearance(rightEditor);
 
         final @NotNull Color caretRowColor = Optional
                 .ofNullable(rightEditor.getColorsScheme().getColor(EditorColors.CARET_ROW_COLOR))
@@ -213,7 +219,7 @@ final class BulkJsonEditors implements DialogComponent {
 
     // UC-EDITOR-PANEL-007
     void caretOnEveryValue() {
-        BulkJsonEditor.placeCaretOnAll(rightEditor, liveMarkers());
+        placeCaretOnAll(rightEditor, liveMarkers());
         refreshRowHighlights();
     }
 
@@ -229,7 +235,7 @@ final class BulkJsonEditors implements DialogComponent {
             public void caretPositionChanged(final @NotNull CaretEvent event) {
                 final @NotNull Caret caret = event.getCaret();
                 if (indexAt(caret.getOffset()) < 0) {
-                    caret.moveToOffset(BulkJsonEditor.nearestValidOffset(caret.getOffset(), liveMarkers()));
+                    caret.moveToOffset(nearestValidOffset(caret.getOffset(), liveMarkers()));
                 }
                 refreshRowHighlights();
             }
@@ -305,7 +311,7 @@ final class BulkJsonEditors implements DialogComponent {
                 final int offset = rightEditor.logicalPositionToOffset(rightEditor.visualToLogicalPosition(position));
 
                 if (indexAt(offset) < 0) {
-                    final int snapped = BulkJsonEditor.nearestValidOffset(offset, liveMarkers());
+                    final int snapped = nearestValidOffset(offset, liveMarkers());
                     position = rightEditor.logicalToVisualPosition(rightEditor.offsetToLogicalPosition(snapped));
                 }
 
@@ -396,5 +402,60 @@ final class BulkJsonEditors implements DialogComponent {
             refreshRowHighlights();
             refreshDiffHighlights();
         });
+    }
+
+    // UC-EDITOR-PANEL-007
+    private static void setupEditorAppearance(final @NotNull Editor editor) {
+        final @NotNull EditorColorsScheme scheme = editor.getColorsScheme();
+        scheme.setEditorFontSize(15f);
+        scheme.setLineSpacing(1.4f);
+
+        final @NotNull EditorSettings settings = editor.getSettings();
+        settings.setLineNumbersShown(true);
+        settings.setLineMarkerAreaShown(false);
+        settings.setFoldingOutlineShown(true);
+        settings.setVirtualSpace(false);
+        settings.setUseSoftWraps(false);
+        settings.setAdditionalLinesCount(1);
+    }
+
+    // UC-EDITOR-PANEL-007
+    private static int nearestValidOffset(final int offset, final @NotNull List<RangeMarker> markers) {
+        int minDistance = Integer.MAX_VALUE;
+        int nearestOffset = offset;
+        for (final RangeMarker m : markers) {
+            if (!m.isValid()) continue;
+
+            if (Math.abs(offset - m.getStartOffset()) < minDistance) {
+                minDistance = Math.abs(offset - m.getStartOffset());
+                nearestOffset = m.getStartOffset();
+            }
+            if (Math.abs(offset - m.getEndOffset()) < minDistance) {
+                minDistance = Math.abs(offset - m.getEndOffset());
+                nearestOffset = m.getEndOffset();
+            }
+        }
+        return nearestOffset;
+    }
+
+    // UC-EDITOR-PANEL-007
+    private static void placeCaretOnAll(final @NotNull Editor editor, final @NotNull List<RangeMarker> markers) {
+        final @NotNull CaretModel caretModel = editor.getCaretModel();
+        caretModel.removeSecondaryCarets();
+
+        boolean isFirst = true;
+        for (final RangeMarker marker : markers) {
+            if (!marker.isValid()) continue;
+
+            final @NotNull LogicalPosition logPos = editor.offsetToLogicalPosition(marker.getEndOffset());
+            final @NotNull VisualPosition visPos = editor.logicalToVisualPosition(logPos);
+
+            if (isFirst) {
+                caretModel.moveToVisualPosition(visPos);
+                isFirst = false;
+            } else {
+                caretModel.addCaret(visPos, true);
+            }
+        }
     }
 }

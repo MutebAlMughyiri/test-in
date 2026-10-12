@@ -153,7 +153,7 @@ public abstract class JsonSplitBulkSectionDialog extends AbstractFrameworkDialog
             final int index = i;
             newValues.add(editors.valueAt(index)
                     .filter(current -> !current.equals(originalEscaped.get(index)))
-                    .map(current -> EditedValue.of(BulkJsonEditor.unescapeJson(current).trim()))
+                    .map(current -> EditedValue.of(BulkValueText.unescape(current).trim()))
                     .orElse(EditedValue.UNCHANGED));
         }
 
@@ -169,13 +169,13 @@ public abstract class JsonSplitBulkSectionDialog extends AbstractFrameworkDialog
 
         for (int i = 0; i < selectedItems.size(); i++) {
             final @NotNull TestCaseDto tc = selectedItems.get(i);
-            final @NotNull String escapedValue = BulkJsonEditor.escapeJson(getOriginalValue(tc));
+            final @NotNull String escapedValue = BulkValueText.escape(getOriginalValue(tc));
             originalEscaped.add(escapedValue);
 
             final @NotNull StringBuilder prefixSb = new StringBuilder("  {\n    \"id\": \"")
-                    .append(BulkJsonEditor.escapeJson(tc.getId().toString())).append("\",\n");
+                    .append(BulkValueText.escape(tc.getId().toString())).append("\",\n");
             if (showsDescriptionContext()) {
-                prefixSb.append("    \"description\": \"").append(BulkJsonEditor.escapeJson(tc.getDescription())).append("\",\n");
+                prefixSb.append("    \"description\": \"").append(BulkValueText.escape(tc.getDescription())).append("\",\n");
             }
             prefixSb.append("    \"").append(getJsonFieldName()).append("\": \"");
 
