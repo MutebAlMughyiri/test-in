@@ -24,7 +24,7 @@ import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.TestinData;
 import org.testin.editor.open.TestinEditors;
 import org.testin.logger.TestinLogger;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.services.Services;
 
 import java.util.List;
@@ -32,9 +32,9 @@ import java.util.List;
 // UC-TREE-PANEL-005, UC-TREE-PANEL-006
 public class OpenAction extends AbstractAnyProjectAction {
     // UC-TREE-PANEL-005, UC-TREE-PANEL-006, Rule-TREE-PANEL-022
-    public static void execute(final @NotNull Project p, final @NotNull List<Node> selected) {
+    public static void execute(final @NotNull Project p, final @NotNull List<AbstractNode> selected) {
         selected.stream()
-                .filter(Node::isOpenableInEditor)
+                .filter(AbstractNode::isOpenableInEditor)
                 .forEach(dir -> {
                     TestinLogger.info("open: " + dir.getPath());
                     Services.getInstance(p, TestinEditors.class).open(dir);
@@ -51,7 +51,7 @@ public class OpenAction extends AbstractAnyProjectAction {
     @Override
     protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
         e.getPresentation().setEnabled(TestinData.selectedNodes(e).stream()
-                .anyMatch(Node::isOpenableInEditor));
+                .anyMatch(AbstractNode::isOpenableInEditor));
     }
 
     @Override

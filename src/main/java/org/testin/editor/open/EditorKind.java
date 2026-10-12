@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.model.NodeType;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.util.Bundle;
 
 import java.util.Map;
@@ -50,7 +50,7 @@ public enum EditorKind {
     private final @NotNull EditorFileType fileType;
 
     // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-001
-    public static @NotNull EditorKind of(final @NotNull Node dir) {
+    public static @NotNull EditorKind of(final @NotNull AbstractNode dir) {
         return OPENS.getOrDefault(dir.getType(), TEST_SET);
     }
 

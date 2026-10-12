@@ -40,7 +40,7 @@ import org.testin.editor.open.UnifiedVirtualFile;
 import org.testin.importexport.FileFormat;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCaseDto;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
@@ -153,11 +153,11 @@ public class ImportFlowIdeTest extends AbstractTempRootIdeTest {
         return FileFormat.JSON.importToFile(getProject(), file);
     }
 
-    private void imported(final @NotNull Node into, final @NotNull Map<String, List<TestCaseDto>> sheets) {
+    private void imported(final @NotNull AbstractNode into, final @NotNull Map<String, List<TestCaseDto>> sheets) {
         imported(into, sheets, new EmptyProgressIndicator());
     }
 
-    private void imported(final @NotNull Node into, final @NotNull Map<String, List<TestCaseDto>> sheets, final @NotNull ProgressIndicator indicator) {
+    private void imported(final @NotNull AbstractNode into, final @NotNull Map<String, List<TestCaseDto>> sheets, final @NotNull ProgressIndicator indicator) {
         if (into.holdsTestCases()) anEditorStandsOpenOn(into);
         final int total = sheets.values().stream().mapToInt(List::size).sum();
         final @NotNull Future<?> running = ApplicationManager.getApplication().executeOnPooledThread(() -> new ImportWork(getProject()).importInBackground(into, sheets, false, total, indicator));
@@ -170,7 +170,7 @@ public class ImportFlowIdeTest extends AbstractTempRootIdeTest {
         }
     }
 
-    private void anEditorStandsOpenOn(final @NotNull Node testSet) {
+    private void anEditorStandsOpenOn(final @NotNull AbstractNode testSet) {
         if (Arrays.stream(FileEditorManager.getInstance(getProject()).getOpenFiles()).anyMatch(open -> open.getPath().equals(testSet.getPath().toAbsolutePath().toString())))
             return;
 

@@ -64,7 +64,7 @@ public class BrowseFieldIdeTest extends AbstractTempRootIdeTest {
         final @NotNull Chooser chooser = new Chooser(chosen);
         ServiceContainerUtil.replaceService(ApplicationManager.getApplication(), FileChooserFactory.class, chooser, getTestRootDisposable());
 
-        final @NotNull TextInput input = ComponentDialogBase.textField().caption("Folder").value(typed.getPresentableUrl())
+        final @NotNull TextInput input = DialogPart.textField().caption("Folder").value(typed.getPresentableUrl())
                 .browse(getProject(), FileChooserDescriptorFactory.createSingleFolderDescriptor()).build().getComponent();
         final @NotNull JTextField field = (JTextField) input.getFocusComponent();
 

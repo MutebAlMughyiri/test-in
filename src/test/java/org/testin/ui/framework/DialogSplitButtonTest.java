@@ -30,7 +30,7 @@ public class DialogSplitButtonTest {
 
     @Test
     public void anAlternativePressedOnceDoesNotBecomeWhatEnterRuns() {
-        final DialogSplitButton split = ComponentDialogBase.splitButton("Commit & Push", "Commit").getComponent();
+        final DialogSplitButton split = DialogPart.splitButton("Commit & Push", "Commit").getComponent();
         final List<String> readBySubmit = new ArrayList<>();
         split.onSubmitRequest(() -> readBySubmit.add(split.getChosen()));
 

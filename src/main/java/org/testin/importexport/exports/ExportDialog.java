@@ -26,7 +26,7 @@ import org.testin.testcase.TestSetEditorAttributes;
 import org.testin.ui.dialogs.Destination;
 import org.testin.ui.dialogs.DestinationForm;
 import org.testin.ui.framework.AbstractFrameworkDialog;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.DialogSize;
 import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.util.Bundle;
@@ -62,9 +62,9 @@ public final class ExportDialog extends AbstractFrameworkDialog {
         preview.show(sheetsData);
 
         components = List.of(
-                ComponentDialogBase.of(form),
-                ComponentDialogBase.of(preview),
-                ComponentDialogBase.button(ExportAction.NAME));
+                DialogPart.of(form),
+                DialogPart.of(preview),
+                DialogPart.button(ExportAction.NAME));
 
         shortcuts = List.of(
                 StatusBarShortcut.build(Shortcuts.Enter, ExportAction.NAME, this::submit),

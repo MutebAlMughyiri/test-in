@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.Nodes;
 import org.testin.logger.TestinLogger;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.services.Services;
 import org.testin.util.FailureText;
 
@@ -89,9 +89,9 @@ public final class LastOpenEditors {
         }
     }
 
-    private @NotNull List<Node> stillIndexed(final String @NotNull [] entries) {
+    private @NotNull List<AbstractNode> stillIndexed(final String @NotNull [] entries) {
         final @NotNull Nodes nodes = Services.getInstance(p, Nodes.class);
-        final @NotNull List<Node> found = new ArrayList<>();
+        final @NotNull List<AbstractNode> found = new ArrayList<>();
 
         for (final String entry : entries) {
             nodes.find(Path.of(entry)).ifPresentOrElse(
@@ -105,7 +105,7 @@ public final class LastOpenEditors {
         return found;
     }
 
-    private void openAll(final @NotNull List<Node> found) {
+    private void openAll(final @NotNull List<AbstractNode> found) {
         final @NotNull TestinEditors editors = Services.getInstance(p, TestinEditors.class);
 
         for (int i = 0; i < found.size(); i++) editors.open(found.get(i), i == found.size() - 1);

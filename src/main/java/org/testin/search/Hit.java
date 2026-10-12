@@ -18,29 +18,29 @@ package org.testin.search;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCaseDto;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.util.Icons;
 
 import javax.swing.Icon;
 import java.util.Optional;
 
-public record Hit(@NotNull Icon icon, @NotNull String name, @NotNull String where, @NotNull Node node, @NotNull Optional<TestCaseDto> testCase) {
+public record Hit(@NotNull Icon icon, @NotNull String name, @NotNull String where, @NotNull AbstractNode node, @NotNull Optional<TestCaseDto> testCase) {
     public static @NotNull Hit of(final @NotNull TestCaseDto tc) {
         return new Hit(Icons.TEST_CASE, tc.getDescription(), where(tc.getParent()),
                 tc.getParent(), Optional.of(tc));
     }
 
     // UC-INTERNAL-001, Rule-INTERNAL-072, Rule-INTERNAL-098
-    public static @NotNull Hit of(final @NotNull TestCaseDto tc, final @NotNull Node testRun) {
+    public static @NotNull Hit of(final @NotNull TestCaseDto tc, final @NotNull AbstractNode testRun) {
         return new Hit(testRun.iconShownInTree(), tc.getDescription(), where(testRun), testRun, Optional.of(tc));
     }
 
     // UC-INTERNAL-001, Rule-INTERNAL-072
-    public static @NotNull Hit of(final @NotNull Node node) {
+    public static @NotNull Hit of(final @NotNull AbstractNode node) {
         return new Hit(node.iconShownInTree(), node.getName(), where(node), node, Optional.empty());
     }
 
-    private static @NotNull String where(final @NotNull Node node) {
+    private static @NotNull String where(final @NotNull AbstractNode node) {
         return String.join(" > ", node.getPath2());
     }
 }

@@ -21,7 +21,7 @@ import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.ui.framework.AbstractFrameworkDialog;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.DialogSize;
 import org.testin.ui.framework.HtmlPage;
 import org.testin.ui.framework.StatusBarShortcut;
@@ -45,7 +45,7 @@ public final class GuideDialog extends AbstractFrameworkDialog {
 
         size = DialogSize.TALL;
 
-        components = List.of(ComponentDialogBase.of(page));
+        components = List.of(DialogPart.of(page));
 
         shortcuts = List.of(StatusBarShortcut.build(Shortcuts.Escape, Bundle.message("shortcut.close"), this::closeCancel));
     }

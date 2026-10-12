@@ -25,16 +25,16 @@ import org.testin.services.Services;
 import org.testin.testcase.TestCaseDialogKey;
 import org.testin.testcase.UpdateTestCaseFields;
 import org.testin.testcase.create.CreateTestCaseSection;
-import org.testin.testcase.create.TestCaseBaseDialog;
+import org.testin.testcase.create.AbstractTestCaseDialog;
 import org.testin.testcase.create.TestCaseForm;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.util.Bundle;
 
 import javax.swing.JComponent;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class UpdateTestCaseDialog extends TestCaseBaseDialog {
+public class UpdateTestCaseDialog extends AbstractTestCaseDialog {
     private final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
 
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-036
@@ -77,7 +77,7 @@ public class UpdateTestCaseDialog extends TestCaseBaseDialog {
 
         // Rule-INTERNAL-101
         resizable = true;
-        components = List.of(ComponentDialogBase.of(form));
+        components = List.of(DialogPart.of(form));
 
         registerDialogKeys(keys);
     }

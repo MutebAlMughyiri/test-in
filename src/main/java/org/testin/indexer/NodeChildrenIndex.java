@@ -17,7 +17,7 @@
 package org.testin.indexer;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -31,17 +31,17 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
 final class NodeChildrenIndex {
-    private static final @NotNull Comparator<Node> BY_ARRANGEMENT = Comparator
-            .comparing(Node::isRetired)
-            .thenComparingInt(Node::getOrder)
+    private static final @NotNull Comparator<AbstractNode> BY_ARRANGEMENT = Comparator
+            .comparing(AbstractNode::isRetired)
+            .thenComparingInt(AbstractNode::getOrder)
             .thenComparing(node -> node.getMarker().getCreatedAt())
-            .thenComparing(Node::getName);
+            .thenComparing(AbstractNode::getName);
     private final @NotNull AtomicLong invalidations = new AtomicLong();
-    private volatile @NotNull Map<Path, List<Node>> childrenByParent = Map.of();
+    private volatile @NotNull Map<Path, List<AbstractNode>> childrenByParent = Map.of();
     private volatile long builtAfter = -1;
 
     @NotNull
-    List<Node> get(final @NotNull Path parentPath, final @NotNull Supplier<Collection<Node>> source) {
+    List<AbstractNode> get(final @NotNull Path parentPath, final @NotNull Supplier<Collection<AbstractNode>> source) {
         rebuildIfNeeded(source);
         return childrenByParent.getOrDefault(parentPath, List.of());
     }
@@ -55,14 +55,14 @@ final class NodeChildrenIndex {
         invalidate();
     }
 
-    private void rebuildIfNeeded(final @NotNull Supplier<Collection<Node>> source) {
+    private void rebuildIfNeeded(final @NotNull Supplier<Collection<AbstractNode>> source) {
         if (builtAfter == invalidations.get()) return;
         synchronized (this) {
             final long seen = invalidations.get();
             if (builtAfter == seen) return;
 
-            final @NotNull Map<Path, List<Node>> rebuilt = new HashMap<>();
-            for (final Node directory : source.get()) {
+            final @NotNull Map<Path, List<AbstractNode>> rebuilt = new HashMap<>();
+            for (final AbstractNode directory : source.get()) {
                 Optional.ofNullable(directory.getParent()).ifPresent(parent ->
                         rebuilt.computeIfAbsent(parent.getPath(), _ -> new ArrayList<>()).add(directory));
             }

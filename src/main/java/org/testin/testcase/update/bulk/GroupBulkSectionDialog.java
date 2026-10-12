@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class GroupBulkSectionDialog extends JsonArraySplitBulkSectionDialog {
+public class GroupBulkSectionDialog extends AbstractJsonArraySplitBulkSectionDialog {
     public GroupBulkSectionDialog(final @NotNull Project p, final @NotNull List<TestCaseDto> selectedItems, final @NotNull Consumer<List<TestCaseDto>> updatedItems) {
         super(p, selectedItems, updatedItems);
     }

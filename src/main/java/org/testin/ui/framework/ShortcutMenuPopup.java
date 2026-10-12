@@ -92,7 +92,7 @@ public final class ShortcutMenuPopup<T extends MenuItem> {
 
         DialogKeys.install(list, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, declared);
 
-        return new StatusBarBase(declared.toArray(StatusBarItem[]::new)).getPanel();
+        return new ShortcutStrip(declared.toArray(StatusBarItem[]::new)).getPanel();
     }
 
     private void bindRows(final @NotNull JBList<T> list, final @NotNull JBPopup popup) {

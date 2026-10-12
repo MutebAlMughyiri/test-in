@@ -30,7 +30,7 @@ import org.testin.model.markers.TestRunPackageMarker;
 import org.testin.model.markers.TestRunsFolderMarker;
 import org.testin.model.markers.TestSetMarker;
 import org.testin.model.markers.TestSetPackageMarker;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestCasesFolderNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
@@ -54,7 +54,7 @@ public final class NodeMapper {
         final @NotNull TestProjectNode tp = TestProjectNode.builder()
                 .name(fileName)
                 .path(path)
-                .path2(Node.pathOf(List.of(), fileName))
+                .path2(AbstractNode.pathOf(List.of(), fileName))
                 .build();
 
         // Rule-INTERNAL-091
@@ -74,7 +74,7 @@ public final class NodeMapper {
         final @NotNull TestProjectNode tp = TestProjectNode.builder()
                 .name(fileName)
                 .path(path)
-                .path2(Node.pathOf(List.of(), fileName))
+                .path2(AbstractNode.pathOf(List.of(), fileName))
                 .marker(marker)
                 .build();
 
@@ -94,7 +94,7 @@ public final class NodeMapper {
                 .path(dir)
                 .name(NodeType.TCF.getFolderName())
                 .parent(tp)
-                .path2(Node.pathOf(tp.getPath2(), NodeType.TCF.getFolderName()))
+                .path2(AbstractNode.pathOf(tp.getPath2(), NodeType.TCF.getFolderName()))
                 .marker(Services.getInstance(p, Nodes.class).readMarker(dir, NodeType.TCF, TestCasesFolderMarker.class))
                 .build();
     }
@@ -105,20 +105,20 @@ public final class NodeMapper {
                 .path(dir)
                 .name(NodeType.TRF.getFolderName())
                 .parent(tp)
-                .path2(Node.pathOf(tp.getPath2(), NodeType.TRF.getFolderName()))
+                .path2(AbstractNode.pathOf(tp.getPath2(), NodeType.TRF.getFolderName()))
                 .marker(Services.getInstance(p, Nodes.class).readMarker(dir, NodeType.TRF, TestRunsFolderMarker.class))
                 .build();
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-014
-    public @NotNull TestSetPackageNode getTestSetPackageNode(final @NotNull Path path, final @NotNull Node parent) {
+    public @NotNull TestSetPackageNode getTestSetPackageNode(final @NotNull Path path, final @NotNull AbstractNode parent) {
         final @NotNull String fileName = path.getFileName().toString();
         TestSetPackageNode testSetPackageNode = TestSetPackageNode
                 .builder()
                 .name(fileName)
                 .path(path)
                 .parent(parent)
-                .path2(Node.pathOf(parent.getPath2(), fileName))
+                .path2(AbstractNode.pathOf(parent.getPath2(), fileName))
                 .marker(Services.getInstance(p, Nodes.class).readMarker(path, NodeType.TSP, TestSetPackageMarker.class))
                 .build();
 
@@ -127,14 +127,14 @@ public final class NodeMapper {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-014
-    public @NotNull TestRunPackageNode getTestRunPackageNode(final @NotNull Path path, final @NotNull Node parent) {
+    public @NotNull TestRunPackageNode getTestRunPackageNode(final @NotNull Path path, final @NotNull AbstractNode parent) {
         final @NotNull String fileName = path.getFileName().toString();
         TestRunPackageNode testRunPackageNode = TestRunPackageNode
                 .builder()
                 .name(fileName)
                 .path(path)
                 .parent(parent)
-                .path2(Node.pathOf(parent.getPath2(), fileName))
+                .path2(AbstractNode.pathOf(parent.getPath2(), fileName))
                 .marker(Services.getInstance(p, Nodes.class).readMarker(path, NodeType.TRP, TestRunPackageMarker.class))
                 .build();
 
@@ -143,14 +143,14 @@ public final class NodeMapper {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-014
-    public @NotNull TestSetNode getTestSetNode(final @NotNull Path path, final @NotNull Node parent) {
+    public @NotNull TestSetNode getTestSetNode(final @NotNull Path path, final @NotNull AbstractNode parent) {
         final @NotNull String fileName = path.getFileName().toString();
         TestSetNode testSetNode = TestSetNode
                 .builder()
                 .name(fileName)
                 .path(path)
                 .parent(parent)
-                .path2(Node.pathOf(parent.getPath2(), fileName))
+                .path2(AbstractNode.pathOf(parent.getPath2(), fileName))
                 .marker(Services.getInstance(p, Nodes.class).readMarker(path, NodeType.TS, TestSetMarker.class))
                 .build();
 
@@ -158,24 +158,24 @@ public final class NodeMapper {
         return testSetNode;
     }
 
-    public @NotNull TestRunNode setTestRunNode(final @NotNull Path path, final @NotNull Node parent) {
+    public @NotNull TestRunNode setTestRunNode(final @NotNull Path path, final @NotNull AbstractNode parent) {
         return buildTestRunNode(path, parent, new TestRunMarker());
     }
 
-    public @NotNull TestRunNode getTestRunNode(final @NotNull Path path, final @NotNull Node parent) {
+    public @NotNull TestRunNode getTestRunNode(final @NotNull Path path, final @NotNull AbstractNode parent) {
         final @NotNull TestRunMarker marker = Services.getInstance(p, Nodes.class).readMarker(path, NodeType.TR, TestRunMarker.class);
         return buildTestRunNode(path, parent, marker);
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-014
-    private @NotNull TestRunNode buildTestRunNode(final @NotNull Path path, final @NotNull Node parent, final @NotNull TestRunMarker marker) {
+    private @NotNull TestRunNode buildTestRunNode(final @NotNull Path path, final @NotNull AbstractNode parent, final @NotNull TestRunMarker marker) {
         final @NotNull String fileName = path.getFileName().toString();
         final var builder = TestRunNode
                 .builder()
                 .name(fileName)
                 .path(path)
                 .parent(parent)
-                .path2(Node.pathOf(parent.getPath2(), fileName));
+                .path2(AbstractNode.pathOf(parent.getPath2(), fileName));
 
         builder.marker(marker);
 

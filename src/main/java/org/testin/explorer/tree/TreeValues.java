@@ -22,7 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -55,15 +55,15 @@ public final class TreeValues {
         return valueOf(component).filter(type::isInstance).map(type::cast);
     }
 
-    public static @NotNull Optional<Node> directoryOf(final @Nullable Object component) {
-        return valueOf(component, Node.class);
+    public static @NotNull Optional<AbstractNode> directoryOf(final @Nullable Object component) {
+        return valueOf(component, AbstractNode.class);
     }
 
-    public static @NotNull Optional<Node> directoryAt(final @Nullable TreePath path) {
+    public static @NotNull Optional<AbstractNode> directoryAt(final @Nullable TreePath path) {
         return Optional.ofNullable(path).flatMap(at -> directoryOf(at.getLastPathComponent()));
     }
 
-    public static @NotNull Optional<Node> selectedNode(final @NotNull SimpleTree tree) {
+    public static @NotNull Optional<AbstractNode> selectedNode(final @NotNull SimpleTree tree) {
         return directoryAt(tree.getSelectionPath());
     }
 
@@ -73,18 +73,18 @@ public final class TreeValues {
     }
 
     public static @NotNull Optional<Path> projectPath(final @NotNull SimpleTree tree) {
-        return valueOf(tree.getModel().getRoot(), TestProjectNode.class).map(Node::getPath);
+        return valueOf(tree.getModel().getRoot(), TestProjectNode.class).map(AbstractNode::getPath);
     }
 
     public static <T> @NotNull Optional<T> singleSelected(final @NotNull SimpleTree tree, final @NotNull Class<T> type) {
         return tree.getSelectionCount() == 1 ? selected(tree, type) : Optional.empty();
     }
 
-    public static @NotNull Optional<Node> singleSelectedNode(final @NotNull SimpleTree tree) {
-        return singleSelected(tree, Node.class);
+    public static @NotNull Optional<AbstractNode> singleSelectedNode(final @NotNull SimpleTree tree) {
+        return singleSelected(tree, AbstractNode.class);
     }
 
-    public static @NotNull List<Node> selectedNodes(final TreePath @Nullable [] paths) {
+    public static @NotNull List<AbstractNode> selectedNodes(final TreePath @Nullable [] paths) {
         return Arrays.stream(Objects.requireNonNullElse(paths, NO_PATHS))
                 .map(TreeValues::directoryAt)
                 .flatMap(Optional::stream)

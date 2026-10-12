@@ -27,7 +27,7 @@ import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.testrun.RunItem;
 import org.testin.testrun.failure.FailureFields;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.DialogHost;
 import org.testin.ui.framework.RowStripe;
 import org.testin.util.Fonts;
@@ -61,7 +61,7 @@ class FailureForm extends JBPanel<FailureForm> implements DialogHost {
         setOpaque(false);
         setBorder(JBUI.Borders.emptyTop(14));
 
-        for (final ComponentDialogBase<?> component : fields.components()) {
+        for (final DialogPart<?> component : fields.components()) {
             final @NotNull JComponent panel = component.getComponent().getPanel();
             panel.setAlignmentX(LEFT_ALIGNMENT);
             add(panel);

@@ -22,7 +22,7 @@ import org.testin.git.GitRefs;
 import org.testin.model.NodeType;
 import org.testin.notifications.Refused;
 import org.testin.ui.framework.AbstractFrameworkDialog;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.ui.framework.TextInput;
 import org.testin.util.Bundle;
@@ -42,7 +42,7 @@ public final class CreateTestProjectDialog extends AbstractFrameworkDialog {
 
         title = Bundle.message("dialog.create.project.title");
 
-        final @NotNull ComponentDialogBase<TextInput> built = ComponentDialogBase.textField()
+        final @NotNull DialogPart<TextInput> built = DialogPart.textField()
                 .icon(NodeType.TP.getIcon())
                 .placeholder(Bundle.message("dialog.create.project.placeholder"))
                 .build();

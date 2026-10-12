@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCaseDto;
 import org.testin.model.status.TestCaseStatus;
 import org.testin.testcase.UpdateTestCaseFields;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.RadioSelection;
 
 import javax.swing.JComponent;
@@ -34,7 +34,7 @@ public class StatusSection implements CreateTestCaseSection {
 
     // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-194, Rule-EDITOR-PANEL-258
     public StatusSection() {
-        status = ComponentDialogBase.<TestCaseStatus>radios("")
+        status = DialogPart.<TestCaseStatus>radios("")
                 .options(List.of(TestCaseStatus.values()), TestCaseStatus::getLabel)
                 .select(TestCaseStatus.PENDING)
                 .build()
@@ -55,7 +55,7 @@ public class StatusSection implements CreateTestCaseSection {
 
     // Rule-EDITOR-PANEL-194, Rule-PRODUCT-017
     @Override
-    public void setupShortcut(final @NotNull JComponent mainPanel, final @NotNull JBPanel<?> slot, final @NotNull TestCaseBaseDialog base, final @NotNull Runnable repackAction) {
+    public void setupShortcut(final @NotNull JComponent mainPanel, final @NotNull JBPanel<?> slot, final @NotNull AbstractTestCaseDialog base, final @NotNull Runnable repackAction) {
     }
 
     @Override

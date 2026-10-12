@@ -19,7 +19,7 @@ package org.testin.rename;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.ui.Caption;
 import org.testin.ui.dialogs.DialogStyle;
 import org.testin.ui.dialogs.FormRows;
@@ -43,7 +43,7 @@ final class RenameCard implements DialogComponent {
     private final @NotNull JComponent panel;
 
     // UC-TREE-PANEL-011, Rule-INTERNAL-087, Rule-INTERNAL-099, Rule-INTERNAL-108, Rule-TREE-PANEL-123
-    RenameCard(final @NotNull Node dir, final @NotNull List<String> place, final @NotNull TextInput field) {
+    RenameCard(final @NotNull AbstractNode dir, final @NotNull List<String> place, final @NotNull TextInput field) {
         this.field = field;
 
         panel = DialogStyle.asSection(new FormRows()
@@ -53,7 +53,7 @@ final class RenameCard implements DialogComponent {
     }
 
     // Rule-INTERNAL-077, Rule-INTERNAL-095, Rule-INTERNAL-096
-    private static @NotNull JBLabel renamed(final @NotNull Node dir) {
+    private static @NotNull JBLabel renamed(final @NotNull AbstractNode dir) {
         final @NotNull JBLabel named = new JBLabel(dir.getName(), Icons.gray(dir.iconShownInTree()), SwingConstants.LEADING);
         named.setFont(Fonts.value());
         named.setIconTextGap(JBUI.scale(ICON_GAP));

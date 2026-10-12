@@ -23,7 +23,7 @@ import org.testin.importexport.shared.SheetPreview;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.TestSetEditorAttributes;
 import org.testin.ui.framework.AbstractFrameworkDialog;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.DialogSize;
 import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.util.Bundle;
@@ -52,9 +52,9 @@ public final class ImportDialog extends AbstractFrameworkDialog {
         form = new SourceSection(p, importAttributes, importLoader, preview::show);
 
         components = List.of(
-                ComponentDialogBase.of(form),
-                ComponentDialogBase.of(preview),
-                ComponentDialogBase.button(ImportAction.NAME));
+                DialogPart.of(form),
+                DialogPart.of(preview),
+                DialogPart.button(ImportAction.NAME));
 
         shortcuts = List.of(
                 StatusBarShortcut.build(Shortcuts.Enter, ImportAction.NAME, this::submit),

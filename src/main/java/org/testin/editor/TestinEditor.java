@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.editor.statusbar.EditorStatusBar;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.testcase.TestCaseOrder;
 import org.testin.view.ViewToolWindowFactory;
@@ -57,7 +57,7 @@ public interface TestinEditor extends Disposable {
     default void launching(final @NotNull UUID testCaseId) {
     }
 
-    @NotNull Node getParent();
+    @NotNull AbstractNode getParent();
 
     @NotNull EditorStatusBar getStatusBar();
 

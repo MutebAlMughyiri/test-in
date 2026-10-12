@@ -23,7 +23,7 @@ import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
 import org.testin.model.markers.AbstractMarker;
 import org.testin.model.markers.Marker;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestRunPackageNode;
@@ -83,11 +83,11 @@ public final class Nodes {
         return renaming.map(self -> !sameFile(self, wanted)).orElse(true);
     }
 
-    public @NotNull List<Node> getChildren(final @NotNull Path parentPath) {
+    public @NotNull List<AbstractNode> getChildren(final @NotNull Path parentPath) {
         return store().getChildren(parentPath);
     }
 
-    public @NotNull List<Node> getAllNodes() {
+    public @NotNull List<AbstractNode> getAllNodes() {
         return List.copyOf(store().allNodes());
     }
 
@@ -192,12 +192,12 @@ public final class Nodes {
         return indexer().announcedIf(store().addTestRunPackage(trp), trp.getPath());
     }
 
-    public boolean persistMarker(final @NotNull Node dto) {
+    public boolean persistMarker(final @NotNull AbstractNode dto) {
         return indexer().announcedIf(store().persistMarker(dto), dto.getPath());
     }
 
     // UC-TREE-PANEL-015, Rule-TREE-PANEL-055, Rule-INTERNAL-117
-    public boolean reorder(final @NotNull Node node, final int order) {
+    public boolean reorder(final @NotNull AbstractNode node, final int order) {
         final @NotNull Marker marker = node.getMarker();
         final int was = marker.getOrder();
         marker.setOrder(order);
@@ -209,7 +209,7 @@ public final class Nodes {
     }
 
     // UC-TREE-PANEL-018, Rule-TREE-PANEL-062, Rule-INTERNAL-117
-    public boolean mark(final @NotNull Node node, final @NotNull NodeStatus status, final @NotNull String tester) {
+    public boolean mark(final @NotNull AbstractNode node, final @NotNull NodeStatus status, final @NotNull String tester) {
         final @NotNull Marker marker = node.getMarker();
         final @NotNull NodeStatus before = marker.status();
         final @NotNull String updatedByBefore = marker.getUpdatedBy();
@@ -230,7 +230,7 @@ public final class Nodes {
         return store().readMarker(dirPath, kind, markerClass);
     }
 
-    public @NotNull Optional<Node> find(final @NotNull Path path) {
+    public @NotNull Optional<AbstractNode> find(final @NotNull Path path) {
         return store().findByPath(path);
     }
 

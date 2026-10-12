@@ -33,7 +33,7 @@ import org.testin.services.Services;
 import org.testin.testcase.TestCaseSnapshot;
 import org.testin.ui.framework.AbstractFrameworkDialog;
 import org.testin.ui.framework.ChoiceInput;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.DialogSize;
 import org.testin.ui.framework.DialogSplitButton;
 import org.testin.ui.framework.SelectionTable;
@@ -72,21 +72,21 @@ public final class PendingCommitsDialog extends AbstractFrameworkDialog {
 
         title = Bundle.message("dialog.pending.title");
 
-        final @NotNull ComponentDialogBase<SelectionTable> table = ComponentDialogBase.table()
+        final @NotNull DialogPart<SelectionTable> table = DialogPart.table()
                 .column(Bundle.message("dialog.pending.column.change.type"), 150)
                 .column(NodeType.TS.getDescription(), 150)
                 .column(Bundle.message("caption.name"), 240)
                 .column(Bundle.message("dialog.pending.column.before"), 180)
                 .column(Bundle.message("dialog.pending.column.after"), 180)
                 .build();
-        final @NotNull ComponentDialogBase<ChoiceInput> branchRow =
-                ComponentDialogBase.choice(Bundle.message("dialog.pending.caption.branch"), offered(branches, currentBranch), currentBranch);
+        final @NotNull DialogPart<ChoiceInput> branchRow =
+                DialogPart.choice(Bundle.message("dialog.pending.caption.branch"), offered(branches, currentBranch), currentBranch);
 
-        final @NotNull ComponentDialogBase<TextInput> messageField = ComponentDialogBase.textField()
+        final @NotNull DialogPart<TextInput> messageField = DialogPart.textField()
                 .placeholder(Bundle.message("dialog.pending.placeholder"))
                 .build();
-        final @NotNull ComponentDialogBase<DialogSplitButton> commitButton =
-                ComponentDialogBase.splitButton(PUSH, COMMIT);
+        final @NotNull DialogPart<DialogSplitButton> commitButton =
+                DialogPart.splitButton(PUSH, COMMIT);
 
         components = List.of(table, branchRow, messageField, commitButton);
         changes = table.getComponent();

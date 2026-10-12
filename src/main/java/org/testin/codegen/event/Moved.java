@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.Fqcn;
 import org.testin.indexer.Nodes;
 import org.testin.logger.TestinLogger;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
@@ -31,15 +31,15 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
-public record Moved(@NotNull Node dir, @NotNull List<String> from, @NotNull Path newParent) {
-    public Moved(final @NotNull Node dir, final @NotNull Path newParent) {
+public record Moved(@NotNull AbstractNode dir, @NotNull List<String> from, @NotNull Path newParent) {
+    public Moved(final @NotNull AbstractNode dir, final @NotNull Path newParent) {
         this(dir, dir.getPath2(), newParent);
     }
 
     // UC-TREE-PANEL-016, Rule-TREE-PANEL-098
     public @NotNull Optional<Moved> back(final @NotNull Project p) {
         return Optional.ofNullable(dir.getPath().getParent()).flatMap(oldParent -> Services.getInstance(p, Nodes.class).find(newParent)
-                .map(target -> new Moved(dir, Node.pathOf(target.getPath2(), dir.getName()), oldParent)));
+                .map(target -> new Moved(dir, AbstractNode.pathOf(target.getPath2(), dir.getName()), oldParent)));
     }
 
     // UC-CODEGEN-016, Rule-CODEGEN-055

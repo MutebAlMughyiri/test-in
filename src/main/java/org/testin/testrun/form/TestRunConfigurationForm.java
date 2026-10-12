@@ -21,7 +21,7 @@ import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.testrun.TestRunConfiguration;
 import org.testin.ui.dialogs.CollapsiblePanel;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.DialogComponent;
 import org.testin.ui.framework.DialogHost;
 import org.testin.util.Bundle;
@@ -45,7 +45,7 @@ public class TestRunConfigurationForm implements DialogComponent {
     private final @NotNull ChangeLogSection changeLog;
     private final @NotNull Map<TestRunConfiguration, ChoiceSection> choices = new EnumMap<>(TestRunConfiguration.class);
     private final @NotNull List<TestRunSection> sections = new ArrayList<>();
-    private final @NotNull List<List<ComponentDialogBase<?>>> rows = new ArrayList<>();
+    private final @NotNull List<List<DialogPart<?>>> rows = new ArrayList<>();
     private @NotNull Runnable answered = () -> {
     };
 
@@ -80,7 +80,7 @@ public class TestRunConfigurationForm implements DialogComponent {
         applyVisibility();
     }
 
-    private static @NotNull JComponent laidOut(final @NotNull List<ComponentDialogBase<?>> row) {
+    private static @NotNull JComponent laidOut(final @NotNull List<DialogPart<?>> row) {
         if (row.size() == 1) return row.getFirst().getComponent().getPanel();
 
         final @NotNull JBPanel<?> line = new JBPanel<>(new GridLayout(1, row.size(), JBUI.scale(COLUMN_GAP), 0));
@@ -99,7 +99,7 @@ public class TestRunConfigurationForm implements DialogComponent {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setOpaque(false);
 
-        for (final List<ComponentDialogBase<?>> row : rows) {
+        for (final List<DialogPart<?>> row : rows) {
             final @NotNull JComponent shown = laidOut(row);
             shown.setAlignmentX(JComponent.LEFT_ALIGNMENT);
             panel.add(shown);

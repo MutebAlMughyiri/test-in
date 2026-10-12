@@ -139,7 +139,7 @@ public abstract class AbstractMultiValueSection implements CreateTestCaseSection
     }
 
     @Override
-    public void setupShortcut(final @NotNull JComponent mainPanel, final @NotNull JBPanel<?> slot, final @NotNull TestCaseBaseDialog base, final @NotNull Runnable repackAction) {
+    public void setupShortcut(final @NotNull JComponent mainPanel, final @NotNull JBPanel<?> slot, final @NotNull AbstractTestCaseDialog base, final @NotNull Runnable repackAction) {
         base.registerShortcut(mainPanel, field().getShortcut().getCustomShortcut(), () -> showSection(slot, repackAction));
     }
 

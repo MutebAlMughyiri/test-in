@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
 import org.testin.actions.TestinData;
 import org.testin.indexer.Nodes;
 import org.testin.logger.TestinLogger;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
@@ -97,21 +97,21 @@ public class TreeTransferHandler extends TransferHandler {
     }
 
     // Rule-TREE-PANEL-013
-    static boolean sameTestProject(final @NotNull Node source, final @NotNull Node target) {
-        final @NotNull Optional<Path> sourceProject = owningProject(source).map(Node::getPath);
+    static boolean sameTestProject(final @NotNull AbstractNode source, final @NotNull AbstractNode target) {
+        final @NotNull Optional<Path> sourceProject = owningProject(source).map(AbstractNode::getPath);
 
         return sourceProject.isPresent()
-                && sourceProject.equals(owningProject(target).map(Node::getPath));
+                && sourceProject.equals(owningProject(target).map(AbstractNode::getPath));
     }
 
-    private static @NotNull Optional<Node> owningProject(final @NotNull Node node) {
+    private static @NotNull Optional<AbstractNode> owningProject(final @NotNull AbstractNode node) {
         return node.selfAndAncestors().stream()
                 .filter(TestProjectNode.class::isInstance)
                 .findFirst();
     }
 
     // UC-TREE-PANEL-013, UC-TREE-PANEL-014, Rule-TREE-PANEL-004, Rule-TREE-PANEL-045
-    static boolean isValidDestination(final @NotNull Node source, final @NotNull Node target, final @NotNull Predicate<Path> occupied) {
+    static boolean isValidDestination(final @NotNull AbstractNode source, final @NotNull AbstractNode target, final @NotNull Predicate<Path> occupied) {
         final @NotNull Path sourcePath = source.getPath().normalize();
         final @NotNull Path targetPath = target.getPath().normalize();
 
@@ -137,7 +137,7 @@ public class TreeTransferHandler extends TransferHandler {
     // UC-TREE-PANEL-013, UC-TREE-PANEL-014
     @Override
     protected @Nullable Transferable createTransferable(final @NotNull JComponent c) {
-        final @NotNull List<Node> directories = transferableSelection();
+        final @NotNull List<AbstractNode> directories = transferableSelection();
         if (directories.isEmpty()) return null;
 
         setDragImage(createDragImage(NodeMoveOrCopy.describe(directories)));
@@ -180,25 +180,25 @@ public class TreeTransferHandler extends TransferHandler {
 
     // UC-TREE-PANEL-013, UC-TREE-PANEL-014, Rule-TREE-PANEL-002, Rule-TREE-PANEL-044
     public boolean canPasteFromClipboard() {
-        final @NotNull Optional<Node> target = TreeValues.singleSelectedNode(tree).filter(Node::isTransferTarget);
+        final @NotNull Optional<AbstractNode> target = TreeValues.singleSelectedNode(tree).filter(AbstractNode::isTransferTarget);
         if (target.isEmpty()) return false;
 
         return clipboardNodes().stream().anyMatch(node -> canTransferInto(node, target.orElseThrow()));
     }
 
-    private @NotNull List<Node> clipboardNodes() {
+    private @NotNull List<AbstractNode> clipboardNodes() {
         return ClipboardContents.withFlavor(NODE_FLAVOR)
                 .map(this::nodesOf)
                 .orElseGet(List::of);
     }
 
-    private @NotNull List<Node> nodesOf(final @NotNull Transferable contents) {
+    private @NotNull List<AbstractNode> nodesOf(final @NotNull Transferable contents) {
         return payloadOf(contents).map(TreeTransferPayload::nodes).orElseGet(List::of);
     }
 
-    private @NotNull List<Node> transferableSelection() {
+    private @NotNull List<AbstractNode> transferableSelection() {
         return TreeValues.selectedNodes(tree.getSelectionPaths()).stream()
-                .filter(Node::isTransferable)
+                .filter(AbstractNode::isTransferable)
                 .toList();
     }
 
@@ -207,7 +207,7 @@ public class TreeTransferHandler extends TransferHandler {
     public boolean canImport(final @NotNull TransferSupport support) {
         if (!support.isDataFlavorSupported(NODE_FLAVOR)) return false;
         final boolean valid = targetDirectory(support)
-                .filter(Node::isTransferTarget)
+                .filter(AbstractNode::isTransferTarget)
                 .filter(target -> anySourceLands(support, target))
                 .isPresent();
 
@@ -220,7 +220,7 @@ public class TreeTransferHandler extends TransferHandler {
         return true;
     }
 
-    private boolean anySourceLands(final @NotNull TransferSupport support, final @NotNull Node target) {
+    private boolean anySourceLands(final @NotNull TransferSupport support, final @NotNull AbstractNode target) {
         return payloadOf(support.getTransferable())
                 .map(payload -> payload.nodes().stream().anyMatch(source -> canTransferInto(source, target)))
                 .orElse(true);
@@ -233,12 +233,12 @@ public class TreeTransferHandler extends TransferHandler {
 
         try {
             final @NotNull TreeTransferPayload payload = (TreeTransferPayload) support.getTransferable().getTransferData(NODE_FLAVOR);
-            final @NotNull Optional<Node> landing = targetDirectory(support);
+            final @NotNull Optional<AbstractNode> landing = targetDirectory(support);
             if (landing.isEmpty()) return false;
-            final @NotNull Node target = landing.get();
+            final @NotNull AbstractNode target = landing.get();
 
             final int action = resolveAction(support, payload);
-            final @NotNull List<Node> sources = transferableSources(payload.nodes(), target);
+            final @NotNull List<AbstractNode> sources = transferableSources(payload.nodes(), target);
 
             if (support.isDrop()) notifyNameCollisions(payload.nodes(), target);
             if (sources.isEmpty()) return false;
@@ -264,27 +264,27 @@ public class TreeTransferHandler extends TransferHandler {
         }
     }
 
-    private @NotNull List<Node> transferableSources(final @NotNull List<Node> nodes, final @NotNull Node target) {
+    private @NotNull List<AbstractNode> transferableSources(final @NotNull List<AbstractNode> nodes, final @NotNull AbstractNode target) {
         return nodes.stream().filter(source -> canTransferInto(source, target)).toList();
     }
 
     // UC-TREE-PANEL-013, UC-TREE-PANEL-014, Rule-TREE-PANEL-043, Rule-TREE-PANEL-044, Rule-TREE-PANEL-045
-    public boolean canTransferInto(final @NotNull Node source, final @NotNull Node target) {
+    public boolean canTransferInto(final @NotNull AbstractNode source, final @NotNull AbstractNode target) {
         return target.acceptsTransferred(source)
                 && sameTestProject(source, target)
                 && isValidDestination(source, target, nodes::nodeExists);
     }
 
-    private boolean isNameCollision(final @NotNull Node source, final @NotNull Node target) {
+    private boolean isNameCollision(final @NotNull AbstractNode source, final @NotNull AbstractNode target) {
         return target.acceptsTransferred(source)
                 && isValidDestination(source, target, _ -> false)
                 && nodes.nodeExists(target.getPath().resolve(source.getName()));
     }
 
     // UC-TREE-PANEL-013, UC-TREE-PANEL-014, Rule-TREE-PANEL-004
-    public boolean notifyNameCollisions(final @NotNull List<Node> nodes, final @NotNull Node target) {
-        final @NotNull List<Node> collided = new ArrayList<>();
-        for (final Node source : nodes) {
+    public boolean notifyNameCollisions(final @NotNull List<AbstractNode> nodes, final @NotNull AbstractNode target) {
+        final @NotNull List<AbstractNode> collided = new ArrayList<>();
+        for (final AbstractNode source : nodes) {
             if (isNameCollision(source, target)) collided.add(source);
         }
         if (collided.isEmpty()) return false;
@@ -297,7 +297,7 @@ public class TreeTransferHandler extends TransferHandler {
         return true;
     }
 
-    private @NotNull Optional<Node> targetDirectory(final @NotNull TransferSupport support) {
+    private @NotNull Optional<AbstractNode> targetDirectory(final @NotNull TransferSupport support) {
         return support.isDrop()
                 ? dropPath(support).flatMap(TreeValues::directoryAt)
                 : TreeValues.selectedNode(tree);
@@ -341,7 +341,7 @@ public class TreeTransferHandler extends TransferHandler {
 
     // UC-TREE-PANEL-013, UC-TREE-PANEL-014, Rule-TREE-PANEL-007
     public void copySelectionToClipboard(final boolean cut) {
-        final @NotNull List<Node> directories = transferableSelection();
+        final @NotNull List<AbstractNode> directories = transferableSelection();
         if (directories.isEmpty()) return;
 
         final int action = cut ? MOVE : COPY;
@@ -353,11 +353,11 @@ public class TreeTransferHandler extends TransferHandler {
     }
 
     // UC-TREE-PANEL-013, Rule-TREE-PANEL-050, Rule-TREE-PANEL-006
-    public void pasteFromClipboard(final @NotNull Node target) {
+    public void pasteFromClipboard(final @NotNull AbstractNode target) {
         ClipboardContents.withFlavor(NODE_FLAVOR).ifPresent(contents -> {
             final boolean wasCut = isCut(contents);
 
-            final @NotNull List<Node> sources = nodesOf(contents).stream()
+            final @NotNull List<AbstractNode> sources = nodesOf(contents).stream()
                     .filter(node -> canTransferInto(node, target))
                     .toList();
             if (sources.isEmpty()) return;
@@ -381,7 +381,7 @@ public class TreeTransferHandler extends TransferHandler {
         resetLastAction();
     }
 
-    private void updateClipboardState(final int action, final @NotNull List<Node> directories) {
+    private void updateClipboardState(final int action, final @NotNull List<AbstractNode> directories) {
         selectedNodes.clear();
         if (action == MOVE) directories.forEach(directory -> selectedNodes.add(directory.getPath()));
         tree.repaint();

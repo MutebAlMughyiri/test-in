@@ -23,7 +23,7 @@ import org.testin.explorer.tree.TreeValues;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestRuns;
 import org.testin.logger.TestinLogger;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
@@ -46,11 +46,11 @@ record ReCreateTestRunWork(@NotNull Project p, @NotNull TestRuns testRuns, @NotN
                         .ifPresent(parent -> reCreate(source, parent)));
     }
 
-    private void reCreate(final @NotNull TestRunNode source, final @NotNull Node parent) {
+    private void reCreate(final @NotNull TestRunNode source, final @NotNull AbstractNode parent) {
         final @NotNull Set<UUID> testCases = testRuns.getRunItems(source.getPath()).coveredIds();
 
         final @NotNull Set<String> taken = nodes.getChildren(parent.getPath()).stream()
-                .map(Node::getName)
+                .map(AbstractNode::getName)
                 .collect(Collectors.toSet());
 
         boundTestProject.get().ifPresentOrElse(

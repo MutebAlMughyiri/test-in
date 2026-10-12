@@ -35,7 +35,7 @@ import java.util.List;
 @NoArgsConstructor
 @SuperBuilder
 @ToString(callSuper = true)
-public class TestSetPackageNode extends Node {
+public class TestSetPackageNode extends AbstractNode {
     @NonNull
     @Builder.Default
     private TestSetPackageMarker marker = new TestSetPackageMarker();

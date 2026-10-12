@@ -19,7 +19,7 @@ package org.testin.indexer;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.NodeType;
 import org.testin.model.FileKind;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
 
@@ -30,7 +30,7 @@ import java.util.UUID;
 public class ReadTestProjectIdeTest extends AbstractReadTheRootIdeTest {
 
     private @NotNull Optional<NodeType> kindAt(final @NotNull Path folder) {
-        return nodes().find(folder).map(Node::getType);
+        return nodes().find(folder).map(AbstractNode::getType);
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-003

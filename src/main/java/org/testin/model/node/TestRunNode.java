@@ -41,7 +41,7 @@ import java.util.stream.Stream;
 @NoArgsConstructor
 @SuperBuilder
 @ToString(callSuper = true)
-public class TestRunNode extends Node {
+public class TestRunNode extends AbstractNode {
     private static final @NotNull String SCREENSHOT_CHARACTERS = "0123456789abcdefghijklmnopqrstuvwxyz";
     private static final int SCREENSHOT_NAME_LENGTH = 5;
     private static final @NotNull Pattern SCREENSHOT_NAME = Pattern.compile("[0-9a-z]{" + SCREENSHOT_NAME_LENGTH + "}\\.png");

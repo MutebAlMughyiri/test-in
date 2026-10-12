@@ -19,7 +19,7 @@ package org.testin.view.details;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.ui.framework.AbstractFrameworkDialog;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.DialogSize;
 import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.util.Bundle;
@@ -37,7 +37,7 @@ public final class ScreenshotDialog extends AbstractFrameworkDialog {
 
         size = DialogSize.TALL;
 
-        components = List.of(ComponentDialogBase.picture(png));
+        components = List.of(DialogPart.picture(png));
 
         shortcuts = List.of(StatusBarShortcut.build(Shortcuts.Escape, Bundle.message("shortcut.close"), this::closeCancel));
     }

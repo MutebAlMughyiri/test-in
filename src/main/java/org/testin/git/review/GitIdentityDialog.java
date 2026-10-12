@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.git.GitRefs;
 import org.testin.notifications.Refused;
 import org.testin.ui.framework.AbstractFrameworkDialog;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.RadioSelection;
 import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.ui.framework.TextInput;
@@ -42,20 +42,20 @@ final class GitIdentityDialog extends AbstractFrameworkDialog {
 
         title = Bundle.message("dialog.git.identity.title");
 
-        final @NotNull ComponentDialogBase<TextInput> name = ComponentDialogBase.textField()
+        final @NotNull DialogPart<TextInput> name = DialogPart.textField()
                 .placeholder(Bundle.message("dialog.git.identity.placeholder.name"))
                 .build();
-        final @NotNull ComponentDialogBase<TextInput> email = ComponentDialogBase.textField()
+        final @NotNull DialogPart<TextInput> email = DialogPart.textField()
                 .placeholder(Bundle.message("dialog.git.identity.placeholder.email"))
                 .build();
-        final @NotNull ComponentDialogBase<RadioSelection<Boolean>> where = ComponentDialogBase.<Boolean>radios(Bundle.message("dialog.git.identity.caption.apply"))
+        final @NotNull DialogPart<RadioSelection<Boolean>> where = DialogPart.<Boolean>radios(Bundle.message("dialog.git.identity.caption.apply"))
                 .option(Bundle.message("dialog.git.identity.option.repository"), false)
                 .option(Bundle.message("dialog.git.identity.option.machine"), true)
                 .select(false)
                 .build();
 
         components = List.of(
-                ComponentDialogBase.message(Bundle.message("dialog.git.identity.message")),
+                DialogPart.message(Bundle.message("dialog.git.identity.message")),
                 name,
                 email,
                 where);

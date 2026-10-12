@@ -20,7 +20,7 @@ import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCaseDto;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.services.Services;
 import org.testin.services.TestCaseValues;
 
@@ -55,10 +55,10 @@ public final class TestCases {
     }
 
     // Rule-TREE-PANEL-008
-    public @NotNull List<TestCaseDto> getTestCasesUnder(final @NotNull Node dir) {
+    public @NotNull List<TestCaseDto> getTestCasesUnder(final @NotNull AbstractNode dir) {
         final @NotNull List<TestCaseDto> testCases = new ArrayList<>(getTestCasesForTestSet(dir.getPath()));
 
-        for (final Node child : store().getChildren(dir.getPath())) {
+        for (final AbstractNode child : store().getChildren(dir.getPath())) {
             if (child.isRetired()) continue;
 
             testCases.addAll(getTestCasesUnder(child));

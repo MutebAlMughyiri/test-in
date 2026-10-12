@@ -20,11 +20,11 @@ import com.google.errorprone.annotations.Immutable;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.NodeFigures;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 
 @FunctionalInterface
 @Immutable
 public interface FiguresGatherer {
     @NotNull
-    NodeFigures of(final @NotNull Project p, final @NotNull Node dto);
+    NodeFigures of(final @NotNull Project p, final @NotNull AbstractNode dto);
 }

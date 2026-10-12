@@ -25,7 +25,7 @@ import org.testin.model.NodeType;
 import org.testin.model.FileKind;
 import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.RunItems;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestCasesFolderNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
@@ -180,7 +180,7 @@ final class IndexingScanner {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-008, Rule-INTERNAL-015
-    private void scanTestSets(final @NotNull Path tcDir, final @NotNull Node parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedProject scanned) {
+    private void scanTestSets(final @NotNull Path tcDir, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedProject scanned) {
         try (Stream<Path> paths = Files.list(tcDir)) {
             final @NotNull List<Path> dirs = paths.filter(Files::isDirectory).toList();
 
@@ -197,7 +197,7 @@ final class IndexingScanner {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-008, Rule-INTERNAL-015
-    private void scanTestSetOrPackage(final @NotNull Path dirPath, final @NotNull Node parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedProject scanned) {
+    private void scanTestSetOrPackage(final @NotNull Path dirPath, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedProject scanned) {
         store.markedAs(dirPath, NodeType.UNDER_TEST_CASES).ifPresentOrElse(
                 marked -> {
                     if (marked == NodeType.TS) scanTestSet(dirPath, parent, indicator, scanned);
@@ -207,7 +207,7 @@ final class IndexingScanner {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-008, Rule-INTERNAL-015
-    private void scanTestSetPackage(final @NotNull Path path, final @NotNull Node parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedProject scanned) {
+    private void scanTestSetPackage(final @NotNull Path path, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedProject scanned) {
         try {
             final @NotNull TestSetPackageNode tsp = directoryMapper.getTestSetPackageNode(path, parent);
 
@@ -224,7 +224,7 @@ final class IndexingScanner {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-011
-    private void scanTestSet(final @NotNull Path path, final @NotNull Node parent, final @NotNull ProgressIndicator indicator, final @NotNull ScannedProject scanned) {
+    private void scanTestSet(final @NotNull Path path, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull ScannedProject scanned) {
         try {
             final @NotNull TestSetNode ts = directoryMapper.getTestSetNode(path, parent);
 
@@ -274,7 +274,7 @@ final class IndexingScanner {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-010, Rule-INTERNAL-015
-    private void scanTestRunNodes(final @NotNull Path trDir, final @NotNull Node parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedProject scanned) {
+    private void scanTestRunNodes(final @NotNull Path trDir, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedProject scanned) {
         try (Stream<Path> paths = Files.list(trDir)) {
             final @NotNull List<Path> dirs = paths.filter(Files::isDirectory).toList();
 
@@ -291,7 +291,7 @@ final class IndexingScanner {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-010, Rule-INTERNAL-015
-    private void scanTestRunOrPackage(final @NotNull Path dirPath, final @NotNull Node parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedProject scanned) {
+    private void scanTestRunOrPackage(final @NotNull Path dirPath, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedProject scanned) {
         store.markedAs(dirPath, NodeType.UNDER_TEST_RUNS).ifPresentOrElse(
                 marked -> {
                     if (marked == NodeType.TR) scanTestRun(dirPath, parent, indicator, scanned);
@@ -301,7 +301,7 @@ final class IndexingScanner {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-010, Rule-INTERNAL-015
-    private void scanTestRunPackageNode(final @NotNull Path path, final @NotNull Node parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedProject scanned) {
+    private void scanTestRunPackageNode(final @NotNull Path path, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedProject scanned) {
         try {
             final @NotNull TestRunPackageNode trp = directoryMapper.getTestRunPackageNode(path, parent);
 
@@ -333,7 +333,7 @@ final class IndexingScanner {
     }
 
     // UC-INTERNAL-002
-    private void scanTestRun(final @NotNull Path path, final @NotNull Node parent, final @NotNull ProgressIndicator indicator, final @NotNull ScannedProject scanned) {
+    private void scanTestRun(final @NotNull Path path, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull ScannedProject scanned) {
         final @NotNull TestRunNode tr = directoryMapper.getTestRunNode(path, parent);
 
         scanned.getTestRunNodes().put(path.toString(), tr);

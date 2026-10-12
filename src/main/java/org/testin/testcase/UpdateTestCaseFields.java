@@ -31,7 +31,7 @@ import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.testcase.create.CreateTestCaseSection;
-import org.testin.testcase.create.TestCaseBaseDialog;
+import org.testin.testcase.create.AbstractTestCaseDialog;
 import org.testin.testcase.update.bulk.DescriptionBulkSectionDialog;
 import org.testin.testcase.update.bulk.ExpectedResultBulkSectionDialog;
 import org.testin.testcase.update.bulk.GroupBulkSectionDialog;
@@ -68,7 +68,7 @@ public enum UpdateTestCaseFields implements MenuItem {
             GenType.UPDATE_TEST_CASE_DESCRIPTION,
             Done.UPDATED,
             (p, items, updatedItems) -> new DescriptionBulkSectionDialog(p, items, updatedItems).open(),
-            TestCaseBaseDialog::getDescriptionSection,
+            AbstractTestCaseDialog::getDescriptionSection,
             ImmutableList.of(CORRECTIONS)
     ),
 
@@ -79,7 +79,7 @@ public enum UpdateTestCaseFields implements MenuItem {
             GenType.UPDATE_TEST_CASE_EXPECTED_RESULT,
             Done.UPDATED,
             (p, items, updatedItems) -> new ExpectedResultBulkSectionDialog(p, items, updatedItems).open(),
-            TestCaseBaseDialog::getExpectedResultSection,
+            AbstractTestCaseDialog::getExpectedResultSection,
             ImmutableList.of(CORRECTIONS)
     ),
 
@@ -90,7 +90,7 @@ public enum UpdateTestCaseFields implements MenuItem {
             GenType.UPDATE_TEST_CASE_MODULE,
             Done.UPDATED,
             (p, items, updatedItems) -> new ModuleBulkSectionDialog(p, items, updatedItems).open(),
-            TestCaseBaseDialog::getModuleSection,
+            AbstractTestCaseDialog::getModuleSection,
             ImmutableList.of(CORRECTIONS)
     ),
 
@@ -101,7 +101,7 @@ public enum UpdateTestCaseFields implements MenuItem {
             GenType.UPDATE_TEST_CASE_TEST_DATA,
             Done.UPDATED,
             (p, items, updatedItems) -> new TestDataBulkSectionDialog(p, items, updatedItems).open(),
-            TestCaseBaseDialog::getTestDataSection,
+            AbstractTestCaseDialog::getTestDataSection,
             ImmutableList.of()
     ),
 
@@ -112,7 +112,7 @@ public enum UpdateTestCaseFields implements MenuItem {
             GenType.UPDATE_TEST_CASE_PRE_CONDITIONS,
             Done.UPDATED,
             (p, items, updatedItems) -> new PreConditionsBulkSectionDialog(p, items, updatedItems).open(),
-            TestCaseBaseDialog::getPreConditionsSection,
+            AbstractTestCaseDialog::getPreConditionsSection,
             ImmutableList.of(CORRECTIONS)
     ),
 
@@ -123,7 +123,7 @@ public enum UpdateTestCaseFields implements MenuItem {
             GenType.UPDATE_TEST_CASE_STEPS,
             Done.UPDATED,
             (p, items, updatedItems) -> new StepsBulkSectionDialog(p, items, updatedItems).open(),
-            TestCaseBaseDialog::getStepsSection,
+            AbstractTestCaseDialog::getStepsSection,
             ImmutableList.of(CORRECTIONS, ADD, NAVIGATE_TAB, AUTO_COMPLETE)
     ),
 
@@ -134,7 +134,7 @@ public enum UpdateTestCaseFields implements MenuItem {
             GenType.UPDATE_TEST_CASE_PRIORITY,
             Done.UPDATED,
             (p, items, updatedItems) -> new PriorityBulkSectionDialog(p, items, updatedItems).open(),
-            TestCaseBaseDialog::getPrioritySection,
+            AbstractTestCaseDialog::getPrioritySection,
             ImmutableList.of(NAVIGATE_ARROWS)
     ),
 
@@ -145,7 +145,7 @@ public enum UpdateTestCaseFields implements MenuItem {
             GenType.UPDATE_TEST_CASE_GROUP,
             Done.UPDATED,
             (p, items, updatedItems) -> new GroupBulkSectionDialog(p, items, updatedItems).open(),
-            TestCaseBaseDialog::getGroupSection,
+            AbstractTestCaseDialog::getGroupSection,
             ImmutableList.of(ADD, AUTO_COMPLETE, NAVIGATE_TAB)
     ),
 
@@ -156,7 +156,7 @@ public enum UpdateTestCaseFields implements MenuItem {
             GenType.UPDATE_TEST_CASE_ORDER,
             Done.RE_SORTED,
             (p, _, _) -> Services.getInstance(p, Notifier.class).softRefuse(p, Bundle.message("update.order.one.at.a.time")),
-            TestCaseBaseDialog::getOrderSection,
+            AbstractTestCaseDialog::getOrderSection,
             ImmutableList.of()
     ),
 
@@ -168,7 +168,7 @@ public enum UpdateTestCaseFields implements MenuItem {
             GenType.NO_CODE_CHANGE,
             Done.UPDATED,
             (p, items, updatedItems) -> new ReferenceBulkSectionDialog(p, items, updatedItems).open(),
-            TestCaseBaseDialog::getReferenceSection,
+            AbstractTestCaseDialog::getReferenceSection,
             ImmutableList.of(CORRECTIONS)
     ),
 
@@ -180,7 +180,7 @@ public enum UpdateTestCaseFields implements MenuItem {
             GenType.UPDATE_TEST_CASE_STATUS,
             Done.UPDATED,
             (p, items, updatedItems) -> new StatusBulkSectionDialog(p, items, updatedItems).open(),
-            TestCaseBaseDialog::getStatusSection,
+            AbstractTestCaseDialog::getStatusSection,
             ImmutableList.of()
     );
 
@@ -190,7 +190,7 @@ public enum UpdateTestCaseFields implements MenuItem {
     private final @NotNull GenType<TestCaseDto> gt;
     private final @NotNull Done done;
     private final @NotNull BulkDialogOpener bulkAction;
-    private final @NotNull Function<TestCaseBaseDialog, CreateTestCaseSection> sectionExtractor;
+    private final @NotNull Function<AbstractTestCaseDialog, CreateTestCaseSection> sectionExtractor;
 
     private final @NotNull ImmutableList<TestCaseDialogKey> ownKeys;
 

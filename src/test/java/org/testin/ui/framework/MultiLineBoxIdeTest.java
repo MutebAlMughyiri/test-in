@@ -62,7 +62,7 @@ public class MultiLineBoxIdeTest extends BasePlatformTestCase {
     }
 
     private @NotNull MultiLineField aBox() {
-        return ComponentDialogBase.multiLineField(getProject(), "Steps", "write the steps..", "").getComponent();
+        return DialogPart.multiLineField(getProject(), "Steps", "write the steps..", "").getComponent();
     }
 
     private @NotNull Editor editorOf(final @NotNull MultiLineField box) {
@@ -116,7 +116,7 @@ public class MultiLineBoxIdeTest extends BasePlatformTestCase {
     // UC-INTERNAL-007, Rule-INTERNAL-097
     public void testEveryBoxOfManyLinesIsTheSameBoxInTheFieldsFont() {
         final @NotNull MultiLineField steps = aBox();
-        final @NotNull MultiLineField expected = ComponentDialogBase.multiLineField(getProject(), "Expected result", "write what should happen..", "").getComponent();
+        final @NotNull MultiLineField expected = DialogPart.multiLineField(getProject(), "Expected result", "write what should happen..", "").getComponent();
 
         assertEquals("a box of many lines is not in the field font", Fonts.field(), steps.getFocusComponent().getFont());
         assertEquals("two boxes of many lines are not the same box", steps.getFocusComponent().getFont(), expected.getFocusComponent().getFont());
@@ -135,7 +135,7 @@ public class MultiLineBoxIdeTest extends BasePlatformTestCase {
 
     // Rule-INTERNAL-136
     public void testAGrowingBoxStartsAtThreeLinesAndShowsAWholePasteUnderAScrollbarOverTheText() {
-        final @NotNull MultiLineField box = ComponentDialogBase.multiLineField(getProject(), "", "Paste the request body", 3, MultiLineField.NO_LIMIT, PlainTextLanguage.INSTANCE, false).getComponent();
+        final @NotNull MultiLineField box = DialogPart.multiLineField(getProject(), "", "Paste the request body", 3, MultiLineField.NO_LIMIT, PlainTextLanguage.INSTANCE, false).getComponent();
         final @NotNull Editor editor = editorOf(box);
         final int line = box.getFocusComponent().getFontMetrics(Fonts.field()).getHeight();
 
@@ -148,7 +148,7 @@ public class MultiLineBoxIdeTest extends BasePlatformTestCase {
 
     // Rule-INTERNAL-136, Rule-INTERNAL-137
     public void testAGrowingBoxStopsAtTheHeightItIsCappedAt() {
-        final @NotNull MultiLineField box = ComponentDialogBase.multiLineField(getProject(), "", "", 3, MultiLineField.NO_LIMIT, PlainTextLanguage.INSTANCE, false).getComponent();
+        final @NotNull MultiLineField box = DialogPart.multiLineField(getProject(), "", "", 3, MultiLineField.NO_LIMIT, PlainTextLanguage.INSTANCE, false).getComponent();
         editorOf(box);
         final int line = box.getFocusComponent().getFontMetrics(Fonts.field()).getHeight();
 

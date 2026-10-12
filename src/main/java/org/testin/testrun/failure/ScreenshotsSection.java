@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.TestRuns;
 import org.testin.model.testrun.RunItem;
 import org.testin.services.Services;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.Screenshots;
 import org.testin.util.Bundle;
 
@@ -32,7 +32,7 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 
 public final class ScreenshotsSection implements FailureSection {
-    private final @NotNull ComponentDialogBase<Screenshots> component;
+    private final @NotNull DialogPart<Screenshots> component;
 
     private final @NotNull IdentityHashMap<byte[], String> named = new IdentityHashMap<>();
 
@@ -41,11 +41,11 @@ public final class ScreenshotsSection implements FailureSection {
         final @NotNull List<byte[]> stored = Services.getInstance(p, TestRuns.class).screenshots(testRunPath, runItem);
         IntStream.range(0, stored.size()).forEach(index -> named.put(stored.get(index), runItem.getScreenshots().get(index)));
 
-        component = ComponentDialogBase.screenshots(Bundle.message("dialog.failure.caption.screenshots"), stored);
+        component = DialogPart.screenshots(Bundle.message("dialog.failure.caption.screenshots"), stored);
     }
 
     @Override
-    public @NotNull ComponentDialogBase<?> component() {
+    public @NotNull DialogPart<?> component() {
         return component;
     }
 

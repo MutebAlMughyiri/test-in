@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.GenAction;
 import org.testin.codegen.event.CopiedTestCase;
 import org.testin.java.codegen.GeneratedMethod;
-import org.testin.java.codegen.method.update.UpdateTestBase;
+import org.testin.java.codegen.method.update.BaseTestMethodChange;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 
@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Optional;
 
 // UC-CODEGEN-002, Rule-CODEGEN-078
-public class CopyTestMethod extends UpdateTestBase implements GenAction<CopiedTestCase> {
+public class CopyTestMethod extends BaseTestMethodChange implements GenAction<CopiedTestCase> {
     @Override
     public void execute(final @NotNull Project p, final @NotNull CopiedTestCase copied) {
         executeAll(p, List.of(copied));

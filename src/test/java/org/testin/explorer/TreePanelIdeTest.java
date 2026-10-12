@@ -38,7 +38,7 @@ import org.testin.explorer.toolbar.SaveTestinYmlAction;
 import org.testin.explorer.tree.TreeValues;
 import org.testin.indexer.AbstractReadTheRootIdeTest;
 import org.testin.model.NodeType;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.status.ProjectStatus;
 import org.testin.services.Services;
@@ -66,7 +66,7 @@ public class TreePanelIdeTest extends AbstractReadTheRootIdeTest {
 
     private static @NotNull List<Object> settledRowsOf(final @NotNull TreePanel panel) {
         final @NotNull SimpleTree tree = panel.getProjectTree().getMainTree();
-        Await.until("the tree never showed Checkout", () -> !rowsOf(tree).isEmpty() && rowsOf(tree).getFirst() instanceof final Node top && top.getName().equals("Checkout"));
+        Await.until("the tree never showed Checkout", () -> !rowsOf(tree).isEmpty() && rowsOf(tree).getFirst() instanceof final AbstractNode top && top.getName().equals("Checkout"));
         return rowsOf(tree);
     }
 
@@ -117,9 +117,9 @@ public class TreePanelIdeTest extends AbstractReadTheRootIdeTest {
         final @NotNull List<Object> rows = settledRowsOf(aPanelShowingTheTree());
 
         assertEquals("the tree does not show exactly one test project: " + rows, 1, rows.stream().filter(TestProjectNode.class::isInstance).count());
-        assertTrue("the tree lists a test project it is not bound to: " + rows, rows.stream().noneMatch(row -> row instanceof final Node node && node.getName().equals("Payments")));
-        assertTrue("a test case is a node in the tree: " + rows, rows.stream().allMatch(Node.class::isInstance));
-        assertTrue("the test set holding the test case is not in the tree: " + rows, rows.stream().anyMatch(row -> row instanceof final Node node && node.getName().equals("Login")));
+        assertTrue("the tree lists a test project it is not bound to: " + rows, rows.stream().noneMatch(row -> row instanceof final AbstractNode node && node.getName().equals("Payments")));
+        assertTrue("a test case is a node in the tree: " + rows, rows.stream().allMatch(AbstractNode.class::isInstance));
+        assertTrue("the test set holding the test case is not in the tree: " + rows, rows.stream().anyMatch(row -> row instanceof final AbstractNode node && node.getName().equals("Login")));
     }
 
     // Rule-TREE-PANEL-015

@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.event.Moved;
 import org.testin.codegen.event.Renamed;
 import org.testin.model.TestCaseDto;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +50,7 @@ public final class CodegenRecorder implements CodeGenerators {
     private static @NotNull String nameOf(final @NotNull Object payload) {
         return switch (payload) {
             case final TestCaseDto tc -> tc.getDescription();
-            case final Node dir -> dir.getName();
+            case final AbstractNode dir -> dir.getName();
             case final Moved moved -> moved.dir().getName();
             case final Renamed renamed -> renamed.dir().getName();
             default -> payload.toString();

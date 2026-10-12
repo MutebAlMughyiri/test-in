@@ -22,7 +22,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.importexport.FileFormat;
 import org.testin.ui.dialogs.DownloadFolder;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.TextInput;
 import org.testin.util.Bundle;
 
@@ -37,7 +37,7 @@ public record SourceFileField(@NotNull TextInput field) {
                 .withTitle(Bundle.message("import.file.title"))
                 .withDescription(Bundle.message("import.file.description"));
 
-        return new SourceFileField(ComponentDialogBase.textField()
+        return new SourceFileField(DialogPart.textField()
                 .caption(Bundle.message("import.caption.source"))
                 .placeholder(Bundle.message("import.choose.file"))
                 .value(DownloadFolder.of(p))

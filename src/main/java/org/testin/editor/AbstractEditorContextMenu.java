@@ -29,7 +29,7 @@ import org.testin.actions.Declared;
 import org.testin.editor.grid.GridKeys;
 import org.testin.editor.grid.NotWhileEditing;
 import org.testin.model.TestCaseDto;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.ui.ActionsMenu;
 import org.testin.undo.TestinUndoAction;
 import org.testin.undo.UndoDirection;
@@ -65,7 +65,7 @@ public abstract class AbstractEditorContextMenu extends DefaultActionGroup {
     public abstract void registerShortcuts(final @NotNull JBList<TestCaseDto> list);
 
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-213
-    protected @NotNull DefaultActionGroup actions(final @NotNull Project p, final @NotNull Node dir, final @NotNull JBList<TestCaseDto> list) {
+    protected @NotNull DefaultActionGroup actions(final @NotNull Project p, final @NotNull AbstractNode dir, final @NotNull JBList<TestCaseDto> list) {
         final @NotNull DefaultActionGroup actions = ActionsMenu.group();
 
         actions.add(Declared.forMenu("Testin.CopyTestCase"));

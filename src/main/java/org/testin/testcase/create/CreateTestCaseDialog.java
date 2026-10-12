@@ -28,7 +28,7 @@ import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
 import org.testin.testcase.CreateTestCaseFields;
 import org.testin.testcase.TestCaseDialogKey;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
@@ -37,7 +37,7 @@ import javax.swing.JComponent;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class CreateTestCaseDialog extends TestCaseBaseDialog {
+public class CreateTestCaseDialog extends AbstractTestCaseDialog {
     // Rule-INTERNAL-054
     private static final @NotNull StatusBarItem ADD_FIELD = StatusBarShortcut.hint(addFieldKeys(), Bundle.message("dialog.key.add.field"));
     private final @NotNull TestSetNode dir;
@@ -68,7 +68,7 @@ public class CreateTestCaseDialog extends TestCaseBaseDialog {
         }
 
         title = GenType.CREATE_TEST_CASE.description();
-        components = List.of(ComponentDialogBase.of(form));
+        components = List.of(DialogPart.of(form));
         // Rule-INTERNAL-100
         resizable = true;
 

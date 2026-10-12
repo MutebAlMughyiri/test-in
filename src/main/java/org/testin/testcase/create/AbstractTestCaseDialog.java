@@ -49,7 +49,7 @@ import java.util.stream.Stream;
 
 // UC-EDITOR-PANEL-005, UC-EDITOR-PANEL-006
 @Getter
-public abstract class TestCaseBaseDialog extends AbstractFrameworkDialog {
+public abstract class AbstractTestCaseDialog extends AbstractFrameworkDialog {
     @Getter(AccessLevel.NONE)
     private static final @NotNull StatusBarItem[] NO_ITEMS = new StatusBarItem[0];
     private static final @NotNull PropertyChangeListener NOTHING_ON_FOCUS = _ -> {
@@ -77,7 +77,7 @@ public abstract class TestCaseBaseDialog extends AbstractFrameworkDialog {
     private @NotNull PropertyChangeListener focusListener = NOTHING_ON_FOCUS;
     private @NotNull Optional<CreateTestCaseSection> editableSection = Optional.empty();
 
-    public TestCaseBaseDialog(final @NotNull Project p, final @NotNull TestCaseDto dto, final @NotNull Consumer<@NotNull TestCaseDto> onSave, final StatusBarItem @NotNull ... dialogKeys) {
+    public AbstractTestCaseDialog(final @NotNull Project p, final @NotNull TestCaseDto dto, final @NotNull Consumer<@NotNull TestCaseDto> onSave, final StatusBarItem @NotNull ... dialogKeys) {
         super(p);
         this.dto = dto;
         this.onSave = onSave;

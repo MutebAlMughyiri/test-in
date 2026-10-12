@@ -20,5 +20,5 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-record DialogDto(@NotNull String title, @NotNull List<? extends ComponentDialogBase<?>> components, @NotNull List<StatusBarShortcut> shortcuts) {
+record DialogDto(@NotNull String title, @NotNull List<? extends DialogPart<?>> components, @NotNull List<StatusBarShortcut> shortcuts) {
 }

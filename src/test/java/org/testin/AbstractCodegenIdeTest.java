@@ -44,7 +44,7 @@ import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
 import org.testin.model.NodeType;
 import org.testin.model.TestCaseDto;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
@@ -117,11 +117,11 @@ public abstract class AbstractCodegenIdeTest extends AbstractTempRootIdeTest {
         return Services.getInstance(getProject(), NodeMapper.class);
     }
 
-    protected @NotNull Node theTestCasesDirectory() {
+    protected @NotNull AbstractNode theTestCasesDirectory() {
         return testProject.getTestCasesFolder();
     }
 
-    protected @NotNull TestSetPackageNode indexedPackage(final @NotNull String name, final @NotNull Node parent) {
+    protected @NotNull TestSetPackageNode indexedPackage(final @NotNull String name, final @NotNull AbstractNode parent) {
         return WriteAction.computeAndWait(() -> {
             final @NotNull TestSetPackageNode created = mapper().getTestSetPackageNode(parent.getPath().resolve(name), parent);
             nodes().addTestSetPackage(created);
@@ -129,7 +129,7 @@ public abstract class AbstractCodegenIdeTest extends AbstractTempRootIdeTest {
         });
     }
 
-    protected @NotNull TestSetNode indexedTestSet(final @NotNull String name, final @NotNull Node parent) {
+    protected @NotNull TestSetNode indexedTestSet(final @NotNull String name, final @NotNull AbstractNode parent) {
         return WriteAction.computeAndWait(() -> {
             final @NotNull TestSetNode created = mapper().getTestSetNode(parent.getPath().resolve(name), parent);
             nodes().addTestSet(created);
@@ -141,7 +141,7 @@ public abstract class AbstractCodegenIdeTest extends AbstractTempRootIdeTest {
         return createdTestSet(name, theTestCasesDirectory());
     }
 
-    protected @NotNull TestSetNode createdTestSet(final @NotNull String name, final @NotNull Node parent) {
+    protected @NotNull TestSetNode createdTestSet(final @NotNull String name, final @NotNull AbstractNode parent) {
         final @NotNull TestSetNode ts = indexedTestSet(name, parent);
 
         JavaCode.of(NodeType.TS).getCreated().execute(getProject(), ts);

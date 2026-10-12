@@ -20,12 +20,12 @@ import com.intellij.icons.AllIcons;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.NodeType;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.notifications.Refused;
 import org.testin.services.Services;
 import org.testin.setting.TestinRoot;
 import org.testin.ui.framework.AbstractFrameworkDialog;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.ui.framework.TextInput;
 import org.testin.util.Bundle;
@@ -43,14 +43,14 @@ final class RenameDialog extends AbstractFrameworkDialog {
     private final @NotNull NodeType type;
 
     // UC-TREE-PANEL-011, Rule-INTERNAL-099, Rule-INTERNAL-105, Rule-INTERNAL-108, Rule-TREE-PANEL-123
-    RenameDialog(final @NotNull Project p, final @NotNull Node dir, final @NotNull Consumer<@NotNull String> onSubmit) {
+    RenameDialog(final @NotNull Project p, final @NotNull AbstractNode dir, final @NotNull Consumer<@NotNull String> onSubmit) {
         super(p);
         this.onSubmit = onSubmit;
         this.type = dir.getType();
 
         title = Bundle.message("dialog.rename.title");
 
-        final @NotNull ComponentDialogBase<TextInput> built = ComponentDialogBase.textField()
+        final @NotNull DialogPart<TextInput> built = DialogPart.textField()
                 .icon(AllIcons.Actions.Edit)
                 .placeholder(Bundle.message("dialog.rename.placeholder"))
                 .value(dir.getName())
@@ -59,8 +59,8 @@ final class RenameDialog extends AbstractFrameworkDialog {
 
         final @NotNull List<String> place = Services.getInstance(p, TestinRoot.class).place(Objects.toString(dir.getPath().getParent(), ""));
         components = List.of(
-                ComponentDialogBase.of(new RenameCard(dir, place, nameInput)),
-                ComponentDialogBase.button(Bundle.message("dialog.rename.confirm")));
+                DialogPart.of(new RenameCard(dir, place, nameInput)),
+                DialogPart.button(Bundle.message("dialog.rename.confirm")));
 
         shortcuts = List.of(
                 StatusBarShortcut.build(Shortcuts.Enter, Bundle.message("dialog.rename.confirm"), this::submit),

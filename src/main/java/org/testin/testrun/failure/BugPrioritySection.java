@@ -20,15 +20,15 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.model.bug.BugPriority;
 import org.testin.model.testrun.RunItem;
 import org.testin.testrun.TestRunEditorAttributes;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.RadioSelection;
 
 import java.util.List;
 
-public record BugPrioritySection(@NotNull ComponentDialogBase<RadioSelection<BugPriority>> component) implements FailureSection {
+public record BugPrioritySection(@NotNull DialogPart<RadioSelection<BugPriority>> component) implements FailureSection {
     // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-148
     public static @NotNull BugPrioritySection of(final @NotNull RunItem runItem) {
-        return new BugPrioritySection(ComponentDialogBase.<BugPriority>radios(TestRunEditorAttributes.BUG_PRIORITY.getName())
+        return new BugPrioritySection(DialogPart.<BugPriority>radios(TestRunEditorAttributes.BUG_PRIORITY.getName())
                 .options(List.of(BugPriority.values()), BugPriority::getLabel)
                 .select(runItem.getBugPriority())
                 .build());

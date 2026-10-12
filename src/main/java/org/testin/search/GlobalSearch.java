@@ -25,7 +25,7 @@ import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
 import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.RunItems;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.services.Services;
 import org.testin.testcase.TestSetEditorAttributes;
@@ -46,7 +46,7 @@ public final class GlobalSearch {
     public static @NotNull Found forQuery(final @NotNull Project p, final @NotNull String query) {
         final @NotNull String wanted = query.trim().toLowerCase(Locale.ROOT);
 
-        final @NotNull List<Node> nodes = wanted.isEmpty() ? everywhereToGo(p) : nodesNamed(p, wanted);
+        final @NotNull List<AbstractNode> nodes = wanted.isEmpty() ? everywhereToGo(p) : nodesNamed(p, wanted);
         final @NotNull List<TestCaseDto> testCases = testCasesMatching(p, wanted);
 
         final @NotNull List<Hit> inTestRuns = inTestRuns(p, testCases);
@@ -58,14 +58,14 @@ public final class GlobalSearch {
         return new Found(List.copyOf(found), nodes.size() + testCases.size() + inTestRuns.size());
     }
 
-    private static @NotNull List<Node> everywhereToGo(final @NotNull Project p) {
+    private static @NotNull List<AbstractNode> everywhereToGo(final @NotNull Project p) {
         return Services.getInstance(p, Nodes.class).getAllNodes().stream()
-                .filter(Node::isOpenableInEditor)
+                .filter(AbstractNode::isOpenableInEditor)
                 .sorted(GlobalSearch::inTreeOrder)
                 .toList();
     }
 
-    private static @NotNull List<Node> nodesNamed(final @NotNull Project p, final @NotNull String wanted) {
+    private static @NotNull List<AbstractNode> nodesNamed(final @NotNull Project p, final @NotNull String wanted) {
         return Services.getInstance(p, Nodes.class).getAllNodes().stream()
                 .filter(node -> contains(node.getName(), wanted))
                 .sorted(GlobalSearch::byClosestName)
@@ -87,7 +87,7 @@ public final class GlobalSearch {
         final @NotNull TestRuns testRuns = Services.getInstance(p, TestRuns.class);
         final @NotNull List<Hit> rows = new ArrayList<>();
 
-        for (final Node node : Services.getInstance(p, Nodes.class).getAllNodes()) {
+        for (final AbstractNode node : Services.getInstance(p, Nodes.class).getAllNodes()) {
             if (!(node instanceof TestRunNode)) continue;
 
             final @NotNull Optional<RunItems> recorded = testRuns.findRunItems(node.getPath());
@@ -118,7 +118,7 @@ public final class GlobalSearch {
         return wanted.trim().length() < 2;
     }
 
-    static int inTreeOrder(final @NotNull Node one, final @NotNull Node other) {
+    static int inTreeOrder(final @NotNull AbstractNode one, final @NotNull AbstractNode other) {
         final int byPlace = String.join(" > ", one.getPath2())
                 .compareToIgnoreCase(String.join(" > ", other.getPath2()));
 
@@ -129,7 +129,7 @@ public final class GlobalSearch {
         return value.toLowerCase(Locale.ROOT).contains(wanted.toLowerCase(Locale.ROOT));
     }
 
-    static int byClosestName(final @NotNull Node one, final @NotNull Node other) {
+    static int byClosestName(final @NotNull AbstractNode one, final @NotNull AbstractNode other) {
         final int byLength = Integer.compare(one.getName().length(), other.getName().length());
 
         return byLength != 0 ? byLength : one.getName().compareToIgnoreCase(other.getName());

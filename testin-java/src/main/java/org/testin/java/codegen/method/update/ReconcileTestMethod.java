@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.Optional;
 
 // Rule-CODEGEN-044
-public class ReconcileTestMethod extends UpdateTestBase implements GenAction<TestCaseDto> {
+public class ReconcileTestMethod extends BaseTestMethodChange implements GenAction<TestCaseDto> {
     @Override
     public void execute(final @NotNull Project p, final @NotNull TestCaseDto tc) {
         executeAll(p, List.of(tc));

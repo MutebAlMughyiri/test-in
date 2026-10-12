@@ -31,7 +31,7 @@ import org.testin.editor.testrun.TestRunEditor;
 import org.testin.indexer.Nodes;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.services.Services;
 
@@ -60,12 +60,12 @@ public final class TestinEditors {
     }
 
     // UC-TREE-PANEL-011, UC-TREE-PANEL-012, Rule-TREE-PANEL-111, Rule-TREE-PANEL-116
-    public void close(final @NotNull Node dir) {
+    public void close(final @NotNull AbstractNode dir) {
         openFilesUnder(dir.getPath()).forEach(FileEditorManager.getInstance(p)::closeFile);
     }
 
     // UC-TREE-PANEL-011, Rule-TREE-PANEL-111
-    public boolean busyUnder(final @NotNull Node dir) {
+    public boolean busyUnder(final @NotNull AbstractNode dir) {
         return editorsOf(openFilesUnder(dir.getPath()).stream()).anyMatch(TestinEditor::isBusy);
     }
 
@@ -116,7 +116,7 @@ public final class TestinEditors {
         return Services.getInstance(p, Nodes.class).nodeExists(file.getDir().getPath());
     }
 
-    public void openThen(final @NotNull Node dir, final @NotNull Consumer<TestinEditor> tell) {
+    public void openThen(final @NotNull AbstractNode dir, final @NotNull Consumer<TestinEditor> tell) {
         ApplicationManager.getApplication().invokeLater(() -> {
             if (!openNow(dir, true)) return;
 
@@ -125,7 +125,7 @@ public final class TestinEditors {
     }
 
     // UC-EDITOR-PANEL-048, Rule-EDITOR-PANEL-233, Rule-VIEW-PANEL-016
-    public void openAndSelect(final @NotNull Node dir, final @NotNull TestCaseDto tc) {
+    public void openAndSelect(final @NotNull AbstractNode dir, final @NotNull TestCaseDto tc) {
         openThen(dir, editor -> editor.selectWhenLoaded(tc.getId()));
     }
 
@@ -133,7 +133,7 @@ public final class TestinEditors {
         return editorFor(testRun).filter(TestRunEditor.class::isInstance).map(TestRunEditor.class::cast);
     }
 
-    public @NotNull Optional<TestinEditor> editorFor(final @NotNull Node dir) {
+    public @NotNull Optional<TestinEditor> editorFor(final @NotNull AbstractNode dir) {
         return editorAt(dir.getPath());
     }
 
@@ -141,7 +141,7 @@ public final class TestinEditors {
         return editorsOf(openFileAt(path).stream()).findFirst();
     }
 
-    public void closeThenOpen(final @NotNull Node dir) {
+    public void closeThenOpen(final @NotNull AbstractNode dir) {
         final @NotNull FileEditorManager fed = FileEditorManager.getInstance(p);
 
         ApplicationManager.getApplication().invokeLater(() -> openFileAt(dir.getPath()).ifPresentOrElse(open -> {
@@ -150,15 +150,15 @@ public final class TestinEditors {
         }, () -> open(dir)));
     }
 
-    public void open(final @NotNull Node dir) {
+    public void open(final @NotNull AbstractNode dir) {
         open(dir, true);
     }
 
-    public void open(final @NotNull Node dir, final boolean focus) {
+    public void open(final @NotNull AbstractNode dir, final boolean focus) {
         ApplicationManager.getApplication().invokeLater(() -> openNow(dir, focus));
     }
 
-    private boolean openNow(final @NotNull Node dir, final boolean focus) {
+    private boolean openNow(final @NotNull AbstractNode dir, final boolean focus) {
         ThreadingAssertions.assertEventDispatchThread();
         final @NotNull FileEditorManager fed = FileEditorManager.getInstance(p);
 

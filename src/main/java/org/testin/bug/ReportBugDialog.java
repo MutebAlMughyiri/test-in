@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.TestRuns;
 import org.testin.services.Services;
 import org.testin.ui.framework.AbstractFrameworkDialog;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.DialogButton;
 import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.ui.framework.PlainTextArea;
@@ -40,9 +40,9 @@ final class ReportBugDialog extends AbstractFrameworkDialog {
     private final @NotNull OpenBugReports reports = Services.getInstance(p, OpenBugReports.class);
     private final @NotNull TestRuns testRuns = Services.getInstance(p, TestRuns.class);
 
-    private final @NotNull ComponentDialogBase<TextInput> titleField;
-    private final @NotNull ComponentDialogBase<PlainTextArea> bodyArea;
-    private final @NotNull ComponentDialogBase<DialogButton> sendButton;
+    private final @NotNull DialogPart<TextInput> titleField;
+    private final @NotNull DialogPart<PlainTextArea> bodyArea;
+    private final @NotNull DialogPart<DialogButton> sendButton;
 
     private boolean sent;
 
@@ -55,22 +55,22 @@ final class ReportBugDialog extends AbstractFrameworkDialog {
         final @NotNull BugReportEdits opening = reports.unsent(runItemPath)
                 .orElse(new BugReportEdits(bug.facts().title(), bug.body()));
 
-        titleField = ComponentDialogBase.textField()
+        titleField = DialogPart.textField()
                 .placeholder(Bundle.message("bug.dialog.title.placeholder"))
                 .value(opening.title())
                 .build();
-        bodyArea = ComponentDialogBase.textArea()
+        bodyArea = DialogPart.textArea()
                 .placeholder(Bundle.message("bug.dialog.body.placeholder"))
                 .value(opening.body())
                 .rows(20)
                 .build();
-        sendButton = ComponentDialogBase.button(Bundle.message("bug.dialog.send"));
+        sendButton = DialogPart.button(Bundle.message("bug.dialog.send"));
 
         title = Bundle.message("bug.dialog.title");
         components = List.of(
                 titleField,
                 bodyArea,
-                ComponentDialogBase.details()
+                DialogPart.details()
                         .row(Bundle.message("bug.dialog.screenshots"), String.valueOf(bug.facts().screenshots().size()))
                         .row(Bundle.message("bug.dialog.repository"), bug.repository().map(BugRepository::displayName).orElse(""))
                         .build(),

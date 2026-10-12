@@ -24,7 +24,7 @@ import org.testin.model.TestCaseDto;
 
 import java.util.List;
 
-public class UpdateTestMethodEnabled extends UpdateTestBase implements GenAction<TestCaseDto> {
+public class UpdateTestMethodEnabled extends BaseTestMethodChange implements GenAction<TestCaseDto> {
     // UC-CODEGEN-013, Rule-CODEGEN-047, Rule-CODEGEN-048
     @Override
     public void execute(final @NotNull Project p, final @NotNull TestCaseDto tc) {

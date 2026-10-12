@@ -25,7 +25,7 @@ import org.testin.NodesOnDisk;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCaseDto;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
@@ -171,7 +171,7 @@ public class TreeTransferIdeTest extends AbstractTempRootIdeTest {
 
         pasteAndWaitForTheCopy();
 
-        final @NotNull Optional<Node> copy = nodes().find(inPayments());
+        final @NotNull Optional<AbstractNode> copy = nodes().find(inPayments());
         assertTrue(copy.isPresent());
         assertEquals("the copy lost its order number", 3, copy.orElseThrow().getOrder());
         assertTrue("a copy of a deprecated test set is not retired", copy.orElseThrow().isRetired());

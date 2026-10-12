@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
 import org.testin.model.TestCaseDto;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.util.FromContentModule;
 import org.testin.util.NameSanitizer;
 
@@ -77,7 +77,7 @@ public final class Fqcn {
 
     // UC-CODEGEN-001, Rule-CODEGEN-007
     @FromContentModule
-    public static @NotNull List<String> ofClass(final @NotNull Node dir) {
+    public static @NotNull List<String> ofClass(final @NotNull AbstractNode dir) {
         return ofClass(dir.getPath2());
     }
 
@@ -96,7 +96,7 @@ public final class Fqcn {
     }
 
     // UC-CODEGEN-001, Rule-CODEGEN-008
-    public static @NotNull List<String> ofPackage(final @NotNull Node dir) {
+    public static @NotNull List<String> ofPackage(final @NotNull AbstractNode dir) {
         return ofPackage(dir.getPath2());
     }
 

@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.model.testrun.TestRunResultAnalysis;
 import org.testin.model.testrun.TestRunSummary;
 import org.testin.ui.framework.AbstractFrameworkDialog;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.DialogSize;
 import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.ui.framework.PlainTextArea;
@@ -47,23 +47,23 @@ public final class TestRunResultAnalysisDialog extends AbstractFrameworkDialog {
 
         title = Bundle.message("dialog.analysis.title");
 
-        final @NotNull List<ComponentDialogBase<?>> parts = new ArrayList<>();
+        final @NotNull List<DialogPart<?>> parts = new ArrayList<>();
 
         for (final TestRunResultAnalysis section : TestRunResultAnalysis.values()) {
-            final @NotNull ComponentDialogBase.TextAreaBuilder builder = ComponentDialogBase.textArea()
+            final @NotNull DialogPart.TextAreaBuilder builder = DialogPart.textArea()
                     .placeholder(Bundle.message("dialog.analysis.placeholder", section.getLabel().toLowerCase(Locale.ROOT)))
                     .value(section.writtenIn(current))
                     .rows(3);
-            final @NotNull ComponentDialogBase<PlainTextArea> area = (readOnly ? builder.readOnly() : builder).build();
+            final @NotNull DialogPart<PlainTextArea> area = (readOnly ? builder.readOnly() : builder).build();
 
             written.put(section, area.getComponent());
 
-            parts.add(ComponentDialogBase.message(section.heading(summary)));
+            parts.add(DialogPart.message(section.heading(summary)));
             parts.add(area);
         }
 
         // Rule-EDITOR-PANEL-189
-        if (!readOnly) parts.add(ComponentDialogBase.button(StatusBarShortcut.SAVE));
+        if (!readOnly) parts.add(DialogPart.button(StatusBarShortcut.SAVE));
 
         components = List.copyOf(parts);
 

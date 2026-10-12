@@ -22,7 +22,7 @@ import org.testin.model.TestCaseDto;
 import org.testin.testcase.CreateTestCaseFields;
 import org.testin.testrun.TestRunEditorAttributes;
 import org.testin.ui.framework.AbstractFrameworkDialog;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.DialogSize;
 import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.util.Bundle;
@@ -42,12 +42,12 @@ public final class StacktraceDialog extends AbstractFrameworkDialog {
         size = DialogSize.TALL;
 
         components = List.of(
-                ComponentDialogBase.details()
+                DialogPart.details()
                         .row(CreateTestCaseFields.DESCRIPTION.getIcon(), tc.getDescription())
                         .row(CreateTestCaseFields.EXPECTED_RESULT.getIcon(), tc.getExpectedResult())
                         .row(TestRunEditorAttributes.ACTUAL_RESULT.getName(), actualResult)
                         .build(),
-                ComponentDialogBase.textArea()
+                DialogPart.textArea()
                         .value(stacktrace)
                         .rows(VISIBLE_ROWS)
                         .readOnly()

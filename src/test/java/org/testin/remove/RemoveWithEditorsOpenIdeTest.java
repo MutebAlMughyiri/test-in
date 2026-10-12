@@ -25,7 +25,7 @@ import org.testin.Said;
 import org.testin.TempTree;
 import org.testin.TreeGesture;
 import org.testin.indexer.Nodes;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
@@ -79,11 +79,11 @@ public class RemoveWithEditorsOpenIdeTest extends AbstractOpenEditorsIdeTest {
         return Services.getInstance(getProject(), UndoHistories.class);
     }
 
-    private @NotNull TestSetNode aTestSet(final @NotNull Node parent, final @NotNull String name) {
+    private @NotNull TestSetNode aTestSet(final @NotNull AbstractNode parent, final @NotNull String name) {
         return new NodesOnDisk(getProject()).testSet(parent, name);
     }
 
-    private void removedAndConfirmed(final @NotNull Node node) {
+    private void removedAndConfirmed(final @NotNull AbstractNode node) {
         TreeGesture.pressed(getProject(), new RemoveAction(), List.of(node));
         ShownDialog.press(getProject(), ConfirmDialog.class, Shortcuts.Enter);
     }

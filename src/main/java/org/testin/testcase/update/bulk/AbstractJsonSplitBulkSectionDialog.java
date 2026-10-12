@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.TestSetEditorAttributes;
 import org.testin.ui.framework.AbstractFrameworkDialog;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.DialogSize;
 import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.util.Bundle;
@@ -35,14 +35,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public abstract class JsonSplitBulkSectionDialog extends AbstractFrameworkDialog {
+public abstract class AbstractJsonSplitBulkSectionDialog extends AbstractFrameworkDialog {
     private final @NotNull List<TestCaseDto> selectedItems;
     private final @NotNull Consumer<List<TestCaseDto>> updatedItems;
     private final @NotNull BulkJsonEditors editors;
 
     private final @NotNull List<String> originalEscaped = new ArrayList<>();
 
-    protected JsonSplitBulkSectionDialog(final @NotNull Project p, final @NotNull List<TestCaseDto> selectedItems, final @NotNull Consumer<List<TestCaseDto>> updatedItems) {
+    protected AbstractJsonSplitBulkSectionDialog(final @NotNull Project p, final @NotNull List<TestCaseDto> selectedItems, final @NotNull Consumer<List<TestCaseDto>> updatedItems) {
         super(p);
         this.selectedItems = selectedItems;
         this.updatedItems = updatedItems;
@@ -52,7 +52,7 @@ public abstract class JsonSplitBulkSectionDialog extends AbstractFrameworkDialog
         editors = new BulkJsonEditors(p);
         buildContent();
 
-        components = List.of(ComponentDialogBase.of(editors));
+        components = List.of(DialogPart.of(editors));
 
         shortcuts = List.of(
                 StatusBarShortcut.save(this::submit),

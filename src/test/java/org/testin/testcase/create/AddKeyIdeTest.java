@@ -55,11 +55,11 @@ public class AddKeyIdeTest extends AbstractTempRootIdeTest {
         ShownDialog.press(getProject(), CreateTestCaseDialog.class, field.getShortcut().getKey());
     }
 
-    private static @NotNull List<EditorTextField> steps(final @NotNull TestCaseBaseDialog dialog) {
+    private static @NotNull List<EditorTextField> steps(final @NotNull AbstractTestCaseDialog dialog) {
         return dialog.getStepsSection().getFields();
     }
 
-    private static @NotNull List<EditorTextField> groups(final @NotNull TestCaseBaseDialog dialog) {
+    private static @NotNull List<EditorTextField> groups(final @NotNull AbstractTestCaseDialog dialog) {
         return dialog.getGroupSection().getFields();
     }
 
@@ -121,7 +121,7 @@ public class AddKeyIdeTest extends AbstractTempRootIdeTest {
     public void testTheUpdateDialogAddsToTheFieldBeingUpdated() {
         final @NotNull TestCaseDto tc = EditorFixtures.testCase(getProject(), checkout(), "Pay with a saved card", "1")
                 .edit().steps(List.of("Open the cart")).build();
-        final @NotNull TestCaseBaseDialog dialog = new UpdateTestCaseDialog(getProject(), tc, UpdateTestCaseFields.STEPS, _ -> {
+        final @NotNull AbstractTestCaseDialog dialog = new UpdateTestCaseDialog(getProject(), tc, UpdateTestCaseFields.STEPS, _ -> {
         });
         ShownDialog.open(getProject(), UpdateTestCaseDialog.class, dialog::show);
 

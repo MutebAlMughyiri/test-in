@@ -17,9 +17,9 @@
 package org.testin.remove;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 
 import java.nio.file.Path;
 
-record Kept(@NotNull Node dto, @NotNull Path original, @NotNull Path copy) {
+record Kept(@NotNull AbstractNode dto, @NotNull Path original, @NotNull Path copy) {
 }

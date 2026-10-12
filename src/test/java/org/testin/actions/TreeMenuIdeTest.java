@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.creator.CreateTreeNodeAction;
 import org.testin.explorer.tree.UpdateStatusAction;
 import org.testin.model.NodeType;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestCasesFolderNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
@@ -50,7 +50,7 @@ import java.util.Objects;
 
 public class TreeMenuIdeTest extends BasePlatformTestCase {
 
-    private static @NotNull List<Node> everyKind() {
+    private static @NotNull List<AbstractNode> everyKind() {
         return List.of(new TestProjectNode(), new TestCasesFolderNode(), new TestRunsFolderNode(),
                 new TestSetPackageNode(), new TestRunPackageNode(), new TestSetNode(), aTestRunIn(TestRunStatus.CREATED));
     }
@@ -61,7 +61,7 @@ public class TreeMenuIdeTest extends BasePlatformTestCase {
         return testRun;
     }
 
-    private static @NotNull String kindOf(final @NotNull Node node) {
+    private static @NotNull String kindOf(final @NotNull AbstractNode node) {
         return node.getType().getDescription();
     }
 
@@ -69,7 +69,7 @@ public class TreeMenuIdeTest extends BasePlatformTestCase {
         return Objects.requireNonNullElse(shown.getDescription(), "");
     }
 
-    private @NotNull Presentation updated(final @NotNull AnAction action, final @NotNull List<Node> selected) {
+    private @NotNull Presentation updated(final @NotNull AnAction action, final @NotNull List<AbstractNode> selected) {
         final @NotNull AnActionEvent e = TestActionEvent.createTestEvent(action, SimpleDataContext.builder()
                 .add(CommonDataKeys.PROJECT, getProject())
                 .add(TestinData.SELECTED_NODES, selected)
@@ -78,7 +78,7 @@ public class TreeMenuIdeTest extends BasePlatformTestCase {
         return e.getPresentation();
     }
 
-    private @NotNull Presentation updated(final @NotNull AnAction action, final @NotNull Node selected) {
+    private @NotNull Presentation updated(final @NotNull AnAction action, final @NotNull AbstractNode selected) {
         return updated(action, List.of(selected));
     }
 
@@ -89,7 +89,7 @@ public class TreeMenuIdeTest extends BasePlatformTestCase {
 
     // Rule-TREE-PANEL-058
     public void testTheTestProjectAndTheTwoContainersCannotBeOrdered() {
-        for (final Node node : everyKind()) {
+        for (final AbstractNode node : everyKind()) {
             final boolean fixed = node instanceof TestProjectNode || node instanceof TestCasesFolderNode || node instanceof TestRunsFolderNode;
 
             assertEquals("Order on " + kindOf(node), !fixed, updated(new OrderNodeAction(), node).isEnabled());
@@ -115,7 +115,7 @@ public class TreeMenuIdeTest extends BasePlatformTestCase {
 
     // Rule-TREE-PANEL-096, Rule-TREE-PANEL-025
     public void testCreateIsGrayOnANodeThatCannotHoldOneAndNamesTheKindsThatCan() {
-        for (final Node node : everyKind()) {
+        for (final AbstractNode node : everyKind()) {
             final @NotNull Presentation shown = updated(new CreateTreeNodeAction(), node);
             final boolean holdsNewNodes = node instanceof TestCasesFolderNode || node instanceof TestRunsFolderNode
                     || node instanceof TestSetPackageNode || node instanceof TestRunPackageNode;
@@ -132,7 +132,7 @@ public class TreeMenuIdeTest extends BasePlatformTestCase {
 
     // Rule-TREE-PANEL-022
     public void testOnlyATestSetAndATestRunOffersToOpen() {
-        for (final Node node : everyKind()) {
+        for (final AbstractNode node : everyKind()) {
             final boolean opens = node instanceof TestSetNode || node instanceof TestRunNode;
 
             assertEquals("Open on " + kindOf(node), opens, updated(new OpenAction(), node).isEnabled());
@@ -141,7 +141,7 @@ public class TreeMenuIdeTest extends BasePlatformTestCase {
 
     // Rule-TREE-PANEL-042
     public void testTheTwoContainersAreNeverOfferedForRemoval() {
-        for (final Node container : List.of(new TestCasesFolderNode(), new TestRunsFolderNode())) {
+        for (final AbstractNode container : List.of(new TestCasesFolderNode(), new TestRunsFolderNode())) {
             assertGrayWithAReason("Remove on " + kindOf(container), updated(new RemoveAction(), container));
         }
 

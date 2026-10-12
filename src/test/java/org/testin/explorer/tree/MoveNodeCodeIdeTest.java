@@ -27,7 +27,7 @@ import org.testin.Await;
 import org.testin.Said;
 import org.testin.TempTree;
 import org.testin.indexer.Nodes;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
 import org.testin.services.Services;
@@ -67,7 +67,7 @@ public class MoveNodeCodeIdeTest extends AbstractCodegenIdeTest {
         return Services.getInstance(getProject(), UndoHistories.class);
     }
 
-    private void cutAndPasted(final @NotNull Node node, final @NotNull Node target) {
+    private void cutAndPasted(final @NotNull AbstractNode node, final @NotNull AbstractNode target) {
         CopyPasteManager.getInstance().setContents(new TreeTransferable(new TreeTransferPayload(List.of(node), TransferHandler.MOVE)));
         handler.pasteFromClipboard(target);
     }

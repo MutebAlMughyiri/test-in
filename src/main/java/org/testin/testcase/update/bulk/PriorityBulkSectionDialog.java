@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class PriorityBulkSectionDialog extends JsonSplitBulkSectionDialog {
+public class PriorityBulkSectionDialog extends AbstractJsonSplitBulkSectionDialog {
     public PriorityBulkSectionDialog(final @NotNull Project p, final @NotNull List<TestCaseDto> selectedItems, final @NotNull Consumer<List<TestCaseDto>> updatedItems) {
         super(p, selectedItems, updatedItems);
     }

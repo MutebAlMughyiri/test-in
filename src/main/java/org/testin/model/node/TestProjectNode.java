@@ -33,7 +33,7 @@ import java.util.List;
 @NoArgsConstructor
 @SuperBuilder
 @ToString(callSuper = true)
-public class TestProjectNode extends Node {
+public class TestProjectNode extends AbstractNode {
     @NotNull
     @Builder.Default
     private TestCasesFolderNode testCasesFolder = new TestCasesFolderNode();
@@ -47,7 +47,7 @@ public class TestProjectNode extends Node {
     private TestProjectMarker marker = new TestProjectMarker();
 
     @Override
-    public @NotNull List<Node> fixedChildren() {
+    public @NotNull List<AbstractNode> fixedChildren() {
         return List.of(testCasesFolder, testRunsFolder);
     }
 

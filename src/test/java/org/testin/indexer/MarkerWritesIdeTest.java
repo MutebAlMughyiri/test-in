@@ -20,7 +20,7 @@ import com.intellij.openapi.application.WriteAction;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.NodeType;
 import org.testin.model.markers.TestProjectMarker;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.status.ProjectStatus;
 import org.testin.services.Services;
@@ -52,7 +52,7 @@ public class MarkerWritesIdeTest extends AbstractReadTheRootIdeTest {
         SyntheticTree.write(testSet.resolve(NodeType.TS.getMarker()), DAMAGED);
         indexer().scanSingleProject(project);
 
-        final @NotNull Node drawn = nodes().find(testSet).orElseThrow();
+        final @NotNull AbstractNode drawn = nodes().find(testSet).orElseThrow();
         WriteAction.runAndWait(() -> nodes().persistMarker(drawn));
 
         assertEquals("the marker that would not parse was written over with defaults", DAMAGED, read(testSet.resolve(NodeType.TS.getMarker())));

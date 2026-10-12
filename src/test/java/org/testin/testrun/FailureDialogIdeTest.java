@@ -47,7 +47,7 @@ import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.testrun.failure.FailureDetailDialog;
 import org.testin.ui.framework.AbstractIconButton;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.MultiLineField;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.util.Bundle;
@@ -278,7 +278,7 @@ public class FailureDialogIdeTest extends AbstractTempRootIdeTest {
             final @NotNull FailureDetailDialog built = new FailureDetailDialog(getProject(), fixture.testRun().getPath(), fixture.runItemOf(fixture.testCases().getFirst()), _ -> {
             });
             assertTrue("what happened is not typed into the box the test case form uses",
-                    ShownDialog.componentsOf(built).stream().map(ComponentDialogBase::getComponent).anyMatch(MultiLineField.class::isInstance));
+                    ShownDialog.componentsOf(built).stream().map(DialogPart::getComponent).anyMatch(MultiLineField.class::isInstance));
 
             fixture.press(editor, RunItemStatus.FAILED);
             final @NotNull JComponent dialog = fixture.openFailureDialog();

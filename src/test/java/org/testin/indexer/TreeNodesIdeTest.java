@@ -23,7 +23,7 @@ import org.testin.creator.NodeCreators;
 import org.testin.model.NodeType;
 import org.testin.model.TestCaseDto;
 import org.testin.model.markers.TestSetMarker;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
@@ -127,7 +127,7 @@ public class TreeNodesIdeTest extends AbstractTempRootIdeTest {
     // Rule-TREE-PANEL-077
     public void testRunningFromAParentSkipsRetiredBranchesButARetiredTestSetStillRuns() {
         final @NotNull TestProjectNode tp = aTestProject();
-        final @NotNull Node testCasesRoot = tp.getTestCasesFolder();
+        final @NotNull AbstractNode testCasesRoot = tp.getTestCasesFolder();
 
         final @NotNull TestCaseDto live = made().testCase(made().testSet(testCasesRoot, "Login"));
 
@@ -166,7 +166,7 @@ public class TreeNodesIdeTest extends AbstractTempRootIdeTest {
     public void testTheTwoContainersAreNeverRemoved() {
         final @NotNull TestProjectNode tp = aTestProject();
 
-        for (final Node container : List.of(tp.getTestCasesFolder(), tp.getTestRunsFolder())) {
+        for (final AbstractNode container : List.of(tp.getTestCasesFolder(), tp.getTestRunsFolder())) {
             final @NotNull AtomicBoolean removed = new AtomicBoolean(true);
             Removals.of(container.getType()).remove(getProject(), container, removed::set);
 
@@ -204,11 +204,11 @@ public class TreeNodesIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-TREE-PANEL-027
     public void testATestSetPackageIsCreatedEmptyAndOpensNothing() {
-        @NotNull Node parent = aTestProject().getTestCasesFolder();
+        @NotNull AbstractNode parent = aTestProject().getTestCasesFolder();
 
         for (final String name : List.of("Payments", "Refunds", "Partial")) {
             final @NotNull Path wanted = parent.getPath().resolve(name);
-            final @NotNull Optional<Node> created = NodeCreators.of(getProject(), NodeType.TSP).execute(name, parent, wanted);
+            final @NotNull Optional<AbstractNode> created = NodeCreators.of(getProject(), NodeType.TSP).execute(name, parent, wanted);
 
             assertTrue("a test set package was not created under " + parent.getName(), created.isPresent());
             assertTrue(nodes().nodeExists(wanted));
@@ -220,11 +220,11 @@ public class TreeNodesIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-TREE-PANEL-033
     public void testATestRunPackageIsCreatedEmptyAndOpensNothing() {
-        @NotNull Node parent = aTestProject().getTestRunsFolder();
+        @NotNull AbstractNode parent = aTestProject().getTestRunsFolder();
 
         for (final String name : List.of("Release 4", "Sprint 12", "Smoke")) {
             final @NotNull Path wanted = parent.getPath().resolve(name);
-            final @NotNull Optional<Node> created = NodeCreators.of(getProject(), NodeType.TRP).execute(name, parent, wanted);
+            final @NotNull Optional<AbstractNode> created = NodeCreators.of(getProject(), NodeType.TRP).execute(name, parent, wanted);
 
             assertTrue("a test run package was not created under " + parent.getName(), created.isPresent());
             assertTrue(nodes().nodeExists(wanted));

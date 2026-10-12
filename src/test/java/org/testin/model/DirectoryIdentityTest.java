@@ -17,7 +17,7 @@
 package org.testin.model;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
 import org.testng.annotations.Test;
@@ -46,8 +46,8 @@ public class DirectoryIdentityTest {
     // Rule-INTERNAL-116
     @Test
     public void twoKindsAtOnePathAreTwoNodes() {
-        final @NotNull Node testSetPackage = TestSetPackageNode.builder().path(LOGIN).build();
-        final @NotNull Node testSet = TestSetNode.builder().path(LOGIN).build();
+        final @NotNull AbstractNode testSetPackage = TestSetPackageNode.builder().path(LOGIN).build();
+        final @NotNull AbstractNode testSet = TestSetNode.builder().path(LOGIN).build();
 
         assertNotEquals(testSetPackage, testSet);
     }

@@ -19,7 +19,7 @@ package org.testin.editor.testrun;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBLabel;
 import org.jetbrains.annotations.NotNull;
-import org.testin.editor.card.BaseCard;
+import org.testin.editor.card.AbstractCard;
 import org.testin.model.Priority;
 import org.testin.model.testrun.RunItem;
 import org.testin.testrun.ChangedSinceCommit;
@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-public class RunItemCard extends BaseCard {
+public class RunItemCard extends AbstractCard {
     private final @NotNull List<Badge> badges = new ArrayList<>();
     private final @NotNull Map<String, String> details = new LinkedHashMap<>();
     private final @NotNull JBLabel changedSince = createDetailLabel();

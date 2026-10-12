@@ -26,7 +26,7 @@ import org.testin.editor.TestinEditor;
 import org.testin.editor.open.TestinEditors;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCaseDto;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
@@ -37,8 +37,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-record RemoveTestCaseWork(@NotNull Project p, @NotNull TestinEditor editor, @NotNull Node dir, @NotNull List<TestCaseDto> selected, @NotNull CutState cutState, @NotNull TestCases testCases, @NotNull TestinEditors editors, @NotNull Notifier notifier) {
-    RemoveTestCaseWork(final @NotNull Project p, final @NotNull TestinEditor editor, final @NotNull Node dir, final @NotNull List<TestCaseDto> selected) {
+record RemoveTestCaseWork(@NotNull Project p, @NotNull TestinEditor editor, @NotNull AbstractNode dir, @NotNull List<TestCaseDto> selected, @NotNull CutState cutState, @NotNull TestCases testCases, @NotNull TestinEditors editors, @NotNull Notifier notifier) {
+    RemoveTestCaseWork(final @NotNull Project p, final @NotNull TestinEditor editor, final @NotNull AbstractNode dir, final @NotNull List<TestCaseDto> selected) {
         this(p, editor, dir, selected, Services.getInstance(p, CutState.class), Services.getInstance(p, TestCases.class), Services.getInstance(p, TestinEditors.class), Services.getInstance(p, Notifier.class));
     }
 

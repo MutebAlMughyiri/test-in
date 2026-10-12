@@ -39,7 +39,7 @@ import java.util.Optional;
 @NoArgsConstructor
 @SuperBuilder
 @ToString
-public abstract class Node {
+public abstract class AbstractNode {
     @NonNull
     @Builder.Default
     private String name = "";
@@ -53,7 +53,7 @@ public abstract class Node {
     private List<String> path2 = List.of();
 
     @ToString.Exclude
-    private @Nullable Node parent;
+    private @Nullable AbstractNode parent;
 
     public static @NotNull List<String> pathOf(final @NotNull List<String> parentPath, final @NotNull String name) {
         final @NotNull ArrayList<String> path = new ArrayList<>(parentPath);
@@ -62,9 +62,9 @@ public abstract class Node {
         return path;
     }
 
-    public @NotNull List<Node> selfAndAncestors() {
-        final @NotNull List<Node> chain = new ArrayList<>();
-        for (Node current = this; current != null; current = current.getParent()) {
+    public @NotNull List<AbstractNode> selfAndAncestors() {
+        final @NotNull List<AbstractNode> chain = new ArrayList<>();
+        for (AbstractNode current = this; current != null; current = current.getParent()) {
             chain.add(current);
         }
         return chain;
@@ -76,7 +76,7 @@ public abstract class Node {
     // Rule-INTERNAL-116
     @Override
     public final boolean equals(final @Nullable Object other) {
-        return other instanceof Node dir && dir.getClass() == getClass() && dir.path.equals(path);
+        return other instanceof AbstractNode dir && dir.getClass() == getClass() && dir.path.equals(path);
     }
 
     @Override
@@ -111,7 +111,7 @@ public abstract class Node {
     }
 
     // Rule-TREE-PANEL-100
-    public @NotNull List<Node> fixedChildren() {
+    public @NotNull List<AbstractNode> fixedChildren() {
         return List.of();
     }
 
@@ -145,7 +145,7 @@ public abstract class Node {
         return getType().acceptsAnything();
     }
 
-    public boolean acceptsTransferred(final @NotNull Node source) {
+    public boolean acceptsTransferred(final @NotNull AbstractNode source) {
         return getType().accepts(source.getType());
     }
 

@@ -17,10 +17,10 @@
 package org.testin.testrun.failure;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 
 // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-148
 public interface FailureSection {
-    @NotNull ComponentDialogBase<?> component();
+    @NotNull DialogPart<?> component();
 
 }

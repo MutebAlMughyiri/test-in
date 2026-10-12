@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.model.Priority;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.CreateTestCaseFields;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.RadioSelection;
 import org.testin.util.Shortcuts;
 
@@ -34,7 +34,7 @@ public class PrioritySection implements CreateTestCaseSection {
 
     // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-031, Rule-EDITOR-PANEL-247
     public PrioritySection() {
-        priority = ComponentDialogBase.<Priority>radios("")
+        priority = DialogPart.<Priority>radios("")
                 .options(Priority.CHOICES, Priority::getLabel)
                 .select(Priority.DEFAULT)
                 .build()
@@ -54,7 +54,7 @@ public class PrioritySection implements CreateTestCaseSection {
     }
 
     @Override
-    public void setupShortcut(final @NotNull JComponent mainPanel, final @NotNull JBPanel<?> slot, final @NotNull TestCaseBaseDialog base, final @NotNull Runnable repackAction) {
+    public void setupShortcut(final @NotNull JComponent mainPanel, final @NotNull JBPanel<?> slot, final @NotNull AbstractTestCaseDialog base, final @NotNull Runnable repackAction) {
         base.registerShortcut(mainPanel, Shortcuts.CreateTestCasePriority.getCustomShortcut(), () -> {
             showSection(slot);
             repackAction.run();

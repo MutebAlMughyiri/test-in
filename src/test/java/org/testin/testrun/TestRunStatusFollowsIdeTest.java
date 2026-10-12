@@ -25,7 +25,7 @@ import org.testin.editor.testrun.TestRunEditor;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestRuns;
 import org.testin.model.testrun.RunItems;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
@@ -61,7 +61,7 @@ public class TestRunStatusFollowsIdeTest extends AbstractOpenEditorsIdeTest {
     }
 
     private @NotNull TestRunStatus inTheTree() {
-        final @NotNull Node row = Services.getInstance(getProject(), Nodes.class).find(testRun.getPath()).orElseThrow(() -> new AssertionError("the test run is not in the tree"));
+        final @NotNull AbstractNode row = Services.getInstance(getProject(), Nodes.class).find(testRun.getPath()).orElseThrow(() -> new AssertionError("the test run is not in the tree"));
         return ((TestRunNode) row).getMarker().getStatus();
     }
 

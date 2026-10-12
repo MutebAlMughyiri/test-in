@@ -55,7 +55,7 @@ public class ShortcutStripIdeTest extends BasePlatformTestCase {
     }
 
     private static @NotNull JComponent stripAt(final int width) {
-        final @NotNull JComponent strip = new StatusBarBase(sixKeys()).getPanel();
+        final @NotNull JComponent strip = new ShortcutStrip(sixKeys()).getPanel();
         strip.setSize(width, strip.getPreferredSize().height);
         laidOut(strip);
         return strip;
@@ -90,7 +90,7 @@ public class ShortcutStripIdeTest extends BasePlatformTestCase {
         final @NotNull Form form = new Form(getProject());
         form.show();
         try {
-            final long strips = Drawn.components(form.root()).stream().filter(component -> component.getClass().getEnclosingClass() == StatusBarBase.class).count();
+            final long strips = Drawn.components(form.root()).stream().filter(component -> component.getClass().getEnclosingClass() == ShortcutStrip.class).count();
             assertEquals("a dialog carries more or fewer than one shortcut strip", 1, strips);
         } finally {
             form.closeCancel();
@@ -102,7 +102,7 @@ public class ShortcutStripIdeTest extends BasePlatformTestCase {
         final @NotNull JTextField field = new JTextField(12);
         final @NotNull JPanel dialog = new JPanel(new BorderLayout());
         dialog.add(field, BorderLayout.CENTER);
-        dialog.add(new StatusBarBase(sixKeys()).getPanel(), BorderLayout.SOUTH);
+        dialog.add(new ShortcutStrip(sixKeys()).getPanel(), BorderLayout.SOUTH);
 
         assertEquals("the keys made the dialog wider than what the tester fills in", field.getPreferredSize().width, dialog.getPreferredSize().width);
 
@@ -124,7 +124,7 @@ public class ShortcutStripIdeTest extends BasePlatformTestCase {
         private Form(final @NotNull Project p) {
             super(p);
             title = "Every field";
-            components = List.of(ComponentDialogBase.textField().caption("Name").placeholder("set name..").build());
+            components = List.of(DialogPart.textField().caption("Name").placeholder("set name..").build());
             shortcuts = List.of(StatusBarShortcut.build(Shortcuts.Enter, "Save", this::submit), StatusBarShortcut.cancel(this::closeCancel));
         }
 

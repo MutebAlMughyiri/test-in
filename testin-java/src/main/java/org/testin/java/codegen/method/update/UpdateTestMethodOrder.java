@@ -41,7 +41,7 @@ import java.util.Map;
 import java.util.Optional;
 
 // Rule-CODEGEN-014
-public class UpdateTestMethodOrder extends UpdateTestBase implements GenAction<TestCaseDto> {
+public class UpdateTestMethodOrder extends BaseTestMethodChange implements GenAction<TestCaseDto> {
     // UC-CODEGEN-011, Rule-CODEGEN-067
     private static @NotNull PsiElement place(final @NotNull PsiClass pc, final @NotNull PsiMethod pm, final @NotNull Optional<PsiElement> after) {
         return after.map(previous -> placeAfter(pc, pm, previous)).orElseGet(() -> placeFirst(pc, pm));

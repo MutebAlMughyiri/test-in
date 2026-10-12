@@ -23,15 +23,15 @@ import org.testin.codegen.Fqcn;
 import org.testin.codegen.JavaSourceRoot;
 import org.testin.config.TestinYml;
 import org.testin.model.NodeType;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.services.OptionalPlugin;
 import org.testin.util.NameSanitizer;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public record Renamed(@NotNull Node dir, @NotNull List<String> from, @NotNull String newName) {
-    public Renamed(final @NotNull Node dir, final @NotNull String newName) {
+public record Renamed(@NotNull AbstractNode dir, @NotNull List<String> from, @NotNull String newName) {
+    public Renamed(final @NotNull AbstractNode dir, final @NotNull String newName) {
         this(dir, dir.getPath2(), newName);
     }
 

@@ -65,10 +65,10 @@ public interface CreateTestCaseSection {
 
     @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto dto);
 
-    void setupShortcut(final @NotNull JComponent mainPanel, final @NotNull JBPanel<?> slot, final @NotNull TestCaseBaseDialog base, final @NotNull Runnable repackAction);
+    void setupShortcut(final @NotNull JComponent mainPanel, final @NotNull JBPanel<?> slot, final @NotNull AbstractTestCaseDialog base, final @NotNull Runnable repackAction);
 
     // Rule-INTERNAL-097
-    default void enableMultiLine(final @NotNull TestCaseBaseDialog base, final @NotNull Runnable onSave) {
+    default void enableMultiLine(final @NotNull AbstractTestCaseDialog base, final @NotNull Runnable onSave) {
     }
 
     @NotNull JComponent getFocusComponent();

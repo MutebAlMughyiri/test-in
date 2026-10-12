@@ -115,8 +115,8 @@ public class DialogShellIdeTest extends BasePlatformTestCase {
                 .filter(button -> Bundle.message("dialog.maximize").equals(button.getAccessibleContext().getAccessibleName())).findFirst();
     }
 
-    private static @NotNull ComponentDialogBase<TextInput> aField(final @NotNull String caption) {
-        return ComponentDialogBase.textField().caption(caption).placeholder("set " + caption.toLowerCase(Locale.ROOT) + "..").build();
+    private static @NotNull DialogPart<TextInput> aField(final @NotNull String caption) {
+        return DialogPart.textField().caption(caption).placeholder("set " + caption.toLowerCase(Locale.ROOT) + "..").build();
     }
 
     @Override
@@ -146,8 +146,8 @@ public class DialogShellIdeTest extends BasePlatformTestCase {
 
     // UC-INTERNAL-007, Rule-INTERNAL-053
     public void testEveryDialogHasATitleItsFieldsStackedDownTheMiddleAndAStripOfKeysAlongTheBottom() {
-        final @NotNull ComponentDialogBase<TextInput> name = aField("Name");
-        final @NotNull ComponentDialogBase<TextInput> path = aField("Path");
+        final @NotNull DialogPart<TextInput> name = aField("Name");
+        final @NotNull DialogPart<TextInput> path = aField("Path");
         final @NotNull Form form = shown(new Form(getProject(), List.of(name, path)));
 
         assertEquals("the dialog does not carry its title at the top", "Every field", ((TitlePanel) popupOf(form).getTitle()).getLabel().getText());
@@ -163,9 +163,9 @@ public class DialogShellIdeTest extends BasePlatformTestCase {
     public void testAKeyOnTheStripWorksWhereverTheCursorIsInsideTheDialog() {
         final @NotNull Form form = shown(new Form(getProject(), List.of(
                 aField("Name"),
-                ComponentDialogBase.<String>textFieldWithSelections().placeholder("set kind..").selection(DialogStyle.NO_ICON, "Test Set", "Holds test cases", "ts").selection(DialogStyle.NO_ICON, "Test Set Package", "Groups test sets", "tsp").build(),
-                ComponentDialogBase.<String>radios("Format").option("PDF", "pdf").option("HTML", "html").select("pdf").build(),
-                ComponentDialogBase.choice("Branch", List.of("main", "release"), "main"))));
+                DialogPart.<String>textFieldWithSelections().placeholder("set kind..").selection(DialogStyle.NO_ICON, "Test Set", "Holds test cases", "ts").selection(DialogStyle.NO_ICON, "Test Set Package", "Groups test sets", "tsp").build(),
+                DialogPart.<String>radios("Format").option("PDF", "pdf").option("HTML", "html").select("pdf").build(),
+                DialogPart.choice("Branch", List.of("main", "release"), "main"))));
 
         final @NotNull JRootPane window = new JRootPane();
         window.getContentPane().add(popupOf(form).getComponent());
@@ -187,8 +187,8 @@ public class DialogShellIdeTest extends BasePlatformTestCase {
 
     // UC-INTERNAL-007, Rule-INTERNAL-057
     public void testTheFirstFieldThatCanTakeTheCursorHasItWhenTheDialogOpens() {
-        final @NotNull ComponentDialogBase<TextInput> first = aField("Name");
-        final @NotNull Form form = shown(new Form(getProject(), List.of(ComponentDialogBase.details().row("Where", "NAFATH › Login").build(), first, aField("Path"))));
+        final @NotNull DialogPart<TextInput> first = aField("Name");
+        final @NotNull Form form = shown(new Form(getProject(), List.of(DialogPart.details().row("Where", "NAFATH › Login").build(), first, aField("Path"))));
 
         assertSame("the cursor is not in the first field that can take it", first.getComponent().getFocusComponent(), popupField(popupOf(form), "myPreferredFocusedComponent"));
         assertTrue("the dialog does not move the cursor into it when it opens", popupOf(form).shouldRequestFocus());
@@ -196,9 +196,9 @@ public class DialogShellIdeTest extends BasePlatformTestCase {
 
     // UC-INTERNAL-007, Rule-INTERNAL-058
     public void testTabMovesToTheNextFieldInTheOrderTheyAreDrawnAndShiftTabBack() {
-        final @NotNull ComponentDialogBase<TextInput> name = aField("Name");
-        final @NotNull ComponentDialogBase<TextInput> path = aField("Path");
-        final @NotNull ComponentDialogBase<TextInput> owner = aField("Owner");
+        final @NotNull DialogPart<TextInput> name = aField("Name");
+        final @NotNull DialogPart<TextInput> path = aField("Path");
+        final @NotNull DialogPart<TextInput> owner = aField("Owner");
         final @NotNull Form form = shown(new Form(getProject(), List.of(name, path, owner)));
         final @NotNull JComponent content = realized(form.root());
 
@@ -214,7 +214,7 @@ public class DialogShellIdeTest extends BasePlatformTestCase {
 
     // UC-INTERNAL-007, Rule-INTERNAL-059
     public void testEscapeClosesTheDialogAtOnceAndSavesNothing() {
-        final @NotNull ComponentDialogBase<TextInput> name = aField("Name");
+        final @NotNull DialogPart<TextInput> name = aField("Name");
         final @NotNull Form form = shown(new Form(getProject(), List.of(name)));
         ((JTextField) name.getComponent().getFocusComponent()).setText("Log in with a valid user");
 
@@ -226,14 +226,14 @@ public class DialogShellIdeTest extends BasePlatformTestCase {
 
     // UC-INTERNAL-007, Rule-INTERNAL-060
     public void testPressingTheDialogsButtonOrClickingARowIsTheSameAsEnter() {
-        final @NotNull ComponentDialogBase<DialogButton> button = ComponentDialogBase.button("Generate");
+        final @NotNull DialogPart<DialogButton> button = DialogPart.button("Generate");
         final @NotNull Form withAButton = shown(new Form(getProject(), List.of(aField("Name"), button)));
 
         ((JButton) button.getComponent().getFocusComponent()).doClick();
         assertEquals("pressing the dialog's button did not do what Enter does", 1, withAButton.submitted.get());
         withAButton.closeCancel();
 
-        final @NotNull ComponentDialogBase<TextFieldWithSelections<String>> list = ComponentDialogBase.<String>textFieldWithSelections().placeholder("set kind..").selection(DialogStyle.NO_ICON, "Test Set", "Holds test cases", "ts").build();
+        final @NotNull DialogPart<TextFieldWithSelections<String>> list = DialogPart.<String>textFieldWithSelections().placeholder("set kind..").selection(DialogStyle.NO_ICON, "Test Set", "Holds test cases", "ts").build();
         final @NotNull Form withAList = shown(new Form(getProject(), List.of(list)));
         final @NotNull JBList<?> rows = Drawn.components(realized(withAList.root())).stream().filter(JBList.class::isInstance).map(JBList.class::cast).findFirst().orElseThrow();
         final @NotNull Rectangle firstRow = rows.getCellBounds(0, 0);
@@ -304,7 +304,7 @@ public class DialogShellIdeTest extends BasePlatformTestCase {
         assertTrue("a dialog the tester cannot resize offers to maximize", maximizeButtonOf(fitted).isEmpty());
         fitted.closeCancel();
 
-        final @NotNull ComponentDialogBase<TextInput> name = aField("Name");
+        final @NotNull DialogPart<TextInput> name = aField("Name");
         final @NotNull Form resizable = shown(new Form(getProject(), List.of(name), true, DialogSize.CONTENT));
         final @NotNull AbstractIconButton maximize = maximizeButtonOf(resizable).orElseThrow(() -> new AssertionError("a resizable dialog has no maximize button in its title bar"));
         final @NotNull Dimension openedAt = resizable.getPopup().getSize();
@@ -330,7 +330,7 @@ public class DialogShellIdeTest extends BasePlatformTestCase {
         fitted.closeCancel();
 
         final @NotNull SelectionTree tree = new SelectionTree("Test cases", new CheckedTreeNode("all"), TestRunTreeCellRenderer.create(), Optional.empty());
-        final @NotNull Form resizable = shown(new Form(getProject(), List.of(aField("Name"), ComponentDialogBase.of(tree)), true, DialogSize.CONTENT));
+        final @NotNull Form resizable = shown(new Form(getProject(), List.of(aField("Name"), DialogPart.of(tree)), true, DialogSize.CONTENT));
         final @NotNull Component center = ((BorderLayout) resizable.root().getLayout()).getLayoutComponent(BorderLayout.CENTER);
 
         assertTrue("a dialog the tester can make smaller than its content clips it instead of scrolling", center instanceof JScrollPane);
@@ -343,7 +343,7 @@ public class DialogShellIdeTest extends BasePlatformTestCase {
 
     // UC-INTERNAL-007, Rule-INTERNAL-102
     public void testATableAsksForEightRows() {
-        final @NotNull JBTable table = Drawn.components(ComponentDialogBase.table().column("Test project", 40).build().getComponent().getPanel()).stream()
+        final @NotNull JBTable table = Drawn.components(DialogPart.table().column("Test project", 40).build().getComponent().getPanel()).stream()
                 .filter(JBTable.class::isInstance).map(JBTable.class::cast).findFirst().orElseThrow();
 
         assertEquals("a table does not ask for eight rows", 8 * table.getRowHeight(), table.getPreferredScrollableViewportSize().height);
@@ -398,11 +398,11 @@ public class DialogShellIdeTest extends BasePlatformTestCase {
         private final @NotNull AtomicInteger submitted = new AtomicInteger();
         private final @NotNull AtomicInteger searched = new AtomicInteger();
 
-        private Form(final @NotNull Project p, final @NotNull List<? extends ComponentDialogBase<?>> fields) {
+        private Form(final @NotNull Project p, final @NotNull List<? extends DialogPart<?>> fields) {
             this(p, fields, false, DialogSize.CONTENT);
         }
 
-        private Form(final @NotNull Project p, final @NotNull List<? extends ComponentDialogBase<?>> fields, final boolean canResize, final @NotNull DialogSize named) {
+        private Form(final @NotNull Project p, final @NotNull List<? extends DialogPart<?>> fields, final boolean canResize, final @NotNull DialogSize named) {
             super(p);
             title = "Every field";
             components = fields;

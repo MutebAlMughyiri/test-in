@@ -37,7 +37,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ComponentDialogBase<C extends DialogComponent> {
+public final class DialogPart<C extends DialogComponent> {
     @Getter
     private final @NotNull C component;
 
@@ -50,47 +50,47 @@ public final class ComponentDialogBase<C extends DialogComponent> {
     }
 
     // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-221, Rule-INTERNAL-097
-    public static @NotNull ComponentDialogBase<MultiLineField> multiLineField(final @NotNull Project p, final @NotNull String caption, final @NotNull String placeholder, final @NotNull String value) {
+    public static @NotNull DialogPart<MultiLineField> multiLineField(final @NotNull Project p, final @NotNull String caption, final @NotNull String placeholder, final @NotNull String value) {
         final @NotNull MultiLineField field = new MultiLineField(p, SpellChecker.createField(p), caption, placeholder);
         field.setText(value);
 
-        return new ComponentDialogBase<>(field);
+        return new DialogPart<>(field);
     }
 
     // Rule-INTERNAL-136, Rule-INTERNAL-139
-    public static @NotNull ComponentDialogBase<MultiLineField> multiLineField(final @NotNull Project p, final @NotNull String caption, final @NotNull String placeholder, final int minimumLines, final int maximumLines, final @NotNull Language language, final boolean spellChecked) {
-        return new ComponentDialogBase<>(new MultiLineField(p, SpellChecker.createField(p, language, spellChecked), caption, placeholder, minimumLines, maximumLines));
+    public static @NotNull DialogPart<MultiLineField> multiLineField(final @NotNull Project p, final @NotNull String caption, final @NotNull String placeholder, final int minimumLines, final int maximumLines, final @NotNull Language language, final boolean spellChecked) {
+        return new DialogPart<>(new MultiLineField(p, SpellChecker.createField(p, language, spellChecked), caption, placeholder, minimumLines, maximumLines));
     }
 
     // Rule-INTERNAL-137
-    public static @NotNull ComponentDialogBase<FieldPair> fieldPair(final @NotNull Project p, final @NotNull String rememberedAs, final @NotNull JBLabel firstTitle, final @NotNull MultiLineField first, final @NotNull JBLabel secondTitle, final @NotNull MultiLineField second) {
-        return new ComponentDialogBase<>(new FieldPair(p, rememberedAs, firstTitle, first, secondTitle, second));
+    public static @NotNull DialogPart<FieldPair> fieldPair(final @NotNull Project p, final @NotNull String rememberedAs, final @NotNull JBLabel firstTitle, final @NotNull MultiLineField first, final @NotNull JBLabel secondTitle, final @NotNull MultiLineField second) {
+        return new DialogPart<>(new FieldPair(p, rememberedAs, firstTitle, first, secondTitle, second));
     }
 
-    public static @NotNull ComponentDialogBase<DialogMessage> message(final @NotNull String text) {
-        return new ComponentDialogBase<>(new DialogMessage(text));
+    public static @NotNull DialogPart<DialogMessage> message(final @NotNull String text) {
+        return new DialogPart<>(new DialogMessage(text));
     }
 
     // UC-INTERNAL-007, Rule-INTERNAL-099, Rule-INTERNAL-108
-    public static @NotNull ComponentDialogBase<ConfirmCard> confirmCard(final @NotNull String text, final @NotNull List<String> from, final @NotNull List<String> to) {
-        return new ComponentDialogBase<>(new ConfirmCard(text, from, to));
+    public static @NotNull DialogPart<ConfirmCard> confirmCard(final @NotNull String text, final @NotNull List<String> from, final @NotNull List<String> to) {
+        return new DialogPart<>(new ConfirmCard(text, from, to));
     }
 
-    public static <C extends DialogComponent> @NotNull ComponentDialogBase<C> of(final @NotNull C component) {
-        return new ComponentDialogBase<>(component);
+    public static <C extends DialogComponent> @NotNull DialogPart<C> of(final @NotNull C component) {
+        return new DialogPart<>(component);
     }
 
-    public static @NotNull ComponentDialogBase<DialogSplitButton> splitButton(final @NotNull String... labels) {
-        return new ComponentDialogBase<>(new DialogSplitButton(List.of(labels)));
+    public static @NotNull DialogPart<DialogSplitButton> splitButton(final @NotNull String... labels) {
+        return new DialogPart<>(new DialogSplitButton(List.of(labels)));
     }
 
-    public static @NotNull ComponentDialogBase<DialogButton> button(final @NotNull String text) {
+    public static @NotNull DialogPart<DialogButton> button(final @NotNull String text) {
         return button(text, List.of());
     }
 
     // Rule-INTERNAL-140
-    public static @NotNull ComponentDialogBase<DialogButton> button(final @NotNull String text, final @NotNull List<Alternative> others) {
-        return new ComponentDialogBase<>(new DialogButton(text, others));
+    public static @NotNull DialogPart<DialogButton> button(final @NotNull String text, final @NotNull List<Alternative> others) {
+        return new DialogPart<>(new DialogButton(text, others));
     }
 
     public static @NotNull DetailsBuilder details() {
@@ -102,16 +102,16 @@ public final class ComponentDialogBase<C extends DialogComponent> {
     }
 
     // Rule-EDITOR-PANEL-219
-    public static @NotNull ComponentDialogBase<Screenshots> screenshots(final @NotNull String caption, final @NotNull List<byte[]> stored) {
-        return new ComponentDialogBase<>(new Screenshots(caption, stored));
+    public static @NotNull DialogPart<Screenshots> screenshots(final @NotNull String caption, final @NotNull List<byte[]> stored) {
+        return new DialogPart<>(new Screenshots(caption, stored));
     }
 
-    public static @NotNull ComponentDialogBase<Picture> picture(final byte @NotNull [] png) {
-        return new ComponentDialogBase<>(new Picture(png));
+    public static @NotNull DialogPart<Picture> picture(final byte @NotNull [] png) {
+        return new DialogPart<>(new Picture(png));
     }
 
-    public static @NotNull ComponentDialogBase<ChoiceInput> choice(final @NotNull String caption, final @NotNull List<String> options, final @NotNull String selected) {
-        return new ComponentDialogBase<>(new ChoiceInput(caption, List.copyOf(options), selected));
+    public static @NotNull DialogPart<ChoiceInput> choice(final @NotNull String caption, final @NotNull List<String> options, final @NotNull String selected) {
+        return new DialogPart<>(new ChoiceInput(caption, List.copyOf(options), selected));
     }
 
     public static <T> @NotNull RadioBuilder<T> radios(final @NotNull String caption) {
@@ -132,8 +132,8 @@ public final class ComponentDialogBase<C extends DialogComponent> {
             return this;
         }
 
-        public @NotNull ComponentDialogBase<SelectionTable> build() {
-            return new ComponentDialogBase<>(new SelectionTable(List.copyOf(columns), List.copyOf(widths)));
+        public @NotNull DialogPart<SelectionTable> build() {
+            return new DialogPart<>(new SelectionTable(List.copyOf(columns), List.copyOf(widths)));
         }
     }
 
@@ -155,8 +155,8 @@ public final class ComponentDialogBase<C extends DialogComponent> {
             return this;
         }
 
-        public @NotNull ComponentDialogBase<DialogDetails> build() {
-            return new ComponentDialogBase<>(new DialogDetails(List.copyOf(rows)));
+        public @NotNull DialogPart<DialogDetails> build() {
+            return new DialogPart<>(new DialogDetails(List.copyOf(rows)));
         }
     }
 
@@ -181,14 +181,14 @@ public final class ComponentDialogBase<C extends DialogComponent> {
             return this;
         }
 
-        public @NotNull ComponentDialogBase<RadioSelection<T>> build() {
+        public @NotNull DialogPart<RadioSelection<T>> build() {
             if (options.isEmpty()) {
                 throw new IllegalStateException("radios needs at least one .option(...)");
             }
             if (selected.isEmpty()) {
                 throw new IllegalStateException("radios needs .select(...) with the value it opens on");
             }
-            return new ComponentDialogBase<>(new RadioSelection<>(caption, List.copyOf(options), selected.orElseThrow()));
+            return new DialogPart<>(new RadioSelection<>(caption, List.copyOf(options), selected.orElseThrow()));
         }
     }
 
@@ -220,8 +220,8 @@ public final class ComponentDialogBase<C extends DialogComponent> {
             return this;
         }
 
-        public @NotNull ComponentDialogBase<PlainTextArea> build() {
-            return new ComponentDialogBase<>(new PlainTextArea(placeholder, value, rows, readOnly));
+        public @NotNull DialogPart<PlainTextArea> build() {
+            return new DialogPart<>(new PlainTextArea(placeholder, value, rows, readOnly));
         }
     }
 
@@ -265,10 +265,10 @@ public final class ComponentDialogBase<C extends DialogComponent> {
             return this;
         }
 
-        public @NotNull ComponentDialogBase<TextInput> build() {
+        public @NotNull DialogPart<TextInput> build() {
             final @NotNull TextInput input = new TextInput(icon, caption, placeholder, value, accepts);
             browsing.ifPresent(browse -> browse.accept(input));
-            return new ComponentDialogBase<>(input);
+            return new DialogPart<>(input);
         }
     }
 
@@ -301,9 +301,9 @@ public final class ComponentDialogBase<C extends DialogComponent> {
             return this;
         }
 
-        public @NotNull ComponentDialogBase<TextFieldWithSelections<T>> build() {
+        public @NotNull DialogPart<TextFieldWithSelections<T>> build() {
             if (rows.isPresent()) {
-                return new ComponentDialogBase<>(
+                return new DialogPart<>(
                         new TextFieldWithSelections<>(icon, placeholder, List.of(), rows.orElseThrow(), SEARCH_ROWS));
             }
 
@@ -315,7 +315,7 @@ public final class ComponentDialogBase<C extends DialogComponent> {
             final @NotNull List<SelectionList<T>> fixed = List.copyOf(selections);
             final @NotNull Answer<T> always = Answer.of(fixed);
 
-            return new ComponentDialogBase<>(
+            return new DialogPart<>(
                     new TextFieldWithSelections<>(icon, placeholder, fixed, _ -> always, fixed.size()));
         }
     }

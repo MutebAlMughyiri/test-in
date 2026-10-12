@@ -19,7 +19,7 @@ package org.testin.indexer;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.NodesOnDisk;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 
 public class CountsStoredNowhereIdeTest extends AbstractTempRootIdeTest {
 
-    private static @NotNull String markerOf(final @NotNull Node node) {
+    private static @NotNull String markerOf(final @NotNull AbstractNode node) {
         final @NotNull Path marker = node.getPath().resolve(node.getType().getMarker());
         try {
             return Files.readAllLines(marker).stream().filter(line -> !line.contains("\"updatedAt\"")).map(line -> line.replaceFirst(",$", "")).collect(Collectors.joining("\n"));
@@ -40,7 +40,7 @@ public class CountsStoredNowhereIdeTest extends AbstractTempRootIdeTest {
         }
     }
 
-    private long theTestCasesBeneath(final @NotNull Node node) {
+    private long theTestCasesBeneath(final @NotNull AbstractNode node) {
         return NodeCounter.childCounts(getProject(), node).testCases();
     }
 

@@ -25,14 +25,14 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.editor.AbstractEditorContextMenu;
 import org.testin.editor.TestinEditor;
 import org.testin.editor.WheelForwarding;
-import org.testin.editor.card.BaseCard;
+import org.testin.editor.card.AbstractCard;
 import org.testin.editor.card.CardHoverAction;
 import org.testin.editor.card.CardTitle;
 import org.testin.editor.card.Offered;
 import org.testin.editor.testrun.ExecutingNow;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.ui.Tooltip;
@@ -60,7 +60,7 @@ public class CardMouseListener extends MouseAdapter {
     private final @NotNull Notifier notifier;
     private @NotNull String shownTip = "";
 
-    public CardMouseListener(final @NotNull Project p, final @NotNull TestinEditor editor, final @NotNull JBList<TestCaseDto> list, final @NotNull CollectionListModel<TestCaseDto> model, final @NotNull Node dir, final @NotNull AbstractEditorContextMenu cm) {
+    public CardMouseListener(final @NotNull Project p, final @NotNull TestinEditor editor, final @NotNull JBList<TestCaseDto> list, final @NotNull CollectionListModel<TestCaseDto> model, final @NotNull AbstractNode dir, final @NotNull AbstractEditorContextMenu cm) {
         this.p = p;
         this.editor = editor;
         this.list = list;
@@ -207,6 +207,6 @@ public class CardMouseListener extends MouseAdapter {
         final @NotNull Rectangle bounds = list.getCellBounds(index, index);
         final @NotNull Point inCell = new Point(e.getX() - bounds.x, e.getY() - bounds.y);
         final @NotNull Component card = list.getCellRenderer().getListCellRendererComponent(list, list.getModel().getElementAt(index), index, false, false);
-        return card instanceof BaseCard drawn ? drawn.tooltipAt(inCell, bounds.getSize()) : "";
+        return card instanceof AbstractCard drawn ? drawn.tooltipAt(inCell, bounds.getSize()) : "";
     }
 }

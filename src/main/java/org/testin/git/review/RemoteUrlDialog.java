@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.git.GitRefs;
 import org.testin.notifications.Refused;
 import org.testin.ui.framework.AbstractFrameworkDialog;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.ui.framework.TextInput;
 import org.testin.util.Bundle;
@@ -39,12 +39,12 @@ final class RemoteUrlDialog extends AbstractFrameworkDialog {
 
         title = Bundle.message("dialog.remote.title");
 
-        final @NotNull ComponentDialogBase<TextInput> url = ComponentDialogBase.textField()
+        final @NotNull DialogPart<TextInput> url = DialogPart.textField()
                 .placeholder("https://github.com/user/repo.git")
                 .build();
 
         components = List.of(
-                ComponentDialogBase.message(Bundle.message("dialog.remote.message", remoteName)),
+                DialogPart.message(Bundle.message("dialog.remote.message", remoteName)),
                 url);
 
         shortcuts = List.of(

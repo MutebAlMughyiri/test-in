@@ -119,7 +119,7 @@ public final class ShownDialog {
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
 
-    public static @NotNull List<ComponentDialogBase<?>> componentsOf(final @NotNull AbstractFrameworkDialog dialog) {
+    public static @NotNull List<DialogPart<?>> componentsOf(final @NotNull AbstractFrameworkDialog dialog) {
         return List.copyOf(dialog.components);
     }
 

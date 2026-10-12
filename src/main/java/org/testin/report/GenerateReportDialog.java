@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.importexport.FileFormat;
 import org.testin.ui.dialogs.DestinationForm;
 import org.testin.ui.framework.AbstractFrameworkDialog;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
@@ -51,8 +51,8 @@ public final class GenerateReportDialog extends AbstractFrameworkDialog {
                 Bundle.message("dialog.report.folder.message"));
 
         components = List.of(
-                ComponentDialogBase.of(form),
-                ComponentDialogBase.button(Bundle.message("dialog.report.button.generate")));
+                DialogPart.of(form),
+                DialogPart.button(Bundle.message("dialog.report.button.generate")));
 
         shortcuts = List.of(
                 StatusBarShortcut.build(Shortcuts.Enter, Bundle.message("dialog.report.button.generate"), this::submit),

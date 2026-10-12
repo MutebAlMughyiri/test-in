@@ -19,7 +19,7 @@ package org.testin.editor.toolbar;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.filter.FilterSource;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 
 public interface Toolbar extends FilterSource {
     void onToolBarSearchValueChanged();
@@ -35,7 +35,7 @@ public interface Toolbar extends FilterSource {
 
     @NotNull Project getProject();
 
-    @NotNull Node getEditedNode();
+    @NotNull AbstractNode getEditedNode();
 
     default void onToolBarSwitchedToCardView() {
     }

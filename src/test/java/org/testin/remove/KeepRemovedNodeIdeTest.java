@@ -27,7 +27,7 @@ import org.testin.NodesOnDisk;
 import org.testin.TestinLog;
 import org.testin.indexer.AbstractReadTheRootIdeTest;
 import org.testin.model.FileKind;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
@@ -99,7 +99,7 @@ public class KeepRemovedNodeIdeTest extends AbstractReadTheRootIdeTest {
         return ts;
     }
 
-    private void removedByTheTester(final @NotNull List<? extends Node> removed) {
+    private void removedByTheTester(final @NotNull List<? extends AbstractNode> removed) {
         new RemoveWork(getProject()).confirm(List.copyOf(removed));
         ShownDialog.press(getProject(), ConfirmDialog.class, Shortcuts.Enter);
 

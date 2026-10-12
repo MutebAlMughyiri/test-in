@@ -24,7 +24,7 @@ import org.testin.model.NodeType;
 import org.testin.model.FileKind;
 import org.testin.model.TestCaseDto;
 import org.testin.model.markers.TestRunMarker;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.testrun.RunItem;
 import org.testin.util.Bundle;
 import org.testin.util.Mapper;
@@ -108,7 +108,7 @@ final class PendingChangeFactory {
 
         final @NotNull String name = tc.map(TestCaseDto::getDescription).filter(description -> !description.isBlank())
                 .orElseGet(() -> String.valueOf(relativePath.getFileName()));
-        final @NotNull String testSet = tc.map(TestCaseDto::getParent).map(Node::getName).orElse("");
+        final @NotNull String testSet = tc.map(TestCaseDto::getParent).map(AbstractNode::getName).orElse("");
 
         final @NotNull List<FieldChange> changes = switch (type) {
             case ADDED -> List.of(new FieldChange(parentName(relativePath), "",

@@ -38,7 +38,7 @@ import org.testin.indexer.ProjectIndexer;
 import org.testin.indexer.TestRuns;
 import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.RunItems;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestRunPackageNode;
@@ -147,7 +147,7 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
         return Services.getInstance(getProject(), BoundTestProject.class);
     }
 
-    private @NotNull TestRunNode cycle1In(final @NotNull Node parent, final @NotNull List<RunItem> runItems) {
+    private @NotNull TestRunNode cycle1In(final @NotNull AbstractNode parent, final @NotNull List<RunItem> runItems) {
         final @NotNull TestRunNode testRun = new NodesOnDisk(getProject()).testRun(parent, "Cycle-1");
         indexedTestRuns().putRunItems(testRun.getPath(), new RunItems().setAll(new ArrayList<>(runItems)));
         return testRun;
@@ -197,7 +197,7 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
                 .orElseThrow(() -> new AssertionError("the dialog has no " + text + " button: " + Drawn.words(content())));
     }
 
-    private @NotNull List<Node> theTestRunsUnder(final @NotNull Node parent) {
+    private @NotNull List<AbstractNode> theTestRunsUnder(final @NotNull AbstractNode parent) {
         return nodes().getChildren(parent.getPath());
     }
 
@@ -320,7 +320,7 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
         theButton(Bundle.message("test.run.create.button")).doClick();
 
         Await.until("the new test run was not created in the folder of the one it was made from", () -> theTestRunsUnder(sprint).size() == 2);
-        final @NotNull Node made = theTestRunsUnder(sprint).stream().filter(node -> !node.getPath().equals(source.getPath())).findFirst().orElseThrow();
+        final @NotNull AbstractNode made = theTestRunsUnder(sprint).stream().filter(node -> !node.getPath().equals(source.getPath())).findFirst().orElseThrow();
         Await.until("the new test run holds no test case", () -> !indexedTestRuns().getRunItems(made.getPath()).coveredIds().isEmpty());
         final @NotNull RunItem carried = indexedTestRuns().getRunItems(made.getPath()).runItemOf(first.getId()).orElseThrow(() -> new AssertionError("the test case was not carried over"));
 

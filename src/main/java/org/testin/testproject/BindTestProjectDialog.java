@@ -25,7 +25,7 @@ import org.testin.model.status.ProjectStatus;
 import org.testin.notifications.Done;
 import org.testin.services.Services;
 import org.testin.ui.framework.AbstractFrameworkDialog;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.SelectionTable;
 import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.util.Bundle;
@@ -47,7 +47,7 @@ public final class BindTestProjectDialog extends AbstractFrameworkDialog {
 
         title = Bundle.message("dialog.bind.title");
 
-        final @NotNull ComponentDialogBase<SelectionTable> table = ComponentDialogBase.table()
+        final @NotNull DialogPart<SelectionTable> table = DialogPart.table()
                 .column(NodeType.TP.getDescription(), 260)
                 .column(Bundle.message("caption.status"), 100)
                 .build();

@@ -20,7 +20,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestSetPackageNode;
 import org.testin.services.Services;
 
@@ -38,7 +38,7 @@ public class CreateTestSetPackage implements NodeCreator {
 
     // UC-TREE-PANEL-008, Rule-TREE-PANEL-027
     @Override
-    public @NotNull Optional<Node> execute(final @NotNull String name, final @NotNull Node parentNode, final @NotNull Path newDirPath) {
+    public @NotNull Optional<AbstractNode> execute(final @NotNull String name, final @NotNull AbstractNode parentNode, final @NotNull Path newDirPath) {
         TestSetPackageNode tsp = directoryMapper.getTestSetPackageNode(newDirPath, parentNode);
 
         return nodes.addTestSetPackage(tsp) ? Optional.of(tsp) : Optional.empty();

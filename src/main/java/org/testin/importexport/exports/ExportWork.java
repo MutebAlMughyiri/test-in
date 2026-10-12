@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCaseDto;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.notifications.Notifier;
 import org.testin.services.BackgroundWork;
 import org.testin.services.Services;
@@ -68,13 +68,13 @@ record ExportWork(@NotNull Project p, @NotNull Notifier notifier, @NotNull TestC
         return String.join(" - ", path) + " (" + (taken.size() + 1) + ")";
     }
 
-    private static @NotNull Optional<VirtualFile> resolveTargetDir(final @NotNull Node node) {
+    private static @NotNull Optional<VirtualFile> resolveTargetDir(final @NotNull AbstractNode node) {
         return Optional.ofNullable(LocalFileSystem.getInstance().findFileByPath(node.getPath().toString()))
                 .map(target -> target.isDirectory() ? target : target.getParent());
     }
 
     // UC-SHARE-001, Rule-SHARE-015
-    void exportFrom(final @NotNull Node node) {
+    void exportFrom(final @NotNull AbstractNode node) {
         final @NotNull Optional<VirtualFile> resolved = resolveTargetDir(node);
         if (resolved.isEmpty()) return;
         final @NotNull VirtualFile targetDir = resolved.orElseThrow();
@@ -117,7 +117,7 @@ record ExportWork(@NotNull Project p, @NotNull Notifier notifier, @NotNull TestC
     }
 
     // UC-SHARE-002, Rule-SHARE-001
-    private @NotNull GatheredSheets gather(final @NotNull Node node) {
+    private @NotNull GatheredSheets gather(final @NotNull AbstractNode node) {
         final @NotNull List<Sheet> found = new ArrayList<>();
         final @NotNull List<String> unreadable = new ArrayList<>();
 
@@ -136,13 +136,13 @@ record ExportWork(@NotNull Project p, @NotNull Notifier notifier, @NotNull TestC
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    private void walk(final @NotNull Node node, final @NotNull List<String> path, final @NotNull List<Sheet> found, final @NotNull List<String> unreadable) {
+    private void walk(final @NotNull AbstractNode node, final @NotNull List<String> path, final @NotNull List<Sheet> found, final @NotNull List<String> unreadable) {
         final @NotNull List<TestCaseDto> here = testCases.getTestCasesForTestSet(node.getPath());
         if (!here.isEmpty()) found.add(new Sheet(path, detached(here)));
 
         unreadable.addAll(testCases.unreadableTestCasesIn(node.getPath()).stream().sorted().toList());
 
-        for (final Node child : nodes.getChildren(node.getPath())) {
+        for (final AbstractNode child : nodes.getChildren(node.getPath())) {
             final @NotNull List<String> under = new ArrayList<>(path);
             under.add(child.getName());
             walk(child, under, found, unreadable);

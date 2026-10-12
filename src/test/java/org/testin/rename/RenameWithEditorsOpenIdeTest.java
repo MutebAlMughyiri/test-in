@@ -27,7 +27,7 @@ import org.testin.editor.AbstractTestinEditor;
 import org.testin.editor.TestinEditor;
 import org.testin.editor.open.TestinEditors;
 import org.testin.indexer.Nodes;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
@@ -97,7 +97,7 @@ public class RenameWithEditorsOpenIdeTest extends AbstractOpenEditorsIdeTest {
         opened(card);
         aCellIsBeingEditedIn(card);
 
-        for (final Node node : List.of(card, payments)) {
+        for (final AbstractNode node : List.of(card, payments)) {
             final @NotNull Presentation shown = TreeGesture.updated(getProject(), new RenameAction(), List.of(node));
 
             assertFalse("Rename is not gray on " + node.getName() + " while a cell under it is being edited", shown.isEnabled());

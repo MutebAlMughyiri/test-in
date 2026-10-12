@@ -28,7 +28,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.TestinData;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 
 import java.util.List;
 import java.util.Objects;
@@ -36,20 +36,20 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TreeGesture {
 
-    private static @NotNull AnActionEvent on(final @NotNull Project p, final @NotNull AnAction action, final @NotNull List<Node> selected) {
+    private static @NotNull AnActionEvent on(final @NotNull Project p, final @NotNull AnAction action, final @NotNull List<AbstractNode> selected) {
         return TestActionEvent.createTestEvent(action, SimpleDataContext.builder()
                 .add(CommonDataKeys.PROJECT, p)
                 .add(TestinData.SELECTED_NODES, selected)
                 .build());
     }
 
-    public static @NotNull Presentation updated(final @NotNull Project p, final @NotNull AnAction action, final @NotNull List<Node> selected) {
+    public static @NotNull Presentation updated(final @NotNull Project p, final @NotNull AnAction action, final @NotNull List<AbstractNode> selected) {
         final @NotNull AnActionEvent e = on(p, action, selected);
         ActionUtil.updateAction(action, e);
         return e.getPresentation();
     }
 
-    public static void pressed(final @NotNull Project p, final @NotNull AnAction action, final @NotNull List<Node> selected) {
+    public static void pressed(final @NotNull Project p, final @NotNull AnAction action, final @NotNull List<AbstractNode> selected) {
         final @NotNull AnActionEvent e = on(p, action, selected);
         ActionUtil.updateAction(action, e);
         if (!e.getPresentation().isEnabled())

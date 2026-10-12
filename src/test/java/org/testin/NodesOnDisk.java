@@ -23,7 +23,7 @@ import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCaseDto;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
@@ -51,7 +51,7 @@ public record NodesOnDisk(@NotNull Project p) {
         });
     }
 
-    public @NotNull TestSetPackageNode testSetPackage(final @NotNull Node parent, final @NotNull String name) {
+    public @NotNull TestSetPackageNode testSetPackage(final @NotNull AbstractNode parent, final @NotNull String name) {
         return WriteAction.computeAndWait(() -> {
             final @NotNull TestSetPackageNode tsp = mapper().getTestSetPackageNode(parent.getPath().resolve(name), parent);
             nodes().addTestSetPackage(tsp);
@@ -59,7 +59,7 @@ public record NodesOnDisk(@NotNull Project p) {
         });
     }
 
-    public @NotNull TestSetNode testSet(final @NotNull Node parent, final @NotNull String name) {
+    public @NotNull TestSetNode testSet(final @NotNull AbstractNode parent, final @NotNull String name) {
         return WriteAction.computeAndWait(() -> {
             final @NotNull TestSetNode ts = mapper().getTestSetNode(parent.getPath().resolve(name), parent);
             nodes().addTestSet(ts);
@@ -67,7 +67,7 @@ public record NodesOnDisk(@NotNull Project p) {
         });
     }
 
-    public @NotNull TestRunNode testRun(final @NotNull Node parent, final @NotNull String name) {
+    public @NotNull TestRunNode testRun(final @NotNull AbstractNode parent, final @NotNull String name) {
         return WriteAction.computeAndWait(() -> {
             final @NotNull TestRunNode tr = mapper().setTestRunNode(parent.getPath().resolve(name), parent);
             nodes().addTestRunNode(tr);

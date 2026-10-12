@@ -39,7 +39,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class DescriptionBulkSectionDialog extends JsonSplitBulkSectionDialog {
+public class DescriptionBulkSectionDialog extends AbstractJsonSplitBulkSectionDialog {
     private final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
 
     public DescriptionBulkSectionDialog(final @NotNull Project p, final @NotNull List<TestCaseDto> selectedItems, final @NotNull Consumer<List<TestCaseDto>> updatedItems) {

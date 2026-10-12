@@ -81,7 +81,7 @@ public class OpeningRowsTest {
     @Test
     public void aFixedSetOfChoicesIsShownBeforeAnythingIsAsked() {
         final @NotNull String picker = read("TextFieldWithSelections.java");
-        final @NotNull String builder = read("ComponentDialogBase.java");
+        final @NotNull String builder = read("DialogPart.java");
 
         assertTrue(picker.contains("show(shownBeforeAsking)"),
                 "rows known at construction must go on screen there, or Enter has nothing to take");

@@ -20,7 +20,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.testrun.Failure;
 import org.testin.model.testrun.RunItem;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.DialogComponent;
 
 import java.nio.file.Path;
@@ -48,7 +48,7 @@ public final class FailureFields {
     }
 
     // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-148
-    public @NotNull List<? extends ComponentDialogBase<?>> components() {
+    public @NotNull List<? extends DialogPart<?>> components() {
         return sections.stream().map(FailureSection::component).toList();
     }
 

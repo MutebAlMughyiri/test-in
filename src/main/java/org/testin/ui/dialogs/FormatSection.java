@@ -18,7 +18,7 @@ package org.testin.ui.dialogs;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.importexport.FileFormat;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.RadioSelection;
 import org.testin.util.Bundle;
 
@@ -28,7 +28,7 @@ import java.util.List;
 public record FormatSection(@NotNull RadioSelection<FileFormat> choice) {
     // Rule-INTERNAL-107
     public static @NotNull FormatSection of(final FileFormat @NotNull [] formats, final @NotNull FileFormat defaultFormat) {
-        return new FormatSection(ComponentDialogBase.<FileFormat>radios(Bundle.message("destination.caption.format"))
+        return new FormatSection(DialogPart.<FileFormat>radios(Bundle.message("destination.caption.format"))
                 .options(List.of(formats), FileFormat::getLabel)
                 .select(defaultFormat)
                 .build()

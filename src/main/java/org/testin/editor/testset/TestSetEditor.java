@@ -26,7 +26,7 @@ import org.testin.actions.Declared;
 import org.testin.codegen.GenType;
 import org.testin.editor.AbstractTestinEditor;
 import org.testin.editor.PageWindow;
-import org.testin.editor.card.BaseCard;
+import org.testin.editor.card.AbstractCard;
 import org.testin.editor.grid.TestSetGridEditListener;
 import org.testin.editor.grid.GridRows;
 import org.testin.editor.cardview.TestCaseCardRenderer;
@@ -251,7 +251,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes,
     public @NotNull String cardTitle(final @NotNull TestCaseDto tc) {
         final @NotNull Set<TestSetEditorAttributes> selected = getSelectedDetails();
 
-        return BaseCard.titleText(positionOf(tc),
+        return AbstractCard.titleText(positionOf(tc),
                 selected.contains(TestSetEditorAttributes.ORDER),
                 selected.contains(TestSetEditorAttributes.DESCRIPTION) ? TestSetEditorAttributes.DESCRIPTION.displayValue(tc) : "");
     }

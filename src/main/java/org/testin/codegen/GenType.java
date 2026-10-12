@@ -27,7 +27,7 @@ import org.testin.codegen.event.MovedTestCase;
 import org.testin.codegen.event.NoOpCodeUpdate;
 import org.testin.codegen.event.Renamed;
 import org.testin.model.TestCaseDto;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.util.Bundle;
 
 import java.util.List;
@@ -35,8 +35,8 @@ import java.util.UUID;
 
 @Immutable
 public record GenType<T>(@NotNull Class<T> payload, @NotNull String description, @NotNull CodeUpdate update) {
-    public static final @NotNull GenType<Node> REMOVE_TEST_PROJECT = new GenType<>(
-            Node.class,
+    public static final @NotNull GenType<AbstractNode> REMOVE_TEST_PROJECT = new GenType<>(
+            AbstractNode.class,
             Bundle.message("codegen.remove.test.project"),
             JavaCodeUpdate.INSTANCE
     );
@@ -47,8 +47,8 @@ public record GenType<T>(@NotNull Class<T> payload, @NotNull String description,
             JavaCodeUpdate.INSTANCE
     );
 
-    public static final @NotNull GenType<Node> REMOVE_TEST_SET_PACKAGE = new GenType<>(
-            Node.class,
+    public static final @NotNull GenType<AbstractNode> REMOVE_TEST_SET_PACKAGE = new GenType<>(
+            AbstractNode.class,
             Bundle.message("codegen.remove.test.set.package"),
             JavaCodeUpdate.INSTANCE
     );
@@ -65,14 +65,14 @@ public record GenType<T>(@NotNull Class<T> payload, @NotNull String description,
             JavaCodeUpdate.INSTANCE
     );
 
-    public static final @NotNull GenType<Node> CREATE_TEST_SET = new GenType<>(
-            Node.class,
+    public static final @NotNull GenType<AbstractNode> CREATE_TEST_SET = new GenType<>(
+            AbstractNode.class,
             Bundle.message("codegen.create.test.set"),
             JavaCodeUpdate.INSTANCE
     );
 
-    public static final @NotNull GenType<Node> REMOVE_TEST_SET = new GenType<>(
-            Node.class,
+    public static final @NotNull GenType<AbstractNode> REMOVE_TEST_SET = new GenType<>(
+            AbstractNode.class,
             Bundle.message("codegen.remove.test.set"),
             JavaCodeUpdate.INSTANCE
     );

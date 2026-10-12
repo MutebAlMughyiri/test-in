@@ -23,7 +23,7 @@ import org.testin.NodesOnDisk;
 import org.testin.TreeGesture;
 import org.testin.creator.dialogs.CreateTestSetDialog;
 import org.testin.indexer.Nodes;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.services.Services;
 import org.testin.ui.framework.ShownDialog;
@@ -48,7 +48,7 @@ public class CreateTestSetOpensIdeTest extends AbstractOpenEditorsIdeTest {
         ShownDialog.typed(getProject(), CreateTestSetDialog.class, "Login");
         ShownDialog.press(getProject(), CreateTestSetDialog.class, Shortcuts.Enter);
 
-        final @NotNull Optional<Node> created = Services.getInstance(getProject(), Nodes.class).find(tp.getTestCasesFolder().getPath().resolve("Login"));
+        final @NotNull Optional<AbstractNode> created = Services.getInstance(getProject(), Nodes.class).find(tp.getTestCasesFolder().getPath().resolve("Login"));
         assertTrue("the test set was not created", created.isPresent());
         Await.until("the new test set did not open in its editor", () -> openOn(created.orElseThrow()).size() == 1);
     }

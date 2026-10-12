@@ -35,7 +35,7 @@ import java.util.List;
 @NoArgsConstructor
 @SuperBuilder
 @ToString(callSuper = true)
-public class TestRunPackageNode extends Node {
+public class TestRunPackageNode extends AbstractNode {
     @NonNull
     @Builder.Default
     private TestRunPackageMarker marker = new TestRunPackageMarker();

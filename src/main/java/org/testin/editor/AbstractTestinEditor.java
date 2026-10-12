@@ -48,7 +48,7 @@ import org.testin.indexer.TestCases;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.model.ToolBarAttribute;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
 import org.testin.services.ProjectLifetime;
@@ -68,7 +68,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-public abstract class AbstractTestinEditor<A extends Enum<A> & ToolBarAttribute, N extends Node> implements Disposable, Toolbar, TestinEditor {
+public abstract class AbstractTestinEditor<A extends Enum<A> & ToolBarAttribute, N extends AbstractNode> implements Disposable, Toolbar, TestinEditor {
     @Getter
     protected final @NotNull Project p;
     @Getter
@@ -179,7 +179,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ToolBarAttribute,
     }
 
     @Override
-    public @NotNull Node getEditedNode() {
+    public @NotNull AbstractNode getEditedNode() {
         return parent;
     }
 

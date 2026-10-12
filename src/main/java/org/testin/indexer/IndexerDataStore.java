@@ -29,7 +29,7 @@ import org.testin.model.testrun.RunItems;
 import org.testin.model.markers.AbstractMarker;
 import org.testin.model.markers.Marker;
 import org.testin.model.markers.TestRunMarker;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestCasesFolderNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
@@ -79,7 +79,7 @@ final class IndexerDataStore {
     @Getter
     private final @NotNull Map<String, RunItems> runItemsByPath = new ConcurrentHashMap<>();
 
-    private final @NotNull List<Map<String, ? extends Node>> dirMaps = List.of(
+    private final @NotNull List<Map<String, ? extends AbstractNode>> dirMaps = List.of(
             testProjectsByPath,
             testSetNodesByPath,
             testRunNodesByPath,
@@ -211,7 +211,7 @@ final class IndexerDataStore {
         return addNode(testRunPackagesByPath, trp, NodeType.TRP.getMarker(), trp.getMarker());
     }
 
-    private <V extends Node> boolean addNode(final @NotNull Map<String, V> map, final @NotNull V dto, final @NotNull String markerFileName, final @NotNull Marker marker) {
+    private <V extends AbstractNode> boolean addNode(final @NotNull Map<String, V> map, final @NotNull V dto, final @NotNull String markerFileName, final @NotNull Marker marker) {
         if (!markers.write(dto.getPath(), markerFileName, marker)) return false;
 
         map.put(dto.getPath().toString(), dto);
@@ -393,7 +393,7 @@ final class IndexerDataStore {
         return true;
     }
 
-    boolean persistMarker(final @NotNull Node dto) {
+    boolean persistMarker(final @NotNull AbstractNode dto) {
         final boolean written = markers.write(dto.getPath(), dto.getMarkerFileName(), dto.getMarker());
         childrenIndex.invalidate();
         refresh(dto.getPath().resolve(dto.getMarkerFileName()), false);
@@ -412,11 +412,11 @@ final class IndexerDataStore {
 
     void renameNode(final @NotNull Path oldPath, final @NotNull Path newPath) {
         final @NotNull RenamedPaths rename = new RenamedPaths(oldPath, newPath);
-        final @Nullable Node newParentNode = Optional.ofNullable(newPath.getParent())
+        final @Nullable AbstractNode newParentNode = Optional.ofNullable(newPath.getParent())
                 .flatMap(this::findByPath)
                 .orElse(null);
 
-        for (final Map<String, ? extends Node> map : dirMaps) {
+        for (final Map<String, ? extends AbstractNode> map : dirMaps) {
             rename.moveEntry(map, dto -> updatePathAndParent(dto, newPath, newParentNode));
             rename.moveNodesUnder(map);
         }
@@ -440,7 +440,7 @@ final class IndexerDataStore {
                 .ifPresent(renamed -> markers.touched(renamed.getPath(), renamed.getMarkerFileName(), renamed.getMarker()));
     }
 
-    private void updatePathAndParent(final @NotNull Node dto, final @NotNull Path newPath, final @Nullable Node newParent) {
+    private void updatePathAndParent(final @NotNull AbstractNode dto, final @NotNull Path newPath, final @Nullable AbstractNode newParent) {
         dto.setPath(newPath);
         dto.setName(newPath.getFileName().toString());
         dto.setParent(newParent);
@@ -453,25 +453,25 @@ final class IndexerDataStore {
     }
 
     @NotNull
-    Optional<Node> findByPath(final @NotNull Path path) {
+    Optional<AbstractNode> findByPath(final @NotNull Path path) {
         final @NotNull String key = path.toString();
 
         return dirMaps.stream()
                 .map(map -> map.get(key))
                 .filter(Objects::nonNull)
-                .map(Node.class::cast)
+                .map(AbstractNode.class::cast)
                 .findFirst();
     }
 
-    private void rebuildPath2(final @NotNull Node dto) {
+    private void rebuildPath2(final @NotNull AbstractNode dto) {
         final @NotNull ArrayList<String> path2 = new ArrayList<>();
-        for (final Node ancestor : dto.selfAndAncestors()) {
+        for (final AbstractNode ancestor : dto.selfAndAncestors()) {
             path2.addFirst(ancestor.getName());
         }
         dto.setPath2(path2);
     }
 
-    @NotNull List<Node> getChildren(final @NotNull Path parentPath) {
+    @NotNull List<AbstractNode> getChildren(final @NotNull Path parentPath) {
         return childrenIndex.get(parentPath, this::allNodes);
     }
 
@@ -479,9 +479,9 @@ final class IndexerDataStore {
         childrenIndex.invalidate();
     }
 
-    @NotNull Collection<Node> allNodes() {
-        final @NotNull List<Node> directories = new ArrayList<>();
-        for (final Map<String, ? extends Node> map : dirMaps) {
+    @NotNull Collection<AbstractNode> allNodes() {
+        final @NotNull List<AbstractNode> directories = new ArrayList<>();
+        for (final Map<String, ? extends AbstractNode> map : dirMaps) {
             directories.addAll(map.values());
         }
         return directories;

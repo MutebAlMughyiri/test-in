@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.util.Bundle;
 import org.testin.util.FailureText;
 
@@ -49,13 +49,13 @@ public class TreePanelCellRenderer extends ColoredTreeCellRenderer {
                 return;
             }
 
-            final @NotNull Optional<Node> shown = TreeValues.directoryOf(value);
+            final @NotNull Optional<AbstractNode> shown = TreeValues.directoryOf(value);
             if (shown.isEmpty()) {
                 append(Objects.toString(value, ""), SimpleTextAttributes.REGULAR_ATTRIBUTES);
                 return;
             }
 
-            final @NotNull Node dir = shown.get();
+            final @NotNull AbstractNode dir = shown.get();
             final @NotNull NodeType type = dir.getType();
 
             setIcon(dir.iconShownInTree());

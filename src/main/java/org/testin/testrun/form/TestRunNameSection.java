@@ -16,14 +16,14 @@
 package org.testin.testrun.form;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.TextInput;
 import org.testin.util.Bundle;
 
-public record TestRunNameSection(@NotNull ComponentDialogBase<TextInput> component) {
+public record TestRunNameSection(@NotNull DialogPart<TextInput> component) {
     // UC-TREE-PANEL-021
     public static @NotNull TestRunNameSection of(final @NotNull String name) {
-        return new TestRunNameSection(ComponentDialogBase.textField()
+        return new TestRunNameSection(DialogPart.textField()
                 .caption(Bundle.message("test.run.form.name.caption"))
                 .placeholder(Bundle.message("test.run.form.name.hint"))
                 .value(name)

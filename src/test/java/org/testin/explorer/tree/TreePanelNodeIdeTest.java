@@ -19,7 +19,7 @@ package org.testin.explorer.tree;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.ui.tree.LeafState;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
@@ -35,7 +35,7 @@ public class TreePanelNodeIdeTest extends BasePlatformTestCase {
 
     private static final Path SET = Path.of("project", "Test Cases", "Login");
 
-    private static @NotNull Node at(final Node directory, final Path path) {
+    private static @NotNull AbstractNode at(final AbstractNode directory, final Path path) {
         directory.setPath(path);
         return directory;
     }

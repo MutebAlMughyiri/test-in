@@ -21,7 +21,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.ui.framework.AbstractFrameworkDialog;
 import org.testin.ui.framework.Answer;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.DialogSize;
 import org.testin.ui.framework.SelectionList;
 import org.testin.ui.framework.StatusBarShortcut;
@@ -40,7 +40,7 @@ public final class GlobalSearchDialog extends AbstractFrameworkDialog {
 
         title = Bundle.message("dialog.search.title");
 
-        final @NotNull ComponentDialogBase<TextFieldWithSelections<Hit>> built = ComponentDialogBase.<Hit>textFieldWithSelections()
+        final @NotNull DialogPart<TextFieldWithSelections<Hit>> built = DialogPart.<Hit>textFieldWithSelections()
                 .icon(AllIcons.Actions.Search)
                 .placeholder(Bundle.message("dialog.search.placeholder"))
                 .rows(query -> rowsFor(p, query))

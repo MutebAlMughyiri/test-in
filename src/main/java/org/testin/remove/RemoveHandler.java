@@ -18,11 +18,11 @@ package org.testin.remove;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 
 import java.util.function.Consumer;
 
 @FunctionalInterface
 public interface RemoveHandler {
-    void remove(final @NotNull Project p, final @NotNull Node dir, final @NotNull Consumer<@NotNull Boolean> onRemoved);
+    void remove(final @NotNull Project p, final @NotNull AbstractNode dir, final @NotNull Consumer<@NotNull Boolean> onRemoved);
 }

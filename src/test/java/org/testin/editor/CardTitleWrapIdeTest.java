@@ -19,7 +19,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.ui.components.JBList;
 import org.jetbrains.annotations.NotNull;
-import org.testin.editor.card.BaseCard;
+import org.testin.editor.card.AbstractCard;
 import org.testin.editor.card.CardHoverAction;
 import org.testin.editor.card.CardTitle;
 import org.testin.editor.card.Offered;
@@ -101,7 +101,7 @@ public class CardTitleWrapIdeTest extends BasePlatformTestCase {
         assertEquals(Integer.MAX_VALUE, CardTitle.titleColumnWidth(0, 3));
     }
 
-    private static final class Card extends BaseCard {
+    private static final class Card extends AbstractCard {
         Card(final @NotNull Project p) {
             super(p);
         }

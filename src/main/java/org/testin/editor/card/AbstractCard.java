@@ -31,7 +31,7 @@ import org.testin.editor.testrun.ExecutingNow;
 import org.testin.model.Automated;
 import org.testin.model.Priority;
 import org.testin.model.TestCaseDto;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.services.Services;
 import org.testin.testcase.TestCaseOrder;
 import org.testin.testcase.UpdateTestCaseFields;
@@ -65,7 +65,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public abstract class BaseCard extends JBPanel<BaseCard> {
+public abstract class AbstractCard extends JBPanel<AbstractCard> {
     protected final @NotNull JTextArea titleArea = Prose.of("");
     protected final @NotNull JBPanel<?> badgePanel = new JBPanel<>(new FlowLayout(FlowLayout.LEFT, JBUI.scale(10), 0));
     protected final @NotNull Map<String, JBLabel> attributeLabels = new HashMap<>();
@@ -89,7 +89,7 @@ public abstract class BaseCard extends JBPanel<BaseCard> {
     private int titleColumnWidth = Integer.MAX_VALUE;
     private int titleWidth;
 
-    public BaseCard(final @NotNull Project p) {
+    public AbstractCard(final @NotNull Project p) {
         this.p = p;
         this.automationState = Services.getInstance(p, AutomationState.class);
         setLayout(new BorderLayout());
@@ -135,7 +135,7 @@ public abstract class BaseCard extends JBPanel<BaseCard> {
     }
 
     // UC-EDITOR-PANEL-047, Rule-EDITOR-PANEL-235, Rule-EDITOR-PANEL-291
-    public void showTitleIcons(final @NotNull Node parent, final @NotNull TestCaseDto tc) {
+    public void showTitleIcons(final @NotNull AbstractNode parent, final @NotNull TestCaseDto tc) {
         hoverButtons = CardHoverAction.onCard(p, parent, tc);
         executing = ExecutingNow.is(p, tc.getId());
     }

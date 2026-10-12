@@ -29,7 +29,7 @@ import org.testin.editor.open.TestinEditors;
 import org.testin.indexer.TestCases;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.notifications.Notifier;
 import org.testin.notifications.Refused;
@@ -69,8 +69,8 @@ public class ExecuteTestsAction extends AbstractAnyProjectAction {
         selectedTestRun(e).ifPresentOrElse(testRun -> openAndRun(p, testRun), () -> runnable(e).ifPresent(dir -> run(p, dir)));
     }
 
-    private @NotNull Optional<Node> runnable(final @NotNull AnActionEvent e) {
-        return TestinData.firstSelected(e, Node.class).filter(Node::isTestCaseContainer);
+    private @NotNull Optional<AbstractNode> runnable(final @NotNull AnActionEvent e) {
+        return TestinData.firstSelected(e, AbstractNode.class).filter(AbstractNode::isTestCaseContainer);
     }
 
     private @NotNull Optional<TestRunNode> selectedTestRun(final @NotNull AnActionEvent e) {
@@ -83,7 +83,7 @@ public class ExecuteTestsAction extends AbstractAnyProjectAction {
     }
 
     // UC-CODEGEN-008, Rule-CODEGEN-031
-    private void run(final @NotNull Project p, final @NotNull Node dir) {
+    private void run(final @NotNull Project p, final @NotNull AbstractNode dir) {
         final @NotNull List<TestCaseDto> testCases = Services.getInstance(p, TestCases.class).getTestCasesUnder(dir);
 
         if (testCases.isEmpty()) {

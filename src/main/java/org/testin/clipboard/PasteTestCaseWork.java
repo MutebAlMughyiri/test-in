@@ -27,7 +27,7 @@ import org.testin.editor.testset.TestSetEditor;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCaseDto;
 import org.testin.model.TestCaseDto.TestCaseDtoBuilder;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
@@ -68,7 +68,7 @@ record PasteTestCaseWork(@NotNull Project p, @NotNull TestinEditor editor, @NotN
     private void pasteInto(final @NotNull TestSetEditor destUI, final @NotNull List<TestCaseDto> pastedTestCases) {
         final boolean isCut = cutState.isCutOf(pastedTestCases);
 
-        final @NotNull Optional<Node> cutFromSet =
+        final @NotNull Optional<AbstractNode> cutFromSet =
                 isCut ? cutState.source().map(TestinEditor::getParent) : Optional.empty();
 
         if (!isCut) cutState.clear();

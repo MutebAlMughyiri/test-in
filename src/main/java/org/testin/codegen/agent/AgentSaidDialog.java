@@ -19,7 +19,7 @@ package org.testin.codegen.agent;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.ui.framework.AbstractFrameworkDialog;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.DialogSize;
 import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.util.Bundle;
@@ -39,7 +39,7 @@ public final class AgentSaidDialog extends AbstractFrameworkDialog {
 
         size = DialogSize.HALF;
 
-        components = List.of(ComponentDialogBase.textArea()
+        components = List.of(DialogPart.textArea()
                 .value(transcript)
                 .rows(VISIBLE_ROWS)
                 .readOnly()

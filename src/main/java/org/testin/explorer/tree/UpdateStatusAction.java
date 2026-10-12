@@ -26,7 +26,7 @@ import org.testin.actions.GrayWithReason;
 import org.testin.actions.TestinData;
 import org.testin.indexer.Nodes;
 import org.testin.logger.TestinLogger;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.status.NodeStatus;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
@@ -53,7 +53,7 @@ public class UpdateStatusAction extends AbstractAnyProjectAction {
     }
 
     // UC-TREE-PANEL-018, Rule-TREE-PANEL-062
-    private void mark(final @NotNull Project p, final @NotNull Node dir) {
+    private void mark(final @NotNull Project p, final @NotNull AbstractNode dir) {
         try {
             if (!Services.getInstance(p, Nodes.class).mark(dir, status, Services.getInstance(p, AppSettingsState.class).testerName))
                 return;
@@ -66,14 +66,14 @@ public class UpdateStatusAction extends AbstractAnyProjectAction {
         }
     }
 
-    private @NotNull Optional<Node> selected(final @NotNull AnActionEvent e) {
+    private @NotNull Optional<AbstractNode> selected(final @NotNull AnActionEvent e) {
         return TestinData.singleSelectedNode(e).filter(dir -> dir.getMarker().statuses().contains(status));
     }
 
     // UC-TREE-PANEL-018, Rule-TREE-PANEL-065
     @Override
     protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        final @NotNull Optional<Node> dir = selected(e);
+        final @NotNull Optional<AbstractNode> dir = selected(e);
 
         e.getPresentation().setVisible(dir.isPresent());
         GrayWithReason.unless(this, e, dir.filter(node -> !status.equals(node.getMarker().status())).isPresent(),

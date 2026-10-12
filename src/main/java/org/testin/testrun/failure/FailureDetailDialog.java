@@ -22,7 +22,7 @@ import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.RunItem;
 import org.testin.testcase.CreateTestCaseFields;
 import org.testin.ui.framework.AbstractFrameworkDialog;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.util.Bundle;
 
@@ -50,8 +50,8 @@ public class FailureDetailDialog extends AbstractFrameworkDialog {
         // Rule-INTERNAL-101
         resizable = true;
 
-        final @NotNull List<ComponentDialogBase<?>> all = new ArrayList<>();
-        all.add(ComponentDialogBase.details()
+        final @NotNull List<DialogPart<?>> all = new ArrayList<>();
+        all.add(DialogPart.details()
                 .row(CreateTestCaseFields.DESCRIPTION.getIcon(), tc.getDescription())
                 .row(CreateTestCaseFields.EXPECTED_RESULT.getIcon(), tc.getExpectedResult())
                 .build());

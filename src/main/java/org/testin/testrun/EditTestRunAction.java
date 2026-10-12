@@ -24,14 +24,14 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.GrayWithReason;
 import org.testin.actions.TestinData;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.util.Bundle;
 
 import java.util.Optional;
 
 public class EditTestRunAction extends AbstractAnyProjectAction {
-    static @NotNull Optional<TestRunNode> selectedTestRun(final @NotNull Optional<Node> dir) {
+    static @NotNull Optional<TestRunNode> selectedTestRun(final @NotNull Optional<AbstractNode> dir) {
         return dir.filter(TestRunNode.class::isInstance)
                 .map(TestRunNode.class::cast)
                 .filter(TestRunNode::isOpen);

@@ -22,7 +22,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.TestinData;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.util.Bundle;
 
 public class ExportAction extends AbstractAnyProjectAction {
@@ -31,14 +31,14 @@ public class ExportAction extends AbstractAnyProjectAction {
     // UC-SHARE-001, UC-SHARE-002
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        TestinData.firstSelected(e, Node.class).ifPresent(dir -> new ExportWork(p).exportFrom(dir));
+        TestinData.firstSelected(e, AbstractNode.class).ifPresent(dir -> new ExportWork(p).exportFrom(dir));
     }
 
     // UC-SHARE-001
     @Override
     protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
         e.getPresentation().setEnabled(TestinData.singleSelectedNode(e)
-                .filter(Node::isTestCaseContainer)
+                .filter(AbstractNode::isTestCaseContainer)
                 .isPresent());
     }
 

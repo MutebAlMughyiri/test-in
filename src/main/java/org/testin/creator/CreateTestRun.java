@@ -26,7 +26,7 @@ import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
 import org.testin.logger.TestinLogger;
 import org.testin.model.testrun.RunItems;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.testrun.TestRunConfiguration;
 import org.testin.notifications.Done;
@@ -71,7 +71,7 @@ public class CreateTestRun implements NodeCreator {
 
     // UC-TREE-PANEL-009
     @Override
-    public @NotNull Optional<Node> execute(final @NotNull String name, final @NotNull Node parentNode, final @NotNull Path newDirPath) {
+    public @NotNull Optional<AbstractNode> execute(final @NotNull String name, final @NotNull AbstractNode parentNode, final @NotNull Path newDirPath) {
         boundTestProject.get().ifPresentOrElse(
                 tp -> configureTestRun(tp.getTestCasesFolder(), name, parentNode, Set.of(), Map.of()),
                 () -> TestinLogger.warn("Create test run: no test project is bound to " + p.getName()));
@@ -80,7 +80,7 @@ public class CreateTestRun implements NodeCreator {
     }
 
     // UC-TREE-PANEL-009, UC-TREE-PANEL-021, Rule-TREE-PANEL-138
-    public void configureTestRun(final @NotNull Node testCasesRoot, final @NotNull String name, final @NotNull Node parentNode, final @NotNull Set<UUID> sourceTestCases, final @NotNull Map<TestRunConfiguration, String> sourceConfiguration) {
+    public void configureTestRun(final @NotNull AbstractNode testCasesRoot, final @NotNull String name, final @NotNull AbstractNode parentNode, final @NotNull Set<UUID> sourceTestCases, final @NotNull Map<TestRunConfiguration, String> sourceConfiguration) {
         final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
         final @NotNull Set<UUID> enabled = sourceTestCases.stream()
                 .filter(id -> testCases.findTestCase(id).map(tc -> tc.getStatus().isEnabled()).orElse(true))
@@ -91,7 +91,7 @@ public class CreateTestRun implements NodeCreator {
     }
 
     // UC-TREE-PANEL-009, Rule-TREE-PANEL-004
-    private boolean create(final @NotNull TestRunConfigurationForm form, final @NotNull SelectionTree selection, final @NotNull Node parentNode) {
+    private boolean create(final @NotNull TestRunConfigurationForm form, final @NotNull SelectionTree selection, final @NotNull AbstractNode parentNode) {
         final @NotNull String name = form.getTestRunName();
         if (name.isEmpty()) {
             notifier.softRefuse(p, Bundle.message("test.run.needs.a.name"));

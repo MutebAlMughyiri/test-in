@@ -17,16 +17,16 @@ package org.testin.testrun.form;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.testrun.TestRunConfiguration;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.TextInput;
 import org.testin.util.Bundle;
 
 import java.util.Map;
 
-public record CommitSection(@NotNull ComponentDialogBase<TextInput> component) implements TestRunSection {
+public record CommitSection(@NotNull DialogPart<TextInput> component) implements TestRunSection {
     // UC-TREE-PANEL-021
     public static @NotNull CommitSection of(final @NotNull String value) {
-        return new CommitSection(ComponentDialogBase.textField()
+        return new CommitSection(DialogPart.textField()
                 .caption(TestRunConfiguration.COMMIT.getDisplayName())
                 .placeholder(Bundle.message("test.run.form.commit.hint"))
                 .value(value)

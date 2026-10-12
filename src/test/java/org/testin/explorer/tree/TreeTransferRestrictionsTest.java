@@ -17,7 +17,7 @@
 package org.testin.explorer.tree;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestCasesFolderNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
@@ -34,20 +34,20 @@ import static org.testng.Assert.assertTrue;
 
 public class TreeTransferRestrictionsTest {
 
-    private static @NotNull Node project(final String name) {
+    private static @NotNull AbstractNode project(final String name) {
         final TestProjectNode dto = new TestProjectNode();
         dto.setPath(Path.of("Testin", name));
         return dto;
     }
 
-    private static @NotNull Node childPackage(final Node parent, final String name) {
+    private static @NotNull AbstractNode childPackage(final AbstractNode parent, final String name) {
         final TestSetPackageNode dto = new TestSetPackageNode();
         dto.setPath(parent.getPath().resolve(name));
         dto.setParent(parent);
         return dto;
     }
 
-    private static @NotNull Node node(final String... underRoot) {
+    private static @NotNull AbstractNode node(final String... underRoot) {
         final TestSetPackageNode dto = new TestSetPackageNode();
         dto.setPath(Path.of("root", underRoot));
         return dto;
@@ -56,12 +56,12 @@ public class TreeTransferRestrictionsTest {
     // Rule-PRODUCT-006, Rule-TREE-PANEL-002
     @Test
     public void fixedNodesCannotBeMovedRenamedOrRemoved() {
-        final Node[] fixed = {
+        final AbstractNode[] fixed = {
                 new TestCasesFolderNode(),
                 new TestRunsFolderNode()
         };
 
-        for (final Node node : fixed) {
+        for (final AbstractNode node : fixed) {
             assertFalse(node.isTransferable(), node.getClass().getSimpleName() + " must not be cut/copied/dragged");
             assertFalse(node.isRemovable(), node.getClass().getSimpleName() + " must not be removable");
             assertFalse(node.isRenamable(), node.getClass().getSimpleName() + " must not be renamable");
@@ -70,7 +70,7 @@ public class TreeTransferRestrictionsTest {
 
     @Test
     public void aTestProjectIsRemovableAndRenamableButNeverMoved() {
-        final Node testProject = new TestProjectNode();
+        final AbstractNode testProject = new TestProjectNode();
 
         assertTrue(testProject.isRemovable(), "a test project is removed by the tester who made it");
         assertFalse(testProject.isTransferable(), "a test project is not cut, copied or dragged");
@@ -79,14 +79,14 @@ public class TreeTransferRestrictionsTest {
 
     @Test
     public void regularNodesKeepTheirCapabilities() {
-        final Node[] regular = {
+        final AbstractNode[] regular = {
                 new TestSetNode(),
                 new TestSetPackageNode(),
                 new TestRunNode(),
                 new TestRunPackageNode()
         };
 
-        for (final Node node : regular) {
+        for (final AbstractNode node : regular) {
             assertTrue(node.isTransferable(), node.getClass().getSimpleName() + " must stay transferable");
             assertTrue(node.isRemovable(), node.getClass().getSimpleName() + " must stay removable");
             assertTrue(node.isRenamable(), node.getClass().getSimpleName() + " must stay renamable");
@@ -96,14 +96,14 @@ public class TreeTransferRestrictionsTest {
     // Rule-PRODUCT-005, Rule-TREE-PANEL-003, Rule-TREE-PANEL-043
     @Test
     public void testRunNodesNeverEnterTheTestSetFamily() {
-        final Node[] testSetFamilyTargets = {
+        final AbstractNode[] testSetFamilyTargets = {
                 new TestCasesFolderNode(),
                 new TestSetPackageNode()
         };
-        final Node[] testRunSources = {new TestRunNode(), new TestRunPackageNode()};
+        final AbstractNode[] testRunSources = {new TestRunNode(), new TestRunPackageNode()};
 
-        for (final Node target : testSetFamilyTargets) {
-            for (final Node source : testRunSources) {
+        for (final AbstractNode target : testSetFamilyTargets) {
+            for (final AbstractNode source : testRunSources) {
                 assertFalse(target.acceptsTransferred(source),
                         target.getClass().getSimpleName() + " must reject " + source.getClass().getSimpleName());
             }
@@ -115,7 +115,7 @@ public class TreeTransferRestrictionsTest {
     // Rule-TREE-PANEL-044
     @Test
     public void testSetAcceptsNoDirectoryNodes() {
-        final Node testSet = new TestSetNode();
+        final AbstractNode testSet = new TestSetNode();
 
         assertFalse(testSet.isTransferTarget(), "a test set holds test cases only");
         assertFalse(testSet.acceptsTransferred(new TestSetPackageNode()), "no package into a test set");
@@ -126,15 +126,15 @@ public class TreeTransferRestrictionsTest {
     // Rule-PRODUCT-005, Rule-TREE-PANEL-003, Rule-TREE-PANEL-043
     @Test
     public void testSetNodesNeverEnterTheTestRunFamily() {
-        final Node[] testRunFamilyTargets = {
+        final AbstractNode[] testRunFamilyTargets = {
                 new TestRunsFolderNode(),
                 new TestRunPackageNode(),
                 new TestRunNode()
         };
-        final Node[] testSetSources = {new TestSetNode(), new TestSetPackageNode()};
+        final AbstractNode[] testSetSources = {new TestSetNode(), new TestSetPackageNode()};
 
-        for (final Node target : testRunFamilyTargets) {
-            for (final Node source : testSetSources) {
+        for (final AbstractNode target : testRunFamilyTargets) {
+            for (final AbstractNode source : testSetSources) {
                 assertFalse(target.acceptsTransferred(source),
                         target.getClass().getSimpleName() + " must reject " + source.getClass().getSimpleName());
             }
@@ -148,7 +148,7 @@ public class TreeTransferRestrictionsTest {
     // Rule-PRODUCT-005, Rule-TREE-PANEL-044
     @Test
     public void testRunAcceptsNoRunStructure() {
-        final Node testRun = new TestRunNode();
+        final AbstractNode testRun = new TestRunNode();
 
         assertFalse(testRun.acceptsTransferred(new TestRunNode()),
                 "no test run into a test run");
@@ -163,7 +163,7 @@ public class TreeTransferRestrictionsTest {
 
     @Test
     public void testProjectAcceptsNothing() {
-        final Node testProject = new TestProjectNode();
+        final AbstractNode testProject = new TestProjectNode();
 
         assertFalse(testProject.isTransferTarget());
         assertFalse(testProject.acceptsTransferred(new TestSetNode()));
@@ -173,7 +173,7 @@ public class TreeTransferRestrictionsTest {
     // Rule-TREE-PANEL-045
     @Test
     public void destinationMustNotBeSelfSubtreeOrParent() {
-        final Node source = node("test-cases", "pkg");
+        final AbstractNode source = node("test-cases", "pkg");
 
         assertFalse(TreeTransferHandler.isValidDestination(source, node("test-cases", "pkg"), _ -> false),
                 "onto itself must be invalid");
@@ -189,8 +189,8 @@ public class TreeTransferRestrictionsTest {
     // Rule-TREE-PANEL-004
     @Test
     public void destinationMustNotAlreadyContainTheName() {
-        final Node source = node("test-cases", "pkg");
-        final Node target = node("test-cases", "other");
+        final AbstractNode source = node("test-cases", "pkg");
+        final AbstractNode target = node("test-cases", "other");
         final Path occupiedPath = Path.of("root", "test-cases", "other", "pkg");
 
         assertFalse(TreeTransferHandler.isValidDestination(source, target, occupiedPath::equals),
@@ -202,19 +202,19 @@ public class TreeTransferRestrictionsTest {
     // Rule-TREE-PANEL-013
     @Test
     public void transfersNeverCrossTestProjects() {
-        final Node projectA = project("projectA");
-        final Node packageInA = childPackage(projectA, "pkg");
-        final Node testCasesDirInA = childPackage(projectA, "Test Cases");
+        final AbstractNode projectA = project("projectA");
+        final AbstractNode packageInA = childPackage(projectA, "pkg");
+        final AbstractNode testCasesDirInA = childPackage(projectA, "Test Cases");
 
-        final Node projectB = project("projectB");
-        final Node packageInB = childPackage(projectB, "pkg2");
+        final AbstractNode projectB = project("projectB");
+        final AbstractNode packageInB = childPackage(projectB, "pkg2");
 
         assertTrue(TreeTransferHandler.sameTestProject(packageInA, testCasesDirInA),
                 "within one project must stay allowed");
         assertFalse(TreeTransferHandler.sameTestProject(packageInA, packageInB),
                 "across projects must be rejected, whatever the node types");
 
-        final Node orphan = new TestSetPackageNode();
+        final AbstractNode orphan = new TestSetPackageNode();
         orphan.setPath(Path.of("somewhere", "pkg"));
         assertFalse(TreeTransferHandler.sameTestProject(orphan, packageInA),
                 "unresolvable ownership must reject");

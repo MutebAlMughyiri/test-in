@@ -24,7 +24,7 @@ import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.GrayWithReason;
 import org.testin.actions.TestinData;
 import org.testin.indexer.Nodes;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
@@ -43,7 +43,7 @@ public class OrderNodeAction extends AbstractAnyProjectAction {
     }
 
     // UC-TREE-PANEL-015, Rule-TREE-PANEL-055
-    private void apply(final @NotNull Project p, final @NotNull Node node, final int order) {
+    private void apply(final @NotNull Project p, final @NotNull AbstractNode node, final int order) {
         if (node.getOrder() == order) return;
 
         final int before = node.getOrder();
@@ -61,12 +61,12 @@ public class OrderNodeAction extends AbstractAnyProjectAction {
     }
 
     // UC-TREE-PANEL-015, Rule-TREE-PANEL-055
-    private boolean place(final @NotNull Project p, final @NotNull Node node, final int order) {
+    private boolean place(final @NotNull Project p, final @NotNull AbstractNode node, final int order) {
         return Services.getInstance(p, Nodes.class).reorder(node, order);
     }
 
-    private @NotNull Optional<Node> orderable(final @NotNull AnActionEvent e) {
-        return TestinData.singleSelectedNode(e).filter(Node::isOrderable);
+    private @NotNull Optional<AbstractNode> orderable(final @NotNull AnActionEvent e) {
+        return TestinData.singleSelectedNode(e).filter(AbstractNode::isOrderable);
     }
 
     // UC-TREE-PANEL-015, Rule-TREE-PANEL-058

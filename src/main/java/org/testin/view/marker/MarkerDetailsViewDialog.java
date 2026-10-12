@@ -22,10 +22,10 @@ import org.testin.indexer.NodeCounter;
 import org.testin.model.NodeType;
 import org.testin.model.NodeFigures;
 import org.testin.model.markers.Marker;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.testcase.TestSetEditorAttributes;
 import org.testin.ui.framework.AbstractFrameworkDialog;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.util.Bundle;
 import org.testin.util.Display;
@@ -34,7 +34,7 @@ import org.testin.util.Shortcuts;
 import java.util.List;
 
 public final class MarkerDetailsViewDialog extends AbstractFrameworkDialog {
-    public MarkerDetailsViewDialog(final @NotNull Project p, final @NotNull Node dto) {
+    public MarkerDetailsViewDialog(final @NotNull Project p, final @NotNull AbstractNode dto) {
         super(p);
 
         final @NotNull Marker marker = dto.getMarker();
@@ -43,7 +43,7 @@ public final class MarkerDetailsViewDialog extends AbstractFrameworkDialog {
 
         title = Bundle.message("dialog.details.title");
 
-        final @NotNull ComponentDialogBase.DetailsBuilder details = ComponentDialogBase.details()
+        final @NotNull DialogPart.DetailsBuilder details = DialogPart.details()
                 .row(Bundle.message("caption.name"), dto.getName())
                 .row(Bundle.message("caption.path"), dto.getPath().toString())
                 .row(TestSetEditorAttributes.CREATED_BY.getName(), marker.getCreatedBy())
@@ -58,7 +58,7 @@ public final class MarkerDetailsViewDialog extends AbstractFrameworkDialog {
 
         components = List.of(
                 details.build(),
-                ComponentDialogBase.of(new RunItemStatusDonut(type.getStatistics().getSlices(), figures)));
+                DialogPart.of(new RunItemStatusDonut(type.getStatistics().getSlices(), figures)));
 
         shortcuts = List.of(StatusBarShortcut.build(Shortcuts.Escape, Bundle.message("shortcut.close"), this::closeCancel));
 

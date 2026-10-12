@@ -51,7 +51,7 @@ public abstract class AbstractOneLineSection implements CreateTestCaseSection {
 
     // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-028
     @Override
-    public void setupShortcut(final @NotNull JComponent mainPanel, final @NotNull JBPanel<?> slot, final @NotNull TestCaseBaseDialog base, final @NotNull Runnable repackAction) {
+    public void setupShortcut(final @NotNull JComponent mainPanel, final @NotNull JBPanel<?> slot, final @NotNull AbstractTestCaseDialog base, final @NotNull Runnable repackAction) {
         base.registerShortcut(mainPanel, shortcut.getCustomShortcut(), () -> {
             showSection(slot);
             repackAction.run();

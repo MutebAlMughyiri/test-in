@@ -20,7 +20,7 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.importexport.FileFormat;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.DialogComponent;
 import org.testin.ui.framework.TextInput;
 import org.testin.util.Bundle;
@@ -39,14 +39,14 @@ public final class DestinationForm implements DialogComponent {
     private final @NotNull JComponent panel;
 
     private DestinationForm(final @NotNull Project p, final FileFormat @NotNull [] formats, final @NotNull FileFormat defaultFormat, final @NotNull String suggestedName, final @NotNull String chooserTitle, final @NotNull String chooserDescription, final @NotNull String section) {
-        folder = ComponentDialogBase.textField()
+        folder = DialogPart.textField()
                 .caption(Bundle.message("destination.caption.folder"))
                 .placeholder(Bundle.message("destination.choose.folder"))
                 .value(DownloadFolder.of(p))
                 .browse(p, FileChooserDescriptorFactory.singleDir().withTitle(chooserTitle).withDescription(chooserDescription))
                 .build().getComponent();
 
-        fileName = ComponentDialogBase.textField()
+        fileName = DialogPart.textField()
                 .caption(Bundle.message("destination.caption.file"))
                 .placeholder(Bundle.message("destination.name.the.file"))
                 .value(suggestedName)

@@ -24,7 +24,7 @@ import org.testin.creator.dialogs.CreateTestRunDialog;
 import org.testin.editor.open.TestinEditors;
 import org.testin.indexer.Nodes;
 import org.testin.model.NodeType;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
 import org.testin.notifications.Refused;
@@ -41,7 +41,7 @@ record CreateTreeNodeWork(@NotNull Project p, @NotNull Nodes nodes, @NotNull Not
     }
 
     // UC-TREE-PANEL-007, UC-TREE-PANEL-008, UC-TREE-PANEL-009, UC-TREE-PANEL-010, Rule-TREE-PANEL-004
-    void createUnder(final @NotNull Node parentNode) {
+    void createUnder(final @NotNull AbstractNode parentNode) {
         final @NotNull BiConsumer<String, NodeType> onCreate = (s, dt) -> {
             if (s.isEmpty()) return;
             final @NotNull Path newDirPath = parentNode.getPath().resolve(s);
@@ -51,7 +51,7 @@ record CreateTreeNodeWork(@NotNull Project p, @NotNull Nodes nodes, @NotNull Not
                 return;
             }
 
-            final @NotNull Optional<Node> created = NodeCreators.of(p, dt).execute(s, parentNode, newDirPath);
+            final @NotNull Optional<AbstractNode> created = NodeCreators.of(p, dt).execute(s, parentNode, newDirPath);
 
             created.ifPresent(dir -> {
                 notifier.softShow(p, Done.CREATED);

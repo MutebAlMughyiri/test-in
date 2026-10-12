@@ -19,7 +19,7 @@ package org.testin.editor.testset;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.clipboard.CutState;
-import org.testin.editor.card.BaseCard;
+import org.testin.editor.card.AbstractCard;
 import org.testin.model.Priority;
 import org.testin.model.TestCaseDto;
 import org.testin.model.status.ExecutionStatus;
@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class TestCaseCard extends BaseCard {
+public class TestCaseCard extends AbstractCard {
     private final @NotNull List<Badge> badges = new ArrayList<>();
     private final @NotNull Map<String, String> details = new LinkedHashMap<>();
     private final @NotNull CutState cutState = Services.getInstance(p, CutState.class);

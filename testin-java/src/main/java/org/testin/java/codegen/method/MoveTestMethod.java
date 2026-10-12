@@ -30,7 +30,7 @@ import org.testin.codegen.GenType;
 import org.testin.codegen.event.MovedTestCase;
 import org.testin.java.codegen.GeneratedClass;
 import org.testin.java.codegen.GeneratedMethod;
-import org.testin.java.codegen.method.update.UpdateTestBase;
+import org.testin.java.codegen.method.update.BaseTestMethodChange;
 import org.testin.java.codegen.method.update.UpdateTestMethodOrder;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
@@ -41,7 +41,7 @@ import java.util.Optional;
 import java.util.Set;
 
 // UC-CODEGEN-002, Rule-CODEGEN-077
-public class MoveTestMethod extends UpdateTestBase implements GenAction<MovedTestCase> {
+public class MoveTestMethod extends BaseTestMethodChange implements GenAction<MovedTestCase> {
 
     // UC-CODEGEN-002, Rule-CODEGEN-077
     @Override

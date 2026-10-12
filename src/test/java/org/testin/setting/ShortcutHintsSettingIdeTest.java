@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.model.StatusBarItem;
 import org.testin.services.Services;
 import org.testin.testcase.TestCaseDialogKey;
-import org.testin.ui.framework.StatusBarBase;
+import org.testin.ui.framework.ShortcutStrip;
 import org.testin.ui.framework.StatusBarShortcut;
 
 public class ShortcutHintsSettingIdeTest extends BasePlatformTestCase {
@@ -43,7 +43,7 @@ public class ShortcutHintsSettingIdeTest extends BasePlatformTestCase {
     }
 
     private static boolean shows(final StatusBarItem @NotNull [] keys) {
-        return new StatusBarBase(keys).getPanel().isVisible();
+        return new ShortcutStrip(keys).getPanel().isVisible();
     }
 
     // Rule-SETTING-028
@@ -63,12 +63,12 @@ public class ShortcutHintsSettingIdeTest extends BasePlatformTestCase {
     // Rule-SETTING-030
     public void testTheSettingCanOnlyTakeAStripAway() {
         withHints(true, () -> {
-            final @NotNull StatusBarBase strip = new StatusBarBase(TEST_CASE_DIALOG);
+            final @NotNull ShortcutStrip strip = new ShortcutStrip(TEST_CASE_DIALOG);
             strip.setShown(false);
             assertFalse("the setting put back a strip its dialog left out", strip.getPanel().isVisible());
         });
         withHints(false, () -> {
-            final @NotNull StatusBarBase strip = new StatusBarBase(TEST_CASE_DIALOG);
+            final @NotNull ShortcutStrip strip = new ShortcutStrip(TEST_CASE_DIALOG);
             strip.setShown(true);
             assertFalse("a dialog showed its strip with the hints turned off", strip.getPanel().isVisible());
         });

@@ -49,11 +49,11 @@ public class FieldPairIdeTest extends BasePlatformTestCase {
     }
 
     private @NotNull MultiLineField box() {
-        return ComponentDialogBase.multiLineField(getProject(), "", "", 3, MultiLineField.NO_LIMIT, JsonLanguage.INSTANCE, false).getComponent();
+        return DialogPart.multiLineField(getProject(), "", "", 3, MultiLineField.NO_LIMIT, JsonLanguage.INSTANCE, false).getComponent();
     }
 
     private @NotNull FieldPair pair(final @NotNull JBLabel first, final @NotNull JBLabel second) {
-        return ComponentDialogBase.fieldPair(getProject(), REMEMBERED_AS, first, box(), second, box()).getComponent();
+        return DialogPart.fieldPair(getProject(), REMEMBERED_AS, first, box(), second, box()).getComponent();
     }
 
     private @NotNull FieldPair pair() {
@@ -107,7 +107,7 @@ public class FieldPairIdeTest extends BasePlatformTestCase {
     // Rule-INTERNAL-139
     public void testEachSectionFormatsItsBoxInItsLanguageChangingOnlyWhitespace() {
         final @NotNull MultiLineField request = box();
-        final @NotNull FieldPair pair = ComponentDialogBase.fieldPair(getProject(), REMEMBERED_AS, new JBLabel("Request"), request, new JBLabel("Response"), box()).getComponent();
+        final @NotNull FieldPair pair = DialogPart.fieldPair(getProject(), REMEMBERED_AS, new JBLabel("Request"), request, new JBLabel("Response"), box()).getComponent();
         final @NotNull String pasted = IntStream.range(0, 2000).mapToObj(i -> "\"key" + i + "\":[{\"id\":" + i + "}]").collect(Collectors.joining(",", "{", "}"));
         final @NotNull EditorTextField drawn = (EditorTextField) request.getFocusComponent();
         drawn.addNotify();

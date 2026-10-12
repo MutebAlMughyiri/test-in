@@ -21,7 +21,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.markers.Marker;
 import org.testin.ui.framework.AbstractFrameworkDialog;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.ui.framework.TextInput;
 import org.testin.util.Bundle;
@@ -42,7 +42,7 @@ final class OrderDialog extends AbstractFrameworkDialog {
 
         title = Bundle.message("dialog.order.title");
 
-        final @NotNull ComponentDialogBase<TextInput> built = ComponentDialogBase.textField()
+        final @NotNull DialogPart<TextInput> built = DialogPart.textField()
                 .icon(AllIcons.Actions.Edit)
                 .placeholder(Bundle.message("dialog.order.placeholder"))
                 .value(shown(current))

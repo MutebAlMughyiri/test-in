@@ -65,7 +65,7 @@ public abstract class AbstractFrameworkDialog implements DialogHost {
     private final @NotNull DialogsOnScreen openDialogs;
     private final @NotNull Maximized maximized = new Maximized();
     protected @NotNull String title = "";
-    protected @NotNull List<? extends ComponentDialogBase<?>> components = List.of();
+    protected @NotNull List<? extends DialogPart<?>> components = List.of();
     protected @NotNull List<StatusBarShortcut> shortcuts = List.of();
     protected @NotNull DialogSize size = DialogSize.CONTENT;
     // UC-INTERNAL-007, Rule-INTERNAL-076
@@ -76,7 +76,7 @@ public abstract class AbstractFrameworkDialog implements DialogHost {
     private @NotNull Optional<JBPopup> popup = Optional.empty();
     private @NotNull Optional<JComponent> content = Optional.empty();
 
-    private @NotNull Optional<StatusBarBase> strip = Optional.empty();
+    private @NotNull Optional<ShortcutStrip> strip = Optional.empty();
     private @NotNull Optional<StatusBarItem[]> keysShown = Optional.empty();
 
     protected AbstractFrameworkDialog(final @NotNull Project p) {
@@ -305,7 +305,7 @@ public abstract class AbstractFrameworkDialog implements DialogHost {
     private @NotNull List<DialogComponent> builtComponents() {
         if (built.isEmpty()) {
             final @NotNull List<DialogComponent> dialogComponents = new ArrayList<>();
-            for (final ComponentDialogBase<?> holder : dto().components()) {
+            for (final DialogPart<?> holder : dto().components()) {
                 dialogComponents.add(holder.getComponent());
             }
             if (dialogComponents.isEmpty()) {
@@ -352,7 +352,7 @@ public abstract class AbstractFrameworkDialog implements DialogHost {
             stack.add(verticalStack(all.subList(fillIndex + 1, all.size())), BorderLayout.SOUTH);
         }
 
-        final @NotNull StatusBarBase statusBar = new StatusBarBase(keysShown.orElseGet(() -> dto().shortcuts().toArray(StatusBarItem[]::new)));
+        final @NotNull ShortcutStrip statusBar = new ShortcutStrip(keysShown.orElseGet(() -> dto().shortcuts().toArray(StatusBarItem[]::new)));
         strip = Optional.of(statusBar);
 
         final @NotNull JBPanel<?> contentPanel = DialogStyle.styleContent(new JBPanel<>(new BorderLayout()));

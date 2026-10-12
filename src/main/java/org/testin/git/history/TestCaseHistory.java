@@ -29,7 +29,7 @@ import org.testin.model.Config;
 import org.testin.model.NodeType;
 import org.testin.model.FileKind;
 import org.testin.model.TestCaseDto;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
 import org.testin.util.Bundle;
@@ -57,7 +57,7 @@ public final class TestCaseHistory {
     public static @NotNull Optional<TestCaseFile> deletedFile(final @NotNull Project p, final @NotNull UUID testCaseId) {
         final @NotNull GitRepositoryService git = new GitRepositoryService(p);
         return Services.getInstance(p, BoundTestProject.class).get()
-                .map(Node::getPath)
+                .map(AbstractNode::getPath)
                 .filter(testProject -> !git.isNotRepository(testProject))
                 .flatMap(testProject -> {
                     try {

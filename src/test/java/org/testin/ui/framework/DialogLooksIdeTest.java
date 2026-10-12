@@ -167,18 +167,18 @@ public class DialogLooksIdeTest extends BasePlatformTestCase {
     private static @NotNull JComponent everyField() {
         final @NotNull JPanel stack = new JPanel();
         Stream.of(
-                        ComponentDialogBase.textField().caption("Name").placeholder("set name..").build(),
-                        ComponentDialogBase.textArea().placeholder("paste the failure..").build(),
-                        ComponentDialogBase.choice("Branch", List.of("main", "release"), "main"),
-                        ComponentDialogBase.<String>radios("Format").option("PDF", "pdf").option("HTML", "html").select("pdf").build(),
-                        ComponentDialogBase.<Integer>textFieldWithSelections().placeholder("set kind..").selection(DialogStyle.NO_ICON, "Test Set", "Holds test cases", 1).build(),
-                        ComponentDialogBase.of(new SelectionTree("Test cases", new CheckedTreeNode("all"), TestRunTreeCellRenderer.create(), Optional.empty())),
-                        ComponentDialogBase.details().row("Where", "NAFATH › Login").build(),
-                        ComponentDialogBase.confirmCard("Remove Login?", List.of("NAFATH", "Test Cases"), List.of()),
-                        ComponentDialogBase.button("Generate"))
+                        DialogPart.textField().caption("Name").placeholder("set name..").build(),
+                        DialogPart.textArea().placeholder("paste the failure..").build(),
+                        DialogPart.choice("Branch", List.of("main", "release"), "main"),
+                        DialogPart.<String>radios("Format").option("PDF", "pdf").option("HTML", "html").select("pdf").build(),
+                        DialogPart.<Integer>textFieldWithSelections().placeholder("set kind..").selection(DialogStyle.NO_ICON, "Test Set", "Holds test cases", 1).build(),
+                        DialogPart.of(new SelectionTree("Test cases", new CheckedTreeNode("all"), TestRunTreeCellRenderer.create(), Optional.empty())),
+                        DialogPart.details().row("Where", "NAFATH › Login").build(),
+                        DialogPart.confirmCard("Remove Login?", List.of("NAFATH", "Test Cases"), List.of()),
+                        DialogPart.button("Generate"))
                 .map(built -> built.getComponent().getPanel())
                 .forEach(stack::add);
-        stack.add(new StatusBarBase(new StatusBarItem[]{StatusBarShortcut.cancel(() -> {
+        stack.add(new ShortcutStrip(new StatusBarItem[]{StatusBarShortcut.cancel(() -> {
         })}).getPanel());
         return stack;
     }
@@ -210,18 +210,18 @@ public class DialogLooksIdeTest extends BasePlatformTestCase {
     public void testEveryIconAFrameworkSurfaceDrawsIsGrayEvenWhenTheIconItIsHandedIsColored() {
         assertFalse("the icon this test hands the framework is not colored, so it proves nothing", isGray(GREEN));
 
-        final @NotNull Component field = ComponentDialogBase.textField().icon(GREEN).placeholder("set name..").build().getComponent().getFocusComponent();
+        final @NotNull Component field = DialogPart.textField().icon(GREEN).placeholder("set name..").build().getComponent().getFocusComponent();
         assertFalse("the field drew no icon", extensionIconsOf(field).isEmpty());
         assertTrue("a field drew its icon in color", extensionIconsOf(field).stream().allMatch(DialogLooksIdeTest::isGray));
 
-        final @NotNull TextFieldWithSelections<Integer> kinds = ComponentDialogBase.<Integer>textFieldWithSelections().placeholder("set kind..").selection(GREEN, "Test Set", "Holds test cases", 1).build().getComponent();
+        final @NotNull TextFieldWithSelections<Integer> kinds = DialogPart.<Integer>textFieldWithSelections().placeholder("set kind..").selection(GREEN, "Test Set", "Holds test cases", 1).build().getComponent();
         final @NotNull SimpleColoredComponent row = rowAt(drawn(kinds.getPanel(), JBList.class).getFirst(), 0);
         assertTrue("a row of a list drew its icon in color", isGray(Objects.requireNonNull(row.getIcon())));
     }
 
     // UC-INTERNAL-007, Rule-INTERNAL-080
     public void testAButtonTheDialogWillNotActOnIsGrayAndHoveringItSaysWhyWhileTheLineBesideItSaysWhatItWouldActOn() {
-        final @NotNull DialogButton button = ComponentDialogBase.button("Generate").getComponent();
+        final @NotNull DialogButton button = DialogPart.button("Generate").getComponent();
         final @NotNull JButton drawnButton = (JButton) button.getFocusComponent();
         final @NotNull JLabel line = drawn(button.getPanel(), JLabel.class).getFirst();
 
@@ -243,7 +243,7 @@ public class DialogLooksIdeTest extends BasePlatformTestCase {
 
     // UC-INTERNAL-007, Rule-INTERNAL-087
     public void testACaptionSitsAboveItsFieldInCapitalsInTheMutedGrayStartingWhereTheFieldsFrameStarts() {
-        final @NotNull TextInput name = ComponentDialogBase.textField().caption("Name").placeholder("set name..").build().getComponent();
+        final @NotNull TextInput name = DialogPart.textField().caption("Name").placeholder("set name..").build().getComponent();
         final @NotNull JComponent panel = realized(name.getPanel());
         final @NotNull Component field = name.getFocusComponent();
         final @NotNull JLabel caption = captionOf(panel, field);
@@ -293,10 +293,10 @@ public class DialogLooksIdeTest extends BasePlatformTestCase {
 
     // UC-INTERNAL-007, Rule-INTERNAL-096
     public void testEveryTypingSurfaceIsInTheFrameAndSizeOfATextField() {
-        final @NotNull Component field = ComponentDialogBase.textField().placeholder("set name..").build().getComponent().getFocusComponent();
-        final @NotNull PlainTextArea area = ComponentDialogBase.textArea().placeholder("paste the failure..").build().getComponent();
+        final @NotNull Component field = DialogPart.textField().placeholder("set name..").build().getComponent().getFocusComponent();
+        final @NotNull PlainTextArea area = DialogPart.textArea().placeholder("paste the failure..").build().getComponent();
         final @NotNull JScrollPane well = drawn(area.getPanel(), JScrollPane.class).getFirst();
-        final @NotNull JComponent value = drawn(ComponentDialogBase.details().row("Description", "Log in with a valid user").build().getComponent().getPanel(), JLabel.class).stream()
+        final @NotNull JComponent value = drawn(DialogPart.details().row("Description", "Log in with a valid user").build().getComponent().getPanel(), JLabel.class).stream()
                 .filter(label -> label.getText().contains("Log in with a valid user")).findFirst().orElseThrow();
 
         final @NotNull Border frame = ((JComponent) field).getBorder();
@@ -356,7 +356,7 @@ public class DialogLooksIdeTest extends BasePlatformTestCase {
 
     // UC-INTERNAL-007, Rule-INTERNAL-106
     public void testAPickedRowIsARoundedBandInsideItsCardAndWhatARowSaysSitsAgainstItsName() {
-        final @NotNull TextFieldWithSelections<Integer> kinds = ComponentDialogBase.<Integer>textFieldWithSelections().placeholder("set kind..")
+        final @NotNull TextFieldWithSelections<Integer> kinds = DialogPart.<Integer>textFieldWithSelections().placeholder("set kind..")
                 .selection(DialogStyle.NO_ICON, "Test Set", "Holds test cases", 1)
                 .selection(DialogStyle.NO_ICON, "Test Set Package", "Groups test sets", 2).build().getComponent();
         final @NotNull JComponent card = kinds.getPanel();

@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.editor.open.TestinEditors;
 import org.testin.editor.open.UnifiedVirtualFile;
 import org.testin.indexer.TestRuns;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.services.Services;
 
 import java.nio.file.Files;
@@ -57,13 +57,13 @@ public abstract class AbstractOpenEditorsIdeTest extends FileEditorManagerTestCa
         }
     }
 
-    protected @NotNull List<VirtualFile> openOn(final @NotNull Node node) {
+    protected @NotNull List<VirtualFile> openOn(final @NotNull AbstractNode node) {
         return Arrays.stream(FileEditorManager.getInstance(getProject()).getOpenFiles())
                 .filter(open -> open instanceof UnifiedVirtualFile testin && testin.getDir().getPath().equals(node.getPath()))
                 .toList();
     }
 
-    protected void opened(final @NotNull Node node) {
+    protected void opened(final @NotNull AbstractNode node) {
         Services.getInstance(getProject(), TestinEditors.class).open(node);
         Await.until(node.getName() + " never opened in its editor", () -> openOn(node).size() == 1);
     }

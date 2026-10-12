@@ -49,7 +49,7 @@ import org.testin.testcase.TestSetEditorAttributes;
 import org.testin.testrun.RunItemStatusService;
 import org.testin.ui.Tooltip;
 import org.testin.ui.framework.Prose;
-import org.testin.ui.framework.StatusBarBase;
+import org.testin.ui.framework.ShortcutStrip;
 import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.util.Bundle;
 import org.testin.util.Display;
@@ -118,7 +118,7 @@ final class LightModeScreen {
     private final @NotNull JBPanel<?> buttons = new JBPanel<>(new GridLayout(1, 0, JBUI.scale(BUTTON_GAP), 0));
     private final @NotNull JBPanel<?> footer = new JBPanel<>(new BorderLayout());
     private final @NotNull JComponent runItemStatusRow = runItemStatusButtons();
-    private final @NotNull StatusBarBase statusBar = new StatusBarBase(new StatusBarItem[0]);
+    private final @NotNull ShortcutStrip statusBar = new ShortcutStrip(new StatusBarItem[0]);
     private final @NotNull ViewMenuBtn viewMenu = new ViewMenuBtn(this::applyView);
     private final @NotNull LightModeZoom zoom = LightModeZoom.remembered();
     private @NotNull Optional<UUID> shownTestCase = Optional.empty();

@@ -33,7 +33,7 @@ import org.testin.indexer.TestCases;
 import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
 import org.testin.model.TestCaseDto;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
@@ -90,7 +90,7 @@ record ImportWork(@NotNull Project p, @NotNull Notifier notifier, @NotNull Testi
         return name.isEmpty() ? Bundle.message("import.sheet.no.name") : name;
     }
 
-    void openImportDialog(final @NotNull Node node) {
+    void openImportDialog(final @NotNull AbstractNode node) {
         new ImportDialog(p, TestSetEditorAttributes.all(Can.IMPORT),
                 (file, format) -> format.importToFile(p, file),
                 selectedTestCasesBySheet -> executeImportWriteAction(node, selectedTestCasesBySheet))
@@ -98,7 +98,7 @@ record ImportWork(@NotNull Project p, @NotNull Notifier notifier, @NotNull Testi
     }
 
     // UC-SHARE-005, UC-SHARE-006
-    private void executeImportWriteAction(final @NotNull Node selectedNode, final @NotNull Map<String, List<TestCaseDto>> selectedTestCasesBySheet) {
+    private void executeImportWriteAction(final @NotNull AbstractNode selectedNode, final @NotNull Map<String, List<TestCaseDto>> selectedTestCasesBySheet) {
         final boolean generateCode = CodeOn.isOnOrHinted(p);
 
         final int total = selectedTestCasesBySheet.values().stream().mapToInt(List::size).sum();
@@ -108,7 +108,7 @@ record ImportWork(@NotNull Project p, @NotNull Notifier notifier, @NotNull Testi
     }
 
     // UC-SHARE-005, UC-SHARE-006
-    void importInBackground(final @NotNull Node selectedNode, final @NotNull Map<String, List<TestCaseDto>> selectedTestCasesBySheet, final boolean generateCode, final int total, final @NotNull ProgressIndicator indicator) {
+    void importInBackground(final @NotNull AbstractNode selectedNode, final @NotNull Map<String, List<TestCaseDto>> selectedTestCasesBySheet, final boolean generateCode, final int total, final @NotNull ProgressIndicator indicator) {
         final @NotNull Path targetPath = selectedNode.getPath();
 
         indicator.setIndeterminate(false);
@@ -189,7 +189,7 @@ record ImportWork(@NotNull Project p, @NotNull Notifier notifier, @NotNull Testi
     }
 
     // UC-SHARE-006, Rule-SHARE-031
-    private @NotNull Map<TestSetNode, List<TestCaseDto>> targetSets(final @NotNull Node selectedNode, final @NotNull Path targetPath, final @NotNull Map<String, List<TestCaseDto>> testCasesBySheet) {
+    private @NotNull Map<TestSetNode, List<TestCaseDto>> targetSets(final @NotNull AbstractNode selectedNode, final @NotNull Path targetPath, final @NotNull Map<String, List<TestCaseDto>> testCasesBySheet) {
         if (selectedNode instanceof TestSetNode ts) {
             final @NotNull List<TestCaseDto> everything = new ArrayList<>();
             testCasesBySheet.values().forEach(everything::addAll);

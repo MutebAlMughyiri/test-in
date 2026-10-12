@@ -17,15 +17,15 @@ package org.testin.testrun.form;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.testrun.TestRunConfiguration;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.RadioSelection;
 
 import java.util.Map;
 
-public record ChoiceSection(@NotNull TestRunConfiguration field, @NotNull ComponentDialogBase<RadioSelection<String>> component) implements TestRunSection {
+public record ChoiceSection(@NotNull TestRunConfiguration field, @NotNull DialogPart<RadioSelection<String>> component) implements TestRunSection {
     // UC-TREE-PANEL-022, Rule-TREE-PANEL-121
     public static @NotNull ChoiceSection of(final @NotNull TestRunConfiguration field, final @NotNull String answer, final @NotNull Runnable changed) {
-        final @NotNull ComponentDialogBase<RadioSelection<String>> radios = ComponentDialogBase.<String>radios(field.getDisplayName())
+        final @NotNull DialogPart<RadioSelection<String>> radios = DialogPart.<String>radios(field.getDisplayName())
                 .options(field.getOptions(), option -> option)
                 .select(answer)
                 .build();

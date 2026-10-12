@@ -39,7 +39,7 @@ import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.util.Arrays;
 
-public class StatusBarBase {
+public class ShortcutStrip {
     private static final @NotNull String INNER_SEPARATOR = " ";
     private static final @NotNull String OUTER_SEPARATOR = "       ";
     private final @NotNull JBPanel<?> statusBar;
@@ -52,7 +52,7 @@ public class StatusBarBase {
     private final @NotNull Border border = JBUI.Borders.emptyRight(Spacing.S);
 
     // UC-INTERNAL-007, Rule-INTERNAL-079
-    public StatusBarBase(final StatusBarItem @NotNull [] items) {
+    public ShortcutStrip(final StatusBarItem @NotNull [] items) {
         this.statusBar = new OneLine();
         this.statusBar.setBorder(JBUI.Borders.empty(Spacing.XS, Spacing.L));
         this.statusBar.setOpaque(true);

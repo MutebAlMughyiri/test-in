@@ -22,7 +22,7 @@ import com.intellij.openapi.ui.popup.LightweightWindowEvent;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCaseDto;
 import org.testin.ui.framework.AbstractFrameworkDialog;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.DialogSize;
 import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.util.Bundle;
@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public abstract class JsonArraySplitBulkSectionDialog extends AbstractFrameworkDialog {
+public abstract class AbstractJsonArraySplitBulkSectionDialog extends AbstractFrameworkDialog {
     private static final @NotNull ItemRecorder RECORDS_NOTHING = (_, _, _, _) -> {
     };
     private final @NotNull List<TestCaseDto> selectedItems;
@@ -43,7 +43,7 @@ public abstract class JsonArraySplitBulkSectionDialog extends AbstractFrameworkD
     private final @NotNull List<List<String>> activeValues = new ArrayList<>();
     private final @NotNull List<int[]> spanOwners = new ArrayList<>();
 
-    protected JsonArraySplitBulkSectionDialog(final @NotNull Project p, final @NotNull List<TestCaseDto> selectedItems, final @NotNull Consumer<List<TestCaseDto>> updatedItems) {
+    protected AbstractJsonArraySplitBulkSectionDialog(final @NotNull Project p, final @NotNull List<TestCaseDto> selectedItems, final @NotNull Consumer<List<TestCaseDto>> updatedItems) {
         super(p);
         this.selectedItems = selectedItems;
         this.updatedItems = updatedItems;
@@ -62,7 +62,7 @@ public abstract class JsonArraySplitBulkSectionDialog extends AbstractFrameworkD
         editors.setOriginalTextSource(this::originalEscapedAt);
         render();
 
-        components = List.of(ComponentDialogBase.of(editors));
+        components = List.of(DialogPart.of(editors));
 
         shortcuts = List.of(
                 StatusBarShortcut.save(this::submit),

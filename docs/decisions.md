@@ -43,10 +43,10 @@ reason: a decision nobody can find the history of gets made again every year.
 nodes from it, both editors read test cases out of it, the view panel shows one
 test case, the report writes a test run out. When each of them read the disk
 for itself, "does this node exist" was a `Files.exists` in one place, a cache
-lookup in another, and a stale `Node` in a third.
+lookup in another, and a stale `AbstractNode` in a third.
 
 **Decision.** `org.testin.indexer` is the only package that touches test data.
-Everything else holds `Node` and `TestCaseDto` objects the indexer
+Everything else holds `AbstractNode` and `TestCaseDto` objects the indexer
 served, and asks the indexer to create, move, rename, copy or delete. Inside the
 indexer, the VFS operation happens first and the cache is updated after it
 succeeds.

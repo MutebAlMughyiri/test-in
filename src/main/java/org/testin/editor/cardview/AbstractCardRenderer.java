@@ -19,7 +19,7 @@ package org.testin.editor.cardview;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.TestinEditor;
-import org.testin.editor.card.BaseCard;
+import org.testin.editor.card.AbstractCard;
 import org.testin.model.TestCaseDto;
 
 import javax.swing.JList;
@@ -31,12 +31,12 @@ public abstract class AbstractCardRenderer<U extends TestinEditor> implements Li
 
     // UC-EDITOR-PANEL-001, UC-EDITOR-PANEL-030
     @Override
-    public @NotNull BaseCard getListCellRendererComponent(final JList<? extends TestCaseDto> list, final TestCaseDto tc, final int index, final boolean isSelected, final boolean cellHasFocus) {
+    public @NotNull AbstractCard getListCellRendererComponent(final JList<? extends TestCaseDto> list, final TestCaseDto tc, final int index, final boolean isSelected, final boolean cellHasFocus) {
         final boolean isRowHovered = (index == editor.getHoveredIndex());
         final @NotNull String hover = isRowHovered ? editor.getHoveredIconAction() : "";
 
         return bindDataAndGetCard(list, tc, index, isSelected, isRowHovered, hover);
     }
 
-    protected abstract @NotNull BaseCard bindDataAndGetCard(final @NotNull JList<? extends TestCaseDto> list, final @NotNull TestCaseDto tc, final int row, final boolean isSelected, final boolean isRowHovered, final @NotNull String hover);
+    protected abstract @NotNull AbstractCard bindDataAndGetCard(final @NotNull JList<? extends TestCaseDto> list, final @NotNull TestCaseDto tc, final int row, final boolean isSelected, final boolean isRowHovered, final @NotNull String hover);
 }

@@ -20,7 +20,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.StandIn;
 import org.testin.creator.NodeCreators;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestCasesFolderNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
@@ -45,7 +45,7 @@ import static org.testng.Assert.assertTrue;
 
 public class TreeNodeKindsTest {
 
-    private static @NotNull List<Node> everyKind() {
+    private static @NotNull List<AbstractNode> everyKind() {
         return List.of(new TestProjectNode(), new TestCasesFolderNode(), new TestRunsFolderNode(),
                 new TestSetPackageNode(), new TestRunPackageNode(), new TestSetNode(), new TestRunNode());
     }
@@ -56,34 +56,34 @@ public class TreeNodeKindsTest {
         return testRun;
     }
 
-    private static @NotNull String name(final @NotNull Node node) {
+    private static @NotNull String name(final @NotNull AbstractNode node) {
         return node.getClass().getSimpleName();
     }
 
     // Rule-TREE-PANEL-002
     @Test
     public void theTwoContainersAreNeverCreatedAndComeWithTheTestProject() {
-        for (final Node node : everyKind()) {
+        for (final AbstractNode node : everyKind()) {
             assertFalse(node.childKinds().contains(NodeType.TCF), name(node) + " offers to create Test Cases");
             assertFalse(node.childKinds().contains(NodeType.TRF), name(node) + " offers to create Test Runs");
         }
 
         final @NotNull Project p = StandIn.of(Project.class);
-        final @NotNull Node parent = new TestProjectNode();
+        final @NotNull AbstractNode parent = new TestProjectNode();
         for (final NodeType container : List.of(NodeType.TCF, NodeType.TRF)) {
             assertTrue(NodeCreators.of(p, container).execute("Extra", parent, Path.of("root", "Extra")).isEmpty(),
                     container.getDescription() + " was created from the tree");
         }
 
         final @NotNull TestProjectNode testProject = new TestProjectNode();
-        assertEquals(testProject.fixedChildren().stream().map(Node::getType).toList(), List.of(NodeType.TCF, NodeType.TRF),
+        assertEquals(testProject.fixedChildren().stream().map(AbstractNode::getType).toList(), List.of(NodeType.TCF, NodeType.TRF),
                 "a test project does not arrive holding its two containers");
     }
 
     // Rule-TREE-PANEL-022
     @Test
     public void onlyATestSetAndATestRunOpenInAnEditor() {
-        for (final Node node : everyKind()) {
+        for (final AbstractNode node : everyKind()) {
             final boolean opens = node instanceof TestSetNode || node instanceof TestRunNode;
 
             assertEquals(node.isOpenableInEditor(), opens, name(node) + (opens ? " does not open" : " has nothing to open, and opens"));
@@ -107,7 +107,7 @@ public class TreeNodeKindsTest {
     // Rule-TREE-PANEL-025
     @Test
     public void nothingIsCreatedUnderATestProjectATestSetOrATestRun() {
-        for (final Node node : List.of(new TestProjectNode(), new TestSetNode(), new TestRunNode())) {
+        for (final AbstractNode node : List.of(new TestProjectNode(), new TestSetNode(), new TestRunNode())) {
             assertFalse(node.canCreateChildren(), name(node) + " offers to create a node under it");
             assertTrue(node.childKinds().isEmpty(), name(node) + " names kinds it would create");
         }
@@ -130,7 +130,7 @@ public class TreeNodeKindsTest {
     // Rule-TREE-PANEL-080
     @Test
     public void runTestsIsOfferedOnTheTestCaseSideAndOnATestRun() {
-        for (final Node node : everyKind()) {
+        for (final AbstractNode node : everyKind()) {
             final boolean runsTestCases = node instanceof TestCasesFolderNode || node instanceof TestSetPackageNode || node instanceof TestSetNode;
 
             assertEquals(node.isTestCaseContainer(), runsTestCases, name(node) + (runsTestCases ? " is not offered Run Tests" : " is offered Run Tests"));

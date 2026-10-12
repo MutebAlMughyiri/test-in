@@ -26,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.editor.TestinEditor;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.model.TestCaseDto;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +35,7 @@ import java.util.Optional;
 public final class TestinData {
     public static final @NotNull DataKey<SimpleTree> TREE = DataKey.create("testin.tree");
 
-    public static final @NotNull DataKey<List<Node>> SELECTED_NODES = DataKey.create("testin.selectedNodes");
+    public static final @NotNull DataKey<List<AbstractNode>> SELECTED_NODES = DataKey.create("testin.selectedNodes");
 
     public static final @NotNull DataKey<TestinEditor> EDITOR = DataKey.create("testin.editor");
 
@@ -65,7 +65,7 @@ public final class TestinData {
         return selected.size() == 1 ? Optional.of(selected.getFirst()) : Optional.empty();
     }
 
-    public static void from(final @NotNull DataSink sink, final @NotNull SimpleTree tree, final @NotNull List<Node> selected) {
+    public static void from(final @NotNull DataSink sink, final @NotNull SimpleTree tree, final @NotNull List<AbstractNode> selected) {
         sink.set(TREE, tree);
         sink.set(SELECTED_NODES, selected);
     }
@@ -74,18 +74,18 @@ public final class TestinData {
         return Optional.ofNullable(TREE.getData(e.getDataContext()));
     }
 
-    public static @NotNull List<Node> selectedNodes(final @NotNull AnActionEvent e) {
+    public static @NotNull List<AbstractNode> selectedNodes(final @NotNull AnActionEvent e) {
         return Optional.ofNullable(SELECTED_NODES.getData(e.getDataContext())).orElse(List.of());
     }
 
     public static <T> @NotNull Optional<T> singleSelected(final @NotNull AnActionEvent e, final @NotNull Class<T> type) {
-        final @NotNull List<Node> selected = selectedNodes(e);
+        final @NotNull List<AbstractNode> selected = selectedNodes(e);
 
         return selected.size() == 1 ? Optional.of(selected.getFirst()).filter(type::isInstance).map(type::cast) : Optional.empty();
     }
 
-    public static @NotNull Optional<Node> singleSelectedNode(final @NotNull AnActionEvent e) {
-        return singleSelected(e, Node.class);
+    public static @NotNull Optional<AbstractNode> singleSelectedNode(final @NotNull AnActionEvent e) {
+        return singleSelected(e, AbstractNode.class);
     }
 
     public static <T> @NotNull Optional<T> firstSelected(final @NotNull AnActionEvent e, final @NotNull Class<T> type) {

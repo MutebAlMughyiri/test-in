@@ -22,7 +22,7 @@ import org.testin.AbstractTempRootIdeTest;
 import org.testin.model.NodeFigures;
 import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.RunItems;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
@@ -56,7 +56,7 @@ public class NodeCountsIdeTest extends AbstractTempRootIdeTest {
         });
     }
 
-    private @NotNull TestSetPackageNode aTestSetPackage(final @NotNull Node parent, final @NotNull String name) {
+    private @NotNull TestSetPackageNode aTestSetPackage(final @NotNull AbstractNode parent, final @NotNull String name) {
         return WriteAction.computeAndWait(() -> {
             final @NotNull TestSetPackageNode tsp = mapper().getTestSetPackageNode(parent.getPath().resolve(name), parent);
             nodes().addTestSetPackage(tsp);
@@ -64,7 +64,7 @@ public class NodeCountsIdeTest extends AbstractTempRootIdeTest {
         });
     }
 
-    private @NotNull List<UUID> aTestSet(final @NotNull Node parent, final @NotNull String name, final int testCases, final @NotNull TestSetStatus status) {
+    private @NotNull List<UUID> aTestSet(final @NotNull AbstractNode parent, final @NotNull String name, final int testCases, final @NotNull TestSetStatus status) {
         final @NotNull TestSetNode ts = WriteAction.computeAndWait(() -> {
             final @NotNull TestSetNode created = mapper().getTestSetNode(parent.getPath().resolve(name), parent);
             created.getMarker().setStatus(status);
@@ -91,7 +91,7 @@ public class NodeCountsIdeTest extends AbstractTempRootIdeTest {
         });
     }
 
-    private @NotNull NodeFigures counted(final @NotNull Node node) {
+    private @NotNull NodeFigures counted(final @NotNull AbstractNode node) {
         return NodeCounter.childCounts(getProject(), node);
     }
 

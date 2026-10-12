@@ -26,7 +26,7 @@ import org.testin.bug.KnownBugIssueStates;
 import org.testin.codegen.ExecutionPosition;
 import org.testin.editor.AbstractTestinEditor;
 import org.testin.editor.PageWindow;
-import org.testin.editor.card.BaseCard;
+import org.testin.editor.card.AbstractCard;
 import org.testin.editor.grid.GridRows;
 import org.testin.editor.grid.TestRunGridEditListener;
 import org.testin.editor.cardview.RunItemCardRenderer;
@@ -263,7 +263,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
         final @NotNull Set<TestRunEditorAttributes> selected = getSelectedDetails();
         final @NotNull TestCaseDto shown = runItem(tc.getId()).map(RunItem::shownTestCase).orElse(tc);
 
-        return BaseCard.titleText(positionOf(tc),
+        return AbstractCard.titleText(positionOf(tc),
                 selected.contains(TestRunEditorAttributes.ORDER),
                 selected.contains(TestRunEditorAttributes.DESCRIPTION) ? TestSetEditorAttributes.DESCRIPTION.displayValue(shown) : "");
     }

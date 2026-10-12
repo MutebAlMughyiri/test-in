@@ -19,7 +19,7 @@ package org.testin.git.conflict;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.ui.framework.AbstractFrameworkDialog;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.DialogButton;
 import org.testin.ui.framework.DialogSize;
 import org.testin.ui.framework.RadioSelection;
@@ -51,12 +51,12 @@ public final class ResolveConflictDialog extends AbstractFrameworkDialog {
 
         title = Bundle.message("dialog.conflict.title", testCase);
 
-        final @NotNull List<ComponentDialogBase<?>> rows = new ArrayList<>();
+        final @NotNull List<DialogPart<?>> rows = new ArrayList<>();
 
-        if (!settled.isEmpty()) rows.add(ComponentDialogBase.message(MergeOutcome.settledSentence(settled, LINE)));
+        if (!settled.isEmpty()) rows.add(DialogPart.message(MergeOutcome.settledSentence(settled, LINE)));
 
         for (final Question question : questions) {
-            final @NotNull ComponentDialogBase<RadioSelection<Boolean>> row = ComponentDialogBase.<Boolean>radios(FieldName.of(question.field()))
+            final @NotNull DialogPart<RadioSelection<Boolean>> row = DialogPart.<Boolean>radios(FieldName.of(question.field()))
                     .option(Bundle.message("dialog.conflict.option.mine", shortened(question.mine())), Boolean.FALSE)
                     .option(Bundle.message("dialog.conflict.option.remote", shortened(question.theirs())), Boolean.TRUE)
                     .select(Boolean.FALSE)
@@ -66,7 +66,7 @@ public final class ResolveConflictDialog extends AbstractFrameworkDialog {
             answers.add(row.getComponent());
         }
 
-        final @NotNull ComponentDialogBase<DialogButton> keep = ComponentDialogBase.button(Bundle.message("dialog.conflict.button.keep"));
+        final @NotNull DialogPart<DialogButton> keep = DialogPart.button(Bundle.message("dialog.conflict.button.keep"));
         rows.add(keep);
 
         components = List.copyOf(rows);

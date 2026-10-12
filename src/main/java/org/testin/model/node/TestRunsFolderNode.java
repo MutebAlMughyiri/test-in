@@ -34,7 +34,7 @@ import java.util.List;
 @NoArgsConstructor
 @SuperBuilder
 @ToString(callSuper = true)
-public class TestRunsFolderNode extends Node {
+public class TestRunsFolderNode extends AbstractNode {
     @NonNull
     @Builder.Default
     private TestRunsFolderMarker marker = new TestRunsFolderMarker();

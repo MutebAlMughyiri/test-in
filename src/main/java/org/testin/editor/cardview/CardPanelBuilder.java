@@ -29,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.editor.AbstractEditorContextMenu;
 import org.testin.editor.TestinEditor;
 import org.testin.model.TestCaseDto;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.ui.FontSync;
 import org.testin.util.Bundle;
 
@@ -87,7 +87,7 @@ public final class CardPanelBuilder {
         return new CardView(model, list, scrollPane);
     }
 
-    public static void wireCommonListeners(final @NotNull Project p, final @NotNull TestinEditor editor, final @NotNull CardView view, final @NotNull Node dir, final @NotNull AbstractEditorContextMenu contextMenu, final @NotNull Supplier<Optional<JBTable>> gridTableSupplier, final @NotNull ToIntFunction<TestCaseDto> rowOnGrid, final @NotNull BooleanSupplier gridActiveSupplier) {
+    public static void wireCommonListeners(final @NotNull Project p, final @NotNull TestinEditor editor, final @NotNull CardView view, final @NotNull AbstractNode dir, final @NotNull AbstractEditorContextMenu contextMenu, final @NotNull Supplier<Optional<JBTable>> gridTableSupplier, final @NotNull ToIntFunction<TestCaseDto> rowOnGrid, final @NotNull BooleanSupplier gridActiveSupplier) {
         final @NotNull JBList<TestCaseDto> list = view.list();
 
         final @NotNull CardMouseListener mouseListener = new CardMouseListener(p, editor, list, view.model(), dir, contextMenu);

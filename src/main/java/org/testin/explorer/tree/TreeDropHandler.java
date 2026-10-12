@@ -25,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.testin.editor.open.TestinEditors;
 import org.testin.logger.TestinLogger;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.services.Services;
 import org.testin.util.FailureText;
 
@@ -45,7 +45,7 @@ public class TreeDropHandler implements FileDropHandler {
             final @NotNull TreeTransferPayload payload = (TreeTransferPayload) transferable.getTransferData(TreeTransferHandler.NODE_FLAVOR);
 
             ApplicationManager.getApplication().invokeLater(() -> {
-                for (final Node node : payload.nodes()) {
+                for (final AbstractNode node : payload.nodes()) {
                     if (!node.isOpenableInEditor()) continue;
 
                     TestinLogger.info("dragged " + node.getType().getMarkerKind() + ": " + node.getName());

@@ -99,7 +99,7 @@ distinction, which is why the triple folded to two rather than to one.
 `statusbar` left the table on the same day, and it was never the surface this
 picture drew. Nothing in Testin adds a widget to the IDE's status bar; what the
 package held was the shortcut-hint strip along the bottom of a dialog, plus the
-two interfaces a row on one implements. The strip is `ui/framework/StatusBarBase`
+two interfaces a row on one implements. The strip is `ui/framework/ShortcutStrip`
 now, beside `StatusBarShortcut`, which is what fills it; the interfaces are in
 `model`, beside the four enums that implement them (#111).
 
@@ -214,7 +214,7 @@ Muteb on 5 October 2026 (#394).
 
 | Package        | Why it stays whole                                                                                                                                  |
 |----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
-| `ui.framework` | One framework with one register. `ComponentDialogBase` refers to 30 of its classes, and a split would make nine of its internals public.            |
+| `ui.framework` | One framework with one register. `DialogPart` refers to 30 of its classes, and a split would make nine of its internals public.                     |
 | `indexer`      | Rule 1: the indexer is the only owner of file access. Its file layer is package-private so nothing else can reach it; a split would make 15 public. |
 
 ---
@@ -245,7 +245,7 @@ one cache and one `IndexChanged` announcement per change.
   `Files.exists`.
 - Need to create, move, rename, copy or delete? Call the indexer. It performs the
   VFS operation and updates the cache, in that order.
-- UI code holds `Node` and `TestCaseDto` objects the indexer served, and
+- UI code holds `AbstractNode` and `TestCaseDto` objects the indexer served, and
   never touches disk.
 
 Test runs in particular are saved and read only through the indexer —

@@ -18,7 +18,7 @@ package org.testin.indexer;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.markers.Marker;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestCasesFolderNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
@@ -60,7 +60,7 @@ public class RetiredNodesTest {
         return dto;
     }
 
-    private static <T extends Node> T createdAt(final T node, final int daysAgo) {
+    private static <T extends AbstractNode> T createdAt(final T node, final int daysAgo) {
         node.getMarker().setCreatedAt(ZonedDateTime.now(ZoneId.systemDefault()).minusDays(daysAgo));
         return node;
     }
@@ -80,7 +80,7 @@ public class RetiredNodesTest {
 
     @Test
     public void nodesWithoutAStatusAreNeverRetired() {
-        for (final Node fixed : List.of(new TestProjectNode(), new TestCasesFolderNode(),
+        for (final AbstractNode fixed : List.of(new TestProjectNode(), new TestCasesFolderNode(),
                 new TestRunsFolderNode(), new TestRunNode())) {
             assertFalse(fixed.isRetired(), fixed.getClass().getSimpleName());
         }
@@ -92,17 +92,17 @@ public class RetiredNodesTest {
         final TestCasesFolderNode parent = new TestCasesFolderNode();
         parent.setPath(PARENT);
 
-        final List<Node> children = List.of(
+        final List<AbstractNode> children = List.of(
                 testSetPackage("old", PackageStatus.ARCHIVED),
                 testSet("zeta", TestSetStatus.ACTIVE),
                 testSet("alpha", TestSetStatus.DEPRECATED),
                 testSetPackage("beta", PackageStatus.ACTIVE));
         children.forEach(child -> child.setParent(parent));
 
-        final List<Node> ordered = new NodeChildrenIndex().get(PARENT,
+        final List<AbstractNode> ordered = new NodeChildrenIndex().get(PARENT,
                 () -> Stream.concat(Stream.of(parent), children.stream()).toList());
 
-        assertEquals(ordered.stream().map(Node::getName).toList(), List.of("beta", "zeta", "alpha", "old"));
+        assertEquals(ordered.stream().map(AbstractNode::getName).toList(), List.of("beta", "zeta", "alpha", "old"));
     }
 
     // Rule-TREE-PANEL-010, Rule-TREE-PANEL-055
@@ -119,13 +119,13 @@ public class RetiredNodesTest {
         first.getMarker().setOrder(1);
         second.getMarker().setOrder(2);
 
-        final List<Node> children = List.of(third, fourth, first, second);
+        final List<AbstractNode> children = List.of(third, fourth, first, second);
         children.forEach(child -> child.setParent(parent));
 
-        final List<Node> ordered = new NodeChildrenIndex().get(PARENT,
+        final List<AbstractNode> ordered = new NodeChildrenIndex().get(PARENT,
                 () -> Stream.concat(Stream.of(parent), children.stream()).toList());
 
-        assertEquals(ordered.stream().map(Node::getName).toList(),
+        assertEquals(ordered.stream().map(AbstractNode::getName).toList(),
                 List.of("zzz-numbered-one", "yyy-numbered-two", "aaa-oldest", "bbb-newest"),
                 "numbers first, in order; then the unnumbered ones oldest first, whatever they are called");
     }
@@ -142,13 +142,13 @@ public class RetiredNodesTest {
         older.getMarker().setOrder(2);
         newer.getMarker().setOrder(2);
 
-        final List<Node> children = List.of(newer, older);
+        final List<AbstractNode> children = List.of(newer, older);
         children.forEach(child -> child.setParent(parent));
 
-        final List<Node> ordered = new NodeChildrenIndex().get(PARENT,
+        final List<AbstractNode> ordered = new NodeChildrenIndex().get(PARENT,
                 () -> Stream.concat(Stream.of(parent), children.stream()).toList());
 
-        assertEquals(ordered.stream().map(Node::getName).toList(), List.of("zzz-older", "aaa-newer"));
+        assertEquals(ordered.stream().map(AbstractNode::getName).toList(), List.of("zzz-older", "aaa-newer"));
     }
 
     // Rule-TREE-PANEL-057
@@ -162,25 +162,25 @@ public class RetiredNodesTest {
 
         final TestSetNode live = testSet("active", TestSetStatus.ACTIVE);
 
-        final List<Node> children = List.of(retired, live);
+        final List<AbstractNode> children = List.of(retired, live);
         children.forEach(child -> child.setParent(parent));
 
-        final List<Node> ordered = new NodeChildrenIndex().get(PARENT,
+        final List<AbstractNode> ordered = new NodeChildrenIndex().get(PARENT,
                 () -> Stream.concat(Stream.of(parent), children.stream()).toList());
 
-        assertEquals(ordered.stream().map(Node::getName).toList(), List.of("active", "deprecated"));
+        assertEquals(ordered.stream().map(AbstractNode::getName).toList(), List.of("active", "deprecated"));
     }
 
     // Rule-TREE-PANEL-058
     @Test
     public void everythingATesterFilesCanBeOrdered() {
-        for (final Node node : List.of(testSet("a", TestSetStatus.ACTIVE),
+        for (final AbstractNode node : List.of(testSet("a", TestSetStatus.ACTIVE),
                 testSetPackage("p", PackageStatus.ACTIVE), new TestRunNode(),
                 new TestRunPackageNode())) {
             assertTrue(node.isOrderable(), node.getClass().getSimpleName());
         }
 
-        for (final Node fixed : List.of(new TestProjectNode(), new TestCasesFolderNode(),
+        for (final AbstractNode fixed : List.of(new TestProjectNode(), new TestCasesFolderNode(),
                 new TestRunsFolderNode())) {
             assertFalse(fixed.isOrderable(), fixed.getClass().getSimpleName());
         }

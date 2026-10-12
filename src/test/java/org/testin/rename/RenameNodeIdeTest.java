@@ -22,7 +22,7 @@ import org.testin.AbstractCodegenIdeTest;
 import org.testin.Await;
 import org.testin.TreeGesture;
 import org.testin.indexer.Nodes;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
 import org.testin.ui.framework.ShownDialog;
@@ -88,7 +88,7 @@ public class RenameNodeIdeTest extends AbstractCodegenIdeTest {
         return Services.getInstance(getProject(), UndoHistories.class);
     }
 
-    private void renamedToSignIn(final @NotNull Node node) {
+    private void renamedToSignIn(final @NotNull AbstractNode node) {
         TreeGesture.pressed(getProject(), new RenameAction(), List.of(node));
         ShownDialog.typed(getProject(), RenameDialog.class, "Sign in");
         ShownDialog.press(getProject(), RenameDialog.class, Shortcuts.Enter);

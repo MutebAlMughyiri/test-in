@@ -23,13 +23,13 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.event.Moved;
 import org.testin.codegen.event.Renamed;
 import org.testin.model.NodeType;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JavaCode {
     // UC-CODEGEN-004, Rule-CODEGEN-023
-    private final @NotNull GenAction<Node> created;
+    private final @NotNull GenAction<AbstractNode> created;
 
     // UC-CODEGEN-015, UC-CODEGEN-017, Rule-CODEGEN-051
     private final @NotNull GenAction<Renamed> renamed;
@@ -38,7 +38,7 @@ public final class JavaCode {
     private final @NotNull GenAction<Moved> moved;
 
     // UC-CODEGEN-018, Rule-CODEGEN-096
-    private final @NotNull GenAction<Node> removed;
+    private final @NotNull GenAction<AbstractNode> removed;
 
     public static @NotNull JavaCode of(final @NotNull NodeType type) {
         final @NotNull String nodeType = type.getDescription();

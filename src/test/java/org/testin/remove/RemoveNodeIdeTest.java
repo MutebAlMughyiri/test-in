@@ -21,7 +21,7 @@ import org.testin.AbstractCodegenIdeTest;
 import org.testin.Await;
 import org.testin.TreeGesture;
 import org.testin.indexer.Nodes;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
 import org.testin.services.Services;
@@ -59,7 +59,7 @@ public class RemoveNodeIdeTest extends AbstractCodegenIdeTest {
         return Services.getInstance(getProject(), UndoHistories.class);
     }
 
-    private void removeAsked(final @NotNull List<Node> nodes) {
+    private void removeAsked(final @NotNull List<AbstractNode> nodes) {
         TreeGesture.pressed(getProject(), new RemoveAction(), nodes);
         assertTrue("Remove did not ask first", ShownDialog.isOpen(getProject(), ConfirmDialog.class));
     }

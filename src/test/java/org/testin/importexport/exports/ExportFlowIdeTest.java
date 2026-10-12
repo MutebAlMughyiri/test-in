@@ -30,7 +30,7 @@ import org.testin.importexport.FileFormat;
 import org.testin.indexer.ProjectIndexer;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCaseDto;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
@@ -168,7 +168,7 @@ public class ExportFlowIdeTest extends AbstractTempRootIdeTest {
         return tc;
     }
 
-    private @NotNull JComponent theExportDialogFor(final @NotNull Node node) {
+    private @NotNull JComponent theExportDialogFor(final @NotNull AbstractNode node) {
         new ExportWork(getProject()).exportFrom(node);
         return ShownDialog.waitedFor(getProject(), ExportDialog.class);
     }

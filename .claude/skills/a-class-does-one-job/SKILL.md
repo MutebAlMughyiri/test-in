@@ -92,7 +92,7 @@ In order. Stop at the first that fits.
 
 1. **A type that already owns this vocabulary.** `Done` owned the past-tense
    outcomes; `Refused` was the missing twin, not a new idea.
-2. **The model the value is about.** A node's behavior goes on `Node`,
+2. **The model the value is about.** A node's behavior goes on `AbstractNode`,
    an enum's presentation goes on the enum. This is already the house style.
 3. **A new type named for the job.** Cheap and honest. An enum of sentences is
    five lines plus its constants, and it makes the rule enforceable: a

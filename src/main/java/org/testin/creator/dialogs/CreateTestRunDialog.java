@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.model.NodeType;
 import org.testin.notifications.Refused;
 import org.testin.ui.framework.AbstractFrameworkDialog;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.ui.framework.TextFieldWithSelections;
 import org.testin.util.Bundle;
@@ -41,7 +41,7 @@ public final class CreateTestRunDialog extends AbstractFrameworkDialog {
 
         title = Bundle.message("dialog.create.test.run.title");
 
-        final @NotNull ComponentDialogBase<TextFieldWithSelections<NodeType>> built = ComponentDialogBase.<NodeType>textFieldWithSelections()
+        final @NotNull DialogPart<TextFieldWithSelections<NodeType>> built = DialogPart.<NodeType>textFieldWithSelections()
                 .icon(NodeType.TR.getIcon())
                 .placeholder(Bundle.message("dialog.create.test.run.placeholder"))
                 .selection(NodeType.TR.getIcon(), NodeType.TR.getDescription(), Bundle.message("dialog.create.test.run.hint.tr"), NodeType.TR)

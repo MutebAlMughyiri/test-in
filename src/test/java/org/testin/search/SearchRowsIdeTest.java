@@ -22,10 +22,10 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.NodesOnDisk;
 import org.testin.explorer.tree.TreePanelCellRenderer;
 import org.testin.indexer.AbstractReadTheRootIdeTest;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.ui.framework.Answer;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.SelectionList;
 import org.testin.ui.framework.TextFieldWithSelections;
 import org.testin.util.Bundle;
@@ -45,7 +45,7 @@ public class SearchRowsIdeTest extends AbstractReadTheRootIdeTest {
     private @NotNull TestProjectNode nafath = new TestProjectNode();
 
     private static @NotNull JBList<?> drawnAsTheSearchDrawsThem(final @NotNull List<SelectionList<Hit>> rows) {
-        final @NotNull ComponentDialogBase.TextFieldBuilder<Hit> builder = ComponentDialogBase.<Hit>textFieldWithSelections().placeholder("search..");
+        final @NotNull DialogPart.TextFieldBuilder<Hit> builder = DialogPart.<Hit>textFieldWithSelections().placeholder("search..");
         rows.forEach(row -> builder.selection(row.icon(), row.name(), row.hint(), row.value()));
         final @NotNull TextFieldWithSelections<Hit> search = builder.build().getComponent();
         return Drawn.components(search.getPanel()).stream().filter(JBList.class::isInstance).map(JBList.class::cast).findFirst().orElseThrow();
@@ -75,7 +75,7 @@ public class SearchRowsIdeTest extends AbstractReadTheRootIdeTest {
         nafath = new NodesOnDisk(getProject()).testProject(root.resolve("NAFATH"));
     }
 
-    private @NotNull Icon drawnInTheTree(final @NotNull Node node) {
+    private @NotNull Icon drawnInTheTree(final @NotNull AbstractNode node) {
         final @NotNull TreePanelCellRenderer tree = new TreePanelCellRenderer(Set.of());
         tree.customizeCellRenderer(new JTree(), node, false, false, true, 0, false);
         return tree.getIcon();
@@ -83,8 +83,8 @@ public class SearchRowsIdeTest extends AbstractReadTheRootIdeTest {
 
     // UC-INTERNAL-001, Rule-INTERNAL-072
     public void testWhatKindOfThingARowIsItsIconSaysAndItIsTheIconTheTreeDraws() {
-        final @NotNull Node login = new NodesOnDisk(getProject()).testSet(nafath.getTestCasesFolder(), "Login");
-        final @NotNull Node cycle = new NodesOnDisk(getProject()).testRun(nafath.getTestRunsFolder(), "Login cycle");
+        final @NotNull AbstractNode login = new NodesOnDisk(getProject()).testSet(nafath.getTestCasesFolder(), "Login");
+        final @NotNull AbstractNode cycle = new NodesOnDisk(getProject()).testRun(nafath.getTestRunsFolder(), "Login cycle");
 
         assertSame("a test set looks different in the search than in the tree", drawnInTheTree(login), Hit.of(login).icon());
         assertSame("a test run looks different in the search than in the tree", drawnInTheTree(cycle), Hit.of(cycle).icon());

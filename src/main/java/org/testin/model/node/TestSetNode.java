@@ -33,7 +33,7 @@ import org.testin.model.status.TestSetStatus;
 @NoArgsConstructor
 @SuperBuilder
 @ToString(callSuper = true)
-public class TestSetNode extends Node {
+public class TestSetNode extends AbstractNode {
     @NonNull
     @Builder.Default
     private TestSetMarker marker = new TestSetMarker();

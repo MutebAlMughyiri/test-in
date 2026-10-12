@@ -20,7 +20,7 @@ import com.intellij.openapi.fileEditor.FileEditorProvider;
 import com.intellij.testFramework.LightVirtualFile;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
 
@@ -28,10 +28,10 @@ import org.testin.model.node.TestSetNode;
 public class UnifiedVirtualFile extends LightVirtualFile {
     private static final @NotNull String PROTOCOL = "testin";
 
-    private final @NotNull Node dir;
+    private final @NotNull AbstractNode dir;
     private final @NotNull EditorKind kind;
 
-    public UnifiedVirtualFile(final @NotNull Node dir) {
+    public UnifiedVirtualFile(final @NotNull AbstractNode dir) {
         super(dir.getName());
         this.dir = dir;
         this.kind = EditorKind.of(dir);

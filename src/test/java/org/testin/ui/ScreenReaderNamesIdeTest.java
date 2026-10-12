@@ -26,7 +26,7 @@ import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
 import org.testin.StandIn;
 import org.testin.editor.TestinEditor;
-import org.testin.editor.card.BaseCard;
+import org.testin.editor.card.AbstractCard;
 import org.testin.editor.card.CardHoverAction;
 import org.testin.editor.card.HoverButton;
 import org.testin.editor.card.Offered;
@@ -46,7 +46,7 @@ import org.testin.testrun.TestRunEditorAttributes;
 import org.testin.testrun.form.TestRunTreeCellRenderer;
 import org.testin.ui.dialogs.DialogStyle;
 import org.testin.ui.framework.AbstractFrameworkDialog;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.SelectionTree;
 import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.view.Drawn;
@@ -120,7 +120,7 @@ public class ScreenReaderNamesIdeTest extends BasePlatformTestCase {
         view.model().add(tc);
         final @NotNull JBList<TestCaseDto> list = view.list();
         list.setCellRenderer((_, shown, index, _, _) -> {
-            card.updateData(index, Set.of(TestRunEditorAttributes.RUN_STATUS), runItem, BaseCard.titleText(index + 1, true, shown.getDescription()));
+            card.updateData(index, Set.of(TestRunEditorAttributes.RUN_STATUS), runItem, AbstractCard.titleText(index + 1, true, shown.getDescription()));
             return card;
         });
 
@@ -196,17 +196,17 @@ public class ScreenReaderNamesIdeTest extends BasePlatformTestCase {
             super(p);
             title = "Every field";
             components = List.of(
-                    ComponentDialogBase.textField().caption("Name").placeholder("set name..").build(),
-                    ComponentDialogBase.textField().placeholder("set path..").build(),
-                    ComponentDialogBase.multiLineField(p, "Steps", "write the steps..", ""),
-                    ComponentDialogBase.choice("Branch", List.of("main", "release"), "main"),
-                    ComponentDialogBase.<String>radios("Format").option("PDF", "pdf").option("HTML", "html").select("pdf").build(),
-                    ComponentDialogBase.<Integer>textFieldWithSelections().placeholder("set kind..").selection(DialogStyle.NO_ICON, "Test Set", "Holds test cases", 1).build(),
-                    ComponentDialogBase.of(new SelectionTree("Test cases", new CheckedTreeNode("all"), TestRunTreeCellRenderer.create(), Optional.empty())),
-                    ComponentDialogBase.table().column("Test project", 40).build(),
-                    ComponentDialogBase.textArea().placeholder("paste the failure..").build(),
-                    ComponentDialogBase.splitButton("Commit", "Commit and Push"),
-                    ComponentDialogBase.button("Generate"));
+                    DialogPart.textField().caption("Name").placeholder("set name..").build(),
+                    DialogPart.textField().placeholder("set path..").build(),
+                    DialogPart.multiLineField(p, "Steps", "write the steps..", ""),
+                    DialogPart.choice("Branch", List.of("main", "release"), "main"),
+                    DialogPart.<String>radios("Format").option("PDF", "pdf").option("HTML", "html").select("pdf").build(),
+                    DialogPart.<Integer>textFieldWithSelections().placeholder("set kind..").selection(DialogStyle.NO_ICON, "Test Set", "Holds test cases", 1).build(),
+                    DialogPart.of(new SelectionTree("Test cases", new CheckedTreeNode("all"), TestRunTreeCellRenderer.create(), Optional.empty())),
+                    DialogPart.table().column("Test project", 40).build(),
+                    DialogPart.textArea().placeholder("paste the failure..").build(),
+                    DialogPart.splitButton("Commit", "Commit and Push"),
+                    DialogPart.button("Generate"));
             shortcuts = List.of(StatusBarShortcut.cancel(this::closeCancel));
         }
 

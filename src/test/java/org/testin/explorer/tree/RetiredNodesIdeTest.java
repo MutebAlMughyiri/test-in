@@ -26,7 +26,7 @@ import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCaseDto;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunPackageNode;
 import org.testin.model.node.TestSetNode;
@@ -45,7 +45,7 @@ import java.util.Set;
 
 public class RetiredNodesIdeTest extends AbstractTempRootIdeTest {
 
-    private static @NotNull List<String> drawn(final @NotNull Node node) {
+    private static @NotNull List<String> drawn(final @NotNull AbstractNode node) {
         final @NotNull TreePanelCellRenderer renderer = new TreePanelCellRenderer(Set.of());
         renderer.getTreeCellRendererComponent(new JTree(), new DefaultMutableTreeNode(node), false, false, true, 0, false);
 
@@ -62,7 +62,7 @@ public class RetiredNodesIdeTest extends AbstractTempRootIdeTest {
         return Services.getInstance(getProject(), Nodes.class);
     }
 
-    private void marked(final @NotNull Node node, final @NotNull NodeStatus status) {
+    private void marked(final @NotNull AbstractNode node, final @NotNull NodeStatus status) {
         assertTrue("the status was not written", nodes().mark(node, status, "Sara"));
     }
 

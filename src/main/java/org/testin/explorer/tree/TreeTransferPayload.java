@@ -17,9 +17,9 @@
 package org.testin.explorer.tree;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 
 import java.util.List;
 
-public record TreeTransferPayload(@NotNull List<Node> nodes, int clipboardAction) {
+public record TreeTransferPayload(@NotNull List<AbstractNode> nodes, int clipboardAction) {
 }

@@ -129,7 +129,7 @@ silently has no effect costs more than the setting it was meant to hold.
   `.idea/inspectionProfiles/Testin.xml` for exactly this reason — what it argues
   for instead is a nullable field, which is the thing the codebase spent a sweep
   removing. Turning it back on means reversing that decision, not tidying up.
-- Node behavior is declared on the node: capability flags on `Node`
+- Node behavior is declared on the node: capability flags on `AbstractNode`
   (`isRenamable`, `isTransferable`, `acceptsTransferred`, ...) instead of
   instanceof chains at call sites. Enums carry their own presentation and
   actions (see `RunItemStatus`, `TestRunStatus`).

@@ -19,11 +19,11 @@ package org.testin.java.codegen.method;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.GenAction;
-import org.testin.java.codegen.method.update.UpdateTestBase;
+import org.testin.java.codegen.method.update.BaseTestMethodChange;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 
-public class RemoveTestMethod extends UpdateTestBase implements GenAction<TestCaseDto> {
+public class RemoveTestMethod extends BaseTestMethodChange implements GenAction<TestCaseDto> {
     // UC-CODEGEN-014, Rule-CODEGEN-049, Rule-CODEGEN-050
     @Override
     public void execute(final @NotNull Project p, final @NotNull TestCaseDto tc) {

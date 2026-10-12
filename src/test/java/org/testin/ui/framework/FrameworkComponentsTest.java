@@ -47,7 +47,7 @@ import static org.testng.Assert.assertTrue;
 public class FrameworkComponentsTest {
 
     private static @NotNull TextFieldWithSelections<Integer> twoSelections() {
-        return ComponentDialogBase.<Integer>textFieldWithSelections()
+        return DialogPart.<Integer>textFieldWithSelections()
                 .placeholder("set name..")
                 .selection(DialogStyle.NO_ICON, "One", "first row", 1)
                 .selection(DialogStyle.NO_ICON, "Two", "second row", 2)
@@ -113,7 +113,7 @@ public class FrameworkComponentsTest {
 
     @Test
     public void textInputOpensWithValueAndPlaceholder() {
-        final TextInput input = ComponentDialogBase.textField()
+        final TextInput input = DialogPart.textField()
                 .placeholder("set new name..")
                 .value("current name")
                 .build()
@@ -125,7 +125,7 @@ public class FrameworkComponentsTest {
 
     @Test
     public void emptyWarningKeepsThePlaceholderText() {
-        final TextInput input = ComponentDialogBase.textField().placeholder("set new name..").build().getComponent();
+        final TextInput input = DialogPart.textField().placeholder("set new name..").build().getComponent();
 
         input.showEmptyWarning();
 
@@ -134,9 +134,9 @@ public class FrameworkComponentsTest {
 
     @Test
     public void confirmCardSaysWherePlacesAreGivenAndNothingWhereTheyAreNot() {
-        final ConfirmCard asked = ComponentDialogBase.confirmCard("Save to testin.yml?", List.of(), List.of()).getComponent();
-        final ConfirmCard removing = ComponentDialogBase.confirmCard("Remove 'X'?", List.of("demo", "Test Cases"), List.of()).getComponent();
-        final ConfirmCard moving = ComponentDialogBase.confirmCard("Move 'X' into 'Y'?", List.of("demo", "Test Cases"), List.of("demo", "Test Cases", "Smoke")).getComponent();
+        final ConfirmCard asked = DialogPart.confirmCard("Save to testin.yml?", List.of(), List.of()).getComponent();
+        final ConfirmCard removing = DialogPart.confirmCard("Remove 'X'?", List.of("demo", "Test Cases"), List.of()).getComponent();
+        final ConfirmCard moving = DialogPart.confirmCard("Move 'X' into 'Y'?", List.of("demo", "Test Cases"), List.of("demo", "Test Cases", "Smoke")).getComponent();
 
         assertEquals(rowCount(asked), 1, "the question alone, with no empty captioned block under it");
         assertEquals(rowCount(removing), 2, "the question and where the node is");
@@ -145,7 +145,7 @@ public class FrameworkComponentsTest {
 
     @Test
     public void messageQuotesAngleBracketsInsteadOfDroppingThem() {
-        final DialogMessage message = ComponentDialogBase.message("Remove 'Login refuses <empty> password'?\nFor good").getComponent();
+        final DialogMessage message = DialogPart.message("Remove 'Login refuses <empty> password'?\nFor good").getComponent();
         final JLabel label = (JLabel) ((Container) message.getPanel().getComponent(0)).getComponent(0);
 
         assertTrue(label.getText().contains("Login refuses &lt;empty&gt; password"), label.getText());
@@ -164,7 +164,7 @@ public class FrameworkComponentsTest {
     // Rule-INTERNAL-107
     @Test
     public void radioSelectionStartsOnTheDeclaredDefault() {
-        final RadioSelection<String> radios = ComponentDialogBase.<String>radios("Severity")
+        final RadioSelection<String> radios = DialogPart.<String>radios("Severity")
                 .option("Major", "MAJOR")
                 .option("Minor", "MINOR")
                 .select("MINOR")
@@ -177,16 +177,16 @@ public class FrameworkComponentsTest {
     @Test
     public void radiosNeedOptionsAndAValueToOpenOn() {
         Assert.expectThrows(IllegalStateException.class, () ->
-                ComponentDialogBase.<String>radios("x").build());
+                DialogPart.<String>radios("x").build());
 
         Assert.expectThrows(IllegalStateException.class, () ->
-                ComponentDialogBase.<String>radios("x").option("A", "A").build());
+                DialogPart.<String>radios("x").option("A", "A").build());
     }
 
     // Rule-TREE-PANEL-121
     @Test
     public void radiosOpenUnansweredWhenTheStoredValueIsNotOffered() {
-        final RadioSelection<String> group = ComponentDialogBase.<String>radios("x")
+        final RadioSelection<String> group = DialogPart.<String>radios("x")
                 .option("A", "A")
                 .select("")
                 .build()
@@ -203,7 +203,7 @@ public class FrameworkComponentsTest {
 
     @Test
     public void textAreaKeepsValueAndClaimsTheSpace() {
-        final PlainTextArea area = ComponentDialogBase.textArea()
+        final PlainTextArea area = DialogPart.textArea()
                 .placeholder("paste error or exception or screenshot..")
                 .value("java.lang.RuntimeException")
                 .build()
@@ -217,11 +217,11 @@ public class FrameworkComponentsTest {
     @Test
     public void theScreenshotsRowHoldsThePicturesAndIsNotDrawnWithoutOne() {
         final byte[] screenshot = {1, 2, 3};
-        final Screenshots shown = ComponentDialogBase.screenshots(Bundle.message("dialog.failure.caption.screenshots"), List.of(screenshot)).getComponent();
+        final Screenshots shown = DialogPart.screenshots(Bundle.message("dialog.failure.caption.screenshots"), List.of(screenshot)).getComponent();
 
         assertEquals(shown.screenshots(), List.of(screenshot), "a picture comes back as it was given, even one that cannot be drawn");
         assertTrue(shown.getPanel().isVisible(), "a row holding a picture is drawn");
-        assertFalse(ComponentDialogBase.screenshots(Bundle.message("dialog.failure.caption.screenshots"), List.of()).getComponent().getPanel().isVisible(),
+        assertFalse(DialogPart.screenshots(Bundle.message("dialog.failure.caption.screenshots"), List.of()).getComponent().getPanel().isVisible(),
                 "a failure with no screenshot draws no Screenshots row at all, and no gap where one would be");
     }
 
@@ -240,7 +240,7 @@ public class FrameworkComponentsTest {
 
     @Test
     public void detailsSkipBlankRowsAndNeverWantFocus() {
-        final DialogDetails details = ComponentDialogBase.details()
+        final DialogDetails details = DialogPart.details()
                 .row("Description", "shown")
                 .row("Expected", "")
                 .row("Skipped", "   ")
@@ -253,7 +253,7 @@ public class FrameworkComponentsTest {
 
     @Test
     public void aButtonRowNeverTakesTheDialogSpace() {
-        final DialogButton button = ComponentDialogBase.button("Generate").getComponent();
+        final DialogButton button = DialogPart.button("Generate").getComponent();
 
         assertFalse(button.fillsSpace(), "a button row does not claim the space");
         assertFalse(button.canFillSpace(), "and must not be given it when nothing else claims it");
@@ -261,8 +261,8 @@ public class FrameworkComponentsTest {
 
     @Test
     public void everythingElseCanTakeTheSpaceWhenNothingClaimsIt() {
-        final TextInput input = ComponentDialogBase.textField().value("name").build().getComponent();
-        final PlainTextArea area = ComponentDialogBase.textArea().value("x").build().getComponent();
+        final TextInput input = DialogPart.textField().value("name").build().getComponent();
+        final PlainTextArea area = DialogPart.textArea().value("x").build().getComponent();
 
         assertTrue(input.canFillSpace(), "a field is a reasonable fallback filler");
         assertTrue(area.canFillSpace());
@@ -281,7 +281,7 @@ public class FrameworkComponentsTest {
     // Rule-INTERNAL-085
     @Test
     public void aChoiceBoxGivenANewTextFieldStillLeavesEnterToTheDialog() {
-        final ChoiceInput choice = ComponentDialogBase.choice("Branch", List.of("main", "release"), "main").getComponent();
+        final ChoiceInput choice = DialogPart.choice("Branch", List.of("main", "release"), "main").getComponent();
         final JComboBox<?> combo = (JComboBox<?>) choice.getFocusComponent();
 
         combo.setEditor(new BasicComboBoxEditor());

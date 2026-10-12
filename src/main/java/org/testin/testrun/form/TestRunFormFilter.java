@@ -26,7 +26,7 @@ import org.testin.filter.FilterSource;
 import org.testin.filter.TestCaseFilter;
 import org.testin.model.Modules;
 import org.testin.model.TestCaseDto;
-import org.testin.model.node.Node;
+import org.testin.model.node.AbstractNode;
 import org.testin.services.Services;
 import org.testin.services.TestCaseValues;
 import org.testin.ui.framework.SelectionTree;
@@ -111,7 +111,7 @@ public final class TestRunFormFilter implements FilterSource {
         for (int i = 0; i < node.getChildCount(); i++) {
             final @NotNull CheckedTreeNode child = (CheckedTreeNode) node.getChildAt(i);
 
-            if (child.getUserObject() instanceof TestCaseDto tc && node.getUserObject() instanceof Node testSet) {
+            if (child.getUserObject() instanceof TestCaseDto tc && node.getUserObject() instanceof AbstractNode testSet) {
                 offered.add(tc);
                 testSets.putIfAbsent(testSet.getPath(), testSet.nameUnder(testCasesRoot));
             } else {

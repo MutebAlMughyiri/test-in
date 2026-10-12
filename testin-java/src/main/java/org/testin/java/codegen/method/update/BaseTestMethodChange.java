@@ -50,7 +50,7 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public class UpdateTestBase {
+public class BaseTestMethodChange {
     private static boolean anotherMethodIsCalled(final @NotNull PsiMethod pm, final @NotNull String methodName) {
         final @NotNull String key = NameSanitizer.methodKey(methodName);
 

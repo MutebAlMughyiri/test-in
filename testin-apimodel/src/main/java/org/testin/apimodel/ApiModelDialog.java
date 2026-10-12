@@ -33,7 +33,7 @@ import org.testin.logger.TestinLogger;
 import org.testin.notifications.Done;
 import org.testin.notifications.Refused;
 import org.testin.ui.framework.AbstractFrameworkDialog;
-import org.testin.ui.framework.ComponentDialogBase;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.FieldPair;
 import org.testin.ui.framework.MultiLineField;
 import org.testin.ui.framework.StatusBarShortcut;
@@ -76,21 +76,21 @@ final class ApiModelDialog extends AbstractFrameworkDialog {
         title = Bundle.message("dialog.api.model.title");
         resizable = true;
 
-        nameInput = ComponentDialogBase.textField()
+        nameInput = DialogPart.textField()
                 .caption(Bundle.message("dialog.api.model.name.caption"))
                 .placeholder(Bundle.message("dialog.api.model.name.placeholder"))
                 .accepting("[A-Za-z][A-Za-z0-9]*")
                 .build()
                 .getComponent();
-        request = ComponentDialogBase.multiLineField(p, "", Bundle.message("dialog.api.model.request.placeholder"), EMPTY_LINES, MultiLineField.NO_LIMIT, Json.language(), false).getComponent();
-        response = ComponentDialogBase.multiLineField(p, "", Bundle.message("dialog.api.model.response.placeholder"), EMPTY_LINES, MultiLineField.NO_LIMIT, Json.language(), false).getComponent();
-        pair = ComponentDialogBase.fieldPair(p, REMEMBERED_LAYOUT, requestTitle, request, responseTitle, response).getComponent();
+        request = DialogPart.multiLineField(p, "", Bundle.message("dialog.api.model.request.placeholder"), EMPTY_LINES, MultiLineField.NO_LIMIT, Json.language(), false).getComponent();
+        response = DialogPart.multiLineField(p, "", Bundle.message("dialog.api.model.response.placeholder"), EMPTY_LINES, MultiLineField.NO_LIMIT, Json.language(), false).getComponent();
+        pair = DialogPart.fieldPair(p, REMEMBERED_LAYOUT, requestTitle, request, responseTitle, response).getComponent();
 
         components = List.of(
-                ComponentDialogBase.details().row(Bundle.message("dialog.api.model.path"), packageName.isEmpty() ? Bundle.message("dialog.api.model.path.root") : packageName).build(),
-                ComponentDialogBase.of(nameInput),
-                ComponentDialogBase.of(pair),
-                ComponentDialogBase.button(Bundle.message("dialog.api.model.create")));
+                DialogPart.details().row(Bundle.message("dialog.api.model.path"), packageName.isEmpty() ? Bundle.message("dialog.api.model.path.root") : packageName).build(),
+                DialogPart.of(nameInput),
+                DialogPart.of(pair),
+                DialogPart.button(Bundle.message("dialog.api.model.create")));
 
         shortcuts = List.of(
                 StatusBarShortcut.build(Shortcuts.Enter, Bundle.message("dialog.api.model.create"), this::submit),
