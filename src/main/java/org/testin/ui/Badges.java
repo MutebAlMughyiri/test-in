@@ -25,6 +25,7 @@ import com.intellij.util.ui.JBUI;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.testin.model.status.TestCaseStatus;
 import org.testin.model.Priority;
 import org.testin.model.TestCaseDto;
 import org.testin.model.status.ExecutionStatusBadge;
@@ -74,6 +75,11 @@ public final class Badges {
         }
 
         return badges;
+    }
+
+    // Rule-EDITOR-PANEL-294
+    public static @NotNull Badge createTestCaseStatusBadge(final @NotNull TestCaseStatus status) {
+        return new Pill(status.getLabel(), FixedColors.ORANGE);
     }
 
     public static @NotNull Badge createExecutionStatusBadge(final @NotNull ExecutionStatusBadge executionStatus) {

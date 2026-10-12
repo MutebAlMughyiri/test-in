@@ -50,7 +50,7 @@ public class TestCaseCard extends BaseCard {
         super(p);
     }
 
-    // UC-EDITOR-PANEL-003, Rule-EDITOR-PANEL-021, Rule-EDITOR-PANEL-267
+    // UC-EDITOR-PANEL-003, Rule-EDITOR-PANEL-021, Rule-EDITOR-PANEL-267, Rule-EDITOR-PANEL-294
     public void updateData(final int index, final @NotNull TestCaseDto tc, final @NotNull Set<?> activeDetails, final @NotNull String title) {
         badges.clear();
         details.clear();
@@ -64,10 +64,13 @@ public class TestCaseCard extends BaseCard {
                 .filter(activeDetails::contains)
                 .forEach(attr -> attr.applyToUI(tc, badges, details));
 
+        if (tc.getStatus().isBadged()) badges.add(Badges.createTestCaseStatusBadge(tc.getStatus()));
+
         final @NotNull ExecutionStatus executionStatus = testNGExecution.statusOf(tc);
 
         if (executionStatus.hasBadge()) badges.add(Badges.createExecutionStatusBadge(executionStatus.getBadge()));
 
+        titleArea.setForeground(tc.getStatus().getDescriptionColor());
         updateUI(index, title, badges, details);
     }
 

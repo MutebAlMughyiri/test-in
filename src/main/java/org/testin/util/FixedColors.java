@@ -16,6 +16,7 @@
 
 package org.testin.util;
 
+import com.intellij.ui.ColorUtil;
 import com.intellij.ui.JBColor;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -34,4 +35,11 @@ public final class FixedColors {
     public static final @NotNull JBColor RED = new JBColor(Color.RED, Color.RED);
     public static final @NotNull JBColor GREEN = new JBColor(Color.GREEN, Color.GREEN);
     public static final @NotNull JBColor ORANGE = new JBColor(Color.ORANGE, Color.ORANGE);
+    public static final @NotNull JBColor YELLOW = new JBColor(Color.YELLOW, Color.YELLOW);
+
+    private static final @NotNull Color PALE_YELLOW = ColorUtil.mix(WHITE, YELLOW, 0.2);
+    private static final @NotNull Color DARK_YELLOW = ColorUtil.mix(YELLOW, BLACK, 0.4);
+
+    // Rule-EDITOR-PANEL-294
+    public static final @NotNull JBColor CREAM = new JBColor(DARK_YELLOW, PALE_YELLOW);
 }

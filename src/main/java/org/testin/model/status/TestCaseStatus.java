@@ -16,35 +16,52 @@
 
 package org.testin.model.status;
 
+import com.intellij.ui.SimpleTextAttributes;
+import com.intellij.util.ui.UIUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.util.Bundle;
+import org.testin.util.FixedColors;
+
+import java.awt.Color;
 
 @Getter
 @AllArgsConstructor
 public enum TestCaseStatus {
     REVIEWED(
             Bundle.message("status.test.case.reviewed"),
-            true
+            true,
+            FixedColors.CREAM,
+            false
     ),
 
     PENDING(
             Bundle.message("status.test.case.pending"),
-            true
+            true,
+            UIUtil.getLabelForeground(),
+            false
     ),
 
     DISABLED(
             Bundle.message("status.test.case.disabled"),
+            false,
+            SimpleTextAttributes.GRAYED_ATTRIBUTES.getFgColor(),
             false
     ),
 
     TO_BE_UPDATED(
             Bundle.message("status.test.case.to.be.updated"),
+            true,
+            UIUtil.getLabelForeground(),
             true
     );
 
     private final @NotNull String label;
     // Rule-CODEGEN-047, Rule-CODEGEN-048
     private final boolean enabled;
+    // Rule-EDITOR-PANEL-294
+    private final @NotNull Color descriptionColor;
+    // Rule-EDITOR-PANEL-294
+    private final boolean badged;
 }
