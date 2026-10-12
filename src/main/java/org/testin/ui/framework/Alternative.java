@@ -24,4 +24,9 @@ public record Alternative(@NotNull Shortcuts key, @NotNull String name, @NotNull
     public Alternative(final @NotNull String name, final @NotNull Runnable action) {
         this(Shortcuts.EMPTY, name, action);
     }
+
+    // Rule-INTERNAL-140
+    public boolean hasKey() {
+        return key != Shortcuts.EMPTY;
+    }
 }

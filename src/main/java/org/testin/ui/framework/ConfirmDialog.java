@@ -53,7 +53,7 @@ public final class ConfirmDialog extends AbstractFrameworkDialog {
         keys.add(StatusBarShortcut.build(Shortcuts.Enter, confirmName, this::submit));
 
         for (final Alternative alternative : closing)
-            if (alternative.key() != Shortcuts.EMPTY)
+            if (alternative.hasKey())
                 keys.add(StatusBarShortcut.build(alternative.key(), alternative.name(), alternative.action()));
 
         if (alternatives.stream().noneMatch(alternative -> alternative.key() == Shortcuts.Escape))
