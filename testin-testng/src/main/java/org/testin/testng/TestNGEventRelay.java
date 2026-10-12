@@ -14,43 +14,37 @@
  * limitations under the License.
  */
 
-package org.testin.runner;
+package org.testin.testng;
 
 import com.intellij.execution.testframework.sm.runner.SMTRunnerEventsAdapter;
-import com.intellij.execution.testframework.sm.runner.SMTRunnerEventsListener;
 import com.intellij.execution.testframework.sm.runner.SMTestProxy;
 import com.intellij.execution.testframework.stacktrace.DiffHyperlink;
 import com.intellij.openapi.project.Project;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.testrun.Failure;
 import org.testin.model.status.ExecutionStatus;
-import org.testin.services.ProjectLifetime;
+import org.testin.runner.TestCaseExecutionListener;
 import org.testin.util.Bundle;
 
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TestCaseExecutionTracker {
-    public static void initGlobalListener(final @NotNull Project p) {
-        p.getMessageBus().connect(ProjectLifetime.of(p)).subscribe(SMTRunnerEventsListener.TEST_STATUS, new SMTRunnerEventsAdapter() {
-            @Override
-            public void onTestStarted(final @NotNull SMTestProxy test) {
-                TestCaseExecutionListener.broadcast(p, test.getPresentableName(), ExecutionStatus.RUNNING, Duration.ZERO, Failure.NONE);
-            }
+// UC-CODEGEN-008, Rule-CODEGEN-075, Rule-CODEGEN-110
+@RequiredArgsConstructor
+public final class TestNGEventRelay extends SMTRunnerEventsAdapter {
+    private final @NotNull Project p;
 
-            @Override
-            public void onTestFinished(final @NotNull SMTestProxy test) {
-                finished(p, test);
-            }
-        });
+    // UC-CODEGEN-008
+    @Override
+    public void onTestStarted(final @NotNull SMTestProxy test) {
+        TestCaseExecutionListener.broadcast(p, test.getPresentableName(), ExecutionStatus.RUNNING, Duration.ZERO, Failure.NONE);
     }
 
     // UC-CODEGEN-008, Rule-CODEGEN-075, Rule-CODEGEN-110
-    static void finished(final @NotNull Project p, final @NotNull SMTestProxy test) {
+    @Override
+    public void onTestFinished(final @NotNull SMTestProxy test) {
         final @NotNull String testName = test.getPresentableName();
 
         if (test.isPassed()) {

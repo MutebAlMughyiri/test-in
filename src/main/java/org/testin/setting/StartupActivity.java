@@ -34,7 +34,6 @@ import org.testin.indexer.DeletedNodes;
 import org.testin.indexer.ProjectIndexer;
 import org.testin.logger.Logger;
 import org.testin.runner.TestCaseExecutionSubscriber;
-import org.testin.runner.TestCaseExecutionTracker;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
 import org.testin.util.Bundle;
@@ -57,8 +56,6 @@ public final class StartupActivity implements ProjectActivity {
         Logger.info("StartupActivity.execute()");
 
         Services.getInstance(DeletedNodes.class).sweep();
-
-        TestCaseExecutionTracker.initGlobalListener(p);
 
         CutState.initClipboardWatch(p);
 
