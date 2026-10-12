@@ -20,11 +20,11 @@ import com.google.errorprone.annotations.Immutable;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.AnimatedIcon;
+import com.intellij.ui.JBColor;
 import com.intellij.ui.scale.JBUIScale;
 import com.intellij.util.IconUtil;
 import com.intellij.util.ui.EmptyIcon;
 import com.intellij.util.ui.JBUI;
-import com.intellij.util.ui.UIUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -56,7 +56,7 @@ public final class Icons {
     public static final @NotNull Icon PLUGIN = IconLoader.getIcon("/icons/pluginIcon.svg", Icons.class);
 
     // Rule-EDITOR-PANEL-291, Rule-VIEW-PANEL-125
-    public static final @NotNull Icon EXECUTING = blinking(dot(UIUtil.getLabelForeground()));
+    public static final @NotNull Icon EXECUTING = blinking(dot(JBColor.GREEN));
 
     private static final float SCALE_FACTOR = 1.3f;
     private static final int DOT_SIZE = 10;
