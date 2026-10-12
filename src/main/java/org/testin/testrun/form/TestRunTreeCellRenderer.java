@@ -35,21 +35,21 @@ public final class TestRunTreeCellRenderer {
         return new CheckboxTree.CheckboxTreeCellRenderer() {
             @Override
             public void customizeRenderer(final @NotNull JTree tree, final @NotNull Object value, final boolean selected, final boolean expanded, final boolean leaf, final int row, final boolean hasFocus) {
-                if (value instanceof CheckedTreeNode node) {
-                    if (node.getUserObject() instanceof Node dir) {
-                        getTextRenderer().setIcon(dir.iconShownInTree());
-                        getTextRenderer().append(dir.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
-                    } else if (node.getUserObject() instanceof TestCaseDto tc) {
-                        getTextRenderer().setIcon(Icons.TEST_CASE_LETTER);
-                        getTextRenderer().append(tc.getDescription(), node.isEnabled() ? SimpleTextAttributes.REGULAR_ATTRIBUTES : SimpleTextAttributes.GRAYED_ATTRIBUTES);
-                        // Rule-TREE-PANEL-138
-                        if (!node.isEnabled())
-                            getTextRenderer().append("  " + tc.getStatus().getLabel(), SimpleTextAttributes.GRAYED_ITALIC_ATTRIBUTES);
-                    } else if (node.getUserObject() instanceof String folder) {
-                        // Rule-TREE-PANEL-134
-                        getTextRenderer().setIcon(AllIcons.Nodes.Folder);
-                        getTextRenderer().append(folder, SimpleTextAttributes.GRAYED_ATTRIBUTES);
-                    }
+                if (!(value instanceof CheckedTreeNode node))
+                    return;
+                if (node.getUserObject() instanceof Node dir) {
+                    getTextRenderer().setIcon(dir.iconShownInTree());
+                    getTextRenderer().append(dir.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
+                } else if (node.getUserObject() instanceof TestCaseDto tc) {
+                    getTextRenderer().setIcon(Icons.TEST_CASE_LETTER);
+                    getTextRenderer().append(tc.getDescription(), node.isEnabled() ? SimpleTextAttributes.REGULAR_ATTRIBUTES : SimpleTextAttributes.GRAYED_ATTRIBUTES);
+                    // Rule-TREE-PANEL-138
+                    if (!node.isEnabled())
+                        getTextRenderer().append("  " + tc.getStatus().getLabel(), SimpleTextAttributes.GRAYED_ITALIC_ATTRIBUTES);
+                } else if (node.getUserObject() instanceof String folder) {
+                    // Rule-TREE-PANEL-134
+                    getTextRenderer().setIcon(AllIcons.Nodes.Folder);
+                    getTextRenderer().append(folder, SimpleTextAttributes.GRAYED_ATTRIBUTES);
                 }
             }
         };
