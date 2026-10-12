@@ -68,7 +68,7 @@ public class MoveNodeCodeIdeTest extends AbstractCodegenIdeTest {
     }
 
     private void cutAndPasted(final @NotNull Node node, final @NotNull Node target) {
-        CopyPasteManager.getInstance().setContents(new NodesTransferable(new TreeTransferPayload(List.of(node), TransferHandler.MOVE)));
+        CopyPasteManager.getInstance().setContents(new TreeTransferable(new TreeTransferPayload(List.of(node), TransferHandler.MOVE)));
         handler.pasteFromClipboard(target);
     }
 
@@ -131,7 +131,7 @@ public class MoveNodeCodeIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-TREE-PANEL-049
     public void testNodesDropOntoANodeNeverBetweenTwo() {
-        final @NotNull TreePanelTree tree = new TreePanelTree(getProject());
+        final @NotNull TestProjectTree tree = new TestProjectTree(getProject());
         Disposer.register(getTestRootDisposable(), tree);
 
         assertEquals("the tree lets a node be dropped between two others", DropMode.ON, tree.getMainTree().getDropMode());

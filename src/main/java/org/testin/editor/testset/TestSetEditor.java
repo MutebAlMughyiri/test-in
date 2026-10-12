@@ -44,7 +44,7 @@ import org.testin.model.Modules;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestSetNode;
 import org.testin.notifications.Refused;
-import org.testin.runner.TestCaseExecutionSubscriber;
+import org.testin.runner.ExecutionRecorder;
 import org.testin.services.Services;
 import org.testin.testcase.CreateTestCaseAction;
 import org.testin.testcase.TestSetEditorAttributes;
@@ -62,7 +62,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes, TestSetNode> implements Toolbar {
-    private final @NotNull ModelChangeNotifier modelChangeNotifier;
+    private final @NotNull CardModelListener modelChangeNotifier;
 
     @Getter
     private final @NotNull TestSetToolbar toolBar;
@@ -83,7 +83,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes,
         mainPanel.add(SideScroll.of(toolBar), BorderLayout.NORTH);
         toolBar.installSearchFocusShortcut(mainPanel);
 
-        this.modelChangeNotifier = new ModelChangeNotifier();
+        this.modelChangeNotifier = new CardModelListener();
         this.modelChangeNotifier.setOnUpdateCallback(this::onDataSynced);
         this.model.addListDataListener(modelChangeNotifier);
 
@@ -92,7 +92,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes,
         mainPanel.add(SideScroll.of(statusBar), BorderLayout.SOUTH);
         StatusBarListener.attach(this);
 
-        TestCaseExecutionSubscriber.onReported(p, projectDisposable, (_, _, _, _) -> list.repaint());
+        ExecutionRecorder.onReported(p, projectDisposable, (_, _, _, _) -> list.repaint());
 
         onToolBarSwitchedToCardView();
 

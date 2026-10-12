@@ -139,18 +139,18 @@ public final class ComponentDialogBase<C extends DialogComponent> {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class DetailsBuilder {
-        private final @NotNull List<Row> rows = new ArrayList<>();
+        private final @NotNull List<DialogDetailRow> rows = new ArrayList<>();
 
         public @NotNull DetailsBuilder row(final @NotNull String caption, final @NotNull String value) {
             if (!value.isBlank()) {
-                rows.add(new Row(caption, Optional.empty(), value));
+                rows.add(new DialogDetailRow(caption, Optional.empty(), value));
             }
             return this;
         }
 
         public @NotNull DetailsBuilder row(final @NotNull Icon icon, final @NotNull String value) {
             if (!value.isBlank()) {
-                rows.add(new Row("", Optional.of(icon), value));
+                rows.add(new DialogDetailRow("", Optional.of(icon), value));
             }
             return this;
         }
@@ -277,7 +277,7 @@ public final class ComponentDialogBase<C extends DialogComponent> {
         private static final int SEARCH_ROWS = 12;
 
         private final @NotNull List<SelectionList<T>> selections = new ArrayList<>();
-        private @NotNull Optional<Rows<T>> rows = Optional.empty();
+        private @NotNull Optional<SelectionSource<T>> rows = Optional.empty();
         private @NotNull Icon icon = DialogStyle.NO_ICON;
         private @NotNull String placeholder = "";
 
@@ -296,7 +296,7 @@ public final class ComponentDialogBase<C extends DialogComponent> {
             return this;
         }
 
-        public @NotNull TextFieldBuilder<T> rows(final @NotNull Rows<T> rows) {
+        public @NotNull TextFieldBuilder<T> rows(final @NotNull SelectionSource<T> rows) {
             this.rows = Optional.of(rows);
             return this;
         }

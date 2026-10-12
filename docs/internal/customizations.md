@@ -58,7 +58,7 @@ Counted during the sweep and dismissed, so the next sweep does not re-raise them
 | Components in `ui.framework` | 35    | The thing that makes every dialog agree                                                                                                                                                                                               |
 | Font roles in `util.Fonts`   | 22    | One owner for every font a tester reads. Rule-INTERNAL-095                                                                                                                                                                            |
 | Rules in `tools/inspect.ps1` | 12    | They exist because no IntelliJ inspection covers them                                                                                                                                                                                 |
-| Fixed sizes                  | 5     | `EditorStatusBar:188`, `AbstractToolbarPanel:92`, `LightModeWindow:665`, `TestCaseForm:74`, `StatusBarBase:46` — each pins one dimension so a row cannot grow with its content. Worth re-reading, but they are layout, not drawing    |
+| Fixed sizes                  | 5     | `EditorStatusBar:188`, `AbstractToolbarPanel:92`, `LightModeScreen:665`, `TestCaseForm:74`, `StatusBarBase:46` — each pins one dimension so a row cannot grow with its content. Worth re-reading, but they are layout, not drawing    |
 
 ---
 

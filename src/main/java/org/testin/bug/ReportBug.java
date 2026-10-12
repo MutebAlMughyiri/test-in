@@ -46,7 +46,7 @@ public final class ReportBug {
     public static void start(final @NotNull Project p, final @NotNull TestRunNode testRunNode, final @NotNull UUID runItemId, final @NotNull TestCaseDto tc, final @NotNull Runnable redraw) {
         final @NotNull TestRuns testRuns = Services.getInstance(p, TestRuns.class);
         final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
-        final @NotNull BugReports reports = Services.getInstance(p, BugReports.class);
+        final @NotNull OpenBugReports reports = Services.getInstance(p, OpenBugReports.class);
         final @NotNull RunItemPath runItemPath = new RunItemPath(testRunNode.getPath(), runItemId);
 
         final @NotNull Optional<RunItems> runItems = testRuns.findRunItems(runItemPath.testRunPath());
@@ -84,7 +84,7 @@ public final class ReportBug {
     }
 
     private static void open(final @NotNull Project p, final @NotNull RunItemPath runItemPath, final @NotNull PreparedBug bug, final @NotNull Runnable redraw) {
-        final @NotNull BugReports reports = Services.getInstance(p, BugReports.class);
+        final @NotNull OpenBugReports reports = Services.getInstance(p, OpenBugReports.class);
         if (reports.anotherIsOpen(runItemPath)) {
             Services.getInstance(p, Notifier.class).softRefuse(p, Bundle.message("bug.finish.open.report"));
             return;

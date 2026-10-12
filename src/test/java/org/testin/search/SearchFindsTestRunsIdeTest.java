@@ -109,7 +109,7 @@ public class SearchFindsTestRunsIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull List<Hit> forTheId() {
-        return Hits.forQuery(getProject(), testCase.getId().toString()).hits();
+        return GlobalSearch.forQuery(getProject(), testCase.getId().toString()).hits();
     }
 
     // UC-INTERNAL-001, Rule-INTERNAL-098

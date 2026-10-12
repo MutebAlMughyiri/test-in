@@ -28,7 +28,7 @@ import org.testin.Said;
 import org.testin.editor.EditorFixtures;
 import org.testin.explorer.TreePanel;
 import org.testin.importexport.FileFormat;
-import org.testin.importexport.imports.SourceSection;
+import org.testin.importexport.imports.SourceFileField;
 import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.ProjectIndexer;
@@ -168,7 +168,7 @@ public class TestinFolderIdeTest extends AbstractTempRootIdeTest {
 
         assertEquals("saving a report does not start in the download folder", downloads.toString(), folderShownBy(DestinationForm.stacked(getProject(), new FileFormat[]{FileFormat.PDF}, FileFormat.PDF, "report", "Folder", "Choose").getPanel()));
         assertEquals("saving an export does not start in the download folder", downloads.toString(), folderShownBy(DestinationForm.inSection(getProject(), new FileFormat[]{FileFormat.CSV}, FileFormat.CSV, "export", "Folder", "Choose", "Destination").getPanel()));
-        assertEquals("choosing a file to import does not start in the download folder", downloads.toString(), SourceSection.of(getProject()).field().getText());
+        assertEquals("choosing a file to import does not start in the download folder", downloads.toString(), SourceFileField.of(getProject()).field().getText());
     }
 
     // Rule-SETTING-022

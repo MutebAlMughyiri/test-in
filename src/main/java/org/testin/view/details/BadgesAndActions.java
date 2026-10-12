@@ -43,7 +43,7 @@ public final class BadgesAndActions extends AbstractDetails {
         final @NotNull JBPanel<?> line = line(GAP);
 
         TestCaseBadges.of(p, dto).forEach(line::add);
-        ActionIcons.of(p, dto, Services.getInstance(p, Nodes.class).find(Services.getInstance(p, TestinRoot.class).resolve(currentPath))).forEach(line::add);
+        TestCaseHoverButtons.of(p, dto, Services.getInstance(p, Nodes.class).find(Services.getInstance(p, TestinRoot.class).resolve(currentPath))).forEach(line::add);
 
         return addFullWidthRow(panel, gbc, line, JBUI.insets(INSETS_TOP, INSETS_SIDE, 0, INSETS_SIDE), currentRow);
     }

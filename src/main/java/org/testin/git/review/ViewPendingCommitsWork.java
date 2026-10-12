@@ -25,7 +25,7 @@ import org.testin.explorer.TreePanel;
 import org.testin.git.GitBackgroundTask;
 import org.testin.git.GitCommits;
 import org.testin.git.GitFailed;
-import org.testin.git.GitFailure;
+import org.testin.git.GitFailureNotice;
 import org.testin.git.GitRepositoryService;
 import org.testin.git.RepositoryRefresh;
 import org.testin.git.change.GitDiffProcessor;
@@ -109,7 +109,7 @@ public record ViewPendingCommitsWork(@NotNull Project p, @NotNull GitRepositoryS
                     ApplicationManager.getApplication().invokeLater(() ->
                             reviewChanges(path, changes, branches, current, unpushed));
                 },
-                ex -> GitFailure.show(p, Bundle.message("git.error.title"), Bundle.message("git.error.diffs", FailureText.of(ex))));
+                ex -> GitFailureNotice.show(p, Bundle.message("git.error.title"), Bundle.message("git.error.diffs", FailureText.of(ex))));
     }
 
     // UC-SHARE-010
@@ -139,7 +139,7 @@ public record ViewPendingCommitsWork(@NotNull Project p, @NotNull GitRepositoryS
                     if (request.newBranch()) startBranchThenCommit(repoPath, request, indicator);
                     else checkoutThenCommit(repoPath, request, indicator);
                 },
-                ex -> GitFailure.show(p, Bundle.message("git.error.title"),
+                ex -> GitFailureNotice.show(p, Bundle.message("git.error.title"),
                         Bundle.message("git.error.prepare", target, FailureText.of(ex))));
     }
 
@@ -225,7 +225,7 @@ public record ViewPendingCommitsWork(@NotNull Project p, @NotNull GitRepositoryS
                     try {
                         recordCompletedTestRuns(repoPath);
                     } catch (final GitFailed ex) {
-                        GitFailure.show(p, Bundle.message("git.record.failed.title"), Bundle.message("git.record.failed.message", commitLabel(commit)) + System.lineSeparator() + FailureText.of(ex));
+                        GitFailureNotice.show(p, Bundle.message("git.record.failed.title"), Bundle.message("git.record.failed.message", commitLabel(commit)) + System.lineSeparator() + FailureText.of(ex));
                     }
 
                     ApplicationManager.getApplication().invokeLater(() -> {
@@ -237,7 +237,7 @@ public record ViewPendingCommitsWork(@NotNull Project p, @NotNull GitRepositoryS
                         notifier.softShow(p, Bundle.message("git.committed"), commitLabel(commit));
                     });
                 },
-                ex -> GitFailure.show(p, Bundle.message("git.commit.failed.title"), Bundle.message("git.commit.failed.message") + System.lineSeparator() + FailureText.of(ex)));
+                ex -> GitFailureNotice.show(p, Bundle.message("git.commit.failed.title"), Bundle.message("git.commit.failed.message") + System.lineSeparator() + FailureText.of(ex)));
     }
 
     // UC-SHARE-012, Rule-SHARE-130
@@ -285,7 +285,7 @@ public record ViewPendingCommitsWork(@NotNull Project p, @NotNull GitRepositoryS
                         scanForChanges(repoPath);
                     });
                 },
-                ex -> GitFailure.show(p, Bundle.message("git.init.failed.title"), Bundle.message("git.init.failed.message", FailureText.of(ex))));
+                ex -> GitFailureNotice.show(p, Bundle.message("git.init.failed.title"), Bundle.message("git.init.failed.message", FailureText.of(ex))));
     }
 
     // UC-SHARE-013, Rule-SHARE-127
@@ -307,7 +307,7 @@ public record ViewPendingCommitsWork(@NotNull Project p, @NotNull GitRepositoryS
                         }
                     });
                 },
-                ex -> GitFailure.show(p, Bundle.message("git.error.title"), Bundle.message("git.error.read.remote", FailureText.of(ex))));
+                ex -> GitFailureNotice.show(p, Bundle.message("git.error.title"), Bundle.message("git.error.read.remote", FailureText.of(ex))));
     }
 
     // UC-SHARE-013, Rule-SHARE-060
@@ -331,7 +331,7 @@ public record ViewPendingCommitsWork(@NotNull Project p, @NotNull GitRepositoryS
                     Services.getInstance(p, Hints.class).clear(SetupStep.GIT_REMOTE, repoPath);
                     ApplicationManager.getApplication().invokeLater(() -> executeGitPush(repoPath, remoteName, remoteUrl, branch, commit));
                 },
-                ex -> GitFailure.show(p, Bundle.message("git.error.title"), Bundle.message("git.error.add.remote", FailureText.of(ex))));
+                ex -> GitFailureNotice.show(p, Bundle.message("git.error.title"), Bundle.message("git.error.add.remote", FailureText.of(ex))));
     }
 
     // UC-SHARE-013, Rule-SHARE-061
@@ -373,7 +373,7 @@ public record ViewPendingCommitsWork(@NotNull Project p, @NotNull GitRepositoryS
     private void pushAfterRebase(final @NotNull Path repoPath, final @NotNull String remote, final @NotNull String branch) {
         GitBackgroundTask.run(p, Bundle.message("git.task.pushing.branch", branch), false,
                 _ -> pushRebased(repoPath, remote, branch),
-                ex -> GitFailure.show(p, Bundle.message("git.push.failed.title"), FailureText.of(ex)));
+                ex -> GitFailureNotice.show(p, Bundle.message("git.push.failed.title"), FailureText.of(ex)));
     }
 
     // UC-SHARE-017
@@ -405,7 +405,7 @@ public record ViewPendingCommitsWork(@NotNull Project p, @NotNull GitRepositoryS
                 },
                 ex -> GitConflictOffer.showIfConflicting(p, git, repoPath,
                         conflicting -> showConflictActions(repoPath, remote, branch, conflicting),
-                        () -> GitFailure.show(p, Bundle.message("git.conflict.operation.failed.title"), FailureText.of(ex))));
+                        () -> GitFailureNotice.show(p, Bundle.message("git.conflict.operation.failed.title"), FailureText.of(ex))));
     }
 
     // UC-SHARE-008, Rule-SHARE-040, Rule-SHARE-127
@@ -419,7 +419,7 @@ public record ViewPendingCommitsWork(@NotNull Project p, @NotNull GitRepositoryS
                                 performCommitWorkflow(repoPath, request, branch);
                             });
                         },
-                        ex -> GitFailure.show(p, Bundle.message("git.config.failed.title"),
+                        ex -> GitFailureNotice.show(p, Bundle.message("git.config.failed.title"),
                                 Bundle.message("git.config.failed.message") + System.lineSeparator() + FailureText.of(ex)))
         ).show());
     }

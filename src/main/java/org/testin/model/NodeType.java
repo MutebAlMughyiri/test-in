@@ -53,7 +53,7 @@ public enum NodeType {
             TestProjectMarker.class,
             SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES,
             NodeStatistics.CHILDREN,
-            ImmutableList.of(NodeCount.TEST_SETS, NodeCount.PACKAGES, NodeCount.TEST_CASES, NodeCount.TEST_RUNS)
+            ImmutableList.of(NodeFigureRow.TEST_SETS, NodeFigureRow.PACKAGES, NodeFigureRow.TEST_CASES, NodeFigureRow.TEST_RUNS)
     ),
 
     TCF(
@@ -64,7 +64,7 @@ public enum NodeType {
             TestCasesFolderMarker.class,
             SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES,
             NodeStatistics.CHILDREN,
-            ImmutableList.of(NodeCount.TEST_SETS, NodeCount.PACKAGES, NodeCount.TEST_CASES)
+            ImmutableList.of(NodeFigureRow.TEST_SETS, NodeFigureRow.PACKAGES, NodeFigureRow.TEST_CASES)
     ),
 
     TRF(
@@ -75,7 +75,7 @@ public enum NodeType {
             TestRunsFolderMarker.class,
             SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES,
             NodeStatistics.CHILDREN,
-            ImmutableList.of(NodeCount.PACKAGES, NodeCount.TEST_RUNS)
+            ImmutableList.of(NodeFigureRow.PACKAGES, NodeFigureRow.TEST_RUNS)
     ),
 
     TSP(
@@ -86,7 +86,7 @@ public enum NodeType {
             TestSetPackageMarker.class,
             SimpleTextAttributes.REGULAR_ATTRIBUTES,
             NodeStatistics.CHILDREN,
-            ImmutableList.of(NodeCount.TEST_SETS, NodeCount.PACKAGES, NodeCount.TEST_CASES)
+            ImmutableList.of(NodeFigureRow.TEST_SETS, NodeFigureRow.PACKAGES, NodeFigureRow.TEST_CASES)
     ),
 
     TRP(
@@ -97,7 +97,7 @@ public enum NodeType {
             TestRunPackageMarker.class,
             SimpleTextAttributes.REGULAR_ATTRIBUTES,
             NodeStatistics.CHILDREN,
-            ImmutableList.of(NodeCount.PACKAGES, NodeCount.TEST_RUNS)
+            ImmutableList.of(NodeFigureRow.PACKAGES, NodeFigureRow.TEST_RUNS)
     ),
 
     TS(
@@ -108,7 +108,7 @@ public enum NodeType {
             TestSetMarker.class,
             SimpleTextAttributes.REGULAR_ATTRIBUTES,
             NodeStatistics.CHILDREN,
-            ImmutableList.of(NodeCount.TEST_CASES)
+            ImmutableList.of(NodeFigureRow.TEST_CASES)
     ),
 
     TR(
@@ -119,7 +119,7 @@ public enum NodeType {
             TestRunMarker.class,
             SimpleTextAttributes.REGULAR_ATTRIBUTES,
             NodeStatistics.RUN_ITEM_STATUSES,
-            ImmutableList.of(NodeCount.TOTAL)
+            ImmutableList.of(NodeFigureRow.TOTAL)
     );
 
     public static final @NotNull List<NodeType> UNDER_TEST_CASES = List.of(TS, TSP);
@@ -144,7 +144,7 @@ public enum NodeType {
     private final @NotNull Class<? extends AbstractMarker> markerClass;
     private final @NotNull SimpleTextAttributes attributes;
     private final @NotNull NodeStatistics statistics;
-    private final @NotNull ImmutableList<NodeCount> counts;
+    private final @NotNull ImmutableList<NodeFigureRow> counts;
 
     public static boolean isOneFolderName(final @NotNull String name) {
         final @NotNull String trimmed = name.trim();

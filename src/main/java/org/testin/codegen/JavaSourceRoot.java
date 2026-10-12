@@ -46,7 +46,7 @@ public final class JavaSourceRoot {
 
     // UC-CODEGEN-020, Rule-CODEGEN-064, Rule-CODEGEN-066
     public static @NotNull Optional<VirtualFile> find(final @NotNull Project p) {
-        final @NotNull TestSourceRoot remembered = Services.getInstance(p, TestSourceRoot.class);
+        final @NotNull RememberedTestSourceRoot remembered = Services.getInstance(p, RememberedTestSourceRoot.class);
 
         final @NotNull Optional<VirtualFile> cached = remembered.get();
         if (cached.isPresent()) return cached;

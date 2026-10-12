@@ -24,7 +24,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.treeStructure.SimpleTree;
 import org.jetbrains.annotations.NotNull;
-import org.testin.actions.AbstractProjectAction;
+import org.testin.actions.AbstractBoundProjectAction;
 import org.testin.actions.GrayWithReason;
 import org.testin.editor.TestinEditor;
 import org.testin.explorer.tree.TreeValues;
@@ -51,7 +51,7 @@ import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public class GenerateReportAction extends AbstractProjectAction {
+public class GenerateReportAction extends AbstractBoundProjectAction {
     private final @NotNull Supplier<Optional<TestRunNode>> selectedTestRun;
     private final @NotNull TestRuns testRuns = Services.getInstance(p, TestRuns.class);
     private final @NotNull Notifier notifier = Services.getInstance(p, Notifier.class);

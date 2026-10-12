@@ -126,7 +126,7 @@ record SyncWork(@NotNull Project p, @NotNull GitRepositoryService git, @NotNull 
     }
 
     private void reportSyncFailure(final @NotNull String detail) {
-        GitFailure.show(p, Bundle.message("git.sync.failed.title"), detail);
+        GitFailureNotice.show(p, Bundle.message("git.sync.failed.title"), detail);
     }
 
     // UC-SHARE-017, Rule-SHARE-077
@@ -164,7 +164,7 @@ record SyncWork(@NotNull Project p, @NotNull GitRepositoryService git, @NotNull 
                     } catch (final Exception ex) {
                         TestinLogger.error("Could not push after resolving: " + FailureText.of(ex));
                         ApplicationManager.getApplication().invokeLater(() ->
-                                GitFailure.show(p, Bundle.message("git.push.failed.title"),
+                                GitFailureNotice.show(p, Bundle.message("git.push.failed.title"),
                                         Bundle.message("git.push.failed.after.resolve", FailureText.of(ex))));
 
                         indicator.setText(Bundle.message("git.progress.refreshing"));

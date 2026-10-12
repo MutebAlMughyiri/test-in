@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NodeCounter {
     public static @NotNull NodeFigures figures(final @NotNull Project p, final @NotNull Node dto) {
-        return Gathered.valueOf(dto.getType().getStatistics().name()).getGather().of(p, dto);
+        return FiguresByStatistics.valueOf(dto.getType().getStatistics().name()).getGather().of(p, dto);
     }
 
     // UC-INTERNAL-006, Rule-INTERNAL-046, Rule-INTERNAL-047, Rule-INTERNAL-050

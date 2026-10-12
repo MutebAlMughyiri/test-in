@@ -89,7 +89,7 @@ public class GitDiffProcessorTest {
         final List<PendingChange> review = review("?? Test Cases/login/case.tc");
 
         assertEquals(review.size(), 1);
-        assertEquals(review.getFirst().type(), DiffType.ADDED);
+        assertEquals(review.getFirst().type(), StatusKind.ADDED);
         assertEquals(review.getFirst().name(), "a brand new case");
         assertEquals(review.getFirst().fieldChanges().getFirst().changeType(), ChangeType.CREATE_TEST_CASE);
     }
@@ -105,7 +105,7 @@ public class GitDiffProcessorTest {
         final List<PendingChange> review = review(" M Test Cases/login/case.tc");
 
         assertEquals(review.size(), 1);
-        assertEquals(review.getFirst().type(), DiffType.MODIFIED);
+        assertEquals(review.getFirst().type(), StatusKind.MODIFIED);
         assertEquals(review.getFirst().fieldChanges().size(), 1);
         assertEquals(review.getFirst().fieldChanges().getFirst().changeType(), ChangeType.CHANGE_MODULE);
     }
@@ -118,7 +118,7 @@ public class GitDiffProcessorTest {
         final List<PendingChange> review = review(" D Test Cases/login/case.tc");
 
         assertEquals(review.size(), 1);
-        assertEquals(review.getFirst().type(), DiffType.DELETED);
+        assertEquals(review.getFirst().type(), StatusKind.DELETED);
         assertEquals(review.getFirst().name(), "a case that is going away");
     }
 
@@ -171,7 +171,7 @@ public class GitDiffProcessorTest {
                     "?? Test Cases/login flow/case-3.tc");
 
             assertEquals(review.size(), 4, "three test cases and the marker that makes the directory a test set");
-            assertTrue(review.stream().allMatch(diff -> diff.type() == DiffType.ADDED));
+            assertTrue(review.stream().allMatch(diff -> diff.type() == StatusKind.ADDED));
             assertEquals(review.stream().filter(diff -> diff.subject() == ChangeSubject.TEST_CASE).count(), 3);
         } catch (final IOException ex) {
             throw new AssertionError(ex);

@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.open.TestinEditors;
 import org.testin.explorer.TreePanel;
-import org.testin.explorer.tree.TreePanelTree;
+import org.testin.explorer.tree.TestProjectTree;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.services.Services;
@@ -63,7 +63,7 @@ public final class GoTo {
         Services.getInstance(p, TestinEditors.class).open(hit.node());
     }
 
-    private static void showTree(final @NotNull Project p, final boolean withFocus, final @NotNull Consumer<TreePanelTree> onShown) {
+    private static void showTree(final @NotNull Project p, final boolean withFocus, final @NotNull Consumer<TestProjectTree> onShown) {
         Optional.ofNullable(ToolWindowManager.getInstance(p).getToolWindow(TREE))
                 .ifPresentOrElse(
                         tw -> tw.activate(() -> onShown.accept(

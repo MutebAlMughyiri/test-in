@@ -21,11 +21,11 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.TempTree;
 import org.testin.git.change.ChangeSubject;
 import org.testin.git.change.ChangeType;
-import org.testin.git.change.DiffType;
+import org.testin.git.change.StatusKind;
 import org.testin.git.change.GitDiffProcessor;
 import org.testin.git.change.PendingChange;
-import org.testin.git.conflict.Merge;
-import org.testin.git.conflict.TestCaseMerge;
+import org.testin.git.conflict.MergeOutcome;
+import org.testin.git.conflict.TestCaseMerger;
 import org.testin.model.Priority;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.Rank;
@@ -238,7 +238,7 @@ public class GitWorkflowTest {
                 "both new test cases are in the review");
         assertTrue(pending.stream().anyMatch(change -> change.subject() == ChangeSubject.MARKER),
                 "and so are the markers that make their directories nodes");
-        assertTrue(pending.stream().allMatch(diff -> diff.type() == DiffType.ADDED));
+        assertTrue(pending.stream().allMatch(diff -> diff.type() == StatusKind.ADDED));
 
         commit(stagedFor(pending), "the first commit");
         assertTrue(git(work, "push", "-u", "origin", "main").isPresent(), "the push to an empty remote succeeded");
@@ -293,7 +293,7 @@ public class GitWorkflowTest {
         final List<PendingChange> pending = review();
 
         assertEquals(pending.size(), 1);
-        assertEquals(pending.getFirst().type(), DiffType.MODIFIED);
+        assertEquals(pending.getFirst().type(), StatusKind.MODIFIED);
         assertEquals(pending.getFirst().fieldChanges().size(), 1, "one field moved, so one row");
         assertEquals(pending.getFirst().fieldChanges().getFirst().changeType(), ChangeType.CHANGE_MODULE);
         assertEquals(pending.getFirst().fieldChanges().getFirst().oldValue(), "authentication");
@@ -311,7 +311,7 @@ public class GitWorkflowTest {
         final List<PendingChange> pending = review();
 
         assertEquals(pending.size(), 1);
-        assertEquals(pending.getFirst().type(), DiffType.ADDED);
+        assertEquals(pending.getFirst().type(), StatusKind.ADDED);
         assertEquals(pending.getFirst().name(), "a locked account cannot sign in");
     }
 
@@ -326,7 +326,7 @@ public class GitWorkflowTest {
             final List<PendingChange> pending = review();
 
             assertEquals(pending.size(), 1);
-            assertEquals(pending.getFirst().type(), DiffType.DELETED);
+            assertEquals(pending.getFirst().type(), StatusKind.DELETED);
             assertEquals(pending.getFirst().name(), "a registered user signs in");
         } catch (final IOException ex) {
             throw new AssertionError(ex);
@@ -342,8 +342,8 @@ public class GitWorkflowTest {
         mustGit(work, "mv", "Test Cases/login flow/" + file, "Test Cases/" + file);
 
         final List<PendingChange> pending = review();
-        assertEquals(pending.stream().filter(change -> change.type() == DiffType.DELETED).count(), 1);
-        assertEquals(pending.stream().filter(change -> change.type() == DiffType.ADDED).count(), 1);
+        assertEquals(pending.stream().filter(change -> change.type() == StatusKind.DELETED).count(), 1);
+        assertEquals(pending.stream().filter(change -> change.type() == StatusKind.ADDED).count(), 1);
 
         commit(stagedFor(pending), "the case moved out of the test set");
 
@@ -397,7 +397,7 @@ public class GitWorkflowTest {
             final String remote = contents(work, ":2", conflicting).get(relativePath);
             final String replayed = contents(work, ":3", conflicting).get(relativePath);
 
-            final Merge merge = TestCaseMerge.of(RealMapper.build(), Objects.requireNonNull(base, "no base"), Objects.requireNonNull(replayed, "no replayed side"), Objects.requireNonNull(remote, "no remote side"));
+            final MergeOutcome merge = TestCaseMerger.of(RealMapper.build(), Objects.requireNonNull(base, "no base"), Objects.requireNonNull(replayed, "no replayed side"), Objects.requireNonNull(remote, "no remote side"));
             assertTrue(merge.isSettled(), "different fields are not a disagreement");
 
             Files.writeString(myCopy, merge.merged().toPrettyString(), StandardCharsets.UTF_8);

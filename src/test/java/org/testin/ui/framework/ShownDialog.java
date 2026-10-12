@@ -51,11 +51,11 @@ import java.util.Optional;
 public final class ShownDialog {
 
     public static boolean isOpen(final @NotNull Project p, final @NotNull Class<?> kind) {
-        return Services.getInstance(p, OpenDialogs.class).shown(kind).isPresent();
+        return Services.getInstance(p, DialogsOnScreen.class).shown(kind).isPresent();
     }
 
     public static @NotNull JBPopup popup(final @NotNull Project p, final @NotNull Class<?> kind) {
-        return Services.getInstance(p, OpenDialogs.class).shown(kind).orElseThrow(() -> new AssertionError("no " + kind.getSimpleName() + " is open"));
+        return Services.getInstance(p, DialogsOnScreen.class).shown(kind).orElseThrow(() -> new AssertionError("no " + kind.getSimpleName() + " is open"));
     }
 
     public static @NotNull JComponent content(final @NotNull Project p, final @NotNull Class<?> kind) {
@@ -115,7 +115,7 @@ public final class ShownDialog {
     }
 
     public static void close(final @NotNull Project p, final @NotNull Class<?> kind) {
-        Services.getInstance(p, OpenDialogs.class).shown(kind).ifPresent(JBPopup::cancel);
+        Services.getInstance(p, DialogsOnScreen.class).shown(kind).ifPresent(JBPopup::cancel);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
 

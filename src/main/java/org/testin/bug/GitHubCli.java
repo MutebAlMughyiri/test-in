@@ -172,11 +172,11 @@ public final class GitHubCli {
     }
 
     // UC-VIEW-PANEL-005, Rule-VIEW-PANEL-092
-    @NotNull IssueStates states(final @NotNull Mapper mapper, final @NotNull BugRepository repository, final @NotNull Collection<Integer> numbers, final boolean boards) {
+    @NotNull GhIssueStatesAnswer states(final @NotNull Mapper mapper, final @NotNull BugRepository repository, final @NotNull Collection<Integer> numbers, final boolean boards) {
         ThreadingAssertions.assertBackgroundThread();
         return launcher.run(stateArguments(repository, numbers, boards), ANYWHERE)
-                .map(answer -> IssueStates.of(mapper, answer, repository.host(), numbers))
-                .orElseGet(() -> IssueStates.failed(Bundle.message("bug.reason.no.gh")));
+                .map(answer -> GhIssueStatesAnswer.of(mapper, answer, repository.host(), numbers))
+                .orElseGet(() -> GhIssueStatesAnswer.failed(Bundle.message("bug.reason.no.gh")));
     }
 
     @FunctionalInterface

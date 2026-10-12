@@ -62,7 +62,7 @@ public final class GlobalSearchDialog extends AbstractFrameworkDialog {
 
     // UC-INTERNAL-001, Rule-INTERNAL-072, Rule-INTERNAL-073
     static @NotNull Answer<Hit> rowsFor(final @NotNull Project p, final @NotNull String query) {
-        final @NotNull Found found = Hits.forQuery(p, query);
+        final @NotNull Found found = GlobalSearch.forQuery(p, query);
 
         final @NotNull List<SelectionList<Hit>> rows = found.hits().stream()
                 .map(hit -> SelectionList.add(hit.icon(), hit.name(), hit.where(), hit))

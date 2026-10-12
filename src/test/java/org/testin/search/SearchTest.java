@@ -90,17 +90,17 @@ public class SearchTest {
 
     @Test
     public void aQueryOfOneCharacterIsNotAQuery() {
-        assertTrue(Hits.tooShort(""), "an empty field is not a search");
-        assertTrue(Hits.tooShort("a"), "one letter matches almost the whole project");
-        assertTrue(Hits.tooShort("  a  "), "and padding does not make it two");
-        assertFalse(Hits.tooShort("ab"));
+        assertTrue(GlobalSearch.tooShort(""), "an empty field is not a search");
+        assertTrue(GlobalSearch.tooShort("a"), "one letter matches almost the whole project");
+        assertTrue(GlobalSearch.tooShort("  a  "), "and padding does not make it two");
+        assertFalse(GlobalSearch.tooShort("ab"));
     }
 
     @Test
     public void matchingIgnoresCase() {
-        assertTrue(Hits.contains("Sign in with a VALID user", "valid"));
-        assertTrue(Hits.contains("Sign in", "SIGN"));
-        assertFalse(Hits.contains("Sign in", "signed"));
+        assertTrue(GlobalSearch.contains("Sign in with a VALID user", "valid"));
+        assertTrue(GlobalSearch.contains("Sign in", "SIGN"));
+        assertFalse(GlobalSearch.contains("Sign in", "signed"));
     }
 
     @Test
@@ -110,7 +110,7 @@ public class SearchTest {
         final TestCaseDto onSomethingUnseen = testCase("Check the balance", set);
 
         final List<TestCaseDto> sorted = new ArrayList<>(List.of(onSomethingUnseen, onADescription));
-        sorted.sort(Hits.byDescriptionMatchThenText("login"));
+        sorted.sort(GlobalSearch.byDescriptionMatchThenText("login"));
 
         assertSame(sorted.getFirst(), onADescription,
                 "the other one is a real hit - it matched on a step - but it looks unrelated at a glance");
@@ -123,7 +123,7 @@ public class SearchTest {
         final TestCaseDto first = testCase("Login fails on a bad password", set);
 
         final List<TestCaseDto> sorted = new ArrayList<>(List.of(second, first));
-        sorted.sort(Hits.byDescriptionMatchThenText("login"));
+        sorted.sort(GlobalSearch.byDescriptionMatchThenText("login"));
 
         assertSame(sorted.getFirst(), first);
     }
@@ -133,13 +133,13 @@ public class SearchTest {
         final TestSetNode exact = testSet("Login", "test-01");
         final TestSetNode longer = testSet("Login and logout journeys", "test-01");
 
-        assertTrue(Hits.byClosestName(exact, longer) < 0,
+        assertTrue(GlobalSearch.byClosestName(exact, longer) < 0,
                 "typing a set's name should put that set at the top, not a sentence containing it");
     }
 
     @Test
     public void nodesOfTheSameLengthAreAlphabetical() {
-        assertTrue(Hits.byClosestName(testSet("Alpha", "x"), testSet("Bravo", "x")) < 0);
+        assertTrue(GlobalSearch.byClosestName(testSet("Alpha", "x"), testSet("Bravo", "x")) < 0);
     }
 
     @Test
@@ -161,7 +161,7 @@ public class SearchTest {
         final TestSetNode underAuth = testSet("Login", "test-01", "Test Cases", "Auth", "Login");
         final TestSetNode underBilling = testSet("Invoices", "test-01", "Test Cases", "Billing", "Invoices");
 
-        assertTrue(Hits.inTreeOrder(underAuth, underBilling) < 0,
+        assertTrue(GlobalSearch.inTreeOrder(underAuth, underBilling) < 0,
                 "Auth before Billing, so a project's sets stay together instead of interleaving alphabetically");
     }
 
@@ -170,7 +170,7 @@ public class SearchTest {
         final TestSetNode second = testSet("Beta", "test-01", "Test Cases");
         final TestSetNode first = testSet("Alpha", "test-01", "Test Cases");
 
-        assertTrue(Hits.inTreeOrder(first, second) < 0);
+        assertTrue(GlobalSearch.inTreeOrder(first, second) < 0);
     }
 
     // Rule-INTERNAL-002

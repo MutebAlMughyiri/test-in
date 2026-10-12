@@ -110,7 +110,7 @@ public final class BugHistory {
     private static @NotNull List<BugCard> notCommitted(final @NotNull Path testProject, final @NotNull Collection<String> committed, final @NotNull Map<String, String> now, final @NotNull Map<String, String> versions, final @NotNull Mapper mapper) {
         return Stream.concat(committed.stream(), now.keySet().stream())
                 .collect(Collectors.toCollection(TreeSet::new)).stream()
-                .flatMap(path -> BugEvents.between(testRun(testProject, path), version(mapper, versions, HEAD, path), parsed(mapper, now.getOrDefault(path, ""))).stream())
+                .flatMap(path -> BugEventDetector.between(testRun(testProject, path), version(mapper, versions, HEAD, path), parsed(mapper, now.getOrDefault(path, ""))).stream())
                 .map(BugCard::notCommitted)
                 .toList();
     }
@@ -122,7 +122,7 @@ public final class BugHistory {
         if (before.isEmpty() != changed.before().isEmpty() || after.isEmpty() != changed.after().isEmpty())
             return Optional.empty();
 
-        return BugEvents.between(testRun(testProject, changed.after().isEmpty() ? changed.before() : changed.after()), before, after)
+        return BugEventDetector.between(testRun(testProject, changed.after().isEmpty() ? changed.before() : changed.after()), before, after)
                 .map(event -> new BugCard(commit.hash(), commit.who(), commit.when(), event));
     }
 

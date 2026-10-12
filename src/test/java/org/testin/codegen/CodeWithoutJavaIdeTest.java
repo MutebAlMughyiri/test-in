@@ -44,7 +44,7 @@ import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.OptionalPlugin;
 import org.testin.services.Services;
-import org.testin.view.details.ActionIcons;
+import org.testin.view.details.TestCaseHoverButtons;
 
 import javax.swing.Icon;
 import java.awt.Cursor;
@@ -85,7 +85,7 @@ public class CodeWithoutJavaIdeTest extends AbstractCodegenIdeTest {
     }
 
     private @NotNull JBLabel theClassButtonOnTheViewPanel(final @NotNull TestCaseDto tc) {
-        return (JBLabel) ActionIcons.of(getProject(), tc, Optional.empty()).stream()
+        return (JBLabel) TestCaseHoverButtons.of(getProject(), tc, Optional.empty()).stream()
                 .filter(JBLabel.class::isInstance)
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("the view panel left the class button out"));

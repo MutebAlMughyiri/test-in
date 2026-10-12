@@ -53,7 +53,7 @@ public enum ChangeSubject {
 
     private final @NotNull ChangeType changed;
 
-    public @NotNull ChangeType changeFor(final @NotNull DiffType type) {
+    public @NotNull ChangeType changeFor(final @NotNull StatusKind type) {
         return type.changeOf(this);
     }
 }

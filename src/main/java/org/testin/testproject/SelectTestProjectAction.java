@@ -22,7 +22,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.actions.AbstractProjectAction;
+import org.testin.actions.AbstractBoundProjectAction;
 import org.testin.actions.GrayWithReason;
 import org.testin.explorer.TreePanel;
 import org.testin.indexer.ProjectIndexer;
@@ -34,7 +34,7 @@ import org.testin.util.Bundle;
 
 import java.util.Map;
 
-public final class SelectTestProjectAction extends AbstractProjectAction {
+public final class SelectTestProjectAction extends AbstractBoundProjectAction {
     private final @NotNull TreePanel tp;
     private final @NotNull ProjectIndexer indexer = Services.getInstance(p, ProjectIndexer.class);
     private final @NotNull Notifier notifier = Services.getInstance(p, Notifier.class);

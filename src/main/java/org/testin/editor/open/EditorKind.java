@@ -32,12 +32,12 @@ public enum EditorKind {
     // UC-EDITOR-PANEL-001
     TEST_SET(
             "test",
-            new EditorType("Test Case", Bundle.message("editor.type.test.set.description"), NodeType.TS.getIcon(), TestSetEditor::new)
+            new EditorFileType("Test Case", Bundle.message("editor.type.test.set.description"), NodeType.TS.getIcon(), TestSetEditor::new)
     ),
 
     TEST_RUN(
             "run",
-            new EditorType("Test Run", Bundle.message("editor.type.test.run.description"), NodeType.TR.getIcon(), TestRunEditor::new)
+            new EditorFileType("Test Run", Bundle.message("editor.type.test.run.description"), NodeType.TR.getIcon(), TestRunEditor::new)
     );
 
     // Rule-EDITOR-PANEL-001
@@ -47,7 +47,7 @@ public enum EditorKind {
 
     private final @NotNull String word;
     @Getter
-    private final @NotNull EditorType fileType;
+    private final @NotNull EditorFileType fileType;
 
     // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-001
     public static @NotNull EditorKind of(final @NotNull Node dir) {

@@ -87,7 +87,7 @@ public class TreeTransferIdeTest extends AbstractTempRootIdeTest {
     }
 
     private void onTheClipboard(final int action) {
-        CopyPasteManager.getInstance().setContents(new NodesTransferable(new TreeTransferPayload(List.of(login), action)));
+        CopyPasteManager.getInstance().setContents(new TreeTransferable(new TreeTransferPayload(List.of(login), action)));
     }
 
     private boolean holdsNodes() {

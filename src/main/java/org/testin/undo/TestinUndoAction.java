@@ -20,7 +20,7 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.actions.AbstractProjectAction;
+import org.testin.actions.AbstractBoundProjectAction;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
@@ -28,7 +28,7 @@ import org.testin.util.Shortcuts;
 
 import javax.swing.JComponent;
 
-public class TestinUndoAction extends AbstractProjectAction {
+public class TestinUndoAction extends AbstractBoundProjectAction {
     private final @NotNull UndoDirection direction;
     private final @NotNull UndoScope scope;
     private final @NotNull UndoHistories undoHistories = Services.getInstance(p, UndoHistories.class);

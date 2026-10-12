@@ -80,7 +80,7 @@ If a fourth appears, it needs one of those two reasons written beside it.
 ## Also delete, do not annotate
 
 An **empty** no-arg constructor needs no annotation at all — Java writes a
-public no-arg constructor for any class that declares none. `ActionIcons` had
+public no-arg constructor for any class that declares none. `TestCaseHoverButtons` had
 
 ```java
 public ActionIcons() {

@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.testset.TestSetEditor;
-import org.testin.explorer.tree.TreePanelTree;
+import org.testin.explorer.tree.TestProjectTree;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.ui.FontSync;
@@ -133,7 +133,7 @@ public class TextSizeIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-SETTING-039
     public void testTheTreeKeepsTheIdesOwnTextSize() {
-        final @NotNull TreePanelTree tree = new TreePanelTree(getProject());
+        final @NotNull TestProjectTree tree = new TestProjectTree(getProject());
         Disposer.register(getTestRootDisposable(), tree);
         final @NotNull JTree mainTree = tree.getMainTree();
         final float treeSize = UIUtil.getTreeFont().getSize2D();

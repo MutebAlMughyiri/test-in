@@ -90,7 +90,7 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
     private static final @NotNull KeyStroke DETAILS = Shortcuts.ToggleDetails.getKey();
     private static final @NotNull KeyStroke DETAILS_RELEASED = KeyStroke.getKeyStroke(DETAILS.getKeyCode(), DETAILS.getModifiers(), true);
     private static final int STEPS = 10;
-    private final @NotNull List<LightModeWindow> opened = new ArrayList<>();
+    private final @NotNull List<LightModeScreen> opened = new ArrayList<>();
 
     private static void press(final @NotNull JFrame frame, final @NotNull KeyStroke key) {
         assertTrue("light mode does not answer " + key, OnScreen.pressKey(frame.getRootPane(), key));
@@ -104,11 +104,11 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
         return everythingIn(frame).stream().filter(kind::isInstance).map(kind::cast).findFirst().orElseThrow(() -> new AssertionError("light mode holds no " + kind.getSimpleName()));
     }
 
-    private static @NotNull JFrame frameOf(final @NotNull LightModeWindow window) {
+    private static @NotNull JFrame frameOf(final @NotNull LightModeScreen window) {
         return (JFrame) Objects.requireNonNull(SwingUtilities.getWindowAncestor(window.frame().rootPane()));
     }
 
-    private static @NotNull Animator theHeightMotion(final @NotNull LightModeWindow window) {
+    private static @NotNull Animator theHeightMotion(final @NotNull LightModeScreen window) {
         return window.frame().heightMotion().orElseThrow(() -> new AssertionError("the window changed height without moving"));
     }
 
@@ -249,19 +249,19 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
 
     @Override
     protected void tearDown() {
-        opened.forEach(LightModeWindow::closeQuietly);
+        opened.forEach(LightModeScreen::closeQuietly);
         super.tearDown();
     }
 
-    private @NotNull LightModeWindow openedOn(final @NotNull TestRunEditor editor) {
-        final @NotNull LightModeWindow window = new LightModeWindow(editor, () -> {
+    private @NotNull LightModeScreen openedOn(final @NotNull TestRunEditor editor) {
+        final @NotNull LightModeScreen window = new LightModeScreen(editor, () -> {
         });
         opened.add(window);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
         return window;
     }
 
-    private void passAndShowTheNext(final @NotNull LightModeWindow window) {
+    private void passAndShowTheNext(final @NotNull LightModeScreen window) {
         press(frameOf(window), RunItemStatus.PASSED.getMenuEntry().shortcut());
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
         window.refresh();
@@ -293,7 +293,7 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
     public void testTheFirstTestCaseArrivesInPlaceAndTheNextComesInMoving() {
         final @NotNull TestRunFixture fixture = aTestRunOf(aTestSetWithSteps(3, 1));
         final @NotNull TestRunEditor editor = walking(fixture);
-        final @NotNull LightModeWindow window = openedOn(editor);
+        final @NotNull LightModeScreen window = openedOn(editor);
         try {
             final @NotNull SlidingPanel testCaseView = theOne(frameOf(window), SlidingPanel.class);
             assertFalse("the first test case slid in, though none left to make room for it", testCaseView.isSliding());
@@ -338,7 +338,7 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
     public void testTheWindowEasesToItsNewHeightRatherThanJumping() {
         final @NotNull TestRunFixture fixture = aTestRunOf(aTestSetWithSteps(2, 4));
         final @NotNull TestRunEditor editor = walking(fixture);
-        final @NotNull LightModeWindow window = openedOn(editor);
+        final @NotNull LightModeScreen window = openedOn(editor);
         final @NotNull JFrame frame = frameOf(window);
         try {
             final int closed = frame.getHeight();
@@ -366,7 +366,7 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
     public void testEverythingMovesForTheSame200Milliseconds() {
         final @NotNull TestRunFixture fixture = aTestRunOf(aTestSetWithSteps(3, 4));
         final @NotNull TestRunEditor editor = walking(fixture);
-        final @NotNull LightModeWindow window = openedOn(editor);
+        final @NotNull LightModeScreen window = openedOn(editor);
         try {
             passAndShowTheNext(window);
             final @NotNull Animator slide = window.slideMotion().orElseThrow(() -> new AssertionError("the next test case arrived without moving"));
@@ -385,7 +385,7 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
     public void testAKeyPressedWhileTheWindowMovesIsTakenAtOnceFromWhereItIs() {
         final @NotNull TestRunFixture fixture = aTestRunOf(aTestSetWithSteps(2, 6));
         final @NotNull TestRunEditor editor = walking(fixture);
-        final @NotNull LightModeWindow window = openedOn(editor);
+        final @NotNull LightModeScreen window = openedOn(editor);
         final @NotNull JFrame frame = frameOf(window);
         try {
             final int closed = frame.getHeight();
@@ -415,7 +415,7 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
         animateWindows(false);
         final @NotNull TestRunFixture fixture = aTestRunOf(aTestSetWithSteps(3, 4));
         final @NotNull TestRunEditor editor = walking(fixture);
-        final @NotNull LightModeWindow window = openedOn(editor);
+        final @NotNull LightModeScreen window = openedOn(editor);
         final @NotNull JFrame frame = frameOf(window);
         try {
             final int closed = frame.getHeight();
@@ -438,7 +438,7 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
         animateWindows(false);
         final @NotNull TestRunFixture fixture = aTestRunOf(aTestSetWithSteps(2, 300));
         final @NotNull TestRunEditor editor = walking(fixture);
-        final @NotNull LightModeWindow window = openedOn(editor);
+        final @NotNull LightModeScreen window = openedOn(editor);
         final @NotNull JFrame frame = frameOf(window);
         try {
             press(frame, DETAILS);

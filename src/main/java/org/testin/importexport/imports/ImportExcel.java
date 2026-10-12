@@ -79,7 +79,7 @@ public class ImportExcel {
             if (workbook.isSheetHidden(i) || workbook.isSheetVeryHidden(i)) continue;
 
             final @NotNull Sheet sheet = workbook.getSheetAt(i);
-            final @NotNull Parsed parsed = parseSheet(p, sheet, dataFormatter);
+            final @NotNull ParsedTestCases parsed = parseSheet(p, sheet, dataFormatter);
             refused += parsed.refused();
 
             if (!parsed.testCases().isEmpty()) {
@@ -91,13 +91,13 @@ public class ImportExcel {
         TestSetEditorAttributes.sayWhatWasRefused(p, refused);
     }
 
-    private @NotNull Parsed parseSheet(final @NotNull Project p, final @NotNull Sheet sheet, final @NotNull DataFormatter dataFormatter) {
+    private @NotNull ParsedTestCases parseSheet(final @NotNull Project p, final @NotNull Sheet sheet, final @NotNull DataFormatter dataFormatter) {
         return Optional.ofNullable(sheet.getRow(0))
                 .map(headerRow -> readRows(p, sheet, headerRow, dataFormatter))
-                .orElse(Parsed.NOTHING);
+                .orElse(ParsedTestCases.NOTHING);
     }
 
-    private @NotNull Parsed readRows(final @NotNull Project p, final @NotNull Sheet sheet, final @NotNull Row headerRow, final @NotNull DataFormatter dataFormatter) {
+    private @NotNull ParsedTestCases readRows(final @NotNull Project p, final @NotNull Sheet sheet, final @NotNull Row headerRow, final @NotNull DataFormatter dataFormatter) {
         final @NotNull Map<String, Integer> headerIndexMap = new HashMap<>();
         for (final Cell cell : headerRow) {
             final @NotNull String headerName = dataFormatter.formatCellValue(cell).trim();
@@ -123,6 +123,6 @@ public class ImportExcel {
             sheetList.add(imported.testCase());
         }
 
-        return new Parsed(sheetList, refused);
+        return new ParsedTestCases(sheetList, refused);
     }
 }

@@ -18,7 +18,7 @@ package org.testin.git;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.git.change.ChangeSubject;
-import org.testin.git.change.DiffType;
+import org.testin.git.change.StatusKind;
 import org.testin.git.change.GitDiffProcessor;
 import org.testin.git.change.PendingChange;
 import org.testin.model.TestCaseDto;
@@ -70,7 +70,7 @@ public class GitRepositoryServiceIdeTest extends AbstractGitRemoteIdeTest {
 
         assertEquals(1, review.size());
         assertEquals(ChangeSubject.TEST_CASE, review.getFirst().subject());
-        assertEquals(DiffType.ADDED, review.getFirst().type());
+        assertEquals(StatusKind.ADDED, review.getFirst().type());
         assertEquals("a test case Git has never seen", review.getFirst().name());
     }
 

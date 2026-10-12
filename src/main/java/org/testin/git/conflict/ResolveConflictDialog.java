@@ -53,7 +53,7 @@ public final class ResolveConflictDialog extends AbstractFrameworkDialog {
 
         final @NotNull List<ComponentDialogBase<?>> rows = new ArrayList<>();
 
-        if (!settled.isEmpty()) rows.add(ComponentDialogBase.message(Merge.settledSentence(settled, LINE)));
+        if (!settled.isEmpty()) rows.add(ComponentDialogBase.message(MergeOutcome.settledSentence(settled, LINE)));
 
         for (final Question question : questions) {
             final @NotNull ComponentDialogBase<RadioSelection<Boolean>> row = ComponentDialogBase.<Boolean>radios(FieldName.of(question.field()))

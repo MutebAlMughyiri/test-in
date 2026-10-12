@@ -16,43 +16,72 @@
 
 package org.testin.importexport.imports;
 
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.importexport.FileFormat;
-import org.testin.ui.dialogs.DownloadFolder;
-import org.testin.ui.framework.ComponentDialogBase;
-import org.testin.ui.framework.TextInput;
+import org.testin.importexport.shared.PreviewLoader;
+import org.testin.model.TestCaseDto;
+import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.ui.dialogs.CollapsiblePanel;
+import org.testin.ui.dialogs.FormRows;
+import org.testin.ui.framework.DialogComponent;
 import org.testin.util.Bundle;
 
+import javax.swing.JComponent;
 import java.io.File;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
-public record SourceSection(@NotNull TextInput field) {
-    // Rule-INTERNAL-095, Rule-INTERNAL-096, Rule-INTERNAL-118, Rule-SETTING-021
-    public static @NotNull SourceSection of(final @NotNull Project p) {
-        final @NotNull FileChooserDescriptor descriptor = new FileChooserDescriptor(true, false, false, false, false, false)
-                .withExtensionFilter("", FileFormat.importableExtensionsForChooser())
-                .withTitle(Bundle.message("import.file.title"))
-                .withDescription(Bundle.message("import.file.description"));
+public final class SourceSection implements DialogComponent {
+    private static final boolean EXPANDED = true;
 
-        return new SourceSection(ComponentDialogBase.textField()
-                .caption(Bundle.message("import.caption.source"))
-                .placeholder(Bundle.message("import.choose.file"))
-                .value(DownloadFolder.of(p))
-                .browse(p, descriptor)
-                .build().getComponent());
+    private final @NotNull SourceFileField source;
+    private final @NotNull FileTypeHint hint;
+    private final @NotNull JComponent panel;
+
+    // UC-SHARE-005, Rule-INTERNAL-099
+    public SourceSection(final @NotNull Project p, final @NotNull List<TestSetEditorAttributes> importAttributes, final @NotNull BiFunction<File, FileFormat, Map<String, List<TestCaseDto>>> importLoader, final @NotNull Consumer<@NotNull Map<String, List<TestCaseDto>>> onDataLoaded) {
+        source = SourceFileField.of(p);
+        hint = FileTypeHint.of(importAttributes);
+
+        final @NotNull PreviewLoader preview = new PreviewLoader(source.field(), p, hint::showStatus, (format, parsedData) -> {
+            hint.showFor(format);
+            onDataLoaded.accept(parsedData);
+        }, importLoader);
+        source.field().onTextChanged(preview::pathChanged);
+
+        // UC-SHARE-007, Rule-SHARE-036
+        source.field().onTextChanged(() -> onDataLoaded.accept(Map.of()));
+
+        panel = CollapsiblePanel.build(Bundle.message("import.section"), new FormRows()
+                .wideRow(source.field().getPanel())
+                .wideRow(hint.panel()), EXPANDED);
     }
 
     // UC-SHARE-005, Rule-SETTING-021
-    public void browse() {
-        ApplicationManager.getApplication().invokeLater(field::browseNow);
+    public void selectSourceFile() {
+        source.browse();
     }
 
-    // UC-SHARE-005, Rule-INTERNAL-067
-    public @NotNull Optional<File> accepted() {
-        final @NotNull String path = field.accepted();
-        return path.isEmpty() ? Optional.empty() : Optional.of(new File(path));
+    // UC-SHARE-005
+    public @NotNull Optional<File> resolve() {
+        return source.accepted();
+    }
+
+    @Override
+    public @NotNull JComponent getPanel() {
+        return panel;
+    }
+
+    @Override
+    public @NotNull JComponent getFocusComponent() {
+        return source.field().getFocusComponent();
+    }
+
+    @Override
+    public void onSubmitRequest(final @NotNull Runnable submit) {
     }
 }

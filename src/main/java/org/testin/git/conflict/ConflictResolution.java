@@ -92,11 +92,11 @@ public final class ConflictResolution {
     private static @NotNull Optional<Merger> mergerFor(final @NotNull String relativePath) {
         final @NotNull Path file = Path.of(relativePath);
 
-        if (TestCaseMerge.isTestCase(relativePath)) return Optional.of(TestCaseMerge::of);
+        if (TestCaseMerger.isTestCase(relativePath)) return Optional.of(TestCaseMerger::of);
         if (FileKind.of(file) == FileKind.RUN_ITEM)
-            return Optional.of((mapper, _, mine, theirs) -> RunItemMerge.of(mapper, mine, theirs));
+            return Optional.of((mapper, _, mine, theirs) -> RunItemMerger.of(mapper, mine, theirs));
         if (NodeType.TR.isMarkerOf(String.valueOf(file.getFileName()))) {
-            return Optional.of(TestRunMarkerMerge::of);
+            return Optional.of(TestRunMarkerMerger::of);
         }
 
         return Optional.empty();
@@ -132,7 +132,7 @@ public final class ConflictResolution {
                 continue;
             }
 
-            final @NotNull Merge merge = merger.orElseThrow().merge(mapper, base, mine, theirs);
+            final @NotNull MergeOutcome merge = merger.orElseThrow().merge(mapper, base, mine, theirs);
 
             if (!merge.isSettled()) {
                 pending.add(new Pending(relativePath, name(mapper, mine, relativePath), merge.merged(),
@@ -148,7 +148,7 @@ public final class ConflictResolution {
             // UC-SHARE-017, Rule-SHARE-109
             if (!settledQuietly.isEmpty()) {
                 Services.getInstance(p, Notifier.class).info(p, Bundle.message("git.merge.settled.title"),
-                        Merge.settledSentence(settledQuietly, System.lineSeparator()));
+                        MergeOutcome.settledSentence(settledQuietly, System.lineSeparator()));
             }
 
             ask(p, git, mapper, repositoryPath, pending, leftOver, onResolved, onLeftOver);
@@ -174,7 +174,7 @@ public final class ConflictResolution {
         };
 
         new ResolveConflictDialog(p, next.name(), next.questions(), next.settled(), takeTheirs -> {
-            final @NotNull Merge answered = new Merge(next.merged(), next.questions(), next.settled());
+            final @NotNull MergeOutcome answered = new MergeOutcome(next.merged(), next.questions(), next.settled());
             for (final Question question : next.questions()) {
                 answered.answer(mapper, question, takeTheirs.contains(question.field()), next.theirs());
             }
@@ -224,6 +224,6 @@ public final class ConflictResolution {
 
     @FunctionalInterface
     private interface Merger {
-        @NotNull Merge merge(@NotNull Mapper mapper, @NotNull String base, @NotNull String mine, @NotNull String theirs);
+        @NotNull MergeOutcome merge(@NotNull Mapper mapper, @NotNull String base, @NotNull String mine, @NotNull String theirs);
     }
 }

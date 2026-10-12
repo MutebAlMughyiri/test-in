@@ -33,7 +33,7 @@ import org.testin.help.SetupStep;
 import org.testin.indexer.DeletedNodes;
 import org.testin.indexer.ProjectIndexer;
 import org.testin.logger.TestinLogger;
-import org.testin.runner.TestCaseExecutionSubscriber;
+import org.testin.runner.ExecutionRecorder;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
 import org.testin.util.Bundle;
@@ -59,7 +59,7 @@ public final class TestinStartup implements ProjectActivity {
 
         CutState.initClipboardWatch(p);
 
-        TestCaseExecutionSubscriber.initRecording(p);
+        ExecutionRecorder.initRecording(p);
     }
 
     // UC-SETTING-002, Rule-SETTING-014, Rule-SETTING-046

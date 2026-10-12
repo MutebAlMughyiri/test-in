@@ -64,5 +64,5 @@ Never `./gradlew inspect` by hand: CI runs it on the push.
 
 One short table of what the review changed and why, then the checks and their
 results, then any finding left as a finding. Commit only after Muteb has tested
-in the sandbox and asked for it, with the why in the commit body (the code
+in the sandbox and asked for it, with the reasons in the commit body (the code
 carries no comments). Push only when he says push.

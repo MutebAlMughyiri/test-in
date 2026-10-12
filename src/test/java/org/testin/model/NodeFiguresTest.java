@@ -57,13 +57,13 @@ public class NodeFiguresTest {
                 runItem(RunItemStatus.BLOCKED),
                 runItem(RunItemStatus.UNTESTED))));
 
-        assertEquals(NodeCount.PASSED.of(figures), "2");
-        assertEquals(NodeCount.FAILED.of(figures), "1");
-        assertEquals(NodeCount.BLOCKED.of(figures), "1");
-        assertEquals(NodeCount.UNTESTED.of(figures), "1");
-        assertEquals(NodeCount.REMOVED.of(figures), "0");
-        assertEquals(NodeCount.TOTAL.of(figures), "5");
-        assertEquals(NodeCount.PASS_RATE.of(figures), "50%", "two of the four that ran passed");
+        assertEquals(NodeFigureRow.PASSED.of(figures), "2");
+        assertEquals(NodeFigureRow.FAILED.of(figures), "1");
+        assertEquals(NodeFigureRow.BLOCKED.of(figures), "1");
+        assertEquals(NodeFigureRow.UNTESTED.of(figures), "1");
+        assertEquals(NodeFigureRow.REMOVED.of(figures), "0");
+        assertEquals(NodeFigureRow.TOTAL.of(figures), "5");
+        assertEquals(NodeFigureRow.PASS_RATE.of(figures), "50%", "two of the four that ran passed");
     }
 
     // Rule-INTERNAL-052
@@ -102,21 +102,21 @@ public class NodeFiguresTest {
     public void aCountReadsAsTheRowItWillBecome() {
         final NodeFigures figures = NodeFigures.ofChildren(9, 4, 2770, 2770, 2);
 
-        assertEquals(NodeCount.TEST_CASES.of(figures), "2770");
-        assertEquals(NodeCount.PASS_RATE.of(NodeFigures.NONE), "0%", "a rate carries its sign");
-        assertEquals(NodeCount.TEST_RUNS.of(NodeFigures.NONE), "0",
+        assertEquals(NodeFigureRow.TEST_CASES.of(figures), "2770");
+        assertEquals(NodeFigureRow.PASS_RATE.of(NodeFigures.NONE), "0%", "a rate carries its sign");
+        assertEquals(NodeFigureRow.TEST_RUNS.of(NodeFigures.NONE), "0",
                 "an empty node answers zero; an absent row would read as 'not counted'");
     }
 
     // Rule-INTERNAL-065
     @Test
     public void aCountSaysWhatANewTestRunWouldTakeWhenThatIsFewer() {
-        assertEquals(NodeCount.TEST_CASES.of(NodeFigures.ofChildren(9, 4, 40, 31, 2)), "40 (31 for a new test run)");
+        assertEquals(NodeFigureRow.TEST_CASES.of(NodeFigures.ofChildren(9, 4, 40, 31, 2)), "40 (31 for a new test run)");
     }
 
     @Test
     public void aCountSaysItOnlyOnceWhenNothingIsRetired() {
-        assertEquals(NodeCount.TEST_CASES.of(NodeFigures.ofChildren(9, 4, 40, 40, 2)), "40",
+        assertEquals(NodeFigureRow.TEST_CASES.of(NodeFigures.ofChildren(9, 4, 40, 40, 2)), "40",
                 "the same number twice is furniture, not an answer");
     }
 }

@@ -61,7 +61,7 @@ public final class AutomationState implements Disposable {
         return Fqcn.methodNameOf(tc).isEmpty() ? Automated.NONE : Automated.MISSING;
     }
 
-    private static @NotNull Answer answer(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases) {
+    private static @NotNull AutomationReading answer(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases) {
         final long codeVersion = PsiModificationTracker.getInstance(p).getModificationCount();
         final @NotNull Map<UUID, Automated> answers = new LinkedHashMap<>();
         final @NotNull Set<UUID> found = new LinkedHashSet<>();
@@ -79,7 +79,7 @@ public final class AutomationState implements Disposable {
             TestinLogger.warn("Could not read the automation state of " + testCases.size() + " test case(s): " + FailureText.of(ex));
         }
 
-        return new Answer(answers, found, codeVersion);
+        return new AutomationReading(answers, found, codeVersion);
     }
 
     // UC-EDITOR-PANEL-047, Rule-EDITOR-PANEL-197
@@ -128,7 +128,7 @@ public final class AutomationState implements Disposable {
     }
 
     // Rule-CODEGEN-082, Rule-EDITOR-PANEL-211
-    private void keep(final @NotNull Project p, final @NotNull Answer answer, final @NotNull List<TestCaseDto> testCases, final @NotNull Map<UUID, Automated> asking, final @NotNull Runnable onAnswered) {
+    private void keep(final @NotNull Project p, final @NotNull AutomationReading answer, final @NotNull List<TestCaseDto> testCases, final @NotNull Map<UUID, Automated> asking, final @NotNull Runnable onAnswered) {
         if (answer.states().isEmpty() || !CodeOn.isOn(p)) return;
 
         known.putAll(answer.states());

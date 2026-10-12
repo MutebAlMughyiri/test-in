@@ -165,7 +165,7 @@ A key that used to do one thing and now does another:
 **It is not a license to write any other comment.** The marker says *which
 documented behavior this is*. It does not describe what the lines do, and nothing
 else is added beside it - not a paragraph saying why, not a line narrating the
-next one. The why goes in the commit message; `CLAUDE.md` says why, and what the
+next one. The reason goes in the commit message; `CLAUDE.md` says why, and what the
 two exceptions are.
 
 **It is not a reason to weaken the documentation to match the code.** When the

@@ -205,7 +205,7 @@ public class ArchitectureTest {
         final @NotNull ArchRule rule = noClasses()
                 .that().resideOutsideOfPackages("org.testin.explorer..", "org.testin.editor..")
                 .and(notOneOf(REFRESH_EXCEPTIONS))
-                .should().callMethod("org.testin.explorer.tree.TreePanelTree", "refresh")
+                .should().callMethod("org.testin.explorer.tree.TestProjectTree", "refresh")
                 .orShould().callMethod("org.testin.editor.open.TestinEditors", "refreshOpen")
                 .because("the indexer announces every change on IndexChanged and the surfaces redraw themselves from it;"
                         + " a caller that refreshes as well is how a rename redrew the tree twice (Rule-INTERNAL-114, #361)."

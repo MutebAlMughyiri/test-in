@@ -37,7 +37,7 @@ final class ReportBugDialog extends AbstractFrameworkDialog {
     private final @NotNull RunItemPath runItemPath;
     private final @NotNull PreparedBug bug;
     private final @NotNull Runnable redraw;
-    private final @NotNull BugReports reports = Services.getInstance(p, BugReports.class);
+    private final @NotNull OpenBugReports reports = Services.getInstance(p, OpenBugReports.class);
     private final @NotNull TestRuns testRuns = Services.getInstance(p, TestRuns.class);
 
     private final @NotNull ComponentDialogBase<TextInput> titleField;

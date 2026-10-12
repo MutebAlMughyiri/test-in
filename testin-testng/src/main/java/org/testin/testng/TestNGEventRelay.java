@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.testrun.Failure;
 import org.testin.model.status.ExecutionStatus;
-import org.testin.runner.TestCaseExecutionListener;
+import org.testin.runner.ExecutionReported;
 import org.testin.util.Bundle;
 
 import java.time.Duration;
@@ -39,27 +39,24 @@ public final class TestNGEventRelay extends SMTRunnerEventsAdapter {
     // UC-CODEGEN-008
     @Override
     public void onTestStarted(final @NotNull SMTestProxy test) {
-        TestCaseExecutionListener.broadcast(p, test.getPresentableName(), ExecutionStatus.RUNNING, Duration.ZERO, Failure.NONE);
+        ExecutionReported.broadcast(p, test.getPresentableName(), ExecutionStatus.RUNNING, Duration.ZERO, Failure.NONE);
     }
 
     // UC-CODEGEN-008, Rule-CODEGEN-075, Rule-CODEGEN-110
     @Override
     public void onTestFinished(final @NotNull SMTestProxy test) {
-        final @NotNull Finished finished = finished(test);
-        TestCaseExecutionListener.broadcast(p, test.getPresentableName(), finished.status(), durationOf(test), finished.failure());
+        final @NotNull FinishedAttempt finished = finished(test);
+        ExecutionReported.broadcast(p, test.getPresentableName(), finished.status(), durationOf(test), finished.failure());
     }
 
     // Rule-CODEGEN-075, Rule-CODEGEN-110
-    static @NotNull Finished finished(final @NotNull SMTestProxy test) {
-        if (test.isPassed()) return new Finished(ExecutionStatus.PASSED, Failure.NONE);
+    static @NotNull FinishedAttempt finished(final @NotNull SMTestProxy test) {
+        if (test.isPassed()) return new FinishedAttempt(ExecutionStatus.PASSED, Failure.NONE);
         if (test.isDefect() && !test.isIgnored() && !test.wasTerminated())
-            return new Finished(ExecutionStatus.FAILED, failureOf(test, ""));
+            return new FinishedAttempt(ExecutionStatus.FAILED, failureOf(test, ""));
         if (test.isIgnored() && !test.wasTerminated())
-            return new Finished(ExecutionStatus.SKIPPED, failureOf(test, Bundle.message("runner.skipped")));
-        return new Finished(ExecutionStatus.FAILED, failureOf(test, Bundle.message("runner.skipped")));
-    }
-
-    record Finished(@NotNull ExecutionStatus status, @NotNull Failure failure) {
+            return new FinishedAttempt(ExecutionStatus.SKIPPED, failureOf(test, Bundle.message("runner.skipped")));
+        return new FinishedAttempt(ExecutionStatus.FAILED, failureOf(test, Bundle.message("runner.skipped")));
     }
 
     private static @NotNull Duration durationOf(final @NotNull SMTestProxy test) {

@@ -66,9 +66,9 @@ import java.util.Set;
 public final class TestinYml {
     public static final @NotNull String SCP_PREFIX = "git@";
     private static final @NotNull String[] FILE_NAMES = {"testin.yml", "testin.yaml"};
-    private static final @NotNull Key<Parsed> READ = Key.create("testin.yml");
+    private static final @NotNull Key<ParsedTestinYml> READ = Key.create("testin.yml");
 
-    private static final @NotNull Parsed NOTHING_SAID = new Parsed(TestinProjectConfig.EMPTY, true);
+    private static final @NotNull ParsedTestinYml NOTHING_SAID = new ParsedTestinYml(TestinProjectConfig.EMPTY, true);
     private static final @NotNull ObjectMapper YAML = new ObjectMapper(new YAMLFactory())
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
             .addHandler(new DeserializationProblemHandler() {
@@ -303,16 +303,16 @@ public final class TestinYml {
         return parsedFor(p).config();
     }
 
-    private static @NotNull Parsed parsedFor(final @NotNull Project p) {
+    private static @NotNull ParsedTestinYml parsedFor(final @NotNull Project p) {
         return Optional.ofNullable(p.getUserData(READ)).orElseGet(() -> {
-            final @NotNull Parsed read = load(p);
+            final @NotNull ParsedTestinYml read = load(p);
             p.putUserData(READ, read);
             return read;
         });
     }
 
-    private static @NotNull Parsed load(final @NotNull Project p) {
-        final @NotNull Parsed parsed = file(p)
+    private static @NotNull ParsedTestinYml load(final @NotNull Project p) {
+        final @NotNull ParsedTestinYml parsed = file(p)
                 .map(TestinYml::read)
                 .orElseGet(() -> {
                     TestinLogger.info("No testin.yml in " + p.getName() + "; Testin goes on without it");
@@ -335,7 +335,7 @@ public final class TestinYml {
         });
     }
 
-    private static @NotNull Parsed read(final @NotNull Path file) {
+    private static @NotNull ParsedTestinYml read(final @NotNull Path file) {
         try {
             return parsed(Files.readString(file), file.toString());
         } catch (final IOException ex) {
@@ -349,7 +349,7 @@ public final class TestinYml {
     }
 
     // UC-TREE-PANEL-001, Rule-TREE-PANEL-119
-    static @NotNull Parsed parsed(final @NotNull String yaml, final @NotNull String source) {
+    static @NotNull ParsedTestinYml parsed(final @NotNull String yaml, final @NotNull String source) {
         if (yaml.isBlank()) {
             TestinLogger.warn("Empty testin.yml: " + source);
             return NOTHING_SAID;
@@ -358,11 +358,11 @@ public final class TestinYml {
         try {
             final @NotNull TestinProjectConfig config = YAML.readValue(yaml, TestinProjectConfig.class);
             TestinLogger.info("Read " + source + ": test project '" + config.projectName() + "'");
-            return new Parsed(config, true);
+            return new ParsedTestinYml(config, true);
 
         } catch (final JsonProcessingException ex) {
             TestinLogger.warn("Malformed " + source + ", ignored: " + FailureText.of(ex));
-            return new Parsed(TestinProjectConfig.EMPTY, false);
+            return new ParsedTestinYml(TestinProjectConfig.EMPTY, false);
         }
     }
 

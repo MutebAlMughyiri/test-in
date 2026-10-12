@@ -19,7 +19,7 @@ package org.testin.git;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.git.change.ChangeSubject;
-import org.testin.git.change.DiffType;
+import org.testin.git.change.StatusKind;
 import org.testin.git.change.PendingChange;
 import org.testin.model.TestCaseDto;
 import org.testng.annotations.Test;
@@ -37,7 +37,7 @@ public class GitRefsTest {
 
     private static @NotNull PendingChange diff(final Path relativePath) {
         return new PendingChange(ChangeSubject.TEST_CASE, "a case", "a test set", UUID.randomUUID().toString(),
-                relativePath, DiffType.MODIFIED,
+                relativePath, StatusKind.MODIFIED,
                 TestCaseDto.builder().build(), List.of());
     }
 
@@ -146,7 +146,7 @@ public class GitRefsTest {
         final List<StatusEntry> entries = GitRefs.parseStatus(List.of("?? .tp"));
 
         assertEquals(entries.size(), 1);
-        assertEquals(entries.getFirst().type(), DiffType.ADDED);
+        assertEquals(entries.getFirst().type(), StatusKind.ADDED);
         assertEquals(entries.getFirst().path(), ".tp");
     }
 
@@ -166,20 +166,20 @@ public class GitRefsTest {
 
     @Test
     public void aModifiedFileIsReportedWhicheverColumnCarriesIt() {
-        assertEquals(GitRefs.parseStatus(List.of(" M a.json")).getFirst().type(), DiffType.MODIFIED);
-        assertEquals(GitRefs.parseStatus(List.of("M  a.json")).getFirst().type(), DiffType.MODIFIED);
-        assertEquals(GitRefs.parseStatus(List.of("MM a.json")).getFirst().type(), DiffType.MODIFIED);
+        assertEquals(GitRefs.parseStatus(List.of(" M a.json")).getFirst().type(), StatusKind.MODIFIED);
+        assertEquals(GitRefs.parseStatus(List.of("M  a.json")).getFirst().type(), StatusKind.MODIFIED);
+        assertEquals(GitRefs.parseStatus(List.of("MM a.json")).getFirst().type(), StatusKind.MODIFIED);
     }
 
     @Test
     public void aDeletedFileIsReportedWhicheverColumnCarriesIt() {
-        assertEquals(GitRefs.parseStatus(List.of(" D a.json")).getFirst().type(), DiffType.DELETED);
-        assertEquals(GitRefs.parseStatus(List.of("D  a.json")).getFirst().type(), DiffType.DELETED);
+        assertEquals(GitRefs.parseStatus(List.of(" D a.json")).getFirst().type(), StatusKind.DELETED);
+        assertEquals(GitRefs.parseStatus(List.of("D  a.json")).getFirst().type(), StatusKind.DELETED);
     }
 
     @Test
     public void aStagedAdditionIsAnAddition() {
-        assertEquals(GitRefs.parseStatus(List.of("A  a.json")).getFirst().type(), DiffType.ADDED);
+        assertEquals(GitRefs.parseStatus(List.of("A  a.json")).getFirst().type(), StatusKind.ADDED);
     }
 
     // Rule-SHARE-048
@@ -190,10 +190,10 @@ public class GitRefsTest {
 
         assertEquals(entries.size(), 2);
 
-        assertEquals(entries.getFirst().type(), DiffType.DELETED);
+        assertEquals(entries.getFirst().type(), StatusKind.DELETED);
         assertEquals(entries.getFirst().path(), "Test Cases/old/a.json");
 
-        assertEquals(entries.get(1).type(), DiffType.ADDED);
+        assertEquals(entries.get(1).type(), StatusKind.ADDED);
         assertEquals(entries.get(1).path(), "Test Cases/new/a.json");
     }
 
@@ -211,8 +211,8 @@ public class GitRefsTest {
         final List<StatusEntry> entries = GitRefs.parseStatus(List.of("RD b.json", "a.json"));
 
         assertEquals(entries.size(), 2);
-        assertEquals(entries.getFirst().type(), DiffType.DELETED);
-        assertEquals(entries.get(1).type(), DiffType.DELETED);
+        assertEquals(entries.getFirst().type(), StatusKind.DELETED);
+        assertEquals(entries.get(1).type(), StatusKind.DELETED);
     }
 
     @Test

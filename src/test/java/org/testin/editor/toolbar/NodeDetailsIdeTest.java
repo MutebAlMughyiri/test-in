@@ -22,7 +22,7 @@ import org.testin.AbstractTempRootIdeTest;
 import org.testin.FilesUnder;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.testset.TestSetEditor;
-import org.testin.model.NodeCount;
+import org.testin.model.NodeFigureRow;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
@@ -37,7 +37,7 @@ import java.util.Map;
 public class NodeDetailsIdeTest extends AbstractTempRootIdeTest {
 
     private static @NotNull String countedTestCases(final @NotNull List<String> words) {
-        final int caption = words.stream().map(word -> word.toLowerCase(Locale.ROOT)).toList().indexOf(NodeCount.TEST_CASES.getCaption().toLowerCase(Locale.ROOT));
+        final int caption = words.stream().map(word -> word.toLowerCase(Locale.ROOT)).toList().indexOf(NodeFigureRow.TEST_CASES.getCaption().toLowerCase(Locale.ROOT));
         assertTrue("the dialog does not count the test cases: " + words, caption > 0);
         return words.get(caption - 1);
     }

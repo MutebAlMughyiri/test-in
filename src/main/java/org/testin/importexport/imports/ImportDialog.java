@@ -36,7 +36,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 public final class ImportDialog extends AbstractFrameworkDialog {
-    private final @NotNull SourceForm form;
+    private final @NotNull SourceSection form;
 
     private final @NotNull Consumer<@NotNull Map<String, List<TestCaseDto>>> onImport;
 
@@ -49,7 +49,7 @@ public final class ImportDialog extends AbstractFrameworkDialog {
         title = Bundle.message("dialog.import.title");
 
         preview = new SheetPreview(p, importAttributes);
-        form = new SourceForm(p, importAttributes, importLoader, preview::show);
+        form = new SourceSection(p, importAttributes, importLoader, preview::show);
 
         components = List.of(
                 ComponentDialogBase.of(form),

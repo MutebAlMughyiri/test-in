@@ -31,12 +31,12 @@ public class StoppedTestCaseIdeTest extends AbstractCodegenIdeTest {
     // Rule-CODEGEN-038
     public void testATestCaseTheTesterStoppedIsRecordedAsNotRunNeverAsFailed() {
         final @NotNull TestCaseDto tc = indexedTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
-        TestCaseExecutionSubscriber.initRecording(getProject());
+        ExecutionRecorder.initRecording(getProject());
         final @NotNull TestNGExecution execution = Services.getInstance(getProject(), TestNGExecution.class);
 
         execution.starting(tc);
         execution.stop(List.of(tc));
-        TestCaseExecutionListener.broadcast(getProject(), tc.getId().toString(), ExecutionStatus.FAILED, Duration.ZERO, Failure.NONE);
+        ExecutionReported.broadcast(getProject(), tc.getId().toString(), ExecutionStatus.FAILED, Duration.ZERO, Failure.NONE);
         settled();
 
         assertEquals("the killed process reported the stopped test case as failed, and it was recorded so", ExecutionStatus.IDLE, execution.statusOf(tc));

@@ -23,7 +23,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.bug.BugIssueState;
-import org.testin.bug.BugIssueStates;
+import org.testin.bug.KnownBugIssueStates;
 import org.testin.model.bug.BugIssueUrl;
 import org.testin.services.Services;
 import org.testin.ui.Badges;
@@ -43,7 +43,7 @@ public final class BugIssueLink {
         Tooltip.set(link, url);
         line.add(link);
 
-        final @NotNull BugIssueState state = Services.getInstance(p, BugIssueStates.class).of(url);
+        final @NotNull BugIssueState state = Services.getInstance(p, KnownBugIssueStates.class).of(url);
         final @NotNull JBPanel<?> pill = AbstractDetails.row(0);
         Badges.showBadges(pill, state.pills());
         Tooltip.set(pill, state.tooltip());

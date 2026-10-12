@@ -80,7 +80,7 @@ record ExportWork(@NotNull Project p, @NotNull Notifier notifier, @NotNull TestC
         final @NotNull VirtualFile targetDir = resolved.orElseThrow();
 
         BackgroundWork.run(p, Bundle.message("export.task.reading", node.getName()), Bundle.message("export.failed.title"), _ -> {
-            final @NotNull Gathered gathered = gather(node);
+            final @NotNull GatheredSheets gathered = gather(node);
             final @NotNull Map<String, List<TestCaseDto>> sheets = gathered.sheets();
             if (sheets.isEmpty()) {
                 ApplicationManager.getApplication().invokeLater(() ->
@@ -117,7 +117,7 @@ record ExportWork(@NotNull Project p, @NotNull Notifier notifier, @NotNull TestC
     }
 
     // UC-SHARE-002, Rule-SHARE-001
-    private @NotNull Gathered gather(final @NotNull Node node) {
+    private @NotNull GatheredSheets gather(final @NotNull Node node) {
         final @NotNull List<Sheet> found = new ArrayList<>();
         final @NotNull List<String> unreadable = new ArrayList<>();
 
@@ -126,7 +126,7 @@ record ExportWork(@NotNull Project p, @NotNull Notifier notifier, @NotNull TestC
         final @NotNull Map<String, List<TestCaseDto>> sheets = new LinkedHashMap<>();
         for (final Sheet sheet : found) sheets.put(uniqueKey(sheets, sheet.path()), sheet.testCases());
 
-        return new Gathered(sheets, unreadable);
+        return new GatheredSheets(sheets, unreadable);
     }
 
     // UC-SHARE-003, Rule-SHARE-020

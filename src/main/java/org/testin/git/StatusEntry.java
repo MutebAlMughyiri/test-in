@@ -17,7 +17,7 @@
 package org.testin.git;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.git.change.DiffType;
+import org.testin.git.change.StatusKind;
 
-public record StatusEntry(@NotNull DiffType type, @NotNull String path) {
+public record StatusEntry(@NotNull StatusKind type, @NotNull String path) {
 }

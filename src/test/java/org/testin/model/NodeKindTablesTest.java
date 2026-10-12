@@ -53,7 +53,7 @@ public class NodeKindTablesTest {
 
     private static @NotNull Set<String> gatheredWaysOfCounting() {
         try {
-            return Arrays.stream(Class.forName("org.testin.indexer.Gathered").getEnumConstants())
+            return Arrays.stream(Class.forName("org.testin.indexer.FiguresByStatistics").getEnumConstants())
                     .map(c -> ((Enum<?>) c).name())
                     .collect(Collectors.toSet());
 

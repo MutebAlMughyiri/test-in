@@ -23,7 +23,7 @@ import com.intellij.util.ui.UIUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.NodeCount;
+import org.testin.model.NodeFigureRow;
 import org.testin.model.NodeFigures;
 import org.testin.ui.framework.DialogComponent;
 import org.testin.util.Fonts;
@@ -58,7 +58,7 @@ public final class RunItemStatusDonut implements DialogComponent {
 
     private final @NotNull JBPanel<?> panel;
 
-    public RunItemStatusDonut(final @NotNull List<NodeCount> slices, final @NotNull NodeFigures figures) {
+    public RunItemStatusDonut(final @NotNull List<NodeFigureRow> slices, final @NotNull NodeFigures figures) {
         final @NotNull JBPanel<?> legend = legend(slices, figures);
         final @NotNull Ring ring = new Ring(slices, figures);
 
@@ -82,20 +82,20 @@ public final class RunItemStatusDonut implements DialogComponent {
         panel.add(block, BorderLayout.NORTH);
     }
 
-    private static @NotNull JBPanel<?> legend(final @NotNull List<NodeCount> slices, final @NotNull NodeFigures figures) {
+    private static @NotNull JBPanel<?> legend(final @NotNull List<NodeFigureRow> slices, final @NotNull NodeFigures figures) {
         final @NotNull JBPanel<?> rows = new JBPanel<>();
         rows.setLayout(new BoxLayout(rows, BoxLayout.Y_AXIS));
         rows.setOpaque(false);
         rows.setBorder(JBUI.Borders.empty());
 
-        for (final NodeCount slice : slices) {
+        for (final NodeFigureRow slice : slices) {
             rows.add(legendRow(slice, figures));
         }
 
         return rows;
     }
 
-    private static @NotNull JBPanel<?> legendRow(final @NotNull NodeCount slice, final @NotNull NodeFigures figures) {
+    private static @NotNull JBPanel<?> legendRow(final @NotNull NodeFigureRow slice, final @NotNull NodeFigures figures) {
         final @NotNull JBPanel<?> row = new JBPanel<>(new BorderLayout(JBUI.scale(8), 0));
         row.setOpaque(false);
         row.setPreferredSize(new Dimension(JBUI.scale(LEGEND_WIDTH), JBUI.scale(ROW_HEIGHT)));
@@ -116,7 +116,7 @@ public final class RunItemStatusDonut implements DialogComponent {
     }
 
     // UC-TREE-PANEL-027, Rule-TREE-PANEL-126
-    static double[] sweeps(final @NotNull List<NodeCount> slices, final @NotNull NodeFigures figures) {
+    static double[] sweeps(final @NotNull List<NodeFigureRow> slices, final @NotNull NodeFigures figures) {
         final double[] sweeps = new double[slices.size()];
         final double whole = Math.max(figures.testRun().total(), 1);
         double sum = 0;
@@ -156,7 +156,7 @@ public final class RunItemStatusDonut implements DialogComponent {
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class Ring extends JComponent {
-        private final @NotNull List<NodeCount> slices;
+        private final @NotNull List<NodeFigureRow> slices;
         private final @NotNull NodeFigures figures;
 
         @Override

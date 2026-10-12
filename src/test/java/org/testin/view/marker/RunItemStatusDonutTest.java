@@ -17,7 +17,7 @@
 package org.testin.view.marker;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.NodeCount;
+import org.testin.model.NodeFigureRow;
 import org.testin.model.NodeFigures;
 import org.testin.model.NodeStatistics;
 import org.testin.model.testrun.TestRunSummary;
@@ -31,7 +31,7 @@ import static org.testng.Assert.assertTrue;
 
 public class RunItemStatusDonutTest {
 
-    private static final List<NodeCount> SLICES = NodeStatistics.RUN_ITEM_STATUSES.getSlices();
+    private static final List<NodeFigureRow> SLICES = NodeStatistics.RUN_ITEM_STATUSES.getSlices();
 
     private static @NotNull NodeFigures run(final long passed, final long failed, final long blocked, final long untested) {
         final long total = passed + failed + blocked + untested;

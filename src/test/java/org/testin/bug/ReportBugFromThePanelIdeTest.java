@@ -185,7 +185,7 @@ public class ReportBugFromThePanelIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull JComponent opened(final @NotNull PreparedBug bug) {
-        final @NotNull BugReports reports = Services.getInstance(getProject(), BugReports.class);
+        final @NotNull OpenBugReports reports = Services.getInstance(getProject(), OpenBugReports.class);
         reports.begin(runItemPath);
         reports.moveTo(runItemPath, Stage.OPEN);
         new ReportBugDialog(getProject(), runItemPath, bug, () -> {
@@ -194,7 +194,7 @@ public class ReportBugFromThePanelIdeTest extends AbstractTempRootIdeTest {
     }
 
     private void sentAndSettled() {
-        Await.until("the send never finished", () -> Services.getInstance(getProject(), BugReports.class).whyReportBugIsOff(runItemPath, failed).filter(Bundle.message("bug.sending")::equals).isEmpty() && !issuesCreated().isEmpty());
+        Await.until("the send never finished", () -> Services.getInstance(getProject(), OpenBugReports.class).whyReportBugIsOff(runItemPath, failed).filter(Bundle.message("bug.sending")::equals).isEmpty() && !issuesCreated().isEmpty());
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
 
@@ -246,7 +246,7 @@ public class ReportBugFromThePanelIdeTest extends AbstractTempRootIdeTest {
         ReportBug.start(getProject(), tr, tc.getId(), tc, () -> {
         });
 
-        Await.until("the stopped preparation never finished", () -> Services.getInstance(getProject(), BugReports.class).whyReportBugIsOff(runItemPath, failed).isEmpty());
+        Await.until("the stopped preparation never finished", () -> Services.getInstance(getProject(), OpenBugReports.class).whyReportBugIsOff(runItemPath, failed).isEmpty());
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
         assertFalse("stopping the progress bar still opened the bug", ShownDialog.isOpen(getProject(), ReportBugDialog.class));
     }

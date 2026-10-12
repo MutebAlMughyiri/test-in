@@ -33,7 +33,7 @@ public class TestNGEventRelayTest {
     }
 
     private static @NotNull String finished(final @NotNull SMTestProxy test) {
-        final TestNGEventRelay.@NotNull Finished finished = TestNGEventRelay.finished(test);
+        final @NotNull FinishedAttempt finished = TestNGEventRelay.finished(test);
         return finished.status() + ": " + finished.failure().message();
     }
 

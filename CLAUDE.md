@@ -242,7 +242,7 @@ silently has no effect costs more than the setting it was meant to hold.
   below. `DeclaredContractsTest` scans the main and test trees for them, holds
   the same three with their reasons and fails on a fourth, so this list can no
   longer drift from the code unnoticed. Do not sweep them again:
-  - `NodesTransferable.getTransferData`, and the one `TestCaseTransferHandler` builds
+  - `TreeTransferable.getTransferData`, and the one `TestCaseTransferHandler` builds
     for a drag of test cases — AWT's `Transferable` contract is that an
     unsupported flavor throws. Catching it hands the platform a wrong object
     instead of "I do not have that".

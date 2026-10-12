@@ -103,8 +103,8 @@ public class TestinConfigTest {
     // Rule-TREE-PANEL-119
     @Test
     public void aBrokenFileIsTheSameValueAndNotTheSameState() {
-        final Parsed broken = TestinYml.parsed("testinProject: [unclosed\n", "malformed");
-        final Parsed absent = TestinYml.parsed("   \n", "blank");
+        final ParsedTestinYml broken = TestinYml.parsed("testinProject: [unclosed\n", "malformed");
+        final ParsedTestinYml absent = TestinYml.parsed("   \n", "blank");
 
         assertEquals(broken.config(), absent.config(), "a file that would not parse has told us no more than one that is not there");
 

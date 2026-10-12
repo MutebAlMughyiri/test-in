@@ -22,7 +22,7 @@ import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.StatusText;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import org.testin.bug.BugIssueStates;
+import org.testin.bug.KnownBugIssueStates;
 import org.testin.codegen.ExecutionPosition;
 import org.testin.editor.AbstractTestinEditor;
 import org.testin.editor.PageWindow;
@@ -57,7 +57,7 @@ import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.TestRunSummary;
 import org.testin.model.status.TestRunStatus;
 import org.testin.notifications.Done;
-import org.testin.runner.TestCaseExecutionSubscriber;
+import org.testin.runner.ExecutionRecorder;
 import org.testin.services.Services;
 import org.testin.testcase.TestSetEditorAttributes;
 import org.testin.testrun.TestRunResultAnalysisDialog;
@@ -108,7 +108,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
         super(p, vf.getTestRun());
         Services.getInstance(p, Guides.class).add(Guide.TEST_RUN_EDITOR_SHORTCUTS);
 
-        TestCaseExecutionSubscriber.onReported(p, projectDisposable, walk::executionReported);
+        ExecutionRecorder.onReported(p, projectDisposable, walk::executionReported);
 
         this.toolBar = new TestRunToolbar(p, this);
         buildOpeningPanel();
@@ -157,7 +157,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
 
                     startIfAsked();
                     onLoaded.run();
-                    Services.getInstance(p, BugIssueStates.class).readAll(() -> ViewToolWindowFactory.refreshShown(p));
+                    Services.getInstance(p, KnownBugIssueStates.class).readAll(() -> ViewToolWindowFactory.refreshShown(p));
                 });
             } catch (final Exception ex) {
                 TestinLogger.error("Failed to load Test Run data from disk: " + FailureText.of(ex));

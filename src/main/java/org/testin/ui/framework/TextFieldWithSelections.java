@@ -67,13 +67,13 @@ public final class TextFieldWithSelections<T> implements DialogComponent, TextVa
     private final @NotNull JBPanel<?> panel;
     private final @NotNull JBScrollPane scrollPane;
     private final int visibleRows;
-    private final @NotNull Rows<T> rows;
+    private final @NotNull SelectionSource<T> rows;
     private final @NotNull AtomicInteger queryGeneration = new AtomicInteger();
     private @NotNull Runnable submitRequest = () -> {
     };
     private boolean askedOnce;
 
-    TextFieldWithSelections(final @NotNull Icon icon, final @NotNull String placeHolderText, final @NotNull List<SelectionList<T>> shownBeforeAsking, final @NotNull Rows<T> rows, final int visibleRows) {
+    TextFieldWithSelections(final @NotNull Icon icon, final @NotNull String placeHolderText, final @NotNull List<SelectionList<T>> shownBeforeAsking, final @NotNull SelectionSource<T> rows, final int visibleRows) {
         this.rows = rows;
         this.visibleRows = visibleRows;
         input = new FrameworkTextField(icon, placeHolderText, "");

@@ -67,7 +67,7 @@ public class LightModeButtonsIdeTest extends AbstractCodegenIdeTest {
     private static final @NotNull String RUN = Bundle.message("action.Testin.RunTestMethod.text");
     private static final @NotNull String TO_THE_TEST_CASE = Bundle.message("action.Testin.NavigateToTestCase.text");
 
-    private final @NotNull List<LightModeWindow> opened = new ArrayList<>();
+    private final @NotNull List<LightModeScreen> opened = new ArrayList<>();
 
     private @NotNull CapturedRunner runner = new CapturedRunner();
 
@@ -123,7 +123,7 @@ public class LightModeButtonsIdeTest extends AbstractCodegenIdeTest {
 
     @Override
     protected void tearDown() {
-        opened.forEach(LightModeWindow::closeQuietly);
+        opened.forEach(LightModeScreen::closeQuietly);
         super.tearDown();
     }
 
@@ -144,7 +144,7 @@ public class LightModeButtonsIdeTest extends AbstractCodegenIdeTest {
     }
 
     private @NotNull JFrame lightModeOn(final @NotNull TestRunEditor editor) {
-        final @NotNull LightModeWindow window = new LightModeWindow(editor, () -> {
+        final @NotNull LightModeScreen window = new LightModeScreen(editor, () -> {
         });
         opened.add(window);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();

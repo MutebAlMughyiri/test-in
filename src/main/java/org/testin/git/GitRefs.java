@@ -20,7 +20,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.config.TestinYml;
-import org.testin.git.change.DiffType;
+import org.testin.git.change.StatusKind;
 import org.testin.git.change.PendingChange;
 import org.testin.util.Bundle;
 
@@ -48,7 +48,7 @@ public final class GitRefs {
         for (final Map.Entry<String, String> change : changes(statusRecords)) {
             final @NotNull String code = change.getKey().substring(0, 2);
             final @NotNull String from = change.getValue();
-            if (code.indexOf('R') >= 0 && !from.isEmpty()) entries.add(new StatusEntry(DiffType.DELETED, from));
+            if (code.indexOf('R') >= 0 && !from.isEmpty()) entries.add(new StatusEntry(StatusKind.DELETED, from));
 
             entries.add(new StatusEntry(typeOf(code), change.getKey().substring(3)));
         }
@@ -95,13 +95,13 @@ public final class GitRefs {
                 : Bundle.message("git.conflict.named.more", names, String.valueOf(rest));
     }
 
-    private static @NotNull DiffType typeOf(final @NotNull String code) {
-        if (code.equals("??") || code.indexOf('A') >= 0) return DiffType.ADDED;
-        if (code.indexOf('D') >= 0) return DiffType.DELETED;
+    private static @NotNull StatusKind typeOf(final @NotNull String code) {
+        if (code.equals("??") || code.indexOf('A') >= 0) return StatusKind.ADDED;
+        if (code.indexOf('D') >= 0) return StatusKind.DELETED;
 
-        if (code.indexOf('R') >= 0) return DiffType.ADDED;
+        if (code.indexOf('R') >= 0) return StatusKind.ADDED;
 
-        return DiffType.MODIFIED;
+        return StatusKind.MODIFIED;
     }
 
     // UC-SHARE-016, Rule-SHARE-122

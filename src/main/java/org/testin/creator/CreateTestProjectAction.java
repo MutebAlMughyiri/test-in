@@ -21,7 +21,7 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.actions.AbstractProjectAction;
+import org.testin.actions.AbstractBoundProjectAction;
 import org.testin.actions.GrayWithReason;
 import org.testin.creator.dialogs.CreateProjectDialog;
 import org.testin.explorer.TreePanel;
@@ -35,7 +35,7 @@ import org.testin.testproject.TestProjectFolder;
 import org.testin.util.Bundle;
 
 
-public class CreateTestProjectAction extends AbstractProjectAction {
+public class CreateTestProjectAction extends AbstractBoundProjectAction {
     private final @NotNull TreePanel tp;
     private final @NotNull TestinRoot testinRoot = Services.getInstance(p, TestinRoot.class);
 

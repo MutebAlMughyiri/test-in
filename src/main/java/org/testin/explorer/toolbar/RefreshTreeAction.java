@@ -22,8 +22,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.actions.AbstractProjectAction;
-import org.testin.bug.BugIssueStates;
+import org.testin.actions.AbstractBoundProjectAction;
+import org.testin.bug.KnownBugIssueStates;
 import org.testin.editor.open.TestinEditors;
 import org.testin.explorer.TreePanel;
 import org.testin.indexer.ProjectIndexer;
@@ -40,7 +40,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class RefreshTreeAction extends AbstractProjectAction {
+public class RefreshTreeAction extends AbstractBoundProjectAction {
     private static final @NotNull String REFRESHED = Done.REFRESHED.getOutcome();
 
     private final @NotNull TreePanel tp;
@@ -110,7 +110,7 @@ public class RefreshTreeAction extends AbstractProjectAction {
             testinEditors.refreshOpen();
 
             tp.refresh();
-            Services.getInstance(p, BugIssueStates.class).readAll(() -> ViewToolWindowFactory.refreshShown(p));
+            Services.getInstance(p, KnownBugIssueStates.class).readAll(() -> ViewToolWindowFactory.refreshShown(p));
             TestinLogger.info("Refresh: tree rebuilt");
 
             tp.fetchBranches();

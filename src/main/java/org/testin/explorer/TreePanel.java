@@ -35,7 +35,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.creator.CreateTestProjectAction;
 import org.testin.explorer.toolbar.BranchSelector;
 import org.testin.explorer.toolbar.RefreshTreeAction;
-import org.testin.explorer.tree.TreePanelTree;
+import org.testin.explorer.tree.TestProjectTree;
 import org.testin.help.Guide;
 import org.testin.help.Guides;
 import org.testin.indexer.IndexChanged;
@@ -79,7 +79,7 @@ public final class TreePanel implements Disposable {
     private final @NotNull RefreshTreeAction refreshAction;
 
     @Getter
-    private final @NotNull TreePanelTree projectTree;
+    private final @NotNull TestProjectTree projectTree;
     // UC-TREE-PANEL-028, Rule-TREE-PANEL-101
     private @NotNull Optional<Content> content = Optional.empty();
     private @NotNull Map<String, ProjectStatus> underRoot = Map.of();
@@ -93,7 +93,7 @@ public final class TreePanel implements Disposable {
 
         refreshAction = new RefreshTreeAction(p, this);
         branchSelector = new BranchSelector(p, this, bound());
-        projectTree = new TreePanelTree(p);
+        projectTree = new TestProjectTree(p);
         Disposer.register(this, projectTree);
 
         final @NotNull JBPanel<?> topBar = new JBPanel<>(new BorderLayout());

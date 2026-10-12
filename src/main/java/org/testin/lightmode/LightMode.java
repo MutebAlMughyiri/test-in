@@ -26,16 +26,16 @@ import java.util.Optional;
 
 @Service(Service.Level.PROJECT)
 public final class LightMode implements Disposable {
-    private @NotNull Optional<LightModeWindow> window = Optional.empty();
+    private @NotNull Optional<LightModeScreen> window = Optional.empty();
 
     // UC-EDITOR-PANEL-046
     public void toggle(final @NotNull TestRunEditor editor, final @NotNull Runnable onChange) {
         final boolean wasShowingThisTestRun = isOpenOn(editor.getParent());
 
-        window.ifPresent(LightModeWindow::close);
+        window.ifPresent(LightModeScreen::close);
 
         if (!wasShowingThisTestRun) {
-            window = Optional.of(new LightModeWindow(editor, () -> {
+            window = Optional.of(new LightModeScreen(editor, () -> {
                 window = Optional.empty();
                 onChange.run();
             }));
@@ -51,11 +51,11 @@ public final class LightMode implements Disposable {
             return;
         }
 
-        window.filter(open -> open.shows(testRun)).ifPresent(LightModeWindow::refresh);
+        window.filter(open -> open.shows(testRun)).ifPresent(LightModeScreen::refresh);
     }
 
     private void closeIfShowing(final @NotNull TestRunNode testRun) {
-        window.filter(open -> open.shows(testRun)).ifPresent(LightModeWindow::close);
+        window.filter(open -> open.shows(testRun)).ifPresent(LightModeScreen::close);
     }
 
     // UC-EDITOR-PANEL-046
@@ -68,7 +68,7 @@ public final class LightMode implements Disposable {
 
     // UC-EDITOR-PANEL-046
     public void tick(final @NotNull TestRunNode testRun) {
-        window.filter(open -> open.shows(testRun)).ifPresent(LightModeWindow::tick);
+        window.filter(open -> open.shows(testRun)).ifPresent(LightModeScreen::tick);
     }
 
     public boolean isOpenOn(final @NotNull TestRunNode testRun) {
@@ -77,6 +77,6 @@ public final class LightMode implements Disposable {
 
     @Override
     public void dispose() {
-        window.ifPresent(LightModeWindow::closeQuietly);
+        window.ifPresent(LightModeScreen::closeQuietly);
     }
 }

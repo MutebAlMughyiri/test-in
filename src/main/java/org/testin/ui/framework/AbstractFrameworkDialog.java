@@ -62,7 +62,7 @@ public abstract class AbstractFrameworkDialog implements DialogHost {
 
     protected final @NotNull Notifier notifier;
 
-    private final @NotNull OpenDialogs openDialogs;
+    private final @NotNull DialogsOnScreen openDialogs;
     private final @NotNull Maximized maximized = new Maximized();
     protected @NotNull String title = "";
     protected @NotNull List<? extends ComponentDialogBase<?>> components = List.of();
@@ -82,7 +82,7 @@ public abstract class AbstractFrameworkDialog implements DialogHost {
     protected AbstractFrameworkDialog(final @NotNull Project p) {
         this.p = p;
         this.notifier = Services.getInstance(p, Notifier.class);
-        this.openDialogs = Services.getInstance(p, OpenDialogs.class);
+        this.openDialogs = Services.getInstance(p, DialogsOnScreen.class);
     }
 
     private static @NotNull JBPanel<?> verticalStack(final @NotNull List<DialogComponent> dialogComponents) {

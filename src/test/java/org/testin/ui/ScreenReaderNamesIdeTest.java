@@ -36,7 +36,7 @@ import org.testin.editor.cardview.CardView;
 import org.testin.editor.statusbar.PageStep;
 import org.testin.editor.statusbar.EditorStatusBar;
 import org.testin.editor.testrun.RunItemCard;
-import org.testin.explorer.tree.TreePanelTree;
+import org.testin.explorer.tree.TestProjectTree;
 import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.Execution;
 import org.testin.model.testrun.RunItem;
@@ -169,7 +169,7 @@ public class ScreenReaderNamesIdeTest extends BasePlatformTestCase {
 
     // Rule-INTERNAL-122
     public void testTheExplorerTreeIsNamed() {
-        final @NotNull TreePanelTree tree = new TreePanelTree(getProject());
+        final @NotNull TestProjectTree tree = new TestProjectTree(getProject());
         Disposer.register(getTestRootDisposable(), tree);
 
         assertEveryStopIsNamed("the explorer tree", tree.getMainTree());

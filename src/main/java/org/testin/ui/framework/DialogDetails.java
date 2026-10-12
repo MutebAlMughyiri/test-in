@@ -36,13 +36,13 @@ public final class DialogDetails implements DialogComponent {
 
     private final @NotNull JBPanel<?> panel;
 
-    DialogDetails(final @NotNull List<Row> rows) {
+    DialogDetails(final @NotNull List<DialogDetailRow> rows) {
         final @NotNull JBPanel<?> stack = new JBPanel<>();
         stack.setLayout(new BoxLayout(stack, BoxLayout.Y_AXIS));
         stack.setOpaque(false);
         stack.setBorder(JBUI.Borders.empty(Spacing.XS, 0));
 
-        for (final Row row : rows) {
+        for (final DialogDetailRow row : rows) {
             // Rule-INTERNAL-087
             final @NotNull JBLabel value = wrappingValue(row.value());
             row.icon().ifPresent(icon -> {

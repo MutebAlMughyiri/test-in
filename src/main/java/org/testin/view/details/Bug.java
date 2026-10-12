@@ -22,7 +22,7 @@ import com.intellij.ui.components.JBPanel;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.bug.BugReports;
+import org.testin.bug.OpenBugReports;
 import org.testin.bug.ReportBug;
 import org.testin.bug.RunItemPath;
 import org.testin.model.TestCaseDto;
@@ -66,7 +66,7 @@ public final class Bug {
 
     // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-066, Rule-VIEW-PANEL-075
     private static @NotNull ActionLink report(final @NotNull Project p, final @NotNull RunItem runItem, final @NotNull TestCaseDto dto, final @NotNull TestRunNode testRunNode) {
-        final @NotNull Optional<String> off = Services.getInstance(p, BugReports.class)
+        final @NotNull Optional<String> off = Services.getInstance(p, OpenBugReports.class)
                 .whyReportBugIsOff(new RunItemPath(testRunNode.getPath(), runItem.getId()), runItem);
 
         final @NotNull ActionLink report = AbstractDetails.link(Bundle.message("bug.dialog.title"),

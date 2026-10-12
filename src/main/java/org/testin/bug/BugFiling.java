@@ -45,7 +45,7 @@ public final class BugFiling {
 
     // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-073, Rule-VIEW-PANEL-077
     public static void send(final @NotNull Project p, final @NotNull RunItemPath runItemPath, final @NotNull BugRepository repository, final @NotNull Edits edits, final @NotNull List<byte[]> screenshots, final @NotNull Runnable redraw) {
-        final @NotNull BugReports reports = Services.getInstance(p, BugReports.class);
+        final @NotNull OpenBugReports reports = Services.getInstance(p, OpenBugReports.class);
         reports.keep(runItemPath, edits);
         reports.moveTo(runItemPath, Stage.SENDING);
         redraw.run();
@@ -64,7 +64,7 @@ public final class BugFiling {
         final @NotNull Notifier notifier = Services.getInstance(p, Notifier.class);
 
         answer.url().ifPresentOrElse(url -> {
-            Services.getInstance(p, BugReports.class).discard(runItemPath);
+            Services.getInstance(p, OpenBugReports.class).discard(runItemPath);
 
             final @NotNull List<String> said = new ArrayList<>(List.of(BugIssueUrl.reference(url)));
             store(p, runItemPath, url).ifPresent(said::add);

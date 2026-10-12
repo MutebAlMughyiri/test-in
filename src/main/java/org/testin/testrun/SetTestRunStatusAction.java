@@ -22,14 +22,14 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.treeStructure.SimpleTree;
 import org.jetbrains.annotations.NotNull;
-import org.testin.actions.AbstractProjectAction;
+import org.testin.actions.AbstractBoundProjectAction;
 import org.testin.actions.GrayWithReason;
 import org.testin.explorer.tree.TreeValues;
 import org.testin.model.node.TestRunNode;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
 
-public class SetTestRunStatusAction extends AbstractProjectAction {
+public class SetTestRunStatusAction extends AbstractBoundProjectAction {
     final @NotNull SimpleTree tree;
     private final @NotNull TestRunStatusChange statusChange = Services.getInstance(p, TestRunStatusChange.class);
 

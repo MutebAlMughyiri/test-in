@@ -75,7 +75,7 @@ public class TestRunMergeTest {
     // Rule-SHARE-080, Rule-SHARE-081
     @Test
     public void bothSidesExecutionsAreJoinedInTimeOrder() {
-        final Merge merge = RunItemMerge.of(RealMapper.build(), MINE_ITEM, THEIRS_ITEM);
+        final MergeOutcome merge = RunItemMerger.of(RealMapper.build(), MINE_ITEM, THEIRS_ITEM);
 
         assertTrue(merge.isSettled(), "a run item is settled by rule, never by asking");
         assertEquals(merge.merged().path("executions").size(), 3, "the execution both sides hold is kept once: " + merge.merged());
@@ -88,8 +88,8 @@ public class TestRunMergeTest {
     // Rule-SHARE-081
     @Test
     public void theBugFieldsComeFromWhoeverRecordedLastWhicheverSideIsMine() {
-        assertEquals(RunItemMerge.of(RealMapper.build(), MINE_ITEM, THEIRS_ITEM).merged().path("bugSeverity").asText(), "MAJOR");
-        assertEquals(RunItemMerge.of(RealMapper.build(), THEIRS_ITEM, MINE_ITEM).merged().path("bugSeverity").asText(), "MAJOR");
+        assertEquals(RunItemMerger.of(RealMapper.build(), MINE_ITEM, THEIRS_ITEM).merged().path("bugSeverity").asText(), "MAJOR");
+        assertEquals(RunItemMerger.of(RealMapper.build(), THEIRS_ITEM, MINE_ITEM).merged().path("bugSeverity").asText(), "MAJOR");
     }
 
     // Rule-SHARE-081, Rule-VIEW-PANEL-119
@@ -98,7 +98,7 @@ public class TestRunMergeTest {
         final String chosenEarly = runItem("MINOR", BOTH.replace("{", "{ \"default\" : true,"), EARLY);
         final String chosenLate = runItem("MAJOR", BOTH, LATE.replace("{", "{ \"default\" : true,"));
 
-        final Merge merge = RunItemMerge.of(RealMapper.build(), chosenEarly, chosenLate);
+        final MergeOutcome merge = RunItemMerger.of(RealMapper.build(), chosenEarly, chosenLate);
 
         assertEquals(merge.merged().path("executions").size(), 3, "a flag does not make the same execution a second one");
         assertTrue(merge.merged().path("executions").get(2).path("default").asBoolean(), "the later side's choice stays: " + merge.merged());
@@ -107,7 +107,7 @@ public class TestRunMergeTest {
 
     @Test
     public void twoIdenticalRunItemsAreNoDisagreement() {
-        final Merge merge = RunItemMerge.of(RealMapper.build(), MINE_ITEM, MINE_ITEM);
+        final MergeOutcome merge = RunItemMerger.of(RealMapper.build(), MINE_ITEM, MINE_ITEM);
 
         assertTrue(merge.isSettled());
         assertTrue(merge.settled().isEmpty(), "nothing was decided, because nothing differed");
@@ -117,7 +117,7 @@ public class TestRunMergeTest {
     // Rule-SHARE-080
     @Test
     public void aTestRunRanFromTheFirstStartToTheLastStop() {
-        final Merge merge = TestRunMarkerMerge.of(RealMapper.build(), BASE_MARKER, MINE_MARKER, THEIRS_MARKER);
+        final MergeOutcome merge = TestRunMarkerMerger.of(RealMapper.build(), BASE_MARKER, MINE_MARKER, THEIRS_MARKER);
 
         assertTrue(merge.isSettled(), "none of this is the tester's to answer: " + merge.questions());
         assertEquals(merge.merged().path("executionStartedAt").asText(), "Monday 14-09-2026 At 09:30:00 [Asia/Riyadh]");
@@ -129,7 +129,7 @@ public class TestRunMergeTest {
     // Rule-SHARE-130
     @Test
     public void aCommittedTestRunBringsItsCommitWithItsStatus() {
-        final Merge merge = TestRunMarkerMerge.of(RealMapper.build(), BASE_MARKER, MINE_MARKER, THEIRS_MARKER.replace("\"status\" : \"COMPLETED\"", "\"status\" : \"COMMITTED\", \"commit\" : \"ea9a501\""));
+        final MergeOutcome merge = TestRunMarkerMerger.of(RealMapper.build(), BASE_MARKER, MINE_MARKER, THEIRS_MARKER.replace("\"status\" : \"COMPLETED\"", "\"status\" : \"COMMITTED\", \"commit\" : \"ea9a501\""));
 
         assertEquals(merge.merged().path("status").asText(), "COMMITTED");
         assertEquals(merge.merged().path("commit").asText(), "ea9a501", "a Committed test run without its commit would read nothing");
@@ -138,7 +138,7 @@ public class TestRunMergeTest {
     // Rule-SHARE-130
     @Test
     public void aCommitIsKeptWhenTheOtherSideIsBehind() {
-        final Merge merge = TestRunMarkerMerge.of(RealMapper.build(), BASE_MARKER, MINE_MARKER.replace("\"status\" : \"IN_PROGRESS\"", "\"status\" : \"COMMITTED\", \"commit\" : \"ea9a501\""), THEIRS_MARKER);
+        final MergeOutcome merge = TestRunMarkerMerger.of(RealMapper.build(), BASE_MARKER, MINE_MARKER.replace("\"status\" : \"IN_PROGRESS\"", "\"status\" : \"COMMITTED\", \"commit\" : \"ea9a501\""), THEIRS_MARKER);
 
         assertEquals(merge.merged().path("status").asText(), "COMMITTED");
         assertEquals(merge.merged().path("commit").asText(), "ea9a501");
@@ -146,7 +146,7 @@ public class TestRunMergeTest {
 
     @Test
     public void theAnswersTheyEachGaveAreBothKept() {
-        final Merge merge = TestRunMarkerMerge.of(RealMapper.build(), BASE_MARKER, MINE_MARKER, THEIRS_MARKER);
+        final MergeOutcome merge = TestRunMarkerMerger.of(RealMapper.build(), BASE_MARKER, MINE_MARKER, THEIRS_MARKER);
 
         assertEquals(merge.merged().path("configuration").path("BROWSER").asText(), "Chrome");
         assertEquals(merge.merged().path("configuration").path("COMPONENT").asText(), "Storefront");
@@ -159,7 +159,7 @@ public class TestRunMergeTest {
         final String theirs = THEIRS_MARKER.replace("\"PLATFORM\" : \"Web\"", "\"PLATFORM\" : \"Mobile\"");
         final String mine = MINE_MARKER.replace("\"PLATFORM\" : \"Web\"", "\"PLATFORM\" : \"Desktop\"");
 
-        final Merge merge = TestRunMarkerMerge.of(RealMapper.build(), BASE_MARKER, mine, theirs);
+        final MergeOutcome merge = TestRunMarkerMerger.of(RealMapper.build(), BASE_MARKER, mine, theirs);
 
         assertEquals(merge.questions().size(), 1, "one question, about the one field both answered: " + merge.questions());
         assertEquals(merge.questions().getFirst().field(), "configuration.PLATFORM");

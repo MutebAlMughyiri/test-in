@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.testrun.TestRunEditor;
-import org.testin.git.GitFailure;
+import org.testin.git.GitFailureNotice;
 import org.testin.git.conflict.GitConflictOffer;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestProjectNode;
@@ -56,7 +56,7 @@ public class GuidesOfferedIdeTest extends AbstractTempRootIdeTest {
     public void testAGitFailureOffersGitSharingAndAConflictOffersConflicts() {
         guides().forgetAll();
 
-        GitFailure.show(getProject(), "Sync Failed", "fatal: could not read from remote repository");
+        GitFailureNotice.show(getProject(), "Sync Failed", "fatal: could not read from remote repository");
         GitConflictOffer.show(getProject(), List.of("Test Cases/Login/a.tc"), () -> {
         }, () -> {
         }, () -> {

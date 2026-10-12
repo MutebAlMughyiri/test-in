@@ -30,7 +30,7 @@ public enum NodeStatistics {
     ),
 
     RUN_ITEM_STATUSES(ImmutableList.of(
-            NodeCount.PASSED, NodeCount.FAILED, NodeCount.BLOCKED, NodeCount.UNTESTED, NodeCount.REMOVED));
+            NodeFigureRow.PASSED, NodeFigureRow.FAILED, NodeFigureRow.BLOCKED, NodeFigureRow.UNTESTED, NodeFigureRow.REMOVED));
 
-    private final @NotNull ImmutableList<NodeCount> slices;
+    private final @NotNull ImmutableList<NodeFigureRow> slices;
 }

@@ -96,7 +96,7 @@ public final class TestNGExecution implements Disposable {
     public void starting(final @NotNull TestCaseDto tc) {
         registry.starting(tc.getId());
 
-        TestCaseExecutionListener.broadcast(p, key(tc.getId()), ExecutionStatus.RUNNING, Duration.ZERO, Failure.NONE);
+        ExecutionReported.broadcast(p, key(tc.getId()), ExecutionStatus.RUNNING, Duration.ZERO, Failure.NONE);
     }
 
     @FromContentModule
@@ -134,7 +134,7 @@ public final class TestNGExecution implements Disposable {
     public void notStarting(final @NotNull TestCaseDto tc) {
         registry.notStarting(tc.getId());
 
-        TestCaseExecutionListener.broadcast(p, key(tc.getId()), ExecutionStatus.IDLE, Duration.ZERO, Failure.NONE);
+        ExecutionReported.broadcast(p, key(tc.getId()), ExecutionStatus.IDLE, Duration.ZERO, Failure.NONE);
     }
 
     // UC-CODEGEN-008
@@ -204,7 +204,7 @@ public final class TestNGExecution implements Disposable {
                 + " execution(s): " + theirs.size() + " had reached a process");
 
         theirs.forEach(this::kill);
-        stop.testCases().forEach(id -> TestCaseExecutionListener.broadcast(p, key(id), ExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
+        stop.testCases().forEach(id -> ExecutionReported.broadcast(p, key(id), ExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
 
         return stop.testCases().size();
     }
@@ -217,7 +217,7 @@ public final class TestNGExecution implements Disposable {
             if (open.isEmpty()) return;
 
             TestinLogger.info("'" + testRunName + "' ended with " + open.size() + " test case(s) still open");
-            open.forEach(id -> TestCaseExecutionListener.broadcast(p, key(id), ExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
+            open.forEach(id -> ExecutionReported.broadcast(p, key(id), ExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
         });
     }
 

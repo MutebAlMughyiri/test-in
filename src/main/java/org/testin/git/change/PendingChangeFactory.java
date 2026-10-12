@@ -42,7 +42,7 @@ import java.util.function.Function;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class PendingChangeFactory {
     // UC-SHARE-010, Rule-SHARE-047
-    static @NotNull PendingChange fromFile(final @NotNull DiffType type, final @NotNull String beforeJson, final @NotNull String afterJson, final @NotNull Path relativePath, final @NotNull Mapper mapper, final @NotNull Function<UUID, Optional<TestCaseDto>> testCases) {
+    static @NotNull PendingChange fromFile(final @NotNull StatusKind type, final @NotNull String beforeJson, final @NotNull String afterJson, final @NotNull Path relativePath, final @NotNull Mapper mapper, final @NotNull Function<UUID, Optional<TestCaseDto>> testCases) {
         return switch (subjectOf(relativePath)) {
             case TEST_CASE -> testCase(type, beforeJson, afterJson, relativePath, mapper);
             case RUN_ITEM -> runItem(type, beforeJson, afterJson, relativePath, mapper, testCases);
@@ -71,20 +71,20 @@ final class PendingChangeFactory {
         }
     }
 
-    private static @NotNull PendingChange testCase(final @NotNull DiffType type, final @NotNull String beforeJson, final @NotNull String afterJson, final @NotNull Path relativePath, final @NotNull Mapper mapper) {
+    private static @NotNull PendingChange testCase(final @NotNull StatusKind type, final @NotNull String beforeJson, final @NotNull String afterJson, final @NotNull Path relativePath, final @NotNull Mapper mapper) {
         final @NotNull String testSet = parentName(relativePath);
 
         return switch (type) {
             case ADDED -> {
                 final @NotNull TestCaseDto newState = read(mapper, afterJson, TestCaseDto.class);
                 yield new PendingChange(ChangeSubject.TEST_CASE, newState.getDescription(), testSet,
-                        newState.getId().toString(), relativePath, DiffType.ADDED, nothingCommitted(),
+                        newState.getId().toString(), relativePath, StatusKind.ADDED, nothingCommitted(),
                         List.of(new FieldChange(Bundle.message("caption.test.case"), "", newState.getDescription(), ChangeSubject.TEST_CASE.getCreated())));
             }
             case DELETED -> {
                 final @NotNull TestCaseDto oldState = read(mapper, beforeJson, TestCaseDto.class);
                 yield new PendingChange(ChangeSubject.TEST_CASE, oldState.getDescription(), testSet,
-                        oldState.getId().toString(), relativePath, DiffType.DELETED, oldState,
+                        oldState.getId().toString(), relativePath, StatusKind.DELETED, oldState,
                         List.of(new FieldChange(Bundle.message("caption.test.case"), oldState.getDescription(), "", ChangeSubject.TEST_CASE.getRemoved())));
             }
             case MODIFIED -> {
@@ -93,7 +93,7 @@ final class PendingChangeFactory {
                 final @NotNull List<FieldChange> fieldChanges = TestCaseChangeComparator.compare(oldState, newState);
 
                 yield new PendingChange(ChangeSubject.TEST_CASE, newState.getDescription(), testSet,
-                        newState.getId().toString(), relativePath, DiffType.MODIFIED, oldState,
+                        newState.getId().toString(), relativePath, StatusKind.MODIFIED, oldState,
                         fieldChanges.isEmpty()
                                 ? List.of(new FieldChange(Bundle.message("caption.test.case"), "", Bundle.message("git.change.no.field"), ChangeSubject.TEST_CASE.getChanged()))
                                 : fieldChanges);
@@ -102,7 +102,7 @@ final class PendingChangeFactory {
     }
 
     // UC-SHARE-010, Rule-SHARE-047
-    private static @NotNull PendingChange runItem(final @NotNull DiffType type, final @NotNull String beforeJson, final @NotNull String afterJson, final @NotNull Path relativePath, final @NotNull Mapper mapper, final @NotNull Function<UUID, Optional<TestCaseDto>> testCases) {
+    private static @NotNull PendingChange runItem(final @NotNull StatusKind type, final @NotNull String beforeJson, final @NotNull String afterJson, final @NotNull Path relativePath, final @NotNull Mapper mapper, final @NotNull Function<UUID, Optional<TestCaseDto>> testCases) {
         final @NotNull Optional<UUID> testCaseId = FileKind.RUN_ITEM.idIn(relativePath);
         final @NotNull Optional<TestCaseDto> tc = testCaseId.flatMap(testCases);
 
@@ -123,7 +123,7 @@ final class PendingChangeFactory {
                 relativePath, type, nothingCommitted(), changes);
     }
 
-    private static @NotNull PendingChange marker(final @NotNull DiffType type, final @NotNull String beforeJson, final @NotNull String afterJson, final @NotNull Path relativePath, final @NotNull Mapper mapper) {
+    private static @NotNull PendingChange marker(final @NotNull StatusKind type, final @NotNull String beforeJson, final @NotNull String afterJson, final @NotNull Path relativePath, final @NotNull Mapper mapper) {
         final @NotNull String node = parentName(relativePath);
         final @NotNull String before = statusIn(mapper, beforeJson);
         final @NotNull String after = statusIn(mapper, afterJson);
@@ -131,7 +131,7 @@ final class PendingChangeFactory {
         final @NotNull List<FieldChange> changes = new ArrayList<>();
         changes.add(new FieldChange(relativePath.getFileName().toString(), before, after, ChangeSubject.MARKER.changeFor(type)));
 
-        if (type == DiffType.MODIFIED && NodeType.TR.isMarkerOf(relativePath.getFileName().toString())) {
+        if (type == StatusKind.MODIFIED && NodeType.TR.isMarkerOf(relativePath.getFileName().toString())) {
             changes.addAll(TestRunChangeComparator.compareFacts(
                     read(mapper, beforeJson, TestRunMarker.class), read(mapper, afterJson, TestRunMarker.class)));
         }
@@ -140,11 +140,11 @@ final class PendingChangeFactory {
     }
 
     // UC-SHARE-010, Rule-SHARE-047
-    static @NotNull PendingChange unreadable(final @NotNull DiffType type, final @NotNull Path relativePath) {
+    static @NotNull PendingChange unreadable(final @NotNull StatusKind type, final @NotNull Path relativePath) {
         return byName(subjectOf(relativePath), type, relativePath);
     }
 
-    private static @NotNull PendingChange byName(final @NotNull ChangeSubject subject, final @NotNull DiffType type, final @NotNull Path relativePath) {
+    private static @NotNull PendingChange byName(final @NotNull ChangeSubject subject, final @NotNull StatusKind type, final @NotNull Path relativePath) {
         return new PendingChange(subject, relativePath.getFileName().toString(), "", "",
                 relativePath, type, nothingCommitted(),
                 List.of(new FieldChange(relativePath.toString(), "", "", subject.changeFor(type))));
