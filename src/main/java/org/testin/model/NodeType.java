@@ -52,7 +52,7 @@ public enum NodeType {
             ".tp",
             TestProjectMarker.class,
             SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES,
-            NodeStatistics.CHILDREN,
+            DonutSlices.CHILDREN,
             ImmutableList.of(NodeFigureRow.TEST_SETS, NodeFigureRow.PACKAGES, NodeFigureRow.TEST_CASES, NodeFigureRow.TEST_RUNS)
     ),
 
@@ -63,7 +63,7 @@ public enum NodeType {
             ".tcf",
             TestCasesFolderMarker.class,
             SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES,
-            NodeStatistics.CHILDREN,
+            DonutSlices.CHILDREN,
             ImmutableList.of(NodeFigureRow.TEST_SETS, NodeFigureRow.PACKAGES, NodeFigureRow.TEST_CASES)
     ),
 
@@ -74,7 +74,7 @@ public enum NodeType {
             ".trf",
             TestRunsFolderMarker.class,
             SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES,
-            NodeStatistics.CHILDREN,
+            DonutSlices.CHILDREN,
             ImmutableList.of(NodeFigureRow.PACKAGES, NodeFigureRow.TEST_RUNS)
     ),
 
@@ -85,7 +85,7 @@ public enum NodeType {
             ".tsp",
             TestSetPackageMarker.class,
             SimpleTextAttributes.REGULAR_ATTRIBUTES,
-            NodeStatistics.CHILDREN,
+            DonutSlices.CHILDREN,
             ImmutableList.of(NodeFigureRow.TEST_SETS, NodeFigureRow.PACKAGES, NodeFigureRow.TEST_CASES)
     ),
 
@@ -96,7 +96,7 @@ public enum NodeType {
             ".trp",
             TestRunPackageMarker.class,
             SimpleTextAttributes.REGULAR_ATTRIBUTES,
-            NodeStatistics.CHILDREN,
+            DonutSlices.CHILDREN,
             ImmutableList.of(NodeFigureRow.PACKAGES, NodeFigureRow.TEST_RUNS)
     ),
 
@@ -107,7 +107,7 @@ public enum NodeType {
             ".ts",
             TestSetMarker.class,
             SimpleTextAttributes.REGULAR_ATTRIBUTES,
-            NodeStatistics.CHILDREN,
+            DonutSlices.CHILDREN,
             ImmutableList.of(NodeFigureRow.TEST_CASES)
     ),
 
@@ -118,7 +118,7 @@ public enum NodeType {
             ".tr",
             TestRunMarker.class,
             SimpleTextAttributes.REGULAR_ATTRIBUTES,
-            NodeStatistics.RUN_ITEM_STATUSES,
+            DonutSlices.RUN_ITEM_STATUSES,
             ImmutableList.of(NodeFigureRow.TOTAL)
     );
 
@@ -143,7 +143,7 @@ public enum NodeType {
     // Rule-INTERNAL-014
     private final @NotNull Class<? extends AbstractMarker> markerClass;
     private final @NotNull SimpleTextAttributes attributes;
-    private final @NotNull NodeStatistics statistics;
+    private final @NotNull DonutSlices statistics;
     private final @NotNull ImmutableList<NodeFigureRow> counts;
 
     public static boolean isOneFolderName(final @NotNull String name) {

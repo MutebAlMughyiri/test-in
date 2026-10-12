@@ -20,12 +20,12 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.CreateTestCaseFields;
-import org.testin.util.SpellChecker;
+import org.testin.util.EditorFields;
 
 // Rule-EDITOR-PANEL-032
 public class TestDataSection extends AbstractMultiLineSection {
     public TestDataSection(final @NotNull Project p) {
-        super(p, SpellChecker.createField(p), CreateTestCaseFields.TEST_DATA);
+        super(p, EditorFields.createField(p), CreateTestCaseFields.TEST_DATA);
     }
 
     // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-032

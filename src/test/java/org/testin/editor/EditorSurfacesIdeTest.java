@@ -26,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
 import org.testin.OnScreen;
-import org.testin.editor.grid.GridPanelBuilder;
+import org.testin.editor.grid.GridTables;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.editor.toolbar.AbstractToolbarPanel;
@@ -156,7 +156,7 @@ public class EditorSurfacesIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-250
     public void testAGridRowIsDrawnInItsStripeOrTheSelectionColorAndNothingElse() {
         final @NotNull List<String[]> rows = List.of(rowReading("Log in"), rowReading("Pay by card"), rowReading("Log out"));
-        final @NotNull JBTable table = new GridPanelBuilder().buildTestTable(rows, Set.of(TestSetEditorAttributes.DESCRIPTION));
+        final @NotNull JBTable table = new GridTables().buildTestTable(rows, Set.of(TestSetEditorAttributes.DESCRIPTION));
         final int column = TestSetEditorAttributes.DESCRIPTION.column();
         final @NotNull JFrame frame = OnScreen.shown(new JBScrollPane(table), getTestRootDisposable());
 

@@ -20,7 +20,7 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.ui.components.JBList;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.card.AbstractCard;
-import org.testin.editor.card.CardHoverAction;
+import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.editor.card.CardTitle;
 import org.testin.editor.card.Offered;
 import org.testin.editor.card.Slot;
@@ -36,10 +36,10 @@ public class CardTitleWrapIdeTest extends BasePlatformTestCase {
     private static final @NotNull String LONG = "Log in with a valid user and check that the dashboard opens with every widget it is supposed to show and nothing else at all";
 
     private static @NotNull List<Offered> everyButton() {
-        return offered(CardHoverAction.NAVIGATE_TO_TEST_METHOD, CardHoverAction.RUN_TEST_METHOD, CardHoverAction.NAVIGATE_TO_TEST_CASE);
+        return offered(TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD, TestCaseQuickAction.RUN_TEST_METHOD, TestCaseQuickAction.NAVIGATE_TO_TEST_CASE);
     }
 
-    private static @NotNull List<Offered> offered(final @NotNull CardHoverAction... actions) {
+    private static @NotNull List<Offered> offered(final @NotNull TestCaseQuickAction... actions) {
         return Arrays.stream(actions).map(action -> new Offered(action, Optional.empty())).toList();
     }
 
@@ -78,12 +78,12 @@ public class CardTitleWrapIdeTest extends BasePlatformTestCase {
 
     // Rule-EDITOR-PANEL-235
     public void testTheNewButtonGoesLastAndMovesNeitherOfTheOthers() {
-        final @NotNull List<Slot> before = CardTitle.descriptionActionIcons(200, offered(CardHoverAction.NAVIGATE_TO_TEST_METHOD, CardHoverAction.RUN_TEST_METHOD), false).slots();
+        final @NotNull List<Slot> before = CardTitle.descriptionActionIcons(200, offered(TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD, TestCaseQuickAction.RUN_TEST_METHOD), false).slots();
         final @NotNull List<Slot> now = CardTitle.descriptionActionIcons(200, everyButton(), false).slots();
 
         assertEquals("the method button moved", before.getFirst().at(), now.getFirst().at());
         assertEquals("the run button moved", before.get(1).at(), now.get(1).at());
-        assertEquals(CardHoverAction.NAVIGATE_TO_TEST_CASE, now.getLast().button().action());
+        assertEquals(TestCaseQuickAction.NAVIGATE_TO_TEST_CASE, now.getLast().button().action());
         assertEquals("the new button's slot is not the size of the others", now.getFirst().at().getSize(), now.getLast().at().getSize());
         assertTrue("the new button overlaps Run", now.getLast().at().getMinX() > now.get(1).at().getMaxX());
     }

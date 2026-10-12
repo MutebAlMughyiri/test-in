@@ -23,7 +23,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.Optional;
 
-public sealed interface Badge permits Pill, Tag, BugBadge, Framed {
+public sealed interface Badge permits Pill, Tag, BugPill, Framed {
     @NotNull
     String text();
 

@@ -20,7 +20,7 @@ package org.testin.model;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.bug.BugPriority;
 import org.testin.model.bug.BugSeverity;
-import org.testin.model.testrun.Execution;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.Failure;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
@@ -47,7 +47,7 @@ public class RecordRunItemStatusTest {
                 .bugSeverity(BugSeverity.MAJOR)
                 .bugPriority(BugPriority.HIGH)
                 .bugIssueUrl(ISSUE)
-                .executions(List.of(Execution.builder()
+                .executions(List.of(RunItemExecution.builder()
                         .status(RunItemStatus.FAILED)
                         .actualResult("NPE on the login button")
                         .stacktrace("java.lang.NullPointerException at Login.click(Login.java:42)")
@@ -70,7 +70,7 @@ public class RecordRunItemStatusTest {
         assertEquals(runItem.getStatus(), RunItemStatus.PASSED, "the pass is the newest execution, so it decides");
         assertEquals(runItem.getExecutions().size(), 2, "the pass is added beside the failure, not written over it");
 
-        final @NotNull Execution failure = runItem.getExecutions().getFirst();
+        final @NotNull RunItemExecution failure = runItem.getExecutions().getFirst();
         assertEquals(failure.getActualResult(), "NPE on the login button", "the failure still says what happened");
         assertFalse(failure.getStacktrace().isEmpty());
         assertEquals(failure.getScreenshots(), List.of("k3f9a.png"));
@@ -117,8 +117,8 @@ public class RecordRunItemStatusTest {
 
     @Test
     public void everyFailureRecordsABug() {
-        final RunItem failed = RunItem.builder().id(UUID.randomUUID()).executions(List.of(Execution.builder().status(RunItemStatus.FAILED).build())).build();
-        final RunItem blocked = RunItem.builder().id(UUID.randomUUID()).executions(List.of(Execution.builder().status(RunItemStatus.BLOCKED).build())).build();
+        final RunItem failed = RunItem.builder().id(UUID.randomUUID()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build();
+        final RunItem blocked = RunItem.builder().id(UUID.randomUUID()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.BLOCKED).build())).build();
 
         assertTrue(failed.recordsABug(), "a failure is Enhancement / Low until the tester says otherwise");
         assertFalse(blocked.recordsABug(), "a result that is not a failure records no bug");
@@ -131,7 +131,7 @@ public class RecordRunItemStatusTest {
         final @NotNull ZonedDateTime firstTime = ZonedDateTime.now(ZoneId.systemDefault()).minusDays(3).truncatedTo(ChronoUnit.SECONDS);
         final @NotNull RunItem runItem = RunItem.builder()
                 .id(UUID.randomUUID())
-                .executions(List.of(Execution.builder().status(RunItemStatus.FAILED).executedBy("Sara").executedAt(firstTime).build()))
+                .executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).executedBy("Sara").executedAt(firstTime).build()))
                 .build();
 
         record(runItem, RunItemStatus.PASSED, "Omar");

@@ -37,7 +37,7 @@ import org.testin.model.testrun.RunItem;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
 import org.testin.util.FailureText;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -54,14 +54,14 @@ import java.util.stream.Stream;
 final class IndexingScanner {
     private final @NotNull IndexerDataStore store;
     private final @NotNull NodeMapper directoryMapper;
-    private final @NotNull Mapper mapper;
+    private final @NotNull JsonCodec mapper;
     private final @NotNull ReadProblems problems;
     private final @NotNull TestDataFiles testDataFiles;
 
     IndexingScanner(final @NotNull Project p, final @NotNull IndexerDataStore store) {
         this.store = store;
         this.directoryMapper = Services.getInstance(p, NodeMapper.class);
-        this.mapper = Services.getInstance(p, Mapper.class);
+        this.mapper = Services.getInstance(p, JsonCodec.class);
         this.problems = new ReadProblems(p, store);
         this.testDataFiles = Services.getInstance(p, TestDataFiles.class);
     }
@@ -230,7 +230,7 @@ final class IndexingScanner {
 
             scanned.getTestSets().put(path.toString(), ts);
 
-            final @NotNull List<UUID> testCaseIds = TestCaseSequenceStore.testCaseIds(List.of());
+            final @NotNull List<UUID> testCaseIds = TestCaseStore.testCaseIds(List.of());
 
             try (Stream<Path> files = Files.list(path)) {
                 files.filter(Files::isRegularFile)
@@ -248,7 +248,7 @@ final class IndexingScanner {
                                 }
 
                                 // Rule-INTERNAL-084
-                                if (!filePath.equals(TestCaseSequenceStore.named(path, tc.getId()))) {
+                                if (!filePath.equals(TestCaseStore.named(path, tc.getId()))) {
                                     scanned.getHandNamedFiles().put(tc.getId(), filePath);
                                 }
 

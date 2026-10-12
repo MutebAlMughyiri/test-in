@@ -60,10 +60,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 public final class TextFieldWithSelections<T> implements DialogComponent, TextValue {
     private static final int DEBOUNCE_MILLIS = 300;
 
-    private final @NotNull FrameworkTextField input;
+    private final @NotNull TextInputField input;
     private final @NotNull JTextField textField;
-    private final @NotNull CollectionListModel<SelectionList<T>> rowModel = new CollectionListModel<>();
-    private final @NotNull JBList<SelectionList<T>> list;
+    private final @NotNull CollectionListModel<Selection<T>> rowModel = new CollectionListModel<>();
+    private final @NotNull JBList<Selection<T>> list;
     private final @NotNull JBPanel<?> panel;
     private final @NotNull JBScrollPane scrollPane;
     private final int visibleRows;
@@ -73,10 +73,10 @@ public final class TextFieldWithSelections<T> implements DialogComponent, TextVa
     };
     private boolean askedOnce;
 
-    TextFieldWithSelections(final @NotNull Icon icon, final @NotNull String placeHolderText, final @NotNull List<SelectionList<T>> shownBeforeAsking, final @NotNull SelectionSource<T> rows, final int visibleRows) {
+    TextFieldWithSelections(final @NotNull Icon icon, final @NotNull String placeHolderText, final @NotNull List<Selection<T>> shownBeforeAsking, final @NotNull SelectionSource<T> rows, final int visibleRows) {
         this.rows = rows;
         this.visibleRows = visibleRows;
-        input = new FrameworkTextField(icon, placeHolderText, "");
+        input = new TextInputField(icon, placeHolderText, "");
         textField = input.component();
 
         list = new JBList<>(rowModel);
@@ -171,7 +171,7 @@ public final class TextFieldWithSelections<T> implements DialogComponent, TextVa
                 : ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
     }
 
-    private void show(final @NotNull List<SelectionList<T>> found) {
+    private void show(final @NotNull List<Selection<T>> found) {
         if (found.equals(rowModel.getItems())) return;
 
         rowModel.replaceAll(found);
@@ -184,7 +184,7 @@ public final class TextFieldWithSelections<T> implements DialogComponent, TextVa
     }
 
     public @NotNull Optional<T> selection() {
-        return ListValue.selected(list).map(SelectionList::value);
+        return ListValue.selected(list).map(Selection::value);
     }
 
     @Override
@@ -248,18 +248,18 @@ public final class TextFieldWithSelections<T> implements DialogComponent, TextVa
         list.ensureIndexIsVisible(newIdx);
 
         // Rule-INTERNAL-122
-        final @NotNull SelectionList<T> reached = list.getModel().getElementAt(newIdx);
+        final @NotNull Selection<T> reached = list.getModel().getElementAt(newIdx);
         AccessibleAnnouncerUtil.announce(textField, reached.hint().isEmpty() ? reached.name() : reached.name() + ", " + reached.hint(), true);
     }
 
     // Rule-INTERNAL-074, Rule-INTERNAL-106
-    private static final class SelectionRenderer<T> extends ColoredListCellRenderer<SelectionList<T>> {
+    private static final class SelectionRenderer<T> extends ColoredListCellRenderer<Selection<T>> {
         private static final float ARC = 8;
 
         private boolean picked;
 
         @Override
-        protected void customizeCellRenderer(final @NotNull JList<? extends SelectionList<T>> list, final SelectionList<T> value, final int index, final boolean selected, final boolean hasFocus) {
+        protected void customizeCellRenderer(final @NotNull JList<? extends Selection<T>> list, final Selection<T> value, final int index, final boolean selected, final boolean hasFocus) {
             picked = selected;
             setOpaque(false);
 

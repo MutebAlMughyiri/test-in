@@ -37,7 +37,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jps.model.java.JavaSourceRootType;
 import org.jetbrains.jps.model.module.JpsModuleSourceRootType;
 import org.testin.codegen.GenType;
-import org.testin.codegen.JavaCode;
+import org.testin.codegen.NodeCode;
 import org.testin.config.TestinYml;
 import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
@@ -144,7 +144,7 @@ public abstract class AbstractCodegenIdeTest extends AbstractTempRootIdeTest {
     protected @NotNull TestSetNode createdTestSet(final @NotNull String name, final @NotNull AbstractNode parent) {
         final @NotNull TestSetNode ts = indexedTestSet(name, parent);
 
-        JavaCode.of(NodeType.TS).getCreated().execute(getProject(), ts);
+        NodeCode.of(NodeType.TS).getCreated().execute(getProject(), ts);
         return ts;
     }
 

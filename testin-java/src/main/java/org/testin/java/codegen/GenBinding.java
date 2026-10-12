@@ -18,14 +18,14 @@ package org.testin.java.codegen;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.codegen.GenAction;
+import org.testin.codegen.CodeChange;
 import org.testin.codegen.GenType;
 
 import java.util.List;
 
-record GenBinding<X>(@NotNull GenType<X> type, @NotNull GenAction<X> action) {
-    <T> @NotNull GenAction<T> typed() {
-        return new GenAction<>() {
+record GenBinding<X>(@NotNull GenType<X> type, @NotNull CodeChange<X> action) {
+    <T> @NotNull CodeChange<T> typed() {
+        return new CodeChange<>() {
             @Override
             public void execute(final @NotNull Project p, final @NotNull T payload) {
                 action.execute(p, type.payload().cast(payload));

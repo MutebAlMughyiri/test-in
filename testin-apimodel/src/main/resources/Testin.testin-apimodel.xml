@@ -13,6 +13,6 @@
     </dependencies>
 
     <extensions defaultExtensionNs="org.testin">
-        <apiModelMakers implementation="org.testin.apimodel.ApiModels"/>
+        <apiModelMakers implementation="org.testin.apimodel.JavaApiModelMaker"/>
     </extensions>
 </idea-plugin>

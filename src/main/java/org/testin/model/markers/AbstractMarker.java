@@ -24,7 +24,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.Config;
+import org.testin.model.DateFormats;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -45,14 +45,14 @@ public abstract class AbstractMarker implements Marker {
     @NonNull
     private String createdBy = "";
     @NonNull
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Config.DATE_FORMAT_PATTERN, locale = Config.DATE_FORMAT_LOCALE)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateFormats.DATE_FORMAT_PATTERN, locale = DateFormats.DATE_FORMAT_LOCALE)
     @JsonInclude(JsonInclude.Include.ALWAYS)
     private ZonedDateTime createdAt = ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS);
     @NonNull
     private String updatedBy = "";
     @NonNull
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Config.DATE_FORMAT_PATTERN, locale = Config.DATE_FORMAT_LOCALE)
-    private ZonedDateTime updatedAt = Config.NOT_EXECUTED;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateFormats.DATE_FORMAT_PATTERN, locale = DateFormats.DATE_FORMAT_LOCALE)
+    private ZonedDateTime updatedAt = DateFormats.NOT_EXECUTED;
 
     @Override
     public @NotNull String getUpdatedBy() {
@@ -61,7 +61,7 @@ public abstract class AbstractMarker implements Marker {
 
     @Override
     public @NotNull ZonedDateTime getUpdatedAt() {
-        return Config.isNotExecuted(updatedAt) ? createdAt : updatedAt;
+        return DateFormats.isNotExecuted(updatedAt) ? createdAt : updatedAt;
     }
 
 }

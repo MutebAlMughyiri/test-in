@@ -50,7 +50,7 @@ public final class PlainTextArea implements DialogComponent {
         area.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, null);
         area.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, null);
 
-        FrameworkTextField.bindClipboard(area);
+        TextInputField.bindClipboard(area);
 
         final @NotNull JBScrollPane scroll = new JBScrollPane(area);
         DialogStyle.framed(scroll);

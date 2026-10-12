@@ -21,7 +21,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
-import org.testin.actions.TestinData;
+import org.testin.actions.TestinDataKeys;
 import org.testin.explorer.tree.TreeValues;
 import org.testin.help.Guide;
 import org.testin.help.Guides;
@@ -41,7 +41,7 @@ public class ViewPendingCommitsAction extends AbstractAnyProjectAction {
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
         Services.getInstance(p, Guides.class).add(Guide.SHARE_OVER_GIT);
-        TestinData.tree(e).flatMap(TreeValues::projectPath).ifPresent(path -> reviewFor(p, path));
+        TestinDataKeys.tree(e).flatMap(TreeValues::projectPath).ifPresent(path -> reviewFor(p, path));
     }
 
     // UC-SHARE-010
@@ -50,7 +50,7 @@ public class ViewPendingCommitsAction extends AbstractAnyProjectAction {
         // Rule-SHARE-105
         if (OptionalPlugin.GIT.grayedWithReason(this, e.getPresentation())) return;
 
-        e.getPresentation().setEnabled(TestinData.firstSelected(e, TestProjectNode.class).isPresent());
+        e.getPresentation().setEnabled(TestinDataKeys.firstSelected(e, TestProjectNode.class).isPresent());
     }
 
     @Override

@@ -26,7 +26,7 @@ import com.intellij.util.ui.UIUtil;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.testin.actions.TestinData;
+import org.testin.actions.TestinDataKeys;
 import org.testin.indexer.Nodes;
 import org.testin.logger.TestinLogger;
 import org.testin.model.node.AbstractNode;
@@ -90,7 +90,7 @@ public class TreeTransferHandler extends TransferHandler {
 
     // UC-TREE-PANEL-013, UC-TREE-PANEL-014
     public static @NotNull Optional<TreeTransferHandler> of(final @NotNull AnActionEvent e) {
-        return TestinData.tree(e)
+        return TestinDataKeys.tree(e)
                 .map(JComponent::getTransferHandler)
                 .filter(TreeTransferHandler.class::isInstance)
                 .map(TreeTransferHandler.class::cast);

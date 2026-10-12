@@ -32,7 +32,7 @@ public class MapperFailureTest {
     @Test
     public void aSerializationFailureRaisesRatherThanReturningNothing() {
         final IllegalStateException failure = expectThrows(IllegalStateException.class,
-                () -> RealMapper.build().writeValueAsBytes(new NotSerializable()));
+                () -> RealJsonCodec.build().writeValueAsBytes(new NotSerializable()));
 
         assertNotNull(failure.getMessage());
         assertTrue(String.valueOf(failure.getMessage()).contains("NotSerializable"),
@@ -42,14 +42,14 @@ public class MapperFailureTest {
     @Test
     public void theSameIsTrueForTheStringForm() {
         final IllegalStateException failure = expectThrows(IllegalStateException.class,
-                () -> RealMapper.build().writeValueAsString(new NotSerializable()));
+                () -> RealJsonCodec.build().writeValueAsString(new NotSerializable()));
 
         assertTrue(String.valueOf(failure.getMessage()).contains("NotSerializable"));
     }
 
     @Test
     public void whatIsWrittenIsNeverEmpty() {
-        final byte[] testCase = RealMapper.build().writeValueAsBytes(TestCaseDto.builder().description("a case").build());
+        final byte[] testCase = RealJsonCodec.build().writeValueAsBytes(TestCaseDto.builder().description("a case").build());
 
         assertTrue(testCase.length > 0);
         assertTrue(new String(testCase, StandardCharsets.UTF_8).contains("a case"));
@@ -57,7 +57,7 @@ public class MapperFailureTest {
 
     @Test
     public void aTestCaseSurvivesTheRoundTrip() {
-        final Mapper mapper = RealMapper.build();
+        final JsonCodec mapper = RealJsonCodec.build();
         final TestCaseDto original = TestCaseDto.builder().description("written and read back").build();
 
         final TestCaseDto readBack = mapper.readValue(mapper.writeValueAsString(original), TestCaseDto.class);
@@ -69,7 +69,7 @@ public class MapperFailureTest {
     @Test
     public void aFileThatIsNotJsonFailsAsUnreadableAndNamesWhatWasExpected() {
         final UncheckedIOException failure = expectThrows(UncheckedIOException.class,
-                () -> RealMapper.build().readValue("not json".getBytes(StandardCharsets.UTF_8), TestCaseDto.class));
+                () -> RealJsonCodec.build().readValue("not json".getBytes(StandardCharsets.UTF_8), TestCaseDto.class));
 
         assertTrue(String.valueOf(failure.getMessage()).contains("TestCaseDto"), "the message names what could not be read: " + failure.getMessage());
     }

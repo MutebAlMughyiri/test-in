@@ -36,8 +36,8 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.Said;
 import org.testin.TestinLog;
-import org.testin.actions.TestinData;
-import org.testin.editor.card.CardHoverAction;
+import org.testin.actions.TestinDataKeys;
+import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.editor.card.Offered;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCaseDto;
@@ -78,7 +78,7 @@ public class CodeWithoutJavaIdeTest extends AbstractCodegenIdeTest {
         final @NotNull AnAction action = Optional.ofNullable(ActionManager.getInstance().getAction("Testin.NavigateToTestMethod")).orElseThrow(() -> new AssertionError("Testin.NavigateToTestMethod is not registered"));
         final @NotNull AnActionEvent e = TestActionEvent.createTestEvent(action, SimpleDataContext.builder()
                 .add(CommonDataKeys.PROJECT, getProject())
-                .add(TestinData.SELECTED_TEST_CASES, List.of(tc))
+                .add(TestinDataKeys.SELECTED_TEST_CASES, List.of(tc))
                 .build());
         ActionUtil.updateAction(action, e);
         return e;
@@ -98,7 +98,7 @@ public class CodeWithoutJavaIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-CODEGEN-005
     public void testWithoutTheJavaCodeGeneratorsTestManagementGoesOnAndNoCodeIsWritten() {
-        ExtensionTestUtil.maskExtensions(CodeGenerators.EP, List.of(), getTestRootDisposable());
+        ExtensionTestUtil.maskExtensions(CodeChangeRegistry.EP, List.of(), getTestRootDisposable());
 
         final @NotNull TestSetNode login = createdTestSet("Login");
         final @NotNull TestCaseDto tc = createdTestCase(login, "Log in with a valid user", "b");
@@ -140,8 +140,8 @@ public class CodeWithoutJavaIdeTest extends AbstractCodegenIdeTest {
         assertNotEquals("the class button is gray even with the Java plugin, so gray proves nothing", grayed(tc, working), String.valueOf(iconOf(working)));
 
         OptionalPlugin.JAVA.missingUntil(getTestRootDisposable());
-        final @NotNull Offered onCard = CardHoverAction.onCard(getProject(), tc.getParent(), tc).getFirst();
-        assertEquals("the card left the class button out", CardHoverAction.NAVIGATE_TO_TEST_METHOD, onCard.action());
+        final @NotNull Offered onCard = TestCaseQuickAction.onCard(getProject(), tc.getParent(), tc).getFirst();
+        assertEquals("the card left the class button out", TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD, onCard.action());
         assertFalse("the class button on the card is drawn live without the Java plugin", onCard.works());
         assertTrue("the class button on the card does not say it needs the Java plugin", onCard.hintText().endsWith(NEEDS_JAVA));
 

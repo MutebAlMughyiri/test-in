@@ -22,7 +22,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.testin.actions.TestinData;
+import org.testin.actions.TestinDataKeys;
 import org.testin.model.markers.Marker;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.status.NodeStatus;
@@ -31,7 +31,7 @@ import java.util.List;
 
 public class UpdateStatusGroup extends DefaultActionGroup {
     private static @NotNull List<NodeStatus> statuses(final @NotNull AnActionEvent e) {
-        return TestinData.singleSelectedNode(e)
+        return TestinDataKeys.singleSelectedNode(e)
                 .map(AbstractNode::getMarker)
                 .map(Marker::statuses)
                 .orElseGet(List::of);

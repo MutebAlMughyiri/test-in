@@ -23,7 +23,7 @@ import org.testin.model.markers.TestRunMarker;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.testrun.TestRunResultAnalysis;
 import org.testin.model.testrun.TestRunConfiguration;
-import org.testin.model.testrun.Execution;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testng.annotations.Test;
@@ -55,7 +55,7 @@ public class TestRunCoverageTest {
                 .setId(EXECUTED)
                 .setBugSeverity(BugSeverity.MAJOR)
                 .setBugPriority(BugPriority.HIGH)
-                .setExecutions(List.of(Execution.builder()
+                .setExecutions(List.of(RunItemExecution.builder()
                         .status(RunItemStatus.FAILED)
                         .actualResult("The lockout counter reset on reload")
                         .duration(Duration.ofSeconds(252))
@@ -105,7 +105,7 @@ public class TestRunCoverageTest {
         assertEquals(fresh.getId(), ADDED, "A test case added to a test set after the test run was created is the whole point");
         assertEquals(fresh.getStatus(), RunItemStatus.PENDING);
         assertEquals(fresh.getDuration(), Duration.ZERO);
-        assertEquals(fresh.getExecutedAt(), Config.NOT_EXECUTED,
+        assertEquals(fresh.getExecutedAt(), DateFormats.NOT_EXECUTED,
                 "Nothing has run it, so it carries no plausible execution time");
     }
 

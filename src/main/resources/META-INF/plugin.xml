@@ -102,10 +102,10 @@
                         interface="org.testin.runner.AutomationExecutor"
                         dynamic="true"/>
         <extensionPoint name="codeGenerators"
-                        interface="org.testin.codegen.CodeGenerators"
+                        interface="org.testin.codegen.CodeChangeRegistry"
                         dynamic="true"/>
         <extensionPoint name="codeNavigation"
-                        interface="org.testin.navigate.CodeNavigation"
+                        interface="org.testin.navigate.TestMethodCode"
                         dynamic="true"/>
         <extensionPoint name="apiModelMakers"
                         interface="org.testin.codegen.ApiModelMaker"
@@ -147,7 +147,7 @@
         <!-- Tool windows -->
         <toolWindow
                 id="testin.tree"
-                factoryClass="org.testin.explorer.Main"
+                factoryClass="org.testin.explorer.TreePanelToolWindowFactory"
                 anchor="left"
                 icon="org.testin.util.Icons.PLUGIN"
                 secondary="false"
@@ -248,10 +248,10 @@
 
         <!-- The tree's actions. Declared rather than constructed so Find Action
              finds them and Settings -> Keymap can rebind them; each reads what
-             the tree has selected from TestinData and grays itself everywhere
+             the tree has selected from TestinDataKeys and grays itself everywhere
              else, so a key declared here is inert outside Testin (#119). -->
         <!-- The editors' actions. Each reads what the editor has selected from
-             TestinData and grays itself outside one (#119). -->
+             TestinDataKeys and grays itself outside one (#119). -->
         <!-- UC-CODEGEN-022: New -> Testin API Model from JSON, below Java Class.
              testin-apimodel answers it through apiModelMakers; with no Java
              plugin it is gray and says why, as every code action is. -->
@@ -292,7 +292,7 @@
 
         <action
                 id="Testin.UpdateRunItem"
-                class="org.testin.testrun.UpdateRunItemAction"
+                class="org.testin.testrun.EditFailureDetailAction"
                 icon="AllIcons.Actions.Edit"
         >
             <keyboard-shortcut keymap="$default" first-keystroke="F2"/>
@@ -346,7 +346,7 @@
 
         <action
                 id="Testin.RunTestMethod"
-                class="org.testin.runner.ExecuteTestMethodAction"
+                class="org.testin.runner.ExecuteOrStopTestMethodsAction"
                 icon="AllIcons.RunConfigurations.TestState.Run"
         >
             <keyboard-shortcut keymap="$default" first-keystroke="F5"/>
@@ -426,7 +426,7 @@
 
         <action
                 id="Testin.SyncWithRemote"
-                class="org.testin.git.SyncActionAction"
+                class="org.testin.git.SyncWithRemoteAction"
                 icon="AllIcons.Actions.SyncPanels"
         />
 

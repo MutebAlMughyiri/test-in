@@ -27,7 +27,7 @@ import com.intellij.psi.PsiWhiteSpace;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.testin.codegen.ExecutionPosition;
-import org.testin.codegen.GenAction;
+import org.testin.codegen.CodeChange;
 import org.testin.codegen.GenType;
 import org.testin.java.codegen.GeneratedMethod;
 import org.testin.model.TestCaseDto;
@@ -41,7 +41,7 @@ import java.util.Map;
 import java.util.Optional;
 
 // Rule-CODEGEN-014
-public class UpdateTestMethodOrder extends BaseTestMethodChange implements GenAction<TestCaseDto> {
+public class UpdateTestMethodOrder extends BaseTestMethodChange implements CodeChange<TestCaseDto> {
     // UC-CODEGEN-011, Rule-CODEGEN-067
     private static @NotNull PsiElement place(final @NotNull PsiClass pc, final @NotNull PsiMethod pm, final @NotNull Optional<PsiElement> after) {
         return after.map(previous -> placeAfter(pc, pm, previous)).orElseGet(() -> placeFirst(pc, pm));

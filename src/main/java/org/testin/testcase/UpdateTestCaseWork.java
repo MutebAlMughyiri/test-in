@@ -25,7 +25,7 @@ import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
-import org.testin.testcase.create.TestCaseUpdateMenuDialog;
+import org.testin.testcase.create.UpdateTestCaseMenu;
 import org.testin.util.Bundle;
 
 import java.nio.file.Path;
@@ -39,7 +39,7 @@ record UpdateTestCaseWork(@NotNull Project p, @NotNull TestinEditor editor, @Not
         this(p, editor, Services.getInstance(p, TestCases.class), Services.getInstance(p, Notifier.class));
     }
 
-    void overSelection(final @NotNull Consumer<TestCaseUpdateMenuDialog> open) {
+    void overSelection(final @NotNull Consumer<UpdateTestCaseMenu> open) {
         final @NotNull List<TestCaseDto> selectedItems = editor.getSelectedTestCases();
         if (selectedItems.isEmpty()) return;
 
@@ -50,7 +50,7 @@ record UpdateTestCaseWork(@NotNull Project p, @NotNull TestinEditor editor, @Not
         final @NotNull List<UUID> ids = TestCaseSnapshot.idsOf(selectedItems);
         final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(p, path, ids);
 
-        open.accept(new TestCaseUpdateMenuDialog(p, selectedItems, (updatedItems, field) -> ApplicationManager.getApplication().executeOnPooledThread(() ->
+        open.accept(new UpdateTestCaseMenu(p, selectedItems, (updatedItems, field) -> ApplicationManager.getApplication().executeOnPooledThread(() ->
                 save(path, ids, before, updatedItems, field))));
     }
 
@@ -71,7 +71,7 @@ record UpdateTestCaseWork(@NotNull Project p, @NotNull TestinEditor editor, @Not
             editor.onToolBarFilterSelectionChanged();
 
             editor.refreshOrdered();
-            TestCaseUpdateMenuDialog.applyAftermath(p, updatedItems, field.getGt());
+            UpdateTestCaseMenu.applyAftermath(p, updatedItems, field.getGt());
         });
     }
 }

@@ -43,7 +43,7 @@ public class RunItemsInOrderTest {
     private static final @NotNull List<UUID> AS_THE_TREE_LISTS_THEM = List.of(LOGIN_FIRST, LOGIN_SECOND, CHECKOUT_FIRST);
 
     private static @NotNull RunItem runItem(final @NotNull UUID testCaseId, final @NotNull RunItemStatus status) {
-        return RunItem.builder().id(testCaseId).executions(List.of(Execution.builder().status(status).build())).build();
+        return RunItem.builder().id(testCaseId).executions(List.of(RunItemExecution.builder().status(status).build())).build();
     }
 
     private static @NotNull RunItems runItemsOf(final @NotNull RunItem... runItems) {

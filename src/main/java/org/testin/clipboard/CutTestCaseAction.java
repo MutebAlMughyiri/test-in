@@ -23,7 +23,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.GrayWithReason;
-import org.testin.actions.TestinData;
+import org.testin.actions.TestinDataKeys;
 import org.testin.editor.TestinEditor;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
@@ -32,7 +32,7 @@ import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
 import org.testin.util.FailureText;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 
 import java.awt.datatransfer.StringSelection;
 import java.util.List;
@@ -42,15 +42,15 @@ public class CutTestCaseAction extends AbstractAnyProjectAction {
     // UC-EDITOR-PANEL-016
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        final @NotNull Optional<TestinEditor> found = TestinData.editor(e);
+        final @NotNull Optional<TestinEditor> found = TestinDataKeys.editor(e);
         if (found.isEmpty()) return;
 
         final @NotNull TestinEditor editor = found.orElseThrow();
-        final @NotNull List<TestCaseDto> selectedTestCases = TestinData.selectedTestCases(e);
+        final @NotNull List<TestCaseDto> selectedTestCases = TestinDataKeys.selectedTestCases(e);
 
         if (!selectedTestCases.isEmpty()) {
             try {
-                final @NotNull String json = Services.getInstance(p, Mapper.class).writeValueAsString(selectedTestCases);
+                final @NotNull String json = Services.getInstance(p, JsonCodec.class).writeValueAsString(selectedTestCases);
                 CopyPasteManager.getInstance().setContents(new StringSelection(json));
 
                 Services.getInstance(p, CutState.class).cut(editor, selectedTestCases);
@@ -70,7 +70,7 @@ public class CutTestCaseAction extends AbstractAnyProjectAction {
     @Override
     protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
         // Rule-EDITOR-PANEL-214
-        if (TestinData.editor(e).filter(editor -> !editor.getParent().isTestCaseContainer()).isPresent()) {
+        if (TestinDataKeys.editor(e).filter(editor -> !editor.getParent().isTestCaseContainer()).isPresent()) {
             e.getPresentation().setEnabled(false);
             e.getPresentation().setDescription(Bundle.message("cut.test.case.disabled.description"));
             return;

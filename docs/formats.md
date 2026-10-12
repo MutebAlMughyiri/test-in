@@ -59,7 +59,7 @@ exactly one of each.
 | **Unknown fields**   | Ignored, never an error. Every type carries `@JsonIgnoreProperties(ignoreUnknown = true)`                                                      |
 | **Missing fields**   | Take the field's default, which is always an empty value of its own type — never null                                                          |
 | **Dates**            | `EEEE dd-MM-yyyy 'At' HH:mm:ss '['VV']'` in `en_US`, for example `Friday 28-08-2026 At 01:12:47 [Asia/Riyadh]`. The zone is part of the value  |
-| **"Never happened"** | The Unix epoch in UTC, `Thursday 01-01-1970 At 00:00:00 [Z]` — `Config.NOT_EXECUTED`. Not a missing field, and not null                        |
+| **"Never happened"** | The Unix epoch in UTC, `Thursday 01-01-1970 At 00:00:00 [Z]` — `DateFormats.NOT_EXECUTED`. Not a missing field, and not null                   |
 | **Enums**            | Written by constant name in capitals. A name this build does not know is a read failure for that file, not a silent default — see *Versioning* |
 
 ---
@@ -189,7 +189,7 @@ from a merge. Those sort after the placed test cases, oldest first, and are
 given a rank the next time anything writes them. It is not an error and must
 not be repaired on read.
 
-There is **no separate sequence file.** `TestCaseSequenceStore` is an in-memory
+There is **no separate sequence file.** `TestCaseStore` is an in-memory
 index the plugin builds while scanning; the order on disk is the `order` field
 on each test case and nothing else.
 

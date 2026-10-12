@@ -66,16 +66,16 @@ public abstract class AbstractTestCaseDialog extends AbstractFrameworkDialog {
     protected final @NotNull StatusSection statusSection;
     protected final @NotNull ReferenceSection referenceSection;
     protected final @NotNull Disposable dialogDisposable;
-    protected final @NotNull Map<CreateTestCaseSection, StatusBarItem[]> statusBarMapping;
+    protected final @NotNull Map<TestCaseSection, StatusBarItem[]> statusBarMapping;
     @Getter(AccessLevel.NONE)
     private final @NotNull TestCaseDto dto;
     @Getter(AccessLevel.NONE)
     private final @NotNull Consumer<@NotNull TestCaseDto> onSave;
     @Getter(AccessLevel.NONE)
     private final StatusBarItem @NotNull [] dialogKeys;
-    private final @NotNull List<CreateTestCaseSection> cachedSections;
+    private final @NotNull List<TestCaseSection> cachedSections;
     private @NotNull PropertyChangeListener focusListener = NOTHING_ON_FOCUS;
-    private @NotNull Optional<CreateTestCaseSection> editableSection = Optional.empty();
+    private @NotNull Optional<TestCaseSection> editableSection = Optional.empty();
 
     public AbstractTestCaseDialog(final @NotNull Project p, final @NotNull TestCaseDto dto, final @NotNull Consumer<@NotNull TestCaseDto> onSave, final StatusBarItem @NotNull ... dialogKeys) {
         super(p);
@@ -104,7 +104,7 @@ public abstract class AbstractTestCaseDialog extends AbstractFrameworkDialog {
                 .distinct()
                 .toList();
 
-        final @NotNull Map<CreateTestCaseSection, StatusBarItem[]> bars = new LinkedHashMap<>();
+        final @NotNull Map<TestCaseSection, StatusBarItem[]> bars = new LinkedHashMap<>();
         for (final CreateTestCaseFields field : CreateTestCaseFields.values())
             bars.put(field.getSectionExtractor().apply(this), field.getStatusBarItems());
 
@@ -123,7 +123,7 @@ public abstract class AbstractTestCaseDialog extends AbstractFrameworkDialog {
                 .anyMatch(stroke -> stroke.getModifiers() == 0);
     }
 
-    private @NotNull Optional<CreateTestCaseSection> sectionHolding(final @NotNull Component focusOwner) {
+    private @NotNull Optional<TestCaseSection> sectionHolding(final @NotNull Component focusOwner) {
         return getAllSections().stream()
                 .filter(section -> UIUtil.isDescendingFrom(focusOwner, section.getWrapper()))
                 .findFirst();
@@ -176,16 +176,16 @@ public abstract class AbstractTestCaseDialog extends AbstractFrameworkDialog {
     }
 
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-035
-    protected void onlyEditable(final @NotNull CreateTestCaseSection target) {
+    protected void onlyEditable(final @NotNull TestCaseSection target) {
         editableSection = Optional.of(target);
         getAllSections().forEach(section -> section.setEditable(section.equals(target)));
     }
 
-    private boolean mayWrite(final @NotNull CreateTestCaseSection section) {
+    private boolean mayWrite(final @NotNull TestCaseSection section) {
         return section.isShown() && editableSection.map(target -> target.equals(section)).orElse(true);
     }
 
-    public @NotNull List<CreateTestCaseSection> getAllSections() {
+    public @NotNull List<TestCaseSection> getAllSections() {
         return cachedSections;
     }
 
@@ -206,9 +206,9 @@ public abstract class AbstractTestCaseDialog extends AbstractFrameworkDialog {
     // Rule-EDITOR-PANEL-029, Rule-EDITOR-PANEL-035
     @Override
     protected void submit() {
-        final @NotNull List<CreateTestCaseSection> writers = getAllSections().stream().filter(this::mayWrite).toList();
+        final @NotNull List<TestCaseSection> writers = getAllSections().stream().filter(this::mayWrite).toList();
 
-        if (!writers.stream().allMatch(CreateTestCaseSection::accepts)) return;
+        if (!writers.stream().allMatch(TestCaseSection::accepts)) return;
 
         if (writers.contains(descriptionSection) && descriptionSection.typed().trim().isEmpty()) {
             descriptionSection.setError(true);
@@ -216,7 +216,7 @@ public abstract class AbstractTestCaseDialog extends AbstractFrameworkDialog {
         }
 
         TestCaseDto edited = dto;
-        for (final CreateTestCaseSection section : writers) edited = section.applyTo(edited);
+        for (final TestCaseSection section : writers) edited = section.applyTo(edited);
         onSave.accept(edited);
 
         closeOk();

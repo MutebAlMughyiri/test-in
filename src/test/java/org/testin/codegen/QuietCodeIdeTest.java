@@ -28,7 +28,7 @@ import com.intellij.testFramework.PlatformTestUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.Said;
-import org.testin.codegen.event.Moved;
+import org.testin.codegen.event.MovedNode;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
@@ -102,7 +102,7 @@ public class QuietCodeIdeTest extends AbstractCodegenIdeTest {
         final @NotNull String before = stampOf("nafath/checkout/PaymentTest.java");
         watchingTheCode();
 
-        GenType.MOVE_TEST_SET.execute(getProject(), new Moved(payment, checkout.getPath()));
+        GenType.MOVE_TEST_SET.execute(getProject(), new MovedNode(payment, checkout.getPath()));
         settled();
 
         assertTrue("a test set dropped where it already is moved or rewrote its class: " + touched, touched.isEmpty());
@@ -121,8 +121,8 @@ public class QuietCodeIdeTest extends AbstractCodegenIdeTest {
         final @NotNull String visa = stampOf("nafath/checkout/cards/VisaTest.java");
         watchingTheCode();
 
-        GenType.MOVE_TEST_SET_PACKAGE.execute(getProject(), new Moved(checkout, checkout.getPath()));
-        GenType.MOVE_TEST_SET_PACKAGE.execute(getProject(), new Moved(checkout, cards.getPath()));
+        GenType.MOVE_TEST_SET_PACKAGE.execute(getProject(), new MovedNode(checkout, checkout.getPath()));
+        GenType.MOVE_TEST_SET_PACKAGE.execute(getProject(), new MovedNode(checkout, cards.getPath()));
         settled();
 
         assertTrue("a package dropped into itself moved or rewrote code: " + touched, touched.isEmpty());

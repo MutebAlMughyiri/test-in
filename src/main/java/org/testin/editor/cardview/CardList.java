@@ -23,7 +23,7 @@ import com.intellij.ui.ClientProperty;
 import com.intellij.ui.CollectionListModel;
 import com.intellij.ui.components.JBList;
 import org.jetbrains.annotations.NotNull;
-import org.testin.actions.TestinData;
+import org.testin.actions.TestinDataKeys;
 import org.testin.editor.TestinEditor;
 import org.testin.model.TestCaseDto;
 
@@ -47,6 +47,6 @@ public class CardList extends JBList<TestCaseDto> implements UiDataProvider {
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-194
     @Override
     public void uiDataSnapshot(final @NotNull DataSink sink) {
-        TestinData.from(sink, editor, getSelectedValuesList());
+        TestinDataKeys.from(sink, editor, getSelectedValuesList());
     }
 }

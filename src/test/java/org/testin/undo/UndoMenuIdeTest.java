@@ -35,7 +35,7 @@ import org.testin.services.Services;
 import org.testin.setting.AppSettingsState;
 import org.testin.testcase.TestSetEditorAttributes;
 import org.testin.util.Bundle;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 import org.testin.view.Drawn;
 
 import javax.swing.text.JTextComponent;
@@ -94,7 +94,7 @@ public class UndoMenuIdeTest extends AbstractTempRootIdeTest {
     public void testTheEntriesSayWhatTheNextPressWouldTakeOrPutBackAndUndoIsExact() {
         final @NotNull TestSetNode ts = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
         final @NotNull TestCaseDto tc = EditorFixtures.testCase(getProject(), ts, "Log in", "m");
-        final @NotNull Mapper mapper = Services.getInstance(getProject(), Mapper.class);
+        final @NotNull JsonCodec mapper = Services.getInstance(getProject(), JsonCodec.class);
         final @NotNull String original = mapper.writeValueAsString(theTestCases().findTestCase(tc.getId()).orElseThrow());
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), ts, getTestRootDisposable());
         final @NotNull AnAction undo = entry(editor, UndoDirection.UNDO);

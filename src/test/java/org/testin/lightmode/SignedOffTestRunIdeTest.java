@@ -22,12 +22,12 @@ import org.testin.NodesOnDisk;
 import org.testin.indexer.TestRuns;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestProjectNode;
-import org.testin.model.testrun.Execution;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.status.TestRunStatus;
 import org.testin.services.Services;
-import org.testin.testrun.RunItemStatusService;
+import org.testin.testrun.RunItemRecorder;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -55,16 +55,16 @@ public class SignedOffTestRunIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull Path aTestRunWithOneFailure() {
         indexedTestRuns().putRunItems(cycle, new RunItems().setAll(List.of(
-                new RunItem().setId(failed).setExecutions(List.of(Execution.builder().status(RunItemStatus.FAILED).actualResult(RECORDED).build())))));
+                new RunItem().setId(failed).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult(RECORDED).build())))));
         return cycle;
     }
 
     private boolean saveAFailureOnto(final @NotNull Path testRunPath) {
-        final @NotNull RunItem row = new RunItem().setId(failed).setExecutions(List.of(Execution.builder().status(RunItemStatus.FAILED).actualResult("Typed after the sign-off").build()));
+        final @NotNull RunItem row = new RunItem().setId(failed).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("Typed after the sign-off").build()));
         final @NotNull FailureForm form = new FailureForm(getProject(), testRunPath, row, 1f, () -> {
         }, () -> {
         });
-        return Services.getInstance(getProject(), RunItemStatusService.class).reviseFailure(testRunPath, failed, form.fields());
+        return Services.getInstance(getProject(), RunItemRecorder.class).reviseFailure(testRunPath, failed, form.fields());
     }
 
     private @NotNull String recordedOn(final @NotNull Path testRunPath) {
@@ -74,7 +74,7 @@ public class SignedOffTestRunIdeTest extends AbstractTempRootIdeTest {
     // Rule-TREE-PANEL-135, Rule-PRODUCT-011
     public void testACommittedTestRunRecordsNothingFurther() {
         final @NotNull Path testRunPath = aTestRunWithOneFailure();
-        final @NotNull RunItemStatusService service = Services.getInstance(getProject(), RunItemStatusService.class);
+        final @NotNull RunItemRecorder service = Services.getInstance(getProject(), RunItemRecorder.class);
         assertTrue("an open test run refused a write", service.heldTestRun(testRunPath).isPresent());
 
         indexedTestRuns().changeTestRunMarker(testRunPath, marker -> marker.setStatus(TestRunStatus.COMMITTED));
@@ -87,7 +87,7 @@ public class SignedOffTestRunIdeTest extends AbstractTempRootIdeTest {
     // Rule-TREE-PANEL-009
     public void testACompletedOrClosedTestRunStillTakesAFailure() {
         final @NotNull Path testRunPath = aTestRunWithOneFailure();
-        final @NotNull RunItemStatusService service = Services.getInstance(getProject(), RunItemStatusService.class);
+        final @NotNull RunItemRecorder service = Services.getInstance(getProject(), RunItemRecorder.class);
 
         for (final TestRunStatus signedOff : List.of(TestRunStatus.COMPLETED, TestRunStatus.CLOSED)) {
             indexedTestRuns().changeTestRunMarker(testRunPath, marker -> marker.setStatus(signedOff));

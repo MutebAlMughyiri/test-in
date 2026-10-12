@@ -29,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
 import org.testin.model.Automated;
 import org.testin.model.TestCaseDto;
-import org.testin.navigate.CodeNavigation;
+import org.testin.navigate.TestMethodCode;
 import org.testin.services.BackgroundWork;
 import org.testin.util.FailureText;
 
@@ -67,7 +67,7 @@ public final class AutomationState implements Disposable {
         final @NotNull Set<UUID> found = new LinkedHashSet<>();
 
         try {
-            final @NotNull Map<UUID, Boolean> methods = CodeNavigation.available().methodsFor(p, testCases);
+            final @NotNull Map<UUID, Boolean> methods = TestMethodCode.available().methodsFor(p, testCases);
 
             for (final TestCaseDto tc : testCases) {
                 answers.put(tc.getId(), stateOf(tc, methods));

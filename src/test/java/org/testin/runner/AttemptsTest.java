@@ -18,10 +18,10 @@
 package org.testin.runner;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.Config;
+import org.testin.model.DateFormats;
 import org.testin.model.status.ExecutionStatus;
 import org.testin.model.status.RunItemStatus;
-import org.testin.model.testrun.Execution;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.Failure;
 import org.testng.annotations.Test;
 
@@ -35,7 +35,7 @@ import static org.testng.Assert.assertTrue;
 public class AttemptsTest {
 
     private static @NotNull Attempt attempt(final @NotNull ExecutionStatus status, final @NotNull String parameters) {
-        return new Attempt(status, Duration.ZERO, new Failure(status == ExecutionStatus.PASSED ? "" : "attempt failed", "", List.of()), parameters, Config.NOT_EXECUTED);
+        return new Attempt(status, Duration.ZERO, new Failure(status == ExecutionStatus.PASSED ? "" : "attempt failed", "", List.of()), parameters, DateFormats.NOT_EXECUTED);
     }
 
     private static @NotNull Attempts held(final @NotNull ExecutionStatus... statuses) {
@@ -94,25 +94,25 @@ public class AttemptsTest {
         final @NotNull Attempts attempts = new Attempts(List.of(
                 attempt(ExecutionStatus.PASSED, "[1234]"), attempt(ExecutionStatus.FAILED, "[0000]"), attempt(ExecutionStatus.PASSED, "[9876]")), 0);
 
-        assertEquals(attempts.executions().stream().map(Execution::getParameters).toList(), List.of("[1234]", "[0000]", "[9876]"));
+        assertEquals(attempts.executions().stream().map(RunItemExecution::getParameters).toList(), List.of("[1234]", "[0000]", "[9876]"));
         assertEquals(attempts.executions().get(attempts.deciding()).getParameters(), "[0000]", "the failing row decides");
     }
 
     // Rule-CODEGEN-111, Rule-VIEW-PANEL-119
     @Test
     public void theDecidingExecutionIsTheDefaultEvenWhenAStopCameFirst() {
-        final @NotNull List<Execution> decided = held(ExecutionStatus.IDLE, ExecutionStatus.FAILED, ExecutionStatus.PASSED).decidedExecutions();
+        final @NotNull List<RunItemExecution> decided = held(ExecutionStatus.IDLE, ExecutionStatus.FAILED, ExecutionStatus.PASSED).decidedExecutions();
 
-        assertEquals(decided.stream().map(Execution::getStatus).toList(), List.of(RunItemStatus.FAILED, RunItemStatus.PASSED));
-        assertEquals(decided.stream().map(Execution::isChosen).toList(), List.of(true, false), "the failed invocation decides, not the one after it");
+        assertEquals(decided.stream().map(RunItemExecution::getStatus).toList(), List.of(RunItemStatus.FAILED, RunItemStatus.PASSED));
+        assertEquals(decided.stream().map(RunItemExecution::isChosen).toList(), List.of(true, false), "the failed invocation decides, not the one after it");
     }
 
     // Rule-CODEGEN-111
     @Test
     public void aDecidingLastAttemptCarriesNoFlagAndALiveOneNeverDoes() {
-        assertEquals(held(ExecutionStatus.PASSED, ExecutionStatus.FAILED).decidedExecutions().stream().map(Execution::isChosen).toList(), List.of(false, false),
+        assertEquals(held(ExecutionStatus.PASSED, ExecutionStatus.FAILED).decidedExecutions().stream().map(RunItemExecution::isChosen).toList(), List.of(false, false),
                 "the last execution is the default without a flag");
-        assertEquals(held(ExecutionStatus.FAILED, ExecutionStatus.PASSED).executions().stream().map(Execution::isChosen).toList(), List.of(false, false),
+        assertEquals(held(ExecutionStatus.FAILED, ExecutionStatus.PASSED).executions().stream().map(RunItemExecution::isChosen).toList(), List.of(false, false),
                 "attempts shown while TestNG runs choose nothing");
     }
 

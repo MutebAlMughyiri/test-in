@@ -30,11 +30,11 @@ import java.util.List;
 import java.util.Optional;
 
 public final class TestRunConfigurationDialog extends AbstractFrameworkDialog {
-    private final @NotNull TestRunFormAction action;
+    private final @NotNull TestRunFormPurpose action;
     private final @NotNull TestRunConfigurationForm form;
     private final @NotNull SelectionTree selection;
 
-    public TestRunConfigurationDialog(final @NotNull Project p, final @NotNull TestRunConfigurationForm form, final @NotNull TestRunFormFilter filter, final @NotNull TestRunFormAction action) {
+    public TestRunConfigurationDialog(final @NotNull Project p, final @NotNull TestRunConfigurationForm form, final @NotNull TestRunFormFilter filter, final @NotNull TestRunFormPurpose action) {
         super(p);
         this.action = action;
         this.form = form;

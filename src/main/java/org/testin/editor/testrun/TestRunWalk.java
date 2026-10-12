@@ -22,7 +22,7 @@ import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.markers.TestRunMarker;
-import org.testin.model.testrun.Execution;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.TestRunResultAnalysis;
 import org.testin.model.testrun.Segment;
 import org.testin.model.testrun.RunItem;
@@ -36,7 +36,7 @@ import org.testin.notifications.Refused;
 import org.testin.runner.ExecuteTestCases;
 import org.testin.runner.TestNGExecution;
 import org.testin.services.Services;
-import org.testin.testrun.RunItemStatusService;
+import org.testin.testrun.RunItemRecorder;
 import org.testin.testrun.TestRunStatusChange;
 
 import java.time.Duration;
@@ -52,11 +52,11 @@ public final class TestRunWalk {
     private final @NotNull Project p;
     private final @NotNull TestRuns testRuns;
     private final @NotNull TestRunStatusChange testRunStatusChange;
-    private final @NotNull RunItemStatusService runItemStatusService;
+    private final @NotNull RunItemRecorder runItemStatusService;
     private final @NotNull TestNGExecution testNGExecution;
     private final @NotNull Notifier notifier;
 
-    private final @NotNull TestRunExecutionTimer executionTimer = new TestRunExecutionTimer();
+    private final @NotNull RunItemClock executionTimer = new RunItemClock();
     private final @NotNull Set<UUID> launchedHere = ConcurrentHashMap.newKeySet();
     private final @NotNull Set<UUID> launchedByRunTests = ConcurrentHashMap.newKeySet();
 
@@ -67,7 +67,7 @@ public final class TestRunWalk {
         this.p = p;
         this.testRuns = Services.getInstance(p, TestRuns.class);
         this.testRunStatusChange = Services.getInstance(p, TestRunStatusChange.class);
-        this.runItemStatusService = Services.getInstance(p, RunItemStatusService.class);
+        this.runItemStatusService = Services.getInstance(p, RunItemRecorder.class);
         this.testNGExecution = Services.getInstance(p, TestNGExecution.class);
         this.notifier = Services.getInstance(p, Notifier.class);
     }
@@ -203,7 +203,7 @@ public final class TestRunWalk {
     }
 
     // UC-EDITOR-PANEL-043, UC-EDITOR-PANEL-044, Rule-EDITOR-PANEL-182, Rule-EDITOR-PANEL-289
-    void executionReported(final @NotNull TestCaseDto tc, final @NotNull ExecutionStatus status, final @NotNull List<Execution> executions, final int written) {
+    void executionReported(final @NotNull TestCaseDto tc, final @NotNull ExecutionStatus status, final @NotNull List<RunItemExecution> executions, final int written) {
         if (!launchedHere.contains(tc.getId())) return;
 
         if (!status.stillGoing()) {

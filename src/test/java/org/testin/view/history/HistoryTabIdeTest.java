@@ -32,8 +32,8 @@ import org.testin.editor.open.TestinEditors;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.git.change.ChangeType;
 import org.testin.git.change.FieldChange;
-import org.testin.git.history.HistoryEntry;
-import org.testin.git.history.HistoryEntryKind;
+import org.testin.git.history.TestCaseHistoryCard;
+import org.testin.git.history.TestCaseHistoryKind;
 import org.testin.indexer.TestRuns;
 import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.RunItems;
@@ -42,7 +42,7 @@ import org.testin.model.bug.BugSeverity;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
-import org.testin.model.testrun.Execution;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.services.Services;
@@ -62,7 +62,7 @@ public class HistoryTabIdeTest extends AbstractTempRootIdeTest {
     private final @NotNull JBPanel<?> tab = new JBPanel<>(new BorderLayout());
 
     private static @NotNull RunItem failed(final @NotNull TestCaseDto tc) {
-        return RunItem.builder().id(tc.getId()).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl("https://github.com/mtb550/test-in/issues/412").executions(List.of(Execution.builder().status(RunItemStatus.FAILED).actualResult("The basket was emptied").build())).build();
+        return RunItem.builder().id(tc.getId()).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl("https://github.com/mtb550/test-in/issues/412").executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The basket was emptied").build())).build();
     }
 
     private @NotNull TestCaseDto aTestCase() {
@@ -101,30 +101,30 @@ public class HistoryTabIdeTest extends AbstractTempRootIdeTest {
         }
     }
 
-    private static @NotNull HistoryEntry updated(final int fields, final @NotNull String newValue) {
+    private static @NotNull TestCaseHistoryCard updated(final int fields, final @NotNull String newValue) {
         final @NotNull List<FieldChange> changes = IntStream.range(0, fields)
                 .mapToObj(i -> new FieldChange("Field " + i, "was " + i, i == 0 ? newValue : "now " + i, ChangeType.CHANGE_DESCRIPTION))
                 .toList();
-        return new HistoryEntry(HistoryEntryKind.UPDATED, "", "Sara", ZonedDateTime.parse("2026-10-07T16:40:00+03:00"), "", "", changes, "before", "after");
+        return new TestCaseHistoryCard(TestCaseHistoryKind.UPDATED, "", "Sara", ZonedDateTime.parse("2026-10-07T16:40:00+03:00"), "", "", changes, "before", "after");
     }
 
     // Rule-VIEW-PANEL-116
     public void testATestCaseCardShowsTwoChangedFieldsAndHowManyMore() {
-        final @NotNull List<String> five = Drawn.words(HistoryCardView.of(getProject(), updated(5, "now 0"), aTestCase(), 0));
+        final @NotNull List<String> five = Drawn.words(HistoryCardPanel.of(getProject(), updated(5, "now 0"), aTestCase(), 0));
         assertTrue("five changed fields do not end with +3 more: " + five, Drawn.holds(five, Bundle.message("view.history.more", "3")));
         assertFalse("a third changed field was drawn: " + five, Drawn.holds(five, "was 2"));
 
-        final @NotNull List<String> three = Drawn.words(HistoryCardView.of(getProject(), updated(3, "now 0"), aTestCase(), 0));
+        final @NotNull List<String> three = Drawn.words(HistoryCardPanel.of(getProject(), updated(3, "now 0"), aTestCase(), 0));
         assertTrue("three changed fields do not end with +1 more: " + three, Drawn.holds(three, Bundle.message("view.history.more", "1")));
 
-        final @NotNull List<String> two = Drawn.words(HistoryCardView.of(getProject(), updated(2, "now 0"), aTestCase(), 0));
+        final @NotNull List<String> two = Drawn.words(HistoryCardPanel.of(getProject(), updated(2, "now 0"), aTestCase(), 0));
         assertFalse("two changed fields say there are more: " + two, Drawn.holds(two, "more"));
     }
 
     // Rule-VIEW-PANEL-116
     public void testALongValueIsCutToThePanelAndWholeOnHover() {
         final @NotNull String longValue = "The transfer is sent and the balance drops by the amount plus the fee. ".repeat(12).trim();
-        final @NotNull JComponent card = HistoryCardView.of(getProject(), updated(1, longValue), aTestCase(), 0);
+        final @NotNull JComponent card = HistoryCardPanel.of(getProject(), updated(1, longValue), aTestCase(), 0);
         final @NotNull ScrollablePanel tabPanel = new ScrollablePanel(new BorderLayout());
         tabPanel.add(card, BorderLayout.NORTH);
         final @NotNull JBScrollPane pane = new JBScrollPane(tabPanel);

@@ -21,7 +21,7 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiCodeBlock;
 import com.intellij.psi.PsiMethod;
 import org.jetbrains.annotations.NotNull;
-import org.testin.codegen.GenAction;
+import org.testin.codegen.CodeChange;
 import org.testin.codegen.event.CopiedTestCase;
 import org.testin.java.codegen.GeneratedMethod;
 import org.testin.java.codegen.method.update.BaseTestMethodChange;
@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Optional;
 
 // UC-CODEGEN-002, Rule-CODEGEN-078
-public class CopyTestMethod extends BaseTestMethodChange implements GenAction<CopiedTestCase> {
+public class CopyTestMethod extends BaseTestMethodChange implements CodeChange<CopiedTestCase> {
     @Override
     public void execute(final @NotNull Project p, final @NotNull CopiedTestCase copied) {
         executeAll(p, List.of(copied));

@@ -21,11 +21,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.Config;
+import org.testin.model.DateFormats;
 import org.testin.model.NodeType;
 import org.testin.model.FileKind;
 import org.testin.util.Bundle;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 import org.testin.util.TestCaseFieldParser;
 
 import java.nio.file.Path;
@@ -50,7 +50,7 @@ public final class TestCaseMerger {
     }
 
     // UC-SHARE-018, Rule-SHARE-080
-    public static @NotNull MergeOutcome of(final @NotNull Mapper mapper, final @NotNull String base, final @NotNull String mine, final @NotNull String theirs) {
+    public static @NotNull MergeOutcome of(final @NotNull JsonCodec mapper, final @NotNull String base, final @NotNull String mine, final @NotNull String theirs) {
         final @NotNull ThreeWayMerge merging = ThreeWayMerge.read(mapper, base, mine, theirs);
         final @NotNull ObjectNode merged = merging.merged();
         final @NotNull List<String> settled = merging.settled();
@@ -95,8 +95,8 @@ public final class TestCaseMerger {
     }
 
     private static void stampTheLaterEdit(final @NotNull ObjectNode merged, final @NotNull ObjectNode mine, final @NotNull ObjectNode theirs) {
-        final @NotNull ZonedDateTime mineAt = TestCaseFieldParser.date(text(mine.path(UPDATED_AT))).orElse(Config.NOT_EXECUTED);
-        final @NotNull ZonedDateTime theirsAt = TestCaseFieldParser.date(text(theirs.path(UPDATED_AT))).orElse(Config.NOT_EXECUTED);
+        final @NotNull ZonedDateTime mineAt = TestCaseFieldParser.date(text(mine.path(UPDATED_AT))).orElse(DateFormats.NOT_EXECUTED);
+        final @NotNull ZonedDateTime theirsAt = TestCaseFieldParser.date(text(theirs.path(UPDATED_AT))).orElse(DateFormats.NOT_EXECUTED);
 
         final @NotNull ObjectNode later = theirsAt.isAfter(mineAt) ? theirs : mine;
 

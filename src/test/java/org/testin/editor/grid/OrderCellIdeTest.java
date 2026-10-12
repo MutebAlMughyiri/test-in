@@ -58,7 +58,7 @@ public class OrderCellIdeTest extends AbstractTempRootIdeTest {
 
     private static void onTheOrderCellOfRow(final @NotNull JBTable grid, final int row) {
         final int order = IntStream.range(0, grid.getColumnCount())
-                .filter(column -> GridPanelBuilder.isOrderColumn(grid, column))
+                .filter(column -> GridTables.isOrderColumn(grid, column))
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("the grid has no Order column"));
         grid.setRowSelectionInterval(row, row);
@@ -160,14 +160,14 @@ public class OrderCellIdeTest extends AbstractTempRootIdeTest {
 
         assertFalse("the card still shows its number with Order unticked", Character.isDigit(editor.cardTitle(editor.getAllTestCases().getFirst()).charAt(0)));
         final @NotNull JBTable grid = gridOf(editor);
-        assertTrue("the grid lost its # column", GridPanelBuilder.isSequenceColumn(grid, 0));
-        assertTrue("the grid still shows the Order column with Order unticked", IntStream.range(0, grid.getColumnCount()).noneMatch(column -> GridPanelBuilder.isOrderColumn(grid, column)));
+        assertTrue("the grid lost its # column", GridTables.isSequenceColumn(grid, 0));
+        assertTrue("the grid still shows the Order column with Order unticked", IntStream.range(0, grid.getColumnCount()).noneMatch(column -> GridTables.isOrderColumn(grid, column)));
     }
 
     // Rule-EDITOR-PANEL-272
     public void testTheGridNumberIsDrawnInTheIdesOwnFontAndTheCellsInTheEditorFont() {
         final @NotNull JBTable grid = gridOf(threeTestCases());
-        final int description = IntStream.range(0, grid.getColumnCount()).filter(column -> !GridPanelBuilder.isSequenceColumn(grid, column) && !GridPanelBuilder.isOrderColumn(grid, column)).findFirst().orElseThrow();
+        final int description = IntStream.range(0, grid.getColumnCount()).filter(column -> !GridTables.isSequenceColumn(grid, column) && !GridTables.isOrderColumn(grid, column)).findFirst().orElseThrow();
 
         assertEquals("the # column is not in the IDE's own font", UIUtil.getTreeFont(), Drawn.first(drawn(grid, 0), JTextArea.class).getFont());
         assertEquals("a value cell left the editor font", grid.getFont(), Drawn.first(drawn(grid, description), JTextArea.class).getFont());

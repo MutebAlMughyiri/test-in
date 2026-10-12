@@ -23,12 +23,12 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.config.TestinYml;
 import org.testin.explorer.TreePanel;
 import org.testin.git.GitBackgroundTask;
-import org.testin.git.GitCommits;
+import org.testin.git.GitCommitAndPush;
 import org.testin.git.GitFailed;
 import org.testin.git.GitFailureNotice;
 import org.testin.git.GitRepositoryService;
 import org.testin.git.RepositoryRefresh;
-import org.testin.git.change.GitDiffProcessor;
+import org.testin.git.change.PendingChangeReader;
 import org.testin.git.change.PendingChange;
 import org.testin.git.conflict.ConflictResolution;
 import org.testin.git.conflict.GitConflictOffer;
@@ -59,9 +59,9 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public record ViewPendingCommitsWork(@NotNull Project p, @NotNull GitRepositoryService git, @NotNull GitCommits commits, @NotNull Notifier notifier, @NotNull Nodes nodes) {
+public record ViewPendingCommitsWork(@NotNull Project p, @NotNull GitRepositoryService git, @NotNull GitCommitAndPush commits, @NotNull Notifier notifier, @NotNull Nodes nodes) {
     public ViewPendingCommitsWork(final @NotNull Project p) {
-        this(p, new GitRepositoryService(p), new GitCommits(p), Services.getInstance(p, Notifier.class), Services.getInstance(p, Nodes.class));
+        this(p, new GitRepositoryService(p), new GitCommitAndPush(p), Services.getInstance(p, Notifier.class), Services.getInstance(p, Nodes.class));
     }
 
     private static @NotNull String commitLabel(final @NotNull String commit) {
@@ -99,7 +99,7 @@ public record ViewPendingCommitsWork(@NotNull Project p, @NotNull GitRepositoryS
                         return;
                     }
 
-                    final @NotNull List<PendingChange> changes = GitDiffProcessor.getPendingChanges(p, path);
+                    final @NotNull List<PendingChange> changes = PendingChangeReader.getPendingChanges(p, path);
 
                     final @NotNull List<String> branches = git.getLocalBranches(path);
                     final @NotNull String current = git.getCurrentBranch(path);
@@ -119,7 +119,7 @@ public record ViewPendingCommitsWork(@NotNull Project p, @NotNull GitRepositoryS
             return;
         }
 
-        new PendingCommitsDialog(p, changes, path, branches, currentBranch,
+        new PendingChangesDialog(p, changes, path, branches, currentBranch,
                 request -> commitOnBranch(path, request)).show();
     }
 

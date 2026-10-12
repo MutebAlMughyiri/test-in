@@ -45,7 +45,7 @@ public class TestRunToolbar extends AbstractToolbarPanel {
                 new LightModeBtn(editor),
                 new GenerateReportBtn(p, editor),
                 new RefreshBtn(getCallbacks()::onToolBarRefreshButtonClicked),
-                new TestRunDetailsPopupBtn(getCallbacks()::onToolBarDetailsSelectionChanged),
+                new TestRunFieldsPopupBtn(getCallbacks()::onToolBarDetailsSelectionChanged),
                 new FilterPopupBtn(getCallbacks()),
                 new SortPopupBtn(getCallbacks()),
                 new CardViewBtn(getCallbacks()::onToolBarSwitchedToCardView),

@@ -18,7 +18,7 @@ package org.testin.git.history;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.bug.BugSeverity;
-import org.testin.model.testrun.Execution;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.testrun.TestRunEditorAttributes;
@@ -36,7 +36,7 @@ public class BugEventDetectorTest {
     private static final @NotNull Path CYCLE_3 = Path.of("Test Runs", "Cycle 3");
 
     private static @NotNull Optional<RunItem> runItem(final @NotNull RunItemStatus status, final @NotNull BugSeverity severity, final @NotNull String executedBy) {
-        return Optional.of(RunItem.builder().bugSeverity(severity).executions(List.of(Execution.builder().status(status).executedBy(executedBy).actualResult("The basket was emptied").build())).build());
+        return Optional.of(RunItem.builder().bugSeverity(severity).executions(List.of(RunItemExecution.builder().status(status).executedBy(executedBy).actualResult("The basket was emptied").build())).build());
     }
 
     private static @NotNull BugEvent between(final @NotNull Optional<RunItem> before, final @NotNull Optional<RunItem> after) {
@@ -56,7 +56,7 @@ public class BugEventDetectorTest {
     // Rule-VIEW-PANEL-105
     @Test
     public void aLinkedIssueIsABugWhateverTheRunItemStatus() {
-        final @NotNull Optional<RunItem> linked = Optional.of(RunItem.builder().bugIssueUrl("https://github.com/mtb550/test-in/issues/412").executions(List.of(Execution.builder().status(RunItemStatus.PASSED).build())).build());
+        final @NotNull Optional<RunItem> linked = Optional.of(RunItem.builder().bugIssueUrl("https://github.com/mtb550/test-in/issues/412").executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())).build());
 
         assertEquals(between(Optional.empty(), linked).kind(), BugEventKind.RECORDED);
     }
@@ -85,15 +85,15 @@ public class BugEventDetectorTest {
     public void aBugWhoseOwnAttributesStayTheSameShowsNothing() {
         assertTrue(BugEventDetector.between(CYCLE_3, runItem(RunItemStatus.FAILED, BugSeverity.MINOR, "Sara"), runItem(RunItemStatus.FAILED, BugSeverity.MINOR, "Muteb")).isEmpty());
 
-        final @NotNull Optional<RunItem> reworded = Optional.of(RunItem.builder().bugSeverity(BugSeverity.MINOR).executions(List.of(Execution.builder().status(RunItemStatus.FAILED).executedBy("Sara").actualResult("The basket was emptied twice").build())).build());
+        final @NotNull Optional<RunItem> reworded = Optional.of(RunItem.builder().bugSeverity(BugSeverity.MINOR).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).executedBy("Sara").actualResult("The basket was emptied twice").build())).build());
         assertTrue(BugEventDetector.between(CYCLE_3, runItem(RunItemStatus.FAILED, BugSeverity.MINOR, "Sara"), reworded).isEmpty(), "the actual result is not shown on a bug card");
     }
 
     // Rule-VIEW-PANEL-105
     @Test
     public void onlyAFailedRunItemColorsItsBugBySeverity() {
-        final @NotNull RunItem linked = RunItem.builder().bugSeverity(BugSeverity.BLOCKER).bugIssueUrl("https://github.com/mtb550/test-in/issues/412").executions(List.of(Execution.builder().status(RunItemStatus.BLOCKED).build())).build();
-        final @NotNull RunItem failed = RunItem.builder().bugSeverity(BugSeverity.BLOCKER).executions(List.of(Execution.builder().status(RunItemStatus.FAILED).build())).build();
+        final @NotNull RunItem linked = RunItem.builder().bugSeverity(BugSeverity.BLOCKER).bugIssueUrl("https://github.com/mtb550/test-in/issues/412").executions(List.of(RunItemExecution.builder().status(RunItemStatus.BLOCKED).build())).build();
+        final @NotNull RunItem failed = RunItem.builder().bugSeverity(BugSeverity.BLOCKER).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build();
 
         assertEquals(BugEventKind.RECORDED.barOf(linked), BugEventKind.RECORDED.getColor(), "a blocked run item has no triage to show");
         assertEquals(BugEventKind.RECORDED.barOf(failed), BugSeverity.BLOCKER.getColor());

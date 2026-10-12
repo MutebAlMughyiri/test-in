@@ -21,9 +21,9 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.Fqcn;
-import org.testin.codegen.GenAction;
+import org.testin.codegen.CodeChange;
 import org.testin.codegen.GenType;
-import org.testin.codegen.event.Renamed;
+import org.testin.codegen.event.RenamedNode;
 import org.testin.java.codegen.GeneratedClass;
 import org.testin.logger.TestinLogger;
 import org.testin.util.NameSanitizer;
@@ -31,10 +31,10 @@ import org.testin.util.NameSanitizer;
 import java.util.List;
 import java.util.Optional;
 
-public class RenameJavaClass implements GenAction<Renamed> {
+public class RenameJavaClass implements CodeChange<RenamedNode> {
     // UC-CODEGEN-015, Rule-CODEGEN-052
     @Override
-    public void execute(final @NotNull Project p, final @NotNull Renamed renamed) {
+    public void execute(final @NotNull Project p, final @NotNull RenamedNode renamed) {
         final @NotNull String newName = renamed.newName();
         final @NotNull List<String> fqcn = Fqcn.ofClass(renamed.from());
         if (fqcn.isEmpty()) return;

@@ -54,7 +54,7 @@ public class NodeDetailsIdeTest extends AbstractTempRootIdeTest {
 
     @Override
     protected void tearDown() {
-        ShownDialog.close(getProject(), MarkerDetailsViewDialog.class);
+        ShownDialog.close(getProject(), NodeDetailsDialog.class);
         super.tearDown();
     }
 
@@ -63,7 +63,7 @@ public class NodeDetailsIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull String theTestCasesCountedForDetails() {
-        new MarkerDetailsViewDialog(getProject(), login);
+        new NodeDetailsDialog(getProject(), login);
         return login.getType().getCounts().getFirst().of(NodeCounter.figures(getProject(), login));
     }
 
@@ -71,7 +71,7 @@ public class NodeDetailsIdeTest extends AbstractTempRootIdeTest {
     public void testOpeningDetailsChangesNothingAndSaysNothing() {
         final @NotNull String before = bytesOf(marker());
         final @NotNull Said balloons = Said.listening(getProject(), getTestRootDisposable());
-        new MarkerDetailsViewDialog(getProject(), login);
+        new NodeDetailsDialog(getProject(), login);
 
         assertEquals("opening Details said something", List.of(), balloons.shown());
         assertEquals("opening Details changed the node", before, bytesOf(marker()));

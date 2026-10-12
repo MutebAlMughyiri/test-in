@@ -35,10 +35,10 @@ public class GridRowsIdeTest extends BasePlatformTestCase {
     }
 
     public void testANewPageKeepsTheTableAndTheColumnsTheTesterChose() {
-        final JBTable table = new GridPanelBuilder().buildTestTable(List.of(aRow("Log in"), aRow("Log out")), Set.of(TestSetEditorAttributes.DESCRIPTION));
+        final JBTable table = new GridTables().buildTestTable(List.of(aRow("Log in"), aRow("Log out")), Set.of(TestSetEditorAttributes.DESCRIPTION));
         final int shownColumns = table.getColumnCount();
 
-        GridPanelBuilder.replaceRows(table, List.<String[]>of(aRow("Reset the password")));
+        GridTables.replaceRows(table, List.<String[]>of(aRow("Reset the password")));
 
         assertEquals("the new page did not replace the rows", 1, table.getRowCount());
         assertEquals("Reset the password", table.getModel().getValueAt(0, TestSetEditorAttributes.DESCRIPTION.column()));

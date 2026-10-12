@@ -32,7 +32,7 @@ import org.testin.model.testrun.RunItem;
 import org.testin.services.Services;
 import org.testin.setting.TestinRoot;
 import org.testin.util.FailureText;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -155,7 +155,7 @@ public final class TestRunFromGit {
     }
 
     private static @NotNull Optional<TestCaseDto> parsed(final @NotNull Project p, final @NotNull String json) {
-        return TestCaseHistory.parsed(Services.getInstance(p, Mapper.class), json);
+        return TestCaseHistory.parsed(Services.getInstance(p, JsonCodec.class), json);
     }
 
     private static @NotNull String fileName(final @NotNull String path) {

@@ -48,8 +48,8 @@ public class GrayUnlessTestCaseSelectedIdeTest extends AbstractTempRootIdeTest {
     private @NotNull AnActionEvent updated(final @NotNull AnAction action, final @NotNull TestSetEditor editor, final @NotNull List<TestCaseDto> selected) {
         final @NotNull AnActionEvent e = TestActionEvent.createTestEvent(action, SimpleDataContext.builder()
                 .add(CommonDataKeys.PROJECT, getProject())
-                .add(TestinData.EDITOR, editor)
-                .add(TestinData.SELECTED_TEST_CASES, selected)
+                .add(TestinDataKeys.EDITOR, editor)
+                .add(TestinDataKeys.SELECTED_TEST_CASES, selected)
                 .build());
         ActionUtil.updateAction(action, e);
         return e;
@@ -76,7 +76,7 @@ public class GrayUnlessTestCaseSelectedIdeTest extends AbstractTempRootIdeTest {
         final @NotNull UpdateTestCaseAction update = new UpdateTestCaseAction();
         final @NotNull AnActionEvent e = TestActionEvent.createTestEvent(update, SimpleDataContext.builder()
                 .add(CommonDataKeys.PROJECT, getProject())
-                .add(TestinData.SELECTED_TEST_CASES, List.of(new TestCaseDto()))
+                .add(TestinDataKeys.SELECTED_TEST_CASES, List.of(new TestCaseDto()))
                 .build());
         ActionUtil.updateAction(update, e);
 

@@ -76,7 +76,7 @@ public class HistoryTab {
     private static void draw(final @NotNull Project p, final @NotNull JPanel historyTab, final @NotNull JBPanel<?> entriesPanel, final @NotNull List<HistoryCard> cards, final @NotNull TestCaseDto tc, final int from, final @NotNull Object request) {
         if (!isCurrent(historyTab, request)) return;
 
-        IntStream.range(from, Math.min(cards.size(), from + GROUP)).forEach(at -> entriesPanel.add(HistoryCardView.of(p, cards.get(at), tc, at)));
+        IntStream.range(from, Math.min(cards.size(), from + GROUP)).forEach(at -> entriesPanel.add(HistoryCardPanel.of(p, cards.get(at), tc, at)));
         historyTab.revalidate();
         historyTab.repaint();
 

@@ -21,13 +21,13 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.CreateTestCaseFields;
 import org.testin.util.Shortcuts;
-import org.testin.util.SpellChecker;
+import org.testin.util.EditorFields;
 
 // Rule-EDITOR-PANEL-194
 public class ReferenceSection extends AbstractOneLineSection {
     // Rule-EDITOR-PANEL-271
     public ReferenceSection(final @NotNull Project p) {
-        super(SpellChecker.createField(p), CreateTestCaseFields.REFERENCE, Shortcuts.CreateTestCaseReference);
+        super(EditorFields.createField(p), CreateTestCaseFields.REFERENCE, Shortcuts.CreateTestCaseReference);
     }
 
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-032

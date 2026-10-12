@@ -72,7 +72,7 @@ public class TreeMenuIdeTest extends BasePlatformTestCase {
     private @NotNull Presentation updated(final @NotNull AnAction action, final @NotNull List<AbstractNode> selected) {
         final @NotNull AnActionEvent e = TestActionEvent.createTestEvent(action, SimpleDataContext.builder()
                 .add(CommonDataKeys.PROJECT, getProject())
-                .add(TestinData.SELECTED_NODES, selected)
+                .add(TestinDataKeys.SELECTED_NODES, selected)
                 .build());
         ActionUtil.updateAction(action, e);
         return e.getPresentation();

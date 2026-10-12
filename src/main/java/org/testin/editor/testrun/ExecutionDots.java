@@ -18,7 +18,7 @@ package org.testin.editor.testrun;
 
 import com.intellij.util.ui.EmptyIcon;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.testrun.Execution;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 
 import javax.swing.Icon;
@@ -38,7 +38,7 @@ record ExecutionDots(@NotNull List<Color> colors, int ringed, int older, int old
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-287
     static @NotNull Icon of(final @NotNull RunItem runItem, final @NotNull Font font) {
-        final @NotNull List<Execution> executions = runItem.getExecutions();
+        final @NotNull List<RunItemExecution> executions = runItem.getExecutions();
         if (runItem.executedAtMostOnce()) return EmptyIcon.ICON_0;
 
         final int from = Math.max(0, executions.size() - SHOWN);

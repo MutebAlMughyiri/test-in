@@ -53,7 +53,7 @@ public class TestSetClassIdeTest extends AbstractCodegenIdeTest {
             written.add(JavaPsiFacade.getElementFactory(getProject()).createMethodFromText("public void writtenByHand() {}", written));
         });
 
-        JavaCode.of(NodeType.TS).getCreated().execute(getProject(), login);
+        NodeCode.of(NodeType.TS).getCreated().execute(getProject(), login);
 
         assertEquals("the class was written over, and the tester's method went with it", 1, generatedClass("nafath.LoginTest").orElseThrow().findMethodsByName("writtenByHand", false).length);
     }

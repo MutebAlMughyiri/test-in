@@ -28,11 +28,11 @@ import org.testin.editor.card.HoverButton;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.status.RunItemStatus;
-import org.testin.model.testrun.Execution;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.services.Services;
 import org.testin.testrun.ChangedSinceCommit;
-import org.testin.testrun.RunItemStatusService;
+import org.testin.testrun.RunItemRecorder;
 import org.testin.testrun.TestRunEditorAttributes;
 import org.testin.ui.Badge;
 import org.testin.ui.Badges;
@@ -75,7 +75,7 @@ public final class RunItemSummary extends AbstractDetails {
     }
 
     // Rule-CODEGEN-112
-    private static @NotNull String whatItWas(final @NotNull Execution execution) {
+    private static @NotNull String whatItWas(final @NotNull RunItemExecution execution) {
         final @NotNull String kind = !execution.getParameters().isBlank() ? execution.getParameters()
                 : execution.getRetry() > 0 ? Bundle.message("execution.retry", String.valueOf(execution.getRetry()))
                 : execution.getInvocation() > 0 ? Bundle.message("execution.invocation", String.valueOf(execution.getInvocation()))
@@ -124,12 +124,12 @@ public final class RunItemSummary extends AbstractDetails {
         if (runItem.executedAtMostOnce()) {
             final @NotNull JBPanel<?> line = line(GAP);
             pills(runItem.shownStatus(), TestRunEditorAttributes.DURATION.gridValue(runItem)).forEach(line::add);
-            Bug.of(p, runItem, currentPath, dto).ifPresent(line::add);
+            BugLine.of(p, runItem, currentPath, dto).ifPresent(line::add);
             row = addFullWidthRow(panel, gbc, line, JBUI.insets(INSETS_TOP, INSETS_SIDE, 0, INSETS_SIDE), row);
         } else {
             final int defaultAt = runItem.defaultIndex();
             final @NotNull Optional<TestRunNode> testRun = testRunOf(p, currentPath);
-            final @NotNull Optional<String> whyNot = testRun.flatMap(shownIn -> Services.getInstance(p, RunItemStatusService.class).whyExecutionsAreFixed(shownIn.getPath(), runItem.getId()));
+            final @NotNull Optional<String> whyNot = testRun.flatMap(shownIn -> Services.getInstance(p, RunItemRecorder.class).whyExecutionsAreFixed(shownIn.getPath(), runItem.getId()));
             final @NotNull List<Runnable> hideEveryLine = new ArrayList<>();
 
             for (int at = 0; at < runItem.getExecutions().size(); at++) {
@@ -150,7 +150,7 @@ public final class RunItemSummary extends AbstractDetails {
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-086, Rule-VIEW-PANEL-119
     private @NotNull JBPanel<?> executionLine(final @NotNull Project p, final @NotNull TestCaseDto dto, final int at, final boolean isDefault) {
-        final @NotNull Execution execution = runItem.getExecutions().get(at);
+        final @NotNull RunItemExecution execution = runItem.getExecutions().get(at);
 
         final @NotNull JBPanel<?> line = line(GAP);
         line.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -165,7 +165,7 @@ public final class RunItemSummary extends AbstractDetails {
             final @NotNull JBLabel star = new JBLabel(AllIcons.Nodes.Favorite);
             Tooltip.set(star, Bundle.message("execution.default"), "");
             line.add(star);
-            Bug.of(p, runItem, currentPath, dto).ifPresent(line::add);
+            BugLine.of(p, runItem, currentPath, dto).ifPresent(line::add);
         }
 
         return line;
@@ -173,7 +173,7 @@ public final class RunItemSummary extends AbstractDetails {
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-120, Rule-VIEW-PANEL-121
     private @NotNull JBPanel<?> actions(final @NotNull Project p, final @NotNull TestCaseDto dto, final @NotNull TestRunNode testRun, final int at, final boolean isDefault, final @NotNull Optional<String> whyNot) {
-        final @NotNull RunItemStatusService statuses = Services.getInstance(p, RunItemStatusService.class);
+        final @NotNull RunItemRecorder statuses = Services.getInstance(p, RunItemRecorder.class);
         final @NotNull JBPanel<?> actions = row(0);
 
         if (!isDefault) {

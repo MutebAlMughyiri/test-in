@@ -24,7 +24,7 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.testin.codegen.GenAction;
+import org.testin.codegen.CodeChange;
 import org.testin.codegen.GenType;
 import org.testin.java.codegen.GeneratedMethod;
 import org.testin.model.TestCaseDto;
@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.Optional;
 
 // Rule-CODEGEN-044
-public class ReconcileTestMethod extends BaseTestMethodChange implements GenAction<TestCaseDto> {
+public class ReconcileTestMethod extends BaseTestMethodChange implements CodeChange<TestCaseDto> {
     @Override
     public void execute(final @NotNull Project p, final @NotNull TestCaseDto tc) {
         executeAll(p, List.of(tc));

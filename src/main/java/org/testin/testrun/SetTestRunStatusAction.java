@@ -45,7 +45,7 @@ public class SetTestRunStatusAction extends AbstractBoundProjectAction {
     }
 
     private void askForStatus(final @NotNull TestRunNode testRunNode) {
-        new TestRunStatusMenuDialog(p, testRunNode.getMarker().getStatus(), selectedStatus ->
+        new TestRunStatusMenu(p, testRunNode.getMarker().getStatus(), selectedStatus ->
                 statusChange.apply(testRunNode, selectedStatus)).show();
     }
 

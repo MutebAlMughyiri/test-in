@@ -31,11 +31,11 @@ import org.testin.services.Services;
 import org.testin.setting.AppSettingsState;
 import org.testin.testcase.UpdateTestCaseAction;
 import org.testin.testcase.UpdateTestCaseFields;
-import org.testin.testcase.create.CreateTestCaseSection;
+import org.testin.testcase.create.TestCaseSection;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.undo.UndoHistories;
 import org.testin.undo.UndoScope;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 import org.testin.util.Shortcuts;
 import org.testin.view.Drawn;
 
@@ -56,7 +56,7 @@ public class UpdateOneFieldIdeTest extends AbstractTempRootIdeTest {
         return tc.edit().description(description).expectedResult(expectedResult).build();
     }
 
-    private static boolean gray(final @NotNull CreateTestCaseSection section) {
+    private static boolean gray(final @NotNull TestCaseSection section) {
         return !section.getFocusComponent().isEnabled();
     }
 
@@ -168,7 +168,7 @@ public class UpdateOneFieldIdeTest extends AbstractTempRootIdeTest {
         settings.testerName = "Sara";
         try {
             final @NotNull TestCaseDto tc = aTestCase("Log in", "Dashboard opens");
-            final @NotNull Mapper mapper = Services.getInstance(getProject(), Mapper.class);
+            final @NotNull JsonCodec mapper = Services.getInstance(getProject(), JsonCodec.class);
             final @NotNull String original = mapper.writeValueAsString(tc.copy());
             final @NotNull TestSetEditor editor = anEditorSelecting(tc);
             final @NotNull UndoScope scope = UndoScope.of(testSet.getPath());

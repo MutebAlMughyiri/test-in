@@ -88,7 +88,7 @@ public final class FontSync {
             applyGlobally(newSize);
 
             updateComponentFontSize(component, refit);
-            ZoomIndicatorDialog.show(p, component, newSize);
+            ZoomIndicator.show(p, component, newSize);
         });
     }
 

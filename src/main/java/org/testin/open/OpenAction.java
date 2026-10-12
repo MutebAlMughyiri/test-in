@@ -21,7 +21,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
-import org.testin.actions.TestinData;
+import org.testin.actions.TestinDataKeys;
 import org.testin.editor.open.TestinEditors;
 import org.testin.logger.TestinLogger;
 import org.testin.model.node.AbstractNode;
@@ -44,13 +44,13 @@ public class OpenAction extends AbstractAnyProjectAction {
     // UC-TREE-PANEL-005, UC-TREE-PANEL-006
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        execute(p, TestinData.selectedNodes(e));
+        execute(p, TestinDataKeys.selectedNodes(e));
     }
 
     // UC-TREE-PANEL-005, Rule-TREE-PANEL-022
     @Override
     protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        e.getPresentation().setEnabled(TestinData.selectedNodes(e).stream()
+        e.getPresentation().setEnabled(TestinDataKeys.selectedNodes(e).stream()
                 .anyMatch(AbstractNode::isOpenableInEditor));
     }
 

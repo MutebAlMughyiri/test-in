@@ -82,8 +82,8 @@ public class NodeKindTablesTest {
     public void everyWayOfCountingIsGathered() {
         final @NotNull Set<String> gathered = gatheredWaysOfCounting();
 
-        assertEquals(gathered, Arrays.stream(NodeStatistics.values()).map(Enum::name).collect(Collectors.toSet()),
-                "Gathered and NodeStatistics no longer name the same ways of counting,"
+        assertEquals(gathered, Arrays.stream(DonutSlices.values()).map(Enum::name).collect(Collectors.toSet()),
+                "Gathered and DonutSlices no longer name the same ways of counting,"
                         + " so NodeCounter.figures throws on a node counted the way that is missing");
     }
 

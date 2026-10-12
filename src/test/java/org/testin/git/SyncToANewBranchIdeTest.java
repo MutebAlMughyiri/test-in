@@ -70,7 +70,7 @@ public class SyncToANewBranchIdeTest extends AbstractTempRootIdeTest {
         mustGit(work, "add", "second.tc");
         mustGit(work, "commit", "-m", "second");
 
-        final @NotNull GitCommits commits = new GitCommits(getProject());
+        final @NotNull GitCommitAndPush commits = new GitCommitAndPush(getProject());
         commits.pullWhereTheRemoteHasBranch(work, "origin", remoteUrl(), BRANCH);
         commits.push(work, "origin", remoteUrl(), BRANCH);
 

@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.Fqcn;
 import org.testin.editor.TestinEditor;
 import org.testin.model.TestCaseDto;
-import org.testin.navigate.CodeNavigation;
+import org.testin.navigate.TestMethodCode;
 import org.testin.notifications.Notifier;
 import org.testin.services.BackgroundWork;
 import org.testin.services.ProjectLifetime;
@@ -50,7 +50,7 @@ public final class WriteBodies {
         final @NotNull AgentConnection connection = AgentConnection.stored();
         if (!connection.isConnected() || testCases.isEmpty()) return;
 
-        BackgroundWork.logged(ReadAction.nonBlocking(() -> CodeNavigation.available().withAWrittenBody(p, testCases))
+        BackgroundWork.logged(ReadAction.nonBlocking(() -> TestMethodCode.available().withAWrittenBody(p, testCases))
                 .expireWith(ProjectLifetime.of(p))
                 .finishOnUiThread(ModalityState.defaultModalityState(), written -> askOrConfirm(p, connection, testCases, written, editor))
                 .submit(AppExecutorUtil.getAppExecutorService()), "Reading which test methods have a written body");
@@ -115,8 +115,8 @@ public final class WriteBodies {
         final @NotNull Optional<String> statements = said.flatMap(AgentAnswer::statementsIn);
 
         final boolean landed = statements.flatMap(written -> overWhatIsThere
-                ? CodeNavigation.available().replaceBody(p, tc, written)
-                : CodeNavigation.available().fillBody(p, tc, written)).isPresent();
+                ? TestMethodCode.available().replaceBody(p, tc, written)
+                : TestMethodCode.available().fillBody(p, tc, written)).isPresent();
 
         transcript.record(tc, prompt, said.orElse(Bundle.message("agent.said.nothing")), landed, outcomeOf(landed, said, statements));
     }
@@ -138,6 +138,6 @@ public final class WriteBodies {
 
         notifier.infoWithActions(p, Bundle.message("agent.done.written"),
                 Bundle.message("agent.done.detail", String.valueOf(transcript.landed()), String.valueOf(asked)),
-                notifier.lastingAction(Bundle.message("agent.said.show"), () -> new AgentSaidDialog(p, transcript.read()).show()));
+                notifier.lastingAction(Bundle.message("agent.said.show"), () -> new AgentTranscriptDialog(p, transcript.read()).show()));
     }
 }

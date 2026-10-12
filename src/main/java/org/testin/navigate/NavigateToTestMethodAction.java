@@ -21,9 +21,9 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
-import org.testin.actions.TestinData;
+import org.testin.actions.TestinDataKeys;
 import org.testin.codegen.CodeOn;
-import org.testin.editor.card.CardHoverAction;
+import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.help.Guide;
 import org.testin.help.Guides;
 import org.testin.model.TestCaseDto;
@@ -36,19 +36,19 @@ public class NavigateToTestMethodAction extends AbstractAnyProjectAction {
         Services.getInstance(p, Guides.class).add(Guide.AUTOMATION_CODE);
         if (CodeOn.isOffAndWarned(p)) return;
 
-        CodeNavigation.available().toCode(p, tc);
+        TestMethodCode.available().toCode(p, tc);
     }
 
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        TestinData.selectedTestCases(e).stream().findFirst().ifPresent(tc -> execute(p, tc));
+        TestinDataKeys.selectedTestCases(e).stream().findFirst().ifPresent(tc -> execute(p, tc));
     }
 
     @Override
     protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        if (!CardHoverAction.NAVIGATE_TO_TEST_METHOD.enableOrExplain(p, e.getPresentation())) return;
+        if (!TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD.enableOrExplain(p, e.getPresentation())) return;
 
-        e.getPresentation().setEnabled(!TestinData.selectedTestCases(e).isEmpty());
+        e.getPresentation().setEnabled(!TestinDataKeys.selectedTestCases(e).isEmpty());
     }
 
     @Override

@@ -37,9 +37,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 
-record SyncWork(@NotNull Project p, @NotNull GitRepositoryService git, @NotNull GitCommits commits, @NotNull Notifier notifier) {
+record SyncWork(@NotNull Project p, @NotNull GitRepositoryService git, @NotNull GitCommitAndPush commits, @NotNull Notifier notifier) {
     SyncWork(final @NotNull Project p) {
-        this(p, new GitRepositoryService(p), new GitCommits(p), Services.getInstance(p, Notifier.class));
+        this(p, new GitRepositoryService(p), new GitCommitAndPush(p), Services.getInstance(p, Notifier.class));
     }
 
     // UC-SHARE-016, Rule-SHARE-070

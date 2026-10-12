@@ -26,7 +26,7 @@ import com.intellij.testFramework.TestActionEvent;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.Await;
-import org.testin.actions.TestinData;
+import org.testin.actions.TestinDataKeys;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
@@ -46,7 +46,7 @@ public class AutomateTestCaseIdeTest extends AbstractCodegenIdeTest {
     private @NotNull AnActionEvent selecting(final @NotNull TestCaseDto tc) {
         return TestActionEvent.createTestEvent(automate(), SimpleDataContext.builder()
                 .add(CommonDataKeys.PROJECT, getProject())
-                .add(TestinData.SELECTED_TEST_CASES, List.of(tc))
+                .add(TestinDataKeys.SELECTED_TEST_CASES, List.of(tc))
                 .build());
     }
 

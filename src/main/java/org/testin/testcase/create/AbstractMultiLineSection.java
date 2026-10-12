@@ -27,7 +27,7 @@ import org.testin.util.Shortcuts;
 import javax.swing.JComponent;
 
 // Rule-INTERNAL-097
-public abstract class AbstractMultiLineSection implements CreateTestCaseSection {
+public abstract class AbstractMultiLineSection implements TestCaseSection {
     protected final @NotNull MultiLineField field;
 
     private final @NotNull JBPanel<?> wrapper;

@@ -105,7 +105,7 @@ and marker fields carry Lombok's `@NonNull`, which generates the runtime check;
 everything else carries the JetBrains `@NotNull` / `@Nullable` so the annotation
 is the contract.
 
-**Consequences.** `Duration.ZERO` and `Config.NOT_EXECUTED` on a run item are
+**Consequences.** `Duration.ZERO` and `DateFormats.NOT_EXECUTED` on a run item are
 the pattern to copy. `BugSeverity.EMPTY` and `BugPriority.EMPTY` were, until a
 severity nobody chose became Enhancement and a priority Low. `Optional` is used
 as a field type on purpose — a popup built on first show, a service the

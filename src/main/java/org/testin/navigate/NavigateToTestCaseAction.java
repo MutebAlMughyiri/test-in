@@ -22,8 +22,8 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.GrayWithReason;
-import org.testin.actions.TestinData;
-import org.testin.editor.card.CardHoverAction;
+import org.testin.actions.TestinDataKeys;
+import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.editor.open.TestinEditors;
 import org.testin.model.TestCaseDto;
 import org.testin.notifications.Notifier;
@@ -35,7 +35,7 @@ import java.util.Optional;
 // UC-EDITOR-PANEL-048
 public class NavigateToTestCaseAction extends AbstractAnyProjectAction {
     public NavigateToTestCaseAction() {
-        getTemplatePresentation().setIcon(CardHoverAction.NAVIGATE_TO_TEST_CASE.getIcon());
+        getTemplatePresentation().setIcon(TestCaseQuickAction.NAVIGATE_TO_TEST_CASE.getIcon());
     }
 
     // UC-EDITOR-PANEL-048, Rule-EDITOR-PANEL-236
@@ -58,13 +58,13 @@ public class NavigateToTestCaseAction extends AbstractAnyProjectAction {
 
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        TestinData.selectedTestCases(e).stream().findFirst().ifPresent(tc -> execute(p, tc));
+        TestinDataKeys.selectedTestCases(e).stream().findFirst().ifPresent(tc -> execute(p, tc));
     }
 
     // UC-EDITOR-PANEL-048, Rule-EDITOR-PANEL-236, Rule-EDITOR-PANEL-230
     @Override
     protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        TestinData.selectedTestCases(e).stream().findFirst().flatMap(NavigateToTestCaseAction::whyNot)
+        TestinDataKeys.selectedTestCases(e).stream().findFirst().flatMap(NavigateToTestCaseAction::whyNot)
                 .ifPresentOrElse(why -> GrayWithReason.unless(this, e, false, why), () -> GrayWithReason.unlessTestCaseSelected(this, e));
     }
 

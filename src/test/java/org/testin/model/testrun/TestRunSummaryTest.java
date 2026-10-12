@@ -32,11 +32,11 @@ import static org.testng.Assert.assertTrue;
 public class TestRunSummaryTest {
 
     private static @NotNull RunItem runItem(final RunItemStatus status) {
-        return RunItem.builder().id(UUID.randomUUID()).executions(List.of(Execution.builder().status(status).build())).build();
+        return RunItem.builder().id(UUID.randomUUID()).executions(List.of(RunItemExecution.builder().status(status).build())).build();
     }
 
     private static @NotNull RunItem executedBy(final String tester) {
-        return RunItem.builder().id(UUID.randomUUID()).executions(List.of(Execution.builder().status(RunItemStatus.PASSED).executedBy(tester).build())).build();
+        return RunItem.builder().id(UUID.randomUUID()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).executedBy(tester).build())).build();
     }
 
     private static int rateOf(final int passed, final int failed) {
@@ -62,7 +62,7 @@ public class TestRunSummaryTest {
         final TestRunSummary summary = TestRunSummary.of(List.of(
                 runItem(RunItemStatus.PASSED),
                 runItem(RunItemStatus.FAILED),
-                RunItem.builder().id(UUID.randomUUID()).removed(true).executions(List.of(Execution.builder().status(RunItemStatus.PASSED).build())).build(),
+                RunItem.builder().id(UUID.randomUUID()).removed(true).executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())).build(),
                 RunItem.builder().id(UUID.randomUUID()).removed(true).build()));
 
         assertEquals(summary.passed(), 1, "a deleted test case's Passed counted");

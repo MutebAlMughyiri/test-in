@@ -51,8 +51,8 @@ public class RunItemStatusMenuTest {
 
     @Test
     public void theStatusesOffMenuCarryTheEmptyEntry() {
-        assertSame(RunItemStatus.PENDING.getMenuEntry(), MenuEntry.NONE);
-        assertSame(RunItemStatus.UNTESTED.getMenuEntry(), MenuEntry.NONE);
+        assertSame(RunItemStatus.PENDING.getMenuEntry(), RunItemStatusKey.NONE);
+        assertSame(RunItemStatus.UNTESTED.getMenuEntry(), RunItemStatusKey.NONE);
     }
 
     @Test
@@ -60,7 +60,7 @@ public class RunItemStatusMenuTest {
         Arrays.stream(RunItemStatus.values())
                 .filter(RunItemStatus::isRunItemStatus)
                 .forEach(status -> {
-                    assertNotSame(status.getMenuEntry(), MenuEntry.NONE,
+                    assertNotSame(status.getMenuEntry(), RunItemStatusKey.NONE,
                             status + " is offered, so it needs an entry of its own");
                     assertNotEquals(status.getMenuEntry().shortcut().getKeyCode(), KeyEvent.VK_UNDEFINED,
                             status + " is offered, so it needs a key that reaches it");
@@ -72,7 +72,7 @@ public class RunItemStatusMenuTest {
         final List<KeyStroke> keys = Arrays.stream(RunItemStatus.values())
                 .filter(RunItemStatus::isRunItemStatus)
                 .map(RunItemStatus::getMenuEntry)
-                .map(MenuEntry::shortcut)
+                .map(RunItemStatusKey::shortcut)
                 .toList();
 
         assertEquals(keys.size(), keys.stream().distinct().count(), "duplicate run item status key");

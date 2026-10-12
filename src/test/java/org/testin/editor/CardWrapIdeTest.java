@@ -26,7 +26,7 @@ import org.testin.editor.testrun.TestRunEditor;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.status.RunItemStatus;
-import org.testin.model.testrun.Execution;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 
 import javax.swing.JLabel;
@@ -40,7 +40,7 @@ public class CardWrapIdeTest extends AbstractTempRootIdeTest {
     private static final @NotNull String LONG = "Invocation 4, all pass - expect stay through 4 invocations, then Passed.";
 
     private static @NotNull RunItem passed(final @NotNull TestCaseDto tc) {
-        return RunItem.builder().id(tc.getId()).executions(List.of(Execution.builder().status(RunItemStatus.PASSED).build())).build();
+        return RunItem.builder().id(tc.getId()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())).build();
     }
 
     private static int heightAt(final @NotNull JBList<TestCaseDto> list, final int width) {

@@ -17,10 +17,10 @@
 package org.testin.lightmode;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.editor.toolbar.AbstractDetailsPopupBtn;
+import org.testin.editor.toolbar.AbstractFieldsPopupBtn;
 import org.testin.util.Bundle;
 
-class ViewMenuBtn extends AbstractDetailsPopupBtn<LightModePart> {
+class ViewMenuBtn extends AbstractFieldsPopupBtn<LightModePart> {
     ViewMenuBtn(final @NotNull Runnable onChanged) {
         super(Bundle.message("light.view.menu"),
                 "testin.lightMode.parts.v3",

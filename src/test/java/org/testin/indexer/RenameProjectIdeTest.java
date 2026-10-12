@@ -25,7 +25,7 @@ import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.status.ProjectStatus;
 import org.testin.services.Services;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -107,7 +107,7 @@ public class RenameProjectIdeTest extends AbstractTempRootIdeTest {
         final UUID id = UUID.randomUUID();
 
         try {
-            Files.writeString(ts.getPath().resolve("login.tc"), Services.getInstance(getProject(), Mapper.class)
+            Files.writeString(ts.getPath().resolve("login.tc"), Services.getInstance(getProject(), JsonCodec.class)
                     .writeValueAsString(TestCaseDto.builder().id(id).description("Log in with a valid user").build()));
         } catch (final Exception ex) {
             throw new AssertionError("Could not write the hand-named test case: " + ex.getMessage(), ex);

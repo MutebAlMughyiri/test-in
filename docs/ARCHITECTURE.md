@@ -37,7 +37,7 @@ explorer          editor           view          lightmode      the surfaces
                             |
                         indexer                                 the only door
         ProjectIndexer   TestCases   TestRuns   Nodes           to test data
-             -> IndexerDataStore -> TestCaseSequenceStore
+             -> IndexerDataStore -> TestCaseStore
              -> TestDataFiles
                             |
                        VFS / disk
@@ -78,7 +78,7 @@ a package in the row it was already in.
 `TestinEscapeAction` and `ShowNodeDetailsAction` were in `org.testin` itself, which is
 in no row of this table at all. They are in `actions` and `view.marker` now -
 where the first already extends `AbstractBoundProjectAction`, and the second opens
-`MarkerDetailsViewDialog` and does nothing else.
+`NodeDetailsDialog` and does nothing else.
 
 `testset` held one action and the group that built it. Both were a copy of the
 package pair two directories away and of the test project pair one directory
@@ -122,7 +122,7 @@ the ones that do not, and all three are deliberate, so they are described here
 rather than listed one by one:
 
 - **An action holds the surface it acts on**, and a feature owns the actions
-  that invoke it. `git/SyncActionAction` reaching `explorer` is a gesture
+  that invoke it. `git/SyncWithRemoteAction` reaching `explorer` is a gesture
   reaching its surface, filed under `git` because that is where sharing lives.
 - **A dialog reaches the dialog framework.** `ui/framework` is drawn in the
   gestures row and is infrastructure: everything that opens a dialog reaches it,
@@ -145,9 +145,9 @@ goes stale the same week (#66, findings 61 and 77).
 | `indexer/ProjectIndexer`                                              | `editor/open/LastOpenEditors`       | Indexing finishes, and the editors the tester had open are reopened.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `indexer/Rescan`                                                      | `explorer/TreePanel`                | Only to ask `Services.isNotCreated(p, TreePanel.class)` before scanning: a project that never opened the Testin tool window must not be indexed behind the tester's back (#77). It no longer tells the surfaces anything - the indexer announces on `IndexChanged` (#361).                                                                                                                                                                                                                                                                                                                                                                                                               |
 | `setting/SettingsConfigurable`                                        | `explorer/TreePanel`                | Applying the settings page rebuilds the tree, because the Testin folder it names is what the tree is built from. Not an action, so it is not the first shape above.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| `codegen/AutomationState`                                             | `navigate/CodeNavigation`           | Whether a test case has automation behind it is answered by resolving the generated method, and resolving is what `navigate` knows how to do.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `codegen/AutomationState`                                             | `navigate/TestMethodCode`           | Whether a test case has automation behind it is answered by resolving the generated method, and resolving is what `navigate` knows how to do.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | `codegen/ExecutionPosition`                                           | `testcase/TestCaseOrder`            | The number a generated method carries is the test case's place in its set, and the set's order is `testcase`'s answer. The third shape above, in one import.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| `actions/TestinData`, `actions/Declared`                              | `editor`, `model`, `util`, `logger` | Deliberate, and new with #119. A declared action is built by the platform with a no-arg constructor, so it asks the surface that has the keyboard what is selected - and a data key has to name the type it answers with. `actions` was a leaf until then, and typing the keys as `Object` to keep it one would be worse than the edge.                                                                                                                                                                                                                                                                                                                                                  |
+| `actions/TestinDataKeys`, `actions/Declared`                          | `editor`, `model`, `util`, `logger` | Deliberate, and new with #119. A declared action is built by the platform with a no-arg constructor, so it asks the surface that has the keyboard what is selected - and a data key has to name the type it answers with. `actions` was a leaf until then, and typing the keys as `Object` to keep it one would be worse than the edge.                                                                                                                                                                                                                                                                                                                                                  |
 | `testcase/TestSetEditorAttributes`, `testrun/TestRunEditorAttributes` | `ui/Badges`                         | Deliberate. An enum carries its own presentation and its own action rather than being read by an `instanceof` chain at every call site — see the conventions in [CLAUDE.md](https://github.com/MutebAlMughyiri/test-in/blob/main/CLAUDE.md). What is new is where it points *from*: these two were in `model` until 11 September 2026, so the vocabulary every layer speaks pulled the badge painter in behind it (#111). A field of a test case is a fact about `testcase`. What is left is one import each, for the badge a card draws; the other four - `codegen`, `importexport`, `notifications`, `indexer` - are a feature calling a side module and a service, which points down. |
 
 **Side modules are not quite "none on each other".** The drawing above says they
@@ -192,7 +192,7 @@ carries a single exception to it (#111).
 
 Four of the six that had to move were tables: per node kind, what some feature
 does for it. Each lives in the package that knows the answer. Three of them -
-`creator/NodeCreators`, `codegen/JavaCode`, `remove/Removals` - answer through
+`creator/NodeCreators`, `codegen/NodeCode`, `remove/RemoveHandlers` - answer through
 one `of(NodeType)` whose body is a `switch` over every kind with no
 `default`, so a kind added without an entry fails `compileJava`, and no call
 site asks what it is holding (#350). The fourth, `indexer/FiguresByStatistics`, is
@@ -337,10 +337,10 @@ anything else happens at all.
 | 2  | `editor/grid/TestSetGridEditListener.persistAndGenerate` | Moves off the EDT with `executeOnPooledThread`, because the codegen in step 10 schedules its own write commands.                             |
 | 3  | `indexer/TestCases.putTestCase`                          | The public door. Returns a boolean: did this have anything to save.                                                                          |
 | 4  | `indexer/IndexerDataStore.putTestCase`                   | Delegates the write, then stamps the **set's** marker as modified — but only if the write happened.                                          |
-| 5  | `indexer/TestCaseSequenceStore.put`                      | The funnel every save arrives at: the update dialog, a grid cell, the details panel, a paste.                                                |
+| 5  | `indexer/TestCaseStore.put`                              | The funnel every save arrives at: the update dialog, a grid cell, the details panel, a paste.                                                |
 | 6  | `indexer/TestDataFiles.alreadyHolds`                     | Serializes the test case and compares the bytes to the file. **Identical, and nothing below runs.**                                          |
-| 7  | `indexer/TestCaseSequenceStore.put`                      | Stamps the audit — `touch` if the index already knows this id, `stampCreated` if it does not.                                                |
-| 8  | `indexer/TestCaseSequenceStore.store`                    | Updates the two maps, then writes.                                                                                                           |
+| 7  | `indexer/TestCaseStore.put`                              | Stamps the audit — `touch` if the index already knows this id, `stampCreated` if it does not.                                                |
+| 8  | `indexer/TestCaseStore.store`                            | Updates the two maps, then writes.                                                                                                           |
 | 9  | `indexer/TestDataFiles.write`                            | Refuses a zero-byte write, claims the path in `OwnWrites` **before** `Files.write`, writes, then records what landed.                        |
 | 10 | back in `TestSetGridEditListener`                        | The attribute's `GenType` regenerates the test method, and `TestCaseSnapshot.record` files the undo entry.                                   |
 

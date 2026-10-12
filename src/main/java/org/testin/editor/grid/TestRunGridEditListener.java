@@ -23,7 +23,7 @@ import org.testin.indexer.TestRuns;
 import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.RunItem;
 import org.testin.services.Services;
-import org.testin.testrun.RunItemStatusService;
+import org.testin.testrun.RunItemRecorder;
 import org.testin.testrun.TestRunEditorAttributes;
 
 import javax.swing.table.DefaultTableModel;
@@ -36,7 +36,7 @@ public class TestRunGridEditListener extends AbstractGridEditListener {
 
     private final @NotNull Runnable onEdited;
 
-    private final @NotNull RunItemStatusService runItemStatusService;
+    private final @NotNull RunItemRecorder runItemStatusService;
 
     private final @NotNull TestRuns testRuns;
 
@@ -44,7 +44,7 @@ public class TestRunGridEditListener extends AbstractGridEditListener {
         super(p, pageItems);
         this.editor = editor;
         this.onEdited = onEdited;
-        this.runItemStatusService = Services.getInstance(p, RunItemStatusService.class);
+        this.runItemStatusService = Services.getInstance(p, RunItemRecorder.class);
         this.testRuns = Services.getInstance(p, TestRuns.class);
     }
 

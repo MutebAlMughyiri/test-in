@@ -35,7 +35,7 @@ import org.testin.Await;
 import org.testin.OnScreen;
 import org.testin.Said;
 import org.testin.editor.EditorFixtures;
-import org.testin.editor.card.CardHoverAction;
+import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.filter.SortDirection;
 import org.testin.filter.SortField;
@@ -601,7 +601,7 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
             for (final String button : buttonNames(frame))
                 assertTrue("the View menu has no entry named " + button + ": " + entries, entries.contains(button));
             assertTrue("the three buttons are not on to start with", view.getSelectedDetails().containsAll(List.of(LightModePart.TEST_METHOD_BUTTON, LightModePart.RUN_BUTTON, LightModePart.TEST_CASE_BUTTON)));
-            assertTrue("Run and Stop are not one entry", LightModePart.RUN_BUTTON.governs(CardHoverAction.RUN_TEST_METHOD) && LightModePart.RUN_BUTTON.governs(CardHoverAction.STOP_TEST_METHOD));
+            assertTrue("Run and Stop are not one entry", LightModePart.RUN_BUTTON.governs(TestCaseQuickAction.RUN_TEST_METHOD) && LightModePart.RUN_BUTTON.governs(TestCaseQuickAction.STOP_TEST_METHOD));
 
             view.getSelectedDetails().remove(LightModePart.TEST_CASE_BUTTON);
             lightMode().refresh(editor.getParent());

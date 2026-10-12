@@ -29,7 +29,7 @@ import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
 import org.testin.model.status.PackageStatus;
 import org.testin.model.status.TestSetStatus;
-import org.testin.remove.Removals;
+import org.testin.remove.RemoveHandlers;
 import org.testin.services.Services;
 import org.testin.setting.AppSettingsState;
 
@@ -168,7 +168,7 @@ public class TreeNodesIdeTest extends AbstractTempRootIdeTest {
 
         for (final AbstractNode container : List.of(tp.getTestCasesFolder(), tp.getTestRunsFolder())) {
             final @NotNull AtomicBoolean removed = new AtomicBoolean(true);
-            Removals.of(container.getType()).remove(getProject(), container, removed::set);
+            RemoveHandlers.of(container.getType()).remove(getProject(), container, removed::set);
 
             assertFalse(container.getName() + " said it was removed", removed.get());
             assertTrue(container.getName() + " is gone from the disk", Files.isDirectory(container.getPath()));

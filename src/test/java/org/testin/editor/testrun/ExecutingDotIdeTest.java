@@ -21,7 +21,7 @@ import org.testin.AbstractCodegenIdeTest;
 import org.testin.Await;
 import org.testin.Gestures;
 import org.testin.editor.EditorFixtures;
-import org.testin.editor.card.CardHoverAction;
+import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.editor.card.CardTitle;
 import org.testin.editor.card.Offered;
 import org.testin.editor.card.Slot;
@@ -63,7 +63,7 @@ public class ExecutingDotIdeTest extends AbstractCodegenIdeTest {
     }
 
     private static @NotNull List<Offered> runAndNavigate() {
-        return List.of(new Offered(CardHoverAction.NAVIGATE_TO_TEST_METHOD, Optional.empty()), new Offered(CardHoverAction.RUN_TEST_METHOD, Optional.empty()));
+        return List.of(new Offered(TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD, Optional.empty()), new Offered(TestCaseQuickAction.RUN_TEST_METHOD, Optional.empty()));
     }
 
     // Rule-EDITOR-PANEL-291
@@ -94,7 +94,7 @@ public class ExecutingDotIdeTest extends AbstractCodegenIdeTest {
         final @NotNull List<TestCaseDto> testCases = profileTestCases();
         final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), EditorFixtures.testRunOver(getProject(), root, testCases), getTestRootDisposable());
         try {
-            CardHoverAction.RUN_TEST_METHOD.executeFor(editor, testCases.getFirst());
+            TestCaseQuickAction.RUN_TEST_METHOD.executeFor(editor, testCases.getFirst());
             assertTrue("the run button did not hand the test case over", Services.getInstance(getProject(), TestNGExecution.class).isRunning(testCases.getFirst().getId()));
 
             assertFalse("a test case TestNG has not started yet shows as executing", executingNow(testCases.getFirst()));

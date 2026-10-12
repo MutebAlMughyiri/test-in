@@ -18,11 +18,11 @@ package org.testin.model;
 
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.testrun.Execution;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.testrun.RunItems;
-import org.testin.util.RealMapper;
+import org.testin.util.RealJsonCodec;
 import org.testng.annotations.Test;
 
 import java.nio.charset.StandardCharsets;
@@ -82,14 +82,14 @@ public class DeletedTestCaseInATestRunTest {
     public void aJudgedRunItemOfADeletedTestCaseShowsRemovedAndKeepsItsRunItemStatusInTheFile() {
         final RunItem runItem = RunItem.builder()
                 .id(UUID.randomUUID())
-                .removed(true).executions(List.of(Execution.builder().status(RunItemStatus.PASSED).build()))
+                .removed(true).executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()))
                 .build();
 
         assertTrue(runItem.isRemoved(), "the run item status path, the details editor and the walker refuse it");
         assertEquals(runItem.shownStatus(), RunItemStatus.REMOVED, "a deleted test case reads Removed while its test run is not Committed");
 
         try {
-            final String written = new String(RealMapper.build().writeValueAsBytes(RunItems.builder().all(List.of(runItem)).build()), StandardCharsets.UTF_8);
+            final String written = new String(RealJsonCodec.build().writeValueAsBytes(RunItems.builder().all(List.of(runItem)).build()), StandardCharsets.UTF_8);
 
             assertTrue(written.contains("\"PASSED\""), "the file keeps the run item status: " + written);
             assertFalse(written.contains("removed"), "the mark is never written: " + written);

@@ -18,7 +18,7 @@ package org.testin.runner;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.status.ExecutionStatus;
-import org.testin.model.testrun.Execution;
+import org.testin.model.testrun.RunItemExecution;
 
 import java.util.List;
 import java.util.function.IntPredicate;
@@ -57,19 +57,19 @@ record Attempts(@NotNull List<Attempt> all, int written) {
     }
 
     // Rule-CODEGEN-111
-    @NotNull List<Execution> executions() {
+    @NotNull List<RunItemExecution> executions() {
         return executions(_ -> false);
     }
 
     // Rule-CODEGEN-111, Rule-VIEW-PANEL-119
-    @NotNull List<Execution> decidedExecutions() {
+    @NotNull List<RunItemExecution> decidedExecutions() {
         final int deciding = deciding();
         final int last = IntStream.range(0, all.size()).filter(this::isExecution).max().orElse(deciding);
         return executions(at -> at == deciding && at != last);
     }
 
     // Rule-CODEGEN-111, Rule-CODEGEN-112
-    private @NotNull List<Execution> executions(final @NotNull IntPredicate chosen) {
+    private @NotNull List<RunItemExecution> executions(final @NotNull IntPredicate chosen) {
         final int[] invocation = new int[all.size()];
         final int[] retry = new int[all.size()];
         for (int at = 0; at < all.size(); at++) {
@@ -81,7 +81,7 @@ record Attempts(@NotNull List<Attempt> all, int written) {
 
         return IntStream.range(0, all.size())
                 .filter(this::isExecution)
-                .mapToObj(at -> Execution.from(statusAt(at).getRunItemStatus().orElseThrow(), all.get(at).duration(), all.get(at).failure())
+                .mapToObj(at -> RunItemExecution.from(statusAt(at).getRunItemStatus().orElseThrow(), all.get(at).duration(), all.get(at).failure())
                         .executedAt(all.get(at).at())
                         .invocation(invokedMoreThanOnce ? invocation[at] : 0)
                         .retry(retry[at])

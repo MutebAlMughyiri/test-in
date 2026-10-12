@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.AutomationState;
-import org.testin.editor.card.CardHoverAction;
+import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.editor.card.HoverButton;
 import org.testin.editor.card.Offered;
 import org.testin.model.Automated;
@@ -39,9 +39,9 @@ import java.util.Optional;
 public final class TestCaseHoverButtons {
     // UC-VIEW-PANEL-009, UC-VIEW-PANEL-012, UC-VIEW-PANEL-014, Rule-VIEW-PANEL-050, Rule-VIEW-PANEL-056, Rule-VIEW-PANEL-057, Rule-VIEW-PANEL-063, Rule-EDITOR-PANEL-237
     public static @NotNull List<JComponent> of(final @NotNull Project p, final @NotNull TestCaseDto dto, final @NotNull Optional<AbstractNode> shownIn) {
-        final @NotNull Offered navigate = CardHoverAction.NAVIGATE_TO_TEST_METHOD.offer(p, shownIn, dto);
-        final @NotNull Offered testRun = CardHoverAction.RUN_TEST_METHOD.offer(p, shownIn, dto);
-        final @NotNull Offered testCase = CardHoverAction.NAVIGATE_TO_TEST_CASE.offer(p, shownIn, dto);
+        final @NotNull Offered navigate = TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD.offer(p, shownIn, dto);
+        final @NotNull Offered testRun = TestCaseQuickAction.RUN_TEST_METHOD.offer(p, shownIn, dto);
+        final @NotNull Offered testCase = TestCaseQuickAction.NAVIGATE_TO_TEST_CASE.offer(p, shownIn, dto);
 
         final @NotNull AutomationState automation = Services.getInstance(p, AutomationState.class);
         automation.read(p, List.of(dto), () -> ViewToolWindowFactory.panel(p).ifPresent(ViewPanel::refreshCurrentView));

@@ -22,7 +22,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.GrayWithReason;
-import org.testin.actions.TestinData;
+import org.testin.actions.TestinDataKeys;
 import org.testin.util.Bundle;
 import org.testin.util.ClipboardContents;
 
@@ -33,7 +33,7 @@ public class PasteTestCaseAction extends AbstractAnyProjectAction {
     private @NotNull Optional<Answered> answered = Optional.empty();
 
     private static @NotNull Optional<PasteTestCaseWork> work(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        return TestinData.editor(e).map(editor -> new PasteTestCaseWork(p, editor));
+        return TestinDataKeys.editor(e).map(editor -> new PasteTestCaseWork(p, editor));
     }
 
     // UC-EDITOR-PANEL-017
@@ -45,7 +45,7 @@ public class PasteTestCaseAction extends AbstractAnyProjectAction {
     @Override
     protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
         // Rule-EDITOR-PANEL-214
-        if (TestinData.editor(e).filter(editor -> !editor.getParent().isTestCaseContainer()).isPresent()) {
+        if (TestinDataKeys.editor(e).filter(editor -> !editor.getParent().isTestCaseContainer()).isPresent()) {
             e.getPresentation().setEnabled(false);
             e.getPresentation().setDescription(Bundle.message("paste.test.case.disabled.description"));
             return;

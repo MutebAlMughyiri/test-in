@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.intellij.execution.process.ProcessOutput;
 import org.jetbrains.annotations.NotNull;
 import org.testin.util.Bundle;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -41,7 +41,7 @@ record GhIssueStatesAnswer(@NotNull Map<Integer, BugIssueState> states, boolean 
     }
 
     // UC-VIEW-PANEL-005, Rule-VIEW-PANEL-091, Rule-VIEW-PANEL-093, Rule-VIEW-PANEL-094
-    static @NotNull GhIssueStatesAnswer of(final @NotNull Mapper mapper, final @NotNull ProcessOutput answer, final @NotNull String host, final @NotNull Collection<Integer> numbers) {
+    static @NotNull GhIssueStatesAnswer of(final @NotNull JsonCodec mapper, final @NotNull ProcessOutput answer, final @NotNull String host, final @NotNull Collection<Integer> numbers) {
         if (answer.isTimeout()) return failed(Bundle.message("bug.states.timed.out", GitHubCli.TIMEOUT.toSeconds()));
 
         final @NotNull JsonNode said = mapper.readTree(answer.getStdout());

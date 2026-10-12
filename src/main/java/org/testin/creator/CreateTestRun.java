@@ -36,8 +36,8 @@ import org.testin.services.BackgroundWork;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
 import org.testin.testrun.form.TestRunConfigurationForm;
-import org.testin.testrun.form.TestRunForm;
-import org.testin.testrun.form.TestRunFormAction;
+import org.testin.testrun.form.TestRunFormOpener;
+import org.testin.testrun.form.TestRunFormPurpose;
 import org.testin.ui.framework.SelectionTree;
 import org.testin.util.Bundle;
 
@@ -86,8 +86,8 @@ public class CreateTestRun implements NodeCreator {
                 .filter(id -> testCases.findTestCase(id).map(tc -> tc.getStatus().isEnabled()).orElse(true))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        new TestRunForm(p).open(testCasesRoot, name, enabled, List.of(), sourceConfiguration,
-                new TestRunFormAction(Bundle.message("test.run.create.title"), Bundle.message("test.run.create.button"), (form, selection) -> create(form, selection, parentNode)));
+        new TestRunFormOpener(p).open(testCasesRoot, name, enabled, List.of(), sourceConfiguration,
+                new TestRunFormPurpose(Bundle.message("test.run.create.title"), Bundle.message("test.run.create.button"), (form, selection) -> create(form, selection, parentNode)));
     }
 
     // UC-TREE-PANEL-009, Rule-TREE-PANEL-004
@@ -119,7 +119,7 @@ public class CreateTestRun implements NodeCreator {
     private void write(final @NotNull TestRunConfigurationForm form, final @NotNull SelectionTree selection, final @NotNull Path savePath, final @NotNull TestRunNode testRunNode) {
         final @NotNull Map<TestRunConfiguration, String> configuration = form.configuration();
 
-        final @NotNull RunItems runItems = new RunItems().coverOnly(TestRunForm.checkedTestCases(selection));
+        final @NotNull RunItems runItems = new RunItems().coverOnly(TestRunFormOpener.checkedTestCases(selection));
 
         BackgroundWork.run(p, Bundle.message("test.run.task.creating", savePath.getFileName()), Bundle.message("test.run.create.failed.title"), _ -> {
             testRunNode.getMarker().configure(TestRunConfiguration.answered(configuration));

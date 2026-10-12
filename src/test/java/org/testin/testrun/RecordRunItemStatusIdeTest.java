@@ -27,7 +27,7 @@ import org.testin.OnScreen;
 import org.testin.Said;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.indexer.TestRuns;
-import org.testin.model.Config;
+import org.testin.model.DateFormats;
 import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.TestRunSummary;
@@ -150,7 +150,7 @@ public class RecordRunItemStatusIdeTest extends AbstractTempRootIdeTest {
             final @NotNull RunItem blocked = fixture.runItemOf(fixture.testCases().getFirst());
             assertEquals(RunItemStatus.BLOCKED, blocked.getStatus());
             assertEquals("Blocked does not say who attempted it", Services.getInstance(getProject(), AppSettingsState.class).testerName, blocked.getExecutedBy());
-            assertFalse("Blocked does not say when it was attempted", Config.isNotExecuted(blocked.getExecutedAt()));
+            assertFalse("Blocked does not say when it was attempted", DateFormats.isNotExecuted(blocked.getExecutedAt()));
             awaitWalkOn(editor, 1);
 
             final @NotNull TestRunSummary summary = TestRunSummary.of(List.of(blocked));

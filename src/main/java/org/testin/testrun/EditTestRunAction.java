@@ -23,7 +23,7 @@ import com.intellij.ui.treeStructure.SimpleTree;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.GrayWithReason;
-import org.testin.actions.TestinData;
+import org.testin.actions.TestinDataKeys;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.util.Bundle;
@@ -40,7 +40,7 @@ public class EditTestRunAction extends AbstractAnyProjectAction {
     // UC-TREE-PANEL-022
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        TestinData.tree(e)
+        TestinDataKeys.tree(e)
                 .map(SimpleTree::getSelectionPath)
                 .ifPresent(path -> new EditTestRunWork(p).editAt(path));
     }
@@ -48,7 +48,7 @@ public class EditTestRunAction extends AbstractAnyProjectAction {
     // UC-TREE-PANEL-022, Rule-TREE-PANEL-073
     @Override
     protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        GrayWithReason.unless(this, e, selectedTestRun(TestinData.singleSelectedNode(e)).isPresent(), Bundle.message("test.run.not.open.description"));
+        GrayWithReason.unless(this, e, selectedTestRun(TestinDataKeys.singleSelectedNode(e)).isPresent(), Bundle.message("test.run.not.open.description"));
     }
 
     @Override

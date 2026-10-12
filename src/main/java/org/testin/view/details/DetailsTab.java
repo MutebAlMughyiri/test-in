@@ -25,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.ExecutionPosition;
 import org.testin.editor.WheelForwarding;
 import org.testin.model.TestCaseDto;
-import org.testin.model.testrun.Execution;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.testcase.TestCaseOrder;
 import org.testin.testcase.TestSetEditorAttributes;
@@ -56,7 +56,7 @@ public class DetailsTab {
     // UC-VIEW-PANEL-005, Rule-VIEW-PANEL-061, Rule-VIEW-PANEL-085, Rule-VIEW-PANEL-086, Rule-VIEW-PANEL-103
     private static @NotNull Band testRunBand(final @NotNull RunItem runItem, final @NotNull List<String> currentPath, final @NotNull OptionalInt shownLine, final @NotNull Consumer<OptionalInt> showExecution) {
         // Rule-VIEW-PANEL-122
-        final @NotNull Execution shown = runItem.shownExecution(shownLine);
+        final @NotNull RunItemExecution shown = runItem.shownExecution(shownLine);
 
         return Band.of(Bundle.message("details.band.run"), List.of(
                 new RunItemSummary(runItem, currentPath, showExecution),

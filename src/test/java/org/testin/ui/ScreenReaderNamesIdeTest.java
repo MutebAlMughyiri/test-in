@@ -27,10 +27,10 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.StandIn;
 import org.testin.editor.TestinEditor;
 import org.testin.editor.card.AbstractCard;
-import org.testin.editor.card.CardHoverAction;
+import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.editor.card.HoverButton;
 import org.testin.editor.card.Offered;
-import org.testin.editor.grid.GridPanelBuilder;
+import org.testin.editor.grid.GridTables;
 import org.testin.editor.cardview.CardPanelBuilder;
 import org.testin.editor.cardview.CardView;
 import org.testin.editor.statusbar.PageStep;
@@ -38,12 +38,12 @@ import org.testin.editor.statusbar.EditorStatusBar;
 import org.testin.editor.testrun.RunItemCard;
 import org.testin.explorer.tree.TestProjectTree;
 import org.testin.model.TestCaseDto;
-import org.testin.model.testrun.Execution;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.testcase.TestSetEditorAttributes;
 import org.testin.testrun.TestRunEditorAttributes;
-import org.testin.testrun.form.TestRunTreeCellRenderer;
+import org.testin.testrun.form.TestCaseSelectionRenderer;
 import org.testin.ui.dialogs.DialogStyle;
 import org.testin.ui.framework.AbstractFrameworkDialog;
 import org.testin.ui.framework.DialogPart;
@@ -113,7 +113,7 @@ public class ScreenReaderNamesIdeTest extends BasePlatformTestCase {
     // Rule-INTERNAL-122
     public void testACardSaysItsTitleThenTheRunItemStatusItShows() {
         final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
-        final @NotNull RunItem runItem = new RunItem().setId(tc.getId()).setExecutions(List.of(Execution.builder().status(RunItemStatus.FAILED).build())).showing(Optional.of(tc), Optional.empty(), Optional.empty(), false);
+        final @NotNull RunItem runItem = new RunItem().setId(tc.getId()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).showing(Optional.of(tc), Optional.empty(), Optional.empty(), false);
         final @NotNull RunItemCard card = new RunItemCard(getProject());
 
         final @NotNull CardView view = CardPanelBuilder.build(getProject(), getTestRootDisposable(), StandIn.of(TestinEditor.class));
@@ -138,7 +138,7 @@ public class ScreenReaderNamesIdeTest extends BasePlatformTestCase {
         Arrays.fill(row, "");
         row[TestSetEditorAttributes.DESCRIPTION.column()] = "Log in with a valid user";
 
-        final @NotNull JBTable table = new GridPanelBuilder().buildTestTable(List.<String[]>of(row), Set.of(TestSetEditorAttributes.DESCRIPTION));
+        final @NotNull JBTable table = new GridTables().buildTestTable(List.<String[]>of(row), Set.of(TestSetEditorAttributes.DESCRIPTION));
 
         assertEveryStopIsNamed("the grid", table);
         assertEquals("Log in with a valid user", spoken(table.getAccessibleContext().getAccessibleTable().getAccessibleAt(0, 0).getAccessibleContext()));
@@ -156,7 +156,7 @@ public class ScreenReaderNamesIdeTest extends BasePlatformTestCase {
 
     // Rule-INTERNAL-122
     public void testAHoverButtonIsNamedAndSaysWhyItIsGray() {
-        final @NotNull CardHoverAction action = CardHoverAction.NAVIGATE_TO_TEST_METHOD;
+        final @NotNull TestCaseQuickAction action = TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD;
 
         final @NotNull JComponent works = HoverButton.of(getProject(), new Offered(action, Optional.empty()), AllIcons.Actions.Execute, "Run test case", () -> {
         });
@@ -202,7 +202,7 @@ public class ScreenReaderNamesIdeTest extends BasePlatformTestCase {
                     DialogPart.choice("Branch", List.of("main", "release"), "main"),
                     DialogPart.<String>radios("Format").option("PDF", "pdf").option("HTML", "html").select("pdf").build(),
                     DialogPart.<Integer>textFieldWithSelections().placeholder("set kind..").selection(DialogStyle.NO_ICON, "Test Set", "Holds test cases", 1).build(),
-                    DialogPart.of(new SelectionTree("Test cases", new CheckedTreeNode("all"), TestRunTreeCellRenderer.create(), Optional.empty())),
+                    DialogPart.of(new SelectionTree("Test cases", new CheckedTreeNode("all"), TestCaseSelectionRenderer.create(), Optional.empty())),
                     DialogPart.table().column("Test project", 40).build(),
                     DialogPart.textArea().placeholder("paste the failure..").build(),
                     DialogPart.splitButton("Commit", "Commit and Push"),

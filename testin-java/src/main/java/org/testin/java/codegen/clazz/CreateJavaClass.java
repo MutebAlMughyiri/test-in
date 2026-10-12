@@ -19,14 +19,14 @@ package org.testin.java.codegen.clazz;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.Fqcn;
-import org.testin.codegen.GenAction;
+import org.testin.codegen.CodeChange;
 import org.testin.codegen.JavaSourceRoot;
 import org.testin.logger.TestinLogger;
 import org.testin.model.node.AbstractNode;
 
 import java.util.List;
 
-public class CreateJavaClass implements GenAction<AbstractNode> {
+public class CreateJavaClass implements CodeChange<AbstractNode> {
     // UC-CODEGEN-001
     @Override
     public void execute(final @NotNull Project p, final @NotNull AbstractNode dir) {

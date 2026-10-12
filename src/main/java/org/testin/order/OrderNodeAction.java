@@ -22,7 +22,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.GrayWithReason;
-import org.testin.actions.TestinData;
+import org.testin.actions.TestinDataKeys;
 import org.testin.indexer.Nodes;
 import org.testin.model.node.AbstractNode;
 import org.testin.notifications.Done;
@@ -66,7 +66,7 @@ public class OrderNodeAction extends AbstractAnyProjectAction {
     }
 
     private @NotNull Optional<AbstractNode> orderable(final @NotNull AnActionEvent e) {
-        return TestinData.singleSelectedNode(e).filter(AbstractNode::isOrderable);
+        return TestinDataKeys.singleSelectedNode(e).filter(AbstractNode::isOrderable);
     }
 
     // UC-TREE-PANEL-015, Rule-TREE-PANEL-058

@@ -33,7 +33,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
 import org.testin.NodesOnDisk;
-import org.testin.actions.TestinData;
+import org.testin.actions.TestinDataKeys;
 import org.testin.indexer.ProjectIndexer;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCaseDto;
@@ -94,7 +94,7 @@ public class WithoutGitIdeTest extends AbstractTempRootIdeTest {
         final @NotNull AnAction sync = Optional.ofNullable(ActionManager.getInstance().getAction("Testin.SyncWithRemote")).orElseThrow(() -> new AssertionError("Sync is not registered"));
         final @NotNull AnActionEvent e = TestActionEvent.createTestEvent(sync, SimpleDataContext.builder()
                 .add(CommonDataKeys.PROJECT, getProject())
-                .add(TestinData.SELECTED_NODES, List.of(tp))
+                .add(TestinDataKeys.SELECTED_NODES, List.of(tp))
                 .build());
         ActionUtil.updateAction(sync, e);
         assertFalse("Sync is offered without Git", e.getPresentation().isEnabled());

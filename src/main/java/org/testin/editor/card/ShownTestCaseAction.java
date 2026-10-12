@@ -35,11 +35,11 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShownTestCaseAction extends DumbAwareAction {
     private final @NotNull Project p;
-    private final @NotNull CardHoverAction button;
+    private final @NotNull TestCaseQuickAction button;
     private final @NotNull Supplier<Optional<TestCaseDto>> shown;
-    private final @NotNull BiConsumer<CardHoverAction, TestCaseDto> press;
+    private final @NotNull BiConsumer<TestCaseQuickAction, TestCaseDto> press;
 
-    public static void bind(final @NotNull Project p, final @NotNull CardHoverAction button, final @NotNull Supplier<Optional<TestCaseDto>> shown, final @NotNull BiConsumer<CardHoverAction, TestCaseDto> press, final @NotNull JComponent component) {
+    public static void bind(final @NotNull Project p, final @NotNull TestCaseQuickAction button, final @NotNull Supplier<Optional<TestCaseDto>> shown, final @NotNull BiConsumer<TestCaseQuickAction, TestCaseDto> press, final @NotNull JComponent component) {
         new ShownTestCaseAction(p, button, shown, press).registerCustomShortcutSet(Declared.shortcutSet(button.getActionId()), component);
     }
 

@@ -24,7 +24,7 @@ import org.testin.model.TestCaseDto;
 import org.testin.services.Services;
 import org.testin.testcase.TestCaseDialogKey;
 import org.testin.testcase.UpdateTestCaseFields;
-import org.testin.testcase.create.CreateTestCaseSection;
+import org.testin.testcase.create.TestCaseSection;
 import org.testin.testcase.create.AbstractTestCaseDialog;
 import org.testin.testcase.create.TestCaseForm;
 import org.testin.ui.framework.DialogPart;
@@ -47,14 +47,14 @@ public class UpdateTestCaseDialog extends AbstractTestCaseDialog {
                 .filter(sibling -> !sibling.getId().equals(existingTestCase.getId()))
                 .toList());
 
-        final @NotNull CreateTestCaseSection targetSection = selectedItem.getSectionExtractor().apply(this);
+        final @NotNull TestCaseSection targetSection = selectedItem.getSectionExtractor().apply(this);
 
         final @NotNull TestCaseForm form = new TestCaseForm(targetSection::getFocusComponent, false);
         final @NotNull JComponent keys = form.getPanel();
 
         onlyEditable(targetSection);
 
-        for (final CreateTestCaseSection section : getAllSections()) {
+        for (final TestCaseSection section : getAllSections()) {
             section.fillData(existingTestCase);
 
             final boolean isTarget = section.equals(targetSection);

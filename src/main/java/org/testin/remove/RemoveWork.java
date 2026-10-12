@@ -21,7 +21,7 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.Declared;
-import org.testin.codegen.JavaCode;
+import org.testin.codegen.NodeCode;
 import org.testin.codegen.WaitForIndexing;
 import org.testin.editor.open.TestinEditors;
 import org.testin.indexer.NodeCounter;
@@ -73,7 +73,7 @@ record RemoveWork(@NotNull Project p, @NotNull Nodes nodes, @NotNull TestinEdito
         if (nodesToRemove.isEmpty()) return;
 
         // Rule-CODEGEN-096
-        if (nodesToRemove.stream().anyMatch(node -> JavaCode.of(node.getType()).getRemoved().generates()) && WaitForIndexing.refuses(p, Bundle.message("remove.confirm.button")))
+        if (nodesToRemove.stream().anyMatch(node -> NodeCode.of(node.getType()).getRemoved().generates()) && WaitForIndexing.refuses(p, Bundle.message("remove.confirm.button")))
             return;
 
         final @NotNull List<Kept> kept = new ArrayList<>(nodesToRemove.size());
@@ -123,7 +123,7 @@ record RemoveWork(@NotNull Project p, @NotNull Nodes nodes, @NotNull TestinEdito
         final @NotNull List<AbstractNode> went = new CopyOnWriteArrayList<>();
 
         for (final AbstractNode node : nodes) {
-            Removals.of(node.getType()).remove(p, node, wasRemoved -> {
+            RemoveHandlers.of(node.getType()).remove(p, node, wasRemoved -> {
                 if (wasRemoved) went.add(node);
                 if (pending.decrementAndGet() != 0) return;
 

@@ -19,7 +19,7 @@ package org.testin.testcase.create;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCaseDto;
-import org.testin.services.TestCaseValues;
+import org.testin.services.TestCaseCompletions;
 import org.testin.testcase.CreateTestCaseFields;
 
 import java.util.List;
@@ -37,7 +37,7 @@ public class GroupSection extends AbstractMultiValueSection {
     }
 
     @Override
-    protected @NotNull Set<String> completions(final @NotNull TestCaseValues cache) {
+    protected @NotNull Set<String> completions(final @NotNull TestCaseCompletions cache) {
         return cache.getGroups();
     }
 

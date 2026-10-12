@@ -18,13 +18,13 @@ package org.testin.java.codegen.method.update;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.codegen.GenAction;
+import org.testin.codegen.CodeChange;
 import org.testin.codegen.GenType;
 import org.testin.model.TestCaseDto;
 
 import java.util.List;
 
-public class UpdateTestMethodEnabled extends BaseTestMethodChange implements GenAction<TestCaseDto> {
+public class UpdateTestMethodEnabled extends BaseTestMethodChange implements CodeChange<TestCaseDto> {
     // UC-CODEGEN-013, Rule-CODEGEN-047, Rule-CODEGEN-048
     @Override
     public void execute(final @NotNull Project p, final @NotNull TestCaseDto tc) {

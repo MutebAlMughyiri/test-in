@@ -19,10 +19,10 @@ package org.testin.git;
 import org.jetbrains.annotations.NotNull;
 import org.testin.git.change.ChangeSubject;
 import org.testin.git.change.StatusKind;
-import org.testin.git.change.GitDiffProcessor;
+import org.testin.git.change.PendingChangeReader;
 import org.testin.git.change.PendingChange;
 import org.testin.model.TestCaseDto;
-import org.testin.util.RealMapper;
+import org.testin.util.RealJsonCodec;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -64,9 +64,9 @@ public class GitRepositoryServiceIdeTest extends AbstractGitRemoteIdeTest {
     // UC-SHARE-010, Rule-SHARE-044
     public void testTheReviewReadsGitForARepositoryTheIdeDoesNotTrack() {
         final @NotNull TestCaseDto neverSeen = TestCaseDto.builder().description("a test case Git has never seen").build();
-        write(work, "Test Cases/login/" + neverSeen.getId() + ".tc", RealMapper.build().writeValueAsString(neverSeen));
+        write(work, "Test Cases/login/" + neverSeen.getId() + ".tc", RealJsonCodec.build().writeValueAsString(neverSeen));
 
-        final @NotNull List<PendingChange> review = GitDiffProcessor.getPendingChanges(getProject(), work);
+        final @NotNull List<PendingChange> review = PendingChangeReader.getPendingChanges(getProject(), work);
 
         assertEquals(1, review.size());
         assertEquals(ChangeSubject.TEST_CASE, review.getFirst().subject());

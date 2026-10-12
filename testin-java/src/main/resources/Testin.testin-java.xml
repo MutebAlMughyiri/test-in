@@ -18,8 +18,8 @@
 
     <!-- What this module hands back to the core. -->
     <extensions defaultExtensionNs="org.testin">
-        <codeGenerators implementation="org.testin.java.codegen.GenRegistry"/>
-        <codeNavigation implementation="org.testin.java.navigate.CodeNavigator"/>
+        <codeGenerators implementation="org.testin.java.codegen.JavaCodeChangeRegistry"/>
+        <codeNavigation implementation="org.testin.java.navigate.JavaTestMethodCode"/>
     </extensions>
 
     <!-- The gutter icon beside a generated @Test. It was declared in

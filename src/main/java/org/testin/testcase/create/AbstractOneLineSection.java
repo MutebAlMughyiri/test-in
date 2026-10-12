@@ -25,7 +25,7 @@ import org.testin.util.Shortcuts;
 
 import javax.swing.JComponent;
 
-public abstract class AbstractOneLineSection implements CreateTestCaseSection {
+public abstract class AbstractOneLineSection implements TestCaseSection {
     protected final @NotNull EditorTextField field;
 
     protected final @NotNull JBLabel icon;

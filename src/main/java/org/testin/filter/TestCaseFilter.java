@@ -36,12 +36,12 @@ import java.util.function.Function;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestCaseFilter {
-    public static @NotNull List<TestCaseDto> filter(final @NotNull Collection<TestCaseDto> source, final @NotNull FilterSelection wanted) {
+    public static @NotNull List<TestCaseDto> filter(final @NotNull Collection<TestCaseDto> source, final @NotNull FilterAndSortChoice wanted) {
         return filter(source, wanted, _ -> Optional.empty());
     }
 
     // UC-EDITOR-PANEL-019, UC-EDITOR-PANEL-020, UC-EDITOR-PANEL-049
-    public static @NotNull List<TestCaseDto> filter(final @NotNull Collection<TestCaseDto> source, final @NotNull FilterSelection wanted, final @NotNull Function<UUID, Optional<RunItem>> runItemProvider) {
+    public static @NotNull List<TestCaseDto> filter(final @NotNull Collection<TestCaseDto> source, final @NotNull FilterAndSortChoice wanted, final @NotNull Function<UUID, Optional<RunItem>> runItemProvider) {
         if (source.isEmpty()) {
             return Collections.emptyList();
         }
@@ -54,7 +54,7 @@ public final class TestCaseFilter {
     }
 
     // UC-EDITOR-PANEL-019, Rule-EDITOR-PANEL-091, Rule-EDITOR-PANEL-239, Rule-EDITOR-PANEL-260, Rule-EDITOR-PANEL-261
-    private static boolean matches(final @NotNull TestCaseDto testCase, final @NotNull String query, final @NotNull FilterSelection wanted, final @NotNull Function<UUID, Optional<RunItem>> runItemProvider) {
+    private static boolean matches(final @NotNull TestCaseDto testCase, final @NotNull String query, final @NotNull FilterAndSortChoice wanted, final @NotNull Function<UUID, Optional<RunItem>> runItemProvider) {
         final @NotNull TestCaseDto shown = runItemProvider.apply(testCase.getId()).map(RunItem::shownTestCase).orElse(testCase);
 
         final boolean matchesSearch = query.isEmpty() || TestSetEditorAttributes.anyContains(shown, query);

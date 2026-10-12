@@ -30,7 +30,7 @@ import org.testin.model.FileKind;
 import org.testin.model.testrun.RunItem;
 import org.testin.services.Services;
 import org.testin.util.FailureText;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
@@ -52,7 +52,7 @@ public final class BugHistory {
 
     // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-107
     public static @NotNull Map<Path, String> runItemsNow(final @NotNull Project p, final @NotNull UUID testCaseId) {
-        final @NotNull Mapper mapper = Services.getInstance(p, Mapper.class);
+        final @NotNull JsonCodec mapper = Services.getInstance(p, JsonCodec.class);
         return Services.getInstance(p, TestRuns.class).runItemsOf(testCaseId).entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, runItem -> mapper.writeValueAsString(runItem.getValue())));
     }
@@ -61,7 +61,7 @@ public final class BugHistory {
     public static @NotNull History addTo(final @NotNull History history, final @NotNull Project p, final @NotNull TestCaseFile file, final @NotNull UUID testCaseId, final @NotNull Map<Path, String> runItemsNow) {
         final @NotNull Path testProject = file.testProject();
         final @NotNull Map<String, String> now = inProject(testProject, FileKind.RUN_ITEM.fileName(testCaseId), runItemsNow);
-        final @NotNull Mapper mapper = Services.getInstance(p, Mapper.class);
+        final @NotNull JsonCodec mapper = Services.getInstance(p, JsonCodec.class);
         final @NotNull GitRepositoryService git = new GitRepositoryService(p);
         if (git.isNotRepository(testProject))
             return history.with(notCommitted(testProject, List.of(), now, Map.of(), mapper), List.of());
@@ -107,7 +107,7 @@ public final class BugHistory {
     }
 
     // Rule-VIEW-PANEL-100, Rule-VIEW-PANEL-107
-    private static @NotNull List<BugCard> notCommitted(final @NotNull Path testProject, final @NotNull Collection<String> committed, final @NotNull Map<String, String> now, final @NotNull Map<String, String> versions, final @NotNull Mapper mapper) {
+    private static @NotNull List<BugCard> notCommitted(final @NotNull Path testProject, final @NotNull Collection<String> committed, final @NotNull Map<String, String> now, final @NotNull Map<String, String> versions, final @NotNull JsonCodec mapper) {
         return Stream.concat(committed.stream(), now.keySet().stream())
                 .collect(Collectors.toCollection(TreeSet::new)).stream()
                 .flatMap(path -> BugEventDetector.between(testRun(testProject, path), version(mapper, versions, HEAD, path), parsed(mapper, now.getOrDefault(path, ""))).stream())
@@ -116,7 +116,7 @@ public final class BugHistory {
     }
 
     // Rule-VIEW-PANEL-105, Rule-VIEW-PANEL-106
-    private static @NotNull Optional<BugCard> card(final @NotNull Path testProject, final @NotNull BugCommit commit, final @NotNull ChangedFile changed, final @NotNull Map<String, String> versions, final @NotNull Mapper mapper) {
+    private static @NotNull Optional<BugCard> card(final @NotNull Path testProject, final @NotNull BugCommit commit, final @NotNull ChangedFile changed, final @NotNull Map<String, String> versions, final @NotNull JsonCodec mapper) {
         final @NotNull Optional<RunItem> before = version(mapper, versions, commit.hash() + "^", changed.before());
         final @NotNull Optional<RunItem> after = version(mapper, versions, commit.hash(), changed.after());
         if (before.isEmpty() != changed.before().isEmpty() || after.isEmpty() != changed.after().isEmpty())
@@ -126,7 +126,7 @@ public final class BugHistory {
                 .map(event -> new BugCard(commit.hash(), commit.who(), commit.when(), event));
     }
 
-    private static @NotNull Optional<RunItem> version(final @NotNull Mapper mapper, final @NotNull Map<String, String> versions, final @NotNull String revision, final @NotNull String path) {
+    private static @NotNull Optional<RunItem> version(final @NotNull JsonCodec mapper, final @NotNull Map<String, String> versions, final @NotNull String revision, final @NotNull String path) {
         return path.isEmpty() ? Optional.empty() : parsed(mapper, versions.getOrDefault(revision + ":" + path, ""));
     }
 
@@ -135,7 +135,7 @@ public final class BugHistory {
         return Optional.ofNullable(file.getParent()).orElse(testProject);
     }
 
-    private static @NotNull Optional<RunItem> parsed(final @NotNull Mapper mapper, final @NotNull String json) {
+    private static @NotNull Optional<RunItem> parsed(final @NotNull JsonCodec mapper, final @NotNull String json) {
         if (json.isBlank()) return Optional.empty();
 
         try {

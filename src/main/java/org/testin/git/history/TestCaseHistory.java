@@ -23,9 +23,9 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.git.GitFailed;
 import org.testin.git.GitRepositoryService;
 import org.testin.git.change.FieldChange;
-import org.testin.git.change.TestCaseChangeComparator;
+import org.testin.git.change.TestCaseFieldChanges;
 import org.testin.indexer.TestCaseFile;
-import org.testin.model.Config;
+import org.testin.model.DateFormats;
 import org.testin.model.NodeType;
 import org.testin.model.FileKind;
 import org.testin.model.TestCaseDto;
@@ -34,7 +34,7 @@ import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
 import org.testin.util.Bundle;
 import org.testin.util.FailureText;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
@@ -83,7 +83,7 @@ public final class TestCaseHistory {
                     ? Map.of()
                     : git.objects(file.testProject(), commits.stream().map(HistoryCommit::objectName).toList());
 
-            return History.read(entries(Services.getInstance(p, Mapper.class), commits, versions, now));
+            return History.read(entries(Services.getInstance(p, JsonCodec.class), commits, versions, now));
         } catch (final GitFailed ex) {
             return History.failed(FailureText.of(ex));
         }
@@ -106,9 +106,9 @@ public final class TestCaseHistory {
     }
 
     // Rule-VIEW-PANEL-096, Rule-VIEW-PANEL-098, Rule-VIEW-PANEL-113
-    static @NotNull List<HistoryEntry> entries(final @NotNull Mapper mapper, final @NotNull List<HistoryCommit> commits, final @NotNull Map<String, String> versions, final @NotNull Optional<TestCaseDto> now) {
+    static @NotNull List<TestCaseHistoryCard> entries(final @NotNull JsonCodec mapper, final @NotNull List<HistoryCommit> commits, final @NotNull Map<String, String> versions, final @NotNull Optional<TestCaseDto> now) {
         final @NotNull List<Optional<TestCaseDto>> read = commits.stream().map(commit -> parsed(mapper, versions.getOrDefault(commit.objectName(), ""))).toList();
-        final @NotNull List<HistoryEntry> entries = new ArrayList<>();
+        final @NotNull List<TestCaseHistoryCard> entries = new ArrayList<>();
 
         uncommitted(read, now).ifPresent(entries::add);
         for (int at = 0; at < commits.size(); at++) {
@@ -117,39 +117,40 @@ public final class TestCaseHistory {
         return entries;
     }
 
-    private static @NotNull Optional<HistoryEntry> uncommitted(final @NotNull List<Optional<TestCaseDto>> read, final @NotNull Optional<TestCaseDto> present) {
+    private static @NotNull Optional<TestCaseHistoryCard> uncommitted(final @NotNull List<Optional<TestCaseDto>> read, final @NotNull Optional<TestCaseDto> present) {
         if (present.isEmpty())
-            return read.isEmpty() || read.getFirst().isEmpty() ? Optional.empty() : Optional.of(HistoryEntry.uncommitted(HistoryEntryKind.REMOVED, "", Config.NOT_EXECUTED, List.of(), read.getFirst(), Optional.empty()));
+            return read.isEmpty() || read.getFirst().isEmpty() ? Optional.empty() : Optional.of(TestCaseHistoryCard.uncommitted(TestCaseHistoryKind.REMOVED, "", DateFormats.NOT_EXECUTED, List.of(), read.getFirst(), Optional.empty()));
 
         final @NotNull TestCaseDto now = present.orElseThrow();
         if (read.isEmpty()) {
-            return Optional.of(HistoryEntry.uncommitted(HistoryEntryKind.CREATED, now.getCreatedBy(), now.getCreatedAt(), List.of(), Optional.empty(), present));
+            return Optional.of(TestCaseHistoryCard.uncommitted(TestCaseHistoryKind.CREATED, now.getCreatedBy(), now.getCreatedAt(), List.of(), Optional.empty(), present));
         }
 
         return read.getFirst()
-                .map(committed -> TestCaseChangeComparator.compare(committed, now))
+                .map(committed -> TestCaseFieldChanges.compare(committed, now))
                 .filter(changes -> !changes.isEmpty())
-                .map(changes -> HistoryEntry.uncommitted(HistoryEntryKind.UPDATED, lastEditor(now), lastEdited(now), changes, read.getFirst(), present));
+                .map(changes -> TestCaseHistoryCard.uncommitted(TestCaseHistoryKind.UPDATED, lastEditor(now), lastEdited(now), changes, read.getFirst(), present));
     }
 
-    private static @NotNull HistoryEntry entry(final @NotNull HistoryCommit commit, final @NotNull Optional<TestCaseDto> version, final @NotNull Optional<TestCaseDto> before, final boolean oldest, final boolean removedHere) {
+    private static @NotNull TestCaseHistoryCard entry(final @NotNull HistoryCommit commit, final @NotNull Optional<TestCaseDto> version, final @NotNull Optional<TestCaseDto> before, final boolean oldest, final boolean removedHere) {
         if (version.isEmpty()) {
             return removedHere
-                    ? HistoryEntry.of(HistoryEntryKind.REMOVED, commit, "", List.of(), before, version)
-                    : HistoryEntry.of(HistoryEntryKind.UPDATED, commit, Bundle.message("view.history.unreadable"), List.of(), before, version);
+                    ? TestCaseHistoryCard.of(TestCaseHistoryKind.REMOVED, commit, "", List.of(), before, version)
+                    : TestCaseHistoryCard.of(TestCaseHistoryKind.UPDATED, commit, Bundle.message("view.history.unreadable"), List.of(), before, version);
         }
-        if (oldest) return HistoryEntry.of(HistoryEntryKind.CREATED, commit, "", List.of(), Optional.empty(), version);
+        if (oldest)
+            return TestCaseHistoryCard.of(TestCaseHistoryKind.CREATED, commit, "", List.of(), Optional.empty(), version);
 
-        return before.map(older -> updated(commit, TestCaseChangeComparator.compare(older, version.orElseThrow()), before, version))
-                .orElseGet(() -> HistoryEntry.of(HistoryEntryKind.UPDATED, commit, Bundle.message("view.history.uncompared"), List.of(), before, version));
+        return before.map(older -> updated(commit, TestCaseFieldChanges.compare(older, version.orElseThrow()), before, version))
+                .orElseGet(() -> TestCaseHistoryCard.of(TestCaseHistoryKind.UPDATED, commit, Bundle.message("view.history.uncompared"), List.of(), before, version));
     }
 
     // Rule-VIEW-PANEL-096
-    private static @NotNull HistoryEntry updated(final @NotNull HistoryCommit commit, final @NotNull List<FieldChange> changes, final @NotNull Optional<TestCaseDto> was, final @NotNull Optional<TestCaseDto> now) {
-        return HistoryEntry.of(HistoryEntryKind.UPDATED, commit, changes.isEmpty() ? Bundle.message("git.change.no.field") : "", changes, was, now);
+    private static @NotNull TestCaseHistoryCard updated(final @NotNull HistoryCommit commit, final @NotNull List<FieldChange> changes, final @NotNull Optional<TestCaseDto> was, final @NotNull Optional<TestCaseDto> now) {
+        return TestCaseHistoryCard.of(TestCaseHistoryKind.UPDATED, commit, changes.isEmpty() ? Bundle.message("git.change.no.field") : "", changes, was, now);
     }
 
-    static @NotNull Optional<TestCaseDto> parsed(final @NotNull Mapper mapper, final @NotNull String json) {
+    static @NotNull Optional<TestCaseDto> parsed(final @NotNull JsonCodec mapper, final @NotNull String json) {
         if (json.isBlank()) return Optional.empty();
 
         try {

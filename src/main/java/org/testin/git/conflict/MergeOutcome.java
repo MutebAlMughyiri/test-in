@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.jetbrains.annotations.NotNull;
 import org.testin.util.Bundle;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 
 import java.util.List;
 
@@ -39,7 +39,7 @@ public record MergeOutcome(@NotNull ObjectNode merged, @NotNull List<Question> q
     }
 
     // UC-SHARE-018
-    public void answer(final @NotNull Mapper mapper, final @NotNull Question question, final boolean takeTheirs, final @NotNull String theirs) {
+    public void answer(final @NotNull JsonCodec mapper, final @NotNull Question question, final boolean takeTheirs, final @NotNull String theirs) {
         if (!takeTheirs) return;
 
         final int dot = question.field().indexOf('.');

@@ -20,7 +20,7 @@ package org.testin.editor.testrun;
 import com.intellij.util.ui.EmptyIcon;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.status.RunItemStatus;
-import org.testin.model.testrun.Execution;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testng.annotations.Test;
 
@@ -40,7 +40,7 @@ public class ExecutionDotsTest {
 
     private static @NotNull RunItem executed(final int times) {
         return RunItem.builder().id(UUID.randomUUID())
-                .executions(IntStream.range(0, times).mapToObj(_ -> Execution.builder().status(RunItemStatus.PASSED).build()).toList())
+                .executions(IntStream.range(0, times).mapToObj(_ -> RunItemExecution.builder().status(RunItemStatus.PASSED).build()).toList())
                 .build();
     }
 
@@ -68,8 +68,8 @@ public class ExecutionDotsTest {
     @Test
     public void theDotsAreTheirExecutionsColors() {
         final @NotNull RunItem mixed = RunItem.builder().id(UUID.randomUUID()).executions(List.of(
-                Execution.builder().status(RunItemStatus.FAILED).build(),
-                Execution.builder().status(RunItemStatus.PASSED).build())).build();
+                RunItemExecution.builder().status(RunItemStatus.FAILED).build(),
+                RunItemExecution.builder().status(RunItemStatus.PASSED).build())).build();
 
         assertEquals(((ExecutionDots) ExecutionDots.of(mixed, FONT)).colors(), List.of(RunItemStatus.FAILED.getRowColor(), RunItemStatus.PASSED.getRowColor()));
     }

@@ -21,66 +21,66 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import org.testin.editor.card.CardHoverAction;
-import org.testin.model.ToolBarAttribute;
-import org.testin.model.ToolBarDefault;
+import org.testin.editor.card.TestCaseQuickAction;
+import org.testin.model.ShowableAttribute;
+import org.testin.model.AttributeDefault;
 import org.testin.util.Bundle;
 
 
 @Getter
 @AllArgsConstructor
-public enum LightModePart implements ToolBarAttribute {
+public enum LightModePart implements ShowableAttribute {
     SET_NAME(
             Bundle.message("light.part.set.name"),
-            ToolBarDefault.ON,
+            AttributeDefault.ON,
             ImmutableList.of()
     ),
 
     DURATION(
             Bundle.message("light.part.duration"),
-            ToolBarDefault.ON,
+            AttributeDefault.ON,
             ImmutableList.of()
     ),
 
     RUN_ITEM_STATUS_BUTTONS(
             Bundle.message("light.part.run.item.status.buttons"),
-            ToolBarDefault.ON,
+            AttributeDefault.ON,
             ImmutableList.of()
     ),
 
     STATUS_BAR(
             Bundle.message("light.part.status.bar"),
-            ToolBarDefault.ON,
+            AttributeDefault.ON,
             ImmutableList.of()
     ),
 
     TEST_METHOD_BUTTON(
             Bundle.message("action.Testin.NavigateToTestMethod.text"),
-            ToolBarDefault.ON,
-            ImmutableList.of(CardHoverAction.NAVIGATE_TO_TEST_METHOD)
+            AttributeDefault.ON,
+            ImmutableList.of(TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD)
     ),
 
     RUN_BUTTON(
             Bundle.message("action.Testin.RunTestMethod.text"),
-            ToolBarDefault.ON,
-            ImmutableList.of(CardHoverAction.RUN_TEST_METHOD, CardHoverAction.STOP_TEST_METHOD)
+            AttributeDefault.ON,
+            ImmutableList.of(TestCaseQuickAction.RUN_TEST_METHOD, TestCaseQuickAction.STOP_TEST_METHOD)
     ),
 
     TEST_CASE_BUTTON(
             Bundle.message("action.Testin.NavigateToTestCase.text"),
-            ToolBarDefault.ON,
-            ImmutableList.of(CardHoverAction.NAVIGATE_TO_TEST_CASE)
+            AttributeDefault.ON,
+            ImmutableList.of(TestCaseQuickAction.NAVIGATE_TO_TEST_CASE)
     );
 
     private final @NotNull String name;
 
-    private final @NotNull ToolBarDefault toolBarDefault;
+    private final @NotNull AttributeDefault toolBarDefault;
 
     @Getter(AccessLevel.NONE)
-    private final @NotNull ImmutableList<CardHoverAction> buttons;
+    private final @NotNull ImmutableList<TestCaseQuickAction> buttons;
 
     // UC-EDITOR-PANEL-046, Rule-EDITOR-PANEL-244
-    public boolean governs(final @NotNull CardHoverAction button) {
+    public boolean governs(final @NotNull TestCaseQuickAction button) {
         return buttons.contains(button);
     }
 }

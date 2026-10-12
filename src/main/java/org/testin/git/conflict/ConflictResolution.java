@@ -30,7 +30,7 @@ import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
 import org.testin.util.FailureText;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -105,7 +105,7 @@ public final class ConflictResolution {
     // UC-SHARE-017, Rule-SHARE-078
     public static void resolve(final @NotNull Project p, final @NotNull Path repositoryPath, final @NotNull List<String> conflicting, final @NotNull Runnable onResolved, final @NotNull Consumer<List<String>> onLeftOver) {
         final @NotNull GitRepositoryService git = new GitRepositoryService(p);
-        final @NotNull Mapper mapper = Services.getInstance(p, Mapper.class);
+        final @NotNull JsonCodec mapper = Services.getInstance(p, JsonCodec.class);
 
         final @NotNull List<String> leftOver = new ArrayList<>();
         final @NotNull List<UnansweredConflict> pending = new ArrayList<>();
@@ -156,7 +156,7 @@ public final class ConflictResolution {
     }
 
     // UC-SHARE-018, Rule-SHARE-081
-    private static void ask(final @NotNull Project p, final @NotNull GitRepositoryService git, final @NotNull Mapper mapper, final @NotNull Path repositoryPath, final @NotNull List<UnansweredConflict> pending, final @NotNull List<String> leftOver, final @NotNull Runnable onResolved, final @NotNull Consumer<List<String>> onLeftOver) {
+    private static void ask(final @NotNull Project p, final @NotNull GitRepositoryService git, final @NotNull JsonCodec mapper, final @NotNull Path repositoryPath, final @NotNull List<UnansweredConflict> pending, final @NotNull List<String> leftOver, final @NotNull Runnable onResolved, final @NotNull Consumer<List<String>> onLeftOver) {
         if (pending.isEmpty()) {
             if (leftOver.isEmpty()) onResolved.run();
             else onLeftOver.accept(List.copyOf(leftOver));
@@ -210,7 +210,7 @@ public final class ConflictResolution {
         return false;
     }
 
-    private static @NotNull String name(final @NotNull Mapper mapper, final @NotNull String json, final @NotNull String relativePath) {
+    private static @NotNull String name(final @NotNull JsonCodec mapper, final @NotNull String json, final @NotNull String relativePath) {
         final @NotNull String description = mapper.readTree(json).path("description").asText("");
         if (!description.isBlank()) return description;
 
@@ -224,6 +224,6 @@ public final class ConflictResolution {
 
     @FunctionalInterface
     private interface Merger {
-        @NotNull MergeOutcome merge(@NotNull Mapper mapper, @NotNull String base, @NotNull String mine, @NotNull String theirs);
+        @NotNull MergeOutcome merge(@NotNull JsonCodec mapper, @NotNull String base, @NotNull String mine, @NotNull String theirs);
     }
 }

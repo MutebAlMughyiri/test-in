@@ -34,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.TestinLog;
 import org.testin.explorer.TreePanel;
-import org.testin.explorer.TreePanelActions;
+import org.testin.explorer.TreePanelToolbar;
 import org.testin.logger.LogLevel;
 import org.testin.logger.LogWriter;
 import org.testin.logger.TestinLogger;
@@ -149,7 +149,7 @@ public class SettingsPageRulesIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TreePanel treePanel = new TreePanel(getProject());
         Disposer.register(getTestRootDisposable(), treePanel);
 
-        final @NotNull AnAction gear = new TreePanelActions().create(getProject(), treePanel).stream()
+        final @NotNull AnAction gear = new TreePanelToolbar().create(getProject(), treePanel).stream()
                 .filter(OpenTestinSettingsAction.class::isInstance)
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("the tree panel has no gear button"));

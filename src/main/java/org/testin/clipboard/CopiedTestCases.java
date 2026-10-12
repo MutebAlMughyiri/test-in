@@ -26,7 +26,7 @@ import org.testin.model.TestCaseDto;
 import org.testin.services.Services;
 import org.testin.util.ClipboardContents;
 import org.testin.util.FailureText;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -49,7 +49,7 @@ public final class CopiedTestCases {
             final @NotNull String json = (String) contents.getTransferData(DataFlavor.stringFlavor);
             if (!json.trim().startsWith("[")) return List.of();
 
-            final @NotNull List<TestCaseDto> parsed = Services.getInstance(p, Mapper.class).readValue(json, new TypeReference<>() {
+            final @NotNull List<TestCaseDto> parsed = Services.getInstance(p, JsonCodec.class).readValue(json, new TypeReference<>() {
             });
 
             return parsed.stream().filter(Objects::nonNull).toList();

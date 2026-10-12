@@ -28,8 +28,8 @@ import org.testin.importexport.imports.ImportSetter;
 import org.testin.model.Groups;
 import org.testin.model.TestCaseDto;
 import org.testin.model.TestCaseDto.TestCaseDtoBuilder;
-import org.testin.model.ToolBarAttribute;
-import org.testin.model.ToolBarDefault;
+import org.testin.model.ShowableAttribute;
+import org.testin.model.AttributeDefault;
 import org.testin.notifications.Notifier;
 import org.testin.notifications.Refused;
 import org.testin.services.Services;
@@ -53,10 +53,10 @@ import java.util.stream.Collectors;
 import static org.testin.importexport.imports.ImportSetter.always;
 
 @Getter
-public enum TestSetEditorAttributes implements ToolBarAttribute {
+public enum TestSetEditorAttributes implements ShowableAttribute {
     SEQUENCE(
             Bundle.message("attribute.sequence"),
-            ToolBarDefault.STRUCTURE,
+            AttributeDefault.STRUCTURE,
             _ -> "",
             (_, tc, _) -> Optional.of(tc),
             GenType.NO_CODE_CHANGE
@@ -68,7 +68,7 @@ public enum TestSetEditorAttributes implements ToolBarAttribute {
 
     ORDER(
             Bundle.message("attribute.order"),
-            ToolBarDefault.ON,
+            AttributeDefault.ON,
             _ -> "",
             (_, tc, _) -> Optional.of(tc),
             GenType.NO_CODE_CHANGE
@@ -80,7 +80,7 @@ public enum TestSetEditorAttributes implements ToolBarAttribute {
 
     DESCRIPTION(
             Bundle.message("attribute.description"),
-            ToolBarDefault.LOCKED_CHECKED,
+            AttributeDefault.LOCKED_CHECKED,
             TestCaseDto::getDescription,
             always((draft, v) -> draft.description(NameSanitizer.description(v))),
             GenType.UPDATE_TEST_CASE_DESCRIPTION,
@@ -93,7 +93,7 @@ public enum TestSetEditorAttributes implements ToolBarAttribute {
 
     ID(
             Bundle.message("attribute.id"),
-            ToolBarDefault.OFF,
+            AttributeDefault.OFF,
             tc -> String.valueOf(tc.getId()),
             (_, tc, _) -> Optional.of(tc),
             GenType.NO_CODE_CHANGE,
@@ -102,7 +102,7 @@ public enum TestSetEditorAttributes implements ToolBarAttribute {
 
     EXPECTED_RESULT(
             Bundle.message("attribute.expected.result"),
-            ToolBarDefault.ON,
+            AttributeDefault.ON,
             TestCaseDto::getExpectedResult,
             always(TestCaseDtoBuilder::expectedResult),
             GenType.UPDATE_TEST_CASE_EXPECTED_RESULT,
@@ -111,7 +111,7 @@ public enum TestSetEditorAttributes implements ToolBarAttribute {
 
     STEPS(
             Bundle.message("attribute.steps"),
-            ToolBarDefault.OFF,
+            AttributeDefault.OFF,
             tc -> String.join(", ", tc.getSteps()),
             always((draft, v) -> draft.steps(TestCaseFieldParser.steps(v))),
             GenType.UPDATE_TEST_CASE_STEPS,
@@ -120,7 +120,7 @@ public enum TestSetEditorAttributes implements ToolBarAttribute {
 
     PRIORITY(
             Bundle.message("attribute.priority"),
-            ToolBarDefault.ON,
+            AttributeDefault.ON,
             tc -> tc.getPriority().getLabel(),
             (_, tc, v) -> TestCaseFieldParser.priority(v, tc.getPriority()).map(priority -> tc.edit().priority(priority).build()),
             GenType.UPDATE_TEST_CASE_PRIORITY,
@@ -133,7 +133,7 @@ public enum TestSetEditorAttributes implements ToolBarAttribute {
 
     FQCN(
             Bundle.message("attribute.fqcn"),
-            ToolBarDefault.OFF,
+            AttributeDefault.OFF,
             tc -> String.join(" > ", Fqcn.ofMethod(tc)),
             (_, tc, _) -> Optional.of(tc),
             GenType.NO_CODE_CHANGE,
@@ -142,7 +142,7 @@ public enum TestSetEditorAttributes implements ToolBarAttribute {
 
     REFERENCE(
             Bundle.message("attribute.reference"),
-            ToolBarDefault.OFF,
+            AttributeDefault.OFF,
             TestCaseDto::getReference,
             always(TestCaseDtoBuilder::reference),
             GenType.NO_CODE_CHANGE,
@@ -151,7 +151,7 @@ public enum TestSetEditorAttributes implements ToolBarAttribute {
 
     TEST_DATA(
             Bundle.message("attribute.test.data"),
-            ToolBarDefault.OFF,
+            AttributeDefault.OFF,
             TestCaseDto::getTestData,
             always(TestCaseDtoBuilder::testData),
             GenType.UPDATE_TEST_CASE_TEST_DATA,
@@ -160,7 +160,7 @@ public enum TestSetEditorAttributes implements ToolBarAttribute {
 
     PRE_CONDITIONS(
             Bundle.message("attribute.pre.conditions"),
-            ToolBarDefault.OFF,
+            AttributeDefault.OFF,
             TestCaseDto::getPreConditions,
             always(TestCaseDtoBuilder::preConditions),
             GenType.UPDATE_TEST_CASE_PRE_CONDITIONS,
@@ -169,7 +169,7 @@ public enum TestSetEditorAttributes implements ToolBarAttribute {
 
     GROUP(
             Bundle.message("attribute.group"),
-            ToolBarDefault.ON,
+            AttributeDefault.ON,
             tc -> Groups.text(tc.getGroups()),
             (_, tc, v) -> TestCaseFieldParser.groups(v).map(groups -> tc.edit().groups(groups).build()),
             GenType.UPDATE_TEST_CASE_GROUP,
@@ -183,7 +183,7 @@ public enum TestSetEditorAttributes implements ToolBarAttribute {
 
     PATH(
             Bundle.message("attribute.path"),
-            ToolBarDefault.OFF,
+            AttributeDefault.OFF,
             tc -> String.join(" > ", tc.getParent().getPath2()),
             (_, tc, _) -> Optional.of(tc),
             GenType.NO_CODE_CHANGE,
@@ -192,7 +192,7 @@ public enum TestSetEditorAttributes implements ToolBarAttribute {
 
     MODULE(
             Bundle.message("attribute.module"),
-            ToolBarDefault.OFF,
+            AttributeDefault.OFF,
             TestCaseDto::getModule,
             always(TestCaseDtoBuilder::module),
             GenType.UPDATE_TEST_CASE_MODULE,
@@ -201,7 +201,7 @@ public enum TestSetEditorAttributes implements ToolBarAttribute {
 
     STATUS(
             Bundle.message("attribute.status"),
-            ToolBarDefault.OFF,
+            AttributeDefault.OFF,
             tc -> tc.getStatus().getLabel(),
             (_, tc, v) -> TestCaseFieldParser.testCaseStatus(v, tc.getStatus()).map(status -> tc.edit().status(status).build()),
             GenType.UPDATE_TEST_CASE_STATUS,
@@ -210,7 +210,7 @@ public enum TestSetEditorAttributes implements ToolBarAttribute {
 
     CREATED_BY(
             Bundle.message("attribute.created.by"),
-            ToolBarDefault.OFF,
+            AttributeDefault.OFF,
             TestCaseDto::getCreatedBy,
             always(TestCaseDtoBuilder::createdBy),
             GenType.NO_CODE_CHANGE,
@@ -219,7 +219,7 @@ public enum TestSetEditorAttributes implements ToolBarAttribute {
 
     UPDATED_BY(
             Bundle.message("attribute.updated.by"),
-            ToolBarDefault.OFF,
+            AttributeDefault.OFF,
             TestCaseDto::getUpdatedBy,
             always(TestCaseDtoBuilder::updatedBy),
             GenType.NO_CODE_CHANGE,
@@ -228,7 +228,7 @@ public enum TestSetEditorAttributes implements ToolBarAttribute {
 
     CREATED_AT(
             Bundle.message("attribute.created.at"),
-            ToolBarDefault.OFF,
+            AttributeDefault.OFF,
             tc -> Display.formatDate(tc.getCreatedAt()),
             (_, tc, v) -> TestCaseFieldParser.date(v).map(at -> tc.edit().createdAt(at).build()),
             GenType.NO_CODE_CHANGE,
@@ -237,7 +237,7 @@ public enum TestSetEditorAttributes implements ToolBarAttribute {
 
     UPDATED_AT(
             Bundle.message("attribute.updated.at"),
-            ToolBarDefault.OFF,
+            AttributeDefault.OFF,
             tc -> Display.formatDate(tc.getUpdatedAt()),
             (_, tc, v) -> TestCaseFieldParser.date(v).map(at -> tc.edit().updatedAt(at).build()),
             GenType.NO_CODE_CHANGE,
@@ -252,14 +252,14 @@ public enum TestSetEditorAttributes implements ToolBarAttribute {
     private static final @NotNull Map<Can, List<TestSetEditorAttributes>> BY_CAPABILITY = EnumSet.allOf(Can.class).stream()
             .collect(Collectors.toUnmodifiableMap(capability -> capability, capability -> Arrays.stream(values()).filter(attribute -> attribute.can(capability)).toList()));
     private final @NotNull String name;
-    private final @NotNull ToolBarDefault toolBarDefault;
+    private final @NotNull AttributeDefault toolBarDefault;
     private final @NotNull Function<TestCaseDto, String> testValueExtractor;
     private final @NotNull ImportSetter importSetter;
     private final @NotNull GenType<TestCaseDto> genType;
     @Getter(AccessLevel.NONE)
     private final @NotNull ImmutableSet<Can> can;
 
-    TestSetEditorAttributes(final @NotNull String name, final @NotNull ToolBarDefault toolBarDefault, final @NotNull Function<TestCaseDto, String> testValueExtractor, final @NotNull ImportSetter importSetter, final @NotNull GenType<TestCaseDto> genType, final @NotNull Can... can) {
+    TestSetEditorAttributes(final @NotNull String name, final @NotNull AttributeDefault toolBarDefault, final @NotNull Function<TestCaseDto, String> testValueExtractor, final @NotNull ImportSetter importSetter, final @NotNull GenType<TestCaseDto> genType, final @NotNull Can... can) {
         this.name = name;
         this.toolBarDefault = toolBarDefault;
         this.testValueExtractor = testValueExtractor;

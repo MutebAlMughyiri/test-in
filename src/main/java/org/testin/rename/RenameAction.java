@@ -22,7 +22,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.GrayWithReason;
-import org.testin.actions.TestinData;
+import org.testin.actions.TestinDataKeys;
 import org.testin.editor.open.TestinEditors;
 import org.testin.indexer.Nodes;
 import org.testin.logger.TestinLogger;
@@ -52,7 +52,7 @@ public class RenameAction extends AbstractAnyProjectAction {
     // UC-TREE-PANEL-011
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        TestinData.singleSelectedNode(e)
+        TestinDataKeys.singleSelectedNode(e)
                 .filter(dir -> whyNot(p, dir).isEmpty())
                 .ifPresent(dir -> new RenameDialog(p, dir, newName -> renameNode(p, dir, newName)).show());
     }
@@ -103,7 +103,7 @@ public class RenameAction extends AbstractAnyProjectAction {
     // UC-TREE-PANEL-011, Rule-TREE-PANEL-104
     @Override
     protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        final @NotNull Optional<String> why = TestinData.singleSelectedNode(e).map(dir -> whyNot(p, dir))
+        final @NotNull Optional<String> why = TestinDataKeys.singleSelectedNode(e).map(dir -> whyNot(p, dir))
                 .orElse(Optional.of(Bundle.message("rename.disabled.description")));
 
         GrayWithReason.unless(this, e, why);

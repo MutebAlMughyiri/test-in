@@ -26,7 +26,7 @@ import org.testin.Await;
 import org.testin.Said;
 import org.testin.TreeGesture;
 import org.testin.editor.EditorFixtures;
-import org.testin.editor.card.CardHoverAction;
+import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.editor.open.TestinEditors;
 import org.testin.editor.toolbar.StartExecutionBtn;
 import org.testin.editor.toolbar.StopExecutionBtn;
@@ -74,7 +74,7 @@ public class ExecutionModeIdeTest extends AbstractCodegenIdeTest {
         final @NotNull List<TestCaseDto> testCases = loginTestCases();
         final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), EditorFixtures.testRunOver(getProject(), root, testCases), getTestRootDisposable());
         try {
-            CardHoverAction.RUN_TEST_METHOD.executeFor(editor, testCases.getFirst());
+            TestCaseQuickAction.RUN_TEST_METHOD.executeFor(editor, testCases.getFirst());
             assertTrue("the run button did not start its test case", Services.getInstance(getProject(), TestNGExecution.class).isRunning(testCases.getFirst().getId()));
 
             assertEquals("a single run button put the test run in a mode", ExecutionMode.IDLE, editor.getWalk().mode());

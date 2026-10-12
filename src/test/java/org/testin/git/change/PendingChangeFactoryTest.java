@@ -19,7 +19,7 @@ package org.testin.git.change;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.Priority;
 import org.testin.model.TestCaseDto;
-import org.testin.util.RealMapper;
+import org.testin.util.RealJsonCodec;
 import org.testng.annotations.Test;
 
 import java.nio.file.Path;
@@ -51,7 +51,7 @@ public class PendingChangeFactoryTest {
     }
 
     private static @NotNull String json(final TestCaseDto dto) {
-        return RealMapper.build().writeValueAsString(dto);
+        return RealJsonCodec.build().writeValueAsString(dto);
     }
 
     @Test
@@ -59,7 +59,7 @@ public class PendingChangeFactoryTest {
         final TestCaseDto added = testCase("a brand new case");
 
         final PendingChange diff = PendingChangeFactory.fromFile(
-                StatusKind.ADDED, "", json(added), PATH, RealMapper.build(), _ -> Optional.empty());
+                StatusKind.ADDED, "", json(added), PATH, RealJsonCodec.build(), _ -> Optional.empty());
 
         assertNotNull(diff);
         assertEquals(diff.type(), StatusKind.ADDED);
@@ -79,7 +79,7 @@ public class PendingChangeFactoryTest {
         final TestCaseDto removed = testCase("a case that is going away");
 
         final PendingChange diff = PendingChangeFactory.fromFile(
-                StatusKind.DELETED, json(removed), "", PATH, RealMapper.build(), _ -> Optional.empty());
+                StatusKind.DELETED, json(removed), "", PATH, RealJsonCodec.build(), _ -> Optional.empty());
 
         assertNotNull(diff);
         assertEquals(diff.type(), StatusKind.DELETED);
@@ -102,7 +102,7 @@ public class PendingChangeFactoryTest {
                 .setPriority(Priority.HIGH);
 
         final PendingChange diff = PendingChangeFactory.fromFile(
-                StatusKind.MODIFIED, json(before), json(after), PATH, RealMapper.build(), _ -> Optional.empty());
+                StatusKind.MODIFIED, json(before), json(after), PATH, RealJsonCodec.build(), _ -> Optional.empty());
 
         assertNotNull(diff);
         assertEquals(diff.type(), StatusKind.MODIFIED);
@@ -119,7 +119,7 @@ public class PendingChangeFactoryTest {
         final TestCaseDto unchanged = testCase("identical on both sides");
 
         final PendingChange change = PendingChangeFactory.fromFile(
-                StatusKind.MODIFIED, json(unchanged), json(unchanged), PATH, RealMapper.build(), _ -> Optional.empty());
+                StatusKind.MODIFIED, json(unchanged), json(unchanged), PATH, RealJsonCodec.build(), _ -> Optional.empty());
 
         assertNotNull(change, "a file git calls modified is a change to commit");
         assertEquals(change.fieldChanges().size(), 1);
@@ -135,7 +135,7 @@ public class PendingChangeFactoryTest {
                 {"id":"%s","executions":[{"status":"PASSED","actualResult":"Signed in"}]}""".formatted(testCaseId);
 
         final PendingChange change = PendingChangeFactory.fromFile(
-                StatusKind.MODIFIED, before, after, Path.of("Test Runs", "cycle 4", testCaseId + ".ri"), RealMapper.build(), _ -> Optional.empty());
+                StatusKind.MODIFIED, before, after, Path.of("Test Runs", "cycle 4", testCaseId + ".ri"), RealJsonCodec.build(), _ -> Optional.empty());
 
         assertEquals(change.subject(), ChangeSubject.RUN_ITEM);
         assertEquals(change.testCaseId(), testCaseId.toString(), "the result says which test case it is about");
@@ -150,7 +150,7 @@ public class PendingChangeFactoryTest {
                 StatusKind.MODIFIED,
                 "{\"status\":\"CREATED\",\"createdBy\":\"mtb\",\"configuration\":{\"PLATFORM\":\"Web\"}}",
                 "{\"status\":\"IN_PROGRESS\",\"createdBy\":\"mtb\",\"configuration\":{\"PLATFORM\":\"Mobile\"}}",
-                Path.of("Test Runs", "cycle 4", ".tr"), RealMapper.build(), _ -> Optional.empty());
+                Path.of("Test Runs", "cycle 4", ".tr"), RealJsonCodec.build(), _ -> Optional.empty());
 
         assertEquals(change.subject(), ChangeSubject.MARKER);
         assertTrue(change.fieldChanges().stream().anyMatch(field -> field.newValue().equals("Mobile")),
@@ -163,7 +163,7 @@ public class PendingChangeFactoryTest {
                 StatusKind.MODIFIED,
                 "{\"status\":\"ACTIVE\",\"createdBy\":\"mtb\"}",
                 "{\"status\":\"ARCHIVED\",\"createdBy\":\"mtb\"}",
-                Path.of("Test Cases", "login", ".ts"), RealMapper.build(), _ -> Optional.empty());
+                Path.of("Test Cases", "login", ".ts"), RealJsonCodec.build(), _ -> Optional.empty());
 
         assertNotNull(change);
         assertEquals(change.subject(), ChangeSubject.MARKER);
@@ -181,16 +181,16 @@ public class PendingChangeFactoryTest {
         final TestCaseDto present = testCase("only one side survived");
 
         assertThrows(IllegalStateException.class, () -> PendingChangeFactory.fromFile(
-                StatusKind.MODIFIED, "", json(present), PATH, RealMapper.build(), _ -> Optional.empty()));
+                StatusKind.MODIFIED, "", json(present), PATH, RealJsonCodec.build(), _ -> Optional.empty()));
 
         assertThrows(IllegalStateException.class, () -> PendingChangeFactory.fromFile(
-                StatusKind.MODIFIED, json(present), "", PATH, RealMapper.build(), _ -> Optional.empty()));
+                StatusKind.MODIFIED, json(present), "", PATH, RealJsonCodec.build(), _ -> Optional.empty()));
 
         assertThrows(IllegalStateException.class, () -> PendingChangeFactory.fromFile(
-                StatusKind.ADDED, json(present), "", PATH, RealMapper.build(), _ -> Optional.empty()));
+                StatusKind.ADDED, json(present), "", PATH, RealJsonCodec.build(), _ -> Optional.empty()));
 
         assertThrows(IllegalStateException.class, () -> PendingChangeFactory.fromFile(
-                StatusKind.DELETED, "", json(present), PATH, RealMapper.build(), _ -> Optional.empty()));
+                StatusKind.DELETED, "", json(present), PATH, RealJsonCodec.build(), _ -> Optional.empty()));
     }
 
     @Test
@@ -199,13 +199,13 @@ public class PendingChangeFactoryTest {
         final TestCaseDto before = testCase("before");
         final TestCaseDto after = testCase("after").setId(before.getId());
 
-        assertEquals(PendingChangeFactory.fromFile(StatusKind.ADDED, "", json(added), PATH, RealMapper.build(), _ -> Optional.empty())
+        assertEquals(PendingChangeFactory.fromFile(StatusKind.ADDED, "", json(added), PATH, RealJsonCodec.build(), _ -> Optional.empty())
                 .name(), "added");
 
-        assertEquals(PendingChangeFactory.fromFile(StatusKind.DELETED, json(before), "", PATH, RealMapper.build(), _ -> Optional.empty())
+        assertEquals(PendingChangeFactory.fromFile(StatusKind.DELETED, json(before), "", PATH, RealJsonCodec.build(), _ -> Optional.empty())
                 .name(), "before", "a deletion is about the test case that was there");
 
-        assertEquals(PendingChangeFactory.fromFile(StatusKind.MODIFIED, json(before), json(after), PATH, RealMapper.build(), _ -> Optional.empty())
+        assertEquals(PendingChangeFactory.fromFile(StatusKind.MODIFIED, json(before), json(after), PATH, RealJsonCodec.build(), _ -> Optional.empty())
                 .name(), "after", "a modification is about the test case as it is now");
     }
 
@@ -214,12 +214,12 @@ public class PendingChangeFactoryTest {
         final TestCaseDto original = testCase("survives the round trip");
 
         final PendingChange diff = PendingChangeFactory.fromFile(
-                StatusKind.DELETED, json(original), "", PATH, RealMapper.build(), _ -> Optional.empty());
+                StatusKind.DELETED, json(original), "", PATH, RealJsonCodec.build(), _ -> Optional.empty());
 
         assertNotNull(diff);
         final TestCaseDto readBack = diff.committed();
 
-        assertEquals(TestCaseChangeComparator.compare(original, readBack), List.of(),
+        assertEquals(TestCaseFieldChanges.compare(original, readBack), List.of(),
                 "a test case written and read back must compare as unchanged");
     }
 
@@ -230,18 +230,18 @@ public class PendingChangeFactoryTest {
         final @NotNull TestCaseDto after = testCase("after").setId(before.getId());
         final @NotNull UUID testCaseId = UUID.randomUUID();
 
-        assertTrue(PendingChangeFactory.fromFile(StatusKind.ADDED, "", json(after), PATH, RealMapper.build(), _ -> Optional.empty()).isRevertible(),
+        assertTrue(PendingChangeFactory.fromFile(StatusKind.ADDED, "", json(after), PATH, RealJsonCodec.build(), _ -> Optional.empty()).isRevertible(),
                 "a new test case can be taken out again");
-        assertTrue(PendingChangeFactory.fromFile(StatusKind.DELETED, json(before), "", PATH, RealMapper.build(), _ -> Optional.empty()).isRevertible(),
+        assertTrue(PendingChangeFactory.fromFile(StatusKind.DELETED, json(before), "", PATH, RealJsonCodec.build(), _ -> Optional.empty()).isRevertible(),
                 "a removed test case can be put back");
-        assertTrue(PendingChangeFactory.fromFile(StatusKind.MODIFIED, json(before), json(after), PATH, RealMapper.build(), _ -> Optional.empty()).isRevertible(),
+        assertTrue(PendingChangeFactory.fromFile(StatusKind.MODIFIED, json(before), json(after), PATH, RealJsonCodec.build(), _ -> Optional.empty()).isRevertible(),
                 "a changed field can be put back");
 
         assertFalse(PendingChangeFactory.fromFile(StatusKind.MODIFIED, "{\"status\":\"PENDING\"}", "{\"status\":\"PASSED\"}",
-                Path.of("Test Runs", "cycle 4", testCaseId + ".ri"), RealMapper.build(), _ -> Optional.empty()).isRevertible(), "a run item status is not a change to a test case");
+                Path.of("Test Runs", "cycle 4", testCaseId + ".ri"), RealJsonCodec.build(), _ -> Optional.empty()).isRevertible(), "a run item status is not a change to a test case");
         assertFalse(PendingChangeFactory.fromFile(StatusKind.MODIFIED, "{\"status\":\"ACTIVE\"}", "{\"status\":\"ARCHIVED\"}",
-                Path.of("Test Cases", "login", ".ts"), RealMapper.build(), _ -> Optional.empty()).isRevertible(), "a marker is not a change to a test case");
+                Path.of("Test Cases", "login", ".ts"), RealJsonCodec.build(), _ -> Optional.empty()).isRevertible(), "a marker is not a change to a test case");
         assertFalse(PendingChangeFactory.fromFile(StatusKind.ADDED, "", "notes",
-                Path.of("Test Cases", "login", "notes.txt"), RealMapper.build(), _ -> Optional.empty()).isRevertible(), "a file Testin does not own is not a change to a test case");
+                Path.of("Test Cases", "login", "notes.txt"), RealJsonCodec.build(), _ -> Optional.empty()).isRevertible(), "a file Testin does not own is not a change to a test case");
     }
 }

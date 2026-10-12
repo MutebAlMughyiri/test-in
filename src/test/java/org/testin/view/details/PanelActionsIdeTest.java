@@ -29,7 +29,7 @@ import org.testin.LoginTestSource;
 import org.testin.Said;
 import org.testin.actions.Declared;
 import org.testin.config.TestinYml;
-import org.testin.editor.card.CardHoverAction;
+import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.model.Automated;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestSetNode;
@@ -94,7 +94,7 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
     }
 
     private static @NotNull KeyStroke f5() {
-        return ((KeyboardShortcut) Declared.shortcutSet(CardHoverAction.RUN_TEST_METHOD.getActionId()).getShortcuts()[0]).getFirstKeyStroke();
+        return ((KeyboardShortcut) Declared.shortcutSet(TestCaseQuickAction.RUN_TEST_METHOD.getActionId()).getShortcuts()[0]).getFirstKeyStroke();
     }
 
     private static <T extends PsiElement> void clickTheMark(final @NotNull LineMarkerInfo<T> mark, final @NotNull MouseEvent click) {
@@ -116,11 +116,11 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
         final @NotNull Container actions = Drawn.components(tab).stream()
                 .filter(JBLabel.class::isInstance)
                 .map(JBLabel.class::cast)
-                .filter(label -> nameOf(label).equals(CardHoverAction.NAVIGATE_TO_TEST_CASE.getTooltip()))
+                .filter(label -> nameOf(label).equals(TestCaseQuickAction.NAVIGATE_TO_TEST_CASE.getTooltip()))
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("the panel drew no button that opens the test case: " + Drawn.words(tab)))
                 .getParent();
-        final @NotNull Set<String> actionNames = Arrays.stream(CardHoverAction.values()).map(CardHoverAction::getTooltip).collect(Collectors.toSet());
+        final @NotNull Set<String> actionNames = Arrays.stream(TestCaseQuickAction.values()).map(TestCaseQuickAction::getTooltip).collect(Collectors.toSet());
         return Arrays.stream(actions.getComponents()).filter(JBLabel.class::isInstance).map(JBLabel.class::cast)
                 .filter(label -> actionNames.contains(nameOf(label)))
                 .toList();
@@ -145,9 +145,9 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
         codeIsOff();
 
         final @NotNull JBLabel run = buttonsOn(tc).get(1);
-        assertEquals("the run button was not drawn", CardHoverAction.RUN_TEST_METHOD.getTooltip(), nameOf(run));
+        assertEquals("the run button was not drawn", TestCaseQuickAction.RUN_TEST_METHOD.getTooltip(), nameOf(run));
         assertGrayAndSaysWhy(run, "the run button");
-        assertEquals("the run button does not say it waits for testin.yml", CardHoverAction.RUN_TEST_METHOD.whyNotOffered(getProject()).orElseThrow(), whyGray(run));
+        assertEquals("the run button does not say it waits for testin.yml", TestCaseQuickAction.RUN_TEST_METHOD.whyNotOffered(getProject()).orElseThrow(), whyGray(run));
     }
 
     // Rule-VIEW-PANEL-051, Rule-VIEW-PANEL-053
@@ -156,14 +156,14 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestNGExecution execution = Services.getInstance(getProject(), TestNGExecution.class);
 
         final @NotNull List<String> idle = buttonsOn(tc).stream().map(PanelActionsIdeTest::nameOf).toList();
-        assertEquals("the run button is not second of the three", CardHoverAction.RUN_TEST_METHOD.getTooltip(), idle.get(1));
-        assertFalse("the stop button was drawn for a test case that is not running", idle.contains(CardHoverAction.STOP_TEST_METHOD.getTooltip()));
+        assertEquals("the run button is not second of the three", TestCaseQuickAction.RUN_TEST_METHOD.getTooltip(), idle.get(1));
+        assertFalse("the stop button was drawn for a test case that is not running", idle.contains(TestCaseQuickAction.STOP_TEST_METHOD.getTooltip()));
 
         execution.starting(tc);
         try {
             final @NotNull List<String> running = buttonsOn(tc).stream().map(PanelActionsIdeTest::nameOf).toList();
-            assertEquals("the run button's place does not hold the stop button while the test case runs", CardHoverAction.STOP_TEST_METHOD.getTooltip(), running.get(1));
-            assertFalse("the run button was drawn beside the stop button", running.contains(CardHoverAction.RUN_TEST_METHOD.getTooltip()));
+            assertEquals("the run button's place does not hold the stop button while the test case runs", TestCaseQuickAction.STOP_TEST_METHOD.getTooltip(), running.get(1));
+            assertFalse("the run button was drawn beside the stop button", running.contains(TestCaseQuickAction.RUN_TEST_METHOD.getTooltip()));
             assertEquals("the stop button was added rather than put in the run button's place", idle.size(), running.size());
         } finally {
             execution.stop(List.of(tc));
@@ -190,7 +190,7 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
         final @NotNull JBLabel code = buttonsOn(tc).getFirst();
         assertTrue("the go to code button was not drawn: " + nameOf(code), automationWords().contains(nameOf(code)));
         assertGrayAndSaysWhy(code, "the go to code button");
-        assertEquals("the go to code button does not say it waits for testin.yml", CardHoverAction.NAVIGATE_TO_TEST_METHOD.whyNotOffered(getProject()).orElseThrow(), whyGray(code));
+        assertEquals("the go to code button does not say it waits for testin.yml", TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD.whyNotOffered(getProject()).orElseThrow(), whyGray(code));
     }
 
     // Rule-VIEW-PANEL-057
@@ -199,8 +199,8 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
 
         assertEquals("the line does not hold three buttons: " + names, 3, names.size());
         assertTrue("the first button is not go to code: " + names, automationWords().contains(names.getFirst()));
-        assertEquals("the run button is not second: " + names, CardHoverAction.RUN_TEST_METHOD.getTooltip(), names.get(1));
-        assertEquals("the button that opens the test case is not last: " + names, CardHoverAction.NAVIGATE_TO_TEST_CASE.getTooltip(), names.get(2));
+        assertEquals("the run button is not second: " + names, TestCaseQuickAction.RUN_TEST_METHOD.getTooltip(), names.get(1));
+        assertEquals("the button that opens the test case is not last: " + names, TestCaseQuickAction.NAVIGATE_TO_TEST_CASE.getTooltip(), names.get(2));
     }
 
     // Rule-VIEW-PANEL-063

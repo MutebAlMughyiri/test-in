@@ -21,8 +21,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 // UC-INTERNAL-001, Rule-INTERNAL-073
-public record Answer<T>(@NotNull List<SelectionList<T>> rows, @NotNull String note) {
-    public static <T> @NotNull Answer<T> of(final @NotNull List<SelectionList<T>> rows) {
+public record Answer<T>(@NotNull List<Selection<T>> rows, @NotNull String note) {
+    public static <T> @NotNull Answer<T> of(final @NotNull List<Selection<T>> rows) {
         return new Answer<>(rows, "");
     }
 }

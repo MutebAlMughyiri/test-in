@@ -154,7 +154,7 @@ public class FrameworkComponentsTest {
 
     @Test
     public void selectionRowKeepsAllDeclaredParts() {
-        final SelectionList<String> row = SelectionList.add(DialogStyle.NO_ICON, "Test Set", "Holds test cases", "TS");
+        final Selection<String> row = Selection.add(DialogStyle.NO_ICON, "Test Set", "Holds test cases", "TS");
 
         assertEquals(row.name(), "Test Set");
         assertEquals(row.hint(), "Holds test cases");

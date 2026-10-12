@@ -20,7 +20,7 @@ import org.testin.model.Priority;
 import org.testin.model.TestCaseDto;
 import org.testin.model.bug.BugPriority;
 import org.testin.model.bug.BugSeverity;
-import org.testin.model.testrun.Execution;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.testcase.TestSetEditorAttributes;
@@ -77,7 +77,7 @@ public class BadgesTest {
     // Rule-EDITOR-PANEL-253
     @Test
     public void aTestCaseThatNeverFailedDrawsNoPill() {
-        final List<Badge> badges = bugBadges(RunItem.builder().executions(List.of(Execution.builder().status(RunItemStatus.PASSED).build())).build());
+        final List<Badge> badges = bugBadges(RunItem.builder().executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())).build());
 
         assertEquals(badges.size(), 0, "a severity is shown only on a failure, so a pass draws no badge");
     }
@@ -85,10 +85,10 @@ public class BadgesTest {
     // Rule-EDITOR-PANEL-147
     @Test
     public void aFailureTheTesterDidNotTriageDrawsItsDefaults() {
-        final List<Badge> badges = bugBadges(RunItem.builder().executions(List.of(Execution.builder().status(RunItemStatus.FAILED).build())).build());
+        final List<Badge> badges = bugBadges(RunItem.builder().executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build());
 
         assertEquals(badges.size(), 1);
-        assertTrue(badges.getFirst() instanceof BugBadge bug && bug.text().equals("Enhancement / Low"),
+        assertTrue(badges.getFirst() instanceof BugPill bug && bug.text().equals("Enhancement / Low"),
                 "a severity and a priority nobody chose are Enhancement and Low");
     }
 
@@ -98,12 +98,12 @@ public class BadgesTest {
         final List<Badge> severityOnly = new ArrayList<>();
         Badges.addBugBadge(severityOnly, "Bug Severity", BugSeverity.MAJOR.getLabel(), BugSeverity.MAJOR.getColor());
         assertEquals(severityOnly.size(), 1);
-        assertTrue(severityOnly.getFirst() instanceof BugBadge bug && bug.text().equals("Major"));
+        assertTrue(severityOnly.getFirst() instanceof BugPill bug && bug.text().equals("Major"));
 
         final List<Badge> priorityOnly = new ArrayList<>();
         Badges.addBugBadge(priorityOnly, "Bug Priority", BugPriority.HIGH.getLabel(), BugPriority.HIGH.getColor());
         assertEquals(priorityOnly.size(), 1);
-        assertTrue(priorityOnly.getFirst() instanceof BugBadge bug && bug.text().equals("High"),
+        assertTrue(priorityOnly.getFirst() instanceof BugPill bug && bug.text().equals("High"),
                 "the survivor keeps its own color, which is why BugPriority still declares one");
     }
 
@@ -116,9 +116,9 @@ public class BadgesTest {
         Badges.addBugBadge(badges, "Bug Priority", BugPriority.HIGH.getLabel(), BugPriority.HIGH.getColor());
 
         assertEquals(badges.size(), 1, "two halves, one badge");
-        assertTrue(badges.getFirst() instanceof BugBadge bug && bug.text().equals("Major / High"),
+        assertTrue(badges.getFirst() instanceof BugPill bug && bug.text().equals("Major / High"),
                 "severity first, because the enum offers it first");
-        assertEquals(((BugBadge) badges.getFirst()).color(), BugSeverity.MAJOR.getColor(),
+        assertEquals(((BugPill) badges.getFirst()).color(), BugSeverity.MAJOR.getColor(),
                 "the color is the first half's");
     }
 
@@ -212,7 +212,7 @@ public class BadgesTest {
         final List<Badge> badges = new ArrayList<>();
         final Map<String, String> details = new HashMap<>();
 
-        TestRunEditorAttributes.DURATION.applyToUI(RunItem.builder().executions(List.of(Execution.builder().status(RunItemStatus.PASSED).duration(Duration.ofSeconds(42)).build())).build(), badges, details);
+        TestRunEditorAttributes.DURATION.applyToUI(RunItem.builder().executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).duration(Duration.ofSeconds(42)).build())).build(), badges, details);
 
         assertEquals(badges.size(), 1, "the duration is not one badge");
         assertTrue(badges.getFirst() instanceof Framed framed && framed.text().equals(Display.formatDuration(Duration.ofSeconds(42))), "the badge does not show the duration");
@@ -225,7 +225,7 @@ public class BadgesTest {
     public void aRunItemNotRunYetHasNoDurationBadge() {
         final List<Badge> badges = new ArrayList<>();
 
-        TestRunEditorAttributes.DURATION.applyToUI(RunItem.builder().executions(List.of(Execution.builder().status(RunItemStatus.PASSED).build())).build(), badges, new HashMap<>());
+        TestRunEditorAttributes.DURATION.applyToUI(RunItem.builder().executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())).build(), badges, new HashMap<>());
 
         assertTrue(badges.isEmpty(), "a run item with no duration drew a badge");
     }

@@ -97,7 +97,7 @@ public class TestCaseFormIdeTest extends AbstractTempRootIdeTest {
     public void testTheFieldsKeysComeFirstAndSaveAndCancelAreAlwaysLast() {
         final @NotNull CreateTestCaseDialog dialog = aShownCreateDialog();
         final @NotNull List<String> shared = List.of(TestCaseDialogKey.SAVE.getName(), TestCaseDialogKey.CANCEL.getName());
-        for (final Map.Entry<CreateTestCaseSection, StatusBarItem[]> field : dialog.statusBarMapping.entrySet()) {
+        for (final Map.Entry<TestCaseSection, StatusBarItem[]> field : dialog.statusBarMapping.entrySet()) {
             dialog.showSectionKeys(field.getValue());
 
             final @NotNull List<String> own = namesOf(field.getValue());

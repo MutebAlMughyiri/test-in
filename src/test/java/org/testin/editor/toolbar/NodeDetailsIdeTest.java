@@ -28,7 +28,7 @@ import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.view.Drawn;
-import org.testin.view.marker.MarkerDetailsViewDialog;
+import org.testin.view.marker.NodeDetailsDialog;
 
 import java.util.List;
 import java.util.Locale;
@@ -43,7 +43,7 @@ public class NodeDetailsIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull List<String> wordsOfTheDialogOpenedBy(final @NotNull TestSetEditor editor) {
-        return ShownDialog.wordsOf(new MarkerDetailsViewDialog(getProject(), editor.getEditedNode()));
+        return ShownDialog.wordsOf(new NodeDetailsDialog(getProject(), editor.getEditedNode()));
     }
 
     // Rule-EDITOR-PANEL-121

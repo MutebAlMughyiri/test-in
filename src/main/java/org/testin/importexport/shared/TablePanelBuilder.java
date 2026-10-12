@@ -21,7 +21,7 @@ import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
-import org.testin.editor.grid.GridPanelBuilder;
+import org.testin.editor.grid.GridTables;
 import org.testin.logger.TestinLogger;
 import org.testin.model.Priority;
 import org.testin.model.TestCaseDto;
@@ -114,7 +114,7 @@ public class TablePanelBuilder {
             TestinLogger.error(FailureText.of(ex));
         }
 
-        GridPanelBuilder.autoSizeColumns(table);
+        GridTables.autoSizeColumns(table);
 
         return table;
     }

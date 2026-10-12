@@ -22,7 +22,7 @@ import org.testin.git.AbstractGitRemoteIdeTest;
 import org.testin.indexer.TestCaseFile;
 import org.testin.model.TestCaseDto;
 import org.testin.services.Services;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -42,7 +42,7 @@ public class TestCaseHistoryIdeTest extends AbstractGitRemoteIdeTest {
     }
 
     private void save(final @NotNull String relativePath, final @NotNull TestCaseDto tc) {
-        write(work, relativePath, Services.getInstance(getProject(), Mapper.class).writeValueAsString(tc));
+        write(work, relativePath, Services.getInstance(getProject(), JsonCodec.class).writeValueAsString(tc));
     }
 
     private @NotNull History historyOf(final @NotNull Path testProject, final @NotNull String relativePath, final @NotNull TestCaseDto now) {
@@ -71,7 +71,7 @@ public class TestCaseHistoryIdeTest extends AbstractGitRemoteIdeTest {
         save("Test Cases/Sign in/" + FILE, now);
         final @NotNull String onDisk = read(work, "Test Cases/Sign in/" + FILE);
 
-        final @NotNull List<HistoryEntry> entries = historyOf(work, "Test Cases/Sign in/" + FILE, now).entries();
+        final @NotNull List<TestCaseHistoryCard> entries = historyOf(work, "Test Cases/Sign in/" + FILE, now).entries();
 
         assertEquals("expected Not committed yet, the move, the review and Created: " + entries, 4, entries.size());
         assertFalse(entries.getFirst().isCommitted());
@@ -80,7 +80,7 @@ public class TestCaseHistoryIdeTest extends AbstractGitRemoteIdeTest {
         assertTrue("a move changes no field", entries.get(1).changes().isEmpty());
         assertEquals("Cycle 4 review", entries.get(2).message());
         assertEquals("The dashboard opens within 2 seconds", entries.get(2).changes().getFirst().newValue());
-        assertEquals(HistoryEntryKind.CREATED, entries.get(3).kind());
+        assertEquals(TestCaseHistoryKind.CREATED, entries.get(3).kind());
         assertEquals(head(work, "HEAD~1"), entries.get(2).hash());
         assertEquals(7, entries.get(2).shortHash().length());
         assertTrue("a commit on another branch reached the history", entries.stream().noneMatch(entry -> entry.message().equals("Side branch")));

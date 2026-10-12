@@ -26,7 +26,7 @@ import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.ui.framework.Answer;
 import org.testin.ui.framework.DialogPart;
-import org.testin.ui.framework.SelectionList;
+import org.testin.ui.framework.Selection;
 import org.testin.ui.framework.TextFieldWithSelections;
 import org.testin.util.Bundle;
 import org.testin.view.Drawn;
@@ -44,7 +44,7 @@ public class SearchRowsIdeTest extends AbstractReadTheRootIdeTest {
 
     private @NotNull TestProjectNode nafath = new TestProjectNode();
 
-    private static @NotNull JBList<?> drawnAsTheSearchDrawsThem(final @NotNull List<SelectionList<Hit>> rows) {
+    private static @NotNull JBList<?> drawnAsTheSearchDrawsThem(final @NotNull List<Selection<Hit>> rows) {
         final @NotNull DialogPart.TextFieldBuilder<Hit> builder = DialogPart.<Hit>textFieldWithSelections().placeholder("search..");
         rows.forEach(row -> builder.selection(row.icon(), row.name(), row.hint(), row.value()));
         final @NotNull TextFieldWithSelections<Hit> search = builder.build().getComponent();
@@ -89,7 +89,7 @@ public class SearchRowsIdeTest extends AbstractReadTheRootIdeTest {
         assertSame("a test set looks different in the search than in the tree", drawnInTheTree(login), Hit.of(login).icon());
         assertSame("a test run looks different in the search than in the tree", drawnInTheTree(cycle), Hit.of(cycle).icon());
 
-        final @NotNull List<SelectionList<Hit>> rows = GlobalSearchDialog.rowsFor(getProject(), "Login").rows();
+        final @NotNull List<Selection<Hit>> rows = GlobalSearchDialog.rowsFor(getProject(), "Login").rows();
         final @NotNull JBList<?> drawn = drawnAsTheSearchDrawsThem(rows);
         for (int index = 0; index < rows.size(); index++) {
             final @NotNull Hit hit = rows.get(index).value();
@@ -113,7 +113,7 @@ public class SearchRowsIdeTest extends AbstractReadTheRootIdeTest {
         new NodesOnDisk(getProject()).testSet(nafath.getTestCasesFolder(), "Login");
         new NodesOnDisk(getProject()).testSet(nafath.getTestCasesFolder(), "Login page");
 
-        final @NotNull List<SelectionList<Hit>> rows = GlobalSearchDialog.rowsFor(getProject(), "Login").rows();
+        final @NotNull List<Selection<Hit>> rows = GlobalSearchDialog.rowsFor(getProject(), "Login").rows();
         final @NotNull JBList<?> drawn = drawnAsTheSearchDrawsThem(rows);
         final int shortName = IntStream.range(0, rows.size()).filter(index -> rows.get(index).name().equals("Login")).findFirst().orElseThrow();
         final int longName = IntStream.range(0, rows.size()).filter(index -> rows.get(index).name().equals("Login page")).findFirst().orElseThrow();

@@ -34,7 +34,7 @@ import org.testin.ui.framework.ShownDialog;
 import org.testin.undo.UndoHistories;
 import org.testin.undo.UndoScope;
 import org.testin.util.Bundle;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -83,7 +83,7 @@ public class ReviewRowsIdeTest extends AbstractGitRemoteIdeTest {
 
     @Override
     protected void tearDown() {
-        ShownDialog.close(getProject(), PendingCommitsDialog.class);
+        ShownDialog.close(getProject(), PendingChangesDialog.class);
         super.tearDown();
     }
 
@@ -96,7 +96,7 @@ public class ReviewRowsIdeTest extends AbstractGitRemoteIdeTest {
     }
 
     private @NotNull String onDisk(final @NotNull TestCaseDto tc) {
-        return Services.getInstance(getProject(), Mapper.class).readValue(read(work, work.relativize(login.getPath()).resolve(tc.getId() + ".tc").toString()), TestCaseDto.class).getDescription();
+        return Services.getInstance(getProject(), JsonCodec.class).readValue(read(work, work.relativize(login.getPath()).resolve(tc.getId() + ".tc").toString()), TestCaseDto.class).getDescription();
     }
 
     private @NotNull JBTable theReviewTable() {

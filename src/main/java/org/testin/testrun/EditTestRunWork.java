@@ -36,8 +36,8 @@ import org.testin.services.BackgroundWork;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
 import org.testin.testrun.form.TestRunConfigurationForm;
-import org.testin.testrun.form.TestRunForm;
-import org.testin.testrun.form.TestRunFormAction;
+import org.testin.testrun.form.TestRunFormOpener;
+import org.testin.testrun.form.TestRunFormPurpose;
 import org.testin.ui.framework.SelectionTree;
 import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.util.Bundle;
@@ -66,16 +66,16 @@ record EditTestRunWork(@NotNull Project p, @NotNull TestRuns testRuns, @NotNull 
         final @NotNull List<TestCaseDto> deleted = held.getAll().stream().filter(RunItem::isRemoved).map(RunItem::shownTestCase).toList();
 
         boundTestProject.get().ifPresentOrElse(
-                tp -> new TestRunForm(p).open(tp.getTestCasesFolder(), testRun.getName(), held.coveredIds(), deleted, testRun.getMarker().getConfiguration(), saves(testRun)),
+                tp -> new TestRunFormOpener(p).open(tp.getTestCasesFolder(), testRun.getName(), held.coveredIds(), deleted, testRun.getMarker().getConfiguration(), saves(testRun)),
                 () -> TestinLogger.warn("Edit test run: no test project is bound to " + p.getName()));
     }
 
-    private @NotNull TestRunFormAction saves(final @NotNull TestRunNode testRun) {
-        return new TestRunFormAction(Bundle.message("test.run.edit.title"), StatusBarShortcut.SAVE, (form, selection) -> save(testRun, form, selection));
+    private @NotNull TestRunFormPurpose saves(final @NotNull TestRunNode testRun) {
+        return new TestRunFormPurpose(Bundle.message("test.run.edit.title"), StatusBarShortcut.SAVE, (form, selection) -> save(testRun, form, selection));
     }
 
     private boolean save(final @NotNull TestRunNode testRun, final @NotNull TestRunConfigurationForm form, final @NotNull SelectionTree selection) {
-        return saveEdit(testRun, form.getTestRunName(), TestRunForm.checkedTestCases(selection), TestRunForm.offeredTestCases(selection), TestRunConfiguration.answered(form.configuration()));
+        return saveEdit(testRun, form.getTestRunName(), TestRunFormOpener.checkedTestCases(selection), TestRunFormOpener.offeredTestCases(selection), TestRunConfiguration.answered(form.configuration()));
     }
 
     // UC-TREE-PANEL-022, Rule-TREE-PANEL-060, Rule-TREE-PANEL-074, Rule-TREE-PANEL-076, Rule-TREE-PANEL-128

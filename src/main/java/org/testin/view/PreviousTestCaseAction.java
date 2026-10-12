@@ -27,9 +27,9 @@ import org.testin.util.Shortcuts;
 import javax.swing.JComponent;
 
 public class PreviousTestCaseAction extends DumbAwareAction {
-    private final @NotNull ViewPagination controller;
+    private final @NotNull ShownTestCaseCursor controller;
 
-    public PreviousTestCaseAction(final @NotNull ViewPagination controller, final @NotNull JComponent component) {
+    public PreviousTestCaseAction(final @NotNull ShownTestCaseCursor controller, final @NotNull JComponent component) {
         super(Bundle.message("page.previous.test.case"), Bundle.message("page.previous.test.case.description"), AllIcons.Actions.Back);
         this.controller = controller;
 

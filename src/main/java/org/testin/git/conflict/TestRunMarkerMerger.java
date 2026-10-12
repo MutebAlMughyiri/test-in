@@ -21,10 +21,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.Config;
+import org.testin.model.DateFormats;
 import org.testin.model.status.TestRunStatus;
 import org.testin.util.Bundle;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 import org.testin.util.TestCaseFieldParser;
 
 import java.time.ZonedDateTime;
@@ -44,7 +44,7 @@ final class TestRunMarkerMerger {
     private static final @NotNull List<String> WRITTEN_INTO = List.of("configuration", "resultAnalysis");
 
     // UC-SHARE-018, Rule-SHARE-080
-    static @NotNull MergeOutcome of(final @NotNull Mapper mapper, final @NotNull String base, final @NotNull String mine, final @NotNull String theirs) {
+    static @NotNull MergeOutcome of(final @NotNull JsonCodec mapper, final @NotNull String base, final @NotNull String mine, final @NotNull String theirs) {
         final @NotNull ThreeWayMerge merging = ThreeWayMerge.read(mapper, base, mine, theirs);
 
         execution(merging);
@@ -68,8 +68,8 @@ final class TestRunMarkerMerger {
         final @NotNull ZonedDateTime yours = stamp(merging.theirs(), field);
         if (ours.equals(yours)) return;
 
-        final boolean takeTheirs = Config.isNotExecuted(ours)
-                || (!Config.isNotExecuted(yours) && (earliest ? yours.isBefore(ours) : yours.isAfter(ours)));
+        final boolean takeTheirs = DateFormats.isNotExecuted(ours)
+                || (!DateFormats.isNotExecuted(yours) && (earliest ? yours.isBefore(ours) : yours.isAfter(ours)));
 
         if (takeTheirs) merging.merged().set(field, merging.theirs().path(field).deepCopy());
         merging.settled().add(said);
@@ -127,6 +127,6 @@ final class TestRunMarkerMerger {
     }
 
     private static @NotNull ZonedDateTime stamp(final @NotNull ObjectNode marker, final @NotNull String field) {
-        return TestCaseFieldParser.date(marker.path(field).asText("")).orElse(Config.NOT_EXECUTED);
+        return TestCaseFieldParser.date(marker.path(field).asText("")).orElse(DateFormats.NOT_EXECUTED);
     }
 }

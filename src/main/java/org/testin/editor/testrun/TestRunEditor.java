@@ -31,16 +31,16 @@ import org.testin.editor.grid.GridRows;
 import org.testin.editor.grid.TestRunGridEditListener;
 import org.testin.editor.cardview.RunItemCardRenderer;
 import org.testin.editor.open.UnifiedVirtualFile;
-import org.testin.editor.statusbar.StatusBarListener;
+import org.testin.editor.statusbar.EditorStatusBarPaging;
 import org.testin.editor.toolbar.GenerateReportBtn;
 import org.testin.editor.toolbar.LightModeBtn;
 import org.testin.editor.toolbar.TestRunResultAnalysisBtn;
 import org.testin.editor.toolbar.StartExecutionBtn;
 import org.testin.editor.toolbar.StopExecutionBtn;
-import org.testin.editor.toolbar.TestRunDetailsPopupBtn;
+import org.testin.editor.toolbar.TestRunFieldsPopupBtn;
 import org.testin.editor.toolbar.TestRunToolbar;
-import org.testin.editor.toolbar.Toolbar;
-import org.testin.filter.FilterSelection;
+import org.testin.editor.toolbar.ToolbarCallbacks;
+import org.testin.filter.FilterAndSortChoice;
 import org.testin.filter.TestCaseFilter;
 import org.testin.git.history.TestRunFromGit;
 import org.testin.help.Guide;
@@ -81,7 +81,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes, TestRunNode> implements Toolbar {
+public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes, TestRunNode> implements ToolbarCallbacks {
     private final @NotNull TestRuns testRuns = Services.getInstance(p, TestRuns.class);
 
     private final @NotNull LightMode lightMode = Services.getInstance(p, LightMode.class);
@@ -223,7 +223,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
     }
 
     private void buildOpeningPanel() {
-        StatusBarListener.attach(this);
+        EditorStatusBarPaging.attach(this);
 
         list.setCellRenderer(new RunItemCardRenderer(p, this));
 
@@ -285,7 +285,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
 
     @Override
     public @NotNull Set<TestRunEditorAttributes> getSelectedDetails() {
-        return getToolBar().getToolbarItem(TestRunDetailsPopupBtn.class).getSelectedDetails();
+        return getToolBar().getToolbarItem(TestRunFieldsPopupBtn.class).getSelectedDetails();
     }
 
     @Override
@@ -373,7 +373,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
 
     @Override
     protected @NotNull List<TestCaseDto> getFilteredList() {
-        final @NotNull FilterSelection filters = FilterSelection.of(toolBar);
+        final @NotNull FilterAndSortChoice filters = FilterAndSortChoice.of(toolBar);
 
         final @NotNull List<TestCaseDto> matched;
         synchronized (allTestCases) {

@@ -25,7 +25,7 @@ import org.testin.model.markers.Marker;
 import org.testin.services.Services;
 import org.testin.setting.AppSettingsState;
 import org.testin.util.FailureText;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -40,7 +40,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 final class MarkerFiles {
 
-    private final @NotNull Mapper mapper;
+    private final @NotNull JsonCodec mapper;
 
     private final @NotNull TestDataFiles testDataFiles;
 
@@ -49,7 +49,7 @@ final class MarkerFiles {
     private final @NotNull Set<Path> damaged = ConcurrentHashMap.newKeySet();
 
     MarkerFiles(final @NotNull Project p) {
-        this.mapper = Services.getInstance(p, Mapper.class);
+        this.mapper = Services.getInstance(p, JsonCodec.class);
         this.testDataFiles = Services.getInstance(p, TestDataFiles.class);
         this.settings = Services.getInstance(p, AppSettingsState.class);
     }

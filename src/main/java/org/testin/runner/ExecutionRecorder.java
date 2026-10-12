@@ -26,7 +26,7 @@ import org.testin.codegen.TestName;
 import org.testin.indexer.TestCases;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
-import org.testin.model.testrun.Execution;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.Failure;
 import org.testin.model.status.ExecutionStatus;
 import org.testin.services.Services;
@@ -82,7 +82,7 @@ public final class ExecutionRecorder implements Disposable {
 
     // Rule-CODEGEN-111
     private void show(final @NotNull TestCaseDto tc, final @NotNull Attempts live) {
-        final @NotNull List<Execution> executions = live.executions();
+        final @NotNull List<RunItemExecution> executions = live.executions();
 
         surfaces.forEach(surface -> surface.accept(tc, ExecutionStatus.RUNNING, executions, live.written()));
     }
@@ -90,7 +90,7 @@ public final class ExecutionRecorder implements Disposable {
     // Rule-CODEGEN-110, Rule-CODEGEN-111
     private void report(final @NotNull TestCaseDto tc, final @NotNull Attempts decided) {
         final @NotNull ExecutionStatus reportedStatus = runItemStatusFor(tc, decided.status());
-        final @NotNull List<Execution> executions = reportedStatus == ExecutionStatus.IDLE ? List.of() : decided.decidedExecutions();
+        final @NotNull List<RunItemExecution> executions = reportedStatus == ExecutionStatus.IDLE ? List.of() : decided.decidedExecutions();
 
         TestinLogger.debug("  reporting on '" + tc.getDescription() + "': " + reportedStatus + " from " + decided.all().size() + " attempt(s)");
 
@@ -114,6 +114,6 @@ public final class ExecutionRecorder implements Disposable {
 
     @FunctionalInterface
     public interface Reported {
-        void accept(final @NotNull TestCaseDto tc, final @NotNull ExecutionStatus status, final @NotNull List<Execution> executions, final int written);
+        void accept(final @NotNull TestCaseDto tc, final @NotNull ExecutionStatus status, final @NotNull List<RunItemExecution> executions, final int written);
     }
 }

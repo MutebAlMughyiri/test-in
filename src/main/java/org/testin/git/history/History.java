@@ -27,11 +27,11 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public record History(@NotNull List<HistoryEntry> entries, @NotNull List<BugCard> bugs, @NotNull List<String> order, @NotNull String problem) {
+public record History(@NotNull List<TestCaseHistoryCard> entries, @NotNull List<BugCard> bugs, @NotNull List<String> order, @NotNull String problem) {
     // Rule-VIEW-PANEL-100
     public static final @NotNull History NOT_UNDER_GIT = new History(List.of(), List.of(), List.of(), Bundle.message("view.history.not.under.git"));
 
-    static @NotNull History read(final @NotNull List<HistoryEntry> entries) {
+    static @NotNull History read(final @NotNull List<TestCaseHistoryCard> entries) {
         return new History(List.copyOf(entries), List.of(), List.of(), "");
     }
 

@@ -20,20 +20,20 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
 import com.intellij.testFramework.ExtensionTestUtil;
 import org.jetbrains.annotations.NotNull;
-import org.testin.codegen.event.Moved;
-import org.testin.codegen.event.Renamed;
+import org.testin.codegen.event.MovedNode;
+import org.testin.codegen.event.RenamedNode;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.AbstractNode;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public final class CodegenRecorder implements CodeGenerators {
-    private final @NotNull CodeGenerators real;
+public final class CodegenRecorder implements CodeChangeRegistry {
+    private final @NotNull CodeChangeRegistry real;
 
     private final @NotNull List<String> asked = new ArrayList<>();
 
-    private CodegenRecorder(final @NotNull CodeGenerators real) {
+    private CodegenRecorder(final @NotNull CodeChangeRegistry real) {
         this.real = real;
     }
 
@@ -51,8 +51,8 @@ public final class CodegenRecorder implements CodeGenerators {
         return switch (payload) {
             case final TestCaseDto tc -> tc.getDescription();
             case final AbstractNode dir -> dir.getName();
-            case final Moved moved -> moved.dir().getName();
-            case final Renamed renamed -> renamed.dir().getName();
+            case final MovedNode moved -> moved.dir().getName();
+            case final RenamedNode renamed -> renamed.dir().getName();
             default -> payload.toString();
         };
     }
@@ -62,10 +62,10 @@ public final class CodegenRecorder implements CodeGenerators {
     }
 
     @Override
-    public <T> @NotNull GenAction<T> actionFor(final @NotNull GenType<T> type) {
-        final @NotNull GenAction<T> action = real.actionFor(type);
+    public <T> @NotNull CodeChange<T> actionFor(final @NotNull GenType<T> type) {
+        final @NotNull CodeChange<T> action = real.actionFor(type);
 
-        return new GenAction<>() {
+        return new CodeChange<>() {
             @Override
             public void execute(final @NotNull Project p, final @NotNull T payload) {
                 asked.add(step(type, nameOf(payload)));

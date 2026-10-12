@@ -28,7 +28,7 @@ import org.testin.indexer.TestRuns;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
-import org.testin.model.testrun.Execution;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.testrun.Failure;
@@ -166,7 +166,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
     // Rule-VIEW-PANEL-014
     public void testTheFolderThePanelWasOpenedFromDecidesWhetherTheTestRunIsDrawn() {
         final @NotNull TestCaseDto tc = threeTestCases().getFirst();
-        final @NotNull TestRunNode tr = aTestRun(List.of(RunItem.builder().id(tc.getId()).executions(List.of(Execution.builder().status(RunItemStatus.FAILED).build())).build()));
+        final @NotNull TestRunNode tr = aTestRun(List.of(RunItem.builder().id(tc.getId()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build()));
 
         view.getPanel().show(List.of(tc), pathOf(tr));
         assertTrue("opened from the test run, the panel drew no test run band: " + details(), details().contains(RUN_BAND));
@@ -196,7 +196,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
     // Rule-VIEW-PANEL-029
     public void testTheTestRunBandIsDrawnOnlyWhenTheTestRunHoldsTheTestCase() {
         final @NotNull List<TestCaseDto> handed = threeTestCases();
-        final @NotNull TestRunNode tr = aTestRun(List.of(RunItem.builder().id(handed.getFirst().getId()).executions(List.of(Execution.builder().status(RunItemStatus.FAILED).build())).build()));
+        final @NotNull TestRunNode tr = aTestRun(List.of(RunItem.builder().id(handed.getFirst().getId()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build()));
 
         view.getPanel().show(List.of(handed.get(1)), pathOf(tr));
         assertFalse("the test run band was drawn for a test case the test run does not hold: " + details(), details().contains(RUN_BAND));
@@ -215,7 +215,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
 
         final @NotNull TestRuns testRuns = Services.getInstance(getProject(), TestRuns.class);
         testRuns.changeRunItem(tr.getPath(), tc.getId(), result -> {
-            result.setExecutions(List.of(Execution.builder().status(RunItemStatus.FAILED).build()));
+            result.setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build()));
             result.recordActualResult("The session was dropped");
         });
         view.getPanel().refreshIfShowing(List.of(tc));

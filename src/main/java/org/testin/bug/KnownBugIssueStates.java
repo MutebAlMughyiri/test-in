@@ -36,7 +36,7 @@ import org.testin.model.testrun.RunItem;
 import org.testin.services.BackgroundWork;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 
 import java.util.Collection;
 import java.util.EnumSet;
@@ -114,7 +114,7 @@ public final class KnownBugIssueStates {
 
     // Rule-VIEW-PANEL-093, Rule-VIEW-PANEL-094, Rule-INTERNAL-127
     private boolean read(final @NotNull GitHubCli cli, final @NotNull BugRepository repository, final @NotNull Set<Integer> numbers, final @NotNull Set<SetupStep> raised) {
-        final @NotNull Mapper mapper = Services.getInstance(p, Mapper.class);
+        final @NotNull JsonCodec mapper = Services.getInstance(p, JsonCodec.class);
         final @NotNull GhIssueStatesAnswer asked = cli.states(mapper, repository, numbers, true);
         if (asked.boardRefused()) raised.add(SetupStep.BOARD_COLUMNS);
         final @NotNull GhIssueStatesAnswer said = asked.boardRefused() ? withoutBoards(cli, mapper, repository, numbers) : asked;
@@ -136,7 +136,7 @@ public final class KnownBugIssueStates {
     }
 
     // Rule-VIEW-PANEL-094, Rule-INTERNAL-127
-    private @NotNull GhIssueStatesAnswer withoutBoards(final @NotNull GitHubCli cli, final @NotNull Mapper mapper, final @NotNull BugRepository repository, final @NotNull Set<Integer> numbers) {
+    private @NotNull GhIssueStatesAnswer withoutBoards(final @NotNull GitHubCli cli, final @NotNull JsonCodec mapper, final @NotNull BugRepository repository, final @NotNull Set<Integer> numbers) {
         Services.getInstance(p, Hints.class).fire(SetupHint.of(SetupStep.BOARD_COLUMNS, Bundle.message("bug.states.board.message", repository.host())));
         return cli.states(mapper, repository, numbers, false);
     }

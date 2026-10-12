@@ -34,7 +34,7 @@ import com.theoryinpractice.testng.model.TestType;
 import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
-import org.testin.navigate.CodeNavigation;
+import org.testin.navigate.TestMethodCode;
 import org.testin.runner.TestNGExecution;
 import org.testin.runner.AutomationExecutor;
 import org.testin.services.BackgroundWork;
@@ -92,7 +92,7 @@ public final class TestNGRunner implements AutomationExecutor {
 
     private @NotNull Optional<Prepared> prepare(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases) {
         try {
-            final @NotNull Map<UUID, List<String>> methods = CodeNavigation.available().methodFqcnsOf(p, testCases);
+            final @NotNull Map<UUID, List<String>> methods = TestMethodCode.available().methodFqcnsOf(p, testCases);
 
             final @NotNull List<Generated> found = new ArrayList<>();
             final @NotNull List<TestCaseDto> withoutCode = new ArrayList<>();

@@ -33,13 +33,13 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.Declared;
 import org.testin.codegen.AutomationState;
-import org.testin.editor.grid.GridPanelBuilder;
+import org.testin.editor.grid.GridTables;
 import org.testin.editor.cardview.CardPanelBuilder;
 import org.testin.editor.cardview.CardView;
 import org.testin.editor.statusbar.PageAction;
 import org.testin.editor.statusbar.EditorStatusBar;
 import org.testin.editor.toolbar.AbstractToolbarPanel;
-import org.testin.editor.toolbar.Toolbar;
+import org.testin.editor.toolbar.ToolbarCallbacks;
 import org.testin.filter.FilterPopupBtn;
 import org.testin.filter.SortPopupBtn;
 import org.testin.indexer.Nodes;
@@ -47,13 +47,13 @@ import org.testin.indexer.ProjectIndexer;
 import org.testin.indexer.TestCases;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
-import org.testin.model.ToolBarAttribute;
+import org.testin.model.ShowableAttribute;
 import org.testin.model.node.AbstractNode;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
 import org.testin.services.ProjectLifetime;
 import org.testin.services.Services;
-import org.testin.services.TestCaseValues;
+import org.testin.services.TestCaseCompletions;
 import org.testin.undo.UndoHistories;
 import org.testin.undo.UndoScope;
 import org.testin.util.Bundle;
@@ -68,7 +68,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-public abstract class AbstractTestinEditor<A extends Enum<A> & ToolBarAttribute, N extends AbstractNode> implements Disposable, Toolbar, TestinEditor {
+public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableAttribute, N extends AbstractNode> implements Disposable, ToolbarCallbacks, TestinEditor {
     @Getter
     protected final @NotNull Project p;
     @Getter
@@ -78,10 +78,10 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ToolBarAttribute,
     protected final @NotNull ProjectIndexer indexer;
     protected final @NotNull Nodes nodes;
     protected final @NotNull TestCases testCases;
-    protected final @NotNull TestCaseValues testCaseValues;
+    protected final @NotNull TestCaseCompletions testCaseValues;
     protected final @NotNull AutomationState automationState;
     protected final @NotNull Notifier notifier;
-    protected final @NotNull GridPanelBuilder gridPanelBuilder = new GridPanelBuilder();
+    protected final @NotNull GridTables gridPanelBuilder = new GridTables();
     protected final @NotNull Disposable projectDisposable;
     protected final @NotNull JBPanel<?> mainPanel;
     protected final @NotNull EditorCenter center;
@@ -114,7 +114,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ToolBarAttribute,
         this.indexer = Services.getInstance(p, ProjectIndexer.class);
         this.nodes = Services.getInstance(p, Nodes.class);
         this.testCases = Services.getInstance(p, TestCases.class);
-        this.testCaseValues = Services.getInstance(p, TestCaseValues.class);
+        this.testCaseValues = Services.getInstance(p, TestCaseCompletions.class);
         this.automationState = Services.getInstance(p, AutomationState.class);
         this.notifier = Services.getInstance(p, Notifier.class);
         this.undoHistories = Services.getInstance(p, UndoHistories.class);

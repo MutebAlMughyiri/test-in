@@ -30,7 +30,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.Await;
-import org.testin.git.review.PendingCommitsDialog;
+import org.testin.git.review.PendingChangesDialog;
 import org.testin.git.review.ViewPendingCommitsWork;
 import org.testin.services.BackgroundWork;
 import org.testin.ui.framework.ShownDialog;
@@ -53,7 +53,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public final class ShareGestures {
     public static @NotNull JComponent theReviewOf(final @NotNull Project p, final @NotNull Path repository) {
         ApplicationManager.getApplication().executeOnPooledThread(() -> new ViewPendingCommitsWork(p).openFor(repository));
-        return ShownDialog.waitedFor(p, PendingCommitsDialog.class);
+        return ShownDialog.waitedFor(p, PendingChangesDialog.class);
     }
 
     public static @NotNull JBTable table(final @NotNull JComponent dialog) {

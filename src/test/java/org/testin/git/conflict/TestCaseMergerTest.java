@@ -18,7 +18,7 @@ package org.testin.git.conflict;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.util.Bundle;
-import org.testin.util.RealMapper;
+import org.testin.util.RealJsonCodec;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
@@ -56,7 +56,7 @@ public class TestCaseMergerTest {
         final String mine = testCase("a registered user signs in", "dashboard opens", "LOW", "muteb", at("10:00:00"), "m");
         final String theirs = testCase("sign in", "the account dashboard opens", "LOW", "sara", at("11:00:00"), "m");
 
-        final MergeOutcome merge = TestCaseMerger.of(RealMapper.build(), base, mine, theirs);
+        final MergeOutcome merge = TestCaseMerger.of(RealJsonCodec.build(), base, mine, theirs);
 
         assertTrue(merge.isSettled(), "different fields are not a conflict");
         assertEquals(merge.merged().get("description").asText(), "a registered user signs in");
@@ -70,7 +70,7 @@ public class TestCaseMergerTest {
         final String mine = testCase("signs in with a valid password", "", "LOW", "muteb", at("10:00:00"), "m");
         final String theirs = testCase("sign in", "the dashboard opens", "LOW", "sara", at("11:30:00"), "m");
 
-        final MergeOutcome merge = TestCaseMerger.of(RealMapper.build(), base, mine, theirs);
+        final MergeOutcome merge = TestCaseMerger.of(RealJsonCodec.build(), base, mine, theirs);
 
         assertTrue(merge.isSettled());
         assertEquals(merge.merged().get("updatedBy").asText(), "sara", "the later edit names who made it");
@@ -84,7 +84,7 @@ public class TestCaseMergerTest {
         final String mine = testCase("a registered user signs in", "", "LOW", "muteb", at("10:00:00"), "m");
         final String theirs = testCase("a known user signs in", "", "LOW", "sara", at("11:00:00"), "m");
 
-        final MergeOutcome merge = TestCaseMerger.of(RealMapper.build(), base, mine, theirs);
+        final MergeOutcome merge = TestCaseMerger.of(RealJsonCodec.build(), base, mine, theirs);
 
         assertFalse(merge.isSettled());
         assertEquals(merge.questions().size(), 1, "one field, one question - not one per differing line");
@@ -101,8 +101,8 @@ public class TestCaseMergerTest {
         final String mine = testCase("mine", "opens", "HIGH", "muteb", at("10:00:00"), "m");
         final String theirs = testCase("theirs", "opens", "LOW", "sara", at("11:00:00"), "m");
 
-        final MergeOutcome merge = TestCaseMerger.of(RealMapper.build(), base, mine, theirs);
-        merge.answer(RealMapper.build(), merge.questions().getFirst(), true, theirs);
+        final MergeOutcome merge = TestCaseMerger.of(RealJsonCodec.build(), base, mine, theirs);
+        merge.answer(RealJsonCodec.build(), merge.questions().getFirst(), true, theirs);
 
         assertEquals(merge.merged().get("description").asText(), "theirs");
         assertEquals(merge.merged().get("priority").asText(), "HIGH", "the priority only I changed is still mine");
@@ -114,8 +114,8 @@ public class TestCaseMergerTest {
         final String mine = testCase("mine", "", "LOW", "muteb", at("10:00:00"), "m");
         final String theirs = testCase("theirs", "", "LOW", "sara", at("11:00:00"), "m");
 
-        final MergeOutcome merge = TestCaseMerger.of(RealMapper.build(), base, mine, theirs);
-        merge.answer(RealMapper.build(), merge.questions().getFirst(), false, theirs);
+        final MergeOutcome merge = TestCaseMerger.of(RealJsonCodec.build(), base, mine, theirs);
+        merge.answer(RealJsonCodec.build(), merge.questions().getFirst(), false, theirs);
 
         assertEquals(merge.merged().get("description").asText(), "mine");
     }
@@ -127,7 +127,7 @@ public class TestCaseMergerTest {
         final String mine = testCase("sign in", "", "LOW", "muteb", at("10:00:00"), "c");
         final String theirs = testCase("sign in", "", "LOW", "sara", at("11:00:00"), "s");
 
-        final MergeOutcome merge = TestCaseMerger.of(RealMapper.build(), base, mine, theirs);
+        final MergeOutcome merge = TestCaseMerger.of(RealJsonCodec.build(), base, mine, theirs);
 
         assertTrue(merge.isSettled(), "where a test case sits is not a question a tester can answer about a merge");
         assertEquals(merge.merged().get("order").asText(), "s");
@@ -140,7 +140,7 @@ public class TestCaseMergerTest {
         final @NotNull String mine = testCase("a registered user signs in", "", "LOW", "muteb", at("10:00:00"), "c");
         final @NotNull String theirs = testCase("sign in", "", "LOW", "sara", at("11:00:00"), "s");
 
-        final @NotNull MergeOutcome merge = TestCaseMerger.of(RealMapper.build(), base, mine, theirs);
+        final @NotNull MergeOutcome merge = TestCaseMerger.of(RealJsonCodec.build(), base, mine, theirs);
         final @NotNull String said = MergeOutcome.settledSentence(merge.settled(), "\n");
 
         assertTrue(merge.isSettled());
@@ -153,7 +153,7 @@ public class TestCaseMergerTest {
         final String mine = testCase("mine", "opens", "LOW", "muteb", at("10:00:00"), "m");
         final String theirs = testCase("theirs", "opens", "LOW", "sara", at("11:00:00"), "m");
 
-        final MergeOutcome merge = TestCaseMerger.of(RealMapper.build(), "", mine, theirs);
+        final MergeOutcome merge = TestCaseMerger.of(RealJsonCodec.build(), "", mine, theirs);
 
         assertEquals(merge.questions().size(), 1);
         assertEquals(merge.questions().getFirst().field(), "description");
@@ -163,7 +163,7 @@ public class TestCaseMergerTest {
     public void anUnreadableSideIsNotAFailure() {
         final String mine = testCase("mine", "", "LOW", "muteb", at("10:00:00"), "m");
 
-        final MergeOutcome merge = TestCaseMerger.of(RealMapper.build(), "", mine, "<<<<<<< HEAD not json at all");
+        final MergeOutcome merge = TestCaseMerger.of(RealJsonCodec.build(), "", mine, "<<<<<<< HEAD not json at all");
 
         assertTrue(merge.isSettled());
         assertEquals(merge.merged().get("description").asText(), "mine");

@@ -23,7 +23,7 @@ import org.testin.filter.SortPopupBtn;
 import java.util.List;
 
 public class TestSetToolbar extends AbstractToolbarPanel {
-    public TestSetToolbar(final @NotNull Toolbar callbacks) {
+    public TestSetToolbar(final @NotNull ToolbarCallbacks callbacks) {
         super(callbacks);
         layoutComponents();
     }
@@ -34,7 +34,7 @@ public class TestSetToolbar extends AbstractToolbarPanel {
         return List.of(
                 new CreateTestCaseBtn(getCallbacks()::onToolBarCreateTestCaseClicked),
                 new RefreshBtn(getCallbacks()::onToolBarRefreshButtonClicked),
-                new TestSetDetailsPopupBtn(getCallbacks()::onToolBarDetailsSelectionChanged),
+                new TestSetFieldsPopupBtn(getCallbacks()::onToolBarDetailsSelectionChanged),
                 new FilterPopupBtn(getCallbacks()),
                 new SortPopupBtn(getCallbacks()),
                 new CardViewBtn(getCallbacks()::onToolBarSwitchedToCardView),

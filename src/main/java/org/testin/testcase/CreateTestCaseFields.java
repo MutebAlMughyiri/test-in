@@ -20,7 +20,7 @@ import com.google.common.collect.ImmutableList;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.StatusBarItem;
-import org.testin.testcase.create.CreateTestCaseSection;
+import org.testin.testcase.create.TestCaseSection;
 import org.testin.testcase.create.AbstractTestCaseDialog;
 import org.testin.util.Bundle;
 import org.testin.util.Icons;
@@ -125,13 +125,13 @@ public enum CreateTestCaseFields implements StatusBarItem {
     private final @NotNull String name;
     private final @NotNull Shortcuts shortcut;
     private final Icons.@NotNull LetterIcon icon;
-    private final @NotNull Function<AbstractTestCaseDialog, CreateTestCaseSection> sectionExtractor;
+    private final @NotNull Function<AbstractTestCaseDialog, TestCaseSection> sectionExtractor;
 
     private final @NotNull String placeholder;
 
     private final @NotNull ImmutableList<TestCaseDialogKey> ownKeys;
 
-    CreateTestCaseFields(final @NotNull String name, final @NotNull Shortcuts shortcut, final Icons.@NotNull LetterIcon icon, final @NotNull Function<AbstractTestCaseDialog, CreateTestCaseSection> sectionExtractor, final @NotNull String placeholder, final TestCaseDialogKey @NotNull ... ownKeys) {
+    CreateTestCaseFields(final @NotNull String name, final @NotNull Shortcuts shortcut, final Icons.@NotNull LetterIcon icon, final @NotNull Function<AbstractTestCaseDialog, TestCaseSection> sectionExtractor, final @NotNull String placeholder, final TestCaseDialogKey @NotNull ... ownKeys) {
         this.name = name;
         this.shortcut = shortcut;
         this.icon = icon;

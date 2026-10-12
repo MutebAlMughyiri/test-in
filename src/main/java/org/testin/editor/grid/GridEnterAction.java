@@ -73,12 +73,12 @@ public final class GridEnterAction extends AbstractBoundProjectAction {
 
     // UC-EDITOR-PANEL-025, UC-EDITOR-PANEL-009, Rule-EDITOR-PANEL-272, Rule-EDITOR-PANEL-273
     private boolean openAt(final int row, final int column) {
-        if (GridPanelBuilder.isSequenceColumn(table, column)) {
+        if (GridTables.isSequenceColumn(table, column)) {
             showDetails(row);
             return true;
         }
 
-        if (GridPanelBuilder.isOrderColumn(table, column) && editor.getParent().isTestCaseContainer()) {
+        if (GridTables.isOrderColumn(table, column) && editor.getParent().isTestCaseContainer()) {
             UpdateTestCaseAction.openField(p, editor, UpdateTestCaseFields.ORDER);
             return true;
         }
@@ -89,7 +89,7 @@ public final class GridEnterAction extends AbstractBoundProjectAction {
     private int selectedCell() {
         final int anchor = table.getColumnModel().getSelectionModel().getAnchorSelectionIndex();
 
-        return table.getSelectedColumnCount() == table.getColumnCount() && GridPanelBuilder.isSequenceColumn(table, anchor)
+        return table.getSelectedColumnCount() == table.getColumnCount() && GridTables.isSequenceColumn(table, anchor)
                 ? anchor
                 : table.getSelectedColumn();
     }

@@ -21,8 +21,8 @@ import org.testin.model.node.TestSetNode;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.testrun.Failure;
-import org.testin.util.Mapper;
-import org.testin.util.RealMapper;
+import org.testin.util.JsonCodec;
+import org.testin.util.RealJsonCodec;
 import org.testng.annotations.Test;
 
 import java.time.Duration;
@@ -35,7 +35,7 @@ import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 public class TestCaseAsJudgedTest {
-    private static final Mapper MAPPER = RealMapper.build();
+    private static final JsonCodec MAPPER = RealJsonCodec.build();
 
     private static @NotNull TestCaseDto testCaseReading(final UUID id, final String description) {
         return TestCaseDto.builder().id(id).description(description).build();

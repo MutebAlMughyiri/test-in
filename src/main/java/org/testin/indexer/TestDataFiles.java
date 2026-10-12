@@ -30,7 +30,7 @@ import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
 import org.testin.util.FailureText;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 
 import java.io.IOException;
 import java.nio.file.AtomicMoveNotSupportedException;
@@ -69,7 +69,7 @@ final class TestDataFiles {
     // UC-INTERNAL-004, Rule-INTERNAL-033
     <T> boolean alreadyHolds(final @NotNull Path path, final @NotNull T content) {
         try {
-            return Arrays.equals(Files.readAllBytes(path), Services.getInstance(p, Mapper.class).writeValueAsBytes(content));
+            return Arrays.equals(Files.readAllBytes(path), Services.getInstance(p, JsonCodec.class).writeValueAsBytes(content));
         } catch (final IOException absentOrUnreadable) {
             return false;
         }
@@ -84,7 +84,7 @@ final class TestDataFiles {
     }
 
     <T> boolean write(final @NotNull Path path, final @NotNull T content) {
-        return writeBytes(path, Services.getInstance(p, Mapper.class).writeValueAsBytes(content));
+        return writeBytes(path, Services.getInstance(p, JsonCodec.class).writeValueAsBytes(content));
     }
 
     void write(final @NotNull Path path, final byte @NotNull [] jsonBytes) {

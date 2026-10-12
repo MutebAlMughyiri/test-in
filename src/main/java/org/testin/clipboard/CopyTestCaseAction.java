@@ -23,7 +23,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.GrayWithReason;
-import org.testin.actions.TestinData;
+import org.testin.actions.TestinDataKeys;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.notifications.Done;
@@ -31,7 +31,7 @@ import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
 import org.testin.util.FailureText;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 
 import java.awt.datatransfer.StringSelection;
 import java.util.List;
@@ -40,11 +40,11 @@ public class CopyTestCaseAction extends AbstractAnyProjectAction {
     // UC-EDITOR-PANEL-015
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        final @NotNull List<TestCaseDto> tcs = TestinData.selectedTestCases(e);
+        final @NotNull List<TestCaseDto> tcs = TestinDataKeys.selectedTestCases(e);
 
         if (!tcs.isEmpty()) {
             try {
-                final @NotNull String json = Services.getInstance(p, Mapper.class).writeValueAsString(tcs);
+                final @NotNull String json = Services.getInstance(p, JsonCodec.class).writeValueAsString(tcs);
                 CopyPasteManager.getInstance().setContents(new StringSelection(json));
 
                 Services.getInstance(p, Notifier.class).softShowCounted(p, Done.COPIED, tcs.size());
@@ -60,7 +60,7 @@ public class CopyTestCaseAction extends AbstractAnyProjectAction {
     @Override
     protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
         // Rule-EDITOR-PANEL-214
-        if (TestinData.editor(e).filter(editor -> !editor.getParent().isTestCaseContainer()).isPresent()) {
+        if (TestinDataKeys.editor(e).filter(editor -> !editor.getParent().isTestCaseContainer()).isPresent()) {
             e.getPresentation().setEnabled(false);
             e.getPresentation().setDescription(Bundle.message("copy.test.case.disabled.description"));
             return;

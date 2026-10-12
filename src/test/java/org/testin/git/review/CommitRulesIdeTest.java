@@ -55,7 +55,7 @@ public class CommitRulesIdeTest extends AbstractGitRemoteIdeTest {
 
     @Override
     protected void tearDown() {
-        ShownDialog.close(getProject(), PendingCommitsDialog.class);
+        ShownDialog.close(getProject(), PendingChangesDialog.class);
         ShownDialog.close(getProject(), GitIdentityDialog.class);
         ShownDialog.close(getProject(), RemoteUrlDialog.class);
         noTestinYml();

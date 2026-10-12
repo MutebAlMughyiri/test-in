@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.time.ZonedDateTime;
 
-public sealed interface HistoryCard permits HistoryEntry, BugCard {
+public sealed interface HistoryCard permits TestCaseHistoryCard, BugCard {
     int SHORT_HASH = 7;
 
     // Rule-VIEW-PANEL-097, Rule-EDITOR-PANEL-265

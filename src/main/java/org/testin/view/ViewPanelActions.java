@@ -19,7 +19,7 @@ package org.testin.view;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.editor.card.CardHoverAction;
+import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.editor.card.ShownTestCaseAction;
 
 import javax.swing.JComponent;
@@ -30,8 +30,8 @@ public class ViewPanelActions {
     public @NotNull List<AnAction> create(final @NotNull ViewPanel panel, final @NotNull JComponent component) {
         final @NotNull Project p = panel.getP();
 
-        ShownTestCaseAction.bind(p, CardHoverAction.NAVIGATE_TO_TEST_METHOD, panel::getCurrentTestCase, (action, tc) -> action.execute(p, tc), component);
-        ShownTestCaseAction.bind(p, CardHoverAction.RUN_TEST_METHOD, panel::getCurrentTestCase, (action, tc) -> action.execute(p, tc), component);
+        ShownTestCaseAction.bind(p, TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD, panel::getCurrentTestCase, (action, tc) -> action.execute(p, tc), component);
+        ShownTestCaseAction.bind(p, TestCaseQuickAction.RUN_TEST_METHOD, panel::getCurrentTestCase, (action, tc) -> action.execute(p, tc), component);
 
         return List.of(
                 new PreviousTestCaseAction(panel.getPage(), component),

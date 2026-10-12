@@ -19,11 +19,11 @@ package org.testin.java.codegen.pkg;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.Fqcn;
-import org.testin.codegen.GenAction;
+import org.testin.codegen.CodeChange;
 import org.testin.codegen.JavaSourceRoot;
 import org.testin.model.node.AbstractNode;
 
-public class RemoveJavaPackage implements GenAction<AbstractNode> {
+public class RemoveJavaPackage implements CodeChange<AbstractNode> {
     // UC-CODEGEN-018, Rule-CODEGEN-059
     @Override
     public void execute(final @NotNull Project p, final @NotNull AbstractNode dir) {

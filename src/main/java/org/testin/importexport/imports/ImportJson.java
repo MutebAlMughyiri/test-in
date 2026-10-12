@@ -23,7 +23,7 @@ import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.services.Services;
 import org.testin.util.FailureText;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,7 +63,7 @@ public class ImportJson {
 
     // UC-SHARE-005, Rule-SHARE-024
     public @NotNull Map<String, List<TestCaseDto>> parseFile(final @NotNull Project p, final @NotNull File file) {
-        final @NotNull Map<String, List<TestCaseDto>> data = Services.getInstance(p, Mapper.class).readValue(bytesOf(file), new TypeReference<>() {
+        final @NotNull Map<String, List<TestCaseDto>> data = Services.getInstance(p, JsonCodec.class).readValue(bytesOf(file), new TypeReference<>() {
         });
         final @NotNull Map<String, List<TestCaseDto>> result = new LinkedHashMap<>();
         for (final Map.Entry<String, List<TestCaseDto>> entry : data.entrySet()) {

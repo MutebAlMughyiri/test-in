@@ -57,7 +57,7 @@ import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
-import org.testin.model.testrun.Execution;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.services.Services;
@@ -226,8 +226,8 @@ public class ReportDeliveryIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull TestRunNode theTestRun() {
         return aTestRun("Cycle-1", List.of(
-                new RunItem().setId(opens).setExecutions(List.of(Execution.builder().status(RunItemStatus.PASSED).build())),
-                new RunItem().setId(locks).setExecutions(List.of(Execution.builder().status(RunItemStatus.FAILED).actualResult("The account stayed open").build()))));
+                new RunItem().setId(opens).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())),
+                new RunItem().setId(locks).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The account stayed open").build()))));
     }
 
     private @NotNull RunItems resultsOf(final @NotNull TestRunNode testRun) {
@@ -257,7 +257,7 @@ public class ReportDeliveryIdeTest extends AbstractTempRootIdeTest {
     public void testAReportIsAboutExactlyOneTestRun() {
         final @NotNull TestRunNode chosen = theTestRun();
         aTestCase(UUID.randomUUID(), "Reset a forgotten password");
-        final @NotNull TestRunNode other = aTestRun("Cycle-2", List.of(new RunItem().setId(locks).setExecutions(List.of(Execution.builder().status(RunItemStatus.BLOCKED).build()))));
+        final @NotNull TestRunNode other = aTestRun("Cycle-2", List.of(new RunItem().setId(locks).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.BLOCKED).build()))));
 
         final @NotNull String html = new String(FileFormat.HTML.generateReport(getProject(), chosen, resultsOf(chosen)), StandardCharsets.UTF_8);
 

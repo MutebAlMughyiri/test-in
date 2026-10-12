@@ -33,7 +33,7 @@ import org.testin.indexer.TestRuns;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
-import org.testin.model.testrun.Execution;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.services.Services;
@@ -76,7 +76,7 @@ public class TestRunProgressIdeTest extends AbstractTempRootIdeTest {
     public void testTypingWhatHappenedDoesNotChangeTheRunItemStatus() {
         final @NotNull List<TestCaseDto> testCases = TestRunFixture.testCasesIn(getProject(), root, 2);
         final @NotNull TestRunFixture fixture = TestRunFixture.of(getProject(), root, List.of(
-                EditorFixtures.pending(testCases.getFirst()).setExecutions(List.of(Execution.builder().status(RunItemStatus.PASSED).build())),
+                EditorFixtures.pending(testCases.getFirst()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())),
                 EditorFixtures.pending(testCases.get(1))), testCases);
         final @NotNull TestRunEditor editor = fixture.opened(getTestRootDisposable());
         try {
@@ -96,7 +96,7 @@ public class TestRunProgressIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-173
     public void testACellTabbedThroughUnchangedWritesNothingAndSaysNothing() {
         final @NotNull List<TestCaseDto> testCases = TestRunFixture.testCasesIn(getProject(), root, 1);
-        final @NotNull TestRunFixture fixture = TestRunFixture.of(getProject(), root, List.of(EditorFixtures.pending(testCases.getFirst()).setExecutions(List.of(Execution.builder().status(RunItemStatus.FAILED).actualResult("It froze").build()))), testCases);
+        final @NotNull TestRunFixture fixture = TestRunFixture.of(getProject(), root, List.of(EditorFixtures.pending(testCases.getFirst()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("It froze").build()))), testCases);
         final @NotNull TestRunEditor editor = fixture.opened(getTestRootDisposable());
         final @NotNull List<String> balloons = Said.listening(getProject(), getTestRootDisposable()).shown();
         try {
@@ -145,7 +145,7 @@ public class TestRunProgressIdeTest extends AbstractTempRootIdeTest {
             awaitWrites();
             final @NotNull Map<String, String> onDisk = FilesUnder.snapshot(fixture.testRun().getPath());
 
-            editor.runItem(fixture.testCases().getFirst().getId()).orElseThrow().setExecutions(List.of(Execution.builder().status(RunItemStatus.PASSED).build()));
+            editor.runItem(fixture.testCases().getFirst().getId()).orElseThrow().setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()));
             editor.refreshAfterTestRunStatusChanged();
 
             assertTrue("the figures do not count what the test run holds now: " + Drawn.words(editor.getStatusBar()),
@@ -176,7 +176,7 @@ public class TestRunProgressIdeTest extends AbstractTempRootIdeTest {
             assertTrue("the test run's status is not shown", inTheTestRun.getFirst().isVisible());
             assertFalse("the clock shows though nothing was timed", inTheTestRun.get(2).isVisible() && Drawn.text(inTheTestRun.get(2)).isEmpty());
 
-            testRunEditor.runItem(fixture.testCases().getFirst().getId()).orElseThrow().setExecutions(List.of(Execution.builder().status(RunItemStatus.PASSED).build()));
+            testRunEditor.runItem(fixture.testCases().getFirst().getId()).orElseThrow().setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()));
             testRunEditor.refreshAfterTestRunStatusChanged();
             assertTrue("the figures are hidden though a run item status was recorded", inTheTestRun.get(1).isVisible());
         } finally {

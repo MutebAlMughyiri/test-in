@@ -22,7 +22,7 @@ import org.testin.TempTree;
 import org.testin.git.change.ChangeSubject;
 import org.testin.git.change.ChangeType;
 import org.testin.git.change.StatusKind;
-import org.testin.git.change.GitDiffProcessor;
+import org.testin.git.change.PendingChangeReader;
 import org.testin.git.change.PendingChange;
 import org.testin.git.conflict.MergeOutcome;
 import org.testin.git.conflict.TestCaseMerger;
@@ -30,7 +30,7 @@ import org.testin.model.Priority;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.Rank;
 import org.testin.testcase.TestCaseOrder;
-import org.testin.util.RealMapper;
+import org.testin.util.RealJsonCodec;
 import org.testng.SkipException;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -162,7 +162,7 @@ public class GitWorkflowTest {
         try {
             final Path file = root.resolve(relativePath);
             Files.createDirectories(file.getParent() == null ? root : file.getParent());
-            Files.writeString(file, content instanceof String text ? text : RealMapper.build().writeValueAsString(content),
+            Files.writeString(file, content instanceof String text ? text : RealJsonCodec.build().writeValueAsString(content),
                     StandardCharsets.UTF_8);
 
         } catch (final IOException ex) {
@@ -198,17 +198,17 @@ public class GitWorkflowTest {
     private @NotNull List<PendingChange> review() {
         final List<String> status = GitRefs.records(mustGit(work, "status", "--porcelain", "-z", "-uall"));
 
-        return GitDiffProcessor.toDiffs(status, work, RealMapper.build(), paths -> contents(work, "HEAD", paths), _ -> Optional.empty());
+        return PendingChangeReader.toDiffs(status, work, RealJsonCodec.build(), paths -> contents(work, "HEAD", paths), _ -> Optional.empty());
     }
 
     private @NotNull Set<String> stagedFor(final List<PendingChange> review) {
         final Set<String> paths = new LinkedHashSet<>(GitRefs.repoRelativePaths(review));
-        paths.addAll(GitCommits.markersAlongside(work, paths));
+        paths.addAll(GitCommitAndPush.markersAlongside(work, paths));
         return paths;
     }
 
     private void commit(final Set<String> paths, final String message) {
-        final Set<String> stageable = GitCommits.stageable(work, paths);
+        final Set<String> stageable = GitCommitAndPush.stageable(work, paths);
 
         if (!stageable.isEmpty()) {
             final List<String> add = new ArrayList<>(List.of("add", "--"));
@@ -369,16 +369,16 @@ public class GitWorkflowTest {
             mustGit(colleague, "config", "user.email", "colleague@example.invalid");
 
             final Path theirCopy = colleague.resolve(relativePath);
-            final TestCaseDto theirs = RealMapper.build().readValue(Files.readString(theirCopy, StandardCharsets.UTF_8), TestCaseDto.class);
-            Files.writeString(theirCopy, RealMapper.build().writeValueAsString(
+            final TestCaseDto theirs = RealJsonCodec.build().readValue(Files.readString(theirCopy, StandardCharsets.UTF_8), TestCaseDto.class);
+            Files.writeString(theirCopy, RealJsonCodec.build().writeValueAsString(
                             theirs.setExpectedResult("the dashboard opens within two seconds").setUpdatedBy("colleague")),
                     StandardCharsets.UTF_8);
             mustGit(colleague, "commit", "-am", "tightened the expected result");
             mustGit(colleague, "push", "origin", "main");
 
             final Path myCopy = work.resolve(relativePath);
-            final TestCaseDto mine = RealMapper.build().readValue(Files.readString(myCopy, StandardCharsets.UTF_8), TestCaseDto.class);
-            Files.writeString(myCopy, RealMapper.build().writeValueAsString(
+            final TestCaseDto mine = RealJsonCodec.build().readValue(Files.readString(myCopy, StandardCharsets.UTF_8), TestCaseDto.class);
+            Files.writeString(myCopy, RealJsonCodec.build().writeValueAsString(
                             mine.setDescription("a registered user signs in with a valid password").setUpdatedBy("muteb")),
                     StandardCharsets.UTF_8);
             commit(stagedFor(review()), "reworded the description");
@@ -397,14 +397,14 @@ public class GitWorkflowTest {
             final String remote = contents(work, ":2", conflicting).get(relativePath);
             final String replayed = contents(work, ":3", conflicting).get(relativePath);
 
-            final MergeOutcome merge = TestCaseMerger.of(RealMapper.build(), Objects.requireNonNull(base, "no base"), Objects.requireNonNull(replayed, "no replayed side"), Objects.requireNonNull(remote, "no remote side"));
+            final MergeOutcome merge = TestCaseMerger.of(RealJsonCodec.build(), Objects.requireNonNull(base, "no base"), Objects.requireNonNull(replayed, "no replayed side"), Objects.requireNonNull(remote, "no remote side"));
             assertTrue(merge.isSettled(), "different fields are not a disagreement");
 
             Files.writeString(myCopy, merge.merged().toPrettyString(), StandardCharsets.UTF_8);
             mustGit(work, "add", "--", relativePath);
             mustGit(work, "-c", "core.editor=true", "rebase", "--continue");
 
-            final TestCaseDto merged = RealMapper.build().readValue(Files.readString(myCopy, StandardCharsets.UTF_8), TestCaseDto.class);
+            final TestCaseDto merged = RealJsonCodec.build().readValue(Files.readString(myCopy, StandardCharsets.UTF_8), TestCaseDto.class);
             assertEquals(merged.getDescription(), "a registered user signs in with a valid password");
             assertEquals(merged.getExpectedResult(), "the dashboard opens within two seconds");
             assertEquals(mustGit(work, "status", "--porcelain", "-uall").strip(), "");
@@ -442,7 +442,7 @@ public class GitWorkflowTest {
             final List<TestCaseDto> after = new ArrayList<>();
             try (Stream<Path> files = Files.list(work.resolve("Test Cases/login flow"))) {
                 for (final Path file : files.filter(f -> f.getFileName().toString().endsWith(".tc")).sorted().toList()) {
-                    after.add(RealMapper.build().readValue(Files.readString(file, StandardCharsets.UTF_8), TestCaseDto.class));
+                    after.add(RealJsonCodec.build().readValue(Files.readString(file, StandardCharsets.UTF_8), TestCaseDto.class));
                 }
             }
 
@@ -471,8 +471,8 @@ public class GitWorkflowTest {
             mustGit(colleague, "config", "user.email", "colleague@example.invalid");
 
             final Path theirCopy = colleague.resolve("Test Cases/login flow/" + testCases.getFirst().getId() + ".tc");
-            final TestCaseDto theirs = RealMapper.build().readValue(Files.readString(theirCopy, StandardCharsets.UTF_8), TestCaseDto.class);
-            Files.writeString(theirCopy, RealMapper.build().writeValueAsString(theirs.setExpectedResult("the dashboard opens within two seconds")),
+            final TestCaseDto theirs = RealJsonCodec.build().readValue(Files.readString(theirCopy, StandardCharsets.UTF_8), TestCaseDto.class);
+            Files.writeString(theirCopy, RealJsonCodec.build().writeValueAsString(theirs.setExpectedResult("the dashboard opens within two seconds")),
                     StandardCharsets.UTF_8);
 
             mustGit(colleague, "commit", "-am", "tightened the expected result");
@@ -480,7 +480,7 @@ public class GitWorkflowTest {
 
             mustGit(work, "pull", "--rebase", "--autostash", "origin", "main");
 
-            final TestCaseDto pulled = RealMapper.build().readValue(
+            final TestCaseDto pulled = RealJsonCodec.build().readValue(
                     Files.readString(work.resolve("Test Cases/login flow/" + testCases.getFirst().getId() + ".tc"),
                             StandardCharsets.UTF_8), TestCaseDto.class);
 

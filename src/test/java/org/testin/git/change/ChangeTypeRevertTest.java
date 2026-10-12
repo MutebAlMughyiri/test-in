@@ -73,7 +73,7 @@ public class ChangeTypeRevertTest {
 
     @Test
     public void everyChangeTheReviewCanShowCanBeReverted() {
-        final List<FieldChange> changes = TestCaseChangeComparator.compare(committed(), edited());
+        final List<FieldChange> changes = TestCaseFieldChanges.compare(committed(), edited());
 
         assertEquals(changes.size(), 10, "every editable field differs between the two states");
         for (final FieldChange change : changes) {
@@ -91,10 +91,10 @@ public class ChangeTypeRevertTest {
     // Rule-SHARE-052
     @Test
     public void eachRevertRestoresItsOwnFieldAndNothingElse() {
-        for (final FieldChange change : TestCaseChangeComparator.compare(committed(), edited())) {
+        for (final FieldChange change : TestCaseFieldChanges.compare(committed(), edited())) {
             final TestCaseDto current = reverted(change.changeType(), edited(), committed());
 
-            final List<FieldChange> left = TestCaseChangeComparator.compare(committed(), current);
+            final List<FieldChange> left = TestCaseFieldChanges.compare(committed(), current);
 
             assertEquals(left.size(), 9,
                     change.changeType() + " should revert exactly one field, leaving nine changed");
@@ -106,11 +106,11 @@ public class ChangeTypeRevertTest {
     @Test
     public void revertingEveryChangeRestoresTheCommittedTestCase() {
         TestCaseDto current = edited();
-        for (final FieldChange change : TestCaseChangeComparator.compare(committed(), edited())) {
+        for (final FieldChange change : TestCaseFieldChanges.compare(committed(), edited())) {
             current = reverted(change.changeType(), current, committed());
         }
 
-        assertEquals(TestCaseChangeComparator.compare(committed(), current), List.of(),
+        assertEquals(TestCaseFieldChanges.compare(committed(), current), List.of(),
                 "reverting every listed change leaves nothing to review");
     }
 
@@ -122,7 +122,7 @@ public class ChangeTypeRevertTest {
                 .setUpdatedBy("Mohammed AlZamil")
                 .setUpdatedAt(ZonedDateTime.parse("2026-09-01T10:00:00Z"));
         final TestCaseDto current = reverted(ChangeType.CHANGE_MODULE, committed().setModule("edited module").setUpdatedBy("Muteb"), committed);
-        assertEquals(TestCaseChangeComparator.compare(committed, current), List.of(), "nothing reviewable is left");
+        assertEquals(TestCaseFieldChanges.compare(committed, current), List.of(), "nothing reviewable is left");
 
         current.takeAuditOf(committed);
 

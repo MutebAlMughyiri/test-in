@@ -23,7 +23,7 @@ import com.intellij.ui.treeStructure.SimpleTree;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.GrayWithReason;
-import org.testin.actions.TestinData;
+import org.testin.actions.TestinDataKeys;
 import org.testin.model.node.TestRunNode;
 import org.testin.util.Bundle;
 
@@ -31,7 +31,7 @@ public class ReCreateTestRunAction extends AbstractAnyProjectAction {
     // UC-TREE-PANEL-021
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        TestinData.tree(e)
+        TestinDataKeys.tree(e)
                 .map(SimpleTree::getSelectionPath)
                 .ifPresent(path -> new ReCreateTestRunWork(p).reCreateAt(path));
     }
@@ -39,7 +39,7 @@ public class ReCreateTestRunAction extends AbstractAnyProjectAction {
     // UC-TREE-PANEL-021, Rule-TREE-PANEL-069
     @Override
     protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        GrayWithReason.unless(this, e, TestinData.singleSelected(e, TestRunNode.class).isPresent(),
+        GrayWithReason.unless(this, e, TestinDataKeys.singleSelected(e, TestRunNode.class).isPresent(),
                 Bundle.message("recreate.test.run.disabled.description"));
     }
 

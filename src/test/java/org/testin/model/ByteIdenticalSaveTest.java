@@ -19,7 +19,7 @@ package org.testin.model;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.status.TestCaseStatus;
-import org.testin.util.RealMapper;
+import org.testin.util.RealJsonCodec;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -63,7 +63,7 @@ public class ByteIdenticalSaveTest {
     }
 
     private static @NotNull String saved() {
-        return new String(RealMapper.build().writeValueAsBytes(typedByATester()), StandardCharsets.UTF_8)
+        return new String(RealJsonCodec.build().writeValueAsBytes(typedByATester()), StandardCharsets.UTF_8)
                 .replace("\r\n", "\n");
     }
 
@@ -123,7 +123,7 @@ public class ByteIdenticalSaveTest {
     // Rule-INTERNAL-135
     @Test
     public void aTestCaseAtItsDefaultPriorityAndStatusStoresNeither() {
-        final String json = RealMapper.build().writeValueAsString(TestCaseDto.builder().description("Log in with a valid user").build());
+        final String json = RealJsonCodec.build().writeValueAsString(TestCaseDto.builder().description("Log in with a valid user").build());
 
         assertFalse(json.contains("\"priority\""), "the default priority, Low, was written: " + json);
         assertFalse(json.contains("\"status\""), "the default status, Pending, was written: " + json);

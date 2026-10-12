@@ -30,7 +30,7 @@ public class TestRunAttributeCoverageTest {
     public void theStacktraceIsReadOnlyAndOffByDefault() {
         assertFalse(TestRunEditorAttributes.STACKTRACE.isEdited(),
                 "the framework writes it; the tester edits it through the failure dialog, not a grid cell");
-        assertEquals(TestRunEditorAttributes.STACKTRACE.getToolBarDefault(), ToolBarDefault.OFF,
+        assertEquals(TestRunEditorAttributes.STACKTRACE.getToolBarDefault(), AttributeDefault.OFF,
                 "it is measured in paragraphs - a column of it on by default crowds out every other column");
     }
 

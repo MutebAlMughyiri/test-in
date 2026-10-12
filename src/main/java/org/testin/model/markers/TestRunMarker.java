@@ -23,7 +23,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.Config;
+import org.testin.model.DateFormats;
 import org.testin.model.testrun.TestRunResultAnalysis;
 import org.testin.model.testrun.TestRunConfiguration;
 import org.testin.model.testrun.TestRunExecution;
@@ -51,12 +51,12 @@ public class TestRunMarker extends AbstractMarker {
     private Map<TestRunResultAnalysis, String> resultAnalysis = new EnumMap<>(TestRunResultAnalysis.class);
 
     @NonNull
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Config.DATE_FORMAT_PATTERN, locale = Config.DATE_FORMAT_LOCALE)
-    private ZonedDateTime executionStartedAt = Config.NOT_EXECUTED;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateFormats.DATE_FORMAT_PATTERN, locale = DateFormats.DATE_FORMAT_LOCALE)
+    private ZonedDateTime executionStartedAt = DateFormats.NOT_EXECUTED;
 
     @NonNull
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Config.DATE_FORMAT_PATTERN, locale = Config.DATE_FORMAT_LOCALE)
-    private ZonedDateTime executionEndedAt = Config.NOT_EXECUTED;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateFormats.DATE_FORMAT_PATTERN, locale = DateFormats.DATE_FORMAT_LOCALE)
+    private ZonedDateTime executionEndedAt = DateFormats.NOT_EXECUTED;
 
     // Rule-EDITOR-PANEL-239
     @NonNull
@@ -84,12 +84,12 @@ public class TestRunMarker extends AbstractMarker {
     }
 
     public void markExecutionStarted() {
-        if (Config.isNotExecuted(executionStartedAt))
+        if (DateFormats.isNotExecuted(executionStartedAt))
             executionStartedAt = ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS);
     }
 
     public void markExecutionEnded() {
-        if (Config.isNotExecuted(executionStartedAt)) return;
+        if (DateFormats.isNotExecuted(executionStartedAt)) return;
 
         executionEndedAt = ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS);
     }

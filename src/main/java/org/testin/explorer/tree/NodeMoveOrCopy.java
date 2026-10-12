@@ -19,9 +19,9 @@ package org.testin.explorer.tree;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.codegen.JavaCode;
+import org.testin.codegen.NodeCode;
 import org.testin.codegen.SubtreeCode;
-import org.testin.codegen.event.Moved;
+import org.testin.codegen.event.MovedNode;
 import org.testin.indexer.Nodes;
 import org.testin.logger.TestinLogger;
 import org.testin.model.node.AbstractNode;
@@ -152,11 +152,11 @@ final class NodeMoveOrCopy {
                 moved(source, destination).flatMap(moved -> moved.back(p)).ifPresent(this::moveCode));
     }
 
-    private @NotNull Optional<Moved> moved(final @NotNull Path from, final @NotNull Path to) {
-        return Optional.ofNullable(to.getParent()).flatMap(target -> nodes.find(from).map(dir -> new Moved(dir, target)));
+    private @NotNull Optional<MovedNode> moved(final @NotNull Path from, final @NotNull Path to) {
+        return Optional.ofNullable(to.getParent()).flatMap(target -> nodes.find(from).map(dir -> new MovedNode(dir, target)));
     }
 
-    private void moveCode(final @NotNull Moved moved) {
-        JavaCode.of(moved.dir().getType()).getMoved().execute(p, moved);
+    private void moveCode(final @NotNull MovedNode moved) {
+        NodeCode.of(moved.dir().getType()).getMoved().execute(p, moved);
     }
 }

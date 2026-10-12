@@ -20,7 +20,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.git.change.FieldChange;
-import org.testin.git.change.RunItemChangeComparator;
+import org.testin.git.change.RunItemFieldChanges;
 import org.testin.model.testrun.RunItem;
 import org.testin.testrun.TestRunEditorAttributes;
 
@@ -52,7 +52,7 @@ final class BugEventDetector {
         if (bugAfter.isEmpty())
             return Optional.of(new BugEvent(BugEventKind.CLEARED, testRun, after.orElseThrow(), List.of()));
 
-        final @NotNull List<FieldChange> changes = RunItemChangeComparator.differences(bugBefore.orElseThrow(), bugAfter.orElseThrow()).stream()
+        final @NotNull List<FieldChange> changes = RunItemFieldChanges.differences(bugBefore.orElseThrow(), bugAfter.orElseThrow()).stream()
                 .filter(change -> BUG_FIELDS.contains(change.fieldName()))
                 .toList();
         return changes.isEmpty() ? Optional.empty() : Optional.of(new BugEvent(BugEventKind.CHANGED, testRun, bugAfter.orElseThrow(), changes));

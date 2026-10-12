@@ -34,8 +34,8 @@ public class HistoryCardsTest {
         return ZonedDateTime.parse("2026-10-0%dT16:40:00+03:00".formatted(day));
     }
 
-    private static @NotNull HistoryEntry entry(final @NotNull String hash, final int day) {
-        return new HistoryEntry(HistoryEntryKind.UPDATED, hash, "Sara", on(day), "", "", List.of(), "", "");
+    private static @NotNull TestCaseHistoryCard entry(final @NotNull String hash, final int day) {
+        return new TestCaseHistoryCard(TestCaseHistoryKind.UPDATED, hash, "Sara", on(day), "", "", List.of(), "", "");
     }
 
     private static @NotNull BugCard bug(final @NotNull String hash, final int day) {
@@ -45,7 +45,7 @@ public class HistoryCardsTest {
     // Rule-VIEW-PANEL-115
     @Test
     public void everyCardSaysWhatHappenedAndWhetherItIsCommitted() {
-        final @NotNull HistoryEntry uncommitted = entry("", 1);
+        final @NotNull TestCaseHistoryCard uncommitted = entry("", 1);
         final @NotNull BugCard committedBug = bug("4f1c9e2a7d" + "0".repeat(30), 2);
 
         assertEquals(uncommitted.kind().getLabel(), Bundle.message("view.history.updated"));
@@ -57,10 +57,10 @@ public class HistoryCardsTest {
     // Rule-VIEW-PANEL-105, Rule-VIEW-PANEL-107
     @Test
     public void cardsFollowTheCommitOrderWithWhatIsNotCommittedOnTopAndTheTestCaseCardFirstWithinOneCommit() {
-        final @NotNull HistoryEntry uncommitted = entry("", 1);
-        final @NotNull HistoryEntry rebased = entry("d".repeat(40), 1);
-        final @NotNull HistoryEntry review = entry("c".repeat(40), 9);
-        final @NotNull HistoryEntry created = entry("a".repeat(40), 3);
+        final @NotNull TestCaseHistoryCard uncommitted = entry("", 1);
+        final @NotNull TestCaseHistoryCard rebased = entry("d".repeat(40), 1);
+        final @NotNull TestCaseHistoryCard review = entry("c".repeat(40), 9);
+        final @NotNull TestCaseHistoryCard created = entry("a".repeat(40), 3);
         final @NotNull BugCard uncommittedBug = bug("", 5);
         final @NotNull BugCard sameCommit = bug("c".repeat(40), 9);
         final @NotNull BugCard between = bug("b".repeat(40), 2);

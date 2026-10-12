@@ -41,7 +41,7 @@ public final class SubtreeCode {
         final @NotNull Nodes nodes = Services.getInstance(p, Nodes.class);
 
         TestinLogger.info("Generating code for " + dir.getName());
-        JavaCode.of(dir.getType()).getCreated().execute(p, dir);
+        NodeCode.of(dir.getType()).getCreated().execute(p, dir);
 
         GenType.CREATE_TEST_CASE.executeAllNow(p, testCases.getTestCasesForTestSet(dir.getPath()));
 

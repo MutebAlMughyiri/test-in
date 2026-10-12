@@ -20,7 +20,7 @@ import com.intellij.openapi.actionSystem.DataSink;
 import com.intellij.openapi.actionSystem.UiDataProvider;
 import com.intellij.ui.treeStructure.SimpleTree;
 import org.jetbrains.annotations.NotNull;
-import org.testin.actions.TestinData;
+import org.testin.actions.TestinDataKeys;
 
 import javax.swing.tree.TreeModel;
 
@@ -32,6 +32,6 @@ public class TestinTree extends SimpleTree implements UiDataProvider {
     // UC-INTERNAL-001, Rule-INTERNAL-002
     @Override
     public void uiDataSnapshot(final @NotNull DataSink sink) {
-        TestinData.from(sink, this, TreeValues.selectedNodes(getSelectionPaths()));
+        TestinDataKeys.from(sink, this, TreeValues.selectedNodes(getSelectionPaths()));
     }
 }

@@ -24,13 +24,13 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCaseDto;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
-import org.testin.services.TestCaseValues;
+import org.testin.services.TestCaseCompletions;
 import org.testin.testcase.CreateTestCaseFields;
 import org.testin.util.Bundle;
 import org.testin.util.Icons;
 import org.testin.util.NameSanitizer;
 import org.testin.util.Shortcuts;
-import org.testin.util.SpellChecker;
+import org.testin.util.EditorFields;
 
 import javax.swing.Icon;
 import java.util.List;
@@ -49,7 +49,7 @@ public class DescriptionSection extends AbstractOneLineSection {
     private @NotNull Supplier<List<TestCaseDto>> siblings = List::of;
 
     public DescriptionSection(final @NotNull Project p) {
-        super(SpellChecker.createCompletionField(p, new TextFieldWithAutoCompletion.StringsCompletionProvider(Services.getInstance(p, TestCaseValues.class).getDescription(), CreateTestCaseFields.DESCRIPTION.getIcon()), ""),
+        super(EditorFields.createCompletionField(p, new TextFieldWithAutoCompletion.StringsCompletionProvider(Services.getInstance(p, TestCaseCompletions.class).getDescription(), CreateTestCaseFields.DESCRIPTION.getIcon()), ""),
                 CreateTestCaseFields.DESCRIPTION, Shortcuts.CreateTestCaseDescription);
 
         this.p = p;

@@ -21,8 +21,8 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.Fqcn;
 import org.testin.model.Groups;
-import org.testin.model.ToolBarAttribute;
-import org.testin.model.ToolBarDefault;
+import org.testin.model.ShowableAttribute;
+import org.testin.model.AttributeDefault;
 import org.testin.model.bug.BugIssueUrl;
 import org.testin.model.testrun.RunItem;
 import org.testin.testcase.TestSetEditorAttributes;
@@ -37,10 +37,10 @@ import java.util.function.Function;
 
 @Getter
 @AllArgsConstructor
-public enum TestRunEditorAttributes implements ToolBarAttribute {
+public enum TestRunEditorAttributes implements ShowableAttribute {
     SEQUENCE(
             TestSetEditorAttributes.SEQUENCE.getName(),
-            ToolBarDefault.STRUCTURE,
+            AttributeDefault.STRUCTURE,
             _ -> ""
     ) {
         @Override
@@ -50,7 +50,7 @@ public enum TestRunEditorAttributes implements ToolBarAttribute {
 
     ORDER(
             TestSetEditorAttributes.ORDER.getName(),
-            ToolBarDefault.ON,
+            AttributeDefault.ON,
             _ -> ""
     ) {
         @Override
@@ -60,7 +60,7 @@ public enum TestRunEditorAttributes implements ToolBarAttribute {
 
     DESCRIPTION(
             TestSetEditorAttributes.DESCRIPTION.getName(),
-            ToolBarDefault.ON,
+            AttributeDefault.ON,
             runItem -> runItem.shownTestCase().getDescription()
     ) {
         @Override
@@ -77,19 +77,19 @@ public enum TestRunEditorAttributes implements ToolBarAttribute {
 
     EXPECTED_RESULT(
             TestSetEditorAttributes.EXPECTED_RESULT.getName(),
-            ToolBarDefault.ON,
+            AttributeDefault.ON,
             runItem -> runItem.shownTestCase().getExpectedResult()
     ),
 
     STEPS(
             TestSetEditorAttributes.STEPS.getName(),
-            ToolBarDefault.OFF,
+            AttributeDefault.OFF,
             runItem -> String.join(", ", runItem.shownTestCase().getSteps())
     ),
 
     PRIORITY(
             TestSetEditorAttributes.PRIORITY.getName(),
-            ToolBarDefault.OFF,
+            AttributeDefault.OFF,
             runItem -> runItem.shownTestCase().getPriority().getLabel()
     ) {
         @Override
@@ -99,7 +99,7 @@ public enum TestRunEditorAttributes implements ToolBarAttribute {
 
     GROUP(
             TestSetEditorAttributes.GROUP.getName(),
-            ToolBarDefault.OFF,
+            AttributeDefault.OFF,
             runItem -> Groups.text(runItem.shownTestCase().getGroups())
     ) {
         @Override
@@ -110,20 +110,20 @@ public enum TestRunEditorAttributes implements ToolBarAttribute {
 
     ACTUAL_RESULT(
             Bundle.message("attribute.run.item.actual.result"),
-            ToolBarDefault.ON,
+            AttributeDefault.ON,
             RunItem::getActualResult,
             RunItem::recordActualResult
     ),
 
     STACKTRACE(
             Bundle.message("attribute.run.item.stacktrace"),
-            ToolBarDefault.OFF,
+            AttributeDefault.OFF,
             RunItem::getStacktrace
     ),
 
     BUG_SEVERITY(
             Bundle.message("attribute.run.item.bug.severity"),
-            ToolBarDefault.ON,
+            AttributeDefault.ON,
             runItem -> runItem.isFailed() ? runItem.getBugSeverity().getLabel() : ""
     ) {
         @Override
@@ -134,7 +134,7 @@ public enum TestRunEditorAttributes implements ToolBarAttribute {
 
     BUG_PRIORITY(
             Bundle.message("attribute.run.item.bug.priority"),
-            ToolBarDefault.ON,
+            AttributeDefault.ON,
             runItem -> runItem.isFailed() ? runItem.getBugPriority().getLabel() : ""
     ) {
         @Override
@@ -145,19 +145,19 @@ public enum TestRunEditorAttributes implements ToolBarAttribute {
 
     BUG_ISSUE(
             Bundle.message("attribute.run.item.bug.issue"),
-            ToolBarDefault.OFF,
+            AttributeDefault.OFF,
             runItem -> BugIssueUrl.reference(runItem.getBugIssueUrl())
     ),
 
     RUN_STATUS(
             Bundle.message("attribute.run.item.status"),
-            ToolBarDefault.ON,
+            AttributeDefault.ON,
             runItem -> runItem.shownStatus().getLabel()
     ),
 
     DURATION(
             Bundle.message("attribute.run.item.duration"),
-            ToolBarDefault.ON,
+            AttributeDefault.ON,
             runItem -> Display.formatDuration(runItem.getDuration())
     ) {
         // Rule-EDITOR-PANEL-270
@@ -169,25 +169,25 @@ public enum TestRunEditorAttributes implements ToolBarAttribute {
 
     EXECUTED_BY(
             Bundle.message("attribute.run.item.executed.by"),
-            ToolBarDefault.OFF,
+            AttributeDefault.OFF,
             RunItem::getExecutedBy
     ),
 
     EXECUTED_AT(
             Bundle.message("attribute.run.item.executed.at"),
-            ToolBarDefault.OFF,
+            AttributeDefault.OFF,
             runItem -> Display.formatDate(runItem.getExecutedAt())
     ),
 
     PATH(
             TestSetEditorAttributes.PATH.getName(),
-            ToolBarDefault.OFF,
+            AttributeDefault.OFF,
             runItem -> String.join(" > ", runItem.liveTestCase().getParent().getPath2())
     ),
 
     FQCN(
             TestSetEditorAttributes.FQCN.getName(),
-            ToolBarDefault.LOCKED_UNCHECKED,
+            AttributeDefault.LOCKED_UNCHECKED,
             runItem -> String.join(" > ", Fqcn.ofMethod(runItem.liveTestCase()))
     );
 
@@ -195,12 +195,12 @@ public enum TestRunEditorAttributes implements ToolBarAttribute {
     public static final @NotNull List<TestRunEditorAttributes> COLUMNS = List.of(values());
 
     private final @NotNull String name;
-    private final @NotNull ToolBarDefault toolBarDefault;
+    private final @NotNull AttributeDefault toolBarDefault;
     private final @NotNull Function<RunItem, String> runItemValueExtractor;
 
     private final @NotNull RunItemValueSetter runItemValueSetter;
 
-    TestRunEditorAttributes(final @NotNull String name, final @NotNull ToolBarDefault toolBarDefault, final @NotNull Function<RunItem, String> runItemValueExtractor) {
+    TestRunEditorAttributes(final @NotNull String name, final @NotNull AttributeDefault toolBarDefault, final @NotNull Function<RunItem, String> runItemValueExtractor) {
         this(name, toolBarDefault, runItemValueExtractor, RunItemValueSetter.NONE);
     }
 

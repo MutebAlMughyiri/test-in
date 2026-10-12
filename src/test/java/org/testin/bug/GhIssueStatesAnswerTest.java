@@ -19,7 +19,7 @@ package org.testin.bug;
 import com.intellij.execution.process.ProcessOutput;
 import org.jetbrains.annotations.NotNull;
 import org.testin.util.Bundle;
-import org.testin.util.RealMapper;
+import org.testin.util.RealJsonCodec;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -31,7 +31,7 @@ import static org.testng.Assert.assertTrue;
 public class GhIssueStatesAnswerTest {
 
     private static @NotNull GhIssueStatesAnswer answered(final @NotNull String stdout, final int exitCode, final Integer... numbers) {
-        return GhIssueStatesAnswer.of(RealMapper.build(), new ProcessOutput(stdout, "", exitCode, false, false), "github.com", List.of(numbers));
+        return GhIssueStatesAnswer.of(RealJsonCodec.build(), new ProcessOutput(stdout, "", exitCode, false, false), "github.com", List.of(numbers));
     }
 
     // Rule-VIEW-PANEL-091
@@ -99,7 +99,7 @@ public class GhIssueStatesAnswerTest {
     // Rule-VIEW-PANEL-093
     @Test
     public void aSignedOutGhIsNamedAndNothingIsRead() {
-        final @NotNull GhIssueStatesAnswer states = GhIssueStatesAnswer.of(RealMapper.build(), new ProcessOutput("", "To get started with GitHub CLI, please run:  gh auth login", 4, false, false), "github.com", List.of(14));
+        final @NotNull GhIssueStatesAnswer states = GhIssueStatesAnswer.of(RealJsonCodec.build(), new ProcessOutput("", "To get started with GitHub CLI, please run:  gh auth login", 4, false, false), "github.com", List.of(14));
 
         assertEquals(states.problem(), Bundle.message("bug.reason.signed.out", "github.com"));
         assertEquals(states.stateOf(14), BugIssueState.NOT_READ);
@@ -109,7 +109,7 @@ public class GhIssueStatesAnswerTest {
     // Rule-VIEW-PANEL-093
     @Test
     public void aGhThatNeverAnsweredSaysHowLongItWaited() {
-        final @NotNull GhIssueStatesAnswer states = GhIssueStatesAnswer.of(RealMapper.build(), new ProcessOutput("", "", -1, true, false), "github.com", List.of(14));
+        final @NotNull GhIssueStatesAnswer states = GhIssueStatesAnswer.of(RealJsonCodec.build(), new ProcessOutput("", "", -1, true, false), "github.com", List.of(14));
 
         assertEquals(states.problem(), Bundle.message("bug.states.timed.out", GitHubCli.TIMEOUT.toSeconds()));
     }

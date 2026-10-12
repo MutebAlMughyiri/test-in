@@ -28,9 +28,9 @@ import javax.swing.JComponent;
 
 // UC-VIEW-PANEL-003
 public class NextTestCaseAction extends DumbAwareAction {
-    private final @NotNull ViewPagination controller;
+    private final @NotNull ShownTestCaseCursor controller;
 
-    public NextTestCaseAction(final @NotNull ViewPagination controller, final @NotNull JComponent component) {
+    public NextTestCaseAction(final @NotNull ShownTestCaseCursor controller, final @NotNull JComponent component) {
         super(Bundle.message("page.next.test.case"), Bundle.message("page.next.test.case.description"), AllIcons.Actions.Forward);
         this.controller = controller;
 

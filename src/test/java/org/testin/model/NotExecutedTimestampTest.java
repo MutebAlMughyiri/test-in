@@ -38,7 +38,7 @@ public class NotExecutedTimestampTest {
     public void aFreshRunItemHasNoExecutionTime() {
         final RunItem runItem = RunItem.builder().id(UUID.randomUUID()).build();
 
-        assertTrue(Config.isNotExecuted(runItem.getExecutedAt()));
+        assertTrue(DateFormats.isNotExecuted(runItem.getExecutedAt()));
         assertEquals(Display.formatDate(runItem.getExecutedAt()), "");
     }
 
@@ -48,15 +48,15 @@ public class NotExecutedTimestampTest {
 
         runItem.recordRunItemStatus(RunItemStatus.PASSED, "tester", Duration.ZERO, Failure.NONE);
 
-        assertFalse(Config.isNotExecuted(runItem.getExecutedAt()));
+        assertFalse(DateFormats.isNotExecuted(runItem.getExecutedAt()));
         assertFalse(Display.formatDate(runItem.getExecutedAt()).isEmpty());
     }
 
     @Test
     public void theEpochIsStillEmptyAfterTheMapperMovesItIntoAnotherZone() {
-        final ZonedDateTime readBack = Config.NOT_EXECUTED.withZoneSameInstant(ZoneId.of("Asia/Riyadh"));
+        final ZonedDateTime readBack = DateFormats.NOT_EXECUTED.withZoneSameInstant(ZoneId.of("Asia/Riyadh"));
 
-        assertTrue(Config.isNotExecuted(readBack));
+        assertTrue(DateFormats.isNotExecuted(readBack));
         assertEquals(Display.formatDate(readBack), "");
     }
 

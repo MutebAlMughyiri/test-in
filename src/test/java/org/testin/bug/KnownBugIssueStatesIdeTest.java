@@ -31,7 +31,7 @@ import org.testin.help.SetupStep;
 import org.testin.indexer.TestCaseFile;
 import org.testin.indexer.TestRuns;
 import org.testin.model.testrun.RunItems;
-import org.testin.model.testrun.Execution;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.services.Services;
@@ -69,7 +69,7 @@ public class KnownBugIssueStatesIdeTest extends AbstractTempRootIdeTest {
     }
 
     private void filed(final @NotNull String testRun, final @NotNull String bugIssueUrl) {
-        final @NotNull RunItem failed = RunItem.builder().id(TEST_CASE_ID).bugIssueUrl(bugIssueUrl).executions(List.of(Execution.builder().status(RunItemStatus.FAILED).build())).build();
+        final @NotNull RunItem failed = RunItem.builder().id(TEST_CASE_ID).bugIssueUrl(bugIssueUrl).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build();
         Services.getInstance(getProject(), TestRuns.class).putRunItems(root.resolve("NAFATH").resolve("Test Runs").resolve(testRun), RunItems.builder().all(new ArrayList<>(List.of(failed))).build());
     }
 

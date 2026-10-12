@@ -21,7 +21,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
-import org.testin.actions.TestinData;
+import org.testin.actions.TestinDataKeys;
 import org.testin.model.NodeType;
 import org.testin.model.node.AbstractNode;
 import org.testin.util.Bundle;
@@ -55,13 +55,13 @@ public class CreateTreeNodeAction extends AbstractAnyProjectAction {
     // UC-TREE-PANEL-007, UC-TREE-PANEL-009
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        TestinData.singleSelectedNode(e).ifPresent(dir -> new CreateTreeNodeWork(p).createUnder(dir));
+        TestinDataKeys.singleSelectedNode(e).ifPresent(dir -> new CreateTreeNodeWork(p).createUnder(dir));
     }
 
     // UC-TREE-PANEL-007, Rule-TREE-PANEL-025
     @Override
     protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        final @NotNull Optional<AbstractNode> selected = TestinData.singleSelectedNode(e);
+        final @NotNull Optional<AbstractNode> selected = TestinDataKeys.singleSelectedNode(e);
         final boolean enabled = selected.filter(AbstractNode::canCreateChildren).isPresent();
 
         e.getPresentation().setEnabled(enabled);

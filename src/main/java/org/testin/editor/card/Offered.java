@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-public record Offered(@NotNull CardHoverAction action, @NotNull Optional<String> whyNot) {
+public record Offered(@NotNull TestCaseQuickAction action, @NotNull Optional<String> whyNot) {
     public boolean works() {
         return whyNot.isEmpty();
     }

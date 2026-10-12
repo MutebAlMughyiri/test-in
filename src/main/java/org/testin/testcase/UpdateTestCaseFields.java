@@ -30,7 +30,7 @@ import org.testin.model.TestCaseDto;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
-import org.testin.testcase.create.CreateTestCaseSection;
+import org.testin.testcase.create.TestCaseSection;
 import org.testin.testcase.create.AbstractTestCaseDialog;
 import org.testin.testcase.update.bulk.DescriptionBulkSectionDialog;
 import org.testin.testcase.update.bulk.ExpectedResultBulkSectionDialog;
@@ -190,7 +190,7 @@ public enum UpdateTestCaseFields implements MenuItem {
     private final @NotNull GenType<TestCaseDto> gt;
     private final @NotNull Done done;
     private final @NotNull BulkDialogOpener bulkAction;
-    private final @NotNull Function<AbstractTestCaseDialog, CreateTestCaseSection> sectionExtractor;
+    private final @NotNull Function<AbstractTestCaseDialog, TestCaseSection> sectionExtractor;
 
     private final @NotNull ImmutableList<TestCaseDialogKey> ownKeys;
 

@@ -23,7 +23,7 @@ import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.services.Services;
 import org.testin.util.FailureText;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +37,7 @@ public class ExportJson {
         try {
             FileUtil.createParentDirs(destFile);
 
-            Files.write(destFile.toPath(), Services.getInstance(p, Mapper.class).writeValueAsBytes(sheetsData));
+            Files.write(destFile.toPath(), Services.getInstance(p, JsonCodec.class).writeValueAsBytes(sheetsData));
         } catch (final IOException ex) {
             TestinLogger.error("export failed: " + destFile + " - " + FailureText.of(ex));
             throw new RuntimeException(ex);

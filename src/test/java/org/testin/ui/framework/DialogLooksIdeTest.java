@@ -30,7 +30,7 @@ import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.StatusBarItem;
-import org.testin.testrun.form.TestRunTreeCellRenderer;
+import org.testin.testrun.form.TestCaseSelectionRenderer;
 import org.testin.ui.Caption;
 import org.testin.ui.dialogs.DialogStyle;
 import org.testin.util.Fonts;
@@ -172,7 +172,7 @@ public class DialogLooksIdeTest extends BasePlatformTestCase {
                         DialogPart.choice("Branch", List.of("main", "release"), "main"),
                         DialogPart.<String>radios("Format").option("PDF", "pdf").option("HTML", "html").select("pdf").build(),
                         DialogPart.<Integer>textFieldWithSelections().placeholder("set kind..").selection(DialogStyle.NO_ICON, "Test Set", "Holds test cases", 1).build(),
-                        DialogPart.of(new SelectionTree("Test cases", new CheckedTreeNode("all"), TestRunTreeCellRenderer.create(), Optional.empty())),
+                        DialogPart.of(new SelectionTree("Test cases", new CheckedTreeNode("all"), TestCaseSelectionRenderer.create(), Optional.empty())),
                         DialogPart.details().row("Where", "NAFATH › Login").build(),
                         DialogPart.confirmCard("Remove Login?", List.of("NAFATH", "Test Cases"), List.of()),
                         DialogPart.button("Generate"))

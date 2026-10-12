@@ -23,7 +23,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.GrayWithReason;
-import org.testin.actions.TestinData;
+import org.testin.actions.TestinDataKeys;
 import org.testin.model.TestCaseDto;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
@@ -43,7 +43,7 @@ public class CopyTestCaseValueAction extends AbstractAnyProjectAction {
     // UC-EDITOR-PANEL-014, Rule-EDITOR-PANEL-207
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        final @NotNull List<TestCaseDto> selected = TestinData.selectedTestCases(e);
+        final @NotNull List<TestCaseDto> selected = TestinDataKeys.selectedTestCases(e);
         if (selected.isEmpty()) return;
 
         new ShortcutMenuPopup<>(p, Bundle.message("copy.menu.title"), CopyChoice.values(), choice -> copy(p, choice, selected)).show();

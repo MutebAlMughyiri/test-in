@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.ui.dialogs.DialogStyle;
-import org.testin.util.SpellChecker;
+import org.testin.util.EditorFields;
 
 import javax.swing.Icon;
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ public final class DialogPart<C extends DialogComponent> {
 
     // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-221, Rule-INTERNAL-097
     public static @NotNull DialogPart<MultiLineField> multiLineField(final @NotNull Project p, final @NotNull String caption, final @NotNull String placeholder, final @NotNull String value) {
-        final @NotNull MultiLineField field = new MultiLineField(p, SpellChecker.createField(p), caption, placeholder);
+        final @NotNull MultiLineField field = new MultiLineField(p, EditorFields.createField(p), caption, placeholder);
         field.setText(value);
 
         return new DialogPart<>(field);
@@ -59,7 +59,7 @@ public final class DialogPart<C extends DialogComponent> {
 
     // Rule-INTERNAL-136, Rule-INTERNAL-139
     public static @NotNull DialogPart<MultiLineField> multiLineField(final @NotNull Project p, final @NotNull String caption, final @NotNull String placeholder, final int minimumLines, final int maximumLines, final @NotNull Language language, final boolean spellChecked) {
-        return new DialogPart<>(new MultiLineField(p, SpellChecker.createField(p, language, spellChecked), caption, placeholder, minimumLines, maximumLines));
+        return new DialogPart<>(new MultiLineField(p, EditorFields.createField(p, language, spellChecked), caption, placeholder, minimumLines, maximumLines));
     }
 
     // Rule-INTERNAL-137
@@ -276,7 +276,7 @@ public final class DialogPart<C extends DialogComponent> {
     public static final class TextFieldBuilder<T> {
         private static final int SEARCH_ROWS = 12;
 
-        private final @NotNull List<SelectionList<T>> selections = new ArrayList<>();
+        private final @NotNull List<Selection<T>> selections = new ArrayList<>();
         private @NotNull Optional<SelectionSource<T>> rows = Optional.empty();
         private @NotNull Icon icon = DialogStyle.NO_ICON;
         private @NotNull String placeholder = "";
@@ -292,7 +292,7 @@ public final class DialogPart<C extends DialogComponent> {
         }
 
         public @NotNull TextFieldBuilder<T> selection(final @NotNull Icon icon, final @NotNull String name, final @NotNull String hint, final @NotNull T value) {
-            selections.add(SelectionList.add(icon, name, hint, value));
+            selections.add(Selection.add(icon, name, hint, value));
             return this;
         }
 
@@ -312,7 +312,7 @@ public final class DialogPart<C extends DialogComponent> {
                         "textFieldWithSelections needs at least one .selection(...) or a .rows(...)");
             }
 
-            final @NotNull List<SelectionList<T>> fixed = List.copyOf(selections);
+            final @NotNull List<Selection<T>> fixed = List.copyOf(selections);
             final @NotNull Answer<T> always = Answer.of(fixed);
 
             return new DialogPart<>(

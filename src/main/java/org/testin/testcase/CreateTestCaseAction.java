@@ -22,7 +22,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
-import org.testin.actions.TestinData;
+import org.testin.actions.TestinDataKeys;
 import org.testin.codegen.GenType;
 import org.testin.editor.TestinEditor;
 import org.testin.model.TestCaseDto;
@@ -30,7 +30,7 @@ import org.testin.model.node.TestSetNode;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
-import org.testin.services.TestCaseValues;
+import org.testin.services.TestCaseCompletions;
 import org.testin.testcase.create.CreateTestCaseDialog;
 import org.testin.util.Bundle;
 
@@ -56,14 +56,14 @@ public class CreateTestCaseAction extends AbstractAnyProjectAction {
                     GenType.CREATE_TEST_CASE.execute(p, tc);
                 });
             });
-            Services.getInstance(p, TestCaseValues.class).addNewItems(affectedNodes);
+            Services.getInstance(p, TestCaseCompletions.class).addNewItems(affectedNodes);
         }).show();
     }
 
     // UC-EDITOR-PANEL-005
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        TestinData.editor(e)
+        TestinDataKeys.editor(e)
                 .filter(editor -> editor.getParent().isTestCaseContainer())
                 .ifPresent(editor -> openCreateDialog(p, editor, (TestSetNode) editor.getParent()));
     }
@@ -71,7 +71,7 @@ public class CreateTestCaseAction extends AbstractAnyProjectAction {
     // UC-EDITOR-PANEL-005, UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-214
     @Override
     protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        final @NotNull Optional<TestinEditor> editor = TestinData.editor(e);
+        final @NotNull Optional<TestinEditor> editor = TestinDataKeys.editor(e);
         final boolean holdsTestCases = editor.filter(open -> open.getParent().isTestCaseContainer()).isPresent();
 
         final boolean loading = editor.filter(TestinEditor::isLoading).isPresent();

@@ -27,7 +27,7 @@ import com.intellij.testFramework.TestActionEvent;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.actions.TestinData;
+import org.testin.actions.TestinDataKeys;
 import org.testin.model.node.AbstractNode;
 
 import java.util.List;
@@ -39,7 +39,7 @@ public final class TreeGesture {
     private static @NotNull AnActionEvent on(final @NotNull Project p, final @NotNull AnAction action, final @NotNull List<AbstractNode> selected) {
         return TestActionEvent.createTestEvent(action, SimpleDataContext.builder()
                 .add(CommonDataKeys.PROJECT, p)
-                .add(TestinData.SELECTED_NODES, selected)
+                .add(TestinDataKeys.SELECTED_NODES, selected)
                 .build());
     }
 

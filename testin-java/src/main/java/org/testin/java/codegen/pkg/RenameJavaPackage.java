@@ -21,9 +21,9 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.Fqcn;
-import org.testin.codegen.GenAction;
+import org.testin.codegen.CodeChange;
 import org.testin.codegen.JavaSourceRoot;
-import org.testin.codegen.event.Renamed;
+import org.testin.codegen.event.RenamedNode;
 import org.testin.java.codegen.PackageDeclarations;
 import org.testin.logger.TestinLogger;
 import org.testin.util.Bundle;
@@ -33,10 +33,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-public class RenameJavaPackage implements GenAction<Renamed> {
+public class RenameJavaPackage implements CodeChange<RenamedNode> {
     // UC-CODEGEN-017, Rule-CODEGEN-056
     @Override
-    public void execute(final @NotNull Project p, final @NotNull Renamed renamed) {
+    public void execute(final @NotNull Project p, final @NotNull RenamedNode renamed) {
         final @NotNull List<String> fqcn = Fqcn.ofPackage(renamed.from());
 
         JavaSourceRoot.find(p).ifPresentOrElse(

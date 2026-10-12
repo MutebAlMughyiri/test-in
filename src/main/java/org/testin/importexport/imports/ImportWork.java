@@ -25,7 +25,7 @@ import com.intellij.util.concurrency.ThreadingAssertions;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.CodeOn;
 import org.testin.codegen.GenType;
-import org.testin.codegen.JavaCode;
+import org.testin.codegen.NodeCode;
 import org.testin.creator.CreateTestSet;
 import org.testin.editor.open.TestinEditors;
 import org.testin.indexer.Nodes;
@@ -208,7 +208,7 @@ record ImportWork(@NotNull Project p, @NotNull Notifier notifier, @NotNull Testi
                         .orElseThrow(() -> new IllegalStateException(Bundle.message("import.set.not.made", name)));
 
                 try {
-                    JavaCode.of(NodeType.TS).getCreated().execute(p, made);
+                    NodeCode.of(NodeType.TS).getCreated().execute(p, made);
                 } catch (final Exception ex) {
                     TestinLogger.error("Failed to create Java class: " + FailureText.of(ex));
                 }

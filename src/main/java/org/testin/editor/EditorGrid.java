@@ -22,16 +22,16 @@ import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.TestinEscapeAction;
-import org.testin.actions.TestinData;
+import org.testin.actions.TestinDataKeys;
 import org.testin.editor.grid.GridContextMenuListener;
 import org.testin.editor.grid.GridEnterAction;
-import org.testin.editor.grid.GridPanelBuilder;
+import org.testin.editor.grid.GridTables;
 import org.testin.editor.grid.GridSelectionListener;
 import org.testin.editor.grid.GridView;
 import org.testin.editor.statusbar.PageAction;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
-import org.testin.model.ToolBarAttribute;
+import org.testin.model.ShowableAttribute;
 import org.testin.open.OpenContextMenuAction;
 import org.testin.ui.FontSync;
 import org.testin.util.Bundle;
@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-final class EditorGrid<A extends Enum<A> & ToolBarAttribute> {
+final class EditorGrid<A extends Enum<A> & ShowableAttribute> {
     private final @NotNull AbstractTestinEditor<A, ?> editor;
     private final @NotNull List<TestCaseDto> rowsOnGrid = new ArrayList<>();
     private @NotNull Optional<GridView> view = Optional.empty();
@@ -89,7 +89,7 @@ final class EditorGrid<A extends Enum<A> & ToolBarAttribute> {
         final @NotNull Disposable fontSync = Disposer.newDisposable(editor.projectDisposable, "testin." + editor.getClass().getSimpleName() + ".gridFontSync");
         try {
             final @NotNull JBTable table = editor.buildTable(editor.gridRows(pageItems), attributes);
-            FontSync.syncWithNativeEditor(editor.p, table, fontSync, _ -> GridPanelBuilder.resizeToFont(table));
+            FontSync.syncWithNativeEditor(editor.p, table, fontSync, _ -> GridTables.resizeToFont(table));
 
             table.getSelectionModel().addListSelectionListener(new GridSelectionListener(editor, table, editor.list, pageItems));
             editor.installEditListener(table, pageItems);
@@ -101,7 +101,7 @@ final class EditorGrid<A extends Enum<A> & ToolBarAttribute> {
             new OpenContextMenuAction(table, editor.contextMenu);
 
             final @NotNull Optional<GridView> previous = view;
-            view = Optional.of(GridPanelBuilder.finishRebuild(table, editor.list, pageItems, fontSync, keepKeyboard, sink -> TestinData.from(sink, editor, editor.getSelectedTestCases())));
+            view = Optional.of(GridTables.finishRebuild(table, editor.list, pageItems, fontSync, keepKeyboard, sink -> TestinDataKeys.from(sink, editor, editor.getSelectedTestCases())));
 
             previous.ifPresent(old -> Disposer.dispose(old.fontSync()));
 
@@ -124,8 +124,8 @@ final class EditorGrid<A extends Enum<A> & ToolBarAttribute> {
         final int column = shown.table().getSelectedColumn();
 
         final @NotNull List<TestCaseDto> pageItems = showOnGrid(editor.getCurrentPageItems());
-        GridPanelBuilder.replaceRows(shown.table(), editor.gridRows(pageItems));
-        GridPanelBuilder.restoreSelection(shown.table(), editor.list, pageItems, column);
+        GridTables.replaceRows(shown.table(), editor.gridRows(pageItems));
+        GridTables.restoreSelection(shown.table(), editor.list, pageItems, column);
 
         if (keepKeyboard) ApplicationManager.getApplication().invokeLater(shown.table()::requestFocusInWindow);
     }

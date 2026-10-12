@@ -16,7 +16,7 @@
 
 package org.testin.util;
 
-import org.testin.model.Config;
+import org.testin.model.DateFormats;
 import org.testng.annotations.Test;
 
 import java.time.ZoneId;
@@ -42,7 +42,7 @@ public class TestCaseFieldParserDateTest {
     // Rule-SHARE-121
     @Test
     public void readsThePlainSpreadsheetShape() {
-        final String plain = when.format(Config.EXCEL_DATE_FORMATTER);
+        final String plain = when.format(DateFormats.EXCEL_DATE_FORMATTER);
 
         assertEquals(TestCaseFieldParser.date(plain).orElseThrow().toLocalDateTime(), when.toLocalDateTime(),
                 "a sheet from another tool carries this one");
@@ -60,8 +60,8 @@ public class TestCaseFieldParserDateTest {
     // Rule-SHARE-106, Rule-SHARE-121
     @Test
     public void aBlankCellIsNoTimeAtAll() {
-        assertTrue(Config.isNotExecuted(TestCaseFieldParser.date("").orElseThrow()), "the file did not say when");
-        assertTrue(Config.isNotExecuted(TestCaseFieldParser.date("   ").orElseThrow()), "nor here");
+        assertTrue(DateFormats.isNotExecuted(TestCaseFieldParser.date("").orElseThrow()), "the file did not say when");
+        assertTrue(DateFormats.isNotExecuted(TestCaseFieldParser.date("   ").orElseThrow()), "nor here");
     }
 
     // Rule-SHARE-106, Rule-SHARE-121

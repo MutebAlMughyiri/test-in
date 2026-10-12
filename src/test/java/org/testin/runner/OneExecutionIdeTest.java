@@ -34,9 +34,9 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.Await;
 import org.testin.Said;
-import org.testin.actions.TestinData;
+import org.testin.actions.TestinDataKeys;
 import org.testin.codegen.GenType;
-import org.testin.editor.card.CardHoverAction;
+import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestSetNode;
 import org.testin.notifications.Done;
@@ -113,7 +113,7 @@ public class OneExecutionIdeTest extends AbstractCodegenIdeTest {
         final @NotNull AnAction action = Optional.ofNullable(ActionManager.getInstance().getAction("Testin.RunTestMethod")).orElseThrow(() -> new AssertionError("Run Test Method is not registered"));
         final @NotNull AnActionEvent e = TestActionEvent.createTestEvent(action, SimpleDataContext.builder()
                 .add(CommonDataKeys.PROJECT, getProject())
-                .add(TestinData.SELECTED_TEST_CASES, List.of(tc))
+                .add(TestinDataKeys.SELECTED_TEST_CASES, List.of(tc))
                 .build());
         ActionUtil.updateAction(action, e);
         return e;
@@ -188,11 +188,11 @@ public class OneExecutionIdeTest extends AbstractCodegenIdeTest {
 
         execution().starting(tc);
 
-        assertEquals("the run button on the card did not become the stop", CardHoverAction.STOP_TEST_METHOD, CardHoverAction.onCard(getProject(), tc.getParent(), tc).get(1).action());
-        assertEquals("the run button on the view panel did not become the stop", CardHoverAction.STOP_TEST_METHOD, CardHoverAction.RUN_TEST_METHOD.offer(getProject(), Optional.empty(), tc).action());
+        assertEquals("the run button on the card did not become the stop", TestCaseQuickAction.STOP_TEST_METHOD, TestCaseQuickAction.onCard(getProject(), tc.getParent(), tc).get(1).action());
+        assertEquals("the run button on the view panel did not become the stop", TestCaseQuickAction.STOP_TEST_METHOD, TestCaseQuickAction.RUN_TEST_METHOD.offer(getProject(), Optional.empty(), tc).action());
         final @NotNull AnActionEvent menu = theRunEntryFor(tc);
         assertEquals("the menu entry did not become the stop", Bundle.message("card.stop.test.method"), menu.getPresentation().getText());
-        assertEquals("the menu entry still shows the run icon", CardHoverAction.STOP_TEST_METHOD.getIcon(), menu.getPresentation().getIcon());
+        assertEquals("the menu entry still shows the run icon", TestCaseQuickAction.STOP_TEST_METHOD.getIcon(), menu.getPresentation().getIcon());
     }
 
     // Rule-CODEGEN-074

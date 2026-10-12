@@ -17,9 +17,9 @@
 package org.testin.model;
 
 import org.testin.model.node.TestRunNode;
-import org.testin.model.testrun.Execution;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
-import org.testin.util.RealMapper;
+import org.testin.util.RealJsonCodec;
 import org.testng.annotations.Test;
 
 import java.nio.charset.StandardCharsets;
@@ -39,11 +39,11 @@ public class RunItemScreenshotsJsonTest {
 
     @Test
     public void theTestRunFileNamesTheScreenshotsAndHoldsNoPicture() {
-        final RunItem written = RunItem.builder().id(UUID.randomUUID()).executions(List.of(Execution.builder().stacktrace("boom").screenshots(List.of(NAME)).build())).build();
+        final RunItem written = RunItem.builder().id(UUID.randomUUID()).executions(List.of(RunItemExecution.builder().stacktrace("boom").screenshots(List.of(NAME)).build())).build();
 
         try {
-            final String json = new String(RealMapper.build().writeValueAsBytes(written), StandardCharsets.UTF_8);
-            final RunItem read = RealMapper.build().readValue(json, RunItem.class);
+            final String json = new String(RealJsonCodec.build().writeValueAsBytes(written), StandardCharsets.UTF_8);
+            final RunItem read = RealJsonCodec.build().readValue(json, RunItem.class);
 
             assertTrue(json.contains("\"" + NAME + "\""), "the file is named: " + json);
             assertFalse(json.contains("iVBORw"), "and no base64 of the picture is written: " + json);
@@ -57,7 +57,7 @@ public class RunItemScreenshotsJsonTest {
     @Test
     public void aRunItemWithNoScreenshotWritesNoKey() {
         try {
-            final String json = new String(RealMapper.build().writeValueAsBytes(RunItem.builder().id(UUID.randomUUID()).build()), StandardCharsets.UTF_8);
+            final String json = new String(RealJsonCodec.build().writeValueAsBytes(RunItem.builder().id(UUID.randomUUID()).build()), StandardCharsets.UTF_8);
 
             assertFalse(json.contains("screenshots"), json);
         } catch (final Exception e) {

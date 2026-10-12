@@ -22,7 +22,7 @@ import com.intellij.util.ui.UIUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.MenuEntry;
+import org.testin.model.RunItemStatusKey;
 import org.testin.model.ReportColor;
 import org.testin.util.Bundle;
 import org.testin.util.FixedColors;
@@ -38,7 +38,7 @@ public enum RunItemStatus {
             JBColor.GREEN,
             FixedColors.GREEN.darker(),
             Bundle.message("status.run.item.passed"),
-            new MenuEntry(KeyStroke.getKeyStroke(KeyEvent.VK_P, 0)),
+            new RunItemStatusKey(KeyStroke.getKeyStroke(KeyEvent.VK_P, 0)),
             false
     ),
 
@@ -46,7 +46,7 @@ public enum RunItemStatus {
             JBColor.RED.darker(),
             FixedColors.RED.darker(),
             Bundle.message("status.run.item.failed"),
-            new MenuEntry(KeyStroke.getKeyStroke(KeyEvent.VK_F, 0)),
+            new RunItemStatusKey(KeyStroke.getKeyStroke(KeyEvent.VK_F, 0)),
             true
     ),
 
@@ -54,7 +54,7 @@ public enum RunItemStatus {
             JBColor.ORANGE,
             FixedColors.ORANGE.darker(),
             Bundle.message("status.run.item.blocked"),
-            new MenuEntry(KeyStroke.getKeyStroke(KeyEvent.VK_B, 0)),
+            new RunItemStatusKey(KeyStroke.getKeyStroke(KeyEvent.VK_B, 0)),
             false
     ),
 
@@ -62,7 +62,7 @@ public enum RunItemStatus {
             JBColor.lazy(UIUtil::getContextHelpForeground),
             FixedColors.GRAY.darker(),
             Bundle.message("status.run.item.pending"),
-            MenuEntry.NONE,
+            RunItemStatusKey.NONE,
             false
     ),
 
@@ -70,7 +70,7 @@ public enum RunItemStatus {
             JBColor.GRAY,
             FixedColors.GRAY.darker(),
             Bundle.message("status.run.item.removed"),
-            MenuEntry.NONE,
+            RunItemStatusKey.NONE,
             false
     ),
 
@@ -78,7 +78,7 @@ public enum RunItemStatus {
             JBColor.GRAY.brighter(),
             FixedColors.GRAY.darker(),
             Bundle.message("status.run.item.untested"),
-            MenuEntry.NONE,
+            RunItemStatusKey.NONE,
             false
     );
 
@@ -86,7 +86,7 @@ public enum RunItemStatus {
     private final @NotNull Color reportColor;
     private final @NotNull String label;
 
-    private final @NotNull MenuEntry menuEntry;
+    private final @NotNull RunItemStatusKey menuEntry;
 
     private final boolean collectsFailureDetails;
 
@@ -101,6 +101,6 @@ public enum RunItemStatus {
     }
 
     public boolean isRunItemStatus() {
-        return !menuEntry.equals(MenuEntry.NONE);
+        return !menuEntry.equals(RunItemStatusKey.NONE);
     }
 }

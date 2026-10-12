@@ -21,8 +21,8 @@ import com.intellij.openapi.project.Project;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.codegen.JavaCode;
-import org.testin.codegen.event.Renamed;
+import org.testin.codegen.NodeCode;
+import org.testin.codegen.event.RenamedNode;
 import org.testin.config.TestinYml;
 import org.testin.editor.open.TestinEditors;
 import org.testin.indexer.Nodes;
@@ -45,7 +45,7 @@ public final class NodeRename {
     public static void apply(final @NotNull Project p, final @NotNull AbstractNode dir, final @NotNull String newName, final @NotNull Runnable onDone) {
         Services.getInstance(p, TestinEditors.class).close(dir);
 
-        final @NotNull Renamed renamed = new Renamed(dir, newName);
+        final @NotNull RenamedNode renamed = new RenamedNode(dir, newName);
         final @NotNull String oldName = dir.getName();
 
         final @NotNull Path oldPath = dir.getPath();
@@ -55,7 +55,7 @@ public final class NodeRename {
         final boolean followed = renamed.toTheFilesName(p);
         if (followed) Services.getInstance(p, BoundTestProject.class).follow(oldName, newName);
         // Rule-CODEGEN-004, Rule-CODEGEN-051
-        JavaCode.of(dir.getType()).getRenamed().execute(p, renamed);
+        NodeCode.of(dir.getType()).getRenamed().execute(p, renamed);
 
         Services.getInstance(p, Nodes.class).renameNode(oldPath, newPath, () -> {
             if (dir instanceof TestProjectNode) projectFollows(p, oldName, newName);
@@ -67,9 +67,9 @@ public final class NodeRename {
     }
 
     // UC-TREE-PANEL-011, Rule-TREE-PANEL-133
-    private static void putBack(final @NotNull Project p, final @NotNull Renamed renamed, final boolean followed) {
-        final @NotNull Renamed back = renamed.back();
-        JavaCode.of(renamed.dir().getType()).getRenamed().execute(p, back);
+    private static void putBack(final @NotNull Project p, final @NotNull RenamedNode renamed, final boolean followed) {
+        final @NotNull RenamedNode back = renamed.back();
+        NodeCode.of(renamed.dir().getType()).getRenamed().execute(p, back);
         if (followed) Services.getInstance(p, BoundTestProject.class).follow(renamed.newName(), back.newName());
 
         TestinLogger.warn("The folder of '" + back.newName() + "' could not be renamed to '" + renamed.newName() + "', so its code and name were put back");
@@ -84,13 +84,13 @@ public final class NodeRename {
             return true;
         }
 
-        final @NotNull Renamed renamed = new Renamed(dir, newName);
+        final @NotNull RenamedNode renamed = new RenamedNode(dir, newName);
         if (renamed.packageInTheWay(p)) {
             notifier.softRefuse(p, Refused.PACKAGE_TAKEN, renamed.newPackage());
             return true;
         }
 
-        if (DumbService.isDumb(p) && renamed.movesCode(p) && JavaCode.of(dir.getType()).getRenamed().generates()) {
+        if (DumbService.isDumb(p) && renamed.movesCode(p) && NodeCode.of(dir.getType()).getRenamed().generates()) {
             notifier.softRefuse(p, Refused.WHILE_INDEXING, Bundle.message("dialog.rename.title"));
             return true;
         }

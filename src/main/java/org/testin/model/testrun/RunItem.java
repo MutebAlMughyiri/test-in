@@ -100,7 +100,7 @@ public class RunItem {
     // UC-EDITOR-PANEL-032, Rule-EDITOR-PANEL-136
     @NotNull
     @Builder.Default
-    private List<Execution> executions = List.of();
+    private List<RunItemExecution> executions = List.of();
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-126
     @JsonIgnore
     @Getter(AccessLevel.NONE)
@@ -133,7 +133,7 @@ public class RunItem {
     }
 
     // Rule-VIEW-PANEL-119
-    public @NotNull Optional<Execution> defaultExecution() {
+    public @NotNull Optional<RunItemExecution> defaultExecution() {
         return executions.isEmpty() ? Optional.empty() : Optional.of(executions.get(defaultIndex()));
     }
 
@@ -152,18 +152,18 @@ public class RunItem {
     }
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-122
-    public @NotNull Execution shownExecution(final @NotNull OptionalInt line) {
+    public @NotNull RunItemExecution shownExecution(final @NotNull OptionalInt line) {
         return line.isPresent() && line.getAsInt() < executions.size() ? executions.get(line.getAsInt()) : shown();
     }
 
     // Rule-VIEW-PANEL-119
-    private @NotNull Execution shown() {
+    private @NotNull RunItemExecution shown() {
         return executions.isEmpty() ? notYetExecuted() : executions.get(defaultIndex());
     }
 
     // Rule-TREE-PANEL-067, Rule-EDITOR-PANEL-132, Rule-EDITOR-PANEL-172
-    private @NotNull Execution notYetExecuted() {
-        return Execution.builder().status(untested ? RunItemStatus.UNTESTED : RunItemStatus.PENDING).duration(clock).actualResult(unrecordedActualResult).build();
+    private @NotNull RunItemExecution notYetExecuted() {
+        return RunItemExecution.builder().status(untested ? RunItemStatus.UNTESTED : RunItemStatus.PENDING).duration(clock).actualResult(unrecordedActualResult).build();
     }
 
     // Rule-VIEW-PANEL-119
@@ -217,7 +217,7 @@ public class RunItem {
     // UC-EDITOR-PANEL-042, Rule-EDITOR-PANEL-288
     @JsonIgnore
     public @NotNull Duration timeSpent() {
-        return executions.stream().map(Execution::getDuration).reduce(clock, Duration::plus);
+        return executions.stream().map(RunItemExecution::getDuration).reduce(clock, Duration::plus);
     }
 
     // Rule-REPORT-027
@@ -286,16 +286,16 @@ public class RunItem {
 
     // UC-EDITOR-PANEL-031, UC-EDITOR-PANEL-038, UC-EDITOR-PANEL-039, UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-159, Rule-EDITOR-PANEL-160, Rule-EDITOR-PANEL-284
     public void recordRunItemStatus(final @NotNull RunItemStatus next, final @NotNull String tester, final @NotNull Duration duration, final @NotNull Failure failure) {
-        recordExecutions(List.of(Execution.recorded(next, tester, duration, failure)), 0, tester);
+        recordExecutions(List.of(RunItemExecution.recorded(next, tester, duration, failure)), 0, tester);
     }
 
     // UC-CODEGEN-008, Rule-CODEGEN-111
-    public void showExecutions(final @NotNull List<Execution> attempts, final int written, final @NotNull String tester) {
+    public void showExecutions(final @NotNull List<RunItemExecution> attempts, final int written, final @NotNull String tester) {
         replaceExecutions(attempts, written, tester);
     }
 
     // UC-CODEGEN-008, Rule-CODEGEN-111, Rule-EDITOR-PANEL-183, Rule-EDITOR-PANEL-172
-    public void recordExecutions(final @NotNull List<Execution> recorded, final int written, final @NotNull String tester) {
+    public void recordExecutions(final @NotNull List<RunItemExecution> recorded, final int written, final @NotNull String tester) {
         if (recorded.isEmpty()) return;
 
         if (recorded.getLast().getActualResult().isBlank()) recorded.getLast().setActualResult(unrecordedActualResult);
@@ -305,8 +305,8 @@ public class RunItem {
     }
 
     // Rule-VIEW-PANEL-119, Rule-CODEGEN-111
-    private void replaceExecutions(final @NotNull List<Execution> replacing, final int written, final @NotNull String tester) {
-        final @NotNull List<Execution> kept = executions.subList(0, Math.max(0, executions.size() - written));
+    private void replaceExecutions(final @NotNull List<RunItemExecution> replacing, final int written, final @NotNull String tester) {
+        final @NotNull List<RunItemExecution> kept = executions.subList(0, Math.max(0, executions.size() - written));
         kept.forEach(execution -> execution.setChosen(false));
         replacing.forEach(execution -> execution.setExecutedBy(tester));
         executions = Stream.concat(kept.stream(), replacing.stream()).toList();

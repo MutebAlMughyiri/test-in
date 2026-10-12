@@ -33,7 +33,7 @@ import com.intellij.psi.codeStyle.CodeStyleManager;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.ExecutionPosition;
 import org.testin.codegen.Fqcn;
-import org.testin.codegen.GenAction;
+import org.testin.codegen.CodeChange;
 import org.testin.codegen.GenType;
 import org.testin.codegen.JavaSourceRoot;
 import org.testin.java.codegen.GeneratedClass;
@@ -57,7 +57,7 @@ import java.util.Optional;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
-public class CreateTestMethod implements GenAction<TestCaseDto> {
+public class CreateTestMethod implements CodeChange<TestCaseDto> {
 
     static @NotNull Optional<Target> parse(final @NotNull List<String> fqcn) {
         if (fqcn.size() < 2) return Optional.empty();

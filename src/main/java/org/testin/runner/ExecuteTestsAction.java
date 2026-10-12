@@ -21,7 +21,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
-import org.testin.actions.TestinData;
+import org.testin.actions.TestinDataKeys;
 import org.testin.codegen.CodeOn;
 import org.testin.editor.TestinEditor;
 import org.testin.editor.testrun.ExecutionMode;
@@ -70,11 +70,11 @@ public class ExecuteTestsAction extends AbstractAnyProjectAction {
     }
 
     private @NotNull Optional<AbstractNode> runnable(final @NotNull AnActionEvent e) {
-        return TestinData.firstSelected(e, AbstractNode.class).filter(AbstractNode::isTestCaseContainer);
+        return TestinDataKeys.firstSelected(e, AbstractNode.class).filter(AbstractNode::isTestCaseContainer);
     }
 
     private @NotNull Optional<TestRunNode> selectedTestRun(final @NotNull AnActionEvent e) {
-        return TestinData.firstSelected(e, TestRunNode.class)
+        return TestinDataKeys.firstSelected(e, TestRunNode.class)
                 .filter(TestRunNode::isOpen);
     }
 

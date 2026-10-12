@@ -31,7 +31,7 @@ import org.testin.editor.open.UnifiedVirtualFile;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.editor.toolbar.GridViewBtn;
-import org.testin.editor.toolbar.TestSetDetailsPopupBtn;
+import org.testin.editor.toolbar.TestSetFieldsPopupBtn;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestProjectNode;
@@ -107,7 +107,7 @@ public class PageSizeAndGridIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         final @NotNull List<String> balloons = Said.listening(getProject(), getTestRootDisposable()).shown();
         try {
-            final @NotNull Set<TestSetEditorAttributes> fields = editor.getToolBar().getToolbarItem(TestSetDetailsPopupBtn.class).getSelectedDetails();
+            final @NotNull Set<TestSetEditorAttributes> fields = editor.getToolBar().getToolbarItem(TestSetFieldsPopupBtn.class).getSelectedDetails();
             fields.add(TestSetEditorAttributes.MODULE);
             editor.getToolBar().getToolbarItem(GridViewBtn.class).doClick();
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();

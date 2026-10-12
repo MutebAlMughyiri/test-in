@@ -53,7 +53,7 @@ final class IndexerDataStore {
     private final @NotNull NodeChildrenIndex childrenIndex = new NodeChildrenIndex();
 
     private final @NotNull MarkerFiles markers;
-    private final @NotNull TestCaseSequenceStore testCaseStore;
+    private final @NotNull TestCaseStore testCaseStore;
 
     @Getter
     private final @NotNull Map<String, TestProjectNode> testProjectsByPath = new ConcurrentHashMap<>();
@@ -91,7 +91,7 @@ final class IndexerDataStore {
     private final @NotNull Map<String, String> refusedProjects = new ConcurrentHashMap<>();
 
     IndexerDataStore(final @NotNull Project p) {
-        this.testCaseStore = new TestCaseSequenceStore(p);
+        this.testCaseStore = new TestCaseStore(p);
         this.markers = new MarkerFiles(p);
     }
 

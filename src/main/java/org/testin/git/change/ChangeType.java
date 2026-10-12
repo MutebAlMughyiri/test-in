@@ -28,12 +28,12 @@ import java.util.ArrayList;
 public enum ChangeType {
     CREATE_TEST_CASE(
             Bundle.message("change.create.test.case"),
-            RevertAction.NONE
+            FieldRevert.NONE
     ),
 
     REMOVE_TEST_CASE(
             Bundle.message("change.remove.test.case"),
-            RevertAction.NONE
+            FieldRevert.NONE
     ),
 
     CHANGE_DESCRIPTION(
@@ -86,54 +86,54 @@ public enum ChangeType {
 
     CREATE_RUN_ITEM(
             Bundle.message("change.create.run.item"),
-            RevertAction.NONE
+            FieldRevert.NONE
     ),
 
     CHANGE_RUN_ITEM(
             Bundle.message("change.change.run.item"),
-            RevertAction.NONE
+            FieldRevert.NONE
     ),
 
     REMOVE_RUN_ITEM(
             Bundle.message("change.remove.run.item"),
-            RevertAction.NONE
+            FieldRevert.NONE
     ),
 
     CREATE_MARKER(
             Bundle.message("change.create.marker"),
-            RevertAction.NONE
+            FieldRevert.NONE
     ),
 
     CHANGE_MARKER(
             Bundle.message("change.change.marker"),
-            RevertAction.NONE
+            FieldRevert.NONE
     ),
 
     REMOVE_MARKER(
             Bundle.message("change.remove.marker"),
-            RevertAction.NONE
+            FieldRevert.NONE
     ),
 
     CREATE_FILE(
             Bundle.message("change.create.file"),
-            RevertAction.NONE
+            FieldRevert.NONE
     ),
 
     CHANGE_FILE(
             Bundle.message("change.change.file"),
-            RevertAction.NONE
+            FieldRevert.NONE
     ),
 
     REMOVE_FILE(
             Bundle.message("change.remove.file"),
-            RevertAction.NONE
+            FieldRevert.NONE
     );
 
     private final @NotNull String label;
 
-    private final @NotNull RevertAction revertAction;
+    private final @NotNull FieldRevert revertAction;
 
     public boolean isRevertible() {
-        return !revertAction.equals(RevertAction.NONE);
+        return !revertAction.equals(FieldRevert.NONE);
     }
 }

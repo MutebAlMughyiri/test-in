@@ -69,7 +69,7 @@ public class ViewPanel implements Disposable {
     private final @NotNull JBScrollPane historyScrollPane;
 
     @Getter
-    private final @NotNull ViewPagination page;
+    private final @NotNull ShownTestCaseCursor page;
 
     @Getter
     private final @NotNull Project p;
@@ -106,7 +106,7 @@ public class ViewPanel implements Disposable {
             return false;
         }, this);
 
-        page = new ViewPagination(this);
+        page = new ShownTestCaseCursor(this);
 
         refreshCurrentView();
 

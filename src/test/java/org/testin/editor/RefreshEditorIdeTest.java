@@ -28,7 +28,7 @@ import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.editor.toolbar.GridViewBtn;
 import org.testin.editor.toolbar.RefreshBtn;
-import org.testin.editor.toolbar.TestSetDetailsPopupBtn;
+import org.testin.editor.toolbar.TestSetFieldsPopupBtn;
 import org.testin.filter.FilterPopupBtn;
 import org.testin.filter.SortField;
 import org.testin.filter.SortPopupBtn;
@@ -41,12 +41,12 @@ import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
-import org.testin.model.testrun.Execution;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.notifications.Done;
 import org.testin.services.Services;
-import org.testin.services.TestCaseValues;
+import org.testin.services.TestCaseCompletions;
 import org.testin.testcase.TestSetEditorAttributes;
 
 import java.util.ArrayList;
@@ -86,7 +86,7 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestCaseDto card = aTestCase(ts, "Pay by card", "m0003", Priority.HIGH, oldGroup);
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), ts, getTestRootDisposable());
         final @NotNull List<String> balloons = Said.listening(getProject(), getTestRootDisposable()).shown();
-        final @NotNull TestCaseValues values = Services.getInstance(getProject(), TestCaseValues.class);
+        final @NotNull TestCaseCompletions values = Services.getInstance(getProject(), TestCaseCompletions.class);
         try {
             final @NotNull FilterPopupBtn filters = editor.getToolBar().getToolbarItem(FilterPopupBtn.class);
             filters.getSelectedPriority().add(Priority.HIGH);
@@ -96,7 +96,7 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
             editor.getToolBar().getSearchTxt().setText("Log in");
             Await.until("the search never narrowed the list", () -> editor.getCurrentTestCases().size() == 1);
             editor.getToolBar().getToolbarItem(GridViewBtn.class).doClick();
-            final @NotNull Set<TestSetEditorAttributes> fields = editor.getToolBar().getToolbarItem(TestSetDetailsPopupBtn.class).getSelectedDetails();
+            final @NotNull Set<TestSetEditorAttributes> fields = editor.getToolBar().getToolbarItem(TestSetFieldsPopupBtn.class).getSelectedDetails();
             Await.until("the group was never offered", () -> values.getGroups().contains(oldGroup));
 
             aTestCase(ts, "Log in with a new user", "m0004", Priority.HIGH, newGroup);
@@ -112,7 +112,7 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
             assertEquals("refresh kept the filter", Set.of(), filters.getSelectedPriority());
             assertEquals("refresh kept the sort", SortField.ORDER, sort.sortBy());
             assertEquals("refresh left the grid", ViewMode.GRID_VIEW, editor.getToolBar().getCurrentView());
-            assertEquals("refresh changed the fields shown", fields, editor.getToolBar().getToolbarItem(TestSetDetailsPopupBtn.class).getSelectedDetails());
+            assertEquals("refresh changed the fields shown", fields, editor.getToolBar().getToolbarItem(TestSetFieldsPopupBtn.class).getSelectedDetails());
             Await.until("the group filter still offers a group no test case uses", () -> values.getGroups().contains(newGroup) && !values.getGroups().contains(oldGroup));
             Await.until("refresh did not say so", () -> balloons.contains(Done.REFRESHED.getOutcome()));
         } finally {
@@ -239,7 +239,7 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
 
             Services.getInstance(getProject(), TestRuns.class).putRunItems(tr.getPath(), new RunItems().setAll(new ArrayList<>(List.of(
                     EditorFixtures.pending(testCases.getFirst()),
-                    EditorFixtures.pending(testCases.get(1)).setExecutions(List.of(Execution.builder().status(RunItemStatus.PASSED).build()))))));
+                    EditorFixtures.pending(testCases.get(1)).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()))))));
 
             pressRefresh(editor);
 

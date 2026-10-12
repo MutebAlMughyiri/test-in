@@ -34,7 +34,7 @@ import org.testin.services.Services;
 import org.testin.setting.TestinRoot;
 import org.testin.testcase.TestCaseSnapshot;
 import org.testin.testcase.UpdateTestCaseFields;
-import org.testin.testcase.create.TestCaseUpdateMenuDialog;
+import org.testin.testcase.create.UpdateTestCaseMenu;
 import org.testin.util.Bundle;
 import org.testin.view.ViewToolWindowFactory;
 
@@ -91,7 +91,7 @@ public final class EditShownTestCase {
         final @NotNull List<UUID> ids = TestCaseSnapshot.idsOf(items);
         final @NotNull Optional<TestCaseSnapshot> before = testSetOf(p, dto).map(testSet -> TestCaseSnapshot.of(p, testSet, ids));
 
-        new TestCaseUpdateMenuDialog(p, items, (tcs, field) -> save(p, dto, tcs, field, ids, before)).show();
+        new UpdateTestCaseMenu(p, items, (tcs, field) -> save(p, dto, tcs, field, ids, before)).show();
     }
 
     // UC-VIEW-PANEL-011, Rule-VIEW-PANEL-007, Rule-VIEW-PANEL-046
@@ -108,7 +108,7 @@ public final class EditShownTestCase {
 
             Services.getInstance(p, Notifier.class).softShow(p, field.getDone());
 
-            ApplicationManager.getApplication().invokeLater(() -> TestCaseUpdateMenuDialog.applyAftermath(p, tcs, field.getGt()));
+            ApplicationManager.getApplication().invokeLater(() -> UpdateTestCaseMenu.applyAftermath(p, tcs, field.getGt()));
         }, () -> Services.getInstance(p, Notifier.class).softRefuse(p, Bundle.message("details.deleted.no.edit")));
     }
 

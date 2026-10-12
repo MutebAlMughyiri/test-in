@@ -28,7 +28,7 @@ import javax.swing.JComponent;
 import java.util.List;
 
 // Rule-EDITOR-PANEL-258
-public class StatusSection implements CreateTestCaseSection {
+public class StatusSection implements TestCaseSection {
     private final @NotNull RadioSelection<TestCaseStatus> status;
     private final @NotNull JBPanel<?> wrapper;
 

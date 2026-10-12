@@ -17,7 +17,7 @@
 package org.testin.git.history;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.Config;
+import org.testin.model.DateFormats;
 
 import java.time.ZonedDateTime;
 
@@ -30,7 +30,7 @@ public record BugCard(@NotNull String hash, @NotNull String who, @NotNull ZonedD
 
     // Rule-VIEW-PANEL-107
     static @NotNull BugCard notCommitted(final @NotNull BugEvent event) {
-        if (event.kind() == BugEventKind.REMOVED) return new BugCard("", "", Config.NOT_EXECUTED, event);
+        if (event.kind() == BugEventKind.REMOVED) return new BugCard("", "", DateFormats.NOT_EXECUTED, event);
 
         return new BugCard("", event.runItem().getExecutedBy(), event.runItem().getExecutedAt(), event);
     }

@@ -26,7 +26,7 @@ import org.testin.undo.Operation;
 import org.testin.undo.UndoHistories;
 import org.testin.undo.UndoScope;
 import org.testin.util.Bundle;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -66,7 +66,7 @@ public record TestCaseSnapshot(@NotNull Path testSetPath, @NotNull List<TestCase
 
     // UC-EDITOR-PANEL-012, Rule-EDITOR-PANEL-070
     public static void record(final @NotNull Project p, final @NotNull UndoScope scope, final @NotNull String description, final @NotNull List<TestCaseSnapshot> before, final @NotNull List<TestCaseSnapshot> after) {
-        if (same(before, after, Services.getInstance(p, Mapper.class))) return;
+        if (same(before, after, Services.getInstance(p, JsonCodec.class))) return;
 
         ApplicationManager.getApplication().invokeLater(() -> Services.getInstance(p, UndoHistories.class).push(scope, new Operation(
                 description,
@@ -76,7 +76,7 @@ public record TestCaseSnapshot(@NotNull Path testSetPath, @NotNull List<TestCase
                 })));
     }
 
-    private static boolean same(final @NotNull List<TestCaseSnapshot> before, final @NotNull List<TestCaseSnapshot> after, final @NotNull Mapper mapper) {
+    private static boolean same(final @NotNull List<TestCaseSnapshot> before, final @NotNull List<TestCaseSnapshot> after, final @NotNull JsonCodec mapper) {
         if (before.size() != after.size()) return false;
 
         for (int i = 0; i < before.size(); i++)
@@ -91,11 +91,11 @@ public record TestCaseSnapshot(@NotNull Path testSetPath, @NotNull List<TestCase
         return ids;
     }
 
-    boolean sameAs(final @NotNull TestCaseSnapshot other, final @NotNull Mapper mapper) {
+    boolean sameAs(final @NotNull TestCaseSnapshot other, final @NotNull JsonCodec mapper) {
         return absent.equals(other.absent) && asJson(mapper).equals(other.asJson(mapper));
     }
 
-    private @NotNull List<String> asJson(final @NotNull Mapper mapper) {
+    private @NotNull List<String> asJson(final @NotNull JsonCodec mapper) {
         return present.stream().map(mapper::writeValueAsString).sorted().toList();
     }
 }

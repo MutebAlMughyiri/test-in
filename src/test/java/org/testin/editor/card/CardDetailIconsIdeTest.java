@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.editor.testset.TestCaseCard;
 import org.testin.editor.testrun.RunItemCard;
 import org.testin.model.TestCaseDto;
-import org.testin.model.testrun.Execution;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.testcase.CreateTestCaseFields;
@@ -93,7 +93,7 @@ public class CardDetailIconsIdeTest extends BasePlatformTestCase {
     // Rule-EDITOR-PANEL-269
     public void testAFieldWithNoIconKeepsItsName() {
         final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
-        final @NotNull RunItem runItem = new RunItem().setId(tc.getId()).setExecutions(List.of(Execution.builder().status(RunItemStatus.FAILED).build())).showing(Optional.of(tc), Optional.empty(), Optional.empty(), false);
+        final @NotNull RunItem runItem = new RunItem().setId(tc.getId()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).showing(Optional.of(tc), Optional.empty(), Optional.empty(), false);
         final @NotNull RunItemCard card = new RunItemCard(getProject());
         card.updateData(0, Set.of(TestRunEditorAttributes.RUN_STATUS), runItem, AbstractCard.titleText(1, true, tc.getDescription()));
 
@@ -104,7 +104,7 @@ public class CardDetailIconsIdeTest extends BasePlatformTestCase {
     // Rule-EDITOR-PANEL-270
     public void testHoveringTheDurationBadgeOnACardSaysDuration() {
         final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
-        final @NotNull RunItem runItem = new RunItem().setId(tc.getId()).setExecutions(List.of(Execution.builder().status(RunItemStatus.PASSED).duration(Duration.ofSeconds(42)).build())).showing(Optional.of(tc), Optional.empty(), Optional.empty(), false);
+        final @NotNull RunItem runItem = new RunItem().setId(tc.getId()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).duration(Duration.ofSeconds(42)).build())).showing(Optional.of(tc), Optional.empty(), Optional.empty(), false);
         final @NotNull RunItemCard card = new RunItemCard(getProject());
         card.updateData(0, Set.of(TestRunEditorAttributes.DURATION), runItem, AbstractCard.titleText(1, true, tc.getDescription()));
         card.layOutAs(CELL);

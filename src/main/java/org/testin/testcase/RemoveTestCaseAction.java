@@ -22,7 +22,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.GrayWithReason;
-import org.testin.actions.TestinData;
+import org.testin.actions.TestinDataKeys;
 import org.testin.model.TestCaseDto;
 import org.testin.util.Bundle;
 
@@ -32,16 +32,16 @@ public class RemoveTestCaseAction extends AbstractAnyProjectAction {
     // UC-EDITOR-PANEL-011
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        final @NotNull List<TestCaseDto> selected = TestinData.selectedTestCases(e);
+        final @NotNull List<TestCaseDto> selected = TestinDataKeys.selectedTestCases(e);
         if (selected.isEmpty()) return;
 
-        TestinData.editor(e).ifPresent(editor -> new RemoveTestCaseWork(p, editor, editor.getParent(), selected).remove());
+        TestinDataKeys.editor(e).ifPresent(editor -> new RemoveTestCaseWork(p, editor, editor.getParent(), selected).remove());
     }
 
     @Override
     protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
         // Rule-EDITOR-PANEL-214
-        if (TestinData.editor(e).filter(editor -> !editor.getParent().isTestCaseContainer()).isPresent()) {
+        if (TestinDataKeys.editor(e).filter(editor -> !editor.getParent().isTestCaseContainer()).isPresent()) {
             e.getPresentation().setEnabled(false);
             e.getPresentation().setDescription(Bundle.message("remove.test.case.disabled.description"));
             return;

@@ -26,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.testin.model.Groups;
 import org.testin.services.Services;
-import org.testin.services.TestCaseValues;
+import org.testin.services.TestCaseCompletions;
 import org.testin.ui.dialogs.DialogStyle;
 
 import javax.swing.AbstractCellEditor;
@@ -42,12 +42,12 @@ import java.util.Objects;
 
 public class GroupMultiSelectEditor extends AbstractCellEditor implements TableCellEditor {
     private final @NotNull JButton button = new JButton();
-    private final @NotNull TestCaseValues testCaseValues;
+    private final @NotNull TestCaseCompletions testCaseValues;
 
     private @NotNull String currentValue = "";
 
     public GroupMultiSelectEditor(final @NotNull Project p) {
-        this.testCaseValues = Services.getInstance(p, TestCaseValues.class);
+        this.testCaseValues = Services.getInstance(p, TestCaseCompletions.class);
 
         button.setBorderPainted(false);
         button.setHorizontalAlignment(SwingConstants.LEFT);

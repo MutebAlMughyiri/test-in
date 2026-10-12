@@ -26,7 +26,7 @@ import org.testin.editor.AbstractEditorContextMenu;
 import org.testin.editor.TestinEditor;
 import org.testin.editor.WheelForwarding;
 import org.testin.editor.card.AbstractCard;
-import org.testin.editor.card.CardHoverAction;
+import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.editor.card.CardTitle;
 import org.testin.editor.card.Offered;
 import org.testin.editor.testrun.ExecutingNow;
@@ -193,7 +193,7 @@ public class CardMouseListener extends MouseAdapter {
         if (index == -1) return Optional.empty();
 
         final @NotNull TestCaseDto tc = list.getModel().getElementAt(index);
-        final @NotNull List<Offered> buttons = CardHoverAction.onCard(p, editor.getParent(), tc);
+        final @NotNull List<Offered> buttons = TestCaseQuickAction.onCard(p, editor.getParent(), tc);
         final boolean executing = ExecutingNow.is(p, tc.getId());
         final int titleWidth = CardTitle.titleWidth(list, editor.cardTitle(tc), CardTitle.slotCount(buttons, executing));
 

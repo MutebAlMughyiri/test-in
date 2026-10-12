@@ -64,7 +64,7 @@ public class GridIdeTest extends BasePlatformTestCase {
     }
 
     private static @NotNull JBTable aGrid(final String @NotNull []... rows) {
-        return new GridPanelBuilder().buildTestTable(List.of(rows), EnumSet.of(TestSetEditorAttributes.SEQUENCE, TestSetEditorAttributes.ORDER, TestSetEditorAttributes.DESCRIPTION, TestSetEditorAttributes.EXPECTED_RESULT, TestSetEditorAttributes.ID));
+        return new GridTables().buildTestTable(List.of(rows), EnumSet.of(TestSetEditorAttributes.SEQUENCE, TestSetEditorAttributes.ORDER, TestSetEditorAttributes.DESCRIPTION, TestSetEditorAttributes.EXPECTED_RESULT, TestSetEditorAttributes.ID));
     }
 
     private static @NotNull JBTable twoRows() {
@@ -146,7 +146,7 @@ public class GridIdeTest extends BasePlatformTestCase {
         }
 
         final int expectedBesideTheDescription = 3;
-        final @NotNull JBTable fresh = new GridPanelBuilder().buildTestTable(List.of(aRow(1, "Log in", "", "id-1"), aRow(2, "Log out", "", "id-2")), EnumSet.of(TestSetEditorAttributes.SEQUENCE, TestSetEditorAttributes.ORDER, TestSetEditorAttributes.DESCRIPTION, TestSetEditorAttributes.EXPECTED_RESULT));
+        final @NotNull JBTable fresh = new GridTables().buildTestTable(List.of(aRow(1, "Log in", "", "id-1"), aRow(2, "Log out", "", "id-2")), EnumSet.of(TestSetEditorAttributes.SEQUENCE, TestSetEditorAttributes.ORDER, TestSetEditorAttributes.DESCRIPTION, TestSetEditorAttributes.EXPECTED_RESULT));
         selectDownTo(fresh, 0, DESCRIPTION);
         onClipboard("A\tB\nC\tD");
 
@@ -179,7 +179,7 @@ public class GridIdeTest extends BasePlatformTestCase {
 
     // Rule-EDITOR-PANEL-047
     public void testOnlyTheColumnsThatCanBeTypedIntoEverOpen() {
-        final @NotNull JBTable table = new GridPanelBuilder().buildTestTable(List.<String[]>of(aRow(1, "Log in", "The dashboard opens", "id-1")), EnumSet.allOf(TestSetEditorAttributes.class));
+        final @NotNull JBTable table = new GridTables().buildTestTable(List.<String[]>of(aRow(1, "Log in", "The dashboard opens", "id-1")), EnumSet.allOf(TestSetEditorAttributes.class));
 
         for (int column = 0; column < table.getColumnCount(); column++) {
             final @NotNull TestSetEditorAttributes attribute = TestSetEditorAttributes.atColumn(table.convertColumnIndexToModel(column));
@@ -188,8 +188,8 @@ public class GridIdeTest extends BasePlatformTestCase {
         }
 
         final @NotNull List<String[]> runRow = List.<String[]>of(new String[TestRunEditorAttributes.values().length]);
-        final @NotNull JBTable open = new GridPanelBuilder().buildTestRunTable(runRow, EnumSet.allOf(TestRunEditorAttributes.class), () -> true);
-        final @NotNull JBTable closed = new GridPanelBuilder().buildTestRunTable(runRow, EnumSet.allOf(TestRunEditorAttributes.class), () -> false);
+        final @NotNull JBTable open = new GridTables().buildTestRunTable(runRow, EnumSet.allOf(TestRunEditorAttributes.class), () -> true);
+        final @NotNull JBTable closed = new GridTables().buildTestRunTable(runRow, EnumSet.allOf(TestRunEditorAttributes.class), () -> false);
         for (int column = 0; column < open.getColumnCount(); column++) {
             final @NotNull TestRunEditorAttributes attribute = TestRunEditorAttributes.atColumn(open.convertColumnIndexToModel(column));
             assertEquals(attribute.getName() + " in an open test run", attribute.isEdited(), open.isCellEditable(0, column));
@@ -228,7 +228,7 @@ public class GridIdeTest extends BasePlatformTestCase {
     public void testOnlyADraggedWidthIsRememberedAndItComesBackNextTime() {
         PropertiesComponent.getInstance().unsetValue(DESCRIPTION_WIDTH);
         final @NotNull JBTable table = twoRows();
-        GridPanelBuilder.autoSizeColumns(table);
+        GridTables.autoSizeColumns(table);
         descriptionColumn(table).setWidth(222);
 
         assertFalse("a width Testin set itself was remembered", PropertiesComponent.getInstance().isValueSet(DESCRIPTION_WIDTH));

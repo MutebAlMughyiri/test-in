@@ -21,7 +21,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.keymap.KeymapUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
-import org.testin.editor.card.CardHoverAction;
+import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.editor.card.Offered;
 import org.testin.model.TestCaseDto;
 
@@ -34,7 +34,7 @@ public class KeyShownWithItsCapabilityIdeTest extends AbstractCodegenIdeTest {
     public void testAKeyIsShownWhereverTheCapabilityItTriggersIsShown() {
         final @NotNull TestCaseDto tc = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
 
-        for (final CardHoverAction button : List.of(CardHoverAction.NAVIGATE_TO_TEST_METHOD, CardHoverAction.RUN_TEST_METHOD)) {
+        for (final TestCaseQuickAction button : List.of(TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD, TestCaseQuickAction.RUN_TEST_METHOD)) {
             final @NotNull AnAction action = Optional.ofNullable(ActionManager.getInstance().getAction(button.getActionId())).orElseThrow(() -> new AssertionError(button.getActionId() + " is not registered"));
             final @NotNull String key = KeymapUtil.getFirstKeyboardShortcutText(action);
             assertFalse(button.getTooltip() + " has no key in the menu, so this proves nothing", key.isEmpty());

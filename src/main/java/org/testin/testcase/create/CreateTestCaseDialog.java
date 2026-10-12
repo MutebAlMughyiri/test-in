@@ -57,7 +57,7 @@ public class CreateTestCaseDialog extends AbstractTestCaseDialog {
         initDynamicStatusBar(keys);
         showSectionKeys(CreateTestCaseFields.DESCRIPTION.getStatusBarItems());
 
-        for (final CreateTestCaseSection section : getAllSections()) {
+        for (final TestCaseSection section : getAllSections()) {
             final @NotNull JBPanel<?> slot = form.newSlot();
 
             section.setupShortcut(keys, slot, this, this::refit);

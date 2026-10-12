@@ -19,7 +19,7 @@ package org.testin.git.change;
 import org.jetbrains.annotations.NotNull;
 import org.testin.TempTree;
 import org.testin.model.TestCaseDto;
-import org.testin.util.RealMapper;
+import org.testin.util.RealJsonCodec;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -63,7 +63,7 @@ public class ReviewKindByNameTest {
     }
 
     private @NotNull ChangeSubject kindOf(final @NotNull String relativePath) {
-        final @NotNull List<PendingChange> review = GitDiffProcessor.toDiffs(List.of("?? " + relativePath), root, RealMapper.build(), _ -> Map.of(), _ -> Optional.empty());
+        final @NotNull List<PendingChange> review = PendingChangeReader.toDiffs(List.of("?? " + relativePath), root, RealJsonCodec.build(), _ -> Map.of(), _ -> Optional.empty());
         assertEquals(review.size(), 1);
         return review.getFirst().subject();
     }
@@ -71,7 +71,7 @@ public class ReviewKindByNameTest {
     // UC-SHARE-010, Rule-SHARE-047
     @Test
     public void aFileIsKnownByItsNameNotByWhatItHolds() {
-        final @NotNull String aTestCase = RealMapper.build().writeValueAsString(TestCaseDto.builder().description("log in with a valid user").build());
+        final @NotNull String aTestCase = RealJsonCodec.build().writeValueAsString(TestCaseDto.builder().description("log in with a valid user").build());
         onDisk("Test Cases/Login/notes.json", aTestCase);
         onDisk("Test Cases/Login/.ts", "{}");
 

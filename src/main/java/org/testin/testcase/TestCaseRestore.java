@@ -28,7 +28,7 @@ import org.testin.notifications.Notifier;
 import org.testin.services.BackgroundWork;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 import org.testin.view.ViewToolWindowFactory;
 
 import java.util.List;
@@ -45,7 +45,7 @@ final class TestCaseRestore {
         }
 
         // UC-EDITOR-PANEL-017, Rule-EDITOR-PANEL-215
-        final @NotNull Written written = new Written();
+        final @NotNull RestoredTestCases written = new RestoredTestCases();
         final boolean allBack = BackgroundWork.synchronously(p, Bundle.message("remove.undo.progress"), false, () -> {
             boolean all = true;
             for (final TestCaseSnapshot snapshot : target) all &= removeAbsent(p, snapshot, written);
@@ -69,11 +69,11 @@ final class TestCaseRestore {
     // UC-EDITOR-PANEL-017, Rule-EDITOR-PANEL-255
     private static boolean stillStands(final @NotNull Project p, final @NotNull TestCaseSnapshot snapshot) {
         return Services.getInstance(p, Nodes.class).nodeExists(snapshot.testSetPath())
-                && snapshot.sameAs(TestCaseSnapshot.of(p, snapshot.testSetPath(), snapshot.ids()), Services.getInstance(p, Mapper.class));
+                && snapshot.sameAs(TestCaseSnapshot.of(p, snapshot.testSetPath(), snapshot.ids()), Services.getInstance(p, JsonCodec.class));
     }
 
     // UC-EDITOR-PANEL-017, Rule-EDITOR-PANEL-215
-    private static boolean removeAbsent(final @NotNull Project p, final @NotNull TestCaseSnapshot snapshot, final @NotNull Written written) {
+    private static boolean removeAbsent(final @NotNull Project p, final @NotNull TestCaseSnapshot snapshot, final @NotNull RestoredTestCases written) {
         final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
 
         final @NotNull List<TestCaseDto> stillThere = snapshot.absent().stream().flatMap(id -> testCases.findTestCase(id).stream()).toList();
@@ -88,7 +88,7 @@ final class TestCaseRestore {
     }
 
     // UC-EDITOR-PANEL-017
-    private static boolean restorePresent(final @NotNull Project p, final @NotNull TestCaseSnapshot snapshot, final @NotNull Written written) {
+    private static boolean restorePresent(final @NotNull Project p, final @NotNull TestCaseSnapshot snapshot, final @NotNull RestoredTestCases written) {
         final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
 
         boolean allBack = true;

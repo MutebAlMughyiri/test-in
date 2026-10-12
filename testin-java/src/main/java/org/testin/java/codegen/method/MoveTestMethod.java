@@ -25,7 +25,7 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.Fqcn;
-import org.testin.codegen.GenAction;
+import org.testin.codegen.CodeChange;
 import org.testin.codegen.GenType;
 import org.testin.codegen.event.MovedTestCase;
 import org.testin.java.codegen.GeneratedClass;
@@ -41,7 +41,7 @@ import java.util.Optional;
 import java.util.Set;
 
 // UC-CODEGEN-002, Rule-CODEGEN-077
-public class MoveTestMethod extends BaseTestMethodChange implements GenAction<MovedTestCase> {
+public class MoveTestMethod extends BaseTestMethodChange implements CodeChange<MovedTestCase> {
 
     // UC-CODEGEN-002, Rule-CODEGEN-077
     @Override

@@ -27,7 +27,7 @@ import org.testin.model.markers.TestRunMarker;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.testrun.RunItem;
 import org.testin.util.Bundle;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
@@ -42,7 +42,7 @@ import java.util.function.Function;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class PendingChangeFactory {
     // UC-SHARE-010, Rule-SHARE-047
-    static @NotNull PendingChange fromFile(final @NotNull StatusKind type, final @NotNull String beforeJson, final @NotNull String afterJson, final @NotNull Path relativePath, final @NotNull Mapper mapper, final @NotNull Function<UUID, Optional<TestCaseDto>> testCases) {
+    static @NotNull PendingChange fromFile(final @NotNull StatusKind type, final @NotNull String beforeJson, final @NotNull String afterJson, final @NotNull Path relativePath, final @NotNull JsonCodec mapper, final @NotNull Function<UUID, Optional<TestCaseDto>> testCases) {
         return switch (subjectOf(relativePath)) {
             case TEST_CASE -> testCase(type, beforeJson, afterJson, relativePath, mapper);
             case RUN_ITEM -> runItem(type, beforeJson, afterJson, relativePath, mapper, testCases);
@@ -60,7 +60,7 @@ final class PendingChangeFactory {
         };
     }
 
-    private static @NotNull Map<String, Object> fieldsIn(final @NotNull Mapper mapper, final @NotNull String json) {
+    private static @NotNull Map<String, Object> fieldsIn(final @NotNull JsonCodec mapper, final @NotNull String json) {
         if (json.isBlank()) return Map.of();
 
         try {
@@ -71,7 +71,7 @@ final class PendingChangeFactory {
         }
     }
 
-    private static @NotNull PendingChange testCase(final @NotNull StatusKind type, final @NotNull String beforeJson, final @NotNull String afterJson, final @NotNull Path relativePath, final @NotNull Mapper mapper) {
+    private static @NotNull PendingChange testCase(final @NotNull StatusKind type, final @NotNull String beforeJson, final @NotNull String afterJson, final @NotNull Path relativePath, final @NotNull JsonCodec mapper) {
         final @NotNull String testSet = parentName(relativePath);
 
         return switch (type) {
@@ -90,7 +90,7 @@ final class PendingChangeFactory {
             case MODIFIED -> {
                 final @NotNull TestCaseDto oldState = read(mapper, beforeJson, TestCaseDto.class);
                 final @NotNull TestCaseDto newState = read(mapper, afterJson, TestCaseDto.class);
-                final @NotNull List<FieldChange> fieldChanges = TestCaseChangeComparator.compare(oldState, newState);
+                final @NotNull List<FieldChange> fieldChanges = TestCaseFieldChanges.compare(oldState, newState);
 
                 yield new PendingChange(ChangeSubject.TEST_CASE, newState.getDescription(), testSet,
                         newState.getId().toString(), relativePath, StatusKind.MODIFIED, oldState,
@@ -102,7 +102,7 @@ final class PendingChangeFactory {
     }
 
     // UC-SHARE-010, Rule-SHARE-047
-    private static @NotNull PendingChange runItem(final @NotNull StatusKind type, final @NotNull String beforeJson, final @NotNull String afterJson, final @NotNull Path relativePath, final @NotNull Mapper mapper, final @NotNull Function<UUID, Optional<TestCaseDto>> testCases) {
+    private static @NotNull PendingChange runItem(final @NotNull StatusKind type, final @NotNull String beforeJson, final @NotNull String afterJson, final @NotNull Path relativePath, final @NotNull JsonCodec mapper, final @NotNull Function<UUID, Optional<TestCaseDto>> testCases) {
         final @NotNull Optional<UUID> testCaseId = FileKind.RUN_ITEM.idIn(relativePath);
         final @NotNull Optional<TestCaseDto> tc = testCaseId.flatMap(testCases);
 
@@ -112,10 +112,10 @@ final class PendingChangeFactory {
 
         final @NotNull List<FieldChange> changes = switch (type) {
             case ADDED -> List.of(new FieldChange(parentName(relativePath), "",
-                    RunItemChangeComparator.summary(read(mapper, afterJson, RunItem.class)), ChangeSubject.RUN_ITEM.getCreated()));
+                    RunItemFieldChanges.summary(read(mapper, afterJson, RunItem.class)), ChangeSubject.RUN_ITEM.getCreated()));
             case DELETED -> List.of(new FieldChange(parentName(relativePath),
-                    RunItemChangeComparator.summary(read(mapper, beforeJson, RunItem.class)), "", ChangeSubject.RUN_ITEM.getRemoved()));
-            case MODIFIED -> RunItemChangeComparator.compare(
+                    RunItemFieldChanges.summary(read(mapper, beforeJson, RunItem.class)), "", ChangeSubject.RUN_ITEM.getRemoved()));
+            case MODIFIED -> RunItemFieldChanges.compare(
                     read(mapper, beforeJson, RunItem.class), read(mapper, afterJson, RunItem.class));
         };
 
@@ -123,7 +123,7 @@ final class PendingChangeFactory {
                 relativePath, type, nothingCommitted(), changes);
     }
 
-    private static @NotNull PendingChange marker(final @NotNull StatusKind type, final @NotNull String beforeJson, final @NotNull String afterJson, final @NotNull Path relativePath, final @NotNull Mapper mapper) {
+    private static @NotNull PendingChange marker(final @NotNull StatusKind type, final @NotNull String beforeJson, final @NotNull String afterJson, final @NotNull Path relativePath, final @NotNull JsonCodec mapper) {
         final @NotNull String node = parentName(relativePath);
         final @NotNull String before = statusIn(mapper, beforeJson);
         final @NotNull String after = statusIn(mapper, afterJson);
@@ -132,7 +132,7 @@ final class PendingChangeFactory {
         changes.add(new FieldChange(relativePath.getFileName().toString(), before, after, ChangeSubject.MARKER.changeFor(type)));
 
         if (type == StatusKind.MODIFIED && NodeType.TR.isMarkerOf(relativePath.getFileName().toString())) {
-            changes.addAll(TestRunChangeComparator.compareFacts(
+            changes.addAll(TestRunMarkerFieldChanges.compareFacts(
                     read(mapper, beforeJson, TestRunMarker.class), read(mapper, afterJson, TestRunMarker.class)));
         }
 
@@ -150,7 +150,7 @@ final class PendingChangeFactory {
                 List.of(new FieldChange(relativePath.toString(), "", "", subject.changeFor(type))));
     }
 
-    private static @NotNull String statusIn(final @NotNull Mapper mapper, final @NotNull String json) {
+    private static @NotNull String statusIn(final @NotNull JsonCodec mapper, final @NotNull String json) {
         final @NotNull Object status = fieldsIn(mapper, json).get("status");
         return Objects.toString(status, "");
     }
@@ -159,7 +159,7 @@ final class PendingChangeFactory {
         return Optional.ofNullable(relativePath.getParent()).map(Path::getFileName).map(Path::toString).orElse("");
     }
 
-    private static <T> @NotNull T read(final @NotNull Mapper mapper, final @NotNull String json, final @NotNull Class<T> type) {
+    private static <T> @NotNull T read(final @NotNull JsonCodec mapper, final @NotNull String json, final @NotNull Class<T> type) {
         if (json.isEmpty()) throw new IllegalStateException("Missing Git file revision");
         return mapper.readValue(json, type);
     }

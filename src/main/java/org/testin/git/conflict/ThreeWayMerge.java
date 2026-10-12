@@ -18,14 +18,14 @@ package org.testin.git.conflict;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.jetbrains.annotations.NotNull;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 
 import java.util.ArrayList;
 import java.util.List;
 
 record ThreeWayMerge(@NotNull ObjectNode base, @NotNull ObjectNode mine, @NotNull ObjectNode theirs, @NotNull ObjectNode merged, @NotNull List<Question> questions, @NotNull List<String> settled) {
     // UC-SHARE-018, Rule-SHARE-080
-    static @NotNull ThreeWayMerge read(final @NotNull Mapper mapper, final @NotNull String base, final @NotNull String mine, final @NotNull String theirs) {
+    static @NotNull ThreeWayMerge read(final @NotNull JsonCodec mapper, final @NotNull String base, final @NotNull String mine, final @NotNull String theirs) {
         final @NotNull ObjectNode ours = mapper.readTree(mine);
 
         return new ThreeWayMerge(mapper.readTree(base), ours, mapper.readTree(theirs), ours.deepCopy(), new ArrayList<>(), new ArrayList<>());

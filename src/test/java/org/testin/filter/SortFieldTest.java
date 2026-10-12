@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.model.Priority;
 import org.testin.model.TestCaseDto;
 import org.testin.model.status.RunItemStatus;
-import org.testin.model.testrun.Execution;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testng.annotations.Test;
 
@@ -90,8 +90,8 @@ public class SortFieldTest {
         final @NotNull TestCaseDto quick = aTestCase("quick", Priority.LOW, "");
         final @NotNull TestCaseDto waiting = aTestCase("waiting", Priority.LOW, "");
         final @NotNull Map<UUID, RunItem> runItems = Map.of(
-                slow.getId(), RunItem.builder().id(slow.getId()).executions(List.of(Execution.builder().status(RunItemStatus.FAILED).duration(Duration.ofMinutes(5)).build())).build(),
-                quick.getId(), RunItem.builder().id(quick.getId()).executions(List.of(Execution.builder().status(RunItemStatus.PASSED).duration(Duration.ofSeconds(20)).build())).build(),
+                slow.getId(), RunItem.builder().id(slow.getId()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).duration(Duration.ofMinutes(5)).build())).build(),
+                quick.getId(), RunItem.builder().id(quick.getId()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).duration(Duration.ofSeconds(20)).build())).build(),
                 waiting.getId(), RunItem.builder().id(waiting.getId()).build());
         final @NotNull Function<UUID, Optional<RunItem>> inTheRun = id -> Optional.ofNullable(runItems.get(id));
 

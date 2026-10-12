@@ -18,7 +18,7 @@ package org.testin.report.generators;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.status.RunItemStatus;
-import org.testin.model.testrun.Execution;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.util.Bundle;
 import org.testng.annotations.Test;
@@ -33,7 +33,7 @@ public class ReportWarningTest {
 
     private static @NotNull RunItem executed(final @NotNull RunItemStatus... statuses) {
         return RunItem.builder().id(UUID.randomUUID())
-                .executions(Arrays.stream(statuses).map(status -> Execution.builder().status(status).build()).toList())
+                .executions(Arrays.stream(statuses).map(status -> RunItemExecution.builder().status(status).build()).toList())
                 .build();
     }
 

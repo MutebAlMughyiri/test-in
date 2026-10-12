@@ -23,10 +23,10 @@ import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.status.TestRunStatus;
-import org.testin.model.testrun.Execution;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.services.Services;
-import org.testin.testrun.RunItemStatusService;
+import org.testin.testrun.RunItemRecorder;
 import org.testin.util.Bundle;
 import org.testin.view.AbstractViewPanelIdeTest;
 import org.testin.view.Drawn;
@@ -39,8 +39,8 @@ public class ExecutionLinesIdeTest extends AbstractViewPanelIdeTest {
 
     private TestCaseDto tc;
 
-    private static @NotNull Execution execution(final @NotNull RunItemStatus status, final int invocation, final int retry, final boolean retried, final @NotNull String actual) {
-        return Execution.builder().status(status).invocation(invocation).retry(retry).retried(retried).actualResult(actual).build();
+    private static @NotNull RunItemExecution execution(final @NotNull RunItemStatus status, final int invocation, final int retry, final boolean retried, final @NotNull String actual) {
+        return RunItemExecution.builder().status(status).invocation(invocation).retry(retry).retried(retried).actualResult(actual).build();
     }
 
     private @NotNull RunItem invokedThreeTimes() {
@@ -55,8 +55,8 @@ public class ExecutionLinesIdeTest extends AbstractViewPanelIdeTest {
         return Services.getInstance(getProject(), TestRuns.class);
     }
 
-    private @NotNull RunItemStatusService runItemStatuses() {
-        return Services.getInstance(getProject(), RunItemStatusService.class);
+    private @NotNull RunItemRecorder runItemStatuses() {
+        return Services.getInstance(getProject(), RunItemRecorder.class);
     }
 
     @Override

@@ -31,12 +31,12 @@ import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.node.TestSetNode;
 import org.testin.search.GlobalSearchDialog;
-import org.testin.testrun.form.TestRunTreeCellRenderer;
+import org.testin.testrun.form.TestCaseSelectionRenderer;
 import org.testin.ui.dialogs.DialogStyle;
 import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
 import org.testin.view.Drawn;
-import org.testin.view.marker.MarkerDetailsViewDialog;
+import org.testin.view.marker.NodeDetailsDialog;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -295,7 +295,7 @@ public class DialogShellIdeTest extends BasePlatformTestCase {
         assertFalse("a dialog holding what the tester typed closes on a stray click", form.dismissOnClickOutside);
         assertFalse("a confirmation closes on a stray click", confirm.dismissOnClickOutside);
         assertTrue("the search does not close when the tester clicks away", search.dismissOnClickOutside);
-        assertTrue("the Details dialog does not close when the tester clicks away", shown(new MarkerDetailsViewDialog(getProject(), new TestSetNode())).dismissOnClickOutside);
+        assertTrue("the Details dialog does not close when the tester clicks away", shown(new NodeDetailsDialog(getProject(), new TestSetNode())).dismissOnClickOutside);
     }
 
     // UC-INTERNAL-007, Rule-INTERNAL-101
@@ -329,7 +329,7 @@ public class DialogShellIdeTest extends BasePlatformTestCase {
         assertFalse("a dialog that cannot be made smaller than its content has a scrollbar", fittedCenter instanceof JScrollPane);
         fitted.closeCancel();
 
-        final @NotNull SelectionTree tree = new SelectionTree("Test cases", new CheckedTreeNode("all"), TestRunTreeCellRenderer.create(), Optional.empty());
+        final @NotNull SelectionTree tree = new SelectionTree("Test cases", new CheckedTreeNode("all"), TestCaseSelectionRenderer.create(), Optional.empty());
         final @NotNull Form resizable = shown(new Form(getProject(), List.of(aField("Name"), DialogPart.of(tree)), true, DialogSize.CONTENT));
         final @NotNull Component center = ((BorderLayout) resizable.root().getLayout()).getLayoutComponent(BorderLayout.CENTER);
 

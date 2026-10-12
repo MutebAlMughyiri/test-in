@@ -21,14 +21,14 @@ import com.intellij.ui.CheckedTreeNode;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.AutomationState;
 import org.testin.filter.FilterPopupBtn;
-import org.testin.filter.FilterSelection;
+import org.testin.filter.FilterAndSortChoice;
 import org.testin.filter.FilterSource;
 import org.testin.filter.TestCaseFilter;
 import org.testin.model.Modules;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.AbstractNode;
 import org.testin.services.Services;
-import org.testin.services.TestCaseValues;
+import org.testin.services.TestCaseCompletions;
 import org.testin.ui.framework.SelectionTree;
 import org.testin.util.Bundle;
 
@@ -57,7 +57,7 @@ public final class TestRunFormFilter implements FilterSource {
         collect(root, testCasesRoot);
 
         this.button = new FilterPopupBtn(this);
-        this.selection = new SelectionTree(Bundle.message("test.run.form.test.cases.caption"), root, TestRunTreeCellRenderer.create(), Optional.of(button));
+        this.selection = new SelectionTree(Bundle.message("test.run.form.test.cases.caption"), root, TestCaseSelectionRenderer.create(), Optional.of(button));
 
         automation.read(p, offered, () -> {
             if (!button.getSelectedAutomation().isEmpty()) onToolBarFilterSelectionChanged();
@@ -87,13 +87,13 @@ public final class TestRunFormFilter implements FilterSource {
 
     @Override
     public @NotNull Set<String> getAvailableGroups() {
-        return Services.getInstance(p, TestCaseValues.class).getGroups();
+        return Services.getInstance(p, TestCaseCompletions.class).getGroups();
     }
 
     // Rule-TREE-PANEL-129, Rule-TREE-PANEL-130
     @Override
     public void onToolBarFilterSelectionChanged() {
-        final @NotNull FilterSelection wanted = FilterSelection.of(button, "");
+        final @NotNull FilterAndSortChoice wanted = FilterAndSortChoice.of(button, "");
         final @NotNull Set<UUID> shown = automation.matching(TestCaseFilter.filter(offered, wanted), wanted.automation()).stream()
                 .map(TestCaseDto::getId)
                 .collect(Collectors.toSet());

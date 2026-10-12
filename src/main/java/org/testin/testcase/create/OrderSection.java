@@ -46,7 +46,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class OrderSection implements CreateTestCaseSection {
+public class OrderSection implements TestCaseSection {
     private final @NotNull Project p;
     private final @NotNull Notifier notifier;
     private final @NotNull TestCases testCases;

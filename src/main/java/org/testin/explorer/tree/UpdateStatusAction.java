@@ -23,7 +23,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.GrayWithReason;
-import org.testin.actions.TestinData;
+import org.testin.actions.TestinDataKeys;
 import org.testin.indexer.Nodes;
 import org.testin.logger.TestinLogger;
 import org.testin.model.node.AbstractNode;
@@ -67,7 +67,7 @@ public class UpdateStatusAction extends AbstractAnyProjectAction {
     }
 
     private @NotNull Optional<AbstractNode> selected(final @NotNull AnActionEvent e) {
-        return TestinData.singleSelectedNode(e).filter(dir -> dir.getMarker().statuses().contains(status));
+        return TestinDataKeys.singleSelectedNode(e).filter(dir -> dir.getMarker().statuses().contains(status));
     }
 
     // UC-TREE-PANEL-018, Rule-TREE-PANEL-065

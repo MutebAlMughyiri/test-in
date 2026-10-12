@@ -22,10 +22,10 @@ import com.intellij.testFramework.TestActionEvent;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
-import org.testin.actions.TestinData;
+import org.testin.actions.TestinDataKeys;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.grid.GridKeys;
-import org.testin.editor.grid.GridPanelBuilder;
+import org.testin.editor.grid.GridTables;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestSetNode;
@@ -72,8 +72,8 @@ public class WaysInIdeTest extends AbstractViewPanelIdeTest {
         final @NotNull ViewDetailsAction action = new ViewDetailsAction();
         final @NotNull AnActionEvent e = TestActionEvent.createTestEvent(action, SimpleDataContext.builder()
                 .add(CommonDataKeys.PROJECT, getProject())
-                .add(TestinData.EDITOR, editor)
-                .add(TestinData.SELECTED_TEST_CASES, testCases)
+                .add(TestinDataKeys.EDITOR, editor)
+                .add(TestinDataKeys.SELECTED_TEST_CASES, testCases)
                 .build());
 
         action.actionPerformed(e);
@@ -122,7 +122,7 @@ public class WaysInIdeTest extends AbstractViewPanelIdeTest {
                 .map(JBTable.class::cast)
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("the editor drew no grid"));
-        final int number = IntStream.range(0, grid.getColumnCount()).filter(column -> GridPanelBuilder.isSequenceColumn(grid, column)).findFirst().orElseThrow(() -> new AssertionError("the grid has no number column"));
+        final int number = IntStream.range(0, grid.getColumnCount()).filter(column -> GridTables.isSequenceColumn(grid, column)).findFirst().orElseThrow(() -> new AssertionError("the grid has no number column"));
         grid.setRowSelectionInterval(0, 2);
         grid.setColumnSelectionInterval(number, number);
 

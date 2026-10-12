@@ -19,7 +19,7 @@ package org.testin.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.Config;
+import org.testin.model.DateFormats;
 import org.testin.model.Groups;
 import org.testin.model.Priority;
 import org.testin.model.status.TestCaseStatus;
@@ -44,7 +44,7 @@ public final class TestCaseFieldParser {
     private static final @NotNull Pattern STEP_SEPARATOR = Pattern.compile("(\\s)(?=\\d+[-.])");
     private static final @NotNull Pattern STEP_PREFIX = Pattern.compile("^\\d+[-.]\\s*");
     private static final @NotNull DateTimeFormatter WITHOUT_WEEKDAY =
-            DateTimeFormatter.ofPattern(Config.DATE_WITHOUT_WEEKDAY_PATTERN, Locale.US);
+            DateTimeFormatter.ofPattern(DateFormats.DATE_WITHOUT_WEEKDAY_PATTERN, Locale.US);
 
     public static @NotNull List<String> steps(final @NotNull String rawSteps) {
         if (rawSteps.isBlank()) return new ArrayList<>();
@@ -92,11 +92,11 @@ public final class TestCaseFieldParser {
 
     // UC-SHARE-005, Rule-SHARE-121
     public static @NotNull Optional<ZonedDateTime> date(final @NotNull String value) {
-        if (value.isBlank()) return Optional.of(Config.NOT_EXECUTED);
+        if (value.isBlank()) return Optional.of(DateFormats.NOT_EXECUTED);
 
         final @NotNull String text = value.trim();
         return parsed(() -> ZonedDateTime.parse(text.replaceFirst("^\\p{L}+\\s+", ""), WITHOUT_WEEKDAY))
-                .or(() -> parsed(() -> LocalDateTime.parse(text, Config.EXCEL_DATE_FORMATTER).atZone(ZoneId.systemDefault())));
+                .or(() -> parsed(() -> LocalDateTime.parse(text, DateFormats.EXCEL_DATE_FORMATTER).atZone(ZoneId.systemDefault())));
     }
 
     private static @NotNull Optional<ZonedDateTime> parsed(final @NotNull Supplier<ZonedDateTime> parse) {

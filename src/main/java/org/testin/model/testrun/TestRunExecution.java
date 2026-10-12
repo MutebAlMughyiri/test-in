@@ -20,7 +20,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.Config;
+import org.testin.model.DateFormats;
 import org.testin.model.markers.DetailRow;
 import org.testin.model.markers.TestRunMarker;
 import org.testin.util.Bundle;
@@ -55,7 +55,7 @@ public enum TestRunExecution {
         final @NotNull ZonedDateTime from = testRun.getExecutionStartedAt();
         final @NotNull ZonedDateTime to = testRun.getExecutionEndedAt();
 
-        if (Config.isNotExecuted(from) || Config.isNotExecuted(to)) return "";
+        if (DateFormats.isNotExecuted(from) || DateFormats.isNotExecuted(to)) return "";
 
         return Display.formatTestRunClock(Duration.between(from, to));
     }

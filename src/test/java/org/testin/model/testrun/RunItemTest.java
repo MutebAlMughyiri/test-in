@@ -21,7 +21,7 @@ import org.testin.model.TestCaseDto;
 import org.testin.model.bug.BugPriority;
 import org.testin.model.bug.BugSeverity;
 import org.testin.model.status.RunItemStatus;
-import org.testin.util.RealMapper;
+import org.testin.util.RealJsonCodec;
 import org.testng.annotations.Test;
 
 import java.time.Duration;
@@ -36,11 +36,11 @@ import static org.testng.Assert.assertTrue;
 
 public class RunItemTest {
 
-    private static @NotNull Execution execution(final @NotNull RunItemStatus status, final @NotNull String actual) {
-        return Execution.builder().status(status).actualResult(actual).build();
+    private static @NotNull RunItemExecution execution(final @NotNull RunItemStatus status, final @NotNull String actual) {
+        return RunItemExecution.builder().status(status).actualResult(actual).build();
     }
 
-    private static @NotNull RunItem withExecutions(final @NotNull Execution... executions) {
+    private static @NotNull RunItem withExecutions(final @NotNull RunItemExecution... executions) {
         return RunItem.builder().id(UUID.randomUUID()).executions(List.of(executions)).build();
     }
 
@@ -50,7 +50,7 @@ public class RunItemTest {
         final @NotNull RunItem runItem = RunItem.builder().id(UUID.randomUUID()).build();
         runItem.recordRunItemStatus(RunItemStatus.PASSED, "muteb", Duration.ZERO, Failure.NONE);
 
-        final @NotNull String json = RealMapper.build().writeValueAsString(runItem);
+        final @NotNull String json = RealJsonCodec.build().writeValueAsString(runItem);
 
         for (final String key : List.of("actualResult", "stacktrace", "screenshots", "bugSeverity", "bugPriority", "bugIssueUrl", "default", "untested", "clock", "invocation", "retry", "retried")) {
             assertFalse(json.contains("\"" + key + "\""), "an ordinary passed run item stored " + key + ": " + json);
@@ -61,7 +61,7 @@ public class RunItemTest {
     // Rule-INTERNAL-135
     @Test
     public void aKeyLeftOutOrUnknownReadsBackAsAFreshRunItemHoldsIt() {
-        final @NotNull RunItem read = RealMapper.build().readValue("{\"id\" : \"" + UUID.randomUUID() + "\", \"executions\" : [ { \"status\" : \"PASSED\", \"fromANewerTestin\" : 1 } ]}", RunItem.class);
+        final @NotNull RunItem read = RealJsonCodec.build().readValue("{\"id\" : \"" + UUID.randomUUID() + "\", \"executions\" : [ { \"status\" : \"PASSED\", \"fromANewerTestin\" : 1 } ]}", RunItem.class);
 
         assertEquals(read.getStatus(), RunItemStatus.PASSED);
         assertEquals(read.getBugSeverity(), BugSeverity.DEFAULT);
@@ -92,7 +92,7 @@ public class RunItemTest {
         runItem.recordRunItemStatus(RunItemStatus.BLOCKED, "tester", Duration.ZERO, Failure.NONE);
 
         assertEquals(runItem.getStatus(), RunItemStatus.BLOCKED);
-        assertTrue(runItem.getExecutions().stream().noneMatch(Execution::isChosen), "no flag is left behind to disagree with the newest");
+        assertTrue(runItem.getExecutions().stream().noneMatch(RunItemExecution::isChosen), "no flag is left behind to disagree with the newest");
     }
 
     // Rule-VIEW-PANEL-120
@@ -104,7 +104,7 @@ public class RunItemTest {
         runItem.chooseExecution(1);
 
         assertEquals(runItem.getStatus(), RunItemStatus.PASSED);
-        assertTrue(runItem.getExecutions().stream().noneMatch(Execution::isChosen), "the last needs no flag to be the default");
+        assertTrue(runItem.getExecutions().stream().noneMatch(RunItemExecution::isChosen), "the last needs no flag to be the default");
     }
 
     // Rule-VIEW-PANEL-121
@@ -134,7 +134,7 @@ public class RunItemTest {
         runItem.showExecutions(List.of(execution(RunItemStatus.PASSED, ""), execution(RunItemStatus.FAILED, "invocation 2")), 1, "Muteb");
         assertEquals(runItem.getExecutions().size(), 3, "the attempt already shown is replaced, not added twice");
 
-        final @NotNull Execution decides = execution(RunItemStatus.FAILED, "invocation 2");
+        final @NotNull RunItemExecution decides = execution(RunItemStatus.FAILED, "invocation 2");
         decides.setChosen(true);
         runItem.recordExecutions(List.of(execution(RunItemStatus.PASSED, ""), decides, execution(RunItemStatus.PASSED, "")), 2, "Muteb");
         assertEquals(runItem.getExecutions().size(), 4);
@@ -145,9 +145,9 @@ public class RunItemTest {
     // Rule-EDITOR-PANEL-288
     @Test
     public void theTimeSpentCountsEveryExecutionWhileTheCardShowsTheDefaults() {
-        final @NotNull Execution first = execution(RunItemStatus.FAILED, "");
+        final @NotNull RunItemExecution first = execution(RunItemStatus.FAILED, "");
         first.setDuration(Duration.ofSeconds(3));
-        final @NotNull Execution again = execution(RunItemStatus.PASSED, "");
+        final @NotNull RunItemExecution again = execution(RunItemStatus.PASSED, "");
         again.setDuration(Duration.ofSeconds(10));
         final @NotNull RunItem runItem = withExecutions(first, again);
 
@@ -180,8 +180,8 @@ public class RunItemTest {
     @Test
     public void everyExecutionsScreenshotsAreStillNamed() {
         final @NotNull RunItem runItem = withExecutions(
-                Execution.builder().status(RunItemStatus.FAILED).screenshots(List.of("k3f9a.png")).build(),
-                Execution.builder().status(RunItemStatus.FAILED).screenshots(List.of("m2p7q.png")).build());
+                RunItemExecution.builder().status(RunItemStatus.FAILED).screenshots(List.of("k3f9a.png")).build(),
+                RunItemExecution.builder().status(RunItemStatus.FAILED).screenshots(List.of("m2p7q.png")).build());
 
         assertEquals(runItem.getScreenshots(), List.of("m2p7q.png"), "a reader sees the default's");
         assertEquals(runItem.allScreenshots(), List.of("k3f9a.png", "m2p7q.png"), "but the files of the first are still in use");

@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.AbstractNode;
 import org.testin.services.Services;
-import org.testin.services.TestCaseValues;
+import org.testin.services.TestCaseCompletions;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -34,11 +34,11 @@ import java.util.UUID;
 @Service(Service.Level.PROJECT)
 public final class TestCases {
     private final @NotNull ProjectIndexer indexer;
-    private final @NotNull TestCaseValues testCaseValues;
+    private final @NotNull TestCaseCompletions testCaseValues;
 
     public TestCases(final @NotNull Project p) {
         this.indexer = Services.getInstance(p, ProjectIndexer.class);
-        this.testCaseValues = Services.getInstance(p, TestCaseValues.class);
+        this.testCaseValues = Services.getInstance(p, TestCaseCompletions.class);
     }
 
     private @NotNull IndexerDataStore store() {

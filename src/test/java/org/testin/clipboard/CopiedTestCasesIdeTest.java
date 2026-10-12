@@ -20,7 +20,7 @@ import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.testin.model.TestCaseDto;
 import org.testin.services.Services;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 
 import java.awt.datatransfer.StringSelection;
 import java.util.List;
@@ -32,7 +32,7 @@ public class CopiedTestCasesIdeTest extends BasePlatformTestCase {
         CopyPasteManager.getInstance().setContents(new StringSelection("a line copied from a bug report"));
         assertTrue("text the tester copied elsewhere was read as test cases waiting to be pasted", CopiedTestCases.onTheClipboard(getProject()).isEmpty());
 
-        CopyPasteManager.getInstance().setContents(new StringSelection(Services.getInstance(getProject(), Mapper.class).writeValueAsString(List.of(TestCaseDto.builder().description("Log in").build()))));
+        CopyPasteManager.getInstance().setContents(new StringSelection(Services.getInstance(getProject(), JsonCodec.class).writeValueAsString(List.of(TestCaseDto.builder().description("Log in").build()))));
         assertEquals("a copied test case was not seen waiting on the clipboard", List.of("Log in"), CopiedTestCases.onTheClipboard(getProject()).stream().map(TestCaseDto::getDescription).toList());
     }
 }

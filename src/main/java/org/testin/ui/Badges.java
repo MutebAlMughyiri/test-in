@@ -99,7 +99,7 @@ public final class Badges {
             }
         }
 
-        badges.add(new BugBadge(value, color, said));
+        badges.add(new BugPill(value, color, said));
     }
 
     public static @NotNull Badge createGroupBadge(final @NotNull String group) {

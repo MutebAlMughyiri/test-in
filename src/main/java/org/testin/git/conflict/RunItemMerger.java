@@ -22,9 +22,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.Config;
+import org.testin.model.DateFormats;
 import org.testin.util.Bundle;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 import org.testin.util.TestCaseFieldParser;
 
 import java.time.ZonedDateTime;
@@ -40,7 +40,7 @@ final class RunItemMerger {
     private static final @NotNull String DEFAULT = "default";
 
     // UC-SHARE-018, Rule-SHARE-080, Rule-SHARE-081
-    public static @NotNull MergeOutcome of(final @NotNull Mapper mapper, final @NotNull String mine, final @NotNull String theirs) {
+    public static @NotNull MergeOutcome of(final @NotNull JsonCodec mapper, final @NotNull String mine, final @NotNull String theirs) {
         final @NotNull ObjectNode mineNode = mapper.readTree(mine);
         final @NotNull ObjectNode theirsNode = mapper.readTree(theirs);
 
@@ -74,10 +74,10 @@ final class RunItemMerger {
     }
 
     private static @NotNull ZonedDateTime executedAt(final @NotNull JsonNode execution) {
-        return TestCaseFieldParser.date(execution.path(EXECUTED_AT).asText("")).orElse(Config.NOT_EXECUTED);
+        return TestCaseFieldParser.date(execution.path(EXECUTED_AT).asText("")).orElse(DateFormats.NOT_EXECUTED);
     }
 
     private static @NotNull ZonedDateTime lastRecorded(final @NotNull ObjectNode runItem) {
-        return executions(runItem).map(RunItemMerger::executedAt).max(Comparator.naturalOrder()).orElse(Config.NOT_EXECUTED);
+        return executions(runItem).map(RunItemMerger::executedAt).max(Comparator.naturalOrder()).orElse(DateFormats.NOT_EXECUTED);
     }
 }

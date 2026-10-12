@@ -21,9 +21,9 @@ import com.intellij.openapi.application.ApplicationManager;
 import org.jetbrains.annotations.NotNull;
 import org.testin.Await;
 import org.testin.Said;
-import org.testin.editor.card.CardHoverAction;
+import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.git.ShareGestures;
-import org.testin.git.review.PendingCommitsDialog;
+import org.testin.git.review.PendingChangesDialog;
 import org.testin.indexer.AbstractReadTheRootIdeTest;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
@@ -38,7 +38,7 @@ import org.testin.model.status.TestRunStatus;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
 import org.testin.testrun.ChangedSinceCommit;
-import org.testin.testrun.RunItemStatusService;
+import org.testin.testrun.RunItemRecorder;
 import org.testin.testrun.TestRunStatusChange;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.util.Bundle;
@@ -105,7 +105,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
 
     @Override
     protected void tearDown() {
-        ShownDialog.close(getProject(), PendingCommitsDialog.class);
+        ShownDialog.close(getProject(), PendingChangesDialog.class);
         super.tearDown();
     }
 
@@ -259,7 +259,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
         readEverything();
     }
 
-    private @NotNull List<HistoryEntry> theHistoryOfTheDeletedTestCase() {
+    private @NotNull List<TestCaseHistoryCard> theHistoryOfTheDeletedTestCase() {
         Services.getInstance(getProject(), BoundTestProject.class).choose(String.valueOf(testProject.getFileName()));
         try {
             return ApplicationManager.getApplication().executeOnPooledThread(() -> TestCaseHistory.deletedFile(getProject(), id)
@@ -279,7 +279,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
         final @NotNull RunItem runItem = theRunItemOf(inProgress);
         assertEquals("a deleted test case was not Removed", RunItemStatus.REMOVED, runItem.shownStatus());
         assertEquals("the run item did not show the last text Git holds", DESCRIPTION, runItem.shownTestCase().getDescription());
-        assertTrue("a deleted test case took a run item status", Services.getInstance(getProject(), RunItemStatusService.class).heldTestRun(inProgress).flatMap(testRun -> testRun.runItemOf(id)).filter(RunItem::isRemoved).isPresent());
+        assertTrue("a deleted test case took a run item status", Services.getInstance(getProject(), RunItemRecorder.class).heldTestRun(inProgress).flatMap(testRun -> testRun.runItemOf(id)).filter(RunItem::isRemoved).isPresent());
     }
 
     // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-113
@@ -287,8 +287,8 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
         committedAsItIs();
         theTestCaseIsDeleted();
 
-        final @NotNull List<HistoryEntry> entries = theHistoryOfTheDeletedTestCase();
-        assertEquals(List.of(HistoryEntryKind.REMOVED, HistoryEntryKind.CREATED), entries.stream().map(HistoryEntry::kind).toList());
+        final @NotNull List<TestCaseHistoryCard> entries = theHistoryOfTheDeletedTestCase();
+        assertEquals(List.of(TestCaseHistoryKind.REMOVED, TestCaseHistoryKind.CREATED), entries.stream().map(TestCaseHistoryCard::kind).toList());
         assertFalse("the deletion is not committed yet", entries.getFirst().isCommitted());
     }
 
@@ -298,8 +298,8 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
         theTestCaseIsDeleted();
         mustGit(testProject, "commit", "-q", "-am", "Remove the login test case");
 
-        final @NotNull List<HistoryEntry> entries = theHistoryOfTheDeletedTestCase();
-        assertEquals(List.of(HistoryEntryKind.REMOVED, HistoryEntryKind.CREATED), entries.stream().map(HistoryEntry::kind).toList());
+        final @NotNull List<TestCaseHistoryCard> entries = theHistoryOfTheDeletedTestCase();
+        assertEquals(List.of(TestCaseHistoryKind.REMOVED, TestCaseHistoryKind.CREATED), entries.stream().map(TestCaseHistoryCard::kind).toList());
         assertEquals("Remove the login test case", entries.getFirst().message());
     }
 
@@ -309,7 +309,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
         final @NotNull Path closed = aTestRun("Cycle 5", TestRunStatus.CLOSED);
         final @NotNull Path committed = aTestRun("Cycle 6", TestRunStatus.COMMITTED);
         readEverything();
-        final @NotNull RunItemStatusService runItemStatuses = Services.getInstance(getProject(), RunItemStatusService.class);
+        final @NotNull RunItemRecorder runItemStatuses = Services.getInstance(getProject(), RunItemRecorder.class);
 
         assertTrue("a Completed test run refused a run item status", runItemStatuses.heldTestRun(completed).isPresent());
         assertTrue("a Closed test run refused a run item status", runItemStatuses.heldTestRun(closed).isPresent());
@@ -417,7 +417,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
         final @NotNull RunItem runItem = theRunItemOf(committed);
         assertEquals("Press Pay", runItem.shownTestCase().getDescription());
         assertFalse(ChangedSinceCommit.of(runItem));
-        assertTrue("a Committed test run took a run item status", Services.getInstance(getProject(), RunItemStatusService.class).heldTestRun(committed).isEmpty());
+        assertTrue("a Committed test run took a run item status", Services.getInstance(getProject(), RunItemRecorder.class).heldTestRun(committed).isEmpty());
     }
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-239
@@ -538,9 +538,9 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
         readEverything();
         final @NotNull TestCaseDto tc = Services.getInstance(getProject(), TestCases.class).findTestCase(id).orElseThrow();
 
-        assertTrue("Run was offered on a Committed test run", CardHoverAction.RUN_TEST_METHOD.whyNotHere(Optional.of(theTestRunAt(committed)), tc).isPresent());
-        assertTrue("Run was refused on a Completed test run", CardHoverAction.RUN_TEST_METHOD.whyNotHere(Optional.of(theTestRunAt(completed)), tc).isEmpty());
-        assertTrue("Run was refused outside any test run", CardHoverAction.RUN_TEST_METHOD.whyNotHere(Optional.empty(), tc).isEmpty());
+        assertTrue("Run was offered on a Committed test run", TestCaseQuickAction.RUN_TEST_METHOD.whyNotHere(Optional.of(theTestRunAt(committed)), tc).isPresent());
+        assertTrue("Run was refused on a Completed test run", TestCaseQuickAction.RUN_TEST_METHOD.whyNotHere(Optional.of(theTestRunAt(completed)), tc).isEmpty());
+        assertTrue("Run was refused outside any test run", TestCaseQuickAction.RUN_TEST_METHOD.whyNotHere(Optional.empty(), tc).isEmpty());
     }
 
     // UC-INTERNAL-002, Rule-EDITOR-PANEL-239

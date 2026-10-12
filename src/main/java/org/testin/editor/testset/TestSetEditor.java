@@ -31,11 +31,11 @@ import org.testin.editor.grid.TestSetGridEditListener;
 import org.testin.editor.grid.GridRows;
 import org.testin.editor.cardview.TestCaseCardRenderer;
 import org.testin.editor.open.UnifiedVirtualFile;
-import org.testin.editor.statusbar.StatusBarListener;
-import org.testin.editor.toolbar.TestSetDetailsPopupBtn;
+import org.testin.editor.statusbar.EditorStatusBarPaging;
+import org.testin.editor.toolbar.TestSetFieldsPopupBtn;
 import org.testin.editor.toolbar.TestSetToolbar;
-import org.testin.editor.toolbar.Toolbar;
-import org.testin.filter.FilterSelection;
+import org.testin.editor.toolbar.ToolbarCallbacks;
+import org.testin.filter.FilterAndSortChoice;
 import org.testin.filter.TestCaseFilter;
 import org.testin.help.Guide;
 import org.testin.help.Guides;
@@ -61,7 +61,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes, TestSetNode> implements Toolbar {
+public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes, TestSetNode> implements ToolbarCallbacks {
     private final @NotNull CardModelListener modelChangeNotifier;
 
     @Getter
@@ -90,7 +90,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes,
         wireList();
 
         mainPanel.add(SideScroll.of(statusBar), BorderLayout.SOUTH);
-        StatusBarListener.attach(this);
+        EditorStatusBarPaging.attach(this);
 
         ExecutionRecorder.onReported(p, projectDisposable, (_, _, _, _) -> list.repaint());
 
@@ -273,7 +273,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes,
 
     @Override
     public @NotNull Set<TestSetEditorAttributes> getSelectedDetails() {
-        return getToolBar().getToolbarItem(TestSetDetailsPopupBtn.class).getSelectedDetails();
+        return getToolBar().getToolbarItem(TestSetFieldsPopupBtn.class).getSelectedDetails();
     }
 
     @Override
@@ -373,7 +373,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes,
 
     @Override
     protected @NotNull List<TestCaseDto> getFilteredList() {
-        final @NotNull FilterSelection filters = FilterSelection.of(toolBar);
+        final @NotNull FilterAndSortChoice filters = FilterAndSortChoice.of(toolBar);
 
         final @NotNull List<TestCaseDto> matched;
         synchronized (allTestCases) {

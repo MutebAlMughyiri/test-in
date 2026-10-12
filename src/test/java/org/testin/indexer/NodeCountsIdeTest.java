@@ -27,7 +27,7 @@ import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
-import org.testin.model.testrun.Execution;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.TestRunSummary;
 import org.testin.model.status.RunItemStatus;
@@ -128,8 +128,8 @@ public class NodeCountsIdeTest extends AbstractTempRootIdeTest {
         final @NotNull List<UUID> testCases = aTestSet(tp.getTestCasesFolder(), "Login", 4, TestSetStatus.ACTIVE);
         final @NotNull TestRunNode tr = aTestRun(tp);
         Services.getInstance(getProject(), TestRuns.class).putRunItems(tr.getPath(), new RunItems().setAll(new ArrayList<>(List.of(
-                new RunItem().setId(testCases.getFirst()).setExecutions(List.of(Execution.builder().status(RunItemStatus.PASSED).build())),
-                new RunItem().setId(testCases.get(1)).setExecutions(List.of(Execution.builder().status(RunItemStatus.FAILED).build()))))));
+                new RunItem().setId(testCases.getFirst()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())),
+                new RunItem().setId(testCases.get(1)).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build()))))));
 
         final @NotNull TestRunSummary counted = NodeCounter.testRunFigures(getProject(), tr).testRun();
 

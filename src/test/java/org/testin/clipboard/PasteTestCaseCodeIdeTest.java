@@ -32,7 +32,7 @@ import org.testin.indexer.TestCases;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 
 import java.awt.datatransfer.StringSelection;
 import java.util.Arrays;
@@ -67,7 +67,7 @@ public class PasteTestCaseCodeIdeTest extends AbstractCodegenIdeTest {
     public void testAPastedCopyGetsItsOwnMethodWithTheOriginalsBody() {
         final @NotNull TestSetNode login = createdTestSet("Login");
         final @NotNull TestCaseDto original = automatedTestCase(login);
-        CopyPasteManager.getInstance().setContents(new StringSelection(Services.getInstance(getProject(), Mapper.class).writeValueAsString(List.of(original))));
+        CopyPasteManager.getInstance().setContents(new StringSelection(Services.getInstance(getProject(), JsonCodec.class).writeValueAsString(List.of(original))));
 
         final @NotNull TestSetEditor editor = new TestSetEditor(getProject(), new UnifiedVirtualFile(login));
         try {

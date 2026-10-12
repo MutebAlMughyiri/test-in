@@ -26,7 +26,7 @@ import org.testin.model.node.TestRunNode;
 import org.testin.model.testrun.RunItem;
 import org.testin.services.Services;
 import org.testin.util.FailureText;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 final class RunItemWriter {
     private final @NotNull IndexerDataStore store;
     private final @NotNull TestDataFiles files;
-    private final @NotNull Mapper mapper;
+    private final @NotNull JsonCodec mapper;
 
     private final @NotNull ExecutorService queue =
             AppExecutorUtil.createBoundedApplicationPoolExecutor("Testin Run Item Writer", 1);
@@ -57,7 +57,7 @@ final class RunItemWriter {
     RunItemWriter(final @NotNull Project p, final @NotNull IndexerDataStore store) {
         this.store = store;
         this.files = Services.getInstance(p, TestDataFiles.class);
-        this.mapper = Services.getInstance(p, Mapper.class);
+        this.mapper = Services.getInstance(p, JsonCodec.class);
     }
 
     private static @NotNull Set<String> namedScreenshots(final @NotNull RunItems runItems) {

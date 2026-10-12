@@ -31,7 +31,7 @@ import org.jetbrains.annotations.TestOnly;
 import org.testin.actions.ActionSystem;
 import org.testin.actions.Declared;
 import org.testin.codegen.AutomationState;
-import org.testin.editor.card.CardHoverAction;
+import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.editor.card.HoverButton;
 import org.testin.editor.card.ShownTestCaseAction;
 import org.testin.editor.testrun.ExecutionControl;
@@ -46,7 +46,7 @@ import org.testin.model.status.RunItemStatus;
 import org.testin.services.Services;
 import org.testin.testcase.CreateTestCaseFields;
 import org.testin.testcase.TestSetEditorAttributes;
-import org.testin.testrun.RunItemStatusService;
+import org.testin.testrun.RunItemRecorder;
 import org.testin.ui.Tooltip;
 import org.testin.ui.framework.Prose;
 import org.testin.ui.framework.ShortcutStrip;
@@ -83,10 +83,10 @@ final class LightModeScreen {
 
     private static final int BUTTON_GAP = 8;
 
-    private static final @NotNull List<CardHoverAction> KEYED = List.of(CardHoverAction.NAVIGATE_TO_TEST_METHOD, CardHoverAction.RUN_TEST_METHOD);
+    private static final @NotNull List<TestCaseQuickAction> KEYED = List.of(TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD, TestCaseQuickAction.RUN_TEST_METHOD);
 
     private final @NotNull TestRunEditor editor;
-    private final @NotNull RunItemStatusService runItemStatusService;
+    private final @NotNull RunItemRecorder runItemStatusService;
     private final @NotNull AutomationState automationState;
     private final @NotNull Runnable onClosed;
 
@@ -128,7 +128,7 @@ final class LightModeScreen {
 
     LightModeScreen(final @NotNull TestRunEditor editor, final @NotNull Runnable onClosed) {
         this.editor = editor;
-        this.runItemStatusService = Services.getInstance(editor.getProject(), RunItemStatusService.class);
+        this.runItemStatusService = Services.getInstance(editor.getProject(), RunItemRecorder.class);
         this.automationState = Services.getInstance(editor.getProject(), AutomationState.class);
         this.details = new TestCaseDetails();
         this.onClosed = onClosed;
@@ -423,7 +423,7 @@ final class LightModeScreen {
             final @NotNull Project p = editor.getProject();
             final @NotNull Automated automation = automationState.of(tc.getId());
 
-            CardHoverAction.onCard(p, editor.getParent(), tc).stream()
+            TestCaseQuickAction.onCard(p, editor.getParent(), tc).stream()
                     .filter(offered -> viewMenu.getSelectedDetails().stream().anyMatch(part -> part.governs(offered.action())))
                     .forEach(offered -> buttons.add(HoverButton.of(p, offered, offered.action().iconOn(automation), offered.action().getTooltip(), () -> offered.action().executeFor(editor, tc))));
         });
@@ -592,8 +592,8 @@ final class LightModeScreen {
     }
 
     // UC-EDITOR-PANEL-046, Rule-EDITOR-PANEL-245
-    private @NotNull StatusBarItem keyHint(final @NotNull CardHoverAction button) {
-        final @NotNull CardHoverAction now = testCaseForButtons()
+    private @NotNull StatusBarItem keyHint(final @NotNull TestCaseQuickAction button) {
+        final @NotNull TestCaseQuickAction now = testCaseForButtons()
                 .map(tc -> button.gestureOn(editor.getProject(), tc))
                 .orElse(button);
 

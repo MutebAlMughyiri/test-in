@@ -19,7 +19,7 @@ package org.testin.filter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.Config;
+import org.testin.model.DateFormats;
 import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.RunItem;
 import org.testin.testcase.TestSetEditorAttributes;
@@ -85,7 +85,7 @@ public enum SortField {
             TestSetEditorAttributes.UPDATED_AT.getName(),
             false,
             Comparator.comparing((SortedTestCase shown) -> shown.testCase().getUpdatedAt()),
-            shown -> shown.testCase().getUpdatedAt().equals(Config.NOT_EXECUTED)
+            shown -> shown.testCase().getUpdatedAt().equals(DateFormats.NOT_EXECUTED)
     ),
 
     RUN_ITEM_STATUS(
@@ -99,7 +99,7 @@ public enum SortField {
             TestRunEditorAttributes.EXECUTED_AT.getName(),
             true,
             Comparator.comparing((SortedTestCase shown) -> shown.runItem().map(RunItem::getExecutedAt).orElseThrow()),
-            shown -> shown.runItem().map(RunItem::getExecutedAt).filter(at -> !at.equals(Config.NOT_EXECUTED)).isEmpty()
+            shown -> shown.runItem().map(RunItem::getExecutedAt).filter(at -> !at.equals(DateFormats.NOT_EXECUTED)).isEmpty()
     ),
 
     DURATION(

@@ -26,11 +26,11 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCaseDto;
 import org.testin.services.Services;
-import org.testin.services.TestCaseValues;
+import org.testin.services.TestCaseCompletions;
 import org.testin.testcase.CreateTestCaseFields;
 import org.testin.ui.dialogs.DialogStyle;
 import org.testin.ui.framework.Spacing;
-import org.testin.util.SpellChecker;
+import org.testin.util.EditorFields;
 
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
@@ -40,9 +40,9 @@ import java.util.List;
 import java.util.Set;
 
 // UC-EDITOR-PANEL-005
-public abstract class AbstractMultiValueSection implements CreateTestCaseSection {
+public abstract class AbstractMultiValueSection implements TestCaseSection {
     protected final @NotNull Project p;
-    private final @NotNull TestCaseValues testCaseValues;
+    private final @NotNull TestCaseCompletions testCaseValues;
 
     @Getter
     private final @NotNull List<EditorTextField> fields = new ArrayList<>();
@@ -52,7 +52,7 @@ public abstract class AbstractMultiValueSection implements CreateTestCaseSection
 
     protected AbstractMultiValueSection(final @NotNull Project p) {
         this.p = p;
-        this.testCaseValues = Services.getInstance(p, TestCaseValues.class);
+        this.testCaseValues = Services.getInstance(p, TestCaseCompletions.class);
 
         this.container = new JBPanel<>();
         this.container.setLayout(new BoxLayout(this.container, BoxLayout.Y_AXIS));
@@ -63,7 +63,7 @@ public abstract class AbstractMultiValueSection implements CreateTestCaseSection
 
     protected abstract @NotNull CreateTestCaseFields field();
 
-    protected abstract @NotNull Set<String> completions(final @NotNull TestCaseValues cache);
+    protected abstract @NotNull Set<String> completions(final @NotNull TestCaseCompletions cache);
 
     protected abstract @NotNull List<String> valuesOf(final @NotNull TestCaseDto dto);
 
@@ -107,7 +107,7 @@ public abstract class AbstractMultiValueSection implements CreateTestCaseSection
     }
 
     public void addField(final @NotNull String text) {
-        final @NotNull EditorTextField box = SpellChecker.createCompletionField(p,
+        final @NotNull EditorTextField box = EditorFields.createCompletionField(p,
                 new TextFieldWithAutoCompletion.StringsCompletionProvider(completions(testCaseValues), field().getIcon()), text);
 
         box.setOneLineMode(true);

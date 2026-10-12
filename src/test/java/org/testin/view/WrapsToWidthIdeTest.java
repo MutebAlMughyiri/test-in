@@ -22,7 +22,7 @@ import org.testin.model.Priority;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.status.RunItemStatus;
-import org.testin.model.testrun.Execution;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.util.Bundle;
 
@@ -79,7 +79,7 @@ public class WrapsToWidthIdeTest extends AbstractViewPanelIdeTest {
     public void testANarrowerPanelMovesTheBugChipAndItsLinkToASecondRowRatherThanHidingThem() {
         final @NotNull TestCaseDto tc = aTestCase(aTestSet("Transfers"), "No retry, fails (transfer) - expect Failed at once.", "1");
         final @NotNull TestRunNode tr = aTestRun(List.of(RunItem.builder().id(tc.getId())
-                .executions(List.of(Execution.builder().status(RunItemStatus.FAILED).actualResult("The transfer went through although it was above the balance").build())).build()));
+                .executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The transfer went through although it was above the balance").build())).build()));
         view.getPanel().show(List.of(tc), tr.getPath2());
         settled();
 

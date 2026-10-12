@@ -16,9 +16,9 @@
 
 package org.testin.git;
 
-import org.testin.git.change.GitDiffProcessor;
+import org.testin.git.change.PendingChangeReader;
 import org.testin.model.NodeType;
-import org.testin.util.RealMapper;
+import org.testin.util.RealJsonCodec;
 import org.testng.annotations.Test;
 
 import java.nio.file.Files;
@@ -55,7 +55,7 @@ public class ScreenshotsInGitTest {
             final Path root = Files.createTempDirectory("testin-git-screenshots");
             markATestRun(root);
 
-            assertTrue(GitDiffProcessor.toDiffs(List.of(" D " + REMOVED), root, RealMapper.build(), _ -> Map.of(), _ -> Optional.empty()).isEmpty(),
+            assertTrue(PendingChangeReader.toDiffs(List.of(" D " + REMOVED), root, RealJsonCodec.build(), _ -> Map.of(), _ -> Optional.empty()).isEmpty(),
                     "a screenshot arrives or goes with its test run, so it has no row of its own");
         } catch (final Exception e) {
             throw new AssertionError("the review could not be built", e);
@@ -70,7 +70,7 @@ public class ScreenshotsInGitTest {
             Files.createDirectories(root.resolve("cases/ts2"));
             Files.writeString(root.resolve(beside), "not really a picture");
 
-            assertEquals(GitDiffProcessor.toDiffs(List.of("?? " + beside), root, RealMapper.build(), _ -> Map.of(), _ -> Optional.empty()).size(), 1,
+            assertEquals(PendingChangeReader.toDiffs(List.of("?? " + beside), root, RealJsonCodec.build(), _ -> Map.of(), _ -> Optional.empty()).size(), 1,
                     "a PNG in a test set has no test run to travel with, so the review has to list it");
         } catch (final Exception e) {
             throw new AssertionError("the review could not be built", e);
@@ -82,12 +82,12 @@ public class ScreenshotsInGitTest {
     public void committingATestRunCarriesTheScreenshotsItsFolderGainedOrLost() {
         final List<String> status = List.of(" M " + RESULT, "?? " + ADDED, " D " + REMOVED, "?? " + OTHER_RUN);
 
-        assertEquals(GitCommits.screenshotsAlongside(status, Set.of(RESULT)), Set.of(ADDED, REMOVED),
+        assertEquals(GitCommitAndPush.screenshotsAlongside(status, Set.of(RESULT)), Set.of(ADDED, REMOVED),
                 "the screenshots a committed result named, or stopped naming, go with it");
     }
 
     @Test
     public void committingNoTestRunCarriesNoScreenshot() {
-        assertTrue(GitCommits.screenshotsAlongside(List.of("?? " + ADDED), Set.of("cases/ts2/4fd2a19b.tc")).isEmpty());
+        assertTrue(GitCommitAndPush.screenshotsAlongside(List.of("?? " + ADDED), Set.of("cases/ts2/4fd2a19b.tc")).isEmpty());
     }
 }

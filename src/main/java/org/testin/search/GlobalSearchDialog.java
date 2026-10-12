@@ -23,7 +23,7 @@ import org.testin.ui.framework.AbstractFrameworkDialog;
 import org.testin.ui.framework.Answer;
 import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.DialogSize;
-import org.testin.ui.framework.SelectionList;
+import org.testin.ui.framework.Selection;
 import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.ui.framework.TextFieldWithSelections;
 import org.testin.util.Bundle;
@@ -64,8 +64,8 @@ public final class GlobalSearchDialog extends AbstractFrameworkDialog {
     static @NotNull Answer<Hit> rowsFor(final @NotNull Project p, final @NotNull String query) {
         final @NotNull Found found = GlobalSearch.forQuery(p, query);
 
-        final @NotNull List<SelectionList<Hit>> rows = found.hits().stream()
-                .map(hit -> SelectionList.add(hit.icon(), hit.name(), hit.where(), hit))
+        final @NotNull List<Selection<Hit>> rows = found.hits().stream()
+                .map(hit -> Selection.add(hit.icon(), hit.name(), hit.where(), hit))
                 .toList();
 
         if (query.isBlank() || found.matched() == 0) return Answer.of(rows);

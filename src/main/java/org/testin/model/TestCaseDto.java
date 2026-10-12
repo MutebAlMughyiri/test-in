@@ -103,13 +103,13 @@ public final class TestCaseDto {
     @NonNull
     @Builder.Default
     @JsonInclude(JsonInclude.Include.ALWAYS)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Config.DATE_FORMAT_PATTERN, locale = Config.DATE_FORMAT_LOCALE)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateFormats.DATE_FORMAT_PATTERN, locale = DateFormats.DATE_FORMAT_LOCALE)
     private volatile ZonedDateTime createdAt = ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
     @NonNull
     @Builder.Default
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Config.DATE_FORMAT_PATTERN, locale = Config.DATE_FORMAT_LOCALE)
-    private volatile ZonedDateTime updatedAt = Config.NOT_EXECUTED;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateFormats.DATE_FORMAT_PATTERN, locale = DateFormats.DATE_FORMAT_LOCALE)
+    private volatile ZonedDateTime updatedAt = DateFormats.NOT_EXECUTED;
 
     @NonNull
     @Builder.Default
@@ -135,7 +135,7 @@ public final class TestCaseDto {
         createdAt = ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS);
 
         updatedBy = "";
-        updatedAt = Config.NOT_EXECUTED;
+        updatedAt = DateFormats.NOT_EXECUTED;
     }
 
     public void touch(final @NotNull String tester) {

@@ -21,20 +21,20 @@ import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.Fqcn;
-import org.testin.codegen.GenAction;
+import org.testin.codegen.CodeChange;
 import org.testin.codegen.GenType;
 import org.testin.codegen.JavaSourceRoot;
-import org.testin.codegen.event.Moved;
+import org.testin.codegen.event.MovedNode;
 import org.testin.java.codegen.PackageDeclarations;
 import org.testin.logger.TestinLogger;
 
 import java.util.List;
 import java.util.Optional;
 
-public class MoveJavaPackage implements GenAction<Moved> {
+public class MoveJavaPackage implements CodeChange<MovedNode> {
     // UC-CODEGEN-017, Rule-CODEGEN-057, Rule-CODEGEN-058
     @Override
-    public void execute(final @NotNull Project p, final @NotNull Moved moved) {
+    public void execute(final @NotNull Project p, final @NotNull MovedNode moved) {
         final @NotNull List<String> fqcn = Fqcn.ofPackage(moved.from());
 
         final @NotNull Optional<List<String>> destinationFound = moved.destinationPackage(p);

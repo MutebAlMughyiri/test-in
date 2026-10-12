@@ -28,7 +28,7 @@ import org.testin.util.Shortcuts;
 import javax.swing.JComponent;
 
 // Rule-EDITOR-PANEL-247
-public class PrioritySection implements CreateTestCaseSection {
+public class PrioritySection implements TestCaseSection {
     private final @NotNull RadioSelection<Priority> priority;
     private final @NotNull JBPanel<?> wrapper;
 

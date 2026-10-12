@@ -20,13 +20,13 @@ import com.intellij.icons.AllIcons;
 import org.jetbrains.annotations.NotNull;
 import org.testin.ui.framework.AbstractIconButton;
 import org.testin.util.Bundle;
-import org.testin.view.marker.MarkerDetailsViewDialog;
+import org.testin.view.marker.NodeDetailsDialog;
 
 public class NodeDetailsBtn extends AbstractIconButton implements ToolbarItem {
     // UC-EDITOR-PANEL-028, Rule-EDITOR-PANEL-121
-    public NodeDetailsBtn(final @NotNull Toolbar editor) {
+    public NodeDetailsBtn(final @NotNull ToolbarCallbacks editor) {
         super(Bundle.message("toolbar.node.details"), AllIcons.General.IndentDetected);
 
-        addActionListener(_ -> new MarkerDetailsViewDialog(editor.getProject(), editor.getEditedNode()).show());
+        addActionListener(_ -> new NodeDetailsDialog(editor.getProject(), editor.getEditedNode()).show());
     }
 }

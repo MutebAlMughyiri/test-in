@@ -21,13 +21,13 @@ import com.intellij.ui.TextFieldWithAutoCompletion;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCaseDto;
 import org.testin.services.Services;
-import org.testin.services.TestCaseValues;
+import org.testin.services.TestCaseCompletions;
 import org.testin.testcase.CreateTestCaseFields;
-import org.testin.util.SpellChecker;
+import org.testin.util.EditorFields;
 
 public class ExpectedResultSection extends AbstractMultiLineSection {
     public ExpectedResultSection(final @NotNull Project p) {
-        super(p, SpellChecker.createCompletionField(p, new TextFieldWithAutoCompletion.StringsCompletionProvider(Services.getInstance(p, TestCaseValues.class).getExpectedResults(), CreateTestCaseFields.EXPECTED_RESULT.getIcon()), ""), CreateTestCaseFields.EXPECTED_RESULT);
+        super(p, EditorFields.createCompletionField(p, new TextFieldWithAutoCompletion.StringsCompletionProvider(Services.getInstance(p, TestCaseCompletions.class).getExpectedResults(), CreateTestCaseFields.EXPECTED_RESULT.getIcon()), ""), CreateTestCaseFields.EXPECTED_RESULT);
     }
 
     // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-032

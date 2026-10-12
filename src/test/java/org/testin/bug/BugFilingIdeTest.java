@@ -29,7 +29,7 @@ import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
-import org.testin.model.testrun.Execution;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.services.Services;
@@ -76,7 +76,7 @@ public class BugFilingIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull RunItemPath runItemPathOf(final UUID testCaseId, final RunItemStatus status) {
-        final RunItem runItem = RunItem.builder().id(testCaseId).executions(List.of(Execution.builder().status(status).build())).build();
+        final RunItem runItem = RunItem.builder().id(testCaseId).executions(List.of(RunItemExecution.builder().status(status).build())).build();
         indexedTestRuns().putRunItems(sprint7TestRunPath(), RunItems.builder().all(new ArrayList<>(List.of(runItem))).build());
         return new RunItemPath(sprint7TestRunPath(), testCaseId);
     }

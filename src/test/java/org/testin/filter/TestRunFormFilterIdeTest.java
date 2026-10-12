@@ -131,7 +131,7 @@ public class TestRunFormFilterIdeTest extends AbstractTempRootIdeTest {
 
         high.setSelected(TestActionEvent.createTestEvent(high), true);
 
-        assertEquals("the priority filter did not pick the test cases an editor's would", TestCaseFilter.filter(List.of(urgent, later, paid), FilterSelection.of(button(), "")), shown());
+        assertEquals("the priority filter did not pick the test cases an editor's would", TestCaseFilter.filter(List.of(urgent, later, paid), FilterAndSortChoice.of(button(), "")), shown());
         assertEquals(List.of(urgent), shown());
     }
 }

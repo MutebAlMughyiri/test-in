@@ -21,7 +21,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
-import org.testin.actions.TestinData;
+import org.testin.actions.TestinDataKeys;
 import org.testin.explorer.tree.TreeTransferHandler;
 import org.testin.util.ClipboardContents;
 
@@ -32,7 +32,7 @@ public class PasteNodeAction extends AbstractAnyProjectAction {
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
         TreeTransferHandler.of(e).ifPresent(handler ->
                 ClipboardContents.withFlavor(TreeTransferHandler.NODE_FLAVOR).ifPresent(contents ->
-                        TestinData.singleSelectedNode(e).ifPresent(target -> new PasteNodeWork(p, handler).paste(contents, target))));
+                        TestinDataKeys.singleSelectedNode(e).ifPresent(target -> new PasteNodeWork(p, handler).paste(contents, target))));
     }
 
     // UC-TREE-PANEL-013

@@ -24,7 +24,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Computable;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
-import org.testin.actions.TestinData;
+import org.testin.actions.TestinDataKeys;
 import org.testin.codegen.agent.AgentConnection;
 import org.testin.codegen.agent.WriteBodies;
 import org.testin.editor.TestinEditor;
@@ -32,7 +32,7 @@ import org.testin.help.Guide;
 import org.testin.help.Guides;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
-import org.testin.navigate.CodeNavigation;
+import org.testin.navigate.TestMethodCode;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
@@ -48,7 +48,7 @@ public class AutomateTestCaseAction extends AbstractAnyProjectAction {
         if (DumbService.isDumb(p)) return 0;
 
         try {
-            return ApplicationManager.getApplication().runReadAction((Computable<Integer>) () -> CodeNavigation.available().methodsFor(p, asked).size());
+            return ApplicationManager.getApplication().runReadAction((Computable<Integer>) () -> TestMethodCode.available().methodsFor(p, asked).size());
         } catch (final Exception ex) {
             TestinLogger.warn("Could not count the methods Automate Test Case wrote: " + FailureText.of(ex));
             return 0;
@@ -69,7 +69,7 @@ public class AutomateTestCaseAction extends AbstractAnyProjectAction {
 
     // Rule-CODEGEN-002
     private static @NotNull List<TestCaseDto> nameable(final @NotNull AnActionEvent e) {
-        return TestinData.selectedTestCases(e).stream().filter(AutomateTestCaseAction::canBeNamed).toList();
+        return TestinDataKeys.selectedTestCases(e).stream().filter(AutomateTestCaseAction::canBeNamed).toList();
     }
 
     // UC-CODEGEN-005, Rule-CODEGEN-025, Rule-INTERNAL-129
@@ -79,7 +79,7 @@ public class AutomateTestCaseAction extends AbstractAnyProjectAction {
         final @NotNull List<TestCaseDto> toWrite = withoutAMethod(p, nameable(e));
         if (toWrite.isEmpty() && !AgentConnection.stored().isConnected()) return;
 
-        final @NotNull Optional<TestinEditor> editor = TestinData.editor(e);
+        final @NotNull Optional<TestinEditor> editor = TestinDataKeys.editor(e);
 
         GenType.CREATE_TEST_CASE.executeAll(p, toWrite);
 
@@ -102,7 +102,7 @@ public class AutomateTestCaseAction extends AbstractAnyProjectAction {
     protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
         if (CodeOn.grayedWithReason(this, e, p)) return;
 
-        final @NotNull List<TestCaseDto> selected = TestinData.selectedTestCases(e);
+        final @NotNull List<TestCaseDto> selected = TestinDataKeys.selectedTestCases(e);
         if (selected.isEmpty()) {
             e.getPresentation().setEnabled(false);
             return;

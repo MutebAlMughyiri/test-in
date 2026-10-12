@@ -18,7 +18,7 @@ package org.testin.creator;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.codegen.JavaCode;
+import org.testin.codegen.NodeCode;
 import org.testin.creator.dialogs.CreateTestSetDialog;
 import org.testin.creator.dialogs.CreateTestRunDialog;
 import org.testin.editor.open.TestinEditors;
@@ -59,7 +59,7 @@ record CreateTreeNodeWork(@NotNull Project p, @NotNull Nodes nodes, @NotNull Not
                 if (dir.isOpenableInEditor())
                     editors.open(dir);
 
-                JavaCode.of(dt).getCreated().execute(p, dir);
+                NodeCode.of(dt).getCreated().execute(p, dir);
             });
 
         };

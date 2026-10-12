@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.open.EditorKind;
 import org.testin.logger.TestinLogger;
-import org.testin.model.ToolBarAttribute;
+import org.testin.model.ShowableAttribute;
 import org.testin.util.FailureText;
 
 import java.util.HashSet;
@@ -37,7 +37,7 @@ public final class ShownFields {
     public static final @NotNull String IN_TEST_RUNS = EditorKind.TEST_RUN.detailsKey(7);
 
     // UC-EDITOR-PANEL-003, Rule-EDITOR-PANEL-022
-    public static <E extends Enum<E> & ToolBarAttribute> @NotNull Set<E> read(final @NotNull String propertyKey, final @NotNull Class<E> attributes) {
+    public static <E extends Enum<E> & ShowableAttribute> @NotNull Set<E> read(final @NotNull String propertyKey, final @NotNull Class<E> attributes) {
         final @NotNull List<E> options = List.of(attributes.getEnumConstants());
         final @NotNull String defaults = options.stream()
                 .filter(o -> o.getToolBarDefault().isSelectedByDefault())

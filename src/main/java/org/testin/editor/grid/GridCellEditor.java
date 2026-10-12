@@ -76,7 +76,7 @@ public class GridCellEditor extends AbstractCellEditor implements TableCellEdito
         textArea.setForeground(table.getForeground());
         textArea.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(EditorColors.SELECTION_BORDER, 1),
-                JBUI.Borders.empty(GridPanelBuilder.CELL_PADDING)));
+                JBUI.Borders.empty(GridTables.CELL_PADDING)));
 
         ApplicationManager.getApplication().invokeLater(textArea::requestFocusInWindow);
         return textArea;

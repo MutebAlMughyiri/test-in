@@ -22,7 +22,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.GrayWithReason;
-import org.testin.actions.TestinData;
+import org.testin.actions.TestinDataKeys;
 import org.testin.model.node.AbstractNode;
 import org.testin.util.Bundle;
 
@@ -31,7 +31,7 @@ import java.util.List;
 // UC-TREE-PANEL-012
 public class RemoveAction extends AbstractAnyProjectAction {
     private static @NotNull List<AbstractNode> removableNodes(final @NotNull AnActionEvent e) {
-        return TestinData.selectedNodes(e).stream()
+        return TestinDataKeys.selectedNodes(e).stream()
                 .filter(AbstractNode::isRemovable)
                 .toList();
     }

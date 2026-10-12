@@ -20,7 +20,7 @@ import com.intellij.openapi.util.text.StringUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.Config;
+import org.testin.model.DateFormats;
 
 import java.time.Duration;
 import java.time.ZonedDateTime;
@@ -45,17 +45,17 @@ public final class Display {
     }
 
     public static @NotNull String formatDate(final @NotNull ZonedDateTime at) {
-        return Config.isNotExecuted(at) ? "" : at.format(Config.getDateFormatterPattern());
+        return DateFormats.isNotExecuted(at) ? "" : at.format(DateFormats.getDateFormatterPattern());
     }
 
     // Rule-INTERNAL-132
     public static @NotNull String shortDates(final @NotNull String text) {
-        return Config.DATE_TEXT.matcher(text).replaceAll("$1");
+        return DateFormats.DATE_TEXT.matcher(text).replaceAll("$1");
     }
 
     // Rule-INTERNAL-132
     public static @NotNull String dateTooltip(final @NotNull String text) {
-        return Config.DATE_TEXT.matcher(text).find() ? text : "";
+        return DateFormats.DATE_TEXT.matcher(text).find() ? text : "";
     }
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-006

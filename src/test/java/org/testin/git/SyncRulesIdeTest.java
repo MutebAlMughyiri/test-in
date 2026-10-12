@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.Await;
 import org.testin.NodesOnDisk;
 import org.testin.Said;
-import org.testin.git.review.PendingCommitsDialog;
+import org.testin.git.review.PendingChangesDialog;
 import org.testin.git.review.ViewPendingCommitsWork;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCaseDto;
@@ -32,7 +32,7 @@ import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.util.Bundle;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -45,7 +45,7 @@ public class SyncRulesIdeTest extends AbstractGitRemoteIdeTest {
 
     @Override
     protected void tearDown() {
-        ShownDialog.close(getProject(), PendingCommitsDialog.class);
+        ShownDialog.close(getProject(), PendingChangesDialog.class);
         super.tearDown();
     }
 
@@ -103,7 +103,7 @@ public class SyncRulesIdeTest extends AbstractGitRemoteIdeTest {
         write(work, "mine.tc", "{\"description\":\"typed\"}");
 
         new ViewPendingCommitsWork(getProject()).openFor(work);
-        ShownDialog.waitedFor(getProject(), PendingCommitsDialog.class);
+        ShownDialog.waitedFor(getProject(), PendingChangesDialog.class);
 
         assertFalse("Git was never asked", onTheMainThread.isEmpty());
         assertFalse("Git was read on the main thread", onTheMainThread.contains(true));
@@ -119,7 +119,7 @@ public class SyncRulesIdeTest extends AbstractGitRemoteIdeTest {
 
         final @NotNull TestCaseDto theirs = TestCaseDto.builder().id(UUID.randomUUID()).description("sign in with a passkey").order("z").build();
         final @NotNull String relative = work.relativize(login.getPath()).resolve(theirs.getId() + ".tc").toString().replace('\\', '/');
-        theColleagueAdds(relative, Services.getInstance(getProject(), Mapper.class).writeValueAsString(theirs));
+        theColleagueAdds(relative, Services.getInstance(getProject(), JsonCodec.class).writeValueAsString(theirs));
 
         synced(Said.listening(getProject(), getTestRootDisposable()).notifications());
 

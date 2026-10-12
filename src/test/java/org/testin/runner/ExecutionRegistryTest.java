@@ -17,7 +17,7 @@
 package org.testin.runner;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.Config;
+import org.testin.model.DateFormats;
 import org.testin.model.TestCaseDto;
 import org.testin.model.status.ExecutionStatus;
 import org.testin.model.testrun.Failure;
@@ -51,7 +51,7 @@ public class ExecutionRegistryTest {
     }
 
     private static @NotNull Attempt attempt(final ExecutionStatus status, final String message) {
-        return new Attempt(status, Duration.ZERO, new Failure(message, "", List.of()), "", Config.NOT_EXECUTED);
+        return new Attempt(status, Duration.ZERO, new Failure(message, "", List.of()), "", DateFormats.NOT_EXECUTED);
     }
 
     private static @NotNull ExecutionStatus statusIn(final Map<UUID, Attempts> decided, final TestCaseDto tc) {

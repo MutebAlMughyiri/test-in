@@ -27,7 +27,7 @@ import org.testin.model.TestCaseDto;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
 import org.testin.util.FailureText;
-import org.testin.util.Mapper;
+import org.testin.util.JsonCodec;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -47,7 +47,7 @@ final class NodeFiles {
     private final @NotNull ProjectIndexer indexer;
     private final @NotNull IndexerDataStore store;
     private final @NotNull VfsExecutor vfs;
-    private final @NotNull Mapper mapper;
+    private final @NotNull JsonCodec mapper;
     private final @NotNull TestDataFiles testDataFiles;
     private final @NotNull OwnWrites ownWrites;
 
@@ -56,7 +56,7 @@ final class NodeFiles {
         this.indexer = indexer;
         this.store = store;
         this.vfs = Services.getInstance(p, VfsExecutor.class);
-        this.mapper = Services.getInstance(p, Mapper.class);
+        this.mapper = Services.getInstance(p, JsonCodec.class);
         this.testDataFiles = Services.getInstance(p, TestDataFiles.class);
         this.ownWrites = Services.getInstance(OwnWrites.class);
     }

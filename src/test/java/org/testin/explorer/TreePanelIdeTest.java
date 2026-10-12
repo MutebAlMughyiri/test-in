@@ -93,7 +93,7 @@ public class TreePanelIdeTest extends AbstractReadTheRootIdeTest {
     }
 
     private @NotNull List<AnAction> titleBarOf(final @NotNull TreePanel panel) {
-        return new TreePanelActions().create(getProject(), panel);
+        return new TreePanelToolbar().create(getProject(), panel);
     }
 
     private @NotNull Presentation updated(final @NotNull AnAction action) {

@@ -22,9 +22,9 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.GrayWithReason;
-import org.testin.actions.TestinData;
+import org.testin.actions.TestinDataKeys;
 import org.testin.editor.TestinEditor;
-import org.testin.testcase.create.TestCaseUpdateMenuDialog;
+import org.testin.testcase.create.UpdateTestCaseMenu;
 import org.testin.util.Bundle;
 
 // UC-EDITOR-PANEL-006
@@ -37,18 +37,18 @@ public class UpdateTestCaseAction extends AbstractAnyProjectAction {
     // UC-EDITOR-PANEL-006
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        TestinData.editor(e).ifPresent(editor -> new UpdateTestCaseWork(p, editor).overSelection(TestCaseUpdateMenuDialog::show));
+        TestinDataKeys.editor(e).ifPresent(editor -> new UpdateTestCaseWork(p, editor).overSelection(UpdateTestCaseMenu::show));
     }
 
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-194
     @Override
     protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        if (TestinData.editor(e).filter(editor -> !editor.getParent().isTestCaseContainer()).isPresent()) {
+        if (TestinDataKeys.editor(e).filter(editor -> !editor.getParent().isTestCaseContainer()).isPresent()) {
             GrayWithReason.unless(this, e, false, Bundle.message("update.test.case.disabled.description"));
             return;
         }
 
-        GrayWithReason.unlessTestCaseSelected(this, e, TestinData.editor(e).isPresent());
+        GrayWithReason.unlessTestCaseSelected(this, e, TestinDataKeys.editor(e).isPresent());
     }
 
     @Override

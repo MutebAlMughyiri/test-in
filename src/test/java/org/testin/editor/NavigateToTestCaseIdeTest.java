@@ -28,7 +28,7 @@ import org.testin.Await;
 import org.testin.Gestures;
 import org.testin.Said;
 import org.testin.codegen.AutomationState;
-import org.testin.editor.card.CardHoverAction;
+import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.editor.open.TestinEditors;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.testrun.TestRunEditor;
@@ -110,9 +110,9 @@ public class NavigateToTestCaseIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestRunEditor testRun = aTestRunEditorOver(testCases.stream().map(EditorFixtures::pending).toList());
         final @NotNull TestSetEditor testSetEditor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         try {
-            assertTrue("a test run's card does not offer it", CardHoverAction.onCard(getProject(), testRun.getParent(), testCases.getFirst()).stream().anyMatch(offered -> offered.action() == CardHoverAction.NAVIGATE_TO_TEST_CASE));
+            assertTrue("a test run's card does not offer it", TestCaseQuickAction.onCard(getProject(), testRun.getParent(), testCases.getFirst()).stream().anyMatch(offered -> offered.action() == TestCaseQuickAction.NAVIGATE_TO_TEST_CASE));
             assertTrue("the test run editor's menu does not offer it", entriesOf(testRun.contextMenu).contains("Testin.NavigateToTestCase"));
-            assertTrue("a test set's card offers it", CardHoverAction.onCard(getProject(), testSet, testCases.getFirst()).stream().noneMatch(offered -> offered.action() == CardHoverAction.NAVIGATE_TO_TEST_CASE));
+            assertTrue("a test set's card offers it", TestCaseQuickAction.onCard(getProject(), testSet, testCases.getFirst()).stream().noneMatch(offered -> offered.action() == TestCaseQuickAction.NAVIGATE_TO_TEST_CASE));
             assertFalse("the test set editor's menu offers it", entriesOf(testSetEditor.contextMenu).contains("Testin.NavigateToTestCase"));
         } finally {
             Disposer.dispose(testRun);
@@ -130,7 +130,7 @@ public class NavigateToTestCaseIdeTest extends AbstractCodegenIdeTest {
             assertFalse("Navigate to Test Case works on a test case in no test set", shown.isEnabled());
             assertEquals(Bundle.message("navigate.test.case.nowhere"), shown.getDescription());
 
-            CardHoverAction.NAVIGATE_TO_TEST_CASE.execute(getProject(), testRun.getList().getSelectedValue());
+            TestCaseQuickAction.NAVIGATE_TO_TEST_CASE.execute(getProject(), testRun.getList().getSelectedValue());
 
             assertTrue("no message said why: " + balloons, balloons.contains(Bundle.message("navigate.test.case.nowhere")));
             assertEquals("something opened for a test case in no test set", List.of(), Services.getInstance(getProject(), TestinEditors.class).openNodePaths());
@@ -152,7 +152,7 @@ public class NavigateToTestCaseIdeTest extends AbstractCodegenIdeTest {
         assertEquals(RUN, ActionManager.getInstance().getAction("Testin.RunTestMethod").getTemplatePresentation().getText());
 
         assertEquals("the card's buttons are named otherwise", List.of(TO_THE_METHOD, RUN, TO_THE_TEST_CASE),
-                Arrays.asList(CardHoverAction.NAVIGATE_TO_TEST_METHOD.getTooltip(), CardHoverAction.RUN_TEST_METHOD.getTooltip(), CardHoverAction.NAVIGATE_TO_TEST_CASE.getTooltip()));
+                Arrays.asList(TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD.getTooltip(), TestCaseQuickAction.RUN_TEST_METHOD.getTooltip(), TestCaseQuickAction.NAVIGATE_TO_TEST_CASE.getTooltip()));
 
         final @NotNull List<String> named = TestCaseHoverButtons.of(getProject(), testCases.getFirst(), Optional.empty()).stream()
                 .map(button -> Objects.requireNonNullElse(button.getAccessibleContext().getAccessibleName(), ""))
