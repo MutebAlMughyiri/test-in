@@ -45,20 +45,21 @@ public final class TestNGEventRelay extends SMTRunnerEventsAdapter {
     // UC-CODEGEN-008, Rule-CODEGEN-075, Rule-CODEGEN-110
     @Override
     public void onTestFinished(final @NotNull SMTestProxy test) {
-        final @NotNull String testName = test.getPresentableName();
+        final @NotNull Finished finished = finished(test);
+        TestCaseExecutionListener.broadcast(p, test.getPresentableName(), finished.status(), durationOf(test), finished.failure());
+    }
 
-        if (test.isPassed()) {
-            TestCaseExecutionListener.broadcast(p, testName, ExecutionStatus.PASSED, durationOf(test), Failure.NONE);
+    // Rule-CODEGEN-075, Rule-CODEGEN-110
+    static @NotNull Finished finished(final @NotNull SMTestProxy test) {
+        if (test.isPassed()) return new Finished(ExecutionStatus.PASSED, Failure.NONE);
+        if (test.isDefect() && !test.isIgnored() && !test.wasTerminated())
+            return new Finished(ExecutionStatus.FAILED, failureOf(test, ""));
+        if (test.isIgnored() && !test.wasTerminated())
+            return new Finished(ExecutionStatus.SKIPPED, failureOf(test, Bundle.message("runner.skipped")));
+        return new Finished(ExecutionStatus.FAILED, failureOf(test, Bundle.message("runner.skipped")));
+    }
 
-        } else if (test.isDefect() && !test.isIgnored() && !test.wasTerminated()) {
-            TestCaseExecutionListener.broadcast(p, testName, ExecutionStatus.FAILED, durationOf(test), failureOf(test, ""));
-
-        } else if (test.isIgnored() && !test.wasTerminated()) {
-            TestCaseExecutionListener.broadcast(p, testName, ExecutionStatus.SKIPPED, durationOf(test), failureOf(test, Bundle.message("runner.skipped")));
-
-        } else {
-            TestCaseExecutionListener.broadcast(p, testName, ExecutionStatus.FAILED, durationOf(test), failureOf(test, Bundle.message("runner.skipped")));
-        }
+    record Finished(@NotNull ExecutionStatus status, @NotNull Failure failure) {
     }
 
     private static @NotNull Duration durationOf(final @NotNull SMTestProxy test) {
