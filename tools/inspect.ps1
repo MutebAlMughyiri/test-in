@@ -36,8 +36,8 @@
     names them in one table, under The inspection gate, and UnlistedRule fails the
     run when that table and this file disagree.
 
-    They read the source as text, so -Quick runs them alone in seconds with no
-    IDE. That is the check to run before handing a change over; the full run is
+    They read the source as text, so -Quick runs them, and PMD, in about a
+    minute with no IDE. That is the check to run before handing a change over; the full run is
     CI's, on every push.
 
 .EXAMPLE
@@ -66,9 +66,9 @@ param(
 # run, wrong for judging the tree as it is now.
     [switch] $ReportOnly,
 
-# Only this script's own rules, and no IDE at all. Seconds rather than
-# twenty minutes, because nothing is indexed: the rules below read the
-# source as text.
+# Only this script's own rules and PMD, and no IDE at all. A minute rather
+# than twenty, because nothing is indexed: the rules below read the source
+# as text, and PMD reads its syntax tree.
 #
 # This is what to run before handing a change over. The full run belongs to
 # CI on every push, and the findings it alone can see - dead code, a
@@ -1942,6 +1942,50 @@ function Read-UnusedImports([string[]] $scopes)
     }
 }
 
+function Read-ComplexMethods
+{
+    <#
+        What pmdMain reports: a production method over the cognitive complexity
+        or if-nesting limit (#378), one finding per method, under PMD's own
+        rule name.
+
+        CI's Build runs pmdMain before the IDE tests, and a quick run did not,
+        so fa0c95529 pushed a breach nothing local reported. Build stayed red
+        for three pushes and skipped the IDE tests on each (#66, finding 388).
+        PMD needs no compile, so this costs Gradle's start and about fifteen
+        seconds. A pmdMain that fails without naming a method is one finding,
+        so a broken PMD run never reads as a clear gate.
+    #>
+    $gradlew = Join-Path $repo $(if ($IsWindows) { 'gradlew.bat' } else { 'gradlew' })
+    $output = @(& $gradlew -p $repo pmdMain --console=plain 2>&1 | ForEach-Object { "$_" })
+    $failed = $LASTEXITCODE -ne 0
+    $found = 0
+
+    foreach ($line in $output)
+    {
+        if ($line -notmatch '^(.+\.java):(\d+):\s+(\w+):\s+(.+)$') { continue }
+        $found++
+        [pscustomobject]@{
+            Path = [System.IO.Path]::GetFullPath($Matches[1]).Substring($repo.Length + 1).Replace('\', '/')
+            Line = [int]$Matches[2]
+            Inspection = $Matches[3]
+            Severity = 'ERROR'
+            Message = $Matches[4]
+        }
+    }
+
+    if ($failed -and -not $found)
+    {
+        [pscustomobject]@{
+            Path = 'build.gradle.kts'
+            Line = 1
+            Inspection = 'PmdDidNotRun'
+            Severity = 'ERROR'
+            Message = "pmdMain failed without naming a method: $(($output | Select-Object -Last 5) -join ' / ')"
+        }
+    }
+}
+
 function Read-NonMarkerComments([string[]] $scopes)
 {
     <#
@@ -2157,6 +2201,10 @@ $problems += @(Read-UnusedLambdaParameters $everyTree)
 $problems += @(Read-QualifiedClassNames $everyTree)
 $problems += @(Read-UnicodeEscapes $everyTree)
 $problems += @(Read-UnusedImports $everyTree)
+if ($Quick)
+{
+    $problems += @(Read-ComplexMethods)
+}
 if (-not $Quick -and -not $ReportOnly)
 {
     $problems += @(Read-UnformattedJava (Resolve-Inspector) $everyTree)

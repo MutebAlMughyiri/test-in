@@ -105,9 +105,11 @@ jobs:
       - name: Build, test and verify
         shell: bash
         # The budget second and alone, so the clock it reads is not shared with
-        # compiling and verifying (#66, finding 108).
+        # compiling and verifying (#66, finding 108). --continue so one gate's
+        # failure never hides the others': pmdMain failing stopped this step
+        # before ideTest on three pushes in a row (#66, finding 388).
         run: |
-          ./gradlew compileJava test pmdMain ideTest jacocoTestCoverageVerification verifyPlugin verifyDistribution
+          ./gradlew compileJava test pmdMain ideTest jacocoTestCoverageVerification verifyPlugin verifyDistribution --continue
           ./gradlew test -Pbudget
 
       - name: Keep the reports

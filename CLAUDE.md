@@ -332,9 +332,9 @@ silently has no effect costs more than the setting it was meant to hold.
   let us make it every push."*
 
 - **Run `pwsh tools/inspect.ps1 -Quick` before handing a change over.** It is
-  the same script with the IDE left out: only the rules that read the source as
-  text, five seconds over every source root, and it exits non-zero on a
-  breach. It was built on 23 September 2026 because warnings kept reaching
+  the same script with the IDE left out: the rules that read the source as
+  text, then `pmdMain`, about a minute over every source root, and it exits
+  non-zero on a breach. It was built on 23 September 2026 because warnings kept reaching
   Muteb's IDE one paste at a time — *"many times I told you, still face inspect
   issues"* — and the worst of them, a lambda parameter nothing reads, is one that
   the headless inspector never reports at all: 113 were sitting in the tree.
