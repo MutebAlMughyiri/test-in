@@ -373,7 +373,7 @@ intellijPlatform {
         // of the products and their versions; this only verifies what it names.
         //
         //     gradlew verifyPlugin -PverifyIde=GoLand
-        //     gradlew verifyPlugin -PverifyIde=AndroidStudio -PverifyVersions=2026.2.1.8
+        //     gradlew verifyPlugin -PverifyIde=Rider -PverifyVersions=2026.2.3
         //
         // JetBrains Client is in no releases listing the Gradle plugin reads, so
         // its version cannot be resolved. verify.yml downloads and unpacks it
