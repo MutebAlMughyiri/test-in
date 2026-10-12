@@ -17,10 +17,10 @@
 package org.testin.util;
 
 import com.intellij.openapi.actionSystem.CustomShortcutSet;
+import com.intellij.openapi.actionSystem.Shortcut;
 import com.intellij.openapi.actionSystem.ShortcutSet;
 import com.intellij.openapi.keymap.KeymapUtil;
 import com.intellij.openapi.util.SystemInfo;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.NotNull;
@@ -31,9 +31,9 @@ import java.awt.Toolkit;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 @Getter
-@AllArgsConstructor
 public enum Shortcuts {
     EMPTY(
             KeyStroke.getKeyStroke(KeyEvent.VK_UNDEFINED, 0)
@@ -55,8 +55,11 @@ public enum Shortcuts {
             KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, menuMask())
     ),
 
-    AddArrayItem(
-            KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, menuMask())
+    AddItem(
+            KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, menuMask()),
+            KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, menuMask() | InputEvent.SHIFT_DOWN_MASK),
+            KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, menuMask()),
+            KeyStroke.getKeyStroke(KeyEvent.VK_ADD, menuMask())
     ),
 
     RemoveArrayItem(
@@ -215,7 +218,7 @@ public enum Shortcuts {
             KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_DOWN_MASK | macAdds(InputEvent.ALT_DOWN_MASK | InputEvent.META_DOWN_MASK))
     ),
 
-    CreateTestCaseAddStep(
+    CreateTestCaseSteps(
             KeyStroke.getKeyStroke(KeyEvent.VK_S, menuMask())
     ),
 
@@ -285,6 +288,12 @@ public enum Shortcuts {
 
     public static final @NotNull KeyStroke NO_KEY = EMPTY.key;
     private final @NotNull KeyStroke key;
+    private final @NotNull KeyStroke @NotNull [] keys;
+
+    Shortcuts(final @NotNull KeyStroke key, final @NotNull KeyStroke @NotNull ... alternatives) {
+        this.key = key;
+        this.keys = Stream.concat(Stream.of(key), Arrays.stream(alternatives)).toArray(KeyStroke[]::new);
+    }
 
     @MagicConstant(flagsFromClass = InputEvent.class)
     public static int menuMask() {
@@ -317,7 +326,7 @@ public enum Shortcuts {
     }
 
     public @NotNull CustomShortcutSet getCustomShortcut() {
-        return customShortcut(key);
+        return new CustomShortcutSet(Arrays.stream(keys).map(Shortcuts::customShortcut).flatMap(set -> Arrays.stream(set.getShortcuts())).toArray(Shortcut[]::new));
     }
 
     public @NotNull String getShortcutText() {
@@ -325,7 +334,7 @@ public enum Shortcuts {
     }
 
     public boolean matches(final @NotNull KeyEvent e) {
-        return matches(e, key);
+        return Arrays.stream(keys).anyMatch(stroke -> matches(e, stroke));
     }
 
     // Rule-INTERNAL-054

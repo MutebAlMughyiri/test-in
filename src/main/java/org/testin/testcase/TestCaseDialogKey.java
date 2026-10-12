@@ -43,19 +43,14 @@ public enum TestCaseDialogKey implements StatusBarItem {
             Shortcuts.Corrections
     ),
 
-    ADD_STEP(
-            Bundle.message("dialog.key.add.step"),
-            Shortcuts.CreateTestCaseAddStep
+    ADD(
+            Bundle.message("shortcut.add"),
+            Shortcuts.AddItem
     ),
 
     AUTO_COMPLETE(
             Bundle.message("dialog.key.auto.complete"),
             Shortcuts.AutoComplete
-    ),
-
-    ADD_GROUP(
-            Bundle.message("dialog.key.add.group"),
-            Shortcuts.CreateTestCaseGroup
     ),
 
     NAVIGATE_TAB(

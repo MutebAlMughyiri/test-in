@@ -122,7 +122,7 @@ Modules**, **Bulk Edit Test Data**, **Bulk Edit Pre-Conditions**, **Bulk Edit
 Steps**, **Bulk Edit Priorities**, **Bulk Edit Statuses**, **Bulk Edit Groups**.
 
 **Bulk Edit Steps** and **Bulk Edit Groups** hold lists, so their strip carries
-two keys more: `Ctrl+Enter` **Add** to add an item and `Shift+Delete` **Remove**
+two keys more: `Ctrl+=`, `Ctrl++` or Ctrl with the numpad `+` **Add** to add an item and `Shift+Delete` **Remove**
 to drop one.
 
 ## Main flow

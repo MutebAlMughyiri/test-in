@@ -59,6 +59,10 @@ public interface CreateTestCaseSection {
     default void readyForEditing() {
     }
 
+    // Rule-EDITOR-PANEL-293
+    default void addBox(final @NotNull Runnable refit) {
+    }
+
     @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto dto);
 
     void setupShortcut(final @NotNull JComponent mainPanel, final @NotNull JBPanel<?> slot, final @NotNull TestCaseBaseDialog base, final @NotNull Runnable repackAction);

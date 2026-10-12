@@ -30,7 +30,6 @@ import org.testin.services.TestCaseValues;
 import org.testin.testcase.CreateTestCaseFields;
 import org.testin.ui.dialogs.DialogStyle;
 import org.testin.ui.framework.Spacing;
-import org.testin.util.Shortcuts;
 import org.testin.util.SpellChecker;
 
 import javax.swing.BoxLayout;
@@ -70,8 +69,6 @@ public abstract class AbstractMultiValueSection implements CreateTestCaseSection
 
     protected abstract @NotNull TestCaseDto write(final @NotNull TestCaseDto dto, final @NotNull List<String> values);
 
-    protected abstract @NotNull Shortcuts addKey();
-
     protected @NotNull String placeholderFor(final int index) {
         return field().getPlaceholder();
     }
@@ -87,13 +84,24 @@ public abstract class AbstractMultiValueSection implements CreateTestCaseSection
         if (!fields.isEmpty()) fields.getLast().requestFocus();
     }
 
+    // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-293
     public void showSection(final @NotNull JBPanel<?> contentPanel, final @NotNull Runnable repackAction) {
         showSection(contentPanel);
         wrapper.setVisible(true);
-        addField("");
+        readyForEditing();
+        refitAndFocus(repackAction);
+    }
 
+    // UC-EDITOR-PANEL-005, UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-293
+    @Override
+    public void addBox(final @NotNull Runnable refit) {
+        addField("");
+        refitAndFocus(refit);
+    }
+
+    private void refitAndFocus(final @NotNull Runnable refit) {
         ApplicationManager.getApplication().invokeLater(() -> {
-            repackAction.run();
+            refit.run();
             focusOnShow();
         });
     }
@@ -132,7 +140,7 @@ public abstract class AbstractMultiValueSection implements CreateTestCaseSection
 
     @Override
     public void setupShortcut(final @NotNull JComponent mainPanel, final @NotNull JBPanel<?> slot, final @NotNull TestCaseBaseDialog base, final @NotNull Runnable repackAction) {
-        base.registerShortcut(mainPanel, addKey().getCustomShortcut(), () -> showSection(slot, repackAction));
+        base.registerShortcut(mainPanel, field().getShortcut().getCustomShortcut(), () -> showSection(slot, repackAction));
     }
 
     @Override

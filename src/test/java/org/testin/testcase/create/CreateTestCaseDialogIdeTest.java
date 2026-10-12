@@ -108,8 +108,8 @@ public class CreateTestCaseDialogIdeTest extends AbstractTempRootIdeTest {
         press(CreateTestCaseFields.PRE_CONDITIONS);
         press(CreateTestCaseFields.TEST_DATA);
         press(CreateTestCaseFields.STEPS);
-        press(CreateTestCaseFields.STEPS);
-        press(CreateTestCaseFields.STEPS);
+        dialog.addBoxAt(dialog.getStepsSection().getFields().getFirst());
+        dialog.addBoxAt(dialog.getStepsSection().getFields().getFirst());
 
         dialog.getDescriptionSection().field.setText("  Pay with a saved card  ");
         dialog.getExpectedResultSection().field.setText("  The order is placed  ");
@@ -117,7 +117,7 @@ public class CreateTestCaseDialogIdeTest extends AbstractTempRootIdeTest {
         dialog.getPreConditionsSection().field.setText("  A card is saved  ");
         dialog.getTestDataSection().field.setText("  4111 1111 1111 1111  ");
         final @NotNull List<EditorTextField> steps = dialog.getStepsSection().getFields();
-        assertEquals("three presses did not give three steps", 3, steps.size());
+        assertEquals("Ctrl+S and two Ctrl+= did not give three steps", 3, steps.size());
         steps.getFirst().setText("  Open the cart  ");
         steps.get(1).setText("   ");
         steps.get(2).setText("  Pay  ");

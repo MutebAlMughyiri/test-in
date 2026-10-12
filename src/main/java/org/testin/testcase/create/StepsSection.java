@@ -21,7 +21,6 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCaseDto;
 import org.testin.services.TestCaseValues;
 import org.testin.testcase.CreateTestCaseFields;
-import org.testin.util.Shortcuts;
 
 import java.util.List;
 import java.util.Set;
@@ -50,11 +49,6 @@ public class StepsSection extends AbstractMultiValueSection {
     @Override
     protected @NotNull TestCaseDto write(final @NotNull TestCaseDto dto, final @NotNull List<String> values) {
         return dto.edit().steps(values).build();
-    }
-
-    @Override
-    protected @NotNull Shortcuts addKey() {
-        return Shortcuts.CreateTestCaseAddStep;
     }
 
     @Override

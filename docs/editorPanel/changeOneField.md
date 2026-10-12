@@ -74,6 +74,11 @@ One field, one small dialog. The rest of the test case is left alone.
 - **Rule-EDITOR-PANEL-259** — The update menu holds every field a tester can
   edit in the grid. A field that can be edited there and is missing from the
   menu fails the build.
+- **Rule-EDITOR-PANEL-293** — Ctrl+= adds one more box to the list field the
+  cursor is in, Steps or Group, and puts the cursor in it. Ctrl++ and Ctrl with
+  the numpad + do the same. A field's own key, Ctrl+S or Ctrl+G, only opens that field; pressed again it
+  moves the cursor to the field and adds nothing. With the cursor anywhere else,
+  Ctrl+= does nothing.
 
 ## The screen
 

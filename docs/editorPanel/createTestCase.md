@@ -82,6 +82,11 @@ This is how every test case in Testin begins.
   is cut off and the editor below does not move.
 - **Rule-EDITOR-PANEL-271** — Reference opens with Ctrl+R, Cmd+R on a Mac, and
   carries R on its icon, the letter the update menu and the copy menu give it.
+- **Rule-EDITOR-PANEL-293** — Ctrl+= adds one more box to the list field the
+  cursor is in, Steps or Group, and puts the cursor in it. Ctrl++ and Ctrl with
+  the numpad + do the same. A field's own key, Ctrl+S or Ctrl+G, only opens that field; pressed again it
+  moves the cursor to the field and adds nothing. With the cursor anywhere else,
+  Ctrl+= does nothing.
 
 ## The screen
 
@@ -124,6 +129,9 @@ This is how every test case in Testin begins.
 | Pre Conditions  | `Ctrl+B`, `Ctrl+Alt+Cmd+B` on a Mac | *set preconditions*                           |
 | Reference       | `Ctrl+R`, `Cmd+R` on a Mac          | *set reference*                               |
 
+In Steps and Group, `Ctrl+=`, `Ctrl++` or Ctrl with the numpad `+` adds one more box; the field's own key only
+opens it (Rule-EDITOR-PANEL-293).
+
 Each field's icon is the letter of its key in a rounded frame, so Pre Conditions
 shows B. The same icon marks the field's values in its completion list.
 
@@ -142,7 +150,7 @@ rather than scrolling inside it (Rule-INTERNAL-097).
 2. The **Create Test Case** dialog opens with the cursor in the description.
 3. The tester types a description.
 4. The tester presses `Ctrl+E` and types the expected result.
-5. The tester presses `Ctrl+S` and types the steps, one to a line.
+5. The tester presses `Ctrl+S`, types the first step, and presses `Ctrl+=` for each next one.
 6. The tester presses `Enter`.
 7. Testin creates the test case at the end of the test set.
 8. A message reads *Created*.

@@ -30,8 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import static org.testin.testcase.TestCaseDialogKey.ADD_GROUP;
-import static org.testin.testcase.TestCaseDialogKey.ADD_STEP;
+import static org.testin.testcase.TestCaseDialogKey.ADD;
 import static org.testin.testcase.TestCaseDialogKey.AUTO_COMPLETE;
 import static org.testin.testcase.TestCaseDialogKey.CORRECTIONS;
 import static org.testin.testcase.TestCaseDialogKey.NAVIGATE_ARROWS;
@@ -86,11 +85,11 @@ public enum CreateTestCaseFields implements StatusBarItem {
 
     STEPS(
             TestSetEditorAttributes.STEPS.getName(),
-            Shortcuts.CreateTestCaseAddStep,
+            Shortcuts.CreateTestCaseSteps,
             Icons.fieldLetter("S", Icons.GRAY),
             TestCaseBaseDialog::getStepsSection,
             Bundle.message("field.set.step"),
-            CORRECTIONS, ADD_STEP, AUTO_COMPLETE, NAVIGATE_TAB
+            CORRECTIONS, ADD, AUTO_COMPLETE, NAVIGATE_TAB
     ),
 
     PRIORITY(
@@ -108,7 +107,7 @@ public enum CreateTestCaseFields implements StatusBarItem {
             Icons.fieldLetter("G", Icons.GRAY),
             TestCaseBaseDialog::getGroupSection,
             Bundle.message("field.set.group"),
-            ADD_GROUP, AUTO_COMPLETE, NAVIGATE_TAB
+            ADD, AUTO_COMPLETE, NAVIGATE_TAB
     ),
 
     REFERENCE(

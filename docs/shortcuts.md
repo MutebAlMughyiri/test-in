@@ -8,8 +8,8 @@ honest way to read this, because that is how a tester meets them.
 
 `Ctrl` here is `Cmd` on a Mac for the keys the platform decides: copy, cut,
 paste, undo, redo, find, and select every value. So are Testin's own keys whose
-`Cmd` form nothing else takes: `Ctrl+Enter` for a new line in a step or a new
-list item, `Ctrl+D` for the details, and the create dialog's `Ctrl+D`, `Ctrl+E`,
+`Cmd` form nothing else takes: `Ctrl+Enter` for a new line, `Ctrl+=` for one more
+box in a list, `Ctrl+D` for the details, and the create dialog's `Ctrl+D`, `Ctrl+E`,
 `Ctrl+S` and `Ctrl+T`.
 
 The rest keep `Ctrl` on a Mac and add `Alt`, because their `Cmd` form belongs to
@@ -171,36 +171,37 @@ light mode. The tree does not zoom.
 
 While the create or update dialog is open.
 
-| Key                                 | What it does                                    |
-|-------------------------------------|-------------------------------------------------|
-| `Ctrl+D`, `Cmd+D` on a Mac          | Opens the description field                     |
-| `Ctrl+E`, `Cmd+E` on a Mac          | Opens the expected result                       |
-| `Ctrl+M`, `Ctrl+Alt+Cmd+M` on a Mac | Opens the module                                |
-| `Ctrl+S`, `Cmd+S` on a Mac          | Adds a step                                     |
-| `Ctrl+T`, `Cmd+T` on a Mac          | Opens the test data                             |
-| `Ctrl+B`, `Ctrl+Alt+Cmd+B` on a Mac | Opens the pre conditions                        |
-| `Ctrl+R`, `Cmd+R` on a Mac          | Opens the reference                             |
-| `Ctrl+G`, `Ctrl+Alt+G` on a Mac     | Adds a group                                    |
-| `Ctrl+P`, `Ctrl+Alt+P` on a Mac     | Opens the priority                              |
-| `Alt+Enter`                         | Offers the corrections for what was typed       |
-| `Ctrl+Space`                        | Offers what has been typed before, on a Mac too |
-| `Tab` `Shift+Tab`                   | Moves between the choices in a picker           |
-| `Up` `Down`                         | Moves through a list of choices                 |
-| `Space`                             | Selects the group under the cursor              |
-| `Enter`                             | Saves                                           |
-| `Escape`                            | Cancels                                         |
+| Key                                                  | What it does                                      |
+|------------------------------------------------------|---------------------------------------------------|
+| `Ctrl+D`, `Cmd+D` on a Mac                           | Opens the description field                       |
+| `Ctrl+E`, `Cmd+E` on a Mac                           | Opens the expected result                         |
+| `Ctrl+M`, `Ctrl+Alt+Cmd+M` on a Mac                  | Opens the module                                  |
+| `Ctrl+S`, `Cmd+S` on a Mac                           | Opens the steps                                   |
+| `Ctrl+T`, `Cmd+T` on a Mac                           | Opens the test data                               |
+| `Ctrl+B`, `Ctrl+Alt+Cmd+B` on a Mac                  | Opens the pre conditions                          |
+| `Ctrl+R`, `Cmd+R` on a Mac                           | Opens the reference                               |
+| `Ctrl+G`, `Ctrl+Alt+G` on a Mac                      | Opens the group                                   |
+| `Ctrl+=`, `Ctrl++`, `Ctrl+Numpad+`, `Cmd+=` on a Mac | Adds a box to Steps or Group, where the cursor is |
+| `Ctrl+P`, `Ctrl+Alt+P` on a Mac                      | Opens the priority                                |
+| `Alt+Enter`                                          | Offers the corrections for what was typed         |
+| `Ctrl+Space`                                         | Offers what has been typed before, on a Mac too   |
+| `Tab` `Shift+Tab`                                    | Moves between the choices in a picker             |
+| `Up` `Down`                                          | Moves through a list of choices                   |
+| `Space`                                              | Selects the group under the cursor                |
+| `Enter`                                              | Saves                                             |
+| `Escape`                                             | Cancels                                           |
 
 ## Inside the bulk editors
 
-| Key                           | What it does                        |
-|-------------------------------|-------------------------------------|
-| `Ctrl+Enter`                  | Adds an item to a list being edited |
-| `Shift+Delete`                | Removes one                         |
-| `Ctrl+Shift+A`                | Puts a caret on every value at once |
-| `Ctrl+Click`                  | Puts a caret where clicked          |
-| `Tab` `Shift+Tab` `Up` `Down` | Move between the values             |
-| `Enter`                       | Saves                               |
-| `Escape`                      | Cancels                             |
+| Key                                                  | What it does                        |
+|------------------------------------------------------|-------------------------------------|
+| `Ctrl+=`, `Ctrl++`, `Ctrl+Numpad+`, `Cmd+=` on a Mac | Adds an item to a list being edited |
+| `Shift+Delete`                                       | Removes one                         |
+| `Ctrl+Shift+A`                                       | Puts a caret on every value at once |
+| `Ctrl+Click`                                         | Puts a caret where clicked          |
+| `Tab` `Shift+Tab` `Up` `Down`                        | Move between the values             |
+| `Enter`                                              | Saves                               |
+| `Escape`                                             | Cancels                             |
 
 ## In any Testin text field
 

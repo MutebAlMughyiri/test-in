@@ -23,7 +23,6 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.colors.EditorColorsScheme;
-import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.impl.EditorComponentImpl;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
 import com.intellij.testFramework.PlatformTestUtil;
@@ -48,6 +47,7 @@ import org.testin.util.Json;
 import org.testin.util.Shortcuts;
 import org.testin.view.Drawn;
 
+import javax.swing.KeyStroke;
 import java.awt.Color;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -89,6 +89,7 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
     @Override
     protected void tearDown() {
         ShownDialog.close(getProject(), ModuleBulkSectionDialog.class);
+        ShownDialog.close(getProject(), StepsBulkSectionDialog.class);
         super.tearDown();
     }
 
@@ -121,7 +122,11 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull List<Editor> editors() {
-        return Drawn.components(ShownDialog.content(getProject(), ModuleBulkSectionDialog.class)).stream()
+        return editorsOf(ModuleBulkSectionDialog.class);
+    }
+
+    private @NotNull List<Editor> editorsOf(final @NotNull Class<?> kind) {
+        return Drawn.components(ShownDialog.content(getProject(), kind)).stream()
                 .filter(EditorComponentImpl.class::isInstance).map(component -> (Editor) ((EditorComponentImpl) component).getEditor()).toList();
     }
 
@@ -244,9 +249,25 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
 
         assertEquals("the bulk editor is not two editors", 2, editors().size());
         for (final Editor editor : editors()) {
-            final @NotNull Language colored = ((EditorEx) editor).getHighlighter().createIterator(startOfValue(editor.getDocument(), 0)).getTokenType().getLanguage();
+            final @NotNull Language colored = editor.getHighlighter().createIterator(startOfValue(editor.getDocument(), 0)).getTokenType().getLanguage();
             assertEquals("a value is not colored as JSON", Json.language(), colored);
         }
+    }
+
+    // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-293
+    public void testTheAddKeyAddsAnItemToABulkList() {
+        aTestSetWithModules("Payments", "Cart");
+        final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
+        editor.getList().setSelectionInterval(0, editor.getList().getModel().getSize() - 1);
+        UpdateTestCaseAction.openField(getProject(), editor, UpdateTestCaseFields.STEPS);
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+        final @NotNull Document steps = editorsOf(StepsBulkSectionDialog.class).stream().filter(values -> !values.isViewer()).findFirst().orElseThrow().getDocument();
+        final int lines = steps.getLineCount();
+
+        for (final KeyStroke stroke : Shortcuts.AddItem.getKeys())
+            ShownDialog.press(getProject(), StepsBulkSectionDialog.class, stroke);
+
+        assertEquals("not every add key added an item to the steps", lines + Shortcuts.AddItem.getKeys().length, steps.getLineCount());
     }
 
     // Rule-EDITOR-PANEL-006

@@ -72,11 +72,7 @@ public class CreateTestCaseDialog extends TestCaseBaseDialog {
         // Rule-INTERNAL-100
         resizable = true;
 
-        getAllSections().forEach(section -> section.enableMultiLine(this, this::submit));
-
-        registerShortcut(keys, Shortcuts.Enter.getCustomShortcut(), this::submit);
-
-        registerShortcut(keys, Shortcuts.Escape.getCustomShortcut(), this::closeCancel);
+        registerDialogKeys(keys);
     }
 
     // Rule-INTERNAL-068

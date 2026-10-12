@@ -52,8 +52,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static org.testin.testcase.TestCaseDialogKey.ADD_GROUP;
-import static org.testin.testcase.TestCaseDialogKey.ADD_STEP;
+import static org.testin.testcase.TestCaseDialogKey.ADD;
 import static org.testin.testcase.TestCaseDialogKey.AUTO_COMPLETE;
 import static org.testin.testcase.TestCaseDialogKey.CORRECTIONS;
 import static org.testin.testcase.TestCaseDialogKey.NAVIGATE_ARROWS;
@@ -125,7 +124,7 @@ public enum UpdateTestCaseFields implements MenuItem {
             Done.UPDATED,
             (p, items, updatedItems) -> new StepsBulkSectionDialog(p, items, updatedItems).open(),
             TestCaseBaseDialog::getStepsSection,
-            ImmutableList.of(CORRECTIONS, ADD_STEP, NAVIGATE_TAB, AUTO_COMPLETE)
+            ImmutableList.of(CORRECTIONS, ADD, NAVIGATE_TAB, AUTO_COMPLETE)
     ),
 
     PRIORITY(
@@ -147,7 +146,7 @@ public enum UpdateTestCaseFields implements MenuItem {
             Done.UPDATED,
             (p, items, updatedItems) -> new GroupBulkSectionDialog(p, items, updatedItems).open(),
             TestCaseBaseDialog::getGroupSection,
-            ImmutableList.of(ADD_GROUP, AUTO_COMPLETE, NAVIGATE_TAB)
+            ImmutableList.of(ADD, AUTO_COMPLETE, NAVIGATE_TAB)
     ),
 
     ORDER(

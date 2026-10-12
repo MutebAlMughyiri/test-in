@@ -32,6 +32,7 @@ import org.testin.services.ProjectLifetime;
 import org.testin.testcase.CreateTestCaseFields;
 import org.testin.testcase.UpdateTestCaseFields;
 import org.testin.ui.framework.AbstractFrameworkDialog;
+import org.testin.util.Shortcuts;
 
 import javax.swing.JComponent;
 import java.awt.Component;
@@ -149,6 +150,23 @@ public abstract class TestCaseBaseDialog extends AbstractFrameworkDialog {
         all.addAll(List.of(dialogKeys));
 
         showKeys(all.toArray(StatusBarItem[]::new));
+    }
+
+    // UC-EDITOR-PANEL-005, UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-293
+    protected final void registerDialogKeys(final @NotNull JComponent keys) {
+        getAllSections().forEach(section -> section.enableMultiLine(this, this::submit));
+        registerShortcut(keys, Shortcuts.Enter.getCustomShortcut(), this::submit);
+        registerShortcut(keys, Shortcuts.Escape.getCustomShortcut(), this::closeCancel);
+        registerShortcut(keys, Shortcuts.AddItem.getCustomShortcut(), this::addBoxWhereTheCursorIs);
+    }
+
+    private void addBoxWhereTheCursorIs() {
+        Optional.ofNullable(KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner()).ifPresent(this::addBoxAt);
+    }
+
+    // Rule-EDITOR-PANEL-293
+    void addBoxAt(final @NotNull Component focusOwner) {
+        sectionHolding(focusOwner).filter(this::mayWrite).ifPresent(section -> section.addBox(this::refit));
     }
 
     @Override

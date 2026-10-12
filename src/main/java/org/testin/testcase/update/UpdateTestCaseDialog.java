@@ -29,7 +29,6 @@ import org.testin.testcase.create.TestCaseBaseDialog;
 import org.testin.testcase.create.TestCaseForm;
 import org.testin.ui.framework.ComponentDialogBase;
 import org.testin.util.Bundle;
-import org.testin.util.Shortcuts;
 
 import javax.swing.JComponent;
 import java.util.List;
@@ -80,10 +79,6 @@ public class UpdateTestCaseDialog extends TestCaseBaseDialog {
         resizable = true;
         components = List.of(ComponentDialogBase.of(form));
 
-        getAllSections().forEach(section -> section.enableMultiLine(this, this::submit));
-
-        registerShortcut(keys, Shortcuts.Enter.getCustomShortcut(), this::submit);
-
-        registerShortcut(keys, Shortcuts.Escape.getCustomShortcut(), this::closeCancel);
+        registerDialogKeys(keys);
     }
 }

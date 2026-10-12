@@ -58,7 +58,6 @@ import org.testin.util.Json;
 import org.testin.util.Shortcuts;
 
 import javax.swing.JComponent;
-import javax.swing.KeyStroke;
 import javax.swing.Timer;
 import java.awt.Color;
 import java.awt.event.MouseEvent;
@@ -125,7 +124,7 @@ final class BulkJsonEditors implements DialogComponent {
         installMultiCaretClick();
     }
 
-    private static void register(final @NotNull Runnable body, final @NotNull KeyStroke keyStroke, final @NotNull JComponent target) {
+    private static void register(final @NotNull Runnable body, final @NotNull CustomShortcutSet keys, final @NotNull JComponent target) {
         new DumbAwareAction() {
             @Override
             public void actionPerformed(final @NotNull AnActionEvent e) {
@@ -136,7 +135,7 @@ final class BulkJsonEditors implements DialogComponent {
             public @NotNull ActionUpdateThread getActionUpdateThread() {
                 return ActionUpdateThread.EDT;
             }
-        }.registerCustomShortcutSet(new CustomShortcutSet(keyStroke), target);
+        }.registerCustomShortcutSet(keys, target);
     }
 
     // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-040
@@ -386,10 +385,10 @@ final class BulkJsonEditors implements DialogComponent {
 
             final @NotNull Shortcuts key = Objects.requireNonNull(shortcut.shortcut());
             final @NotNull Runnable action = Objects.requireNonNull(shortcut.action());
-            register(action, key.getKey(), target);
+            register(action, key.getCustomShortcut(), target);
 
             if (key == Shortcuts.Enter) {
-                register(action, Shortcuts.ConfirmAlternative.getKey(), target);
+                register(action, Shortcuts.ConfirmAlternative.getCustomShortcut(), target);
             }
         }
     }
