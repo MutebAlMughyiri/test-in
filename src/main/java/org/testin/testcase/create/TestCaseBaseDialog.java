@@ -160,6 +160,7 @@ public abstract class TestCaseBaseDialog extends AbstractFrameworkDialog {
         registerShortcut(keys, Shortcuts.AddItem.getCustomShortcut(), this::addBoxWhereTheCursorIs);
     }
 
+    // Rule-EDITOR-PANEL-293
     private void addBoxWhereTheCursorIs() {
         Optional.ofNullable(KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner()).ifPresent(this::addBoxAt);
     }

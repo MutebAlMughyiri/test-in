@@ -286,13 +286,15 @@ public enum Shortcuts {
             KeyStroke.getKeyStroke(KeyEvent.VK_U, 0)
     );
 
-    public static final @NotNull KeyStroke NO_KEY = EMPTY.key;
-    private final @NotNull KeyStroke key;
+    public static final @NotNull KeyStroke NO_KEY = EMPTY.getKey();
     private final @NotNull KeyStroke @NotNull [] keys;
 
     Shortcuts(final @NotNull KeyStroke key, final @NotNull KeyStroke @NotNull ... alternatives) {
-        this.key = key;
         this.keys = Stream.concat(Stream.of(key), Arrays.stream(alternatives)).toArray(KeyStroke[]::new);
+    }
+
+    public @NotNull KeyStroke getKey() {
+        return keys[0];
     }
 
     @MagicConstant(flagsFromClass = InputEvent.class)
@@ -330,7 +332,7 @@ public enum Shortcuts {
     }
 
     public @NotNull String getShortcutText() {
-        return shortcutText(key);
+        return shortcutText(getKey());
     }
 
     public boolean matches(final @NotNull KeyEvent e) {
