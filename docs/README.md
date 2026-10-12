@@ -51,9 +51,9 @@ tell you what changes and which message appears.
 | **[Automation code and the gutter](codegen/main.md)** | The test methods Testin writes, and how they are kept in step with the tree                          | 22        | 106   |
 | **[Reports](report/main.md)**                         | Writing a test run out as a document, in four formats                                                | 3         | 26    |
 | **[Sharing work with the team](share/main.md)**       | Export, import and Git. Every way test data leaves and arrives                                       | 18        | 106   |
-| **[Inside Testin](internal/main.md)**                 | The parts that belong to no panel: the search, and the one thing that owns every file                | 8         | 136   |
+| **[Inside Testin](internal/main.md)**                 | The parts that belong to no panel: the search, and the one thing that owns every file                | 8         | 137   |
 
-**153 use cases and 940 rules**, each one checked against the code it describes.
+**153 use cases and 941 rules**, each one checked against the code it describes.
 
 Every part also lists two more things at the end of its page: where the plugin
 breaks its own rules today, and what nobody has decided yet. Both are honest

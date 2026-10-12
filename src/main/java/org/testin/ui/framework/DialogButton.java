@@ -21,7 +21,9 @@ import org.testin.ui.dialogs.DialogStyle;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public final class DialogButton implements DialogComponent {
     private final @NotNull JButton button;
@@ -29,13 +31,20 @@ public final class DialogButton implements DialogComponent {
     private @NotNull Runnable submitRequest = () -> {
     };
 
-    DialogButton(final @NotNull String text) {
+    // Rule-INTERNAL-140
+    DialogButton(final @NotNull String text, final @NotNull List<Alternative> others) {
         button = new JButton(text);
         button.addActionListener(_ -> submitRequest.run());
 
         DialogStyle.asPrimary(button);
 
-        footer = new ButtonFooter(button);
+        footer = new ButtonFooter(Stream.concat(others.stream().map(DialogButton::other), Stream.of(button)).toArray(JComponent[]::new));
+    }
+
+    private static @NotNull JButton other(final @NotNull Alternative alternative) {
+        final @NotNull JButton other = new JButton(alternative.name());
+        other.addActionListener(_ -> alternative.action().run());
+        return other;
     }
 
     // UC-INTERNAL-007, Rule-INTERNAL-080

@@ -85,7 +85,12 @@ public final class ComponentDialogBase<C extends DialogComponent> {
     }
 
     public static @NotNull ComponentDialogBase<DialogButton> button(final @NotNull String text) {
-        return new ComponentDialogBase<>(new DialogButton(text));
+        return button(text, List.of());
+    }
+
+    // Rule-INTERNAL-140
+    public static @NotNull ComponentDialogBase<DialogButton> button(final @NotNull String text, final @NotNull List<Alternative> others) {
+        return new ComponentDialogBase<>(new DialogButton(text, others));
     }
 
     public static @NotNull DetailsBuilder details() {

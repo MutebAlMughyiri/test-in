@@ -23,6 +23,8 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.ui.Tooltip;
 import org.testin.util.Fonts;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import java.awt.BorderLayout;
 import java.util.Optional;
@@ -33,19 +35,28 @@ final class ButtonFooter {
     private final @NotNull JBLabel tally = new JBLabel();
     private final @NotNull JBPanel<?> panel;
 
-    // Rule-INTERNAL-095, Rule-INTERNAL-119
-    ButtonFooter(final @NotNull JComponent button) {
-        this.button = button;
-        button.setOpaque(false);
-        button.setFont(Fonts.row());
+    // Rule-INTERNAL-095, Rule-INTERNAL-119, Rule-INTERNAL-140
+    ButtonFooter(final @NotNull JComponent @NotNull ... buttons) {
+        this.button = buttons[buttons.length - 1];
+
         tally.setFont(Fonts.small());
         tally.setForeground(JBUI.CurrentTheme.ContextHelp.FOREGROUND);
+
+        final @NotNull JBPanel<?> row = new JBPanel<>();
+        row.setLayout(new BoxLayout(row, BoxLayout.X_AXIS));
+        row.setOpaque(false);
+        for (final JComponent each : buttons) {
+            if (row.getComponentCount() > 0) row.add(Box.createHorizontalStrut(JBUI.scale(Spacing.S)));
+            each.setOpaque(false);
+            each.setFont(Fonts.row());
+            row.add(each);
+        }
 
         panel = new JBPanel<>(new BorderLayout());
         panel.setOpaque(false);
         panel.setBorder(JBUI.Borders.empty(Spacing.M, Spacing.XL));
         panel.add(tally, BorderLayout.WEST);
-        panel.add(button, BorderLayout.EAST);
+        panel.add(row, BorderLayout.EAST);
     }
 
     @NotNull JComponent getPanel() {

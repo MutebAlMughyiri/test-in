@@ -106,10 +106,6 @@ public enum Shortcuts {
             KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0)
     ),
 
-    ConfirmAlternative(
-            KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.SHIFT_DOWN_MASK)
-    ),
-
     GenerateReport(
             KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_DOWN_MASK | macAdds(InputEvent.ALT_DOWN_MASK))
     ),

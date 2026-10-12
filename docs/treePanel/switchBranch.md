@@ -89,8 +89,8 @@ repository.
 │  To:    release                                              │
 │                                                              │
 ├──────────────────────────────────────────────────────────────┤
-│  Enter Switch Anyway   Shift+Enter Review Changes        (3) │
-│  Escape Cancel                                               │
+│  [ Review Changes ]  [ Switch Anyway ]                   (3) │
+│  Enter Switch Anyway   Escape Cancel                         │
 └──────────────────────────────────────────────────────────────┘
 ```
 
@@ -99,8 +99,8 @@ repository.
    committed onto the wrong branch by mistake.
 2. **From** and **To** — the branch the tester is on, and the branch they
    picked.
-3. **Two confirms** — `Enter` switches anyway. `Shift+Enter` opens the review
-   instead.
+3. **Two buttons** — **Switch Anyway**, also `Enter`, switches anyway.
+   **Review Changes** opens the review instead.
 
 ## Main flow
 
@@ -133,8 +133,8 @@ credentials or sit on a host that is not reachable.
 2. The **Uncommitted Changes** dialog says how many changes there are, and that
    they would move to the new branch too.
 3. `Enter`, which is **Switch Anyway**, runs the switch as above.
-4. `Shift+Enter`, which is **Review Changes**, opens the list of changes not yet
-   committed instead.
+4. The **Review Changes** button opens the list of changes not yet committed
+   instead.
 5. `Escape` changes nothing.
 
 ## What Testin refuses

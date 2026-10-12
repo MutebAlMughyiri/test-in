@@ -8,8 +8,8 @@ commit, **so that** I can decide what to send and what to put back.
 This lists everything the tester changed since the last commit, one row for
 each changed field. It is also where a commit is written and sent.
 
-There is no key on the menu. `Shift+Enter` reaches it from the message about
-uncommitted work.
+There is no key on the menu. The **Review Changes** button on the message about
+uncommitted work reaches it.
 
 ## Rules
 

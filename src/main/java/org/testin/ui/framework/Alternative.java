@@ -20,4 +20,8 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.util.Shortcuts;
 
 public record Alternative(@NotNull Shortcuts key, @NotNull String name, @NotNull Runnable action) {
+    // Rule-INTERNAL-140
+    public Alternative(final @NotNull String name, final @NotNull Runnable action) {
+        this(Shortcuts.EMPTY, name, action);
+    }
 }
