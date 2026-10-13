@@ -122,8 +122,8 @@ The status says how far the test run has got.
    clicks a row.
 5. Testin writes the status. In the tree, the test run's icon and its gray
    status word both change. Testin shows the new status word.
-6. Setting **Completed** or **Closed** signs the test run off, and stops any
-   execution still running on it. Every test case
+6. Setting **Completed** or **Closed** signs the test run off. Any execution
+   still running on it stops. Every test case
    still **Pending** becomes **Untested**, except one removed from its test set,
    which stays as the test run recorded it. Testin records the time the test run
    finished, but only if it had been started. From then on **Set Status**, **Edit Test Run** and **Run Tests** are gray
