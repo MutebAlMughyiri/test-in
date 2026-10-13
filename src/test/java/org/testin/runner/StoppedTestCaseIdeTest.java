@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.model.TestCase;
 import org.testin.model.testrun.Failure;
-import org.testin.model.status.ExecutionStatus;
+import org.testin.model.status.TestNGExecutionStatus;
 import org.testin.services.Services;
 
 import java.time.Duration;
@@ -36,9 +36,9 @@ public class StoppedTestCaseIdeTest extends AbstractCodegenIdeTest {
 
         execution.starting(testCase);
         execution.stop(List.of(testCase));
-        ExecutionReported.broadcast(getProject(), testCase.getId().toString(), ExecutionStatus.FAILED, Duration.ZERO, Failure.NONE);
+        ExecutionReported.broadcast(getProject(), testCase.getId().toString(), TestNGExecutionStatus.FAILED, Duration.ZERO, Failure.NONE);
         settled();
 
-        assertEquals("the killed process reported the stopped test case as failed, and it was recorded so", ExecutionStatus.IDLE, execution.executionStatusOf(testCase));
+        assertEquals("the killed process reported the stopped test case as failed, and it was recorded so", TestNGExecutionStatus.IDLE, execution.testNGExecutionStatusOf(testCase));
     }
 }

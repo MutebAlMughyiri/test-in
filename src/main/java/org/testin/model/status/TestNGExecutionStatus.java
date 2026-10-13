@@ -26,41 +26,41 @@ import java.util.Optional;
 
 @Getter
 @AllArgsConstructor
-public enum ExecutionStatus {
+public enum TestNGExecutionStatus {
     IDLE(
             AllIcons.RunConfigurations.TestState.Run,
-            ExecutionStatusBadge.NONE,
+            TestNGExecutionStatusBadge.NONE,
             Optional.empty()
     ),
 
     PASSED(
             AllIcons.RunConfigurations.TestPassed,
-            new ExecutionStatusBadge(RunItemStatus.PASSED.getLabel(), RunItemStatus.PASSED.getRowColor()),
+            new TestNGExecutionStatusBadge(RunItemStatus.PASSED.getLabel(), RunItemStatus.PASSED.getRowColor()),
             Optional.of(RunItemStatus.PASSED)
     ),
 
     FAILED(
             AllIcons.RunConfigurations.TestFailed,
-            new ExecutionStatusBadge(RunItemStatus.FAILED.getLabel(), RunItemStatus.FAILED.getRowColor()),
+            new TestNGExecutionStatusBadge(RunItemStatus.FAILED.getLabel(), RunItemStatus.FAILED.getRowColor()),
             Optional.of(RunItemStatus.FAILED)
     ),
 
     // Rule-EDITOR-PANEL-291
     RUNNING(
             AllIcons.Actions.Suspend,
-            ExecutionStatusBadge.NONE,
+            TestNGExecutionStatusBadge.NONE,
             Optional.empty()
     ),
 
     SKIPPED(
             AllIcons.Actions.Suspend,
-            ExecutionStatusBadge.NONE,
+            TestNGExecutionStatusBadge.NONE,
             Optional.empty()
     );
 
     private final @NotNull Icon icon;
 
-    private final @NotNull ExecutionStatusBadge badge;
+    private final @NotNull TestNGExecutionStatusBadge badge;
 
     private final @NotNull Optional<RunItemStatus> runItemStatus;
 
@@ -69,6 +69,6 @@ public enum ExecutionStatus {
     }
 
     public boolean hasBadge() {
-        return !badge.equals(ExecutionStatusBadge.NONE);
+        return !badge.equals(TestNGExecutionStatusBadge.NONE);
     }
 }

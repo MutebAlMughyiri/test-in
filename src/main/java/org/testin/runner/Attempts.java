@@ -17,7 +17,7 @@
 package org.testin.runner;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.status.ExecutionStatus;
+import org.testin.model.status.TestNGExecutionStatus;
 import org.testin.model.testrun.RunItemExecution;
 
 import java.util.List;
@@ -45,15 +45,15 @@ record Attempts(@NotNull List<Attempt> all, int written) {
     }
 
     // Rule-CODEGEN-075, Rule-CODEGEN-111
-    @NotNull ExecutionStatus executionStatus() {
-        return executionStatusAt(deciding());
+    @NotNull TestNGExecutionStatus testNGExecutionStatus() {
+        return testNGExecutionStatusAt(deciding());
     }
 
     // Rule-CODEGEN-111
     int deciding() {
         final @NotNull List<Integer> lastAttempts = IntStream.range(0, all.size()).filter(at -> !retriedAt(at)).boxed().toList();
 
-        return lastAttempts.stream().filter(at -> executionStatusAt(at) == ExecutionStatus.FAILED).reduce((_, last) -> last).orElse(lastAttempts.getLast());
+        return lastAttempts.stream().filter(at -> testNGExecutionStatusAt(at) == TestNGExecutionStatus.FAILED).reduce((_, last) -> last).orElse(lastAttempts.getLast());
     }
 
     // Rule-CODEGEN-111
@@ -81,7 +81,7 @@ record Attempts(@NotNull List<Attempt> all, int written) {
 
         return IntStream.range(0, all.size())
                 .filter(this::isExecution)
-                .mapToObj(at -> RunItemExecution.from(executionStatusAt(at).getRunItemStatus().orElseThrow(), all.get(at).duration(), all.get(at).failure())
+                .mapToObj(at -> RunItemExecution.from(testNGExecutionStatusAt(at).getRunItemStatus().orElseThrow(), all.get(at).duration(), all.get(at).failure())
                         .executedAt(all.get(at).at())
                         .invocation(invokedMoreThanOnce ? invocation[at] : 0)
                         .retry(retry[at])
@@ -93,15 +93,15 @@ record Attempts(@NotNull List<Attempt> all, int written) {
     }
 
     private boolean isExecution(final int at) {
-        return executionStatusAt(at).getRunItemStatus().isPresent();
+        return testNGExecutionStatusAt(at).getRunItemStatus().isPresent();
     }
 
     // Rule-CODEGEN-110
     private boolean retriedAt(final int at) {
-        return all.get(at).executionStatus() == ExecutionStatus.SKIPPED && at < all.size() - 1;
+        return all.get(at).testNGExecutionStatus() == TestNGExecutionStatus.SKIPPED && at < all.size() - 1;
     }
 
-    private @NotNull ExecutionStatus executionStatusAt(final int at) {
-        return all.get(at).executionStatus() == ExecutionStatus.SKIPPED ? ExecutionStatus.FAILED : all.get(at).executionStatus();
+    private @NotNull TestNGExecutionStatus testNGExecutionStatusAt(final int at) {
+        return all.get(at).testNGExecutionStatus() == TestNGExecutionStatus.SKIPPED ? TestNGExecutionStatus.FAILED : all.get(at).testNGExecutionStatus();
     }
 }

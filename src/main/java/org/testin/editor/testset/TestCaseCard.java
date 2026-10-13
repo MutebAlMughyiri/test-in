@@ -22,7 +22,7 @@ import org.testin.clipboard.CutState;
 import org.testin.editor.card.AbstractCard;
 import org.testin.model.Priority;
 import org.testin.model.TestCase;
-import org.testin.model.status.ExecutionStatus;
+import org.testin.model.status.TestNGExecutionStatus;
 import org.testin.runner.TestNGExecution;
 import org.testin.services.Services;
 import org.testin.testcase.TestSetEditorFields;
@@ -66,9 +66,9 @@ public class TestCaseCard extends AbstractCard {
 
         if (testCase.getStatus().isBadged()) badges.add(Badges.createTestCaseStatusBadge(testCase.getStatus()));
 
-        final @NotNull ExecutionStatus executionStatus = testNGExecution.executionStatusOf(testCase);
+        final @NotNull TestNGExecutionStatus testNGExecutionStatus = testNGExecution.testNGExecutionStatusOf(testCase);
 
-        if (executionStatus.hasBadge()) badges.add(Badges.createExecutionStatusBadge(executionStatus.getBadge()));
+        if (testNGExecutionStatus.hasBadge()) badges.add(Badges.createTestNGExecutionStatusBadge(testNGExecutionStatus.getBadge()));
 
         titleArea.setForeground(testCase.getStatus().getDescriptionColor());
         updateUI(index, title, badges, details);

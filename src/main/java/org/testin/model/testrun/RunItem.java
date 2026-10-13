@@ -228,7 +228,7 @@ public class RunItem {
         return IntStream.range(0, executions.size())
                 .filter(at -> at != chosen)
                 .mapToObj(at -> executions.get(at).getStatus())
-                .filter(status -> status == RunItemStatus.FAILED || status == RunItemStatus.BLOCKED)
+                .filter(runItemExecutionStatus -> runItemExecutionStatus == RunItemStatus.FAILED || runItemExecutionStatus == RunItemStatus.BLOCKED)
                 .collect(Collectors.groupingBy(Function.identity(), () -> new EnumMap<>(RunItemStatus.class), Collectors.counting()));
     }
 
@@ -285,8 +285,8 @@ public class RunItem {
     }
 
     // UC-EDITOR-PANEL-031, UC-EDITOR-PANEL-038, UC-EDITOR-PANEL-039, UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-159, Rule-EDITOR-PANEL-160, Rule-EDITOR-PANEL-284
-    public void recordRunItemStatus(final @NotNull RunItemStatus next, final @NotNull String tester, final @NotNull Duration duration, final @NotNull Failure failure) {
-        recordExecutions(List.of(RunItemExecution.recorded(next, tester, duration, failure)), 0, tester);
+    public void recordRunItemStatus(final @NotNull RunItemStatus runItemStatus, final @NotNull String tester, final @NotNull Duration duration, final @NotNull Failure failure) {
+        recordExecutions(List.of(RunItemExecution.recorded(runItemStatus, tester, duration, failure)), 0, tester);
     }
 
     // UC-CODEGEN-008, Rule-CODEGEN-111

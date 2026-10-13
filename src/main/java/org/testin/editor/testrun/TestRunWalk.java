@@ -27,7 +27,7 @@ import org.testin.model.testrun.TestRunResultAnalysis;
 import org.testin.model.testrun.Segment;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.TestRunSummary;
-import org.testin.model.status.ExecutionStatus;
+import org.testin.model.status.TestNGExecutionStatus;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.status.TestRunStatus;
 import org.testin.notifications.Done;
@@ -203,10 +203,10 @@ public final class TestRunWalk {
     }
 
     // UC-EDITOR-PANEL-043, UC-EDITOR-PANEL-044, Rule-EDITOR-PANEL-182, Rule-EDITOR-PANEL-289
-    void executionReported(final @NotNull TestCase testCase, final @NotNull ExecutionStatus executionStatus, final @NotNull List<RunItemExecution> executions, final int written) {
+    void executionReported(final @NotNull TestCase testCase, final @NotNull TestNGExecutionStatus testNGExecutionStatus, final @NotNull List<RunItemExecution> executions, final int written) {
         if (!launchedHere.contains(testCase.getId())) return;
 
-        if (!executionStatus.stillGoing()) {
+        if (!testNGExecutionStatus.stillGoing()) {
             launchedHere.remove(testCase.getId());
             launchedByRunTests.remove(testCase.getId());
         }
@@ -215,10 +215,10 @@ public final class TestRunWalk {
 
         if (!editor.getParent().takesRunItemStatuses()) return;
 
-        if (executionStatus.stillGoing() && !executions.isEmpty())
+        if (testNGExecutionStatus.stillGoing() && !executions.isEmpty())
             runItemStatusService.showAttempts(editor, testCase, executions, written);
 
-        executionStatus.getRunItemStatus().ifPresent(runItemStatus -> {
+        testNGExecutionStatus.getRunItemStatus().ifPresent(runItemStatus -> {
             runItemStatusService.recordReported(editor, testCase, runItemStatus, executions, written);
 
             if (launchedHere.isEmpty()) sayWhatTheTestRunRecorded();

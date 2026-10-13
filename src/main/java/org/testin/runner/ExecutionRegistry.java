@@ -17,7 +17,7 @@
 package org.testin.runner;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.status.ExecutionStatus;
+import org.testin.model.status.TestNGExecutionStatus;
 import org.testin.util.Bundle;
 
 import java.util.Collection;
@@ -41,7 +41,7 @@ final class ExecutionRegistry {
 
     private final @NotNull Set<UUID> stopped = ConcurrentHashMap.newKeySet();
 
-    private final @NotNull Map<UUID, ExecutionStatus> runItemStatus = new ConcurrentHashMap<>();
+    private final @NotNull Map<UUID, TestNGExecutionStatus> testNGExecutionStatuses = new ConcurrentHashMap<>();
 
     private final @NotNull Map<UUID, Attempts> held = new ConcurrentHashMap<>();
 
@@ -95,16 +95,16 @@ final class ExecutionRegistry {
         return executingNow.contains(testCaseId);
     }
 
-    @NotNull ExecutionStatus executionStatusOf(final @NotNull UUID testCaseId) {
-        return isRunning(testCaseId) ? ExecutionStatus.RUNNING : runItemStatus.getOrDefault(testCaseId, ExecutionStatus.IDLE);
+    @NotNull TestNGExecutionStatus testNGExecutionStatusOf(final @NotNull UUID testCaseId) {
+        return isRunning(testCaseId) ? TestNGExecutionStatus.RUNNING : testNGExecutionStatuses.getOrDefault(testCaseId, TestNGExecutionStatus.IDLE);
     }
 
     // Rule-CODEGEN-110
     @NotNull Map<UUID, Attempts> attempted(final @NotNull UUID testCaseId, final @NotNull Attempt attempt) {
-        if (attempt.executionStatus() == ExecutionStatus.IDLE && held.containsKey(testCaseId))
+        if (attempt.testNGExecutionStatus() == TestNGExecutionStatus.IDLE && held.containsKey(testCaseId))
             return decide(List.of(testCaseId));
         if (!configOf.containsKey(testCaseId)) return Map.of(testCaseId, Attempts.of(attempt));
-        if (attempt.executionStatus() == ExecutionStatus.RUNNING) {
+        if (attempt.testNGExecutionStatus() == TestNGExecutionStatus.RUNNING) {
             executingNow.add(testCaseId);
             return decidedBefore(testCaseId, attempt);
         }
@@ -139,16 +139,16 @@ final class ExecutionRegistry {
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-038
-    void reported(final @NotNull UUID testCaseId, final @NotNull ExecutionStatus executionStatus) {
-        if (executionStatus == ExecutionStatus.RUNNING) return;
+    void reported(final @NotNull UUID testCaseId, final @NotNull TestNGExecutionStatus testNGExecutionStatus) {
+        if (testNGExecutionStatus == TestNGExecutionStatus.RUNNING) return;
 
         pending.remove(testCaseId);
         configOf.remove(testCaseId);
         executingNow.remove(testCaseId);
 
-        if (executionStatus == ExecutionStatus.IDLE && !stopped.contains(testCaseId)) return;
+        if (testNGExecutionStatus == TestNGExecutionStatus.IDLE && !stopped.contains(testCaseId)) return;
 
-        runItemStatus.put(testCaseId, executionStatus);
+        testNGExecutionStatuses.put(testCaseId, testNGExecutionStatus);
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-037

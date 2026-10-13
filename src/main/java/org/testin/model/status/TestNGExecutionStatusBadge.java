@@ -23,6 +23,6 @@ import org.jetbrains.annotations.NotNull;
 import java.awt.Color;
 
 @Immutable
-public record ExecutionStatusBadge(@NotNull String label, @NotNull Color color) {
-    public static final @NotNull ExecutionStatusBadge NONE = new ExecutionStatusBadge("", JBColor.GRAY);
+public record TestNGExecutionStatusBadge(@NotNull String label, @NotNull Color color) {
+    public static final @NotNull TestNGExecutionStatusBadge NONE = new TestNGExecutionStatusBadge("", JBColor.GRAY);
 }

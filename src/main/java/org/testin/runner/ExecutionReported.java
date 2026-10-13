@@ -20,18 +20,18 @@ import com.intellij.openapi.project.Project;
 import com.intellij.util.messages.Topic;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.testrun.Failure;
-import org.testin.model.status.ExecutionStatus;
+import org.testin.model.status.TestNGExecutionStatus;
 
 import java.time.Duration;
 
 public interface ExecutionReported {
     Topic<ExecutionReported> TOPIC = Topic.create("RunTestCaseNotification", ExecutionReported.class);
 
-    static void broadcast(final @NotNull Project project, final @NotNull String testName, final @NotNull ExecutionStatus executionStatus, final @NotNull Duration duration, final @NotNull Failure failure) {
+    static void broadcast(final @NotNull Project project, final @NotNull String testName, final @NotNull TestNGExecutionStatus testNGExecutionStatus, final @NotNull Duration duration, final @NotNull Failure failure) {
         if (project.isDisposed()) return;
 
-        project.getMessageBus().syncPublisher(TOPIC).onExecutionStatusChanged(testName, executionStatus, duration, failure);
+        project.getMessageBus().syncPublisher(TOPIC).onTestNGExecutionStatusChanged(testName, testNGExecutionStatus, duration, failure);
     }
 
-    void onExecutionStatusChanged(final @NotNull String testName, final @NotNull ExecutionStatus executionStatus, final @NotNull Duration duration, final @NotNull Failure failure);
+    void onTestNGExecutionStatusChanged(final @NotNull String testName, final @NotNull TestNGExecutionStatus testNGExecutionStatus, final @NotNull Duration duration, final @NotNull Failure failure);
 }

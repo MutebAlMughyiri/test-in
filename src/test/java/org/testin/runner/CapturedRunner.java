@@ -22,7 +22,7 @@ import com.intellij.testFramework.ExtensionTestUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCase;
 import org.testin.model.testrun.Failure;
-import org.testin.model.status.ExecutionStatus;
+import org.testin.model.status.TestNGExecutionStatus;
 import org.testin.services.Services;
 
 import java.time.Duration;
@@ -38,13 +38,13 @@ public final class CapturedRunner implements AutomationExecutor {
         return runner;
     }
 
-    public static void reports(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull ExecutionStatus executionStatus, final @NotNull Duration duration) {
-        ExecutionReported.broadcast(project, testCase.getId().toString(), executionStatus, duration, Failure.NONE);
+    public static void reports(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull TestNGExecutionStatus testNGExecutionStatus, final @NotNull Duration duration) {
+        ExecutionReported.broadcast(project, testCase.getId().toString(), testNGExecutionStatus, duration, Failure.NONE);
     }
 
     public static void startedByTestNg(final @NotNull Project project, final @NotNull TestCase testCase) {
         Services.getInstance(project, TestNGExecution.class).launched(List.of(testCase), "Testin: captured");
-        reports(project, testCase, ExecutionStatus.RUNNING, Duration.ZERO);
+        reports(project, testCase, TestNGExecutionStatus.RUNNING, Duration.ZERO);
     }
 
     public @NotNull List<List<TestCase>> executions() {

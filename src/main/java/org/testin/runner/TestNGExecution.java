@@ -32,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCase;
 import org.testin.model.testrun.Failure;
-import org.testin.model.status.ExecutionStatus;
+import org.testin.model.status.TestNGExecutionStatus;
 import org.testin.notifications.Notifier;
 import org.testin.notifications.Refused;
 import org.testin.services.Services;
@@ -96,7 +96,7 @@ public final class TestNGExecution implements Disposable {
     public void starting(final @NotNull TestCase testCase) {
         registry.starting(testCase.getId());
 
-        ExecutionReported.broadcast(project, key(testCase.getId()), ExecutionStatus.RUNNING, Duration.ZERO, Failure.NONE);
+        ExecutionReported.broadcast(project, key(testCase.getId()), TestNGExecutionStatus.RUNNING, Duration.ZERO, Failure.NONE);
     }
 
     @FromContentModule
@@ -134,7 +134,7 @@ public final class TestNGExecution implements Disposable {
     public void notStarting(final @NotNull TestCase testCase) {
         registry.notStarting(testCase.getId());
 
-        ExecutionReported.broadcast(project, key(testCase.getId()), ExecutionStatus.IDLE, Duration.ZERO, Failure.NONE);
+        ExecutionReported.broadcast(project, key(testCase.getId()), TestNGExecutionStatus.IDLE, Duration.ZERO, Failure.NONE);
     }
 
     // UC-CODEGEN-008
@@ -170,13 +170,13 @@ public final class TestNGExecution implements Disposable {
         return registry.isExecutingNow(testCaseId);
     }
 
-    public @NotNull ExecutionStatus executionStatusOf(final @NotNull TestCase testCase) {
-        return registry.executionStatusOf(testCase.getId());
+    public @NotNull TestNGExecutionStatus testNGExecutionStatusOf(final @NotNull TestCase testCase) {
+        return registry.testNGExecutionStatusOf(testCase.getId());
     }
 
     // UC-CODEGEN-008
-    void reported(final @NotNull UUID testCaseId, final @NotNull ExecutionStatus executionStatus) {
-        registry.reported(testCaseId, executionStatus);
+    void reported(final @NotNull UUID testCaseId, final @NotNull TestNGExecutionStatus testNGExecutionStatus) {
+        registry.reported(testCaseId, testNGExecutionStatus);
     }
 
     // Rule-CODEGEN-110
@@ -204,7 +204,7 @@ public final class TestNGExecution implements Disposable {
                 + " execution(s): " + theirs.size() + " had reached a process");
 
         theirs.forEach(this::kill);
-        stop.testCases().forEach(testCaseId -> ExecutionReported.broadcast(project, key(testCaseId), ExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
+        stop.testCases().forEach(testCaseId -> ExecutionReported.broadcast(project, key(testCaseId), TestNGExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
 
         return stop.testCases().size();
     }
@@ -217,7 +217,7 @@ public final class TestNGExecution implements Disposable {
             if (open.isEmpty()) return;
 
             TestinLogger.info("'" + testRunName + "' ended with " + open.size() + " test case(s) still open");
-            open.forEach(testCaseId -> ExecutionReported.broadcast(project, key(testCaseId), ExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
+            open.forEach(testCaseId -> ExecutionReported.broadcast(project, key(testCaseId), TestNGExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
         });
     }
 

@@ -32,7 +32,7 @@ import org.testin.editor.WheelForwarding;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
 import org.testin.model.TestCase;
-import org.testin.model.status.ExecutionStatus;
+import org.testin.model.status.TestNGExecutionStatus;
 import org.testin.model.testrun.RunItem;
 import org.testin.runner.ExecutionRecorder;
 import org.testin.services.ProjectLifetime;
@@ -110,7 +110,7 @@ public class ViewPanel implements Disposable {
 
         refreshCurrentView();
 
-        ExecutionRecorder.onReported(project, this, (testCase, status, _, _) -> executionReported(testCase, status));
+        ExecutionRecorder.onReported(project, this, (testCase, testNGExecutionStatus, _, _) -> executionReported(testCase, testNGExecutionStatus));
     }
 
     private @NotNull Stream<JPanel> tabs() {
@@ -219,8 +219,8 @@ public class ViewPanel implements Disposable {
     }
 
     // Rule-VIEW-PANEL-005, Rule-CODEGEN-111
-    private void executionReported(final @NotNull TestCase testCase, final @NotNull ExecutionStatus executionStatus) {
-        if (executionStatus.stillGoing()) reloadDetailsIfShowing(testCase.getId());
+    private void executionReported(final @NotNull TestCase testCase, final @NotNull TestNGExecutionStatus testNGExecutionStatus) {
+        if (testNGExecutionStatus.stillGoing()) reloadDetailsIfShowing(testCase.getId());
         else if (shows(testCase.getId())) refreshCurrentView();
     }
 

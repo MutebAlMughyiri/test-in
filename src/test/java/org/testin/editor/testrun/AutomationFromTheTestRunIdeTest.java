@@ -39,7 +39,7 @@ import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
-import org.testin.model.status.ExecutionStatus;
+import org.testin.model.status.TestNGExecutionStatus;
 import org.testin.model.status.RunItemStatus;
 import org.testin.runner.CapturedRunner;
 import org.testin.runner.TestNGExecution;
@@ -94,8 +94,8 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
         return Services.getInstance(getProject(), TestRuns.class).getRunItems(testRun.getPath()).runItemOf(testCase.getId()).orElseThrow();
     }
 
-    private void reported(final @NotNull TestCase testCase, final @NotNull ExecutionStatus executionStatus, final @NotNull Duration duration) {
-        CapturedRunner.reports(getProject(), testCase, executionStatus, duration);
+    private void reported(final @NotNull TestCase testCase, final @NotNull TestNGExecutionStatus testNGExecutionStatus, final @NotNull Duration duration) {
+        CapturedRunner.reports(getProject(), testCase, testNGExecutionStatus, duration);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
 
@@ -119,7 +119,7 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
             TestCaseQuickAction.RUN_TEST_METHOD.executeFor(claiming, testCase);
             assertEquals("the test case was not handed to TestNG", List.of(List.of(testCase)), runner.executions());
 
-            reported(testCase, ExecutionStatus.PASSED, Duration.ofMillis(84));
+            reported(testCase, TestNGExecutionStatus.PASSED, Duration.ofMillis(84));
 
             Await.until("the run item status did not come back to the test run that ran it", () -> runItemOf(running, testCase).getStatus() == RunItemStatus.PASSED);
             assertEquals("the run item status went to another editor showing the same test case", RunItemStatus.PENDING, runItemOf(alsoShowing, testCase).getStatus());
@@ -139,7 +139,7 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
             Gestures.press(getProject(), TestRunFixture.keyFor(editor, RunItemStatus.PASSED), editor.getList());
 
             TestCaseQuickAction.RUN_TEST_METHOD.executeFor(editor, testCases.get(1));
-            reported(testCases.get(1), ExecutionStatus.PASSED, Duration.ofMillis(84));
+            reported(testCases.get(1), TestNGExecutionStatus.PASSED, Duration.ofMillis(84));
             Await.until("the automation's run item status was not recorded", () -> runItemOf(testRun, testCases.get(1)).getStatus() == RunItemStatus.PASSED);
 
             final @NotNull RunItem byKeyboard = runItemOf(testRun, testCases.getFirst());
@@ -177,7 +177,7 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
                 TimeoutUtil.sleep(20);
             }
 
-            reported(testCases.getFirst(), ExecutionStatus.PASSED, Duration.ofMillis(84));
+            reported(testCases.getFirst(), TestNGExecutionStatus.PASSED, Duration.ofMillis(84));
 
             Await.until("the automation's run item status was not recorded", () -> runItemOf(testRun, testCases.getFirst()).getStatus() == RunItemStatus.PASSED);
             assertEquals("the clock's count replaced the framework's own time", Duration.ofMillis(84), runItemOf(testRun, testCases.getFirst()).getDuration());
@@ -194,7 +194,7 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestRunEditor editor = opened(testRun);
         try {
             TestCaseQuickAction.RUN_TEST_METHOD.executeFor(editor, testCase);
-            reported(testCase, ExecutionStatus.PASSED, Duration.ofMillis(84));
+            reported(testCase, TestNGExecutionStatus.PASSED, Duration.ofMillis(84));
 
             Await.until("running it again was not recorded", () -> runItemOf(testRun, testCase).getExecutions().size() == 2);
             final @NotNull List<RunItemExecution> executions = runItemOf(testRun, testCase).getExecutions();
@@ -249,7 +249,7 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
 
             assertEquals("the whole test run was not one execution of every test case, judged or not", List.of(testCases), runner.executions());
 
-            reported(testCases.getFirst(), ExecutionStatus.FAILED, Duration.ofMillis(5));
+            reported(testCases.getFirst(), TestNGExecutionStatus.FAILED, Duration.ofMillis(5));
             Await.until("the second run of a judged test case was not recorded", () -> runItemOf(testRun, testCases.getFirst()).getExecutions().size() == 2);
             assertEquals("the new run did not decide the run item status", RunItemStatus.FAILED, runItemOf(testRun, testCases.getFirst()).getStatus());
         } finally {

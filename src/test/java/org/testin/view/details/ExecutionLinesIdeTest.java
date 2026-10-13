@@ -39,8 +39,8 @@ public class ExecutionLinesIdeTest extends AbstractViewPanelIdeTest {
 
     private TestCase testCase;
 
-    private static @NotNull RunItemExecution execution(final @NotNull RunItemStatus runItemStatus, final int invocation, final int retry, final boolean retried, final @NotNull String actual) {
-        return RunItemExecution.builder().status(runItemStatus).invocation(invocation).retry(retry).retried(retried).actualResult(actual).build();
+    private static @NotNull RunItemExecution execution(final @NotNull RunItemStatus runItemExecutionStatus, final int invocation, final int retry, final boolean retried, final @NotNull String actual) {
+        return RunItemExecution.builder().status(runItemExecutionStatus).invocation(invocation).retry(retry).retried(retried).actualResult(actual).build();
     }
 
     private @NotNull RunItem invokedThreeTimes() {

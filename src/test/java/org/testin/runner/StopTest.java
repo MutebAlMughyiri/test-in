@@ -17,7 +17,7 @@
 package org.testin.runner;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.status.ExecutionStatus;
+import org.testin.model.status.TestNGExecutionStatus;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -65,11 +65,11 @@ public class StopTest {
     public void aPassedTestCaseKeepsItsRunItemStatusThroughAStop() {
         final ExecutionRegistry registry = new ExecutionRegistry();
         registry.launched(List.of(ONE, TWO), "cycle 1");
-        registry.reported(ONE, ExecutionStatus.PASSED);
+        registry.reported(ONE, TestNGExecutionStatus.PASSED);
 
         final Stop stop = registry.stopping(List.of(TWO));
 
-        assertEquals(registry.executionStatusOf(ONE), ExecutionStatus.PASSED, "a stop took back a run item status that had already landed");
+        assertEquals(registry.testNGExecutionStatusOf(ONE), TestNGExecutionStatus.PASSED, "a stop took back a run item status that had already landed");
         assertFalse(stop.testCases().contains(ONE), "a finished test case was swept up with the other test case in its configuration");
         assertFalse(registry.isStopped(ONE), "a finished test case was recorded as stopped");
     }
@@ -89,7 +89,7 @@ public class StopTest {
 
         assertEquals(Set.copyOf(registry.ended("cycle 1")), Set.of(ONE, TWO));
         assertFalse(registry.isRunning(ONE), "a test case was still running after its process ended");
-        assertEquals(registry.executionStatusOf(ONE), ExecutionStatus.IDLE, "a test case left behind by a dead process still showed a status");
+        assertEquals(registry.testNGExecutionStatusOf(ONE), TestNGExecutionStatus.IDLE, "a test case left behind by a dead process still showed a status");
     }
 
     @Test

@@ -155,7 +155,8 @@ silently has no effect costs more than the setting it was meant to hold.
   bare either (#431): `testProject`, never `project`, unless it is IntelliJ's
   `Project`; `runItem`, never `item`; `testRun`, never `run` as a noun; and a
   status says which one - `testCaseStatus`, `runItemStatus`, `testRunStatus`,
-  `executionStatus`, `nodeStatus`. A model field keeps its plain name
+  `runItemExecutionStatus` (one of a run item's executions),
+  `testNGExecutionStatus`, `nodeStatus`. A model field keeps its plain name
   (`TestCase.status`), because its class already says whose it is and its name
   is the key on disk. `NamesSayTheBusinessWordTest` holds the type names to it. Read the
   `names-say-the-business` skill under `.claude/skills/` before naming or

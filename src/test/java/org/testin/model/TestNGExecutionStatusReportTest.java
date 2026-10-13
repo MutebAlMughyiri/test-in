@@ -16,7 +16,7 @@
 
 package org.testin.model;
 
-import org.testin.model.status.ExecutionStatus;
+import org.testin.model.status.TestNGExecutionStatus;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
@@ -25,32 +25,32 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-public class ExecutionStatusReportTest {
+public class TestNGExecutionStatusReportTest {
 
     @Test
     public void onlyRunningSaysTheTestCaseIsStillGoing() {
-        assertTrue(ExecutionStatus.RUNNING.stillGoing());
+        assertTrue(TestNGExecutionStatus.RUNNING.stillGoing());
 
-        assertEquals(Arrays.stream(ExecutionStatus.values()).filter(ExecutionStatus::stillGoing).count(), 1);
+        assertEquals(Arrays.stream(TestNGExecutionStatus.values()).filter(TestNGExecutionStatus::stillGoing).count(), 1);
     }
 
     @Test
     public void everyRunItemStatusEndsTheExecutionItReportsOn() {
-        for (final ExecutionStatus executionStatus : ExecutionStatus.values()) {
-            if (executionStatus.getRunItemStatus().isEmpty()) continue;
+        for (final TestNGExecutionStatus testNGExecutionStatus : TestNGExecutionStatus.values()) {
+            if (testNGExecutionStatus.getRunItemStatus().isEmpty()) continue;
 
-            assertFalse(executionStatus.stillGoing(), executionStatus + " reports a run item status while claiming to still be running");
+            assertFalse(testNGExecutionStatus.stillGoing(), testNGExecutionStatus + " reports a run item status while claiming to still be running");
         }
     }
 
     @Test
     public void aTestCaseThatNeverRanReleasesItsClaimAndRecordsNothing() {
-        assertFalse(ExecutionStatus.IDLE.stillGoing());
-        assertTrue(ExecutionStatus.IDLE.getRunItemStatus().isEmpty());
+        assertFalse(TestNGExecutionStatus.IDLE.stillGoing());
+        assertTrue(TestNGExecutionStatus.IDLE.getRunItemStatus().isEmpty());
     }
 
     @Test
     public void aStartIsNotARunItemStatus() {
-        assertTrue(ExecutionStatus.RUNNING.getRunItemStatus().isEmpty());
+        assertTrue(TestNGExecutionStatus.RUNNING.getRunItemStatus().isEmpty());
     }
 }

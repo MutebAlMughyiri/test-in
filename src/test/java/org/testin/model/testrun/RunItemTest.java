@@ -36,8 +36,8 @@ import static org.testng.Assert.assertTrue;
 
 public class RunItemTest {
 
-    private static @NotNull RunItemExecution execution(final @NotNull RunItemStatus runItemStatus, final @NotNull String actual) {
-        return RunItemExecution.builder().status(runItemStatus).actualResult(actual).build();
+    private static @NotNull RunItemExecution execution(final @NotNull RunItemStatus runItemExecutionStatus, final @NotNull String actual) {
+        return RunItemExecution.builder().status(runItemExecutionStatus).actualResult(actual).build();
     }
 
     private static @NotNull RunItem withExecutions(final @NotNull RunItemExecution... executions) {

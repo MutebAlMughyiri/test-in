@@ -82,9 +82,9 @@ public class RunItemExecution {
     private boolean chosen;
 
     // UC-EDITOR-PANEL-032, UC-CODEGEN-008, Rule-EDITOR-PANEL-136
-    public static @NotNull RunItemExecutionBuilder from(final @NotNull RunItemStatus status, final @NotNull Duration duration, final @NotNull Failure failure) {
+    public static @NotNull RunItemExecutionBuilder from(final @NotNull RunItemStatus runItemExecutionStatus, final @NotNull Duration duration, final @NotNull Failure failure) {
         return RunItemExecution.builder()
-                .status(status)
+                .status(runItemExecutionStatus)
                 .duration(duration)
                 .actualResult(failure.message())
                 .stacktrace(failure.stacktrace())
@@ -92,8 +92,8 @@ public class RunItemExecution {
     }
 
     // UC-EDITOR-PANEL-032, Rule-EDITOR-PANEL-136
-    public static @NotNull RunItemExecution recorded(final @NotNull RunItemStatus status, final @NotNull String tester, final @NotNull Duration duration, final @NotNull Failure failure) {
-        return from(status, duration, failure)
+    public static @NotNull RunItemExecution recorded(final @NotNull RunItemStatus runItemExecutionStatus, final @NotNull String tester, final @NotNull Duration duration, final @NotNull Failure failure) {
+        return from(runItemExecutionStatus, duration, failure)
                 .executedBy(tester)
                 .executedAt(ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS))
                 .build();

@@ -36,7 +36,7 @@ import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
-import org.testin.model.status.ExecutionStatus;
+import org.testin.model.status.TestNGExecutionStatus;
 import org.testin.model.status.RunItemStatus;
 import org.testin.runner.CapturedRunner;
 import org.testin.runner.TestNGExecution;
@@ -173,7 +173,7 @@ public class LightModeButtonsIdeTest extends AbstractCodegenIdeTest {
             click(button(frame, RUN_TEST_METHOD_TEXT));
 
             assertEquals("Run did not run the test case on screen", List.of(List.of(testCases.getFirst())), runner.executions());
-            CapturedRunner.reports(getProject(), testCases.getFirst(), ExecutionStatus.PASSED, Duration.ofMillis(84));
+            CapturedRunner.reports(getProject(), testCases.getFirst(), TestNGExecutionStatus.PASSED, Duration.ofMillis(84));
             Await.until("Run did not claim the test case for this test run first", () -> editor.runItem(testCases.getFirst().getId()).filter(item -> item.getStatus() == RunItemStatus.PASSED).isPresent());
         } finally {
             Disposer.dispose(editor);
