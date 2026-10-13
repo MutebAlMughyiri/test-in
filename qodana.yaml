@@ -129,13 +129,6 @@ exclude:
     paths:
       - docs/_includes/head-custom.html
 
-  # GitCommandRunnerTest proves a credential in a remote URL is masked before
-  # Git's message reaches the log, so its test data has to be a URL with a
-  # password in it. Every one is fake.
-  - name: HardcodedPasswords
-    paths:
-      - src/test/java/org/testin/git/GitCommandRunnerTest.java
-
   # An action's inputs are declared in its action.yml online, which an offline
   # inspector cannot fetch, so every with: key reads as undefined.
   - name: UndefinedParamsPresent

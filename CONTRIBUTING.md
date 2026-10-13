@@ -258,7 +258,6 @@ fall behind. Each entry names the narrowest path it can:
 | Files whose bytes something else owns           | The Gradle wrapper, JetBrains' agreements                                                                                 |
 | Four CSS inspections in `style.scss`            | The docs site's stylesheet is a Jekyll file: front matter, Liquid and `_sass` imports, and the theme's own classes        |
 | `JSUnresolvedLibraryURL` in `head-custom.html`  | The docs site loads Mermaid from its CDN, and the inspector keeps no local copy of a library behind a URL                 |
-| `HardcodedPasswords` in `GitCommandRunnerTest`  | It proves a credential in a remote URL is masked, so its fake URLs carry a password                                       |
 | `UndefinedParamsPresent` in `.github/workflows` | An action's inputs are declared in its `action.yml` online, which an offline inspector cannot fetch                       |
 | `UndefinedAction` in `.github/workflows`        | It looks each action up through GitHub's API without signing in, and a shared runner runs out of the anonymous rate limit |
 

@@ -23,6 +23,7 @@ import org.testng.annotations.Test;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
@@ -94,13 +95,15 @@ public class GitCommandRunnerTest {
     // Rule-SHARE-004, Rule-SHARE-057, Rule-SHARE-062
     @Test
     public void aTokenInARemoteUrlNeverReachesTheLogOrTheTester() {
+        final @NotNull String token = "ghp_" + UUID.randomUUID();
         assertEquals(GitSafeText.withoutCredentials(
-                        "fatal: could not read from https://ghp_secret@github.com/owner/repo.git"),
+                        "fatal: could not read from https://" + token + "@github.com/owner/repo.git"),
                 "fatal: could not read from https://***@github.com/owner/repo.git",
                 "a token used as the username is the common form, and it has no colon to find it by");
 
+        final @NotNull String password = UUID.randomUUID() + "%40" + UUID.randomUUID();
         assertEquals(GitSafeText.withoutCredentials(
-                        "remote: https://user:p%40ss@example.com/x rejected"),
+                        "remote: https://user:" + password + "@example.com/x rejected"),
                 "remote: https://***@example.com/x rejected",
                 "an escaped at-sign in the password is not the one that introduces the host");
     }
