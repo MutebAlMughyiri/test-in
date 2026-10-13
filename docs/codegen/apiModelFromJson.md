@@ -91,15 +91,17 @@ class to build, the response as a record to read.
   are open each time the dialog opens, a closed one is still written on Create,
   and each section's line names the file it becomes once a Name is typed.
 - **Rule-CODEGEN-107** — An empty Request or Response box is three lines high. A
-  pasted body grows it until all of it shows, as far as the IDE frame allows;
-  past that it scrolls, with a scrollbar drawn over the text that takes no width
-  of its own. Spelling is not checked in them: a JSON key is not a word.
-- **Rule-CODEGEN-108** — At the Debug log level, `testin.log` records each
-  Create: every pasted body exactly as it was pasted, and every file exactly as
-  it was written, or the refusal and its reason. At any other level it records
-  only which files were written. Like the agent's transcript (Rule-CODEGEN-090),
-  the bodies are recorded as pasted, secrets included, so Debug is for tracing a
-  problem, not for every day.
+  pasted body grows it until all of it shows, up to its share of the IDE frame:
+  30% of the frame's height for each box when they are stacked, 60% side by
+  side. Past that it scrolls, with a scrollbar drawn over the text that takes no
+  width of its own. Spelling is not checked in them: a JSON key is not a word.
+- **Rule-CODEGEN-108** — At the Debug or Trace log level, `testin.log` records each
+  Create: each pasted body exactly as it was pasted, as Testin reads it, then
+  every file exactly as it was written - or, when a body cannot be read, its
+  refusal and the reason, and a body after it is not read. At Info it records
+  only which files were written, and above Info nothing. Like the agent's
+  transcript (Rule-CODEGEN-090), the bodies are recorded as pasted, secrets
+  included, so Debug is for tracing a problem, not for every day.
 - **Rule-CODEGEN-109** — The request and response boxes are JSON editors: a body
   shows in the editor's JSON colors, and the Format JSON button in each
   section's header lays it out over lines with the tester's JSON code style.

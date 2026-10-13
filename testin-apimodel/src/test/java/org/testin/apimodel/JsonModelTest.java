@@ -77,6 +77,16 @@ public class JsonModelTest {
         assertEquals(fields(nested(edge, "ListItem")), List.of("page:Integer"));
     }
 
+    // Rule-CODEGEN-104
+    @Test
+    public void aListBodyIsOneOfItsObjectsWithEveryKeyAnyOfThemHas() {
+        final @NotNull ModelType orders = model("OrdersResponse", """
+                [ { "id": 1, "total": 10 }, null, { "id": 2, "paid": true, "total": 12.5 } ]""");
+
+        assertEquals(fields(orders), List.of("id:Integer", "total:Double", "paid:Boolean"), "a key only a later object has was lost");
+        assertEquals(orders.nested(), List.of(), "the list's objects became a type of their own rather than the body's");
+    }
+
     // Rule-CODEGEN-102
     @Test
     public void aListsObjectsMergeAtEveryDepth() {

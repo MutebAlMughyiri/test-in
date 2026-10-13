@@ -587,4 +587,22 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
 
         assertEquals("a test run whose test case change was left out became the record", TestRunStatus.COMPLETED, theTestRunAt(completed).getMarker().getStatus());
     }
+
+    // Rule-PRODUCT-007
+    public void testEditingATestCaseAfterATestRunJudgedItLeavesWhatTheTestRunRecorded() {
+        final @NotNull Path inProgress = aTestRun("Cycle 5", TestRunStatus.IN_PROGRESS);
+        final @NotNull Path runItemFile = inProgress.resolve(FileKind.RUN_ITEM.fileName(testCaseId));
+        readEverything();
+        final @NotNull String recorded = read(runItemFile);
+        final @NotNull TestCases testCases = Services.getInstance(getProject(), TestCases.class);
+        final @NotNull TestCase testCase = testCases.findTestCase(testCaseId).orElseThrow();
+
+        assertTrue("the edit was not saved", testCases.putTestCase(testSet, testCase.edit().description("Press Pay now").expectedResult("The receipt opens").build()));
+        indexedTestRuns().awaitWrites();
+        readEverything();
+
+        final @NotNull RunItem runItem = indexedTestRuns().getRunItems(inProgress).runItemOf(testCaseId).orElseThrow(() -> new AssertionError("the test run lost its run item"));
+        assertEquals("editing the test case changed the run item status the test run recorded", RunItemStatus.PASSED, runItem.shownStatus());
+        assertEquals("editing the test case rewrote the run item", recorded, read(runItemFile));
+    }
 }

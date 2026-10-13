@@ -34,6 +34,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
 public class RuleCoverageTest {
@@ -104,7 +105,7 @@ public class RuleCoverageTest {
     }
 
     @Test
-    public void reportTheRulesNoTestProves() {
+    public void everyLiveRuleIsProvenByATest() {
         final @NotNull Set<String> proven = provenBy().keySet();
         final @NotNull Map<String, Map<Integer, Map<String, List<String>>>> byPart = DocumentedRules.live();
 
@@ -147,5 +148,6 @@ public class RuleCoverageTest {
                 %s""".formatted(summary, parts, unproven));
 
         TestinLogger.info(summary + " - the rules no test proves are listed in " + REPORT);
+        assertEquals(covered, total, summary + ". A rule is proven by a test method carrying its marker; these carry none:" + unproven);
     }
 }

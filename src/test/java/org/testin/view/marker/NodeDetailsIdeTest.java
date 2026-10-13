@@ -24,6 +24,8 @@ import org.testin.indexer.NodeCounter;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.ui.framework.ShownDialog;
+import org.testin.util.Shortcuts;
+import org.testin.view.PopupsBuilt;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -75,6 +77,16 @@ public class NodeDetailsIdeTest extends AbstractTempRootIdeTest {
 
         assertEquals("opening Details said something", List.of(), balloons.shown());
         assertEquals("opening Details changed the node", before, bytesOf(marker()));
+    }
+
+    // Rule-TREE-PANEL-137, Rule-EDITOR-PANEL-281
+    public void testDetailsClosesOnEscapeAndOnAClickAnywhereOutsideIt() {
+        final @NotNull PopupsBuilt popups = PopupsBuilt.recording(getTestRootDisposable());
+        ShownDialog.open(getProject(), NodeDetailsDialog.class, () -> new NodeDetailsDialog(getProject(), login).show());
+
+        assertEquals("a click outside leaves Details open", List.of(true), popups.last().asked("setCancelOnClickOutside"));
+        ShownDialog.press(getProject(), NodeDetailsDialog.class, Shortcuts.Escape);
+        assertFalse("Escape left Details open", ShownDialog.isOpen(getProject(), NodeDetailsDialog.class));
     }
 
     // Rule-TREE-PANEL-088

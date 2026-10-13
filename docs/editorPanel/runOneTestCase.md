@@ -48,7 +48,8 @@ press `P` or `F`.
   or not. The clock stops, and what it counted is not kept, so no second is
   counted twice in the test run's clock (Rule-EDITOR-PANEL-288).
 - **Rule-EDITOR-PANEL-241** — A run item can be executed again while its test
-  run takes run item statuses, and the new result is one more execution.
+  run takes run item statuses. Each attempt is one more execution, after the
+  ones before it, which stay as they were recorded.
 - **Rule-EDITOR-PANEL-242** — A status from the automation for the test case the
   walk is on moves the walk to the next test case waiting for a run item status. The tester's own run item status does
   exactly the same, and execution goes on. Until

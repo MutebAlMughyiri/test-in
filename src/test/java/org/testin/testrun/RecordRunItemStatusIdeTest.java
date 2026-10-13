@@ -25,11 +25,15 @@ import org.testin.Await;
 import org.testin.FilesUnder;
 import org.testin.OnScreen;
 import org.testin.Said;
+import org.testin.editor.EditorFixtures;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.indexer.TestRuns;
 import org.testin.model.DateFormats;
 import org.testin.model.TestCase;
+import org.testin.model.bug.BugPriority;
+import org.testin.model.bug.BugSeverity;
 import org.testin.model.testrun.RunItem;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.TestRunSummary;
 import org.testin.model.status.RunItemStatus;
 import org.testin.notifications.Done;
@@ -160,6 +164,28 @@ public class RecordRunItemStatusIdeTest extends AbstractTempRootIdeTest {
             assertEquals("Blocked is not counted as executed", 1, summary.executed());
             assertTrue("the report does not say a blocked test case was attempted and could not complete",
                     Bundle.message("report.section.blocked.description", "1").contains("attempted but could not complete"));
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
+    // Rule-EDITOR-PANEL-142
+    public void testRecordingBlockedClearsNothingAlreadyWrittenAboutTheTestCase() {
+        final @NotNull List<TestCase> testCases = TestRunFixture.testCasesIn(getProject(), root, 2);
+        final @NotNull RunItem failed = RunItem.builder().id(testCases.getFirst().getId()).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl("https://github.com/acme/shop/issues/7")
+                .executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The session was dropped").stacktrace("java.lang.AssertionError: logged out").build())).build();
+        final @NotNull TestRunFixture fixture = TestRunFixture.of(getProject(), root, List.of(failed, EditorFixtures.pending(testCases.get(1))), testCases);
+        final @NotNull TestRunEditor editor = fixture.opened(getTestRootDisposable());
+        try {
+            editor.getList().setSelectedIndex(0);
+
+            fixture.press(editor, RunItemStatus.BLOCKED);
+
+            final @NotNull RunItem blocked = fixture.runItemOf(testCases.getFirst());
+            assertEquals(RunItemStatus.BLOCKED, blocked.getStatus());
+            final @NotNull RunItemExecution before = blocked.getExecutions().getFirst();
+            assertEquals("Blocked cleared the failure written before it", List.of(RunItemStatus.FAILED, "The session was dropped", "java.lang.AssertionError: logged out"), List.of(before.getStatus(), before.getActualResult(), before.getStacktrace()));
+            assertEquals("Blocked cleared the bug written before it", List.of(BugSeverity.MAJOR, BugPriority.HIGH, "https://github.com/acme/shop/issues/7"), List.of(blocked.getBugSeverity(), blocked.getBugPriority(), blocked.getBugIssueUrl()));
         } finally {
             Disposer.dispose(editor);
         }

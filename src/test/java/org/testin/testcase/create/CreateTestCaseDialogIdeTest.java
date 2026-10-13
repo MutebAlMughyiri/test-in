@@ -21,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
 import org.testin.Said;
+import org.testin.clipboard.CopyChoice;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.indexer.TestCases;
@@ -31,11 +32,14 @@ import org.testin.notifications.Done;
 import org.testin.services.Services;
 import org.testin.testcase.CreateTestCaseAction;
 import org.testin.testcase.CreateTestCaseFields;
+import org.testin.testcase.UpdateTestCaseFields;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.util.Shortcuts;
 import org.testin.view.Drawn;
 import org.testin.view.PopupsBuilt;
 
+import javax.swing.KeyStroke;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -85,6 +89,19 @@ public class CreateTestCaseDialogIdeTest extends AbstractTempRootIdeTest {
 
         assertTrue("the expected result did not appear on its key", dialog.getExpectedResultSection().isShown());
         assertFalse("another field appeared on the expected result's key", dialog.getModuleSection().isShown());
+    }
+
+    // Rule-EDITOR-PANEL-271
+    public void testReferenceOpensOnCtrlRAndCarriesTheLetterTheUpdateAndCopyMenusGiveIt() {
+        final @NotNull CreateTestCaseDialog dialog = shown();
+
+        assertEquals("Reference is not Ctrl+R, Cmd+R on a Mac", KeyStroke.getKeyStroke(KeyEvent.VK_R, Shortcuts.menuMask()), CreateTestCaseFields.REFERENCE.getShortcut().getKey());
+        press(CreateTestCaseFields.REFERENCE);
+
+        assertTrue("Reference did not open on its key", dialog.getReferenceSection().isShown());
+        assertEquals("R", CreateTestCaseFields.REFERENCE.getIcon().letter());
+        assertSame("the update menu gives Reference another icon", CreateTestCaseFields.REFERENCE.getIcon(), UpdateTestCaseFields.REFERENCE.getIcon());
+        assertSame("the copy menu gives Reference another icon", CreateTestCaseFields.REFERENCE.getIcon(), CopyChoice.REFERENCE.getIcon());
     }
 
     // Rule-EDITOR-PANEL-029, Rule-EDITOR-PANEL-031

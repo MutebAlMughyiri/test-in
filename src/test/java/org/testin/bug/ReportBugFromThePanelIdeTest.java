@@ -19,8 +19,11 @@ import com.intellij.execution.process.ProcessOutput;
 import com.intellij.notification.Notification;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.ex.ActionUtil;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.testFramework.PlatformTestUtil;
+import com.intellij.ui.components.JBTextField;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
@@ -28,6 +31,9 @@ import org.testin.Notified;
 import org.testin.Said;
 import org.testin.config.TestinYml;
 import org.testin.editor.EditorFixtures;
+import org.testin.help.Hints;
+import org.testin.help.SetupHint;
+import org.testin.help.SetupStep;
 import org.testin.model.TestCase;
 import org.testin.model.bug.BugPriority;
 import org.testin.model.bug.BugSeverity;
@@ -165,6 +171,7 @@ public class ReportBugFromThePanelIdeTest extends AbstractTempRootIdeTest {
             } catch (final IOException ex) {
                 throw new AssertionError("Could not put testin.yml back: " + ex.getMessage(), ex);
             }
+            LocalFileSystem.getInstance().refreshNioFiles(List.of(file));
         });
         TestinYml.reload(getProject());
     }
@@ -372,5 +379,34 @@ public class ReportBugFromThePanelIdeTest extends AbstractTempRootIdeTest {
         Notified.press(getProject(), reported, open);
 
         assertEquals("Open did not open the issue each time it was pressed", List.of(ISSUE, ISSUE), browser.addresses());
+    }
+
+    // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-104
+    public void testApplyInTheBugRepoUrlHintWritesOnlyThatLineThenOpensTestinYml() {
+        final @NotNull Path file = TestinYml.savePath(getProject()).orElseThrow();
+        final @NotNull String before = "testinProject: NAFATH\n# the team's own note\nbugRepoUrl: not an address\nlocation: remote\n";
+        try {
+            Files.createDirectories(file.getParent());
+            Files.writeString(file, before, StandardCharsets.UTF_8);
+        } catch (final IOException ex) {
+            throw new AssertionError("Could not write testin.yml: " + ex.getMessage(), ex);
+        }
+        final @NotNull Hints hints = Services.getInstance(getProject(), Hints.class);
+
+        ReportBug.start(getProject(), testRun, testCase.getId(), testCase, () -> {
+        });
+        Await.until("Report Bug never opened the bug", () -> ShownDialog.isOpen(getProject(), ReportBugDialog.class));
+
+        final @NotNull SetupHint hint = hints.waiting().stream().filter(waiting -> waiting.step() == SetupStep.BUG_FILING).findFirst().orElseThrow(() -> new AssertionError("Testin Help holds no bugRepoUrl hint"));
+        assertEquals(Bundle.message("bug.reason.not.a.repository"), hint.text());
+        final @NotNull JComponent form = hint.form().orElseThrow(() -> new AssertionError("the hint has no bugRepoUrl field")).get();
+        Drawn.first(form, JBTextField.class).setText(REPOSITORY);
+        assertEquals("typing in the field wrote testin.yml", before, read(file));
+
+        Drawn.first(form, JButton.class, button -> Bundle.message("bug.repo.url.apply").equals(button.getText())).doClick();
+
+        assertEquals("testinProject: NAFATH\n# the team's own note\nbugRepoUrl: " + REPOSITORY + "\nlocation: remote\n", read(file));
+        assertTrue("testin.yml did not open", Optional.ofNullable(LocalFileSystem.getInstance().refreshAndFindFileByNioFile(file)).map(FileEditorManager.getInstance(getProject())::isFileOpen).orElse(false));
+        assertTrue("the hint still waits after Apply", hints.waiting().stream().noneMatch(waiting -> waiting.step() == SetupStep.BUG_FILING));
     }
 }

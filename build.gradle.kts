@@ -170,9 +170,10 @@ allprojects {
 // and the agent skips such a class unless told otherwise. The report reads the
 // instrumentCode output: JaCoCo matches a class by a checksum of its bytes, and
 // those are the bytes the tests load, not the ones in build/classes. Each
-// minimum is the whole percent under what was measured on 4 October 2026 -
-// 84.81% of lines, 52.92% of branches - so it stops coverage falling, and
-// raising it is a decision rather than a side effect.
+// minimum is the whole percent under what was measured on 13 October 2026 -
+// 86.13% of lines, 53.73% of branches - so it stops coverage falling, and
+// raising it is a decision rather than a side effect. #425 raises it toward
+// 100% of both as the tests it asks for land.
 allprojects {
     pluginManager.apply("jacoco")
 
@@ -216,11 +217,11 @@ tasks.jacocoTestCoverageVerification {
         rule {
             limit {
                 counter = "LINE"
-                minimum = "0.84".toBigDecimal()
+                minimum = "0.86".toBigDecimal()
             }
             limit {
                 counter = "BRANCH"
-                minimum = "0.52".toBigDecimal()
+                minimum = "0.53".toBigDecimal()
             }
         }
     }

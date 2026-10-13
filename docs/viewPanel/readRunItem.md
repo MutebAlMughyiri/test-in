@@ -37,9 +37,6 @@ test run.
 - **Rule-VIEW-PANEL-030** — The band comes from the test run itself, so the
   panel and a report on the same test run can never disagree.
 - **Rule-VIEW-PANEL-031** — A test run value with nothing in it is not drawn.
-- **Rule-VIEW-PANEL-032** — Recording a pass clears the actual result, the
-  stacktrace and the bug issue link, and puts the bug severity and priority back
-  to Enhancement and Low. The band is left holding its line of pills.
 - **Rule-VIEW-PANEL-033** — A test case the test run has not reached yet reads **Pending**.
 - **Rule-VIEW-PANEL-091** — Beside a filed bug's link stands its state on
   GitHub: the Status column of the Project board it sits on, or else Open, Fixed

@@ -46,6 +46,9 @@ import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.services.Services;
+import org.testin.testcase.TestSetEditorFields;
+import org.testin.testcase.UpdateTestCaseFields;
+import org.testin.testrun.TestRunEditorFields;
 import org.testin.util.Bundle;
 import org.testin.view.Drawn;
 
@@ -106,6 +109,20 @@ public class HistoryTabIdeTest extends AbstractTempRootIdeTest {
                 .mapToObj(i -> new FieldChange("Field " + i, "was " + i, i == 0 ? newValue : "now " + i, ChangeType.CHANGE_DESCRIPTION))
                 .toList();
         return new TestCaseHistoryCard(TestCaseHistoryKind.UPDATED, "", "Sara", ZonedDateTime.parse("2026-10-07T16:40:00+03:00"), "", "", changes, "before", "after");
+    }
+
+    // Rule-VIEW-PANEL-111
+    public void testAChangedFieldIsNamedByItsUpdateMenuIconWithItsNameOnHoverAndAFieldWithNoIconInWords() {
+        final @NotNull String priority = TestSetEditorFields.PRIORITY.getName();
+        final @NotNull String severity = TestRunEditorFields.BUG_SEVERITY.getName();
+        final @NotNull List<FieldChange> changes = List.of(new FieldChange(priority, "Medium", "High", ChangeType.CHANGE_PRIORITY), new FieldChange(severity, "Minor", "Major", ChangeType.CHANGE_RUN_ITEM));
+        final @NotNull JComponent card = HistoryCardPanel.of(getProject(), new TestCaseHistoryCard(TestCaseHistoryKind.UPDATED, "", "Sara", ZonedDateTime.parse("2026-10-07T16:40:00+03:00"), "", "", changes, "before", "after"), aTestCase(), 0);
+
+        final @NotNull JBLabel caption = Drawn.first(card, JBLabel.class, label -> UpdateTestCaseFields.PRIORITY.getIcon().equals(label.getIcon()));
+        assertEquals("the field with an icon is also written beside it", "", Drawn.text(caption));
+        assertEquals("resting the pointer on the icon does not name the field", priority, Drawn.hovering(caption));
+        assertFalse("the field with an icon is named in words: " + Drawn.words(card), Drawn.holds(Drawn.words(card), priority));
+        assertTrue("a field with no icon is not named in words: " + Drawn.words(card), Drawn.holds(Drawn.words(card), severity));
     }
 
     // Rule-VIEW-PANEL-116

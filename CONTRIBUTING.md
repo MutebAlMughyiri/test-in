@@ -189,13 +189,14 @@ code carries: `// Rule-TREE-PANEL-038` on the line above the test method, or
 `// UC-TREE-PANEL-012, Rule-TREE-PANEL-038`. `RuleCoverageTest` reads every
 test root and does two things with them (#325):
 
-| Check                        | What happens                                                                                                                                                      |
-|------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `everyRuleATestNamesExists`  | Fails when a test marker names a rule no document writes, as `RuleNumbersTest` does for the production code                                                       |
-| `reportTheRulesNoTestProves` | Writes `build/reports/rule-coverage/unproven.md` - proven against total per part, then every rule no test proves - and prints the count. It never fails the build |
+| Check                          | What happens                                                                                                                                                                              |
+|--------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `everyRuleATestNamesExists`    | Fails when a test marker names a rule no document writes, as `RuleNumbersTest` does for the production code                                                                               |
+| `everyLiveRuleIsProvenByATest` | Fails when a rule that is not retired has no test carrying its marker, and writes `build/reports/rule-coverage/unproven.md`: proven against total per part, then each rule no test proves |
 
-CI keeps the report with the other test reports. When a test you write proves a
-rule, give it the marker: that is how the count goes up.
+Every live rule has had a test since 13 October 2026 (#425), so a new rule
+lands with the test that proves it, in the same commit. CI keeps the report
+with the other test reports.
 
 ### The coverage gate
 
@@ -210,7 +211,7 @@ JaCoCo measures the lines and branches both test tasks run, `test` and
 |            |                                                                                                                                                 |
 |------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
 | **Report** | `build/reports/jacoco/test/html/index.html`, one row per package, and `jacocoTestReport.xml` beside it. CI keeps it with the other test reports |
-| **Gate**   | `jacocoTestCoverageVerification`, part of `check`. Fails under 84% of lines or 52% of branches, from 84.81% and 52.92% on 4 October 2026        |
+| **Gate**   | `jacocoTestCoverageVerification`, part of `check`. Fails under 86% of lines or 53% of branches, from 86.13% and 53.73% on 13 October 2026       |
 
 The gate stops coverage falling and asks for nothing more. **Raise a minimum in
 the commit that lifts its figure past the next whole percent**, so the floor

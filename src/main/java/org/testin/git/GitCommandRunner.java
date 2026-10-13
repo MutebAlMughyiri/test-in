@@ -153,7 +153,7 @@ final class GitCommandRunner {
     }
 
     // Rule-SHARE-132
-    private static @NotNull GitFailed inSafeMode(final @NotNull IllegalStateException safeMode) {
+    static @NotNull GitFailed inSafeMode(final @NotNull IllegalStateException safeMode) {
         TestinLogger.warn("Git refused to run in a project in safe mode: " + safeMode.getMessage());
         return new GitFailed(Bundle.message("git.safe.mode"));
     }

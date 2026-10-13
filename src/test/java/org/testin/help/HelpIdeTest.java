@@ -17,11 +17,22 @@
 
 package org.testin.help;
 
+import com.intellij.icons.AllIcons;
+import com.intellij.openapi.util.Disposer;
+import com.intellij.openapi.wm.CustomStatusBarWidget;
+import com.intellij.openapi.wm.StatusBarWidget;
+import com.intellij.openapi.wm.StatusBarWidgetFactory;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.ui.components.ActionLink;
+import com.intellij.ui.components.JBLabel;
+import com.intellij.util.IconUtil;
+import com.intellij.util.ui.ImageUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.services.Services;
 
+import javax.swing.Icon;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -33,6 +44,35 @@ public class HelpIdeTest extends BasePlatformTestCase {
         Arrays.stream(SetupStep.values()).forEach(hints::clear);
         Services.getInstance(getProject(), Guides.class).forgetAll();
         return hints;
+    }
+
+    private static int @NotNull [] pixelsOf(final @NotNull Icon icon) {
+        final @NotNull BufferedImage image = ImageUtil.createImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+        final @NotNull Graphics2D g2 = image.createGraphics();
+        try {
+            icon.paintIcon(null, g2, 0, 0);
+        } finally {
+            g2.dispose();
+        }
+        return image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth());
+    }
+
+    // Rule-INTERNAL-126
+    public void testTheMarkIsTheQuestionMarkLastOnTheStatusBarOfEveryProject() {
+        nothingWaits();
+        final @NotNull StatusBarWidgetFactory last = StatusBarWidgetFactory.EP_NAME.getExtensionList().getLast();
+        assertInstanceOf(last, HelpMarkFactory.class);
+        assertTrue("the mark is not offered in this project", last.isAvailable(getProject()));
+        assertTrue("the mark waits for the tester to turn it on", last.isEnabledByDefault());
+
+        final @NotNull StatusBarWidget mark = last.createWidget(getProject());
+        try {
+            final @NotNull Icon drawn = ((JBLabel) ((CustomStatusBarWidget) mark).getComponent()).getIcon();
+            final @NotNull Icon questionMark = IconUtil.resizeSquared(AllIcons.General.QuestionDialog, drawn.getIconWidth());
+            assertTrue("the mark is not the IDE's question mark", Arrays.equals(pixelsOf(questionMark), pixelsOf(drawn)));
+        } finally {
+            Disposer.dispose(mark);
+        }
     }
 
     // Rule-INTERNAL-127

@@ -186,6 +186,25 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
         }
     }
 
+    // Rule-EDITOR-PANEL-241
+    public void testRunningAJudgedRunItemAgainIsOneMoreExecutionAfterTheOnesBefore() {
+        final @NotNull TestCase testCase = automatedTestCases(1).getFirst();
+        final @NotNull RunItem failed = RunItem.builder().id(testCase.getId()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The session was dropped").build())).build();
+        final @NotNull TestRunNode testRun = aTestRun("Cycle-1", List.of(failed));
+        final @NotNull TestRunEditor editor = opened(testRun);
+        try {
+            TestCaseQuickAction.RUN_TEST_METHOD.executeFor(editor, testCase);
+            reported(testCase, ExecutionStatus.PASSED, Duration.ofMillis(84));
+
+            Await.until("running it again was not recorded", () -> runItemOf(testRun, testCase).getExecutions().size() == 2);
+            final @NotNull List<RunItemExecution> executions = runItemOf(testRun, testCase).getExecutions();
+            assertEquals(List.of(RunItemStatus.FAILED, RunItemStatus.PASSED), executions.stream().map(RunItemExecution::getStatus).toList());
+            assertEquals("the execution before lost what it recorded", "The session was dropped", executions.getFirst().getActualResult());
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
     // Rule-EDITOR-PANEL-152
     public void testOnlyTheTestersStopOrClosingTheTabEndsTheAutomationThisEditorStarted() {
         final @NotNull List<TestCase> testCases = automatedTestCases(3);

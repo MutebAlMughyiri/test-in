@@ -16,12 +16,8 @@
 
 package org.testin.lightmode;
 
-import com.intellij.codeInspection.ex.InspectionProfileWrapper;
-import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.registry.Registry;
-import com.intellij.psi.PsiDocumentManager;
-import com.intellij.psi.PsiFile;
 import com.intellij.testFramework.PlatformTestUtil;
 import com.intellij.ui.EditorTextField;
 import com.intellij.ui.RoundedLineBorder;
@@ -34,6 +30,7 @@ import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
 import org.testin.OnScreen;
 import org.testin.Said;
+import org.testin.SpellChecking;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.editor.testrun.TestRunEditor;
@@ -78,7 +75,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.IntStream;
 
@@ -169,17 +165,6 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
             if (words.get(i).equalsIgnoreCase(wanted)) return i;
         }
         return -1;
-    }
-
-    private static boolean spellCheckingIsOn(final @NotNull PsiFile typedIn) {
-        final @NotNull Object customization = Objects.requireNonNull(InspectionProfileWrapper.getCustomInspectionProfileWrapper(typedIn), "the box was given no inspection customization");
-        try {
-            final @NotNull Field on = customization.getClass().getDeclaredField("myUseSpellCheck");
-            on.setAccessible(true);
-            return on.getBoolean(customization);
-        } catch (final ReflectiveOperationException ex) {
-            throw new LinkageError("the box was customized by something other than spell checking: " + customization.getClass().getName(), ex);
-        }
     }
 
     private static @NotNull List<JComponent> buttons(final @NotNull JFrame frame) {
@@ -563,8 +548,7 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
         box.setText(WITH_TYPOS);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
-        final @NotNull PsiFile typedIn = Optional.ofNullable(ReadAction.computeBlocking(() -> PsiDocumentManager.getInstance(getProject()).getPsiFile(box.getDocument()))).orElseThrow(() -> new AssertionError(where + ": the box has no file to check"));
-        assertTrue(where + ": spell checking is not switched on for the box", spellCheckingIsOn(typedIn));
+        assertTrue(where + ": spell checking is not switched on for the box", SpellChecking.isOn(getProject(), box));
 
         assertEquals(where + ": the text was changed without the tester picking a correction", WITH_TYPOS, box.getText());
     }

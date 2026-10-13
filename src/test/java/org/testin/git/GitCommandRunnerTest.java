@@ -16,6 +16,8 @@
 
 package org.testin.git;
 
+import org.jetbrains.annotations.NotNull;
+import org.testin.util.Bundle;
 import org.testng.annotations.Test;
 
 import java.nio.charset.StandardCharsets;
@@ -23,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 public class GitCommandRunnerTest {
@@ -35,6 +38,18 @@ public class GitCommandRunnerTest {
 
         assertEquals(written, "test-01/Test Cases/Login/a.json\0test-01/.testproject",
                 "a space is an ordinary character in a test set name, so the separator cannot be one");
+    }
+
+    // Rule-SHARE-132
+    @Test
+    public void aGitCommandRefusedInSafeModeIsSaidInOneLineNamingTrustProject() {
+        final @NotNull GitFailed refused = GitCommandRunner.inSafeMode(new IllegalStateException("Shouldn't be possible to run a Git command in the safe mode"));
+
+        final @NotNull String said = String.valueOf(refused.getMessage());
+
+        assertEquals(said, Bundle.message("git.safe.mode"));
+        assertFalse(said.contains("Shouldn't"), "Git's own words reached the tester");
+        assertFalse(said.contains("\n"), "the refusal is more than one line");
     }
 
     @Test
