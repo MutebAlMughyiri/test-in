@@ -192,7 +192,7 @@ public class LightModeButtonsIdeTest extends AbstractCodegenIdeTest {
             assertEquals("the Navigate to Test Method tooltip does not name its key", Declared.shortcutText("Testin.NavigateToTestMethod"), shortcutOn(button(frame, TO_THE_METHOD)));
 
             final @NotNull List<String> bar = Drawn.words(frame.getRootPane());
-            final int lastRunItemStatus = Arrays.stream(RunItemStatus.values()).filter(RunItemStatus::isRunItemStatus).mapToInt(runItemStatus -> bar.lastIndexOf(runItemStatus.getLabel())).max().orElse(-1);
+            final int lastRunItemStatus = Arrays.stream(RunItemStatus.values()).filter(RunItemStatus::isJudged).mapToInt(runItemStatus -> bar.lastIndexOf(runItemStatus.getLabel())).max().orElse(-1);
             assertTrue("the status bar does not list Run Test Method after the run item status keys: " + bar, bar.lastIndexOf(RUN_TEST_METHOD_TEXT) > lastRunItemStatus);
             assertTrue("the status bar does not list Navigate to Test Method after the run item status keys: " + bar, bar.lastIndexOf(TO_THE_METHOD) > lastRunItemStatus);
 
@@ -203,7 +203,7 @@ public class LightModeButtonsIdeTest extends AbstractCodegenIdeTest {
             Gestures.press(getProject(), runKey, frame.getRootPane());
             assertFalse("F5 did not stop the test case while its automation ran", Services.getInstance(getProject(), TestNGExecution.class).isRunning(testCases.getFirst().getId()));
 
-            OnScreen.pressKey(frame.getRootPane(), RunItemStatus.FAILED.getMenuEntry().shortcut());
+            OnScreen.pressKey(frame.getRootPane(), RunItemStatus.FAILED.getShortcut());
             assertEquals("the buttons stayed while the failure form was open", List.of(), buttons(frame));
             assertFalse("the keys stayed while the failure form was open", Gestures.updated(getProject(), runKey, frame.getRootPane()).isEnabled());
         } finally {

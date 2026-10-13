@@ -127,11 +127,6 @@ public class RunItem {
         return removed;
     }
 
-    // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-126, Rule-EDITOR-PANEL-239
-    public @NotNull RunItemStatus shownStatus() {
-        return isRemoved() ? RunItemStatus.REMOVED : getStatus();
-    }
-
     // Rule-VIEW-PANEL-119
     public @NotNull Optional<RunItemExecution> defaultExecution() {
         return executions.isEmpty() ? Optional.empty() : Optional.of(executions.get(defaultIndex()));
@@ -166,10 +161,10 @@ public class RunItem {
         return RunItemExecution.builder().status(untested ? RunItemStatus.UNTESTED : RunItemStatus.PENDING).duration(clock).actualResult(unrecordedActualResult).build();
     }
 
-    // Rule-VIEW-PANEL-119
+    // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-126, Rule-EDITOR-PANEL-239, Rule-VIEW-PANEL-119
     @JsonIgnore
     public @NotNull RunItemStatus getStatus() {
-        return shown().getStatus();
+        return isRemoved() ? RunItemStatus.REMOVED : shown().getStatus();
     }
 
     // Rule-VIEW-PANEL-119, Rule-EDITOR-PANEL-132
@@ -241,7 +236,7 @@ public class RunItem {
     // Rule-EDITOR-PANEL-253, Rule-VIEW-PANEL-105
     @JsonIgnore
     public boolean isFailed() {
-        return shownStatus() == RunItemStatus.FAILED;
+        return getStatus() == RunItemStatus.FAILED;
     }
 
     public @NotNull Optional<String> bugIssue() {
@@ -266,7 +261,7 @@ public class RunItem {
 
     // UC-TREE-PANEL-020, Rule-TREE-PANEL-067, Rule-INTERNAL-117
     public boolean markUntestedIfPending() {
-        if (shownStatus() != RunItemStatus.PENDING) return false;
+        if (getStatus() != RunItemStatus.PENDING) return false;
 
         untested = true;
         return true;
@@ -281,7 +276,7 @@ public class RunItem {
 
     @JsonIgnore
     public boolean isJudged() {
-        return getStatus().isRunItemStatus() || isRemoved();
+        return getStatus().isJudged() || isRemoved();
     }
 
     // UC-EDITOR-PANEL-031, UC-EDITOR-PANEL-038, UC-EDITOR-PANEL-039, UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-159, Rule-EDITOR-PANEL-160, Rule-EDITOR-PANEL-284

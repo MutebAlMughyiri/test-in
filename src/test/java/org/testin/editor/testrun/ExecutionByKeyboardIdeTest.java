@@ -60,7 +60,7 @@ public class ExecutionByKeyboardIdeTest extends AbstractTempRootIdeTest {
 
         final @NotNull Set<KeyStroke> answered = keysAnsweredBy(list);
         for (final RunItemStatus runItemStatus : List.of(RunItemStatus.PASSED, RunItemStatus.FAILED, RunItemStatus.BLOCKED)) {
-            assertTrue("recording " + runItemStatus + " needs the mouse: " + answered, answered.contains(runItemStatus.getMenuEntry().shortcut()));
+            assertTrue("recording " + runItemStatus + " needs the mouse: " + answered, answered.contains(runItemStatus.getShortcut()));
         }
         assertTrue("the report needs the mouse: " + answered, answered.contains(Shortcuts.GenerateReport.getKey()));
         assertTrue("the menu on a test case needs the mouse: " + answered, answered.contains(Shortcuts.ContextMenu.getKey()));

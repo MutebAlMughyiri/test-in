@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package org.testin.model;
+package org.testin.model.status;
 
-import org.testin.model.status.TestNGExecutionStatus;
-import org.testin.model.status.RunItemStatus;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
-public class TestNGExecutionStatusToRunItemStatusTest {
+public class TestNGExecutionStatusTest {
 
     @Test
     public void passingAndFailingAreRunItemStatuses() {
@@ -43,6 +43,12 @@ public class TestNGExecutionStatusToRunItemStatusTest {
     }
 
     @Test
+    public void aSkippedAttemptIsNotARunItemStatusYet() {
+        assertTrue(TestNGExecutionStatus.SKIPPED.getRunItemStatus().isEmpty(),
+                "TestNG may still retry it, so the card shows no run item status for it");
+    }
+
+    @Test
     public void aStoppedTestCaseIsNotAFailure() {
         assertTrue(TestNGExecutionStatus.IDLE.getRunItemStatus().isEmpty(),
                 "nobody found a defect - the test case simply did not finish, so its status is left alone (#34)");
@@ -52,15 +58,37 @@ public class TestNGExecutionStatusToRunItemStatusTest {
     public void everyTestNGExecutionStatusAnswersWithoutANull() {
         for (final TestNGExecutionStatus testNGExecutionStatus : TestNGExecutionStatus.values()) {
             assertNotNull(testNGExecutionStatus.getRunItemStatus(), testNGExecutionStatus + " must answer with a value of its own type");
+            assertNotNull(testNGExecutionStatus.getIcon(), testNGExecutionStatus + " needs an icon for the gutter");
         }
     }
 
     @Test
     public void aRunItemStatusIsAlwaysOneATesterCouldHaveGivenByHand() {
         for (final TestNGExecutionStatus testNGExecutionStatus : TestNGExecutionStatus.values()) {
-            testNGExecutionStatus.getRunItemStatus().ifPresent(runItemStatus -> assertTrue(
-                    runItemStatus == RunItemStatus.PASSED || runItemStatus == RunItemStatus.FAILED || runItemStatus == RunItemStatus.BLOCKED,
+            testNGExecutionStatus.getRunItemStatus().ifPresent(runItemStatus -> assertTrue(runItemStatus.isJudged(),
                     testNGExecutionStatus + " maps to " + runItemStatus + ", which is not a run item status a tester chooses"));
         }
+    }
+
+    @Test
+    public void onlyRunningSaysTheTestCaseIsStillGoing() {
+        assertTrue(TestNGExecutionStatus.RUNNING.stillGoing());
+
+        assertEquals(Arrays.stream(TestNGExecutionStatus.values()).filter(TestNGExecutionStatus::stillGoing).count(), 1);
+    }
+
+    @Test
+    public void everyRunItemStatusEndsTheExecutionItReportsOn() {
+        for (final TestNGExecutionStatus testNGExecutionStatus : TestNGExecutionStatus.values()) {
+            if (testNGExecutionStatus.getRunItemStatus().isEmpty()) continue;
+
+            assertFalse(testNGExecutionStatus.stillGoing(), testNGExecutionStatus + " reports a run item status while claiming to still be running");
+        }
+    }
+
+    @Test
+    public void aTestCaseThatNeverRanReleasesItsClaimAndRecordsNothing() {
+        assertFalse(TestNGExecutionStatus.IDLE.stillGoing());
+        assertTrue(TestNGExecutionStatus.IDLE.getRunItemStatus().isEmpty());
     }
 }

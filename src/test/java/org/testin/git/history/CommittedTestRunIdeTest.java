@@ -246,7 +246,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
 
         final @NotNull RunItem committed = theRunItemOf(completed);
         assertFalse("a committed test run lost a run item", committed.isRemoved());
-        assertEquals("a Committed test run changed the run item status its commit recorded", RunItemStatus.PASSED, committed.shownStatus());
+        assertEquals("a Committed test run changed the run item status its commit recorded", RunItemStatus.PASSED, committed.getStatus());
         assertEquals("Press Pay", committed.shownTestCase().getDescription());
     }
 
@@ -277,7 +277,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
         theTestCaseIsDeleted();
 
         final @NotNull RunItem runItem = theRunItemOf(inProgress);
-        assertEquals("a deleted test case was not Removed", RunItemStatus.REMOVED, runItem.shownStatus());
+        assertEquals("a deleted test case was not Removed", RunItemStatus.REMOVED, runItem.getStatus());
         assertEquals("the run item did not show the last text Git holds", DESCRIPTION, runItem.shownTestCase().getDescription());
         assertTrue("a deleted test case took a run item status", Services.getInstance(getProject(), RunItemRecorder.class).heldTestRun(inProgress).flatMap(testRun -> testRun.runItemOf(testCaseId)).filter(RunItem::isRemoved).isPresent());
     }
@@ -502,7 +502,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
 
         final @NotNull RunItem runItem = indexedTestRuns().getRunItems(committed).runItemOf(testCaseId).orElseThrow();
         assertFalse("a Committed test run reads Removed for a test case it has not read from its commit yet", runItem.isRemoved());
-        assertEquals(RunItemStatus.PASSED, runItem.shownStatus());
+        assertEquals(RunItemStatus.PASSED, runItem.getStatus());
     }
 
     // UC-TREE-PANEL-020, Rule-TREE-PANEL-136
@@ -602,7 +602,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
         readEverything();
 
         final @NotNull RunItem runItem = indexedTestRuns().getRunItems(inProgress).runItemOf(testCaseId).orElseThrow(() -> new AssertionError("the test run lost its run item"));
-        assertEquals("editing the test case changed the run item status the test run recorded", RunItemStatus.PASSED, runItem.shownStatus());
+        assertEquals("editing the test case changed the run item status the test run recorded", RunItemStatus.PASSED, runItem.getStatus());
         assertEquals("editing the test case rewrote the run item", recorded, read(runItemFile));
     }
 }

@@ -56,6 +56,7 @@ import org.testin.model.node.TestRunNode;
 import org.testin.model.testrun.TestRunResultAnalysis;
 import org.testin.model.testrun.TestRunConfiguration;
 import org.testin.model.testrun.RunItem;
+import org.testin.model.status.TestRunStatus;
 import org.testin.model.testrun.TestRunSummary;
 import org.testin.report.ReportTile;
 import org.testin.services.Services;
@@ -101,6 +102,7 @@ public final class TestRunWordGenerator {
                 addHeading(document, Bundle.message("report.heading.overview"), 0, 15);
 
                 final @NotNull TestRunSummary summary = TestRunSummary.of(runItems.getAll());
+                final @NotNull TestRunStatus testRunStatus = testRunNode.getMarker().getStatus();
 
                 XWPFTable overviewTable = document.createTable(1, 2);
                 overviewTable.setWidth("100%");
@@ -131,7 +133,7 @@ public final class TestRunWordGenerator {
 
                 for (int tile = 0; tile < tiles; tile++) {
                     final @NotNull ReportTile figure = headline.get(tile);
-                    addStatisticCell(statsTable, tile, figure.valueIn(summary), figure.getLabel(), figure.getHex());
+                    addStatisticCell(statsTable, tile, figure.valueIn(summary), figure.labelIn(testRunStatus), figure.getHex());
                 }
 
                 final boolean analyzed = TestRunResultAnalysis.anyWrittenIn(testRunNode.getMarker().getResultAnalysis());
@@ -143,7 +145,7 @@ public final class TestRunWordGenerator {
                         final @NotNull String written = section.writtenIn(testRunNode.getMarker().getResultAnalysis());
                         if (written.isEmpty()) continue;
 
-                        addColoredCount(document, section.heading(summary), section.getHexColor());
+                        addColoredCount(document, section.heading(summary, testRunStatus), section.getHexColor());
                         addText(document, written, ReportFont.BODY.roundedPoints(), false, BLACK, NO_BORDER, 8);
                     }
                 }
@@ -153,7 +155,7 @@ public final class TestRunWordGenerator {
                     final long count = section.count(summary);
                     if (count == 0) continue;
 
-                    buildTestCaseTable(document, String.valueOf(sectionNumber++), section, section.description(String.valueOf(count)), runItems);
+                    buildTestCaseTable(document, String.valueOf(sectionNumber++), section, section.titleIn(testRunStatus), section.description(String.valueOf(count)), runItems);
                 }
 
                 addFooter(document);
@@ -253,8 +255,8 @@ public final class TestRunWordGenerator {
         headingTextRun.setColor(headingColor);
     }
 
-    private void buildTestCaseTable(final @NotNull XWPFDocument document, final @NotNull String sectionNumber, final @NotNull ReportSection section, final @NotNull String description, final @NotNull RunItems runItems) {
-        addHeading(document, sectionNumber + ". " + section.getTitle(), 20, 12);
+    private void buildTestCaseTable(final @NotNull XWPFDocument document, final @NotNull String sectionNumber, final @NotNull ReportSection section, final @NotNull String title, final @NotNull String description, final @NotNull RunItems runItems) {
+        addHeading(document, sectionNumber + ". " + title, 20, 12);
         addText(document, description, ReportFont.LEAD.roundedPoints(), false, BLACK, NO_BORDER, 12);
 
         final @NotNull List<TestRunEditorFields> failureDetail = section.getFailureDetailColumns();

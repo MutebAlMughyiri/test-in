@@ -244,7 +244,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
         loadedRunItems().ifPresent(runItems -> new TestRunResultAnalysisDialog(project,
                 TestRunSummary.of(runItems.getAll()),
                 parent.getMarker().getResultAnalysis(),
-                parent.getMarker().getStatus().isRecord(),
+                parent.getMarker().getStatus(),
                 analysis -> {
                     if (testRuns.findTestRunNode(parent.getPath()).map(testRun -> testRun.getMarker().getStatus().isRecord()).orElse(false)) {
                         notifier.softRefuse(project, Bundle.message("run.item.status.test.run.signed.off", TestRunStatus.COMMITTED.getLabel()));

@@ -211,16 +211,16 @@ public final class Nodes {
     // UC-TREE-PANEL-018, Rule-TREE-PANEL-062, Rule-INTERNAL-117
     public boolean mark(final @NotNull AbstractNode node, final @NotNull NodeStatus nodeStatus, final @NotNull String tester) {
         final @NotNull Marker marker = node.getMarker();
-        final @NotNull NodeStatus before = marker.status();
+        final @NotNull NodeStatus nodeStatusBefore = marker.nodeStatus();
         final @NotNull String updatedByBefore = marker.getUpdatedBy();
         final @NotNull ZonedDateTime updatedAtBefore = marker.getUpdatedAt();
 
-        marker.applyStatus(nodeStatus);
+        marker.changeNodeStatus(nodeStatus);
         marker.touch(tester);
 
         if (persistMarker(node)) return true;
 
-        marker.applyStatus(before);
+        marker.changeNodeStatus(nodeStatusBefore);
         marker.setUpdatedBy(updatedByBefore);
         marker.setUpdatedAt(updatedAtBefore);
         return false;

@@ -93,8 +93,8 @@ public class TestCaseAsJudgedTest {
         runItem.showing(Optional.empty(), Optional.empty(), Optional.of(testCaseReading(testCaseId, "as Git last held it")), false);
 
         assertTrue(runItem.isRemoved(), "nothing may act on the run item of a test case that no longer exists");
-        assertEquals(runItem.shownStatus(), RunItemStatus.REMOVED, "a deleted test case reads Removed while its test run is not Committed");
-        assertEquals(runItem.getStatus(), RunItemStatus.PASSED, "the file keeps the run item status it was given");
+        assertEquals(runItem.getStatus(), RunItemStatus.REMOVED, "a deleted test case reads Removed while its test run is not Committed");
+        assertEquals(runItem.defaultExecution().orElseThrow().getStatus(), RunItemStatus.PASSED, "the file keeps the run item status it was given");
         assertEquals(runItem.shownTestCase().getDescription(), "as Git last held it");
     }
 
@@ -118,7 +118,7 @@ public class TestCaseAsJudgedTest {
         runItem.showing(Optional.empty(), Optional.of(testCaseReading(testCaseId, "before")), Optional.empty(), false);
 
         assertFalse(runItem.isRemoved(), "a committed test run keeps every run item it recorded");
-        assertEquals(runItem.shownStatus(), RunItemStatus.PASSED);
+        assertEquals(runItem.getStatus(), RunItemStatus.PASSED);
         assertEquals(runItem.shownTestCase().getDescription(), "before");
     }
 

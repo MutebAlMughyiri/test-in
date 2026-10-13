@@ -52,7 +52,7 @@ final class FieldName {
             if (question.name().equals(constant)) return question.getDisplayName();
         }
         for (final TestRunResultAnalysis heading : TestRunResultAnalysis.values()) {
-            if (heading.name().equals(key)) return heading.getLabel();
+            if (heading.name().equals(key)) return heading.getRunItemStatus().getLabel();
         }
 
         return jsonField;

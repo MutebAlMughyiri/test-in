@@ -38,7 +38,7 @@ public class TestRunEditorContextMenu extends AbstractEditorContextMenu {
         this.project = project;
         this.editor = editor;
 
-        add(Declared.forMenu("Testin.SetTestCaseStatus"));
+        add(Declared.forMenu("Testin.SetRunItemStatus"));
         addSeparator();
         add(Declared.forMenu("Testin.UpdateRunItem"));
         addSeparator();

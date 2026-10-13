@@ -34,7 +34,7 @@ public final class TestCaseBadges {
         final @NotNull List<Badge> badges = Badges.testCaseBadges(testCase);
 
         final @NotNull TestNGExecutionStatus testNGExecutionStatus = Services.getInstance(project, TestNGExecution.class).testNGExecutionStatusOf(testCase);
-        if (testNGExecutionStatus.hasBadge()) badges.add(Badges.createTestNGExecutionStatusBadge(testNGExecutionStatus.getBadge()));
+        testNGExecutionStatus.getRunItemStatus().map(Badges::createRunItemStatusBadge).ifPresent(badges::add);
 
         return Badges.pills(badges);
     }

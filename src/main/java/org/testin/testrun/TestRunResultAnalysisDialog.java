@@ -18,6 +18,7 @@ package org.testin.testrun;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
+import org.testin.model.status.TestRunStatus;
 import org.testin.model.testrun.TestRunResultAnalysis;
 import org.testin.model.testrun.TestRunSummary;
 import org.testin.ui.framework.AbstractFrameworkDialog;
@@ -40,10 +41,10 @@ public final class TestRunResultAnalysisDialog extends AbstractFrameworkDialog {
     private final boolean readOnly;
 
     // UC-EDITOR-PANEL-045, Rule-EDITOR-PANEL-190
-    public TestRunResultAnalysisDialog(final @NotNull Project project, final @NotNull TestRunSummary summary, final @NotNull Map<TestRunResultAnalysis, String> current, final boolean readOnly, final @NotNull Consumer<@NotNull Map<TestRunResultAnalysis, String>> onSave) {
+    public TestRunResultAnalysisDialog(final @NotNull Project project, final @NotNull TestRunSummary summary, final @NotNull Map<TestRunResultAnalysis, String> current, final @NotNull TestRunStatus testRunStatus, final @NotNull Consumer<@NotNull Map<TestRunResultAnalysis, String>> onSave) {
         super(project);
         this.onSave = onSave;
-        this.readOnly = readOnly;
+        this.readOnly = testRunStatus.isRecord();
 
         title = Bundle.message("dialog.analysis.title");
 
@@ -51,14 +52,14 @@ public final class TestRunResultAnalysisDialog extends AbstractFrameworkDialog {
 
         for (final TestRunResultAnalysis section : TestRunResultAnalysis.values()) {
             final @NotNull DialogPart.TextAreaBuilder builder = DialogPart.textArea()
-                    .placeholder(Bundle.message("dialog.analysis.placeholder", section.getLabel().toLowerCase(Locale.ROOT)))
+                    .placeholder(Bundle.message("dialog.analysis.placeholder", section.labelIn(testRunStatus).toLowerCase(Locale.ROOT)))
                     .value(section.writtenIn(current))
                     .rows(3);
             final @NotNull DialogPart<PlainTextArea> area = (readOnly ? builder.readOnly() : builder).build();
 
             written.put(section, area.getComponent());
 
-            parts.add(DialogPart.message(section.heading(summary)));
+            parts.add(DialogPart.message(section.heading(summary, testRunStatus)));
             parts.add(area);
         }
 

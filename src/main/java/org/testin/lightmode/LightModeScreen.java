@@ -148,7 +148,7 @@ final class LightModeScreen {
     }
 
     private static @NotNull String keyOf(final @NotNull RunItemStatus runItemStatus) {
-        return Shortcuts.shortcutText(runItemStatus.getMenuEntry().shortcut());
+        return Shortcuts.shortcutText(runItemStatus.getShortcut());
     }
 
     private static @NotNull JComponent iconBefore(final @NotNull Icon icon, final @NotNull JComponent text) {
@@ -271,9 +271,9 @@ final class LightModeScreen {
         frame.bind(KeyStroke.getKeyStroke(details.getKeyCode(), 0, true), "testin.lightMode.releaseDetailsAlone", () -> detailsKeyHeld = false);
 
         for (final RunItemStatus runItemStatus : RunItemStatus.values()) {
-            if (!runItemStatus.isRunItemStatus()) continue;
+            if (!runItemStatus.isJudged()) continue;
 
-            frame.bind(runItemStatus.getMenuEntry().shortcut(), "testin.lightMode." + runItemStatus.name(), () -> judge(runItemStatus));
+            frame.bind(runItemStatus.getShortcut(), "testin.lightMode." + runItemStatus.name(), () -> judge(runItemStatus));
         }
 
         KEYED.forEach(button -> ShownTestCaseAction.bind(editor.getProject(), button, this::testCaseForButtons, (action, testCase) -> action.executeFor(editor, testCase), frame.rootPane()));
@@ -329,7 +329,7 @@ final class LightModeScreen {
     private void judge(final @NotNull RunItemStatus runItemStatus) {
         if (capture.isPresent()) return;
 
-        if (runItemStatus.isCollectsFailureDetails()) {
+        if (runItemStatus.collectsFailureDetails()) {
             openCapture();
             return;
         }
@@ -551,7 +551,7 @@ final class LightModeScreen {
         runItemStatuses.setOpaque(false);
 
         for (final RunItemStatus runItemStatus : RunItemStatus.values()) {
-            if (!runItemStatus.isRunItemStatus()) continue;
+            if (!runItemStatus.isJudged()) continue;
 
             runItemStatuses.add(new RunItemStatusButton(keyOf(runItemStatus), runItemStatus.getLabel(), () -> judge(runItemStatus)));
         }
@@ -583,7 +583,7 @@ final class LightModeScreen {
         statusBarItems.add(StatusBarShortcut.hint(Shortcuts.Escape.getShortcutText(), Bundle.message("shortcut.close")));
 
         for (final RunItemStatus runItemStatus : RunItemStatus.values()) {
-            if (runItemStatus.isRunItemStatus())
+            if (runItemStatus.isJudged())
                 statusBarItems.add(StatusBarShortcut.hint(keyOf(runItemStatus), runItemStatus.getLabel()));
         }
 

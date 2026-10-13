@@ -89,7 +89,7 @@ public class PendingChangeReaderTest {
         final List<PendingChange> review = review("?? Test Cases/login/testCase.testcase");
 
         assertEquals(review.size(), 1);
-        assertEquals(review.getFirst().type(), GitStatusKind.ADDED);
+        assertEquals(review.getFirst().gitStatusKind(), GitStatusKind.ADDED);
         assertEquals(review.getFirst().name(), "a brand new test case");
         assertEquals(review.getFirst().fieldChanges().getFirst().changeType(), ChangeType.CREATE_TEST_CASE);
     }
@@ -105,7 +105,7 @@ public class PendingChangeReaderTest {
         final List<PendingChange> review = review(" M Test Cases/login/testCase.testcase");
 
         assertEquals(review.size(), 1);
-        assertEquals(review.getFirst().type(), GitStatusKind.MODIFIED);
+        assertEquals(review.getFirst().gitStatusKind(), GitStatusKind.MODIFIED);
         assertEquals(review.getFirst().fieldChanges().size(), 1);
         assertEquals(review.getFirst().fieldChanges().getFirst().changeType(), ChangeType.CHANGE_MODULE);
     }
@@ -118,7 +118,7 @@ public class PendingChangeReaderTest {
         final List<PendingChange> review = review(" D Test Cases/login/testCase.testcase");
 
         assertEquals(review.size(), 1);
-        assertEquals(review.getFirst().type(), GitStatusKind.DELETED);
+        assertEquals(review.getFirst().gitStatusKind(), GitStatusKind.DELETED);
         assertEquals(review.getFirst().name(), "a case that is going away");
     }
 
@@ -171,7 +171,7 @@ public class PendingChangeReaderTest {
                     "?? Test Cases/login flow/testCase-3.testcase");
 
             assertEquals(review.size(), 4, "three test cases and the marker that makes the directory a test set");
-            assertTrue(review.stream().allMatch(diff -> diff.type() == GitStatusKind.ADDED));
+            assertTrue(review.stream().allMatch(diff -> diff.gitStatusKind() == GitStatusKind.ADDED));
             assertEquals(review.stream().filter(diff -> diff.subject() == ChangeSubject.TEST_CASE).count(), 3);
         } catch (final IOException ex) {
             throw new AssertionError(ex);

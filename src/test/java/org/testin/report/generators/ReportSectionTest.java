@@ -23,6 +23,7 @@ import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.TestRunSummary;
 import org.testin.model.status.RunItemStatus;
+import org.testin.model.status.TestRunStatus;
 import org.testin.report.ReportTile;
 import org.testng.annotations.Test;
 
@@ -80,6 +81,15 @@ public class ReportSectionTest {
         assertEquals(ReportSection.BLOCKED.getHexColor(), RunItemStatus.BLOCKED.getReportHex(), "the blocked table heading");
         assertEquals(ReportTile.BLOCKED.getHex(), RunItemStatus.BLOCKED.getReportHex(), "the blocked count tile");
         assertEquals(TestRunResultAnalysis.BLOCKED.getHexColor(), RunItemStatus.BLOCKED.getReportHex(), "the blocked result analysis line");
+    }
+
+    // Rule-EDITOR-PANEL-176
+    @Test
+    public void aReportNamesUntouchedTestCasesTheWayTheEditorDoes() {
+        assertEquals(ReportTile.UNTESTED.labelIn(TestRunStatus.ASSIGNED), RunItemStatus.PENDING.getLabel(), "the count tile of an open test run");
+        assertEquals(ReportTile.UNTESTED.labelIn(TestRunStatus.COMPLETED), RunItemStatus.UNTESTED.getLabel(), "the count tile of a signed-off test run");
+        assertEquals(ReportSection.UNTESTED.titleIn(TestRunStatus.ASSIGNED), RunItemStatus.PENDING.getLabel() + " Test Cases", "the table of an open test run");
+        assertEquals(ReportSection.UNTESTED.titleIn(TestRunStatus.CLOSED), RunItemStatus.UNTESTED.getLabel() + " Test Cases", "the table of a signed-off test run");
     }
 
     @Test

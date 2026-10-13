@@ -17,18 +17,19 @@
 package org.testin.model;
 
 import org.jetbrains.annotations.NotNull;
+import org.testin.model.status.TestRunStatus;
 import org.testin.model.testrun.TestRunSummary;
 import org.testin.util.Bundle;
 
-public record NodeFigures(long testSets, long packages, long testCases, long runnableTestCases, long testRuns, @NotNull TestRunSummary testRun) {
-    public static final @NotNull NodeFigures NONE = new NodeFigures(0, 0, 0, 0, 0, TestRunSummary.EMPTY);
+public record NodeFigures(long testSets, long packages, long testCases, long runnableTestCases, long testRuns, @NotNull TestRunSummary testRun, @NotNull TestRunStatus testRunStatus) {
+    public static final @NotNull NodeFigures NONE = new NodeFigures(0, 0, 0, 0, 0, TestRunSummary.EMPTY, TestRunStatus.CREATED);
 
     public static @NotNull NodeFigures ofChildren(final long testSets, final long packages, final long testCases, final long runnableTestCases, final long testRuns) {
-        return new NodeFigures(testSets, packages, testCases, runnableTestCases, testRuns, TestRunSummary.EMPTY);
+        return new NodeFigures(testSets, packages, testCases, runnableTestCases, testRuns, TestRunSummary.EMPTY, TestRunStatus.CREATED);
     }
 
-    public static @NotNull NodeFigures ofTestRun(final @NotNull TestRunSummary summary) {
-        return new NodeFigures(0, 0, 0, 0, 0, summary);
+    public static @NotNull NodeFigures ofTestRun(final @NotNull TestRunSummary summary, final @NotNull TestRunStatus testRunStatus) {
+        return new NodeFigures(0, 0, 0, 0, 0, summary, testRunStatus);
     }
 
     // UC-INTERNAL-006, Rule-INTERNAL-052

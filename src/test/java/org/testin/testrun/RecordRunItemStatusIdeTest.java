@@ -223,9 +223,9 @@ public class RecordRunItemStatusIdeTest extends AbstractTempRootIdeTest {
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
             assertEquals(RunItemStatus.FAILED, fixture.runItemStatusOf(fixture.testCases().getFirst()));
-            for (final RunItemStatus other : RunItemStatus.values()) {
-                if (!other.isRunItemStatus() || other == RunItemStatus.FAILED) continue;
-                assertFalse(other + " asks for detail", other.isCollectsFailureDetails());
+            for (final RunItemStatus otherRunItemStatus : RunItemStatus.values()) {
+                if (!otherRunItemStatus.isJudged() || otherRunItemStatus == RunItemStatus.FAILED) continue;
+                assertFalse(otherRunItemStatus + " asks for detail", otherRunItemStatus.collectsFailureDetails());
             }
         } finally {
             Disposer.dispose(editor);

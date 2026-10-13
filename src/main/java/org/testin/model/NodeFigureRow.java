@@ -18,6 +18,7 @@ package org.testin.model;
 
 import com.intellij.ui.JBColor;
 import com.intellij.util.ui.UIUtil;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -82,12 +83,13 @@ public enum NodeFigureRow {
             RunItemStatus.BLOCKED.getRowColor()
     ),
 
-    UNTESTED(
-            RunItemStatus.UNTESTED.getLabel(),
-            figures -> figures.testRun().untested(),
-            NodeFigureRow::plain,
-            RunItemStatus.UNTESTED.getRowColor()
-    ),
+    // Rule-EDITOR-PANEL-176
+    UNTESTED(RunItemStatus.UNTESTED.getLabel(), figures -> figures.testRun().unjudged(), NodeFigureRow::plain, RunItemStatus.UNTESTED.getRowColor()) {
+        @Override
+        public @NotNull String captionIn(final @NotNull NodeFigures figures) {
+            return RunItemStatus.UNTESTED.labelIn(figures.testRunStatus());
+        }
+    },
 
     REMOVED(
             RunItemStatus.REMOVED.getLabel(),
@@ -110,6 +112,7 @@ public enum NodeFigureRow {
             Uncharted.COLOR
     );
 
+    @Getter(AccessLevel.NONE)
     private final @NotNull String caption;
     private final @NotNull ToLongFunction<NodeFigures> reader;
     private final @NotNull LongFunction<String> format;
@@ -122,6 +125,10 @@ public enum NodeFigureRow {
 
     private static @NotNull String percentage(final long value) {
         return value + "%";
+    }
+
+    public @NotNull String captionIn(final @NotNull NodeFigures figures) {
+        return caption;
     }
 
     public @NotNull String of(final @NotNull NodeFigures figures) {

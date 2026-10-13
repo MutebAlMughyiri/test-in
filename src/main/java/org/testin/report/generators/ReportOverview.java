@@ -47,7 +47,7 @@ public final class ReportOverview {
 
         add(rows, TestRunEditorFields.EXECUTED_BY.getName(), summary.executedBy());
         TestRunExecution.rowsOf(marker).forEach(row -> add(rows, row.caption(), row.value()));
-        add(rows, TestRunEditorFields.RUN_STATUS.getName(), marker.getStatus().getLabel());
+        add(rows, Bundle.message("field.test.run.status"), marker.getStatus().getLabel());
 
         return List.copyOf(rows);
     }

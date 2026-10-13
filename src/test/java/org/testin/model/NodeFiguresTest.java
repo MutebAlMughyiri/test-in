@@ -22,6 +22,7 @@ import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.TestRunSummary;
 import org.testin.model.status.RunItemStatus;
+import org.testin.model.status.TestRunStatus;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -43,7 +44,7 @@ public class NodeFiguresTest {
                 runItem(RunItemStatus.PASSED),
                 runItem(RunItemStatus.FAILED)));
 
-        assertSame(NodeFigures.ofTestRun(summary).testRun(), summary,
+        assertSame(NodeFigures.ofTestRun(summary, TestRunStatus.IN_PROGRESS).testRun(), summary,
                 "seven fields copied out of the summary would make the popup a second "
                         + "implementation of how a test run went, which is what the summary exists to prevent");
     }
@@ -55,7 +56,7 @@ public class NodeFiguresTest {
                 runItem(RunItemStatus.PASSED),
                 runItem(RunItemStatus.FAILED),
                 runItem(RunItemStatus.BLOCKED),
-                runItem(RunItemStatus.UNTESTED))));
+                runItem(RunItemStatus.UNTESTED))), TestRunStatus.IN_PROGRESS);
 
         assertEquals(NodeFigureRow.PASSED.of(figures), "2");
         assertEquals(NodeFigureRow.FAILED.of(figures), "1");
@@ -66,12 +67,21 @@ public class NodeFiguresTest {
         assertEquals(NodeFigureRow.PASS_RATE.of(figures), "50%", "two of the four that ran passed");
     }
 
+    // Rule-EDITOR-PANEL-176
+    @Test
+    public void theRingNamesUntouchedTestCasesTheWayTheEditorDoes() {
+        final TestRunSummary summary = TestRunSummary.of(List.of(runItem(RunItemStatus.PENDING)));
+
+        assertEquals(NodeFigureRow.UNTESTED.captionIn(NodeFigures.ofTestRun(summary, TestRunStatus.IN_PROGRESS)), RunItemStatus.PENDING.getLabel());
+        assertEquals(NodeFigureRow.UNTESTED.captionIn(NodeFigures.ofTestRun(summary, TestRunStatus.CLOSED)), RunItemStatus.UNTESTED.getLabel());
+    }
+
     // Rule-INTERNAL-052
     @Test
     public void aTestRunNobodyHasStartedSaysSoRatherThanReportingZeroPercent() {
         final NodeFigures untouched = NodeFigures.ofTestRun(TestRunSummary.of(List.of(
                 runItem(RunItemStatus.PENDING),
-                runItem(RunItemStatus.PENDING))));
+                runItem(RunItemStatus.PENDING))), TestRunStatus.IN_PROGRESS);
 
         assertEquals(untouched.rateLabel(), "Not run");
     }
@@ -82,7 +92,7 @@ public class NodeFiguresTest {
                 runItem(RunItemStatus.PASSED),
                 runItem(RunItemStatus.PASSED),
                 runItem(RunItemStatus.PASSED),
-                runItem(RunItemStatus.FAILED))));
+                runItem(RunItemStatus.FAILED))), TestRunStatus.IN_PROGRESS);
 
         assertEquals(testRun.rateLabel(), "75%");
     }

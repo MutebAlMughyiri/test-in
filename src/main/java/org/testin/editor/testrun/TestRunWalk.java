@@ -139,7 +139,7 @@ public final class TestRunWalk {
 
         for (int i = Math.max(from, 0); i < shown.size(); i++) {
             if (editor.runItem(shown.get(i).getId())
-                    .filter(runItem -> runItem.shownStatus() == RunItemStatus.PENDING)
+                    .filter(runItem -> runItem.getStatus() == RunItemStatus.PENDING)
                     .isPresent()) return i;
         }
 

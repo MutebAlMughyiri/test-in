@@ -8,7 +8,7 @@ to someone with no IDE.
 This turns one test run into a file: a PDF, a Word file, a web page or a
 spreadsheet.
 
-A test run can be reported on in four of its five statuses: **Created**, **Assigned**, **Completed** and **Closed**.
+A test run can be reported on in five of its six statuses: **Created**, **Assigned**, **Completed**, **Closed** and **Committed**.
 **In Progress** is the one that
 cannot.
 

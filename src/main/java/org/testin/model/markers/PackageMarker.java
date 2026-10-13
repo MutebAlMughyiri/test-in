@@ -25,20 +25,20 @@ import java.util.List;
 public interface PackageMarker extends Marker {
     @NotNull PackageStatus getStatus();
 
-    void setStatus(@NotNull PackageStatus status);
+    void setStatus(@NotNull PackageStatus packageStatus);
 
     @Override
-    default @NotNull NodeStatus status() {
+    default @NotNull NodeStatus nodeStatus() {
         return getStatus();
     }
 
     @Override
-    default @NotNull List<NodeStatus> statuses() {
+    default @NotNull List<NodeStatus> nodeStatuses() {
         return List.of(PackageStatus.values());
     }
 
     @Override
-    default void applyStatus(final @NotNull NodeStatus status) {
-        setStatus((PackageStatus) status);
+    default void changeNodeStatus(final @NotNull NodeStatus nodeStatus) {
+        setStatus((PackageStatus) nodeStatus);
     }
 }

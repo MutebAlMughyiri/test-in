@@ -51,6 +51,7 @@ import org.testin.model.node.TestRunNode;
 import org.testin.model.testrun.TestRunResultAnalysis;
 import org.testin.model.testrun.TestRunConfiguration;
 import org.testin.model.testrun.RunItem;
+import org.testin.model.status.TestRunStatus;
 import org.testin.model.testrun.TestRunSummary;
 import org.testin.notifications.Notifier;
 import org.testin.report.ReportTile;
@@ -124,6 +125,7 @@ public final class TestRunPdfGenerator {
             document.add(overviewHeading);
 
             final @NotNull TestRunSummary summary = TestRunSummary.of(runItems.getAll());
+            final @NotNull TestRunStatus testRunStatus = testRunNode.getMarker().getStatus();
 
             Table overviewTable = new Table(UnitValue.createPercentArray(new float[]{30, 70}))
                     .useAllAvailableWidth()
@@ -161,7 +163,7 @@ public final class TestRunPdfGenerator {
                     .setBorder(Border.NO_BORDER);
 
             for (final ReportTile tile : tiles) {
-                addStatisticCell(statsTable, tile.valueIn(summary), tile.getLabel(), rgb(tile.getHex()), boldFont);
+                addStatisticCell(statsTable, tile.valueIn(summary), tile.labelIn(testRunStatus), rgb(tile.getHex()), boldFont);
             }
 
             document.add(statsTable);
@@ -175,7 +177,7 @@ public final class TestRunPdfGenerator {
                 final long count = section.count(summary);
                 if (count == 0) continue;
 
-                buildTestCaseTable(document, String.valueOf(sectionNumber++), section, section.description(String.valueOf(count)), runItems, boldFont, regularFont);
+                buildTestCaseTable(document, String.valueOf(sectionNumber++), section, section.titleIn(testRunStatus), section.description(String.valueOf(count)), runItems, boldFont, regularFont);
             }
 
             float pageWidth = pdf.getDefaultPageSize().getWidth();
@@ -229,7 +231,7 @@ public final class TestRunPdfGenerator {
             final @NotNull String written = section.writtenIn(testRunNode.getMarker().getResultAnalysis());
             if (written.isEmpty()) continue;
 
-            document.add(paragraph(section.heading(summary))
+            document.add(paragraph(section.heading(summary, testRunNode.getMarker().getStatus()))
                     .setFont(boldFont).setFontSize(ReportFont.LEAD.points())
                     .setFontColor(rgb(section.getHexColor()))
                     .setMarginBottom(2));
@@ -248,8 +250,8 @@ public final class TestRunPdfGenerator {
     }
 
     // UC-REPORT-001, Rule-REPORT-024
-    private void buildTestCaseTable(final @NotNull Document document, final @NotNull String sectionNumber, final @NotNull ReportSection section, final @NotNull String description, final @NotNull RunItems runItems, final @NotNull PdfFont boldFont, final @NotNull PdfFont regularFont) {
-        document.add(paragraph(sectionNumber + ". " + section.getTitle())
+    private void buildTestCaseTable(final @NotNull Document document, final @NotNull String sectionNumber, final @NotNull ReportSection section, final @NotNull String title, final @NotNull String description, final @NotNull RunItems runItems, final @NotNull PdfFont boldFont, final @NotNull PdfFont regularFont) {
+        document.add(paragraph(sectionNumber + ". " + title)
                 .setFont(boldFont)
                 .setFontSize(ReportFont.SECTION.points())
                 .setFontColor(DARK_NAVY)

@@ -43,7 +43,7 @@ public class FieldNameTest {
     public void aResultAnalysisKeyIsNamedByItsHeading() {
         final TestRunResultAnalysis heading = TestRunResultAnalysis.PASSED;
 
-        assertEquals(FieldName.of("resultAnalysis." + heading.name()), heading.getLabel(),
+        assertEquals(FieldName.of("resultAnalysis." + heading.name()), heading.getRunItemStatus().getLabel(),
                 "the key is named as the analysis dialog heads it");
     }
 

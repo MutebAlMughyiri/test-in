@@ -30,6 +30,7 @@ import org.testin.model.node.TestRunNode;
 import org.testin.model.testrun.TestRunResultAnalysis;
 import org.testin.model.testrun.TestRunConfiguration;
 import org.testin.model.testrun.RunItem;
+import org.testin.model.status.TestRunStatus;
 import org.testin.model.testrun.TestRunSummary;
 import org.testin.model.status.RunItemStatus;
 import org.testin.report.ReportTile;
@@ -51,7 +52,7 @@ public final class TestRunHtmlGenerator {
         final @NotNull StringBuilder tokens = new StringBuilder();
 
         for (final RunItemStatus runItemStatus : List.of(RunItemStatus.PASSED, RunItemStatus.FAILED, RunItemStatus.BLOCKED, RunItemStatus.UNTESTED, RunItemStatus.REMOVED)) {
-            tokens.append("--run-item-status-").append(runItemStatus.name().toLowerCase(Locale.ROOT)).append(": #").append(shade.apply(runItemStatus)).append(";");
+            tokens.append(runItemStatus.getCssVariable()).append(": #").append(shade.apply(runItemStatus)).append(";");
         }
 
         return tokens.toString();
@@ -62,6 +63,7 @@ public final class TestRunHtmlGenerator {
         final @NotNull List<RunItem> all = runItems.getAll();
         final int total = all.size();
         final @NotNull TestRunSummary summary = TestRunSummary.of(all);
+        final @NotNull TestRunStatus testRunStatus = testRunNode.getMarker().getStatus();
         final int passRate = summary.passRate();
 
         final @NotNull String testRunName = testRunNode.getName();
@@ -105,7 +107,7 @@ public final class TestRunHtmlGenerator {
 
         html.append("<div class='summary-cards'>");
         for (final ReportTile tile : ReportTile.shownFor(summary)) {
-            summaryCard(html, tile.valueIn(summary), tile.getLabel(), tile.getCssToken());
+            summaryCard(html, tile.valueIn(summary), tile.labelIn(testRunStatus), tile.getCssToken());
         }
         html.append("</div>");
 
@@ -118,9 +120,9 @@ public final class TestRunHtmlGenerator {
                 final @NotNull String written = section.writtenIn(testRunNode.getMarker().getResultAnalysis());
                 if (written.isEmpty()) continue;
 
-                html.append("<div class='analysis-heading' style='color: var(--run-item-status-")
-                        .append(section.name().toLowerCase(Locale.ROOT)).append(")'>")
-                        .append(section.heading(summary)).append("</div>")
+                html.append("<div class='analysis-heading' style='color: ")
+                        .append(section.getRunItemStatus().getCssToken()).append("'>")
+                        .append(section.heading(summary, testRunStatus)).append("</div>")
                         .append("<div class='analysis-text'>")
                         .append(StringUtil.escapeXmlEntities(written))
                         .append("</div>");
@@ -132,7 +134,7 @@ public final class TestRunHtmlGenerator {
             final long count = section.count(summary);
             if (count == 0) continue;
 
-            appendTestCaseTable(html, sectionNumber++, section, section.description("<b>" + count + "</b>"), all);
+            appendTestCaseTable(html, sectionNumber++, section, section.titleIn(testRunStatus), section.description("<b>" + count + "</b>"), all);
         }
 
         html.append("<div class='footer'>")
@@ -147,9 +149,9 @@ public final class TestRunHtmlGenerator {
     }
 
     // Rule-REPORT-019
-    private void appendTestCaseTable(final @NotNull StringBuilder html, final int sectionNumber, final @NotNull ReportSection section, final @NotNull String blurb, final @NotNull List<RunItem> runItems) {
+    private void appendTestCaseTable(final @NotNull StringBuilder html, final int sectionNumber, final @NotNull ReportSection section, final @NotNull String title, final @NotNull String blurb, final @NotNull List<RunItem> runItems) {
         final @NotNull String name = section.name().toLowerCase(Locale.ROOT);
-        html.append("<div class='section-title-bar'><div class='section-title'>").append(sectionNumber).append(". ").append(section.getTitle()).append("</div></div>");
+        html.append("<div class='section-title-bar'><div class='section-title'>").append(sectionNumber).append(". ").append(title).append("</div></div>");
         html.append("<div class='summary-text'>").append(blurb).append("</div>");
         html.append("<table class='detail-table'>")
                 .append("<tr style='background: var(--section-").append(name).append(")")

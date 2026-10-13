@@ -23,13 +23,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public record TestRunSummary(long total, long passed, long failed, long blocked, long untested, long removed, @NotNull String executedBy) {
+public record TestRunSummary(long total, long passed, long failed, long blocked, long unjudged, long removed, @NotNull String executedBy) {
     public static final @NotNull TestRunSummary EMPTY = new TestRunSummary(0, 0, 0, 0, 0, 0, "");
 
     // UC-INTERNAL-006, Rule-INTERNAL-048, Rule-INTERNAL-049
     public static @NotNull TestRunSummary of(final @NotNull List<RunItem> runItems) {
         final @NotNull Map<RunItemStatus, Long> counts = runItems.stream()
-                .collect(Collectors.groupingBy(RunItem::shownStatus, Collectors.counting()));
+                .collect(Collectors.groupingBy(RunItem::getStatus, Collectors.counting()));
 
         return new TestRunSummary(
                 runItems.size(),

@@ -33,11 +33,11 @@ import static org.testng.Assert.assertTrue;
 
 public class NodeStatusWorthShowingTest {
 
-    private static void assertActiveIs(final @NotNull NodeStatus @NotNull [] values, final @NotNull NodeStatus expected) {
-        final @NotNull List<NodeStatus> active = Arrays.stream(values).filter(NodeStatus::isActive).toList();
+    private static void assertActiveIs(final @NotNull NodeStatus @NotNull [] nodeStatuses, final @NotNull NodeStatus expectedNodeStatus) {
+        final @NotNull List<NodeStatus> activeNodeStatuses = Arrays.stream(nodeStatuses).filter(NodeStatus::isActive).toList();
 
-        assertEquals(List.of(expected), active, expected.getClass().getSimpleName() + " must have exactly one status meaning \"in current work\","
-                + " because the tree draws every other one beside the name. Active: " + active);
+        assertEquals(List.of(expectedNodeStatus), activeNodeStatuses, expectedNodeStatus.getClass().getSimpleName() + " must have exactly one status meaning \"in current work\","
+                + " because the tree draws every other one beside the name. Active: " + activeNodeStatuses);
     }
 
     @Test

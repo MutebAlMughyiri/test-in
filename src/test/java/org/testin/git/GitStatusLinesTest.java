@@ -30,7 +30,7 @@ public class GitStatusLinesTest {
         final List<GitStatusEntry> entries = GitStatusLines.parseGitStatus(List.of("?? .testproject"));
 
         assertEquals(entries.size(), 1);
-        assertEquals(entries.getFirst().type(), GitStatusKind.ADDED);
+        assertEquals(entries.getFirst().gitStatusKind(), GitStatusKind.ADDED);
         assertEquals(entries.getFirst().path(), ".testproject");
     }
 
@@ -50,20 +50,20 @@ public class GitStatusLinesTest {
 
     @Test
     public void aModifiedFileIsReportedWhicheverColumnCarriesIt() {
-        assertEquals(GitStatusLines.parseGitStatus(List.of(" M a.json")).getFirst().type(), GitStatusKind.MODIFIED);
-        assertEquals(GitStatusLines.parseGitStatus(List.of("M  a.json")).getFirst().type(), GitStatusKind.MODIFIED);
-        assertEquals(GitStatusLines.parseGitStatus(List.of("MM a.json")).getFirst().type(), GitStatusKind.MODIFIED);
+        assertEquals(GitStatusLines.parseGitStatus(List.of(" M a.json")).getFirst().gitStatusKind(), GitStatusKind.MODIFIED);
+        assertEquals(GitStatusLines.parseGitStatus(List.of("M  a.json")).getFirst().gitStatusKind(), GitStatusKind.MODIFIED);
+        assertEquals(GitStatusLines.parseGitStatus(List.of("MM a.json")).getFirst().gitStatusKind(), GitStatusKind.MODIFIED);
     }
 
     @Test
     public void aDeletedFileIsReportedWhicheverColumnCarriesIt() {
-        assertEquals(GitStatusLines.parseGitStatus(List.of(" D a.json")).getFirst().type(), GitStatusKind.DELETED);
-        assertEquals(GitStatusLines.parseGitStatus(List.of("D  a.json")).getFirst().type(), GitStatusKind.DELETED);
+        assertEquals(GitStatusLines.parseGitStatus(List.of(" D a.json")).getFirst().gitStatusKind(), GitStatusKind.DELETED);
+        assertEquals(GitStatusLines.parseGitStatus(List.of("D  a.json")).getFirst().gitStatusKind(), GitStatusKind.DELETED);
     }
 
     @Test
     public void aStagedAdditionIsAnAddition() {
-        assertEquals(GitStatusLines.parseGitStatus(List.of("A  a.json")).getFirst().type(), GitStatusKind.ADDED);
+        assertEquals(GitStatusLines.parseGitStatus(List.of("A  a.json")).getFirst().gitStatusKind(), GitStatusKind.ADDED);
     }
 
     // Rule-SHARE-048
@@ -74,10 +74,10 @@ public class GitStatusLinesTest {
 
         assertEquals(entries.size(), 2);
 
-        assertEquals(entries.getFirst().type(), GitStatusKind.DELETED);
+        assertEquals(entries.getFirst().gitStatusKind(), GitStatusKind.DELETED);
         assertEquals(entries.getFirst().path(), "Test Cases/old/a.json");
 
-        assertEquals(entries.get(1).type(), GitStatusKind.ADDED);
+        assertEquals(entries.get(1).gitStatusKind(), GitStatusKind.ADDED);
         assertEquals(entries.get(1).path(), "Test Cases/new/a.json");
     }
 
@@ -95,8 +95,8 @@ public class GitStatusLinesTest {
         final List<GitStatusEntry> entries = GitStatusLines.parseGitStatus(List.of("RD b.json", "a.json"));
 
         assertEquals(entries.size(), 2);
-        assertEquals(entries.getFirst().type(), GitStatusKind.DELETED);
-        assertEquals(entries.get(1).type(), GitStatusKind.DELETED);
+        assertEquals(entries.getFirst().gitStatusKind(), GitStatusKind.DELETED);
+        assertEquals(entries.get(1).gitStatusKind(), GitStatusKind.DELETED);
     }
 
     @Test

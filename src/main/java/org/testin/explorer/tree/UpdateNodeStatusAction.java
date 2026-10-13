@@ -67,7 +67,7 @@ public class UpdateNodeStatusAction extends AbstractAnyProjectAction {
     }
 
     private @NotNull Optional<AbstractNode> selected(final @NotNull AnActionEvent e) {
-        return TestinDataKeys.singleSelectedNode(e).filter(node -> node.getMarker().statuses().contains(nodeStatus));
+        return TestinDataKeys.singleSelectedNode(e).filter(node -> node.getMarker().nodeStatuses().contains(nodeStatus));
     }
 
     // UC-TREE-PANEL-018, Rule-TREE-PANEL-065
@@ -76,7 +76,7 @@ public class UpdateNodeStatusAction extends AbstractAnyProjectAction {
         final @NotNull Optional<AbstractNode> selectedNode = selected(e);
 
         e.getPresentation().setVisible(selectedNode.isPresent());
-        GrayWithReason.unless(this, e, selectedNode.filter(node -> !nodeStatus.equals(node.getMarker().status())).isPresent(),
+        GrayWithReason.unless(this, e, selectedNode.filter(node -> !nodeStatus.equals(node.getMarker().nodeStatus())).isPresent(),
                 Bundle.message("node.status.already.description", nodeStatus.getLabel()));
     }
 

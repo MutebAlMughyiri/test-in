@@ -92,13 +92,13 @@ public enum TestRunStatus implements MenuItem {
     private final @NotNull SetBy setBy;
 
     // UC-TREE-PANEL-020, Rule-TREE-PANEL-068, Rule-TREE-PANEL-092
-    public boolean canBeSetFrom(final @NotNull TestRunStatus current) {
-        return setBy == SetBy.TESTER && stage > current.stage;
+    public boolean canBeSetFrom(final @NotNull TestRunStatus currentTestRunStatus) {
+        return setBy == SetBy.TESTER && stage > currentTestRunStatus.stage;
     }
 
     // Rule-TREE-PANEL-092
-    public boolean isFurtherThan(final @NotNull TestRunStatus other) {
-        return stage > other.stage;
+    public boolean isFurtherThan(final @NotNull TestRunStatus otherTestRunStatus) {
+        return stage > otherTestRunStatus.stage;
     }
 
     // UC-REPORT-001, Rule-REPORT-016

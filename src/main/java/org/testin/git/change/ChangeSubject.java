@@ -53,7 +53,7 @@ public enum ChangeSubject {
 
     private final @NotNull ChangeType changed;
 
-    public @NotNull ChangeType changeFor(final @NotNull GitStatusKind type) {
-        return type.changeOf(this);
+    public @NotNull ChangeType changeFor(final @NotNull GitStatusKind gitStatusKind) {
+        return gitStatusKind.changeOf(this);
     }
 }

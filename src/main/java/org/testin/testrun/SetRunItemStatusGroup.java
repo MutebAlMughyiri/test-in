@@ -29,22 +29,22 @@ import java.util.List;
 public class SetRunItemStatusGroup extends DefaultActionGroup {
     // UC-EDITOR-PANEL-032
     public SetRunItemStatusGroup() {
-        super(runItemStatuses());
+        super(setRunItemStatusActions());
     }
 
     // UC-EDITOR-PANEL-032
     public static void bindLettersTo(final @NotNull JComponent list) {
-        runItemStatuses().forEach(action -> action.registerCustomShortcutSet(action.getShortcutSet(), list));
+        setRunItemStatusActions().forEach(action -> action.registerCustomShortcutSet(action.getShortcutSet(), list));
     }
 
     // UC-EDITOR-PANEL-032, Rule-EDITOR-PANEL-213
-    private static @NotNull List<SetRunItemStatusAction> runItemStatuses() {
+    private static @NotNull List<SetRunItemStatusAction> setRunItemStatusActions() {
         return Arrays.stream(RunItemStatus.values())
-                .filter(RunItemStatus::isRunItemStatus)
+                .filter(RunItemStatus::isJudged)
                 .map(runItemStatus -> {
                     final @NotNull SetRunItemStatusAction action = new SetRunItemStatusAction(runItemStatus);
 
-                    action.registerCustomShortcutSet(Shortcuts.customShortcut(runItemStatus.getMenuEntry().shortcut()), null);
+                    action.registerCustomShortcutSet(Shortcuts.customShortcut(runItemStatus.getShortcut()), null);
                     return action;
                 })
                 .toList();

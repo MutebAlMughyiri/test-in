@@ -89,12 +89,12 @@ public class SignedOffTestRunIdeTest extends AbstractTempRootIdeTest {
         final @NotNull Path testRunPath = aTestRunWithOneFailure();
         final @NotNull RunItemRecorder service = Services.getInstance(getProject(), RunItemRecorder.class);
 
-        for (final TestRunStatus signedOff : List.of(TestRunStatus.COMPLETED, TestRunStatus.CLOSED)) {
-            indexedTestRuns().changeTestRunMarker(testRunPath, marker -> marker.setStatus(signedOff));
+        for (final TestRunStatus signedOffTestRunStatus : List.of(TestRunStatus.COMPLETED, TestRunStatus.CLOSED)) {
+            indexedTestRuns().changeTestRunMarker(testRunPath, marker -> marker.setStatus(signedOffTestRunStatus));
 
-            assertTrue(signedOff + " refused a write", service.heldTestRun(testRunPath).isPresent());
-            assertTrue(signedOff + " refused a failure", saveAFailureOnto(testRunPath));
-            assertEquals(signedOff + " did not record the failure", "Typed after the sign-off", recordedOn(testRunPath));
+            assertTrue(signedOffTestRunStatus + " refused a write", service.heldTestRun(testRunPath).isPresent());
+            assertTrue(signedOffTestRunStatus + " refused a failure", saveAFailureOnto(testRunPath));
+            assertEquals(signedOffTestRunStatus + " did not record the failure", "Typed after the sign-off", recordedOn(testRunPath));
         }
     }
 }

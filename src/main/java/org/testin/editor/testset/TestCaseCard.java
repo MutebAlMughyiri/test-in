@@ -68,7 +68,7 @@ public class TestCaseCard extends AbstractCard {
 
         final @NotNull TestNGExecutionStatus testNGExecutionStatus = testNGExecution.testNGExecutionStatusOf(testCase);
 
-        if (testNGExecutionStatus.hasBadge()) badges.add(Badges.createTestNGExecutionStatusBadge(testNGExecutionStatus.getBadge()));
+        testNGExecutionStatus.getRunItemStatus().map(Badges::createRunItemStatusBadge).ifPresent(badges::add);
 
         titleArea.setForeground(testCase.getStatus().getDescriptionColor());
         updateUI(index, title, badges, details);

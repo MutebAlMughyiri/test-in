@@ -51,7 +51,7 @@ public class DeletedTestCaseInATestRunTest {
 
     @Test
     public void aRemovedRowIsNotARunItemStatus() {
-        assertFalse(RunItemStatus.REMOVED.isRunItemStatus(), "nobody chose REMOVED from the menu");
+        assertFalse(RunItemStatus.REMOVED.isJudged(), "nobody chose REMOVED from the menu");
     }
 
     @Test
@@ -74,7 +74,7 @@ public class DeletedTestCaseInATestRunTest {
                 .removed(true)
                 .build();
 
-        assertEquals(runItem.shownStatus(), RunItemStatus.REMOVED, "nothing was executed, and now nothing can be");
+        assertEquals(runItem.getStatus(), RunItemStatus.REMOVED, "nothing was executed, and now nothing can be");
     }
 
     // Rule-EDITOR-PANEL-126
@@ -86,7 +86,7 @@ public class DeletedTestCaseInATestRunTest {
                 .build();
 
         assertTrue(runItem.isRemoved(), "the run item status path, the details editor and the walker refuse it");
-        assertEquals(runItem.shownStatus(), RunItemStatus.REMOVED, "a deleted test case reads Removed while its test run is not Committed");
+        assertEquals(runItem.getStatus(), RunItemStatus.REMOVED, "a deleted test case reads Removed while its test run is not Committed");
 
         try {
             final String written = new String(RealJsonCodec.build().writeValueAsBytes(RunItems.builder().all(List.of(runItem)).build()), StandardCharsets.UTF_8);

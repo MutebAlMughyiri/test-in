@@ -238,7 +238,7 @@ public class GitWorkflowTest {
                 "both new test cases are in the review");
         assertTrue(pending.stream().anyMatch(change -> change.subject() == ChangeSubject.MARKER),
                 "and so are the markers that make their directories nodes");
-        assertTrue(pending.stream().allMatch(diff -> diff.type() == GitStatusKind.ADDED));
+        assertTrue(pending.stream().allMatch(diff -> diff.gitStatusKind() == GitStatusKind.ADDED));
 
         commit(stagedFor(pending), "the first commit");
         assertTrue(git(work, "push", "-u", "origin", "main").isPresent(), "the push to an empty remote succeeded");
@@ -293,7 +293,7 @@ public class GitWorkflowTest {
         final List<PendingChange> pending = review();
 
         assertEquals(pending.size(), 1);
-        assertEquals(pending.getFirst().type(), GitStatusKind.MODIFIED);
+        assertEquals(pending.getFirst().gitStatusKind(), GitStatusKind.MODIFIED);
         assertEquals(pending.getFirst().fieldChanges().size(), 1, "one field moved, so one row");
         assertEquals(pending.getFirst().fieldChanges().getFirst().changeType(), ChangeType.CHANGE_MODULE);
         assertEquals(pending.getFirst().fieldChanges().getFirst().oldValue(), "authentication");
@@ -311,7 +311,7 @@ public class GitWorkflowTest {
         final List<PendingChange> pending = review();
 
         assertEquals(pending.size(), 1);
-        assertEquals(pending.getFirst().type(), GitStatusKind.ADDED);
+        assertEquals(pending.getFirst().gitStatusKind(), GitStatusKind.ADDED);
         assertEquals(pending.getFirst().name(), "a locked account cannot sign in");
     }
 
@@ -326,7 +326,7 @@ public class GitWorkflowTest {
             final List<PendingChange> pending = review();
 
             assertEquals(pending.size(), 1);
-            assertEquals(pending.getFirst().type(), GitStatusKind.DELETED);
+            assertEquals(pending.getFirst().gitStatusKind(), GitStatusKind.DELETED);
             assertEquals(pending.getFirst().name(), "a registered user signs in");
         } catch (final IOException ex) {
             throw new AssertionError(ex);
@@ -342,8 +342,8 @@ public class GitWorkflowTest {
         mustGit(work, "mv", "Test Cases/login flow/" + file, "Test Cases/" + file);
 
         final List<PendingChange> pending = review();
-        assertEquals(pending.stream().filter(change -> change.type() == GitStatusKind.DELETED).count(), 1);
-        assertEquals(pending.stream().filter(change -> change.type() == GitStatusKind.ADDED).count(), 1);
+        assertEquals(pending.stream().filter(change -> change.gitStatusKind() == GitStatusKind.DELETED).count(), 1);
+        assertEquals(pending.stream().filter(change -> change.gitStatusKind() == GitStatusKind.ADDED).count(), 1);
 
         commit(stagedFor(pending), "the case moved out of the test set");
 

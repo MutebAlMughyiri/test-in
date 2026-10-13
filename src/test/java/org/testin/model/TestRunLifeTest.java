@@ -35,8 +35,8 @@ import static org.testng.Assert.assertFalse;
 
 public class TestRunLifeTest {
 
-    private static @NotNull List<TestRunStatus> offeredFrom(final @NotNull TestRunStatus current) {
-        return Arrays.stream(TestRunStatus.values()).filter(testRunStatus -> testRunStatus.canBeSetFrom(current)).toList();
+    private static @NotNull List<TestRunStatus> offeredFrom(final @NotNull TestRunStatus currentTestRunStatus) {
+        return Arrays.stream(TestRunStatus.values()).filter(testRunStatus -> testRunStatus.canBeSetFrom(currentTestRunStatus)).toList();
     }
 
     // Rule-TREE-PANEL-031
@@ -55,9 +55,9 @@ public class TestRunLifeTest {
     // Rule-TREE-PANEL-068
     @Test
     public void aTesterSetsAssignedCompletedAndClosedAndNothingElse() {
-        for (final TestRunStatus current : TestRunStatus.values()) {
-            assertFalse(TestRunStatus.CREATED.canBeSetFrom(current), "a tester set Created on a " + current + " test run");
-            assertFalse(TestRunStatus.IN_PROGRESS.canBeSetFrom(current), "a tester set In Progress on a " + current + " test run");
+        for (final TestRunStatus currentTestRunStatus : TestRunStatus.values()) {
+            assertFalse(TestRunStatus.CREATED.canBeSetFrom(currentTestRunStatus), "a tester set Created on a " + currentTestRunStatus + " test run");
+            assertFalse(TestRunStatus.IN_PROGRESS.canBeSetFrom(currentTestRunStatus), "a tester set In Progress on a " + currentTestRunStatus + " test run");
         }
 
         assertEquals(offeredFrom(TestRunStatus.CREATED), List.of(TestRunStatus.COMPLETED, TestRunStatus.ASSIGNED, TestRunStatus.CLOSED));

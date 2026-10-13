@@ -41,8 +41,8 @@ import static org.testin.git.LocalGit.mustGit;
 public class GitCommitAndPushIdeTest extends AbstractGitRemoteIdeTest {
     private static final int WINDOWS_COMMAND_LINE_LIMIT = 32767;
 
-    private static @NotNull PendingChange ticked(final @NotNull String relativePath, final @NotNull GitStatusKind type) {
-        return new PendingChange(ChangeSubject.TEST_CASE, "a test case", "login", UUID.randomUUID().toString(), Path.of(relativePath), type, TestCase.builder().build(), List.of());
+    private static @NotNull PendingChange ticked(final @NotNull String relativePath, final @NotNull GitStatusKind gitStatusKind) {
+        return new PendingChange(ChangeSubject.TEST_CASE, "a test case", "login", UUID.randomUUID().toString(), Path.of(relativePath), gitStatusKind, TestCase.builder().build(), List.of());
     }
 
     private @NotNull GitCommitAndPush commits() {

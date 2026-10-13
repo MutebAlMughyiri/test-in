@@ -67,7 +67,7 @@ public class RunItemCard extends AbstractCard {
 
         Optional.ofNullable(fieldLabels.get(TestRunEditorFields.RUN_STATUS.getName())).ifPresent(runItemStatusLabel -> {
             runItemStatusLabel.setFont(Fonts.strong());
-            runItemStatusLabel.setForeground(runItem.shownStatus().getRowColor());
+            runItemStatusLabel.setForeground(runItem.getStatus().getRowColor());
             // Rule-EDITOR-PANEL-287
             runItemStatusLabel.setIcon(ExecutionDots.of(runItem, runItemStatusLabel.getFont()));
             runItemStatusLabel.setHorizontalTextPosition(SwingConstants.LEADING);

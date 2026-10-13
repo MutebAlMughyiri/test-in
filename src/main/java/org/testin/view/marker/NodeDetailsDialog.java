@@ -54,7 +54,7 @@ public final class NodeDetailsDialog extends AbstractFrameworkDialog {
 
         marker.getDetailRows().forEach(extra -> details.row(extra.caption(), extra.value()));
 
-        type.getCounts().forEach(count -> details.row(count.getCaption(), count.of(figures)));
+        type.getCounts().forEach(count -> details.row(count.captionIn(figures), count.of(figures)));
 
         components = List.of(
                 details.build(),

@@ -33,7 +33,7 @@ public class UpdateNodeStatusGroup extends DefaultActionGroup {
     private static @NotNull List<NodeStatus> nodeStatuses(final @NotNull AnActionEvent e) {
         return TestinDataKeys.singleSelectedNode(e)
                 .map(AbstractNode::getMarker)
-                .map(Marker::statuses)
+                .map(Marker::nodeStatuses)
                 .orElseGet(List::of);
     }
 

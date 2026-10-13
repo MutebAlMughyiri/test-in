@@ -76,11 +76,11 @@ final class TestRunMarkerMerger {
     }
 
     private static void mergeTestRunStatus(final @NotNull ThreeWayMerge merging) {
-        final @NotNull TestRunStatus ours = testRunStatusIn(merging.mine());
-        final @NotNull TestRunStatus yours = testRunStatusIn(merging.theirs());
-        if (ours == yours) return;
+        final @NotNull TestRunStatus myTestRunStatus = testRunStatusIn(merging.mine());
+        final @NotNull TestRunStatus theirTestRunStatus = testRunStatusIn(merging.theirs());
+        if (myTestRunStatus == theirTestRunStatus) return;
 
-        if (yours.isFurtherThan(ours)) {
+        if (theirTestRunStatus.isFurtherThan(myTestRunStatus)) {
             merging.merged().set(TEST_RUN_STATUS_KEY, merging.theirs().path(TEST_RUN_STATUS_KEY).deepCopy());
             // Rule-SHARE-130
             if (merging.theirs().has(COMMIT)) merging.merged().set(COMMIT, merging.theirs().path(COMMIT).deepCopy());

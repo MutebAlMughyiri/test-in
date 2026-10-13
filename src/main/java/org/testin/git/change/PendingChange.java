@@ -22,7 +22,7 @@ import org.testin.model.TestCase;
 import java.nio.file.Path;
 import java.util.List;
 
-public record PendingChange(@NotNull ChangeSubject subject, @NotNull String name, @NotNull String testSet, @NotNull String testCaseId, @NotNull Path relativeFilePath, @NotNull GitStatusKind type, @NotNull TestCase committed, @NotNull List<FieldChange> fieldChanges) {
+public record PendingChange(@NotNull ChangeSubject subject, @NotNull String name, @NotNull String testSet, @NotNull String testCaseId, @NotNull Path relativeFilePath, @NotNull GitStatusKind gitStatusKind, @NotNull TestCase committed, @NotNull List<FieldChange> fieldChanges) {
     public boolean isRevertible() {
         return subject == ChangeSubject.TEST_CASE && !testCaseId.isEmpty();
     }

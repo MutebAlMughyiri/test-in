@@ -30,14 +30,14 @@ import java.util.function.Consumer;
 public class TestRunStatusMenu {
     private final @NotNull Project project;
 
-    private final @NotNull TestRunStatus current;
+    private final @NotNull TestRunStatus currentTestRunStatus;
 
     private final @NotNull Consumer<TestRunStatus> onTestRunStatusSelected;
 
     // UC-TREE-PANEL-020, Rule-TREE-PANEL-068, Rule-TREE-PANEL-092
     public void show() {
         final TestRunStatus @NotNull [] offered = Arrays.stream(TestRunStatus.values())
-                .filter(testRunStatus -> testRunStatus.canBeSetFrom(current))
+                .filter(testRunStatus -> testRunStatus.canBeSetFrom(currentTestRunStatus))
                 .toArray(TestRunStatus[]::new);
 
         new ShortcutMenuPopup<>(project, Bundle.message("test.run.set.status.menu"), offered, onTestRunStatusSelected).show();

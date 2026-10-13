@@ -17,6 +17,7 @@
 package org.testin.model;
 
 import org.testin.model.status.RunItemStatus;
+import org.testin.util.Shortcuts;
 import org.testng.annotations.Test;
 
 import javax.swing.KeyStroke;
@@ -35,34 +36,34 @@ public class RunItemStatusMenuTest {
     // Rule-PRODUCT-012
     @Test
     public void aTesterChoosesExactlyPassedFailedOrBlocked() {
-        final List<RunItemStatus> onMenu = Arrays.stream(RunItemStatus.values())
-                .filter(RunItemStatus::isRunItemStatus)
+        final List<RunItemStatus> runItemStatusesOnMenu = Arrays.stream(RunItemStatus.values())
+                .filter(RunItemStatus::isJudged)
                 .toList();
 
-        assertEquals(onMenu, List.of(RunItemStatus.PASSED, RunItemStatus.FAILED, RunItemStatus.BLOCKED));
+        assertEquals(runItemStatusesOnMenu, List.of(RunItemStatus.PASSED, RunItemStatus.FAILED, RunItemStatus.BLOCKED));
     }
 
     // Rule-PRODUCT-013
     @Test
     public void thePluginSetsPendingAndUntestedItself() {
-        assertFalse(RunItemStatus.PENDING.isRunItemStatus(), "queued for a test run, not a run item status");
-        assertFalse(RunItemStatus.UNTESTED.isRunItemStatus(), "set when a test run finishes without reaching the test case");
+        assertFalse(RunItemStatus.PENDING.isJudged(), "queued for a test run, not a run item status");
+        assertFalse(RunItemStatus.UNTESTED.isJudged(), "set when a test run finishes without reaching the test case");
     }
 
     @Test
-    public void theRunItemStatusesOffMenuCarryTheEmptyEntry() {
-        assertSame(RunItemStatus.PENDING.getMenuEntry(), RunItemStatusKey.NONE);
-        assertSame(RunItemStatus.UNTESTED.getMenuEntry(), RunItemStatusKey.NONE);
+    public void theRunItemStatusesOffMenuCarryNoKey() {
+        assertSame(RunItemStatus.PENDING.getShortcut(), Shortcuts.NO_KEY);
+        assertSame(RunItemStatus.UNTESTED.getShortcut(), Shortcuts.NO_KEY);
     }
 
     @Test
     public void everyOfferedRunItemStatusHasAKeyAndAnIcon() {
         Arrays.stream(RunItemStatus.values())
-                .filter(RunItemStatus::isRunItemStatus)
+                .filter(RunItemStatus::isJudged)
                 .forEach(runItemStatus -> {
-                    assertNotSame(runItemStatus.getMenuEntry(), RunItemStatusKey.NONE,
-                            runItemStatus + " is offered, so it needs an entry of its own");
-                    assertNotEquals(runItemStatus.getMenuEntry().shortcut().getKeyCode(), KeyEvent.VK_UNDEFINED,
+                    assertNotSame(runItemStatus.getShortcut(), Shortcuts.NO_KEY,
+                            runItemStatus + " is offered, so it needs a key of its own");
+                    assertNotEquals(runItemStatus.getShortcut().getKeyCode(), KeyEvent.VK_UNDEFINED,
                             runItemStatus + " is offered, so it needs a key that reaches it");
                 });
     }
@@ -70,9 +71,8 @@ public class RunItemStatusMenuTest {
     @Test
     public void noTwoOfferedRunItemStatusesShareAKey() {
         final List<KeyStroke> keys = Arrays.stream(RunItemStatus.values())
-                .filter(RunItemStatus::isRunItemStatus)
-                .map(RunItemStatus::getMenuEntry)
-                .map(RunItemStatusKey::shortcut)
+                .filter(RunItemStatus::isJudged)
+                .map(RunItemStatus::getShortcut)
                 .toList();
 
         assertEquals(keys.size(), keys.stream().distinct().count(), "duplicate run item status key");

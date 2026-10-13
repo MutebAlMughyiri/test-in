@@ -68,8 +68,8 @@ public class TestRunMarker extends AbstractMarker {
     }
 
     // UC-TREE-PANEL-020, Rule-TREE-PANEL-091, Rule-INTERNAL-117
-    public void changeStatus(final @NotNull TestRunStatus next) {
-        status = next;
+    public void changeStatus(final @NotNull TestRunStatus testRunStatus) {
+        status = testRunStatus;
     }
 
     // UC-SHARE-012, Rule-EDITOR-PANEL-239, Rule-INTERNAL-117

@@ -66,20 +66,20 @@ public interface Marker {
         setUpdatedAt(ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS));
     }
 
-    default @NotNull NodeStatus status() {
+    default @NotNull NodeStatus nodeStatus() {
         return NoNodeStatus.NONE;
     }
 
-    default @NotNull List<NodeStatus> statuses() {
+    default @NotNull List<NodeStatus> nodeStatuses() {
         return List.of();
     }
 
-    default void applyStatus(final @NotNull NodeStatus status) {
+    default void changeNodeStatus(final @NotNull NodeStatus nodeStatus) {
     }
 
     @JsonIgnore
     default @NotNull String getStatusLabel() {
-        return status().getLabel();
+        return nodeStatus().getLabel();
     }
 
     @JsonIgnore

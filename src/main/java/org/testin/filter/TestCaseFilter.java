@@ -73,7 +73,7 @@ public final class TestCaseFilter {
 
     private static boolean matchesRunItemStatus(final @NotNull UUID testCaseId, final @NotNull Set<RunItemStatus> runItemStatuses, final @NotNull Function<UUID, Optional<RunItem>> runItemProvider) {
         return runItemProvider.apply(testCaseId)
-                .map(RunItem::shownStatus)
+                .map(RunItem::getStatus)
                 .filter(runItemStatuses::contains)
                 .isPresent();
     }

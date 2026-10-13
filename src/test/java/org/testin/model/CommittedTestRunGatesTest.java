@@ -38,7 +38,7 @@ public class CommittedTestRunGatesTest {
     // Rule-TREE-PANEL-135
     @Test
     public void noTestRunStatusCanBeSetOnACommittedTestRun() {
-        assertTrue(Arrays.stream(TestRunStatus.values()).noneMatch(next -> next.canBeSetFrom(TestRunStatus.COMMITTED)), "a Committed test run was offered another status");
+        assertTrue(Arrays.stream(TestRunStatus.values()).noneMatch(testRunStatus -> testRunStatus.canBeSetFrom(TestRunStatus.COMMITTED)), "a Committed test run was offered another status");
     }
 
     // Rule-TREE-PANEL-135

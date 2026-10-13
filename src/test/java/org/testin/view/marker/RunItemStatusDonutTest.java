@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.model.NodeFigureRow;
 import org.testin.model.NodeFigures;
 import org.testin.model.DonutSlices;
+import org.testin.model.status.TestRunStatus;
 import org.testin.model.testrun.TestRunSummary;
 import org.testng.annotations.Test;
 
@@ -36,7 +37,7 @@ public class RunItemStatusDonutTest {
     private static @NotNull NodeFigures testRunFigures(final long passed, final long failed, final long blocked, final long untested) {
         final long total = passed + failed + blocked + untested;
 
-        return NodeFigures.ofTestRun(new TestRunSummary(total, passed, failed, blocked, untested, 0, ""));
+        return NodeFigures.ofTestRun(new TestRunSummary(total, passed, failed, blocked, untested, 0, ""), TestRunStatus.IN_PROGRESS);
     }
 
     private static double sum(final double[] sweeps) {

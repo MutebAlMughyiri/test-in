@@ -16,12 +16,14 @@
 
 package org.testin.report;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.ReportColor;
 import org.testin.model.testrun.TestRunSummary;
 import org.testin.model.status.RunItemStatus;
+import org.testin.model.status.TestRunStatus;
 import org.testin.util.Bundle;
 
 import java.util.Arrays;
@@ -42,7 +44,7 @@ public enum ReportTile {
     PASSED(
             RunItemStatus.PASSED.getLabel(),
             RunItemStatus.PASSED.getReportHex(),
-            "var(--run-item-status-passed)",
+            RunItemStatus.PASSED.getCssToken(),
             TestRunSummary::passed,
             ""
     ),
@@ -50,7 +52,7 @@ public enum ReportTile {
     FAILED(
             RunItemStatus.FAILED.getLabel(),
             RunItemStatus.FAILED.getReportHex(),
-            "var(--run-item-status-failed)",
+            RunItemStatus.FAILED.getCssToken(),
             TestRunSummary::failed,
             ""
     ),
@@ -58,20 +60,20 @@ public enum ReportTile {
     BLOCKED(
             RunItemStatus.BLOCKED.getLabel(),
             RunItemStatus.BLOCKED.getReportHex(),
-            "var(--run-item-status-blocked)",
+            RunItemStatus.BLOCKED.getCssToken(),
             TestRunSummary::blocked,
             ""
     ),
 
-    UNTESTED(
-            RunItemStatus.UNTESTED.getLabel(),
-            RunItemStatus.UNTESTED.getReportHex(),
-            "var(--run-item-status-untested)",
-            TestRunSummary::untested,
-            ""
-    ),
+    // Rule-EDITOR-PANEL-176
+    UNTESTED(RunItemStatus.UNTESTED.getLabel(), RunItemStatus.UNTESTED.getReportHex(), RunItemStatus.UNTESTED.getCssToken(), TestRunSummary::unjudged, "") {
+        @Override
+        public @NotNull String labelIn(final @NotNull TestRunStatus testRunStatus) {
+            return RunItemStatus.UNTESTED.labelIn(testRunStatus);
+        }
+    },
 
-    REMOVED(RunItemStatus.REMOVED.getLabel(), RunItemStatus.REMOVED.getReportHex(), "var(--run-item-status-removed)", TestRunSummary::removed, "") {
+    REMOVED(RunItemStatus.REMOVED.getLabel(), RunItemStatus.REMOVED.getReportHex(), RunItemStatus.REMOVED.getCssToken(), TestRunSummary::removed, "") {
         @Override
         public boolean isShownFor(final @NotNull TestRunSummary summary) {
             return summary.hasRemoved();
@@ -86,6 +88,7 @@ public enum ReportTile {
             "%"
     );
 
+    @Getter(AccessLevel.NONE)
     private final @NotNull String label;
 
     private final @NotNull String hex;
@@ -99,6 +102,10 @@ public enum ReportTile {
     // Rule-REPORT-002
     public static @NotNull List<ReportTile> shownFor(final @NotNull TestRunSummary summary) {
         return Arrays.stream(values()).filter(tile -> tile.isShownFor(summary)).toList();
+    }
+
+    public @NotNull String labelIn(final @NotNull TestRunStatus testRunStatus) {
+        return label;
     }
 
     public @NotNull String valueIn(final @NotNull TestRunSummary summary) {

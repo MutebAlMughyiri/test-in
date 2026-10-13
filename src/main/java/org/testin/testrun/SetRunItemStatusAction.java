@@ -69,7 +69,7 @@ public class SetRunItemStatusAction extends AbstractAnyProjectAction {
 
     // UC-EDITOR-PANEL-034
     private @NotNull Optional<RunItem> askingForFailureDetails(final @NotNull TestRunEditor editor, final @NotNull List<TestCase> selectedTestCases) {
-        if (!runItemStatus.isCollectsFailureDetails() || selectedTestCases.size() != 1) return Optional.empty();
+        if (!runItemStatus.collectsFailureDetails() || selectedTestCases.size() != 1) return Optional.empty();
 
         return editor.runItem(selectedTestCases.getFirst().getId()).filter(runItem -> !runItem.isRemoved());
     }

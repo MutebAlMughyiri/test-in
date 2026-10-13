@@ -152,7 +152,7 @@ public enum TestRunEditorFields implements ShowableField {
     RUN_STATUS(
             Bundle.message("field.run.item.status"),
             FieldDefault.ON,
-            runItem -> runItem.shownStatus().getLabel()
+            runItem -> runItem.getStatus().getLabel()
     ),
 
     DURATION(

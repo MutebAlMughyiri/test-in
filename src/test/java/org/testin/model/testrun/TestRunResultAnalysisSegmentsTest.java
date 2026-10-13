@@ -40,8 +40,8 @@ public class TestRunResultAnalysisSegmentsTest {
         return new TestRunSummary(passed + failed + blocked + untested + removed, passed, failed, blocked, untested, removed, "");
     }
 
-    private static @NotNull List<Segment> of(final @NotNull TestRunSummary summary, final @NotNull TestRunStatus testRun) {
-        return TestRunResultAnalysis.segments(summary, testRun);
+    private static @NotNull List<Segment> of(final @NotNull TestRunSummary summary, final @NotNull TestRunStatus testRunStatus) {
+        return TestRunResultAnalysis.segments(summary, testRunStatus);
     }
 
     private static @NotNull String words(final @NotNull TestRunSummary summary) {
@@ -107,9 +107,9 @@ public class TestRunResultAnalysisSegmentsTest {
     public void untouchedTestCasesArePendingUntilTheTestRunGivesUpOnThem() {
         assertEquals(words(testRunSummary(0, 0, 0, 7, 0)), RunItemStatus.PENDING.getLabel() + " 7");
 
-        for (final TestRunStatus over : new TestRunStatus[]{TestRunStatus.COMPLETED, TestRunStatus.CLOSED}) {
-            assertEquals(of(testRunSummary(0, 0, 0, 7, 0), over).getFirst().text(), RunItemStatus.UNTESTED.getLabel() + " 7",
-                    "a test run that is " + over.getLabel() + " has stopped waiting for them");
+        for (final TestRunStatus signedOffTestRunStatus : new TestRunStatus[]{TestRunStatus.COMPLETED, TestRunStatus.CLOSED}) {
+            assertEquals(of(testRunSummary(0, 0, 0, 7, 0), signedOffTestRunStatus).getFirst().text(), RunItemStatus.UNTESTED.getLabel() + " 7",
+                    "a test run that is " + signedOffTestRunStatus.getLabel() + " has stopped waiting for them");
         }
     }
 
@@ -122,10 +122,11 @@ public class TestRunResultAnalysisSegmentsTest {
         assertEquals(words(testRunSummary(1, 1, 1, 0, 0)), closed);
     }
 
+    // Rule-EDITOR-PANEL-176
     @Test
-    public void thePlainLabelIsTheFinishedName() {
-        assertEquals(TestRunResultAnalysis.UNTESTED.getLabel(), RunItemStatus.UNTESTED.getLabel());
-        assertEquals(TestRunResultAnalysis.UNTESTED.heading(testRunSummary(0, 0, 0, 7, 0)), RunItemStatus.UNTESTED.getLabel() + " (7)");
+    public void theHeadingNamesUntouchedTestCasesTheWayTheStatusBarDoes() {
+        assertEquals(TestRunResultAnalysis.UNTESTED.heading(testRunSummary(0, 0, 0, 7, 0), TestRunStatus.IN_PROGRESS), RunItemStatus.PENDING.getLabel() + " (7)");
+        assertEquals(TestRunResultAnalysis.UNTESTED.heading(testRunSummary(0, 0, 0, 7, 0), TestRunStatus.COMPLETED), RunItemStatus.UNTESTED.getLabel() + " (7)");
     }
 
     // Rule-EDITOR-PANEL-190
@@ -133,12 +134,12 @@ public class TestRunResultAnalysisSegmentsTest {
     public void theAnalysisHasOneSectionForEachRunItemStatusEachCountingItsOwn() {
         final @NotNull TestRunSummary summary = testRunSummary(1, 2, 3, 4, 0);
 
-        assertEquals(Stream.of(TestRunResultAnalysis.values()).map(TestRunResultAnalysis::getLabel).toList(),
-                List.of(RunItemStatus.PASSED.getLabel(), RunItemStatus.FAILED.getLabel(), RunItemStatus.BLOCKED.getLabel(), RunItemStatus.UNTESTED.getLabel()));
-        assertEquals(TestRunResultAnalysis.PASSED.heading(summary), RunItemStatus.PASSED.getLabel() + " (1)");
-        assertEquals(TestRunResultAnalysis.FAILED.heading(summary), RunItemStatus.FAILED.getLabel() + " (2)");
-        assertEquals(TestRunResultAnalysis.BLOCKED.heading(summary), RunItemStatus.BLOCKED.getLabel() + " (3)");
-        assertEquals(TestRunResultAnalysis.UNTESTED.heading(summary), RunItemStatus.UNTESTED.getLabel() + " (4)");
+        assertEquals(Stream.of(TestRunResultAnalysis.values()).map(TestRunResultAnalysis::getRunItemStatus).toList(),
+                List.of(RunItemStatus.PASSED, RunItemStatus.FAILED, RunItemStatus.BLOCKED, RunItemStatus.UNTESTED));
+        assertEquals(TestRunResultAnalysis.PASSED.heading(summary, TestRunStatus.COMPLETED), RunItemStatus.PASSED.getLabel() + " (1)");
+        assertEquals(TestRunResultAnalysis.FAILED.heading(summary, TestRunStatus.COMPLETED), RunItemStatus.FAILED.getLabel() + " (2)");
+        assertEquals(TestRunResultAnalysis.BLOCKED.heading(summary, TestRunStatus.COMPLETED), RunItemStatus.BLOCKED.getLabel() + " (3)");
+        assertEquals(TestRunResultAnalysis.UNTESTED.heading(summary, TestRunStatus.COMPLETED), RunItemStatus.UNTESTED.getLabel() + " (4)");
     }
 
     // Rule-EDITOR-PANEL-191

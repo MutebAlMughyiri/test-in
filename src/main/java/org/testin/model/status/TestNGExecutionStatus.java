@@ -29,46 +29,35 @@ import java.util.Optional;
 public enum TestNGExecutionStatus {
     IDLE(
             AllIcons.RunConfigurations.TestState.Run,
-            TestNGExecutionStatusBadge.NONE,
             Optional.empty()
     ),
 
     PASSED(
             AllIcons.RunConfigurations.TestPassed,
-            new TestNGExecutionStatusBadge(RunItemStatus.PASSED.getLabel(), RunItemStatus.PASSED.getRowColor()),
             Optional.of(RunItemStatus.PASSED)
     ),
 
     FAILED(
             AllIcons.RunConfigurations.TestFailed,
-            new TestNGExecutionStatusBadge(RunItemStatus.FAILED.getLabel(), RunItemStatus.FAILED.getRowColor()),
             Optional.of(RunItemStatus.FAILED)
     ),
 
     // Rule-EDITOR-PANEL-291
     RUNNING(
             AllIcons.Actions.Suspend,
-            TestNGExecutionStatusBadge.NONE,
             Optional.empty()
     ),
 
     SKIPPED(
             AllIcons.Actions.Suspend,
-            TestNGExecutionStatusBadge.NONE,
             Optional.empty()
     );
 
     private final @NotNull Icon icon;
 
-    private final @NotNull TestNGExecutionStatusBadge badge;
-
     private final @NotNull Optional<RunItemStatus> runItemStatus;
 
     public boolean stillGoing() {
         return this == RUNNING;
-    }
-
-    public boolean hasBadge() {
-        return !badge.equals(TestNGExecutionStatusBadge.NONE);
     }
 }

@@ -62,7 +62,7 @@ public class PendingChangeFactoryTest {
                 GitStatusKind.ADDED, "", json(added), PATH, RealJsonCodec.build(), _ -> Optional.empty());
 
         assertNotNull(diff);
-        assertEquals(diff.type(), GitStatusKind.ADDED);
+        assertEquals(diff.gitStatusKind(), GitStatusKind.ADDED);
         assertEquals(diff.testCaseId(), added.getId().toString());
         assertEquals(diff.relativeFilePath(), PATH);
         assertTrue(diff.committed().getDescription().isEmpty(), "an added file has no before state");
@@ -82,7 +82,7 @@ public class PendingChangeFactoryTest {
                 GitStatusKind.DELETED, json(removed), "", PATH, RealJsonCodec.build(), _ -> Optional.empty());
 
         assertNotNull(diff);
-        assertEquals(diff.type(), GitStatusKind.DELETED);
+        assertEquals(diff.gitStatusKind(), GitStatusKind.DELETED);
         assertEquals(diff.committed().getDescription(), "a case that is going away");
 
         assertEquals(diff.fieldChanges().size(), 1);
@@ -105,7 +105,7 @@ public class PendingChangeFactoryTest {
                 GitStatusKind.MODIFIED, json(before), json(after), PATH, RealJsonCodec.build(), _ -> Optional.empty());
 
         assertNotNull(diff);
-        assertEquals(diff.type(), GitStatusKind.MODIFIED);
+        assertEquals(diff.gitStatusKind(), GitStatusKind.MODIFIED);
         assertEquals(diff.committed().getDescription(), "the original description");
 
         assertEquals(diff.fieldChanges().size(), 2, "two fields moved, so two rows in the review");

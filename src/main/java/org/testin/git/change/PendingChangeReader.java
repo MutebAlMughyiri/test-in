@@ -67,7 +67,7 @@ public final class PendingChangeReader {
                 .filter(entry -> isListed(root, entry))
                 .toList();
         final @NotNull Map<String, String> committed = committedContents.apply(listed.stream()
-                .filter(entry -> entry.type().hasBefore())
+                .filter(entry -> entry.gitStatusKind().hasBefore())
                 .map(GitStatusEntry::path)
                 .toList());
 
@@ -76,7 +76,7 @@ public final class PendingChangeReader {
 
             try {
                 result.add(PendingChangeFactory.fromFile(
-                        entry.type(),
+                        entry.gitStatusKind(),
                         committed.getOrDefault(entry.path(), ""),
                         workingContent(root, relativePath, entry),
                         relativePath,
@@ -85,7 +85,7 @@ public final class PendingChangeReader {
 
             } catch (final RuntimeException ex) {
                 TestinLogger.warn("Listing " + relativePath + " without detail: " + FailureText.of(ex));
-                result.add(PendingChangeFactory.unreadable(entry.type(), relativePath));
+                result.add(PendingChangeFactory.unreadable(entry.gitStatusKind(), relativePath));
             }
         }
         return result;
@@ -95,7 +95,7 @@ public final class PendingChangeReader {
         final @NotNull Path relativePath = Path.of(entry.path());
         if (FileKind.of(relativePath, folderKindOf(root, relativePath)) == FileKind.SCREENSHOT) return false;
 
-        if (!entry.type().hasBefore() && !Files.exists(root.resolve(relativePath))) {
+        if (!entry.gitStatusKind().hasBefore() && !Files.exists(root.resolve(relativePath))) {
             TestinLogger.warn("Skipping " + relativePath + ": Git listed it as new, and it is gone");
             return false;
         }
@@ -111,7 +111,7 @@ public final class PendingChangeReader {
     }
 
     private static @NotNull String workingContent(final @NotNull Path root, final @NotNull Path relativePath, final @NotNull GitStatusEntry entry) {
-        if (!entry.type().hasAfter()) return "";
+        if (!entry.gitStatusKind().hasAfter()) return "";
 
         final @NotNull Path file = root.resolve(relativePath);
         try {

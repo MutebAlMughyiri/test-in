@@ -26,12 +26,12 @@ import org.testin.model.status.RunItemStatus;
 public enum ReportEmphasis {
     ALARMING(
             RunItemStatus.FAILED.getReportHex(),
-            "var(--run-item-status-failed)"
+            RunItemStatus.FAILED.getCssToken()
     ),
 
     CAUTIONARY(
             RunItemStatus.BLOCKED.getReportHex(),
-            "var(--run-item-status-blocked)"
+            RunItemStatus.BLOCKED.getCssToken()
     ),
 
     MUTED(

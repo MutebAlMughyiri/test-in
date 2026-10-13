@@ -34,6 +34,7 @@ import org.testin.model.Automated;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.testrun.Failure;
+import org.testin.model.status.RunItemStatus;
 import org.testin.model.status.TestNGExecutionStatus;
 import org.testin.notifications.Done;
 import org.testin.runner.ExecutionReported;
@@ -235,7 +236,7 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
         settled();
         view.getPanel().refreshCurrentView();
         assertEquals("the test case the tester stopped was recorded as failed", TestNGExecutionStatus.IDLE, execution.testNGExecutionStatusOf(testCase));
-        assertFalse("the panel shows the stopped test case as failed: " + view.words(ViewTab.DETAILS), view.words(ViewTab.DETAILS).contains(TestNGExecutionStatus.FAILED.getBadge().label()));
+        assertFalse("the panel shows the stopped test case as failed: " + view.words(ViewTab.DETAILS), view.words(ViewTab.DETAILS).contains(RunItemStatus.FAILED.getLabel()));
     }
 
     // Rule-VIEW-PANEL-049

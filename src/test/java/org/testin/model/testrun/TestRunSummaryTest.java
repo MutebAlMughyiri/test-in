@@ -78,7 +78,7 @@ public class TestRunSummaryTest {
                 runItem(RunItemStatus.UNTESTED),
                 runItem(RunItemStatus.PENDING)));
 
-        assertEquals(summary.untested(), 3, "PENDING is untested that the test run has not reached yet");
+        assertEquals(summary.unjudged(), 3, "PENDING is untested that the test run has not reached yet");
     }
 
     @Test
@@ -87,7 +87,7 @@ public class TestRunSummaryTest {
                 runItem(RunItemStatus.PASSED),
                 runItem(RunItemStatus.UNTESTED)));
 
-        assertEquals(summary.untested(), 1);
+        assertEquals(summary.unjudged(), 1);
         assertEquals(summary.passed(), 1);
         assertEquals(summary.passRate(), 100, "one test case ran and it passed; the untested one is not a failure");
     }
@@ -105,7 +105,7 @@ public class TestRunSummaryTest {
         assertEquals(summary.passed(), 2);
         assertEquals(summary.failed(), 1);
         assertEquals(summary.blocked(), 1);
-        assertEquals(summary.untested(), 1);
+        assertEquals(summary.unjudged(), 1);
         assertEquals(summary.executed(), 4, "passed, failed and blocked were run; the pending one was not");
         assertEquals(summary.passRate(), 50, "2 of the 4 that ran");
     }
@@ -124,7 +124,7 @@ public class TestRunSummaryTest {
         assertEquals(summary.total(), 7);
         assertEquals(summary.removed(), 2);
         assertEquals(summary.passed() + summary.failed() + summary.blocked()
-                + summary.untested() + summary.removed(), summary.total());
+                + summary.unjudged() + summary.removed(), summary.total());
     }
 
     @Test
@@ -147,7 +147,7 @@ public class TestRunSummaryTest {
                 runItem(RunItemStatus.PASSED),
                 runItem(RunItemStatus.REMOVED)));
 
-        assertEquals(summary.untested(), 0);
+        assertEquals(summary.unjudged(), 0);
         assertEquals(summary.executed(), 1);
         assertEquals(summary.passRate(), 100, "the removed test case is not a test case that failed to pass");
     }

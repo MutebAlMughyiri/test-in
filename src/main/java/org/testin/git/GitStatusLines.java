@@ -39,7 +39,7 @@ public final class GitStatusLines {
             final @NotNull String from = change.getValue();
             if (code.indexOf('R') >= 0 && !from.isEmpty()) entries.add(new GitStatusEntry(GitStatusKind.DELETED, from));
 
-            entries.add(new GitStatusEntry(typeOf(code), change.getKey().substring(3)));
+            entries.add(new GitStatusEntry(gitStatusKindOf(code), change.getKey().substring(3)));
         }
         return entries;
     }
@@ -69,7 +69,7 @@ public final class GitStatusLines {
         return Arrays.stream(nulSeparated.split("\0")).filter(record -> !record.isEmpty()).toList();
     }
 
-    private static @NotNull GitStatusKind typeOf(final @NotNull String code) {
+    private static @NotNull GitStatusKind gitStatusKindOf(final @NotNull String code) {
         if (code.equals("??") || code.indexOf('A') >= 0) return GitStatusKind.ADDED;
         if (code.indexOf('D') >= 0) return GitStatusKind.DELETED;
 

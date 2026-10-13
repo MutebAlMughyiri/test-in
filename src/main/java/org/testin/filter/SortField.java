@@ -91,7 +91,7 @@ public enum SortField {
     RUN_ITEM_STATUS(
             Bundle.message("filter.run.item.status"),
             true,
-            Comparator.comparing((SortedTestCase shown) -> shown.runItem().map(RunItem::shownStatus).orElseThrow()),
+            Comparator.comparing((SortedTestCase shown) -> shown.runItem().map(RunItem::getStatus).orElseThrow()),
             shown -> shown.runItem().isEmpty()
     ),
 

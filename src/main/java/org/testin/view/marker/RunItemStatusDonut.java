@@ -101,7 +101,7 @@ public final class RunItemStatusDonut implements DialogComponent {
         row.setPreferredSize(new Dimension(JBUI.scale(LEGEND_WIDTH), JBUI.scale(ROW_HEIGHT)));
         row.setMaximumSize(new Dimension(JBUI.scale(LEGEND_WIDTH), JBUI.scale(ROW_HEIGHT)));
 
-        final @NotNull JBLabel name = new JBLabel(slice.getCaption());
+        final @NotNull JBLabel name = new JBLabel(slice.captionIn(figures));
         name.setIcon(new Swatch(slice.getSwatch()));
         name.setIconTextGap(JBUI.scale(8));
         name.setFont(Fonts.small());

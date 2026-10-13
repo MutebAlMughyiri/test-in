@@ -247,7 +247,7 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
     }
 
     private void passAndShowTheNext(final @NotNull LightModeScreen window) {
-        press(frameOf(window), RunItemStatus.PASSED.getMenuEntry().shortcut());
+        press(frameOf(window), RunItemStatus.PASSED.getShortcut());
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
         window.refresh();
     }
@@ -258,7 +258,7 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestRunEditor editor = walking(fixture);
         final @NotNull JFrame frame = lightModeOn(editor);
         try {
-            press(frame, RunItemStatus.PASSED.getMenuEntry().shortcut());
+            press(frame, RunItemStatus.PASSED.getShortcut());
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
             assertEquals("light mode recorded somewhere the editor does not see", RunItemStatus.PASSED, editor.runItem(fixture.testCases().getFirst().getId()).map(RunItem::getStatus).orElseThrow());
@@ -336,7 +336,7 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
             assertTrue("opening the details did not grow the window", open > closed);
             assertTrue("the window jumped to its new height: " + opening, opening.stream().filter(height -> height > closed && height < open).count() >= 3);
 
-            press(frame, RunItemStatus.FAILED.getMenuEntry().shortcut());
+            press(frame, RunItemStatus.FAILED.getShortcut());
             assertEquals("the window jumped when the failure form took the details' place", open, frame.getHeight());
             final @NotNull List<Integer> failing = heightsDriven(theHeightMotion(window), frame, STEPS);
             final int withForm = failing.getLast();
@@ -471,7 +471,7 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
         final @NotNull JFrame frame = lightModeOn(editor);
         final @NotNull List<String> balloons = Said.listening(getProject(), getTestRootDisposable()).shown();
         try {
-            press(frame, RunItemStatus.FAILED.getMenuEntry().shortcut());
+            press(frame, RunItemStatus.FAILED.getShortcut());
             final @NotNull FailureForm form = theOne(frame, FailureForm.class);
             final @NotNull EditorTextField typed = Drawn.components(form).stream().filter(EditorTextField.class::isInstance).map(EditorTextField.class::cast).findFirst().orElseThrow();
             typed.setText("The dashboard stayed blank");
@@ -497,7 +497,7 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestRunEditor editor = walking(fixture);
         final @NotNull JFrame frame = lightModeOn(editor);
         try {
-            press(frame, RunItemStatus.FAILED.getMenuEntry().shortcut());
+            press(frame, RunItemStatus.FAILED.getShortcut());
             final @NotNull List<String> inTheForm = Drawn.words(theOne(frame, FailureForm.class));
 
             final @NotNull TestCase walked = fixture.testCases().getFirst();
@@ -526,7 +526,7 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestRunEditor editor = walking(fixture);
         final @NotNull JFrame frame = lightModeOn(editor);
         try {
-            press(frame, RunItemStatus.FAILED.getMenuEntry().shortcut());
+            press(frame, RunItemStatus.FAILED.getShortcut());
             final @NotNull EditorTextField inTheForm = Drawn.components(theOne(frame, FailureForm.class)).stream().filter(EditorTextField.class::isInstance).map(EditorTextField.class::cast).findFirst().orElseThrow();
             assertSpellChecked("light mode's form", inTheForm);
             assertTrue("light mode does not offer the corrections key while the form is open", Drawn.holds(Drawn.words(frame.getRootPane()), Bundle.message("dialog.key.corrections")));

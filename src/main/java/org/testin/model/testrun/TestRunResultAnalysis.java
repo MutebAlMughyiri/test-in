@@ -35,40 +35,36 @@ import java.util.function.ToLongFunction;
 public enum TestRunResultAnalysis {
     PASSED(
             RunItemStatus.PASSED,
-            RunItemStatus.PASSED,
             TestRunSummary::passed
     ),
 
     FAILED(
-            RunItemStatus.FAILED,
             RunItemStatus.FAILED,
             TestRunSummary::failed
     ),
 
     BLOCKED(
             RunItemStatus.BLOCKED,
-            RunItemStatus.BLOCKED,
             TestRunSummary::blocked
     ),
 
     UNTESTED(
-            RunItemStatus.PENDING,
             RunItemStatus.UNTESTED,
-            TestRunSummary::untested
+            TestRunSummary::unjudged
     );
 
-    private final @NotNull RunItemStatus whileRunning;
-    private final @NotNull RunItemStatus onceFinished;
+    private final @NotNull RunItemStatus runItemStatus;
 
     private final @NotNull ToLongFunction<TestRunSummary> count;
 
-    public static @NotNull List<Segment> segments(final @NotNull TestRunSummary summary, final @NotNull TestRunStatus testRun) {
+    // Rule-EDITOR-PANEL-175, Rule-EDITOR-PANEL-176
+    public static @NotNull List<Segment> segments(final @NotNull TestRunSummary summary, final @NotNull TestRunStatus testRunStatus) {
         final @NotNull List<Segment> segments = new ArrayList<>();
 
         for (final TestRunResultAnalysis section : values()) {
             final long testCases = section.count.applyAsLong(summary);
             if (testCases > 0)
-                segments.add(new Segment(section.labelIn(testRun) + " " + testCases, section.getOnceFinished().getRowColor()));
+                segments.add(new Segment(section.labelIn(testRunStatus) + " " + testCases, section.runItemStatus.getRowColor()));
         }
 
         if (summary.hasRemoved()) {
@@ -100,19 +96,16 @@ public enum TestRunResultAnalysis {
 
     // Rule-REPORT-025
     public @NotNull String getHexColor() {
-        return onceFinished.getReportHex();
+        return runItemStatus.getReportHex();
     }
 
-    public @NotNull String getLabel() {
-        return onceFinished.getLabel();
+    // Rule-EDITOR-PANEL-176
+    public @NotNull String labelIn(final @NotNull TestRunStatus testRunStatus) {
+        return runItemStatus.labelIn(testRunStatus);
     }
 
-    public @NotNull String labelIn(final @NotNull TestRunStatus testRun) {
-        return (testRun.isTerminal() ? onceFinished : whileRunning).getLabel();
-    }
-
-    public @NotNull String heading(final @NotNull TestRunSummary summary) {
-        return getLabel() + " (" + count.applyAsLong(summary) + ")";
+    public @NotNull String heading(final @NotNull TestRunSummary summary, final @NotNull TestRunStatus testRunStatus) {
+        return labelIn(testRunStatus) + " (" + count.applyAsLong(summary) + ")";
     }
 
     public @NotNull String writtenIn(final @NotNull Map<TestRunResultAnalysis, String> analysis) {

@@ -42,12 +42,12 @@ import java.util.function.Function;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class PendingChangeFactory {
     // UC-SHARE-010, Rule-SHARE-047
-    static @NotNull PendingChange fromFile(final @NotNull GitStatusKind type, final @NotNull String beforeJson, final @NotNull String afterJson, final @NotNull Path relativePath, final @NotNull JsonCodec mapper, final @NotNull Function<UUID, Optional<TestCase>> testCases) {
+    static @NotNull PendingChange fromFile(final @NotNull GitStatusKind gitStatusKind, final @NotNull String beforeJson, final @NotNull String afterJson, final @NotNull Path relativePath, final @NotNull JsonCodec mapper, final @NotNull Function<UUID, Optional<TestCase>> testCases) {
         return switch (subjectOf(relativePath)) {
-            case TEST_CASE -> testCase(type, beforeJson, afterJson, relativePath, mapper);
-            case RUN_ITEM -> runItem(type, beforeJson, afterJson, relativePath, mapper, testCases);
-            case MARKER -> marker(type, beforeJson, afterJson, relativePath, mapper);
-            case OTHER -> byName(ChangeSubject.OTHER, type, relativePath);
+            case TEST_CASE -> testCase(gitStatusKind, beforeJson, afterJson, relativePath, mapper);
+            case RUN_ITEM -> runItem(gitStatusKind, beforeJson, afterJson, relativePath, mapper, testCases);
+            case MARKER -> marker(gitStatusKind, beforeJson, afterJson, relativePath, mapper);
+            case OTHER -> byName(ChangeSubject.OTHER, gitStatusKind, relativePath);
         };
     }
 
@@ -71,10 +71,10 @@ final class PendingChangeFactory {
         }
     }
 
-    private static @NotNull PendingChange testCase(final @NotNull GitStatusKind type, final @NotNull String beforeJson, final @NotNull String afterJson, final @NotNull Path relativePath, final @NotNull JsonCodec mapper) {
+    private static @NotNull PendingChange testCase(final @NotNull GitStatusKind gitStatusKind, final @NotNull String beforeJson, final @NotNull String afterJson, final @NotNull Path relativePath, final @NotNull JsonCodec mapper) {
         final @NotNull String testSet = parentName(relativePath);
 
-        return switch (type) {
+        return switch (gitStatusKind) {
             case ADDED -> {
                 final @NotNull TestCase newState = read(mapper, afterJson, TestCase.class);
                 yield new PendingChange(ChangeSubject.TEST_CASE, newState.getDescription(), testSet,
@@ -102,7 +102,7 @@ final class PendingChangeFactory {
     }
 
     // UC-SHARE-010, Rule-SHARE-047
-    private static @NotNull PendingChange runItem(final @NotNull GitStatusKind type, final @NotNull String beforeJson, final @NotNull String afterJson, final @NotNull Path relativePath, final @NotNull JsonCodec mapper, final @NotNull Function<UUID, Optional<TestCase>> testCases) {
+    private static @NotNull PendingChange runItem(final @NotNull GitStatusKind gitStatusKind, final @NotNull String beforeJson, final @NotNull String afterJson, final @NotNull Path relativePath, final @NotNull JsonCodec mapper, final @NotNull Function<UUID, Optional<TestCase>> testCases) {
         final @NotNull Optional<UUID> testCaseId = FileKind.RUN_ITEM.idIn(relativePath);
         final @NotNull Optional<TestCase> testCase = testCaseId.flatMap(testCases);
 
@@ -110,7 +110,7 @@ final class PendingChangeFactory {
                 .orElseGet(() -> String.valueOf(relativePath.getFileName()));
         final @NotNull String testSet = testCase.map(TestCase::getParent).map(AbstractNode::getName).orElse("");
 
-        final @NotNull List<FieldChange> changes = switch (type) {
+        final @NotNull List<FieldChange> changes = switch (gitStatusKind) {
             case ADDED -> List.of(new FieldChange(parentName(relativePath), "",
                     RunItemFieldChanges.summary(read(mapper, afterJson, RunItem.class)), ChangeSubject.RUN_ITEM.getCreated()));
             case DELETED -> List.of(new FieldChange(parentName(relativePath),
@@ -120,34 +120,34 @@ final class PendingChangeFactory {
         };
 
         return new PendingChange(ChangeSubject.RUN_ITEM, name, testSet, testCaseId.map(UUID::toString).orElse(""),
-                relativePath, type, nothingCommitted(), changes);
+                relativePath, gitStatusKind, nothingCommitted(), changes);
     }
 
-    private static @NotNull PendingChange marker(final @NotNull GitStatusKind type, final @NotNull String beforeJson, final @NotNull String afterJson, final @NotNull Path relativePath, final @NotNull JsonCodec mapper) {
+    private static @NotNull PendingChange marker(final @NotNull GitStatusKind gitStatusKind, final @NotNull String beforeJson, final @NotNull String afterJson, final @NotNull Path relativePath, final @NotNull JsonCodec mapper) {
         final @NotNull String node = parentName(relativePath);
         final @NotNull String before = markerStatusIn(mapper, beforeJson);
         final @NotNull String after = markerStatusIn(mapper, afterJson);
 
         final @NotNull List<FieldChange> changes = new ArrayList<>();
-        changes.add(new FieldChange(relativePath.getFileName().toString(), before, after, ChangeSubject.MARKER.changeFor(type)));
+        changes.add(new FieldChange(relativePath.getFileName().toString(), before, after, ChangeSubject.MARKER.changeFor(gitStatusKind)));
 
-        if (type == GitStatusKind.MODIFIED && NodeType.TEST_RUN.isMarkerOf(relativePath.getFileName().toString())) {
+        if (gitStatusKind == GitStatusKind.MODIFIED && NodeType.TEST_RUN.isMarkerOf(relativePath.getFileName().toString())) {
             changes.addAll(TestRunMarkerFieldChanges.compareFacts(
                     read(mapper, beforeJson, TestRunMarker.class), read(mapper, afterJson, TestRunMarker.class)));
         }
 
-        return new PendingChange(ChangeSubject.MARKER, node, "", "", relativePath, type, nothingCommitted(), changes);
+        return new PendingChange(ChangeSubject.MARKER, node, "", "", relativePath, gitStatusKind, nothingCommitted(), changes);
     }
 
     // UC-SHARE-010, Rule-SHARE-047
-    static @NotNull PendingChange unreadable(final @NotNull GitStatusKind type, final @NotNull Path relativePath) {
-        return byName(subjectOf(relativePath), type, relativePath);
+    static @NotNull PendingChange unreadable(final @NotNull GitStatusKind gitStatusKind, final @NotNull Path relativePath) {
+        return byName(subjectOf(relativePath), gitStatusKind, relativePath);
     }
 
-    private static @NotNull PendingChange byName(final @NotNull ChangeSubject subject, final @NotNull GitStatusKind type, final @NotNull Path relativePath) {
+    private static @NotNull PendingChange byName(final @NotNull ChangeSubject subject, final @NotNull GitStatusKind gitStatusKind, final @NotNull Path relativePath) {
         return new PendingChange(subject, relativePath.getFileName().toString(), "", "",
-                relativePath, type, nothingCommitted(),
-                List.of(new FieldChange(relativePath.toString(), "", "", subject.changeFor(type))));
+                relativePath, gitStatusKind, nothingCommitted(),
+                List.of(new FieldChange(relativePath.toString(), "", "", subject.changeFor(gitStatusKind))));
     }
 
     private static @NotNull String markerStatusIn(final @NotNull JsonCodec mapper, final @NotNull String json) {

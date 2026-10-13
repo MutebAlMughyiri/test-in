@@ -221,7 +221,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
         view.getPanel().refreshIfShowing(List.of(testCase));
 
         final @NotNull RunItem recorded = testRuns.findRunItems(testRun.getPath()).flatMap(runItems -> runItems.runItemOf(testCase.getId())).orElseThrow();
-        assertTrue("the band does not show the run item status the test run holds: " + details(), details().contains(recorded.shownStatus().getLabel()));
+        assertTrue("the band does not show the run item status the test run holds: " + details(), details().contains(recorded.getStatus().getLabel()));
         assertTrue("the band does not show the actual result the test run holds: " + details(), holds(details(), recorded.getActualResult()));
         assertFalse("the band still shows what it drew before the test run changed: " + details(), details().contains(RunItemStatus.PENDING.getLabel()));
     }

@@ -47,7 +47,7 @@ public class TreeContextMenu extends DefaultActionGroup {
         addSeparator();
 
         add(actionsSubMenu(List.of(
-                Declared.forMenu("Testin.UpdateStatus")), List.of(
+                Declared.forMenu("Testin.UpdateNodeStatus")), List.of(
                 new TestinUndoAction(project, tree, UndoScope.TREE, UndoDirection.UNDO),
                 new TestinUndoAction(project, tree, UndoScope.TREE, UndoDirection.REDO),
                 Declared.forMenu("Testin.ReCreateTestRun"),

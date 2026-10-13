@@ -70,7 +70,7 @@ public class GitRepositoryServiceIdeTest extends AbstractGitRemoteIdeTest {
 
         assertEquals(1, review.size());
         assertEquals(ChangeSubject.TEST_CASE, review.getFirst().subject());
-        assertEquals(GitStatusKind.ADDED, review.getFirst().type());
+        assertEquals(GitStatusKind.ADDED, review.getFirst().gitStatusKind());
         assertEquals("a test case Git has never seen", review.getFirst().name());
     }
 

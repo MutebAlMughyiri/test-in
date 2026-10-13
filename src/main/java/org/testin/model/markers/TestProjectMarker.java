@@ -53,17 +53,17 @@ public class TestProjectMarker extends AbstractMarker {
     }
 
     @Override
-    public @NotNull NodeStatus status() {
+    public @NotNull NodeStatus nodeStatus() {
         return status;
     }
 
     @Override
-    public @NotNull List<NodeStatus> statuses() {
+    public @NotNull List<NodeStatus> nodeStatuses() {
         return List.of(TestProjectStatus.values());
     }
 
     @Override
-    public void applyStatus(final @NotNull NodeStatus status) {
-        setStatus((TestProjectStatus) status);
+    public void changeNodeStatus(final @NotNull NodeStatus nodeStatus) {
+        setStatus((TestProjectStatus) nodeStatus);
     }
 }

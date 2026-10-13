@@ -55,10 +55,11 @@ public final class NodeCounter {
                 counted(byType, NodeType.TEST_RUN));
     }
 
-    // UC-INTERNAL-006, Rule-INTERNAL-048, Rule-INTERNAL-049, Rule-INTERNAL-051
+    // UC-INTERNAL-006, Rule-INTERNAL-048, Rule-INTERNAL-049, Rule-INTERNAL-051, Rule-EDITOR-PANEL-176
     public static @NotNull NodeFigures testRunFigures(final @NotNull Project project, final @NotNull AbstractNode node) {
-        return Services.getInstance(project, TestRuns.class).findRunItems(node.getPath())
-                .map(testRun -> NodeFigures.ofTestRun(TestRunSummary.of(testRun.getAll())))
+        final @NotNull TestRuns testRuns = Services.getInstance(project, TestRuns.class);
+        return testRuns.findRunItems(node.getPath())
+                .flatMap(runItems -> testRuns.findTestRunNode(node.getPath()).map(testRun -> NodeFigures.ofTestRun(TestRunSummary.of(runItems.getAll()), testRun.getMarker().getStatus())))
                 .orElse(NodeFigures.NONE);
     }
 

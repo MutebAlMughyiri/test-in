@@ -36,7 +36,6 @@ import org.testin.testrun.RunItemRecorder;
 import org.testin.testrun.TestRunEditorFields;
 import org.testin.ui.Badge;
 import org.testin.ui.Badges;
-import org.testin.ui.Pill;
 import org.testin.ui.Tooltip;
 import org.testin.util.Bundle;
 import org.testin.util.Display;
@@ -86,7 +85,7 @@ public final class RunItemSummary extends AbstractDetails {
     // UC-VIEW-PANEL-005, Rule-VIEW-PANEL-086
     private static @NotNull List<JComponent> pills(final @NotNull RunItemStatus runItemStatus, final @NotNull String duration) {
         final @NotNull List<Badge> badges = new ArrayList<>();
-        badges.add(new Pill(runItemStatus.getLabel(), runItemStatus.getRowColor()));
+        badges.add(Badges.createRunItemStatusBadge(runItemStatus));
         Badges.addDurationBadge(badges, duration);
         return Badges.pills(badges);
     }
@@ -123,7 +122,7 @@ public final class RunItemSummary extends AbstractDetails {
         int row = currentRow;
         if (runItem.executedAtMostOnce()) {
             final @NotNull JBPanel<?> line = line(GAP);
-            pills(runItem.shownStatus(), TestRunEditorFields.DURATION.gridValue(runItem)).forEach(line::add);
+            pills(runItem.getStatus(), TestRunEditorFields.DURATION.gridValue(runItem)).forEach(line::add);
             BugLine.of(project, runItem, treePath, testCase).ifPresent(line::add);
             row = addFullWidthRow(panel, constraints, line, JBUI.insets(INSETS_TOP, INSETS_SIDE, 0, INSETS_SIDE), row);
         } else {

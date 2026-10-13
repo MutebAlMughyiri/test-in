@@ -70,7 +70,7 @@ public class TreeOperationsIdeTest extends AbstractTempRootIdeTest {
 
         assertEquals("and it says which status it is",
                 TestProjectStatus.INACTIVE,
-                nodes().find(testProjectPath).orElseThrow().getMarker().status());
+                nodes().find(testProjectPath).orElseThrow().getMarker().nodeStatus());
     }
 
     // Rule-INTERNAL-090

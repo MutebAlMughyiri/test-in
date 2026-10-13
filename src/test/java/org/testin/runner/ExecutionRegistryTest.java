@@ -225,7 +225,7 @@ public class ExecutionRegistryTest {
         final TestNGExecutionStatus testNGExecutionStatus = registry.testNGExecutionStatusOf(UUID.randomUUID());
 
         assertEquals(testNGExecutionStatus, TestNGExecutionStatus.IDLE, "the empty answer is a status of its own, so no caller checks for one");
-        assertFalse(testNGExecutionStatus.hasBadge(), "and it draws nothing");
+        assertTrue(testNGExecutionStatus.getRunItemStatus().isEmpty(), "and it shows no run item status");
     }
 
     // Rule-CODEGEN-034

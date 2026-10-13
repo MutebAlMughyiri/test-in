@@ -160,7 +160,7 @@ public final class PendingChangesDialog extends AbstractFrameworkDialog {
             final @NotNull UUID testCaseId = UUID.fromString(diff.testCaseId());
             final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(project, testSetPath, List.of(testCaseId));
 
-            final boolean reverted = switch (diff.type()) {
+            final boolean reverted = switch (diff.gitStatusKind()) {
                 case ADDED -> removeNewTestCase(testSetPath, testCaseId, before);
                 // Rule-INTERNAL-035
                 case DELETED -> testCases.putTestCaseVerbatim(testSetPath, diff.committed());

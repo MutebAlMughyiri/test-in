@@ -65,7 +65,7 @@ public final class TestRunExcelGenerator {
         worksheet.value(row++, 0, Bundle.message("report.summary.named", testRunNode.getName(),
                 String.valueOf(summary.total()), String.valueOf(summary.executed()), summary.passRate() + "%"));
         for (final ReportTile figure : ReportTile.shownFor(summary)) {
-            caption(worksheet, row, figure.getLabel(), figure.getHex());
+            caption(worksheet, row, figure.labelIn(testRunNode.getMarker().getStatus()), figure.getHex());
             worksheet.value(row, 1, figure.amountIn(summary));
             if (!figure.getUnit().isEmpty()) worksheet.style(row, 1).format("0\"" + figure.getUnit() + "\"").set();
             row++;
@@ -78,7 +78,7 @@ public final class TestRunExcelGenerator {
                 final @NotNull String written = section.writtenIn(testRunNode.getMarker().getResultAnalysis());
                 if (written.isEmpty()) continue;
 
-                caption(worksheet, row, section.heading(summary), section.getHexColor());
+                caption(worksheet, row, section.heading(summary, testRunNode.getMarker().getStatus()), section.getHexColor());
                 worksheet.value(row, 1, written);
                 worksheet.style(row++, 1).wrapText(true).set();
             }
@@ -121,7 +121,7 @@ public final class TestRunExcelGenerator {
 
             worksheet.value(row, 0, testCaseId.toString());
             worksheet.value(row, 1, orNotAvailable(details.getDescription()));
-            worksheet.value(row, 2, runItem.shownStatus().getLabel());
+            worksheet.value(row, 2, runItem.getStatus().getLabel());
             // Rule-REPORT-027
             worksheet.value(row, 3, ReportText.joined("\n", runItem.getActualResult(), ReportText.otherExecutions(runItem).orElse("")));
             worksheet.value(row, 4, TestRunEditorFields.BUG_SEVERITY.getRunItemValueExtractor().apply(runItem));

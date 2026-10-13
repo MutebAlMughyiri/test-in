@@ -25,6 +25,7 @@ import org.testin.model.ReportColor;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.TestRunSummary;
 import org.testin.model.status.RunItemStatus;
+import org.testin.model.status.TestRunStatus;
 import org.testin.testrun.TestRunEditorFields;
 import org.testin.util.Bundle;
 
@@ -33,43 +34,37 @@ import java.util.function.ToLongFunction;
 
 enum ReportSection {
     FAILED(
-            Bundle.message("report.section.failed.title"),
             Bundle.message("report.section.failed.description"),
             TestRunSummary::failed,
             ImmutableList.of(TestRunEditorFields.BUG_PRIORITY, TestRunEditorFields.BUG_SEVERITY),
             RunItemStatus.FAILED),
 
     PASSED(
-            Bundle.message("report.section.passed.title"),
             Bundle.message("report.section.passed.description"),
             TestRunSummary::passed,
             ImmutableList.of(),
             RunItemStatus.PASSED),
 
     BLOCKED(
-            Bundle.message("report.section.blocked.title"),
             Bundle.message("report.section.blocked.description"),
             TestRunSummary::blocked,
             ImmutableList.of(),
             RunItemStatus.BLOCKED),
 
     UNTESTED(
-            Bundle.message("report.section.untested.title"),
             Bundle.message("report.section.untested.description"),
-            TestRunSummary::untested,
+            TestRunSummary::unjudged,
             ImmutableList.of(),
-            RunItemStatus.PENDING,
-            RunItemStatus.UNTESTED),
+            RunItemStatus.UNTESTED,
+            RunItemStatus.PENDING),
 
     REMOVED(
-            Bundle.message("report.section.removed.title"),
             Bundle.message("report.section.removed.description"),
             TestRunSummary::removed,
             ImmutableList.of(),
             RunItemStatus.REMOVED);
 
-    @Getter
-    private final @NotNull String title;
+    private final @NotNull RunItemStatus runItemStatus;
     private final @NotNull String descriptionFormat;
     @Getter
     private final @NotNull String hexColor;
@@ -78,10 +73,10 @@ enum ReportSection {
     private final @NotNull ImmutableList<TestRunEditorFields> failureDetailColumns;
     private final @NotNull ImmutableSet<RunItemStatus> runItemStatuses;
 
-    ReportSection(final @NotNull String title, final @NotNull String descriptionFormat, final @NotNull ToLongFunction<TestRunSummary> count, final @NotNull ImmutableList<TestRunEditorFields> failureDetailColumns, final @NotNull RunItemStatus... runItemStatuses) {
-        this.title = title;
+    ReportSection(final @NotNull String descriptionFormat, final @NotNull ToLongFunction<TestRunSummary> count, final @NotNull ImmutableList<TestRunEditorFields> failureDetailColumns, final @NotNull RunItemStatus... runItemStatuses) {
+        this.runItemStatus = runItemStatuses[0];
         this.descriptionFormat = descriptionFormat;
-        this.hexColor = runItemStatuses[0].getReportHex();
+        this.hexColor = runItemStatus.getReportHex();
         this.count = count;
         this.failureDetailColumns = failureDetailColumns;
         this.runItemStatuses = Sets.immutableEnumSet(Arrays.asList(runItemStatuses));
@@ -112,6 +107,11 @@ enum ReportSection {
         return count.applyAsLong(summary);
     }
 
+    // Rule-EDITOR-PANEL-176
+    public @NotNull String titleIn(final @NotNull TestRunStatus testRunStatus) {
+        return Bundle.message("report.section.title", runItemStatus.labelIn(testRunStatus));
+    }
+
     public @NotNull String description(final @NotNull String renderedCount) {
         return String.format(descriptionFormat, renderedCount);
     }
@@ -126,6 +126,6 @@ enum ReportSection {
     }
 
     public boolean matches(final @NotNull RunItem runItem) {
-        return runItemStatuses.contains(runItem.shownStatus());
+        return runItemStatuses.contains(runItem.getStatus());
     }
 }

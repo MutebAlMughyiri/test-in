@@ -22,14 +22,15 @@ import com.intellij.util.ui.UIUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.RunItemStatusKey;
 import org.testin.model.ReportColor;
 import org.testin.util.Bundle;
 import org.testin.util.FixedColors;
+import org.testin.util.Shortcuts;
 
 import javax.swing.KeyStroke;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
+import java.util.Locale;
 
 @Getter
 @AllArgsConstructor
@@ -38,57 +39,49 @@ public enum RunItemStatus {
             JBColor.GREEN,
             FixedColors.GREEN.darker(),
             Bundle.message("status.run.item.passed"),
-            new RunItemStatusKey(KeyStroke.getKeyStroke(KeyEvent.VK_P, 0)),
-            false
+            KeyStroke.getKeyStroke(KeyEvent.VK_P, 0)
     ),
 
     FAILED(
             JBColor.RED.darker(),
             FixedColors.RED.darker(),
             Bundle.message("status.run.item.failed"),
-            new RunItemStatusKey(KeyStroke.getKeyStroke(KeyEvent.VK_F, 0)),
-            true
+            KeyStroke.getKeyStroke(KeyEvent.VK_F, 0)
     ),
 
     BLOCKED(
             JBColor.ORANGE,
             FixedColors.ORANGE.darker(),
             Bundle.message("status.run.item.blocked"),
-            new RunItemStatusKey(KeyStroke.getKeyStroke(KeyEvent.VK_B, 0)),
-            false
+            KeyStroke.getKeyStroke(KeyEvent.VK_B, 0)
     ),
 
     PENDING(
             JBColor.lazy(UIUtil::getContextHelpForeground),
             FixedColors.GRAY.darker(),
             Bundle.message("status.run.item.pending"),
-            RunItemStatusKey.NONE,
-            false
+            Shortcuts.NO_KEY
     ),
 
     REMOVED(
             JBColor.GRAY,
             FixedColors.GRAY.darker(),
             Bundle.message("status.run.item.removed"),
-            RunItemStatusKey.NONE,
-            false
+            Shortcuts.NO_KEY
     ),
 
     UNTESTED(
             JBColor.GRAY.brighter(),
             FixedColors.GRAY.darker(),
             Bundle.message("status.run.item.untested"),
-            RunItemStatusKey.NONE,
-            false
+            Shortcuts.NO_KEY
     );
 
     private final @NotNull Color rowColor;
     private final @NotNull Color reportColor;
     private final @NotNull String label;
 
-    private final @NotNull RunItemStatusKey menuEntry;
-
-    private final boolean collectsFailureDetails;
+    private final @NotNull KeyStroke shortcut;
 
     // Rule-REPORT-025
     public @NotNull String getReportHex() {
@@ -100,7 +93,28 @@ public enum RunItemStatus {
         return ColorUtil.toHex(ReportColor.forDarkPage(reportColor));
     }
 
-    public boolean isRunItemStatus() {
-        return !menuEntry.equals(RunItemStatusKey.NONE);
+    // Rule-REPORT-025
+    public @NotNull String getCssVariable() {
+        return "--run-item-status-" + name().toLowerCase(Locale.ROOT);
+    }
+
+    // Rule-REPORT-025
+    public @NotNull String getCssToken() {
+        return "var(" + getCssVariable() + ")";
+    }
+
+    // Rule-EDITOR-PANEL-176
+    public @NotNull String labelIn(final @NotNull TestRunStatus testRunStatus) {
+        return this == UNTESTED && !testRunStatus.isTerminal() ? PENDING.label : label;
+    }
+
+    // Rule-PRODUCT-012
+    public boolean isJudged() {
+        return !Shortcuts.isNoKey(shortcut);
+    }
+
+    // UC-EDITOR-PANEL-034
+    public boolean collectsFailureDetails() {
+        return this == FAILED;
     }
 }

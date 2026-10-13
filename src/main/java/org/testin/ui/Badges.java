@@ -25,10 +25,10 @@ import com.intellij.util.ui.JBUI;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.testin.model.status.RunItemStatus;
 import org.testin.model.status.TestCaseStatus;
 import org.testin.model.Priority;
 import org.testin.model.TestCase;
-import org.testin.model.status.TestNGExecutionStatusBadge;
 import org.testin.util.Bundle;
 import org.testin.util.FixedColors;
 import org.testin.util.Fonts;
@@ -82,8 +82,8 @@ public final class Badges {
         return new Pill(testCaseStatus.getLabel(), FixedColors.ORANGE);
     }
 
-    public static @NotNull Badge createTestNGExecutionStatusBadge(final @NotNull TestNGExecutionStatusBadge testNGExecutionStatus) {
-        return new Pill(testNGExecutionStatus.label(), testNGExecutionStatus.color());
+    public static @NotNull Badge createRunItemStatusBadge(final @NotNull RunItemStatus runItemStatus) {
+        return new Pill(runItemStatus.getLabel(), runItemStatus.getRowColor());
     }
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-253, Rule-VIEW-PANEL-086

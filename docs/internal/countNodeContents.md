@@ -52,8 +52,9 @@ them opens.
 | A test set         | Test cases                                 |
 | A test run         | Total, and a ring of its run item statuses |
 
-The run item statuses on the ring are **Passed**, **Failed**, **Blocked**, **Untested** and **Removed**. The pass rate
-sits in the middle of it.
+The run item statuses on the ring are **Passed**, **Failed**, **Blocked**, **Pending** or **Untested**, and **Removed**.
+The test cases nobody has judged read **Pending** while the test run is open and **Untested** once it is signed off, as
+in its editor (Rule-EDITOR-PANEL-176). The pass rate sits in the middle of it.
 
 ## The screen
 
