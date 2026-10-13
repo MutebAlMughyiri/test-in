@@ -253,14 +253,14 @@ with its reason.** Qodana reads that list in CI and `tools/inspect.ps1` reads th
 same entries, so the two gates cannot disagree, and there is no second list to
 fall behind. Each entry names the narrowest path it can:
 
-| Exception                                                               | Why nothing better is possible                                                                                            |
-|-------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
-| Files whose bytes something else owns                                   | The two sample `.ts` markers (JSON that TypeScript claims by extension), the Gradle wrapper, JetBrains' agreements        |
-| Four CSS inspections in `style.scss`                                    | The docs site's stylesheet is a Jekyll file: front matter, Liquid and `_sass` imports, and the theme's own classes        |
-| `JSUnresolvedLibraryURL`, `JSUnresolvedReference` in `head-custom.html` | The docs site loads Mermaid from its CDN, and the inspector keeps no local copy of a library behind a URL                 |
-| `HardcodedPasswords` in `GitCommandRunnerTest`                          | It proves a credential in a remote URL is masked, so its fake URLs carry a password                                       |
-| `UndefinedParamsPresent` in `.github/workflows`                         | An action's inputs are declared in its `action.yml` online, which an offline inspector cannot fetch                       |
-| `UndefinedAction` in `.github/workflows`                                | It looks each action up through GitHub's API without signing in, and a shared runner runs out of the anonymous rate limit |
+| Exception                                       | Why nothing better is possible                                                                                            |
+|-------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
+| Files whose bytes something else owns           | The Gradle wrapper, JetBrains' agreements                                                                                 |
+| Four CSS inspections in `style.scss`            | The docs site's stylesheet is a Jekyll file: front matter, Liquid and `_sass` imports, and the theme's own classes        |
+| `JSUnresolvedLibraryURL` in `head-custom.html`  | The docs site loads Mermaid from its CDN, and the inspector keeps no local copy of a library behind a URL                 |
+| `HardcodedPasswords` in `GitCommandRunnerTest`  | It proves a credential in a remote URL is masked, so its fake URLs carry a password                                       |
+| `UndefinedParamsPresent` in `.github/workflows` | An action's inputs are declared in its `action.yml` online, which an offline inspector cannot fetch                       |
+| `UndefinedAction` in `.github/workflows`        | It looks each action up through GitHub's API without signing in, and a shared runner runs out of the anonymous rate limit |
 
 A core method that only a content module calls is marked `@FromContentModule`,
 which `.idea/misc.xml` names an entry point, so neither the IDE nor the

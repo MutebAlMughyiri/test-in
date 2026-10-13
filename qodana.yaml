@@ -87,20 +87,11 @@ licenseRules:
 # about what is excused. Every entry names the narrowest path it can, and says
 # why nothing better is possible. Anything not listed fails the gate.
 exclude:
-  # Files whose bytes something else owns.
-  #
-  # The sample test project marks a test set with a file named .ts, which is
-  # also TypeScript's extension. The marker is JSON, so reading it as TypeScript
-  # gives fifteen syntax errors per file. .ts is the marker Testin writes, and
-  # an IDE maps a file name to a type in its own settings, never the project's,
-  # so the two markers are listed by name and the rest of samples is inspected.
-  #
-  # gradlew and gradlew.bat are written by Gradle's wrapper task. EULA.md and
-  # PRIVACY_POLICY.md are JetBrains' agreements quoted verbatim.
+  # Files whose bytes something else owns. gradlew and gradlew.bat are written
+  # by Gradle's wrapper task. EULA.md and PRIVACY_POLICY.md are JetBrains'
+  # agreements quoted verbatim.
   - name: All
     paths:
-      - "samples/testin-root/Demo/Test Cases/Login/.ts"
-      - "samples/testin-root/Demo/Test Cases/Checkout/Payment/.ts"
       - gradlew
       - gradlew.bat
       - EULA.md
@@ -130,14 +121,11 @@ exclude:
 
   # The documentation site loads Mermaid from its CDN, which is how a static
   # page gets it. The inspector keeps no local copy of a library behind a URL,
-  # so it reports the link and every use of the mermaid global the library
-  # defines. A local copy would need Jekyll's relative_url path, which the
-  # inspector cannot resolve either. Every other inspection reads the file.
+  # so it reports the link. A local copy would need Jekyll's relative_url path,
+  # which the inspector cannot resolve either. The mermaid global the library
+  # defines is declared in the file with /* global mermaid */, so every other
+  # inspection reads the file, unresolved references included.
   - name: JSUnresolvedLibraryURL
-    paths:
-      - docs/_includes/head-custom.html
-
-  - name: JSUnresolvedReference
     paths:
       - docs/_includes/head-custom.html
 
