@@ -71,7 +71,7 @@ public final class Icons {
             }
 
             @Override
-            public void paintIcon(final Component c, final Graphics g, final int x, final int y) {
+            public void paintIcon(final Component component, final Graphics g, final int x, final int y) {
                 final @NotNull Graphics2D g2 = (Graphics2D) g.create();
                 try {
                     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -118,7 +118,7 @@ public final class Icons {
     public static @NotNull Icon dot(final @NotNull Color color) {
         return new Icon() {
             @Override
-            public void paintIcon(final Component c, final Graphics g, final int x, final int y) {
+            public void paintIcon(final Component component, final Graphics g, final int x, final int y) {
                 final @NotNull Graphics2D g2 = (Graphics2D) g.create();
                 try {
                     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

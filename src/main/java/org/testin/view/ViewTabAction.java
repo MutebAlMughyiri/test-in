@@ -39,8 +39,8 @@ public final class ViewTabAction extends AbstractBoundProjectAction {
     // UC-VIEW-PANEL-017, Rule-VIEW-PANEL-079, Rule-VIEW-PANEL-080
     @Override
     public void actionPerformed(final @NotNull AnActionEvent e) {
-        ViewToolWindowFactory.toolWindow(project).ifPresent(tw -> {
-            final @NotNull ContentManager contents = tw.getContentManager();
+        ViewToolWindowFactory.toolWindow(project).ifPresent(toolWindow -> {
+            final @NotNull ContentManager contents = toolWindow.getContentManager();
             direction.getSelect().apply(contents).doWhenDone(() -> Optional.ofNullable(contents.getSelectedContent())
                     .ifPresent(front -> contents.setSelectedContent(front, true)));
         });

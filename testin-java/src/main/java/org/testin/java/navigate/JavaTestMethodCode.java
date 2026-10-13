@@ -50,8 +50,8 @@ import java.util.Set;
 import java.util.UUID;
 
 public final class JavaTestMethodCode implements TestMethodCode {
-    private static boolean doesSomething(final @NotNull PsiMethod pm) {
-        return Optional.ofNullable(pm.getBody())
+    private static boolean doesSomething(final @NotNull PsiMethod testMethod) {
+        return Optional.ofNullable(testMethod.getBody())
                 .filter(body -> body.getStatements().length > 0)
                 .isPresent();
     }
@@ -79,7 +79,7 @@ public final class JavaTestMethodCode implements TestMethodCode {
     @Override
     public @NotNull Map<UUID, Boolean> methodsFor(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases) {
         final @NotNull Map<UUID, Boolean> found = new LinkedHashMap<>();
-        generatedMethodsOf(project, testCases).forEach((testCaseId, pm) -> found.put(testCaseId, doesSomething(pm)));
+        generatedMethodsOf(project, testCases).forEach((testCaseId, testMethod) -> found.put(testCaseId, doesSomething(testMethod)));
 
         return found;
     }
@@ -97,7 +97,7 @@ public final class JavaTestMethodCode implements TestMethodCode {
 
             for (final TestCaseDto testCase : group.getValue()) {
                 Optional.ofNullable(methods.get(testCase.getId().toString()))
-                        .ifPresent(pm -> found.put(testCase.getId(), pm));
+                        .ifPresent(testMethod -> found.put(testCase.getId(), testMethod));
             }
         }
 
@@ -110,8 +110,8 @@ public final class JavaTestMethodCode implements TestMethodCode {
         if (DumbService.isDumb(project)) return Set.of();
 
         final @NotNull Set<UUID> written = new HashSet<>();
-        generatedMethodsOf(project, testCases).forEach((testCaseId, pm) -> {
-            if (GeneratedMethod.holdsAWrittenBody(pm)) written.add(testCaseId);
+        generatedMethodsOf(project, testCases).forEach((testCaseId, testMethod) -> {
+            if (GeneratedMethod.holdsAWrittenBody(testMethod)) written.add(testCaseId);
         });
 
         return written;
@@ -162,9 +162,9 @@ public final class JavaTestMethodCode implements TestMethodCode {
         final @NotNull Map<UUID, List<String>> named = new LinkedHashMap<>();
 
         for (final TestCaseDto testCase : testCases) {
-            Optional.ofNullable(methods.get(testCase.getId())).ifPresent(pm -> {
+            Optional.ofNullable(methods.get(testCase.getId())).ifPresent(testMethod -> {
                 final @NotNull List<String> fqcn = new ArrayList<>(Fqcn.ofMethod(testCase));
-                fqcn.set(fqcn.size() - 1, pm.getName());
+                fqcn.set(fqcn.size() - 1, testMethod.getName());
 
                 named.put(testCase.getId(), fqcn);
             });

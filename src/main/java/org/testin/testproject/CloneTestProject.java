@@ -74,8 +74,8 @@ public final class CloneTestProject {
         final @NotNull Nodes nodes = Services.getInstance(project, Nodes.class);
 
         @NotNull String name = base;
-        for (int n = 2; nodes.isTaken(root.resolve(name), Optional.empty()); n++) {
-            name = base + n;
+        for (int number = 2; nodes.isTaken(root.resolve(name), Optional.empty()); number++) {
+            name = base + number;
         }
         return name;
     }

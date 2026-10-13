@@ -53,11 +53,11 @@ record RemoveTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor
             ApplicationManager.getApplication().runWriteAction(() -> performDeletion(selectedTestCases));
         };
 
-        final @NotNull String msg = selectedTestCases.size() == 1
+        final @NotNull String message = selectedTestCases.size() == 1
                 ? Bundle.message("remove.test.case.confirm.one", selectedTestCases.getFirst().getDescription())
                 : Bundle.message("remove.test.case.confirm.many", String.valueOf(selectedTestCases.size()));
 
-        new ConfirmDialog(project, Bundle.message("remove.confirm.title"), msg, node.getPath().toString(), "", Bundle.message("remove.confirm.button"), delete).show();
+        new ConfirmDialog(project, Bundle.message("remove.confirm.title"), message, node.getPath().toString(), "", Bundle.message("remove.confirm.button"), delete).show();
     }
 
     // UC-EDITOR-PANEL-011, Rule-EDITOR-PANEL-064

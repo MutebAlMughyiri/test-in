@@ -30,22 +30,22 @@ import java.awt.geom.RoundRectangle2D;
 // Rule-INTERNAL-096
 final class FieldFrame extends DarculaTextBorder {
     @Override
-    public void paintBorder(final @NotNull Component c, final @NotNull Graphics g, final int x, final int y, final int width, final int height) {
-        super.paintBorder(c, g, x, y, width, height);
+    public void paintBorder(final @NotNull Component component, final @NotNull Graphics g, final int x, final int y, final int width, final int height) {
+        super.paintBorder(component, g, x, y, width, height);
 
-        if (isFocused(c)) return;
+        if (isFocused(component)) return;
 
         final @NotNull Graphics2D g2 = (Graphics2D) g.create();
         try {
             GraphicsUtil.setupAAPainting(g2);
 
-            final float bw = DarculaUIUtil.BW.getFloat();
-            final float lw = DarculaUIUtil.LW.getFloat();
+            final float borderWidth = DarculaUIUtil.BW.getFloat();
+            final float lineWidth = DarculaUIUtil.LW.getFloat();
             final float arc = DarculaUIUtil.COMPONENT_ARC.getFloat();
 
             g2.setColor(JBColor.border());
-            g2.setStroke(new BasicStroke(lw));
-            g2.draw(new RoundRectangle2D.Float(x + bw, y + bw, width - 2 * bw - lw, height - 2 * bw - lw, arc, arc));
+            g2.setStroke(new BasicStroke(lineWidth));
+            g2.draw(new RoundRectangle2D.Float(x + borderWidth, y + borderWidth, width - 2 * borderWidth - lineWidth, height - 2 * borderWidth - lineWidth, arc, arc));
         } finally {
             g2.dispose();
         }

@@ -119,13 +119,13 @@ public final class RunItemSummary extends AbstractDetails {
 
     // UC-VIEW-PANEL-005, Rule-VIEW-PANEL-086, Rule-VIEW-PANEL-123
     @Override
-    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto testCase, final int currentRow) {
+    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull TestCaseDto testCase, final int currentRow) {
         int row = currentRow;
         if (runItem.executedAtMostOnce()) {
             final @NotNull JBPanel<?> line = line(GAP);
             pills(runItem.shownStatus(), TestRunEditorFields.DURATION.gridValue(runItem)).forEach(line::add);
             BugLine.of(project, runItem, treePath, testCase).ifPresent(line::add);
-            row = addFullWidthRow(panel, gbc, line, JBUI.insets(INSETS_TOP, INSETS_SIDE, 0, INSETS_SIDE), row);
+            row = addFullWidthRow(panel, constraints, line, JBUI.insets(INSETS_TOP, INSETS_SIDE, 0, INSETS_SIDE), row);
         } else {
             final int defaultAt = runItem.defaultIndex();
             final @NotNull Optional<TestRunNode> testRun = testRunOf(project, treePath);
@@ -141,11 +141,11 @@ public final class RunItemSummary extends AbstractDetails {
                 showOnClick(line, actions, index);
 
                 final int indent = runItem.getExecutions().get(index).getRetry() > 0 ? RETRY_INDENT : 0;
-                row = addFullWidthRow(panel, gbc, line, JBUI.insets(INSETS_TOP, INSETS_SIDE + indent, 0, INSETS_SIDE), row);
+                row = addFullWidthRow(panel, constraints, line, JBUI.insets(INSETS_TOP, INSETS_SIDE + indent, 0, INSETS_SIDE), row);
             }
         }
 
-        return ChangedSinceCommit.of(runItem) ? addFullWidthRow(panel, gbc, changedSince(), JBUI.insets(GAP, INSETS_SIDE, 0, INSETS_SIDE), row) : row;
+        return ChangedSinceCommit.of(runItem) ? addFullWidthRow(panel, constraints, changedSince(), JBUI.insets(GAP, INSETS_SIDE, 0, INSETS_SIDE), row) : row;
     }
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-086, Rule-VIEW-PANEL-119

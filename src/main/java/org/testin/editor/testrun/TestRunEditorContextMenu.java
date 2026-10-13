@@ -31,12 +31,12 @@ import org.testin.testrun.SetRunItemStatusGroup;
 
 public class TestRunEditorContextMenu extends AbstractEditorContextMenu {
     private final @NotNull Project project;
-    private final @NotNull TestinEditor ui;
+    private final @NotNull TestinEditor editor;
 
-    public TestRunEditorContextMenu(final @NotNull Project project, final @NotNull TestinEditor ui, final @NotNull AbstractNode node, final @NotNull JBList<TestCaseDto> list) {
+    public TestRunEditorContextMenu(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull AbstractNode node, final @NotNull JBList<TestCaseDto> list) {
         super();
         this.project = project;
-        this.ui = ui;
+        this.editor = editor;
 
         add(Declared.forMenu("Testin.SetTestCaseStatus"));
         addSeparator();
@@ -58,7 +58,7 @@ public class TestRunEditorContextMenu extends AbstractEditorContextMenu {
     public void registerShortcuts(final @NotNull JBList<TestCaseDto> list) {
         new TestinEscapeAction(project, list);
         new OpenContextMenuAction(list, this);
-        new GenerateReportAction(project, ui, list);
+        new GenerateReportAction(project, editor, list);
 
         SetRunItemStatusGroup.bindLettersTo(list);
     }

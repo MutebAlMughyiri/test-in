@@ -39,26 +39,26 @@ import java.util.function.Supplier;
 
 public class OpenContextMenuAction extends DumbAwareAction {
     private final @NotNull JComponent owner;
-    private final @NotNull DefaultActionGroup cm;
+    private final @NotNull DefaultActionGroup contextMenu;
 
     private final @NotNull Supplier<Optional<Point>> anchor;
 
-    public OpenContextMenuAction(final @NotNull SimpleTree tree, final @NotNull DefaultActionGroup cm) {
-        this(tree, cm, () -> selectedRow(tree));
+    public OpenContextMenuAction(final @NotNull SimpleTree tree, final @NotNull DefaultActionGroup contextMenu) {
+        this(tree, contextMenu, () -> selectedRow(tree));
     }
 
-    public OpenContextMenuAction(final @NotNull JBList<?> list, final @NotNull DefaultActionGroup cm) {
-        this(list, cm, () -> selectedCell(list));
+    public OpenContextMenuAction(final @NotNull JBList<?> list, final @NotNull DefaultActionGroup contextMenu) {
+        this(list, contextMenu, () -> selectedCell(list));
     }
 
-    public OpenContextMenuAction(final @NotNull JBTable table, final @NotNull DefaultActionGroup cm) {
-        this(table, cm, () -> selectedCell(table));
+    public OpenContextMenuAction(final @NotNull JBTable table, final @NotNull DefaultActionGroup contextMenu) {
+        this(table, contextMenu, () -> selectedCell(table));
     }
 
-    private OpenContextMenuAction(final @NotNull JComponent owner, final @NotNull DefaultActionGroup cm, final @NotNull Supplier<Optional<Point>> anchor) {
+    private OpenContextMenuAction(final @NotNull JComponent owner, final @NotNull DefaultActionGroup contextMenu, final @NotNull Supplier<Optional<Point>> anchor) {
         super(Bundle.message("menu.show.context"));
         this.owner = owner;
-        this.cm = cm;
+        this.contextMenu = contextMenu;
         this.anchor = anchor;
         this.registerCustomShortcutSet(Shortcuts.ContextMenu.getCustomShortcut(), owner);
     }
@@ -96,7 +96,7 @@ public class OpenContextMenuAction extends DumbAwareAction {
     @Override
     public void actionPerformed(final @NotNull AnActionEvent e) {
         anchor.get().ifPresent(at -> ActionManager.getInstance()
-                .createActionPopupMenu(ActionPlaces.TOOLWINDOW_POPUP, cm)
+                .createActionPopupMenu(ActionPlaces.TOOLWINDOW_POPUP, contextMenu)
                 .getComponent()
                 .show(owner, at.x, at.y));
     }

@@ -61,9 +61,9 @@ public final class SeparatedValues {
     private int readQuoted(final int from) {
         int at = from;
         while (at < text.length()) {
-            final char c = text.charAt(at);
-            if (c != '"') {
-                current.append(c);
+            final char character = text.charAt(at);
+            if (character != '"') {
+                current.append(character);
                 at++;
             } else if (charAt(at + 1) == '"') {
                 current.append('"');
@@ -77,16 +77,16 @@ public final class SeparatedValues {
     }
 
     private int readPlain(final int at) {
-        final char c = text.charAt(at);
-        if (c == separator) {
+        final char character = text.charAt(at);
+        if (character == separator) {
             endField();
-        } else if (c == '\r' && charAt(at + 1) == '\n') {
+        } else if (character == '\r' && charAt(at + 1) == '\n') {
             endRecord();
             return at + 2;
-        } else if (c == '\n' || c == '\r') {
+        } else if (character == '\n' || character == '\r') {
             endRecord();
         } else {
-            current.append(c);
+            current.append(character);
         }
 
         return at + 1;

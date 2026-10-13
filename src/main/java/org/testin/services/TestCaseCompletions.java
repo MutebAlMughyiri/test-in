@@ -71,24 +71,24 @@ public final class TestCaseCompletions implements Disposable {
         return Collections.unmodifiableSet(groups);
     }
 
-    public void addDescription(final @NotNull String t) {
-        addTo(descriptions, t);
+    public void addDescription(final @NotNull String description) {
+        addTo(descriptions, description);
     }
 
-    public void addExpectedResult(final @NotNull String e) {
-        addTo(expectedResults, e);
+    public void addExpectedResult(final @NotNull String expectedResult) {
+        addTo(expectedResults, expectedResult);
     }
 
-    public void addModule(final @NotNull String e) {
-        addTo(modules, e);
+    public void addModule(final @NotNull String module) {
+        addTo(modules, module);
     }
 
-    public void addGroup(final @NotNull String g) {
-        addTo(groups, g);
+    public void addGroup(final @NotNull String group) {
+        addTo(groups, group);
     }
 
-    public void addStep(final @NotNull String s) {
-        addTo(steps, s);
+    public void addStep(final @NotNull String step) {
+        addTo(steps, step);
     }
 
     public void load(final @NotNull List<TestCaseDto> testCases) {
@@ -117,7 +117,7 @@ public final class TestCaseCompletions implements Disposable {
                 addTo(newDescriptions, testCase.getDescription());
                 addTo(newExpectedResults, testCase.getExpectedResult());
                 addTo(newModules, testCase.getModule());
-                testCase.getSteps().forEach(s -> addTo(newSteps, s));
+                testCase.getSteps().forEach(step -> addTo(newSteps, step));
                 testCase.getGroups().forEach(g -> addTo(newGroups, g));
             }
 

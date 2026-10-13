@@ -55,9 +55,9 @@ public class WordFooterLinkTest {
                 final @NotNull XWPFParagraph line = reopened.getParagraphs().getFirst();
 
                 final @NotNull StringBuilder linked = new StringBuilder();
-                for (final XWPFRun run : line.getRuns()) {
-                    if (run instanceof XWPFHyperlinkRun hyperlink) {
-                        linked.append(run.text());
+                for (final XWPFRun textRun : line.getRuns()) {
+                    if (textRun instanceof XWPFHyperlinkRun hyperlink) {
+                        linked.append(textRun.text());
 
                         final @NotNull String target = reopened.getPackagePart()
                                 .getRelationship(hyperlink.getHyperlinkId()).getTargetURI().toString();

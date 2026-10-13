@@ -40,8 +40,8 @@ public final class Display {
     public static @NotNull String format(final @NotNull String text) {
         if (text.isBlank()) return "";
 
-        final @NotNull String s = text.trim();
-        return StringUtil.capitalize(s) + (endsClosed(s) ? "" : ".");
+        final @NotNull String trimmed = text.trim();
+        return StringUtil.capitalize(trimmed) + (endsClosed(trimmed) ? "" : ".");
     }
 
     public static @NotNull String formatDate(final @NotNull ZonedDateTime at) {
@@ -99,7 +99,7 @@ public final class Display {
         return duration.isZero() ? "" : formatTestCaseClock(duration);
     }
 
-    private static boolean endsClosed(final @NotNull String s) {
-        return ".!?:;/)".indexOf(s.charAt(s.length() - 1)) >= 0;
+    private static boolean endsClosed(final @NotNull String text) {
+        return ".!?:;/)".indexOf(text.charAt(text.length() - 1)) >= 0;
     }
 }

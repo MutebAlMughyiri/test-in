@@ -42,21 +42,21 @@ public class CellEditListener implements TableModelListener {
 
         if (e.getType() == TableModelEvent.UPDATE) {
             final int row = e.getFirstRow();
-            final int col = e.getColumn();
+            final int column = e.getColumn();
 
-            if (row >= 0 && col >= 2) {
+            if (row >= 0 && column >= 2) {
                 isUpdating = true;
                 try {
                     final @NotNull DefaultTableModel model = (DefaultTableModel) e.getSource();
-                    final @NotNull String updatedValue = String.valueOf(model.getValueAt(row, col));
-                    final @NotNull TestSetEditorFields currentField = importFields.get(col - 2);
+                    final @NotNull String updatedValue = String.valueOf(model.getValueAt(row, column));
+                    final @NotNull TestSetEditorFields currentField = importFields.get(column - 2);
                     final @NotNull Optional<TestCaseDto> took = currentField.getImportSetter().execute(project, testCases.get(row), updatedValue);
 
                     // Rule-SHARE-106
                     took.ifPresentOrElse(testCase -> testCases.set(row, testCase), () -> TestSetEditorFields.sayWhatWasRefused(project, 1));
 
                     final @NotNull String formattedValue = currentField.gridValue(testCases.get(row));
-                    model.setValueAt(formattedValue, row, col);
+                    model.setValueAt(formattedValue, row, column);
                 } finally {
                     isUpdating = false;
                 }

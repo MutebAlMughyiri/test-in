@@ -47,17 +47,17 @@ public final class JsonCodec {
         return new UncheckedIOException("Not a readable " + type + ": " + FailureText.of(ex), ex);
     }
 
-    public @NotNull <T> T readValue(final byte @NotNull [] src, final @NotNull Class<T> valueType) {
+    public @NotNull <T> T readValue(final byte @NotNull [] bytes, final @NotNull Class<T> valueType) {
         try {
-            return mapper.readValue(src, valueType);
+            return mapper.readValue(bytes, valueType);
         } catch (final IOException ex) {
             throw unreadable(valueType.getSimpleName(), ex);
         }
     }
 
-    public @NotNull <T> T readValue(final byte @NotNull [] src, final @NotNull TypeReference<T> valueTypeRef) {
+    public @NotNull <T> T readValue(final byte @NotNull [] bytes, final @NotNull TypeReference<T> valueTypeRef) {
         try {
-            return mapper.readValue(src, valueTypeRef);
+            return mapper.readValue(bytes, valueTypeRef);
         } catch (final IOException ex) {
             throw unreadable(valueTypeRef.getType().getTypeName(), ex);
         }

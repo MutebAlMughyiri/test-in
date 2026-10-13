@@ -75,18 +75,18 @@ public enum ReportFont {
     public static final @NotNull String PDF_BOLD = StandardFonts.HELVETICA_BOLD;
     public static final @NotNull String PDF_ITALIC = StandardFonts.HELVETICA_OBLIQUE;
 
-    private final float pt;
-    private final int px;
+    private final float points;
+    private final int pixels;
 
     public float pt() {
-        return pt;
+        return points;
     }
 
     public int ptRounded() {
-        return Math.round(pt);
+        return Math.round(points);
     }
 
     public @NotNull String css() {
-        return px + "px";
+        return pixels + "px";
     }
 }

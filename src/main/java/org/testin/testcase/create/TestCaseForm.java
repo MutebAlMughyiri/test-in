@@ -74,11 +74,11 @@ public final class TestCaseForm implements DialogComponent {
         panel = new JBPanel<>(new BorderLayout()) {
             @Override
             public @NotNull Dimension getPreferredSize() {
-                final @NotNull Dimension pref = super.getPreferredSize();
+                final @NotNull Dimension preferredSize = super.getPreferredSize();
                 final @NotNull Rectangle screen = ScreenUtil.getScreenRectangle(this);
-                pref.width = Math.max(pref.width, screen.width / 2);
-                pref.height = Math.min(pref.height, (int) (screen.height * 0.85));
-                return pref;
+                preferredSize.width = Math.max(preferredSize.width, screen.width / 2);
+                preferredSize.height = Math.min(preferredSize.height, (int) (screen.height * 0.85));
+                return preferredSize;
             }
         };
         panel.setOpaque(false);

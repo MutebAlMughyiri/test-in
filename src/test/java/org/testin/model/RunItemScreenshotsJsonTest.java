@@ -49,8 +49,8 @@ public class RunItemScreenshotsJsonTest {
             assertFalse(json.contains("iVBORw"), "and no base64 of the picture is written: " + json);
             assertEquals(read.getScreenshots(), List.of(NAME));
             assertEquals(read.getStacktrace(), "boom", "the text stays text");
-        } catch (final Exception e) {
-            throw new AssertionError("the run item could not be written and read back", e);
+        } catch (final Exception ex) {
+            throw new AssertionError("the run item could not be written and read back", ex);
         }
     }
 
@@ -60,8 +60,8 @@ public class RunItemScreenshotsJsonTest {
             final String json = new String(RealJsonCodec.build().writeValueAsBytes(RunItem.builder().id(UUID.randomUUID()).build()), StandardCharsets.UTF_8);
 
             assertFalse(json.contains("screenshots"), json);
-        } catch (final Exception e) {
-            throw new AssertionError("the run item could not be written", e);
+        } catch (final Exception ex) {
+            throw new AssertionError("the run item could not be written", ex);
         }
     }
 

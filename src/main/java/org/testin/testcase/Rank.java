@@ -38,10 +38,10 @@ public final class Rank {
     public static @NotNull String after(final @NotNull String last) {
         if (last.isEmpty()) return MIDDLE;
 
-        final char lastChar = last.charAt(last.length() - 1);
+        final char lastCharacter = last.charAt(last.length() - 1);
 
-        if (lastChar < LAST) {
-            return last.substring(0, last.length() - 1) + (char) (lastChar + 1);
+        if (lastCharacter < LAST) {
+            return last.substring(0, last.length() - 1) + (char) (lastCharacter + 1);
         }
 
         return last + MIDDLE;

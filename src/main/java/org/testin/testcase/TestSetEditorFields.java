@@ -82,7 +82,7 @@ public enum TestSetEditorFields implements ShowableField {
             Bundle.message("field.description"),
             FieldDefault.LOCKED_CHECKED,
             TestCaseDto::getDescription,
-            always((draft, v) -> draft.description(NameSanitizer.description(v))),
+            always((draft, value) -> draft.description(NameSanitizer.description(value))),
             GenType.UPDATE_TEST_CASE_DESCRIPTION,
             Can.EDIT, Can.IMPORT, Can.COPY, Can.EXPORT
     ) {
@@ -113,7 +113,7 @@ public enum TestSetEditorFields implements ShowableField {
             Bundle.message("field.steps"),
             FieldDefault.OFF,
             testCase -> String.join(", ", testCase.getSteps()),
-            always((draft, v) -> draft.steps(TestCaseFieldParser.steps(v))),
+            always((draft, value) -> draft.steps(TestCaseFieldParser.steps(value))),
             GenType.UPDATE_TEST_CASE_STEPS,
             Can.EDIT, Can.IMPORT, Can.COPY, Can.EXPORT
     ),
@@ -122,7 +122,7 @@ public enum TestSetEditorFields implements ShowableField {
             Bundle.message("field.priority"),
             FieldDefault.ON,
             testCase -> testCase.getPriority().getLabel(),
-            (_, testCase, v) -> TestCaseFieldParser.priority(v, testCase.getPriority()).map(priority -> testCase.edit().priority(priority).build()),
+            (_, testCase, value) -> TestCaseFieldParser.priority(value, testCase.getPriority()).map(priority -> testCase.edit().priority(priority).build()),
             GenType.UPDATE_TEST_CASE_PRIORITY,
             Can.EDIT, Can.IMPORT, Can.COPY, Can.EXPORT
     ) {
@@ -171,7 +171,7 @@ public enum TestSetEditorFields implements ShowableField {
             Bundle.message("field.group"),
             FieldDefault.ON,
             testCase -> Groups.text(testCase.getGroups()),
-            (_, testCase, v) -> TestCaseFieldParser.groups(v).map(groups -> testCase.edit().groups(groups).build()),
+            (_, testCase, value) -> TestCaseFieldParser.groups(value).map(groups -> testCase.edit().groups(groups).build()),
             GenType.UPDATE_TEST_CASE_GROUP,
             Can.EDIT, Can.IMPORT, Can.COPY, Can.EXPORT
     ) {
@@ -203,7 +203,7 @@ public enum TestSetEditorFields implements ShowableField {
             Bundle.message("field.status"),
             FieldDefault.OFF,
             testCase -> testCase.getStatus().getLabel(),
-            (_, testCase, v) -> TestCaseFieldParser.testCaseStatus(v, testCase.getStatus()).map(status -> testCase.edit().status(status).build()),
+            (_, testCase, value) -> TestCaseFieldParser.testCaseStatus(value, testCase.getStatus()).map(status -> testCase.edit().status(status).build()),
             GenType.UPDATE_TEST_CASE_STATUS,
             Can.EDIT, Can.COPY, Can.EXPORT
     ),
@@ -230,7 +230,7 @@ public enum TestSetEditorFields implements ShowableField {
             Bundle.message("field.created.at"),
             FieldDefault.OFF,
             testCase -> Display.formatDate(testCase.getCreatedAt()),
-            (_, testCase, v) -> TestCaseFieldParser.date(v).map(at -> testCase.edit().createdAt(at).build()),
+            (_, testCase, value) -> TestCaseFieldParser.date(value).map(at -> testCase.edit().createdAt(at).build()),
             GenType.NO_CODE_CHANGE,
             Can.IMPORT, Can.EXPORT
     ),
@@ -239,7 +239,7 @@ public enum TestSetEditorFields implements ShowableField {
             Bundle.message("field.updated.at"),
             FieldDefault.OFF,
             testCase -> Display.formatDate(testCase.getUpdatedAt()),
-            (_, testCase, v) -> TestCaseFieldParser.date(v).map(at -> testCase.edit().updatedAt(at).build()),
+            (_, testCase, value) -> TestCaseFieldParser.date(value).map(at -> testCase.edit().updatedAt(at).build()),
             GenType.NO_CODE_CHANGE,
             Can.IMPORT, Can.EXPORT
     );

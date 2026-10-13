@@ -43,8 +43,8 @@ import java.util.Optional;
 
 public class ImportExcel {
     private static boolean isEmpty(final @NotNull Row row, final @NotNull DataFormatter dataFormatter) {
-        for (int c = 0; c < row.getLastCellNum(); c++) {
-            if (!dataFormatter.formatCellValue(row.getCell(c)).trim().isEmpty()) return false;
+        for (int column = 0; column < row.getLastCellNum(); column++) {
+            if (!dataFormatter.formatCellValue(row.getCell(column)).trim().isEmpty()) return false;
         }
         return true;
     }
@@ -116,7 +116,7 @@ public class ImportExcel {
             if (row.getRowNum() == headerRow.getRowNum() || isEmpty(row, dataFormatter)) continue;
 
             final @NotNull ImportedRow imported = TestSetEditorFields.importRow(project, field -> Optional.ofNullable(headerIndexMap.get(field.getName().toLowerCase(Locale.ROOT)))
-                    .map(colIndex -> dataFormatter.formatCellValue(row.getCell(colIndex)).trim())
+                    .map(columnIndex -> dataFormatter.formatCellValue(row.getCell(columnIndex)).trim())
                     .orElse(""));
 
             refused += imported.refused();

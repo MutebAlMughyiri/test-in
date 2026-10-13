@@ -41,7 +41,7 @@ public class GridEditConfirmationTest {
         try (Stream<Path> files = Files.list(GRID)) {
             final List<Path> found = new ArrayList<>();
 
-            for (final Path file : files.filter(f -> f.toString().endsWith(".java")).toList()) {
+            for (final Path file : files.filter(candidate -> candidate.toString().endsWith(".java")).toList()) {
                 if (file.getFileName().toString().startsWith(PARENT)) continue;
 
                 final String source = Files.readString(file);

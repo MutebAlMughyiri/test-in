@@ -98,8 +98,8 @@ public class GridTables {
 
     // UC-SETTING-011, Rule-SETTING-039
     public static void resizeToFont(final @NotNull JBTable table) {
-        final @NotNull FontMetrics fm = table.getFontMetrics(table.getFont());
-        table.setRowHeight(Math.max(fm.getHeight() + 4, 20));
+        final @NotNull FontMetrics metrics = table.getFontMetrics(table.getFont());
+        table.setRowHeight(Math.max(metrics.getHeight() + 4, 20));
         autoSizeColumns(table);
         updateRowHeights(table);
     }
@@ -109,7 +109,7 @@ public class GridTables {
             private final @NotNull JTextArea textArea = new JTextArea();
             private final @NotNull GridBagLayout layout = new GridBagLayout();
             private final @NotNull JPanel wrapper = new JPanel(layout);
-            private final @NotNull GridBagConstraints c = new GridBagConstraints();
+            private final @NotNull GridBagConstraints constraints = new GridBagConstraints();
             private final @NotNull GridBagConstraints centered = new GridBagConstraints();
 
             {
@@ -118,18 +118,18 @@ public class GridTables {
                 textArea.setBorder(JBUI.Borders.empty(CELL_PADDING));
                 textArea.setOpaque(false);
                 wrapper.setOpaque(true);
-                c.gridx = 0;
-                c.gridy = 0;
-                c.weightx = 1.0;
-                c.weighty = 1.0;
-                c.fill = GridBagConstraints.HORIZONTAL;
-                c.anchor = GridBagConstraints.WEST;
+                constraints.gridx = 0;
+                constraints.gridy = 0;
+                constraints.weightx = 1.0;
+                constraints.weighty = 1.0;
+                constraints.fill = GridBagConstraints.HORIZONTAL;
+                constraints.anchor = GridBagConstraints.WEST;
                 centered.gridx = 0;
                 centered.gridy = 0;
                 centered.weightx = 1.0;
                 centered.weighty = 1.0;
                 centered.anchor = GridBagConstraints.CENTER;
-                wrapper.add(textArea, c);
+                wrapper.add(textArea, constraints);
             }
 
             // Rule-EDITOR-PANEL-250, Rule-INTERNAL-122, Rule-INTERNAL-132
@@ -141,7 +141,7 @@ public class GridTables {
                 wrapper.getAccessibleContext().setAccessibleName(raw);
                 final boolean sequence = isSequenceColumn(table, column);
                 textArea.setLineWrap(!sequence);
-                layout.setConstraints(textArea, sequence ? centered : c);
+                layout.setConstraints(textArea, sequence ? centered : constraints);
                 textArea.setFont(sequence ? UIUtil.getTreeFont() : table.getFont());
                 textArea.setForeground(isSelected ? EditorColors.SELECTION_FOREGROUND : table.getForeground());
                 wrapper.setBackground(isSelected ? SELECTION_BACKGROUND : RowStripe.of(row));
@@ -171,15 +171,15 @@ public class GridTables {
         final int to = Math.min(lastRow, table.getRowCount() - 1);
 
         final int baseHeight = table.getRowHeight();
-        for (int r = from; r <= to; r++) {
+        for (int row = from; row <= to; row++) {
             int maxHeight = baseHeight;
-            for (int c = 0; c < table.getColumnCount(); c++) {
-                final @NotNull TableCellRenderer renderer = table.getCellRenderer(r, c);
-                final @NotNull Component comp = renderer.getTableCellRendererComponent(
-                        table, table.getValueAt(r, c), false, false, r, c);
-                maxHeight = Math.max(maxHeight, comp.getPreferredSize().height);
+            for (int column = 0; column < table.getColumnCount(); column++) {
+                final @NotNull TableCellRenderer renderer = table.getCellRenderer(row, column);
+                final @NotNull Component component = renderer.getTableCellRendererComponent(
+                        table, table.getValueAt(row, column), false, false, row, column);
+                maxHeight = Math.max(maxHeight, component.getPreferredSize().height);
             }
-            table.setRowHeight(r, maxHeight);
+            table.setRowHeight(row, maxHeight);
         }
     }
 
@@ -262,35 +262,35 @@ public class GridTables {
 
     // UC-EDITOR-PANEL-004, Rule-EDITOR-PANEL-027
     public static void autoSizeColumns(final @NotNull JBTable table) {
-        final @NotNull FontMetrics fm = table.getFontMetrics(table.getFont());
+        final @NotNull FontMetrics metrics = table.getFontMetrics(table.getFont());
         int tableTotalWidth = 0;
         for (int i = 0; i < table.getColumnCount(); i++) {
-            final @NotNull TableColumn col = table.getColumnModel().getColumn(i);
+            final @NotNull TableColumn column = table.getColumnModel().getColumn(i);
 
-            final int savedWidth = widthKey(table, col)
+            final int savedWidth = widthKey(table, column)
                     .map(key -> PropertiesComponent.getInstance().getInt(key, -1))
                     .orElse(-1);
             if (savedWidth > 0) {
-                col.setPreferredWidth(savedWidth);
+                column.setPreferredWidth(savedWidth);
                 tableTotalWidth += savedWidth;
                 continue;
             }
 
-            final @NotNull TableCellRenderer headerRenderer = Optional.ofNullable(col.getHeaderRenderer())
+            final @NotNull TableCellRenderer headerRenderer = Optional.ofNullable(column.getHeaderRenderer())
                     .orElseGet(() -> table.getTableHeader().getDefaultRenderer());
 
-            final @NotNull Component headerComp = headerRenderer.getTableCellRendererComponent(
-                    table, col.getHeaderValue(), false, false, 0, i);
-            int maxWidth = headerComp.getPreferredSize().width;
+            final @NotNull Component headerComponent = headerRenderer.getTableCellRendererComponent(
+                    table, column.getHeaderValue(), false, false, 0, i);
+            int maxWidth = headerComponent.getPreferredSize().width;
 
             final int capBeforePadding = MAX_COL_WIDTH - (2 * CELL_PADDING + 20);
 
-            for (int r = 0; r < table.getRowCount() && maxWidth < capBeforePadding; r++) {
-                maxWidth = Math.max(maxWidth, fm.stringWidth(Objects.toString(table.getValueAt(r, i), "")));
+            for (int row = 0; row < table.getRowCount() && maxWidth < capBeforePadding; row++) {
+                maxWidth = Math.max(maxWidth, metrics.stringWidth(Objects.toString(table.getValueAt(row, i), "")));
             }
 
             maxWidth += 2 * CELL_PADDING + 20;
-            col.setPreferredWidth(Math.min(maxWidth, MAX_COL_WIDTH));
+            column.setPreferredWidth(Math.min(maxWidth, MAX_COL_WIDTH));
             tableTotalWidth += Math.min(maxWidth, MAX_COL_WIDTH);
         }
 
@@ -344,16 +344,16 @@ public class GridTables {
 
     // UC-EDITOR-PANEL-003, Rule-EDITOR-PANEL-021
     public <E extends Enum<E> & ShowableField> void applyColumnVisibility(final @NotNull JBTable table, final @NotNull Class<E> fieldType, final @NotNull Set<E> selected) {
-        final @NotNull TableColumnModel cm = table.getColumnModel();
-        while (cm.getColumnCount() > 0) {
-            cm.removeColumn(cm.getColumn(cm.getColumnCount() - 1));
+        final @NotNull TableColumnModel columns = table.getColumnModel();
+        while (columns.getColumnCount() > 0) {
+            columns.removeColumn(columns.getColumn(columns.getColumnCount() - 1));
         }
 
         final E @NotNull [] allValues = fieldType.getEnumConstants();
         for (int i = 0; i < allValues.length; i++) {
             final @NotNull E field = allValues[i];
             if (selected.contains(field)) {
-                cm.addColumn(columnFor(i, field.getName()));
+                columns.addColumn(columnFor(i, field.getName()));
             }
         }
 

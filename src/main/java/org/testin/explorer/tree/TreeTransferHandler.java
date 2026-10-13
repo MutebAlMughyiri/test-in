@@ -130,13 +130,13 @@ public class TreeTransferHandler extends TransferHandler {
     }
 
     @Override
-    public int getSourceActions(final @NotNull JComponent c) {
+    public int getSourceActions(final @NotNull JComponent component) {
         return COPY_OR_MOVE;
     }
 
     // UC-TREE-PANEL-013, UC-TREE-PANEL-014
     @Override
-    protected @Nullable Transferable createTransferable(final @NotNull JComponent c) {
+    protected @Nullable Transferable createTransferable(final @NotNull JComponent component) {
         final @NotNull List<AbstractNode> directories = transferableSelection();
         if (directories.isEmpty()) return null;
 
@@ -329,10 +329,10 @@ public class TreeTransferHandler extends TransferHandler {
     }
 
     @Override
-    public void exportToClipboard(final @NotNull JComponent comp, final @NotNull Clipboard clip, final int action) {
+    public void exportToClipboard(final @NotNull JComponent component, final @NotNull Clipboard clip, final int action) {
         clipboardAction = action;
         try {
-            super.exportToClipboard(comp, clip, action);
+            super.exportToClipboard(component, clip, action);
         } finally {
             clipboardAction = COPY;
         }

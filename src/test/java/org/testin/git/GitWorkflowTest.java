@@ -441,7 +441,7 @@ public class GitWorkflowTest {
 
             final List<TestCaseDto> after = new ArrayList<>();
             try (Stream<Path> files = Files.list(work.resolve("Test Cases/login flow"))) {
-                for (final Path file : files.filter(f -> f.getFileName().toString().endsWith(".tc")).sorted().toList()) {
+                for (final Path file : files.filter(candidate -> candidate.getFileName().toString().endsWith(".tc")).sorted().toList()) {
                     after.add(RealJsonCodec.build().readValue(Files.readString(file, StandardCharsets.UTF_8), TestCaseDto.class));
                 }
             }

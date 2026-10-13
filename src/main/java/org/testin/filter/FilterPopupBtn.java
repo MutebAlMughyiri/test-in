@@ -169,8 +169,8 @@ public class FilterPopupBtn extends AbstractIconButton implements ToolbarItem {
         filterResetBtn.add(filterPriorityMenu);
 
         final @NotNull DefaultActionGroup filterAutomationMenu = new DefaultActionGroup(Bundle.message("filter.automation"), true);
-        Automated.FILTERABLE.forEach(a -> filterAutomationMenu.add(new ToggleFilterAction<>(a.getLabel(), a.getIcon(),
-                a, selectedAutomation, FilterMembership.plain(), onChanged)));
+        Automated.FILTERABLE.forEach(automated -> filterAutomationMenu.add(new ToggleFilterAction<>(automated.getLabel(), automated.getIcon(),
+                automated, selectedAutomation, FilterMembership.plain(), onChanged)));
         filterResetBtn.add(filterAutomationMenu);
 
         final @NotNull ActionGroup filterGroupMenu = new ActionGroup(TestSetEditorFields.GROUP.getName(), true) {
@@ -208,13 +208,13 @@ public class FilterPopupBtn extends AbstractIconButton implements ToolbarItem {
         filterResetBtn.add(filterModuleMenu);
 
         final @NotNull DefaultActionGroup filterTestCaseStatusMenu = new DefaultActionGroup(Bundle.message("filter.test.case.status"), true);
-        Arrays.stream(TestCaseStatus.values()).forEach(s ->
-                filterTestCaseStatusMenu.add(new ToggleFilterAction<>(s.getLabel(), null,
-                        s, selectedTestCaseStatus, FilterMembership.plain(), onChanged)));
+        Arrays.stream(TestCaseStatus.values()).forEach(status ->
+                filterTestCaseStatusMenu.add(new ToggleFilterAction<>(status.getLabel(), null,
+                        status, selectedTestCaseStatus, FilterMembership.plain(), onChanged)));
         filterResetBtn.add(filterTestCaseStatusMenu);
 
         filterResetBtn.add(submenu(Bundle.message("filter.run.item.status"), source::hasRunItemStatuses, Bundle.message("filter.run.only"), () -> Arrays.stream(RunItemStatus.values())
-                .<AnAction>map(s -> new ToggleFilterAction<>(s.getLabel(), null, s, selectedStatus, FilterMembership.plain(), onChanged))
+                .<AnAction>map(status -> new ToggleFilterAction<>(status.getLabel(), null, status, selectedStatus, FilterMembership.plain(), onChanged))
                 .toList()));
 
         // Rule-EDITOR-PANEL-260, Rule-TREE-PANEL-129

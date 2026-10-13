@@ -34,8 +34,8 @@ public class SelectAllHeaderListener extends MouseAdapter {
     // UC-SHARE-003, Rule-SHARE-018
     @Override
     public void mouseClicked(final @NotNull MouseEvent e) {
-        final int col = table.columnAtPoint(e.getPoint());
-        if (col == 0) {
+        final int column = table.columnAtPoint(e.getPoint());
+        if (column == 0) {
             final boolean newState = !headerCheckbox.isSelected();
             headerCheckbox.setSelected(newState);
 

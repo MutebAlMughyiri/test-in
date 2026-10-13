@@ -144,12 +144,12 @@ public abstract class AbstractCard extends JBPanel<AbstractCard> {
     public void applyCardViewLayout(final @NotNull JList<?> list) {
         titleArea.setFont(Fonts.title());
 
-        for (final JBLabel lbl : fieldLabels.values()) {
-            lbl.setFont(Fonts.body());
+        for (final JBLabel label : fieldLabels.values()) {
+            label.setFont(Fonts.body());
         }
 
-        for (final Component c : badgePanel.getComponents()) {
-            c.setFont(Fonts.badge());
+        for (final Component component : badgePanel.getComponents()) {
+            component.setFont(Fonts.badge());
         }
 
         final int slots = CardTitle.slotCount(hoverButtons, executing);
@@ -174,7 +174,7 @@ public abstract class AbstractCard extends JBPanel<AbstractCard> {
         Badges.showBadges(badgePanel, badges);
         shownBadges = List.copyOf(badges);
 
-        fieldLabels.values().forEach(lbl -> lbl.setVisible(false));
+        fieldLabels.values().forEach(label -> label.setVisible(false));
 
         final @NotNull List<String> spoken = new ArrayList<>();
         if (priority != Priority.DEFAULT) spoken.add(priority.getLabel());
@@ -183,17 +183,17 @@ public abstract class AbstractCard extends JBPanel<AbstractCard> {
         details.forEach((attrName, value) -> {
             if (value.isBlank()) return;
 
-            final @NotNull JBLabel lbl = fieldLabels.computeIfAbsent(attrName, _ -> {
-                final @NotNull JBLabel newLbl = createDetailLabel();
-                content.add(newLbl);
-                return newLbl;
+            final @NotNull JBLabel label = fieldLabels.computeIfAbsent(attrName, _ -> {
+                final @NotNull JBLabel newLabel = createDetailLabel();
+                content.add(newLabel);
+                return newLabel;
             });
 
             final @NotNull Optional<Icon> icon = UpdateTestCaseFields.iconOf(attrName);
-            lbl.setIcon(icon.orElse(EmptyIcon.ICON_0));
-            lbl.setText(Display.shortDates(icon.isPresent() ? value : attrName + ": " + value));
+            label.setIcon(icon.orElse(EmptyIcon.ICON_0));
+            label.setText(Display.shortDates(icon.isPresent() ? value : attrName + ": " + value));
             lineTooltips.put(attrName, Display.dateTooltip(value));
-            lbl.setVisible(true);
+            label.setVisible(true);
             spoken.add(attrName + ": " + value);
         });
 

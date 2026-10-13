@@ -39,14 +39,14 @@ public class TreeMouseListener extends PopupHandler {
     private final @NotNull TreeContextMenu treeContextMenu;
 
     @Override
-    public void invokePopup(final @NotNull Component comp, final int x, final int y) {
-        nodeAt(x, y).ifPresent(selPath -> {
-            if (!tree.getSelectionModel().isPathSelected(selPath)) {
-                tree.setSelectionPath(selPath);
+    public void invokePopup(final @NotNull Component component, final int x, final int y) {
+        nodeAt(x, y).ifPresent(selectedPath -> {
+            if (!tree.getSelectionModel().isPathSelected(selectedPath)) {
+                tree.setSelectionPath(selectedPath);
             }
 
             final @NotNull ActionPopupMenu popupMenu = ActionManager.getInstance().createActionPopupMenu(ActionPlaces.TOOLWINDOW_POPUP, treeContextMenu);
-            popupMenu.getComponent().show(comp, x, y);
+            popupMenu.getComponent().show(component, x, y);
         });
     }
 

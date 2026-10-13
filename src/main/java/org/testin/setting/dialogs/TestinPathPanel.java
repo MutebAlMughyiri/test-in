@@ -54,11 +54,11 @@ public final class TestinPathPanel {
         setupValidationListener();
     }
 
-    private static boolean isFolder(final @NotNull String pathStr) {
-        if (pathStr.isBlank()) return false;
+    private static boolean isFolder(final @NotNull String pathText) {
+        if (pathText.isBlank()) return false;
 
         try {
-            return Files.isDirectory(Path.of(pathStr));
+            return Files.isDirectory(Path.of(pathText));
         } catch (final InvalidPathException ex) {
             return false;
         }
@@ -105,15 +105,15 @@ public final class TestinPathPanel {
 
     // UC-SETTING-003, Rule-SETTING-015, Rule-SETTING-017
     private void updateOpenButtonState() {
-        final @NotNull String pathStr = pathField.getText();
-        asked.set(pathStr);
+        final @NotNull String pathText = pathField.getText();
+        asked.set(pathText);
 
         probe.execute(() -> {
-            if (!pathStr.equals(asked.get())) return;
+            if (!pathText.equals(asked.get())) return;
 
-            final boolean folder = isFolder(pathStr);
+            final boolean folder = isFolder(pathText);
             ApplicationManager.getApplication().invokeLater(() -> {
-                if (pathStr.equals(asked.get())) openFolderBtn.setEnabled(folder);
+                if (pathText.equals(asked.get())) openFolderBtn.setEnabled(folder);
             }, ModalityState.any());
         });
     }

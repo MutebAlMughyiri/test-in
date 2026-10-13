@@ -118,13 +118,13 @@ public class DetailsTab {
     }
 
     private void renderRows(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull TestCaseDto testCase, final @NotNull List<AbstractDetails> rows) {
-        final @NotNull GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = JBUI.insets(INSETS_DEFAULT);
-        gbc.anchor = GridBagConstraints.NORTHWEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = WEIGHT_X;
+        final @NotNull GridBagConstraints constraints = new GridBagConstraints();
+        constraints.insets = JBUI.insets(INSETS_DEFAULT);
+        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.weightx = WEIGHT_X;
 
-        final int row = setupFixedRows(project, panel, gbc, testCase, rows);
+        final int row = setupFixedRows(project, panel, constraints, testCase, rows);
         addVerticalSpacer(panel, row);
     }
 
@@ -140,18 +140,18 @@ public class DetailsTab {
         return List.copyOf(rows);
     }
 
-    private int setupFixedRows(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto testCase, final @NotNull List<AbstractDetails> rows) {
+    private int setupFixedRows(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull TestCaseDto testCase, final @NotNull List<AbstractDetails> rows) {
         int row = 0;
         for (final AbstractDetails component : rows) {
-            row = component.render(project, panel, (GridBagConstraints) gbc.clone(), testCase, row);
+            row = component.render(project, panel, (GridBagConstraints) constraints.clone(), testCase, row);
         }
         return row;
     }
 
     private void addVerticalSpacer(final @NotNull JBPanel<?> panel, final int lastRow) {
-        final @NotNull GridBagConstraints spacerGbc = new GridBagConstraints();
-        spacerGbc.gridy = lastRow;
-        spacerGbc.weighty = SPACER_WEIGHT_Y;
-        panel.add(Box.createVerticalGlue(), spacerGbc);
+        final @NotNull GridBagConstraints spacerConstraints = new GridBagConstraints();
+        spacerConstraints.gridy = lastRow;
+        spacerConstraints.weighty = SPACER_WEIGHT_Y;
+        panel.add(Box.createVerticalGlue(), spacerConstraints);
     }
 }

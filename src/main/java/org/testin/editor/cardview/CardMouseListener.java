@@ -54,19 +54,19 @@ public class CardMouseListener extends MouseAdapter {
     private final @NotNull Project project;
     private final @NotNull JBList<TestCaseDto> list;
     private final @NotNull CollectionListModel<TestCaseDto> model;
-    private final @NotNull AbstractEditorContextMenu cm;
+    private final @NotNull AbstractEditorContextMenu contextMenu;
     private final @NotNull List<String> treePath;
     private final @NotNull TestinEditor editor;
     private final @NotNull Notifier notifier;
     private @NotNull String shownTip = "";
 
-    public CardMouseListener(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull JBList<TestCaseDto> list, final @NotNull CollectionListModel<TestCaseDto> model, final @NotNull AbstractNode node, final @NotNull AbstractEditorContextMenu cm) {
+    public CardMouseListener(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull JBList<TestCaseDto> list, final @NotNull CollectionListModel<TestCaseDto> model, final @NotNull AbstractNode node, final @NotNull AbstractEditorContextMenu contextMenu) {
         this.project = project;
         this.editor = editor;
         this.list = list;
         this.treePath = node.treePath();
         this.model = model;
-        this.cm = cm;
+        this.contextMenu = contextMenu;
         this.notifier = Services.getInstance(project, Notifier.class);
     }
 
@@ -93,7 +93,7 @@ public class CardMouseListener extends MouseAdapter {
 
             final @NotNull ActionManager actionManager = ActionManager.getInstance();
             final @NotNull String place = ActionPlaces.TOOLWINDOW_POPUP;
-            actionManager.createActionPopupMenu(place, cm).getComponent().show(e.getComponent(), e.getX(), e.getY());
+            actionManager.createActionPopupMenu(place, contextMenu).getComponent().show(e.getComponent(), e.getX(), e.getY());
         }
     }
 

@@ -56,7 +56,7 @@ public class MoveCodeIdeTest extends AbstractCodegenIdeTest {
         NodeCode.of(NodeType.TS).getMoved().execute(getProject(), new MovedNode(login, root.resolve("Never read")));
 
         assertTrue("the class moved into a place the tree does not know", generatedClass("nafath.LoginTest").isPresent());
-        assertTrue("the tester was not told the code stayed behind, naming the class: " + said, said.stream().anyMatch(n -> n.getType() == NotificationType.WARNING && n.getContent().contains("nafath.LoginTest")));
+        assertTrue("the tester was not told the code stayed behind, naming the class: " + said, said.stream().anyMatch(notification -> notification.getType() == NotificationType.WARNING && notification.getContent().contains("nafath.LoginTest")));
     }
 
     // Rule-CODEGEN-056

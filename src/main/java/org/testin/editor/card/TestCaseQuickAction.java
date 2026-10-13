@@ -155,7 +155,7 @@ public enum TestCaseQuickAction {
     // UC-EDITOR-PANEL-035, UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-180
     public void executeFor(final @NotNull Project project, final @NotNull Optional<TestinEditor> editor, final @NotNull List<TestCaseDto> testCases) {
         if (this == RUN_TEST_METHOD)
-            editor.ifPresent(ui -> testCases.forEach(testCase -> ui.launching(testCase.getId())));
+            editor.ifPresent(openEditor -> testCases.forEach(testCase -> openEditor.launching(testCase.getId())));
 
         execute(project, testCases);
     }

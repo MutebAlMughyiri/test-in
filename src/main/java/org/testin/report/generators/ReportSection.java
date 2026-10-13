@@ -70,7 +70,7 @@ enum ReportSection {
 
     @Getter
     private final @NotNull String title;
-    private final @NotNull String descriptionFmt;
+    private final @NotNull String descriptionFormat;
     @Getter
     private final @NotNull String hexColor;
     private final @NotNull ToLongFunction<TestRunSummary> count;
@@ -78,9 +78,9 @@ enum ReportSection {
     private final @NotNull ImmutableList<TestRunEditorFields> failureDetailColumns;
     private final @NotNull ImmutableSet<RunItemStatus> statuses;
 
-    ReportSection(final @NotNull String title, final @NotNull String descriptionFmt, final @NotNull ToLongFunction<TestRunSummary> count, final @NotNull ImmutableList<TestRunEditorFields> failureDetailColumns, final @NotNull RunItemStatus... statuses) {
+    ReportSection(final @NotNull String title, final @NotNull String descriptionFormat, final @NotNull ToLongFunction<TestRunSummary> count, final @NotNull ImmutableList<TestRunEditorFields> failureDetailColumns, final @NotNull RunItemStatus... statuses) {
         this.title = title;
-        this.descriptionFmt = descriptionFmt;
+        this.descriptionFormat = descriptionFormat;
         this.hexColor = statuses[0].getReportHex();
         this.count = count;
         this.failureDetailColumns = failureDetailColumns;
@@ -113,7 +113,7 @@ enum ReportSection {
     }
 
     public @NotNull String description(final @NotNull String renderedCount) {
-        return String.format(descriptionFmt, renderedCount);
+        return String.format(descriptionFormat, renderedCount);
     }
 
     // UC-REPORT-001, Rule-REPORT-022

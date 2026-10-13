@@ -21,5 +21,5 @@ import org.jetbrains.annotations.NotNull;
 
 @FunctionalInterface
 interface VfsOperation {
-    void execute(final @NotNull VirtualFile vf);
+    void execute(final @NotNull VirtualFile file);
 }

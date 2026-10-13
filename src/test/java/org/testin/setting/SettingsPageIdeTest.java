@@ -190,7 +190,7 @@ public class SettingsPageIdeTest extends AbstractTempRootIdeTest {
     // Rule-SETTING-040
     public void testThePageIsRegisteredUnderTheIdItAnswersSearchWith() {
         final boolean registered = Configurable.APPLICATION_CONFIGURABLE.getExtensionList().stream()
-                .anyMatch(ep -> SettingsConfigurable.class.getName().equals(ep.instanceClass) && page.getId().equals(ep.id));
+                .anyMatch(extension -> SettingsConfigurable.class.getName().equals(extension.instanceClass) && page.getId().equals(extension.id));
 
         assertTrue("the settings search finds the page by an id the IDE does not register it under", registered);
     }

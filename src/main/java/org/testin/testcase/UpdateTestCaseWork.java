@@ -71,7 +71,7 @@ record UpdateTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor
             editor.onToolBarFilterSelectionChanged();
 
             editor.refreshOrdered();
-            UpdateTestCaseMenu.applyAftermath(project, updatedTestCases, field.getGt());
+            UpdateTestCaseMenu.applyAftermath(project, updatedTestCases, field.getCodeChangeType());
         });
     }
 }

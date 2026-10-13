@@ -40,21 +40,21 @@ public final class ShownFields {
     public static <E extends Enum<E> & ShowableField> @NotNull Set<E> read(final @NotNull String propertyKey, final @NotNull Class<E> fieldType) {
         final @NotNull List<E> options = List.of(fieldType.getEnumConstants());
         final @NotNull String defaults = options.stream()
-                .filter(o -> o.getToolBarDefault().isSelectedByDefault())
+                .filter(field -> field.getToolBarDefault().isSelectedByDefault())
                 .map(Enum::name)
                 .collect(Collectors.joining(","));
 
         final @NotNull Set<E> chosen = new HashSet<>();
-        for (final String s : PropertiesComponent.getInstance().getValue(propertyKey, defaults).split(",", -1)) {
-            if (s.isEmpty()) continue;
+        for (final String stored : PropertiesComponent.getInstance().getValue(propertyKey, defaults).split(",", -1)) {
+            if (stored.isEmpty()) continue;
             try {
-                chosen.add(Enum.valueOf(fieldType, s));
+                chosen.add(Enum.valueOf(fieldType, stored));
             } catch (final IllegalArgumentException ex) {
-                TestinLogger.error("Invalid editor field '" + s + "' for " + propertyKey + ": " + FailureText.of(ex));
+                TestinLogger.error("Invalid editor field '" + stored + "' for " + propertyKey + ": " + FailureText.of(ex));
             }
         }
 
-        options.forEach(o -> o.getToolBarDefault().enforceLock(o, chosen));
+        options.forEach(field -> field.getToolBarDefault().enforceLock(field, chosen));
         return chosen;
     }
 

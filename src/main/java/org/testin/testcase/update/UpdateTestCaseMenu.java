@@ -42,15 +42,15 @@ public class UpdateTestCaseMenu {
         this.updatedTestCases = updatedTestCases;
     }
 
-    public static void applyAftermath(final @NotNull Project project, final @NotNull List<TestCaseDto> updated, final @NotNull GenType<TestCaseDto> gt) {
+    public static void applyAftermath(final @NotNull Project project, final @NotNull List<TestCaseDto> updated, final @NotNull GenType<TestCaseDto> codeChangeType) {
         ViewToolWindowFactory.refreshIfShowing(project, updated);
 
-        TestinLogger.trace("Generating automation code for " + updated.size() + ": " + gt);
+        TestinLogger.trace("Generating automation code for " + updated.size() + ": " + codeChangeType);
 
         // UC-CODEGEN-003, Rule-CODEGEN-019
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
-            if (updated.size() == 1) gt.execute(project, updated.getFirst());
-            else gt.executeAll(project, updated);
+            if (updated.size() == 1) codeChangeType.execute(project, updated.getFirst());
+            else codeChangeType.executeAll(project, updated);
         });
     }
 
@@ -69,12 +69,12 @@ public class UpdateTestCaseMenu {
 
     // UC-EDITOR-PANEL-006, UC-EDITOR-PANEL-007
     public void open(final @NotNull UpdateTestCaseFields field) {
-        final @NotNull GenType<TestCaseDto> gt = field.getGt();
-        TestinLogger.trace("Update field -> " + field.getName() + " | changeType = " + gt);
+        final @NotNull GenType<TestCaseDto> codeChangeType = field.getCodeChangeType();
+        TestinLogger.trace("Update field -> " + field.getName() + " | changeType = " + codeChangeType);
 
         if (testCases.size() == 1) {
             new UpdateTestCaseDialog(project, testCases.getFirst(), field, edited -> {
-                TestinLogger.trace("Single Edit Save -> changeType = " + gt);
+                TestinLogger.trace("Single Edit Save -> changeType = " + codeChangeType);
                 updatedTestCases.accept(List.of(edited), field);
             }).show();
 
@@ -82,7 +82,7 @@ public class UpdateTestCaseMenu {
         }
 
         field.getBulkAction().execute(project, testCases, list -> {
-            TestinLogger.trace("Bulk Edit Save -> changeType = " + gt);
+            TestinLogger.trace("Bulk Edit Save -> changeType = " + codeChangeType);
             updatedTestCases.accept(list, field);
         });
     }

@@ -61,7 +61,7 @@ public final class StacktraceLine extends AbstractDetails {
 
     // UC-VIEW-PANEL-006, Rule-VIEW-PANEL-034, Rule-VIEW-PANEL-081
     @Override
-    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto testCase, final int currentRow) {
+    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull TestCaseDto testCase, final int currentRow) {
         final @NotNull String stacktrace = shown.getStacktrace();
         final @NotNull List<String> screenshots = shown.getScreenshots();
         final boolean link = !stacktrace.isBlank();
@@ -74,7 +74,7 @@ public final class StacktraceLine extends AbstractDetails {
         if (link) parts.add(stacktraceLink(project, testCase, stacktrace));
         screenshots.forEach(name -> parts.add(thumbnail(project, testRunPath, name)));
 
-        return addFullWidthRow(panel, gbc, line(parts), JBUI.insets(INSETS_TOP, INSETS_SIDE, 0, INSETS_SIDE), currentRow);
+        return addFullWidthRow(panel, constraints, line(parts), JBUI.insets(INSETS_TOP, INSETS_SIDE, 0, INSETS_SIDE), currentRow);
     }
 
     // UC-VIEW-PANEL-006, Rule-VIEW-PANEL-034

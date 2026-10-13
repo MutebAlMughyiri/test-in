@@ -28,16 +28,16 @@ public class UpdateTestMethodDescription extends BaseTestMethodChange implements
     // UC-CODEGEN-010, Rule-CODEGEN-001, Rule-CODEGEN-040
     @Override
     public void execute(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
-        applyOrCreate(project, testCase, GenType.UPDATE_TEST_CASE_DESCRIPTION.description(), pm -> {
-            writeDescription(project, pm, testCase);
-            reformat(project, pm);
+        applyOrCreate(project, testCase, GenType.UPDATE_TEST_CASE_DESCRIPTION.description(), testMethod -> {
+            writeDescription(project, testMethod, testCase);
+            reformat(project, testMethod);
         });
     }
 
     // UC-CODEGEN-010, UC-CODEGEN-003, Rule-CODEGEN-019
     @Override
     public void executeAll(final @NotNull Project project, final @NotNull List<? extends TestCaseDto> testCases) {
-        applyToEach(project, testCases, GenType.UPDATE_TEST_CASE_DESCRIPTION.description(), (pm, testCase) -> writeDescription(project, pm, testCase));
+        applyToEach(project, testCases, GenType.UPDATE_TEST_CASE_DESCRIPTION.description(), (testMethod, testCase) -> writeDescription(project, testMethod, testCase));
         GenType.CREATE_TEST_CASE.executeAllNow(project, testCases);
     }
 }

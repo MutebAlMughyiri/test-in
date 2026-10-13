@@ -83,9 +83,9 @@ final class NodeFiles {
 
         final @NotNull Path targetParent = found.orElseThrow();
 
-        vfs.executeVfsAction(oldPath, targetParent, Bundle.message("vfs.move.failed.title"), (sourceVf, targetVf) -> {
+        vfs.executeVfsAction(oldPath, targetParent, Bundle.message("vfs.move.failed.title"), (sourceFile, targetFile) -> {
             try {
-                sourceVf.move(indexer, targetVf);
+                sourceFile.move(indexer, targetFile);
             } catch (final IOException ex) {
                 TestinLogger.error(FailureText.of(ex));
                 throw new RuntimeException(ex);
@@ -139,9 +139,9 @@ final class NodeFiles {
             };
 
             ownWrites.record(project, copiedRoot);
-            vfs.executeVfsAction(sourcePath, targetPath, Bundle.message("vfs.copy.failed.title"), (sourceVf, targetVf) -> {
+            vfs.executeVfsAction(sourcePath, targetPath, Bundle.message("vfs.copy.failed.title"), (sourceFile, targetFile) -> {
                 try {
-                    sourceVf.copy(indexer, targetVf, sourceVf.getName());
+                    sourceFile.copy(indexer, targetFile, sourceFile.getName());
                 } catch (final IOException ex) {
                     TestinLogger.error(FailureText.of(ex));
                     throw new RuntimeException(ex);
@@ -151,9 +151,9 @@ final class NodeFiles {
     }
 
     void rename(final @NotNull Path oldPath, final @NotNull Path newPath, final @NotNull Runnable onFinished, final @NotNull Runnable onFailed) {
-        vfs.executeVfsAction(oldPath, vf -> {
+        vfs.executeVfsAction(oldPath, file -> {
             try {
-                vf.rename(indexer, newPath.getFileName().toString());
+                file.rename(indexer, newPath.getFileName().toString());
             } catch (final IOException ex) {
                 TestinLogger.error(FailureText.of(ex));
                 throw new RuntimeException(ex);

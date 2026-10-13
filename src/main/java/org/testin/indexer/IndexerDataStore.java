@@ -289,8 +289,8 @@ final class IndexerDataStore {
     }
 
     void removeTestProject(final @NotNull Path path) {
-        final @NotNull String pathStr = path.toString();
-        testProjectsByPath.remove(pathStr);
+        final @NotNull String pathText = path.toString();
+        testProjectsByPath.remove(pathText);
         testCasesFoldersByPath.entrySet().removeIf(entry -> entry.getValue().getPath().startsWith(path));
         testRunsFoldersByPath.entrySet().removeIf(entry -> entry.getValue().getPath().startsWith(path));
 
@@ -300,7 +300,7 @@ final class IndexerDataStore {
         removeTestRunsUnder(path);
         childrenIndex.invalidate();
 
-        TestinLogger.info("Test project dropped from the index: " + pathStr);
+        TestinLogger.info("Test project dropped from the index: " + pathText);
     }
 
     private void removeTestSetPackagesUnder(final @NotNull Path path) {
@@ -339,41 +339,41 @@ final class IndexerDataStore {
     }
 
     void removeTestSet(final @NotNull Path path) {
-        final @NotNull String pathStr = path.toString();
-        testSetNodesByPath.remove(pathStr);
-        testCaseStore.removeForTestSet(pathStr);
+        final @NotNull String pathText = path.toString();
+        testSetNodesByPath.remove(pathText);
+        testCaseStore.removeForTestSet(pathText);
         childrenIndex.invalidate();
-        TestinLogger.info("Removed test set at: " + pathStr);
+        TestinLogger.info("Removed test set at: " + pathText);
     }
 
     void removeTestRun(final @NotNull Path path) {
-        final @NotNull String pathStr = path.toString();
-        testRunNodesByPath.remove(pathStr);
-        runItemsByPath.remove(pathStr);
+        final @NotNull String pathText = path.toString();
+        testRunNodesByPath.remove(pathText);
+        runItemsByPath.remove(pathText);
         childrenIndex.invalidate();
-        TestinLogger.info("Removed test run at: " + pathStr);
+        TestinLogger.info("Removed test run at: " + pathText);
     }
 
     void removeTestSetPackage(final @NotNull Path path) {
-        final @NotNull String pathStr = path.toString();
-        testSetPackagesByPath.remove(pathStr);
+        final @NotNull String pathText = path.toString();
+        testSetPackagesByPath.remove(pathText);
 
         removeTestSetPackagesUnder(path);
         removeTestSetsUnder(path);
         childrenIndex.invalidate();
 
-        TestinLogger.info("Removed test set package at: " + pathStr);
+        TestinLogger.info("Removed test set package at: " + pathText);
     }
 
     void removeTestRunPackage(final @NotNull Path path) {
-        final @NotNull String pathStr = path.toString();
-        testRunPackagesByPath.remove(pathStr);
+        final @NotNull String pathText = path.toString();
+        testRunPackagesByPath.remove(pathText);
 
         removeTestRunPackagesUnder(path);
         removeTestRunsUnder(path);
         childrenIndex.invalidate();
 
-        TestinLogger.info("Removed test run package at: " + pathStr);
+        TestinLogger.info("Removed test run package at: " + pathText);
     }
 
     boolean addTestProject(final @NotNull TestProjectNode testProject) {

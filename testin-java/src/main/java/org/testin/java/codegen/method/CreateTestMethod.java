@@ -109,7 +109,7 @@ public class CreateTestMethod implements CodeChange<TestCaseDto> {
     // Rule-CODEGEN-095
     private static @NotNull Optional<PsiMethod> theTestersOwn(final @NotNull Optional<String> owner, final @NotNull Optional<PsiMethod> sameName, final @NotNull Map<String, PsiMethod> describedByHand, final @NotNull TestCaseDto testCase) {
         if (owner.isPresent())
-            return sameName.filter(pm -> owner.orElseThrow().isEmpty() && GeneratedMethod.testAnnotationOf(pm).isPresent());
+            return sameName.filter(testMethod -> owner.orElseThrow().isEmpty() && GeneratedMethod.testAnnotationOf(testMethod).isPresent());
 
         return Optional.ofNullable(describedByHand.remove(testCase.getDescription()));
     }
@@ -167,11 +167,11 @@ public class CreateTestMethod implements CodeChange<TestCaseDto> {
 
         final @NotNull Map<String, String> owners = new HashMap<>();
         final @NotNull Map<String, PsiMethod> byKey = new HashMap<>();
-        for (final PsiMethod pm : targetClass.getMethods()) {
-            final @NotNull String methodKey = NameSanitizer.methodKey(pm.getName());
+        for (final PsiMethod testMethod : targetClass.getMethods()) {
+            final @NotNull String methodKey = NameSanitizer.methodKey(testMethod.getName());
 
-            owners.putIfAbsent(methodKey, GeneratedMethod.testCaseIdOf(pm).orElse(""));
-            byKey.putIfAbsent(methodKey, pm);
+            owners.putIfAbsent(methodKey, GeneratedMethod.testCaseIdOf(testMethod).orElse(""));
+            byKey.putIfAbsent(methodKey, testMethod);
         }
 
         final @NotNull Map<String, PsiMethod> generated = GeneratedMethod.byTestCaseId(targetClass);
@@ -333,7 +333,7 @@ public class CreateTestMethod implements CodeChange<TestCaseDto> {
 
             final @NotNull String key = NameSanitizer.methodKey(methodName);
             final @NotNull Optional<PsiMethod> sameName = Arrays.stream(targetClass.getMethods())
-                    .filter(pm -> key.equals(NameSanitizer.methodKey(pm.getName())))
+                    .filter(testMethod -> key.equals(NameSanitizer.methodKey(testMethod.getName())))
                     .findFirst();
 
             if (sameName.isPresent()) {

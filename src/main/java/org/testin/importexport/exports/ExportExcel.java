@@ -93,8 +93,8 @@ public class ExportExcel {
                 }
             }
 
-            try (FileOutputStream fos = new FileOutputStream(destFile)) {
-                workbook.write(fos);
+            try (FileOutputStream output = new FileOutputStream(destFile)) {
+                workbook.write(output);
             }
         } catch (final IOException ex) {
             TestinLogger.error(FailureText.of(ex));

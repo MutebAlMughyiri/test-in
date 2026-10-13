@@ -137,8 +137,8 @@ public final class Badges {
         }).toList();
     }
 
-    static boolean isLight(final @NotNull Color bg) {
-        return 0.2126 * bg.getRed() + 0.7152 * bg.getGreen() + 0.0722 * bg.getBlue() > 140;
+    static boolean isLight(final @NotNull Color background) {
+        return 0.2126 * background.getRed() + 0.7152 * background.getGreen() + 0.0722 * background.getBlue() > 140;
     }
 
     // Rule-EDITOR-PANEL-252

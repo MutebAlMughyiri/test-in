@@ -35,7 +35,7 @@ import java.util.List;
 @AllArgsConstructor
 public class UnifiedFileEditor extends UserDataHolderBase implements FileEditor {
     private final @NotNull Project project;
-    private final @NotNull UnifiedVirtualFile vf;
+    private final @NotNull UnifiedVirtualFile file;
 
     @Getter
     private final @NotNull TestinEditor editor;
@@ -53,12 +53,12 @@ public class UnifiedFileEditor extends UserDataHolderBase implements FileEditor 
     // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-011
     @Override
     public @NotNull String getName() {
-        return vf.getNode().getName();
+        return file.getNode().getName();
     }
 
     @Override
     public @NotNull VirtualFile getFile() {
-        return vf;
+        return file;
     }
 
     @Override
@@ -77,11 +77,11 @@ public class UnifiedFileEditor extends UserDataHolderBase implements FileEditor 
     }
 
     @Override
-    public void addPropertyChangeListener(final @NotNull PropertyChangeListener l) {
+    public void addPropertyChangeListener(final @NotNull PropertyChangeListener listener) {
     }
 
     @Override
-    public void removePropertyChangeListener(final @NotNull PropertyChangeListener l) {
+    public void removePropertyChangeListener(final @NotNull PropertyChangeListener listener) {
     }
 
     @Override
@@ -99,7 +99,7 @@ public class UnifiedFileEditor extends UserDataHolderBase implements FileEditor 
                 return;
             }
 
-            viewer.showIfOpen(selected, vf.getNode().treePath());
+            viewer.showIfOpen(selected, file.getNode().treePath());
         });
     }
 }

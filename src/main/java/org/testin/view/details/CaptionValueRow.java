@@ -38,30 +38,30 @@ public final class CaptionValueRow {
     private static final int SIDE = 16;
 
     // Rule-VIEW-PANEL-006, Rule-INTERNAL-132
-    public static int add(final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull String caption, final @NotNull String valueText, final int row) {
+    public static int add(final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull String caption, final @NotNull String valueText, final int row) {
         if (valueText.trim().isEmpty()) return row;
 
         final @NotNull JTextArea valueArea = Prose.of(Display.shortDates(valueText));
         valueArea.setFont(Fonts.body());
         Tooltip.set(valueArea, Display.dateTooltip(valueText));
 
-        return add(panel, gbc, caption, valueArea, row);
+        return add(panel, constraints, caption, valueArea, row);
     }
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-082
-    public static int add(final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull String caption, final @NotNull JComponent value, final int row) {
-        gbc.gridx = 0;
-        gbc.weightx = 1.0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.NORTHWEST;
+    public static int add(final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull String caption, final @NotNull JComponent value, final int row) {
+        constraints.gridx = 0;
+        constraints.weightx = 1.0;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
 
-        gbc.gridy = row;
-        gbc.insets = JBUI.insets(SPACE_ABOVE, SIDE, CAPTION_GAP, SIDE);
-        panel.add(Caption.of(caption, Fonts.panelCaption()), gbc);
+        constraints.gridy = row;
+        constraints.insets = JBUI.insets(SPACE_ABOVE, SIDE, CAPTION_GAP, SIDE);
+        panel.add(Caption.of(caption, Fonts.panelCaption()), constraints);
 
-        gbc.gridy = row + 1;
-        gbc.insets = JBUI.insets(0, SIDE);
-        panel.add(value, gbc);
+        constraints.gridy = row + 1;
+        constraints.insets = JBUI.insets(0, SIDE);
+        panel.add(value, constraints);
 
         return row + 2;
     }

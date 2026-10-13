@@ -187,7 +187,7 @@ public enum UpdateTestCaseFields implements MenuItem {
     private final @NotNull String name;
     private final @NotNull Shortcuts shortcut;
     private final @NotNull Icon icon;
-    private final @NotNull GenType<TestCaseDto> gt;
+    private final @NotNull GenType<TestCaseDto> codeChangeType;
     private final @NotNull Done done;
     private final @NotNull BulkDialogOpener bulkAction;
     private final @NotNull Function<AbstractTestCaseDialog, TestCaseSection> sectionExtractor;

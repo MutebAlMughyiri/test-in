@@ -70,8 +70,8 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorFields, Tes
 
     private volatile boolean loading;
 
-    public TestSetEditor(final @NotNull Project project, final @NotNull UnifiedVirtualFile vf) {
-        super(project, vf.getTestSet());
+    public TestSetEditor(final @NotNull Project project, final @NotNull UnifiedVirtualFile file) {
+        super(project, file.getTestSet());
         Services.getInstance(project, Guides.class).add(Guide.TEST_CASE_EDITOR_SHORTCUTS);
 
         list.setDragEnabled(true);

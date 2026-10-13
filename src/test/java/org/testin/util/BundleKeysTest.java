@@ -43,9 +43,9 @@ public class BundleKeysTest {
         final Pattern call = Pattern.compile("Bundle\\.message\\(\\s*\"([^\"]+)\"");
 
         for (final Path java : sources()) {
-            final Matcher m = call.matcher(read(java));
-            while (m.find()) {
-                keys.add(m.group(1));
+            final Matcher matcher = call.matcher(read(java));
+            while (matcher.find()) {
+                keys.add(matcher.group(1));
             }
         }
         return keys;
@@ -64,16 +64,16 @@ public class BundleKeysTest {
     private static @NotNull Stream<Path> javaFilesUnder(final Path root) {
         try (var walk = Files.walk(root)) {
             return walk.filter(path -> path.toString().endsWith(".java")).toList().stream();
-        } catch (final IOException e) {
-            throw new AssertionError("Could not walk " + root, e);
+        } catch (final IOException ex) {
+            throw new AssertionError("Could not walk " + root, ex);
         }
     }
 
     private static @NotNull String read(final Path path) {
         try {
             return Files.readString(path, StandardCharsets.UTF_8);
-        } catch (final IOException e) {
-            throw new AssertionError("Could not read " + path, e);
+        } catch (final IOException ex) {
+            throw new AssertionError("Could not read " + path, ex);
         }
     }
 
@@ -85,8 +85,8 @@ public class BundleKeysTest {
 
         try (Reader in = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             properties.load(in);
-        } catch (final IOException e) {
-            throw new AssertionError("Could not read " + path, e);
+        } catch (final IOException ex) {
+            throw new AssertionError("Could not read " + path, ex);
         }
         return properties;
     }

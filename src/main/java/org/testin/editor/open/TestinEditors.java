@@ -77,27 +77,27 @@ public final class TestinEditors {
 
     // Rule-EDITOR-PANEL-015
     public void closeAll() {
-        final @NotNull FileEditorManager fed = FileEditorManager.getInstance(project);
+        final @NotNull FileEditorManager editorManager = FileEditorManager.getInstance(project);
 
-        for (final VirtualFile open : fed.getOpenFiles()) {
-            if (open instanceof UnifiedVirtualFile) fed.closeFile(open);
+        for (final VirtualFile open : editorManager.getOpenFiles()) {
+            if (open instanceof UnifiedVirtualFile) editorManager.closeFile(open);
         }
     }
 
     // UC-TREE-PANEL-025, Rule-TREE-PANEL-082
     public void refreshOpen() {
-        final @NotNull FileEditorManager fed = FileEditorManager.getInstance(project);
+        final @NotNull FileEditorManager editorManager = FileEditorManager.getInstance(project);
 
-        for (final VirtualFile open : fed.getOpenFiles()) {
+        for (final VirtualFile open : editorManager.getOpenFiles()) {
             if (!(open instanceof UnifiedVirtualFile testinFile)) continue;
 
             if (!isIndexed(testinFile)) {
                 TestinLogger.info("Closing the editor for a node that is no longer indexed: " + testinFile.getName());
-                fed.closeFile(testinFile);
+                editorManager.closeFile(testinFile);
                 continue;
             }
 
-            for (final FileEditor tab : fed.getAllEditors(testinFile)) {
+            for (final FileEditor tab : editorManager.getAllEditors(testinFile)) {
                 if (!(tab instanceof UnifiedFileEditor unified)) continue;
 
                 final @NotNull TestinEditor editor = unified.getEditor();
@@ -142,11 +142,11 @@ public final class TestinEditors {
     }
 
     public void closeThenOpen(final @NotNull AbstractNode node) {
-        final @NotNull FileEditorManager fed = FileEditorManager.getInstance(project);
+        final @NotNull FileEditorManager editorManager = FileEditorManager.getInstance(project);
 
         ApplicationManager.getApplication().invokeLater(() -> openFileAt(node.getPath()).ifPresentOrElse(open -> {
-            fed.closeFile(open);
-            fed.openFile(open, true);
+            editorManager.closeFile(open);
+            editorManager.openFile(open, true);
         }, () -> open(node)));
     }
 
@@ -160,12 +160,12 @@ public final class TestinEditors {
 
     private boolean openNow(final @NotNull AbstractNode node, final boolean focus) {
         ThreadingAssertions.assertEventDispatchThread();
-        final @NotNull FileEditorManager fed = FileEditorManager.getInstance(project);
+        final @NotNull FileEditorManager editorManager = FileEditorManager.getInstance(project);
 
         final @NotNull Optional<VirtualFile> already = openFileAt(node.getPath());
         if (already.isPresent()) {
             TestinLogger.info("Editor already open, focusing: " + node.getName());
-            fed.openFile(already.orElseThrow(), focus);
+            editorManager.openFile(already.orElseThrow(), focus);
             return true;
         }
 
@@ -175,7 +175,7 @@ public final class TestinEditors {
         }
 
         TestinLogger.info("Opening Editor: " + node.getPath());
-        fed.openFile(new UnifiedVirtualFile(node), focus);
+        editorManager.openFile(new UnifiedVirtualFile(node), focus);
 
         return true;
     }
@@ -195,9 +195,9 @@ public final class TestinEditors {
     }
 
     private @NotNull Stream<TestinEditor> editorsOf(final @NotNull Stream<VirtualFile> files) {
-        final @NotNull FileEditorManager fed = FileEditorManager.getInstance(project);
+        final @NotNull FileEditorManager editorManager = FileEditorManager.getInstance(project);
 
-        return files.flatMap(open -> Arrays.stream(fed.getAllEditors(open)))
+        return files.flatMap(open -> Arrays.stream(editorManager.getAllEditors(open)))
                 .filter(UnifiedFileEditor.class::isInstance)
                 .map(tab -> ((UnifiedFileEditor) tab).getEditor());
     }
@@ -205,8 +205,9 @@ public final class TestinEditors {
     public @NotNull List<Path> openNodePaths() {
         final @NotNull List<Path> paths = new ArrayList<>();
 
-        for (final VirtualFile vf : FileEditorManager.getInstance(project).getOpenFiles()) {
-            if (vf instanceof UnifiedVirtualFile uvf) paths.add(uvf.getNode().getPath().toAbsolutePath());
+        for (final VirtualFile file : FileEditorManager.getInstance(project).getOpenFiles()) {
+            if (file instanceof UnifiedVirtualFile virtualFile)
+                paths.add(virtualFile.getNode().getPath().toAbsolutePath());
         }
 
         return paths;

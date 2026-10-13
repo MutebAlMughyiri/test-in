@@ -58,7 +58,7 @@ public class MoveTestMethod extends BaseTestMethodChange implements CodeChange<M
                 WriteCommandAction.runWriteCommandAction(project, GenType.MOVE_TEST_CASE.description(), null, () -> {
                     final @NotNull Set<PsiClass> left = new LinkedHashSet<>();
                     moves.forEach(moved -> move(project, moved).ifPresent(left::add));
-                    left.forEach(pc -> reformat(project, pc));
+                    left.forEach(testClass -> reformat(project, testClass));
 
                     new UpdateTestMethodOrder().executeAll(project, moves.stream().map(MovedTestCase::testCase).toList());
                 });

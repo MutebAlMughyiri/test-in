@@ -57,7 +57,7 @@ public class Breadcrumb extends AbstractDetails {
 
     // UC-VIEW-PANEL-010, Rule-VIEW-PANEL-041
     @Override
-    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto testCase, final int currentRow) {
+    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull TestCaseDto testCase, final int currentRow) {
         final @NotNull JBPanel<?> pathPanel = line(0);
 
         {
@@ -103,12 +103,12 @@ public class Breadcrumb extends AbstractDetails {
             }
         }
 
-        gbc.gridx = 0;
-        gbc.gridy = currentRow;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = JBUI.insets(INSETS_TOP, INSETS_LEFT, INSETS_BOTTOM, INSETS_RIGHT);
+        constraints.gridx = 0;
+        constraints.gridy = currentRow;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.insets = JBUI.insets(INSETS_TOP, INSETS_LEFT, INSETS_BOTTOM, INSETS_RIGHT);
 
-        panel.add(pathPanel, gbc);
+        panel.add(pathPanel, constraints);
 
         return currentRow + 1;
     }

@@ -69,7 +69,7 @@ public class PackageSizeTest {
         final @NotNull Set<String> named = namedInArchitecture();
         final @NotNull Map<String, Long> over = sizes().entrySet().stream()
                 .filter(size -> size.getValue() > LINE && !named.contains(size.getKey()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, _) -> a, TreeMap::new));
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (kept, _) -> kept, TreeMap::new));
 
         assertEquals(over, Map.of(), "split these along their feature's parts, or name the reason in ARCHITECTURE.md's Package sizes");
     }

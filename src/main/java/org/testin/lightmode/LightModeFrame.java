@@ -151,9 +151,9 @@ final class LightModeFrame {
     // UC-EDITOR-PANEL-046, Rule-EDITOR-PANEL-217
     private int usableHeight() {
         return Optional.ofNullable(frame.getGraphicsConfiguration())
-                .map(gc -> gc.getBounds().height
-                        - Toolkit.getDefaultToolkit().getScreenInsets(gc).top
-                        - Toolkit.getDefaultToolkit().getScreenInsets(gc).bottom)
+                .map(screen -> screen.getBounds().height
+                        - Toolkit.getDefaultToolkit().getScreenInsets(screen).top
+                        - Toolkit.getDefaultToolkit().getScreenInsets(screen).bottom)
                 .orElseGet(() -> ScreenUtil.getScreenRectangle(frame).height);
     }
 

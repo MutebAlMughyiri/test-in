@@ -60,10 +60,10 @@ public class StepsBulkSectionDialog extends AbstractJsonArraySplitBulkSectionDia
             final @NotNull List<String> cleanSteps = new ArrayList<>();
 
             for (final String step : newValues.get(i)) {
-                final @NotNull String cleanStr = Objects.toString(step, "").trim();
+                final @NotNull String cleanText = Objects.toString(step, "").trim();
 
-                if (!cleanStr.isEmpty()) {
-                    cleanSteps.add(cleanStr);
+                if (!cleanText.isEmpty()) {
+                    cleanSteps.add(cleanText);
                 }
             }
 

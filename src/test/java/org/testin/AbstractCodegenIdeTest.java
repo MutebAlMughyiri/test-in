@@ -79,8 +79,8 @@ public abstract class AbstractCodegenIdeTest extends AbstractTempRootIdeTest {
 
     private TestProjectNode testProject;
 
-    protected static @NotNull String attributeOf(final @NotNull PsiMethod pm, final @NotNull String attribute) {
-        return Optional.ofNullable(pm.getModifierList().findAnnotation(TESTNG_TEST))
+    protected static @NotNull String attributeOf(final @NotNull PsiMethod testMethod, final @NotNull String attribute) {
+        return Optional.ofNullable(testMethod.getModifierList().findAnnotation(TESTNG_TEST))
                 .map(annotation -> annotation.findDeclaredAttributeValue(attribute))
                 .map(PsiElement::getText)
                 .orElse("");
@@ -169,8 +169,8 @@ public abstract class AbstractCodegenIdeTest extends AbstractTempRootIdeTest {
 
     protected @NotNull Optional<PsiMethod> methodOf(final @NotNull String qualifiedName, final @NotNull TestCaseDto testCase) {
         return generatedClass(qualifiedName).stream()
-                .flatMap(pc -> Arrays.stream(pc.getMethods()))
-                .filter(pm -> attributeOf(pm, "testName").equals("\"" + testCase.getId() + "\""))
+                .flatMap(testClass -> Arrays.stream(testClass.getMethods()))
+                .filter(testMethod -> attributeOf(testMethod, "testName").equals("\"" + testCase.getId() + "\""))
                 .findFirst();
     }
 
@@ -184,8 +184,8 @@ public abstract class AbstractCodegenIdeTest extends AbstractTempRootIdeTest {
         PsiDocumentManager.getInstance(getProject()).commitAllDocuments();
     }
 
-    protected void writtenByTheTester(final @NotNull PsiMethod pm, final @NotNull String statements) {
-        final @NotNull PsiCodeBlock body = Optional.ofNullable(pm.getBody()).orElseThrow(() -> new AssertionError(pm.getName() + " has no body to write in"));
+    protected void writtenByTheTester(final @NotNull PsiMethod testMethod, final @NotNull String statements) {
+        final @NotNull PsiCodeBlock body = Optional.ofNullable(testMethod.getBody()).orElseThrow(() -> new AssertionError(testMethod.getName() + " has no body to write in"));
         WriteCommandAction.runWriteCommandAction(getProject(), () -> {
             body.replace(JavaPsiFacade.getElementFactory(getProject()).createCodeBlockFromText("{ " + statements + " }", body));
         });

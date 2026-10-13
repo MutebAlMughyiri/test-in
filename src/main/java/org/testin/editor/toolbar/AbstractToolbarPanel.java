@@ -57,7 +57,7 @@ public abstract class AbstractToolbarPanel extends JBPanel<AbstractToolbarPanel>
         return Math.max(naturalHeight, BAR_HEIGHT);
     }
 
-    private void addItems(final @NotNull List<ToolbarItem> items, final @NotNull GridBagConstraints gbc) {
+    private void addItems(final @NotNull List<ToolbarItem> items, final @NotNull GridBagConstraints constraints) {
         for (final ToolbarItem item : items) {
             if (!(item instanceof JComponent component)) {
                 TestinLogger.error(item.getClass().getSimpleName() + " is a toolbar item but not a Swing component, so it was left off the toolbar");
@@ -65,8 +65,8 @@ public abstract class AbstractToolbarPanel extends JBPanel<AbstractToolbarPanel>
             }
 
             toolbarItems.put(item.getClass(), item);
-            add(component, gbc);
-            gbc.gridx++;
+            add(component, constraints);
+            constraints.gridx++;
         }
     }
 
@@ -90,32 +90,32 @@ public abstract class AbstractToolbarPanel extends JBPanel<AbstractToolbarPanel>
     }
 
     protected void layoutComponents() {
-        final @NotNull GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.weightx = 0.0;
+        final @NotNull GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.weightx = 0.0;
 
-        addItems(getCustomComponents(), gbc);
+        addItems(getCustomComponents(), constraints);
 
-        addItems(getTrailingComponents(), gbc);
+        addItems(getTrailingComponents(), constraints);
 
         final @NotNull NodeDetailsBtn details = new NodeDetailsBtn(callbacks);
-        add(details, gbc);
+        add(details, constraints);
         toolbarItems.put(NodeDetailsBtn.class, details);
 
-        gbc.gridx++;
-        addSearch(gbc);
+        constraints.gridx++;
+        addSearch(constraints);
 
         wireViewButtons();
     }
 
     // UC-EDITOR-PANEL-019, Rule-EDITOR-PANEL-212
-    private void addSearch(final @NotNull GridBagConstraints gbc) {
-        gbc.weightx = 1.0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+    private void addSearch(final @NotNull GridBagConstraints constraints) {
+        constraints.weightx = 1.0;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
 
-        add(searchTxt, gbc);
+        add(searchTxt, constraints);
         toolbarItems.put(SearchTxt.class, searchTxt);
     }
 

@@ -38,8 +38,8 @@ public class EnumNullContractTest {
                 && cause.getMessage().contains("must not be null");
     }
 
-    private static @NotNull Throwable rootCause(final @NotNull Throwable t) {
-        Throwable current = t;
+    private static @NotNull Throwable rootCause(final @NotNull Throwable ex) {
+        Throwable current = ex;
         while (current.getCause() != null && !current.equals(current.getCause())) current = current.getCause();
         return current;
     }
@@ -58,8 +58,8 @@ public class EnumNullContractTest {
             for (final Class<?> type : enums) {
                 try {
                     Objects.requireNonNull(type.getEnumConstants(), type.getName() + " is not an enum");
-                } catch (final Throwable t) {
-                    final Throwable cause = rootCause(t);
+                } catch (final Throwable thrown) {
+                    final Throwable cause = rootCause(thrown);
                     if (isNullContractBreach(cause)) breaches.add(type.getName() + ": " + cause.getMessage());
                     else skipped.add(type.getName() + ": " + cause);
                 }
@@ -67,7 +67,7 @@ public class EnumNullContractTest {
 
             if (!skipped.isEmpty()) {
                 TestinLogger.info("Enums that could not initialize for reasons unrelated to nullability:");
-                skipped.forEach(s -> TestinLogger.info("  " + s));
+                skipped.forEach(line -> TestinLogger.info("  " + line));
             }
 
             if (!breaches.isEmpty()) {

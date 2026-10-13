@@ -32,12 +32,12 @@ import org.testin.testcase.UpdateTestCaseFields;
 public class TestSetEditorContextMenu extends AbstractEditorContextMenu {
     private final @NotNull Project project;
 
-    private final @NotNull TestinEditor ui;
+    private final @NotNull TestinEditor editor;
 
-    public TestSetEditorContextMenu(final @NotNull Project project, final @NotNull TestinEditor ui, final @NotNull TestSetNode testSet, final @NotNull JBList<TestCaseDto> list) {
+    public TestSetEditorContextMenu(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull TestSetNode testSet, final @NotNull JBList<TestCaseDto> list) {
         super();
         this.project = project;
-        this.ui = ui;
+        this.editor = editor;
 
         add(Declared.forMenu("Testin.CreateTestCase"));
         add(Declared.forMenu("Testin.ViewDetails"));
@@ -62,7 +62,7 @@ public class TestSetEditorContextMenu extends AbstractEditorContextMenu {
         new OpenContextMenuAction(list, this);
 
         for (final UpdateTestCaseFields field : UpdateTestCaseFields.values()) {
-            field.bindShortcut(list, () -> UpdateTestCaseAction.openField(project, ui, field));
+            field.bindShortcut(list, () -> UpdateTestCaseAction.openField(project, editor, field));
         }
     }
 }

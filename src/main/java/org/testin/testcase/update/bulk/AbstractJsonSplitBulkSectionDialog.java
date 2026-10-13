@@ -171,14 +171,14 @@ public abstract class AbstractJsonSplitBulkSectionDialog extends AbstractFramewo
             final @NotNull String escapedValue = BulkValueText.escape(getOriginalValue(testCase));
             originalEscaped.add(escapedValue);
 
-            final @NotNull StringBuilder prefixSb = new StringBuilder("  {\n    \"id\": \"")
+            final @NotNull StringBuilder prefixText = new StringBuilder("  {\n    \"id\": \"")
                     .append(BulkValueText.escape(testCase.getId().toString())).append("\",\n");
             if (showsDescriptionContext()) {
-                prefixSb.append("    \"description\": \"").append(BulkValueText.escape(testCase.getDescription())).append("\",\n");
+                prefixText.append("    \"description\": \"").append(BulkValueText.escape(testCase.getDescription())).append("\",\n");
             }
-            prefixSb.append("    \"").append(getJsonFieldName()).append("\": \"");
+            prefixText.append("    \"").append(getJsonFieldName()).append("\": \"");
 
-            final @NotNull String prefix = prefixSb.toString();
+            final @NotNull String prefix = prefixText.toString();
             final @NotNull String suffix = "\"\n  }";
             final @NotNull String comma = (i == selectedTestCases.size() - 1) ? "\n" : ",\n";
 

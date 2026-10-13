@@ -67,20 +67,20 @@ public class ReconcileTestMethod extends BaseTestMethodChange implements CodeCha
         final @NotNull Optional<PsiClass> target = classOf(project, inClass.getFirst());
         if (target.isEmpty()) return;
 
-        final @NotNull PsiClass pc = target.orElseThrow();
-        final @NotNull Map<String, PsiMethod> methods = GeneratedMethod.byTestCaseId(pc);
+        final @NotNull PsiClass testClass = target.orElseThrow();
+        final @NotNull Map<String, PsiMethod> methods = GeneratedMethod.byTestCaseId(testClass);
 
         int written = 0;
         for (final TestCaseDto testCase : inClass) {
-            final @Nullable PsiMethod pm = methods.get(testCase.getId().toString());
-            if (pm == null) continue;
+            final @Nullable PsiMethod testMethod = methods.get(testCase.getId().toString());
+            if (testMethod == null) continue;
 
-            writeDescription(project, pm, testCase);
-            writeGroups(project, pm, testCase);
-            writeEnabled(project, pm, testCase);
+            writeDescription(project, testMethod, testCase);
+            writeGroups(project, testMethod, testCase);
+            writeEnabled(project, testMethod, testCase);
             written++;
         }
 
-        if (written > 0) reformat(project, pc);
+        if (written > 0) reformat(project, testClass);
     }
 }

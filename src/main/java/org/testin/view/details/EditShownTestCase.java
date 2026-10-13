@@ -108,7 +108,7 @@ public final class EditShownTestCase {
 
             Services.getInstance(project, Notifier.class).softShow(project, field.getDone());
 
-            ApplicationManager.getApplication().invokeLater(() -> UpdateTestCaseMenu.applyAftermath(project, updatedTestCases, field.getGt()));
+            ApplicationManager.getApplication().invokeLater(() -> UpdateTestCaseMenu.applyAftermath(project, updatedTestCases, field.getCodeChangeType()));
         }, () -> Services.getInstance(project, Notifier.class).softRefuse(project, Bundle.message("details.deleted.no.edit")));
     }
 

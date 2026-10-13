@@ -28,7 +28,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 
 public final class FormRows extends JBPanel<FormRows> {
-    private final @NotNull GridBagConstraints gbc = new GridBagConstraints();
+    private final @NotNull GridBagConstraints constraints = new GridBagConstraints();
 
     private int nextRow;
 
@@ -36,17 +36,17 @@ public final class FormRows extends JBPanel<FormRows> {
         super(new GridBagLayout());
         setOpaque(false);
 
-        gbc.insets = JBUI.insets(4);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.gridx = 0;
-        gbc.weightx = 1.0;
+        constraints.insets = JBUI.insets(4);
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.anchor = GridBagConstraints.WEST;
+        constraints.gridx = 0;
+        constraints.weightx = 1.0;
     }
 
     // Rule-INTERNAL-087
     public @NotNull FormRows row(final @NotNull String label, final @NotNull JComponent field) {
-        gbc.gridy = nextRow++;
-        add(label.isEmpty() ? field : Caption.above(label, field), gbc);
+        constraints.gridy = nextRow++;
+        add(label.isEmpty() ? field : Caption.above(label, field), constraints);
 
         return this;
     }

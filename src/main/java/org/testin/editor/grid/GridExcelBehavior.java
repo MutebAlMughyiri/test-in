@@ -78,21 +78,21 @@ public final class GridExcelBehavior {
     // UC-EDITOR-PANEL-018, Rule-EDITOR-PANEL-086
     private static void copySelection(final @NotNull JBTable table, final boolean cut) {
         final int[] rows = table.getSelectedRows();
-        final int[] cols = table.getSelectedColumns();
-        if (rows.length == 0 || cols.length == 0) return;
+        final int[] columns = table.getSelectedColumns();
+        if (rows.length == 0 || columns.length == 0) return;
 
         final @NotNull String copied = Arrays.stream(rows)
-                .mapToObj(row -> rowAsTsv(table, row, cols))
+                .mapToObj(row -> rowAsTsv(table, row, columns))
                 .collect(Collectors.joining("\n"));
         CopyPasteManager.getInstance().setContents(new StringSelection(copied));
 
-        if (cut) fillCells(table, rows, cols, "");
+        if (cut) fillCells(table, rows, columns, "");
     }
 
     // UC-EDITOR-PANEL-018, Rule-EDITOR-PANEL-086
-    private static @NotNull String rowAsTsv(final @NotNull JBTable table, final int row, final int @NotNull [] cols) {
-        return Arrays.stream(cols)
-                .mapToObj(col -> SeparatedValues.field(Objects.toString(table.getValueAt(row, col), ""), '\t'))
+    private static @NotNull String rowAsTsv(final @NotNull JBTable table, final int row, final int @NotNull [] columns) {
+        return Arrays.stream(columns)
+                .mapToObj(column -> SeparatedValues.field(Objects.toString(table.getValueAt(row, column), ""), '\t'))
                 .collect(Collectors.joining("\t"));
     }
 
@@ -118,24 +118,25 @@ public final class GridExcelBehavior {
     }
 
     // UC-EDITOR-PANEL-018, Rule-EDITOR-PANEL-088
-    private static void fillCells(final @NotNull JBTable table, final int @NotNull [] rows, final int @NotNull [] cols, final @NotNull String value) {
+    private static void fillCells(final @NotNull JBTable table, final int @NotNull [] rows, final int @NotNull [] columns, final @NotNull String value) {
         for (final int row : rows) {
-            for (final int col : cols) setIfEditable(table, value, row, col);
+            for (final int column : columns) setIfEditable(table, value, row, column);
         }
     }
 
     // UC-EDITOR-PANEL-018, Rule-EDITOR-PANEL-088
     private static void layBlock(final @NotNull JBTable table, final @NotNull List<List<String>> block, final int anchorRow, final int anchorCol) {
         final int rowsThatFit = Math.min(block.size(), table.getRowCount() - anchorRow);
-        for (int r = 0; r < rowsThatFit; r++) {
-            final @NotNull List<String> fields = block.get(r);
-            final int colsThatFit = Math.min(fields.size(), table.getColumnCount() - anchorCol);
-            for (int c = 0; c < colsThatFit; c++) setIfEditable(table, fields.get(c), anchorRow + r, anchorCol + c);
+        for (int row = 0; row < rowsThatFit; row++) {
+            final @NotNull List<String> fields = block.get(row);
+            final int columnsThatFit = Math.min(fields.size(), table.getColumnCount() - anchorCol);
+            for (int column = 0; column < columnsThatFit; column++)
+                setIfEditable(table, fields.get(column), anchorRow + row, anchorCol + column);
         }
     }
 
     // Rule-EDITOR-PANEL-089
-    private static void setIfEditable(final @NotNull JBTable table, final @NotNull String value, final int row, final int col) {
-        if (table.isCellEditable(row, col)) table.setValueAt(value, row, col);
+    private static void setIfEditable(final @NotNull JBTable table, final @NotNull String value, final int row, final int column) {
+        if (table.isCellEditable(row, column)) table.setValueAt(value, row, column);
     }
 }

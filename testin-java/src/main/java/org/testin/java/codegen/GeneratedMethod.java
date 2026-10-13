@@ -51,31 +51,31 @@ public final class GeneratedMethod {
     }
 
     // UC-CODEGEN-021, Rule-CODEGEN-003
-    public static boolean holdsAWrittenBody(final @NotNull PsiMethod pm) {
-        return Optional.ofNullable(pm.getBody())
+    public static boolean holdsAWrittenBody(final @NotNull PsiMethod testMethod) {
+        return Optional.ofNullable(testMethod.getBody())
                 .map(body -> body.getStatements().length > 0 || !body.getText().contains(TODO))
                 .orElse(true);
     }
 
     // Rule-CODEGEN-001
-    public static @NotNull Optional<PsiMethod> forTestCase(final @NotNull PsiClass pc, final @NotNull TestCaseDto testCase) {
-        return Optional.ofNullable(byTestCaseId(pc).get(testCase.getId().toString()));
+    public static @NotNull Optional<PsiMethod> forTestCase(final @NotNull PsiClass testClass, final @NotNull TestCaseDto testCase) {
+        return Optional.ofNullable(byTestCaseId(testClass).get(testCase.getId().toString()));
     }
 
     // Rule-CODEGEN-001
-    public static @NotNull Map<String, PsiMethod> byTestCaseId(final @NotNull PsiClass pc) {
+    public static @NotNull Map<String, PsiMethod> byTestCaseId(final @NotNull PsiClass testClass) {
         final @NotNull Map<String, PsiMethod> byId = new LinkedHashMap<>();
 
-        for (final PsiMethod pm : pc.getMethods()) {
-            testCaseIdOf(pm).ifPresent(testCaseId -> byId.putIfAbsent(testCaseId, pm));
+        for (final PsiMethod testMethod : testClass.getMethods()) {
+            testCaseIdOf(testMethod).ifPresent(testCaseId -> byId.putIfAbsent(testCaseId, testMethod));
         }
 
         return byId;
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-013
-    public static @NotNull Optional<String> testCaseIdOf(final @NotNull PsiMethod pm) {
-        return testAnnotationOf(pm)
+    public static @NotNull Optional<String> testCaseIdOf(final @NotNull PsiMethod testMethod) {
+        return testAnnotationOf(testMethod)
                 .map(annotation -> annotation.findDeclaredAttributeValue(TEST_NAME))
                 .filter(PsiLiteralValue.class::isInstance)
                 .map(value -> ((PsiLiteralValue) value).getValue())
@@ -84,12 +84,12 @@ public final class GeneratedMethod {
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-001
-    public static void adopt(final @NotNull Project project, final @NotNull PsiMethod pm, final @NotNull TestCaseDto testCase) {
-        if (testCaseIdOf(pm).isPresent()) return;
+    public static void adopt(final @NotNull Project project, final @NotNull PsiMethod testMethod, final @NotNull TestCaseDto testCase) {
+        if (testCaseIdOf(testMethod).isPresent()) return;
 
-        testAnnotationOf(pm).ifPresent(annotation -> {
+        testAnnotationOf(testMethod).ifPresent(annotation -> {
             final @NotNull PsiAnnotation written = JavaPsiFacade.getElementFactory(project)
-                    .createAnnotationFromText("@Test(" + TEST_NAME + " = " + JavaLiteral.of(testCase.getId().toString()) + ")", pm);
+                    .createAnnotationFromText("@Test(" + TEST_NAME + " = " + JavaLiteral.of(testCase.getId().toString()) + ")", testMethod);
 
             Optional.ofNullable(written.findDeclaredAttributeValue(TEST_NAME))
                     .ifPresent(value -> annotation.setDeclaredAttributeValue(TEST_NAME, value));
@@ -97,21 +97,21 @@ public final class GeneratedMethod {
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-095
-    public static @NotNull Map<String, PsiMethod> untaggedByDescription(final @NotNull PsiClass pc) {
+    public static @NotNull Map<String, PsiMethod> untaggedByDescription(final @NotNull PsiClass testClass) {
         final @NotNull Map<String, PsiMethod> found = new LinkedHashMap<>();
-        for (final PsiMethod pm : pc.getMethods()) {
-            if (testCaseIdOf(pm).isPresent()) continue;
+        for (final PsiMethod testMethod : testClass.getMethods()) {
+            if (testCaseIdOf(testMethod).isPresent()) continue;
 
-            testAnnotationOf(pm)
+            testAnnotationOf(testMethod)
                     .map(annotation -> AnnotationUtil.getStringAttributeValue(annotation, DESCRIPTION))
                     .filter(description -> !description.isEmpty())
-                    .ifPresent(description -> found.putIfAbsent(description, pm));
+                    .ifPresent(description -> found.putIfAbsent(description, testMethod));
         }
         return found;
     }
 
-    public static @NotNull Optional<PsiAnnotation> testAnnotationOf(final @NotNull PsiMethod pm) {
-        return Optional.ofNullable(pm.getModifierList().findAnnotation(TESTNG_TEST));
+    public static @NotNull Optional<PsiAnnotation> testAnnotationOf(final @NotNull PsiMethod testMethod) {
+        return Optional.ofNullable(testMethod.getModifierList().findAnnotation(TESTNG_TEST));
     }
 
     // UC-CODEGEN-002

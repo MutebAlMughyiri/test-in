@@ -34,30 +34,30 @@ public class TestMethodCodeIdeTest extends AbstractCodegenIdeTest {
 
     private @NotNull TestCaseDto aRenamedTestCaseWhoseMethodHasAnotherName() {
         final @NotNull TestCaseDto testCase = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
-        final @NotNull PsiMethod pm = writtenMethodOf(LOGIN_TEST, testCase);
+        final @NotNull PsiMethod testMethod = writtenMethodOf(LOGIN_TEST, testCase);
         WriteCommandAction.runWriteCommandAction(getProject(), () -> {
-            pm.setName("whatTheTesterCalledIt");
+            testMethod.setName("whatTheTesterCalledIt");
         });
 
         testCase.setDescription("Sign in with a valid user");
         return testCase;
     }
 
-    private boolean caretIsOn(final @NotNull PsiMethod pm) {
+    private boolean caretIsOn(final @NotNull PsiMethod testMethod) {
         return Optional.ofNullable(FileEditorManager.getInstance(getProject()).getSelectedTextEditor())
                 .map(Editor::getCaretModel)
-                .filter(caret -> caret.getOffset() == pm.getTextOffset())
+                .filter(caret -> caret.getOffset() == testMethod.getTextOffset())
                 .isPresent();
     }
 
     // Rule-CODEGEN-001
     public void testGoToCodeFindsTheMethodOfARenamedTestCase() {
         final @NotNull TestCaseDto testCase = aRenamedTestCaseWhoseMethodHasAnotherName();
-        final @NotNull PsiMethod pm = writtenMethodOf(LOGIN_TEST, testCase);
+        final @NotNull PsiMethod testMethod = writtenMethodOf(LOGIN_TEST, testCase);
 
         TestMethodCode.available().toCode(getProject(), testCase);
 
-        Await.until("go to code did not reach the method of a test case renamed since it was written", () -> caretIsOn(pm));
+        Await.until("go to code did not reach the method of a test case renamed since it was written", () -> caretIsOn(testMethod));
     }
 
     // Rule-CODEGEN-001

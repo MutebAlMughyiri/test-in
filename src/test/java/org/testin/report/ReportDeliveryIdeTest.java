@@ -106,7 +106,7 @@ public class ReportDeliveryIdeTest extends AbstractTempRootIdeTest {
         return message.getActions().stream()
                 .filter(action -> named.equals(action.getTemplatePresentation().getText()))
                 .findFirst()
-                .orElseThrow(() -> new AssertionError("the message has no " + named + " link: " + message.getActions().stream().map(a -> a.getTemplatePresentation().getText()).toList()));
+                .orElseThrow(() -> new AssertionError("the message has no " + named + " link: " + message.getActions().stream().map(offeredAction -> offeredAction.getTemplatePresentation().getText()).toList()));
     }
 
     private static @NotNull List<Path> everythingUnder(final @NotNull Path folder) {
@@ -245,8 +245,8 @@ public class ReportDeliveryIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull Notification theReportMessage() {
-        Await.until("the report was written and nothing said so", () -> said.stream().anyMatch(n -> n.getContent().contains(Bundle.message("report.generated.message", "").strip())));
-        return said.stream().filter(n -> n.getContent().contains(Bundle.message("report.generated.message", "").strip())).findFirst().orElseThrow();
+        Await.until("the report was written and nothing said so", () -> said.stream().anyMatch(notification -> notification.getContent().contains(Bundle.message("report.generated.message", "").strip())));
+        return said.stream().filter(notification -> notification.getContent().contains(Bundle.message("report.generated.message", "").strip())).findFirst().orElseThrow();
     }
 
     private void clicked(final @NotNull Notification message, final @NotNull AnAction link) {

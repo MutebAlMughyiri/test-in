@@ -243,12 +243,12 @@ public final class TextFieldWithSelections<T> implements DialogComponent, TextVa
         final int size = list.getModel().getSize();
         if (size == 0) return;
 
-        final int newIdx = Math.clamp(list.getSelectedIndex() + delta, 0, size - 1);
-        list.setSelectedIndex(newIdx);
-        list.ensureIndexIsVisible(newIdx);
+        final int newIndex = Math.clamp(list.getSelectedIndex() + delta, 0, size - 1);
+        list.setSelectedIndex(newIndex);
+        list.ensureIndexIsVisible(newIndex);
 
         // Rule-INTERNAL-122
-        final @NotNull Selection<T> reached = list.getModel().getElementAt(newIdx);
+        final @NotNull Selection<T> reached = list.getModel().getElementAt(newIndex);
         AccessibleAnnouncerUtil.announce(textField, reached.hint().isEmpty() ? reached.name() : reached.name() + ", " + reached.hint(), true);
     }
 

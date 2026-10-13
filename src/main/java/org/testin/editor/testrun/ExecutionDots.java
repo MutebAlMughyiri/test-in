@@ -66,12 +66,12 @@ record ExecutionDots(@NotNull List<Color> colors, int ringed, int older, int old
 
     // Rule-EDITOR-PANEL-287
     @Override
-    public void paintIcon(final @NotNull Component c, final @NotNull Graphics g, final int x, final int y) {
+    public void paintIcon(final @NotNull Component component, final @NotNull Graphics g, final int x, final int y) {
         final @NotNull Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         g2.setFont(font);
-        g2.setColor(c.getForeground());
+        g2.setColor(component.getForeground());
         g2.drawString(olderText(older), x, y + font.getSize() - 1);
 
         final int dot = dot();

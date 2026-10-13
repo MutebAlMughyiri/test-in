@@ -43,9 +43,9 @@ public class UpdateTestMethodIdeTest extends AbstractCodegenIdeTest {
     // Rule-CODEGEN-001
     public void testARenamedTestCaseFindsItsMethodByIdentityNotByName() {
         final @NotNull TestCaseDto testCase = aTestCaseWithAMethod();
-        final @NotNull PsiMethod pm = writtenMethodOf(LOGIN_TEST, testCase);
+        final @NotNull PsiMethod testMethod = writtenMethodOf(LOGIN_TEST, testCase);
         WriteCommandAction.runWriteCommandAction(getProject(), () -> {
-            pm.setName("whatTheTesterCalledIt");
+            testMethod.setName("whatTheTesterCalledIt");
         });
 
         described(testCase, "Sign in with a valid user");
@@ -60,9 +60,9 @@ public class UpdateTestMethodIdeTest extends AbstractCodegenIdeTest {
 
         described(testCase, "Sign in with a valid user");
 
-        final @NotNull PsiMethod pm = writtenMethodOf(LOGIN_TEST, testCase);
-        assertEquals("signInWithAValidUser", pm.getName());
-        assertEquals("\"Sign in with a valid user\"", attributeOf(pm, "description"));
+        final @NotNull PsiMethod testMethod = writtenMethodOf(LOGIN_TEST, testCase);
+        assertEquals("signInWithAValidUser", testMethod.getName());
+        assertEquals("\"Sign in with a valid user\"", attributeOf(testMethod, "description"));
     }
 
     // Rule-CODEGEN-079
@@ -71,9 +71,9 @@ public class UpdateTestMethodIdeTest extends AbstractCodegenIdeTest {
 
         described(testCase, "Class");
 
-        final @NotNull PsiMethod pm = writtenMethodOf(LOGIN_TEST, testCase);
-        assertEquals("the method took a name Java refuses", "logInWithAValidUser", pm.getName());
-        assertEquals("the description was not saved into the annotation", "\"Class\"", attributeOf(pm, "description"));
+        final @NotNull PsiMethod testMethod = writtenMethodOf(LOGIN_TEST, testCase);
+        assertEquals("the method took a name Java refuses", "logInWithAValidUser", testMethod.getName());
+        assertEquals("the description was not saved into the annotation", "\"Class\"", attributeOf(testMethod, "description"));
     }
 
     // Rule-CODEGEN-079
@@ -84,9 +84,9 @@ public class UpdateTestMethodIdeTest extends AbstractCodegenIdeTest {
 
         described(logIn, "log out!");
 
-        final @NotNull PsiMethod pm = writtenMethodOf(LOGIN_TEST, logIn);
-        assertEquals("two methods now share one name, and the class no longer compiles", "logIn", pm.getName());
-        assertEquals("\"log out!\"", attributeOf(pm, "description"));
+        final @NotNull PsiMethod testMethod = writtenMethodOf(LOGIN_TEST, logIn);
+        assertEquals("two methods now share one name, and the class no longer compiles", "logIn", testMethod.getName());
+        assertEquals("\"log out!\"", attributeOf(testMethod, "description"));
     }
 
     // Rule-CODEGEN-045
@@ -137,8 +137,8 @@ public class UpdateTestMethodIdeTest extends AbstractCodegenIdeTest {
         GenType.UPDATE_TEST_CASE_STATUS.execute(getProject(), testCase);
         settled();
 
-        final @NotNull PsiMethod pm = writtenMethodOf(LOGIN_TEST, testCase);
-        assertFalse("turning the test case back on wrote an enabled attribute: " + pm.getModifierList().getText(), pm.getModifierList().getText().contains("enabled"));
+        final @NotNull PsiMethod testMethod = writtenMethodOf(LOGIN_TEST, testCase);
+        assertFalse("turning the test case back on wrote an enabled attribute: " + testMethod.getModifierList().getText(), testMethod.getModifierList().getText().contains("enabled"));
     }
 
     // Rule-CODEGEN-068
@@ -153,11 +153,11 @@ public class UpdateTestMethodIdeTest extends AbstractCodegenIdeTest {
         GenType.RECONCILE_TEST_CASE.executeAllNow(getProject(), List.of(restored, withoutAMethod));
         settled();
 
-        final @NotNull PsiMethod pm = writtenMethodOf(LOGIN_TEST, restored);
-        assertEquals("signIn", pm.getName());
-        assertEquals("\"Sign in\"", attributeOf(pm, "description"));
-        assertEquals("{\"smoke\"}", attributeOf(pm, "groups"));
-        assertEquals("false", attributeOf(pm, "enabled"));
+        final @NotNull PsiMethod testMethod = writtenMethodOf(LOGIN_TEST, restored);
+        assertEquals("signIn", testMethod.getName());
+        assertEquals("\"Sign in\"", attributeOf(testMethod, "description"));
+        assertEquals("{\"smoke\"}", attributeOf(testMethod, "groups"));
+        assertEquals("false", attributeOf(testMethod, "enabled"));
         assertTrue("undo created a method for a test case that had none", methodOf(LOGIN_TEST, withoutAMethod).isEmpty());
     }
 }

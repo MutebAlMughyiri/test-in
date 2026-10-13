@@ -24,23 +24,23 @@ import org.jetbrains.annotations.NotNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class BulkValueText {
     // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-044
-    static @NotNull String escape(final @NotNull String str) {
-        return str.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "");
+    static @NotNull String escape(final @NotNull String text) {
+        return text.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "");
     }
 
     // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-044
-    static @NotNull String unescape(final @NotNull String str) {
-        final @NotNull StringBuilder out = new StringBuilder(str.length());
+    static @NotNull String unescape(final @NotNull String text) {
+        final @NotNull StringBuilder out = new StringBuilder(text.length());
 
-        for (int i = 0; i < str.length(); i++) {
-            final char current = str.charAt(i);
+        for (int i = 0; i < text.length(); i++) {
+            final char current = text.charAt(i);
 
-            if (current != '\\' || i == str.length() - 1) {
+            if (current != '\\' || i == text.length() - 1) {
                 out.append(current);
                 continue;
             }
 
-            final char escaped = str.charAt(++i);
+            final char escaped = text.charAt(++i);
 
             switch (escaped) {
                 case 'n' -> out.append('\n');

@@ -36,7 +36,7 @@ public class Steps extends AbstractDetails {
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-027
     @Override
-    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto testCase, final int row) {
+    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull TestCaseDto testCase, final int row) {
         final @NotNull List<String> steps = testCase.getSteps();
 
         if (steps.isEmpty() || steps.stream().allMatch(String::isBlank))
@@ -54,7 +54,7 @@ public class Steps extends AbstractDetails {
             stepsContainer.add(createStepComponent(stepText, marginBottom));
         }
 
-        return addRow(panel, gbc, TestSetEditorFields.STEPS.getName(), stepsContainer, row);
+        return addRow(panel, constraints, TestSetEditorFields.STEPS.getName(), stepsContainer, row);
     }
 
     private @NotNull JTextArea createStepComponent(final @NotNull String text, final int marginBottom) {

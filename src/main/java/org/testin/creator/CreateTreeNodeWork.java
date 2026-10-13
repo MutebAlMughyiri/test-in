@@ -42,16 +42,16 @@ record CreateTreeNodeWork(@NotNull Project project, @NotNull Nodes nodes, @NotNu
 
     // UC-TREE-PANEL-007, UC-TREE-PANEL-008, UC-TREE-PANEL-009, UC-TREE-PANEL-010, Rule-TREE-PANEL-004
     void createUnder(final @NotNull AbstractNode parentNode) {
-        final @NotNull BiConsumer<String, NodeType> onCreate = (s, dt) -> {
-            if (s.isEmpty()) return;
-            final @NotNull Path newDirectoryPath = parentNode.getPath().resolve(s);
+        final @NotNull BiConsumer<String, NodeType> onCreate = (name, type) -> {
+            if (name.isEmpty()) return;
+            final @NotNull Path newDirectoryPath = parentNode.getPath().resolve(name);
 
             if (nodes.nodeExists(newDirectoryPath)) {
-                notifier.softRefuse(project, Refused.ALREADY_EXISTS, s);
+                notifier.softRefuse(project, Refused.ALREADY_EXISTS, name);
                 return;
             }
 
-            final @NotNull Optional<AbstractNode> created = NodeCreators.of(project, dt).execute(s, parentNode, newDirectoryPath);
+            final @NotNull Optional<AbstractNode> created = NodeCreators.of(project, type).execute(name, parentNode, newDirectoryPath);
 
             created.ifPresent(node -> {
                 notifier.softShow(project, Done.CREATED);
@@ -59,7 +59,7 @@ record CreateTreeNodeWork(@NotNull Project project, @NotNull Nodes nodes, @NotNu
                 if (node.isOpenableInEditor())
                     editors.open(node);
 
-                NodeCode.of(dt).getCreated().execute(project, node);
+                NodeCode.of(type).getCreated().execute(project, node);
             });
 
         };

@@ -162,16 +162,16 @@ public final class TestRunHtmlGenerator {
 
         html.append("</tr>");
 
-        final @NotNull AtomicInteger seq = new AtomicInteger(1);
+        final @NotNull AtomicInteger sequence = new AtomicInteger(1);
         runItems.stream()
                 .filter(section::matches)
                 .forEach(runItem -> {
                     ProgressManager.checkCanceled();
-                    final @NotNull String desc = runItem.shownTestCase().getDescription();
+                    final @NotNull String description = runItem.shownTestCase().getDescription();
 
                     html.append("<tr>")
-                            .append("<td class='seq'>").append(seq.getAndIncrement()).append("</td>")
-                            .append("<td>").append(StringUtil.escapeXmlEntities(desc.isEmpty() ? "—" : desc));
+                            .append("<td class='seq'>").append(sequence.getAndIncrement()).append("</td>")
+                            .append("<td>").append(StringUtil.escapeXmlEntities(description.isEmpty() ? "—" : description));
 
                     // Rule-REPORT-027
                     ReportText.otherExecutions(runItem).ifPresent(others -> html.append("<div class='actual'>").append(StringUtil.escapeXmlEntities(others)).append("</div>"));

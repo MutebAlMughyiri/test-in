@@ -76,14 +76,14 @@ public class ImportCsv {
 
         int refused = 0;
 
-        for (int r = 1; r < records.size(); r++) {
-            final @NotNull List<String> values = records.get(r);
+        for (int row = 1; row < records.size(); row++) {
+            final @NotNull List<String> values = records.get(row);
 
             if (values.stream().allMatch(String::isBlank)) continue;
 
             final @NotNull ImportedRow imported = TestSetEditorFields.importRow(project, field -> Optional.ofNullable(headerIndexMap.get(field.getName().toLowerCase(Locale.ROOT)))
-                    .filter(colIndex -> colIndex < values.size())
-                    .map(colIndex -> values.get(colIndex).trim())
+                    .filter(columnIndex -> columnIndex < values.size())
+                    .map(columnIndex -> values.get(columnIndex).trim())
                     .orElse(""));
 
             refused += imported.refused();

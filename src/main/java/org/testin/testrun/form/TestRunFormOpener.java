@@ -141,9 +141,9 @@ public final class TestRunFormOpener {
 
     // Rule-TREE-PANEL-138, Rule-TREE-PANEL-139
     private @NotNull CheckedTreeNode convertToCheckedNodes(final @NotNull DefaultMutableTreeNode node) {
-        final @NotNull Object userObj = node.getUserObject();
-        final @NotNull CheckedTreeNode newNode = new CheckedTreeNode(userObj);
-        if (userObj instanceof TestCaseDto testCase) newNode.setEnabled(testCase.getStatus().isEnabled());
+        final @NotNull Object userObject = node.getUserObject();
+        final @NotNull CheckedTreeNode newNode = new CheckedTreeNode(userObject);
+        if (userObject instanceof TestCaseDto testCase) newNode.setEnabled(testCase.getStatus().isEnabled());
         for (int i = 0; i < node.getChildCount(); i++) {
             newNode.add(convertToCheckedNodes((DefaultMutableTreeNode) node.getChildAt(i)));
         }

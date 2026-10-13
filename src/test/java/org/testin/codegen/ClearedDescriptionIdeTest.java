@@ -39,8 +39,8 @@ public class ClearedDescriptionIdeTest extends AbstractCodegenIdeTest {
     public void testAClearedDescriptionLeavesTheMethodUnderItsName() {
         final @NotNull TestCaseDto testCase = aTestCaseWhoseDescriptionWasCleared();
 
-        final @NotNull PsiMethod pm = writtenMethodOf(LOGIN_TEST, testCase);
-        assertEquals("clearing the description renamed the method", "logInWithAValidUser", pm.getName());
+        final @NotNull PsiMethod testMethod = writtenMethodOf(LOGIN_TEST, testCase);
+        assertEquals("clearing the description renamed the method", "logInWithAValidUser", testMethod.getName());
         assertEquals("clearing the description wrote a second method or lost the first", 1, generatedClass(LOGIN_TEST).orElseThrow().getMethods().length);
     }
 
@@ -48,8 +48,8 @@ public class ClearedDescriptionIdeTest extends AbstractCodegenIdeTest {
     public void testAClearedDescriptionIsRecordedInTheAnnotationAndTheNameStays() {
         final @NotNull TestCaseDto testCase = aTestCaseWhoseDescriptionWasCleared();
 
-        final @NotNull PsiMethod pm = writtenMethodOf(LOGIN_TEST, testCase);
-        assertEquals("clearing the description renamed the method", "logInWithAValidUser", pm.getName());
-        assertEquals("the method still claims the description the tester cleared", "\"\"", attributeOf(pm, "description"));
+        final @NotNull PsiMethod testMethod = writtenMethodOf(LOGIN_TEST, testCase);
+        assertEquals("clearing the description renamed the method", "logInWithAValidUser", testMethod.getName());
+        assertEquals("the method still claims the description the tester cleared", "\"\"", attributeOf(testMethod, "description"));
     }
 }

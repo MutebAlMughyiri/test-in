@@ -120,10 +120,10 @@ public final class Fqcn {
     }
 
     private static void sanitizeTail(final @NotNull List<String> names) {
-        final int lastIdx = names.size() - 1;
-        names.set(lastIdx, NameSanitizer.className(names.get(lastIdx)));
+        final int lastIndex = names.size() - 1;
+        names.set(lastIndex, NameSanitizer.className(names.get(lastIndex)));
 
-        for (int i = 0; i < lastIdx; i++) {
+        for (int i = 0; i < lastIndex; i++) {
             names.set(i, NameSanitizer.packageName(names.get(i)));
         }
     }

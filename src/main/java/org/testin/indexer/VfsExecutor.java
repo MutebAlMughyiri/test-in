@@ -57,9 +57,9 @@ final class VfsExecutor {
         claim(path);
 
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
-            final @NotNull Optional<VirtualFile> vf = find(path);
+            final @NotNull Optional<VirtualFile> virtualFile = find(path);
 
-            ApplicationManager.getApplication().invokeLater(() -> vf.ifPresentOrElse(
+            ApplicationManager.getApplication().invokeLater(() -> virtualFile.ifPresentOrElse(
                     file -> WriteAction.run(() -> {
                         try {
                             operation.execute(file);
@@ -80,11 +80,11 @@ final class VfsExecutor {
         claim(targetPath);
 
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
-            final @NotNull Optional<VirtualFile> sourceVf = find(sourcePath);
-            final @NotNull Optional<VirtualFile> targetVf = find(targetPath);
+            final @NotNull Optional<VirtualFile> sourceFile = find(sourcePath);
+            final @NotNull Optional<VirtualFile> targetFile = find(targetPath);
 
             ApplicationManager.getApplication().invokeLater(() -> {
-                if (sourceVf.isEmpty() || targetVf.isEmpty()) {
+                if (sourceFile.isEmpty() || targetFile.isEmpty()) {
                     Services.getInstance(project, Notifier.class).error(project, errorTitle, Bundle.message("vfs.source.or.target.not.found"));
                     onFailure.run();
                     return;
@@ -92,7 +92,7 @@ final class VfsExecutor {
 
                 WriteAction.run(() -> {
                     try {
-                        operation.execute(sourceVf.get(), targetVf.get());
+                        operation.execute(sourceFile.get(), targetFile.get());
                         onSuccess.run();
                     } catch (final Exception ex) {
                         Services.getInstance(project, Notifier.class).error(project, errorTitle, Bundle.message("vfs.operation.failed", FailureText.of(ex)));
@@ -112,14 +112,14 @@ final class VfsExecutor {
                 return;
             }
 
-            final @NotNull Optional<VirtualFile> vf = find(path);
+            final @NotNull Optional<VirtualFile> file = find(path);
 
             ApplicationManager.getApplication().invokeLater(() -> {
                 final @NotNull AtomicBoolean deleted = new AtomicBoolean(true);
 
                 WriteAction.run(() -> {
                     try {
-                        if (vf.isPresent()) vf.get().delete(requester);
+                        if (file.isPresent()) file.get().delete(requester);
                     } catch (final IOException ex) {
                         deleted.set(false);
                         Services.getInstance(project, Notifier.class).error(project, Bundle.message("vfs.delete.failed.title"), Bundle.message("vfs.delete.failed", FailureText.of(ex)));

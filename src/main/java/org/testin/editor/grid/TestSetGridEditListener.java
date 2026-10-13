@@ -70,8 +70,8 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
 
     // UC-EDITOR-PANEL-008, Rule-EDITOR-PANEL-050
     @Override
-    protected @NotNull GridEdit apply(final @NotNull DefaultTableModel model, final @NotNull TestCaseDto testCase, final int row, final int col) {
-        final @NotNull TestSetEditorFields field = TestSetEditorFields.atColumn(col);
+    protected @NotNull GridEdit apply(final @NotNull DefaultTableModel model, final @NotNull TestCaseDto testCase, final int row, final int column) {
+        final @NotNull TestSetEditorFields field = TestSetEditorFields.atColumn(column);
 
         if (!field.can(Can.EDIT)) return GridEdit.UNCHANGED;
 
@@ -80,13 +80,13 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
                 .orElseGet(() -> TestCaseSnapshot.of(project, testSetPath, List.of(testCase.getId())));
         final @NotNull TestCaseDto current = pending.map(Changed::testCase).orElse(testCase);
 
-        final @NotNull String typed = String.valueOf(model.getValueAt(row, col));
+        final @NotNull String typed = String.valueOf(model.getValueAt(row, column));
 
         final @NotNull Object before = field.gridValue(current);
         final @NotNull Optional<TestCaseDto> took = field.getImportSetter().execute(project, current, typed);
         final @NotNull Object after = field.gridValue(took.orElse(current));
 
-        model.setValueAt(after, row, col);
+        model.setValueAt(after, row, column);
 
         // Rule-EDITOR-PANEL-206
         if (took.isEmpty()) {

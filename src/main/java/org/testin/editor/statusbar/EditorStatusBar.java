@@ -131,11 +131,11 @@ public class EditorStatusBar extends JBPanel<EditorStatusBar> {
         row.setOpaque(false);
         row.setBackground(JBUI.CurrentTheme.EditorTabs.background());
 
-        final @NotNull GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridy = 0;
-        gbc.insets = JBUI.insetsLeft(4);
+        final @NotNull GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridy = 0;
+        constraints.insets = JBUI.insetsLeft(4);
 
-        for (final JComponent item : components) row.add(item, gbc);
+        for (final JComponent item : components) row.add(item, constraints);
 
         return row;
     }

@@ -40,7 +40,7 @@ public class Title extends AbstractDetails {
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-025, Rule-VIEW-PANEL-125
     @Override
-    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto testCase, final int currentRow) {
+    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull TestCaseDto testCase, final int currentRow) {
         final @NotNull String titleText = TestSetEditorFields.DESCRIPTION.displayValue(testCase);
         final @NotNull String finalValue = titleText.trim().isEmpty() ? "-" : titleText;
 
@@ -51,13 +51,13 @@ public class Title extends AbstractDetails {
 
         mainTitleArea.setFont(Fonts.title());
 
-        gbc.gridx = 0;
-        gbc.gridy = currentRow;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1.0;
-        gbc.insets = JBUI.insets(INSETS_TOP, INSETS_LEFT, INSETS_BOTTOM, INSETS_RIGHT);
+        constraints.gridx = 0;
+        constraints.gridy = currentRow;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.weightx = 1.0;
+        constraints.insets = JBUI.insets(INSETS_TOP, INSETS_LEFT, INSETS_BOTTOM, INSETS_RIGHT);
 
-        panel.add(mainTitleArea, gbc);
+        panel.add(mainTitleArea, constraints);
 
         return currentRow + 1;
     }

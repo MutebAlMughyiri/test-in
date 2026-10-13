@@ -115,7 +115,7 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
         final @NotNull TestSetNode testSet = aTestSet("Login");
         final @NotNull TestCaseDto testCase = everyFieldFilled(aTestCase(testSet, "Log in with a valid user", "a"));
         final @NotNull TestRunNode testRun = aTestRun(List.of(failedWith(testCase, List.of())));
-        final @NotNull JBPanel<?> tab = drawnWithEveryBandOpen(testCase, Services.getInstance(getProject(), TestRuns.class).findRunItems(testRun.getPath()).flatMap(run -> run.runItemOf(testCase.getId())), testRun.treePath());
+        final @NotNull JBPanel<?> tab = drawnWithEveryBandOpen(testCase, Services.getInstance(getProject(), TestRuns.class).findRunItems(testRun.getPath()).flatMap(runItems -> runItems.runItemOf(testCase.getId())), testRun.treePath());
 
         final @NotNull List<Component> drawn = Drawn.components(tab);
         assertTrue("the test case's own band was not drawn open: " + Drawn.words(tab), Drawn.holds(Drawn.words(tab), "The dashboard opens"));

@@ -59,13 +59,13 @@ record RemoveWork(@NotNull Project project, @NotNull Nodes nodes, @NotNull Testi
                 ? NodeCounter.childCounts(project, nodesToRemove.getFirst()).describe()
                 : "";
 
-        final @NotNull String msg = (nodesToRemove.size() == 1
+        final @NotNull String message = (nodesToRemove.size() == 1
                 ? Bundle.message("remove.confirm.one", nodesToRemove.getFirst().getName())
                 : Bundle.message("remove.confirm.many", String.valueOf(nodesToRemove.size())))
                 + (holds.isEmpty() ? "" : System.lineSeparator() + holds);
 
         final @NotNull String from = nodesToRemove.size() == 1 ? Objects.toString(nodesToRemove.getFirst().getPath().getParent(), "") : "";
-        new ConfirmDialog(project, Bundle.message("remove.confirm.title"), msg, from, "", Bundle.message("remove.confirm.button"), () -> removeNodes(nodesToRemove)).show();
+        new ConfirmDialog(project, Bundle.message("remove.confirm.title"), message, from, "", Bundle.message("remove.confirm.button"), () -> removeNodes(nodesToRemove)).show();
     }
 
     // UC-TREE-PANEL-012, Rule-TREE-PANEL-041

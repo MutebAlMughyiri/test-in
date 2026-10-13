@@ -48,17 +48,17 @@ public class TestCaseMethodIdeTest extends AbstractCodegenIdeTest {
     public void testTestNameCarriesTheTestCaseId() {
         final @NotNull TestCaseDto testCase = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
 
-        final @NotNull PsiMethod pm = generatedClass(LOGIN_TEST).orElseThrow().getMethods()[0];
+        final @NotNull PsiMethod testMethod = generatedClass(LOGIN_TEST).orElseThrow().getMethods()[0];
 
-        assertEquals("testName does not carry the test case id, so nothing could find the method afterward", "\"" + testCase.getId() + "\"", attributeOf(pm, "testName"));
+        assertEquals("testName does not carry the test case id, so nothing could find the method afterward", "\"" + testCase.getId() + "\"", attributeOf(testMethod, "testName"));
     }
 
     // Rule-CODEGEN-003
     public void testTestinWritesTheDeclarationAndOneTodoAndLeavesTheBodyToTheTester() {
         final @NotNull TestCaseDto testCase = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
 
-        final @NotNull PsiMethod pm = writtenMethodOf(LOGIN_TEST, testCase);
-        final @NotNull PsiCodeBlock body = Optional.ofNullable(pm.getBody()).orElseThrow(() -> new AssertionError("the method was written without a body"));
+        final @NotNull PsiMethod testMethod = writtenMethodOf(LOGIN_TEST, testCase);
+        final @NotNull PsiCodeBlock body = Optional.ofNullable(testMethod.getBody()).orElseThrow(() -> new AssertionError("the method was written without a body"));
         final @NotNull Collection<PsiComment> comments = PsiTreeUtil.findChildrenOfType(body, PsiComment.class);
 
         assertEquals("Testin wrote statements into a body that belongs to the tester", 0, body.getStatements().length);

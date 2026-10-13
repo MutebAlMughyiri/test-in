@@ -271,8 +271,8 @@ public abstract class AbstractFrameworkDialog implements DialogHost {
 
             ApplicationManager.getApplication().invokeLater(() -> {
                 final @NotNull Component focusOwner = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
-                if (focusOwner instanceof JComponent jComp) {
-                    jComp.scrollRectToVisible(new Rectangle(0, 0, jComp.getWidth(), jComp.getHeight()));
+                if (focusOwner instanceof JComponent component) {
+                    component.scrollRectToVisible(new Rectangle(0, 0, component.getWidth(), component.getHeight()));
                 }
             });
         });

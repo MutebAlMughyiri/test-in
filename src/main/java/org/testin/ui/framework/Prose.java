@@ -55,8 +55,8 @@ public final class Prose {
                 try {
                     Optional.ofNullable(modelToView2D(getDocument().getLength())).ifPresent(end ->
                             ending.paintIcon(this, g, (int) end.getMaxX() + endingGap(), (int) end.getCenterY() - ending.getIconHeight() / 2));
-                } catch (final BadLocationException e) {
-                    TestinLogger.warn("Could not find the end of the text to draw its mark after: " + e.getMessage());
+                } catch (final BadLocationException ex) {
+                    TestinLogger.warn("Could not find the end of the text to draw its mark after: " + ex.getMessage());
                 }
             }
         };

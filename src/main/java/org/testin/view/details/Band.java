@@ -60,13 +60,13 @@ public final class Band extends AbstractDetails {
 
     // UC-VIEW-PANEL-004, UC-VIEW-PANEL-005, Rule-VIEW-PANEL-085, Rule-VIEW-PANEL-087
     @Override
-    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto testCase, final int currentRow) {
-        int row = addFullWidthRow(panel, (GridBagConstraints) gbc.clone(), heading(project), JBUI.insets(INSETS_TOP, INSETS_SIDE, 0, INSETS_SIDE), currentRow);
+    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull TestCaseDto testCase, final int currentRow) {
+        int row = addFullWidthRow(panel, (GridBagConstraints) constraints.clone(), heading(project), JBUI.insets(INSETS_TOP, INSETS_SIDE, 0, INSETS_SIDE), currentRow);
 
         if (!isOpen()) return row;
 
         for (final AbstractDetails field : rows) {
-            row = field.render(project, panel, (GridBagConstraints) gbc.clone(), testCase, row);
+            row = field.render(project, panel, (GridBagConstraints) constraints.clone(), testCase, row);
         }
 
         return row;

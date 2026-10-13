@@ -109,23 +109,23 @@ class TestCaseDetails extends JBPanel<TestCaseDetails> {
     }
 
     private void addRow(final @NotNull Icon icon, final @NotNull JComponent value) {
-        final @NotNull GridBagConstraints gbc = new GridBagConstraints();
+        final @NotNull GridBagConstraints constraints = new GridBagConstraints();
 
-        gbc.gridy = GridBagConstraints.RELATIVE;
-        gbc.anchor = GridBagConstraints.NORTHWEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = JBUI.insetsBottom(GAP);
+        constraints.gridy = GridBagConstraints.RELATIVE;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.insets = JBUI.insetsBottom(GAP);
 
-        gbc.gridx = 0;
-        gbc.weightx = 0;
-        gbc.anchor = GridBagConstraints.WEST;
-        add(new JBLabel(icon), gbc);
+        constraints.gridx = 0;
+        constraints.weightx = 0;
+        constraints.anchor = GridBagConstraints.WEST;
+        add(new JBLabel(icon), constraints);
 
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        gbc.anchor = GridBagConstraints.NORTHWEST;
-        gbc.insets = JBUI.insets(0, GAP, GAP, 0);
-        add(value, gbc);
+        constraints.gridx = 1;
+        constraints.weightx = 1;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.insets = JBUI.insets(0, GAP, GAP, 0);
+        add(value, constraints);
     }
 
     private void addTags(final @NotNull TestCaseDto testCase) {

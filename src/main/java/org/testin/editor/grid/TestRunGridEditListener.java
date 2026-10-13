@@ -55,8 +55,8 @@ public class TestRunGridEditListener extends AbstractGridEditListener {
 
     // UC-EDITOR-PANEL-041, Rule-EDITOR-PANEL-174
     @Override
-    protected @NotNull GridEdit apply(final @NotNull DefaultTableModel model, final @NotNull TestCaseDto onThisRow, final int row, final int col) {
-        final @NotNull TestRunEditorFields field = TestRunEditorFields.atColumn(col);
+    protected @NotNull GridEdit apply(final @NotNull DefaultTableModel model, final @NotNull TestCaseDto onThisRow, final int row, final int column) {
+        final @NotNull TestRunEditorFields field = TestRunEditorFields.atColumn(column);
 
         if (!field.isEdited()) return GridEdit.UNCHANGED;
 
@@ -67,22 +67,22 @@ public class TestRunGridEditListener extends AbstractGridEditListener {
         final @NotNull String before = field.getRunItemValueExtractor().apply(runItem);
 
         if (runItem.isRemoved()) {
-            model.setValueAt(before, row, col);
+            model.setValueAt(before, row, column);
             runItemStatusService.refuseRemoved();
             return GridEdit.REFUSED;
         }
 
         // Rule-EDITOR-PANEL-174
         if (runItemStatusService.heldTestRun(editor.getParent().getPath()).isEmpty()) {
-            model.setValueAt(before, row, col);
+            model.setValueAt(before, row, column);
             return GridEdit.REFUSED;
         }
 
-        final @NotNull String typed = String.valueOf(model.getValueAt(row, col));
+        final @NotNull String typed = String.valueOf(model.getValueAt(row, column));
         testRuns.changeRunItem(editor.getParent().getPath(), onThisRow.getId(), result -> field.getRunItemValueSetter().execute(result, typed));
         final @NotNull String after = field.getRunItemValueExtractor().apply(runItem);
 
-        model.setValueAt(after, row, col);
+        model.setValueAt(after, row, column);
 
         if (Objects.equals(before, after)) return GridEdit.UNCHANGED;
 

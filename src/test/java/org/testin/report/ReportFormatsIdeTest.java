@@ -270,7 +270,7 @@ public class ReportFormatsIdeTest extends AbstractTempRootIdeTest {
 
         report(FileFormat.PDF, testRun);
 
-        Await.until("the PDF left Arabic out and said nothing", () -> said.stream().anyMatch(n -> n.getTitle().equals(Bundle.message("report.pdf.left.out.title"))));
+        Await.until("the PDF left Arabic out and said nothing", () -> said.stream().anyMatch(notification -> notification.getTitle().equals(Bundle.message("report.pdf.left.out.title"))));
     }
 
     // Rule-REPORT-019

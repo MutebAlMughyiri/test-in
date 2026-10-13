@@ -65,20 +65,20 @@ public final class TestNGExecution implements Disposable {
 
         project.getMessageBus().connect(this).subscribe(ExecutionManager.EXECUTION_TOPIC, new ExecutionListener() {
             @Override
-            public void processStarted(final @NotNull String executorId, final @NotNull ExecutionEnvironment env, final @NotNull ProcessHandler handler) {
-                final @NotNull String testRunName = env.getRunProfile().getName();
+            public void processStarted(final @NotNull String executorId, final @NotNull ExecutionEnvironment environment, final @NotNull ProcessHandler handler) {
+                final @NotNull String testRunName = environment.getRunProfile().getName();
                 if (registry.launchedHere(testRunName)) live.put(handler, testRunName);
             }
 
             @Override
-            public void processTerminated(final @NotNull String executorId, final @NotNull ExecutionEnvironment env, final @NotNull ProcessHandler handler, final int exitCode) {
+            public void processTerminated(final @NotNull String executorId, final @NotNull ExecutionEnvironment environment, final @NotNull ProcessHandler handler, final int exitCode) {
                 live.remove(handler);
-                ended(env);
+                ended(environment);
             }
 
             @Override
-            public void processNotStarted(final @NotNull String executorId, final @NotNull ExecutionEnvironment env) {
-                ended(env);
+            public void processNotStarted(final @NotNull String executorId, final @NotNull ExecutionEnvironment environment) {
+                ended(environment);
             }
         });
     }
@@ -210,9 +210,9 @@ public final class TestNGExecution implements Disposable {
     }
 
     // UC-CODEGEN-008, Rule-CODEGEN-092, Rule-CODEGEN-110
-    private void ended(final @NotNull ExecutionEnvironment env) {
+    private void ended(final @NotNull ExecutionEnvironment environment) {
         ApplicationManager.getApplication().invokeLater(() -> {
-            final @NotNull String testRunName = env.getRunProfile().getName();
+            final @NotNull String testRunName = environment.getRunProfile().getName();
             final @NotNull List<UUID> open = registry.ended(testRunName);
             if (open.isEmpty()) return;
 

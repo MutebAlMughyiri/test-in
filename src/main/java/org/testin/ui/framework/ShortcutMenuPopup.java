@@ -103,10 +103,10 @@ public final class ShortcutMenuPopup<T extends MenuItem> {
         list.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(final @NotNull MouseEvent e) {
-                final int idx = list.locationToIndex(e.getPoint());
-                if (idx < 0) return;
+                final int index = list.locationToIndex(e.getPoint());
+                if (index < 0) return;
 
-                list.setSelectedIndex(idx);
+                list.setSelectedIndex(index);
                 ListValue.selected(list).ifPresent(item -> select(item, popup));
             }
         });

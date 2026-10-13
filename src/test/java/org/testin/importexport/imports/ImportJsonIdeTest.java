@@ -46,8 +46,8 @@ public class ImportJsonIdeTest extends BasePlatformTestCase {
             final @NotNull Map<String, List<TestCaseDto>> read = new ImportJson().parseFile(getProject(), new File(file.toString()));
 
             return read.values().iterator().next().getFirst();
-        } catch (final Exception e) {
-            throw new AssertionError("the exported file could not be written for the test", e);
+        } catch (final Exception ex) {
+            throw new AssertionError("the exported file could not be written for the test", ex);
         }
     }
 

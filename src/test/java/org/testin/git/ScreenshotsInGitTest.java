@@ -43,8 +43,8 @@ public class ScreenshotsInGitTest {
             final Path at = root.resolve("runs/cycle38");
             Files.createDirectories(at);
             Files.writeString(at.resolve(NodeType.TR.getMarker()), "{}");
-        } catch (final Exception e) {
-            throw new AssertionError("could not write the test run's marker", e);
+        } catch (final Exception ex) {
+            throw new AssertionError("could not write the test run's marker", ex);
         }
     }
 
@@ -57,8 +57,8 @@ public class ScreenshotsInGitTest {
 
             assertTrue(PendingChangeReader.toDiffs(List.of(" D " + REMOVED), root, RealJsonCodec.build(), _ -> Map.of(), _ -> Optional.empty()).isEmpty(),
                     "a screenshot arrives or goes with its test run, so it has no row of its own");
-        } catch (final Exception e) {
-            throw new AssertionError("the review could not be built", e);
+        } catch (final Exception ex) {
+            throw new AssertionError("the review could not be built", ex);
         }
     }
 
@@ -72,8 +72,8 @@ public class ScreenshotsInGitTest {
 
             assertEquals(PendingChangeReader.toDiffs(List.of("?? " + beside), root, RealJsonCodec.build(), _ -> Map.of(), _ -> Optional.empty()).size(), 1,
                     "a PNG in a test set has no test run to travel with, so the review has to list it");
-        } catch (final Exception e) {
-            throw new AssertionError("the review could not be built", e);
+        } catch (final Exception ex) {
+            throw new AssertionError("the review could not be built", ex);
         }
     }
 

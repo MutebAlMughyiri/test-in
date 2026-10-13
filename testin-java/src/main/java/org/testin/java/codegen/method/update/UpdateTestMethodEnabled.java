@@ -28,14 +28,14 @@ public class UpdateTestMethodEnabled extends BaseTestMethodChange implements Cod
     // UC-CODEGEN-013, Rule-CODEGEN-047, Rule-CODEGEN-048
     @Override
     public void execute(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
-        applyUpdate(project, testCase, GenType.UPDATE_TEST_CASE_STATUS.description(), pm -> {
-            writeEnabled(project, pm, testCase);
-            reformat(project, pm);
+        applyUpdate(project, testCase, GenType.UPDATE_TEST_CASE_STATUS.description(), testMethod -> {
+            writeEnabled(project, testMethod, testCase);
+            reformat(project, testMethod);
         });
     }
 
     @Override
     public void executeAll(final @NotNull Project project, final @NotNull List<? extends TestCaseDto> testCases) {
-        applyToEach(project, testCases, GenType.UPDATE_TEST_CASE_STATUS.description(), (pm, testCase) -> writeEnabled(project, pm, testCase));
+        applyToEach(project, testCases, GenType.UPDATE_TEST_CASE_STATUS.description(), (testMethod, testCase) -> writeEnabled(project, testMethod, testCase));
     }
 }

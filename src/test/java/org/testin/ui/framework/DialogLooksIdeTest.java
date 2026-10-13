@@ -78,7 +78,7 @@ public class DialogLooksIdeTest extends BasePlatformTestCase {
 
     private static final @NotNull Icon GREEN = new Icon() {
         @Override
-        public void paintIcon(final Component c, final Graphics g, final int x, final int y) {
+        public void paintIcon(final Component component, final Graphics g, final int x, final int y) {
             g.setColor(Icons.GREEN);
             g.fillRect(x, y, getIconWidth(), getIconHeight());
         }

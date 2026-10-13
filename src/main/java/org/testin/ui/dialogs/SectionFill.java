@@ -37,7 +37,7 @@ final class SectionFill implements Border {
     private static final float LINE = 1;
 
     @Override
-    public void paintBorder(final @NotNull Component c, final @NotNull Graphics g, final int x, final int y, final int width, final int height) {
+    public void paintBorder(final @NotNull Component component, final @NotNull Graphics g, final int x, final int y, final int width, final int height) {
         final @NotNull Graphics2D g2 = (Graphics2D) g.create();
         try {
             GraphicsUtil.setupAAPainting(g2);
@@ -57,7 +57,7 @@ final class SectionFill implements Border {
     }
 
     @Override
-    public @NotNull Insets getBorderInsets(final @NotNull Component c) {
+    public @NotNull Insets getBorderInsets(final @NotNull Component component) {
         return JBUI.insets(Spacing.XL);
     }
 

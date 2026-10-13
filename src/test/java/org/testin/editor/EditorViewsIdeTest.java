@@ -101,8 +101,8 @@ public class EditorViewsIdeTest extends AbstractTempRootIdeTest {
 
     private static @NotNull List<String> headers(final @NotNull JBTable table) {
         final @NotNull List<String> shown = new ArrayList<>();
-        for (int c = 0; c < table.getColumnCount(); c++)
-            shown.add(String.valueOf(table.getColumnModel().getColumn(c).getHeaderValue()));
+        for (int column = 0; column < table.getColumnCount(); column++)
+            shown.add(String.valueOf(table.getColumnModel().getColumn(column).getHeaderValue()));
         return shown;
     }
 

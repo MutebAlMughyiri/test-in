@@ -28,7 +28,7 @@ import org.testin.editor.TestinEditor;
 public class UnifiedEditorProvider implements FileEditorProvider, DumbAware {
     @Override
     public boolean accept(final @NotNull Project project, final @NotNull VirtualFile file) {
-        return file instanceof UnifiedVirtualFile vf && vf.isValid();
+        return file instanceof UnifiedVirtualFile virtualFile && virtualFile.isValid();
     }
 
     @Override

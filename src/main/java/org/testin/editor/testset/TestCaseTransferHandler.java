@@ -72,13 +72,13 @@ public class TestCaseTransferHandler extends TransferHandler {
 
     // UC-EDITOR-PANEL-010, Rule-EDITOR-PANEL-058
     @Override
-    public int getSourceActions(final JComponent c) {
+    public int getSourceActions(final JComponent component) {
         return MOVE;
     }
 
     @Override
-    protected @Nullable Transferable createTransferable(final JComponent c) {
-        if (!(c instanceof JBList<?> rawList)) return null;
+    protected @Nullable Transferable createTransferable(final JComponent component) {
+        if (!(component instanceof JBList<?> rawList)) return null;
 
         final @NotNull List<TestCaseDto> testCases = rawList.getSelectedValuesList().stream()
                 .filter(TestCaseDto.class::isInstance)

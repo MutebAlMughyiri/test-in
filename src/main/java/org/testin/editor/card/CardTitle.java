@@ -76,27 +76,27 @@ public final class CardTitle {
         return column > forIcons ? column : Integer.MAX_VALUE;
     }
 
-    public static void drawDescriptionActionIcons(final @NotNull Component c, final @NotNull Graphics g, final int titleWidth, final @NotNull String hoveredAction, final @NotNull List<Offered> buttons, final @NotNull Automated automation, final boolean executing) {
+    public static void drawDescriptionActionIcons(final @NotNull Component component, final @NotNull Graphics g, final int titleWidth, final @NotNull String hoveredAction, final @NotNull List<Offered> buttons, final @NotNull Automated automation, final boolean executing) {
         descriptionActionIcons(titleWidth, buttons, executing).slots()
-                .forEach(slot -> draw(c, g, slot.button(), slot.button().action().iconOn(automation), slot.at(), hoveredAction));
+                .forEach(slot -> draw(component, g, slot.button(), slot.button().action().iconOn(automation), slot.at(), hoveredAction));
     }
 
     // UC-EDITOR-PANEL-047, Rule-CODEGEN-062, Rule-EDITOR-PANEL-235
-    private static void draw(final @NotNull Component c, final @NotNull Graphics g, final @NotNull Offered button, final @NotNull Icon icon, final @NotNull Rectangle at, final @NotNull String hoveredAction) {
+    private static void draw(final @NotNull Component component, final @NotNull Graphics g, final @NotNull Offered button, final @NotNull Icon icon, final @NotNull Rectangle at, final @NotNull String hoveredAction) {
         final @NotNull Icon shown = button.works() ? icon : IconLoader.getDisabledIcon(icon);
 
-        drawHoverableIcon(c, g, shown, at.x + (at.width - shown.getIconWidth()) / 2, at.y + (at.height - shown.getIconHeight()) / 2,
+        drawHoverableIcon(component, g, shown, at.x + (at.width - shown.getIconWidth()) / 2, at.y + (at.height - shown.getIconHeight()) / 2,
                 button.works() && button.action().name().equals(hoveredAction));
     }
 
-    private static void drawHoverableIcon(final @NotNull Component c, final @NotNull Graphics g, final @NotNull Icon baseIcon, final int x, final int y, final boolean isHovered) {
+    private static void drawHoverableIcon(final @NotNull Component component, final @NotNull Graphics g, final @NotNull Icon baseIcon, final int x, final int y, final boolean isHovered) {
         if (isHovered) {
-            final @NotNull Icon scaledIcon = IconUtil.scale(baseIcon, c, 1.5f);
+            final @NotNull Icon scaledIcon = IconUtil.scale(baseIcon, component, 1.5f);
             final int offsetX = (scaledIcon.getIconWidth() - baseIcon.getIconWidth()) / 2;
             final int offsetY = (scaledIcon.getIconHeight() - baseIcon.getIconHeight()) / 2;
-            scaledIcon.paintIcon(c, g, x - offsetX, y - offsetY);
+            scaledIcon.paintIcon(component, g, x - offsetX, y - offsetY);
         } else {
-            baseIcon.paintIcon(c, g, x, y);
+            baseIcon.paintIcon(component, g, x, y);
         }
     }
 

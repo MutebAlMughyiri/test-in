@@ -158,7 +158,7 @@ public class TestinFolderIdeTest extends AbstractTempRootIdeTest {
         assertTrue("with no folder set, Testin never finished reading", indexer().isIndexed());
         assertTrue("with no folder set, Testin read a test project", indexer().testProjects().isEmpty());
         assertTrue("with no folder set, the tree has something to show", Services.getInstance(getProject(), Nodes.class).getTestProjectsByPath().isEmpty());
-        assertTrue("with no folder set, Testin reported a failure: " + said.stream().map(Notification::getContent).toList(), said.stream().noneMatch(n -> n.getType() == NotificationType.ERROR));
+        assertTrue("with no folder set, Testin reported a failure: " + said.stream().map(Notification::getContent).toList(), said.stream().noneMatch(notification -> notification.getType() == NotificationType.ERROR));
     }
 
     // Rule-SETTING-021

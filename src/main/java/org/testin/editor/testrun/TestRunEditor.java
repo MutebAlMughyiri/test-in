@@ -104,8 +104,8 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
 
     private boolean startWhenLoaded;
 
-    public TestRunEditor(final @NotNull Project project, final @NotNull UnifiedVirtualFile vf) {
-        super(project, vf.getTestRun());
+    public TestRunEditor(final @NotNull Project project, final @NotNull UnifiedVirtualFile file) {
+        super(project, file.getTestRun());
         Services.getInstance(project, Guides.class).add(Guide.TEST_RUN_EDITOR_SHORTCUTS);
 
         ExecutionRecorder.onReported(project, projectDisposable, walk::executionReported);

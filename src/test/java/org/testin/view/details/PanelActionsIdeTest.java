@@ -144,10 +144,10 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestCaseDto testCase = aTestCase();
         codeIsOff();
 
-        final @NotNull JBLabel run = buttonsOn(testCase).get(1);
-        assertEquals("the run button was not drawn", TestCaseQuickAction.RUN_TEST_METHOD.getTooltip(), nameOf(run));
-        assertGrayAndSaysWhy(run, "the run button");
-        assertEquals("the run button does not say it waits for testin.yml", TestCaseQuickAction.RUN_TEST_METHOD.whyNotOffered(getProject()).orElseThrow(), whyGray(run));
+        final @NotNull JBLabel runButton = buttonsOn(testCase).get(1);
+        assertEquals("the run button was not drawn", TestCaseQuickAction.RUN_TEST_METHOD.getTooltip(), nameOf(runButton));
+        assertGrayAndSaysWhy(runButton, "the run button");
+        assertEquals("the run button does not say it waits for testin.yml", TestCaseQuickAction.RUN_TEST_METHOD.whyNotOffered(getProject()).orElseThrow(), whyGray(runButton));
     }
 
     // Rule-VIEW-PANEL-051, Rule-VIEW-PANEL-053
@@ -172,14 +172,14 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-VIEW-PANEL-052
     public void testTheRunButtonGrowsUnderThePointer() {
-        final @NotNull JBLabel run = buttonsOn(aTestCase()).get(1);
-        assertEquals("the run button cannot work here: " + whyGray(run), "", whyGray(run));
-        final int before = widthOf(run);
+        final @NotNull JBLabel runButton = buttonsOn(aTestCase()).get(1);
+        assertEquals("the run button cannot work here: " + whyGray(runButton), "", whyGray(runButton));
+        final int before = widthOf(runButton);
 
-        pointerOver(run);
+        pointerOver(runButton);
 
-        assertTrue("the run button did not grow under the pointer", widthOf(run) > before);
-        assertEquals("the pointer is not a hand over the run button", Cursor.HAND_CURSOR, run.getCursor().getType());
+        assertTrue("the run button did not grow under the pointer", widthOf(runButton) > before);
+        assertEquals("the pointer is not a hand over the run button", Cursor.HAND_CURSOR, runButton.getCursor().getType());
     }
 
     // Rule-VIEW-PANEL-056
@@ -253,7 +253,7 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
 
         Await.until("saving the description did not rewrite it in the test method", () -> {
             settled();
-            return methodOf(LOGIN_TEST, testCase).map(pm -> attributeOf(pm, "description")).filter("\"Sign in with a valid user\""::equals).isPresent();
+            return methodOf(LOGIN_TEST, testCase).map(testMethod -> attributeOf(testMethod, "description")).filter("\"Sign in with a valid user\""::equals).isPresent();
         });
     }
 

@@ -61,6 +61,7 @@ import javax.swing.Timer;
 import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.IntFunction;
@@ -71,8 +72,8 @@ final class BulkJsonEditors implements DialogComponent {
 
     private final @NotNull Project project;
 
-    private final @NotNull Document leftDoc;
-    private final @NotNull Document rightDoc;
+    private final @NotNull Document leftDocument;
+    private final @NotNull Document rightDocument;
     private final @NotNull Editor leftEditor;
     private final @NotNull Editor rightEditor;
     private final @NotNull JBSplitter splitter;
@@ -81,7 +82,7 @@ final class BulkJsonEditors implements DialogComponent {
     private final @NotNull List<RangeMarker> guardBlocks = new ArrayList<>();
     private final @NotNull List<RangeHighlighter> leftLineHighlighters = new ArrayList<>();
     private final @NotNull TextAttributes leftLineAttributes = new TextAttributes();
-    private final @NotNull Disposable docListenerDisposable = Disposer.newDisposable();
+    private final @NotNull Disposable documentListenerDisposable = Disposer.newDisposable();
 
     private @NotNull IntFunction<String> originalTextAt = _ -> "";
 
@@ -89,8 +90,8 @@ final class BulkJsonEditors implements DialogComponent {
     BulkJsonEditors(final @NotNull Project project) {
         this.project = project;
 
-        leftDoc = EditorFactory.getInstance().createDocument("");
-        leftEditor = EditorFactory.getInstance().createEditor(leftDoc, project, Json.fileType(), true);
+        leftDocument = EditorFactory.getInstance().createDocument("");
+        leftEditor = EditorFactory.getInstance().createEditor(leftDocument, project, Json.fileType(), true);
         setupEditorAppearance(leftEditor);
         leftEditor.getContentComponent().setFocusable(false);
         leftEditor.getSettings().setCaretRowShown(false);
@@ -101,10 +102,10 @@ final class BulkJsonEditors implements DialogComponent {
             }
         });
 
-        rightDoc = EditorFactory.getInstance().createDocument("");
-        EditorActionManager.getInstance().setReadonlyFragmentModificationHandler(rightDoc, _ -> {
+        rightDocument = EditorFactory.getInstance().createDocument("");
+        EditorActionManager.getInstance().setReadonlyFragmentModificationHandler(rightDocument, _ -> {
         });
-        rightEditor = EditorFactory.getInstance().createEditor(rightDoc, project, Json.fileType(), false);
+        rightEditor = EditorFactory.getInstance().createEditor(rightDocument, project, Json.fileType(), false);
         setupEditorAppearance(rightEditor);
 
         final @NotNull Color caretRowColor = Optional
@@ -139,28 +140,28 @@ final class BulkJsonEditors implements DialogComponent {
     // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-040
     void setContent(final @NotNull String leftText, final @NotNull String rightText, final @NotNull List<int[]> editableRanges) {
         WriteCommandAction.runWriteCommandAction(project, () -> {
-            for (final RangeMarker guard : guardBlocks) rightDoc.removeGuardedBlock(guard);
+            for (final RangeMarker guard : guardBlocks) rightDocument.removeGuardedBlock(guard);
             guardBlocks.clear();
             markers.clear();
 
-            leftDoc.setReadOnly(false);
-            leftDoc.setText(leftText);
-            leftDoc.setReadOnly(true);
+            leftDocument.setReadOnly(false);
+            leftDocument.setText(leftText);
+            leftDocument.setReadOnly(true);
 
-            rightDoc.setText(rightText);
+            rightDocument.setText(rightText);
 
             int guardStart = 0;
             for (final int[] range : editableRanges) {
-                final @NotNull RangeMarker marker = rightDoc.createRangeMarker(range[0], range[1]);
+                final @NotNull RangeMarker marker = rightDocument.createRangeMarker(range[0], range[1]);
                 marker.setGreedyToLeft(true);
                 marker.setGreedyToRight(true);
                 markers.add(marker);
 
-                if (guardStart < range[0]) guardBlocks.add(rightDoc.createGuardedBlock(guardStart, range[0]));
+                if (guardStart < range[0]) guardBlocks.add(rightDocument.createGuardedBlock(guardStart, range[0]));
                 guardStart = range[1];
             }
-            if (guardStart < rightDoc.getTextLength()) {
-                guardBlocks.add(rightDoc.createGuardedBlock(guardStart, rightDoc.getTextLength()));
+            if (guardStart < rightDocument.getTextLength()) {
+                guardBlocks.add(rightDocument.createGuardedBlock(guardStart, rightDocument.getTextLength()));
             }
         });
     }
@@ -177,7 +178,7 @@ final class BulkJsonEditors implements DialogComponent {
         final @NotNull RangeMarker marker = markers.get(index);
         if (!marker.isValid()) return Optional.empty();
 
-        return Optional.of(rightDoc.getText(new TextRange(marker.getStartOffset(), marker.getEndOffset())));
+        return Optional.of(rightDocument.getText(new TextRange(marker.getStartOffset(), marker.getEndOffset())));
     }
 
     @NotNull List<Integer> indicesUnderCarets() {
@@ -188,7 +189,7 @@ final class BulkJsonEditors implements DialogComponent {
             if (index >= 0 && !indices.contains(index)) indices.add(index);
         }
 
-        indices.sort((a, b) -> Integer.compare(b, a));
+        indices.sort(Comparator.reverseOrder());
         return indices;
     }
 
@@ -221,7 +222,7 @@ final class BulkJsonEditors implements DialogComponent {
     }
 
     void release() {
-        Disposer.dispose(docListenerDisposable);
+        Disposer.dispose(documentListenerDisposable);
         if (!leftEditor.isDisposed()) EditorFactory.getInstance().releaseEditor(leftEditor);
         if (!rightEditor.isDisposed()) EditorFactory.getInstance().releaseEditor(rightEditor);
     }
@@ -254,12 +255,12 @@ final class BulkJsonEditors implements DialogComponent {
         final @NotNull Timer redraw = new Timer(TYPING_SETTLES_MILLIS, _ -> refreshDiffHighlights());
         redraw.setRepeats(false);
 
-        rightDoc.addDocumentListener(new DocumentListener() {
+        rightDocument.addDocumentListener(new DocumentListener() {
             @Override
             public void documentChanged(final @NotNull DocumentEvent event) {
                 redraw.restart();
             }
-        }, docListenerDisposable);
+        }, documentListenerDisposable);
     }
 
     private void refreshDiffHighlights() {
@@ -332,8 +333,8 @@ final class BulkJsonEditors implements DialogComponent {
         leftLineHighlighters.clear();
 
         for (final Caret caret : rightEditor.getCaretModel().getAllCarets()) {
-            final int line = rightDoc.getLineNumber(caret.getOffset());
-            if (line < leftDoc.getLineCount()) {
+            final int line = rightDocument.getLineNumber(caret.getOffset());
+            if (line < leftDocument.getLineCount()) {
                 leftLineHighlighters.add(leftMarkup.addLineHighlighter(line, HighlighterLayer.CARET_ROW, leftLineAttributes));
             }
         }
@@ -413,16 +414,16 @@ final class BulkJsonEditors implements DialogComponent {
     private static int nearestValidOffset(final int offset, final @NotNull List<RangeMarker> markers) {
         int minDistance = Integer.MAX_VALUE;
         int nearestOffset = offset;
-        for (final RangeMarker m : markers) {
-            if (!m.isValid()) continue;
+        for (final RangeMarker marker : markers) {
+            if (!marker.isValid()) continue;
 
-            if (Math.abs(offset - m.getStartOffset()) < minDistance) {
-                minDistance = Math.abs(offset - m.getStartOffset());
-                nearestOffset = m.getStartOffset();
+            if (Math.abs(offset - marker.getStartOffset()) < minDistance) {
+                minDistance = Math.abs(offset - marker.getStartOffset());
+                nearestOffset = marker.getStartOffset();
             }
-            if (Math.abs(offset - m.getEndOffset()) < minDistance) {
-                minDistance = Math.abs(offset - m.getEndOffset());
-                nearestOffset = m.getEndOffset();
+            if (Math.abs(offset - marker.getEndOffset()) < minDistance) {
+                minDistance = Math.abs(offset - marker.getEndOffset());
+                nearestOffset = marker.getEndOffset();
             }
         }
         return nearestOffset;
@@ -437,14 +438,14 @@ final class BulkJsonEditors implements DialogComponent {
         for (final RangeMarker marker : markers) {
             if (!marker.isValid()) continue;
 
-            final @NotNull LogicalPosition logPos = editor.offsetToLogicalPosition(marker.getEndOffset());
-            final @NotNull VisualPosition visPos = editor.logicalToVisualPosition(logPos);
+            final @NotNull LogicalPosition logicalPosition = editor.offsetToLogicalPosition(marker.getEndOffset());
+            final @NotNull VisualPosition visualPosition = editor.logicalToVisualPosition(logicalPosition);
 
             if (isFirst) {
-                caretModel.moveToVisualPosition(visPos);
+                caretModel.moveToVisualPosition(visualPosition);
                 isFirst = false;
             } else {
-                caretModel.addCaret(visPos, true);
+                caretModel.addCaret(visualPosition, true);
             }
         }
     }

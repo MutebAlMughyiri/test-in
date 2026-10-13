@@ -82,26 +82,26 @@ public abstract class AbstractDetails {
         Services.getInstance(project, TestinEditors.class).testRunEditorFor(testRunNode).ifPresent(TestRunEditor::refreshView);
     }
 
-    public abstract int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto testCase, final int currentRow);
+    public abstract int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull TestCaseDto testCase, final int currentRow);
 
-    protected int addRow(final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull String caption, final @NotNull String value, final int row) {
-        return CaptionValueRow.add(panel, gbc, caption, value, row);
+    protected int addRow(final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull String caption, final @NotNull String value, final int row) {
+        return CaptionValueRow.add(panel, constraints, caption, value, row);
     }
 
-    protected int addRow(final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull String caption, final @NotNull JComponent value, final int row) {
-        return CaptionValueRow.add(panel, gbc, caption, value, row);
+    protected int addRow(final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull String caption, final @NotNull JComponent value, final int row) {
+        return CaptionValueRow.add(panel, constraints, caption, value, row);
     }
 
     // Rule-VIEW-PANEL-085, Rule-VIEW-PANEL-124
-    protected int addFullWidthRow(final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull JComponent component, final @NotNull Insets insets, final int row) {
-        gbc.gridx = 0;
-        gbc.gridy = row;
-        gbc.weightx = 1.0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = insets;
+    protected int addFullWidthRow(final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull JComponent component, final @NotNull Insets insets, final int row) {
+        constraints.gridx = 0;
+        constraints.gridy = row;
+        constraints.weightx = 1.0;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.anchor = GridBagConstraints.WEST;
+        constraints.insets = insets;
 
-        panel.add(component, gbc);
+        panel.add(component, constraints);
 
         return row + 1;
     }

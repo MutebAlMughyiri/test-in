@@ -93,8 +93,8 @@ public class DeletedTestCaseInATestRunTest {
 
             assertTrue(written.contains("\"PASSED\""), "the file keeps the run item status: " + written);
             assertFalse(written.contains("removed"), "the mark is never written: " + written);
-        } catch (final Exception e) {
-            throw new AssertionError("the test run could not be written", e);
+        } catch (final Exception ex) {
+            throw new AssertionError("the test run could not be written", ex);
         }
     }
 }

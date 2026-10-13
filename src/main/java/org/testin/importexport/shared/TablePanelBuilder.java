@@ -103,8 +103,8 @@ public class TablePanelBuilder {
         try {
             final @NotNull TableColumn priorityCol = table.getColumn(TestSetEditorFields.PRIORITY.getName());
             final @NotNull ComboBox<String> priorityBox = new ComboBox<>();
-            for (final Priority pr : Priority.values()) {
-                priorityBox.addItem(pr.getLabel());
+            for (final Priority priority : Priority.values()) {
+                priorityBox.addItem(priority.getLabel());
             }
             priorityCol.setCellEditor(new DefaultCellEditor(priorityBox));
 

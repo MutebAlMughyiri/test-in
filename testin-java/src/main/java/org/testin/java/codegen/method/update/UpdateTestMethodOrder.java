@@ -43,31 +43,31 @@ import java.util.Optional;
 // Rule-CODEGEN-014
 public class UpdateTestMethodOrder extends BaseTestMethodChange implements CodeChange<TestCaseDto> {
     // UC-CODEGEN-011, Rule-CODEGEN-067
-    private static @NotNull PsiElement place(final @NotNull PsiClass pc, final @NotNull PsiMethod pm, final @NotNull Optional<PsiElement> after) {
-        return after.map(previous -> placeAfter(pc, pm, previous)).orElseGet(() -> placeFirst(pc, pm));
+    private static @NotNull PsiElement place(final @NotNull PsiClass testClass, final @NotNull PsiMethod testMethod, final @NotNull Optional<PsiElement> after) {
+        return after.map(previous -> placeAfter(testClass, testMethod, previous)).orElseGet(() -> placeFirst(testClass, testMethod));
     }
 
     // UC-CODEGEN-011, Rule-CODEGEN-067
-    private static @NotNull PsiElement placeFirst(final @NotNull PsiClass pc, final @NotNull PsiMethod pm) {
-        final @NotNull Optional<PsiMethod> first = firstGenerated(pc).filter(found -> !found.equals(pm));
-        if (first.isEmpty()) return pm;
+    private static @NotNull PsiElement placeFirst(final @NotNull PsiClass testClass, final @NotNull PsiMethod testMethod) {
+        final @NotNull Optional<PsiMethod> first = firstGenerated(testClass).filter(found -> !found.equals(testMethod));
+        if (first.isEmpty()) return testMethod;
 
-        final @NotNull PsiElement moved = pc.addBefore(pm, first.get());
-        pm.delete();
+        final @NotNull PsiElement moved = testClass.addBefore(testMethod, first.get());
+        testMethod.delete();
         return moved;
     }
 
     // UC-CODEGEN-011, Rule-CODEGEN-067
-    private static @NotNull PsiElement placeAfter(final @NotNull PsiClass pc, final @NotNull PsiMethod pm, final @NotNull PsiElement after) {
-        if (nextAfter(after).filter(next -> next.equals(pm)).isPresent()) return pm;
+    private static @NotNull PsiElement placeAfter(final @NotNull PsiClass testClass, final @NotNull PsiMethod testMethod, final @NotNull PsiElement after) {
+        if (nextAfter(after).filter(next -> next.equals(testMethod)).isPresent()) return testMethod;
 
-        final @NotNull PsiElement moved = pc.addAfter(pm, after);
-        pm.delete();
+        final @NotNull PsiElement moved = testClass.addAfter(testMethod, after);
+        testMethod.delete();
         return moved;
     }
 
-    private static @NotNull Optional<PsiMethod> firstGenerated(final @NotNull PsiClass pc) {
-        return Arrays.stream(pc.getMethods()).filter(method -> GeneratedMethod.testCaseIdOf(method).isPresent()).findFirst();
+    private static @NotNull Optional<PsiMethod> firstGenerated(final @NotNull PsiClass testClass) {
+        return Arrays.stream(testClass.getMethods()).filter(method -> GeneratedMethod.testCaseIdOf(method).isPresent()).findFirst();
     }
 
     private static @NotNull Optional<PsiElement> nextAfter(final @NotNull PsiElement element) {
@@ -109,9 +109,9 @@ public class UpdateTestMethodOrder extends BaseTestMethodChange implements CodeC
         final @NotNull Optional<PsiClass> target = classOf(project, inSet.getFirst());
         if (target.isEmpty()) return;
 
-        final @NotNull PsiClass pc = target.get();
+        final @NotNull PsiClass testClass = target.get();
 
-        final @NotNull Map<String, PsiMethod> methods = GeneratedMethod.byTestCaseId(pc);
+        final @NotNull Map<String, PsiMethod> methods = GeneratedMethod.byTestCaseId(testClass);
 
         @NotNull Optional<PsiElement> after = Optional.empty();
         int position = 0;
@@ -120,14 +120,14 @@ public class UpdateTestMethodOrder extends BaseTestMethodChange implements CodeC
         for (final TestCaseDto testCase : inSet) {
             position++;
 
-            final @Nullable PsiMethod pm = methods.get(testCase.getId().toString());
-            if (pm == null) continue;
+            final @Nullable PsiMethod testMethod = methods.get(testCase.getId().toString());
+            if (testMethod == null) continue;
 
-            updateTestAnnotationAttribute(project, pm, "priority", String.valueOf(position));
-            after = Optional.of(place(pc, pm, after));
+            updateTestAnnotationAttribute(project, testMethod, "priority", String.valueOf(position));
+            after = Optional.of(place(testClass, testMethod, after));
             written++;
         }
 
-        if (written > 0) reformat(project, pc);
+        if (written > 0) reformat(project, testClass);
     }
 }

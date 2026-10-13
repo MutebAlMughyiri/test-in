@@ -84,8 +84,8 @@ public final class TestRunPdfGenerator {
 
     // UC-REPORT-001, Rule-REPORT-002, Rule-REPORT-005
     public byte @NotNull [] generate(final @NotNull Project project, final @NotNull TestRunNode testRunNode, final @NotNull RunItems runItems) {
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-             PdfDocument pdf = new PdfDocument(new PdfWriter(baos));
+        try (ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+             PdfDocument pdf = new PdfDocument(new PdfWriter(bytes));
              Document document = new Document(pdf, pdf.getDefaultPageSize(), false)) {
             PdfFont boldFont = PdfFontFactory.createFont(ReportFont.PDF_BOLD);
             PdfFont regularFont = PdfFontFactory.createFont(ReportFont.PDF_REGULAR);
@@ -206,7 +206,7 @@ public final class TestRunPdfGenerator {
 
             document.close();
             sayWhatWasLeftOut(project);
-            return baos.toByteArray();
+            return bytes.toByteArray();
 
         } catch (final IOException ex) {
             TestinLogger.error("PDF generation failed: " + FailureText.of(ex));
@@ -268,35 +268,35 @@ public final class TestRunPdfGenerator {
                 .setAutoLayout()
                 .setBorder(Border.NO_BORDER);
 
-        final @NotNull DeviceRgb headerBg = rgb(section.getHexColor());
-        final @NotNull DeviceRgb headerFg = rgb(section.textHex());
-        addTestCaseTableHeader(table, "#", headerBg, headerFg, boldFont);
-        addTestCaseTableHeader(table, Bundle.message("caption.test.case"), headerBg, headerFg, boldFont);
+        final @NotNull DeviceRgb headerBackground = rgb(section.getHexColor());
+        final @NotNull DeviceRgb headerForeground = rgb(section.textHex());
+        addTestCaseTableHeader(table, "#", headerBackground, headerForeground, boldFont);
+        addTestCaseTableHeader(table, Bundle.message("caption.test.case"), headerBackground, headerForeground, boldFont);
         for (final TestRunEditorFields detail : failureDetail) {
-            addTestCaseTableHeader(table, detail.getName(), headerBg, headerFg, boldFont);
+            addTestCaseTableHeader(table, detail.getName(), headerBackground, headerForeground, boldFont);
         }
 
-        int idx = 1;
-        boolean alt = true;
+        int index = 1;
+        boolean shadedRow = true;
         for (RunItem runItem : runItems.getAll()) {
             if (!section.matches(runItem)) continue;
             ProgressManager.checkCanceled();
 
-            DeviceRgb rowBg = alt ? LIGHT_BG : WHITE;
-            alt = !alt;
+            DeviceRgb rowBackground = shadedRow ? LIGHT_BG : WHITE;
+            shadedRow = !shadedRow;
 
             table.addCell(new Cell()
-                    .setBackgroundColor(rowBg)
+                    .setBackgroundColor(rowBackground)
                     .setBorder(new SolidBorder(BORDER_GRAY, 1))
                     .setPaddingTop(4).setPaddingBottom(4).setPaddingLeft(6).setPaddingRight(6)
-                    .add(para(String.valueOf(idx))
+                    .add(para(String.valueOf(index))
                             .setFont(regularFont).setFontSize(ReportFont.BODY.pt()).setFontColor(DARK_GRAY)
                             .setTextAlignment(TextAlignment.CENTER)));
 
             final @NotNull String testCaseName = runItem.shownTestCase().getDescription();
             final @NotNull String shownTestCaseName = testCaseName.isEmpty() ? "—" : testCaseName;
             final @NotNull Cell testCaseCell = new Cell()
-                    .setBackgroundColor(rowBg)
+                    .setBackgroundColor(rowBackground)
                     .setBorder(new SolidBorder(BORDER_GRAY, 1))
                     .setPaddingTop(4).setPaddingBottom(4).setPaddingLeft(6).setPaddingRight(6);
             testCaseCell.add(para(shownTestCaseName)
@@ -308,15 +308,15 @@ public final class TestRunPdfGenerator {
             table.addCell(testCaseCell);
 
             if (section.isWithFailureDetail())
-                addFailureDetail(table, testCaseCell, runItem, rowBg, boldFont, regularFont);
+                addFailureDetail(table, testCaseCell, runItem, rowBackground, boldFont, regularFont);
 
-            idx++;
+            index++;
         }
 
         document.add(table);
     }
 
-    private void addFailureDetail(final @NotNull Table table, final @NotNull Cell testCaseCell, final @NotNull RunItem runItem, final @NotNull DeviceRgb rowBg, final @NotNull PdfFont boldFont, final @NotNull PdfFont regularFont) {
+    private void addFailureDetail(final @NotNull Table table, final @NotNull Cell testCaseCell, final @NotNull RunItem runItem, final @NotNull DeviceRgb rowBackground, final @NotNull PdfFont boldFont, final @NotNull PdfFont regularFont) {
         final @NotNull String actualResult = runItem.getActualResult();
         final @NotNull Paragraph actual = para(Bundle.message("report.actual.result", actualResult.isEmpty() ? "—" : actualResult))
                 .setFont(regularFont).setFontSize(ReportFont.SMALL.pt()).setFontColor(DARK_GRAY);
@@ -327,15 +327,15 @@ public final class TestRunPdfGenerator {
         testCaseCell.add(actual);
 
         final @NotNull BugPriority priority = runItem.getBugPriority();
-        table.addCell(runItemStatusCell(priority.getLabel(), rgb(priority.getEmphasis().getHexColor()), rowBg, boldFont));
+        table.addCell(runItemStatusCell(priority.getLabel(), rgb(priority.getEmphasis().getHexColor()), rowBackground, boldFont));
 
         final @NotNull BugSeverity severity = runItem.getBugSeverity();
-        table.addCell(runItemStatusCell(severity.getLabel(), rgb(severity.getEmphasis().getHexColor()), rowBg, boldFont));
+        table.addCell(runItemStatusCell(severity.getLabel(), rgb(severity.getEmphasis().getHexColor()), rowBackground, boldFont));
     }
 
-    private @NotNull Cell runItemStatusCell(final @NotNull String text, final @NotNull DeviceRgb color, final @NotNull DeviceRgb rowBg, final @NotNull PdfFont boldFont) {
+    private @NotNull Cell runItemStatusCell(final @NotNull String text, final @NotNull DeviceRgb color, final @NotNull DeviceRgb rowBackground, final @NotNull PdfFont boldFont) {
         return new Cell()
-                .setBackgroundColor(rowBg)
+                .setBackgroundColor(rowBackground)
                 .setBorder(new SolidBorder(BORDER_GRAY, 1))
                 .setPaddingTop(4).setPaddingBottom(4).setPaddingLeft(6).setPaddingRight(6)
                 .setVerticalAlignment(VerticalAlignment.MIDDLE)
@@ -403,8 +403,8 @@ public final class TestRunPdfGenerator {
     private @NotNull String printable(final @NotNull String text) {
         printsWith.ifPresent(font -> {
             final boolean loses = text.codePoints()
-                    .filter(cp -> !Character.isWhitespace(cp) && !Character.isISOControl(cp))
-                    .anyMatch(cp -> !font.containsGlyph(cp));
+                    .filter(codePoint -> !Character.isWhitespace(codePoint) && !Character.isISOControl(codePoint))
+                    .anyMatch(codePoint -> !font.containsGlyph(codePoint));
             if (loses) leftOut.add(text);
         });
         return text;

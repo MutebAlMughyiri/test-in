@@ -111,8 +111,8 @@ public class DeclaredShortcutsTest {
         final Path path = Path.of("src", "main", "resources", "META-INF", "plugin.xml");
         try {
             return Files.readString(path, StandardCharsets.UTF_8);
-        } catch (final IOException e) {
-            throw new AssertionError("Could not read " + path.toAbsolutePath(), e);
+        } catch (final IOException ex) {
+            throw new AssertionError("Could not read " + path.toAbsolutePath(), ex);
         }
     }
 

@@ -66,7 +66,7 @@ public final class GoTo {
     private static void showTree(final @NotNull Project project, final boolean withFocus, final @NotNull Consumer<TestProjectTree> onShown) {
         Optional.ofNullable(ToolWindowManager.getInstance(project).getToolWindow(TREE))
                 .ifPresentOrElse(
-                        tw -> tw.activate(() -> onShown.accept(
+                        toolWindow -> toolWindow.activate(() -> onShown.accept(
                                 Services.getInstance(project, TreePanel.class).getProjectTree()), withFocus),
                         () -> TestinLogger.warn("The Testin tool window is not registered, so there is no tree to reveal in"));
     }

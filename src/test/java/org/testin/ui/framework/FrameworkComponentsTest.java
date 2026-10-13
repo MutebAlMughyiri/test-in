@@ -233,8 +233,8 @@ public class FrameworkComponentsTest {
 
             assertEquals(ScreenshotImages.read(png.toByteArray()).map(BufferedImage::getWidth), Optional.of(40));
             assertTrue(ScreenshotImages.read(new byte[]{1, 2, 3}).isEmpty(), "bytes that are not a picture draw nothing, and throw nothing (#50)");
-        } catch (final Exception e) {
-            throw new AssertionError("the picture could not be encoded for the test", e);
+        } catch (final Exception ex) {
+            throw new AssertionError("the picture could not be encoded for the test", ex);
         }
     }
 

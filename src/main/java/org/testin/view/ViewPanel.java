@@ -139,19 +139,19 @@ public class ViewPanel implements Disposable {
 
     // Rule-VIEW-PANEL-124
     private @NotNull JBScrollPane createScrollPane(final @NotNull JComponent view) {
-        final @NotNull JBScrollPane sp = new JBScrollPane(view);
-        sp.setBorder(null);
-        sp.setViewportBorder(null);
-        sp.setFocusable(false);
-        sp.getVerticalScrollBar().setUnitIncrement(16);
-        return sp;
+        final @NotNull JBScrollPane scrollPane = new JBScrollPane(view);
+        scrollPane.setBorder(null);
+        scrollPane.setViewportBorder(null);
+        scrollPane.setFocusable(false);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        return scrollPane;
     }
 
     // UC-VIEW-PANEL-001, Rule-VIEW-PANEL-010, Rule-VIEW-PANEL-012
     public void show(final @NotNull List<TestCaseDto> testCases, final @NotNull List<String> treePath) {
         if (testCases.isEmpty()) return;
 
-        ViewToolWindowFactory.toolWindow(project).ifPresent(tw -> tw.show(() -> {
+        ViewToolWindowFactory.toolWindow(project).ifPresent(toolWindow -> toolWindow.show(() -> {
             selectDetailsTab();
             this.updateList(testCases, treePath);
         }));
@@ -182,10 +182,10 @@ public class ViewPanel implements Disposable {
     }
 
     private void selectDetailsTab() {
-        ViewToolWindowFactory.toolWindow(project).ifPresent(tw -> {
-            for (final Content content : tw.getContentManager().getContents()) {
+        ViewToolWindowFactory.toolWindow(project).ifPresent(toolWindow -> {
+            for (final Content content : toolWindow.getContentManager().getContents()) {
                 if (ViewTab.DETAILS.getDisplayName().equals(content.getDisplayName())) {
-                    tw.getContentManager().setSelectedContent(content);
+                    toolWindow.getContentManager().setSelectedContent(content);
                     break;
                 }
             }

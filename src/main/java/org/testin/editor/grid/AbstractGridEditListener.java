@@ -64,23 +64,23 @@ public abstract class AbstractGridEditListener implements TableModelListener {
         if (e.getType() != TableModelEvent.UPDATE) return;
 
         final int row = e.getFirstRow();
-        final int col = e.getColumn();
-        if (row < 0 || col < 0) return;
+        final int column = e.getColumn();
+        if (row < 0 || column < 0) return;
         if (!(e.getSource() instanceof DefaultTableModel model)
                 || row >= model.getRowCount()
                 || row >= pageTestCases.size()
-                || col >= model.getColumnCount()
-                || col >= columnCount()) return;
+                || column >= model.getColumnCount()
+                || column >= columnCount()) return;
 
         final @NotNull TestCaseDto edited = pageTestCases.get(row);
 
         updating = true;
         try {
-            final @NotNull String typed = String.valueOf(model.getValueAt(row, col));
+            final @NotNull String typed = String.valueOf(model.getValueAt(row, column));
 
-            final @NotNull GridEdit outcome = apply(model, edited, row, col);
+            final @NotNull GridEdit outcome = apply(model, edited, row, column);
 
-            if (!outcome.isSaid()) sayIfRewritten(typed, String.valueOf(model.getValueAt(row, col)));
+            if (!outcome.isSaid()) sayIfRewritten(typed, String.valueOf(model.getValueAt(row, column)));
 
             if (!outcome.isWritten()) return;
 
@@ -94,7 +94,7 @@ public abstract class AbstractGridEditListener implements TableModelListener {
 
     protected abstract int columnCount();
 
-    protected abstract @NotNull GridEdit apply(final @NotNull DefaultTableModel model, final @NotNull TestCaseDto onThisRow, final int row, final int col);
+    protected abstract @NotNull GridEdit apply(final @NotNull DefaultTableModel model, final @NotNull TestCaseDto onThisRow, final int row, final int column);
 
     // UC-EDITOR-PANEL-008, Rule-EDITOR-PANEL-008
     private void confirmEdit(final @NotNull TestCaseDto edited) {

@@ -71,13 +71,13 @@ final class SyntheticTree {
         write(project.resolve("Test Cases").resolve(".tcf"), MARKER);
         write(project.resolve("Test Runs").resolve(".trf"), MARKER);
 
-        for (int s = 0; s < sets; s++) {
-            final @NotNull Path set = project.resolve("Test Cases").resolve("set-" + s);
+        for (int setIndex = 0; setIndex < sets; setIndex++) {
+            final @NotNull Path set = project.resolve("Test Cases").resolve("set-" + setIndex);
             write(set.resolve(".ts"), MARKER);
 
-            for (int c = 0; c < perSet; c++) {
+            for (int testCaseIndex = 0; testCaseIndex < perSet; testCaseIndex++) {
                 final @NotNull UUID testCaseId = UUID.randomUUID();
-                write(set.resolve(testCaseId + ".tc"), testCase(testCaseId, "a" + c));
+                write(set.resolve(testCaseId + ".tc"), testCase(testCaseId, "a" + testCaseIndex));
             }
         }
 

@@ -112,8 +112,8 @@ public class GridCellEditor extends AbstractCellEditor implements TableCellEdito
 
     @Override
     public boolean isCellEditable(final EventObject e) {
-        if (e instanceof MouseEvent me) {
-            return me.getClickCount() >= 2;
+        if (e instanceof MouseEvent mouseEvent) {
+            return mouseEvent.getClickCount() >= 2;
         }
         return true;
     }

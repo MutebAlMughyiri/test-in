@@ -130,7 +130,7 @@ public abstract class AbstractTestCaseDialog extends AbstractFrameworkDialog {
     }
 
     protected void initDynamicStatusBar(final @NotNull JComponent parentPanel) {
-        focusListener = evt -> Optional.ofNullable((Component) evt.getNewValue())
+        focusListener = e -> Optional.ofNullable((Component) e.getNewValue())
                 .filter(focusOwner -> UIUtil.isDescendingFrom(focusOwner, parentPanel))
                 .flatMap(this::sectionHolding)
                 .ifPresent(section -> showSectionKeys(statusBarMapping.getOrDefault(section, NO_ITEMS)));
