@@ -82,7 +82,7 @@ public class ChangeOneFieldIdeTest extends AbstractViewPanelIdeTest {
 
         assertTrue("F2 answers on a panel that has never drawn a test case", KeyPress.boundTo(view.keyboardTarget(ViewTab.DETAILS), FieldChange.f2()).isEmpty());
 
-        view.getPanel().show(List.of(testCase), testSet.getPath2());
+        view.getPanel().show(List.of(testCase), testSet.treePath());
         assertTrue("F2 does not answer once a test case is drawn", KeyPress.boundTo(view.keyboardTarget(ViewTab.DETAILS), FieldChange.f2()).isPresent());
 
         view.getPanel().reset();
@@ -96,7 +96,7 @@ public class ChangeOneFieldIdeTest extends AbstractViewPanelIdeTest {
         final @NotNull TestCaseDto first = aTestCase(testSet, "Log in with a valid user", "a");
         final @NotNull TestCaseDto second = aTestCase(testSet, "Log in with a locked user", "b");
         final @NotNull TestCaseDto third = aTestCase(testSet, "Log in with no password", "c");
-        view.getPanel().show(List.of(first, second, third), testSet.getPath2());
+        view.getPanel().show(List.of(first, second, third), testSet.treePath());
 
         FieldChange.pressF2(getProject(), view);
         assertEquals("the menu was opened for more than the one test case on display", Bundle.message("update.dialog.title.one"), popups.last().getTitle());
@@ -137,7 +137,7 @@ public class ChangeOneFieldIdeTest extends AbstractViewPanelIdeTest {
         final @NotNull TestCaseDto testCase = aTestCase(testSet, "Log in with a valid user", "a");
         final @NotNull Path file = fileOf(testCase);
         final @NotNull FileTime before = writtenAt(file);
-        view.getPanel().show(List.of(testCase), testSet.getPath2());
+        view.getPanel().show(List.of(testCase), testSet.treePath());
 
         final @NotNull List<String> said = Said.during(getProject(), () -> changeTheDescriptionTo("Log in with a valid user"));
 
@@ -149,7 +149,7 @@ public class ChangeOneFieldIdeTest extends AbstractViewPanelIdeTest {
     // Rule-VIEW-PANEL-048
     public void testASavedChangeIsOneEntryOnTheUndoHistory() {
         final @NotNull TestCaseDto testCase = aTestCase(testSet, "Log in with a valid user", "a");
-        view.getPanel().show(List.of(testCase), testSet.getPath2());
+        view.getPanel().show(List.of(testCase), testSet.treePath());
         final @NotNull UndoHistories undo = Services.getInstance(getProject(), UndoHistories.class);
 
         changeTheDescriptionTo("Sign in with a valid user");

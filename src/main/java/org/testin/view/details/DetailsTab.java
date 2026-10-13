@@ -54,14 +54,14 @@ public class DetailsTab {
     final double SPACER_WEIGHT_Y = 1.0;
 
     // UC-VIEW-PANEL-005, Rule-VIEW-PANEL-061, Rule-VIEW-PANEL-085, Rule-VIEW-PANEL-086, Rule-VIEW-PANEL-103
-    private static @NotNull Band testRunBand(final @NotNull RunItem runItem, final @NotNull List<String> currentPath, final @NotNull OptionalInt shownLine, final @NotNull Consumer<OptionalInt> showExecution) {
+    private static @NotNull Band testRunBand(final @NotNull RunItem runItem, final @NotNull List<String> treePath, final @NotNull OptionalInt shownLine, final @NotNull Consumer<OptionalInt> showExecution) {
         // Rule-VIEW-PANEL-122
         final @NotNull RunItemExecution shown = runItem.shownExecution(shownLine);
 
         return Band.of(Bundle.message("details.band.run"), List.of(
-                new RunItemSummary(runItem, currentPath, showExecution),
+                new RunItemSummary(runItem, treePath, showExecution),
                 new AttributeRow(TestRunEditorAttributes.ACTUAL_RESULT.getName(), (_, _) -> shown.getActualResult()),
-                new StacktraceLine(shown, currentPath),
+                new StacktraceLine(shown, treePath),
                 new AttributeRow(TestRunEditorAttributes.EXECUTED_BY.getName(), (_, _) -> Display.whoAndWhen(shown.getExecutedBy(), shown.getExecutedAt()))));
     }
 
@@ -80,13 +80,13 @@ public class DetailsTab {
     }
 
     // UC-VIEW-PANEL-004
-    public void load(final @NotNull Project project, final @NotNull JBPanel<?> detailsTab, final @NotNull Optional<TestCaseDto> shownTestCase, final @NotNull Optional<RunItem> runItem, final @NotNull List<String> currentPath, final @NotNull OptionalInt shownLine, final @NotNull Consumer<OptionalInt> showExecution) {
+    public void load(final @NotNull Project project, final @NotNull JBPanel<?> detailsTab, final @NotNull Optional<TestCaseDto> shownTestCase, final @NotNull Optional<RunItem> runItem, final @NotNull List<String> treePath, final @NotNull OptionalInt shownLine, final @NotNull Consumer<OptionalInt> showExecution) {
         detailsTab.removeAll();
         detailsTab.setLayout(new BorderLayout());
         detailsTab.setBorder(BorderFactory.createEmptyBorder());
 
         shownTestCase.ifPresentOrElse(
-                testCase -> renderTestCase(project, detailsTab, testCase, detailRows(runItem, currentPath, shownLine, showExecution)),
+                testCase -> renderTestCase(project, detailsTab, testCase, detailRows(runItem, treePath, shownLine, showExecution)),
                 () -> renderPlaceholder(detailsTab));
 
         detailsTab.revalidate();
@@ -129,11 +129,11 @@ public class DetailsTab {
     }
 
     // UC-VIEW-PANEL-004, UC-VIEW-PANEL-005, Rule-VIEW-PANEL-085, Rule-VIEW-PANEL-087
-    private @NotNull List<AbstractDetails> detailRows(final @NotNull Optional<RunItem> runItem, final @NotNull List<String> currentPath, final @NotNull OptionalInt shownLine, final @NotNull Consumer<OptionalInt> showExecution) {
-        final @NotNull List<AbstractDetails> rows = new ArrayList<>(List.of(new Breadcrumb(currentPath), new Title(), new BadgesAndActions(currentPath)));
+    private @NotNull List<AbstractDetails> detailRows(final @NotNull Optional<RunItem> runItem, final @NotNull List<String> treePath, final @NotNull OptionalInt shownLine, final @NotNull Consumer<OptionalInt> showExecution) {
+        final @NotNull List<AbstractDetails> rows = new ArrayList<>(List.of(new Breadcrumb(treePath), new Title(), new BadgesAndActions(treePath)));
 
         runItem.ifPresentOrElse(shown -> {
-            rows.add(testRunBand(shown, currentPath, shownLine, showExecution));
+            rows.add(testRunBand(shown, treePath, shownLine, showExecution));
             rows.add(Band.folding(Bundle.message("details.band.test.case"), TEST_CASE_OPEN, testCaseFields()));
         }, () -> rows.addAll(testCaseFields()));
 

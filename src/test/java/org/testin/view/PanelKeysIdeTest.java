@@ -61,7 +61,7 @@ public class PanelKeysIdeTest extends AbstractViewPanelIdeTest {
     // Rule-VIEW-PANEL-019
     public void testThePagingKeysWorkFromEveryTab() {
         final @NotNull ViewOnScreen built = ViewOnScreen.built(getProject(), getTestRootDisposable());
-        built.getPanel().show(testCases, testSet.getPath2());
+        built.getPanel().show(testCases, testSet.treePath());
 
         for (final ViewTab tab : ViewTab.values()) {
             final @NotNull JComponent pressedIn = built.keyboardTarget(tab);
@@ -80,11 +80,11 @@ public class PanelKeysIdeTest extends AbstractViewPanelIdeTest {
         assertTrue("the back arrow is not gray on an empty panel", isGray(view.previousArrow()));
         assertTrue("the forward arrow is not gray on an empty panel", isGray(view.nextArrow()));
 
-        view.getPanel().show(List.of(testCases.getFirst()), testSet.getPath2());
+        view.getPanel().show(List.of(testCases.getFirst()), testSet.treePath());
         assertTrue("the back arrow is not gray with one test case handed over", isGray(view.previousArrow()));
         assertTrue("the forward arrow is not gray with one test case handed over", isGray(view.nextArrow()));
 
-        view.getPanel().show(testCases, testSet.getPath2());
+        view.getPanel().show(testCases, testSet.treePath());
         assertTrue("the back arrow is not gray on the first test case", isGray(view.previousArrow()));
         assertFalse("the forward arrow is gray with two test cases still to go", isGray(view.nextArrow()));
 
@@ -97,7 +97,7 @@ public class PanelKeysIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-021
     public void testPagingSaysNothing() {
-        view.getPanel().show(testCases, testSet.getPath2());
+        view.getPanel().show(testCases, testSet.treePath());
         final @NotNull JComponent details = view.keyboardTarget(ViewTab.DETAILS);
 
         final @NotNull List<String> said = Said.during(getProject(), () -> {
@@ -112,7 +112,7 @@ public class PanelKeysIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-079
     public void testTabBringsTheNextTabToTheFrontAndShiftTabThePrevious() {
-        view.getPanel().show(List.of(testCases.getFirst()), testSet.getPath2());
+        view.getPanel().show(List.of(testCases.getFirst()), testSet.treePath());
         assertEquals(ViewTab.DETAILS.getDisplayName(), view.tabInFront());
 
         assertTrue(KeyPress.press(getProject(), view.keyboardTarget(ViewTab.DETAILS), key(Shortcuts.TabNext)));
@@ -135,7 +135,7 @@ public class PanelKeysIdeTest extends AbstractViewPanelIdeTest {
         final @NotNull JBList<?> list = (JBList<?>) editor.getPreferredFocusedComponent();
         list.setSelectedIndex(0);
         settled();
-        view.getPanel().show(List.of(testCases.getFirst()), testSet.getPath2());
+        view.getPanel().show(List.of(testCases.getFirst()), testSet.treePath());
         final @NotNull CutState cut = Services.getInstance(getProject(), CutState.class);
         cut.cut(editor, List.of(testCases.get(1)));
 
@@ -154,7 +154,7 @@ public class PanelKeysIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-088
     public void testEscapeInsideThePanelGivesTheKeyboardBackAndClosesNothing() {
-        view.getPanel().show(List.of(testCases.getFirst()), testSet.getPath2());
+        view.getPanel().show(List.of(testCases.getFirst()), testSet.treePath());
 
         for (final ViewTab tab : ViewTab.values()) {
             final int before = view.timesTheEditorGotTheKeyboard();

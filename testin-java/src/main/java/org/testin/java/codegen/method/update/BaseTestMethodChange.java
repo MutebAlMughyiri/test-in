@@ -197,16 +197,16 @@ public class BaseTestMethodChange {
 
     // Rule-CODEGEN-021
     protected void applyToMethod(final @NotNull Project project, final @NotNull TestCaseDto testCase, final @NotNull String title, final @NotNull Consumer<PsiMethod> updater, final @NotNull Consumer<String> onMissing) {
-        final @NotNull List<String> path = Fqcn.ofClass(testCase.getParent());
-        if (path.isEmpty()) return;
+        final @NotNull List<String> classSegments = Fqcn.ofClass(testCase.getParent());
+        if (classSegments.isEmpty()) return;
 
         final @NotNull Runnable inCommand = () ->
                 WriteCommandAction.runWriteCommandAction(project, title, null, () ->
-                        GeneratedClass.find(project, path)
+                        GeneratedClass.find(project, classSegments)
                                 .ifPresentOrElse(
                                         targetClass -> findMethodByTestName(targetClass, testCase).ifPresentOrElse(updater,
                                                 () -> onMissing.accept("no method with testName=" + testCase.getId())),
-                                        () -> onMissing.accept("class not found: " + String.join(".", path))));
+                                        () -> onMissing.accept("class not found: " + String.join(".", classSegments))));
 
         if (CommandProcessor.getInstance().getCurrentCommand() != null) inCommand.run();
         else ApplicationManager.getApplication().invokeLater(inCommand);

@@ -421,7 +421,7 @@ final class IndexerDataStore {
             rename.moveNodesUnder(map);
         }
 
-        rebuildPath2Under(newPath);
+        rebuildTreePathUnder(newPath);
 
         rename.moveEntry(testCaseStore.getTestCaseIdsByTestSet(), _ -> {
         });
@@ -446,10 +446,10 @@ final class IndexerDataStore {
         node.setParent(newParent);
     }
 
-    private void rebuildPath2Under(final @NotNull Path newPath) {
+    private void rebuildTreePathUnder(final @NotNull Path newPath) {
         allNodes().stream()
                 .filter(node -> node.getPath().startsWith(newPath))
-                .forEach(this::rebuildPath2);
+                .forEach(this::rebuildTreePath);
     }
 
     @NotNull
@@ -463,12 +463,12 @@ final class IndexerDataStore {
                 .findFirst();
     }
 
-    private void rebuildPath2(final @NotNull AbstractNode node) {
-        final @NotNull ArrayList<String> path2 = new ArrayList<>();
+    private void rebuildTreePath(final @NotNull AbstractNode node) {
+        final @NotNull ArrayList<String> treePath = new ArrayList<>();
         for (final AbstractNode ancestor : node.selfAndAncestors()) {
-            path2.addFirst(ancestor.getName());
+            treePath.addFirst(ancestor.getName());
         }
-        node.setPath2(path2);
+        node.setTreePath(treePath);
     }
 
     @NotNull List<AbstractNode> getChildren(final @NotNull Path parentPath) {

@@ -129,7 +129,7 @@ public class TestMethodGutter extends RelatedItemLineMarkerProvider implements D
                             TestinLogger.info("Found in indexer: " + node.getDescription());
 
                             ApplicationManager.getApplication().invokeLater(() ->
-                                    ViewToolWindowFactory.showPanel(project, List.of(node), node.getParent().getPath2(), ViewPanel::focusDetailsTab));
+                                    ViewToolWindowFactory.showPanel(project, List.of(node), node.getParent().treePath(), ViewPanel::focusDetailsTab));
                         },
                         () -> refuseMissingTestCase(project, uuid, methodName));
 

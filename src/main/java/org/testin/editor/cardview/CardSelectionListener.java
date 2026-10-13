@@ -33,7 +33,7 @@ public class CardSelectionListener implements ListSelectionListener {
     private final @NotNull Project project;
     private final @NotNull JBList<TestCaseDto> list;
     private final @NotNull TestinEditor editor;
-    private final @NotNull List<String> path;
+    private final @NotNull List<String> treePath;
 
     // UC-EDITOR-PANEL-025, Rule-EDITOR-PANEL-113
     @Override
@@ -44,7 +44,7 @@ public class CardSelectionListener implements ListSelectionListener {
             if (!selected.isEmpty()) {
                 list.ensureIndexIsVisible(list.getSelectedIndex());
 
-                ViewToolWindowFactory.panel(project).ifPresent(viewer -> viewer.showIfOpen(selected, path));
+                ViewToolWindowFactory.panel(project).ifPresent(viewer -> viewer.showIfOpen(selected, treePath));
             }
 
             editor.refreshSelectionStatus(list.getSelectedIndices());

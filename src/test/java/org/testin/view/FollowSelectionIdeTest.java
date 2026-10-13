@@ -48,7 +48,7 @@ public class FollowSelectionIdeTest extends AbstractViewPanelIdeTest {
         final @NotNull TestCaseDto third = aTestCase(testSet, "Log in with no password", "c");
         final @NotNull TestSetEditor editor = anEditorOn(testSet);
 
-        view.getPanel().show(List.of(first), testSet.getPath2());
+        view.getPanel().show(List.of(first), testSet.treePath());
         selectIn(editor, second);
         assertTrue("moving the selection did not fill the panel on screen: " + details(), holds(details(), "Log in with a locked user"));
 
@@ -64,7 +64,7 @@ public class FollowSelectionIdeTest extends AbstractViewPanelIdeTest {
         final @NotNull TestCaseDto second = aTestCase(testSet, "Log in with a locked user", "b");
         final @NotNull TestSetEditor editor = anEditorOn(testSet);
 
-        view.getPanel().show(List.of(first), testSet.getPath2());
+        view.getPanel().show(List.of(first), testSet.treePath());
         view.bringToFront(ViewTab.HISTORY);
         selectIn(editor, second);
 
@@ -79,7 +79,7 @@ public class FollowSelectionIdeTest extends AbstractViewPanelIdeTest {
         final @NotNull TestCaseDto second = aTestCase(testSet, "Log in with a locked user", "b");
         final @NotNull TestSetEditor editor = anEditorOn(testSet);
 
-        view.getPanel().show(List.of(first), testSet.getPath2());
+        view.getPanel().show(List.of(first), testSet.treePath());
         view.closedByTheTester();
         selectIn(editor, second);
         selectIn(editor, first);
@@ -95,7 +95,7 @@ public class FollowSelectionIdeTest extends AbstractViewPanelIdeTest {
         aTestCase(other, "Log out from the menu", "a");
         final @NotNull TestSetEditor nothingSelected = anEditorOn(other);
 
-        view.getPanel().show(List.of(testCase), testSet.getPath2());
+        view.getPanel().show(List.of(testCase), testSet.treePath());
         new UnifiedFileEditor(getProject(), new UnifiedVirtualFile(other), nothingSelected).selectNotify();
 
         assertEquals("moving to an editor with nothing selected left a test case in the panel", List.of(Bundle.message("details.placeholder")), details());
@@ -110,7 +110,7 @@ public class FollowSelectionIdeTest extends AbstractViewPanelIdeTest {
         final @NotNull TestSetEditor itsEditor = anEditorOn(testSet);
         final @NotNull TestSetEditor anotherEditor = anEditorOn(other);
 
-        view.getPanel().show(List.of(testCase), testSet.getPath2());
+        view.getPanel().show(List.of(testCase), testSet.treePath());
 
         Disposer.dispose(anotherEditor);
         assertTrue("closing another editor closed the panel", view.isOpen());

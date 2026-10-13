@@ -148,20 +148,20 @@ public class ViewPanel implements Disposable {
     }
 
     // UC-VIEW-PANEL-001, Rule-VIEW-PANEL-010, Rule-VIEW-PANEL-012
-    public void show(final @NotNull List<TestCaseDto> testCases, final @NotNull List<String> path) {
+    public void show(final @NotNull List<TestCaseDto> testCases, final @NotNull List<String> treePath) {
         if (testCases.isEmpty()) return;
 
         ViewToolWindowFactory.toolWindow(project).ifPresent(tw -> tw.show(() -> {
             selectDetailsTab();
-            this.updateList(testCases, path);
+            this.updateList(testCases, treePath);
         }));
     }
 
     // UC-VIEW-PANEL-002, Rule-VIEW-PANEL-015, Rule-VIEW-PANEL-016, Rule-VIEW-PANEL-102
-    public void showIfOpen(final @NotNull List<TestCaseDto> testCases, final @NotNull List<String> path) {
+    public void showIfOpen(final @NotNull List<TestCaseDto> testCases, final @NotNull List<String> treePath) {
         if (isClosed() || testCases.isEmpty()) return;
 
-        this.updateList(testCases, path);
+        this.updateList(testCases, treePath);
     }
 
     private boolean isClosed() {
@@ -193,17 +193,17 @@ public class ViewPanel implements Disposable {
     }
 
     // UC-VIEW-PANEL-015, Rule-VIEW-PANEL-060
-    public void hide(final @NotNull List<String> closingPath) {
+    public void hide(final @NotNull List<String> closingTreePath) {
         if (isClosed()) return;
-        if (!page.getCurrentPath().equals(closingPath)) return;
+        if (!page.getTreePath().equals(closingTreePath)) return;
 
         this.reset();
         this.hide();
     }
 
-    public void updateList(final @NotNull List<TestCaseDto> testCases, final @NotNull List<String> path) {
+    public void updateList(final @NotNull List<TestCaseDto> testCases, final @NotNull List<String> treePath) {
         shownLine = OptionalInt.empty();
-        this.page.updateList(testCases, path);
+        this.page.updateList(testCases, treePath);
         this.refreshCurrentView();
     }
 
@@ -265,10 +265,10 @@ public class ViewPanel implements Disposable {
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-083
     @NotNull Optional<RunItem> shownRunItem() {
-        final @NotNull List<String> path = page.getCurrentPath();
-        if (path.isEmpty()) return Optional.empty();
+        final @NotNull List<String> treePath = page.getTreePath();
+        if (treePath.isEmpty()) return Optional.empty();
 
-        return getCurrentTestCase().flatMap(shown -> testRuns.findRunItems(testinRoot.resolve(path))
+        return getCurrentTestCase().flatMap(shown -> testRuns.findRunItems(testinRoot.resolve(treePath))
                 .flatMap(testRun -> testRun.runItemOf(shown.getId())));
     }
 

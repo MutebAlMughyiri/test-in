@@ -60,15 +60,15 @@ public class ViewToolWindowFactory implements ToolWindowFactory, DumbAware {
     }
 
     // UC-VIEW-PANEL-001, Rule-VIEW-PANEL-010
-    public static void showPanel(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases, final @NotNull List<String> path, final @NotNull Consumer<ViewPanel> onReadyAction) {
+    public static void showPanel(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases, final @NotNull List<String> treePath, final @NotNull Consumer<ViewPanel> onReadyAction) {
         toolWindow(project).ifPresent(tw -> tw.show(() -> panel(project).ifPresent(viewer -> {
-            viewer.show(testCases, path);
+            viewer.show(testCases, treePath);
             onReadyAction.accept(viewer);
         })));
     }
 
-    public static void showPanel(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases, final @NotNull List<String> path) {
-        showPanel(project, testCases, path, _ -> {
+    public static void showPanel(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases, final @NotNull List<String> treePath) {
+        showPanel(project, testCases, treePath, _ -> {
         });
     }
 

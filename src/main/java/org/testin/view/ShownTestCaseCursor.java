@@ -32,13 +32,13 @@ public class ShownTestCaseCursor {
     private int currentIndex = 0;
 
     @Getter
-    private @NotNull List<String> currentPath = List.of();
+    private @NotNull List<String> treePath = List.of();
 
     // UC-VIEW-PANEL-002, Rule-VIEW-PANEL-018
-    public void updateList(final @NotNull List<TestCaseDto> testCases, final @NotNull List<String> path) {
+    public void updateList(final @NotNull List<TestCaseDto> testCases, final @NotNull List<String> treePath) {
         this.shownTestCases = testCases;
         this.currentIndex = 0;
-        this.currentPath = path;
+        this.treePath = treePath;
     }
 
     public @NotNull Optional<TestCaseDto> getCurrentItem() {

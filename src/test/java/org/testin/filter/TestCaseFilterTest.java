@@ -122,7 +122,7 @@ public class TestCaseFilterTest {
     @Test
     public void theSearchReadsEveryFieldTheFieldsPopupLists() {
         final @NotNull TestSetNode set = new TestSetNode();
-        set.setPath2(new ArrayList<>(List.of("Shop", "Checkout")));
+        set.setTreePath(new ArrayList<>(List.of("Shop", "Checkout")));
         final @NotNull TestCaseDto testCase = TestCaseDto.builder()
                 .id(UUID.randomUUID())
                 .description("Refuse an expired card")

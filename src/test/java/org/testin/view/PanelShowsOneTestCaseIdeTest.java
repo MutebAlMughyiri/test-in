@@ -59,15 +59,15 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
         return List.of(aTestCase(testSet, "Log in with a valid user", "a"), aTestCase(testSet, "Log in with a locked user", "b"), aTestCase(testSet, "Log in with no password", "c"));
     }
 
-    private @NotNull List<String> pathOf(final @NotNull TestRunNode testRun) {
-        return testRun.getPath2();
+    private @NotNull List<String> treePathOf(final @NotNull TestRunNode testRun) {
+        return testRun.treePath();
     }
 
     // Rule-VIEW-PANEL-002
     public void testThePanelDrawsTheFirstOfTheTestCasesItWasHandedAndNoOther() {
         final @NotNull List<TestCaseDto> handed = threeTestCases();
 
-        view.getPanel().show(handed, handed.getFirst().getParent().getPath2());
+        view.getPanel().show(handed, handed.getFirst().getParent().treePath());
 
         final @NotNull List<String> words = details();
         assertTrue("the first test case was not drawn: " + words, holds(words, "Log in with a valid user"));
@@ -78,32 +78,32 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
     // Rule-VIEW-PANEL-003
     public void testNothingButAskingOpensThePanel() {
         final @NotNull List<TestCaseDto> handed = threeTestCases();
-        final @NotNull List<String> path = handed.getFirst().getParent().getPath2();
+        final @NotNull List<String> treePath = handed.getFirst().getParent().treePath();
 
-        view.getPanel().showIfOpen(handed, path);
+        view.getPanel().showIfOpen(handed, treePath);
         ViewToolWindowFactory.refreshIfShowing(getProject(), handed);
         view.getPanel().refreshCurrentView();
         settled();
         assertFalse("the panel opened without the tester asking for a test case's details", view.isOpen());
 
-        view.getPanel().show(handed, path);
+        view.getPanel().show(handed, treePath);
         assertTrue("asking for a test case's details did not open the panel", view.isOpen());
     }
 
     // Rule-VIEW-PANEL-004
     public void testAnOpenPanelFollowsAndAClosedOneStaysClosedUntilAskedAgain() {
         final @NotNull List<TestCaseDto> handed = threeTestCases();
-        final @NotNull List<String> path = handed.getFirst().getParent().getPath2();
+        final @NotNull List<String> treePath = handed.getFirst().getParent().treePath();
 
-        view.getPanel().show(List.of(handed.getFirst()), path);
-        view.getPanel().showIfOpen(List.of(handed.get(1)), path);
+        view.getPanel().show(List.of(handed.getFirst()), treePath);
+        view.getPanel().showIfOpen(List.of(handed.get(1)), treePath);
         assertTrue("the open panel did not follow the tester to the next test case: " + details(), holds(details(), "Log in with a locked user"));
 
         view.closedByTheTester();
-        view.getPanel().showIfOpen(List.of(handed.get(2)), path);
+        view.getPanel().showIfOpen(List.of(handed.get(2)), treePath);
         assertFalse("the closed panel came back when the tester moved on", view.isOpen());
 
-        view.getPanel().show(List.of(handed.get(2)), path);
+        view.getPanel().show(List.of(handed.get(2)), treePath);
         assertTrue("the tester asked again and the panel stayed closed", view.isOpen());
     }
 
@@ -111,7 +111,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
     public void testThePanelDrawsWhatTestinHoldsNotTheCopyItWasHanded() {
         final @NotNull TestCaseDto testCase = threeTestCases().getFirst();
 
-        view.getPanel().show(List.of(handedCopy(testCase, "The copy the editor handed over")), testCase.getParent().getPath2());
+        view.getPanel().show(List.of(handedCopy(testCase, "The copy the editor handed over")), testCase.getParent().treePath());
         assertTrue("the panel drew the copy it was handed rather than what Testin holds: " + details(), holds(details(), "Log in with a valid user"));
 
         Services.getInstance(getProject(), TestCases.class).putTestCase(testCase.getParent().getPath(), handedCopy(testCase, "Sign in with a valid user"));
@@ -123,17 +123,17 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
     // Rule-VIEW-PANEL-007
     public void testOpeningPagingAndClosingSayNothing() {
         final @NotNull List<TestCaseDto> handed = threeTestCases();
-        final @NotNull List<String> path = handed.getFirst().getParent().getPath2();
+        final @NotNull List<String> treePath = handed.getFirst().getParent().treePath();
 
         final @NotNull List<String> said = Said.during(getProject(), () -> {
-            view.getPanel().show(handed, path);
+            view.getPanel().show(handed, treePath);
             view.getPanel().getPage().goNext();
             settled();
             view.getPanel().getPage().goPrevious();
             settled();
             view.getPanel().hide();
-            view.getPanel().show(handed, path);
-            view.getPanel().hide(path);
+            view.getPanel().show(handed, treePath);
+            view.getPanel().hide(treePath);
         });
 
         assertEquals("opening, paging or closing the panel said something", List.of(), said);
@@ -143,7 +143,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
     public void testEveryRefreshDrawsBothTabs() {
         final @NotNull TestCaseDto testCase = threeTestCases().getFirst();
 
-        view.getPanel().show(List.of(testCase), testCase.getParent().getPath2());
+        view.getPanel().show(List.of(testCase), testCase.getParent().treePath());
         assertTrue("the Details tab was not drawn: " + details(), holds(details(), "Log in with a valid user"));
         Await.until("the History tab was not drawn: " + view.words(ViewTab.HISTORY), () -> view.words(ViewTab.HISTORY).equals(List.of(Bundle.message("view.history.not.under.git"))));
 
@@ -158,7 +158,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
         view.bringToFront(ViewTab.HISTORY);
         assertEquals(ViewTab.HISTORY.getDisplayName(), view.tabInFront());
 
-        view.getPanel().show(List.of(testCase), testCase.getParent().getPath2());
+        view.getPanel().show(List.of(testCase), testCase.getParent().treePath());
 
         assertEquals("the panel opened on the tab that was in front last time", ViewTab.DETAILS.getDisplayName(), view.tabInFront());
     }
@@ -168,10 +168,10 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
         final @NotNull TestCaseDto testCase = threeTestCases().getFirst();
         final @NotNull TestRunNode testRun = aTestRun(List.of(RunItem.builder().id(testCase.getId()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build()));
 
-        view.getPanel().show(List.of(testCase), pathOf(testRun));
+        view.getPanel().show(List.of(testCase), treePathOf(testRun));
         assertTrue("opened from the test run, the panel drew no test run band: " + details(), details().contains(RUN_BAND));
 
-        view.getPanel().show(List.of(testCase), testCase.getParent().getPath2());
+        view.getPanel().show(List.of(testCase), testCase.getParent().treePath());
         assertFalse("opened from the test set, the panel drew the test run band: " + details(), details().contains(RUN_BAND));
     }
 
@@ -181,13 +181,13 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
         final @NotNull TestSetNode other = aTestSet("Logout");
         final @NotNull List<TestCaseDto> second = List.of(aTestCase(other, "Log out from the menu", "a"), aTestCase(other, "Log out by closing the tab", "b"), aTestCase(other, "Log out after a timeout", "c"));
 
-        view.getPanel().show(first, first.getFirst().getParent().getPath2());
+        view.getPanel().show(first, first.getFirst().getParent().treePath());
         view.getPanel().getPage().goNext();
         view.getPanel().getPage().goNext();
         settled();
         assertTrue("paging did not reach the third test case: " + details(), holds(details(), "Log in with no password"));
 
-        view.getPanel().showIfOpen(second, other.getPath2());
+        view.getPanel().showIfOpen(second, other.treePath());
 
         assertTrue("the new fill did not start at its first test case: " + details(), holds(details(), "Log out from the menu"));
         assertFalse("the paging position was carried over into the new fill", view.getPanel().getPage().hasPrevious());
@@ -198,11 +198,11 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
         final @NotNull List<TestCaseDto> handed = threeTestCases();
         final @NotNull TestRunNode testRun = aTestRun(List.of(RunItem.builder().id(handed.getFirst().getId()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build()));
 
-        view.getPanel().show(List.of(handed.get(1)), pathOf(testRun));
+        view.getPanel().show(List.of(handed.get(1)), treePathOf(testRun));
         assertFalse("the test run band was drawn for a test case the test run does not hold: " + details(), details().contains(RUN_BAND));
         assertTrue("the test case the test run does not hold was not drawn on its own: " + details(), holds(details(), "Log in with a locked user"));
 
-        view.getPanel().show(List.of(handed.getFirst()), pathOf(testRun));
+        view.getPanel().show(List.of(handed.getFirst()), treePathOf(testRun));
         assertTrue("the test run band was not drawn for a test case the test run holds: " + details(), details().contains(RUN_BAND));
     }
 
@@ -210,7 +210,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
     public void testTheTestRunBandIsReadFromTheTestRunItself() {
         final @NotNull TestCaseDto testCase = threeTestCases().getFirst();
         final @NotNull TestRunNode testRun = aTestRun(List.of(EditorFixtures.pending(testCase)));
-        view.getPanel().show(List.of(testCase), pathOf(testRun));
+        view.getPanel().show(List.of(testCase), treePathOf(testRun));
         assertTrue(details().contains(RunItemStatus.PENDING.getLabel()));
 
         final @NotNull TestRuns testRuns = Services.getInstance(getProject(), TestRuns.class);
@@ -233,7 +233,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
         final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());
         try {
             editor.getList().setSelectedIndex(0);
-            view.getPanel().show(List.of(testCase), pathOf(testRun));
+            view.getPanel().show(List.of(testCase), treePathOf(testRun));
             assertTrue(details().contains(RunItemStatus.PENDING.getLabel()));
 
             Gestures.press(getProject(), TestRunFixture.keyFor(editor, RunItemStatus.PASSED), editor.getList());
@@ -253,7 +253,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
         row.recordRunItemStatus(RunItemStatus.FAILED, "muteb", Duration.ZERO, Failure.NONE);
         final @NotNull TestRunNode testRun = aTestRun(List.of(row));
 
-        view.getPanel().show(List.of(handedCopy(testCase, "The copy the editor handed over")), pathOf(testRun));
+        view.getPanel().show(List.of(handedCopy(testCase, "The copy the editor handed over")), treePathOf(testRun));
         assertTrue("the panel did not show the test case as the test run's run item shows it: " + details(), holds(details(), testCase.getDescription()));
         assertFalse("the panel showed the copy it was handed: " + details(), holds(details(), "The copy the editor handed over"));
 
@@ -271,7 +271,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
         testRuns.changeTestRunMarker(testRun.getPath(), marker -> marker.recordCommit("ea9a501"));
         testRuns.rememberRecorded("ea9a501", Map.of(testCase.getId(), Optional.of(handedCopy(testCase, "As the commit recorded it"))));
 
-        view.getPanel().show(List.of(testCase), pathOf(testRun));
+        view.getPanel().show(List.of(testCase), treePathOf(testRun));
 
         assertEquals("the Details tab does not show the commit's text", "As the commit recorded it", view.getPanel().shownTestCase().orElseThrow().getDescription());
         assertEquals("the History tab would compare the commit's text with the last commit", testCase.getDescription(), view.getPanel().liveTestCase().orElseThrow().getDescription());

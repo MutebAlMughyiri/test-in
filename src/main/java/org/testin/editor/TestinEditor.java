@@ -199,6 +199,6 @@ public interface TestinEditor extends Disposable {
 
     @Override
     default void dispose() {
-        ViewToolWindowFactory.panel(getProject()).ifPresent(viewer -> viewer.hide(getParent().getPath2()));
+        ViewToolWindowFactory.panel(getProject()).ifPresent(viewer -> viewer.hide(getParent().treePath()));
     }
 }

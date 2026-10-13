@@ -32,7 +32,7 @@ import java.util.List;
 
 public record RenamedNode(@NotNull AbstractNode node, @NotNull List<String> from, @NotNull String newName) {
     public RenamedNode(final @NotNull AbstractNode node, final @NotNull String newName) {
-        this(node, node.getPath2(), newName);
+        this(node, node.treePath(), newName);
     }
 
     // UC-TREE-PANEL-011, Rule-TREE-PANEL-133

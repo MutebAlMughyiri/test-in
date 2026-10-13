@@ -98,7 +98,7 @@ public class AgentCommandTest {
     @Test
     public void thePromptSaysWhereTheTestCaseSitsAndWhichClassHoldsItsMethod() {
         final TestSetNode login = new TestSetNode();
-        login.setPath2(new ArrayList<>(List.of("NAFATH", "Test Cases", "Accounts", "Login")));
+        login.setTreePath(new ArrayList<>(List.of("NAFATH", "Test Cases", "Accounts", "Login")));
         final TestCaseDto testCase = aTestCase();
         testCase.setParent(login);
 

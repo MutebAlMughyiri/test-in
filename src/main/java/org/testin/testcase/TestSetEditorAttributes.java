@@ -184,7 +184,7 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
     PATH(
             Bundle.message("attribute.path"),
             AttributeDefault.OFF,
-            testCase -> String.join(" > ", testCase.getParent().getPath2()),
+            testCase -> String.join(" > ", testCase.getParent().treePath()),
             (_, testCase, _) -> Optional.of(testCase),
             GenType.NO_CODE_CHANGE,
             Can.EXPORT

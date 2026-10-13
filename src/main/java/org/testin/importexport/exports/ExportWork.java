@@ -59,13 +59,13 @@ record ExportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
         return Bundle.message("export.unreadable.message", count, named, rest);
     }
 
-    private static @NotNull String uniqueKey(final @NotNull Map<String, ?> taken, final @NotNull List<String> path) {
-        for (int from = path.size() - 1; from >= 0; from--) {
-            final @NotNull String key = String.join(" - ", path.subList(from, path.size()));
+    private static @NotNull String uniqueKey(final @NotNull Map<String, ?> taken, final @NotNull List<String> treePath) {
+        for (int from = treePath.size() - 1; from >= 0; from--) {
+            final @NotNull String key = String.join(" - ", treePath.subList(from, treePath.size()));
             if (!taken.containsKey(key)) return key;
         }
 
-        return String.join(" - ", path) + " (" + (taken.size() + 1) + ")";
+        return String.join(" - ", treePath) + " (" + (taken.size() + 1) + ")";
     }
 
     private static @NotNull Optional<VirtualFile> resolveTargetDir(final @NotNull AbstractNode node) {
@@ -124,7 +124,7 @@ record ExportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
         walk(node, List.of(node.getName()), found, unreadable);
 
         final @NotNull Map<String, List<TestCaseDto>> sheets = new LinkedHashMap<>();
-        for (final Sheet sheet : found) sheets.put(uniqueKey(sheets, sheet.path()), sheet.testCases());
+        for (final Sheet sheet : found) sheets.put(uniqueKey(sheets, sheet.treePath()), sheet.testCases());
 
         return new GatheredSheets(sheets, unreadable);
     }
@@ -136,14 +136,14 @@ record ExportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    private void walk(final @NotNull AbstractNode node, final @NotNull List<String> path, final @NotNull List<Sheet> found, final @NotNull List<String> unreadable) {
+    private void walk(final @NotNull AbstractNode node, final @NotNull List<String> treePath, final @NotNull List<Sheet> found, final @NotNull List<String> unreadable) {
         final @NotNull List<TestCaseDto> here = testCases.getTestCasesForTestSet(node.getPath());
-        if (!here.isEmpty()) found.add(new Sheet(path, detached(here)));
+        if (!here.isEmpty()) found.add(new Sheet(treePath, detached(here)));
 
         unreadable.addAll(testCases.unreadableTestCasesIn(node.getPath()).stream().sorted().toList());
 
         for (final AbstractNode child : nodes.getChildren(node.getPath())) {
-            final @NotNull List<String> under = new ArrayList<>(path);
+            final @NotNull List<String> under = new ArrayList<>(treePath);
             under.add(child.getName());
             walk(child, under, found, unreadable);
         }

@@ -55,7 +55,7 @@ public class CardMouseListener extends MouseAdapter {
     private final @NotNull JBList<TestCaseDto> list;
     private final @NotNull CollectionListModel<TestCaseDto> model;
     private final @NotNull AbstractEditorContextMenu cm;
-    private final @NotNull List<String> path;
+    private final @NotNull List<String> treePath;
     private final @NotNull TestinEditor editor;
     private final @NotNull Notifier notifier;
     private @NotNull String shownTip = "";
@@ -64,7 +64,7 @@ public class CardMouseListener extends MouseAdapter {
         this.project = project;
         this.editor = editor;
         this.list = list;
-        this.path = node.getPath2();
+        this.treePath = node.treePath();
         this.model = model;
         this.cm = cm;
         this.notifier = Services.getInstance(project, Notifier.class);
@@ -78,7 +78,7 @@ public class CardMouseListener extends MouseAdapter {
 
         if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
             if (isClickOnItem)
-                Optional.ofNullable(model.getElementAt(index)).ifPresent(selected -> ViewToolWindowFactory.showPanel(project, List.of(selected), path, ViewPanel::focusDetailsTab));
+                Optional.ofNullable(model.getElementAt(index)).ifPresent(selected -> ViewToolWindowFactory.showPanel(project, List.of(selected), treePath, ViewPanel::focusDetailsTab));
 
             return;
         }

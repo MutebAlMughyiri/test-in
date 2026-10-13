@@ -41,6 +41,6 @@ public record Hit(@NotNull Icon icon, @NotNull String name, @NotNull String wher
     }
 
     private static @NotNull String where(final @NotNull AbstractNode node) {
-        return String.join(" > ", node.getPath2());
+        return String.join(" > ", node.treePath());
     }
 }

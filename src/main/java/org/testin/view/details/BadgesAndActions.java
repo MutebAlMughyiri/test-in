@@ -35,7 +35,7 @@ public final class BadgesAndActions extends AbstractDetails {
     private static final int INSETS_TOP = 8;
     private static final int INSETS_SIDE = 16;
 
-    private final @NotNull List<String> currentPath;
+    private final @NotNull List<String> treePath;
 
     // UC-VIEW-PANEL-004, UC-VIEW-PANEL-012, Rule-VIEW-PANEL-085
     @Override
@@ -43,7 +43,7 @@ public final class BadgesAndActions extends AbstractDetails {
         final @NotNull JBPanel<?> line = line(GAP);
 
         TestCaseBadges.of(project, testCase).forEach(line::add);
-        TestCaseHoverButtons.of(project, testCase, Services.getInstance(project, Nodes.class).find(Services.getInstance(project, TestinRoot.class).resolve(currentPath))).forEach(line::add);
+        TestCaseHoverButtons.of(project, testCase, Services.getInstance(project, Nodes.class).find(Services.getInstance(project, TestinRoot.class).resolve(treePath))).forEach(line::add);
 
         return addFullWidthRow(panel, gbc, line, JBUI.insets(INSETS_TOP, INSETS_SIDE, 0, INSETS_SIDE), currentRow);
     }

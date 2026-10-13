@@ -64,7 +64,7 @@ public final class RunItemSummary extends AbstractDetails {
     private static final @NotNull String ACTIONS_HIDDEN = "hidden";
 
     private final @NotNull RunItem runItem;
-    private final @NotNull List<String> currentPath;
+    private final @NotNull List<String> treePath;
     private final @NotNull Consumer<OptionalInt> showExecution;
 
     // Rule-EDITOR-PANEL-263
@@ -124,11 +124,11 @@ public final class RunItemSummary extends AbstractDetails {
         if (runItem.executedAtMostOnce()) {
             final @NotNull JBPanel<?> line = line(GAP);
             pills(runItem.shownStatus(), TestRunEditorAttributes.DURATION.gridValue(runItem)).forEach(line::add);
-            BugLine.of(project, runItem, currentPath, testCase).ifPresent(line::add);
+            BugLine.of(project, runItem, treePath, testCase).ifPresent(line::add);
             row = addFullWidthRow(panel, gbc, line, JBUI.insets(INSETS_TOP, INSETS_SIDE, 0, INSETS_SIDE), row);
         } else {
             final int defaultAt = runItem.defaultIndex();
-            final @NotNull Optional<TestRunNode> testRun = testRunOf(project, currentPath);
+            final @NotNull Optional<TestRunNode> testRun = testRunOf(project, treePath);
             final @NotNull Optional<String> whyNot = testRun.flatMap(shownIn -> Services.getInstance(project, RunItemRecorder.class).whyExecutionsAreFixed(shownIn.getPath(), runItem.getId()));
             final @NotNull List<Runnable> hideEveryLine = new ArrayList<>();
 
@@ -165,7 +165,7 @@ public final class RunItemSummary extends AbstractDetails {
             final @NotNull JBLabel star = new JBLabel(AllIcons.Nodes.Favorite);
             Tooltip.set(star, Bundle.message("execution.default"), "");
             line.add(star);
-            BugLine.of(project, runItem, currentPath, testCase).ifPresent(line::add);
+            BugLine.of(project, runItem, treePath, testCase).ifPresent(line::add);
         }
 
         return line;

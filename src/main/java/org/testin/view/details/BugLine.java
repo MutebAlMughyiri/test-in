@@ -45,11 +45,11 @@ public final class BugLine {
     private static final int LINK_GAP = 10;
 
     // UC-VIEW-PANEL-005, UC-VIEW-PANEL-016, Rule-VIEW-PANEL-031, Rule-VIEW-PANEL-086
-    public static @NotNull Optional<JComponent> of(final @NotNull Project project, final @NotNull RunItem runItem, final @NotNull List<String> currentPath, final @NotNull TestCaseDto testCase) {
+    public static @NotNull Optional<JComponent> of(final @NotNull Project project, final @NotNull RunItem runItem, final @NotNull List<String> treePath, final @NotNull TestCaseDto testCase) {
         final @NotNull Optional<String> bugIssue = runItem.bugIssue();
         if (!runItem.recordsABug()) return Optional.empty();
 
-        return AbstractDetails.testRunOf(project, currentPath).map(testRunNode -> drawn(project, runItem, testCase, bugIssue, testRunNode));
+        return AbstractDetails.testRunOf(project, treePath).map(testRunNode -> drawn(project, runItem, testCase, bugIssue, testRunNode));
     }
 
     // UC-VIEW-PANEL-005, UC-VIEW-PANEL-016, Rule-VIEW-PANEL-066, Rule-VIEW-PANEL-075, Rule-VIEW-PANEL-086

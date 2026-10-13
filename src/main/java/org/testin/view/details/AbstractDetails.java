@@ -72,8 +72,8 @@ public abstract class AbstractDetails {
     }
 
     // UC-VIEW-PANEL-005
-    static @NotNull Optional<TestRunNode> testRunOf(final @NotNull Project project, final @NotNull List<String> currentPath) {
-        return Services.getInstance(project, TestRuns.class).findTestRunNode(Services.getInstance(project, TestinRoot.class).resolve(currentPath));
+    static @NotNull Optional<TestRunNode> testRunOf(final @NotNull Project project, final @NotNull List<String> treePath) {
+        return Services.getInstance(project, TestRuns.class).findTestRunNode(Services.getInstance(project, TestinRoot.class).resolve(treePath));
     }
 
     // UC-VIEW-PANEL-016, UC-VIEW-PANEL-004

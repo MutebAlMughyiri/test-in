@@ -86,7 +86,7 @@ public class WaysInIdeTest extends AbstractViewPanelIdeTest {
     public void testFollowingASelectionOfSeveralHandsThemAll() {
         final @NotNull TestSetEditor editor = anEditor();
         editor.onToolBarSwitchedToCardView();
-        view.getPanel().show(List.of(testCases.getFirst()), testSet.getPath2());
+        view.getPanel().show(List.of(testCases.getFirst()), testSet.treePath());
 
         final @NotNull JBList<?> list = (JBList<?>) editor.getPreferredFocusedComponent();
         list.setSelectionInterval(0, 2);

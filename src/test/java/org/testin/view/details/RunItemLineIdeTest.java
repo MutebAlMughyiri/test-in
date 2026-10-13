@@ -62,7 +62,7 @@ public class RunItemLineIdeTest extends AbstractTempRootIdeTest {
         return row;
     }
 
-    private @NotNull List<String> shownTestRunPath() {
+    private @NotNull List<String> shownTestRunTreePath() {
         final @NotNull Path testRunPath = WriteAction.computeAndWait(() -> {
             final @NotNull NodeMapper mapper = Services.getInstance(getProject(), NodeMapper.class);
             final @NotNull Nodes nodes = Services.getInstance(getProject(), Nodes.class);
@@ -76,13 +76,13 @@ public class RunItemLineIdeTest extends AbstractTempRootIdeTest {
         return List.of(testRunPath.toString());
     }
 
-    private @NotNull JBPanel<?> drawn(final @NotNull RunItem runItem, final @NotNull List<String> testRunPath) {
-        return Drawn.detailsTab(getProject(), aTestCase(), Optional.of(runItem), testRunPath);
+    private @NotNull JBPanel<?> drawn(final @NotNull RunItem runItem, final @NotNull List<String> testRunTreePath) {
+        return Drawn.detailsTab(getProject(), aTestCase(), Optional.of(runItem), testRunTreePath);
     }
 
     // Rule-VIEW-PANEL-086
     public void testRunItemStatusDurationAndBugChipAreOneLine() {
-        final @NotNull JBPanel<?> tab = drawn(failed(""), shownTestRunPath());
+        final @NotNull JBPanel<?> tab = drawn(failed(""), shownTestRunTreePath());
         final @NotNull Component status = Drawn.reading(tab, RunItemStatus.FAILED.getLabel());
         final @NotNull Component duration = Drawn.reading(tab, "02:14");
         final @NotNull Component bugChip = Drawn.components(tab).stream()
@@ -97,14 +97,14 @@ public class RunItemLineIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-VIEW-PANEL-033
     public void testATestCaseTheTestRunHasNotReachedReadsPending() {
-        final @NotNull List<String> words = Drawn.words(drawn(RunItem.builder().id(TEST_CASE_ID).build(), shownTestRunPath()));
+        final @NotNull List<String> words = Drawn.words(drawn(RunItem.builder().id(TEST_CASE_ID).build(), shownTestRunTreePath()));
 
         assertTrue("an unreached test case does not read Pending: " + words, words.contains(Bundle.message("status.run.item.pending")));
     }
 
     // Rule-VIEW-PANEL-031
     public void testAnEmptyTestRunValueIsNotDrawn() {
-        final @NotNull List<String> words = Drawn.words(drawn(RunItem.builder().id(TEST_CASE_ID).executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())).build(), shownTestRunPath()));
+        final @NotNull List<String> words = Drawn.words(drawn(RunItem.builder().id(TEST_CASE_ID).executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())).build(), shownTestRunTreePath()));
 
         assertFalse("an empty actual result was drawn: " + words, words.contains(Bundle.message("attribute.run.item.actual.result").toUpperCase(Locale.ROOT)));
         assertFalse("an empty executed by was drawn: " + words, words.contains(Bundle.message("attribute.run.item.executed.by").toUpperCase(Locale.ROOT)));
@@ -114,8 +114,8 @@ public class RunItemLineIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-VIEW-PANEL-080
     public void testNoLinkOnTheDetailsTabTakesTheKeyboard() {
-        final @NotNull List<String> testRunPath = shownTestRunPath();
-        final @NotNull List<ActionLink> links = Stream.of(drawn(failed(""), testRunPath), drawn(failed(ISSUE), testRunPath))
+        final @NotNull List<String> testRunTreePath = shownTestRunTreePath();
+        final @NotNull List<ActionLink> links = Stream.of(drawn(failed(""), testRunTreePath), drawn(failed(ISSUE), testRunTreePath))
                 .flatMap(tab -> Drawn.components(tab).stream())
                 .filter(ActionLink.class::isInstance)
                 .map(ActionLink.class::cast)

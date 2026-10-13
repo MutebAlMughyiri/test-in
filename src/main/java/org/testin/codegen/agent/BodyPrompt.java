@@ -39,7 +39,7 @@ public final class BodyPrompt {
                 "{testData}", testCase.getTestData(),
                 "{preConditions}", testCase.getPreConditions(),
                 "{module}", testCase.getModule(),
-                "{testSetPath}", String.join(" > ", testCase.getParent().getPath2()),
+                "{testSetPath}", String.join(" > ", testCase.getParent().treePath()),
                 "{class}", Fqcn.classOfMethod(testCase),
                 "{method}", methodName);
 

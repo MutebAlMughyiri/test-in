@@ -58,7 +58,7 @@ public final class EditShownTestCase {
             @Override
             public void actionPerformed(final @NotNull AnActionEvent e) {
                 ViewToolWindowFactory.panel(project).ifPresent(viewPanel -> viewPanel.getCurrentTestCase()
-                        .ifPresent(currentDto -> openIfEditable(project, currentDto, viewPanel.getPage().getCurrentPath())));
+                        .ifPresent(currentDto -> openIfEditable(project, currentDto, viewPanel.getPage().getTreePath())));
             }
 
             @Override
@@ -69,17 +69,17 @@ public final class EditShownTestCase {
     }
 
     // UC-VIEW-PANEL-011, Rule-VIEW-PANEL-110
-    static void openIfEditable(final @NotNull Project project, final @NotNull TestCaseDto testCase, final @NotNull List<String> currentPath) {
-        whyNotEditable(project, testCase, currentPath).ifPresentOrElse(reason -> Services.getInstance(project, Notifier.class).softRefuse(project, reason), () -> open(project, testCase));
+    static void openIfEditable(final @NotNull Project project, final @NotNull TestCaseDto testCase, final @NotNull List<String> treePath) {
+        whyNotEditable(project, testCase, treePath).ifPresentOrElse(reason -> Services.getInstance(project, Notifier.class).softRefuse(project, reason), () -> open(project, testCase));
     }
 
     // Rule-VIEW-PANEL-110
-    private static @NotNull Optional<String> whyNotEditable(final @NotNull Project project, final @NotNull TestCaseDto testCase, final @NotNull List<String> currentPath) {
+    private static @NotNull Optional<String> whyNotEditable(final @NotNull Project project, final @NotNull TestCaseDto testCase, final @NotNull List<String> treePath) {
         if (Services.getInstance(project, TestCases.class).findTestCase(testCase.getId()).isEmpty())
             return Optional.of(Bundle.message("details.deleted.no.edit"));
 
-        final boolean committed = !currentPath.isEmpty() && Services.getInstance(project, TestRuns.class)
-                .findTestRunNode(Services.getInstance(project, TestinRoot.class).resolve(currentPath))
+        final boolean committed = !treePath.isEmpty() && Services.getInstance(project, TestRuns.class)
+                .findTestRunNode(Services.getInstance(project, TestinRoot.class).resolve(treePath))
                 .filter(testRun -> !testRun.takesRunItemStatuses())
                 .isPresent();
         return committed ? Optional.of(Bundle.message("details.committed.no.edit")) : Optional.empty();

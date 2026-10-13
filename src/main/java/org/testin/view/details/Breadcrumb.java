@@ -53,7 +53,7 @@ public class Breadcrumb extends AbstractDetails {
     final int INSETS_BOTTOM = 5;
     final int INSETS_RIGHT = 16;
 
-    private final @NotNull List<String> currentPath;
+    private final @NotNull List<String> treePath;
 
     // UC-VIEW-PANEL-010, Rule-VIEW-PANEL-041
     @Override
@@ -61,9 +61,9 @@ public class Breadcrumb extends AbstractDetails {
         final @NotNull JBPanel<?> pathPanel = line(0);
 
         {
-            for (int i = 0; i < currentPath.size(); i++) {
-                final @NotNull String labelText = currentPath.get(i);
-                final boolean isLast = (i == currentPath.size() - 1);
+            for (int i = 0; i < treePath.size(); i++) {
+                final @NotNull String labelText = treePath.get(i);
+                final boolean isLast = (i == treePath.size() - 1);
 
                 final int index = i;
 
@@ -88,7 +88,7 @@ public class Breadcrumb extends AbstractDetails {
                     // UC-VIEW-PANEL-010, Rule-VIEW-PANEL-042, Rule-VIEW-PANEL-043
                     @Override
                     public void mouseClicked(final MouseEvent e) {
-                        final @NotNull Path stepPath = Services.getInstance(project, TestinRoot.class).resolve(currentPath.subList(0, index + 1));
+                        final @NotNull Path stepPath = Services.getInstance(project, TestinRoot.class).resolve(treePath.subList(0, index + 1));
 
                         Services.getInstance(project, Nodes.class).find(stepPath).map(Hit::of).ifPresent(hit -> GoTo.the(project, hit));
                     }

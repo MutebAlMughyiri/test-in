@@ -97,7 +97,7 @@ public final class CardPanelBuilder {
 
         contextMenu.registerShortcuts(list);
 
-        list.addListSelectionListener(new CardSelectionListener(project, list, editor, node.getPath2()));
+        list.addListSelectionListener(new CardSelectionListener(project, list, editor, node.treePath()));
         list.addListSelectionListener(new CardGridSelectionSynchronizer(list, gridTableSupplier, gridActiveSupplier, rowOnGrid));
     }
 }

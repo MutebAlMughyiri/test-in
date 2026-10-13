@@ -44,7 +44,7 @@ public class SearchTest {
         final TestSetNode set = TestSetNode.builder().build();
         set.setName(name);
         set.setPath(Path.of("C:", "Testin", "test-01", "Test Cases", name));
-        set.setPath2(new ArrayList<>(List.of(chain)));
+        set.setTreePath(new ArrayList<>(List.of(chain)));
 
         return set;
     }

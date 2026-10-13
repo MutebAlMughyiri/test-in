@@ -223,7 +223,7 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestCaseDto testCase = aTestCase();
         final @NotNull TestNGExecution execution = Services.getInstance(getProject(), TestNGExecution.class);
         ExecutionRecorder.initRecording(getProject());
-        view.getPanel().show(List.of(testCase), testCase.getParent().getPath2());
+        view.getPanel().show(List.of(testCase), testCase.getParent().treePath());
         execution.starting(testCase);
 
         final @NotNull List<String> said = Said.during(getProject(), () -> assertTrue("F5 did nothing on a running test case", KeyPress.press(getProject(), view.keyboardTarget(ViewTab.DETAILS), f5())));
@@ -245,7 +245,7 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
         settled();
         assertEquals("\"Log in with a valid user\"", attributeOf(writtenMethodOf(LOGIN_TEST, testCase), "description"));
         final @NotNull PopupsBuilt popups = PopupsBuilt.recording(getTestRootDisposable());
-        view.getPanel().show(List.of(testCase), testSet.getPath2());
+        view.getPanel().show(List.of(testCase), testSet.treePath());
 
         assertTrue(FieldChange.pressF2(getProject(), view));
         FieldChange.chooseTheDescription(popups.last());

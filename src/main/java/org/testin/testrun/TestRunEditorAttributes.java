@@ -182,7 +182,7 @@ public enum TestRunEditorAttributes implements ShowableAttribute {
     PATH(
             TestSetEditorAttributes.PATH.getName(),
             AttributeDefault.OFF,
-            runItem -> String.join(" > ", runItem.liveTestCase().getParent().getPath2())
+            runItem -> String.join(" > ", runItem.liveTestCase().getParent().treePath())
     ),
 
     FQCN(

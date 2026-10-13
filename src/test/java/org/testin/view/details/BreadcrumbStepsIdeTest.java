@@ -40,7 +40,7 @@ public class BreadcrumbStepsIdeTest extends AbstractViewPanelIdeTest {
     public void testEveryStepGoesToThePlaceItNamesAndBringsUpTheTree() {
         final @NotNull TestSetNode testSet = aTestSet("Login");
         final @NotNull TestCaseDto testCase = aTestCase(testSet, "Log in with a valid user", "a");
-        final @NotNull JBPanel<?> tab = Drawn.detailsTab(getProject(), testCase, Optional.empty(), testSet.getPath2());
+        final @NotNull JBPanel<?> tab = Drawn.detailsTab(getProject(), testCase, Optional.empty(), testSet.treePath());
 
         final @NotNull List<String> container = TestinLog.during(() -> click(Drawn.reading(tab, "Test Cases")));
         assertEquals("the tree did not come up on the step", 1, view.timesTheTreeCameUp());

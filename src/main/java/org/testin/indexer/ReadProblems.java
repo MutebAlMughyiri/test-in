@@ -93,7 +93,7 @@ final class ReadProblems {
 
     // Rule-INTERNAL-014
     private @NotNull String nodePath(final @NotNull Path path) {
-        return store.findByPath(path).map(node -> String.join(" > ", node.getPath2())).orElseGet(path::toString);
+        return store.findByPath(path).map(node -> String.join(" > ", node.treePath())).orElseGet(path::toString);
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-015

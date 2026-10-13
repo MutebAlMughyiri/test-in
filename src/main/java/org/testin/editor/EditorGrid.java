@@ -94,7 +94,7 @@ final class EditorGrid<A extends Enum<A> & ShowableAttribute> {
             table.getSelectionModel().addListSelectionListener(new GridSelectionListener(editor, table, editor.list, pageTestCases));
             editor.installEditListener(table, pageTestCases);
             new TestinEscapeAction(editor.project, table);
-            new GridEnterAction(editor, table, pageTestCases, editor.parent.getPath2());
+            new GridEnterAction(editor, table, pageTestCases, editor.parent.treePath());
             table.addMouseListener(new GridContextMenuListener(table, editor.list, editor.contextMenu, pageTestCases));
             editor.contextMenu.bindShortcutsTo(table);
             PageAction.bindToGrid(editor, table);

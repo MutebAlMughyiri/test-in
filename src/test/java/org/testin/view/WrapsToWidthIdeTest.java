@@ -80,7 +80,7 @@ public class WrapsToWidthIdeTest extends AbstractViewPanelIdeTest {
         final @NotNull TestCaseDto testCase = aTestCase(aTestSet("Transfers"), "No retry, fails (transfer) - expect Failed at once.", "1");
         final @NotNull TestRunNode testRun = aTestRun(List.of(RunItem.builder().id(testCase.getId())
                 .executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The transfer went through although it was above the balance").build())).build()));
-        view.getPanel().show(List.of(testCase), testRun.getPath2());
+        view.getPanel().show(List.of(testCase), testRun.treePath());
         settled();
 
         final @NotNull JComponent pane = ViewTab.DETAILS.paneOf(view.getPanel());

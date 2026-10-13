@@ -40,7 +40,7 @@ public class CopyChoiceTest {
 
     private static @NotNull TestCaseDto writtenInFull() {
         final @NotNull TestSetNode set = new TestSetNode();
-        set.setPath2(new ArrayList<>(List.of("shop", "checkout", "Payment")));
+        set.setTreePath(new ArrayList<>(List.of("shop", "checkout", "Payment")));
 
         final @NotNull TestCaseDto testCase = TestCaseDto.builder()
                 .id(UUID.randomUUID())
@@ -99,7 +99,7 @@ public class CopyChoiceTest {
     @Test
     public void theClassNameIsCopiedDotted() {
         final @NotNull TestSetNode set = new TestSetNode();
-        set.setPath2(new ArrayList<>(List.of("shop", "checkout", "Payment")));
+        set.setTreePath(new ArrayList<>(List.of("shop", "checkout", "Payment")));
 
         final @NotNull TestCaseDto testCase = TestCaseDto.builder().description("card is declined").build();
         testCase.setParent(set);

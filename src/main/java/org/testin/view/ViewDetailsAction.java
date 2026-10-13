@@ -36,7 +36,7 @@ public class ViewDetailsAction extends AbstractAnyProjectAction {
         if (selected.isEmpty()) return;
 
         TestinDataKeys.editor(e).ifPresent(editor ->
-                ViewToolWindowFactory.showPanel(project, selected, editor.getParent().getPath2(), ViewPanel::focusDetailsTab));
+                ViewToolWindowFactory.showPanel(project, selected, editor.getParent().treePath(), ViewPanel::focusDetailsTab));
     }
 
     // UC-VIEW-PANEL-001, Rule-EDITOR-PANEL-230

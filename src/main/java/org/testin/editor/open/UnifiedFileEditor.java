@@ -99,7 +99,7 @@ public class UnifiedFileEditor extends UserDataHolderBase implements FileEditor 
                 return;
             }
 
-            viewer.showIfOpen(selected, vf.getNode().getPath2());
+            viewer.showIfOpen(selected, vf.getNode().treePath());
         });
     }
 }

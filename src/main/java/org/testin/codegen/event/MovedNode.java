@@ -33,13 +33,13 @@ import java.util.Optional;
 
 public record MovedNode(@NotNull AbstractNode node, @NotNull List<String> from, @NotNull Path newParent) {
     public MovedNode(final @NotNull AbstractNode node, final @NotNull Path newParent) {
-        this(node, node.getPath2(), newParent);
+        this(node, node.treePath(), newParent);
     }
 
     // UC-TREE-PANEL-016, Rule-TREE-PANEL-098
     public @NotNull Optional<MovedNode> back(final @NotNull Project project) {
         return Optional.ofNullable(node.getPath().getParent()).flatMap(oldParent -> Services.getInstance(project, Nodes.class).find(newParent)
-                .map(target -> new MovedNode(node, AbstractNode.pathOf(target.getPath2(), node.getName()), oldParent)));
+                .map(target -> new MovedNode(node, AbstractNode.treePathOf(target.treePath(), node.getName()), oldParent)));
     }
 
     // UC-CODEGEN-016, Rule-CODEGEN-055

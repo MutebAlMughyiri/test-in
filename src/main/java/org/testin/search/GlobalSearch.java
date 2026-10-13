@@ -119,8 +119,8 @@ public final class GlobalSearch {
     }
 
     static int inTreeOrder(final @NotNull AbstractNode one, final @NotNull AbstractNode other) {
-        final int byPlace = String.join(" > ", one.getPath2())
-                .compareToIgnoreCase(String.join(" > ", other.getPath2()));
+        final int byPlace = String.join(" > ", one.treePath())
+                .compareToIgnoreCase(String.join(" > ", other.treePath()));
 
         return byPlace != 0 ? byPlace : one.getName().compareToIgnoreCase(other.getName());
     }

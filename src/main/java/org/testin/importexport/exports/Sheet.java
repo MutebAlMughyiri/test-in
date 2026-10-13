@@ -21,5 +21,5 @@ import org.testin.model.TestCaseDto;
 
 import java.util.List;
 
-record Sheet(@NotNull List<String> path, @NotNull List<TestCaseDto> testCases) {
+record Sheet(@NotNull List<String> treePath, @NotNull List<TestCaseDto> testCases) {
 }

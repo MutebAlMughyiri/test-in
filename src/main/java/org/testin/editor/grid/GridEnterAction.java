@@ -42,14 +42,14 @@ public final class GridEnterAction extends AbstractBoundProjectAction {
     private final @NotNull TestinEditor editor;
     private final @NotNull JBTable table;
     private final @NotNull List<TestCaseDto> pageTestCases;
-    private final @NotNull List<String> path;
+    private final @NotNull List<String> treePath;
 
-    public GridEnterAction(final @NotNull TestinEditor editor, final @NotNull JBTable table, final @NotNull List<TestCaseDto> pageTestCases, final @NotNull List<String> path) {
+    public GridEnterAction(final @NotNull TestinEditor editor, final @NotNull JBTable table, final @NotNull List<TestCaseDto> pageTestCases, final @NotNull List<String> treePath) {
         super(editor.getProject(), Bundle.message("grid.enter.text"), Bundle.message("grid.enter.description"), AllIcons.Actions.PreviewDetails);
         this.editor = editor;
         this.table = table;
         this.pageTestCases = pageTestCases;
-        this.path = path;
+        this.treePath = treePath;
         this.registerCustomShortcutSet(new CustomShortcutSet(GridKeys.enter()), table);
 
         installDoubleClick();
@@ -103,7 +103,7 @@ public final class GridEnterAction extends AbstractBoundProjectAction {
     private void showDetails(final int row) {
         if (row < 0 || row >= pageTestCases.size()) return;
 
-        ViewToolWindowFactory.showPanel(project, List.of(pageTestCases.get(row)), path, ViewPanel::focusDetailsTab);
+        ViewToolWindowFactory.showPanel(project, List.of(pageTestCases.get(row)), treePath, ViewPanel::focusDetailsTab);
     }
 
     // UC-EDITOR-PANEL-025

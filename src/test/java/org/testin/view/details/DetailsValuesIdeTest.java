@@ -94,11 +94,11 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
         return Optional.ofNullable(icon).map(Icon::getIconWidth).orElse(0);
     }
 
-    private @NotNull JBPanel<?> drawnWithEveryBandOpen(final @NotNull TestCaseDto testCase, final @NotNull Optional<RunItem> runItem, final @NotNull List<String> path) {
+    private @NotNull JBPanel<?> drawnWithEveryBandOpen(final @NotNull TestCaseDto testCase, final @NotNull Optional<RunItem> runItem, final @NotNull List<String> treePath) {
         final boolean wasOpen = PropertiesComponent.getInstance().getBoolean(DetailsTab.TEST_CASE_OPEN, false);
         PropertiesComponent.getInstance().setValue(DetailsTab.TEST_CASE_OPEN, true, false);
         try {
-            return Drawn.detailsTab(getProject(), testCase, runItem, path);
+            return Drawn.detailsTab(getProject(), testCase, runItem, treePath);
         } finally {
             PropertiesComponent.getInstance().setValue(DetailsTab.TEST_CASE_OPEN, wasOpen, false);
         }
@@ -115,7 +115,7 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
         final @NotNull TestSetNode testSet = aTestSet("Login");
         final @NotNull TestCaseDto testCase = everyFieldFilled(aTestCase(testSet, "Log in with a valid user", "a"));
         final @NotNull TestRunNode testRun = aTestRun(List.of(failedWith(testCase, List.of())));
-        final @NotNull JBPanel<?> tab = drawnWithEveryBandOpen(testCase, Services.getInstance(getProject(), TestRuns.class).findRunItems(testRun.getPath()).flatMap(run -> run.runItemOf(testCase.getId())), testRun.getPath2());
+        final @NotNull JBPanel<?> tab = drawnWithEveryBandOpen(testCase, Services.getInstance(getProject(), TestRuns.class).findRunItems(testRun.getPath()).flatMap(run -> run.runItemOf(testCase.getId())), testRun.treePath());
 
         final @NotNull List<Component> drawn = Drawn.components(tab);
         assertTrue("the test case's own band was not drawn open: " + Drawn.words(tab), Drawn.holds(Drawn.words(tab), "The dashboard opens"));
@@ -134,16 +134,16 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-041
     public void testTheBreadcrumbIsOneStepForEachFolderAboveTheTestCase() {
-        final @NotNull List<String> path = List.of("Demo", "Test Cases", "Accounts", "Login");
-        final @NotNull JBPanel<?> tab = Drawn.detailsTab(getProject(), TestCaseDto.builder().description("Log in with a valid user").build(), Optional.empty(), path);
+        final @NotNull List<String> treePath = List.of("Demo", "Test Cases", "Accounts", "Login");
+        final @NotNull JBPanel<?> tab = Drawn.detailsTab(getProject(), TestCaseDto.builder().description("Log in with a valid user").build(), Optional.empty(), treePath);
 
         final @NotNull Container breadcrumb = lineOf(Drawn.reading(tab, "Demo"));
         final @NotNull List<JLabel> parts = Arrays.stream(breadcrumb.getComponents()).filter(JLabel.class::isInstance).map(JLabel.class::cast).toList();
         final @NotNull List<String> steps = parts.stream().map(part -> Objects.toString(part.getText(), "")).filter(text -> !text.isEmpty()).toList();
         final long arrows = parts.stream().filter(part -> Optional.ofNullable(part.getIcon()).isPresent() && Objects.toString(part.getText(), "").isEmpty()).count();
 
-        assertEquals("the breadcrumb does not show one step for each folder, in order", path, steps);
-        assertEquals("the steps are not joined by one arrow between each two", path.size() - 1, arrows);
+        assertEquals("the breadcrumb does not show one step for each folder, in order", treePath, steps);
+        assertEquals("the steps are not joined by one arrow between each two", treePath.size() - 1, arrows);
 
         final @NotNull JBPanel<?> noPath = Drawn.detailsTab(getProject(), TestCaseDto.builder().description("Log in with a valid user").build(), Optional.empty(), List.of());
         assertFalse("a panel handed no path drew a step: " + Drawn.words(noPath), Drawn.holds(Drawn.words(noPath), "Demo"));
@@ -156,10 +156,10 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
         final @NotNull TestCaseDto middle = aTestCase(testSet, "Log in with a locked user", "m");
         aTestCase(testSet, "Log in with no password", "z");
 
-        assertEquals("Order was not read as the test case's place in its test set", "2", orderIn(Drawn.words(Drawn.detailsTab(getProject(), middle, Optional.empty(), testSet.getPath2()))));
+        assertEquals("Order was not read as the test case's place in its test set", "2", orderIn(Drawn.words(Drawn.detailsTab(getProject(), middle, Optional.empty(), testSet.treePath()))));
 
         aTestCase(testSet, "Log in twice", "b");
-        assertEquals("Order did not follow the test set when a test case was put above it", "3", orderIn(Drawn.words(Drawn.detailsTab(getProject(), middle, Optional.empty(), testSet.getPath2()))));
+        assertEquals("Order did not follow the test set when a test case was put above it", "3", orderIn(Drawn.words(Drawn.detailsTab(getProject(), middle, Optional.empty(), testSet.treePath()))));
     }
 
     // Rule-VIEW-PANEL-062
@@ -168,7 +168,7 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
         aTestCase(testSet, "Log in with a valid user", "a");
         final @NotNull TestCaseDto deleted = TestCaseDto.builder().parent(testSet).description("Log in with a locked user").build();
 
-        final @NotNull List<String> words = Drawn.words(Drawn.detailsTab(getProject(), deleted, Optional.empty(), testSet.getPath2()));
+        final @NotNull List<String> words = Drawn.words(Drawn.detailsTab(getProject(), deleted, Optional.empty(), testSet.treePath()));
 
         assertFalse("a test case its test set no longer holds was given a place in it: " + words, words.contains(ORDER));
     }
@@ -182,7 +182,7 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
         final @NotNull List<String> names = testRuns.storeScreenshots(testRun.getPath(), List.of(aScreenshot(320, 200), aScreenshot(640, 400)));
         assertEquals(2, names.size());
 
-        final @NotNull JBPanel<?> tab = Drawn.detailsTab(getProject(), testCase, Optional.of(failedWith(testCase, names)), testRun.getPath2());
+        final @NotNull JBPanel<?> tab = Drawn.detailsTab(getProject(), testCase, Optional.of(failedWith(testCase, names)), testRun.treePath());
         final @NotNull Component link = Drawn.reading(tab, Bundle.message("view.stacktrace.link"));
         final @NotNull List<Component> line = Arrays.asList(lineOf(link).getComponents());
 
@@ -221,7 +221,7 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
         chosen.remove(TestRunEditorAttributes.STACKTRACE);
         ShownFields.write(ShownFields.IN_TEST_RUNS, chosen);
         try {
-            final @NotNull JBPanel<?> tab = Drawn.detailsTab(getProject(), testCase, Optional.of(failedWith(testCase, names)), testRun.getPath2());
+            final @NotNull JBPanel<?> tab = Drawn.detailsTab(getProject(), testCase, Optional.of(failedWith(testCase, names)), testRun.treePath());
 
             assertTrue("the Stacktrace link went missing because Fields hides the Stacktrace", Drawn.words(tab).contains(Bundle.message("view.stacktrace.link")));
             assertTrue("the screenshot was not drawn because Fields hides the Stacktrace", Drawn.components(tab).stream().filter(JBLabel.class::isInstance).map(JBLabel.class::cast).anyMatch(label -> Drawn.hovering(label).contains(names.getFirst())));

@@ -51,7 +51,7 @@ public final class StacktraceLine extends AbstractDetails {
 
     private final @NotNull RunItemExecution shown;
 
-    private final @NotNull List<String> currentPath;
+    private final @NotNull List<String> treePath;
 
     private static @NotNull JBPanel<?> line(final @NotNull List<? extends JComponent> parts) {
         final @NotNull JBPanel<?> line = line(GAP);
@@ -69,7 +69,7 @@ public final class StacktraceLine extends AbstractDetails {
 
         final @NotNull List<JComponent> parts = new ArrayList<>();
 
-        final @NotNull Path testRunPath = Services.getInstance(project, TestinRoot.class).resolve(currentPath);
+        final @NotNull Path testRunPath = Services.getInstance(project, TestinRoot.class).resolve(treePath);
 
         if (link) parts.add(stacktraceLink(project, testCase, stacktrace));
         screenshots.forEach(name -> parts.add(thumbnail(project, testRunPath, name)));

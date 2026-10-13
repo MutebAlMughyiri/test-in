@@ -36,7 +36,7 @@ public enum ViewTab {
             Bundle.message("view.tab.details"),
             ViewPanel::getDetailsScrollPane,
             ViewPanel::getDetailsTab,
-            panel -> new DetailsTab().load(panel.getProject(), panel.getDetailsTab(), panel.shownTestCase(), panel.shownRunItem(), panel.getPage().getCurrentPath(), panel.shownLine(), panel::showExecution)
+            panel -> new DetailsTab().load(panel.getProject(), panel.getDetailsTab(), panel.shownTestCase(), panel.shownRunItem(), panel.getPage().getTreePath(), panel.shownLine(), panel::showExecution)
     ),
 
     HISTORY(

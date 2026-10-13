@@ -60,7 +60,7 @@ public class BugOnTheSummaryLineIdeTest extends AbstractViewPanelIdeTest {
     }
 
     private @NotNull JBPanel<?> drawn(final @NotNull RunItem runItem) {
-        return Drawn.detailsTab(getProject(), testCase, Optional.of(runItem), testRun.getPath2());
+        return Drawn.detailsTab(getProject(), testCase, Optional.of(runItem), testRun.treePath());
     }
 
     // Rule-VIEW-PANEL-066
