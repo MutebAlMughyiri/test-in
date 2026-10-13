@@ -27,19 +27,19 @@ public class GitStatusLinesTest {
 
     @Test
     public void anUntrackedFileIsAnAddition() {
-        final List<StatusEntry> entries = GitStatusLines.parseStatus(List.of("?? .tp"));
+        final List<StatusEntry> entries = GitStatusLines.parseStatus(List.of("?? .testproject"));
 
         assertEquals(entries.size(), 1);
         assertEquals(entries.getFirst().type(), StatusKind.ADDED);
-        assertEquals(entries.getFirst().path(), ".tp");
+        assertEquals(entries.getFirst().path(), ".testproject");
     }
 
     @Test
     public void everyNewTestCaseInANewTestSetIsReported() {
         final List<StatusEntry> entries = GitStatusLines.parseStatus(List.of(
-                "?? .tp",
-                "?? Test Cases/.tcf",
-                "?? Test Cases/rp/.ts",
+                "?? .testproject",
+                "?? Test Cases/.testcasesfolder",
+                "?? Test Cases/rp/.testset",
                 "?? Test Cases/rp/73ebd4d7-4a2c-4813-92d5-30aebe3a3670.json",
                 "?? Test Cases/rp/84e8bf04-815d-4a48-81e2-3985b1e25c75.json"));
 

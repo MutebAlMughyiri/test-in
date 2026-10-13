@@ -96,7 +96,7 @@ public class ReviewRowsIdeTest extends AbstractGitRemoteIdeTest {
     }
 
     private @NotNull String onDisk(final @NotNull TestCase testCase) {
-        return Services.getInstance(getProject(), JsonCodec.class).readValue(read(work, work.relativize(login.getPath()).resolve(testCase.getId() + ".tc").toString()), TestCase.class).getDescription();
+        return Services.getInstance(getProject(), JsonCodec.class).readValue(read(work, work.relativize(login.getPath()).resolve(testCase.getId() + ".testcase").toString()), TestCase.class).getDescription();
     }
 
     private @NotNull JBTable theReviewTable() {

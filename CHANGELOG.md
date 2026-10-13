@@ -6,6 +6,12 @@ is [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## Unreleased
 
+**Before you update:** wipe your test data. This build reads format 5 and converts nothing. Every file Testin stores is
+now named in full words - a test project holds `.testproject`, a test set `.testset`, a test run `.testrun`, a test case
+is `<id>.testcase` and a run item `<id>.runitem` - so a test project an earlier build wrote is not shown at all: delete
+its folder and create it again. Format 5 also keeps every execution of a run item (format 4, #415). A team sharing a
+test project should update together.
+
 ### Added
 
 - **Sort:** a new **Sort** button beside **Filter** arranges the test cases by one field - Order, Description, Priority,

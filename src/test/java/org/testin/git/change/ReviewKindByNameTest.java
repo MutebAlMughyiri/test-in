@@ -73,17 +73,17 @@ public class ReviewKindByNameTest {
     public void aFileIsKnownByItsNameNotByWhatItHolds() {
         final @NotNull String aTestCase = RealJsonCodec.build().writeValueAsString(TestCase.builder().description("log in with a valid user").build());
         onDisk("Test Cases/Login/notes.json", aTestCase);
-        onDisk("Test Cases/Login/.ts", "{}");
+        onDisk("Test Cases/Login/.testset", "{}");
 
         assertEquals(kindOf("Test Cases/Login/notes.json"), ChangeSubject.OTHER, "a file holding a test case but not named one became a test case row");
-        assertEquals(kindOf("Test Cases/Login/.ts"), ChangeSubject.MARKER);
+        assertEquals(kindOf("Test Cases/Login/.testset"), ChangeSubject.MARKER);
     }
 
     // UC-SHARE-010, Rule-SHARE-047
     @Test
     public void aTestCaseOrRunItemTheReviewCannotParseStillGetsItsKindOfRow() {
-        final @NotNull String testCase = "Test Cases/Login/" + UUID.randomUUID() + ".tc";
-        final @NotNull String result = "Test Runs/Sprint 1/" + UUID.randomUUID() + ".ri";
+        final @NotNull String testCase = "Test Cases/Login/" + UUID.randomUUID() + ".testcase";
+        final @NotNull String result = "Test Runs/Sprint 1/" + UUID.randomUUID() + ".runitem";
         onDisk(testCase, "{ this is not a test case");
         onDisk(result, "{ this is not a result");
 

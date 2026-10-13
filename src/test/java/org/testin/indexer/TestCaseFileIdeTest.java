@@ -69,7 +69,7 @@ public class TestCaseFileIdeTest extends AbstractTempRootIdeTest {
 
         assertEquals("the test case was placed in the wrong test project", testProject.getPath(), file.testProject());
         assertEquals("the test case's file is not where the store writes it",
-                Path.of(testProject.getTestCasesFolder().getPath().getFileName().toString(), "Login", testCase.getId() + ".tc"), file.inProject());
+                Path.of(testProject.getTestCasesFolder().getPath().getFileName().toString(), "Login", testCase.getId() + ".testcase"), file.inProject());
     }
 
     public void testATestCaseNoIndexedTestProjectHoldsHasNoFile() {

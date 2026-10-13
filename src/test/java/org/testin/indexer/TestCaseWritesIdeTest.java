@@ -36,7 +36,7 @@ import static org.junit.Assert.assertArrayEquals;
 
 public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
 
-    private static final String HAND_NAMED = "Log in by hand.tc";
+    private static final String HAND_NAMED = "Log in by hand.testcase";
 
     private static @NotNull TestCase pastedInto(final TestSetNode testSet, final TestCase cut) {
         final TestCase pasted = TestCase.builder()
@@ -70,7 +70,7 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
     }
 
     private static @NotNull Path fileOf(final TestSetNode testSet, final TestCase testCase) {
-        return testSet.getPath().resolve(testCase.getId() + ".tc");
+        return testSet.getPath().resolve(testCase.getId() + ".testcase");
     }
 
     private static byte @NotNull [] bytesOf(final @NotNull Path file) {
@@ -137,7 +137,7 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
         final Path set = project.resolve("Test Cases").resolve("set-0");
 
         try (var files = Files.list(set)) {
-            final Path testCaseFile = files.filter(file -> file.getFileName().toString().endsWith(".tc")).findFirst().orElseThrow();
+            final Path testCaseFile = files.filter(file -> file.getFileName().toString().endsWith(".testcase")).findFirst().orElseThrow();
             Files.move(testCaseFile, set.resolve(HAND_NAMED));
         } catch (final IOException ex) {
             throw new AssertionError("could not name the test case file by hand", ex);
@@ -299,7 +299,7 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
 
         assertTrue("the save said it failed", indexedTestCases().putTestCaseVerbatim(set, testCase));
 
-        assertTrue("the test case was not filed under its id", Files.isRegularFile(set.resolve(testCase.getId() + ".tc")));
+        assertTrue("the test case was not filed under its id", Files.isRegularFile(set.resolve(testCase.getId() + ".testcase")));
         assertFalse("the hand-named file was left beside it", Files.exists(set.resolve(HAND_NAMED)));
     }
 
@@ -310,7 +310,7 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
 
         assertFalse("a save that left the test case in two files was reported as saved", indexedTestCases().putTestCaseVerbatim(set, testCase));
 
-        assertFalse("the file filed under the id was left beside the hand-named one", Files.exists(set.resolve(testCase.getId() + ".tc")));
+        assertFalse("the file filed under the id was left beside the hand-named one", Files.exists(set.resolve(testCase.getId() + ".testcase")));
         assertTrue("the hand-named file went although its delete was refused", Files.exists(set.resolve(HAND_NAMED)));
     }
 

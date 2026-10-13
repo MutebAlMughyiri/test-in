@@ -91,7 +91,7 @@ public abstract class AbstractGitRemoteIdeTest extends AbstractTempRootIdeTest {
         identify(work, "Testin Test", "testin@example.invalid");
         mustGit(work, "remote", "add", "origin", remoteUrl());
 
-        write(work, "first.tc", "{}");
+        write(work, "first.testcase", "{}");
         commitAll(work, "first");
         mustGit(work, "push", "-u", "origin", MAIN);
     }

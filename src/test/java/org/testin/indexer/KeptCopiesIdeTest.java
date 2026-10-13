@@ -46,7 +46,7 @@ public class KeptCopiesIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull Path aTestSet(final @NotNull String project, final @NotNull String content) {
         final @NotNull Path testSet = root.resolve(project).resolve("Test Cases").resolve("Login");
-        SyntheticTree.write(testSet.resolve("case.tc"), content);
+        SyntheticTree.write(testSet.resolve("case.testcase"), content);
         return testSet;
     }
 
@@ -55,7 +55,7 @@ public class KeptCopiesIdeTest extends AbstractTempRootIdeTest {
         final @NotNull Path kept = kept(aTestSet("Checkout", "first"));
         try {
             assertFalse("the copy kept for undo sits under the Testin folder, where it would be read and committed: " + kept, kept.startsWith(root));
-            assertEquals("the kept copy does not hold what was removed", "first", read(kept.resolve("case.tc")));
+            assertEquals("the kept copy does not hold what was removed", "first", read(kept.resolve("case.testcase")));
         } finally {
             deletedNodes().forget(kept);
         }
@@ -67,8 +67,8 @@ public class KeptCopiesIdeTest extends AbstractTempRootIdeTest {
         final @NotNull Path second = kept(aTestSet("Payments", "second"));
         try {
             assertNotEquals("two test sets of one name were kept in one place", first, second);
-            assertEquals("the second removal wrote over the first one's copy", "first", read(first.resolve("case.tc")));
-            assertEquals("the second removal was not kept", "second", read(second.resolve("case.tc")));
+            assertEquals("the second removal wrote over the first one's copy", "first", read(first.resolve("case.testcase")));
+            assertEquals("the second removal was not kept", "second", read(second.resolve("case.testcase")));
         } finally {
             deletedNodes().forget(first);
             deletedNodes().forget(second);
@@ -80,10 +80,10 @@ public class KeptCopiesIdeTest extends AbstractTempRootIdeTest {
         final @NotNull Path original = aTestSet("Checkout", "removed");
         final @NotNull Path kept = kept(original);
         try {
-            SyntheticTree.write(original.resolve("case.tc"), "made since");
+            SyntheticTree.write(original.resolve("case.testcase"), "made since");
 
             assertFalse("putting back over something already there was reported as done", deletedNodes().putBack(getProject(), kept, original));
-            assertEquals("putting back wrote over what is there", "made since", read(original.resolve("case.tc")));
+            assertEquals("putting back wrote over what is there", "made since", read(original.resolve("case.testcase")));
         } finally {
             deletedNodes().forget(kept);
         }

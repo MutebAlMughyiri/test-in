@@ -32,7 +32,7 @@ There is no key for this. It is the first row of the page.
 - **Rule-SETTING-014** — With no folder set, Testin reads nothing and shows
   nothing. It does not fail.
 - **Rule-SETTING-045** — A folder that is itself a test project, one that holds
-  a .tp, is refused, and the refusal names the folder that holds it: the Testin
+  a .testproject, is refused, and the refusal names the folder that holds it: the Testin
   folder holds test projects and is never one of them.
 - **Rule-SETTING-046** — A stored folder that is not a full path, or not a path
   at all, is read as not set, whatever put it there. Testin then asks for the

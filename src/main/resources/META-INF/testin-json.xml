@@ -4,6 +4,6 @@
      markers NodeType declares; JsonMarkerNamesTest keeps them equal. -->
 <idea-plugin>
     <extensions defaultExtensionNs="com.intellij">
-        <fileType name="JSON" fileNames=".tp;.tcf;.trf;.tsp;.trp;.ts;.tr"/>
+        <fileType name="JSON" fileNames=".testproject;.testcasesfolder;.testrunsfolder;.testsetpackage;.testrunpackage;.testset;.testrun"/>
     </extensions>
 </idea-plugin>

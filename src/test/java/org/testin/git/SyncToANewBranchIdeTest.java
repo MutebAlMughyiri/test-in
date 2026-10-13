@@ -39,7 +39,7 @@ public class SyncToANewBranchIdeTest extends AbstractTempRootIdeTest {
         try {
             remote = Files.createDirectories(root.resolve("remote.git"));
             work = Files.createDirectories(root.resolve("work"));
-            Files.writeString(work.resolve("first.tc"), "{}");
+            Files.writeString(work.resolve("first.testcase"), "{}");
         } catch (final IOException ex) {
             throw new AssertionError("Could not lay out the repositories: " + ex.getMessage(), ex);
         }
@@ -50,7 +50,7 @@ public class SyncToANewBranchIdeTest extends AbstractTempRootIdeTest {
         mustGit(work, "config", "user.email", "testin@example.invalid");
         mustGit(work, "remote", "add", "origin", remoteUrl());
 
-        mustGit(work, "add", "first.tc");
+        mustGit(work, "add", "first.testcase");
         mustGit(work, "commit", "-m", "first");
         mustGit(work, "push", "-u", "origin", "main");
     }
@@ -63,11 +63,11 @@ public class SyncToANewBranchIdeTest extends AbstractTempRootIdeTest {
     public void testSyncPushesABranchTheRemoteDoesNotHaveYet() {
         mustGit(work, "checkout", "-b", BRANCH);
         try {
-            Files.writeString(work.resolve("second.tc"), "{}");
+            Files.writeString(work.resolve("second.testcase"), "{}");
         } catch (final IOException ex) {
             throw new AssertionError("Could not write the test case: " + ex.getMessage(), ex);
         }
-        mustGit(work, "add", "second.tc");
+        mustGit(work, "add", "second.testcase");
         mustGit(work, "commit", "-m", "second");
 
         final @NotNull GitCommitAndPush commits = new GitCommitAndPush(getProject());

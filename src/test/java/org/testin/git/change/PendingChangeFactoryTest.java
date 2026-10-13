@@ -38,7 +38,7 @@ import static org.testng.Assert.assertTrue;
 
 public class PendingChangeFactoryTest {
 
-    private static final Path PATH = Path.of("Test Cases", "login", "case.tc");
+    private static final Path PATH = Path.of("Test Cases", "login", "case.testcase");
 
     private static @NotNull TestCase testCase(final String description) {
         return TestCase.builder()
@@ -135,7 +135,7 @@ public class PendingChangeFactoryTest {
                 {"id":"%s","executions":[{"status":"PASSED","actualResult":"Signed in"}]}""".formatted(testCaseId);
 
         final PendingChange change = PendingChangeFactory.fromFile(
-                StatusKind.MODIFIED, before, after, Path.of("Test Runs", "cycle 4", testCaseId + ".ri"), RealJsonCodec.build(), _ -> Optional.empty());
+                StatusKind.MODIFIED, before, after, Path.of("Test Runs", "cycle 4", testCaseId + ".runitem"), RealJsonCodec.build(), _ -> Optional.empty());
 
         assertEquals(change.subject(), ChangeSubject.RUN_ITEM);
         assertEquals(change.testCaseId(), testCaseId.toString(), "the result says which test case it is about");
@@ -150,7 +150,7 @@ public class PendingChangeFactoryTest {
                 StatusKind.MODIFIED,
                 "{\"status\":\"CREATED\",\"createdBy\":\"mtb\",\"configuration\":{\"PLATFORM\":\"Web\"}}",
                 "{\"status\":\"IN_PROGRESS\",\"createdBy\":\"mtb\",\"configuration\":{\"PLATFORM\":\"Mobile\"}}",
-                Path.of("Test Runs", "cycle 4", ".tr"), RealJsonCodec.build(), _ -> Optional.empty());
+                Path.of("Test Runs", "cycle 4", ".testrun"), RealJsonCodec.build(), _ -> Optional.empty());
 
         assertEquals(change.subject(), ChangeSubject.MARKER);
         assertTrue(change.fieldChanges().stream().anyMatch(field -> field.newValue().equals("Mobile")),
@@ -163,7 +163,7 @@ public class PendingChangeFactoryTest {
                 StatusKind.MODIFIED,
                 "{\"status\":\"ACTIVE\",\"createdBy\":\"mtb\"}",
                 "{\"status\":\"ARCHIVED\",\"createdBy\":\"mtb\"}",
-                Path.of("Test Cases", "login", ".ts"), RealJsonCodec.build(), _ -> Optional.empty());
+                Path.of("Test Cases", "login", ".testset"), RealJsonCodec.build(), _ -> Optional.empty());
 
         assertNotNull(change);
         assertEquals(change.subject(), ChangeSubject.MARKER);
@@ -238,9 +238,9 @@ public class PendingChangeFactoryTest {
                 "a changed field can be put back");
 
         assertFalse(PendingChangeFactory.fromFile(StatusKind.MODIFIED, "{\"status\":\"PENDING\"}", "{\"status\":\"PASSED\"}",
-                Path.of("Test Runs", "cycle 4", testCaseId + ".ri"), RealJsonCodec.build(), _ -> Optional.empty()).isRevertible(), "a run item status is not a change to a test case");
+                Path.of("Test Runs", "cycle 4", testCaseId + ".runitem"), RealJsonCodec.build(), _ -> Optional.empty()).isRevertible(), "a run item status is not a change to a test case");
         assertFalse(PendingChangeFactory.fromFile(StatusKind.MODIFIED, "{\"status\":\"ACTIVE\"}", "{\"status\":\"ARCHIVED\"}",
-                Path.of("Test Cases", "login", ".ts"), RealJsonCodec.build(), _ -> Optional.empty()).isRevertible(), "a marker is not a change to a test case");
+                Path.of("Test Cases", "login", ".testset"), RealJsonCodec.build(), _ -> Optional.empty()).isRevertible(), "a marker is not a change to a test case");
         assertFalse(PendingChangeFactory.fromFile(StatusKind.ADDED, "", "notes",
                 Path.of("Test Cases", "login", "notes.txt"), RealJsonCodec.build(), _ -> Optional.empty()).isRevertible(), "a file Testin does not own is not a change to a test case");
     }

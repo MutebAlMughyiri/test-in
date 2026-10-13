@@ -41,7 +41,7 @@ public final class ReportOverview {
         final @NotNull List<DetailRow> rows = new ArrayList<>();
 
         rows.add(new DetailRow(Bundle.message("report.overview.project"), projectName));
-        rows.add(new DetailRow(Bundle.message("node.tr"), testRunNode.getName()));
+        rows.add(new DetailRow(Bundle.message("node.test.run"), testRunNode.getName()));
 
         for (final TestRunConfiguration field : TestRunConfiguration.values()) addConfiguration(rows, field, marker);
 

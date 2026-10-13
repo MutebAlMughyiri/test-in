@@ -27,14 +27,14 @@ import static org.testng.Assert.assertEquals;
 
 public class BugHistoryTest {
 
-    private static final @NotNull String RUN_ITEM = "77777777-7777-4777-8777-777777777397.ri";
+    private static final @NotNull String RUN_ITEM = "77777777-7777-4777-8777-777777777397.runitem";
 
     // Rule-VIEW-PANEL-106
     @Test
     public void everyCommitIsReadWithTheRunItemsItAddedChangedMovedOrRemoved() {
         final @NotNull String log = RECORD + "a".repeat(40) + FIELD + "Sara" + FIELD + "2026-10-05T17:27:00+03:00\n\n"
                 + "M\tTest Runs/Cycle 3/" + RUN_ITEM + "\n"
-                + "M\tTest Cases/Login/77777777-7777-4777-8777-777777777397.tc\n"
+                + "M\tTest Cases/Login/77777777-7777-4777-8777-777777777397.testcase\n"
                 + "R100\tTest Runs/Cycle 2/" + RUN_ITEM + "\tTest Runs/Cycle 2 (Android)/" + RUN_ITEM + "\n"
                 + RECORD + "b".repeat(40) + FIELD + "Muteb" + FIELD + "2026-10-04T20:42:00+03:00\n\n"
                 + "A\tTest Runs/Cycle 3/" + RUN_ITEM + "\n"

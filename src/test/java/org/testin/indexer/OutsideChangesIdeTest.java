@@ -208,7 +208,7 @@ public class OutsideChangesIdeTest extends AbstractReadTheRootIdeTest {
             TestinYml.reload(getProject());
         }
 
-        final @NotNull Path testCase = theTestCasesOf(aTestProjectAt(root.resolve("Checkout"))).resolve("Login").resolve("case.tc");
+        final @NotNull Path testCase = theTestCasesOf(aTestProjectAt(root.resolve("Checkout"))).resolve("Login").resolve("case.testcase");
         written(testCase, "{}");
         assertNotNull("a change to a test case under the Testin folder was not taken up, so this test proves nothing about testin.yml", new TestinFileWatcher().prepareChange(eventsOfWritingAgain(onDisk(testCase))));
     }

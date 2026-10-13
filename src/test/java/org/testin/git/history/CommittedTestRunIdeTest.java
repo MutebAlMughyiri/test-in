@@ -206,8 +206,8 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
         assertEquals(MESSAGE, subject("HEAD^"));
         assertEquals(TestRunStatus.COMMITTED, theTestRunAt(completed).getMarker().getStatus());
         assertEquals(testersCommit, theTestRunAt(completed).getMarker().getCommit());
-        assertTrue("the commit was not written into the .tr", read(completed.resolve(NodeType.TEST_RUN.getMarker())).contains(testersCommit));
-        assertEquals("the .tr was left out of Testin's commit", "", mustGit(testProjectPath, "status", "--porcelain").trim());
+        assertTrue("the commit was not written into the .testrun", read(completed.resolve(NodeType.TEST_RUN.getMarker())).contains(testersCommit));
+        assertEquals("the .testrun was left out of Testin's commit", "", mustGit(testProjectPath, "status", "--porcelain").trim());
         assertEquals("a test run that was not Completed changed", TestRunStatus.IN_PROGRESS, theTestRunAt(inProgress).getMarker().getStatus());
         assertEquals("", theTestRunAt(inProgress).getMarker().getCommit());
     }

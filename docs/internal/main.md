@@ -56,8 +56,8 @@ when something changes them, and making sure only one thing is ever writing.
 - **The Testin folder** is the one folder on this machine that holds test
   projects. It is set once, on the settings page.
 - **A marker file** is a small file Testin writes beside a node, saying what the
-  node is. A test project holds one named `.tp`. A test set holds one named
-  `.ts`. Testin uses seven of them.
+  node is. A test project holds one named `.testproject`. A test set holds one named
+  `.testset`. Testin uses seven of them.
 - **To read** a test project is to walk its folders once and hold everything it
   holds in memory.
 - **A kept copy** is the copy Testin puts aside when it removes something, so

@@ -22,26 +22,26 @@
 ```
 <Testin folder>/
 └── NAFATH/                       a test project
-    ├── .tp                       the test project marker
+    ├── .testproject                       the test project marker
     ├── Test Cases/
-    │   ├── .tcf                  the Test Cases directory marker
+    │   ├── .testcasesfolder                  the Test Cases directory marker
     │   ├── Login/                a test set package
-    │   │   └── .tsp
+    │   │   └── .testsetpackage
     │   └── ts2/                  a test set
-    │       ├── .ts
-    │       └── 4fd2a19b-….tc     one test case, named by its id
+    │       ├── .testset
+    │       └── 4fd2a19b-….testcase     one test case, named by its id
     └── Test Runs/
-        ├── .trf                  the Test Runs directory marker
+        ├── .testrunsfolder                  the Test Runs directory marker
         ├── Cycles/               a test run package
-        │   └── .trp
+        │   └── .testrunpackage
         └── cycle31/              a test run
-            ├── .tr
-            ├── 4fd2a19b-….ri     one run item, named by the test case it is about
+            ├── .testrun
+            ├── 4fd2a19b-….runitem     one run item, named by the test case it is about
             └── k3f9a.png         a screenshot a failure names
 ```
 
-**A marker is a file whose whole name is the extension.** `.ts`, not `foo.ts`.
-A directory is a test set because it holds a file called `.ts`, and that is the
+**A marker is a file whose whole name is the extension.** `.testset`, not `foo.testset`.
+A directory is a test set because it holds a file called `.testset`, and that is the
 only thing that makes it one — the folder name is the node's name and carries no
 meaning beyond it.
 
@@ -87,19 +87,19 @@ for it, and what is written back is that answer rather than an invented one.
 
 ### The seven and what each adds
 
-| File   | Node                       | Adds                                                                                                                                      | Values                                                              |
-|--------|----------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------|
-| `.tp`  | Test project               | `status`, and `format` - which format this project's files are in, 3 for the one described here                                           | `ACTIVE` `INACTIVE`                                                 |
-| `.tcf` | The `Test Cases` directory | —                                                                                                                                         |                                                                     |
-| `.trf` | The `Test Runs` directory  | —                                                                                                                                         |                                                                     |
-| `.tsp` | Test set package           | `status`                                                                                                                                  | `ACTIVE` `ARCHIVED`                                                 |
-| `.ts`  | Test set                   | `status`                                                                                                                                  | `ACTIVE` `DEPRECATED`                                               |
-| `.trp` | Test run package           | `status`                                                                                                                                  | `ACTIVE` `ARCHIVED`                                                 |
-| `.tr`  | Test run                   | `status`, and the test run's own facts: `configuration`, `resultAnalysis`, `executionStartedAt`, `executionEndedAt`, `commit` — see below | `CREATED` `IN_PROGRESS` `COMPLETED` `ASSIGNED` `CLOSED` `COMMITTED` |
+| File               | Node                       | Adds                                                                                                                                      | Values                                                              |
+|--------------------|----------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------|
+| `.testproject`     | Test project               | `status`, and `format` - which format this project's files are in, 5 for the one described here                                           | `ACTIVE` `INACTIVE`                                                 |
+| `.testcasesfolder` | The `Test Cases` directory | —                                                                                                                                         |                                                                     |
+| `.testrunsfolder`  | The `Test Runs` directory  | —                                                                                                                                         |                                                                     |
+| `.testsetpackage`  | Test set package           | `status`                                                                                                                                  | `ACTIVE` `ARCHIVED`                                                 |
+| `.testset`         | Test set                   | `status`                                                                                                                                  | `ACTIVE` `DEPRECATED`                                               |
+| `.testrunpackage`  | Test run package           | `status`                                                                                                                                  | `ACTIVE` `ARCHIVED`                                                 |
+| `.testrun`         | Test run                   | `status`, and the test run's own facts: `configuration`, `resultAnalysis`, `executionStartedAt`, `executionEndedAt`, `commit` — see below | `CREATED` `IN_PROGRESS` `COMPLETED` `ASSIGNED` `CLOSED` `COMMITTED` |
 
 **A directory carrying two markers of one family is read as the more specific
-one.** Under `Test Cases` the order is `.ts` then `.tsp`; under `Test Runs` it is
-`.tr` then `.trp` — a set is what holds test cases and a package is what holds
+one.** Under `Test Cases` the order is `.testset` then `.testsetpackage`; under `Test Runs` it is
+`.testrun` then `.testrunpackage` — a set is what holds test cases and a package is what holds
 sets. `NodeType.UNDER_TEST_CASES` and `UNDER_TEST_RUNS` are that
 precedence, and nothing else may ask in a different order.
 
@@ -144,16 +144,16 @@ own file:
 
 ---
 
-## A test case — `<uuid>.tc`
+## A test case — `<uuid>.testcase`
 
-One file per test case, inside its test set. **Any `.tc` file directly inside
-a test set is a test case** (Rule-INTERNAL-011), so `login.tc` written by hand
-is read as one and a copy of it is given an id of its own; a `.tc` sitting in
+One file per test case, inside its test set. **Any `.testcase` file directly inside
+a test set is a test case** (Rule-INTERNAL-011), so `login.testcase` written by hand
+is read as one and a copy of it is given an id of its own; a `.testcase` sitting in
 `Test Cases` rather than in a set is not a test case at all. The file holds
 JSON; the name says what the JSON is, so nothing has to look inside to find
 out.
 
-Testin writes the file as `<id>.tc`, and a hand-named one is filed under its
+Testin writes the file as `<id>.testcase`, and a hand-named one is filed under its
 id the next time anything writes it, the hand-named file going once that write
 has landed (Rule-INTERNAL-084). The two names answer different questions:
 the **file name** is what the tree shows (Rule-INTERNAL-012 — a `name` field
@@ -216,17 +216,17 @@ on each test case and nothing else.
 
 ---
 
-## A run item — `<test case id>.ri`
+## A run item — `<test case id>.runitem`
 
 One file per test case the test run covers, inside the test run's folder, beside
-its `.tr`. A test case appears in a test run once, so the test case's id is the
+its `.testrun`. A test case appears in a test run once, so the test case's id is the
 file's name and two testers adding the same test case offline write the same
 file rather than two.
 
 It records what was executed, not what exists: a test case removed from the test
 set keeps its run item here. What the test run itself is - how it was configured,
 what the tester wrote about the run item statuses, when it was executed - is in
-its `.tr`, with its status.
+its `.testrun`, with its status.
 
 The run items are read in the order their test cases sit in their test sets, and
 a run item whose test case the project no longer holds comes last. So a report
@@ -234,15 +234,15 @@ prints them in the order a tester reads the tree, never in the order a folder
 listing happens to give.
 
 **A run item's file goes only when the test run stops covering its test case.**
-Unticking a test case in Edit Test Run removes that one `.ri`, and nothing else
-in the folder is touched. A `.ri` the test run in memory does not cover is left
+Unticking a test case in Edit Test Run removes that one `.runitem`, and nothing else
+in the folder is touched. A `.runitem` the test run in memory does not cover is left
 exactly where it is: it can be one a pull brought a moment ago, or one a failed
 write could not produce, and removing either would lose a run item status nobody
 asked to lose. Writing a run item status writes the one file it is about, so two
 testers judging different test cases of one test run never touch the same file.
 
-**A run item is known by its file name** (Rule-INTERNAL-094). A `.ri` whose name
-is not a test case id, `login-result.ri` renamed by hand for one, is not read:
+**A run item is known by its file name** (Rule-INTERNAL-094). A `.runitem` whose name
+is not a test case id, `login-result.runitem` renamed by hand for one, is not read:
 the scan names it in a warning, and nothing writes a second file for it.
 Renamed to its test case's id, it is read again at the next Refresh.
 
@@ -359,13 +359,20 @@ Format 4 keeps every execution of a run item: the top-level `status`,
 `screenshots` moved into `executions`, and the run item gained `untested`,
 `clock` and `unrecordedActualResult` (#415).
 
-**The project says which format its files are in**, in its `.tp`: `format`, and
-4 is the format this page describes. A project without the number, or with a
+Format 5 names every file in full words, as the code names what it holds:
+`.tp`, `.ts`, `.tr` and the other markers became `.testproject`, `.testset`,
+`.testrun` and the rest, a test case `<id>.testcase` and a run item
+`<id>.runitem` (#427). A folder written in format 4 or earlier holds no
+`.testproject`, so it is not a test project (Rule-INTERNAL-003): it is not shown,
+not read and not touched.
+
+**The project says which format its files are in**, in its `.testproject`: `format`, and
+5 is the format this page describes. A project without the number, or with a
 lower one, is not read at all: it is shown refused, and the tester removes it
 and creates it again, because nothing converts it ([UC-INTERNAL-002](internal/readTestProject.md), Rule-INTERNAL-091).
 A project
 with a **higher** number is not read at all: a format this build does not know is
-refused rather than guessed at, because reading it as format 4 would delete what
+refused rather than guessed at, because reading it as format 5 would delete what
 this build cannot see.
 
 **A file whose shape changed structurally is not read at all.** A test run

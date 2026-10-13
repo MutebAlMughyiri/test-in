@@ -83,7 +83,7 @@ public class SyncWorkIdeTest extends AbstractGitRemoteIdeTest {
     public void testARemoteThatCannotBeAskedStopsTheSyncAndSaysWhy() {
         final @NotNull String before = head(remote, MAIN);
         mustGit(work, "remote", "set-url", "origin", root.resolve("nowhere.git").toUri().toString());
-        write(work, "mine.tc", "{}");
+        write(work, "mine.testcase", "{}");
         commitAll(work, "my test case");
         final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
 

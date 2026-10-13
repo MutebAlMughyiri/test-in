@@ -44,20 +44,20 @@ public class WatchedPathTest {
 
     @Test
     public void aMarkerNamesItsProjectToo() {
-        assertEquals(of(PROJECT.resolve("Test Cases/Login/.ts")), Optional.of(PROJECT));
-        assertEquals(of(PROJECT.resolve(".tp")), Optional.of(PROJECT));
+        assertEquals(of(PROJECT.resolve("Test Cases/Login/.testset")), Optional.of(PROJECT));
+        assertEquals(of(PROJECT.resolve(".testproject")), Optional.of(PROJECT));
     }
 
     // Rule-INTERNAL-021
     @Test
     public void everyFileOfOneProjectAnswersTheSameProject() {
-        assertEquals(of(PROJECT.resolve("Test Runs/Cycle 1/Cycle 1.tr")), of(PROJECT.resolve(".tp")),
+        assertEquals(of(PROJECT.resolve("Test Runs/Cycle 1/Cycle 1.testrun")), of(PROJECT.resolve(".testproject")),
                 "forty files changed in one project have to collapse to one scan");
     }
 
     @Test
     public void aSecondProjectIsItsOwnAnswer() {
-        assertEquals(of(ROOT.resolve("test-02/.tp")), Optional.of(ROOT.resolve("test-02")));
+        assertEquals(of(ROOT.resolve("test-02/.testproject")), Optional.of(ROOT.resolve("test-02")));
     }
 
     // Rule-INTERNAL-017
@@ -81,7 +81,7 @@ public class WatchedPathTest {
     public void anythingOutsideTheTestinRootIsIgnored() {
         assertEquals(of(Path.of("C:", "Users", "mtb", "IdeaProjects", "testin", "build", "Foo.class")),
                 Optional.empty(), "this is nearly every event the listener will ever see");
-        assertEquals(of(Path.of("C:", "Users", "mtb", "TestinOther", "test-01", ".tp")), Optional.empty(),
+        assertEquals(of(Path.of("C:", "Users", "mtb", "TestinOther", "test-01", ".testproject")), Optional.empty(),
                 "a sibling folder whose name merely starts the same way is not inside the root");
     }
 
@@ -93,7 +93,7 @@ public class WatchedPathTest {
 
     @Test
     public void anUnconfiguredRootWatchesNothing() {
-        assertTrue(WatchedPath.testProjectOf(PROJECT.resolve(".tp"), Path.of("")).isEmpty(),
+        assertTrue(WatchedPath.testProjectOf(PROJECT.resolve(".testproject"), Path.of("")).isEmpty(),
                 "there is nothing to watch before a tester has set a Testin folder");
     }
 }

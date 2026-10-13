@@ -30,7 +30,7 @@ import static org.testng.Assert.assertTrue;
 
 public class TrashTest {
 
-    private static final @NotNull Path REMOVED = Path.of("Checkout", "Test Cases", "Login", "1111.tc");
+    private static final @NotNull Path REMOVED = Path.of("Checkout", "Test Cases", "Login", "1111.testcase");
 
     // UC-INTERNAL-005, Rule-INTERNAL-036
     @Test

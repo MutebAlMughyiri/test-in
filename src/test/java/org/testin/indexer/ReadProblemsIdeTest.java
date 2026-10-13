@@ -113,7 +113,7 @@ public class ReadProblemsIdeTest extends AbstractReadTheRootIdeTest {
 
         final @NotNull List<String> clashing = said(Bundle.message("indexer.clash.title", PROJECT));
         assertFalse("two test case files claiming one identity were merged in silence", clashing.isEmpty());
-        assertTrue("the report does not name the file: " + clashing, names(clashing, shared + ".tc"));
+        assertTrue("the report does not name the file: " + clashing, names(clashing, shared + ".testcase"));
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-094
@@ -122,7 +122,7 @@ public class ReadProblemsIdeTest extends AbstractReadTheRootIdeTest {
         final @NotNull UUID named = UUID.randomUUID();
         final @NotNull UUID handNamed = UUID.randomUUID();
         resultIn(testRun, FileKind.RUN_ITEM.fileName(named), named);
-        resultIn(testRun, "by hand.ri", handNamed);
+        resultIn(testRun, "by hand.runitem", handNamed);
 
         readEverything();
 
@@ -132,6 +132,6 @@ public class ReadProblemsIdeTest extends AbstractReadTheRootIdeTest {
         assertEquals("the results read are not exactly the one named by its test case id", List.of(named), read);
 
         final @NotNull List<String> warned = said(Bundle.message("indexer.run.items.unnamed.title", PROJECT));
-        assertTrue("the result file not named by a test case id was not named in a warning: " + warned, names(warned, "by hand.ri"));
+        assertTrue("the result file not named by a test case id was not named in a warning: " + warned, names(warned, "by hand.runitem"));
     }
 }

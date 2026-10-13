@@ -57,7 +57,7 @@ public class GuidesOfferedIdeTest extends AbstractTempRootIdeTest {
         guides().forgetAll();
 
         GitFailureNotice.show(getProject(), "Sync Failed", "fatal: could not read from remote repository");
-        GitConflictOffer.show(getProject(), List.of("Test Cases/Login/a.tc"), () -> {
+        GitConflictOffer.show(getProject(), List.of("Test Cases/Login/a.testcase"), () -> {
         }, () -> {
         }, () -> {
         });

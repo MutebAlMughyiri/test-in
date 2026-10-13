@@ -171,15 +171,15 @@ public class TestCaseMergerTest {
 
     @Test
     public void aTestCaseIsWhatThisCanMerge() {
-        assertTrue(TestCaseMerger.isTestCase("Test Cases/Login/6197ec6e.tc"));
-        assertTrue(TestCaseMerger.isTestCase("Test Cases\\Login\\6197ec6e.tc"),
+        assertTrue(TestCaseMerger.isTestCase("Test Cases/Login/6197ec6e.testcase"));
+        assertTrue(TestCaseMerger.isTestCase("Test Cases\\Login\\6197ec6e.testcase"),
                 "Git names paths with slashes and Windows names them with backslashes");
     }
 
     @Test
     public void aMarkerATestRunOrAnythingElseIsNot() {
-        assertFalse(TestCaseMerger.isTestCase("Test Cases/Login/.ts"), "a marker has no named fields to merge");
-        assertFalse(TestCaseMerger.isTestCase(".tp"));
+        assertFalse(TestCaseMerger.isTestCase("Test Cases/Login/.testset"), "a marker has no named fields to merge");
+        assertFalse(TestCaseMerger.isTestCase(".testproject"));
         assertFalse(TestCaseMerger.isTestCase("Test Runs/Cycle 1/Cycle 1.json"),
                 "a test run records what happened; it is not something two people edit into one");
         assertFalse(TestCaseMerger.isTestCase("Test Cases/Login/notes.txt"));

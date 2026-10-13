@@ -13,13 +13,14 @@ There is no key for this. It starts on its own.
 ## Rules
 
 - **Rule-INTERNAL-003** — A folder is a test project only if it holds a file
-  named `.tp`.
+  named `.testproject`.
 - **Rule-INTERNAL-091** — A test project says which format its files are in, in
-  its `.tp`. This build reads format 4 and nothing else: a project without the
-  number, or with a lower one, is shown refused as written by an older Testin,
-  to be removed and created again, because nothing converts it; a project with
-  a higher number is refused as written by a newer Testin. A refused project is not read and not
-  written: no file inside it is opened.
+  its `.testproject`. This build reads format 5 and nothing else: a project with a
+  higher number is refused as written by a newer Testin, and one without the
+  number or with a lower one as written by an older Testin. A refused project is
+  not read and not written: no file inside it is opened. A folder written in
+  format 4 or earlier holds no `.testproject`, so it is not a test project
+  (Rule-INTERNAL-003) and is not shown.
 - **Rule-INTERNAL-004** — Only the folders directly inside the Testin folder are
   looked at. A test project one level deeper is not found.
 - **Rule-INTERNAL-005** — A test project that is not **Active** is read,
@@ -29,13 +30,13 @@ There is no key for this. It starts on its own.
 - **Rule-INTERNAL-007** — Inside a test project, Testin reads two folders. They
   are named `Test Cases` and `Test Runs`. Nothing else is read.
 - **Rule-INTERNAL-008** — A folder inside `Test Cases` is read only if it holds
-  a file named `.ts` or a file named `.tsp`. The first makes it a test set. The
+  a file named `.testset` or a file named `.testsetpackage`. The first makes it a test set. The
   second makes it a test set package.
 - **Rule-INTERNAL-009** — A folder holding both is read as a test set.
 - **Rule-INTERNAL-010** — A folder inside `Test Runs` is read the same way, from
-  a file named `.tr` or a file named `.trp`.
+  a file named `.testrun` or a file named `.testrunpackage`.
 - **Rule-INTERNAL-011** — A file's name says what it is: every file ending in
-  `.tc` directly inside a test set is a test case, and every file ending in `.ri`
+  `.testcase` directly inside a test set is a test case, and every file ending in `.runitem`
   directly inside a test run is one run item. Nothing looks inside a
   file to decide what it is.
 - **Rule-INTERNAL-012** — A test case is known by its file name. What the file
@@ -144,7 +145,7 @@ measured rather than estimated.
 | **Reading four thousand**         | 35 ms    | 80 ms  |
 
 The results are their own line because they are their own files: since #305 a
-test run of two thousand test cases is two thousand `.ri` files rather than one
+test run of two thousand test cases is two thousand `.runitem` files rather than one
 `run.json`, so the question "what does a big cycle cost to read" is a question
 about four thousand small documents - one cycle of two thousand test cases and
 fifty of forty, which is the shape of a real Testin folder. Two thousand of them
@@ -203,20 +204,20 @@ the bottom of the IDE, beside the other background jobs.
 
 1. The tester opens a code project, or presses **Refresh**.
 2. Testin reads the Testin folder from the settings.
-3. Testin lists the folders directly inside it, and keeps those holding a `.tp`
+3. Testin lists the folders directly inside it, and keeps those holding a `.testproject`
    file.
 4. Testin starts one background job for each of them.
 5. The bar reads *Indexing*, then the test project's name.
 6. The bar reads the test project's name, then *test sets...*.
-7. Testin walks `Test Cases`. For each test set, it reads every `.tc` file
+7. Testin walks `Test Cases`. For each test set, it reads every `.testcase` file
    at the same time. It does not read them one after another.
 8. After each test set the bar reads *Test set:*, then its name, then how many
    test cases it holds.
 9. The bar reads the test project's name, then *test runs...*.
 10. Testin walks `Test Runs`. Each test run reads its own facts from its
-    `.tr` - its status, how it was configured, what the tester wrote about the
+    `.testrun` - its status, how it was configured, what the tester wrote about the
     run item statuses, when it was executed. It also reads one file per result,
-    `<test case id>.ri`, in the order their test cases sit in their test sets.
+    `<test case id>.runitem`, in the order their test cases sit in their test sets.
 11. The bar reads *Done -*, then the test project's name, and closes.
 12. The tree draws itself from memory. Every editor that was open when the IDE
     closed opens again.
@@ -226,14 +227,14 @@ the bottom of the IDE, beside the other background jobs.
 **If no Testin folder is set** — nothing is read, and nothing is said. The panel
 shows its empty state instead.
 
-**If a folder under the Testin folder holds no `.tp` file** — it is not a test
+**If a folder under the Testin folder holds no `.testproject` file** — it is not a test
 project, and it is skipped without a word. This is the ordinary case. The
 Testin folder usually holds other things.
 
 **If Testin itself fails while reading a test project** — the test project is
 not counted as read. The tester is told it could not be read, and why (Rule-INTERNAL-124). This is a fault in Testin,
 not in the files. A damaged file
-is never reported this way. A damaged `.tp` or other marker is read as defaults.
+is never reported this way. A damaged `.testproject` or other marker is read as defaults.
 An unreadable test case or result is left out, as described below.
 
 **If a marker file is missing** — nothing is said. A node just created has no
@@ -247,7 +248,7 @@ both leave the marker exactly as it is. So the number, the status, who made it,
 how the test run was configured and what the tester wrote about the run item
 statuses are all still there to repair (Rule-INTERNAL-083).
 
-**If a folder under `Test Cases` holds no `.ts` and no `.tsp` file** — the
+**If a folder under `Test Cases` holds no `.testset` and no `.testsetpackage` file** — the
 folder is skipped. Everything inside it is skipped too. When it holds test
 cases, Testin says so once the read has finished. One message names all such
 folders. That message waits in the notification list instead of fading, because

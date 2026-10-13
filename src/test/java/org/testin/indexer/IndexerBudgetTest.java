@@ -117,7 +117,7 @@ public class IndexerBudgetTest {
 
         try (Stream<Path> walk = Files.walk(project)) {
             for (final Path file : walk.toList()) {
-                if (!file.getFileName().toString().endsWith(".tc")) continue;
+                if (!file.getFileName().toString().endsWith(".testcase")) continue;
 
                 testCases.add(MAPPER.readValue(file.toFile(), TestCase.class));
             }

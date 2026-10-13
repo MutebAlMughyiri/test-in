@@ -46,7 +46,7 @@ public class RunItemsSurviveRenameTest {
             }""";
 
     private static @NotNull Path createTestRun(final @NotNull Path folder) {
-        write(folder.resolve(".tr"), "{}");
+        write(folder.resolve(".testrun"), "{}");
         write(folder.resolve(FileKind.RUN_ITEM.fileName(JUDGED_TEST_CASE)), A_RESULT);
         return folder;
     }
@@ -86,7 +86,7 @@ public class RunItemsSurviveRenameTest {
 
     @Test
     public void aRunItemIsNamedByItsTestCaseAndNotByItsFolder() {
-        assertEquals(FileKind.RUN_ITEM.fileName(JUDGED_TEST_CASE), JUDGED_TEST_CASE + ".ri",
+        assertEquals(FileKind.RUN_ITEM.fileName(JUDGED_TEST_CASE), JUDGED_TEST_CASE + ".runitem",
                 "A result is named by the test case it is about, so there is no folder name in it to keep in step."
                         + " The moment a result's name is derived from its folder, renaming a test run empties it.");
     }
@@ -107,7 +107,7 @@ public class RunItemsSurviveRenameTest {
             assertEquals(read(result).getStatus().name(), "PASSED",
                     "The run item status the tester recorded before the rename is the thing this issue was about");
 
-            assertTrue(Files.exists(renamed.resolve(".tr")), "The marker moved with the folder, as it always did");
+            assertTrue(Files.exists(renamed.resolve(".testrun")), "The marker moved with the folder, as it always did");
         } finally {
             TempTree.delete(root);
         }

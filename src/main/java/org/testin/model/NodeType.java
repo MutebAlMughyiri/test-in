@@ -46,10 +46,10 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public enum NodeType {
     TEST_PROJECT(
-            Bundle.message("node.tp"),
+            Bundle.message("node.test.project"),
             "",
             AllIcons.Nodes.Project,
-            ".tp",
+            ".testproject",
             TestProjectMarker.class,
             SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES,
             DonutSlices.CHILDREN,
@@ -57,10 +57,10 @@ public enum NodeType {
     ),
 
     TEST_CASES_FOLDER(
-            Bundle.message("node.tcf"),
+            Bundle.message("node.test.cases.folder"),
             "Test Cases",
             AllIcons.Nodes.Bookmark,
-            ".tcf",
+            ".testcasesfolder",
             TestCasesFolderMarker.class,
             SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES,
             DonutSlices.CHILDREN,
@@ -68,10 +68,10 @@ public enum NodeType {
     ),
 
     TEST_RUNS_FOLDER(
-            Bundle.message("node.trf"),
+            Bundle.message("node.test.runs.folder"),
             "Test Runs",
             AllIcons.Nodes.Bookmark,
-            ".trf",
+            ".testrunsfolder",
             TestRunsFolderMarker.class,
             SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES,
             DonutSlices.CHILDREN,
@@ -79,10 +79,10 @@ public enum NodeType {
     ),
 
     TEST_SET_PACKAGE(
-            Bundle.message("node.tsp"),
+            Bundle.message("node.test.set.package"),
             "",
             AllIcons.Nodes.WebFolder,
-            ".tsp",
+            ".testsetpackage",
             TestSetPackageMarker.class,
             SimpleTextAttributes.REGULAR_ATTRIBUTES,
             DonutSlices.CHILDREN,
@@ -90,10 +90,10 @@ public enum NodeType {
     ),
 
     TEST_RUN_PACKAGE(
-            Bundle.message("node.trp"),
+            Bundle.message("node.test.run.package"),
             "",
             AllIcons.Nodes.WebFolder,
-            ".trp",
+            ".testrunpackage",
             TestRunPackageMarker.class,
             SimpleTextAttributes.REGULAR_ATTRIBUTES,
             DonutSlices.CHILDREN,
@@ -101,10 +101,10 @@ public enum NodeType {
     ),
 
     TEST_SET(
-            Bundle.message("node.ts"),
+            Bundle.message("node.test.set"),
             "",
             AllIcons.Vcs.Changelist,
-            ".ts",
+            ".testset",
             TestSetMarker.class,
             SimpleTextAttributes.REGULAR_ATTRIBUTES,
             DonutSlices.CHILDREN,
@@ -112,10 +112,10 @@ public enum NodeType {
     ),
 
     TEST_RUN(
-            Bundle.message("node.tr"),
+            Bundle.message("node.test.run"),
             "",
             AllIcons.Toolwindows.ToolWindowRunWithCoverage,
-            ".tr",
+            ".testrun",
             TestRunMarker.class,
             SimpleTextAttributes.REGULAR_ATTRIBUTES,
             DonutSlices.RUN_ITEM_STATUSES,

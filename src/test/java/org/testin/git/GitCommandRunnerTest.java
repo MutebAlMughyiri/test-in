@@ -30,19 +30,19 @@ public class GitCommandRunnerTest {
     @Test
     public void entriesAreSeparatedByTheOneByteAPathCannotContain() {
         final String written = new String(
-                GitCommandRunner.pathspecBytes(List.of("test-01/Test Cases/Login/a.json", "test-01/.tp")),
+                GitCommandRunner.pathspecBytes(List.of("test-01/Test Cases/Login/a.json", "test-01/.testproject")),
                 StandardCharsets.UTF_8);
 
-        assertEquals(written, "test-01/Test Cases/Login/a.json\0test-01/.tp",
+        assertEquals(written, "test-01/Test Cases/Login/a.json\0test-01/.testproject",
                 "a space is an ordinary character in a test set name, so the separator cannot be one");
     }
 
     @Test
     public void nothingFollowsTheLastEntry() {
-        final byte[] written = GitCommandRunner.pathspecBytes(List.of("test-01/.tp"));
+        final byte[] written = GitCommandRunner.pathspecBytes(List.of("test-01/.testproject"));
 
         assertTrue(written.length > 0);
-        assertEquals(written[written.length - 1], (byte) 'p',
+        assertEquals(written[written.length - 1], (byte) 't',
                 "a trailing separator leaves an empty pathspec behind it, and Git rejects the whole command over one");
     }
 
@@ -57,22 +57,22 @@ public class GitCommandRunnerTest {
         final byte[] batch = """
                 1111 blob 3
                 abc
-                HEAD:gone.tc missing
+                HEAD:gone.testcase missing
                 2222 blob %d
                 %s
                 """.formatted(arabic.getBytes(StandardCharsets.UTF_8).length, arabic).getBytes(StandardCharsets.UTF_8);
 
-        assertEquals(GitCommandRunner.objectsIn(List.of("a.tc", "gone.tc", "b.tc"), batch),
-                Map.of("a.tc", "abc", "b.tc", arabic),
+        assertEquals(GitCommandRunner.objectsIn(List.of("a.testcase", "gone.testcase", "b.testcase"), batch),
+                Map.of("a.testcase", "abc", "b.testcase", arabic),
                 "a missing file is absent, and a size counted in bytes still ends on the right letter");
     }
 
     @Test
     public void theBatchAsksForEachFileAtTheRevisionOnItsOwnLine() {
-        assertEquals(new String(GitCommandRunner.batchRequest(":2", List.of("Test Cases/a b.tc", "c.tc")), StandardCharsets.UTF_8),
+        assertEquals(new String(GitCommandRunner.batchRequest(":2", List.of("Test Cases/a b.testcase", "c.testcase")), StandardCharsets.UTF_8),
                 """
-                        :2:Test Cases/a b.tc
-                        :2:c.tc
+                        :2:Test Cases/a b.testcase
+                        :2:c.testcase
                         """);
     }
 

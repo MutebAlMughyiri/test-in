@@ -9,7 +9,7 @@ When two people change the same field, only one value can be kept. This window
 shows both and lets the tester pick.
 
 **Two kinds of file raise a question, and one never does.** A test case asks
-about a field both sides rewrote. A test run's own `.tr` asks about a key both
+about a field both sides rewrote. A test run's own `.testrun` asks about a key both
 sides wrote differently into its configuration or its result analysis. The row
 is named as the tester already knows that key - **Platform**, or the heading the
 analysis was written under. A run item is
@@ -76,7 +76,7 @@ There is no key that opens this. It opens during a merge.
 1. **The title** — the words **Both Changed**, then what the tester calls the
    thing: a test case's description, and for a test run's marker the test run
    itself, which is the folder it sits in. Neither is ever the file's name:
-   every test run holds a marker called `.tr`, so three test run conflicts in a
+   every test run holds a marker called `.testrun`, so three test run conflicts in a
    row would all be titled the same.
 2. **Each row** — the field, then the two values. **Mine** is chosen to start
    with. A test run's key is named as the tester already knows it: the question

@@ -173,13 +173,13 @@ public void registerWithAnEmailNobodyHasUsed() {
 <img alt="Testin, shot 9" src="assets/medium/shot-9-report-pdf.png"
      style="max-width:100%;height:auto;border-radius:6px">
 <h2>What is on disk</h2>
-<p>A test project is a folder. A folder is a test set because it contains a file called <code>.ts</code>, and a test run
-    because it contains <code>.tr</code> — markers whose whole name is the extension. Inside a test set, every test case
-    is one file named by its id, <code>4fd2a19b-….tc</code>. A test run keeps its own facts in its <code>.tr</code> -
+<p>A test project is a folder. A folder is a test set because it contains a file called <code>.testset</code>, and a test run
+    because it contains <code>.testrun</code> — markers whose whole name is the extension. Inside a test set, every test case
+    is one file named by its id, <code>4fd2a19b-….testcase</code>. A test run keeps its own facts in its <code>.testrun</code> -
     how
     it was configured, when it was executed, what you wrote about the run item statuses -and one file per result beside
     it, <code>&lt;test
-        case id&gt;.ri</code>: status, duration, who executed it and when, the actual result, the exception, the
+        case id&gt;.runitem</code>: status, duration, who executed it and when, the actual result, the exception, the
     screenshot names and the bug issue link. One run item status is one small file, which is why two people running the
     same
     cycle never write over each other.</p>

@@ -28,11 +28,11 @@ public class ViewPendingCommitsWorkIdeTest extends AbstractGitRemoteIdeTest {
 
     // UC-SHARE-015, Rule-SHARE-066, Rule-SHARE-067
     public void testCommitsNotOnTheRemoteAreCountedRatherThanReportedAsNoChanges() {
-        write(work, "a.tc", "{}");
-        write(work, "b.tc", "{}");
-        write(work, "c.tc", "{}");
+        write(work, "a.testcase", "{}");
+        write(work, "b.testcase", "{}");
+        write(work, "c.testcase", "{}");
         commitAll(work, "three test cases");
-        write(work, "d.tc", "{}");
+        write(work, "d.testcase", "{}");
         commitAll(work, "one more");
         final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
 

@@ -16,7 +16,7 @@ panel does the same job by hand, and is on
 
 - **Rule-INTERNAL-016** — Testin watches every file the IDE watches. A change
   counts only if the file is inside a test project Testin reads: a folder under
-  the Testin folder with a `.tp` marker, and only the one named for this code
+  the Testin folder with a `.testproject` marker, and only the one named for this code
   project when one is named. A changed folder that is not one is dropped from what Testin
   shows.
 - **Rule-INTERNAL-017** — Anything inside a `.git` folder is ignored, however

@@ -23,9 +23,12 @@ import org.testin.model.node.AbstractNode;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 public class ReadTestProjectIdeTest extends AbstractReadTheRootIdeTest {
 
@@ -34,16 +37,37 @@ public class ReadTestProjectIdeTest extends AbstractReadTheRootIdeTest {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-003
-    public void testOnlyAFolderHoldingATpFileIsATestProject() {
+    public void testOnlyAFolderHoldingATestProjectMarkerIsATestProject() {
         final @NotNull Path marked = aTestProjectAt(root.resolve("Checkout"));
         final @NotNull Path unmarked = root.resolve("Payments");
         marked(theTestCasesOf(unmarked), NodeType.TEST_CASES_FOLDER);
 
         readEverything();
 
-        assertTrue("a folder holding a .tp file was not read as a test project", nodes().nodeExists(marked));
-        assertFalse("a folder with no .tp file was read as a test project", nodes().nodeExists(unmarked));
-        assertFalse("a folder with no .tp file is offered as a test project", indexer().testProjects().containsKey("Payments"));
+        assertTrue("a folder holding a .testproject file was not read as a test project", nodes().nodeExists(marked));
+        assertFalse("a folder with no .testproject file was read as a test project", nodes().nodeExists(unmarked));
+        assertFalse("a folder with no .testproject file is offered as a test project", indexer().testProjects().containsKey("Payments"));
+    }
+
+    // UC-INTERNAL-002, Rule-INTERNAL-003, Rule-INTERNAL-091
+    public void testAFolderWrittenInFormatFourIsNotATestProjectAndIsLeftAlone() {
+        final @NotNull Path current = aTestProjectAt(root.resolve("Checkout"));
+        final @NotNull Path older = root.resolve("NAFATH");
+        final @NotNull String olderMarker = "{ \"status\" : \"ACTIVE\", \"format\" : 4 }";
+        SyntheticTree.write(older.resolve(".tp"), olderMarker);
+        SyntheticTree.write(older.resolve("Test Cases").resolve(".tcf"), SyntheticTree.marker());
+
+        readEverything();
+
+        assertTrue("a test project in format 5 was not read", nodes().nodeExists(current));
+        assertFalse("a folder written in format 4 was read as a test project", nodes().nodeExists(older));
+        assertFalse("a folder written in format 4 is offered by name", indexer().testProjects().containsKey("NAFATH"));
+        try (Stream<Path> files = Files.walk(older)) {
+            assertEquals("Testin wrote into a folder written in format 4", 2, files.filter(Files::isRegularFile).count());
+            assertEquals("Testin changed the marker of a folder written in format 4", olderMarker, Files.readString(older.resolve(".tp")));
+        } catch (final IOException ex) {
+            throw new AssertionError("could not read the folder written in format 4", ex);
+        }
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-004
@@ -96,8 +120,8 @@ public class ReadTestProjectIdeTest extends AbstractReadTheRootIdeTest {
 
         readEverything();
 
-        assertEquals("a folder holding .ts is not a test set", Optional.of(NodeType.TEST_SET), kindAt(testSet));
-        assertEquals("a folder holding .tsp is not a test set package", Optional.of(NodeType.TEST_SET_PACKAGE), kindAt(testSetPackage));
+        assertEquals("a folder holding .testset is not a test set", Optional.of(NodeType.TEST_SET), kindAt(testSet));
+        assertEquals("a folder holding .testsetpackage is not a test set package", Optional.of(NodeType.TEST_SET_PACKAGE), kindAt(testSetPackage));
         assertFalse("a folder holding neither marker was read", nodes().nodeExists(unmarked));
         assertTrue("a test case in a folder holding neither marker was read", indexedTestCases().findTestCase(inUnmarked).isEmpty());
     }
@@ -110,7 +134,7 @@ public class ReadTestProjectIdeTest extends AbstractReadTheRootIdeTest {
 
         readEverything();
 
-        assertEquals("a folder holding .ts and .tsp was not read as a test set", Optional.of(NodeType.TEST_SET), kindAt(both));
+        assertEquals("a folder holding .testset and .testsetpackage was not read as a test set", Optional.of(NodeType.TEST_SET), kindAt(both));
         assertTrue("and its test case was not read", indexedTestCases().findTestCase(testCase).isPresent());
     }
 
@@ -124,8 +148,8 @@ public class ReadTestProjectIdeTest extends AbstractReadTheRootIdeTest {
 
         readEverything();
 
-        assertEquals("a folder holding .tr is not a test run", Optional.of(NodeType.TEST_RUN), kindAt(testRun));
-        assertEquals("a folder holding .trp is not a test run package", Optional.of(NodeType.TEST_RUN_PACKAGE), kindAt(testRunPackage));
+        assertEquals("a folder holding .testrun is not a test run", Optional.of(NodeType.TEST_RUN), kindAt(testRun));
+        assertEquals("a folder holding .testrunpackage is not a test run package", Optional.of(NodeType.TEST_RUN_PACKAGE), kindAt(testRunPackage));
         assertFalse("a folder holding neither marker was read", nodes().nodeExists(unmarked));
     }
 

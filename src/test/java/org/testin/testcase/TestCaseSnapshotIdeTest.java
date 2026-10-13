@@ -109,6 +109,6 @@ public class TestCaseSnapshotIdeTest extends AbstractTempRootIdeTest {
 
         assertTrue("the undo said it could not put the test case back", Services.getInstance(getProject(), UndoHistories.class).undo(scope));
         assertTrue("the test case is not back in the index", indexedTestCases().findTestCase(removed.getId()).isPresent());
-        assertTrue("the test case's file is not back on disk", Files.isRegularFile(testSet.getPath().resolve(removed.getId() + ".tc")));
+        assertTrue("the test case's file is not back on disk", Files.isRegularFile(testSet.getPath().resolve(removed.getId() + ".testcase")));
     }
 }

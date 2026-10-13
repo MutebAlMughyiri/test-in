@@ -29,18 +29,18 @@ public class GitConflictOfferTest {
     // Rule-SHARE-079
     @Test
     public void theConflictMessageNamesTheFilesStillInTheWay() {
-        final @NotNull String said = GitConflictOffer.conflictMessage(List.of("notes.txt", "Test Cases/login/a.tc"));
+        final @NotNull String said = GitConflictOffer.conflictMessage(List.of("notes.txt", "Test Cases/login/a.testcase"));
 
-        assertTrue(said.contains("notes.txt") && said.contains("Test Cases/login/a.tc"), said);
+        assertTrue(said.contains("notes.txt") && said.contains("Test Cases/login/a.testcase"), said);
     }
 
     // Rule-SHARE-079
     @Test
     public void aLongListNamesThreeFilesAndCountsTheRest() {
-        final @NotNull String said = GitConflictOffer.conflictMessage(List.of("a.tc", "b.tc", "c.tc", "d.tc", "e.tc"));
+        final @NotNull String said = GitConflictOffer.conflictMessage(List.of("a.testcase", "b.testcase", "c.testcase", "d.testcase", "e.testcase"));
 
-        assertTrue(said.contains("a.tc, b.tc, c.tc"), said);
-        assertFalse(said.contains("d.tc"), said);
+        assertTrue(said.contains("a.testcase, b.testcase, c.testcase"), said);
+        assertFalse(said.contains("d.testcase"), said);
         assertTrue(said.contains("2 more"), said);
     }
 }

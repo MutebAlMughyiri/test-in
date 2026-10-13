@@ -140,7 +140,7 @@ public class SampleProjectTest {
         for (final Path file : testCases) {
             final @NotNull TestCase testCase = read(file, TestCase.class);
 
-            assertEquals(testCase.getId().toString(), file.getFileName().toString().replace(".tc", ""),
+            assertEquals(testCase.getId().toString(), file.getFileName().toString().replace(".testcase", ""),
                     "A test case's file name is its identity, so the sample must agree with itself: " + file);
             assertFalse(testCase.getOrder().isEmpty(),
                     "The sample is what a project written by the current build looks like, and that means ranked: " + file);
@@ -152,7 +152,7 @@ public class SampleProjectTest {
     @Test
     public void everyTestRunParsesAndItsRunItemsNameTestCasesThatExist() {
         final @NotNull List<String> testCaseIds = testCaseFiles().stream()
-                .map(file -> file.getFileName().toString().replace(".tc", ""))
+                .map(file -> file.getFileName().toString().replace(".testcase", ""))
                 .toList();
 
         final @NotNull List<Path> testRuns = testRunFolders();
@@ -169,7 +169,7 @@ public class SampleProjectTest {
             for (final Path file : results) {
                 final @NotNull RunItem runItem = read(file, RunItem.class);
 
-                assertEquals(runItem.getId().toString(), file.getFileName().toString().replace(".ri", ""),
+                assertEquals(runItem.getId().toString(), file.getFileName().toString().replace(".runitem", ""),
                         "A result's file name is its test case's id, so the sample must agree with itself: " + file);
                 assertTrue(testCaseIds.contains(runItem.getId().toString()),
                         "The result " + file.getFileName() + " names a test case the sample does not hold: " + runItem.getId());

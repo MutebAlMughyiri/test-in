@@ -178,9 +178,9 @@ public class ExportFlowIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestSetNode login = new NodesOnDisk(getProject()).testSet(testProject.getTestCasesFolder(), "Login");
         final @NotNull TestCase first = aTestCase(login, "log in with a valid user");
         final @NotNull TestCase second = aTestCase(login, "a wrong password is refused");
-        final @NotNull Path firstFile = login.getPath().resolve(first.getId() + ".tc");
+        final @NotNull Path firstFile = login.getPath().resolve(first.getId() + ".testcase");
         final byte @NotNull [] firstBefore = bytesOf(firstFile);
-        final byte @NotNull [] secondBefore = bytesOf(login.getPath().resolve(second.getId() + ".tc"));
+        final byte @NotNull [] secondBefore = bytesOf(login.getPath().resolve(second.getId() + ".testcase"));
         final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
 
         final @NotNull JComponent dialog = theExportDialogFor(login);
@@ -191,7 +191,7 @@ public class ExportFlowIdeTest extends AbstractTempRootIdeTest {
         exported(said, 2);
 
         assertArrayEquals("the test case file changed on disk", firstBefore, bytesOf(firstFile));
-        assertArrayEquals("the second test case file changed on disk", secondBefore, bytesOf(login.getPath().resolve(second.getId() + ".tc")));
+        assertArrayEquals("the second test case file changed on disk", secondBefore, bytesOf(login.getPath().resolve(second.getId() + ".testcase")));
         assertEquals("the test case Testin holds changed", "log in with a valid user", indexedTestCases().findTestCase(first.getId()).orElseThrow().getDescription());
         assertEquals("a wrong password is refused", indexedTestCases().findTestCase(second.getId()).orElseThrow().getDescription());
     }
@@ -207,7 +207,7 @@ public class ExportFlowIdeTest extends AbstractTempRootIdeTest {
         final @NotNull JComponent dialog = theExportDialogFor(login);
 
         assertEquals(List.of("Login"), tabTitles(dialog));
-        assertEquals("only the .tc file became a row", 1, firstTable(dialog).getRowCount());
+        assertEquals("only the .testcase file became a row", 1, firstTable(dialog).getRowCount());
     }
 
     // UC-SHARE-001, Rule-SHARE-010
@@ -280,7 +280,7 @@ public class ExportFlowIdeTest extends AbstractTempRootIdeTest {
     public void testAnUnreadableTestCaseIsNamedBeforeTheExportAndTheTesterChoosesToGoOn() {
         final @NotNull TestSetNode login = new NodesOnDisk(getProject()).testSet(testProject.getTestCasesFolder(), "Login");
         aTestCase(login, "log in with a valid user");
-        final @NotNull String broken = UUID.randomUUID() + ".tc";
+        final @NotNull String broken = UUID.randomUUID() + ".testcase";
         write(login.getPath().resolve(broken), "{ this is not a test case");
         Services.getInstance(getProject(), ProjectIndexer.class).scanSingleProject(testProject.getPath());
 

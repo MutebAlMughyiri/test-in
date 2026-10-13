@@ -81,7 +81,7 @@ public class CommitRulesIdeTest extends AbstractGitRemoteIdeTest {
         final @NotNull Path solo = directory("solo");
         mustGit(solo, "init", "--initial-branch=" + MAIN);
         identify(solo, "Testin Test", "testin@example.invalid");
-        write(solo, "first.tc", "{}");
+        write(solo, "first.testcase", "{}");
         commitAll(solo, "first");
         return solo;
     }
@@ -114,7 +114,7 @@ public class CommitRulesIdeTest extends AbstractGitRemoteIdeTest {
     public void testTheCommitIsMadeStraightAfterTheIdentityIsSet() {
         mustGit(work, "config", "user.name", "");
         mustGit(work, "config", "user.email", "");
-        write(work, "second.tc", "{\"description\":\"typed\"}");
+        write(work, "second.testcase", "{\"description\":\"typed\"}");
         final @NotNull String before = head(work, "HEAD");
 
         final @NotNull JComponent review = theReview(work);
@@ -138,7 +138,7 @@ public class CommitRulesIdeTest extends AbstractGitRemoteIdeTest {
                 #!/bin/sh
                 exit 1
                 """);
-        write(work, "second.tc", "{\"description\":\"typed\"}");
+        write(work, "second.testcase", "{\"description\":\"typed\"}");
         final @NotNull String remoteBefore = head(remote, MAIN);
         final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
         final @NotNull List<Task> started = ShareGestures.tasksStarted(getTestRootDisposable());
@@ -181,7 +181,7 @@ public class CommitRulesIdeTest extends AbstractGitRemoteIdeTest {
         ShareGestures.pressEnter(asked);
         Await.until("the first push did not land", () -> count(said, Bundle.message("git.pushed.title")) == 1);
 
-        write(solo, "second.tc", "{}");
+        write(solo, "second.testcase", "{}");
         commitAll(solo, "second");
         pressPushOnTheWaitingCommits(solo, said);
         Await.until("the second push did not land", () -> count(said, Bundle.message("git.pushed.title")) == 2);
@@ -192,7 +192,7 @@ public class CommitRulesIdeTest extends AbstractGitRemoteIdeTest {
 
     // UC-SHARE-013, Rule-SHARE-061
     public void testTheMessageAboutAPushStaysInTheNotificationList() {
-        write(work, "second.tc", "{}");
+        write(work, "second.testcase", "{}");
         commitAll(work, "second");
         final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
 
@@ -206,10 +206,10 @@ public class CommitRulesIdeTest extends AbstractGitRemoteIdeTest {
     // UC-SHARE-014, Rule-SHARE-065
     public void testABranchThatCannotBeCheckedOutCommitsNothing() {
         mustGit(work, "checkout", "-b", "other");
-        write(work, "first.tc", "{\"on\":\"other\"}");
+        write(work, "first.testcase", "{\"on\":\"other\"}");
         commitAll(work, "the other branch's first test case");
         mustGit(work, "checkout", MAIN);
-        write(work, "first.tc", "{\"on\":\"typed on main\"}");
+        write(work, "first.testcase", "{\"on\":\"typed on main\"}");
         final @NotNull String mainBefore = head(work, MAIN);
         final @NotNull String otherBefore = head(work, "other");
         final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
@@ -223,7 +223,7 @@ public class CommitRulesIdeTest extends AbstractGitRemoteIdeTest {
         assertEquals(mainBefore, head(work, MAIN));
         assertEquals(otherBefore, head(work, "other"));
         assertEquals(MAIN, mustGit(work, "branch", "--show-current").trim());
-        assertEquals("{\"on\":\"typed on main\"}", read(work, "first.tc"));
+        assertEquals("{\"on\":\"typed on main\"}", read(work, "first.testcase"));
         assertTrue(git(work, "diff", "--quiet").isEmpty());
     }
 }

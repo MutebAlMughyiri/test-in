@@ -148,7 +148,7 @@ public class ClipboardGesturesIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull List<String> everyFile() {
         try (final Stream<Path> files = Files.walk(testProject.getPath())) {
-            return files.filter(Files::isRegularFile).filter(file -> file.toString().endsWith(".tc")).sorted().map(file -> file + "@" + file.toFile().lastModified()).toList();
+            return files.filter(Files::isRegularFile).filter(file -> file.toString().endsWith(".testcase")).sorted().map(file -> file + "@" + file.toFile().lastModified()).toList();
         } catch (final IOException ex) {
             throw new AssertionError("the test project could not be read", ex);
         }

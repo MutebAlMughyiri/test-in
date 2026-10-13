@@ -35,7 +35,7 @@ import static org.testin.git.LocalGit.git;
 import static org.testin.git.LocalGit.mustGit;
 
 public class MergeNotStagedIdeTest extends AbstractGitRemoteIdeTest {
-    private static final @NotNull String TEST_CASE = "Test Cases/Login/login.tc";
+    private static final @NotNull String TEST_CASE = "Test Cases/Login/login.testcase";
 
     private static @NotNull String oneLine(final @NotNull String testCaseId, final @NotNull String description, final @NotNull String expected) {
         return "{\"id\":\"" + testCaseId + "\",\"description\":\"" + description + "\",\"expectedResult\":\"" + expected + "\"}";

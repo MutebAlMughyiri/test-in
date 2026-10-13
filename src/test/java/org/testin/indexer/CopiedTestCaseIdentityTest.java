@@ -35,13 +35,13 @@ public class CopiedTestCaseIdentityTest {
 
     @Test
     public void aTestCaseTestinNamedIsATestCaseFile() {
-        assertTrue(ProjectIndexer.isTestCaseFile(TEST_SET.resolve("3f2b9c14-0d5e-4a71-9c33-8e1f4b2a7d60.tc"), IS_TEST_SET));
+        assertTrue(ProjectIndexer.isTestCaseFile(TEST_SET.resolve("3f2b9c14-0d5e-4a71-9c33-8e1f4b2a7d60.testcase"), IS_TEST_SET));
     }
 
     // Rule-INTERNAL-011
     @Test
     public void aTestCaseTheTesterNamedIsATestCaseFileToo() {
-        assertTrue(ProjectIndexer.isTestCaseFile(TEST_SET.resolve("login.tc"), IS_TEST_SET),
+        assertTrue(ProjectIndexer.isTestCaseFile(TEST_SET.resolve("login.testcase"), IS_TEST_SET),
                 "a hand-named test case file is still a test case, so a copy of it has to get an id of its own");
     }
 
@@ -53,12 +53,12 @@ public class CopiedTestCaseIdentityTest {
 
     @Test
     public void aMarkerIsNotATestCaseFile() {
-        assertFalse(ProjectIndexer.isTestCaseFile(TEST_SET.resolve(".ts"), IS_TEST_SET));
+        assertFalse(ProjectIndexer.isTestCaseFile(TEST_SET.resolve(".testset"), IS_TEST_SET));
     }
 
     // Rule-INTERNAL-011
     @Test
     public void jsonOutsideATestSetIsNotATestCaseFile() {
-        assertFalse(ProjectIndexer.isTestCaseFile(Path.of("root", "Test Cases", "notes.tc"), IS_TEST_SET));
+        assertFalse(ProjectIndexer.isTestCaseFile(Path.of("root", "Test Cases", "notes.testcase"), IS_TEST_SET));
     }
 }

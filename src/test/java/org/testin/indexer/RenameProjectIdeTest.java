@@ -107,7 +107,7 @@ public class RenameProjectIdeTest extends AbstractTempRootIdeTest {
         final UUID testCaseId = UUID.randomUUID();
 
         try {
-            Files.writeString(testSet.getPath().resolve("login.tc"), Services.getInstance(getProject(), JsonCodec.class)
+            Files.writeString(testSet.getPath().resolve("login.testcase"), Services.getInstance(getProject(), JsonCodec.class)
                     .writeValueAsString(TestCase.builder().id(testCaseId).description("Log in with a valid user").build()));
         } catch (final Exception ex) {
             throw new AssertionError("Could not write the hand-named test case: " + ex.getMessage(), ex);
@@ -121,7 +121,7 @@ public class RenameProjectIdeTest extends AbstractTempRootIdeTest {
         final TestCaseFile file = indexedTestCases().testCaseFile(testCase).orElseThrow();
 
         assertEquals("the test case is placed in the renamed project", to, file.testProject());
-        assertEquals("the test case lost its hand-named file", "login.tc", file.inProject().getFileName().toString());
+        assertEquals("the test case lost its hand-named file", "login.testcase", file.inProject().getFileName().toString());
     }
 
     // Rule-TREE-PANEL-004

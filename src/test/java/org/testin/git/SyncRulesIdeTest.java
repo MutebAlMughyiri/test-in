@@ -63,26 +63,26 @@ public class SyncRulesIdeTest extends AbstractGitRemoteIdeTest {
 
     // UC-SHARE-016, Rule-SHARE-003
     public void testOneSyncSendsMyWorkAndTakesTheirs() {
-        theColleagueAdds("theirs.tc", "{}");
-        write(work, "mine.tc", "{}");
+        theColleagueAdds("theirs.testcase", "{}");
+        write(work, "mine.testcase", "{}");
         commitAll(work, "my test case");
 
         synced(Said.listening(getProject(), getTestRootDisposable()).notifications());
 
-        assertTrue("the colleague's work was not taken", Files.exists(work.resolve("theirs.tc")));
+        assertTrue("the colleague's work was not taken", Files.exists(work.resolve("theirs.testcase")));
         assertEquals("my work is still only on this machine", head(work, "HEAD"), head(remote, MAIN));
-        assertEquals("{}", mustGit(remote, "show", MAIN + ":mine.tc").trim());
+        assertEquals("{}", mustGit(remote, "show", MAIN + ":mine.testcase").trim());
     }
 
     // UC-SHARE-016, Rule-SHARE-070
     public void testThePushIsSkippedWhenNothingIsWaiting() {
-        theColleagueAdds("theirs.tc", "{}");
+        theColleagueAdds("theirs.testcase", "{}");
         mustGit(work, "remote", "set-url", "--push", "origin", root.resolve("nowhere.git").toUri().toString());
 
         final @NotNull Notification done = synced(Said.listening(getProject(), getTestRootDisposable()).notifications());
 
         assertEquals("a push was tried with nothing to send", Bundle.message("git.synced.up.to.date"), done.getContent());
-        assertTrue("the sync did not take the colleague's work", Files.exists(work.resolve("theirs.tc")));
+        assertTrue("the sync did not take the colleague's work", Files.exists(work.resolve("theirs.testcase")));
     }
 
     // UC-SHARE-016, Rule-SHARE-005, Rule-SHARE-072
@@ -90,7 +90,7 @@ public class SyncRulesIdeTest extends AbstractGitRemoteIdeTest {
         final @NotNull List<Task> started = ShareGestures.tasksStarted(getTestRootDisposable());
 
         synced(Said.listening(getProject(), getTestRootDisposable()).notifications());
-        write(work, "mine.tc", "{\"description\":\"typed\"}");
+        write(work, "mine.testcase", "{\"description\":\"typed\"}");
         new ViewPendingCommitsWork(getProject()).openFor(work);
 
         assertFalse("the sync, which pulls with a rebase and pushes, could be canceled", ShareGestures.titled(started, Bundle.message("git.task.syncing")).isCancellable());
@@ -100,7 +100,7 @@ public class SyncRulesIdeTest extends AbstractGitRemoteIdeTest {
     // UC-SHARE-010, Rule-SHARE-050
     public void testReadingGitHappensOffTheMainThread() {
         final @NotNull List<Boolean> onTheMainThread = ShareGestures.gitCallsOnTheMainThread(getTestRootDisposable());
-        write(work, "mine.tc", "{\"description\":\"typed\"}");
+        write(work, "mine.testcase", "{\"description\":\"typed\"}");
 
         new ViewPendingCommitsWork(getProject()).openFor(work);
         ShownDialog.waitedFor(getProject(), PendingChangesDialog.class);
@@ -118,7 +118,7 @@ public class SyncRulesIdeTest extends AbstractGitRemoteIdeTest {
         mustGit(work, "push", "origin", MAIN);
 
         final @NotNull TestCase theirs = TestCase.builder().id(UUID.randomUUID()).description("sign in with a passkey").order("z").build();
-        final @NotNull String relative = work.relativize(login.getPath()).resolve(theirs.getId() + ".tc").toString().replace('\\', '/');
+        final @NotNull String relative = work.relativize(login.getPath()).resolve(theirs.getId() + ".testcase").toString().replace('\\', '/');
         theColleagueAdds(relative, Services.getInstance(getProject(), JsonCodec.class).writeValueAsString(theirs));
 
         synced(Said.listening(getProject(), getTestRootDisposable()).notifications());

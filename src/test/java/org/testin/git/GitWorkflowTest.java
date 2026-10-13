@@ -118,7 +118,7 @@ public class GitWorkflowTest {
 
             final Set<String> paths = new LinkedHashSet<>();
             for (int i = 0; i < 1200; i++) {
-                final String name = UUID.randomUUID() + ".tc";
+                final String name = UUID.randomUUID() + ".testcase";
                 Files.writeString(set.resolve(name), "{}");
                 paths.add("test-01/Test Cases/pkg1/Login/" + name);
             }
@@ -174,10 +174,10 @@ public class GitWorkflowTest {
     }
 
     private @NotNull List<TestCase> writeTestProject() {
-        write(work, ".tp", "{\"status\":\"ACTIVE\"}");
-        write(work, "Test Cases/.tcf", "{}");
-        write(work, "Test Runs/.trf", "{}");
-        write(work, "Test Cases/login flow/.ts", "{}");
+        write(work, ".testproject", "{\"status\":\"ACTIVE\"}");
+        write(work, "Test Cases/.testcasesfolder", "{}");
+        write(work, "Test Runs/.testrunsfolder", "{}");
+        write(work, "Test Cases/login flow/.testset", "{}");
 
         final List<TestCase> testCases = List.of(
                 testCase("a registered user signs in"),
@@ -190,7 +190,7 @@ public class GitWorkflowTest {
         }
 
         for (final TestCase testCase : testCases) {
-            write(work, "Test Cases/login flow/" + testCase.getId() + ".tc", testCase);
+            write(work, "Test Cases/login flow/" + testCase.getId() + ".testcase", testCase);
         }
         return testCases;
     }
@@ -245,7 +245,7 @@ public class GitWorkflowTest {
 
         final Path colleague = cloneAsColleague();
         for (final TestCase testCase : testCases) {
-            assertTrue(Files.exists(colleague.resolve("Test Cases/login flow/" + testCase.getId() + ".tc")),
+            assertTrue(Files.exists(colleague.resolve("Test Cases/login flow/" + testCase.getId() + ".testcase")),
                     "the colleague received " + testCase.getDescription());
         }
     }
@@ -259,9 +259,9 @@ public class GitWorkflowTest {
 
         final Path colleague = cloneAsColleague();
 
-        assertTrue(Files.exists(colleague.resolve(".tp")), "the test project marker travelled");
-        assertTrue(Files.exists(colleague.resolve("Test Cases/.tcf")), "the test cases container marker travelled");
-        assertTrue(Files.exists(colleague.resolve("Test Cases/login flow/.ts")),
+        assertTrue(Files.exists(colleague.resolve(".testproject")), "the test project marker travelled");
+        assertTrue(Files.exists(colleague.resolve("Test Cases/.testcasesfolder")), "the test cases container marker travelled");
+        assertTrue(Files.exists(colleague.resolve("Test Cases/login flow/.testset")),
                 "the test set marker travelled - without it the test cases are in a directory nothing recognises");
     }
 
@@ -273,10 +273,10 @@ public class GitWorkflowTest {
                 .filter(change -> change.subject() == ChangeSubject.TEST_CASE)
                 .toList());
 
-        assertTrue(staged.contains(".tp"));
-        assertTrue(staged.contains("Test Cases/.tcf"));
-        assertTrue(staged.contains("Test Cases/login flow/.ts"));
-        assertFalse(staged.contains("Test Runs/.trf"),
+        assertTrue(staged.contains(".testproject"));
+        assertTrue(staged.contains("Test Cases/.testcasesfolder"));
+        assertTrue(staged.contains("Test Cases/login flow/.testset"));
+        assertFalse(staged.contains("Test Runs/.testrunsfolder"),
                 "no test case sits under Test Runs, so its marker is not part of this commit");
     }
 
@@ -288,7 +288,7 @@ public class GitWorkflowTest {
         assertEquals(review(), List.of(), "nothing is pending straight after a commit");
 
         final TestCase edited = testCases.getFirst().setModule("payments");
-        write(work, "Test Cases/login flow/" + edited.getId() + ".tc", edited);
+        write(work, "Test Cases/login flow/" + edited.getId() + ".testcase", edited);
 
         final List<PendingChange> pending = review();
 
@@ -306,7 +306,7 @@ public class GitWorkflowTest {
         commit(stagedFor(review()), "the first commit");
 
         final TestCase extra = testCase("a locked account cannot sign in");
-        write(work, "Test Cases/login flow/" + extra.getId() + ".tc", extra);
+        write(work, "Test Cases/login flow/" + extra.getId() + ".testcase", extra);
 
         final List<PendingChange> pending = review();
 
@@ -321,7 +321,7 @@ public class GitWorkflowTest {
             final List<TestCase> testCases = writeTestProject();
             commit(stagedFor(review()), "the first commit");
 
-            Files.delete(work.resolve("Test Cases/login flow/" + testCases.getFirst().getId() + ".tc"));
+            Files.delete(work.resolve("Test Cases/login flow/" + testCases.getFirst().getId() + ".testcase"));
 
             final List<PendingChange> pending = review();
 
@@ -338,7 +338,7 @@ public class GitWorkflowTest {
         final List<TestCase> testCases = writeTestProject();
         commit(stagedFor(review()), "the first commit");
 
-        final String file = testCases.getFirst().getId() + ".tc";
+        final String file = testCases.getFirst().getId() + ".testcase";
         mustGit(work, "mv", "Test Cases/login flow/" + file, "Test Cases/" + file);
 
         final List<PendingChange> pending = review();
@@ -362,7 +362,7 @@ public class GitWorkflowTest {
             commit(stagedFor(review()), "the first commit");
             mustGit(work, "push", "-u", "origin", "main");
 
-            final String relativePath = "Test Cases/login flow/" + testCases.getFirst().getId() + ".tc";
+            final String relativePath = "Test Cases/login flow/" + testCases.getFirst().getId() + ".testcase";
 
             final Path colleague = cloneAsColleague();
             mustGit(colleague, "config", "user.name", "Colleague");
@@ -426,14 +426,14 @@ public class GitWorkflowTest {
             mustGit(colleague, "config", "user.email", "colleague@example.invalid");
 
             final TestCase theirNewTestCase = testCase("a locked account cannot sign in").setOrder("s");
-            write(colleague, "Test Cases/login flow/" + theirNewTestCase.getId() + ".tc", theirNewTestCase);
+            write(colleague, "Test Cases/login flow/" + theirNewTestCase.getId() + ".testcase", theirNewTestCase);
 
             mustGit(colleague, "add", "-A");
             mustGit(colleague, "commit", "-m", "added the locked account case");
             mustGit(colleague, "push", "origin", "main");
 
             final TestCase myNewTestCase = testCase("a signed-in user signs out").setOrder("s");
-            write(work, "Test Cases/login flow/" + myNewTestCase.getId() + ".tc", myNewTestCase);
+            write(work, "Test Cases/login flow/" + myNewTestCase.getId() + ".testcase", myNewTestCase);
             commit(stagedFor(review()), "added the sign out case");
 
             assertTrue(git(work, "pull", "--rebase", "--autostash", "origin", "main").isPresent(),
@@ -441,7 +441,7 @@ public class GitWorkflowTest {
 
             final List<TestCase> after = new ArrayList<>();
             try (Stream<Path> files = Files.list(work.resolve("Test Cases/login flow"))) {
-                for (final Path file : files.filter(candidate -> candidate.getFileName().toString().endsWith(".tc")).sorted().toList()) {
+                for (final Path file : files.filter(candidate -> candidate.getFileName().toString().endsWith(".testcase")).sorted().toList()) {
                     after.add(RealJsonCodec.build().readValue(Files.readString(file, StandardCharsets.UTF_8), TestCase.class));
                 }
             }
@@ -470,7 +470,7 @@ public class GitWorkflowTest {
             mustGit(colleague, "config", "user.name", "Colleague");
             mustGit(colleague, "config", "user.email", "colleague@example.invalid");
 
-            final Path theirCopy = colleague.resolve("Test Cases/login flow/" + testCases.getFirst().getId() + ".tc");
+            final Path theirCopy = colleague.resolve("Test Cases/login flow/" + testCases.getFirst().getId() + ".testcase");
             final TestCase theirs = RealJsonCodec.build().readValue(Files.readString(theirCopy, StandardCharsets.UTF_8), TestCase.class);
             Files.writeString(theirCopy, RealJsonCodec.build().writeValueAsString(theirs.setExpectedResult("the dashboard opens within two seconds")),
                     StandardCharsets.UTF_8);
@@ -481,7 +481,7 @@ public class GitWorkflowTest {
             mustGit(work, "pull", "--rebase", "--autostash", "origin", "main");
 
             final TestCase pulled = RealJsonCodec.build().readValue(
-                    Files.readString(work.resolve("Test Cases/login flow/" + testCases.getFirst().getId() + ".tc"),
+                    Files.readString(work.resolve("Test Cases/login flow/" + testCases.getFirst().getId() + ".testcase"),
                             StandardCharsets.UTF_8), TestCase.class);
 
             assertEquals(pulled.getExpectedResult(), "the dashboard opens within two seconds");
@@ -532,6 +532,6 @@ public class GitWorkflowTest {
         assertTrue(status.stream().anyMatch(record -> record.startsWith("?? Test Cases/login flow/")),
                 "a path with a space comes back unquoted: " + status);
         assertEquals(GitStatusLines.parseStatus(status).stream()
-                .filter(entry -> entry.path().endsWith(".tc")).count(), 2);
+                .filter(entry -> entry.path().endsWith(".testcase")).count(), 2);
     }
 }

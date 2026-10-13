@@ -41,7 +41,7 @@ import static org.testin.git.LocalGit.mustGit;
 public class BugHistoryIdeTest extends AbstractGitRemoteIdeTest {
 
     private static final @NotNull UUID ID = UUID.fromString("77777777-7777-4777-8777-777777777397");
-    private static final @NotNull String RUN_ITEM = ID + ".ri";
+    private static final @NotNull String RUN_ITEM = ID + ".runitem";
 
     private static @NotNull RunItem runItem(final @NotNull RunItemStatus status, final @NotNull BugSeverity severity) {
         return RunItem.builder().id(ID).bugSeverity(severity).executions(List.of(RunItemExecution.builder().status(status).actualResult("The basket was emptied").executedBy("Sara").build())).build();
@@ -62,7 +62,7 @@ public class BugHistoryIdeTest extends AbstractGitRemoteIdeTest {
     private @NotNull List<BugCard> bugsOf(final @NotNull Path testProjectPath) {
         final @NotNull Map<Path, String> now = BugHistory.runItemsNow(getProject(), ID);
         try {
-            return ApplicationManager.getApplication().executeOnPooledThread(() -> BugHistory.addTo(History.read(List.of()), getProject(), new TestCaseFile(testProjectPath, Path.of("Test Cases", "Login", ID + ".tc")), ID, now).bugs()).get();
+            return ApplicationManager.getApplication().executeOnPooledThread(() -> BugHistory.addTo(History.read(List.of()), getProject(), new TestCaseFile(testProjectPath, Path.of("Test Cases", "Login", ID + ".testcase")), ID, now).bugs()).get();
         } catch (final InterruptedException | ExecutionException ex) {
             throw new AssertionError("the bugs were never read", ex);
         }

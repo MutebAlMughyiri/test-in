@@ -16,18 +16,18 @@ came from a real test project, and nothing here should.
       src/test/java/     where Generate Code writes
 
     testin-root/         what the rootTestinPath setting points at
-      Demo/                                  .tp   the test project, format 2
-        Test Cases/                          .tcf
-          Login/                             .ts   3 test cases, one .tc each
-          Checkout/                          .tsp  a test set package
-            Payment/                         .ts   3 test cases, one .tc each
-        Test Runs/                           .trf
-          Cycle-1/                           .tr   completed; six results, one .ri each
-          Regression/                        .trp  a test run package
-            Cycle-2/                         .tr   in progress; two results
+      Demo/                    .testproject       the test project, format 5
+        Test Cases/            .testcasesfolder
+          Login/               .testset           3 test cases, one .testcase each
+          Checkout/            .testsetpackage    a test set package
+            Payment/           .testset           3 test cases, one .testcase each
+        Test Runs/             .testrunsfolder
+          Cycle-1/             .testrun           completed; six run items, one .runitem each
+          Regression/          .testrunpackage    a test run package
+            Cycle-2/           .testrun           in progress; two run items
 
-Seven directories, seven marker formats. `.tsp` and `.trp` had no committed
-example anywhere before this — the format documentation (#100) takes its
+Seven directories, seven marker formats. `.testsetpackage` and `.testrunpackage`
+had no committed example anywhere before this — the format documentation (#100) takes its
 examples from here.
 
 ## Running the sandbox on it
@@ -56,8 +56,8 @@ reads it with, and asserts that:
 - all seven markers are present;
 - each test case's file name is its id;
 - each test case carries a rank;
-- a test run holds one result file per test case and no results file of its own;
-- every result names a test case that exists.
+- a test run holds one run item file per test case and no run items file of its own;
+- every run item names a test case that exists.
 
 So this sample cannot rot quietly. If a format changes, that test fails and names
 the file — which is the entire reason it is worth committing sample data rather

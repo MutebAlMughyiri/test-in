@@ -113,7 +113,7 @@ in the folder is on the screen, in the order the places give.
 second, separate test case. The file name is the identity, so both are read and
 both get a number.
 
-**If a test case file is not named the way Testin names them** — a `.tc` whose
+**If a test case file is not named the way Testin names them** — a `.testcase` whose
 name is not an id - Testin uses the id written inside the file instead. Testin did not write that file.
 Making up an identity for it would be worse than believing what it says. The
 first save files it under that name, and the hand-named file goes with it, so

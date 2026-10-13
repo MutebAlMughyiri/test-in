@@ -78,32 +78,32 @@ public class GitCommitAndPushIdeTest extends AbstractGitRemoteIdeTest {
 
     // UC-SHARE-012, Rule-SHARE-054
     public void testTheMarkersAboveACommittedTestCaseAreCommittedWithIt() {
-        write(work, ".tp", "{}");
-        write(work, "Test Cases/.tcf", "{}");
-        write(work, "Test Cases/login/.ts", "{}");
-        write(work, "Test Runs/.trf", "{}");
-        write(work, "Test Cases/login/a.tc", "{}");
+        write(work, ".testproject", "{}");
+        write(work, "Test Cases/.testcasesfolder", "{}");
+        write(work, "Test Cases/login/.testset", "{}");
+        write(work, "Test Runs/.testrunsfolder", "{}");
+        write(work, "Test Cases/login/a.testcase", "{}");
 
-        commits().stageAndCommit(work, "one test case", List.of(ticked("Test Cases/login/a.tc", StatusKind.ADDED)));
+        commits().stageAndCommit(work, "one test case", List.of(ticked("Test Cases/login/a.testcase", StatusKind.ADDED)));
 
         final @NotNull List<String> committed = committedPaths();
-        assertTrue(committed.toString(), committed.containsAll(List.of(".tp", "Test Cases/.tcf", "Test Cases/login/.ts", "Test Cases/login/a.tc")));
-        assertFalse("no test case sits under Test Runs, so its marker waits: " + committed, committed.contains("Test Runs/.trf"));
+        assertTrue(committed.toString(), committed.containsAll(List.of(".testproject", "Test Cases/.testcasesfolder", "Test Cases/login/.testset", "Test Cases/login/a.testcase")));
+        assertFalse("no test case sits under Test Runs, so its marker waits: " + committed, committed.contains("Test Runs/.testrunsfolder"));
     }
 
     // UC-SHARE-012, Rule-SHARE-055
     public void testATestCaseThatIsGoneIsCommittedAsARemoval() {
-        write(work, "Test Cases/login/a.tc", "{}");
+        write(work, "Test Cases/login/a.testcase", "{}");
         commitAll(work, "a test case");
-        mustGit(work, "mv", "Test Cases/login/a.tc", "Test Cases/a.tc");
+        mustGit(work, "mv", "Test Cases/login/a.testcase", "Test Cases/a.testcase");
 
         commits().stageAndCommit(work, "moved the test case", List.of(
-                ticked("Test Cases/login/a.tc", StatusKind.DELETED),
-                ticked("Test Cases/a.tc", StatusKind.ADDED)));
+                ticked("Test Cases/login/a.testcase", StatusKind.DELETED),
+                ticked("Test Cases/a.testcase", StatusKind.ADDED)));
 
         final @NotNull List<String> committed = committedPaths();
-        assertTrue(committed.toString(), committed.contains("Test Cases/a.tc"));
-        assertFalse("the path that is gone was committed as a removal: " + committed, committed.contains("Test Cases/login/a.tc"));
+        assertTrue(committed.toString(), committed.contains("Test Cases/a.testcase"));
+        assertFalse("the path that is gone was committed as a removal: " + committed, committed.contains("Test Cases/login/a.testcase"));
         assertEquals("", mustGit(work, "status", "--porcelain", "-uall").strip());
     }
 
@@ -112,7 +112,7 @@ public class GitCommitAndPushIdeTest extends AbstractGitRemoteIdeTest {
         final @NotNull List<PendingChange> selected = new ArrayList<>();
         int asArguments = 0;
         for (int i = 0; i < 1200; i++) {
-            final @NotNull String relativePath = "Test Cases/a package with a long name/a test set with a long name/" + UUID.randomUUID() + ".tc";
+            final @NotNull String relativePath = "Test Cases/a package with a long name/a test set with a long name/" + UUID.randomUUID() + ".testcase";
             write(work, relativePath, "{}");
             selected.add(ticked(relativePath, StatusKind.ADDED));
             asArguments += relativePath.length() + 3;
@@ -128,31 +128,31 @@ public class GitCommitAndPushIdeTest extends AbstractGitRemoteIdeTest {
     // UC-SHARE-016, Rule-SHARE-071
     public void testThePullRebasesAndKeepsWhatWasNotCommitted() {
         final @NotNull Path colleague = colleague();
-        write(colleague, "theirs.tc", "{}");
+        write(colleague, "theirs.testcase", "{}");
         commitAll(colleague, "their test case");
         mustGit(colleague, "push", "origin", MAIN);
         final @NotNull String theirCommit = head(colleague, "HEAD");
 
-        write(work, "mine.tc", "{}");
+        write(work, "mine.testcase", "{}");
         commitAll(work, "my test case");
-        write(work, "first.tc", "{\"typed\":\"not committed yet\"}");
+        write(work, "first.testcase", "{\"typed\":\"not committed yet\"}");
 
         commits().pullWhereTheRemoteHasBranch(work, "origin", remoteUrl(), MAIN);
 
         assertEquals("my commit was replayed on top of theirs", theirCommit, head(work, "HEAD~1"));
         assertEquals("a rebase makes no merge commit", "", mustGit(work, "log", "--merges", "--oneline").strip());
-        assertEquals("the uncommitted change was stashed and put back", "{\"typed\":\"not committed yet\"}", read(work, "first.tc"));
+        assertEquals("the uncommitted change was stashed and put back", "{\"typed\":\"not committed yet\"}", read(work, "first.testcase"));
     }
 
     // UC-SHARE-013, Rule-SHARE-123
     public void testCommitAndPushLandsOnTopOfWhatTheRemoteHolds() {
         final @NotNull Path colleague = colleague();
-        write(colleague, "theirs.tc", "{}");
+        write(colleague, "theirs.testcase", "{}");
         commitAll(colleague, "their test case");
         mustGit(colleague, "push", "origin", MAIN);
         final @NotNull String theirCommit = head(colleague, "HEAD");
 
-        write(work, "mine.tc", "{}");
+        write(work, "mine.testcase", "{}");
         commitAll(work, "my test case");
 
         commits().pullAndPush(work, "origin", remoteUrl(), MAIN);
@@ -166,7 +166,7 @@ public class GitCommitAndPushIdeTest extends AbstractGitRemoteIdeTest {
         final @NotNull String before = head(remote, MAIN);
         final @NotNull String nowhere = root.resolve("nowhere.git").toUri().toString();
         mustGit(work, "remote", "set-url", "origin", nowhere);
-        write(work, "mine.tc", "{}");
+        write(work, "mine.testcase", "{}");
         commitAll(work, "my test case");
 
         try {
@@ -184,7 +184,7 @@ public class GitCommitAndPushIdeTest extends AbstractGitRemoteIdeTest {
     // UC-SHARE-017, Rule-SHARE-077
     public void testRollingBackKeepsEverythingThatWasHereBeforeThePull() {
         bothChangeTheNotes();
-        write(work, "first.tc", "{\"typed\":\"not committed yet\"}");
+        write(work, "first.testcase", "{\"typed\":\"not committed yet\"}");
         final @NotNull String before = head(work, "HEAD");
 
         pullStopsOnAConflict();
@@ -192,7 +192,7 @@ public class GitCommitAndPushIdeTest extends AbstractGitRemoteIdeTest {
 
         assertEquals("the commit that was here is here again", before, head(work, "HEAD"));
         assertEquals("mine", read(work, "notes.txt").strip());
-        assertEquals("the uncommitted change came back", "{\"typed\":\"not committed yet\"}", read(work, "first.tc"));
+        assertEquals("the uncommitted change came back", "{\"typed\":\"not committed yet\"}", read(work, "first.testcase"));
         assertTrue(new GitRepositoryService(getProject()).unfinished(work).isEmpty());
     }
 

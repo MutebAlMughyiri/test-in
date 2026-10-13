@@ -43,7 +43,7 @@ public class GitSetupHintsIdeTest extends AbstractGitRemoteIdeTest {
     // UC-SHARE-009, Rule-SHARE-042, Rule-INTERNAL-127
     public void testAFolderNotUnderGitAnswersBrieflyAndItsHintMakesTheRepository() {
         final @NotNull Path notARepository = directory("not-a-repository");
-        write(notARepository, ".tp", "{}");
+        write(notARepository, ".testproject", "{}");
         final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
 
         new ViewPendingCommitsWork(getProject()).openFor(notARepository);
@@ -77,7 +77,7 @@ public class GitSetupHintsIdeTest extends AbstractGitRemoteIdeTest {
     // UC-SHARE-009, Rule-SHARE-042, Rule-INTERNAL-127
     public void testAnotherTestProjectUnderGitLeavesTheHintAndSyncAfterGitInitClearsIt() {
         final @NotNull Path notARepository = directory("not-a-repository");
-        write(notARepository, ".tp", "{}");
+        write(notARepository, ".testproject", "{}");
         final @NotNull Path repository = directory("a-repository");
         mustGit(repository, "init", "-q");
         new ViewPendingCommitsWork(getProject()).openFor(notARepository);

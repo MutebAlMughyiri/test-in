@@ -90,7 +90,7 @@ public class ImportFlowIdeTest extends AbstractTempRootIdeTest {
 
     private static @NotNull List<Path> filesOfTestCasesIn(final @NotNull Path folder) {
         try (Stream<Path> files = Files.list(folder)) {
-            return files.filter(file -> file.getFileName().toString().endsWith(".tc")).sorted().toList();
+            return files.filter(file -> file.getFileName().toString().endsWith(".testcase")).sorted().toList();
         } catch (final IOException ex) {
             throw new AssertionError("Could not list " + folder + ": " + ex.getMessage(), ex);
         }
@@ -187,7 +187,7 @@ public class ImportFlowIdeTest extends AbstractTempRootIdeTest {
     public void testAnImportNeverOverwritesAnExistingTestCase() {
         final @NotNull TestSetNode login = new NodesOnDisk(getProject()).testSet(testProject.getTestCasesFolder(), "Login");
         final @NotNull TestCase existing = new NodesOnDisk(getProject()).testCase(login);
-        final @NotNull Path existingFile = login.getPath().resolve(existing.getId() + ".tc");
+        final @NotNull Path existingFile = login.getPath().resolve(existing.getId() + ".testcase");
         final byte @NotNull [] before = bytesOf(existingFile);
         final @NotNull TestCase sameId = existing.edit().description("a colleague's wording of the same test case").build();
 

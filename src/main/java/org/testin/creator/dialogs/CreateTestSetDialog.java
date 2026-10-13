@@ -44,8 +44,8 @@ public final class CreateTestSetDialog extends AbstractFrameworkDialog {
         final @NotNull DialogPart<TextFieldWithSelections<NodeType>> built = DialogPart.<NodeType>textFieldWithSelections()
                 .icon(NodeType.TEST_SET.getIcon())
                 .placeholder(Bundle.message("dialog.create.test.placeholder"))
-                .selection(NodeType.TEST_SET.getIcon(), NodeType.TEST_SET.getDescription(), Bundle.message("dialog.create.test.hint.ts"), NodeType.TEST_SET)
-                .selection(NodeType.TEST_SET_PACKAGE.getIcon(), NodeType.TEST_SET_PACKAGE.getDescription(), Bundle.message("dialog.create.test.hint.tsp"), NodeType.TEST_SET_PACKAGE)
+                .selection(NodeType.TEST_SET.getIcon(), NodeType.TEST_SET.getDescription(), Bundle.message("dialog.create.test.hint.test.set"), NodeType.TEST_SET)
+                .selection(NodeType.TEST_SET_PACKAGE.getIcon(), NodeType.TEST_SET_PACKAGE.getDescription(), Bundle.message("dialog.create.test.hint.test.set.package"), NodeType.TEST_SET_PACKAGE)
                 .build();
         nameAndType = built.getComponent();
         components = List.of(built);

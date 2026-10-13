@@ -50,21 +50,21 @@ public class GitRepositoryServiceIdeTest extends AbstractGitRemoteIdeTest {
     // UC-SHARE-009, Rule-SHARE-043
     public void testMakingTheRepositoryCommitsNothing() {
         final @NotNull Path fresh = directory("fresh");
-        write(fresh, ".tp", "{}");
-        write(fresh, "Test Cases/login/a.tc", "{}");
+        write(fresh, ".testproject", "{}");
+        write(fresh, "Test Cases/login/a.testcase", "{}");
 
         repositories().initialize(fresh);
 
         assertTrue("the repository was made", Files.isDirectory(fresh.resolve(".git")));
         assertTrue("nothing was committed by making it", git(fresh, "rev-parse", "--verify", "HEAD").isEmpty());
         final @NotNull String waiting = mustGit(fresh, "status", "--porcelain", "-uall");
-        assertTrue("the test project is still waiting to be committed: " + waiting, waiting.contains("Test Cases/login/a.tc"));
+        assertTrue("the test project is still waiting to be committed: " + waiting, waiting.contains("Test Cases/login/a.testcase"));
     }
 
     // UC-SHARE-010, Rule-SHARE-044
     public void testTheReviewReadsGitForARepositoryTheIdeDoesNotTrack() {
         final @NotNull TestCase neverSeen = TestCase.builder().description("a test case Git has never seen").build();
-        write(work, "Test Cases/login/" + neverSeen.getId() + ".tc", RealJsonCodec.build().writeValueAsString(neverSeen));
+        write(work, "Test Cases/login/" + neverSeen.getId() + ".testcase", RealJsonCodec.build().writeValueAsString(neverSeen));
 
         final @NotNull List<PendingChange> review = PendingChangeReader.getPendingChanges(getProject(), work);
 
@@ -96,11 +96,11 @@ public class GitRepositoryServiceIdeTest extends AbstractGitRemoteIdeTest {
     public void testCommitsWaitingForTheRemoteAreCountedNotTheirFiles() {
         assertEquals(OptionalInt.of(0), repositories().unpushedCount(work));
 
-        write(work, "a.tc", "{}");
-        write(work, "b.tc", "{}");
-        write(work, "c.tc", "{}");
+        write(work, "a.testcase", "{}");
+        write(work, "b.testcase", "{}");
+        write(work, "c.testcase", "{}");
         commitAll(work, "three test cases");
-        write(work, "d.tc", "{}");
+        write(work, "d.testcase", "{}");
         commitAll(work, "one more");
 
         assertEquals("two commits holding four files", OptionalInt.of(2), repositories().unpushedCount(work));

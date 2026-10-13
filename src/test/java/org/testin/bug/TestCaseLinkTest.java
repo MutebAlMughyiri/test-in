@@ -26,8 +26,8 @@ import static org.testng.Assert.assertTrue;
 
 public class TestCaseLinkTest {
 
-    private static final Path FILE = Path.of("Test Cases", "ts2", "07f7e754-b849-4b38-9e6e-a2cacd84e927.tc");
-    private static final String LINK = "https://github.com/mtb550/test-03/blob/master/Test%20Cases/ts2/07f7e754-b849-4b38-9e6e-a2cacd84e927.tc";
+    private static final Path FILE = Path.of("Test Cases", "ts2", "07f7e754-b849-4b38-9e6e-a2cacd84e927.testcase");
+    private static final String LINK = "https://github.com/mtb550/test-03/blob/master/Test%20Cases/ts2/07f7e754-b849-4b38-9e6e-a2cacd84e927.testcase";
 
     @Test
     public void aWebRemoteLinksToTheFileOnItsBranch() {

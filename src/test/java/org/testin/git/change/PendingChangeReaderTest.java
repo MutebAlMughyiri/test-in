@@ -84,9 +84,9 @@ public class PendingChangeReaderTest {
 
     @Test
     public void aNewlyWrittenTestCaseIsInTheReview() {
-        onDisk("Test Cases/login/case.tc", testCase("a brand new case"));
+        onDisk("Test Cases/login/case.testcase", testCase("a brand new case"));
 
-        final List<PendingChange> review = review("?? Test Cases/login/case.tc");
+        final List<PendingChange> review = review("?? Test Cases/login/case.testcase");
 
         assertEquals(review.size(), 1);
         assertEquals(review.getFirst().type(), StatusKind.ADDED);
@@ -99,10 +99,10 @@ public class PendingChangeReaderTest {
         final TestCase before = testCase("the original");
         final TestCase after = testCase("the original").setId(before.getId()).setModule("billing");
 
-        committed.put("Test Cases/login/case.tc", RealJsonCodec.build().writeValueAsString(before));
-        onDisk("Test Cases/login/case.tc", after);
+        committed.put("Test Cases/login/case.testcase", RealJsonCodec.build().writeValueAsString(before));
+        onDisk("Test Cases/login/case.testcase", after);
 
-        final List<PendingChange> review = review(" M Test Cases/login/case.tc");
+        final List<PendingChange> review = review(" M Test Cases/login/case.testcase");
 
         assertEquals(review.size(), 1);
         assertEquals(review.getFirst().type(), StatusKind.MODIFIED);
@@ -113,9 +113,9 @@ public class PendingChangeReaderTest {
     @Test
     public void aDeletedTestCaseIsReviewedFromWhatWasCommitted() {
         final TestCase removed = testCase("a case that is going away");
-        committed.put("Test Cases/login/case.tc", RealJsonCodec.build().writeValueAsString(removed));
+        committed.put("Test Cases/login/case.testcase", RealJsonCodec.build().writeValueAsString(removed));
 
-        final List<PendingChange> review = review(" D Test Cases/login/case.tc");
+        final List<PendingChange> review = review(" D Test Cases/login/case.testcase");
 
         assertEquals(review.size(), 1);
         assertEquals(review.getFirst().type(), StatusKind.DELETED);
@@ -125,14 +125,14 @@ public class PendingChangeReaderTest {
     @Test
     public void markersAreListedAsMarkerChanges() {
         try {
-            onDisk("Test Cases/login/case.tc", testCase("the test case among them"));
-            Files.writeString(root.resolve("Test Cases/login/.ts"), "{}", StandardCharsets.UTF_8);
-            Files.writeString(root.resolve(".tp"), "{}", StandardCharsets.UTF_8);
+            onDisk("Test Cases/login/case.testcase", testCase("the test case among them"));
+            Files.writeString(root.resolve("Test Cases/login/.testset"), "{}", StandardCharsets.UTF_8);
+            Files.writeString(root.resolve(".testproject"), "{}", StandardCharsets.UTF_8);
 
             final List<PendingChange> review = review(
-                    "?? .tp",
-                    "?? Test Cases/login/.ts",
-                    "?? Test Cases/login/case.tc");
+                    "?? .testproject",
+                    "?? Test Cases/login/.testset",
+                    "?? Test Cases/login/case.testcase");
 
             assertEquals(review.size(), 3, "every changed file is a row - what is not listed cannot be committed");
             assertEquals(review.stream().filter(change -> change.subject() == ChangeSubject.MARKER).count(), 2);
@@ -147,10 +147,10 @@ public class PendingChangeReaderTest {
     public void aFileGitCallsModifiedIsAlwaysARow() {
         final TestCase unchanged = testCase("identical on both sides");
 
-        committed.put("Test Cases/login/case.tc", RealJsonCodec.build().writeValueAsString(unchanged));
-        onDisk("Test Cases/login/case.tc", unchanged);
+        committed.put("Test Cases/login/case.testcase", RealJsonCodec.build().writeValueAsString(unchanged));
+        onDisk("Test Cases/login/case.testcase", unchanged);
 
-        final List<PendingChange> review = review(" M Test Cases/login/case.tc");
+        final List<PendingChange> review = review(" M Test Cases/login/case.testcase");
 
         assertEquals(review.size(), 1);
         assertEquals(review.getFirst().fieldChanges().getFirst().changeType(), ChangeType.CHANGE_FILE);
@@ -160,15 +160,15 @@ public class PendingChangeReaderTest {
     public void aWholeNewTestSetIsReviewedTestCaseByTestCase() {
         try {
             for (int index = 1; index <= 3; index++) {
-                onDisk("Test Cases/login flow/case-" + index + ".tc", testCase("case " + index));
+                onDisk("Test Cases/login flow/case-" + index + ".testcase", testCase("case " + index));
             }
-            Files.writeString(root.resolve("Test Cases/login flow/.ts"), "{}", StandardCharsets.UTF_8);
+            Files.writeString(root.resolve("Test Cases/login flow/.testset"), "{}", StandardCharsets.UTF_8);
 
             final List<PendingChange> review = review(
-                    "?? Test Cases/login flow/.ts",
-                    "?? Test Cases/login flow/case-1.tc",
-                    "?? Test Cases/login flow/case-2.tc",
-                    "?? Test Cases/login flow/case-3.tc");
+                    "?? Test Cases/login flow/.testset",
+                    "?? Test Cases/login flow/case-1.testcase",
+                    "?? Test Cases/login flow/case-2.testcase",
+                    "?? Test Cases/login flow/case-3.testcase");
 
             assertEquals(review.size(), 4, "three test cases and the marker that makes the directory a test set");
             assertTrue(review.stream().allMatch(diff -> diff.type() == StatusKind.ADDED));
@@ -180,22 +180,22 @@ public class PendingChangeReaderTest {
 
     @Test
     public void aQuotedPathStillFindsItsFile() {
-        onDisk("Test Cases/login flow/a case.tc", testCase("quoted all the way down"));
+        onDisk("Test Cases/login flow/a case.testcase", testCase("quoted all the way down"));
 
-        final List<PendingChange> review = review("?? Test Cases/login flow/a case.tc");
+        final List<PendingChange> review = review("?? Test Cases/login flow/a case.testcase");
 
         assertEquals(review.size(), 1);
-        assertEquals(review.getFirst().relativeFilePath(), Path.of("Test Cases/login flow/a case.tc"));
+        assertEquals(review.getFirst().relativeFilePath(), Path.of("Test Cases/login flow/a case.testcase"));
         assertEquals(review.getFirst().name(), "quoted all the way down");
     }
 
     @Test
     public void anUntrackedFileThatVanishedIsSkippedAndTheRestSurvives() {
-        onDisk("Test Cases/login/case.tc", testCase("still here"));
+        onDisk("Test Cases/login/case.testcase", testCase("still here"));
 
         final List<PendingChange> review = review(
-                "?? Test Cases/login/gone.tc",
-                "?? Test Cases/login/case.tc");
+                "?? Test Cases/login/gone.testcase",
+                "?? Test Cases/login/case.testcase");
 
         assertEquals(review.size(), 1, "the file that vanished is not a change; the one that is there still is");
         assertEquals(review.getFirst().name(), "still here");

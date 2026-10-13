@@ -129,7 +129,7 @@ Write two more, so the test run in step 8 has something to move through.
 
 > **The period is not in your data.** Testin capitalizes and closes a
 > description when it draws it, and stores exactly what you typed. Open the
-> `.tc` file if you want to check — it is yours, in plain text.
+> `.testcase` file if you want to check — it is yours, in plain text.
 
 Press `F2` on a card to change one field, or any of `D` `E` `M` `T` `B` `S` `P`
 `G` `O` `R` to open that field straight away.

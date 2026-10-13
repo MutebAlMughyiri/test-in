@@ -34,7 +34,7 @@ import java.util.Optional;
 @ToString(callSuper = true)
 public class TestProjectMarker extends AbstractMarker {
     // Rule-INTERNAL-091
-    public static final int FORMAT = 4;
+    public static final int FORMAT = 5;
 
     @NonNull
     private ProjectStatus status = ProjectStatus.ACTIVE;

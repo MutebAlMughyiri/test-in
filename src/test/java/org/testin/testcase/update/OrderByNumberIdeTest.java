@@ -92,7 +92,7 @@ public class OrderByNumberIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull List<String> everyFileButNumber6() {
         try (final Stream<Path> files = Files.list(testSet.getPath())) {
-            return files.filter(file -> file.toString().endsWith(".tc")).sorted().map(file -> file + "@" + file.toFile().lastModified() + "=" + read(file)).filter(file -> !file.contains("\"Test case number 6\"")).toList();
+            return files.filter(file -> file.toString().endsWith(".testcase")).sorted().map(file -> file + "@" + file.toFile().lastModified() + "=" + read(file)).filter(file -> !file.contains("\"Test case number 6\"")).toList();
         } catch (final IOException ex) {
             throw new AssertionError("the test set could not be read", ex);
         }

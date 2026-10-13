@@ -12,15 +12,15 @@
 
 # The test data's own files: JSON, whatever the name says. The seven markers have
 # no extension to match, so each is named (#305).
-*.tc          text eol=lf
-*.ri          text eol=lf
-.tp           text eol=lf
-.tcf          text eol=lf
-.trf          text eol=lf
-.tsp          text eol=lf
-.trp          text eol=lf
-.ts           text eol=lf
-.tr           text eol=lf
+*.testcase          text eol=lf
+*.runitem           text eol=lf
+.testproject        text eol=lf
+.testcasesfolder    text eol=lf
+.testrunsfolder     text eol=lf
+.testsetpackage     text eol=lf
+.testrunpackage     text eol=lf
+.testset            text eol=lf
+.testrun            text eol=lf
 
 *.jar         binary
 *.png         binary

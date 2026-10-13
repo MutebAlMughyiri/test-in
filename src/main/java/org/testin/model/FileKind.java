@@ -31,9 +31,9 @@ import java.util.UUID;
 public enum FileKind {
     MARKER(""),
 
-    TEST_CASE(".tc"),
+    TEST_CASE(".testcase"),
 
-    RUN_ITEM(".ri"),
+    RUN_ITEM(".runitem"),
 
     SCREENSHOT(".png"),
 

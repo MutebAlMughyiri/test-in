@@ -49,7 +49,7 @@ public class WatchedProjectsIdeTest extends AbstractTempRootIdeTest {
 
         indexer().rescanChangedProject(notes, new EmptyProgressIndicator());
 
-        assertFalse("a folder with no .tp marker became a test project", nodes().nodeExists(notes));
+        assertFalse("a folder with no .testproject marker became a test project", nodes().nodeExists(notes));
     }
 
     // Rule-INTERNAL-016
