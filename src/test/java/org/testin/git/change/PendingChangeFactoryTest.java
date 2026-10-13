@@ -148,8 +148,8 @@ public class PendingChangeFactoryTest {
     public void aTestRunsMarkerSaysWhichOfItsFactsChanged() {
         final PendingChange change = PendingChangeFactory.fromFile(
                 StatusKind.MODIFIED,
-                "{\"status\":\"CREATED\",\"createdBy\":\"mtb\",\"configuration\":{\"PLATFORM\":\"Web\"}}",
-                "{\"status\":\"IN_PROGRESS\",\"createdBy\":\"mtb\",\"configuration\":{\"PLATFORM\":\"Mobile\"}}",
+                "{\"status\":\"CREATED\",\"createdBy\":\"mtb\",\"configuration\":{\"platform\":\"Web\"}}",
+                "{\"status\":\"IN_PROGRESS\",\"createdBy\":\"mtb\",\"configuration\":{\"platform\":\"Mobile\"}}",
                 Path.of("Test Runs", "cycle 4", ".testrun"), RealJsonCodec.build(), _ -> Optional.empty());
 
         assertEquals(change.subject(), ChangeSubject.MARKER);

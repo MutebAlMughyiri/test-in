@@ -16,6 +16,8 @@
 
 package org.testin.model.testrun;
 
+import com.fasterxml.jackson.databind.EnumNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.EnumNaming;
 import com.google.common.collect.ImmutableList;
 import com.google.errorprone.annotations.Immutable;
 import com.intellij.icons.AllIcons;
@@ -36,6 +38,7 @@ import java.util.Objects;
 
 @Getter
 @AllArgsConstructor
+@EnumNaming(EnumNamingStrategies.LowerCamelCaseStrategy.class)
 public enum TestRunConfiguration {
     TEST_TYPE(
             Bundle.message("config.test.type"),

@@ -35,7 +35,7 @@ public class FieldNameTest {
     public void aTestRunsConfigurationKeyIsNamedByTheQuestionTheTesterAnswered() {
         final TestRunConfiguration question = TestRunConfiguration.TEST_TYPE;
 
-        assertEquals(FieldName.of("configuration." + question.name()), question.getDisplayName(),
+        assertEquals(FieldName.of("configuration.testType"), question.getDisplayName(),
                 "the key is named as the test run creation dialog names it");
     }
 

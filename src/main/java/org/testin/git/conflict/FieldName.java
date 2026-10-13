@@ -36,7 +36,7 @@ final class FieldName {
     }
 
     private static @NotNull String ofTestCaseField(final @NotNull String jsonField) {
-        final @NotNull String constant = jsonField.replaceAll("([a-z0-9])([A-Z])", "$1_$2").toUpperCase(Locale.ROOT);
+        final @NotNull String constant = constantOf(jsonField);
 
         for (final TestSetEditorFields field : TestSetEditorFields.values()) {
             if (field.name().equals(constant)) return field.getName();
@@ -46,13 +46,19 @@ final class FieldName {
     }
 
     private static @NotNull String ofTestRunKey(final @NotNull String key, final @NotNull String jsonField) {
+        final @NotNull String constant = constantOf(key);
+
         for (final TestRunConfiguration question : TestRunConfiguration.values()) {
-            if (question.name().equals(key)) return question.getDisplayName();
+            if (question.name().equals(constant)) return question.getDisplayName();
         }
         for (final TestRunResultAnalysis heading : TestRunResultAnalysis.values()) {
             if (heading.name().equals(key)) return heading.getLabel();
         }
 
         return jsonField;
+    }
+
+    private static @NotNull String constantOf(final @NotNull String jsonKey) {
+        return jsonKey.replaceAll("([a-z0-9])([A-Z])", "$1_$2").toUpperCase(Locale.ROOT);
     }
 }

@@ -5,10 +5,10 @@
   "updatedAt" : "Wednesday 07-01-2026 At 14:30:00 [UTC]",
   "status" : "COMPLETED",
   "configuration" : {
-    "TEST_TYPE" : "Regression",
-    "PLATFORM" : "Web",
-    "BROWSER" : "Firefox",
-    "COMPONENT" : "Storefront"
+    "testType" : "Regression",
+    "platform" : "Web",
+    "browser" : "Firefox",
+    "component" : "Storefront"
   },
   "resultAnalysis" : {
     "PASSED" : "Sign-in and the happy path through checkout both hold.",

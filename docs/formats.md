@@ -122,7 +122,7 @@ own file:
 
 | Field                | Type   | Required                   | Meaning                                                                                                                                                                                  |
 |----------------------|--------|----------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `configuration`      | map    | no, **omitted when empty** | What the test run was executed against. Keys are `TEST_TYPE` `CHANGE_LOG` `COMMIT` `PLATFORM` `COMPONENT` `LANGUAGE` `BROWSER` `DEVICE_TYPE`; values are free text                       |
+| `configuration`      | map    | no, **omitted when empty** | What the test run was executed against. Keys are `testType` `changeLog` `commit` `platform` `component` `language` `browser` `deviceType`; values are free text                          |
 | `resultAnalysis`     | map    | no, **omitted when empty** | What the tester wrote about each group of run item statuses. Keys are `PASSED` `FAILED` `BLOCKED` `UNTESTED`; values are free text                                                       |
 | `executionStartedAt` | date   | no, defaults to the epoch  | When Start Execution was first pressed. Kept: a test run resumed next week still started when it started                                                                                 |
 | `executionEndedAt`   | date   | no, defaults to the epoch  | When execution last stopped                                                                                                                                                              |
@@ -136,7 +136,7 @@ own file:
   "updatedBy" : "Mohammed AlZamil",
   "updatedAt" : "Monday 14-09-2026 At 10:22:05 [Asia/Riyadh]",
   "status" : "IN_PROGRESS",
-  "configuration" : { "TEST_TYPE" : "Regression", "PLATFORM" : "Web", "BROWSER" : "Chrome" },
+  "configuration" : { "testType" : "Regression", "platform" : "Web", "browser" : "Chrome" },
   "executionStartedAt" : "Monday 14-09-2026 At 10:00:12 [Asia/Riyadh]",
   "executionEndedAt" : "Thursday 01-01-1970 At 00:00:00 [Z]"
 }

@@ -5,11 +5,11 @@
   "updatedAt" : "Wednesday 07-01-2026 At 14:30:00 [UTC]",
   "status" : "IN_PROGRESS",
   "configuration" : {
-    "TEST_TYPE" : "Retest",
-    "PLATFORM" : "Web",
-    "BROWSER" : "Chrome",
-    "CHANGE_LOG" : "Story-114 (lockout counter)",
-    "COMMIT" : "9f3c1ab"
+    "testType" : "Retest",
+    "platform" : "Web",
+    "browser" : "Chrome",
+    "changeLog" : "Story-114 (lockout counter)",
+    "commit" : "9f3c1ab"
   },
   "resultAnalysis" : {
     "UNTESTED" : "Checkout is not part of this retest."

@@ -47,7 +47,7 @@ public class TestRunMergeTest {
               "createdBy" : "Muteb",
               "createdAt" : "Sunday 13-09-2026 At 09:00:00 [Asia/Riyadh]",
               "status" : "CREATED",
-              "configuration" : { "PLATFORM" : "Web" }
+              "configuration" : { "platform" : "Web" }
             }""";
     private static final String MINE_MARKER = """
             {
@@ -56,7 +56,7 @@ public class TestRunMergeTest {
               "updatedBy" : "Muteb",
               "updatedAt" : "Monday 14-09-2026 At 10:05:00 [Asia/Riyadh]",
               "status" : "IN_PROGRESS",
-              "configuration" : { "PLATFORM" : "Web", "BROWSER" : "Chrome" },
+              "configuration" : { "platform" : "Web", "browser" : "Chrome" },
               "executionStartedAt" : "Monday 14-09-2026 At 10:00:00 [Asia/Riyadh]",
               "executionEndedAt" : "Monday 14-09-2026 At 10:20:00 [Asia/Riyadh]"
             }""";
@@ -67,7 +67,7 @@ public class TestRunMergeTest {
               "updatedBy" : "Sara",
               "updatedAt" : "Monday 14-09-2026 At 11:40:00 [Asia/Riyadh]",
               "status" : "COMPLETED",
-              "configuration" : { "PLATFORM" : "Web", "COMPONENT" : "Storefront" },
+              "configuration" : { "platform" : "Web", "component" : "Storefront" },
               "executionStartedAt" : "Monday 14-09-2026 At 09:30:00 [Asia/Riyadh]",
               "executionEndedAt" : "Monday 14-09-2026 At 11:35:00 [Asia/Riyadh]"
             }""";
@@ -148,26 +148,26 @@ public class TestRunMergeTest {
     public void theAnswersTheyEachGaveAreBothKept() {
         final MergeOutcome merge = TestRunMarkerMerger.of(RealJsonCodec.build(), BASE_MARKER, MINE_MARKER, THEIRS_MARKER);
 
-        assertEquals(merge.merged().path("configuration").path("BROWSER").asText(), "Chrome");
-        assertEquals(merge.merged().path("configuration").path("COMPONENT").asText(), "Storefront");
-        assertEquals(merge.merged().path("configuration").path("PLATFORM").asText(), "Web", "neither touched it");
+        assertEquals(merge.merged().path("configuration").path("browser").asText(), "Chrome");
+        assertEquals(merge.merged().path("configuration").path("component").asText(), "Storefront");
+        assertEquals(merge.merged().path("configuration").path("platform").asText(), "Web", "neither touched it");
     }
 
     // Rule-SHARE-081
     @Test
     public void onlyAFieldBothChangedIsAskedAbout() {
-        final String theirs = THEIRS_MARKER.replace("\"PLATFORM\" : \"Web\"", "\"PLATFORM\" : \"Mobile\"");
-        final String mine = MINE_MARKER.replace("\"PLATFORM\" : \"Web\"", "\"PLATFORM\" : \"Desktop\"");
+        final String theirs = THEIRS_MARKER.replace("\"platform\" : \"Web\"", "\"platform\" : \"Mobile\"");
+        final String mine = MINE_MARKER.replace("\"platform\" : \"Web\"", "\"platform\" : \"Desktop\"");
 
         final MergeOutcome merge = TestRunMarkerMerger.of(RealJsonCodec.build(), BASE_MARKER, mine, theirs);
 
         assertEquals(merge.questions().size(), 1, "one question, about the one field both answered: " + merge.questions());
-        assertEquals(merge.questions().getFirst().field(), "configuration.PLATFORM");
+        assertEquals(merge.questions().getFirst().field(), "configuration.platform");
         assertEquals(merge.questions().getFirst().mine(), "Desktop");
         assertEquals(merge.questions().getFirst().theirs(), "Mobile");
 
         merge.answer(RealJsonCodec.build(), merge.questions().getFirst(), true, theirs);
-        assertEquals(merge.merged().path("configuration").path("PLATFORM").asText(), "Mobile",
+        assertEquals(merge.merged().path("configuration").path("platform").asText(), "Mobile",
                 "the tester's answer is written where the value lives, inside the configuration");
     }
 }
