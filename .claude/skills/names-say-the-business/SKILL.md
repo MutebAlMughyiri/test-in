@@ -97,12 +97,13 @@ than converted. A key that is persisted but not seen as a word - a settings key
 such as `testin.selectedDetails.test.v4` - keeps its string when the surrounding
 constant is renamed.
 
-## The two short names, and there are only two
+## No short names
 
-`p` is always the `Project`, and `tc` is always one `TestCaseDto`. Both are
-written down: `p` in CLAUDE.md, `tc` in the code everywhere. They are the
-exception because they are universal - every file uses them the same way - and
-because they name the type rather than shorten the business word.
+The `Project` is `project` and one `TestCaseDto` is `testCase`. Muteb retired
+the last two short names, `p` and `tc`, on 13 October 2026 (#426): *"i dont
+want to have abbriviations for my business"*, then *"dont use `p`"*. What may
+still be shortened is Java's own idioms and the known acronyms, and the
+**Abbreviations** table in CLAUDE.md is the one list of them.
 
 Anything else gets its full name. A local called `dto`, `obj`, `data` or `list`
 says nothing that the line above it did not already say.
@@ -141,5 +142,5 @@ Renaming is a three-step check, not a find-and-replace. CLAUDE.md states it:
 2. Would a contributor who has never read this file know what the name holds?
 3. Does the name repeat what the type already says - `dto`, `list`, `obj`? Say
    the business word instead.
-4. Is it one of the two short names, `p` and `tc`? Then it is fine. If you are
-   inventing a third, you are naming something that deserves its own word.
+4. Is it shortened at all? Then it is in CLAUDE.md's **Abbreviations** table,
+   or it is spelled out.

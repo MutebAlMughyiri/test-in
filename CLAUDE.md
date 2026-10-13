@@ -74,7 +74,7 @@ silently has no effect costs more than the setting it was meant to hold.
 
 ## Code conventions
 
-- The `Project` object is always named `p`: `final @NotNull Project p`.
+- The `Project` object is always named `project`: `final @NotNull Project project`.
 - Abstract parent classes are named `Abstract*`; non-abstract parents `Base*`.
 - **Packages are all-lowercase and named by feature, never by kind.** One word
   where one will do: `editor`, `explorer`, `report`, `creator`, `model`. A
@@ -148,9 +148,11 @@ silently has no effect costs more than the setting it was meant to hold.
 - **Names say the business word, in full.** A test case is a `TestCase`, never
   a `Case`: `TestCaseDetails`, `testCaseId`, `testCases`, `A_TEST_CASE`. The
   same holds for the documentation and for issues - *test case id*, never *case
-  id*. `p` for the `Project` and `tc` for one `TestCaseDto` are the only short
-  names, and there is no third. Read the `names-say-the-business` skill under
-  `.claude/skills/` before naming or renaming anything.
+  id*. Nothing Testin names is abbreviated: `testCase`, never `tc`;
+  `testProject`, never `tp`; `button`, never `btn`. **Abbreviations** below
+  lists the Java idioms and known acronyms that stay. Read the
+  `names-say-the-business` skill under `.claude/skills/` before naming or
+  renaming anything.
 - **A class is named by its import, never by its package path.** `Optional`,
   not `java.util.Optional`, in code and in tests alike; the only exception is
   a simple name that already means another class in that file, and it carries
@@ -168,7 +170,7 @@ silently has no effect costs more than the setting it was meant to hold.
   shared class.
 
 - **Every state-changing action confirms itself** with one soft notification at
-  the point it succeeded: `Services.getInstance(p, Notifier.class).softShow(p,
+  the point it succeeded: `Services.getInstance(project, Notifier.class).softShow(project,
   Done.COPIED)`. The words live in `Done` when it worked and `Refused` when it
   did not; `Notifier` only delivers them. The message is the **outcome in the
   past tense** and nothing
@@ -268,6 +270,38 @@ silently has no effect costs more than the setting it was meant to hold.
   return: every one is a platform override whose contract uses null, six in
   `src/main` and the rest in two test fixtures standing in for the platform.
   Testin's own last three went to `Optional` in #352.
+
+### Abbreviations
+
+No name in the plugin abbreviates a word, in production code or tests (#426).
+Muteb, 13 October 2026: *"no abbriviations in our pligin at all. except java
+and all known like exception -> ex"*, and *"dont use `p`"*. The `Project` is
+`project`. A business word is never shortened: `testCase`, `testSet`,
+`testRun`, `runItem`, `testProject`, `node`, `testCaseId`, `attribute`. Nor is
+any other word: `button`, `label`, `column`, `index`, `text`, `background`,
+`component`, `message`, `directory`. What stays is in this table, and only
+here.
+
+| Abbreviation                                                                                     | Stands for                                                                                                                               | Where it stands                                                                                                       |
+|--------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| `e`                                                                                              | an event                                                                                                                                 | A parameter holding an `AnActionEvent`, a `MouseEvent` or any other event                                             |
+| `ex`                                                                                             | an exception                                                                                                                             | A caught exception or throwable                                                                                       |
+| `i`, `j`                                                                                         | an index                                                                                                                                 | A loop counter                                                                                                        |
+| `x`, `y`                                                                                         | a coordinate                                                                                                                             | A horizontal or vertical position                                                                                     |
+| `g`, `g2`                                                                                        | `Graphics`, `Graphics2D`                                                                                                                 | A painting method's graphics                                                                                          |
+| `sb`                                                                                             | `StringBuilder`                                                                                                                          | A local building a string                                                                                             |
+| `args`                                                                                           | arguments                                                                                                                                | A varargs parameter                                                                                                   |
+| `Id`, `UUID`, `Url`, `Http`, `Ssh`, `Api`, `Cli`, `Os`, `Iso`, `Rgb`, `Hex`, `Lf`, `Nul`, `Todo` | the standards, characters and words of those names                                                                                       | Inside a longer name: `testCaseId`, `bugRepoUrl`, `isoTime`, `nulSeparated`                                           |
+| `Json`, `Yaml`, `Yml`, `Xml`, `Html`, `Css`, `Pdf`, `Csv`, `Tsv`, `Xls`, `Xlsx`, `Png`           | the file formats of those names                                                                                                          | `Yml` only for `testin.yml`, the file's own name                                                                      |
+| `Dto`, `Enum`, `Bi`, `Max`, `Min`, `Temp`, `Info`, `NoOp`                                        | data transfer object, enumeration, two, maximum, minimum, temporary, information, no operation                                           | As Java writes them: `TestCaseDto`, `BiConsumer`, `Math.max`, `createTempFile`, the `INFO` log level                  |
+| `Ide`, `Edt`, `Psi`, `Vfs`, `Ui`, `App`                                                          | integrated development environment, event dispatch thread, program structure interface, virtual file system, user interface, application | As IntelliJ's API writes them: `PsiMethod`, `Service.Level.APP`, `*IdeTest`                                           |
+| `Git`, `Gh`, `TestNg`, `Mac`, `Ctrl`, `Alt`, `Fqcn`                                              | the products, keys and terms of those names                                                                                              | `Gh` is the GitHub CLI; `Fqcn` the FQCN attribute, as Java names a fully qualified class name                         |
+| `UC`                                                                                             | use case                                                                                                                                 | The `UC-` markers and the use case ids of `docs/standard.md`                                                          |
+| `.tp`, `.ts`, `.tr`, `.tsp`, `.trp`, `.tcf`, `.trf`, `.tc`, `.ri`                                | the files a test project is stored in                                                                                                    | On disk only, until #427 gives them full names. The code names them in full: `NodeType.TEST_SET`, `FileKind.RUN_ITEM` |
+
+A library's own names are not Testin's to change: Apache POI's `XWPFRun` and
+`getTcPr`, Swing's `GridBagConstraints`. A variable holding one is spelled out:
+`textRun`, `cellProperties`, `constraints`.
 
 ## Process
 

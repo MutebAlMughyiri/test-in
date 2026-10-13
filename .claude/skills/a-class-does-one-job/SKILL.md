@@ -20,8 +20,8 @@ colors, titles, fade times, actions, and the status bar it anchors to. One job:
 It also held six methods like this:
 
 ```java
-public void softRefuseNothingToRun(final @NotNull Project p, final @NotNull String name) {
-    softRefuse(p, name + " has no test cases to run");
+public void softRefuseNothingToRun(final @NotNull Project project, final @NotNull String name) {
+    softRefuse(project, name + " has no test cases to run");
 }
 ```
 
