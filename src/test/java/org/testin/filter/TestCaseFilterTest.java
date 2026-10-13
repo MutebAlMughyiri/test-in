@@ -17,6 +17,7 @@
 package org.testin.filter;
 
 import org.jetbrains.annotations.NotNull;
+import org.testin.model.node.NodeChain;
 import org.testin.model.Priority;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestSetNode;
@@ -121,8 +122,7 @@ public class TestCaseFilterTest {
     // Rule-EDITOR-PANEL-091
     @Test
     public void theSearchReadsEveryFieldTheFieldsPopupLists() {
-        final @NotNull TestSetNode set = new TestSetNode();
-        set.setTreePath(new ArrayList<>(List.of("Shop", "Checkout")));
+        final @NotNull TestSetNode set = NodeChain.testSetAt("Shop", "Checkout");
         final @NotNull TestCaseDto testCase = TestCaseDto.builder()
                 .id(UUID.randomUUID())
                 .description("Refuse an expired card")

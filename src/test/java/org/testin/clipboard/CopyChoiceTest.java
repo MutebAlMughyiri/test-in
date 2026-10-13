@@ -17,6 +17,7 @@
 package org.testin.clipboard;
 
 import org.jetbrains.annotations.NotNull;
+import org.testin.model.node.NodeChain;
 import org.testin.model.Priority;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestSetNode;
@@ -39,8 +40,7 @@ import static org.testng.Assert.assertTrue;
 public class CopyChoiceTest {
 
     private static @NotNull TestCaseDto writtenInFull() {
-        final @NotNull TestSetNode set = new TestSetNode();
-        set.setTreePath(new ArrayList<>(List.of("shop", "checkout", "Payment")));
+        final @NotNull TestSetNode set = NodeChain.testSetAt("shop", "checkout", "Payment");
 
         final @NotNull TestCaseDto testCase = TestCaseDto.builder()
                 .id(UUID.randomUUID())
@@ -98,8 +98,7 @@ public class CopyChoiceTest {
 
     @Test
     public void theClassNameIsCopiedDotted() {
-        final @NotNull TestSetNode set = new TestSetNode();
-        set.setTreePath(new ArrayList<>(List.of("shop", "checkout", "Payment")));
+        final @NotNull TestSetNode set = NodeChain.testSetAt("shop", "checkout", "Payment");
 
         final @NotNull TestCaseDto testCase = TestCaseDto.builder().description("card is declined").build();
         testCase.setParent(set);

@@ -17,6 +17,7 @@
 package org.testin.search;
 
 import org.jetbrains.annotations.NotNull;
+import org.testin.model.node.NodeChain;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestCasesFolderNode;
 import org.testin.model.node.TestProjectNode;
@@ -40,11 +41,9 @@ import static org.testng.Assert.assertTrue;
 
 public class SearchTest {
 
-    private static @NotNull TestSetNode testSet(final String name, final String... chain) {
-        final TestSetNode set = TestSetNode.builder().build();
-        set.setName(name);
-        set.setPath(Path.of("C:", "Testin", "test-01", "Test Cases", name));
-        set.setTreePath(new ArrayList<>(List.of(chain)));
+    private static @NotNull TestSetNode testSet(final String... treePath) {
+        final TestSetNode set = NodeChain.testSetAt(treePath);
+        set.setPath(Path.of("C:", "Testin", "test-01", "Test Cases", set.getName()));
 
         return set;
     }
@@ -58,7 +57,7 @@ public class SearchTest {
 
     @Test
     public void aTestCasePointsAtTheTestSetThatHoldsIt() {
-        final TestSetNode login = testSet("Login", "test-01", "Test Cases", "Login");
+        final TestSetNode login = testSet("test-01", "Test Cases", "Login");
         final TestCaseDto testCase = testCase("Sign in with a valid user", login);
 
         final Hit hit = Hit.of(testCase);
@@ -70,7 +69,7 @@ public class SearchTest {
 
     @Test
     public void aNodeCarriesItselfAndNoTestCase() {
-        final TestSetNode login = testSet("Login", "test-01", "Test Cases", "Login");
+        final TestSetNode login = testSet("test-01", "Test Cases", "Login");
 
         final Hit hit = Hit.of(login);
 
@@ -81,7 +80,7 @@ public class SearchTest {
 
     @Test
     public void everyHitSaysWhereItLives() {
-        final TestSetNode login = testSet("Login", "test-01", "Test Cases", "Auth", "Login");
+        final TestSetNode login = testSet("test-01", "Test Cases", "Auth", "Login");
 
         assertEquals(Hit.of(login).where(), "test-01 > Test Cases > Auth > Login");
         assertEquals(Hit.of(testCase("Sign in", login)).where(), "test-01 > Test Cases > Auth > Login",
@@ -105,7 +104,7 @@ public class SearchTest {
 
     @Test
     public void testCasesThatMatchOnTheirDescriptionComeFirst() {
-        final TestSetNode set = testSet("Login", "test-01");
+        final TestSetNode set = testSet("test-01", "Login");
         final TestCaseDto onADescription = testCase("Login with a valid user", set);
         final TestCaseDto onSomethingUnseen = testCase("Check the balance", set);
 
@@ -118,7 +117,7 @@ public class SearchTest {
 
     @Test
     public void testCasesMatchingEquallyWellAreAlphabetical() {
-        final TestSetNode set = testSet("Login", "test-01");
+        final TestSetNode set = testSet("test-01", "Login");
         final TestCaseDto second = testCase("Login with a valid user", set);
         final TestCaseDto first = testCase("Login fails on a bad password", set);
 
@@ -130,8 +129,8 @@ public class SearchTest {
 
     @Test
     public void theNodeWhoseNameIsTheQueryOutranksOneThatMerelyContainsIt() {
-        final TestSetNode exact = testSet("Login", "test-01");
-        final TestSetNode longer = testSet("Login and logout journeys", "test-01");
+        final TestSetNode exact = testSet("test-01", "Login");
+        final TestSetNode longer = testSet("test-01", "Login and logout journeys");
 
         assertTrue(GlobalSearch.byClosestName(exact, longer) < 0,
                 "typing a set's name should put that set at the top, not a sentence containing it");
@@ -139,12 +138,12 @@ public class SearchTest {
 
     @Test
     public void nodesOfTheSameLengthAreAlphabetical() {
-        assertTrue(GlobalSearch.byClosestName(testSet("Alpha", "x"), testSet("Bravo", "x")) < 0);
+        assertTrue(GlobalSearch.byClosestName(testSet("x", "Alpha"), testSet("x", "Bravo")) < 0);
     }
 
     @Test
     public void aTestSetIsSomewhereToGo() {
-        assertTrue(testSet("Login", "test-01").isOpenableInEditor(),
+        assertTrue(testSet("test-01", "Login").isOpenableInEditor(),
                 "the empty-query list is built from this, so a set that stopped saying yes would vanish from it");
     }
 
@@ -158,8 +157,8 @@ public class SearchTest {
 
     @Test
     public void theEmptyQueryListReadsAsTheTreeDoes() {
-        final TestSetNode underAuthentication = testSet("Login", "test-01", "Test Cases", "Auth", "Login");
-        final TestSetNode underBilling = testSet("Invoices", "test-01", "Test Cases", "Billing", "Invoices");
+        final TestSetNode underAuthentication = testSet("test-01", "Test Cases", "Auth", "Login");
+        final TestSetNode underBilling = testSet("test-01", "Test Cases", "Billing", "Invoices");
 
         assertTrue(GlobalSearch.inTreeOrder(underAuthentication, underBilling) < 0,
                 "Auth before Billing, so a project's sets stay together instead of interleaving alphabetically");
@@ -167,8 +166,8 @@ public class SearchTest {
 
     @Test
     public void twoNodesInOnePlaceAreAlphabetical() {
-        final TestSetNode second = testSet("Beta", "test-01", "Test Cases");
-        final TestSetNode first = testSet("Alpha", "test-01", "Test Cases");
+        final TestSetNode second = testSet("test-01", "Test Cases", "Beta");
+        final TestSetNode first = testSet("test-01", "Test Cases", "Alpha");
 
         assertTrue(GlobalSearch.inTreeOrder(first, second) < 0);
     }
@@ -176,7 +175,7 @@ public class SearchTest {
     // Rule-INTERNAL-002
     @Test
     public void onlyTestSetsAndTestRunsHaveAnEditorToOpen() {
-        assertTrue(testSet("Login", "test-01").isOpenableInEditor(), "a test set opens the test set editor");
+        assertTrue(testSet("test-01", "Login").isOpenableInEditor(), "a test set opens the test set editor");
         assertTrue(TestRunNode.builder().build().isOpenableInEditor(), "a test run opens the test run editor");
     }
 

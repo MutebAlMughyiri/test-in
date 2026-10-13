@@ -30,6 +30,7 @@ import org.testin.util.FromContentModule;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public record MovedNode(@NotNull AbstractNode node, @NotNull List<String> from, @NotNull Path newParent) {
     public MovedNode(final @NotNull AbstractNode node, final @NotNull Path newParent) {
@@ -39,7 +40,7 @@ public record MovedNode(@NotNull AbstractNode node, @NotNull List<String> from, 
     // UC-TREE-PANEL-016, Rule-TREE-PANEL-098
     public @NotNull Optional<MovedNode> back(final @NotNull Project project) {
         return Optional.ofNullable(node.getPath().getParent()).flatMap(oldParent -> Services.getInstance(project, Nodes.class).find(newParent)
-                .map(target -> new MovedNode(node, AbstractNode.treePathOf(target.treePath(), node.getName()), oldParent)));
+                .map(target -> new MovedNode(node, Stream.concat(target.treePath().stream(), Stream.of(node.getName())).toList(), oldParent)));
     }
 
     // UC-CODEGEN-016, Rule-CODEGEN-055

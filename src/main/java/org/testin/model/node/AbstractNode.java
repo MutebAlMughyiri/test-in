@@ -16,7 +16,6 @@
 
 package org.testin.model.node;
 
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -49,23 +48,14 @@ public abstract class AbstractNode {
     @Builder.Default
     private Path path = Path.of("");
 
-    @NonNull
-    @Builder.Default
-    @Getter(AccessLevel.NONE)
-    private List<String> treePath = List.of();
-
     @ToString.Exclude
     private @Nullable AbstractNode parent;
 
-    public static @NotNull List<String> treePathOf(final @NotNull List<String> parentTreePath, final @NotNull String name) {
-        final @NotNull ArrayList<String> treePath = new ArrayList<>(parentTreePath);
-        treePath.add(name);
-
-        return treePath;
-    }
-
     public @NotNull List<String> treePath() {
-        return treePath;
+        return selfAndAncestors().reversed().stream()
+                .map(AbstractNode::getName)
+                .filter(name -> !name.isEmpty())
+                .toList();
     }
 
     public @NotNull List<AbstractNode> selfAndAncestors() {

@@ -18,13 +18,13 @@ package org.testin.codegen.agent;
 
 
 import org.jetbrains.annotations.NotNull;
+import org.testin.model.node.NodeChain;
 import org.testin.codegen.Fqcn;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestSetNode;
 import org.testng.annotations.Test;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -97,8 +97,7 @@ public class AgentCommandTest {
     // Rule-CODEGEN-086
     @Test
     public void thePromptSaysWhereTheTestCaseSitsAndWhichClassHoldsItsMethod() {
-        final TestSetNode login = new TestSetNode();
-        login.setTreePath(new ArrayList<>(List.of("NAFATH", "Test Cases", "Accounts", "Login")));
+        final TestSetNode login = NodeChain.testSetAt("NAFATH", "Test Cases", "Accounts", "Login");
         final TestCaseDto testCase = aTestCase();
         testCase.setParent(login);
 

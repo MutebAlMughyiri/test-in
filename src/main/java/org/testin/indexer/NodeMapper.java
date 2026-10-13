@@ -41,7 +41,6 @@ import org.testin.model.node.TestSetPackageNode;
 import org.testin.services.Services;
 
 import java.nio.file.Path;
-import java.util.List;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Service(Service.Level.PROJECT)
@@ -54,7 +53,6 @@ public final class NodeMapper {
         final @NotNull TestProjectNode testProject = TestProjectNode.builder()
                 .name(fileName)
                 .path(path)
-                .treePath(AbstractNode.treePathOf(List.of(), fileName))
                 .build();
 
         // Rule-INTERNAL-091
@@ -74,7 +72,6 @@ public final class NodeMapper {
         final @NotNull TestProjectNode testProject = TestProjectNode.builder()
                 .name(fileName)
                 .path(path)
-                .treePath(AbstractNode.treePathOf(List.of(), fileName))
                 .marker(marker)
                 .build();
 
@@ -94,7 +91,6 @@ public final class NodeMapper {
                 .path(directory)
                 .name(NodeType.TCF.getFolderName())
                 .parent(testProject)
-                .treePath(AbstractNode.treePathOf(testProject.treePath(), NodeType.TCF.getFolderName()))
                 .marker(Services.getInstance(project, Nodes.class).readMarker(directory, NodeType.TCF, TestCasesFolderMarker.class))
                 .build();
     }
@@ -105,7 +101,6 @@ public final class NodeMapper {
                 .path(directory)
                 .name(NodeType.TRF.getFolderName())
                 .parent(testProject)
-                .treePath(AbstractNode.treePathOf(testProject.treePath(), NodeType.TRF.getFolderName()))
                 .marker(Services.getInstance(project, Nodes.class).readMarker(directory, NodeType.TRF, TestRunsFolderMarker.class))
                 .build();
     }
@@ -118,7 +113,6 @@ public final class NodeMapper {
                 .name(fileName)
                 .path(path)
                 .parent(parent)
-                .treePath(AbstractNode.treePathOf(parent.treePath(), fileName))
                 .marker(Services.getInstance(project, Nodes.class).readMarker(path, NodeType.TSP, TestSetPackageMarker.class))
                 .build();
 
@@ -134,7 +128,6 @@ public final class NodeMapper {
                 .name(fileName)
                 .path(path)
                 .parent(parent)
-                .treePath(AbstractNode.treePathOf(parent.treePath(), fileName))
                 .marker(Services.getInstance(project, Nodes.class).readMarker(path, NodeType.TRP, TestRunPackageMarker.class))
                 .build();
 
@@ -150,7 +143,6 @@ public final class NodeMapper {
                 .name(fileName)
                 .path(path)
                 .parent(parent)
-                .treePath(AbstractNode.treePathOf(parent.treePath(), fileName))
                 .marker(Services.getInstance(project, Nodes.class).readMarker(path, NodeType.TS, TestSetMarker.class))
                 .build();
 
@@ -174,8 +166,7 @@ public final class NodeMapper {
                 .builder()
                 .name(fileName)
                 .path(path)
-                .parent(parent)
-                .treePath(AbstractNode.treePathOf(parent.treePath(), fileName));
+                .parent(parent);
 
         builder.marker(marker);
 
