@@ -91,8 +91,8 @@ public class KeyboardMenuIdeTest extends AbstractTempRootIdeTest {
     }
 
     private static @NotNull Set<KeyStroke> keysOfTheKeymap(final @NotNull AnAction entry) {
-        final @NotNull String id = Objects.requireNonNullElse(ActionManager.getInstance().getId(unwrapped(entry)), "");
-        return id.isEmpty() ? Set.of() : keysOf(ActionManager.getInstance().getAction(id));
+        final @NotNull String actionId = Objects.requireNonNullElse(ActionManager.getInstance().getId(unwrapped(entry)), "");
+        return actionId.isEmpty() ? Set.of() : keysOf(ActionManager.getInstance().getAction(actionId));
     }
 
     private static @NotNull JBTable theGridOf(final @NotNull AbstractTestinEditor<?, ?> editor) {

@@ -40,10 +40,10 @@ public class BugFactsTest {
     // Rule-VIEW-PANEL-068
     @Test
     public void theFactsAreReadOffTheRunItemItsTestCaseAndItsTestRun() {
-        final UUID id = UUID.randomUUID();
-        final TestCaseDto tc = TestCaseDto.builder().id(id).description("  Log in with a valid user ").expectedResult("Welcome")
+        final UUID testCaseId = UUID.randomUUID();
+        final TestCaseDto testCase = TestCaseDto.builder().id(testCaseId).description("  Log in with a valid user ").expectedResult("Welcome")
                 .steps(List.of("Open", "Log in")).testData("user=a").build();
-        final RunItem runItem = RunItem.builder().id(id)
+        final RunItem runItem = RunItem.builder().id(testCaseId)
                 .bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("Error page").stacktrace("boom").executedBy("Muteb").executedAt(ZonedDateTime.of(2026, 9, 13, 14, 14, 0, 0, ZoneId.of("Asia/Riyadh"))).build())).build();
         final TestRunMarker testRunMarker = new TestRunMarker();
         testRunMarker.setConfiguration(new EnumMap<>(Map.of(
@@ -51,7 +51,7 @@ public class BugFactsTest {
                 TestRunConfiguration.BROWSER, "Chrome",
                 TestRunConfiguration.COMMIT, "933a3984")));
 
-        final BugFacts facts = BugFacts.of(runItem, tc, testRunMarker, "Sprint 7", List.of());
+        final BugFacts facts = BugFacts.of(runItem, testCase, testRunMarker, "Sprint 7", List.of());
 
         assertEquals(facts.title(), "Log in with a valid user.", "the description as the Details tab shows it");
         assertEquals(facts.expectedResult(), "Welcome.");
@@ -65,14 +65,14 @@ public class BugFactsTest {
         assertEquals(facts.commit(), "933a3984");
         assertEquals(facts.stacktrace(), "boom");
         assertEquals(facts.testRun(), "Sprint 7");
-        assertEquals(facts.testCaseId(), id);
+        assertEquals(facts.testCaseId(), testCaseId);
     }
 
     @Test
     public void aRunItemNobodyExecutedHasNoExecuted() {
-        final TestCaseDto tc = TestCaseDto.builder().build();
-        final RunItem runItem = RunItem.builder().id(tc.getId()).build();
+        final TestCaseDto testCase = TestCaseDto.builder().build();
+        final RunItem runItem = RunItem.builder().id(testCase.getId()).build();
 
-        assertEquals(BugFacts.of(runItem, tc, new TestRunMarker(), "Sprint 7", List.of()).executed(), "");
+        assertEquals(BugFacts.of(runItem, testCase, new TestRunMarker(), "Sprint 7", List.of()).executed(), "");
     }
 }

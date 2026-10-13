@@ -39,11 +39,11 @@ public class BugOnTheSummaryLineIdeTest extends AbstractViewPanelIdeTest {
 
     private static final @NotNull String ISSUE = "https://github.com/mtb550/test-in/issues/412";
 
-    private TestCaseDto tc;
+    private TestCaseDto testCase;
     private TestRunNode testRun;
 
-    private static @NotNull RunItem recorded(final @NotNull TestCaseDto tc, final @NotNull RunItemStatus status, final @NotNull String bugIssueUrl) {
-        return RunItem.builder().id(tc.getId()).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl(bugIssueUrl).executions(List.of(RunItemExecution.builder().status(status).build())).build();
+    private static @NotNull RunItem recorded(final @NotNull TestCaseDto testCase, final @NotNull RunItemStatus status, final @NotNull String bugIssueUrl) {
+        return RunItem.builder().id(testCase.getId()).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl(bugIssueUrl).executions(List.of(RunItemExecution.builder().status(status).build())).build();
     }
 
     private static @NotNull Component rowOf(final @NotNull Component drawn) {
@@ -55,17 +55,17 @@ public class BugOnTheSummaryLineIdeTest extends AbstractViewPanelIdeTest {
     @Override
     protected void setUp() {
         super.setUp();
-        tc = aTestCase(aTestSet("Login"), "Log in with a valid user", "a");
-        testRun = aTestRun(List.of(RunItem.builder().id(tc.getId()).build()));
+        testCase = aTestCase(aTestSet("Login"), "Log in with a valid user", "a");
+        testRun = aTestRun(List.of(RunItem.builder().id(testCase.getId()).build()));
     }
 
     private @NotNull JBPanel<?> drawn(final @NotNull RunItem runItem) {
-        return Drawn.detailsTab(getProject(), tc, Optional.of(runItem), testRun.getPath2());
+        return Drawn.detailsTab(getProject(), testCase, Optional.of(runItem), testRun.getPath2());
     }
 
     // Rule-VIEW-PANEL-066
     public void testAFailedTestCaseCarriesItsBugAndReportBugOnTheSummaryLine() {
-        final @NotNull JBPanel<?> tab = drawn(recorded(tc, RunItemStatus.FAILED, ""));
+        final @NotNull JBPanel<?> tab = drawn(recorded(testCase, RunItemStatus.FAILED, ""));
 
         final @NotNull Component status = Drawn.reading(tab, RunItemStatus.FAILED.getLabel());
         final @NotNull Component report = Drawn.reading(tab, Bundle.message("bug.dialog.title"));
@@ -77,17 +77,17 @@ public class BugOnTheSummaryLineIdeTest extends AbstractViewPanelIdeTest {
     // Rule-VIEW-PANEL-066
     public void testTheBugStaysWhileTheTestCaseHasAnIssueWhateverItsRunItemStatus() {
         for (final RunItemStatus status : List.of(RunItemStatus.PASSED, RunItemStatus.BLOCKED, RunItemStatus.FAILED)) {
-            final @NotNull JBPanel<?> tab = drawn(recorded(tc, status, ISSUE));
+            final @NotNull JBPanel<?> tab = drawn(recorded(testCase, status, ISSUE));
             final @NotNull Component issue = Drawn.reading(tab, "#412");
             assertSame("the issue of a " + status.getLabel() + " test case is not on the summary line", rowOf(Drawn.reading(tab, status.getLabel())), rowOf(issue));
         }
-        assertFalse("a passed test case with no issue still carries a bug", Drawn.words(drawn(recorded(tc, RunItemStatus.PASSED, ""))).contains(Bundle.message("bug.dialog.title")));
+        assertFalse("a passed test case with no issue still carries a bug", Drawn.words(drawn(recorded(testCase, RunItemStatus.PASSED, ""))).contains(Bundle.message("bug.dialog.title")));
     }
 
     // Rule-VIEW-PANEL-075
     public void testAReportedTestCaseShowsItsIssueAsANumberThatOpensIt() {
         final @NotNull BrowserOpened browser = BrowserOpened.recording(getTestRootDisposable());
-        final @NotNull JBPanel<?> tab = drawn(recorded(tc, RunItemStatus.FAILED, ISSUE));
+        final @NotNull JBPanel<?> tab = drawn(recorded(testCase, RunItemStatus.FAILED, ISSUE));
 
         final @NotNull ActionLink issue = (ActionLink) Drawn.reading(tab, "#412");
         assertTrue("hovering the issue does not give its whole address: " + issue.getToolTipText(), String.valueOf(issue.getToolTipText()).contains(ISSUE));

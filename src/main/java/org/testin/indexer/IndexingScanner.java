@@ -79,20 +79,20 @@ final class IndexingScanner {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-012
-    private static @NotNull UUID identityOf(final @NotNull Path filePath, final @NotNull TestCaseDto tc) {
+    private static @NotNull UUID identityOf(final @NotNull Path filePath, final @NotNull TestCaseDto testCase) {
         final @NotNull Optional<UUID> fromTheName = FileKind.TEST_CASE.idIn(filePath);
 
         if (fromTheName.isPresent()) {
             final @NotNull UUID fromName = fromTheName.orElseThrow();
 
-            if (!fromName.equals(tc.getId())) {
-                TestinLogger.warn("Test case " + filePath.getFileName() + " says its id is " + tc.getId()
+            if (!fromName.equals(testCase.getId())) {
+                TestinLogger.warn("Test case " + filePath.getFileName() + " says its id is " + testCase.getId()
                         + "; the file name is the identity, so it is read as " + fromName);
             }
             return fromName;
         }
 
-        return tc.getId();
+        return testCase.getId();
     }
 
     // Rule-INTERNAL-124
@@ -180,8 +180,8 @@ final class IndexingScanner {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-008, Rule-INTERNAL-015
-    private void scanTestSets(final @NotNull Path tcDir, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedProject scanned) {
-        try (Stream<Path> paths = Files.list(tcDir)) {
+    private void scanTestSets(final @NotNull Path testCaseDirectory, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedProject scanned) {
+        try (Stream<Path> paths = Files.list(testCaseDirectory)) {
             final @NotNull List<Path> dirs = paths.filter(Files::isDirectory).toList();
 
             for (final Path dirPath : dirs) {
@@ -190,9 +190,9 @@ final class IndexingScanner {
                 scanTestSetOrPackage(dirPath, parent, indicator, unread, scanned);
             }
         } catch (final NoSuchFileException absent) {
-            TestinLogger.info("No test sets to read: " + tcDir);
+            TestinLogger.info("No test sets to read: " + testCaseDirectory);
         } catch (final IOException ex) {
-            throw new UncheckedIOException("the folder " + tcDir.getFileName() + " could not be listed: " + FailureText.of(ex), ex);
+            throw new UncheckedIOException("the folder " + testCaseDirectory.getFileName() + " could not be listed: " + FailureText.of(ex), ex);
         }
     }
 
@@ -238,21 +238,21 @@ final class IndexingScanner {
                         .parallel()
                         .forEach(filePath -> {
                             try {
-                                final @NotNull TestCaseDto tc = mapper.readValue(Files.readAllBytes(filePath), TestCaseDto.class);
-                                tc.setParent(testSet);
-                                tc.setId(identityOf(filePath, tc));
+                                final @NotNull TestCaseDto testCase = mapper.readValue(Files.readAllBytes(filePath), TestCaseDto.class);
+                                testCase.setParent(testSet);
+                                testCase.setId(identityOf(filePath, testCase));
 
-                                if (scanned.getTestCasesById().put(tc.getId(), tc) != null) {
+                                if (scanned.getTestCasesById().put(testCase.getId(), testCase) != null) {
                                     scanned.getClashingTestCases().add(testSet.getName() + "/" + filePath.getFileName());
-                                    scanned.getClashingIds().add(tc.getId());
+                                    scanned.getClashingIds().add(testCase.getId());
                                 }
 
                                 // Rule-INTERNAL-084
-                                if (!filePath.equals(TestCaseStore.named(path, tc.getId()))) {
-                                    scanned.getHandNamedFiles().put(tc.getId(), filePath);
+                                if (!filePath.equals(TestCaseStore.named(path, testCase.getId()))) {
+                                    scanned.getHandNamedFiles().put(testCase.getId(), filePath);
                                 }
 
-                                testCaseIds.add(tc.getId());
+                                testCaseIds.add(testCase.getId());
                             } catch (final IOException | UncheckedIOException ex) {
                                 TestinLogger.error("Failed to read test case '" + filePath.toAbsolutePath() +
                                         "': " + FailureText.of(ex));
@@ -350,15 +350,15 @@ final class IndexingScanner {
 
         for (final Path file : testDataFiles.runItemsIn(testRunPath)) {
             // Rule-INTERNAL-094
-            final @NotNull Optional<UUID> id = FileKind.RUN_ITEM.idIn(file);
-            if (id.isEmpty()) {
+            final @NotNull Optional<UUID> testCaseId = FileKind.RUN_ITEM.idIn(file);
+            if (testCaseId.isEmpty()) {
                 scanned.getHandNamedRunItems().add(testRunPath.getFileName() + "/" + file.getFileName());
                 continue;
             }
 
             try {
                 final @NotNull RunItem runItem = mapper.readValue(Files.readAllBytes(file), RunItem.class);
-                runItem.setId(id.orElseThrow());
+                runItem.setId(testCaseId.orElseThrow());
                 read.add(runItem);
 
             } catch (final IOException | UncheckedIOException ex) {

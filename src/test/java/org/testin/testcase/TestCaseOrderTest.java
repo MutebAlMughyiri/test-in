@@ -94,7 +94,7 @@ public class TestCaseOrderTest {
         final List<TestCaseDto> arranged = new ArrayList<>(List.of(first, third, second));
         final List<TestCaseDto> moved = TestCaseOrder.place(arranged);
         final List<TestCaseDto> placed = arranged.stream()
-                .map(tc -> moved.stream().filter(copy -> copy.getId().equals(tc.getId())).findFirst().orElse(tc))
+                .map(testCase -> moved.stream().filter(copy -> copy.getId().equals(testCase.getId())).findFirst().orElse(testCase))
                 .toList();
 
         assertEquals(moved.size(), 1, "one drag, one file");

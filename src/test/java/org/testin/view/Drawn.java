@@ -42,13 +42,13 @@ import java.util.function.Predicate;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Drawn {
 
-    public static @NotNull JBPanel<?> detailsTab(final @NotNull Project p, final @NotNull TestCaseDto tc, final @NotNull Optional<RunItem> runItem, final @NotNull List<String> currentPath) {
-        return detailsTab(p, tc, runItem, currentPath, OptionalInt.empty());
+    public static @NotNull JBPanel<?> detailsTab(final @NotNull Project p, final @NotNull TestCaseDto testCase, final @NotNull Optional<RunItem> runItem, final @NotNull List<String> currentPath) {
+        return detailsTab(p, testCase, runItem, currentPath, OptionalInt.empty());
     }
 
-    public static @NotNull JBPanel<?> detailsTab(final @NotNull Project p, final @NotNull TestCaseDto tc, final @NotNull Optional<RunItem> runItem, final @NotNull List<String> currentPath, final @NotNull OptionalInt shownLine) {
+    public static @NotNull JBPanel<?> detailsTab(final @NotNull Project p, final @NotNull TestCaseDto testCase, final @NotNull Optional<RunItem> runItem, final @NotNull List<String> currentPath, final @NotNull OptionalInt shownLine) {
         final @NotNull JBPanel<?> tab = new JBPanel<>();
-        new DetailsTab().load(p, tab, Optional.of(tc), runItem, currentPath, shownLine, _ -> {
+        new DetailsTab().load(p, tab, Optional.of(testCase), runItem, currentPath, shownLine, _ -> {
         });
         return tab;
     }

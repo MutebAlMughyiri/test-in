@@ -78,14 +78,14 @@ public class TestCaseFilterTest {
         final List<TestCaseDto> result = TestCaseFilter.filter(
                 List.of(passed, missing),
                 new FilterAndSortChoice("", Set.of(), Set.of(), Set.of(), Set.of(), Set.of(RunItemStatus.PASSED), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING),
-                id -> Optional.ofNullable(recorded.get(id)));
+                testCaseId -> Optional.ofNullable(recorded.get(testCaseId)));
 
         assertEquals(result, List.of(passed));
     }
 
     @Test
     public void theSearchReadsEveryFieldTheTesterWrites() {
-        final TestCaseDto tc = TestCaseDto.builder()
+        final TestCaseDto testCase = TestCaseDto.builder()
                 .description("Log in")
                 .module("accounts")
                 .testData("admin@example.com")
@@ -95,9 +95,9 @@ public class TestCaseFilterTest {
                 .build();
 
         for (final String wanted : List.of("accounts", "admin@example.com", "The account exists", "JIRA-123", "Regression")) {
-            final List<TestCaseDto> result = TestCaseFilter.filter(List.of(tc), new FilterAndSortChoice(wanted, Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING));
+            final List<TestCaseDto> result = TestCaseFilter.filter(List.of(testCase), new FilterAndSortChoice(wanted, Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING));
 
-            assertEquals(result, List.of(tc), "the search did not read the field holding '" + wanted + "'");
+            assertEquals(result, List.of(testCase), "the search did not read the field holding '" + wanted + "'");
         }
     }
 
@@ -113,9 +113,9 @@ public class TestCaseFilterTest {
 
     @Test
     public void aQueryNoFieldHoldsFindsNothing() {
-        final TestCaseDto tc = TestCaseDto.builder().description("Log in").build();
+        final TestCaseDto testCase = TestCaseDto.builder().description("Log in").build();
 
-        assertEquals(TestCaseFilter.filter(List.of(tc), new FilterAndSortChoice("nothing holds this", Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING)), List.of());
+        assertEquals(TestCaseFilter.filter(List.of(testCase), new FilterAndSortChoice("nothing holds this", Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING)), List.of());
     }
 
     // Rule-EDITOR-PANEL-091
@@ -123,7 +123,7 @@ public class TestCaseFilterTest {
     public void theSearchReadsEveryFieldTheFieldsPopupLists() {
         final @NotNull TestSetNode set = new TestSetNode();
         set.setPath2(new ArrayList<>(List.of("Shop", "Checkout")));
-        final @NotNull TestCaseDto tc = TestCaseDto.builder()
+        final @NotNull TestCaseDto testCase = TestCaseDto.builder()
                 .id(UUID.randomUUID())
                 .description("Refuse an expired card")
                 .expectedResult("The payment is declined")
@@ -140,14 +140,14 @@ public class TestCaseFilterTest {
                 .createdAt(ZonedDateTime.of(2026, 1, 2, 3, 4, 5, 0, ZoneOffset.UTC))
                 .updatedAt(ZonedDateTime.of(2026, 6, 7, 8, 9, 10, 0, ZoneOffset.UTC))
                 .build();
-        tc.setParent(set);
+        testCase.setParent(set);
 
         final @NotNull List<String> notFound = new ArrayList<>();
         for (final TestSetEditorAttributes field : TestSetEditorAttributes.values()) {
-            final @NotNull String value = field.gridValue(tc);
+            final @NotNull String value = field.gridValue(testCase);
             if (value.isBlank()) continue;
 
-            if (TestCaseFilter.filter(List.of(tc), new FilterAndSortChoice(value, Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING)).isEmpty())
+            if (TestCaseFilter.filter(List.of(testCase), new FilterAndSortChoice(value, Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING)).isEmpty())
                 notFound.add(field.getName() + " = " + value);
         }
 

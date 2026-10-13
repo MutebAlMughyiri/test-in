@@ -32,14 +32,14 @@ public class KeyShownWithItsCapabilityIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-PRODUCT-016
     public void testAKeyIsShownWhereverTheCapabilityItTriggersIsShown() {
-        final @NotNull TestCaseDto tc = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
+        final @NotNull TestCaseDto testCase = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
 
         for (final TestCaseQuickAction button : List.of(TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD, TestCaseQuickAction.RUN_TEST_METHOD)) {
             final @NotNull AnAction action = Optional.ofNullable(ActionManager.getInstance().getAction(button.getActionId())).orElseThrow(() -> new AssertionError(button.getActionId() + " is not registered"));
             final @NotNull String key = KeymapUtil.getFirstKeyboardShortcutText(action);
             assertFalse(button.getTooltip() + " has no key in the menu, so this proves nothing", key.isEmpty());
 
-            final @NotNull Offered onCard = button.offer(getProject(), Optional.empty(), tc);
+            final @NotNull Offered onCard = button.offer(getProject(), Optional.empty(), testCase);
             assertTrue("the card offers " + button.getTooltip() + " without the key the menu shows: " + onCard.hintText(), onCard.hintText().endsWith(key));
         }
     }

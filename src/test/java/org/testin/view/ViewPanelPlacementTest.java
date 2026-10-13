@@ -31,21 +31,21 @@ public class ViewPanelPlacementTest {
 
     private static final @NotNull Path PLUGIN_XML = Path.of("src", "main", "resources", "META-INF", "plugin.xml");
 
-    private static @NotNull Element toolWindow(final @NotNull String id) {
+    private static @NotNull Element toolWindow(final @NotNull String toolWindowId) {
         try {
             final @NotNull NodeList found = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(PLUGIN_XML.toFile()).getElementsByTagName("toolWindow");
             for (int i = 0; i < found.getLength(); i++) {
                 final @NotNull Element toolWindow = (Element) found.item(i);
-                if (id.equals(toolWindow.getAttribute("id"))) return toolWindow;
+                if (toolWindowId.equals(toolWindow.getAttribute("id"))) return toolWindow;
             }
-            throw new AssertionError(PLUGIN_XML + " declares no tool window " + id);
+            throw new AssertionError(PLUGIN_XML + " declares no tool window " + toolWindowId);
         } catch (final Exception ex) {
             throw new AssertionError("Could not read " + PLUGIN_XML + ": " + ex.getMessage(), ex);
         }
     }
 
-    private static @NotNull String stripeTitle(final @NotNull String id) {
-        return Bundle.message("toolwindow.stripe." + id);
+    private static @NotNull String stripeTitle(final @NotNull String toolWindowId) {
+        return Bundle.message("toolwindow.stripe." + toolWindowId);
     }
 
     // Rule-VIEW-PANEL-001

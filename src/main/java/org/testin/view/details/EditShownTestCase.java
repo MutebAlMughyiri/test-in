@@ -69,13 +69,13 @@ public final class EditShownTestCase {
     }
 
     // UC-VIEW-PANEL-011, Rule-VIEW-PANEL-110
-    static void openIfEditable(final @NotNull Project p, final @NotNull TestCaseDto dto, final @NotNull List<String> currentPath) {
-        whyNotEditable(p, dto, currentPath).ifPresentOrElse(reason -> Services.getInstance(p, Notifier.class).softRefuse(p, reason), () -> open(p, dto));
+    static void openIfEditable(final @NotNull Project p, final @NotNull TestCaseDto testCase, final @NotNull List<String> currentPath) {
+        whyNotEditable(p, testCase, currentPath).ifPresentOrElse(reason -> Services.getInstance(p, Notifier.class).softRefuse(p, reason), () -> open(p, testCase));
     }
 
     // Rule-VIEW-PANEL-110
-    private static @NotNull Optional<String> whyNotEditable(final @NotNull Project p, final @NotNull TestCaseDto dto, final @NotNull List<String> currentPath) {
-        if (Services.getInstance(p, TestCases.class).findTestCase(dto.getId()).isEmpty())
+    private static @NotNull Optional<String> whyNotEditable(final @NotNull Project p, final @NotNull TestCaseDto testCase, final @NotNull List<String> currentPath) {
+        if (Services.getInstance(p, TestCases.class).findTestCase(testCase.getId()).isEmpty())
             return Optional.of(Bundle.message("details.deleted.no.edit"));
 
         final boolean committed = !currentPath.isEmpty() && Services.getInstance(p, TestRuns.class)
@@ -86,34 +86,34 @@ public final class EditShownTestCase {
     }
 
     // UC-VIEW-PANEL-011, Rule-VIEW-PANEL-007
-    private static void open(final @NotNull Project p, final @NotNull TestCaseDto dto) {
-        final @NotNull List<TestCaseDto> items = List.of(dto);
-        final @NotNull List<UUID> ids = TestCaseSnapshot.idsOf(items);
-        final @NotNull Optional<TestCaseSnapshot> before = testSetOf(p, dto).map(testSet -> TestCaseSnapshot.of(p, testSet, ids));
+    private static void open(final @NotNull Project p, final @NotNull TestCaseDto testCase) {
+        final @NotNull List<TestCaseDto> shownTestCases = List.of(testCase);
+        final @NotNull List<UUID> testCaseIds = TestCaseSnapshot.idsOf(shownTestCases);
+        final @NotNull Optional<TestCaseSnapshot> before = testSetOf(p, testCase).map(testSet -> TestCaseSnapshot.of(p, testSet, testCaseIds));
 
-        new UpdateTestCaseMenu(p, items, (tcs, field) -> save(p, dto, tcs, field, ids, before)).show();
+        new UpdateTestCaseMenu(p, shownTestCases, (testCases, field) -> save(p, testCase, testCases, field, testCaseIds, before)).show();
     }
 
     // UC-VIEW-PANEL-011, Rule-VIEW-PANEL-007, Rule-VIEW-PANEL-046
-    private static void save(final @NotNull Project p, final @NotNull TestCaseDto dto, final @NotNull List<TestCaseDto> tcs, final @NotNull UpdateTestCaseFields field, final @NotNull List<UUID> ids, final @NotNull Optional<TestCaseSnapshot> before) {
+    private static void save(final @NotNull Project p, final @NotNull TestCaseDto shownTestCase, final @NotNull List<TestCaseDto> updatedTestCases, final @NotNull UpdateTestCaseFields field, final @NotNull List<UUID> testCaseIds, final @NotNull Optional<TestCaseSnapshot> before) {
         final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
 
-        testSetOf(p, dto).ifPresentOrElse(testSet -> {
+        testSetOf(p, shownTestCase).ifPresentOrElse(testSet -> {
             boolean changed = false;
-            for (final TestCaseDto tc : tcs) changed |= testCases.putTestCase(testSet, tc);
+            for (final TestCaseDto testCase : updatedTestCases) changed |= testCases.putTestCase(testSet, testCase);
 
             if (!changed) return;
 
-            before.ifPresent(taken -> TestCaseSnapshot.record(p, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.update"), tcs), taken, TestCaseSnapshot.of(p, testSet, ids)));
+            before.ifPresent(taken -> TestCaseSnapshot.record(p, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.update"), updatedTestCases), taken, TestCaseSnapshot.of(p, testSet, testCaseIds)));
 
             Services.getInstance(p, Notifier.class).softShow(p, field.getDone());
 
-            ApplicationManager.getApplication().invokeLater(() -> UpdateTestCaseMenu.applyAftermath(p, tcs, field.getGt()));
+            ApplicationManager.getApplication().invokeLater(() -> UpdateTestCaseMenu.applyAftermath(p, updatedTestCases, field.getGt()));
         }, () -> Services.getInstance(p, Notifier.class).softRefuse(p, Bundle.message("details.deleted.no.edit")));
     }
 
     // Rule-VIEW-PANEL-046
-    private static @NotNull Optional<Path> testSetOf(final @NotNull Project p, final @NotNull TestCaseDto dto) {
-        return Services.getInstance(p, TestCases.class).findTestCase(dto.getId()).map(held -> held.getParent().getPath());
+    private static @NotNull Optional<Path> testSetOf(final @NotNull Project p, final @NotNull TestCaseDto testCase) {
+        return Services.getInstance(p, TestCases.class).findTestCase(testCase.getId()).map(held -> held.getParent().getPath());
     }
 }

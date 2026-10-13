@@ -32,8 +32,8 @@ record GenBinding<X>(@NotNull GenType<X> type, @NotNull CodeChange<X> action) {
             }
 
             @Override
-            public void executeAll(final @NotNull Project p, final @NotNull List<? extends T> items) {
-                action.executeAll(p, items.stream().map(type.payload()::cast).toList());
+            public void executeAll(final @NotNull Project p, final @NotNull List<? extends T> payloads) {
+                action.executeAll(p, payloads.stream().map(type.payload()::cast).toList());
             }
 
             @Override

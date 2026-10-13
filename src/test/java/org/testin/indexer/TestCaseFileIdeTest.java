@@ -30,9 +30,9 @@ import java.util.UUID;
 public class TestCaseFileIdeTest extends AbstractTempRootIdeTest {
 
     private static @NotNull TestCaseDto aTestCaseIn(final TestSetNode testSet) {
-        final TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
-        tc.setParent(testSet);
-        return tc;
+        final TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
+        testCase.setParent(testSet);
+        return testCase;
     }
 
     private @NotNull TestCases indexedTestCases() {
@@ -63,18 +63,18 @@ public class TestCaseFileIdeTest extends AbstractTempRootIdeTest {
     public void testATestCaseIsFoundInsideTheTestProjectThatHoldsIt() {
         final TestProjectNode testProject = aTestProject("NAFATH");
         aTestProject("NAFATH2");
-        final TestCaseDto tc = aTestCaseIn(aTestSetIn(testProject));
+        final TestCaseDto testCase = aTestCaseIn(aTestSetIn(testProject));
 
-        final TestCaseFile file = indexedTestCases().testCaseFile(tc).orElseThrow();
+        final TestCaseFile file = indexedTestCases().testCaseFile(testCase).orElseThrow();
 
         assertEquals("the test case was placed in the wrong test project", testProject.getPath(), file.testProject());
         assertEquals("the test case's file is not where the store writes it",
-                Path.of(testProject.getTestCasesFolder().getPath().getFileName().toString(), "Login", tc.getId() + ".tc"), file.inProject());
+                Path.of(testProject.getTestCasesFolder().getPath().getFileName().toString(), "Login", testCase.getId() + ".tc"), file.inProject());
     }
 
     public void testATestCaseNoIndexedTestProjectHoldsHasNoFile() {
-        final TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).build();
+        final TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).build();
 
-        assertTrue("a test case with no test set was given a file", indexedTestCases().testCaseFile(tc).isEmpty());
+        assertTrue("a test case with no test set was given a file", indexedTestCases().testCaseFile(testCase).isEmpty());
     }
 }

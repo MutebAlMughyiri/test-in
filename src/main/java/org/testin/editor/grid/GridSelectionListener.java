@@ -34,7 +34,7 @@ public class GridSelectionListener implements ListSelectionListener {
     private final @NotNull TestinEditor editor;
     private final @NotNull JBTable table;
     private final @NotNull JBList<TestCaseDto> list;
-    private final @NotNull List<TestCaseDto> pageItems;
+    private final @NotNull List<TestCaseDto> pageTestCases;
 
     // UC-EDITOR-PANEL-024, Rule-EDITOR-PANEL-111
     @Override
@@ -42,14 +42,14 @@ public class GridSelectionListener implements ListSelectionListener {
         if (e.getValueIsAdjusting()) return;
 
         final int @NotNull [] rows = Arrays.stream(table.getSelectedRows())
-                .filter(row -> row >= 0 && row < pageItems.size())
+                .filter(row -> row >= 0 && row < pageTestCases.size())
                 .toArray();
 
         if (rows.length == 0) return;
 
         final boolean gridHadFocus = table.isFocusOwner();
 
-        editor.selectTestCase(pageItems.get(rows[0]));
+        editor.selectTestCase(pageTestCases.get(rows[0]));
         list.setSelectedIndices(rows);
 
         if (gridHadFocus) {

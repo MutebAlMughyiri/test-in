@@ -60,17 +60,17 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
     }
 
     private static @NotNull TestCaseDto aTestCaseIn(final TestSetNode testSet, final String rank) {
-        final TestCaseDto tc = TestCaseDto.builder()
+        final TestCaseDto testCase = TestCaseDto.builder()
                 .id(UUID.randomUUID())
                 .description("Log in with a valid user")
                 .order(rank)
                 .build();
-        tc.setParent(testSet);
-        return tc;
+        testCase.setParent(testSet);
+        return testCase;
     }
 
-    private static @NotNull Path fileOf(final TestSetNode testSet, final TestCaseDto tc) {
-        return testSet.getPath().resolve(tc.getId() + ".tc");
+    private static @NotNull Path fileOf(final TestSetNode testSet, final TestCaseDto testCase) {
+        return testSet.getPath().resolve(testCase.getId() + ".tc");
     }
 
     private static byte @NotNull [] bytesOf(final @NotNull Path file) {
@@ -235,7 +235,7 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
         assertEquals("the index still files the test case under its old set", signUp.getPath(), indexed.getParent().getPath());
         assertEquals("the move took a new creator", "Mohammed AlZamil", indexed.getCreatedBy());
         assertTrue("the old set still lists the test case",
-                indexedTestCases().getTestCasesForTestSet(login.getPath()).stream().noneMatch(tc -> tc.getId().equals(cut.getId())));
+                indexedTestCases().getTestCasesForTestSet(login.getPath()).stream().noneMatch(testCase -> testCase.getId().equals(cut.getId())));
     }
 
     // Rule-INTERNAL-112
@@ -262,16 +262,16 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
     // Rule-INTERNAL-112
     public void testARemovalWhoseDeleteIsRefusedKeepsTheTestCase() {
         final TestSetNode testSet = oneTestSet();
-        final TestCaseDto tc = aTestCaseIn(testSet, "m");
-        indexedTestCases().putTestCaseVerbatim(testSet.getPath(), tc);
+        final TestCaseDto testCase = aTestCaseIn(testSet, "m");
+        indexedTestCases().putTestCaseVerbatim(testSet.getPath(), testCase);
 
-        undeletable(fileOf(testSet, tc));
+        undeletable(fileOf(testSet, testCase));
 
-        assertFalse("a refused delete was reported as a removal", indexedTestCases().removeTestCase(testSet.getPath(), tc.getId()));
+        assertFalse("a refused delete was reported as a removal", indexedTestCases().removeTestCase(testSet.getPath(), testCase.getId()));
 
-        assertTrue("a refused delete took the test case out of the index", indexedTestCases().findTestCase(tc.getId()).isPresent());
+        assertTrue("a refused delete took the test case out of the index", indexedTestCases().findTestCase(testCase.getId()).isPresent());
         assertTrue("a refused delete took the test case out of its set",
-                indexedTestCases().getTestCasesForTestSet(testSet.getPath()).stream().anyMatch(each -> each.getId().equals(tc.getId())));
+                indexedTestCases().getTestCasesForTestSet(testSet.getPath()).stream().anyMatch(each -> each.getId().equals(testCase.getId())));
     }
 
     public void testAMoveWhoseOldFileWillNotGoLeavesTheTestCaseWhereItWas() {
@@ -295,22 +295,22 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
     // Rule-INTERNAL-084
     public void testSavingAHandNamedTestCaseFilesItUnderItsId() {
         final Path set = setWithAHandNamedTestCase();
-        final TestCaseDto tc = indexedTestCases().getTestCasesForTestSet(set).getFirst();
+        final TestCaseDto testCase = indexedTestCases().getTestCasesForTestSet(set).getFirst();
 
-        assertTrue("the save said it failed", indexedTestCases().putTestCaseVerbatim(set, tc));
+        assertTrue("the save said it failed", indexedTestCases().putTestCaseVerbatim(set, testCase));
 
-        assertTrue("the test case was not filed under its id", Files.isRegularFile(set.resolve(tc.getId() + ".tc")));
+        assertTrue("the test case was not filed under its id", Files.isRegularFile(set.resolve(testCase.getId() + ".tc")));
         assertFalse("the hand-named file was left beside it", Files.exists(set.resolve(HAND_NAMED)));
     }
 
     public void testASaveWhoseHandNamedFileWillNotGoIsTakenBack() {
         final Path set = setWithAHandNamedTestCase();
-        final TestCaseDto tc = indexedTestCases().getTestCasesForTestSet(set).getFirst();
+        final TestCaseDto testCase = indexedTestCases().getTestCasesForTestSet(set).getFirst();
         undeletable(set.resolve(HAND_NAMED));
 
-        assertFalse("a save that left the test case in two files was reported as saved", indexedTestCases().putTestCaseVerbatim(set, tc));
+        assertFalse("a save that left the test case in two files was reported as saved", indexedTestCases().putTestCaseVerbatim(set, testCase));
 
-        assertFalse("the file filed under the id was left beside the hand-named one", Files.exists(set.resolve(tc.getId() + ".tc")));
+        assertFalse("the file filed under the id was left beside the hand-named one", Files.exists(set.resolve(testCase.getId() + ".tc")));
         assertTrue("the hand-named file went although its delete was refused", Files.exists(set.resolve(HAND_NAMED)));
     }
 

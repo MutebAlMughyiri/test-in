@@ -55,8 +55,8 @@ class TestCaseDetails extends JBPanel<TestCaseDetails> {
 
     }
 
-    void show(final @NotNull TestCaseDto tc) {
-        shown = Optional.of(tc);
+    void show(final @NotNull TestCaseDto testCase) {
+        shown = Optional.of(testCase);
 
         render();
     }
@@ -82,13 +82,13 @@ class TestCaseDetails extends JBPanel<TestCaseDetails> {
         shown.ifPresent(this::rows);
     }
 
-    private void rows(final @NotNull TestCaseDto tc) {
-        addTags(tc);
+    private void rows(final @NotNull TestCaseDto testCase) {
+        addTags(testCase);
 
-        addRow(CreateTestCaseFields.STEPS.getIcon(), Display.numberedSteps(tc.getSteps()));
+        addRow(CreateTestCaseFields.STEPS.getIcon(), Display.numberedSteps(testCase.getSteps()));
 
-        addRow(CreateTestCaseFields.TEST_DATA.getIcon(), tc.getTestData());
-        addRow(CreateTestCaseFields.PRE_CONDITIONS.getIcon(), TestSetEditorAttributes.PRE_CONDITIONS.displayValue(tc));
+        addRow(CreateTestCaseFields.TEST_DATA.getIcon(), testCase.getTestData());
+        addRow(CreateTestCaseFields.PRE_CONDITIONS.getIcon(), TestSetEditorAttributes.PRE_CONDITIONS.displayValue(testCase));
 
         if (cutOff) addCutOffNotice();
     }
@@ -128,8 +128,8 @@ class TestCaseDetails extends JBPanel<TestCaseDetails> {
         add(value, gbc);
     }
 
-    private void addTags(final @NotNull TestCaseDto tc) {
-        final @NotNull List<Badge> badges = Badges.testCaseBadges(tc);
+    private void addTags(final @NotNull TestCaseDto testCase) {
+        final @NotNull List<Badge> badges = Badges.testCaseBadges(testCase);
 
         if (badges.isEmpty()) return;
 

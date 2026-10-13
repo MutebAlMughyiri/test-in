@@ -31,16 +31,16 @@ public final class BodyPrompt {
             List.of("{description}", "{expectedResult}", "{steps}", "{testData}", "{preConditions}", "{module}", "{testSetPath}", "{class}", "{method}");
 
     // UC-CODEGEN-021, Rule-CODEGEN-086
-    public static @NotNull String of(final @NotNull String template, final @NotNull TestCaseDto tc, final @NotNull String methodName) {
+    public static @NotNull String of(final @NotNull String template, final @NotNull TestCaseDto testCase, final @NotNull String methodName) {
         final @NotNull Map<String, String> values = Map.of(
-                "{description}", tc.getDescription(),
-                "{expectedResult}", tc.getExpectedResult(),
-                "{steps}", String.join("\n", tc.getSteps()),
-                "{testData}", tc.getTestData(),
-                "{preConditions}", tc.getPreConditions(),
-                "{module}", tc.getModule(),
-                "{testSetPath}", String.join(" > ", tc.getParent().getPath2()),
-                "{class}", Fqcn.classOfMethod(tc),
+                "{description}", testCase.getDescription(),
+                "{expectedResult}", testCase.getExpectedResult(),
+                "{steps}", String.join("\n", testCase.getSteps()),
+                "{testData}", testCase.getTestData(),
+                "{preConditions}", testCase.getPreConditions(),
+                "{module}", testCase.getModule(),
+                "{testSetPath}", String.join(" > ", testCase.getParent().getPath2()),
+                "{class}", Fqcn.classOfMethod(testCase),
                 "{method}", methodName);
 
         @NotNull String written = template;

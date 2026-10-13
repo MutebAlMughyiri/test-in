@@ -66,7 +66,7 @@ public class AutomatedStateIdeTest extends AbstractCodegenIdeTest {
     private void readAndAwait(final @NotNull List<TestCaseDto> testCases) {
         state().read(getProject(), testCases, () -> {
         });
-        Await.until("the automation state never arrived", () -> testCases.stream().noneMatch(tc -> state().of(tc.getId()) == Automated.UNKNOWN));
+        Await.until("the automation state never arrived", () -> testCases.stream().noneMatch(testCase -> state().of(testCase.getId()) == Automated.UNKNOWN));
     }
 
     // Rule-EDITOR-PANEL-195
@@ -89,10 +89,10 @@ public class AutomatedStateIdeTest extends AbstractCodegenIdeTest {
         state().read(getProject(), testCases, () -> {
         });
 
-        for (final TestCaseDto tc : testCases) {
-            assertEquals("the state was read on the screen's thread, or reported before it was read", Automated.UNKNOWN, state().of(tc.getId()));
+        for (final TestCaseDto testCase : testCases) {
+            assertEquals("the state was read on the screen's thread, or reported before it was read", Automated.UNKNOWN, state().of(testCase.getId()));
         }
-        Await.until("the answers never arrived", () -> testCases.stream().noneMatch(tc -> state().of(tc.getId()) == Automated.UNKNOWN));
+        Await.until("the answers never arrived", () -> testCases.stream().noneMatch(testCase -> state().of(testCase.getId()) == Automated.UNKNOWN));
     }
 
     // Rule-EDITOR-PANEL-197

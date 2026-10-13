@@ -38,16 +38,16 @@ public class OrderByNumberIdeTest extends AbstractTempRootIdeTest {
         return Services.getInstance(getProject(), TestCases.class);
     }
 
-    private @NotNull TestCaseDto stored(final @NotNull TestCaseDto tc) {
-        return theTestCases().findTestCase(tc.getId()).orElseThrow();
+    private @NotNull TestCaseDto stored(final @NotNull TestCaseDto testCase) {
+        return theTestCases().findTestCase(testCase.getId()).orElseThrow();
     }
 
-    private @NotNull TestCaseDto movedTo(final int position, final @NotNull TestCaseDto tc) {
+    private @NotNull TestCaseDto movedTo(final int position, final @NotNull TestCaseDto testCase) {
         final @NotNull OrderSection order = new OrderSection(getProject());
-        order.fillData(stored(tc));
+        order.fillData(stored(testCase));
         order.getPosition().setValue(position);
-        final @NotNull TestCaseDto moved = order.applyTo(stored(tc));
-        theTestCases().putTestCase(tc.getParent().getPath(), moved);
+        final @NotNull TestCaseDto moved = order.applyTo(stored(testCase));
+        theTestCases().putTestCase(testCase.getParent().getPath(), moved);
         return moved;
     }
 
@@ -62,7 +62,7 @@ public class OrderByNumberIdeTest extends AbstractTempRootIdeTest {
 
         final @NotNull TestCaseDto moved = movedTo(1, last);
 
-        Await.until("the unplaced test cases were never given places", () -> unplaced.stream().filter(tc -> !tc.getId().equals(last.getId())).noneMatch(tc -> stored(tc).getOrder().isEmpty()));
+        Await.until("the unplaced test cases were never given places", () -> unplaced.stream().filter(testCase -> !testCase.getId().equals(last.getId())).noneMatch(testCase -> stored(testCase).getOrder().isEmpty()));
         final @NotNull List<TestCaseDto> nowOrdered = TestCaseOrder.ordered(theTestCases().getTestCasesForTestSet(testSet.getPath()));
         assertEquals("the typed position meant nothing among test cases that had no place", moved.getId(), nowOrdered.getFirst().getId());
         final @NotNull Map<String, String> placed = FilesUnder.snapshot(testSet.getPath());
@@ -70,9 +70,9 @@ public class OrderByNumberIdeTest extends AbstractTempRootIdeTest {
         movedTo(3, moved);
 
         assertEquals("the placing happened a second time", placed.keySet(), FilesUnder.snapshot(testSet.getPath()).keySet());
-        for (final TestCaseDto tc : unplaced) {
-            if (tc.getId().equals(moved.getId())) continue;
-            final @NotNull String file = placed.keySet().stream().filter(name -> name.contains(tc.getId().toString())).findFirst().orElseThrow();
+        for (final TestCaseDto testCase : unplaced) {
+            if (testCase.getId().equals(moved.getId())) continue;
+            final @NotNull String file = placed.keySet().stream().filter(name -> name.contains(testCase.getId().toString())).findFirst().orElseThrow();
             assertEquals("a test case around the one moved was written again", placed.get(file), FilesUnder.snapshot(testSet.getPath()).get(file));
         }
     }

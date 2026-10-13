@@ -109,11 +109,11 @@ public class OneExecutionIdeTest extends AbstractCodegenIdeTest {
         return Done.counted(Bundle.message("execution.status.running"), howMany);
     }
 
-    private @NotNull AnActionEvent theRunEntryFor(final @NotNull TestCaseDto tc) {
+    private @NotNull AnActionEvent theRunEntryFor(final @NotNull TestCaseDto testCase) {
         final @NotNull AnAction action = Optional.ofNullable(ActionManager.getInstance().getAction("Testin.RunTestMethod")).orElseThrow(() -> new AssertionError("Run Test Method is not registered"));
         final @NotNull AnActionEvent e = TestActionEvent.createTestEvent(action, SimpleDataContext.builder()
                 .add(CommonDataKeys.PROJECT, getProject())
-                .add(TestinDataKeys.SELECTED_TEST_CASES, List.of(tc))
+                .add(TestinDataKeys.SELECTED_TEST_CASES, List.of(testCase))
                 .build());
         ActionUtil.updateAction(action, e);
         return e;
@@ -129,7 +129,7 @@ public class OneExecutionIdeTest extends AbstractCodegenIdeTest {
         settled();
 
         assertTrue("the refusal does not name both modules: " + balloons, balloons.contains(Refused.ACROSS_MODULES.about("app, api")));
-        assertTrue("a test case of the refused selection still reads as running", selected.stream().noneMatch(tc -> execution().isRunning(tc.getId())));
+        assertTrue("a test case of the refused selection still reads as running", selected.stream().noneMatch(testCase -> execution().isRunning(testCase.getId())));
     }
 
     // Rule-CODEGEN-031
@@ -176,21 +176,21 @@ public class OneExecutionIdeTest extends AbstractCodegenIdeTest {
         Await.until("the execution never started", () -> !launched.isEmpty());
 
         final @NotNull List<String> priorities = Stream.of(first, second, third)
-                .map(tc -> attributeOf(writtenMethodOf(LOGIN_TEST, tc), "priority"))
+                .map(testCase -> attributeOf(writtenMethodOf(LOGIN_TEST, testCase), "priority"))
                 .toList();
         assertEquals("TestNG is not told to run the methods in the order of the test cases in their test set", List.of("1", "2", "3"), priorities);
     }
 
     // Rule-CODEGEN-036
     public void testWhileATestCaseIsRunningTheRunButtonAndTheMenuEntryBecomeTheStop() {
-        final @NotNull TestCaseDto tc = theTestCases(List.of(createdTestCase(createdTestSet("Login"), "Log in", "b"))).getFirst();
-        assertEquals("the menu entry is not the run before anything runs", Bundle.message("action.Testin.RunTestMethod.text"), theRunEntryFor(tc).getPresentation().getText());
+        final @NotNull TestCaseDto testCase = theTestCases(List.of(createdTestCase(createdTestSet("Login"), "Log in", "b"))).getFirst();
+        assertEquals("the menu entry is not the run before anything runs", Bundle.message("action.Testin.RunTestMethod.text"), theRunEntryFor(testCase).getPresentation().getText());
 
-        execution().starting(tc);
+        execution().starting(testCase);
 
-        assertEquals("the run button on the card did not become the stop", TestCaseQuickAction.STOP_TEST_METHOD, TestCaseQuickAction.onCard(getProject(), tc.getParent(), tc).get(1).action());
-        assertEquals("the run button on the view panel did not become the stop", TestCaseQuickAction.STOP_TEST_METHOD, TestCaseQuickAction.RUN_TEST_METHOD.offer(getProject(), Optional.empty(), tc).action());
-        final @NotNull AnActionEvent menu = theRunEntryFor(tc);
+        assertEquals("the run button on the card did not become the stop", TestCaseQuickAction.STOP_TEST_METHOD, TestCaseQuickAction.onCard(getProject(), testCase.getParent(), testCase).get(1).action());
+        assertEquals("the run button on the view panel did not become the stop", TestCaseQuickAction.STOP_TEST_METHOD, TestCaseQuickAction.RUN_TEST_METHOD.offer(getProject(), Optional.empty(), testCase).action());
+        final @NotNull AnActionEvent menu = theRunEntryFor(testCase);
         assertEquals("the menu entry did not become the stop", Bundle.message("card.stop.test.method"), menu.getPresentation().getText());
         assertEquals("the menu entry still shows the run icon", TestCaseQuickAction.STOP_TEST_METHOD.getIcon(), menu.getPresentation().getIcon());
     }

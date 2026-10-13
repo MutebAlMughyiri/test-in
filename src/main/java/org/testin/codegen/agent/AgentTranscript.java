@@ -30,15 +30,15 @@ public final class AgentTranscript {
     private int landed;
 
     // UC-CODEGEN-021, Rule-CODEGEN-090
-    public void record(final @NotNull TestCaseDto tc, final @NotNull String prompt, final @NotNull String said, final boolean bodyLanded, final @NotNull String outcome) {
+    public void record(final @NotNull TestCaseDto testCase, final @NotNull String prompt, final @NotNull String said, final boolean bodyLanded, final @NotNull String outcome) {
         if (bodyLanded) landed++;
         TestinLogger.debug("""
                 Agent asked for '%s':
                 %s
                 and said:
-                %s""".formatted(tc.getDescription(), prompt, said));
+                %s""".formatted(testCase.getDescription(), prompt, said));
 
-        exchanges.add(Bundle.message("agent.transcript.exchange", tc.getDescription(), outcome, prompt, said));
+        exchanges.add(Bundle.message("agent.transcript.exchange", testCase.getDescription(), outcome, prompt, said));
     }
 
     // Rule-CODEGEN-089

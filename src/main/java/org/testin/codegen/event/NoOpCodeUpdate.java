@@ -31,7 +31,7 @@ public record NoOpCodeUpdate(@NotNull String fieldName) implements CodeUpdate {
     }
 
     @Override
-    public <T> void executeAll(final @NotNull GenType<T> type, final @NotNull Project p, final @NotNull List<? extends T> items, final @NotNull String undoGroup) {
-        TestinLogger.info("Update " + fieldName + " on " + items.size() + ": data-only field, no Java code change");
+    public <T> void executeAll(final @NotNull GenType<T> type, final @NotNull Project p, final @NotNull List<? extends T> payloads, final @NotNull String undoGroup) {
+        TestinLogger.info("Update " + fieldName + " on " + payloads.size() + ": data-only field, no Java code change");
     }
 }

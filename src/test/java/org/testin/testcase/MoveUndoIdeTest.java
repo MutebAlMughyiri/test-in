@@ -51,9 +51,9 @@ public class MoveUndoIdeTest extends AbstractTempRootIdeTest {
     private @NotNull TestSetNode from = new TestSetNode();
     private @NotNull TestSetNode to = new TestSetNode();
 
-    private static boolean onDisk(final @NotNull Path testSet, final @NotNull UUID id) {
+    private static boolean onDisk(final @NotNull Path testSet, final @NotNull UUID testCaseId) {
         try (final Stream<Path> files = Files.list(testSet)) {
-            return files.anyMatch(file -> file.getFileName().toString().contains(id.toString()));
+            return files.anyMatch(file -> file.getFileName().toString().contains(testCaseId.toString()));
         } catch (final IOException ex) {
             throw new AssertionError("could not read " + testSet, ex);
         }

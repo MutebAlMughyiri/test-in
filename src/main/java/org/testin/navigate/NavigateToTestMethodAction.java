@@ -32,16 +32,16 @@ import org.testin.services.Services;
 // UC-CODEGEN-006
 public class NavigateToTestMethodAction extends AbstractAnyProjectAction {
     // UC-CODEGEN-006, Rule-INTERNAL-129
-    public static void execute(final @NotNull Project p, final @NotNull TestCaseDto tc) {
+    public static void execute(final @NotNull Project p, final @NotNull TestCaseDto testCase) {
         Services.getInstance(p, Guides.class).add(Guide.AUTOMATION_CODE);
         if (CodeOn.isOffAndWarned(p)) return;
 
-        TestMethodCode.available().toCode(p, tc);
+        TestMethodCode.available().toCode(p, testCase);
     }
 
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        TestinDataKeys.selectedTestCases(e).stream().findFirst().ifPresent(tc -> execute(p, tc));
+        TestinDataKeys.selectedTestCases(e).stream().findFirst().ifPresent(testCase -> execute(p, testCase));
     }
 
     @Override

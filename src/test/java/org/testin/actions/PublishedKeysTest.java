@@ -104,8 +104,8 @@ public class PublishedKeysTest {
         final @NotNull List<String> unreachable = defaultKeysByAction().entrySet().stream()
                 .filter(action -> action.getValue().isEmpty())
                 .map(Map.Entry::getKey)
-                .filter(id -> !xml.contains("<reference ref=\"" + id + "\"") && sources.stream().noneMatch(source -> source.contains("\"" + id + "\"")))
-                .filter(id -> !Pattern.compile("id=\"" + Pattern.quote(id) + "\"[^>]*>\\s*(?:<[^>]+>\\s*)*?<add-to-group").matcher(xml).find())
+                .filter(testCaseId -> !xml.contains("<reference ref=\"" + testCaseId + "\"") && sources.stream().noneMatch(source -> source.contains("\"" + testCaseId + "\"")))
+                .filter(testCaseId -> !Pattern.compile("id=\"" + Pattern.quote(testCaseId) + "\"[^>]*>\\s*(?:<[^>]+>\\s*)*?<add-to-group").matcher(xml).find())
                 .toList();
 
         assertEquals(unreachable, List.of(), "a capability with no key is on no menu either, so nothing says it is there: " + unreachable);

@@ -32,9 +32,9 @@ public class PageWindowTest {
     private static @NotNull List<TestCaseDto> testCasesOf(final int count) {
         final List<TestCaseDto> testCases = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            final TestCaseDto tc = new TestCaseDto();
-            tc.setId(UUID.randomUUID());
-            testCases.add(tc);
+            final TestCaseDto testCase = new TestCaseDto();
+            testCase.setId(UUID.randomUUID());
+            testCases.add(testCase);
         }
         return testCases;
     }

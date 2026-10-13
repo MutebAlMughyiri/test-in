@@ -195,11 +195,11 @@ final class NodeFiles {
     // UC-TREE-PANEL-014, Rule-TREE-PANEL-051, Rule-INTERNAL-113
     private boolean reidentify(final @NotNull Path testCaseFile) {
         try {
-            final @NotNull TestCaseDto tc = mapper.readValue(Files.readAllBytes(testCaseFile), TestCaseDto.class);
+            final @NotNull TestCaseDto testCase = mapper.readValue(Files.readAllBytes(testCaseFile), TestCaseDto.class);
             final @NotNull UUID fresh = UUID.randomUUID();
 
-            tc.setId(fresh);
-            if (!testDataFiles.write(testCaseFile.resolveSibling(FileKind.TEST_CASE.fileName(fresh)), tc))
+            testCase.setId(fresh);
+            if (!testDataFiles.write(testCaseFile.resolveSibling(FileKind.TEST_CASE.fileName(fresh)), testCase))
                 return false;
 
             ownWrites.record(p, testCaseFile);

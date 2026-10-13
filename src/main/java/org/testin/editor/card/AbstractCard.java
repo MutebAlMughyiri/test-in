@@ -135,9 +135,9 @@ public abstract class AbstractCard extends JBPanel<AbstractCard> {
     }
 
     // UC-EDITOR-PANEL-047, Rule-EDITOR-PANEL-235, Rule-EDITOR-PANEL-291
-    public void showTitleIcons(final @NotNull AbstractNode parent, final @NotNull TestCaseDto tc) {
-        hoverButtons = TestCaseQuickAction.onCard(p, parent, tc);
-        executing = ExecutingNow.is(p, tc.getId());
+    public void showTitleIcons(final @NotNull AbstractNode parent, final @NotNull TestCaseDto testCase) {
+        hoverButtons = TestCaseQuickAction.onCard(p, parent, testCase);
+        executing = ExecutingNow.is(p, testCase.getId());
     }
 
     // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-003

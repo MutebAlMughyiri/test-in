@@ -52,30 +52,30 @@ public final class TestRunFormOpener {
     }
 
     public static @NotNull Set<UUID> checkedTestCases(final @NotNull SelectionTree selection) {
-        final @NotNull Set<UUID> ids = new LinkedHashSet<>();
+        final @NotNull Set<UUID> testCaseIds = new LinkedHashSet<>();
 
         selection.forEachChecked(checked -> {
-            if (checked instanceof TestCaseDto tc) ids.add(tc.getId());
+            if (checked instanceof TestCaseDto testCase) testCaseIds.add(testCase.getId());
         });
 
-        return ids;
+        return testCaseIds;
     }
 
     // UC-TREE-PANEL-022, Rule-TREE-PANEL-076
     public static @NotNull Set<UUID> offeredTestCases(final @NotNull SelectionTree selection) {
-        final @NotNull Set<UUID> ids = new LinkedHashSet<>();
+        final @NotNull Set<UUID> testCaseIds = new LinkedHashSet<>();
 
         selection.forEachLeaf(leaf -> {
-            if (leaf instanceof TestCaseDto tc) ids.add(tc.getId());
+            if (leaf instanceof TestCaseDto testCase) testCaseIds.add(testCase.getId());
         });
 
-        return ids;
+        return testCaseIds;
     }
 
     // UC-TREE-PANEL-022, Rule-TREE-PANEL-134
     private static @NotNull CheckedTreeNode deletedFolder(final @NotNull List<TestCaseDto> deleted) {
         final @NotNull CheckedTreeNode folder = new CheckedTreeNode(Bundle.message("test.run.deleted.test.cases"));
-        deleted.forEach(tc -> folder.add(new CheckedTreeNode(tc)));
+        deleted.forEach(testCase -> folder.add(new CheckedTreeNode(testCase)));
         return folder;
     }
 
@@ -98,8 +98,8 @@ public final class TestRunFormOpener {
 
     // UC-TREE-PANEL-022, Rule-TREE-PANEL-093, Rule-TREE-PANEL-076
     private boolean checkOnly(final @NotNull CheckedTreeNode node, final @NotNull Set<UUID> wanted) {
-        if (node.getUserObject() instanceof TestCaseDto tc) {
-            final boolean covered = wanted.contains(tc.getId());
+        if (node.getUserObject() instanceof TestCaseDto testCase) {
+            final boolean covered = wanted.contains(testCase.getId());
             node.setChecked(covered);
 
             return covered;
@@ -122,8 +122,8 @@ public final class TestRunFormOpener {
         final @NotNull DefaultMutableTreeNode node = new DefaultMutableTreeNode(thisNode);
 
         if (thisNode.holdsTestCases()) {
-            for (final TestCaseDto tc : testCases.getTestCasesForTestSet(folder)) {
-                node.add(new DefaultMutableTreeNode(tc));
+            for (final TestCaseDto testCase : testCases.getTestCasesForTestSet(folder)) {
+                node.add(new DefaultMutableTreeNode(testCase));
             }
             return node;
         }
@@ -143,7 +143,7 @@ public final class TestRunFormOpener {
     private @NotNull CheckedTreeNode convertToCheckedNodes(final @NotNull DefaultMutableTreeNode node) {
         final @NotNull Object userObj = node.getUserObject();
         final @NotNull CheckedTreeNode newNode = new CheckedTreeNode(userObj);
-        if (userObj instanceof TestCaseDto tc) newNode.setEnabled(tc.getStatus().isEnabled());
+        if (userObj instanceof TestCaseDto testCase) newNode.setEnabled(testCase.getStatus().isEnabled());
         for (int i = 0; i < node.getChildCount(); i++) {
             newNode.add(convertToCheckedNodes((DefaultMutableTreeNode) node.getChildAt(i)));
         }

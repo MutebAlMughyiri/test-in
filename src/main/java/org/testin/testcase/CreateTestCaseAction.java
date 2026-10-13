@@ -42,18 +42,18 @@ import java.util.UUID;
 public class CreateTestCaseAction extends AbstractAnyProjectAction {
     // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-008, Rule-EDITOR-PANEL-030
     public static void openCreateDialog(final @NotNull Project p, final @NotNull TestinEditor editor, final @NotNull TestSetNode dir) {
-        new CreateTestCaseDialog(p, dir, tc -> {
-            final @NotNull List<TestCaseDto> affectedNodes = List.of(tc);
+        new CreateTestCaseDialog(p, dir, testCase -> {
+            final @NotNull List<TestCaseDto> affectedNodes = List.of(testCase);
 
-            final @NotNull List<UUID> ids = TestCaseSnapshot.idsOf(affectedNodes);
-            final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(p, dir.getPath(), ids);
+            final @NotNull List<UUID> testCaseIds = TestCaseSnapshot.idsOf(affectedNodes);
+            final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(p, dir.getPath(), testCaseIds);
 
-            editor.appendNewTestCase(tc, () -> {
-                TestCaseSnapshot.record(p, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.create"), affectedNodes), before, TestCaseSnapshot.of(p, dir.getPath(), ids));
+            editor.appendNewTestCase(testCase, () -> {
+                TestCaseSnapshot.record(p, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.create"), affectedNodes), before, TestCaseSnapshot.of(p, dir.getPath(), testCaseIds));
 
                 ApplicationManager.getApplication().invokeLater(() -> {
                     Services.getInstance(p, Notifier.class).softShow(p, Done.CREATED);
-                    GenType.CREATE_TEST_CASE.execute(p, tc);
+                    GenType.CREATE_TEST_CASE.execute(p, testCase);
                 });
             });
             Services.getInstance(p, TestCaseCompletions.class).addNewItems(affectedNodes);

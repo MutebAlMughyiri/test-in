@@ -46,38 +46,38 @@ public final class Declared {
             "Testin.CopyTestCase", Shortcuts.CopyItem,
             "Testin.RemoveTestCase", Shortcuts.DeletePackage);
 
-    public static @NotNull AnAction action(final @NotNull String id) {
-        final @Nullable AnAction action = ActionManager.getInstance().getAction(id);
+    public static @NotNull AnAction action(final @NotNull String actionId) {
+        final @Nullable AnAction action = ActionManager.getInstance().getAction(actionId);
 
         if (action == null) {
-            TestinLogger.error("No action is registered as '" + id + "', so a menu is missing an entry");
-            throw new IllegalStateException("No action is registered as '" + id + "'");
+            TestinLogger.error("No action is registered as '" + actionId + "', so a menu is missing an entry");
+            throw new IllegalStateException("No action is registered as '" + actionId + "'");
         }
 
         return action;
     }
 
-    public static @NotNull String shortcutText(final @NotNull String id) {
-        if (id.isEmpty()) return "";
+    public static @NotNull String shortcutText(final @NotNull String actionId) {
+        if (actionId.isEmpty()) return "";
 
-        return Optional.ofNullable(SURFACE_KEYS.get(id))
+        return Optional.ofNullable(SURFACE_KEYS.get(actionId))
                 .map(Shortcuts::getShortcutText)
-                .orElseGet(() -> KeymapUtil.getFirstKeyboardShortcutText(action(id)));
+                .orElseGet(() -> KeymapUtil.getFirstKeyboardShortcutText(action(actionId)));
     }
 
-    public static @NotNull ShortcutSet shortcutSet(final @NotNull String id) {
-        if (id.isEmpty()) return CustomShortcutSet.EMPTY;
+    public static @NotNull ShortcutSet shortcutSet(final @NotNull String actionId) {
+        if (actionId.isEmpty()) return CustomShortcutSet.EMPTY;
 
-        return Optional.ofNullable(SURFACE_KEYS.get(id))
+        return Optional.ofNullable(SURFACE_KEYS.get(actionId))
                 .<ShortcutSet>map(Shortcuts::getCustomShortcut)
-                .orElseGet(() -> action(id).getShortcutSet());
+                .orElseGet(() -> action(actionId).getShortcutSet());
     }
 
     // UC-INTERNAL-001, Rule-INTERNAL-066, Rule-INTERNAL-068
-    public static @NotNull AnAction forMenu(final @NotNull String id) {
-        final @NotNull AnAction action = action(id);
+    public static @NotNull AnAction forMenu(final @NotNull String actionId) {
+        final @NotNull AnAction action = action(actionId);
 
-        return Optional.ofNullable(SURFACE_KEYS.get(id))
+        return Optional.ofNullable(SURFACE_KEYS.get(actionId))
                 .map(key -> carrying(action, key))
                 .orElse(action);
     }
@@ -90,10 +90,10 @@ public final class Declared {
     }
 
     // UC-INTERNAL-001, Rule-INTERNAL-066, Rule-INTERNAL-068
-    public static void bindTo(final @NotNull String id, final @NotNull JComponent component) {
-        final @NotNull Shortcuts key = Optional.ofNullable(SURFACE_KEYS.get(id))
-                .orElseThrow(() -> new IllegalStateException("No surface key is declared for " + id));
+    public static void bindTo(final @NotNull String actionId, final @NotNull JComponent component) {
+        final @NotNull Shortcuts key = Optional.ofNullable(SURFACE_KEYS.get(actionId))
+                .orElseThrow(() -> new IllegalStateException("No surface key is declared for " + actionId));
 
-        ActionUtil.wrap(action(id)).registerCustomShortcutSet(key.getCustomShortcut(), component);
+        ActionUtil.wrap(action(actionId)).registerCustomShortcutSet(key.getCustomShortcut(), component);
     }
 }

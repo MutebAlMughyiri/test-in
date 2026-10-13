@@ -116,9 +116,9 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes,
         try {
             indexer.awaitIndexing();
 
-            final @NotNull List<TestCaseDto> items = testCases.getTestCasesForTestSet(parent.getPath());
+            final @NotNull List<TestCaseDto> testCasesInSet = testCases.getTestCasesForTestSet(parent.getPath());
 
-            if (items.isEmpty()) {
+            if (testCasesInSet.isEmpty()) {
                 ApplicationManager.getApplication().invokeLater(() -> {
                     if (generation != modelGeneration.get()) return;
                     allTestCases.clear();
@@ -131,9 +131,9 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes,
                 return;
             }
 
-            testCaseValues.load(items);
+            testCaseValues.load(testCasesInSet);
 
-            final @NotNull List<TestCaseDto> ordered = TestCaseOrder.ordered(items);
+            final @NotNull List<TestCaseDto> ordered = TestCaseOrder.ordered(testCasesInSet);
 
             ApplicationManager.getApplication().invokeLater(() -> {
                 if (generation != modelGeneration.get()) return;
@@ -209,29 +209,30 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes,
 
     // UC-EDITOR-PANEL-025, Rule-EDITOR-PANEL-009
     @Override
-    protected void notOnAnyPage(final @NotNull TestCaseDto tc) {
-        notifier.softRefuse(p, Refused.HIDDEN_BY_THE_FILTER, tc.getDescription());
+    protected void notOnAnyPage(final @NotNull TestCaseDto testCase) {
+        notifier.softRefuse(p, Refused.HIDDEN_BY_THE_FILTER, testCase.getDescription());
     }
 
     // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-030
     @Override
-    public void appendNewTestCase(final @NotNull TestCaseDto tc, final @NotNull Runnable onPersisted) {
-        hold(tc);
+    public void appendNewTestCase(final @NotNull TestCaseDto testCase, final @NotNull Runnable onPersisted) {
+        hold(testCase);
         orderThen(() -> {
-            hold(tc);
+            hold(testCase);
 
             updateSequenceAndSaveAll(onPersisted);
 
             nodes.refreshDirectory(parent.getPath());
 
             refreshView();
-            selectTestCase(tc);
+            selectTestCase(testCase);
         });
     }
 
-    private void hold(final @NotNull TestCaseDto tc) {
+    private void hold(final @NotNull TestCaseDto testCase) {
         synchronized (allTestCases) {
-            if (allTestCases.stream().noneMatch(held -> held.getId().equals(tc.getId()))) allTestCases.add(tc);
+            if (allTestCases.stream().noneMatch(held -> held.getId().equals(testCase.getId())))
+                allTestCases.add(testCase);
         }
     }
 
@@ -248,12 +249,12 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes,
 
     // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-014
     @Override
-    public @NotNull String cardTitle(final @NotNull TestCaseDto tc) {
+    public @NotNull String cardTitle(final @NotNull TestCaseDto testCase) {
         final @NotNull Set<TestSetEditorAttributes> selected = getSelectedDetails();
 
-        return AbstractCard.titleText(positionOf(tc),
+        return AbstractCard.titleText(positionOf(testCase),
                 selected.contains(TestSetEditorAttributes.ORDER),
-                selected.contains(TestSetEditorAttributes.DESCRIPTION) ? TestSetEditorAttributes.DESCRIPTION.displayValue(tc) : "");
+                selected.contains(TestSetEditorAttributes.DESCRIPTION) ? TestSetEditorAttributes.DESCRIPTION.displayValue(testCase) : "");
     }
 
     @Override
@@ -277,9 +278,9 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes,
     }
 
     @Override
-    protected void replaceModel(final @NotNull List<TestCaseDto> pageItems) {
+    protected void replaceModel(final @NotNull List<TestCaseDto> pageTestCases) {
         modelChangeNotifier.pause();
-        super.replaceModel(pageItems);
+        super.replaceModel(pageTestCases);
         modelChangeNotifier.resume();
     }
 
@@ -356,8 +357,8 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes,
 
     // UC-EDITOR-PANEL-020
     @Override
-    protected @NotNull List<String[]> gridRows(final @NotNull List<TestCaseDto> pageItems) {
-        return GridRows.ofTestCases(pageItems, firstRowOnPage(), this::positionOf);
+    protected @NotNull List<String[]> gridRows(final @NotNull List<TestCaseDto> pageTestCases) {
+        return GridRows.ofTestCases(pageTestCases, firstRowOnPage(), this::positionOf);
     }
 
     // UC-EDITOR-PANEL-020
@@ -367,8 +368,8 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes,
     }
 
     @Override
-    protected void installEditListener(final @NotNull JBTable table, final @NotNull List<TestCaseDto> pageItems) {
-        table.getModel().addTableModelListener(new TestSetGridEditListener(p, pageItems, model::allContentsChanged, parent.getPath()));
+    protected void installEditListener(final @NotNull JBTable table, final @NotNull List<TestCaseDto> pageTestCases) {
+        table.getModel().addTableModelListener(new TestSetGridEditListener(p, pageTestCases, model::allContentsChanged, parent.getPath()));
     }
 
     @Override

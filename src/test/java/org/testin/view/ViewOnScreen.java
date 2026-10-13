@@ -181,8 +181,8 @@ public final class ViewOnScreen {
         }
 
         @Override
-        public @Nullable ToolWindow getToolWindow(final @Nullable String id) {
-            return Optional.ofNullable(id).map(shown::get).map(window -> window.window).orElseGet(() -> headless.getToolWindow(id));
+        public @Nullable ToolWindow getToolWindow(final @Nullable String toolWindowId) {
+            return Optional.ofNullable(toolWindowId).map(shown::get).map(window -> window.window).orElseGet(() -> headless.getToolWindow(toolWindowId));
         }
 
         @Override
@@ -207,8 +207,8 @@ public final class ViewOnScreen {
 
         @Override
         @Deprecated
-        public void unregisterToolWindow(final @NotNull String id) {
-            throw new UnsupportedOperationException("the stand-in tool windows unregister nothing: " + id);
+        public void unregisterToolWindow(final @NotNull String toolWindowId) {
+            throw new UnsupportedOperationException("the stand-in tool windows unregister nothing: " + toolWindowId);
         }
 
         @Override
@@ -247,8 +247,8 @@ public final class ViewOnScreen {
         }
 
         @Override
-        public @Nullable Balloon getToolWindowBalloon(final @NotNull String id) {
-            return headless.getToolWindowBalloon(id);
+        public @Nullable Balloon getToolWindowBalloon(final @NotNull String toolWindowId) {
+            return headless.getToolWindowBalloon(toolWindowId);
         }
 
         @Override

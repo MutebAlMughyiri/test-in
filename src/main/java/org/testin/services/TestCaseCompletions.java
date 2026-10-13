@@ -95,8 +95,8 @@ public final class TestCaseCompletions implements Disposable {
         cacheAsync(testCases);
     }
 
-    public void addNewItems(final @NotNull List<TestCaseDto> tcs) {
-        cacheAsync(tcs);
+    public void addNewItems(final @NotNull List<TestCaseDto> testCases) {
+        cacheAsync(testCases);
     }
 
     public void reload(final @NotNull Supplier<@NotNull List<TestCaseDto>> source) {
@@ -113,12 +113,12 @@ public final class TestCaseCompletions implements Disposable {
             final @NotNull Set<String> newSteps = ConcurrentHashMap.newKeySet();
             final @NotNull Set<String> newGroups = ConcurrentHashMap.newKeySet();
 
-            for (final TestCaseDto tc : testCases) {
-                addTo(newDescriptions, tc.getDescription());
-                addTo(newExpectedResults, tc.getExpectedResult());
-                addTo(newModules, tc.getModule());
-                tc.getSteps().forEach(s -> addTo(newSteps, s));
-                tc.getGroups().forEach(g -> addTo(newGroups, g));
+            for (final TestCaseDto testCase : testCases) {
+                addTo(newDescriptions, testCase.getDescription());
+                addTo(newExpectedResults, testCase.getExpectedResult());
+                addTo(newModules, testCase.getModule());
+                testCase.getSteps().forEach(s -> addTo(newSteps, s));
+                testCase.getGroups().forEach(g -> addTo(newGroups, g));
             }
 
             replace(descriptions, newDescriptions);
@@ -134,12 +134,12 @@ public final class TestCaseCompletions implements Disposable {
         updates.execute(() -> testCases.forEach(this::cache));
     }
 
-    private void cache(final @NotNull TestCaseDto tc) {
-        addDescription(tc.getDescription());
-        addExpectedResult(tc.getExpectedResult());
-        addModule(tc.getModule());
-        tc.getSteps().forEach(this::addStep);
-        tc.getGroups().forEach(this::addGroup);
+    private void cache(final @NotNull TestCaseDto testCase) {
+        addDescription(testCase.getDescription());
+        addExpectedResult(testCase.getExpectedResult());
+        addModule(testCase.getModule());
+        testCase.getSteps().forEach(this::addStep);
+        testCase.getGroups().forEach(this::addGroup);
     }
 
     @Override

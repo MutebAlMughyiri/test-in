@@ -27,5 +27,5 @@ import java.util.function.Consumer;
 @FunctionalInterface
 @Immutable
 public interface BulkDialogOpener {
-    void execute(final @NotNull Project p, final @NotNull List<TestCaseDto> items, final @NotNull Consumer<List<TestCaseDto>> updatedItems);
+    void execute(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases, final @NotNull Consumer<List<TestCaseDto>> updatedTestCases);
 }

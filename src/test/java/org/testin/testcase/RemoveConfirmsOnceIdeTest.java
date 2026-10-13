@@ -46,7 +46,7 @@ public class RemoveConfirmsOnceIdeTest extends AbstractTempRootIdeTest {
         final @NotNull Said balloons = Said.listening(getProject(), getTestRootDisposable());
         new RemoveTestCaseWork(getProject(), editor, login, chosen).remove();
         ShownDialog.press(getProject(), ConfirmDialog.class, Shortcuts.Enter);
-        Await.until("the three test cases were never removed", () -> chosen.stream().allMatch(tc -> Services.getInstance(getProject(), TestCases.class).findTestCase(tc.getId()).isEmpty()));
+        Await.until("the three test cases were never removed", () -> chosen.stream().allMatch(testCase -> Services.getInstance(getProject(), TestCases.class).findTestCase(testCase.getId()).isEmpty()));
         Await.until("removing three test cases said nothing", () -> balloons.shown().stream().anyMatch(said -> said.startsWith(Done.REMOVED.getOutcome())));
 
         final @NotNull List<String> confirmations = balloons.shown().stream().filter(said -> said.startsWith(Done.REMOVED.getOutcome())).toList();

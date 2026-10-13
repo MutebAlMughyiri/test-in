@@ -42,8 +42,8 @@ import java.util.stream.Collectors;
 public class DescriptionBulkSectionDialog extends AbstractJsonSplitBulkSectionDialog {
     private final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
 
-    public DescriptionBulkSectionDialog(final @NotNull Project p, final @NotNull List<TestCaseDto> selectedItems, final @NotNull Consumer<List<TestCaseDto>> updatedItems) {
-        super(p, selectedItems, updatedItems);
+    public DescriptionBulkSectionDialog(final @NotNull Project p, final @NotNull List<TestCaseDto> selectedTestCases, final @NotNull Consumer<List<TestCaseDto>> updatedTestCases) {
+        super(p, selectedTestCases, updatedTestCases);
     }
 
     private static @NotNull Optional<String> keyOf(final @NotNull String description) {
@@ -79,22 +79,22 @@ public class DescriptionBulkSectionDialog extends AbstractJsonSplitBulkSectionDi
 
     // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-224
     @Override
-    protected @NotNull Set<Integer> clashing(final @NotNull List<TestCaseDto> items, final @NotNull List<EditedValue> newValues) {
-        final @NotNull Set<UUID> inThisDialog = items.stream().map(TestCaseDto::getId).collect(Collectors.toSet());
+    protected @NotNull Set<Integer> clashing(final @NotNull List<TestCaseDto> testCases, final @NotNull List<EditedValue> newValues) {
+        final @NotNull Set<UUID> inThisDialog = testCases.stream().map(TestCaseDto::getId).collect(Collectors.toSet());
         final @NotNull Map<Path, Set<String>> taken = new HashMap<>();
 
-        for (int i = 0; i < items.size(); i++) {
-            final @NotNull TestCaseDto tc = items.get(i);
-            final @NotNull Set<String> inItsSet = taken.computeIfAbsent(tc.getParent().getPath(), path -> keysOutside(path, inThisDialog));
+        for (int i = 0; i < testCases.size(); i++) {
+            final @NotNull TestCaseDto testCase = testCases.get(i);
+            final @NotNull Set<String> inItsSet = taken.computeIfAbsent(testCase.getParent().getPath(), path -> keysOutside(path, inThisDialog));
 
-            if (!newValues.get(i).changed()) keyOf(tc.getDescription()).ifPresent(inItsSet::add);
+            if (!newValues.get(i).changed()) keyOf(testCase.getDescription()).ifPresent(inItsSet::add);
         }
 
         final @NotNull Set<Integer> clashing = new LinkedHashSet<>();
         final @NotNull List<String> notANameYet = new ArrayList<>();
         final @NotNull List<String> takenYet = new ArrayList<>();
 
-        for (int i = 0; i < items.size(); i++) {
+        for (int i = 0; i < testCases.size(); i++) {
             final @NotNull EditedValue edited = newValues.get(i);
             if (!edited.changed() || edited.value().isEmpty()) continue;
 
@@ -106,7 +106,7 @@ public class DescriptionBulkSectionDialog extends AbstractJsonSplitBulkSectionDi
                 continue;
             }
 
-            if (!Objects.requireNonNull(taken.get(items.get(i).getParent().getPath())).add(NameSanitizer.methodKey(methodName))) {
+            if (!Objects.requireNonNull(taken.get(testCases.get(i).getParent().getPath())).add(NameSanitizer.methodKey(methodName))) {
                 clashing.add(i);
                 takenYet.add(methodName);
             }

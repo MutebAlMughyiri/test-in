@@ -40,7 +40,7 @@ public class FailureDetailDialog extends AbstractFrameworkDialog {
         super(p);
         this.onSave = onSave;
 
-        final @NotNull TestCaseDto tc = runItem.shownTestCase();
+        final @NotNull TestCaseDto testCase = runItem.shownTestCase();
 
         fields = new FailureFields(p, testRunPath, runItem);
         fields.onResized(this::refit);
@@ -52,8 +52,8 @@ public class FailureDetailDialog extends AbstractFrameworkDialog {
 
         final @NotNull List<DialogPart<?>> all = new ArrayList<>();
         all.add(DialogPart.details()
-                .row(CreateTestCaseFields.DESCRIPTION.getIcon(), tc.getDescription())
-                .row(CreateTestCaseFields.EXPECTED_RESULT.getIcon(), tc.getExpectedResult())
+                .row(CreateTestCaseFields.DESCRIPTION.getIcon(), testCase.getDescription())
+                .row(CreateTestCaseFields.EXPECTED_RESULT.getIcon(), testCase.getExpectedResult())
                 .build());
         all.addAll(fields.components());
 

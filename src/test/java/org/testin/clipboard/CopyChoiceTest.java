@@ -42,7 +42,7 @@ public class CopyChoiceTest {
         final @NotNull TestSetNode set = new TestSetNode();
         set.setPath2(new ArrayList<>(List.of("shop", "checkout", "Payment")));
 
-        final @NotNull TestCaseDto tc = TestCaseDto.builder()
+        final @NotNull TestCaseDto testCase = TestCaseDto.builder()
                 .id(UUID.randomUUID())
                 .description("Refuse an expired card")
                 .expectedResult("The payment is declined")
@@ -55,8 +55,8 @@ public class CopyChoiceTest {
                 .module("payments")
                 .status(TestCaseStatus.REVIEWED)
                 .build();
-        tc.setParent(set);
-        return tc;
+        testCase.setParent(set);
+        return testCase;
     }
 
     @Test
@@ -101,26 +101,26 @@ public class CopyChoiceTest {
         final @NotNull TestSetNode set = new TestSetNode();
         set.setPath2(new ArrayList<>(List.of("shop", "checkout", "Payment")));
 
-        final @NotNull TestCaseDto tc = TestCaseDto.builder().description("card is declined").build();
-        tc.setParent(set);
+        final @NotNull TestCaseDto testCase = TestCaseDto.builder().description("card is declined").build();
+        testCase.setParent(set);
 
-        assertEquals(CopyChoice.FQCN.from(tc), "shop.checkout.PaymentTest.cardIsDeclined");
+        assertEquals(CopyChoice.FQCN.from(testCase), "shop.checkout.PaymentTest.cardIsDeclined");
     }
 
     // Rule-EDITOR-PANEL-073, Rule-EDITOR-PANEL-207
     @Test
     public void allDetailsCopiesEveryFieldTheTesterWroteAsNameColonValue() {
-        final @NotNull TestCaseDto tc = writtenInFull();
+        final @NotNull TestCaseDto testCase = writtenInFull();
         final @NotNull List<TestSetEditorAttributes> written = List.of(
                 TestSetEditorAttributes.DESCRIPTION, TestSetEditorAttributes.EXPECTED_RESULT, TestSetEditorAttributes.STEPS,
                 TestSetEditorAttributes.PRIORITY, TestSetEditorAttributes.REFERENCE, TestSetEditorAttributes.TEST_DATA,
                 TestSetEditorAttributes.PRE_CONDITIONS, TestSetEditorAttributes.GROUP, TestSetEditorAttributes.MODULE,
                 TestSetEditorAttributes.STATUS);
 
-        final @NotNull String copied = CopyChoice.ALL_DETAILS.from(tc);
+        final @NotNull String copied = CopyChoice.ALL_DETAILS.from(testCase);
 
         for (final TestSetEditorAttributes field : written) {
-            assertTrue(copied.contains(field.getName() + ": " + field.gridValue(tc)), field.getName() + " is not copied as its name, a colon and its value: " + copied);
+            assertTrue(copied.contains(field.getName() + ": " + field.gridValue(testCase)), field.getName() + " is not copied as its name, a colon and its value: " + copied);
         }
         for (final TestSetEditorAttributes field : TestSetEditorAttributes.values()) {
             if (written.contains(field)) continue;
@@ -132,10 +132,10 @@ public class CopyChoiceTest {
     // Rule-EDITOR-PANEL-207
     @Test
     public void aFieldLeftEmptyIsNotALine() {
-        final @NotNull TestCaseDto tc = writtenInFull();
-        tc.setReference("");
+        final @NotNull TestCaseDto testCase = writtenInFull();
+        testCase.setReference("");
 
-        assertFalse(CopyChoice.ALL_DETAILS.from(tc).contains(TestSetEditorAttributes.REFERENCE.getName() + ":"), "an empty reference still got a line");
+        assertFalse(CopyChoice.ALL_DETAILS.from(testCase).contains(TestSetEditorAttributes.REFERENCE.getName() + ":"), "an empty reference still got a line");
     }
 
     // Rule-EDITOR-PANEL-074
@@ -153,11 +153,11 @@ public class CopyChoiceTest {
     // Rule-EDITOR-PANEL-208
     @Test
     public void aSingleValueIsCopiedBareAndSoAreTheValuesTheTesterNeverWrites() {
-        final @NotNull TestCaseDto tc = writtenInFull();
+        final @NotNull TestCaseDto testCase = writtenInFull();
 
-        assertEquals(CopyChoice.DESCRIPTION.from(tc), "Refuse an expired card", "a single value carries no caption");
-        assertEquals(CopyChoice.ID.from(tc), tc.getId().toString(), "the identity can be copied on its own");
-        assertEquals(CopyChoice.FQCN.from(tc), "shop.checkout.PaymentTest.refuseAnExpiredCard", "and the class name");
-        assertEquals(CopyChoice.PATH.from(tc), TestSetEditorAttributes.PATH.gridValue(tc), "and the path");
+        assertEquals(CopyChoice.DESCRIPTION.from(testCase), "Refuse an expired card", "a single value carries no caption");
+        assertEquals(CopyChoice.ID.from(testCase), testCase.getId().toString(), "the identity can be copied on its own");
+        assertEquals(CopyChoice.FQCN.from(testCase), "shop.checkout.PaymentTest.refuseAnExpiredCard", "and the class name");
+        assertEquals(CopyChoice.PATH.from(testCase), TestSetEditorAttributes.PATH.gridValue(testCase), "and the path");
     }
 }

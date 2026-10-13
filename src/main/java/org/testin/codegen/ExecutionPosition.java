@@ -37,15 +37,15 @@ import java.util.function.ToIntFunction;
 public final class ExecutionPosition {
     // UC-CODEGEN-002, Rule-CODEGEN-014
     @FromContentModule
-    public static int of(final @NotNull Project p, final @NotNull TestCaseDto tc) {
-        return ofEach(p).applyAsInt(tc);
+    public static int of(final @NotNull Project p, final @NotNull TestCaseDto testCase) {
+        return ofEach(p).applyAsInt(testCase);
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-014
     public static @NotNull ToIntFunction<TestCaseDto> ofEach(final @NotNull Project p) {
         final @NotNull Map<Path, List<TestCaseDto>> sets = new HashMap<>();
 
-        return tc -> TestCaseOrder.positionOf(sets.computeIfAbsent(tc.getParent().getPath(), _ -> setOf(p, tc)), tc);
+        return testCase -> TestCaseOrder.positionOf(sets.computeIfAbsent(testCase.getParent().getPath(), _ -> setOf(p, testCase)), testCase);
     }
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-014
@@ -53,17 +53,17 @@ public final class ExecutionPosition {
         final @NotNull Map<Path, List<TestCaseDto>> sets = new HashMap<>();
         final @NotNull Map<UUID, Integer> places = new HashMap<>();
 
-        for (final TestCaseDto tc : testCases) {
-            final @NotNull List<TestCaseDto> set = sets.computeIfAbsent(tc.getParent().getPath(), _ -> setOf(p, tc));
-            final int place = TestCaseOrder.positionOf(set, tc);
-            if (place <= set.size()) places.put(tc.getId(), place);
+        for (final TestCaseDto testCase : testCases) {
+            final @NotNull List<TestCaseDto> set = sets.computeIfAbsent(testCase.getParent().getPath(), _ -> setOf(p, testCase));
+            final int place = TestCaseOrder.positionOf(set, testCase);
+            if (place <= set.size()) places.put(testCase.getId(), place);
         }
 
         return places;
     }
 
     // UC-CODEGEN-011, Rule-CODEGEN-042
-    public static @NotNull List<TestCaseDto> setOf(final @NotNull Project p, final @NotNull TestCaseDto tc) {
-        return TestCaseOrder.ordered(Services.getInstance(p, TestCases.class).getTestCasesForTestSet(tc.getParent().getPath()));
+    public static @NotNull List<TestCaseDto> setOf(final @NotNull Project p, final @NotNull TestCaseDto testCase) {
+        return TestCaseOrder.ordered(Services.getInstance(p, TestCases.class).getTestCasesForTestSet(testCase.getParent().getPath()));
     }
 }

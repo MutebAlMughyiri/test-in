@@ -65,13 +65,13 @@ public class TablePanelBuilder {
         };
 
         int index = 1;
-        for (final TestCaseDto tc : testCases) {
+        for (final TestCaseDto testCase : testCases) {
             final Object @NotNull [] rowData = new Object[columns.length];
             rowData[0] = true;
             rowData[1] = String.valueOf(index++);
 
             for (int i = 0; i < importAttributes.size(); i++) {
-                rowData[i + 2] = importAttributes.get(i).gridValue(tc);
+                rowData[i + 2] = importAttributes.get(i).gridValue(testCase);
             }
             model.addRow(rowData);
         }

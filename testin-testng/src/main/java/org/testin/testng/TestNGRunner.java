@@ -97,10 +97,10 @@ public final class TestNGRunner implements AutomationExecutor {
             final @NotNull List<Generated> found = new ArrayList<>();
             final @NotNull List<TestCaseDto> withoutCode = new ArrayList<>();
 
-            for (final TestCaseDto tc : testCases) {
-                Optional.ofNullable(methods.get(tc.getId())).ifPresentOrElse(
-                        method -> found.add(new Generated(tc, method)),
-                        () -> withoutCode.add(tc));
+            for (final TestCaseDto testCase : testCases) {
+                Optional.ofNullable(methods.get(testCase.getId())).ifPresentOrElse(
+                        method -> found.add(new Generated(testCase, method)),
+                        () -> withoutCode.add(testCase));
             }
 
             final @NotNull List<Module> modules = found.stream()
@@ -130,7 +130,7 @@ public final class TestNGRunner implements AutomationExecutor {
 
         // Rule-CODEGEN-097
         if (prepared.spansModules()) {
-            execution.acrossModules(prepared.found().stream().map(Generated::tc).toList(), prepared.modules().stream().map(Module::getName).distinct().toList());
+            execution.acrossModules(prepared.found().stream().map(Generated::testCase).toList(), prepared.modules().stream().map(Module::getName).distinct().toList());
             return;
         }
 
@@ -140,14 +140,14 @@ public final class TestNGRunner implements AutomationExecutor {
     private void launch(final @NotNull Project p, final @NotNull List<Generated> found, final @NotNull Optional<Module> module) {
         final @NotNull TestNGExecution execution = Services.getInstance(p, TestNGExecution.class);
 
-        final @NotNull Set<TestCaseDto> stillWanted = new HashSet<>(execution.stillWanted(found.stream().map(Generated::tc).toList()));
+        final @NotNull Set<TestCaseDto> stillWanted = new HashSet<>(execution.stillWanted(found.stream().map(Generated::testCase).toList()));
         if (stillWanted.isEmpty()) {
             TestinLogger.info("Not starting: every test case in the execution was stopped before it began");
             return;
         }
 
-        final @NotNull List<Generated> generated = found.stream().filter(one -> stillWanted.contains(one.tc())).toList();
-        final @NotNull List<TestCaseDto> testCases = generated.stream().map(Generated::tc).toList();
+        final @NotNull List<Generated> generated = found.stream().filter(one -> stillWanted.contains(one.testCase())).toList();
+        final @NotNull List<TestCaseDto> testCases = generated.stream().map(Generated::testCase).toList();
 
         final @NotNull LinkedHashSet<String> patterns = new LinkedHashSet<>(generated.stream().map(Generated::pattern).toList());
         final @NotNull String name = execution.freeRunName(configNameFor(generated));

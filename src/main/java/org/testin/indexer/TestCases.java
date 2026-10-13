@@ -67,28 +67,28 @@ public final class TestCases {
         return testCases;
     }
 
-    public @NotNull Optional<TestCaseDto> findTestCase(final @NotNull UUID id) {
-        return store().findTestCase(id);
+    public @NotNull Optional<TestCaseDto> findTestCase(final @NotNull UUID testCaseId) {
+        return store().findTestCase(testCaseId);
     }
 
     // UC-INTERNAL-004, Rule-INTERNAL-033
-    public boolean putTestCase(final @NotNull Path testSetPath, final @NotNull TestCaseDto tc) {
-        return store().putTestCase(testSetPath, tc);
+    public boolean putTestCase(final @NotNull Path testSetPath, final @NotNull TestCaseDto testCase) {
+        return store().putTestCase(testSetPath, testCase);
     }
 
     // UC-INTERNAL-004, Rule-INTERNAL-035
-    public boolean putTestCaseVerbatim(final @NotNull Path testSetPath, final @NotNull TestCaseDto tc) {
-        return store().putTestCaseVerbatim(testSetPath, tc);
+    public boolean putTestCaseVerbatim(final @NotNull Path testSetPath, final @NotNull TestCaseDto testCase) {
+        return store().putTestCaseVerbatim(testSetPath, testCase);
     }
 
     // UC-EDITOR-PANEL-017, Rule-INTERNAL-035
-    public boolean moveTestCase(final @NotNull Path fromSet, final @NotNull Path toSet, final @NotNull TestCaseDto tc) {
-        return store().moveTestCase(fromSet, toSet, tc);
+    public boolean moveTestCase(final @NotNull Path fromSet, final @NotNull Path toSet, final @NotNull TestCaseDto testCase) {
+        return store().moveTestCase(fromSet, toSet, testCase);
     }
 
     // UC-EDITOR-PANEL-011, Rule-EDITOR-PANEL-064
-    public boolean removeTestCase(final @NotNull Path testSetPath, final @NotNull UUID tcId) {
-        if (!store().removeTestCase(testSetPath, tcId)) return false;
+    public boolean removeTestCase(final @NotNull Path testSetPath, final @NotNull UUID testCaseId) {
+        if (!store().removeTestCase(testSetPath, testCaseId)) return false;
 
         testCaseValues.reload(this::getAllTestCases);
         return true;
@@ -109,8 +109,8 @@ public final class TestCases {
     }
 
     // UC-INTERNAL-004, Rule-INTERNAL-034
-    public @NotNull Optional<TestCaseFile> testCaseFile(final @NotNull TestCaseDto tc) {
-        final @NotNull Path file = store().testCaseFileOf(tc);
+    public @NotNull Optional<TestCaseFile> testCaseFile(final @NotNull TestCaseDto testCase) {
+        final @NotNull Path file = store().testCaseFileOf(testCase);
         return indexer.testProjectHolding(file).map(testProject -> new TestCaseFile(testProject, testProject.relativize(file)));
     }
 }

@@ -59,18 +59,18 @@ public final class Badges {
     private static final @NotNull Icon CLOCK = IconUtil.resizeSquared(AllIcons.Vcs.History, 14);
 
     // Rule-VIEW-PANEL-114, Rule-EDITOR-PANEL-268
-    public static void addPriorityBadge(final @NotNull List<Badge> badges, final @NotNull TestCaseDto tc) {
-        if (tc.getPriority() == Priority.DEFAULT) return;
+    public static void addPriorityBadge(final @NotNull List<Badge> badges, final @NotNull TestCaseDto testCase) {
+        if (testCase.getPriority() == Priority.DEFAULT) return;
 
-        badges.add(new Pill(tc.getPriority().getLabel(), tc.getPriority().getColor(), tc.getPriority().tooltip()));
+        badges.add(new Pill(testCase.getPriority().getLabel(), testCase.getPriority().getColor(), testCase.getPriority().tooltip()));
     }
 
     // UC-EDITOR-PANEL-001
-    public static @NotNull List<Badge> testCaseBadges(final @NotNull TestCaseDto tc) {
+    public static @NotNull List<Badge> testCaseBadges(final @NotNull TestCaseDto testCase) {
         final @NotNull List<Badge> badges = new ArrayList<>();
-        addPriorityBadge(badges, tc);
+        addPriorityBadge(badges, testCase);
 
-        for (final String group : tc.getGroups()) {
+        for (final String group : testCase.getGroups()) {
             badges.add(createGroupBadge(group));
         }
 

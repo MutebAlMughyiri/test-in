@@ -73,8 +73,8 @@ public class PageSizeAndGridIdeTest extends AbstractTempRootIdeTest {
         return EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());
     }
 
-    private @NotNull TestCaseDto stored(final @NotNull TestCaseDto tc) {
-        return Services.getInstance(getProject(), TestCases.class).findTestCase(tc.getId()).orElseThrow();
+    private @NotNull TestCaseDto stored(final @NotNull TestCaseDto testCase) {
+        return Services.getInstance(getProject(), TestCases.class).findTestCase(testCase.getId()).orElseThrow();
     }
 
     // Rule-EDITOR-PANEL-222
@@ -128,8 +128,8 @@ public class PageSizeAndGridIdeTest extends AbstractTempRootIdeTest {
 
             Await.until("one Ctrl+Z was refused", () -> Services.getInstance(getProject(), UndoHistories.class).undo(UndoScope.of(testSet.getPath())));
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
-            for (final TestCaseDto tc : testCases) {
-                assertEquals("one Ctrl+Z did not take the whole paste back", "", stored(tc).getModule());
+            for (final TestCaseDto testCase : testCases) {
+                assertEquals("one Ctrl+Z did not take the whole paste back", "", stored(testCase).getModule());
             }
             assertFalse("the paste was more than one change", Services.getInstance(getProject(), UndoHistories.class).canUndo(UndoScope.of(testSet.getPath())));
 
@@ -143,13 +143,13 @@ public class PageSizeAndGridIdeTest extends AbstractTempRootIdeTest {
             redrawn.changeSelection(2, module, false, true);
             OnScreen.pressKey(redrawn, GridKeys.CUT.keyStroke());
 
-            Await.until("the cut was never written", () -> testCases.stream().allMatch(tc -> stored(tc).getModule().isEmpty()));
+            Await.until("the cut was never written", () -> testCases.stream().allMatch(testCase -> stored(testCase).getModule().isEmpty()));
             Await.until("the cut was never confirmed: " + balloons, () -> !balloons.isEmpty());
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
             assertEquals("a cut over three cells was not one message counting three test cases", List.of(Done.counted(Done.UPDATED.getOutcome(), 3)), balloons);
             Await.until("one Ctrl+Z was refused", () -> Services.getInstance(getProject(), UndoHistories.class).undo(UndoScope.of(testSet.getPath())));
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
-            assertEquals("one Ctrl+Z did not take the whole cut back", List.of("Login", "Login", "Payments"), testCases.stream().map(tc -> stored(tc).getModule()).toList());
+            assertEquals("one Ctrl+Z did not take the whole cut back", List.of("Login", "Login", "Payments"), testCases.stream().map(testCase -> stored(testCase).getModule()).toList());
         } finally {
             CopyPasteManager.getInstance().setContents(new StringSelection(""));
             Disposer.dispose(editor);

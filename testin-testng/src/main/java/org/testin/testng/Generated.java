@@ -21,7 +21,7 @@ import org.testin.model.TestCaseDto;
 
 import java.util.List;
 
-record Generated(@NotNull TestCaseDto tc, @NotNull List<String> fqcn) {
+record Generated(@NotNull TestCaseDto testCase, @NotNull List<String> fqcn) {
     @NotNull String pattern() {
         return String.join(".", fqcn.subList(0, fqcn.size() - 1)) + "," + fqcn.getLast();
     }

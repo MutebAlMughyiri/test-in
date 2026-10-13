@@ -84,15 +84,15 @@ public class SearchFindsTestRunsIdeTest extends AbstractTempRootIdeTest {
             return set;
         });
 
-        final TestCaseDto tc = TestCaseDto.builder()
+        final TestCaseDto testCase = TestCaseDto.builder()
                 .id(UUID.randomUUID())
                 .description("Log in with a valid user")
                 .order("m")
                 .build();
-        tc.setParent(login);
+        testCase.setParent(login);
 
-        indexedTestCases().putTestCaseVerbatim(login.getPath(), tc);
-        return tc;
+        indexedTestCases().putTestCaseVerbatim(login.getPath(), testCase);
+        return testCase;
     }
 
     private @NotNull Path aTestRunOver(final TestProjectNode testProject, final String named, final UUID testCaseId) {

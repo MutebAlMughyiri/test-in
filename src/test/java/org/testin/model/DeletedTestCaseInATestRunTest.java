@@ -35,17 +35,17 @@ import static org.testng.Assert.assertTrue;
 
 public class DeletedTestCaseInATestRunTest {
 
-    private static @NotNull RunItem removedItem(final UUID id) {
+    private static @NotNull RunItem removedItem(final UUID testCaseId) {
         return RunItem.builder()
-                .id(id).removed(true)
+                .id(testCaseId).removed(true)
                 .build();
     }
 
     @Test
     public void aRowWhoseTestCaseIsGoneSaysSoByName() {
-        final UUID id = UUID.randomUUID();
+        final UUID testCaseId = UUID.randomUUID();
 
-        assertTrue(removedItem(id).isRemoved(),
+        assertTrue(removedItem(testCaseId).isRemoved(),
                 "the run item status path, the details editor and the walker all ask this");
     }
 
@@ -56,13 +56,13 @@ public class DeletedTestCaseInATestRunTest {
 
     @Test
     public void theRowStillShowsAndStillNamesItsTestCase() {
-        final UUID id = UUID.randomUUID();
-        final RunItem runItem = removedItem(id);
+        final UUID testCaseId = UUID.randomUUID();
+        final RunItem runItem = removedItem(testCaseId);
 
         final TestCaseDto shown = runItem.shownTestCase();
 
-        assertEquals(shown.getId(), id, "the id is the only identity a deleted test case has left");
-        assertTrue(shown.getDescription().contains(id.toString()),
+        assertEquals(shown.getId(), testCaseId, "the id is the only identity a deleted test case has left");
+        assertTrue(shown.getDescription().contains(testCaseId.toString()),
                 "the row names itself rather than drawing blank: " + shown.getDescription());
     }
 

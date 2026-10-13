@@ -50,8 +50,8 @@ public class PendingChangeFactoryTest {
                 .build();
     }
 
-    private static @NotNull String json(final TestCaseDto dto) {
-        return RealJsonCodec.build().writeValueAsString(dto);
+    private static @NotNull String json(final TestCaseDto testCase) {
+        return RealJsonCodec.build().writeValueAsString(testCase);
     }
 
     @Test

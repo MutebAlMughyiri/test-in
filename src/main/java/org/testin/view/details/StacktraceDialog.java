@@ -34,7 +34,7 @@ public final class StacktraceDialog extends AbstractFrameworkDialog {
     private static final int VISIBLE_ROWS = 22;
 
     // UC-VIEW-PANEL-006, Rule-VIEW-PANEL-036
-    public StacktraceDialog(final @NotNull Project p, final @NotNull TestCaseDto tc, final @NotNull String actualResult, final @NotNull String stacktrace) {
+    public StacktraceDialog(final @NotNull Project p, final @NotNull TestCaseDto testCase, final @NotNull String actualResult, final @NotNull String stacktrace) {
         super(p);
 
         title = Bundle.message("dialog.stacktrace.title");
@@ -43,8 +43,8 @@ public final class StacktraceDialog extends AbstractFrameworkDialog {
 
         components = List.of(
                 DialogPart.details()
-                        .row(CreateTestCaseFields.DESCRIPTION.getIcon(), tc.getDescription())
-                        .row(CreateTestCaseFields.EXPECTED_RESULT.getIcon(), tc.getExpectedResult())
+                        .row(CreateTestCaseFields.DESCRIPTION.getIcon(), testCase.getDescription())
+                        .row(CreateTestCaseFields.EXPECTED_RESULT.getIcon(), testCase.getExpectedResult())
                         .row(TestRunEditorAttributes.ACTUAL_RESULT.getName(), actualResult)
                         .build(),
                 DialogPart.textArea()

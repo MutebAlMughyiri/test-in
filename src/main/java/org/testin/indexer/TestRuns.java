@@ -108,7 +108,7 @@ public final class TestRuns {
     // Rule-EDITOR-PANEL-239
     public @NotNull Set<UUID> notReadFrom(final @NotNull String commit, final @NotNull Set<UUID> testCaseIds) {
         final @NotNull Map<UUID, Optional<TestCaseDto>> read = recorded.getOrDefault(commit, Map.of());
-        return testCaseIds.stream().filter(id -> !read.containsKey(id)).collect(Collectors.toSet());
+        return testCaseIds.stream().filter(testCaseId -> !read.containsKey(testCaseId)).collect(Collectors.toSet());
     }
 
     // Rule-EDITOR-PANEL-126

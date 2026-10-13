@@ -123,10 +123,10 @@ public final class TestCaseDto {
     @Builder.Default
     private volatile String preConditions = "";
 
-    public static @NotNull TestCaseDto deleted(final @NotNull UUID id) {
+    public static @NotNull TestCaseDto deleted(final @NotNull UUID testCaseId) {
         return TestCaseDto.builder()
-                .id(id)
-                .description(Bundle.message("testcase.deleted", id))
+                .id(testCaseId)
+                .description(Bundle.message("testcase.deleted", testCaseId))
                 .build();
     }
 

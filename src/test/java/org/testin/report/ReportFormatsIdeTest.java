@@ -132,10 +132,10 @@ public class ReportFormatsIdeTest extends AbstractTempRootIdeTest {
         super.tearDown();
     }
 
-    private void aTestCase(final @NotNull UUID id, final @NotNull String description) {
-        final @NotNull TestCaseDto tc = TestCaseDto.builder().id(id).description(description).order(id.toString()).build();
-        tc.setParent(login);
-        Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(login.getPath(), tc);
+    private void aTestCase(final @NotNull UUID testCaseId, final @NotNull String description) {
+        final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(testCaseId).description(description).order(testCaseId.toString()).build();
+        testCase.setParent(login);
+        Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(login.getPath(), testCase);
     }
 
     private @NotNull TestRunNode aTestRun(final @NotNull String named, final @NotNull List<RunItem> runItems) {

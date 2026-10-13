@@ -58,11 +58,11 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
             Bundle.message("attribute.sequence"),
             AttributeDefault.STRUCTURE,
             _ -> "",
-            (_, tc, _) -> Optional.of(tc),
+            (_, testCase, _) -> Optional.of(testCase),
             GenType.NO_CODE_CHANGE
     ) {
         @Override
-        public void applyToUI(final @NotNull TestCaseDto tc, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
+        public void applyToUI(final @NotNull TestCaseDto testCase, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
         }
     },
 
@@ -70,11 +70,11 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
             Bundle.message("attribute.order"),
             AttributeDefault.ON,
             _ -> "",
-            (_, tc, _) -> Optional.of(tc),
+            (_, testCase, _) -> Optional.of(testCase),
             GenType.NO_CODE_CHANGE
     ) {
         @Override
-        public void applyToUI(final @NotNull TestCaseDto tc, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
+        public void applyToUI(final @NotNull TestCaseDto testCase, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
         }
     },
 
@@ -87,15 +87,15 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
             Can.EDIT, Can.IMPORT, Can.COPY, Can.EXPORT
     ) {
         @Override
-        public void applyToUI(final @NotNull TestCaseDto tc, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
+        public void applyToUI(final @NotNull TestCaseDto testCase, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
         }
     },
 
     ID(
             Bundle.message("attribute.id"),
             AttributeDefault.OFF,
-            tc -> String.valueOf(tc.getId()),
-            (_, tc, _) -> Optional.of(tc),
+            testCase -> String.valueOf(testCase.getId()),
+            (_, testCase, _) -> Optional.of(testCase),
             GenType.NO_CODE_CHANGE,
             Can.EXPORT
     ),
@@ -112,7 +112,7 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
     STEPS(
             Bundle.message("attribute.steps"),
             AttributeDefault.OFF,
-            tc -> String.join(", ", tc.getSteps()),
+            testCase -> String.join(", ", testCase.getSteps()),
             always((draft, v) -> draft.steps(TestCaseFieldParser.steps(v))),
             GenType.UPDATE_TEST_CASE_STEPS,
             Can.EDIT, Can.IMPORT, Can.COPY, Can.EXPORT
@@ -121,21 +121,21 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
     PRIORITY(
             Bundle.message("attribute.priority"),
             AttributeDefault.ON,
-            tc -> tc.getPriority().getLabel(),
-            (_, tc, v) -> TestCaseFieldParser.priority(v, tc.getPriority()).map(priority -> tc.edit().priority(priority).build()),
+            testCase -> testCase.getPriority().getLabel(),
+            (_, testCase, v) -> TestCaseFieldParser.priority(v, testCase.getPriority()).map(priority -> testCase.edit().priority(priority).build()),
             GenType.UPDATE_TEST_CASE_PRIORITY,
             Can.EDIT, Can.IMPORT, Can.COPY, Can.EXPORT
     ) {
         @Override
-        public void applyToUI(final @NotNull TestCaseDto tc, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
+        public void applyToUI(final @NotNull TestCaseDto testCase, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
         }
     },
 
     FQCN(
             Bundle.message("attribute.fqcn"),
             AttributeDefault.OFF,
-            tc -> String.join(" > ", Fqcn.ofMethod(tc)),
-            (_, tc, _) -> Optional.of(tc),
+            testCase -> String.join(" > ", Fqcn.ofMethod(testCase)),
+            (_, testCase, _) -> Optional.of(testCase),
             GenType.NO_CODE_CHANGE,
             Can.EXPORT
     ),
@@ -170,22 +170,22 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
     GROUP(
             Bundle.message("attribute.group"),
             AttributeDefault.ON,
-            tc -> Groups.text(tc.getGroups()),
-            (_, tc, v) -> TestCaseFieldParser.groups(v).map(groups -> tc.edit().groups(groups).build()),
+            testCase -> Groups.text(testCase.getGroups()),
+            (_, testCase, v) -> TestCaseFieldParser.groups(v).map(groups -> testCase.edit().groups(groups).build()),
             GenType.UPDATE_TEST_CASE_GROUP,
             Can.EDIT, Can.IMPORT, Can.COPY, Can.EXPORT
     ) {
         @Override
-        public void applyToUI(final @NotNull TestCaseDto tc, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
-            tc.getGroups().stream().map(Badges::createGroupBadge).forEach(badges::add);
+        public void applyToUI(final @NotNull TestCaseDto testCase, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
+            testCase.getGroups().stream().map(Badges::createGroupBadge).forEach(badges::add);
         }
     },
 
     PATH(
             Bundle.message("attribute.path"),
             AttributeDefault.OFF,
-            tc -> String.join(" > ", tc.getParent().getPath2()),
-            (_, tc, _) -> Optional.of(tc),
+            testCase -> String.join(" > ", testCase.getParent().getPath2()),
+            (_, testCase, _) -> Optional.of(testCase),
             GenType.NO_CODE_CHANGE,
             Can.EXPORT
     ),
@@ -202,8 +202,8 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
     STATUS(
             Bundle.message("attribute.status"),
             AttributeDefault.OFF,
-            tc -> tc.getStatus().getLabel(),
-            (_, tc, v) -> TestCaseFieldParser.testCaseStatus(v, tc.getStatus()).map(status -> tc.edit().status(status).build()),
+            testCase -> testCase.getStatus().getLabel(),
+            (_, testCase, v) -> TestCaseFieldParser.testCaseStatus(v, testCase.getStatus()).map(status -> testCase.edit().status(status).build()),
             GenType.UPDATE_TEST_CASE_STATUS,
             Can.EDIT, Can.COPY, Can.EXPORT
     ),
@@ -229,8 +229,8 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
     CREATED_AT(
             Bundle.message("attribute.created.at"),
             AttributeDefault.OFF,
-            tc -> Display.formatDate(tc.getCreatedAt()),
-            (_, tc, v) -> TestCaseFieldParser.date(v).map(at -> tc.edit().createdAt(at).build()),
+            testCase -> Display.formatDate(testCase.getCreatedAt()),
+            (_, testCase, v) -> TestCaseFieldParser.date(v).map(at -> testCase.edit().createdAt(at).build()),
             GenType.NO_CODE_CHANGE,
             Can.IMPORT, Can.EXPORT
     ),
@@ -238,8 +238,8 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
     UPDATED_AT(
             Bundle.message("attribute.updated.at"),
             AttributeDefault.OFF,
-            tc -> Display.formatDate(tc.getUpdatedAt()),
-            (_, tc, v) -> TestCaseFieldParser.date(v).map(at -> tc.edit().updatedAt(at).build()),
+            testCase -> Display.formatDate(testCase.getUpdatedAt()),
+            (_, testCase, v) -> TestCaseFieldParser.date(v).map(at -> testCase.edit().updatedAt(at).build()),
             GenType.NO_CODE_CHANGE,
             Can.IMPORT, Can.EXPORT
     );
@@ -269,11 +269,11 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
     }
 
     // UC-EDITOR-PANEL-019, UC-INTERNAL-001, Rule-EDITOR-PANEL-091
-    public static boolean anyContains(final @NotNull TestCaseDto tc, final @NotNull String wanted) {
+    public static boolean anyContains(final @NotNull TestCaseDto testCase, final @NotNull String wanted) {
         final @NotNull String lowered = wanted.toLowerCase(Locale.ROOT);
 
         for (final TestSetEditorAttributes attribute : values()) {
-            if (attribute.gridValue(tc).toLowerCase(Locale.ROOT).contains(lowered)) return true;
+            if (attribute.gridValue(testCase).toLowerCase(Locale.ROOT).contains(lowered)) return true;
         }
 
         return false;
@@ -281,18 +281,18 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
 
     // UC-SHARE-006, Rule-SHARE-106, Rule-EDITOR-PANEL-206
     public static @NotNull ImportedRow importRow(final @NotNull Project p, final @NotNull Function<TestSetEditorAttributes, String> cell) {
-        TestCaseDto tc = TestCaseDto.builder().build();
+        TestCaseDto testCase = TestCaseDto.builder().build();
         int refused = 0;
 
         for (final TestSetEditorAttributes attr : values()) {
             if (!attr.can(Can.IMPORT)) continue;
 
-            final @NotNull Optional<TestCaseDto> took = attr.importSetter.execute(p, tc, cell.apply(attr));
-            if (took.isPresent()) tc = took.orElseThrow();
+            final @NotNull Optional<TestCaseDto> took = attr.importSetter.execute(p, testCase, cell.apply(attr));
+            if (took.isPresent()) testCase = took.orElseThrow();
             else refused++;
         }
 
-        return new ImportedRow(tc, refused);
+        return new ImportedRow(testCase, refused);
     }
 
     // UC-SHARE-006, Rule-SHARE-106, Rule-EDITOR-PANEL-206
@@ -330,18 +330,18 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
         return can.contains(capability);
     }
 
-    public @NotNull String gridValue(final @NotNull TestCaseDto tc) {
-        return this == STEPS ? String.join("\n", tc.getSteps()) : testValueExtractor.apply(tc);
+    public @NotNull String gridValue(final @NotNull TestCaseDto testCase) {
+        return this == STEPS ? String.join("\n", testCase.getSteps()) : testValueExtractor.apply(testCase);
     }
 
     // Rule-VIEW-PANEL-026, Rule-EDITOR-PANEL-005
-    public @NotNull String displayValue(final @NotNull TestCaseDto tc) {
-        final @NotNull String raw = testValueExtractor.apply(tc);
+    public @NotNull String displayValue(final @NotNull TestCaseDto testCase) {
+        final @NotNull String raw = testValueExtractor.apply(testCase);
 
         return PROSE.contains(this) ? Display.format(raw) : raw;
     }
 
-    public void applyToUI(final @NotNull TestCaseDto tc, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
-        details.put(name, displayValue(tc));
+    public void applyToUI(final @NotNull TestCaseDto testCase, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
+        details.put(name, displayValue(testCase));
     }
 }

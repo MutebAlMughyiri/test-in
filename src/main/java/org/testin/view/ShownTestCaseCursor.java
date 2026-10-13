@@ -28,7 +28,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ShownTestCaseCursor {
     private final @NotNull ViewPanel viewPanel;
-    private @NotNull List<TestCaseDto> items = List.of();
+    private @NotNull List<TestCaseDto> shownTestCases = List.of();
     private int currentIndex = 0;
 
     @Getter
@@ -36,14 +36,14 @@ public class ShownTestCaseCursor {
 
     // UC-VIEW-PANEL-002, Rule-VIEW-PANEL-018
     public void updateList(final @NotNull List<TestCaseDto> testCases, final @NotNull List<String> path) {
-        this.items = testCases;
+        this.shownTestCases = testCases;
         this.currentIndex = 0;
         this.currentPath = path;
     }
 
     public @NotNull Optional<TestCaseDto> getCurrentItem() {
-        return currentIndex >= 0 && currentIndex < items.size()
-                ? Optional.of(items.get(currentIndex))
+        return currentIndex >= 0 && currentIndex < shownTestCases.size()
+                ? Optional.of(shownTestCases.get(currentIndex))
                 : Optional.empty();
     }
 
@@ -64,7 +64,7 @@ public class ShownTestCaseCursor {
     }
 
     public boolean hasNext() {
-        return currentIndex < items.size() - 1;
+        return currentIndex < shownTestCases.size() - 1;
     }
 
     public boolean hasPrevious() {

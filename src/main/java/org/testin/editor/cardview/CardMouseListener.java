@@ -109,9 +109,9 @@ public class CardMouseListener extends MouseAdapter {
         if (!bounds.contains(e.getPoint())) return;
 
         getActionAtPoint(index, e.getX() - bounds.x, e.getY() - bounds.y).ifPresent(button -> {
-            final @NotNull TestCaseDto tc = list.getModel().getElementAt(index);
+            final @NotNull TestCaseDto testCase = list.getModel().getElementAt(index);
 
-            TestinLogger.trace(button.action().getTooltip() + ", tc: " + tc.getDescription());
+            TestinLogger.trace(button.action().getTooltip() + ", tc: " + testCase.getDescription());
 
             if (!button.works()) {
                 notifier.softRefuse(p, button.hintText());
@@ -119,7 +119,7 @@ public class CardMouseListener extends MouseAdapter {
                 return;
             }
 
-            button.action().executeFor(editor, tc);
+            button.action().executeFor(editor, testCase);
 
             e.consume();
         });
@@ -192,10 +192,10 @@ public class CardMouseListener extends MouseAdapter {
     private @NotNull Optional<Offered> getActionAtPoint(final int index, final int xInCell, final int yInCell) {
         if (index == -1) return Optional.empty();
 
-        final @NotNull TestCaseDto tc = list.getModel().getElementAt(index);
-        final @NotNull List<Offered> buttons = TestCaseQuickAction.onCard(p, editor.getParent(), tc);
-        final boolean executing = ExecutingNow.is(p, tc.getId());
-        final int titleWidth = CardTitle.titleWidth(list, editor.cardTitle(tc), CardTitle.slotCount(buttons, executing));
+        final @NotNull TestCaseDto testCase = list.getModel().getElementAt(index);
+        final @NotNull List<Offered> buttons = TestCaseQuickAction.onCard(p, editor.getParent(), testCase);
+        final boolean executing = ExecutingNow.is(p, testCase.getId());
+        final int titleWidth = CardTitle.titleWidth(list, editor.cardTitle(testCase), CardTitle.slotCount(buttons, executing));
 
         return CardTitle.descriptionActionIcons(titleWidth, buttons, executing).at(xInCell, yInCell);
     }

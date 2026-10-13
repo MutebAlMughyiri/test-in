@@ -58,13 +58,13 @@ public class RunItems {
         all.forEach(runItem -> held.put(runItem.getId(), runItem));
 
         final @NotNull List<RunItem> covered = new ArrayList<>();
-        held.forEach((id, runItem) -> {
-            if (wanted.contains(id)) covered.add(runItem);
+        held.forEach((testCaseId, runItem) -> {
+            if (wanted.contains(testCaseId)) covered.add(runItem);
         });
 
         wanted.stream()
-                .filter(id -> !held.containsKey(id))
-                .forEach(id -> covered.add(new RunItem().setId(id)));
+                .filter(testCaseId -> !held.containsKey(testCaseId))
+                .forEach(testCaseId -> covered.add(new RunItem().setId(testCaseId)));
 
         return new RunItems().setAll(covered);
     }

@@ -75,17 +75,17 @@ public class RefusedValuesIdeTest extends AbstractTempRootIdeTest {
         testSet = EditorFixtures.testSet(getProject(), testProject, "Checkout");
         final @NotNull List<TestCaseDto> made = new ArrayList<>();
         for (int i = 0; i < descriptions.length; i++) {
-            final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description(descriptions[i]).order(String.format("m%04d", i))
+            final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description(descriptions[i]).order(String.format("m%04d", i))
                     .priority(Priority.MEDIUM).groups(new ArrayList<>(List.of("Smoke"))).build();
-            tc.setParent(testSet);
-            Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), tc);
-            made.add(tc);
+            testCase.setParent(testSet);
+            Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase);
+            made.add(testCase);
         }
         return made;
     }
 
-    private @NotNull TestCaseDto stored(final @NotNull TestCaseDto tc) {
-        return Services.getInstance(getProject(), TestCases.class).findTestCase(tc.getId()).orElseThrow();
+    private @NotNull TestCaseDto stored(final @NotNull TestCaseDto testCase) {
+        return Services.getInstance(getProject(), TestCases.class).findTestCase(testCase.getId()).orElseThrow();
     }
 
     // Rule-EDITOR-PANEL-206

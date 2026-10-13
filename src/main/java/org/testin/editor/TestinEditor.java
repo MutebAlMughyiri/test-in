@@ -108,11 +108,11 @@ public interface TestinEditor extends Disposable {
     @NotNull Project getProject();
 
     // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-014
-    default int positionOf(final @NotNull TestCaseDto tc) {
+    default int positionOf(final @NotNull TestCaseDto testCase) {
         final @NotNull List<TestCaseDto> all = getAllTestCases();
 
         synchronized (all) {
-            return TestCaseOrder.positionOf(all, tc);
+            return TestCaseOrder.positionOf(all, testCase);
         }
     }
 
@@ -151,8 +151,8 @@ public interface TestinEditor extends Disposable {
     @NotNull List<TestCaseDto> getSelectedTestCases();
 
     // UC-EDITOR-PANEL-005
-    default void appendNewTestCase(final @NotNull TestCaseDto tc, final @NotNull Runnable onPersisted) {
-        TestinLogger.debug("This editor does not create test cases; '" + tc.getDescription() + "' was not added");
+    default void appendNewTestCase(final @NotNull TestCaseDto testCase, final @NotNull Runnable onPersisted) {
+        TestinLogger.debug("This editor does not create test cases; '" + testCase.getDescription() + "' was not added");
     }
 
     @NotNull JComponent getComponent();
@@ -161,7 +161,7 @@ public interface TestinEditor extends Disposable {
 
     @NotNull Set<?> getSelectedDetails();
 
-    @NotNull String cardTitle(final @NotNull TestCaseDto tc);
+    @NotNull String cardTitle(final @NotNull TestCaseDto testCase);
 
     // UC-EDITOR-PANEL-009, Rule-EDITOR-PANEL-013
     default void refreshOrdered() {
@@ -182,9 +182,9 @@ public interface TestinEditor extends Disposable {
 
     void updateSequenceAndSaveAll(final @NotNull Runnable onPersisted);
 
-    void selectTestCase(final @NotNull TestCaseDto tc);
+    void selectTestCase(final @NotNull TestCaseDto testCase);
 
-    void selectWhenLoaded(final @NotNull UUID id);
+    void selectWhenLoaded(final @NotNull UUID testCaseId);
 
     default void runWhenLoaded() {
     }

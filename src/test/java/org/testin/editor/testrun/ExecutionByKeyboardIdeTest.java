@@ -65,8 +65,8 @@ public class ExecutionByKeyboardIdeTest extends AbstractTempRootIdeTest {
         assertTrue("the report needs the mouse: " + answered, answered.contains(Shortcuts.GenerateReport.getKey()));
         assertTrue("the menu on a test case needs the mouse: " + answered, answered.contains(Shortcuts.ContextMenu.getKey()));
 
-        for (final String id : List.of("Testin.UpdateRunItem", "Testin.RunTestMethod", "Testin.NavigateToTestMethod")) {
-            assertTrue(id + " has no key, so that step of the execution needs the mouse", KeymapManager.getInstance().getActiveKeymap().getShortcuts(id).length > 0);
+        for (final String actionId : List.of("Testin.UpdateRunItem", "Testin.RunTestMethod", "Testin.NavigateToTestMethod")) {
+            assertTrue(actionId + " has no key, so that step of the execution needs the mouse", KeymapManager.getInstance().getActiveKeymap().getShortcuts(actionId).length > 0);
         }
     }
 }

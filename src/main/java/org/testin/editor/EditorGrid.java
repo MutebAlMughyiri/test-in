@@ -83,25 +83,25 @@ final class EditorGrid<A extends Enum<A> & ShowableAttribute> {
     void rebuild() {
         final boolean keepKeyboard = view.map(GridView::handOver).orElse(false);
 
-        final @NotNull List<TestCaseDto> pageItems = showOnGrid(editor.getCurrentPageItems());
+        final @NotNull List<TestCaseDto> pageTestCases = showOnGrid(editor.getCurrentPageItems());
         final @NotNull Set<A> attributes = editor.getSelectedDetails();
-        TestinLogger.debug("[grid] rebuildGrid start, pageItems=" + pageItems.size() + ", details=" + attributes);
+        TestinLogger.debug("[grid] rebuildGrid start, pageItems=" + pageTestCases.size() + ", details=" + attributes);
         final @NotNull Disposable fontSync = Disposer.newDisposable(editor.projectDisposable, "testin." + editor.getClass().getSimpleName() + ".gridFontSync");
         try {
-            final @NotNull JBTable table = editor.buildTable(editor.gridRows(pageItems), attributes);
+            final @NotNull JBTable table = editor.buildTable(editor.gridRows(pageTestCases), attributes);
             FontSync.syncWithNativeEditor(editor.p, table, fontSync, _ -> GridTables.resizeToFont(table));
 
-            table.getSelectionModel().addListSelectionListener(new GridSelectionListener(editor, table, editor.list, pageItems));
-            editor.installEditListener(table, pageItems);
+            table.getSelectionModel().addListSelectionListener(new GridSelectionListener(editor, table, editor.list, pageTestCases));
+            editor.installEditListener(table, pageTestCases);
             new TestinEscapeAction(editor.p, table);
-            new GridEnterAction(editor, table, pageItems, editor.parent.getPath2());
-            table.addMouseListener(new GridContextMenuListener(table, editor.list, editor.contextMenu, pageItems));
+            new GridEnterAction(editor, table, pageTestCases, editor.parent.getPath2());
+            table.addMouseListener(new GridContextMenuListener(table, editor.list, editor.contextMenu, pageTestCases));
             editor.contextMenu.bindShortcutsTo(table);
             PageAction.bindToGrid(editor, table);
             new OpenContextMenuAction(table, editor.contextMenu);
 
             final @NotNull Optional<GridView> previous = view;
-            view = Optional.of(GridTables.finishRebuild(table, editor.list, pageItems, fontSync, keepKeyboard, sink -> TestinDataKeys.from(sink, editor, editor.getSelectedTestCases())));
+            view = Optional.of(GridTables.finishRebuild(table, editor.list, pageTestCases, fontSync, keepKeyboard, sink -> TestinDataKeys.from(sink, editor, editor.getSelectedTestCases())));
 
             previous.ifPresent(old -> Disposer.dispose(old.fontSync()));
 
@@ -123,16 +123,16 @@ final class EditorGrid<A extends Enum<A> & ShowableAttribute> {
         final boolean keepKeyboard = shown.handOver();
         final int column = shown.table().getSelectedColumn();
 
-        final @NotNull List<TestCaseDto> pageItems = showOnGrid(editor.getCurrentPageItems());
-        GridTables.replaceRows(shown.table(), editor.gridRows(pageItems));
-        GridTables.restoreSelection(shown.table(), editor.list, pageItems, column);
+        final @NotNull List<TestCaseDto> pageTestCases = showOnGrid(editor.getCurrentPageItems());
+        GridTables.replaceRows(shown.table(), editor.gridRows(pageTestCases));
+        GridTables.restoreSelection(shown.table(), editor.list, pageTestCases, column);
 
         if (keepKeyboard) ApplicationManager.getApplication().invokeLater(shown.table()::requestFocusInWindow);
     }
 
-    private @NotNull List<TestCaseDto> showOnGrid(final @NotNull List<TestCaseDto> pageItems) {
+    private @NotNull List<TestCaseDto> showOnGrid(final @NotNull List<TestCaseDto> pageTestCases) {
         rowsOnGrid.clear();
-        rowsOnGrid.addAll(pageItems);
+        rowsOnGrid.addAll(pageTestCases);
         return rowsOnGrid;
     }
 }

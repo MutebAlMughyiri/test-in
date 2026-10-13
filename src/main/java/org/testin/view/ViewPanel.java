@@ -110,7 +110,7 @@ public class ViewPanel implements Disposable {
 
         refreshCurrentView();
 
-        ExecutionRecorder.onReported(p, this, (tc, status, _, _) -> executionReported(tc, status));
+        ExecutionRecorder.onReported(p, this, (testCase, status, _, _) -> executionReported(testCase, status));
     }
 
     private @NotNull Stream<JPanel> tabs() {
@@ -219,9 +219,9 @@ public class ViewPanel implements Disposable {
     }
 
     // Rule-VIEW-PANEL-005, Rule-CODEGEN-111
-    private void executionReported(final @NotNull TestCaseDto tc, final @NotNull ExecutionStatus status) {
-        if (status.stillGoing()) reloadDetailsIfShowing(tc.getId());
-        else if (shows(tc.getId())) refreshCurrentView();
+    private void executionReported(final @NotNull TestCaseDto testCase, final @NotNull ExecutionStatus status) {
+        if (status.stillGoing()) reloadDetailsIfShowing(testCase.getId());
+        else if (shows(testCase.getId())) refreshCurrentView();
     }
 
     // Rule-VIEW-PANEL-005, Rule-VIEW-PANEL-125

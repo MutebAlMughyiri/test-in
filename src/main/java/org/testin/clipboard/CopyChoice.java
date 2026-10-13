@@ -115,7 +115,7 @@ public enum CopyChoice implements MenuItem {
             TestSetEditorAttributes.FQCN,
             Shortcuts.CopyFqcn,
             Icons.fieldLetter("F", Icons.GRAY),
-            tc -> String.join(".", Fqcn.ofMethod(tc))
+            testCase -> String.join(".", Fqcn.ofMethod(testCase))
     ),
 
     ID(
@@ -147,17 +147,17 @@ public enum CopyChoice implements MenuItem {
         this(attribute.getName(), shortcut, icon, Optional.of(attribute), copied);
     }
 
-    private static @NotNull String allDetailsOf(final @NotNull TestCaseDto tc) {
+    private static @NotNull String allDetailsOf(final @NotNull TestCaseDto testCase) {
         return Arrays.stream(TestSetEditorAttributes.values())
                 .filter(attr -> attr.can(Can.COPY))
-                .filter(attr -> !attr.gridValue(tc).isBlank())
-                .map(attr -> attr.getName() + ": " + attr.gridValue(tc))
+                .filter(attr -> !attr.gridValue(testCase).isBlank())
+                .map(attr -> attr.getName() + ": " + attr.gridValue(testCase))
                 .collect(Collectors.joining("\n"));
     }
 
     // UC-EDITOR-PANEL-014, Rule-EDITOR-PANEL-208
-    public @NotNull String from(final @NotNull TestCaseDto tc) {
-        return copied.apply(tc);
+    public @NotNull String from(final @NotNull TestCaseDto testCase) {
+        return copied.apply(testCase);
     }
 
     public @NotNull String copiedMessage(final int testCases) {

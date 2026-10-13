@@ -192,8 +192,8 @@ public final class Nodes {
         return indexer().announcedIf(store().addTestRunPackage(testRunPackage), testRunPackage.getPath());
     }
 
-    public boolean persistMarker(final @NotNull AbstractNode dto) {
-        return indexer().announcedIf(store().persistMarker(dto), dto.getPath());
+    public boolean persistMarker(final @NotNull AbstractNode node) {
+        return indexer().announcedIf(store().persistMarker(node), node.getPath());
     }
 
     // UC-TREE-PANEL-015, Rule-TREE-PANEL-055, Rule-INTERNAL-117

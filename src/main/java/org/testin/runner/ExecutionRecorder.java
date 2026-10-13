@@ -72,31 +72,31 @@ public final class ExecutionRecorder implements Disposable {
         final @NotNull Attempt attempt = new Attempt(status, duration, failure, TestName.parameters(testName), ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS));
 
         TestName.testCaseId(testName).flatMap(testCases::findTestCase).ifPresentOrElse(
-                tc -> {
+                testCase -> {
                     final @NotNull TestNGExecution execution = Services.getInstance(p, TestNGExecution.class);
-                    execution.attempted(tc.getId(), attempt).forEach((id, decided) -> testCases.findTestCase(id).ifPresent(decidedTc -> report(decidedTc, decided)));
-                    execution.takeUnwritten(tc.getId()).ifPresent(live -> show(tc, live));
+                    execution.attempted(testCase.getId(), attempt).forEach((testCaseId, decided) -> testCases.findTestCase(testCaseId).ifPresent(decidedTestCase -> report(decidedTestCase, decided)));
+                    execution.takeUnwritten(testCase.getId()).ifPresent(live -> show(testCase, live));
                 },
                 () -> TestinLogger.debug("  '" + testName + "' is not a generated test case - reported against none"));
     }
 
     // Rule-CODEGEN-111
-    private void show(final @NotNull TestCaseDto tc, final @NotNull Attempts live) {
+    private void show(final @NotNull TestCaseDto testCase, final @NotNull Attempts live) {
         final @NotNull List<RunItemExecution> executions = live.executions();
 
-        surfaces.forEach(surface -> surface.accept(tc, ExecutionStatus.RUNNING, executions, live.written()));
+        surfaces.forEach(surface -> surface.accept(testCase, ExecutionStatus.RUNNING, executions, live.written()));
     }
 
     // Rule-CODEGEN-110, Rule-CODEGEN-111
-    private void report(final @NotNull TestCaseDto tc, final @NotNull Attempts decided) {
-        final @NotNull ExecutionStatus reportedStatus = runItemStatusFor(tc, decided.status());
+    private void report(final @NotNull TestCaseDto testCase, final @NotNull Attempts decided) {
+        final @NotNull ExecutionStatus reportedStatus = runItemStatusFor(testCase, decided.status());
         final @NotNull List<RunItemExecution> executions = reportedStatus == ExecutionStatus.IDLE ? List.of() : decided.decidedExecutions();
 
-        TestinLogger.debug("  reporting on '" + tc.getDescription() + "': " + reportedStatus + " from " + decided.all().size() + " attempt(s)");
+        TestinLogger.debug("  reporting on '" + testCase.getDescription() + "': " + reportedStatus + " from " + decided.all().size() + " attempt(s)");
 
-        Services.getInstance(p, TestNGExecution.class).reported(tc.getId(), reportedStatus);
+        Services.getInstance(p, TestNGExecution.class).reported(testCase.getId(), reportedStatus);
 
-        surfaces.forEach(surface -> surface.accept(tc, reportedStatus, executions, decided.written()));
+        surfaces.forEach(surface -> surface.accept(testCase, reportedStatus, executions, decided.written()));
     }
 
     @Override
@@ -105,15 +105,15 @@ public final class ExecutionRecorder implements Disposable {
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-038
-    private @NotNull ExecutionStatus runItemStatusFor(final @NotNull TestCaseDto tc, final @NotNull ExecutionStatus status) {
+    private @NotNull ExecutionStatus runItemStatusFor(final @NotNull TestCaseDto testCase, final @NotNull ExecutionStatus status) {
         final boolean stopped = status == ExecutionStatus.FAILED
-                && Services.getInstance(p, TestNGExecution.class).isStopped(tc);
+                && Services.getInstance(p, TestNGExecution.class).isStopped(testCase);
 
         return stopped ? ExecutionStatus.IDLE : status;
     }
 
     @FunctionalInterface
     public interface Reported {
-        void accept(final @NotNull TestCaseDto tc, final @NotNull ExecutionStatus status, final @NotNull List<RunItemExecution> executions, final int written);
+        void accept(final @NotNull TestCaseDto testCase, final @NotNull ExecutionStatus status, final @NotNull List<RunItemExecution> executions, final int written);
     }
 }

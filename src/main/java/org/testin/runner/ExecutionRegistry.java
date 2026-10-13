@@ -47,17 +47,17 @@ final class ExecutionRegistry {
 
     private final @NotNull Set<UUID> executingNow = ConcurrentHashMap.newKeySet();
 
-    void starting(final @NotNull UUID id) {
-        pending.add(id);
-        stopped.remove(id);
+    void starting(final @NotNull UUID testCaseId) {
+        pending.add(testCaseId);
+        stopped.remove(testCaseId);
     }
 
-    boolean take(final @NotNull UUID id) {
-        return pending.remove(id);
+    boolean take(final @NotNull UUID testCaseId) {
+        return pending.remove(testCaseId);
     }
 
-    void launched(final @NotNull Collection<UUID> ids, final @NotNull String testRunName) {
-        ids.forEach(id -> configOf.put(id, testRunName));
+    void launched(final @NotNull Collection<UUID> testCaseIds, final @NotNull String testRunName) {
+        testCaseIds.forEach(testCaseId -> configOf.put(testCaseId, testRunName));
         launchedNames.add(testRunName);
     }
 
@@ -77,77 +77,78 @@ final class ExecutionRegistry {
                 .orElseThrow();
     }
 
-    void notStarting(final @NotNull UUID id) {
-        pending.remove(id);
-        configOf.remove(id);
+    void notStarting(final @NotNull UUID testCaseId) {
+        pending.remove(testCaseId);
+        configOf.remove(testCaseId);
     }
 
-    boolean isStopped(final @NotNull UUID id) {
-        return stopped.contains(id);
+    boolean isStopped(final @NotNull UUID testCaseId) {
+        return stopped.contains(testCaseId);
     }
 
-    boolean isRunning(final @NotNull UUID id) {
-        return pending.contains(id) || configOf.containsKey(id);
+    boolean isRunning(final @NotNull UUID testCaseId) {
+        return pending.contains(testCaseId) || configOf.containsKey(testCaseId);
     }
 
     // Rule-EDITOR-PANEL-291
-    boolean isExecutingNow(final @NotNull UUID id) {
-        return executingNow.contains(id);
+    boolean isExecutingNow(final @NotNull UUID testCaseId) {
+        return executingNow.contains(testCaseId);
     }
 
-    @NotNull ExecutionStatus statusOf(final @NotNull UUID id) {
-        return isRunning(id) ? ExecutionStatus.RUNNING : runItemStatus.getOrDefault(id, ExecutionStatus.IDLE);
+    @NotNull ExecutionStatus statusOf(final @NotNull UUID testCaseId) {
+        return isRunning(testCaseId) ? ExecutionStatus.RUNNING : runItemStatus.getOrDefault(testCaseId, ExecutionStatus.IDLE);
     }
 
     // Rule-CODEGEN-110
-    @NotNull Map<UUID, Attempts> attempted(final @NotNull UUID id, final @NotNull Attempt attempt) {
-        if (attempt.status() == ExecutionStatus.IDLE && held.containsKey(id)) return decide(List.of(id));
-        if (!configOf.containsKey(id)) return Map.of(id, Attempts.of(attempt));
+    @NotNull Map<UUID, Attempts> attempted(final @NotNull UUID testCaseId, final @NotNull Attempt attempt) {
+        if (attempt.status() == ExecutionStatus.IDLE && held.containsKey(testCaseId))
+            return decide(List.of(testCaseId));
+        if (!configOf.containsKey(testCaseId)) return Map.of(testCaseId, Attempts.of(attempt));
         if (attempt.status() == ExecutionStatus.RUNNING) {
-            executingNow.add(id);
-            return decidedBefore(id, attempt);
+            executingNow.add(testCaseId);
+            return decidedBefore(testCaseId, attempt);
         }
 
-        executingNow.remove(id);
-        held.merge(id, Attempts.of(attempt), Attempts::then);
+        executingNow.remove(testCaseId);
+        held.merge(testCaseId, Attempts.of(attempt), Attempts::then);
         return Map.of();
     }
 
     // Rule-CODEGEN-111
-    @NotNull Optional<Attempts> takeUnwritten(final @NotNull UUID id) {
-        final @NotNull Optional<Attempts> live = Optional.ofNullable(held.get(id)).filter(attempts -> attempts.written() < attempts.executionCount());
-        live.ifPresent(attempts -> held.put(id, attempts.allWritten()));
+    @NotNull Optional<Attempts> takeUnwritten(final @NotNull UUID testCaseId) {
+        final @NotNull Optional<Attempts> live = Optional.ofNullable(held.get(testCaseId)).filter(attempts -> attempts.written() < attempts.executionCount());
+        live.ifPresent(attempts -> held.put(testCaseId, attempts.allWritten()));
         return live;
     }
 
-    private @NotNull Map<UUID, Attempts> decidedBefore(final @NotNull UUID id, final @NotNull Attempt running) {
-        final @NotNull String execution = configOf.getOrDefault(id, "");
+    private @NotNull Map<UUID, Attempts> decidedBefore(final @NotNull UUID testCaseId, final @NotNull Attempt running) {
+        final @NotNull String execution = configOf.getOrDefault(testCaseId, "");
         final @NotNull Map<UUID, Attempts> decided = decide(held.keySet().stream()
-                .filter(other -> !other.equals(id) && execution.equals(configOf.get(other)))
+                .filter(other -> !other.equals(testCaseId) && execution.equals(configOf.get(other)))
                 .toList());
 
-        decided.put(id, Attempts.of(running));
+        decided.put(testCaseId, Attempts.of(running));
         return decided;
     }
 
-    private @NotNull Map<UUID, Attempts> decide(final @NotNull List<UUID> ids) {
+    private @NotNull Map<UUID, Attempts> decide(final @NotNull List<UUID> testCaseIds) {
         final @NotNull Map<UUID, Attempts> decided = new LinkedHashMap<>();
 
-        ids.forEach(id -> Optional.ofNullable(held.remove(id)).ifPresent(attempts -> decided.put(id, attempts)));
+        testCaseIds.forEach(testCaseId -> Optional.ofNullable(held.remove(testCaseId)).ifPresent(attempts -> decided.put(testCaseId, attempts)));
         return decided;
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-038
-    void reported(final @NotNull UUID id, final @NotNull ExecutionStatus status) {
+    void reported(final @NotNull UUID testCaseId, final @NotNull ExecutionStatus status) {
         if (status == ExecutionStatus.RUNNING) return;
 
-        pending.remove(id);
-        configOf.remove(id);
-        executingNow.remove(id);
+        pending.remove(testCaseId);
+        configOf.remove(testCaseId);
+        executingNow.remove(testCaseId);
 
-        if (status == ExecutionStatus.IDLE && !stopped.contains(id)) return;
+        if (status == ExecutionStatus.IDLE && !stopped.contains(testCaseId)) return;
 
-        runItemStatus.put(id, status);
+        runItemStatus.put(testCaseId, status);
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-037
@@ -156,7 +157,7 @@ final class ExecutionRegistry {
         if (running.isEmpty()) return Stop.NOTHING;
 
         final @NotNull Set<String> testRuns = running.stream()
-                .map(id -> configOf.getOrDefault(id, ""))
+                .map(testCaseId -> configOf.getOrDefault(testCaseId, ""))
                 .filter(name -> !name.isEmpty())
                 .collect(Collectors.toSet());
 
@@ -166,12 +167,12 @@ final class ExecutionRegistry {
                 .distinct()
                 .toList();
 
-        testCases.forEach(id -> {
-            pending.remove(id);
-            configOf.remove(id);
-            held.remove(id);
-            executingNow.remove(id);
-            stopped.add(id);
+        testCases.forEach(testCaseId -> {
+            pending.remove(testCaseId);
+            configOf.remove(testCaseId);
+            held.remove(testCaseId);
+            executingNow.remove(testCaseId);
+            stopped.add(testCaseId);
         });
 
         return new Stop(testRuns, testCases);
@@ -185,10 +186,10 @@ final class ExecutionRegistry {
                 .map(Map.Entry::getKey)
                 .toList();
 
-        abandoned.forEach(id -> {
-            pending.remove(id);
-            configOf.remove(id);
-            executingNow.remove(id);
+        abandoned.forEach(testCaseId -> {
+            pending.remove(testCaseId);
+            configOf.remove(testCaseId);
+            executingNow.remove(testCaseId);
         });
 
         return abandoned;

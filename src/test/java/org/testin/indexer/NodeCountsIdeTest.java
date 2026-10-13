@@ -72,15 +72,15 @@ public class NodeCountsIdeTest extends AbstractTempRootIdeTest {
             return created;
         });
 
-        final @NotNull List<UUID> ids = new ArrayList<>();
+        final @NotNull List<UUID> testCaseIds = new ArrayList<>();
         for (int i = 0; i < testCases; i++) {
-            final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in " + i).order("m" + i).build();
-            tc.setParent(testSet);
-            Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), tc);
-            ids.add(tc.getId());
+            final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in " + i).order("m" + i).build();
+            testCase.setParent(testSet);
+            Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase);
+            testCaseIds.add(testCase.getId());
         }
 
-        return ids;
+        return testCaseIds;
     }
 
     private @NotNull TestRunNode aTestRun(final @NotNull TestProjectNode testProject) {

@@ -263,7 +263,7 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
     }
 
     private @NotNull CheckedTreeNode theDeletedRow(final @NotNull UUID deleted) {
-        return rows().stream().filter(row -> row.getUserObject() instanceof final TestCaseDto tc && tc.getId().equals(deleted)).findFirst()
+        return rows().stream().filter(row -> row.getUserObject() instanceof final TestCaseDto testCase && testCase.getId().equals(deleted)).findFirst()
                 .orElseThrow(() -> new AssertionError("a test case deleted since is not offered: " + offered()));
     }
 

@@ -27,17 +27,17 @@ import java.util.List;
 public class UpdateTestMethodDescription extends BaseTestMethodChange implements CodeChange<TestCaseDto> {
     // UC-CODEGEN-010, Rule-CODEGEN-001, Rule-CODEGEN-040
     @Override
-    public void execute(final @NotNull Project p, final @NotNull TestCaseDto tc) {
-        applyOrCreate(p, tc, GenType.UPDATE_TEST_CASE_DESCRIPTION.description(), pm -> {
-            writeDescription(p, pm, tc);
+    public void execute(final @NotNull Project p, final @NotNull TestCaseDto testCase) {
+        applyOrCreate(p, testCase, GenType.UPDATE_TEST_CASE_DESCRIPTION.description(), pm -> {
+            writeDescription(p, pm, testCase);
             reformat(p, pm);
         });
     }
 
     // UC-CODEGEN-010, UC-CODEGEN-003, Rule-CODEGEN-019
     @Override
-    public void executeAll(final @NotNull Project p, final @NotNull List<? extends TestCaseDto> items) {
-        applyToEach(p, items, GenType.UPDATE_TEST_CASE_DESCRIPTION.description(), (pm, tc) -> writeDescription(p, pm, tc));
-        GenType.CREATE_TEST_CASE.executeAllNow(p, items);
+    public void executeAll(final @NotNull Project p, final @NotNull List<? extends TestCaseDto> testCases) {
+        applyToEach(p, testCases, GenType.UPDATE_TEST_CASE_DESCRIPTION.description(), (pm, testCase) -> writeDescription(p, pm, testCase));
+        GenType.CREATE_TEST_CASE.executeAllNow(p, testCases);
     }
 }

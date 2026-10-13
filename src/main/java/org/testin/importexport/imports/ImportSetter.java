@@ -29,8 +29,8 @@ import java.util.function.BiFunction;
 @Immutable
 public interface ImportSetter {
     static @NotNull ImportSetter always(final @NotNull BiFunction<TestCaseDtoBuilder, String, TestCaseDtoBuilder> write) {
-        return (_, tc, value) -> Optional.of(write.apply(tc.edit(), value).build());
+        return (_, testCase, value) -> Optional.of(write.apply(testCase.edit(), value).build());
     }
 
-    @NotNull Optional<TestCaseDto> execute(final @NotNull Project p, final @NotNull TestCaseDto tc, final @NotNull String value);
+    @NotNull Optional<TestCaseDto> execute(final @NotNull Project p, final @NotNull TestCaseDto testCase, final @NotNull String value);
 }

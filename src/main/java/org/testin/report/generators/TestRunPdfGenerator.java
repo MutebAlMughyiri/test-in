@@ -294,12 +294,12 @@ public final class TestRunPdfGenerator {
                             .setTextAlignment(TextAlignment.CENTER)));
 
             final @NotNull String testCaseName = runItem.shownTestCase().getDescription();
-            final @NotNull String tcName = testCaseName.isEmpty() ? "—" : testCaseName;
+            final @NotNull String shownTestCaseName = testCaseName.isEmpty() ? "—" : testCaseName;
             final @NotNull Cell testCaseCell = new Cell()
                     .setBackgroundColor(rowBg)
                     .setBorder(new SolidBorder(BORDER_GRAY, 1))
                     .setPaddingTop(4).setPaddingBottom(4).setPaddingLeft(6).setPaddingRight(6);
-            testCaseCell.add(para(tcName)
+            testCaseCell.add(para(shownTestCaseName)
                     .setFont(regularFont).setFontSize(ReportFont.BODY.pt()).setFontColor(BLACK)
                     .setMarginBottom(0));
 

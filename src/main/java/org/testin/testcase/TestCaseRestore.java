@@ -76,11 +76,11 @@ final class TestCaseRestore {
     private static boolean removeAbsent(final @NotNull Project p, final @NotNull TestCaseSnapshot snapshot, final @NotNull RestoredTestCases written) {
         final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
 
-        final @NotNull List<TestCaseDto> stillThere = snapshot.absent().stream().flatMap(id -> testCases.findTestCase(id).stream()).toList();
+        final @NotNull List<TestCaseDto> stillThere = snapshot.absent().stream().flatMap(testCaseId -> testCases.findTestCase(testCaseId).stream()).toList();
 
         boolean allWent = true;
-        for (final TestCaseDto tc : stillThere) {
-            if (testCases.removeTestCase(snapshot.testSetPath(), tc.getId())) written.removed().add(tc);
+        for (final TestCaseDto testCase : stillThere) {
+            if (testCases.removeTestCase(snapshot.testSetPath(), testCase.getId())) written.removed().add(testCase);
             else allWent = false;
         }
 
@@ -92,10 +92,10 @@ final class TestCaseRestore {
         final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
 
         boolean allBack = true;
-        for (final TestCaseDto tc : snapshot.present()) {
-            final boolean isComingBack = testCases.findTestCase(tc.getId()).isEmpty();
+        for (final TestCaseDto testCase : snapshot.present()) {
+            final boolean isComingBack = testCases.findTestCase(testCase.getId()).isEmpty();
 
-            final @NotNull TestCaseDto stored = tc.copy();
+            final @NotNull TestCaseDto stored = testCase.copy();
             if (!testCases.putTestCaseVerbatim(snapshot.testSetPath(), stored)) {
                 allBack = false;
                 continue;

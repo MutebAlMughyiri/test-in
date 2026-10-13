@@ -215,17 +215,17 @@ final class LightModeScreen {
     }
 
     // UC-EDITOR-PANEL-046, Rule-EDITOR-PANEL-201
-    private void showTestCase(final @NotNull TestCaseDto tc) {
-        final boolean arrived = shownTestCase.map(previous -> !previous.equals(tc.getId())).orElse(false);
-        shownTestCase = Optional.of(tc.getId());
+    private void showTestCase(final @NotNull TestCaseDto testCase) {
+        final boolean arrived = shownTestCase.map(previous -> !previous.equals(testCase.getId())).orElse(false);
+        shownTestCase = Optional.of(testCase.getId());
 
         if (arrived) testCaseView.captureLeaving();
 
-        set.setText(tc.getParent().getName());
-        description.setText(TestSetEditorAttributes.DESCRIPTION.displayValue(tc));
-        expected.setText(TestSetEditorAttributes.EXPECTED_RESULT.displayValue(tc));
+        set.setText(testCase.getParent().getName());
+        description.setText(TestSetEditorAttributes.DESCRIPTION.displayValue(testCase));
+        expected.setText(TestSetEditorAttributes.EXPECTED_RESULT.displayValue(testCase));
 
-        details.show(tc);
+        details.show(testCase);
 
         if (arrived) slideTestCaseIn();
     }
@@ -276,7 +276,7 @@ final class LightModeScreen {
             frame.bind(status.getMenuEntry().shortcut(), "testin.lightMode." + status.name(), () -> judge(status));
         }
 
-        KEYED.forEach(button -> ShownTestCaseAction.bind(editor.getProject(), button, this::testCaseForButtons, (action, tc) -> action.executeFor(editor, tc), frame.rootPane()));
+        KEYED.forEach(button -> ShownTestCaseAction.bind(editor.getProject(), button, this::testCaseForButtons, (action, testCase) -> action.executeFor(editor, testCase), frame.rootPane()));
 
         frame.onClosing(this::close);
     }
@@ -419,13 +419,13 @@ final class LightModeScreen {
     private void showButtons() {
         buttons.removeAll();
 
-        testCaseForButtons().ifPresent(tc -> {
+        testCaseForButtons().ifPresent(testCase -> {
             final @NotNull Project p = editor.getProject();
-            final @NotNull Automated automation = automationState.of(tc.getId());
+            final @NotNull Automated automation = automationState.of(testCase.getId());
 
-            TestCaseQuickAction.onCard(p, editor.getParent(), tc).stream()
+            TestCaseQuickAction.onCard(p, editor.getParent(), testCase).stream()
                     .filter(offered -> viewMenu.getSelectedDetails().stream().anyMatch(part -> part.governs(offered.action())))
-                    .forEach(offered -> buttons.add(HoverButton.of(p, offered, offered.action().iconOn(automation), offered.action().getTooltip(), () -> offered.action().executeFor(editor, tc))));
+                    .forEach(offered -> buttons.add(HoverButton.of(p, offered, offered.action().iconOn(automation), offered.action().getTooltip(), () -> offered.action().executeFor(editor, testCase))));
         });
 
         buttons.setVisible(buttons.getComponentCount() > 0);
@@ -445,7 +445,7 @@ final class LightModeScreen {
 
     private @NotNull Optional<RunItem> executingItem() {
         return executingTestCase()
-                .flatMap(tc -> editor.runItem(tc.getId()))
+                .flatMap(testCase -> editor.runItem(testCase.getId()))
                 .filter(runItem -> !runItem.isRemoved());
     }
 
@@ -578,23 +578,23 @@ final class LightModeScreen {
     }
 
     private StatusBarItem @NotNull [] testCaseKeys() {
-        final @NotNull List<StatusBarItem> items = new ArrayList<>();
-        items.add(StatusBarShortcut.hint(Shortcuts.ToggleDetails.getShortcutText(), Bundle.message("shortcut.details")));
-        items.add(StatusBarShortcut.hint(Shortcuts.Escape.getShortcutText(), Bundle.message("shortcut.close")));
+        final @NotNull List<StatusBarItem> statusBarItems = new ArrayList<>();
+        statusBarItems.add(StatusBarShortcut.hint(Shortcuts.ToggleDetails.getShortcutText(), Bundle.message("shortcut.details")));
+        statusBarItems.add(StatusBarShortcut.hint(Shortcuts.Escape.getShortcutText(), Bundle.message("shortcut.close")));
 
         for (final RunItemStatus status : RunItemStatus.values()) {
-            if (status.isRunItemStatus()) items.add(StatusBarShortcut.hint(keyOf(status), status.getLabel()));
+            if (status.isRunItemStatus()) statusBarItems.add(StatusBarShortcut.hint(keyOf(status), status.getLabel()));
         }
 
-        KEYED.forEach(button -> items.add(keyHint(button)));
+        KEYED.forEach(button -> statusBarItems.add(keyHint(button)));
 
-        return items.toArray(new StatusBarItem[0]);
+        return statusBarItems.toArray(new StatusBarItem[0]);
     }
 
     // UC-EDITOR-PANEL-046, Rule-EDITOR-PANEL-245
     private @NotNull StatusBarItem keyHint(final @NotNull TestCaseQuickAction button) {
         final @NotNull TestCaseQuickAction now = testCaseForButtons()
-                .map(tc -> button.gestureOn(editor.getProject(), tc))
+                .map(testCase -> button.gestureOn(editor.getProject(), testCase))
                 .orElse(button);
 
         return StatusBarShortcut.hint(Declared.shortcutText(button.getActionId()), now.getTooltip());

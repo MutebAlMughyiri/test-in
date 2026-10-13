@@ -91,9 +91,9 @@ public class GridEditIdeTest extends AbstractTempRootIdeTest {
     private @NotNull TestSetEditor aGridOver(final @NotNull String... descriptions) {
         testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
         for (int i = 0; i < descriptions.length; i++) {
-            final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description(descriptions[i]).order(String.format("m%04d", i)).groups(new ArrayList<>(List.of("Smoke"))).build();
-            tc.setParent(testSet);
-            theTestCases().putTestCaseVerbatim(testSet.getPath(), tc);
+            final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description(descriptions[i]).order(String.format("m%04d", i)).groups(new ArrayList<>(List.of("Smoke"))).build();
+            testCase.setParent(testSet);
+            theTestCases().putTestCaseVerbatim(testSet.getPath(), testCase);
         }
 
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
@@ -103,8 +103,8 @@ public class GridEditIdeTest extends AbstractTempRootIdeTest {
         return editor;
     }
 
-    private @NotNull TestCaseDto stored(final @NotNull TestCaseDto tc) {
-        return theTestCases().findTestCase(tc.getId()).orElseThrow();
+    private @NotNull TestCaseDto stored(final @NotNull TestCaseDto testCase) {
+        return theTestCases().findTestCase(testCase.getId()).orElseThrow();
     }
 
     private @NotNull List<String> everyFile() {
@@ -119,12 +119,12 @@ public class GridEditIdeTest extends AbstractTempRootIdeTest {
     public void testTestinStoresTheValueItMadeAndTheCellSaysItWasAdjusted() {
         final @NotNull TestSetEditor editor = aGridOver("Log in");
         final @NotNull JBTable table = gridOf(editor);
-        final @NotNull TestCaseDto tc = editor.getList().getModel().getElementAt(0);
+        final @NotNull TestCaseDto testCase = editor.getList().getModel().getElementAt(0);
         final @NotNull Said balloons = Said.listening(getProject(), getTestRootDisposable());
 
         typeInto(table, 0, TestSetEditorAttributes.GROUP, " Smoke ,  Regression ,Smoke");
 
-        Await.until("the groups were never stored", () -> stored(tc).getGroups().equals(List.of("Smoke", "Regression")));
+        Await.until("the groups were never stored", () -> stored(testCase).getGroups().equals(List.of("Smoke", "Regression")));
         assertEquals("the cell was not redrawn to what Testin stored", "Smoke, Regression", table.getValueAt(0, column(table, TestSetEditorAttributes.GROUP)));
         assertTrue("a cell that no longer shows what was typed did not say so", balloons.shown().contains(adjusted("Smoke, Regression", "Smoke ,  Regression ,Smoke")));
     }
@@ -162,7 +162,7 @@ public class GridEditIdeTest extends AbstractTempRootIdeTest {
     public void testClickingAwayFromAnOpenCellSavesIt() {
         final @NotNull TestSetEditor editor = aGridOver("Log in", "Log out");
         final @NotNull JBTable table = gridOf(editor);
-        final @NotNull TestCaseDto tc = editor.getList().getModel().getElementAt(0);
+        final @NotNull TestCaseDto testCase = editor.getList().getModel().getElementAt(0);
         table.setSize(1200, 600);
 
         assertTrue(table.editCellAt(0, column(table, TestSetEditorAttributes.DESCRIPTION)));
@@ -173,7 +173,7 @@ public class GridEditIdeTest extends AbstractTempRootIdeTest {
         for (final MouseListener listener : table.getMouseListeners()) listener.mousePressed(click);
 
         assertFalse("clicking away left the cell open", table.isEditing());
-        Await.until("clicking away from the open cell did not save it", () -> stored(tc).getDescription().equals("Sign in"));
+        Await.until("clicking away from the open cell did not save it", () -> stored(testCase).getDescription().equals("Sign in"));
     }
 
     // Rule-EDITOR-PANEL-053

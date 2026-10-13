@@ -88,18 +88,18 @@ public class MoveCodeIdeTest extends AbstractCodegenIdeTest {
     // Rule-CODEGEN-077
     public void testACutAndPastedTestCaseTakesItsMethodBodyAndAllIntoAClassWrittenForIt() {
         final @NotNull TestSetNode login = createdTestSet("Login");
-        final @NotNull TestCaseDto tc = createdTestCase(login, "Log in with a valid user", "b");
-        writtenByTheTester(writtenMethodOf("nafath.LoginTest", tc), WRITTEN_BY_THE_TESTER);
+        final @NotNull TestCaseDto testCase = createdTestCase(login, "Log in with a valid user", "b");
+        writtenByTheTester(writtenMethodOf("nafath.LoginTest", testCase), WRITTEN_BY_THE_TESTER);
         final @NotNull TestSetNode visa = indexedTestSet("Visa", indexedPackage("Cards", theTestCasesDirectory()));
 
         final @NotNull TestCases testCases = Services.getInstance(getProject(), TestCases.class);
-        testCases.removeTestCase(login.getPath(), tc.getId());
-        tc.setParent(visa);
-        testCases.putTestCaseVerbatim(visa.getPath(), tc);
-        GenType.MOVE_TEST_CASE.execute(getProject(), new MovedTestCase(tc, login));
+        testCases.removeTestCase(login.getPath(), testCase.getId());
+        testCase.setParent(visa);
+        testCases.putTestCaseVerbatim(visa.getPath(), testCase);
+        GenType.MOVE_TEST_CASE.execute(getProject(), new MovedTestCase(testCase, login));
         settled();
 
-        assertTrue("the method stayed in the class the test case was cut from", methodOf("nafath.LoginTest", tc).isEmpty());
-        assertTrue("the method did not arrive with the tester's body", writtenMethodOf("nafath.cards.VisaTest", tc).getText().contains(WRITTEN_BY_THE_TESTER));
+        assertTrue("the method stayed in the class the test case was cut from", methodOf("nafath.LoginTest", testCase).isEmpty());
+        assertTrue("the method did not arrive with the tester's body", writtenMethodOf("nafath.cards.VisaTest", testCase).getText().contains(WRITTEN_BY_THE_TESTER));
     }
 }

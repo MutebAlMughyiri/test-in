@@ -51,26 +51,26 @@ public class TestCaseCard extends AbstractCard {
     }
 
     // UC-EDITOR-PANEL-003, Rule-EDITOR-PANEL-021, Rule-EDITOR-PANEL-267, Rule-EDITOR-PANEL-294
-    public void updateData(final int index, final @NotNull TestCaseDto tc, final @NotNull Set<?> activeDetails, final @NotNull String title) {
+    public void updateData(final int index, final @NotNull TestCaseDto testCase, final @NotNull Set<?> activeDetails, final @NotNull String title) {
         badges.clear();
         details.clear();
 
-        this.isPendingCut = cutState.isPending(tc.getId());
+        this.isPendingCut = cutState.isPending(testCase.getId());
 
-        this.automation = automationState.of(tc.getId());
-        this.priority = activeDetails.contains(TestSetEditorAttributes.PRIORITY) ? tc.getPriority() : Priority.DEFAULT;
+        this.automation = automationState.of(testCase.getId());
+        this.priority = activeDetails.contains(TestSetEditorAttributes.PRIORITY) ? testCase.getPriority() : Priority.DEFAULT;
 
         Arrays.stream(TestSetEditorAttributes.values())
                 .filter(activeDetails::contains)
-                .forEach(attr -> attr.applyToUI(tc, badges, details));
+                .forEach(attr -> attr.applyToUI(testCase, badges, details));
 
-        if (tc.getStatus().isBadged()) badges.add(Badges.createTestCaseStatusBadge(tc.getStatus()));
+        if (testCase.getStatus().isBadged()) badges.add(Badges.createTestCaseStatusBadge(testCase.getStatus()));
 
-        final @NotNull ExecutionStatus executionStatus = testNGExecution.statusOf(tc);
+        final @NotNull ExecutionStatus executionStatus = testNGExecution.statusOf(testCase);
 
         if (executionStatus.hasBadge()) badges.add(Badges.createExecutionStatusBadge(executionStatus.getBadge()));
 
-        titleArea.setForeground(tc.getStatus().getDescriptionColor());
+        titleArea.setForeground(testCase.getStatus().getDescriptionColor());
         updateUI(index, title, badges, details);
     }
 

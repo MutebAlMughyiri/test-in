@@ -97,14 +97,14 @@ public class TreeNodesIdeTest extends AbstractTempRootIdeTest {
     public void testRetiringAPackageDeletesNothingInIt() {
         final @NotNull TestSetPackageNode payments = made().testSetPackage(aTestProject().getTestCasesFolder(), "Payments");
         final @NotNull TestSetNode refunds = made().testSet(payments, "Refunds");
-        final @NotNull TestCaseDto tc = made().testCase(refunds);
+        final @NotNull TestCaseDto testCase = made().testCase(refunds);
         final @NotNull Map<Path, String> before = filesUnder(refunds.getPath(), "");
 
         assertTrue("the package was not archived", nodes().mark(payments, PackageStatus.ARCHIVED, TESTER));
 
         assertTrue("archiving did not retire the package", payments.isRetired());
         assertTrue("archiving removed a test set from the index", nodes().nodeExists(refunds.getPath()));
-        assertEquals("archiving lost a test case", List.of(tc.getId()), idsOf(indexedTestCases().getTestCasesForTestSet(refunds.getPath())));
+        assertEquals("archiving lost a test case", List.of(testCase.getId()), idsOf(indexedTestCases().getTestCasesForTestSet(refunds.getPath())));
         assertEquals("archiving changed a file inside the package", before, filesUnder(refunds.getPath(), ""));
     }
 

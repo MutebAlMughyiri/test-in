@@ -35,9 +35,9 @@ public class TestCaseCardRenderer extends AbstractCardRenderer<TestinEditor> {
 
     // UC-EDITOR-PANEL-001
     @Override
-    protected @NotNull TestCaseCard bindDataAndGetCard(final @NotNull JList<? extends TestCaseDto> list, final @NotNull TestCaseDto tc, final int row, final boolean isSelected, final boolean isRowHovered, final @NotNull String hover) {
-        card.updateData(row, tc, editor.getSelectedDetails(), editor.cardTitle(tc));
-        card.showTitleIcons(editor.getParent(), tc);
+    protected @NotNull TestCaseCard bindDataAndGetCard(final @NotNull JList<? extends TestCaseDto> list, final @NotNull TestCaseDto testCase, final int row, final boolean isSelected, final boolean isRowHovered, final @NotNull String hover) {
+        card.updateData(row, testCase, editor.getSelectedDetails(), editor.cardTitle(testCase));
+        card.showTitleIcons(editor.getParent(), testCase);
         card.setActionsState(isSelected, isRowHovered, hover);
         card.applyCardViewLayout(list);
 

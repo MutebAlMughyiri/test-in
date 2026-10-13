@@ -36,16 +36,16 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public abstract class AbstractJsonSplitBulkSectionDialog extends AbstractFrameworkDialog {
-    private final @NotNull List<TestCaseDto> selectedItems;
-    private final @NotNull Consumer<List<TestCaseDto>> updatedItems;
+    private final @NotNull List<TestCaseDto> selectedTestCases;
+    private final @NotNull Consumer<List<TestCaseDto>> updatedTestCases;
     private final @NotNull BulkJsonEditors editors;
 
     private final @NotNull List<String> originalEscaped = new ArrayList<>();
 
-    protected AbstractJsonSplitBulkSectionDialog(final @NotNull Project p, final @NotNull List<TestCaseDto> selectedItems, final @NotNull Consumer<List<TestCaseDto>> updatedItems) {
+    protected AbstractJsonSplitBulkSectionDialog(final @NotNull Project p, final @NotNull List<TestCaseDto> selectedTestCases, final @NotNull Consumer<List<TestCaseDto>> updatedTestCases) {
         super(p);
-        this.selectedItems = selectedItems;
-        this.updatedItems = updatedItems;
+        this.selectedTestCases = selectedTestCases;
+        this.updatedTestCases = updatedTestCases;
 
         title = getPopupTitle();
 
@@ -77,12 +77,12 @@ public abstract class AbstractJsonSplitBulkSectionDialog extends AbstractFramewo
     protected abstract @NotNull TestSetEditorAttributes attribute();
 
     // Rule-EDITOR-PANEL-005
-    protected @NotNull String getOriginalValue(final @NotNull TestCaseDto tc) {
-        return attribute().gridValue(tc);
+    protected @NotNull String getOriginalValue(final @NotNull TestCaseDto testCase) {
+        return attribute().gridValue(testCase);
     }
 
-    protected @NotNull Optional<TestCaseDto> withValue(final @NotNull TestCaseDto tc, final @NotNull String value) {
-        return attribute().getImportSetter().execute(p, tc, value);
+    protected @NotNull Optional<TestCaseDto> withValue(final @NotNull TestCaseDto testCase, final @NotNull String value) {
+        return attribute().getImportSetter().execute(p, testCase, value);
     }
 
     protected boolean acceptsBlank() {
@@ -90,7 +90,7 @@ public abstract class AbstractJsonSplitBulkSectionDialog extends AbstractFramewo
     }
 
     // Rule-EDITOR-PANEL-224
-    protected @NotNull Set<Integer> clashing(final @NotNull List<TestCaseDto> items, final @NotNull List<EditedValue> newValues) {
+    protected @NotNull Set<Integer> clashing(final @NotNull List<TestCaseDto> testCases, final @NotNull List<EditedValue> newValues) {
         return Set.of();
     }
 
@@ -99,13 +99,13 @@ public abstract class AbstractJsonSplitBulkSectionDialog extends AbstractFramewo
     }
 
     // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-041, Rule-EDITOR-PANEL-206
-    protected @NotNull List<TestCaseDto> applyValues(final @NotNull List<TestCaseDto> items, final @NotNull List<EditedValue> newValues) {
+    protected @NotNull List<TestCaseDto> applyValues(final @NotNull List<TestCaseDto> testCases, final @NotNull List<EditedValue> newValues) {
         final @NotNull List<TestCaseDto> written = new ArrayList<>();
-        final @NotNull Set<Integer> clashing = clashing(items, newValues);
+        final @NotNull Set<Integer> clashing = clashing(testCases, newValues);
 
         int refused = 0;
 
-        for (int i = 0; i < items.size(); i++) {
+        for (int i = 0; i < testCases.size(); i++) {
             final @NotNull EditedValue edited = newValues.get(i);
             if (!edited.changed()) continue;
 
@@ -113,7 +113,7 @@ public abstract class AbstractJsonSplitBulkSectionDialog extends AbstractFramewo
 
             if (clashing.contains(i)) continue;
 
-            final @NotNull Optional<TestCaseDto> took = withValue(items.get(i), edited.value());
+            final @NotNull Optional<TestCaseDto> took = withValue(testCases.get(i), edited.value());
             if (took.isEmpty()) {
                 refused++;
                 continue;
@@ -148,7 +148,7 @@ public abstract class AbstractJsonSplitBulkSectionDialog extends AbstractFramewo
     protected void submit() {
         final @NotNull List<EditedValue> newValues = new ArrayList<>();
 
-        for (int i = 0; i < selectedItems.size(); i++) {
+        for (int i = 0; i < selectedTestCases.size(); i++) {
             final int index = i;
             newValues.add(editors.valueAt(index)
                     .filter(current -> !current.equals(originalEscaped.get(index)))
@@ -156,7 +156,7 @@ public abstract class AbstractJsonSplitBulkSectionDialog extends AbstractFramewo
                     .orElse(EditedValue.UNCHANGED));
         }
 
-        updatedItems.accept(applyValues(selectedItems, newValues));
+        updatedTestCases.accept(applyValues(selectedTestCases, newValues));
 
         closeOk();
     }
@@ -166,21 +166,21 @@ public abstract class AbstractJsonSplitBulkSectionDialog extends AbstractFramewo
         final @NotNull StringBuilder right = new StringBuilder("[\n");
         final @NotNull List<int[]> editableRanges = new ArrayList<>();
 
-        for (int i = 0; i < selectedItems.size(); i++) {
-            final @NotNull TestCaseDto tc = selectedItems.get(i);
-            final @NotNull String escapedValue = BulkValueText.escape(getOriginalValue(tc));
+        for (int i = 0; i < selectedTestCases.size(); i++) {
+            final @NotNull TestCaseDto testCase = selectedTestCases.get(i);
+            final @NotNull String escapedValue = BulkValueText.escape(getOriginalValue(testCase));
             originalEscaped.add(escapedValue);
 
             final @NotNull StringBuilder prefixSb = new StringBuilder("  {\n    \"id\": \"")
-                    .append(BulkValueText.escape(tc.getId().toString())).append("\",\n");
+                    .append(BulkValueText.escape(testCase.getId().toString())).append("\",\n");
             if (showsDescriptionContext()) {
-                prefixSb.append("    \"description\": \"").append(BulkValueText.escape(tc.getDescription())).append("\",\n");
+                prefixSb.append("    \"description\": \"").append(BulkValueText.escape(testCase.getDescription())).append("\",\n");
             }
             prefixSb.append("    \"").append(getJsonFieldName()).append("\": \"");
 
             final @NotNull String prefix = prefixSb.toString();
             final @NotNull String suffix = "\"\n  }";
-            final @NotNull String comma = (i == selectedItems.size() - 1) ? "\n" : ",\n";
+            final @NotNull String comma = (i == selectedTestCases.size() - 1) ? "\n" : ",\n";
 
             left.append(prefix).append(escapedValue).append(suffix).append(comma);
 

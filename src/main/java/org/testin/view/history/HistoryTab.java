@@ -54,7 +54,7 @@ public class HistoryTab {
     }
 
     // Rule-VIEW-PANEL-100
-    private static void show(final @NotNull Project p, final @NotNull JPanel historyTab, final @NotNull History history, final @NotNull TestCaseDto tc, final @NotNull Object request) {
+    private static void show(final @NotNull Project p, final @NotNull JPanel historyTab, final @NotNull History history, final @NotNull TestCaseDto testCase, final @NotNull Object request) {
         final @NotNull List<HistoryCard> cards = history.cards();
         if (cards.isEmpty()) {
             line(historyTab, history.problem());
@@ -69,19 +69,19 @@ public class HistoryTab {
         historyTab.removeAll();
         historyTab.add(entriesPanel, BorderLayout.NORTH);
         if (!history.problem().isBlank()) historyTab.add(lineLabel(history.problem()), BorderLayout.CENTER);
-        draw(p, historyTab, entriesPanel, cards, tc, 0, request);
+        draw(p, historyTab, entriesPanel, cards, testCase, 0, request);
     }
 
     // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-099, Rule-VIEW-PANEL-101
-    private static void draw(final @NotNull Project p, final @NotNull JPanel historyTab, final @NotNull JBPanel<?> entriesPanel, final @NotNull List<HistoryCard> cards, final @NotNull TestCaseDto tc, final int from, final @NotNull Object request) {
+    private static void draw(final @NotNull Project p, final @NotNull JPanel historyTab, final @NotNull JBPanel<?> entriesPanel, final @NotNull List<HistoryCard> cards, final @NotNull TestCaseDto testCase, final int from, final @NotNull Object request) {
         if (!isCurrent(historyTab, request)) return;
 
-        IntStream.range(from, Math.min(cards.size(), from + GROUP)).forEach(at -> entriesPanel.add(HistoryCardPanel.of(p, cards.get(at), tc, at)));
+        IntStream.range(from, Math.min(cards.size(), from + GROUP)).forEach(at -> entriesPanel.add(HistoryCardPanel.of(p, cards.get(at), testCase, at)));
         historyTab.revalidate();
         historyTab.repaint();
 
         if (from + GROUP < cards.size()) {
-            ApplicationManager.getApplication().invokeLater(() -> draw(p, historyTab, entriesPanel, cards, tc, from + GROUP, request), p.getDisposed());
+            ApplicationManager.getApplication().invokeLater(() -> draw(p, historyTab, entriesPanel, cards, testCase, from + GROUP, request), p.getDisposed());
         }
     }
 
@@ -110,7 +110,7 @@ public class HistoryTab {
         historyTab.repaint();
 
         if (shown.isEmpty()) return;
-        final @NotNull TestCaseDto tc = shown.orElseThrow();
+        final @NotNull TestCaseDto testCase = shown.orElseThrow();
 
         final @NotNull Timer reading = new Timer(READING_AFTER_MILLIS, _ -> {
             if (isCurrent(historyTab, request)) line(historyTab, Bundle.message("view.history.reading"));
@@ -118,17 +118,17 @@ public class HistoryTab {
         reading.setRepeats(false);
         reading.start();
 
-        final @NotNull Map<Path, String> runItemsNow = BugHistory.runItemsNow(p, tc.getId());
+        final @NotNull Map<Path, String> runItemsNow = BugHistory.runItemsNow(p, testCase.getId());
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
-            final @NotNull History history = testCases.testCaseFile(tc)
-                    .or(() -> TestCaseHistory.deletedFile(p, tc.getId()))
-                    .map(file -> BugHistory.addTo(TestCaseHistory.read(p, file, testCases.findTestCase(tc.getId())), p, file, tc.getId(), runItemsNow))
+            final @NotNull History history = testCases.testCaseFile(testCase)
+                    .or(() -> TestCaseHistory.deletedFile(p, testCase.getId()))
+                    .map(file -> BugHistory.addTo(TestCaseHistory.read(p, file, testCases.findTestCase(testCase.getId())), p, file, testCase.getId(), runItemsNow))
                     .orElseGet(() -> History.failed(Bundle.message("view.history.no.file")));
 
             ApplicationManager.getApplication().invokeLater(() -> {
                 reading.stop();
-                if (isCurrent(historyTab, request)) show(p, historyTab, history, tc, request);
+                if (isCurrent(historyTab, request)) show(p, historyTab, history, testCase, request);
             }, p.getDisposed());
         });
     }

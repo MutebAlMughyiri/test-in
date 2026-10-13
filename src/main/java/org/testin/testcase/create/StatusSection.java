@@ -49,8 +49,8 @@ public class StatusSection implements TestCaseSection {
     }
 
     @Override
-    public @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto dto) {
-        return dto.edit().status(status.getSelected()).build();
+    public @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto testCase) {
+        return testCase.edit().status(status.getSelected()).build();
     }
 
     // Rule-EDITOR-PANEL-194, Rule-PRODUCT-017
@@ -69,7 +69,7 @@ public class StatusSection implements TestCaseSection {
     }
 
     @Override
-    public void fillData(final @NotNull TestCaseDto dto) {
-        status.select(dto.getStatus());
+    public void fillData(final @NotNull TestCaseDto testCase) {
+        status.select(testCase.getStatus());
     }
 }

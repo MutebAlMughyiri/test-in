@@ -53,7 +53,7 @@ public class CellEditListener implements TableModelListener {
                     final @NotNull Optional<TestCaseDto> took = currentAttr.getImportSetter().execute(p, testCases.get(row), updatedValue);
 
                     // Rule-SHARE-106
-                    took.ifPresentOrElse(tc -> testCases.set(row, tc), () -> TestSetEditorAttributes.sayWhatWasRefused(p, 1));
+                    took.ifPresentOrElse(testCase -> testCases.set(row, testCase), () -> TestSetEditorAttributes.sayWhatWasRefused(p, 1));
 
                     final @NotNull String formattedValue = currentAttr.gridValue(testCases.get(row));
                     model.setValueAt(formattedValue, row, col);

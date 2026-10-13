@@ -74,25 +74,25 @@ public class CodeWithoutJavaIdeTest extends AbstractCodegenIdeTest {
         return JavaSourceRoot.find(getProject()).orElseThrow(() -> new AssertionError("the project has no test source folder"));
     }
 
-    private @NotNull AnActionEvent theMenuEntryFor(final @NotNull TestCaseDto tc) {
+    private @NotNull AnActionEvent theMenuEntryFor(final @NotNull TestCaseDto testCase) {
         final @NotNull AnAction action = Optional.ofNullable(ActionManager.getInstance().getAction("Testin.NavigateToTestMethod")).orElseThrow(() -> new AssertionError("Testin.NavigateToTestMethod is not registered"));
         final @NotNull AnActionEvent e = TestActionEvent.createTestEvent(action, SimpleDataContext.builder()
                 .add(CommonDataKeys.PROJECT, getProject())
-                .add(TestinDataKeys.SELECTED_TEST_CASES, List.of(tc))
+                .add(TestinDataKeys.SELECTED_TEST_CASES, List.of(testCase))
                 .build());
         ActionUtil.updateAction(action, e);
         return e;
     }
 
-    private @NotNull JBLabel theClassButtonOnTheViewPanel(final @NotNull TestCaseDto tc) {
-        return (JBLabel) TestCaseHoverButtons.of(getProject(), tc, Optional.empty()).stream()
+    private @NotNull JBLabel theClassButtonOnTheViewPanel(final @NotNull TestCaseDto testCase) {
+        return (JBLabel) TestCaseHoverButtons.of(getProject(), testCase, Optional.empty()).stream()
                 .filter(JBLabel.class::isInstance)
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("the view panel left the class button out"));
     }
 
-    private @NotNull String grayed(final @NotNull TestCaseDto tc, final @NotNull JBLabel label) {
-        final @NotNull Icon drawn = Services.getInstance(getProject(), AutomationState.class).of(tc.getId()).getIcon();
+    private @NotNull String grayed(final @NotNull TestCaseDto testCase, final @NotNull JBLabel label) {
+        final @NotNull Icon drawn = Services.getInstance(getProject(), AutomationState.class).of(testCase.getId()).getIcon();
         return String.valueOf(IconUtil.scale(IconLoader.getDisabledIcon(drawn), label, DRAWN_AT));
     }
 
@@ -101,15 +101,15 @@ public class CodeWithoutJavaIdeTest extends AbstractCodegenIdeTest {
         ExtensionTestUtil.maskExtensions(CodeChangeRegistry.EP, List.of(), getTestRootDisposable());
 
         final @NotNull TestSetNode login = createdTestSet("Login");
-        final @NotNull TestCaseDto tc = createdTestCase(login, "Log in with a valid user", "b");
-        tc.setDescription("Sign in with a valid user");
-        GenType.UPDATE_TEST_CASE_DESCRIPTION.execute(getProject(), tc);
-        GenType.REMOVE_TEST_CASE.execute(getProject(), tc);
+        final @NotNull TestCaseDto testCase = createdTestCase(login, "Log in with a valid user", "b");
+        testCase.setDescription("Sign in with a valid user");
+        GenType.UPDATE_TEST_CASE_DESCRIPTION.execute(getProject(), testCase);
+        GenType.REMOVE_TEST_CASE.execute(getProject(), testCase);
         GenType.REMOVE_TEST_SET.execute(getProject(), login);
         settled();
 
         assertNull("code was written without the Java code generators", theTestSourceRoot().findFileByRelativePath("nafath/LoginTest.java"));
-        assertTrue("the test case was lost because its code could not be written", Services.getInstance(getProject(), TestCases.class).findTestCase(tc.getId()).isPresent());
+        assertTrue("the test case was lost because its code could not be written", Services.getInstance(getProject(), TestCases.class).findTestCase(testCase.getId()).isPresent());
     }
 
     // Rule-CODEGEN-006
@@ -135,25 +135,25 @@ public class CodeWithoutJavaIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-CODEGEN-027
     public void testWithoutTheJavaPluginTheClassButtonIsGrayAndTheMenuEntrySaysWhy() {
-        final @NotNull TestCaseDto tc = aTestCase();
-        final @NotNull JBLabel working = theClassButtonOnTheViewPanel(tc);
-        assertNotEquals("the class button is gray even with the Java plugin, so gray proves nothing", grayed(tc, working), String.valueOf(iconOf(working)));
+        final @NotNull TestCaseDto testCase = aTestCase();
+        final @NotNull JBLabel working = theClassButtonOnTheViewPanel(testCase);
+        assertNotEquals("the class button is gray even with the Java plugin, so gray proves nothing", grayed(testCase, working), String.valueOf(iconOf(working)));
 
         OptionalPlugin.JAVA.missingUntil(getTestRootDisposable());
-        final @NotNull Offered onCard = TestCaseQuickAction.onCard(getProject(), tc.getParent(), tc).getFirst();
+        final @NotNull Offered onCard = TestCaseQuickAction.onCard(getProject(), testCase.getParent(), testCase).getFirst();
         assertEquals("the card left the class button out", TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD, onCard.action());
         assertFalse("the class button on the card is drawn live without the Java plugin", onCard.works());
         assertTrue("the class button on the card does not say it needs the Java plugin", onCard.hintText().endsWith(NEEDS_JAVA));
 
-        final @NotNull JBLabel classIcon = theClassButtonOnTheViewPanel(tc);
-        assertEquals("the class button on the view panel is not drawn gray", grayed(tc, classIcon), String.valueOf(iconOf(classIcon)));
+        final @NotNull JBLabel classIcon = theClassButtonOnTheViewPanel(testCase);
+        assertEquals("the class button on the view panel is not drawn gray", grayed(testCase, classIcon), String.valueOf(iconOf(classIcon)));
         assertTrue("the gray class button on the view panel does not say it needs the Java plugin", String.valueOf(classIcon.getAccessibleContext().getAccessibleDescription()).endsWith(NEEDS_JAVA));
         final int width = iconOf(classIcon).getIconWidth();
         Arrays.stream(classIcon.getMouseListeners()).forEach(listener -> listener.mouseEntered(new MouseEvent(classIcon, MouseEvent.MOUSE_ENTERED, 0, 0, 1, 1, 0, false)));
         assertEquals("the gray class button on the view panel grows under the pointer", width, iconOf(classIcon).getIconWidth());
         assertEquals("the gray class button on the view panel offers a hand", Cursor.DEFAULT_CURSOR, classIcon.getCursor().getType());
 
-        final @NotNull AnActionEvent menu = theMenuEntryFor(tc);
+        final @NotNull AnActionEvent menu = theMenuEntryFor(testCase);
         assertTrue("the menu entry was left out", menu.getPresentation().isVisible());
         assertFalse("the menu entry is live without the Java plugin", menu.getPresentation().isEnabled());
         assertTrue("the gray menu entry does not read (needs the Java plugin): " + menu.getPresentation().getText(), String.valueOf(menu.getPresentation().getText()).endsWith(NEEDS_JAVA));

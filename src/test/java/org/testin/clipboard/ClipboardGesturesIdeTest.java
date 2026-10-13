@@ -117,9 +117,9 @@ public class ClipboardGesturesIdeTest extends AbstractTempRootIdeTest {
     private @NotNull TestSetEditor aTestSetOf(final @NotNull String name, final @NotNull String... descriptions) {
         final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), testProject, name);
         for (int i = 0; i < descriptions.length; i++) {
-            final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description(descriptions[i]).order(String.format("m%04d", i)).createdBy("Ann").build();
-            tc.setParent(testSet);
-            theTestCases().putTestCaseVerbatim(testSet.getPath(), tc);
+            final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description(descriptions[i]).order(String.format("m%04d", i)).createdBy("Ann").build();
+            testCase.setParent(testSet);
+            theTestCases().putTestCaseVerbatim(testSet.getPath(), testCase);
         }
         return EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
     }
@@ -130,14 +130,14 @@ public class ClipboardGesturesIdeTest extends AbstractTempRootIdeTest {
         return e;
     }
 
-    private boolean offered(final @NotNull String id, final @NotNull JComponent on) {
-        return eventOn(ActionManager.getInstance().getAction(id), on).getPresentation().isEnabled();
+    private boolean offered(final @NotNull String actionId, final @NotNull JComponent on) {
+        return eventOn(ActionManager.getInstance().getAction(actionId), on).getPresentation().isEnabled();
     }
 
-    private void choose(final @NotNull String id, final @NotNull JComponent on) {
-        final @NotNull AnAction action = ActionManager.getInstance().getAction(id);
+    private void choose(final @NotNull String actionId, final @NotNull JComponent on) {
+        final @NotNull AnAction action = ActionManager.getInstance().getAction(actionId);
         final @NotNull AnActionEvent e = eventOn(action, on);
-        assertTrue(id + " is gray on " + on.getClass().getName() + ": " + e.getPresentation().getDescription(), e.getPresentation().isEnabled());
+        assertTrue(actionId + " is gray on " + on.getClass().getName() + ": " + e.getPresentation().getDescription(), e.getPresentation().isEnabled());
         ActionUtil.performAction(action, e);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }

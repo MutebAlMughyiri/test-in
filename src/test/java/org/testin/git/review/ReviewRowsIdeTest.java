@@ -91,12 +91,12 @@ public class ReviewRowsIdeTest extends AbstractGitRemoteIdeTest {
         return Services.getInstance(getProject(), TestCases.class);
     }
 
-    private void typed(final @NotNull TestCaseDto tc, final @NotNull String description) {
-        assertTrue("the edit was not saved", indexedTestCases().putTestCase(login.getPath(), indexedTestCases().findTestCase(tc.getId()).orElseThrow().edit().description(description).build()));
+    private void typed(final @NotNull TestCaseDto testCase, final @NotNull String description) {
+        assertTrue("the edit was not saved", indexedTestCases().putTestCase(login.getPath(), indexedTestCases().findTestCase(testCase.getId()).orElseThrow().edit().description(description).build()));
     }
 
-    private @NotNull String onDisk(final @NotNull TestCaseDto tc) {
-        return Services.getInstance(getProject(), JsonCodec.class).readValue(read(work, work.relativize(login.getPath()).resolve(tc.getId() + ".tc").toString()), TestCaseDto.class).getDescription();
+    private @NotNull String onDisk(final @NotNull TestCaseDto testCase) {
+        return Services.getInstance(getProject(), JsonCodec.class).readValue(read(work, work.relativize(login.getPath()).resolve(testCase.getId() + ".tc").toString()), TestCaseDto.class).getDescription();
     }
 
     private @NotNull JBTable theReviewTable() {

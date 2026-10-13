@@ -44,47 +44,47 @@ record RemoveTestCaseWork(@NotNull Project p, @NotNull TestinEditor editor, @Not
 
     // UC-EDITOR-PANEL-011, Rule-EDITOR-PANEL-062
     void remove() {
-        final @NotNull List<TestCaseDto> selectedItems = selected;
-        if (selectedItems.isEmpty()) return;
+        final @NotNull List<TestCaseDto> selectedTestCases = selected;
+        if (selectedTestCases.isEmpty()) return;
 
         final @NotNull Runnable delete = () -> {
             if (WaitForIndexing.refuses(p, Bundle.message("remove.confirm.button"))) return;
 
-            ApplicationManager.getApplication().runWriteAction(() -> performDeletion(selectedItems));
+            ApplicationManager.getApplication().runWriteAction(() -> performDeletion(selectedTestCases));
         };
 
-        final @NotNull String msg = selectedItems.size() == 1
-                ? Bundle.message("remove.test.case.confirm.one", selectedItems.getFirst().getDescription())
-                : Bundle.message("remove.test.case.confirm.many", String.valueOf(selectedItems.size()));
+        final @NotNull String msg = selectedTestCases.size() == 1
+                ? Bundle.message("remove.test.case.confirm.one", selectedTestCases.getFirst().getDescription())
+                : Bundle.message("remove.test.case.confirm.many", String.valueOf(selectedTestCases.size()));
 
         new ConfirmDialog(p, Bundle.message("remove.confirm.title"), msg, dir.getPath().toString(), "", Bundle.message("remove.confirm.button"), delete).show();
     }
 
     // UC-EDITOR-PANEL-011, Rule-EDITOR-PANEL-064
-    private void performDeletion(final @NotNull List<TestCaseDto> selectedItems) {
-        editor.getAllTestCases().removeAll(selectedItems);
+    private void performDeletion(final @NotNull List<TestCaseDto> selectedTestCases) {
+        editor.getAllTestCases().removeAll(selectedTestCases);
 
         cutState.clear();
 
-        ApplicationManager.getApplication().executeOnPooledThread(() -> removeFromDisk(selectedItems));
+        ApplicationManager.getApplication().executeOnPooledThread(() -> removeFromDisk(selectedTestCases));
     }
 
     // UC-EDITOR-PANEL-011, Rule-EDITOR-PANEL-064
-    private void removeFromDisk(final @NotNull List<TestCaseDto> selectedItems) {
-        final @NotNull List<UUID> ids = TestCaseSnapshot.idsOf(selectedItems);
-        final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(p, dir.getPath(), ids);
+    private void removeFromDisk(final @NotNull List<TestCaseDto> selectedTestCases) {
+        final @NotNull List<UUID> testCaseIds = TestCaseSnapshot.idsOf(selectedTestCases);
+        final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(p, dir.getPath(), testCaseIds);
 
         final @NotNull List<TestCaseDto> removed = new ArrayList<>();
-        for (final TestCaseDto tc : selectedItems) {
-            if (testCases.removeTestCase(dir.getPath(), tc.getId())) removed.add(tc);
+        for (final TestCaseDto testCase : selectedTestCases) {
+            if (testCases.removeTestCase(dir.getPath(), testCase.getId())) removed.add(testCase);
         }
 
-        TestCaseSnapshot.record(p, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.remove"), removed), before, TestCaseSnapshot.of(p, dir.getPath(), ids));
+        TestCaseSnapshot.record(p, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.remove"), removed), before, TestCaseSnapshot.of(p, dir.getPath(), testCaseIds));
 
         ApplicationManager.getApplication().invokeLater(() -> {
             if (!removed.isEmpty()) GenType.REMOVE_TEST_CASE.executeAll(p, removed);
 
-            if (removed.size() == selectedItems.size()) editor.refreshView();
+            if (removed.size() == selectedTestCases.size()) editor.refreshView();
             else editors.reloadOpen(dir.getPath());
 
             if (!removed.isEmpty())

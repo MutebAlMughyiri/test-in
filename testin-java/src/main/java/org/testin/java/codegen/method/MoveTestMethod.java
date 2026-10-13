@@ -60,7 +60,7 @@ public class MoveTestMethod extends BaseTestMethodChange implements CodeChange<M
                     moves.forEach(moved -> move(p, moved).ifPresent(left::add));
                     left.forEach(pc -> reformat(p, pc));
 
-                    new UpdateTestMethodOrder().executeAll(p, moves.stream().map(MovedTestCase::tc).toList());
+                    new UpdateTestMethodOrder().executeAll(p, moves.stream().map(MovedTestCase::testCase).toList());
                 });
 
         if (CommandProcessor.getInstance().getCurrentCommand() != null) inCommand.run();
@@ -68,28 +68,28 @@ public class MoveTestMethod extends BaseTestMethodChange implements CodeChange<M
     }
 
     private @NotNull Optional<PsiClass> move(final @NotNull Project p, final @NotNull MovedTestCase moved) {
-        final @NotNull TestCaseDto tc = moved.tc();
+        final @NotNull TestCaseDto testCase = moved.testCase();
 
         final @NotNull Optional<PsiClass> from = GeneratedClass.find(p, Fqcn.ofClass(moved.from()));
         if (from.isEmpty()) {
-            TestinLogger.debug("Nothing to move for '" + tc.getDescription() + "': the test set it came from has no class");
+            TestinLogger.debug("Nothing to move for '" + testCase.getDescription() + "': the test set it came from has no class");
             return Optional.empty();
         }
 
-        final @NotNull Optional<PsiMethod> method = GeneratedMethod.forTestCase(from.orElseThrow(), tc);
+        final @NotNull Optional<PsiMethod> method = GeneratedMethod.forTestCase(from.orElseThrow(), testCase);
         if (method.isEmpty()) {
-            TestinLogger.debug("Nothing to move for '" + tc.getDescription() + "': no method with testName=" + tc.getId());
+            TestinLogger.debug("Nothing to move for '" + testCase.getDescription() + "': no method with testName=" + testCase.getId());
             return Optional.empty();
         }
 
-        final @NotNull List<String> destination = Fqcn.ofClass(tc.getParent());
+        final @NotNull List<String> destination = Fqcn.ofClass(testCase.getParent());
 
         final @NotNull Optional<PsiClass> into = destination.isEmpty()
                 ? Optional.empty()
                 : GeneratedClass.findOrWrite(p, destination.subList(0, destination.size() - 1), destination.getLast());
 
         if (into.isEmpty()) {
-            TestinLogger.warn("Left the method for '" + tc.getDescription() + "' where it was: "
+            TestinLogger.warn("Left the method for '" + testCase.getDescription() + "' where it was: "
                     + "the test set it moved into has no class to put it in");
             return Optional.empty();
         }
@@ -97,12 +97,12 @@ public class MoveTestMethod extends BaseTestMethodChange implements CodeChange<M
         final @NotNull PsiClass target = into.orElseThrow();
 
         if (target.equals(from.orElseThrow())) {
-            TestinLogger.debug("The method for '" + tc.getDescription() + "' is already in the right class");
+            TestinLogger.debug("The method for '" + testCase.getDescription() + "' is already in the right class");
             return Optional.empty();
         }
 
-        if (GeneratedMethod.forTestCase(target, tc).isPresent()) {
-            TestinLogger.warn("Left the method for '" + tc.getDescription() + "' in " + from.orElseThrow().getQualifiedName()
+        if (GeneratedMethod.forTestCase(target, testCase).isPresent()) {
+            TestinLogger.warn("Left the method for '" + testCase.getDescription() + "' in " + from.orElseThrow().getQualifiedName()
                     + ": " + target.getQualifiedName() + " already has a method for this test case");
             return Optional.empty();
         }

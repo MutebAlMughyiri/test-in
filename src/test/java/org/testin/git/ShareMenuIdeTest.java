@@ -37,24 +37,24 @@ import java.util.List;
 public class ShareMenuIdeTest extends BasePlatformTestCase {
     private static final @NotNull List<String> SHARE_ACTIONS = List.of("Testin.Export", "Testin.Import", "Testin.SyncWithRemote", "Testin.ViewPendingCommits");
 
-    private static @NotNull AnAction action(final @NotNull String id) {
-        final @NotNull AnAction action = ActionManager.getInstance().getAction(id);
-        assertNotNull(id + " is not declared", action);
+    private static @NotNull AnAction action(final @NotNull String actionId) {
+        final @NotNull AnAction action = ActionManager.getInstance().getAction(actionId);
+        assertNotNull(actionId + " is not declared", action);
         return action;
     }
 
-    private @NotNull AnActionEvent updated(final @NotNull String id) {
-        final @NotNull AnActionEvent event = TestActionEvent.createTestEvent(action(id), SimpleDataContext.getProjectContext(getProject()));
-        ActionUtil.updateAction(action(id), event);
+    private @NotNull AnActionEvent updated(final @NotNull String actionId) {
+        final @NotNull AnActionEvent event = TestActionEvent.createTestEvent(action(actionId), SimpleDataContext.getProjectContext(getProject()));
+        ActionUtil.updateAction(action(actionId), event);
         return event;
     }
 
     // UC-SHARE-001, Rule-SHARE-006
     public void testNothingHereIsInTheKeymap() {
-        for (final String id : SHARE_ACTIONS) {
-            action(id);
+        for (final String actionId : SHARE_ACTIONS) {
+            action(actionId);
             for (final Keymap keymap : KeymapManagerEx.getInstanceEx().getAllKeymaps()) {
-                assertEquals(id + " has a key in the " + keymap.getName() + " keymap", 0, keymap.getShortcuts(id).length);
+                assertEquals(actionId + " has a key in the " + keymap.getName() + " keymap", 0, keymap.getShortcuts(actionId).length);
             }
         }
     }
@@ -64,13 +64,13 @@ public class ShareMenuIdeTest extends BasePlatformTestCase {
         OptionalPlugin.GIT.missingUntil(getTestRootDisposable());
         final @NotNull List<AnAction> menu = Arrays.asList(new TreeContextMenu(getProject(), new SimpleTree()).getChildActionsOrStubs());
 
-        for (final String id : List.of("Testin.SyncWithRemote", "Testin.ViewPendingCommits")) {
-            assertTrue(id + " was left out of the menu", menu.contains(action(id)));
+        for (final String actionId : List.of("Testin.SyncWithRemote", "Testin.ViewPendingCommits")) {
+            assertTrue(actionId + " was left out of the menu", menu.contains(action(actionId)));
 
-            final @NotNull AnActionEvent event = updated(id);
-            assertTrue(id + " was hidden", event.getPresentation().isVisible());
-            assertFalse(id + " can be pressed without Git", event.getPresentation().isEnabled());
-            assertEquals(Bundle.message("plugin.needs", Bundle.message("action." + id + ".text"), "Git"), event.getPresentation().getText());
+            final @NotNull AnActionEvent event = updated(actionId);
+            assertTrue(actionId + " was hidden", event.getPresentation().isVisible());
+            assertFalse(actionId + " can be pressed without Git", event.getPresentation().isEnabled());
+            assertEquals(Bundle.message("plugin.needs", Bundle.message("action." + actionId + ".text"), "Git"), event.getPresentation().getText());
         }
     }
 }

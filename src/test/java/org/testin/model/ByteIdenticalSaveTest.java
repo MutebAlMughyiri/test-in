@@ -40,26 +40,26 @@ public class ByteIdenticalSaveTest {
     private static final Path GOLDEN = Path.of("src", "test", "resources", "golden", "test-case.json");
 
     private static @NotNull TestCaseDto typedByATester() {
-        final TestCaseDto tc = new TestCaseDto();
+        final TestCaseDto testCase = new TestCaseDto();
 
-        tc.setId(UUID.fromString("11111111-2222-3333-4444-555555555555"));
-        tc.setOrder("zo");
-        tc.setDescription("Log in with a valid user");
-        tc.setExpectedResult("The tester reaches the dashboard.");
-        tc.setSteps(List.of("Open \"/login\"", "Type C:\\Users\\test", "Press Enter"));
-        tc.setStatus(TestCaseStatus.TO_BE_UPDATED);
-        tc.setPriority(Priority.HIGH);
-        tc.setReference("JIRA-1");
-        tc.setGroups(List.of("smoke", "régression"));
-        tc.setCreatedBy("Muteb");
-        tc.setUpdatedBy("");
-        tc.setCreatedAt(ZonedDateTime.of(2026, 9, 2, 23, 29, 28, 0, ZoneId.of("Asia/Riyadh")));
-        tc.setUpdatedAt(ZonedDateTime.of(2026, 9, 10, 1, 23, 59, 0, ZoneId.of("Europe/London")));
-        tc.setModule("");
-        tc.setTestData("{\"user\": \"admin\"}");
-        tc.setPreConditions("");
+        testCase.setId(UUID.fromString("11111111-2222-3333-4444-555555555555"));
+        testCase.setOrder("zo");
+        testCase.setDescription("Log in with a valid user");
+        testCase.setExpectedResult("The tester reaches the dashboard.");
+        testCase.setSteps(List.of("Open \"/login\"", "Type C:\\Users\\test", "Press Enter"));
+        testCase.setStatus(TestCaseStatus.TO_BE_UPDATED);
+        testCase.setPriority(Priority.HIGH);
+        testCase.setReference("JIRA-1");
+        testCase.setGroups(List.of("smoke", "régression"));
+        testCase.setCreatedBy("Muteb");
+        testCase.setUpdatedBy("");
+        testCase.setCreatedAt(ZonedDateTime.of(2026, 9, 2, 23, 29, 28, 0, ZoneId.of("Asia/Riyadh")));
+        testCase.setUpdatedAt(ZonedDateTime.of(2026, 9, 10, 1, 23, 59, 0, ZoneId.of("Europe/London")));
+        testCase.setModule("");
+        testCase.setTestData("{\"user\": \"admin\"}");
+        testCase.setPreConditions("");
 
-        return tc;
+        return testCase;
     }
 
     private static @NotNull String saved() {

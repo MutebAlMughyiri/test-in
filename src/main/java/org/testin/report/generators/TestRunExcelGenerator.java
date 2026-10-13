@@ -116,10 +116,10 @@ public final class TestRunExcelGenerator {
         int row = 1;
         for (final RunItem runItem : runItems.getAll()) {
             ProgressManager.checkCanceled();
-            final @NotNull UUID id = runItem.getId();
+            final @NotNull UUID testCaseId = runItem.getId();
             final @NotNull TestCaseDto details = runItem.shownTestCase();
 
-            ws.value(row, 0, id.toString());
+            ws.value(row, 0, testCaseId.toString());
             ws.value(row, 1, orNotAvailable(details.getDescription()));
             ws.value(row, 2, runItem.shownStatus().getLabel());
             // Rule-REPORT-027

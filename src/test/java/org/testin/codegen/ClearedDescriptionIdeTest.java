@@ -26,29 +26,29 @@ public class ClearedDescriptionIdeTest extends AbstractCodegenIdeTest {
     private static final @NotNull String LOGIN_TEST = "nafath.LoginTest";
 
     private @NotNull TestCaseDto aTestCaseWhoseDescriptionWasCleared() {
-        final @NotNull TestCaseDto tc = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
+        final @NotNull TestCaseDto testCase = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
         settled();
 
-        tc.setDescription("");
-        GenType.UPDATE_TEST_CASE_DESCRIPTION.execute(getProject(), tc);
+        testCase.setDescription("");
+        GenType.UPDATE_TEST_CASE_DESCRIPTION.execute(getProject(), testCase);
         settled();
-        return tc;
+        return testCase;
     }
 
     // Rule-CODEGEN-021
     public void testAClearedDescriptionLeavesTheMethodUnderItsName() {
-        final @NotNull TestCaseDto tc = aTestCaseWhoseDescriptionWasCleared();
+        final @NotNull TestCaseDto testCase = aTestCaseWhoseDescriptionWasCleared();
 
-        final @NotNull PsiMethod pm = writtenMethodOf(LOGIN_TEST, tc);
+        final @NotNull PsiMethod pm = writtenMethodOf(LOGIN_TEST, testCase);
         assertEquals("clearing the description renamed the method", "logInWithAValidUser", pm.getName());
         assertEquals("clearing the description wrote a second method or lost the first", 1, generatedClass(LOGIN_TEST).orElseThrow().getMethods().length);
     }
 
     // Rule-CODEGEN-021
     public void testAClearedDescriptionIsRecordedInTheAnnotationAndTheNameStays() {
-        final @NotNull TestCaseDto tc = aTestCaseWhoseDescriptionWasCleared();
+        final @NotNull TestCaseDto testCase = aTestCaseWhoseDescriptionWasCleared();
 
-        final @NotNull PsiMethod pm = writtenMethodOf(LOGIN_TEST, tc);
+        final @NotNull PsiMethod pm = writtenMethodOf(LOGIN_TEST, testCase);
         assertEquals("clearing the description renamed the method", "logInWithAValidUser", pm.getName());
         assertEquals("the method still claims the description the tester cleared", "\"\"", attributeOf(pm, "description"));
     }

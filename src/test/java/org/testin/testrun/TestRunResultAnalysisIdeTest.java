@@ -81,7 +81,7 @@ public class TestRunResultAnalysisIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull TestRunFixture aJudgedTestRunIn(final @NotNull TestRunStatus status) {
         final @NotNull List<TestCaseDto> testCases = TestRunFixture.testCasesIn(getProject(), root, 2);
-        final @NotNull TestRunFixture fixture = TestRunFixture.of(getProject(), root, testCases.stream().map(tc -> EditorFixtures.pending(tc).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()))).toList(), testCases);
+        final @NotNull TestRunFixture fixture = TestRunFixture.of(getProject(), root, testCases.stream().map(testCase -> EditorFixtures.pending(testCase).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()))).toList(), testCases);
         fixture.testRun().getMarker().changeStatus(status);
         return fixture;
     }

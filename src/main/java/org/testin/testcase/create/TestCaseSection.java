@@ -51,7 +51,7 @@ public interface TestCaseSection {
     }
 
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-036
-    default boolean isShownWith(final @NotNull TestCaseDto dto) {
+    default boolean isShownWith(final @NotNull TestCaseDto testCase) {
         return false;
     }
 
@@ -63,7 +63,7 @@ public interface TestCaseSection {
     default void addBox(final @NotNull Runnable refit) {
     }
 
-    @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto dto);
+    @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto testCase);
 
     void setupShortcut(final @NotNull JComponent mainPanel, final @NotNull JBPanel<?> slot, final @NotNull AbstractTestCaseDialog base, final @NotNull Runnable repackAction);
 
@@ -75,7 +75,7 @@ public interface TestCaseSection {
 
     void setEditable(final boolean editable);
 
-    void fillData(final @NotNull TestCaseDto dto);
+    void fillData(final @NotNull TestCaseDto testCase);
 
     default void styleField(final @NotNull EditorTextField field, final @NotNull String placeholder) {
         DialogStyle.asField(field);

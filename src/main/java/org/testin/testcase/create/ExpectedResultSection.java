@@ -32,18 +32,18 @@ public class ExpectedResultSection extends AbstractMultiLineSection {
 
     // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-032
     @Override
-    public @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto dto) {
-        return dto.edit().expectedResult(field.getText().trim()).build();
+    public @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto testCase) {
+        return testCase.edit().expectedResult(field.getText().trim()).build();
     }
 
     @Override
-    public void fillData(final @NotNull TestCaseDto dto) {
-        field.setText(dto.getExpectedResult());
+    public void fillData(final @NotNull TestCaseDto testCase) {
+        field.setText(testCase.getExpectedResult());
     }
 
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-036
     @Override
-    public boolean isShownWith(final @NotNull TestCaseDto dto) {
-        return !dto.getExpectedResult().isEmpty();
+    public boolean isShownWith(final @NotNull TestCaseDto testCase) {
+        return !testCase.getExpectedResult().isEmpty();
     }
 }

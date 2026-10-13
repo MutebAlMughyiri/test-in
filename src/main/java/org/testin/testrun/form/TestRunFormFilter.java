@@ -98,7 +98,7 @@ public final class TestRunFormFilter implements FilterSource {
                 .map(TestCaseDto::getId)
                 .collect(Collectors.toSet());
 
-        selection.show(leaf -> leaf instanceof TestCaseDto tc && shown.contains(tc.getId()));
+        selection.show(leaf -> leaf instanceof TestCaseDto testCase && shown.contains(testCase.getId()));
     }
 
     @Override
@@ -111,8 +111,8 @@ public final class TestRunFormFilter implements FilterSource {
         for (int i = 0; i < node.getChildCount(); i++) {
             final @NotNull CheckedTreeNode child = (CheckedTreeNode) node.getChildAt(i);
 
-            if (child.getUserObject() instanceof TestCaseDto tc && node.getUserObject() instanceof AbstractNode testSet) {
-                offered.add(tc);
+            if (child.getUserObject() instanceof TestCaseDto testCase && node.getUserObject() instanceof AbstractNode testSet) {
+                offered.add(testCase);
                 testSets.putIfAbsent(testSet.getPath(), testSet.nameUnder(testCasesRoot));
             } else {
                 collect(child, testCasesRoot);

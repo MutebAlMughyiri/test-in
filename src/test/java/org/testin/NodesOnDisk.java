@@ -76,14 +76,14 @@ public record NodesOnDisk(@NotNull Project p) {
     }
 
     public @NotNull TestCaseDto testCase(final @NotNull TestSetNode testSet) {
-        final @NotNull TestCaseDto tc = TestCaseDto.builder()
+        final @NotNull TestCaseDto testCase = TestCaseDto.builder()
                 .id(UUID.randomUUID())
                 .description("Log in with a valid user")
                 .order("m")
                 .build();
 
-        if (!Services.getInstance(p, TestCases.class).putTestCaseVerbatim(testSet.getPath(), tc))
+        if (!Services.getInstance(p, TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase))
             throw new AssertionError("the test case was not written into " + testSet.getName());
-        return tc;
+        return testCase;
     }
 }

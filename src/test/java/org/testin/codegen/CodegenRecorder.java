@@ -49,7 +49,7 @@ public final class CodegenRecorder implements CodeChangeRegistry {
 
     private static @NotNull String nameOf(final @NotNull Object payload) {
         return switch (payload) {
-            case final TestCaseDto tc -> tc.getDescription();
+            case final TestCaseDto testCase -> testCase.getDescription();
             case final AbstractNode dir -> dir.getName();
             case final MovedNode moved -> moved.dir().getName();
             case final RenamedNode renamed -> renamed.dir().getName();
@@ -73,9 +73,9 @@ public final class CodegenRecorder implements CodeChangeRegistry {
             }
 
             @Override
-            public void executeAll(final @NotNull Project p, final @NotNull List<? extends T> items) {
-                items.forEach(item -> asked.add(step(type, nameOf(item))));
-                action.executeAll(p, items);
+            public void executeAll(final @NotNull Project p, final @NotNull List<? extends T> payloads) {
+                payloads.forEach(item -> asked.add(step(type, nameOf(item))));
+                action.executeAll(p, payloads);
             }
 
             @Override

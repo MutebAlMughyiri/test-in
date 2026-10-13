@@ -33,8 +33,8 @@ public class DescriptionColorIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull TestCaseCard bound(final @NotNull TestCaseStatus status) {
         final @NotNull TestCaseCard card = new TestCaseCard(getProject());
-        final @NotNull TestCaseDto tc = TestCaseDto.builder().description("Log in with a locked user").status(status).build();
-        card.updateData(0, tc, Set.of(), tc.getDescription());
+        final @NotNull TestCaseDto testCase = TestCaseDto.builder().description("Log in with a locked user").status(status).build();
+        card.updateData(0, testCase, Set.of(), testCase.getDescription());
         return card;
     }
 

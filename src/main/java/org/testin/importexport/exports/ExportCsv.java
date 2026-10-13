@@ -46,10 +46,10 @@ public class ExportCsv {
             writer.newLine();
 
             for (final Map.Entry<String, List<TestCaseDto>> entry : sheetsData.entrySet()) {
-                for (final TestCaseDto tc : entry.getValue()) {
+                for (final TestCaseDto testCase : entry.getValue()) {
                     final @NotNull List<String> rowValues = new ArrayList<>();
                     for (final TestSetEditorAttributes attr : TestSetEditorAttributes.all(Can.EXPORT)) {
-                        rowValues.add(SeparatedValues.field(attr.gridValue(tc), ','));
+                        rowValues.add(SeparatedValues.field(attr.gridValue(testCase), ','));
                     }
                     writer.write(String.join(",", rowValues));
                     writer.newLine();

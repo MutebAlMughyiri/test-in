@@ -58,8 +58,8 @@ public class ExecutingDotIdeTest extends AbstractCodegenIdeTest {
         return made;
     }
 
-    private boolean executingNow(final @NotNull TestCaseDto tc) {
-        return ExecutingNow.is(getProject(), tc.getId());
+    private boolean executingNow(final @NotNull TestCaseDto testCase) {
+        return ExecutingNow.is(getProject(), testCase.getId());
     }
 
     private static @NotNull List<Offered> runAndNavigate() {
@@ -130,8 +130,8 @@ public class ExecutingDotIdeTest extends AbstractCodegenIdeTest {
         }
     }
 
-    private boolean titleSaysExecuting(final @NotNull TestCaseDto tc) {
-        return Drawn.components(Drawn.detailsTab(getProject(), tc, Optional.empty(), List.of())).stream()
+    private boolean titleSaysExecuting(final @NotNull TestCaseDto testCase) {
+        return Drawn.components(Drawn.detailsTab(getProject(), testCase, Optional.empty(), List.of())).stream()
                 .filter(JTextArea.class::isInstance)
                 .anyMatch(area -> Bundle.message("execution.executing").equals(area.getAccessibleContext().getAccessibleDescription()));
     }

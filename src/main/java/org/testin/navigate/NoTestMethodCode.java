@@ -29,8 +29,8 @@ import java.util.UUID;
 
 public final class NoTestMethodCode implements TestMethodCode {
     @Override
-    public void toCode(final @NotNull Project p, final @NotNull TestCaseDto tc) {
-        TestinLogger.debug("No code navigation in this IDE; nothing opened for '" + tc.getDescription() + "'");
+    public void toCode(final @NotNull Project p, final @NotNull TestCaseDto testCase) {
+        TestinLogger.debug("No code navigation in this IDE; nothing opened for '" + testCase.getDescription() + "'");
     }
 
     @Override
@@ -46,15 +46,15 @@ public final class NoTestMethodCode implements TestMethodCode {
     }
 
     @Override
-    public @NotNull Optional<String> fillBody(final @NotNull Project p, final @NotNull TestCaseDto tc, final @NotNull String statements) {
-        TestinLogger.debug("No code navigation in this IDE; no body written for '" + tc.getDescription() + "'");
+    public @NotNull Optional<String> fillBody(final @NotNull Project p, final @NotNull TestCaseDto testCase, final @NotNull String statements) {
+        TestinLogger.debug("No code navigation in this IDE; no body written for '" + testCase.getDescription() + "'");
 
         return Optional.empty();
     }
 
     @Override
-    public @NotNull Optional<String> replaceBody(final @NotNull Project p, final @NotNull TestCaseDto tc, final @NotNull String statements) {
-        return fillBody(p, tc, statements);
+    public @NotNull Optional<String> replaceBody(final @NotNull Project p, final @NotNull TestCaseDto testCase, final @NotNull String statements) {
+        return fillBody(p, testCase, statements);
     }
 
     @Override

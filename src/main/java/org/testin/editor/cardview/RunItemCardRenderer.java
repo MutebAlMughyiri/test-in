@@ -35,12 +35,12 @@ public class RunItemCardRenderer extends AbstractCardRenderer<TestRunEditor> {
 
     // UC-EDITOR-PANEL-030
     @Override
-    protected @NotNull RunItemCard bindDataAndGetCard(final @NotNull JList<? extends TestCaseDto> list, final @NotNull TestCaseDto tc, final int row, final boolean isSelected, final boolean isRowHovered, final @NotNull String hover) {
-        final @NotNull RunItem runItem = editor.runItem(tc.getId())
-                .orElseGet(() -> RunItem.pendingFor(tc));
+    protected @NotNull RunItemCard bindDataAndGetCard(final @NotNull JList<? extends TestCaseDto> list, final @NotNull TestCaseDto testCase, final int row, final boolean isSelected, final boolean isRowHovered, final @NotNull String hover) {
+        final @NotNull RunItem runItem = editor.runItem(testCase.getId())
+                .orElseGet(() -> RunItem.pendingFor(testCase));
 
-        card.updateData(row, editor.getSelectedDetails(), runItem, editor.cardTitle(tc));
-        card.showTitleIcons(editor.getParent(), tc);
+        card.updateData(row, editor.getSelectedDetails(), runItem, editor.cardTitle(testCase));
+        card.showTitleIcons(editor.getParent(), testCase);
         card.setActionsState(isSelected, isRowHovered, hover);
         card.applyCardViewLayout(list);
 

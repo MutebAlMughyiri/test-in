@@ -39,7 +39,7 @@ final class SyntheticTree {
               "format" : %d
             }""".formatted(TestProjectMarker.FORMAT);
 
-    static @NotNull String testCase(final @NotNull UUID id, final @NotNull String order) {
+    static @NotNull String testCase(final @NotNull UUID testCaseId, final @NotNull String order) {
         return """
                 {
                   "order" : "%s",
@@ -58,7 +58,7 @@ final class SyntheticTree {
                   "module" : "Authentication",
                   "testData" : "user=valid.user password=****",
                   "preConditions" : "The user exists and is not locked"
-                }""".formatted(order, id);
+                }""".formatted(order, testCaseId);
     }
 
     static @NotNull String marker() {
@@ -76,8 +76,8 @@ final class SyntheticTree {
             write(set.resolve(".ts"), MARKER);
 
             for (int c = 0; c < perSet; c++) {
-                final @NotNull UUID id = UUID.randomUUID();
-                write(set.resolve(id + ".tc"), testCase(id, "a" + c));
+                final @NotNull UUID testCaseId = UUID.randomUUID();
+                write(set.resolve(testCaseId + ".tc"), testCase(testCaseId, "a" + c));
             }
         }
 

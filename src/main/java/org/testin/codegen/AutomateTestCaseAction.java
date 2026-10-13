@@ -59,12 +59,12 @@ public class AutomateTestCaseAction extends AbstractAnyProjectAction {
     private static @NotNull List<TestCaseDto> withoutAMethod(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases) {
         final @NotNull AutomationState state = Services.getInstance(p, AutomationState.class);
 
-        return testCases.stream().filter(tc -> !state.hasMethod(tc.getId())).toList();
+        return testCases.stream().filter(testCase -> !state.hasMethod(testCase.getId())).toList();
     }
 
     // Rule-CODEGEN-002
-    private static boolean canBeNamed(final @NotNull TestCaseDto tc) {
-        return !Fqcn.methodNameOf(tc).isEmpty();
+    private static boolean canBeNamed(final @NotNull TestCaseDto testCase) {
+        return !Fqcn.methodNameOf(testCase).isEmpty();
     }
 
     // Rule-CODEGEN-002

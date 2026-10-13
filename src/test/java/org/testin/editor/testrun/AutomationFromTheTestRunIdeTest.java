@@ -90,39 +90,39 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
         return EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());
     }
 
-    private @NotNull RunItem runItemOf(final @NotNull TestRunNode testRun, final @NotNull TestCaseDto tc) {
-        return Services.getInstance(getProject(), TestRuns.class).getRunItems(testRun.getPath()).runItemOf(tc.getId()).orElseThrow();
+    private @NotNull RunItem runItemOf(final @NotNull TestRunNode testRun, final @NotNull TestCaseDto testCase) {
+        return Services.getInstance(getProject(), TestRuns.class).getRunItems(testRun.getPath()).runItemOf(testCase.getId()).orElseThrow();
     }
 
-    private void reported(final @NotNull TestCaseDto tc, final @NotNull ExecutionStatus status, final @NotNull Duration duration) {
-        CapturedRunner.reports(getProject(), tc, status, duration);
+    private void reported(final @NotNull TestCaseDto testCase, final @NotNull ExecutionStatus status, final @NotNull Duration duration) {
+        CapturedRunner.reports(getProject(), testCase, status, duration);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
 
-    private @NotNull Map<?, ?> writtenRunItem(final @NotNull TestRunNode testRun, final @NotNull TestCaseDto tc) {
+    private @NotNull Map<?, ?> writtenRunItem(final @NotNull TestRunNode testRun, final @NotNull TestCaseDto testCase) {
         Services.getInstance(getProject(), TestRuns.class).awaitWrites();
         try {
-            return Services.getInstance(getProject(), JsonCodec.class).readValue(Files.readString(testRun.getPath().resolve(FileKind.RUN_ITEM.fileName(tc.getId()))), Map.class);
+            return Services.getInstance(getProject(), JsonCodec.class).readValue(Files.readString(testRun.getPath().resolve(FileKind.RUN_ITEM.fileName(testCase.getId()))), Map.class);
         } catch (final IOException ex) {
-            throw new AssertionError("the run item of '" + tc.getDescription() + "' was never written", ex);
+            throw new AssertionError("the run item of '" + testCase.getDescription() + "' was never written", ex);
         }
     }
 
     // Rule-EDITOR-PANEL-180
     public void testTheEditorClaimsTheTestCaseSoTheStatusComesBackToItsOwnTestRun() {
-        final @NotNull TestCaseDto tc = automatedTestCases(1).getFirst();
-        final @NotNull TestRunNode running = aTestRun("Cycle-1", List.of(EditorFixtures.pending(tc)));
-        final @NotNull TestRunNode alsoShowing = aTestRun("Cycle-2", List.of(EditorFixtures.pending(tc)));
+        final @NotNull TestCaseDto testCase = automatedTestCases(1).getFirst();
+        final @NotNull TestRunNode running = aTestRun("Cycle-1", List.of(EditorFixtures.pending(testCase)));
+        final @NotNull TestRunNode alsoShowing = aTestRun("Cycle-2", List.of(EditorFixtures.pending(testCase)));
         final @NotNull TestRunEditor claiming = opened(running);
         final @NotNull TestRunEditor other = opened(alsoShowing);
         try {
-            TestCaseQuickAction.RUN_TEST_METHOD.executeFor(claiming, tc);
-            assertEquals("the test case was not handed to TestNG", List.of(List.of(tc)), runner.runs());
+            TestCaseQuickAction.RUN_TEST_METHOD.executeFor(claiming, testCase);
+            assertEquals("the test case was not handed to TestNG", List.of(List.of(testCase)), runner.runs());
 
-            reported(tc, ExecutionStatus.PASSED, Duration.ofMillis(84));
+            reported(testCase, ExecutionStatus.PASSED, Duration.ofMillis(84));
 
-            Await.until("the run item status did not come back to the test run that ran it", () -> runItemOf(running, tc).getStatus() == RunItemStatus.PASSED);
-            assertEquals("the run item status went to another editor showing the same test case", RunItemStatus.PENDING, runItemOf(alsoShowing, tc).getStatus());
+            Await.until("the run item status did not come back to the test run that ran it", () -> runItemOf(running, testCase).getStatus() == RunItemStatus.PASSED);
+            assertEquals("the run item status went to another editor showing the same test case", RunItemStatus.PENDING, runItemOf(alsoShowing, testCase).getStatus());
         } finally {
             Disposer.dispose(claiming);
             Disposer.dispose(other);

@@ -126,7 +126,7 @@ public class EditorStatusBar extends JBPanel<EditorStatusBar> {
         return Math.clamp((inner - arrows) / 2, sentence, Math.max(sentence, inner - figures - arrows));
     }
 
-    private static @NotNull JBPanel<?> centeredRow(final @NotNull JComponent... items) {
+    private static @NotNull JBPanel<?> centeredRow(final @NotNull JComponent... components) {
         final @NotNull JBPanel<?> row = new JBPanel<>(new GridBagLayout());
         row.setOpaque(false);
         row.setBackground(JBUI.CurrentTheme.EditorTabs.background());
@@ -135,7 +135,7 @@ public class EditorStatusBar extends JBPanel<EditorStatusBar> {
         gbc.gridy = 0;
         gbc.insets = JBUI.insetsLeft(4);
 
-        for (final JComponent item : items) row.add(item, gbc);
+        for (final JComponent item : components) row.add(item, gbc);
 
         return row;
     }

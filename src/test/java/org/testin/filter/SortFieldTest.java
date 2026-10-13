@@ -93,7 +93,7 @@ public class SortFieldTest {
                 slow.getId(), RunItem.builder().id(slow.getId()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).duration(Duration.ofMinutes(5)).build())).build(),
                 quick.getId(), RunItem.builder().id(quick.getId()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).duration(Duration.ofSeconds(20)).build())).build(),
                 waiting.getId(), RunItem.builder().id(waiting.getId()).build());
-        final @NotNull Function<UUID, Optional<RunItem>> inTheRun = id -> Optional.ofNullable(runItems.get(id));
+        final @NotNull Function<UUID, Optional<RunItem>> inTheRun = testCaseId -> Optional.ofNullable(runItems.get(testCaseId));
 
         assertEquals(descriptionsOf(SortField.DURATION.sorted(List.of(waiting, slow, quick), SortDirection.DESCENDING, inTheRun)), List.of("slow", "quick", "waiting"));
         assertEquals(descriptionsOf(SortField.RUN_ITEM_STATUS.sorted(List.of(waiting, slow, quick), SortDirection.ASCENDING, inTheRun)), List.of("quick", "slow", "waiting"),

@@ -111,8 +111,8 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
         return indexedTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
     }
 
-    private @NotNull List<JBLabel> buttonsOn(final @NotNull TestCaseDto tc) {
-        final @NotNull JBPanel<?> tab = Drawn.detailsTab(getProject(), tc, Optional.empty(), List.of());
+    private @NotNull List<JBLabel> buttonsOn(final @NotNull TestCaseDto testCase) {
+        final @NotNull JBPanel<?> tab = Drawn.detailsTab(getProject(), testCase, Optional.empty(), List.of());
         final @NotNull Container actions = Drawn.components(tab).stream()
                 .filter(JBLabel.class::isInstance)
                 .map(JBLabel.class::cast)
@@ -141,10 +141,10 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-VIEW-PANEL-050
     public void testTheRunButtonIsDrawnGrayAndSaysWhyWhereItCannotWork() {
-        final @NotNull TestCaseDto tc = aTestCase();
+        final @NotNull TestCaseDto testCase = aTestCase();
         codeIsOff();
 
-        final @NotNull JBLabel run = buttonsOn(tc).get(1);
+        final @NotNull JBLabel run = buttonsOn(testCase).get(1);
         assertEquals("the run button was not drawn", TestCaseQuickAction.RUN_TEST_METHOD.getTooltip(), nameOf(run));
         assertGrayAndSaysWhy(run, "the run button");
         assertEquals("the run button does not say it waits for testin.yml", TestCaseQuickAction.RUN_TEST_METHOD.whyNotOffered(getProject()).orElseThrow(), whyGray(run));
@@ -152,21 +152,21 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-VIEW-PANEL-051, Rule-VIEW-PANEL-053
     public void testTheRunButtonAndTheStopButtonShareOnePlaceAndNeverShowTogether() {
-        final @NotNull TestCaseDto tc = aTestCase();
+        final @NotNull TestCaseDto testCase = aTestCase();
         final @NotNull TestNGExecution execution = Services.getInstance(getProject(), TestNGExecution.class);
 
-        final @NotNull List<String> idle = buttonsOn(tc).stream().map(PanelActionsIdeTest::nameOf).toList();
+        final @NotNull List<String> idle = buttonsOn(testCase).stream().map(PanelActionsIdeTest::nameOf).toList();
         assertEquals("the run button is not second of the three", TestCaseQuickAction.RUN_TEST_METHOD.getTooltip(), idle.get(1));
         assertFalse("the stop button was drawn for a test case that is not running", idle.contains(TestCaseQuickAction.STOP_TEST_METHOD.getTooltip()));
 
-        execution.starting(tc);
+        execution.starting(testCase);
         try {
-            final @NotNull List<String> running = buttonsOn(tc).stream().map(PanelActionsIdeTest::nameOf).toList();
+            final @NotNull List<String> running = buttonsOn(testCase).stream().map(PanelActionsIdeTest::nameOf).toList();
             assertEquals("the run button's place does not hold the stop button while the test case runs", TestCaseQuickAction.STOP_TEST_METHOD.getTooltip(), running.get(1));
             assertFalse("the run button was drawn beside the stop button", running.contains(TestCaseQuickAction.RUN_TEST_METHOD.getTooltip()));
             assertEquals("the stop button was added rather than put in the run button's place", idle.size(), running.size());
         } finally {
-            execution.stop(List.of(tc));
+            execution.stop(List.of(testCase));
         }
     }
 
@@ -184,10 +184,10 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-VIEW-PANEL-056
     public void testTheGoToCodeButtonIsDrawnGrayAndSaysWhyWhereItCannotWork() {
-        final @NotNull TestCaseDto tc = aTestCase();
+        final @NotNull TestCaseDto testCase = aTestCase();
         codeIsOff();
 
-        final @NotNull JBLabel code = buttonsOn(tc).getFirst();
+        final @NotNull JBLabel code = buttonsOn(testCase).getFirst();
         assertTrue("the go to code button was not drawn: " + nameOf(code), automationWords().contains(nameOf(code)));
         assertGrayAndSaysWhy(code, "the go to code button");
         assertEquals("the go to code button does not say it waits for testin.yml", TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD.whyNotOffered(getProject()).orElseThrow(), whyGray(code));
@@ -220,32 +220,32 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-VIEW-PANEL-084, Rule-VIEW-PANEL-055
     public void testF5StopsTheTestCaseOnDisplayAndItIsRecordedAsNotRun() {
-        final @NotNull TestCaseDto tc = aTestCase();
+        final @NotNull TestCaseDto testCase = aTestCase();
         final @NotNull TestNGExecution execution = Services.getInstance(getProject(), TestNGExecution.class);
         ExecutionRecorder.initRecording(getProject());
-        view.getPanel().show(List.of(tc), tc.getParent().getPath2());
-        execution.starting(tc);
+        view.getPanel().show(List.of(testCase), testCase.getParent().getPath2());
+        execution.starting(testCase);
 
         final @NotNull List<String> said = Said.during(getProject(), () -> assertTrue("F5 did nothing on a running test case", KeyPress.press(getProject(), view.keyboardTarget(ViewTab.DETAILS), f5())));
 
-        assertFalse("F5 did not stop the running test case", execution.isRunning(tc.getId()));
+        assertFalse("F5 did not stop the running test case", execution.isRunning(testCase.getId()));
         assertTrue("stopping said nothing: " + said, said.stream().anyMatch(words -> words.contains(Done.STOPPED.getOutcome())));
 
-        ExecutionReported.broadcast(getProject(), tc.getId().toString(), ExecutionStatus.FAILED, Duration.ZERO, Failure.NONE);
+        ExecutionReported.broadcast(getProject(), testCase.getId().toString(), ExecutionStatus.FAILED, Duration.ZERO, Failure.NONE);
         settled();
         view.getPanel().refreshCurrentView();
-        assertEquals("the test case the tester stopped was recorded as failed", ExecutionStatus.IDLE, execution.statusOf(tc));
+        assertEquals("the test case the tester stopped was recorded as failed", ExecutionStatus.IDLE, execution.statusOf(testCase));
         assertFalse("the panel shows the stopped test case as failed: " + view.words(ViewTab.DETAILS), view.words(ViewTab.DETAILS).contains(ExecutionStatus.FAILED.getBadge().label()));
     }
 
     // Rule-VIEW-PANEL-049
     public void testSavingAChangeRewritesTheAutomationCodeForThatField() {
         final @NotNull TestSetNode testSet = createdTestSet("Login");
-        final @NotNull TestCaseDto tc = createdTestCase(testSet, "Log in with a valid user", "b");
+        final @NotNull TestCaseDto testCase = createdTestCase(testSet, "Log in with a valid user", "b");
         settled();
-        assertEquals("\"Log in with a valid user\"", attributeOf(writtenMethodOf(LOGIN_TEST, tc), "description"));
+        assertEquals("\"Log in with a valid user\"", attributeOf(writtenMethodOf(LOGIN_TEST, testCase), "description"));
         final @NotNull PopupsBuilt popups = PopupsBuilt.recording(getTestRootDisposable());
-        view.getPanel().show(List.of(tc), testSet.getPath2());
+        view.getPanel().show(List.of(testCase), testSet.getPath2());
 
         assertTrue(FieldChange.pressF2(getProject(), view));
         FieldChange.chooseTheDescription(popups.last());
@@ -253,17 +253,17 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
 
         Await.until("saving the description did not rewrite it in the test method", () -> {
             settled();
-            return methodOf(LOGIN_TEST, tc).map(pm -> attributeOf(pm, "description")).filter("\"Sign in with a valid user\""::equals).isPresent();
+            return methodOf(LOGIN_TEST, testCase).map(pm -> attributeOf(pm, "description")).filter("\"Sign in with a valid user\""::equals).isPresent();
         });
     }
 
     // Rule-VIEW-PANEL-010, Rule-VIEW-PANEL-011, Rule-VIEW-PANEL-022
     public void testClickingTheMarkBesideATestMethodOpensThePanelOnThatOneTestCase() {
-        final @NotNull TestCaseDto tc = aTestCase();
-        final @NotNull String text = LoginTestSource.withTestNg(tc.getId().toString());
+        final @NotNull TestCaseDto testCase = aTestCase();
+        final @NotNull String text = LoginTestSource.withTestNg(testCase.getId().toString());
         final @NotNull PsiFile file = myFixture.addFileToProject("nafath/LoginMarkTest.java", text);
         myFixture.configureFromExistingVirtualFile(file.getVirtualFile());
-        myFixture.getEditor().getCaretModel().moveToOffset(text.indexOf(tc.getId().toString()));
+        myFixture.getEditor().getCaretModel().moveToOffset(text.indexOf(testCase.getId().toString()));
         final @NotNull GutterMark mark = myFixture.findGuttersAtCaret().stream()
                 .filter(found -> Bundle.message("gutter.view.details").equals(found.getTooltipText()))
                 .findFirst()

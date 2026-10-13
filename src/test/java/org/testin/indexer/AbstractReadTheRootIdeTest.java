@@ -63,9 +63,9 @@ public abstract class AbstractReadTheRootIdeTest extends AbstractTempRootIdeTest
     }
 
     protected static @NotNull UUID aTestCaseIn(final @NotNull Path folder) {
-        final @NotNull UUID id = UUID.randomUUID();
-        SyntheticTree.write(folder.resolve(FileKind.TEST_CASE.fileName(id)), SyntheticTree.testCase(id, "m"));
-        return id;
+        final @NotNull UUID testCaseId = UUID.randomUUID();
+        SyntheticTree.write(folder.resolve(FileKind.TEST_CASE.fileName(testCaseId)), SyntheticTree.testCase(testCaseId, "m"));
+        return testCaseId;
     }
 
     protected static void resultIn(final @NotNull Path testRun, final @NotNull String fileName, final @NotNull UUID testCaseId) {

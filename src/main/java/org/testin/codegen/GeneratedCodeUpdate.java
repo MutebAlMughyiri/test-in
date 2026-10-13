@@ -60,10 +60,10 @@ public enum GeneratedCodeUpdate implements CodeUpdate {
 
     // UC-CODEGEN-019, Rule-CODEGEN-005, Rule-EDITOR-PANEL-046
     @Override
-    public <T> void executeAll(final @NotNull GenType<T> type, final @NotNull Project p, final @NotNull List<? extends T> items, final @NotNull String undoGroup) {
-        if (cannotGenerate(p, type.description()) || items.isEmpty()) return;
+    public <T> void executeAll(final @NotNull GenType<T> type, final @NotNull Project p, final @NotNull List<? extends T> payloads, final @NotNull String undoGroup) {
+        if (cannotGenerate(p, type.description()) || payloads.isEmpty()) return;
 
         WriteCommandAction.runWriteCommandAction(p, type.description(), undoGroup,
-                () -> CodeChangeRegistry.find(type).executeAll(p, items));
+                () -> CodeChangeRegistry.find(type).executeAll(p, payloads));
     }
 }

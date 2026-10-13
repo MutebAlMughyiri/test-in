@@ -36,21 +36,21 @@ import java.util.function.Consumer;
 public abstract class AbstractJsonArraySplitBulkSectionDialog extends AbstractFrameworkDialog {
     private static final @NotNull ItemRecorder RECORDS_NOTHING = (_, _, _, _) -> {
     };
-    private final @NotNull List<TestCaseDto> selectedItems;
-    private final @NotNull Consumer<List<TestCaseDto>> updatedItems;
+    private final @NotNull List<TestCaseDto> selectedTestCases;
+    private final @NotNull Consumer<List<TestCaseDto>> updatedTestCases;
     private final @NotNull BulkJsonEditors editors;
     private final @NotNull List<List<String>> originalValues = new ArrayList<>();
     private final @NotNull List<List<String>> activeValues = new ArrayList<>();
     private final @NotNull List<int[]> spanOwners = new ArrayList<>();
 
-    protected AbstractJsonArraySplitBulkSectionDialog(final @NotNull Project p, final @NotNull List<TestCaseDto> selectedItems, final @NotNull Consumer<List<TestCaseDto>> updatedItems) {
+    protected AbstractJsonArraySplitBulkSectionDialog(final @NotNull Project p, final @NotNull List<TestCaseDto> selectedTestCases, final @NotNull Consumer<List<TestCaseDto>> updatedTestCases) {
         super(p);
-        this.selectedItems = selectedItems;
-        this.updatedItems = updatedItems;
+        this.selectedTestCases = selectedTestCases;
+        this.updatedTestCases = updatedTestCases;
 
         title = getPopupTitle();
 
-        for (final List<String> values : extractOriginalValues(selectedItems)) {
+        for (final List<String> values : extractOriginalValues(selectedTestCases)) {
             final @NotNull List<String> current = new ArrayList<>(Objects.requireNonNullElse(values, List.of()));
             if (current.isEmpty()) current.add("");
 
@@ -81,13 +81,13 @@ public abstract class AbstractJsonArraySplitBulkSectionDialog extends AbstractFr
         editors.bindKeysToEditor(shortcuts);
     }
 
-    protected abstract @NotNull List<TestCaseDto> applyValues(final @NotNull List<TestCaseDto> items, final @NotNull List<List<String>> newValues);
+    protected abstract @NotNull List<TestCaseDto> applyValues(final @NotNull List<TestCaseDto> testCases, final @NotNull List<List<String>> newValues);
 
     protected abstract @NotNull String getPopupTitle();
 
     protected abstract @NotNull String getArrayFieldName();
 
-    protected abstract @NotNull List<List<String>> extractOriginalValues(final @NotNull List<TestCaseDto> items);
+    protected abstract @NotNull List<List<String>> extractOriginalValues(final @NotNull List<TestCaseDto> testCases);
 
     // UC-EDITOR-PANEL-007
     public void open() {
@@ -113,14 +113,14 @@ public abstract class AbstractJsonArraySplitBulkSectionDialog extends AbstractFr
         final @NotNull List<TestCaseDto> edited = new ArrayList<>();
         final @NotNull List<List<String>> editedValues = new ArrayList<>();
 
-        for (int i = 0; i < selectedItems.size(); i++) {
+        for (int i = 0; i < selectedTestCases.size(); i++) {
             if (activeValues.get(i).equals(originalValues.get(i))) continue;
 
-            edited.add(selectedItems.get(i));
+            edited.add(selectedTestCases.get(i));
             editedValues.add(activeValues.get(i));
         }
 
-        updatedItems.accept(applyValues(edited, editedValues));
+        updatedTestCases.accept(applyValues(edited, editedValues));
 
         closeOk();
     }
@@ -149,7 +149,7 @@ public abstract class AbstractJsonArraySplitBulkSectionDialog extends AbstractFr
         final @NotNull List<Integer> spans = editors.indicesUnderCarets();
         if (spans.isEmpty()) return;
 
-        final int focusTc = spanOwners.get(spans.getLast())[0];
+        final int focusedTestCase = spanOwners.get(spans.getLast())[0];
         int focusItem = 0;
 
         for (final int span : spans) {
@@ -166,7 +166,7 @@ public abstract class AbstractJsonArraySplitBulkSectionDialog extends AbstractFr
         }
 
         render();
-        focusItem(focusTc, focusItem);
+        focusItem(focusedTestCase, focusItem);
     }
 
     private void caretOnEveryValue() {
@@ -189,10 +189,10 @@ public abstract class AbstractJsonArraySplitBulkSectionDialog extends AbstractFr
 
         spanOwners.clear();
 
-        for (int i = 0; i < selectedItems.size(); i++) {
-            final @NotNull TestCaseDto tc = selectedItems.get(i);
-            final @NotNull String prefix = "  {\n    \"id\": \"" + BulkValueText.escape(tc.getId().toString())
-                    + "\",\n    \"description\": \"" + BulkValueText.escape(tc.getDescription())
+        for (int i = 0; i < selectedTestCases.size(); i++) {
+            final @NotNull TestCaseDto selectedTestCase = selectedTestCases.get(i);
+            final @NotNull String prefix = "  {\n    \"id\": \"" + BulkValueText.escape(selectedTestCase.getId().toString())
+                    + "\",\n    \"description\": \"" + BulkValueText.escape(selectedTestCase.getDescription())
                     + "\",\n    \"" + getArrayFieldName() + "\": [\n";
             left.append(prefix);
             right.append(prefix);
@@ -204,7 +204,7 @@ public abstract class AbstractJsonArraySplitBulkSectionDialog extends AbstractFr
             }, i);
 
             final @NotNull String suffix = "    ]\n  }";
-            final @NotNull String comma = (i < selectedItems.size() - 1) ? ",\n" : "\n";
+            final @NotNull String comma = (i < selectedTestCases.size() - 1) ? ",\n" : "\n";
             left.append(suffix).append(comma);
             right.append(suffix).append(comma);
         }

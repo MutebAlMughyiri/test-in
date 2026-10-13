@@ -68,7 +68,7 @@ public abstract class AbstractTestCaseDialog extends AbstractFrameworkDialog {
     protected final @NotNull Disposable dialogDisposable;
     protected final @NotNull Map<TestCaseSection, StatusBarItem[]> statusBarMapping;
     @Getter(AccessLevel.NONE)
-    private final @NotNull TestCaseDto dto;
+    private final @NotNull TestCaseDto testCase;
     @Getter(AccessLevel.NONE)
     private final @NotNull Consumer<@NotNull TestCaseDto> onSave;
     @Getter(AccessLevel.NONE)
@@ -77,9 +77,9 @@ public abstract class AbstractTestCaseDialog extends AbstractFrameworkDialog {
     private @NotNull PropertyChangeListener focusListener = NOTHING_ON_FOCUS;
     private @NotNull Optional<TestCaseSection> editableSection = Optional.empty();
 
-    public AbstractTestCaseDialog(final @NotNull Project p, final @NotNull TestCaseDto dto, final @NotNull Consumer<@NotNull TestCaseDto> onSave, final StatusBarItem @NotNull ... dialogKeys) {
+    public AbstractTestCaseDialog(final @NotNull Project p, final @NotNull TestCaseDto testCase, final @NotNull Consumer<@NotNull TestCaseDto> onSave, final StatusBarItem @NotNull ... dialogKeys) {
         super(p);
-        this.dto = dto;
+        this.testCase = testCase;
         this.onSave = onSave;
         this.dialogKeys = dialogKeys.clone();
         this.dialogDisposable = Disposer.newDisposable("testin.testCaseDialog");
@@ -215,7 +215,7 @@ public abstract class AbstractTestCaseDialog extends AbstractFrameworkDialog {
             return;
         }
 
-        TestCaseDto edited = dto;
+        TestCaseDto edited = testCase;
         for (final TestCaseSection section : writers) edited = section.applyTo(edited);
         onSave.accept(edited);
 

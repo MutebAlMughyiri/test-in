@@ -142,11 +142,11 @@ public enum CreateTestCaseFields implements StatusBarItem {
 
     // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-199
     public StatusBarItem @NotNull [] getStatusBarItems() {
-        final @NotNull List<StatusBarItem> items = new ArrayList<>(ownKeys);
+        final @NotNull List<StatusBarItem> statusBarItems = new ArrayList<>(ownKeys);
 
-        if (this == DESCRIPTION) items.addAll(JUMP_KEYS);
+        if (this == DESCRIPTION) statusBarItems.addAll(JUMP_KEYS);
 
-        return items.toArray(StatusBarItem[]::new);
+        return statusBarItems.toArray(StatusBarItem[]::new);
     }
 
     @Override

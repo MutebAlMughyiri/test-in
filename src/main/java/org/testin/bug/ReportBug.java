@@ -43,7 +43,7 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReportBug {
     // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-067
-    public static void start(final @NotNull Project p, final @NotNull TestRunNode testRunNode, final @NotNull UUID runItemId, final @NotNull TestCaseDto tc, final @NotNull Runnable redraw) {
+    public static void start(final @NotNull Project p, final @NotNull TestRunNode testRunNode, final @NotNull UUID runItemId, final @NotNull TestCaseDto testCase, final @NotNull Runnable redraw) {
         final @NotNull TestRuns testRuns = Services.getInstance(p, TestRuns.class);
         final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
         final @NotNull OpenBugReports reports = Services.getInstance(p, OpenBugReports.class);
@@ -57,10 +57,10 @@ public final class ReportBug {
         redraw.run();
 
         final @NotNull RunItem failedItem = failed.orElseThrow();
-        final @NotNull Optional<TestCaseFile> file = testCases.testCaseFile(tc);
+        final @NotNull Optional<TestCaseFile> file = testCases.testCaseFile(testCase);
 
         BackgroundWork.run(p, Bundle.message("bug.preparing"), Bundle.message("bug.send.failed.title"), true,
-                indicator -> prepare(p, BugFacts.of(failedItem, tc, testRunNode.getMarker(), testRunNode.getName(), testRuns.screenshots(runItemPath.testRunPath(), failedItem)), file, indicator),
+                indicator -> prepare(p, BugFacts.of(failedItem, testCase, testRunNode.getMarker(), testRunNode.getName(), testRuns.screenshots(runItemPath.testRunPath(), failedItem)), file, indicator),
                 bug -> open(p, runItemPath, bug, redraw),
                 () -> {
                     reports.end(runItemPath, Stage.PREPARING);

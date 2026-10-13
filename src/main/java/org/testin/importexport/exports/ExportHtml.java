@@ -111,10 +111,10 @@ public class ExportHtml {
                 writer.write("</tr>");
                 writer.newLine();
 
-                for (final TestCaseDto tc : testCases) {
+                for (final TestCaseDto testCase : testCases) {
                     writer.write("<tr>");
                     for (final TestSetEditorAttributes attr : TestSetEditorAttributes.all(Can.EXPORT)) {
-                        writer.write("<td>" + StringUtil.escapeXmlEntities(attr.gridValue(tc)) + "</td>");
+                        writer.write("<td>" + StringUtil.escapeXmlEntities(attr.gridValue(testCase)) + "</td>");
                     }
                     writer.write("</tr>");
                     writer.newLine();

@@ -47,17 +47,17 @@ public final class CutState implements Disposable {
 
     public void cut(final @NotNull TestinEditor editor, final @NotNull List<TestCaseDto> testCases) {
         pending.clear();
-        testCases.forEach(tc -> pending.add(tc.getId()));
+        testCases.forEach(testCase -> pending.add(testCase.getId()));
         source = Optional.of(editor);
     }
 
-    public boolean isPending(final @NotNull UUID id) {
-        return pending.contains(id);
+    public boolean isPending(final @NotNull UUID testCaseId) {
+        return pending.contains(testCaseId);
     }
 
     // UC-EDITOR-PANEL-017, Rule-EDITOR-PANEL-079, Rule-EDITOR-PANEL-082
     public boolean isCutOf(final @NotNull List<TestCaseDto> testCases) {
-        return !testCases.isEmpty() && testCases.stream().allMatch(tc -> pending.contains(tc.getId()));
+        return !testCases.isEmpty() && testCases.stream().allMatch(testCase -> pending.contains(testCase.getId()));
     }
 
     public boolean isCutting() {

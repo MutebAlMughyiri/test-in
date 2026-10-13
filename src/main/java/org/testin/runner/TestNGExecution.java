@@ -83,8 +83,8 @@ public final class TestNGExecution implements Disposable {
         });
     }
 
-    private static @NotNull String key(final @NotNull UUID id) {
-        return id.toString().toLowerCase(Locale.ROOT);
+    private static @NotNull String key(final @NotNull UUID testCaseId) {
+        return testCaseId.toString().toLowerCase(Locale.ROOT);
     }
 
     @Override
@@ -93,15 +93,15 @@ public final class TestNGExecution implements Disposable {
 
     // UC-CODEGEN-008, Rule-CODEGEN-034
     @FromContentModule
-    public void starting(final @NotNull TestCaseDto tc) {
-        registry.starting(tc.getId());
+    public void starting(final @NotNull TestCaseDto testCase) {
+        registry.starting(testCase.getId());
 
-        ExecutionReported.broadcast(p, key(tc.getId()), ExecutionStatus.RUNNING, Duration.ZERO, Failure.NONE);
+        ExecutionReported.broadcast(p, key(testCase.getId()), ExecutionStatus.RUNNING, Duration.ZERO, Failure.NONE);
     }
 
     @FromContentModule
     public @NotNull List<TestCaseDto> stillWanted(final @NotNull List<TestCaseDto> testCases) {
-        return testCases.stream().filter(tc -> registry.take(tc.getId())).toList();
+        return testCases.stream().filter(testCase -> registry.take(testCase.getId())).toList();
     }
 
     // UC-CODEGEN-008, Rule-CODEGEN-076
@@ -131,17 +131,17 @@ public final class TestNGExecution implements Disposable {
         notifier.softRefuse(p, Refused.ACROSS_MODULES, String.join(", ", modules));
     }
 
-    public void notStarting(final @NotNull TestCaseDto tc) {
-        registry.notStarting(tc.getId());
+    public void notStarting(final @NotNull TestCaseDto testCase) {
+        registry.notStarting(testCase.getId());
 
-        ExecutionReported.broadcast(p, key(tc.getId()), ExecutionStatus.IDLE, Duration.ZERO, Failure.NONE);
+        ExecutionReported.broadcast(p, key(testCase.getId()), ExecutionStatus.IDLE, Duration.ZERO, Failure.NONE);
     }
 
     // UC-CODEGEN-008
     @FromContentModule
-    public void noGeneratedCode(final @NotNull TestCaseDto tc) {
-        TestinLogger.warn("Not running '" + tc.getDescription() + "': it has no generated code");
-        notStarting(tc);
+    public void noGeneratedCode(final @NotNull TestCaseDto testCase) {
+        TestinLogger.warn("Not running '" + testCase.getDescription() + "': it has no generated code");
+        notStarting(testCase);
     }
 
     // UC-CODEGEN-008, Rule-CODEGEN-033, Rule-CODEGEN-074, Rule-CODEGEN-034
@@ -156,37 +156,37 @@ public final class TestNGExecution implements Disposable {
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-038
-    public boolean isStopped(final @NotNull TestCaseDto tc) {
-        return registry.isStopped(tc.getId());
+    public boolean isStopped(final @NotNull TestCaseDto testCase) {
+        return registry.isStopped(testCase.getId());
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-036
-    public boolean isRunning(final @NotNull UUID id) {
-        return registry.isRunning(id);
+    public boolean isRunning(final @NotNull UUID testCaseId) {
+        return registry.isRunning(testCaseId);
     }
 
     // Rule-EDITOR-PANEL-291
-    public boolean isExecutingNow(final @NotNull UUID id) {
-        return registry.isExecutingNow(id);
+    public boolean isExecutingNow(final @NotNull UUID testCaseId) {
+        return registry.isExecutingNow(testCaseId);
     }
 
-    public @NotNull ExecutionStatus statusOf(final @NotNull TestCaseDto tc) {
-        return registry.statusOf(tc.getId());
+    public @NotNull ExecutionStatus statusOf(final @NotNull TestCaseDto testCase) {
+        return registry.statusOf(testCase.getId());
     }
 
     // UC-CODEGEN-008
-    void reported(final @NotNull UUID id, final @NotNull ExecutionStatus status) {
-        registry.reported(id, status);
+    void reported(final @NotNull UUID testCaseId, final @NotNull ExecutionStatus status) {
+        registry.reported(testCaseId, status);
     }
 
     // Rule-CODEGEN-110
-    @NotNull Map<UUID, Attempts> attempted(final @NotNull UUID id, final @NotNull Attempt attempt) {
-        return registry.attempted(id, attempt);
+    @NotNull Map<UUID, Attempts> attempted(final @NotNull UUID testCaseId, final @NotNull Attempt attempt) {
+        return registry.attempted(testCaseId, attempt);
     }
 
     // Rule-CODEGEN-111
-    @NotNull Optional<Attempts> takeUnwritten(final @NotNull UUID id) {
-        return registry.takeUnwritten(id);
+    @NotNull Optional<Attempts> takeUnwritten(final @NotNull UUID testCaseId) {
+        return registry.takeUnwritten(testCaseId);
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-037
@@ -195,8 +195,8 @@ public final class TestNGExecution implements Disposable {
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-037
-    public int stopTestCases(final @NotNull Collection<UUID> ids) {
-        final @NotNull Stop stop = registry.stopping(List.copyOf(ids));
+    public int stopTestCases(final @NotNull Collection<UUID> testCaseIds) {
+        final @NotNull Stop stop = registry.stopping(List.copyOf(testCaseIds));
         if (stop.testCases().isEmpty()) return 0;
 
         final @NotNull Map<ProcessHandler, String> theirs = running(stop.executions());
@@ -204,7 +204,7 @@ public final class TestNGExecution implements Disposable {
                 + " execution(s): " + theirs.size() + " had reached a process");
 
         theirs.forEach(this::kill);
-        stop.testCases().forEach(id -> ExecutionReported.broadcast(p, key(id), ExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
+        stop.testCases().forEach(testCaseId -> ExecutionReported.broadcast(p, key(testCaseId), ExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
 
         return stop.testCases().size();
     }
@@ -217,7 +217,7 @@ public final class TestNGExecution implements Disposable {
             if (open.isEmpty()) return;
 
             TestinLogger.info("'" + testRunName + "' ended with " + open.size() + " test case(s) still open");
-            open.forEach(id -> ExecutionReported.broadcast(p, key(id), ExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
+            open.forEach(testCaseId -> ExecutionReported.broadcast(p, key(testCaseId), ExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
         });
     }
 

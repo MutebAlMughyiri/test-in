@@ -288,15 +288,15 @@ public final class TestRunWordGenerator {
             setCellText(numCell, String.valueOf(idx), ReportFont.BODY.ptRounded(), false, DARK_GRAY);
             numCell.getParagraphs().getFirst().setAlignment(ParagraphAlignment.CENTER);
 
-            XWPFTableCell tcCell = row.getCell(1);
-            shadeCell(tcCell, rowBg);
-            setCellPadding(tcCell, 4, 6, 4, 6);
+            XWPFTableCell testCaseCell = row.getCell(1);
+            shadeCell(testCaseCell, rowBg);
+            setCellPadding(testCaseCell, 4, 6, 4, 6);
             final @NotNull String testCaseName = runItem.shownTestCase().getDescription();
-            final @NotNull String tcName = testCaseName.isEmpty() ? "—" : testCaseName;
-            setCellText(tcCell, tcName, ReportFont.BODY.ptRounded(), false, BLACK);
+            final @NotNull String shownTestCaseName = testCaseName.isEmpty() ? "—" : testCaseName;
+            setCellText(testCaseCell, shownTestCaseName, ReportFont.BODY.ptRounded(), false, BLACK);
 
             // Rule-REPORT-027
-            ReportText.otherExecutions(runItem).ifPresent(others -> styledRun(tcCell.addParagraph().createRun(), others, ReportFont.SMALL, DARK_GRAY));
+            ReportText.otherExecutions(runItem).ifPresent(others -> styledRun(testCaseCell.addParagraph().createRun(), others, ReportFont.SMALL, DARK_GRAY));
 
             if (section.isWithFailureDetail()) addFailureDetail(row, runItem, rowBg);
 

@@ -132,8 +132,8 @@ public class RecordRunItemStatusIdeTest extends AbstractTempRootIdeTest {
             fixture.press(editor, RunItemStatus.BLOCKED);
 
             assertEquals("five recorded at once were not one message with a count", List.of(Done.counted(RunItemStatus.BLOCKED.getLabel(), 5)), balloons);
-            for (final TestCaseDto tc : fixture.testCases().subList(0, 5))
-                assertEquals(RunItemStatus.BLOCKED, fixture.statusOf(tc));
+            for (final TestCaseDto testCase : fixture.testCases().subList(0, 5))
+                assertEquals(RunItemStatus.BLOCKED, fixture.statusOf(testCase));
         } finally {
             Disposer.dispose(editor);
         }
@@ -255,8 +255,8 @@ public class RecordRunItemStatusIdeTest extends AbstractTempRootIdeTest {
             fixture.press(editor, RunItemStatus.FAILED);
 
             assertTrue("failing several opened the failure dialog", fixture.failureDialog().isEmpty());
-            for (final TestCaseDto tc : List.of(fixture.testCases().getFirst(), fixture.testCases().get(2))) {
-                final @NotNull RunItem failed = fixture.runItemOf(tc);
+            for (final TestCaseDto testCase : List.of(fixture.testCases().getFirst(), fixture.testCases().get(2))) {
+                final @NotNull RunItem failed = fixture.runItemOf(testCase);
                 assertEquals(RunItemStatus.FAILED, failed.getStatus());
                 assertEquals("a test case failed with several was given detail", "", failed.getActualResult());
             }

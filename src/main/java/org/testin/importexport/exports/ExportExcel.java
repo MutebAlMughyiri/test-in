@@ -80,11 +80,11 @@ public class ExportExcel {
                 }
 
                 int rowIndex = 1;
-                for (final TestCaseDto tc : entry.getValue()) {
+                for (final TestCaseDto testCase : entry.getValue()) {
                     final @NotNull Row row = sheet.createRow(rowIndex++);
                     for (int i = 0; i < TestSetEditorAttributes.all(Can.EXPORT).size(); i++) {
                         final @NotNull Cell cell = row.createCell(i);
-                        cell.setCellValue(TestSetEditorAttributes.all(Can.EXPORT).get(i).gridValue(tc));
+                        cell.setCellValue(TestSetEditorAttributes.all(Can.EXPORT).get(i).gridValue(testCase));
                     }
                 }
 

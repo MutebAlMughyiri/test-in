@@ -58,35 +58,35 @@ public class TesterNameStampIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull TestCaseDto aTestCaseIn(final @NotNull TestSetNode testSet) {
-        final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
-        tc.setParent(testSet);
-        return tc;
+        final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
+        testCase.setParent(testSet);
+        return testCase;
     }
 
-    private void put(final @NotNull TestSetNode testSet, final @NotNull TestCaseDto tc) {
-        assertTrue("the test case was not written", Services.getInstance(getProject(), TestCases.class).putTestCase(testSet.getPath(), tc));
+    private void put(final @NotNull TestSetNode testSet, final @NotNull TestCaseDto testCase) {
+        assertTrue("the test case was not written", Services.getInstance(getProject(), TestCases.class).putTestCase(testSet.getPath(), testCase));
     }
 
     // Rule-SETTING-018
     public void testTheNameIsReadAtTheMomentItIsStamped() {
         final @NotNull TestSetNode testSet = loginTestSet();
-        final @NotNull TestCaseDto tc = aTestCaseIn(testSet);
+        final @NotNull TestCaseDto testCase = aTestCaseIn(testSet);
 
-        asTester("Sara", () -> put(testSet, tc));
-        assertEquals("Sara", tc.getCreatedBy());
+        asTester("Sara", () -> put(testSet, testCase));
+        assertEquals("Sara", testCase.getCreatedBy());
 
-        tc.setDescription("Log in with a locked user");
-        asTester("Omar", () -> put(testSet, tc));
-        assertEquals("the tester name changed, and the edit was stamped with the old one", "Omar", tc.getUpdatedBy());
-        assertEquals("an edit changed who created the test case", "Sara", tc.getCreatedBy());
+        testCase.setDescription("Log in with a locked user");
+        asTester("Omar", () -> put(testSet, testCase));
+        assertEquals("the tester name changed, and the edit was stamped with the old one", "Omar", testCase.getUpdatedBy());
+        assertEquals("an edit changed who created the test case", "Sara", testCase.getCreatedBy());
     }
 
     // Rule-SETTING-019
     public void testAnEmptyNameWritesNoName() {
         final @NotNull TestSetNode testSet = loginTestSet();
-        final @NotNull TestCaseDto tc = aTestCaseIn(testSet);
+        final @NotNull TestCaseDto testCase = aTestCaseIn(testSet);
 
-        asTester("", () -> put(testSet, tc));
-        assertEquals("an empty tester name was replaced by a name of Testin's own", "", tc.getCreatedBy());
+        asTester("", () -> put(testSet, testCase));
+        assertEquals("an empty tester name was replaced by a name of Testin's own", "", testCase.getCreatedBy());
     }
 }

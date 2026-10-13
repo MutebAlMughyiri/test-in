@@ -104,11 +104,11 @@ public class RenameProjectIdeTest extends AbstractTempRootIdeTest {
     public void testAHandNamedTestCaseKeepsItsFile() {
         final TestProjectNode testProject = aTestProject("NAFATH");
         final TestSetNode testSet = aTestSetIn(testProject);
-        final UUID id = UUID.randomUUID();
+        final UUID testCaseId = UUID.randomUUID();
 
         try {
             Files.writeString(testSet.getPath().resolve("login.tc"), Services.getInstance(getProject(), JsonCodec.class)
-                    .writeValueAsString(TestCaseDto.builder().id(id).description("Log in with a valid user").build()));
+                    .writeValueAsString(TestCaseDto.builder().id(testCaseId).description("Log in with a valid user").build()));
         } catch (final Exception ex) {
             throw new AssertionError("Could not write the hand-named test case: " + ex.getMessage(), ex);
         }
@@ -117,8 +117,8 @@ public class RenameProjectIdeTest extends AbstractTempRootIdeTest {
         final Path to = root.resolve("Nafath_App");
         rename(testProject.getPath(), to);
 
-        final TestCaseDto tc = indexedTestCases().findTestCase(id).orElseThrow();
-        final TestCaseFile file = indexedTestCases().testCaseFile(tc).orElseThrow();
+        final TestCaseDto testCase = indexedTestCases().findTestCase(testCaseId).orElseThrow();
+        final TestCaseFile file = indexedTestCases().testCaseFile(testCase).orElseThrow();
 
         assertEquals("the test case is placed in the renamed project", to, file.testProject());
         assertEquals("the test case lost its hand-named file", "login.tc", file.inProject().getFileName().toString());

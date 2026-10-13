@@ -119,9 +119,9 @@ public class AddKeyIdeTest extends AbstractTempRootIdeTest {
 
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-293
     public void testTheUpdateDialogAddsToTheFieldBeingUpdated() {
-        final @NotNull TestCaseDto tc = EditorFixtures.testCase(getProject(), checkout(), "Pay with a saved card", "1")
+        final @NotNull TestCaseDto testCase = EditorFixtures.testCase(getProject(), checkout(), "Pay with a saved card", "1")
                 .edit().steps(List.of("Open the cart")).build();
-        final @NotNull AbstractTestCaseDialog dialog = new UpdateTestCaseDialog(getProject(), tc, UpdateTestCaseFields.STEPS, _ -> {
+        final @NotNull AbstractTestCaseDialog dialog = new UpdateTestCaseDialog(getProject(), testCase, UpdateTestCaseFields.STEPS, _ -> {
         });
         ShownDialog.open(getProject(), UpdateTestCaseDialog.class, dialog::show);
 

@@ -76,7 +76,7 @@ public final class GlobalSearch {
         if (tooShort(wanted)) return List.of();
 
         return Services.getInstance(p, TestCases.class).getAllTestCases().stream()
-                .filter(tc -> TestSetEditorAttributes.anyContains(tc, wanted))
+                .filter(testCase -> TestSetEditorAttributes.anyContains(testCase, wanted))
                 .toList();
     }
 
@@ -95,8 +95,8 @@ public final class GlobalSearch {
 
             final @NotNull Set<UUID> covered = recorded.orElseThrow().coveredIds();
             testCases.stream()
-                    .filter(tc -> covered.contains(tc.getId()))
-                    .map(tc -> Hit.of(tc, node))
+                    .filter(testCase -> covered.contains(testCase.getId()))
+                    .map(testCase -> Hit.of(testCase, node))
                     .forEach(rows::add);
         }
 
@@ -136,7 +136,7 @@ public final class GlobalSearch {
     }
 
     static @NotNull Comparator<TestCaseDto> byDescriptionMatchThenText(final @NotNull String wanted) {
-        return Comparator.comparingInt((TestCaseDto tc) -> contains(tc.getDescription(), wanted) ? 0 : 1)
+        return Comparator.comparingInt((TestCaseDto testCase) -> contains(testCase.getDescription(), wanted) ? 0 : 1)
                 .thenComparing(TestCaseDto::getDescription, String.CASE_INSENSITIVE_ORDER);
     }
 }

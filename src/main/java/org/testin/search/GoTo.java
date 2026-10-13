@@ -44,16 +44,16 @@ public final class GoTo {
     public static void the(final @NotNull Project p, final @NotNull Hit hit) {
         TestinLogger.info("Going to " + hit.name() + " in " + hit.where());
 
-        hit.testCase().ifPresentOrElse(tc -> toTestCase(p, hit, tc), () -> toNode(p, hit));
+        hit.testCase().ifPresentOrElse(testCase -> toTestCase(p, hit, testCase), () -> toNode(p, hit));
     }
 
-    private static void toTestCase(final @NotNull Project p, final @NotNull Hit hit, final @NotNull TestCaseDto tc) {
+    private static void toTestCase(final @NotNull Project p, final @NotNull Hit hit, final @NotNull TestCaseDto testCase) {
         showTree(p, WITHOUT_FOCUS, tree -> tree.reveal(hit.node().getPath()));
 
         // Rule-VIEW-PANEL-010
         Services.getInstance(p, TestinEditors.class).openThen(hit.node(), editor -> {
-            editor.selectWhenLoaded(tc.getId());
-            ViewToolWindowFactory.showPanel(p, List.of(tc), hit.node().getPath2());
+            editor.selectWhenLoaded(testCase.getId());
+            ViewToolWindowFactory.showPanel(p, List.of(testCase), hit.node().getPath2());
         });
     }
 

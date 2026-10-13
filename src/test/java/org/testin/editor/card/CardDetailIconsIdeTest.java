@@ -52,9 +52,9 @@ public class CardDetailIconsIdeTest extends BasePlatformTestCase {
     }
 
     private @NotNull TestCaseCard aCardWithItsExpectedResult() {
-        final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").expectedResult(EXPECTED).build();
+        final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").expectedResult(EXPECTED).build();
         final @NotNull TestCaseCard card = new TestCaseCard(getProject());
-        card.updateData(0, tc, Set.of(TestSetEditorAttributes.EXPECTED_RESULT), AbstractCard.titleText(1, true, tc.getDescription()));
+        card.updateData(0, testCase, Set.of(TestSetEditorAttributes.EXPECTED_RESULT), AbstractCard.titleText(1, true, testCase.getDescription()));
         card.layOutAs(CELL);
         return card;
     }
@@ -72,9 +72,9 @@ public class CardDetailIconsIdeTest extends BasePlatformTestCase {
 
     // Rule-EDITOR-PANEL-269
     public void testAReferenceLineLeadsWithItsR() {
-        final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").reference(REFERENCE).build();
+        final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").reference(REFERENCE).build();
         final @NotNull TestCaseCard card = new TestCaseCard(getProject());
-        card.updateData(0, tc, Set.of(TestSetEditorAttributes.REFERENCE), AbstractCard.titleText(1, true, tc.getDescription()));
+        card.updateData(0, testCase, Set.of(TestSetEditorAttributes.REFERENCE), AbstractCard.titleText(1, true, testCase.getDescription()));
         card.layOutAs(CELL);
 
         final @NotNull JBLabel line = theLineSaying(card, REFERENCE);
@@ -92,10 +92,10 @@ public class CardDetailIconsIdeTest extends BasePlatformTestCase {
 
     // Rule-EDITOR-PANEL-269
     public void testAFieldWithNoIconKeepsItsName() {
-        final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
-        final @NotNull RunItem runItem = new RunItem().setId(tc.getId()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).showing(Optional.of(tc), Optional.empty(), Optional.empty(), false);
+        final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
+        final @NotNull RunItem runItem = new RunItem().setId(testCase.getId()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).showing(Optional.of(testCase), Optional.empty(), Optional.empty(), false);
         final @NotNull RunItemCard card = new RunItemCard(getProject());
-        card.updateData(0, Set.of(TestRunEditorAttributes.RUN_STATUS), runItem, AbstractCard.titleText(1, true, tc.getDescription()));
+        card.updateData(0, Set.of(TestRunEditorAttributes.RUN_STATUS), runItem, AbstractCard.titleText(1, true, testCase.getDescription()));
 
         final @NotNull JBLabel line = theLineSaying(card, RunItemStatus.FAILED.getLabel());
         assertTrue("a field with no icon lost its name: " + line.getText(), line.getText().startsWith(TestRunEditorAttributes.RUN_STATUS.getName() + ": "));
@@ -103,10 +103,10 @@ public class CardDetailIconsIdeTest extends BasePlatformTestCase {
 
     // Rule-EDITOR-PANEL-270
     public void testHoveringTheDurationBadgeOnACardSaysDuration() {
-        final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
-        final @NotNull RunItem runItem = new RunItem().setId(tc.getId()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).duration(Duration.ofSeconds(42)).build())).showing(Optional.of(tc), Optional.empty(), Optional.empty(), false);
+        final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
+        final @NotNull RunItem runItem = new RunItem().setId(testCase.getId()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).duration(Duration.ofSeconds(42)).build())).showing(Optional.of(testCase), Optional.empty(), Optional.empty(), false);
         final @NotNull RunItemCard card = new RunItemCard(getProject());
-        card.updateData(0, Set.of(TestRunEditorAttributes.DURATION), runItem, AbstractCard.titleText(1, true, tc.getDescription()));
+        card.updateData(0, Set.of(TestRunEditorAttributes.DURATION), runItem, AbstractCard.titleText(1, true, testCase.getDescription()));
         card.layOutAs(CELL);
 
         final @NotNull JBLabel badge = Drawn.first(card, JBLabel.class, label -> label.isVisible() && Display.formatDuration(Duration.ofSeconds(42)).equals(label.getText()));

@@ -39,26 +39,26 @@ public class NavigateToTestCaseAction extends AbstractAnyProjectAction {
     }
 
     // UC-EDITOR-PANEL-048, Rule-EDITOR-PANEL-236
-    public static @NotNull Optional<String> whyNot(final @NotNull TestCaseDto tc) {
-        return tc.getParent().getPath().toString().isEmpty()
+    public static @NotNull Optional<String> whyNot(final @NotNull TestCaseDto testCase) {
+        return testCase.getParent().getPath().toString().isEmpty()
                 ? Optional.of(Bundle.message("navigate.test.case.nowhere"))
                 : Optional.empty();
     }
 
     // UC-EDITOR-PANEL-048, UC-VIEW-PANEL-009, Rule-EDITOR-PANEL-233, Rule-EDITOR-PANEL-236, Rule-VIEW-PANEL-063
-    public static void execute(final @NotNull Project p, final @NotNull TestCaseDto tc) {
-        final @NotNull Optional<String> whyNot = whyNot(tc);
+    public static void execute(final @NotNull Project p, final @NotNull TestCaseDto testCase) {
+        final @NotNull Optional<String> whyNot = whyNot(testCase);
         if (whyNot.isPresent()) {
             Services.getInstance(p, Notifier.class).softRefuse(p, whyNot.orElseThrow());
             return;
         }
 
-        Services.getInstance(p, TestinEditors.class).openAndSelect(tc.getParent(), tc);
+        Services.getInstance(p, TestinEditors.class).openAndSelect(testCase.getParent(), testCase);
     }
 
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        TestinDataKeys.selectedTestCases(e).stream().findFirst().ifPresent(tc -> execute(p, tc));
+        TestinDataKeys.selectedTestCases(e).stream().findFirst().ifPresent(testCase -> execute(p, testCase));
     }
 
     // UC-EDITOR-PANEL-048, Rule-EDITOR-PANEL-236, Rule-EDITOR-PANEL-230

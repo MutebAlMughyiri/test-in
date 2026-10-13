@@ -34,18 +34,18 @@ import org.testin.util.Shortcuts;
 import java.util.List;
 
 public final class NodeDetailsDialog extends AbstractFrameworkDialog {
-    public NodeDetailsDialog(final @NotNull Project p, final @NotNull AbstractNode dto) {
+    public NodeDetailsDialog(final @NotNull Project p, final @NotNull AbstractNode node) {
         super(p);
 
-        final @NotNull Marker marker = dto.getMarker();
-        final @NotNull NodeType type = dto.getType();
-        final @NotNull NodeFigures figures = NodeCounter.figures(p, dto);
+        final @NotNull Marker marker = node.getMarker();
+        final @NotNull NodeType type = node.getType();
+        final @NotNull NodeFigures figures = NodeCounter.figures(p, node);
 
         title = Bundle.message("dialog.details.title");
 
         final @NotNull DialogPart.DetailsBuilder details = DialogPart.details()
-                .row(Bundle.message("caption.name"), dto.getName())
-                .row(Bundle.message("caption.path"), dto.getPath().toString())
+                .row(Bundle.message("caption.name"), node.getName())
+                .row(Bundle.message("caption.path"), node.getPath().toString())
                 .row(TestSetEditorAttributes.CREATED_BY.getName(), marker.getCreatedBy())
                 .row(TestSetEditorAttributes.CREATED_AT.getName(), Display.formatDate(marker.getCreatedAt()))
                 .row(TestSetEditorAttributes.UPDATED_BY.getName(), marker.getUpdatedBy())

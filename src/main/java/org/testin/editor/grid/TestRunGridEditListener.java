@@ -40,8 +40,8 @@ public class TestRunGridEditListener extends AbstractGridEditListener {
 
     private final @NotNull TestRuns testRuns;
 
-    public TestRunGridEditListener(final @NotNull Project p, final @NotNull TestRunEditor editor, final @NotNull List<TestCaseDto> pageItems, final @NotNull Runnable onEdited) {
-        super(p, pageItems);
+    public TestRunGridEditListener(final @NotNull Project p, final @NotNull TestRunEditor editor, final @NotNull List<TestCaseDto> pageTestCases, final @NotNull Runnable onEdited) {
+        super(p, pageTestCases);
         this.editor = editor;
         this.onEdited = onEdited;
         this.runItemStatusService = Services.getInstance(p, RunItemRecorder.class);

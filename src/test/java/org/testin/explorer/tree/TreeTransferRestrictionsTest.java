@@ -35,22 +35,22 @@ import static org.testng.Assert.assertTrue;
 public class TreeTransferRestrictionsTest {
 
     private static @NotNull AbstractNode project(final String name) {
-        final TestProjectNode dto = new TestProjectNode();
-        dto.setPath(Path.of("Testin", name));
-        return dto;
+        final TestProjectNode testProject = new TestProjectNode();
+        testProject.setPath(Path.of("Testin", name));
+        return testProject;
     }
 
     private static @NotNull AbstractNode childPackage(final AbstractNode parent, final String name) {
-        final TestSetPackageNode dto = new TestSetPackageNode();
-        dto.setPath(parent.getPath().resolve(name));
-        dto.setParent(parent);
-        return dto;
+        final TestSetPackageNode testSetPackage = new TestSetPackageNode();
+        testSetPackage.setPath(parent.getPath().resolve(name));
+        testSetPackage.setParent(parent);
+        return testSetPackage;
     }
 
     private static @NotNull AbstractNode node(final String... underRoot) {
-        final TestSetPackageNode dto = new TestSetPackageNode();
-        dto.setPath(Path.of("root", underRoot));
-        return dto;
+        final TestSetPackageNode testSetPackage = new TestSetPackageNode();
+        testSetPackage.setPath(Path.of("root", underRoot));
+        return testSetPackage;
     }
 
     // Rule-PRODUCT-006, Rule-TREE-PANEL-002

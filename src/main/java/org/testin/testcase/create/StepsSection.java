@@ -42,13 +42,13 @@ public class StepsSection extends AbstractMultiValueSection {
     }
 
     @Override
-    protected @NotNull List<String> valuesOf(final @NotNull TestCaseDto dto) {
-        return dto.getSteps();
+    protected @NotNull List<String> valuesOf(final @NotNull TestCaseDto testCase) {
+        return testCase.getSteps();
     }
 
     @Override
-    protected @NotNull TestCaseDto write(final @NotNull TestCaseDto dto, final @NotNull List<String> values) {
-        return dto.edit().steps(values).build();
+    protected @NotNull TestCaseDto write(final @NotNull TestCaseDto testCase, final @NotNull List<String> values) {
+        return testCase.edit().steps(values).build();
     }
 
     @Override

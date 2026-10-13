@@ -43,7 +43,7 @@ public final class ExecuteTestCases {
         final @NotNull TestNGExecution execution = Services.getInstance(p, TestNGExecution.class);
 
         final @NotNull List<TestCaseDto> starting = testCases.stream()
-                .filter(tc -> !execution.isRunning(tc.getId()))
+                .filter(testCase -> !execution.isRunning(testCase.getId()))
                 .toList();
 
         if (starting.isEmpty()) return;

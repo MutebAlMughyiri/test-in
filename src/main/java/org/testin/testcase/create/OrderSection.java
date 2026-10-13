@@ -83,10 +83,10 @@ public class OrderSection implements TestCaseSection {
     }
 
     @Override
-    public void fillData(final @NotNull TestCaseDto dto) {
-        final @NotNull List<TestCaseDto> inSet = ExecutionPosition.setOf(p, dto);
+    public void fillData(final @NotNull TestCaseDto testCase) {
+        final @NotNull List<TestCaseDto> inSet = ExecutionPosition.setOf(p, testCase);
         final int size = Math.max(1, inSet.size());
-        final int current = Math.min(TestCaseOrder.positionOf(inSet, dto), size);
+        final int current = Math.min(TestCaseOrder.positionOf(inSet, testCase), size);
 
         position.setMaxValue(size);
 
@@ -111,41 +111,41 @@ public class OrderSection implements TestCaseSection {
 
     // UC-EDITOR-PANEL-009, Rule-EDITOR-PANEL-055, Rule-EDITOR-PANEL-282
     @Override
-    public @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto dto) {
-        final @NotNull List<TestCaseDto> inSet = ExecutionPosition.setOf(p, dto);
+    public @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto ordered) {
+        final @NotNull List<TestCaseDto> inSet = ExecutionPosition.setOf(p, ordered);
         final int target = position.getValue();
 
-        if (target == TestCaseOrder.positionOf(inSet, dto)) return dto;
+        if (target == TestCaseOrder.positionOf(inSet, ordered)) return ordered;
 
-        final @NotNull List<TestCaseDto> others = rankTheUnranked(inSet, dto).stream()
-                .filter(tc -> !tc.getId().equals(dto.getId()))
+        final @NotNull List<TestCaseDto> others = rankTheUnranked(inSet, ordered).stream()
+                .filter(testCase -> !testCase.getId().equals(ordered.getId()))
                 .toList();
 
         final @NotNull String before = target > 1 ? others.get(target - 2).getOrder() : "";
         final @NotNull String after = target <= others.size() ? others.get(target - 1).getOrder() : "";
 
-        return dto.edit().order(Rank.between(before, after)).build();
+        return ordered.edit().order(Rank.between(before, after)).build();
     }
 
     // UC-EDITOR-PANEL-009, Rule-EDITOR-PANEL-055
-    private @NotNull List<TestCaseDto> rankTheUnranked(final @NotNull List<TestCaseDto> inSet, final @NotNull TestCaseDto dto) {
-        if (inSet.stream().noneMatch(tc -> tc.getOrder().isEmpty())) return inSet;
+    private @NotNull List<TestCaseDto> rankTheUnranked(final @NotNull List<TestCaseDto> inSet, final @NotNull TestCaseDto ordered) {
+        if (inSet.stream().noneMatch(testCase -> testCase.getOrder().isEmpty())) return inSet;
 
         final @NotNull Map<UUID, TestCaseDto> placed = TestCaseOrder.place(inSet).stream()
                 .collect(Collectors.toMap(TestCaseDto::getId, moved -> moved));
         final @NotNull List<TestCaseDto> ranked = placed.values().stream()
-                .filter(moved -> !moved.getId().equals(dto.getId()))
+                .filter(moved -> !moved.getId().equals(ordered.getId()))
                 .toList();
 
         if (!ranked.isEmpty()) {
             TestinLogger.info("Ranking " + ranked.size() + " test case(s) that had no place, so a typed position means something");
 
-            final @NotNull Path setPath = dto.getParent().getPath();
+            final @NotNull Path setPath = ordered.getParent().getPath();
             ApplicationManager.getApplication().executeOnPooledThread(() ->
                     ranked.forEach(moved -> testCases.putTestCase(setPath, moved)));
         }
 
-        return inSet.stream().map(tc -> placed.getOrDefault(tc.getId(), tc)).toList();
+        return inSet.stream().map(testCase -> placed.getOrDefault(testCase.getId(), testCase)).toList();
     }
 
     @Override

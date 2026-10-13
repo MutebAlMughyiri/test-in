@@ -52,8 +52,8 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
 
     private final @NotNull Map<UUID, Changed> changedThisGesture = new LinkedHashMap<>();
 
-    public TestSetGridEditListener(final @NotNull Project p, final @NotNull List<TestCaseDto> pageItems, final @NotNull Runnable onEdited, final @NotNull Path testSetPath) {
-        super(p, pageItems);
+    public TestSetGridEditListener(final @NotNull Project p, final @NotNull List<TestCaseDto> pageTestCases, final @NotNull Runnable onEdited, final @NotNull Path testSetPath) {
+        super(p, pageTestCases);
         this.onEdited = onEdited;
         this.testSetPath = testSetPath;
         this.testCases = Services.getInstance(p, TestCases.class);
@@ -70,15 +70,15 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
 
     // UC-EDITOR-PANEL-008, Rule-EDITOR-PANEL-050
     @Override
-    protected @NotNull GridEdit apply(final @NotNull DefaultTableModel model, final @NotNull TestCaseDto tc, final int row, final int col) {
+    protected @NotNull GridEdit apply(final @NotNull DefaultTableModel model, final @NotNull TestCaseDto testCase, final int row, final int col) {
         final @NotNull TestSetEditorAttributes attr = TestSetEditorAttributes.atColumn(col);
 
         if (!attr.can(Can.EDIT)) return GridEdit.UNCHANGED;
 
-        final @NotNull Optional<Changed> pending = Optional.ofNullable(changedThisGesture.get(tc.getId()));
+        final @NotNull Optional<Changed> pending = Optional.ofNullable(changedThisGesture.get(testCase.getId()));
         final @NotNull TestCaseSnapshot undoFrom = pending.map(Changed::before)
-                .orElseGet(() -> TestCaseSnapshot.of(p, testSetPath, List.of(tc.getId())));
-        final @NotNull TestCaseDto current = pending.map(Changed::tc).orElse(tc);
+                .orElseGet(() -> TestCaseSnapshot.of(p, testSetPath, List.of(testCase.getId())));
+        final @NotNull TestCaseDto current = pending.map(Changed::testCase).orElse(testCase);
 
         final @NotNull String typed = String.valueOf(model.getValueAt(row, col));
 
@@ -128,10 +128,10 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
             final @NotNull List<TestCaseSnapshot> before = new ArrayList<>();
 
             for (final Changed changed : gesture) {
-                if (!testCases.putTestCase(testSetPath, changed.tc())) continue;
+                if (!testCases.putTestCase(testSetPath, changed.testCase())) continue;
 
-                changed.generators().forEach(generator -> generator.execute(p, changed.tc()));
-                written.add(changed.tc());
+                changed.generators().forEach(generator -> generator.execute(p, changed.testCase()));
+                written.add(changed.testCase());
                 before.add(changed.before());
             }
 

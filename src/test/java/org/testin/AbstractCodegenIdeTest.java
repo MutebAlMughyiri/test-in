@@ -149,16 +149,16 @@ public abstract class AbstractCodegenIdeTest extends AbstractTempRootIdeTest {
     }
 
     protected @NotNull TestCaseDto indexedTestCase(final @NotNull TestSetNode testSet, final @NotNull String description, final @NotNull String order) {
-        final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description(description).order(order).build();
-        tc.setParent(testSet);
-        Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), tc);
-        return tc;
+        final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description(description).order(order).build();
+        testCase.setParent(testSet);
+        Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase);
+        return testCase;
     }
 
     protected @NotNull TestCaseDto createdTestCase(final @NotNull TestSetNode testSet, final @NotNull String description, final @NotNull String order) {
-        final @NotNull TestCaseDto tc = indexedTestCase(testSet, description, order);
-        GenType.CREATE_TEST_CASE.execute(getProject(), tc);
-        return tc;
+        final @NotNull TestCaseDto testCase = indexedTestCase(testSet, description, order);
+        GenType.CREATE_TEST_CASE.execute(getProject(), testCase);
+        return testCase;
     }
 
     protected @NotNull Optional<PsiClass> generatedClass(final @NotNull String qualifiedName) {
@@ -167,16 +167,16 @@ public abstract class AbstractCodegenIdeTest extends AbstractTempRootIdeTest {
         return Optional.ofNullable(JavaPsiFacade.getInstance(getProject()).findClass(qualifiedName, GlobalSearchScope.projectScope(getProject())));
     }
 
-    protected @NotNull Optional<PsiMethod> methodOf(final @NotNull String qualifiedName, final @NotNull TestCaseDto tc) {
+    protected @NotNull Optional<PsiMethod> methodOf(final @NotNull String qualifiedName, final @NotNull TestCaseDto testCase) {
         return generatedClass(qualifiedName).stream()
                 .flatMap(pc -> Arrays.stream(pc.getMethods()))
-                .filter(pm -> attributeOf(pm, "testName").equals("\"" + tc.getId() + "\""))
+                .filter(pm -> attributeOf(pm, "testName").equals("\"" + testCase.getId() + "\""))
                 .findFirst();
     }
 
-    protected @NotNull PsiMethod writtenMethodOf(final @NotNull String qualifiedName, final @NotNull TestCaseDto tc) {
-        Await.until("'" + tc.getDescription() + "' has no method in " + qualifiedName, () -> methodOf(qualifiedName, tc).isPresent());
-        return methodOf(qualifiedName, tc).orElseThrow();
+    protected @NotNull PsiMethod writtenMethodOf(final @NotNull String qualifiedName, final @NotNull TestCaseDto testCase) {
+        Await.until("'" + testCase.getDescription() + "' has no method in " + qualifiedName, () -> methodOf(qualifiedName, testCase).isPresent());
+        return methodOf(qualifiedName, testCase).orElseThrow();
     }
 
     protected void settled() {

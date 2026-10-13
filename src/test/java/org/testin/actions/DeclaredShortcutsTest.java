@@ -79,9 +79,9 @@ public class DeclaredShortcutsTest {
         final Map<String, List<String>> byKey = declaredKeys(keymap);
         final List<String> withMacKey = byKey.values().stream().flatMap(List::stream).toList();
 
-        declaredKeys("$default").forEach((key, ids) -> ids.stream()
-                .filter(id -> !withMacKey.contains(id))
-                .forEach(id -> byKey.computeIfAbsent(asMacDefault(key), _ -> new ArrayList<>()).add(id)));
+        declaredKeys("$default").forEach((key, testCaseIds) -> testCaseIds.stream()
+                .filter(testCaseId -> !withMacKey.contains(testCaseId))
+                .forEach(testCaseId -> byKey.computeIfAbsent(asMacDefault(key), _ -> new ArrayList<>()).add(testCaseId)));
         return byKey;
     }
 
@@ -117,11 +117,11 @@ public class DeclaredShortcutsTest {
     }
 
     private static void assertSharedOnlyOnPurpose(final String keymap, final Map<String, List<String>> keys) {
-        keys.forEach((key, ids) -> {
-            if (ids.size() == 1) return;
+        keys.forEach((key, testCaseIds) -> {
+            if (testCaseIds.size() == 1) return;
 
-            assertEquals(ids, SHARED_ON_PURPOSE.get(key),
-                    keymap + " binds " + key + " to " + ids + ". The platform runs whichever of them is"
+            assertEquals(testCaseIds, SHARED_ON_PURPOSE.get(key),
+                    keymap + " binds " + key + " to " + testCaseIds + ". The platform runs whichever of them is"
                             + " enabled and says nothing when both are, so one of these never runs and nothing"
                             + " reports it. A key two actions are meant to share belongs in SHARED_ON_PURPOSE,"
                             + " named by the exact pair that shares it.");
@@ -141,8 +141,8 @@ public class DeclaredShortcutsTest {
         final Map<String, List<String>> declared = declaredKeys("$default");
         declared.putAll(declaredKeys("Mac OS X 10.5+"));
 
-        SHARED_ON_PURPOSE.forEach((key, ids) -> assertEquals(declared.get(key), ids,
-                key + " is excused as shared by " + ids + ", and that is not what plugin.xml says anymore."
+        SHARED_ON_PURPOSE.forEach((key, testCaseIds) -> assertEquals(declared.get(key), testCaseIds,
+                key + " is excused as shared by " + testCaseIds + ", and that is not what plugin.xml says anymore."
                         + " Remove the entry, or say which pair shares it now."));
     }
 
@@ -150,8 +150,8 @@ public class DeclaredShortcutsTest {
     public void everyMacKeyBelongsToAnActionThatHasADefaultKey() {
         final List<String> withDefault = declaredKeys("$default").values().stream().flatMap(List::stream).toList();
 
-        MAC_KEYMAPS.forEach(keymap -> declaredKeys(keymap).values().stream().flatMap(List::stream).forEach(id -> assertTrue(withDefault.contains(id),
-                id + " has a " + keymap + " key and no default key, so it answers on a Mac and nowhere else")));
+        MAC_KEYMAPS.forEach(keymap -> declaredKeys(keymap).values().stream().flatMap(List::stream).forEach(testCaseId -> assertTrue(withDefault.contains(testCaseId),
+                testCaseId + " has a " + keymap + " key and no default key, so it answers on a Mac and nowhere else")));
     }
 
     @Test
@@ -163,7 +163,7 @@ public class DeclaredShortcutsTest {
 
     @Test
     public void noKeyOnAMacIsOneMacOsTakesFirst() {
-        MAC_KEYMAPS.forEach(keymap -> keysOnAMac(keymap).forEach((key, ids) -> assertFalse(TAKEN_BY_MACOS.contains(key),
-                keymap + " puts " + ids + " on " + key + ", which macOS takes before the IDE sees it")));
+        MAC_KEYMAPS.forEach(keymap -> keysOnAMac(keymap).forEach((key, testCaseIds) -> assertFalse(TAKEN_BY_MACOS.contains(key),
+                keymap + " puts " + testCaseIds + " on " + key + ", which macOS takes before the IDE sees it")));
     }
 }

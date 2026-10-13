@@ -25,8 +25,8 @@ import java.util.List;
 public interface CodeChange<T> {
     void execute(final @NotNull Project p, final @NotNull T payload);
 
-    default void executeAll(final @NotNull Project p, final @NotNull List<? extends T> items) {
-        for (final T item : items) execute(p, item);
+    default void executeAll(final @NotNull Project p, final @NotNull List<? extends T> payloads) {
+        for (final T item : payloads) execute(p, item);
     }
 
     // Rule-CODEGEN-081

@@ -23,5 +23,5 @@ import org.testin.testcase.TestCaseSnapshot;
 
 import java.util.Set;
 
-record Changed(@NotNull TestCaseDto tc, @NotNull TestCaseSnapshot before, @NotNull Set<GenType<TestCaseDto>> generators) {
+record Changed(@NotNull TestCaseDto testCase, @NotNull TestCaseSnapshot before, @NotNull Set<GenType<TestCaseDto>> generators) {
 }

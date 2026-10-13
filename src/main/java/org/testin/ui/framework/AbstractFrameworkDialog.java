@@ -71,7 +71,7 @@ public abstract class AbstractFrameworkDialog implements DialogHost {
     // UC-INTERNAL-007, Rule-INTERNAL-076
     protected boolean dismissOnClickOutside;
     protected boolean resizable;
-    private @NotNull Optional<DialogDto> dto = Optional.empty();
+    private @NotNull Optional<DialogDto> dialog = Optional.empty();
     private @NotNull Optional<List<DialogComponent>> built = Optional.empty();
     private @NotNull Optional<JBPopup> popup = Optional.empty();
     private @NotNull Optional<JComponent> content = Optional.empty();
@@ -296,10 +296,10 @@ public abstract class AbstractFrameworkDialog implements DialogHost {
     }
 
     private @NotNull DialogDto dto() {
-        if (dto.isEmpty()) {
-            dto = Optional.of(new DialogDto(title, components, shortcuts));
+        if (dialog.isEmpty()) {
+            dialog = Optional.of(new DialogDto(title, components, shortcuts));
         }
-        return dto.orElseThrow();
+        return dialog.orElseThrow();
     }
 
     private @NotNull List<DialogComponent> builtComponents() {

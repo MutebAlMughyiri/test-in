@@ -109,7 +109,7 @@ public final class TestRunFromGit {
             final @NotNull Map<String, String> files = git.contents(testProjectPath, commit, listed);
 
             final @NotNull Map<UUID, Optional<TestCaseDto>> testCases = new HashMap<>();
-            wanted.values().forEach(id -> testCases.put(id, Optional.empty()));
+            wanted.values().forEach(testCaseId -> testCases.put(testCaseId, Optional.empty()));
             listed.forEach(path -> testCases.remove(wanted.get(fileName(path))));
             files.forEach((path, json) -> testCases.put(wanted.get(fileName(path)), parsed(p, json)));
             testRuns.rememberRecorded(commit, testCases);
@@ -125,12 +125,12 @@ public final class TestRunFromGit {
         final @NotNull Map<String, UUID> wanted = deleted.stream().collect(Collectors.toMap(FileKind.TEST_CASE::fileName, Function.identity()));
         try {
             final @NotNull Map<String, UUID> lastVersions = lastVersions(git.log(testProjectPath, Stream.concat(Stream.of(FORMAT, "--name-status", "--"),
-                    deleted.stream().map(id -> BugHistory.pathspec(NodeType.TCF, FileKind.TEST_CASE, id))).toArray(String[]::new)), wanted);
+                    deleted.stream().map(testCaseId -> BugHistory.pathspec(NodeType.TCF, FileKind.TEST_CASE, testCaseId))).toArray(String[]::new)), wanted);
             if (lastVersions.isEmpty()) return;
 
             final @NotNull Map<UUID, TestCaseDto> testCases = new HashMap<>();
             git.objects(testProjectPath, List.copyOf(lastVersions.keySet())).forEach((objectName, json) ->
-                    parsed(p, json).ifPresent(tc -> testCases.put(lastVersions.get(objectName), tc)));
+                    parsed(p, json).ifPresent(testCase -> testCases.put(lastVersions.get(objectName), testCase)));
             Services.getInstance(p, TestRuns.class).rememberLastInGit(testCases);
         } catch (final GitFailed ex) {
             TestinLogger.info("The deleted test cases could not be read from Git, so they show as deleted: " + FailureText.of(ex));
@@ -147,8 +147,8 @@ public final class TestRunFromGit {
             lines.stream().skip(1).map(line -> line.split("\t")).forEach(change -> {
                 final @NotNull String path = change[change.length - 1];
                 Optional.ofNullable(wanted.get(fileName(path)))
-                        .filter(id -> !found.containsValue(id))
-                        .ifPresent(id -> found.put((change[0].startsWith(DELETED) ? hash + "^" : hash) + ":" + path, id));
+                        .filter(testCaseId -> !found.containsValue(testCaseId))
+                        .ifPresent(testCaseId -> found.put((change[0].startsWith(DELETED) ? hash + "^" : hash) + ":" + path, testCaseId));
             });
         }
         return found;

@@ -38,19 +38,19 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestCaseHoverButtons {
     // UC-VIEW-PANEL-009, UC-VIEW-PANEL-012, UC-VIEW-PANEL-014, Rule-VIEW-PANEL-050, Rule-VIEW-PANEL-056, Rule-VIEW-PANEL-057, Rule-VIEW-PANEL-063, Rule-EDITOR-PANEL-237
-    public static @NotNull List<JComponent> of(final @NotNull Project p, final @NotNull TestCaseDto dto, final @NotNull Optional<AbstractNode> shownIn) {
-        final @NotNull Offered navigate = TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD.offer(p, shownIn, dto);
-        final @NotNull Offered testRun = TestCaseQuickAction.RUN_TEST_METHOD.offer(p, shownIn, dto);
-        final @NotNull Offered testCase = TestCaseQuickAction.NAVIGATE_TO_TEST_CASE.offer(p, shownIn, dto);
+    public static @NotNull List<JComponent> of(final @NotNull Project p, final @NotNull TestCaseDto shownTestCase, final @NotNull Optional<AbstractNode> shownIn) {
+        final @NotNull Offered navigate = TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD.offer(p, shownIn, shownTestCase);
+        final @NotNull Offered testRun = TestCaseQuickAction.RUN_TEST_METHOD.offer(p, shownIn, shownTestCase);
+        final @NotNull Offered testCase = TestCaseQuickAction.NAVIGATE_TO_TEST_CASE.offer(p, shownIn, shownTestCase);
 
         final @NotNull AutomationState automation = Services.getInstance(p, AutomationState.class);
-        automation.read(p, List.of(dto), () -> ViewToolWindowFactory.panel(p).ifPresent(ViewPanel::refreshCurrentView));
+        automation.read(p, List.of(shownTestCase), () -> ViewToolWindowFactory.panel(p).ifPresent(ViewPanel::refreshCurrentView));
 
-        final @NotNull Automated state = automation.of(dto.getId());
+        final @NotNull Automated state = automation.of(shownTestCase.getId());
 
         return List.of(
-                HoverButton.of(p, navigate, state.getIcon(), navigate.action().getTooltip(), () -> navigate.action().execute(p, dto)),
-                HoverButton.of(p, testRun, testRun.action().getIcon(), testRun.action().getTooltip(), () -> testRun.action().execute(p, dto)),
-                HoverButton.of(p, testCase, testCase.action().getIcon(), testCase.action().getTooltip(), () -> testCase.action().execute(p, dto)));
+                HoverButton.of(p, navigate, state.getIcon(), navigate.action().getTooltip(), () -> navigate.action().execute(p, shownTestCase)),
+                HoverButton.of(p, testRun, testRun.action().getIcon(), testRun.action().getTooltip(), () -> testRun.action().execute(p, shownTestCase)),
+                HoverButton.of(p, testCase, testCase.action().getIcon(), testCase.action().getTooltip(), () -> testCase.action().execute(p, shownTestCase)));
     }
 }

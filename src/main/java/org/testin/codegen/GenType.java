@@ -193,17 +193,17 @@ public record GenType<T>(@NotNull Class<T> payload, @NotNull String description,
     }
 
     // UC-CODEGEN-019, Rule-CODEGEN-005, Rule-EDITOR-PANEL-046
-    public void executeAll(final @NotNull Project p, final @NotNull List<? extends T> items) {
-        ApplicationManager.getApplication().invokeLater(() -> executeAllNow(p, items), p.getDisposed());
+    public void executeAll(final @NotNull Project p, final @NotNull List<? extends T> payloads) {
+        ApplicationManager.getApplication().invokeLater(() -> executeAllNow(p, payloads), p.getDisposed());
     }
 
-    public void executeAllNow(final @NotNull Project p, final @NotNull List<? extends T> items) {
-        executeAllNow(p, items, UUID.randomUUID().toString());
+    public void executeAllNow(final @NotNull Project p, final @NotNull List<? extends T> payloads) {
+        executeAllNow(p, payloads, UUID.randomUUID().toString());
     }
 
     // UC-CODEGEN-019, Rule-CODEGEN-005, Rule-CODEGEN-018
-    public void executeAllNow(final @NotNull Project p, final @NotNull List<? extends T> items, final @NotNull String undoGroup) {
-        update.executeAll(this, p, items, undoGroup);
+    public void executeAllNow(final @NotNull Project p, final @NotNull List<? extends T> payloads, final @NotNull String undoGroup) {
+        update.executeAll(this, p, payloads, undoGroup);
     }
 
     @Override

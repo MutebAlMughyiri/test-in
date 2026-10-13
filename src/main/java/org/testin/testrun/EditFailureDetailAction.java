@@ -83,7 +83,7 @@ public class EditFailureDetailAction extends AbstractAnyProjectAction {
         final @NotNull Optional<String> signedOff = TestinDataKeys.testRunEditor(e).flatMap(testRunEditor -> testRunEditor.getParent().whySignedOff());
 
         GrayWithReason.unless(this, e, signedOff.isEmpty() && TestinDataKeys.testRunEditor(e)
-                        .flatMap(testRunEditor -> TestinDataKeys.singleSelectedTestCase(e).flatMap(tc -> testRunEditor.runItem(tc.getId())))
+                        .flatMap(testRunEditor -> TestinDataKeys.singleSelectedTestCase(e).flatMap(testCase -> testRunEditor.runItem(testCase.getId())))
                         .filter(RunItem::isFailed)
                         .isPresent(),
                 signedOff.orElse(Bundle.message("run.item.details.disabled.description")));

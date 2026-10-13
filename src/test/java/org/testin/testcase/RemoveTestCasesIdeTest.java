@@ -60,9 +60,9 @@ public class RemoveTestCasesIdeTest extends AbstractTempRootIdeTest {
                 .findFirst().orElseThrow(() -> new AssertionError("nothing on the cards takes a change back on Ctrl+Z"));
     }
 
-    private static @NotNull String stamp(final @NotNull Path testSet, final @NotNull TestCaseDto tc) {
+    private static @NotNull String stamp(final @NotNull Path testSet, final @NotNull TestCaseDto testCase) {
         try (final Stream<Path> files = Files.list(testSet)) {
-            final @NotNull Path file = files.filter(candidate -> candidate.getFileName().toString().startsWith(tc.getId().toString())).findFirst().orElseThrow();
+            final @NotNull Path file = files.filter(candidate -> candidate.getFileName().toString().startsWith(testCase.getId().toString())).findFirst().orElseThrow();
             return Files.readString(file) + "@" + file.toFile().lastModified();
         } catch (final IOException ex) {
             throw new AssertionError("the test set could not be read", ex);
@@ -106,8 +106,8 @@ public class RemoveTestCasesIdeTest extends AbstractTempRootIdeTest {
         ShownDialog.press(getProject(), ConfirmDialog.class, Shortcuts.Enter.getKey());
     }
 
-    private void awaitGone(final @NotNull TestCaseDto tc) {
-        Await.until("'" + tc.getDescription() + "' was never removed", () -> theTestCases().findTestCase(tc.getId()).isEmpty());
+    private void awaitGone(final @NotNull TestCaseDto testCase) {
+        Await.until("'" + testCase.getDescription() + "' was never removed", () -> theTestCases().findTestCase(testCase.getId()).isEmpty());
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
 

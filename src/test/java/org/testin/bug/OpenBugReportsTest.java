@@ -35,10 +35,10 @@ import static org.testng.Assert.assertTrue;
 public class OpenBugReportsTest {
 
     private static final RunItemPath RUN_ITEM_PATH = new RunItemPath(Path.of("NAFATH", "Test Runs", "Sprint 7"), UUID.randomUUID());
-    private static final RunItemPath SAME_TEST_CASE_OTHER_RUN = new RunItemPath(Path.of("NAFATH", "Test Runs", "Sprint 8"), RUN_ITEM_PATH.id());
+    private static final RunItemPath SAME_TEST_CASE_OTHER_RUN = new RunItemPath(Path.of("NAFATH", "Test Runs", "Sprint 8"), RUN_ITEM_PATH.testCaseId());
 
     private static @NotNull RunItem failed() {
-        return RunItem.builder().id(RUN_ITEM_PATH.id()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build();
+        return RunItem.builder().id(RUN_ITEM_PATH.testCaseId()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build();
     }
 
     // Rule-VIEW-PANEL-072
@@ -67,7 +67,7 @@ public class OpenBugReportsTest {
     @Test
     public void aReportedBugKeepsReportBugOff() {
         final OpenBugReports reports = new OpenBugReports();
-        final RunItem reported = RunItem.builder().id(RUN_ITEM_PATH.id()).bugIssueUrl("https://github.com/mtb550/test-in/issues/412").executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build();
+        final RunItem reported = RunItem.builder().id(RUN_ITEM_PATH.testCaseId()).bugIssueUrl("https://github.com/mtb550/test-in/issues/412").executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build();
 
         assertEquals(reports.whyReportBugIsOff(RUN_ITEM_PATH, reported), Optional.of(Bundle.message("bug.already.reported")));
     }

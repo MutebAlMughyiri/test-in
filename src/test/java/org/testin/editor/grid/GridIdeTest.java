@@ -53,13 +53,13 @@ public class GridIdeTest extends BasePlatformTestCase {
 
     private static final @NotNull String DESCRIPTION_WIDTH = EditorKind.TEST_SET.columnWidthKey(TestSetEditorAttributes.DESCRIPTION.getName());
 
-    private static String @NotNull [] aRow(final int order, final @NotNull String description, final @NotNull String expected, final @NotNull String id) {
+    private static String @NotNull [] aRow(final int order, final @NotNull String description, final @NotNull String expected, final @NotNull String testCaseId) {
         final String[] row = new String[TestSetEditorAttributes.values().length];
         Arrays.fill(row, "");
         row[TestSetEditorAttributes.ORDER.column()] = String.valueOf(order);
         row[TestSetEditorAttributes.DESCRIPTION.column()] = description;
         row[TestSetEditorAttributes.EXPECTED_RESULT.column()] = expected;
-        row[TestSetEditorAttributes.ID.column()] = id;
+        row[TestSetEditorAttributes.ID.column()] = testCaseId;
         return row;
     }
 

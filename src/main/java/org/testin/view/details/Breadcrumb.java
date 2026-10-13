@@ -57,7 +57,7 @@ public class Breadcrumb extends AbstractDetails {
 
     // UC-VIEW-PANEL-010, Rule-VIEW-PANEL-041
     @Override
-    public int render(final @NotNull Project p, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto dto, final int currentRow) {
+    public int render(final @NotNull Project p, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto testCase, final int currentRow) {
         final @NotNull JBPanel<?> pathPanel = line(0);
 
         {

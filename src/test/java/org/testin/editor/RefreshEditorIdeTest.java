@@ -70,10 +70,10 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull TestCaseDto aTestCase(final @NotNull TestSetNode testSet, final @NotNull String description, final @NotNull String order, final @NotNull Priority priority, final @NotNull String group) {
-        final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description(description).order(order).priority(priority).groups(new ArrayList<>(List.of(group))).build();
-        tc.setParent(testSet);
-        Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), tc);
-        return tc;
+        final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description(description).order(order).priority(priority).groups(new ArrayList<>(List.of(group))).build();
+        testCase.setParent(testSet);
+        Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase);
+        return testCase;
     }
 
     // Rule-EDITOR-PANEL-117

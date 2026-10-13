@@ -63,8 +63,8 @@ public class KeysTheIdeHoldsIdeTest extends BasePlatformTestCase {
         return ActionManager.getInstance().getActionIdList("Testin.");
     }
 
-    private static @NotNull List<KeyStroke> keysOf(final @NotNull Keymap keymap, final @NotNull String id) {
-        return Arrays.stream(keymap.getShortcuts(id)).filter(KeyboardShortcut.class::isInstance).map(KeyboardShortcut.class::cast).map(KeyboardShortcut::getFirstKeyStroke).toList();
+    private static @NotNull List<KeyStroke> keysOf(final @NotNull Keymap keymap, final @NotNull String actionId) {
+        return Arrays.stream(keymap.getShortcuts(actionId)).filter(KeyboardShortcut.class::isInstance).map(KeyboardShortcut.class::cast).map(KeyboardShortcut::getFirstKeyStroke).toList();
     }
 
     private static boolean isASurfaceGesture(final @NotNull KeyStroke key) {
@@ -85,9 +85,9 @@ public class KeysTheIdeHoldsIdeTest extends BasePlatformTestCase {
         }
     }
 
-    private static @NotNull String declarationOf(final @NotNull String xml, final @NotNull String id) {
-        final int from = xml.indexOf("id=\"" + id + "\"");
-        assertTrue("plugin.xml does not declare " + id, from >= 0);
+    private static @NotNull String declarationOf(final @NotNull String xml, final @NotNull String actionId) {
+        final int from = xml.indexOf("id=\"" + actionId + "\"");
+        assertTrue("plugin.xml does not declare " + actionId, from >= 0);
         final int next = xml.indexOf("<action", from);
         return xml.substring(xml.lastIndexOf("<action", from), next >= 0 ? next : xml.length());
     }
@@ -97,8 +97,8 @@ public class KeysTheIdeHoldsIdeTest extends BasePlatformTestCase {
         final @NotNull Keymap keymap = KeymapManager.getInstance().getActiveKeymap();
 
         final @NotNull List<String> gesturesTaken = new ArrayList<>();
-        for (final String id : everyTestinAction()) {
-            keysOf(keymap, id).stream().filter(KeysTheIdeHoldsIdeTest::isASurfaceGesture).forEach(key -> gesturesTaken.add(id + " " + KeymapUtil.getKeystrokeText(key)));
+        for (final String actionId : everyTestinAction()) {
+            keysOf(keymap, actionId).stream().filter(KeysTheIdeHoldsIdeTest::isASurfaceGesture).forEach(key -> gesturesTaken.add(actionId + " " + KeymapUtil.getKeystrokeText(key)));
         }
         assertEquals("a surface's own gesture is declared to the IDE, where it is dispatched before the tree, the card list or the grid", List.of(), gesturesTaken);
         assertFalse("the search's key is not declared to the IDE, so the Keymap cannot rebind it", keysOf(keymap, "Testin.Search").isEmpty());
@@ -136,10 +136,10 @@ public class KeysTheIdeHoldsIdeTest extends BasePlatformTestCase {
         final @NotNull String xml = pluginXml();
 
         final @NotNull List<String> noted = new ArrayList<>();
-        for (final String id : everyTestinAction()) {
-            final boolean shared = keysOf(defaults, id).stream()
+        for (final String actionId : everyTestinAction()) {
+            final boolean shared = keysOf(defaults, actionId).stream()
                     .anyMatch(key -> Arrays.stream(defaults.getActionIds(key)).anyMatch(other -> !other.startsWith("Testin.")));
-            if (shared && declarationOf(xml, id).contains("Rule-INTERNAL-069")) noted.add(id);
+            if (shared && declarationOf(xml, actionId).contains("Rule-INTERNAL-069")) noted.add(actionId);
         }
         assertEquals("the keys the IDE's action and Testin's can both fire in one place are not exactly the ones noted beside their binding", FIRE_WHERE_THE_IDE_DOES, noted.stream().sorted().toList());
 

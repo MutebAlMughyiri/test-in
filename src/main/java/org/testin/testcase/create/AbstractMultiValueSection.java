@@ -65,9 +65,9 @@ public abstract class AbstractMultiValueSection implements TestCaseSection {
 
     protected abstract @NotNull Set<String> completions(final @NotNull TestCaseCompletions cache);
 
-    protected abstract @NotNull List<String> valuesOf(final @NotNull TestCaseDto dto);
+    protected abstract @NotNull List<String> valuesOf(final @NotNull TestCaseDto testCase);
 
-    protected abstract @NotNull TestCaseDto write(final @NotNull TestCaseDto dto, final @NotNull List<String> values);
+    protected abstract @NotNull TestCaseDto write(final @NotNull TestCaseDto testCase, final @NotNull List<String> values);
 
     protected @NotNull String placeholderFor(final int index) {
         return field().getPlaceholder();
@@ -127,7 +127,7 @@ public abstract class AbstractMultiValueSection implements TestCaseSection {
 
     // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-033
     @Override
-    public @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto dto) {
+    public @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto testCase) {
         final @NotNull List<String> values = new ArrayList<>();
 
         for (final EditorTextField box : fields) {
@@ -135,7 +135,7 @@ public abstract class AbstractMultiValueSection implements TestCaseSection {
             if (!typed.isEmpty()) values.add(typed);
         }
 
-        return write(dto, values);
+        return write(testCase, values);
     }
 
     @Override
@@ -161,8 +161,8 @@ public abstract class AbstractMultiValueSection implements TestCaseSection {
     }
 
     @Override
-    public void fillData(final @NotNull TestCaseDto dto) {
-        setData(valuesOf(dto));
+    public void fillData(final @NotNull TestCaseDto testCase) {
+        setData(valuesOf(testCase));
     }
 
     // UC-EDITOR-PANEL-006

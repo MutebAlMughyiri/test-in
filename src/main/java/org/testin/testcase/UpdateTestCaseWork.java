@@ -40,29 +40,29 @@ record UpdateTestCaseWork(@NotNull Project p, @NotNull TestinEditor editor, @Not
     }
 
     void overSelection(final @NotNull Consumer<UpdateTestCaseMenu> open) {
-        final @NotNull List<TestCaseDto> selectedItems = editor.getSelectedTestCases();
-        if (selectedItems.isEmpty()) return;
+        final @NotNull List<TestCaseDto> selectedTestCases = editor.getSelectedTestCases();
+        if (selectedTestCases.isEmpty()) return;
 
         final @NotNull Path path = editor.getParent().getPath();
 
-        TestinLogger.trace("update test cases: " + selectedItems.stream().map(TestCaseDto::getDescription).collect(Collectors.joining(", ")));
+        TestinLogger.trace("update test cases: " + selectedTestCases.stream().map(TestCaseDto::getDescription).collect(Collectors.joining(", ")));
 
-        final @NotNull List<UUID> ids = TestCaseSnapshot.idsOf(selectedItems);
-        final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(p, path, ids);
+        final @NotNull List<UUID> testCaseIds = TestCaseSnapshot.idsOf(selectedTestCases);
+        final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(p, path, testCaseIds);
 
-        open.accept(new UpdateTestCaseMenu(p, selectedItems, (updatedItems, field) -> ApplicationManager.getApplication().executeOnPooledThread(() ->
-                save(path, ids, before, updatedItems, field))));
+        open.accept(new UpdateTestCaseMenu(p, selectedTestCases, (updatedTestCases, field) -> ApplicationManager.getApplication().executeOnPooledThread(() ->
+                save(path, testCaseIds, before, updatedTestCases, field))));
     }
 
-    private void save(final @NotNull Path path, final @NotNull List<UUID> ids, final @NotNull TestCaseSnapshot before, final @NotNull List<TestCaseDto> updatedItems, final @NotNull UpdateTestCaseFields field) {
+    private void save(final @NotNull Path path, final @NotNull List<UUID> testCaseIds, final @NotNull TestCaseSnapshot before, final @NotNull List<TestCaseDto> updatedTestCases, final @NotNull UpdateTestCaseFields field) {
         int counted = 0;
-        for (final TestCaseDto tc : updatedItems)
-            if (testCases.putTestCase(path, tc)) counted++;
+        for (final TestCaseDto testCase : updatedTestCases)
+            if (testCases.putTestCase(path, testCase)) counted++;
         final int written = counted;
 
         if (written == 0) return;
 
-        TestCaseSnapshot.record(p, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.update"), updatedItems), before, TestCaseSnapshot.of(p, path, ids));
+        TestCaseSnapshot.record(p, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.update"), updatedTestCases), before, TestCaseSnapshot.of(p, path, testCaseIds));
 
         ApplicationManager.getApplication().invokeLater(() -> {
             // Rule-EDITOR-PANEL-008
@@ -71,7 +71,7 @@ record UpdateTestCaseWork(@NotNull Project p, @NotNull TestinEditor editor, @Not
             editor.onToolBarFilterSelectionChanged();
 
             editor.refreshOrdered();
-            UpdateTestCaseMenu.applyAftermath(p, updatedItems, field.getGt());
+            UpdateTestCaseMenu.applyAftermath(p, updatedTestCases, field.getGt());
         });
     }
 }

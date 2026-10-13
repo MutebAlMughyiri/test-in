@@ -45,19 +45,19 @@ public class RetiredNodesTest {
     private static final Path PARENT = Path.of("root", "Test Cases");
 
     private static @NotNull TestSetNode testSet(final String name, final TestSetStatus status) {
-        final TestSetNode dto = new TestSetNode();
-        dto.setName(name);
-        dto.setPath(PARENT.resolve(name));
-        dto.getMarker().setStatus(status);
-        return dto;
+        final TestSetNode testSet = new TestSetNode();
+        testSet.setName(name);
+        testSet.setPath(PARENT.resolve(name));
+        testSet.getMarker().setStatus(status);
+        return testSet;
     }
 
     private static @NotNull TestSetPackageNode testSetPackage(final String name, final PackageStatus status) {
-        final TestSetPackageNode dto = new TestSetPackageNode();
-        dto.setName(name);
-        dto.setPath(PARENT.resolve(name));
-        dto.getMarker().setStatus(status);
-        return dto;
+        final TestSetPackageNode testSetPackage = new TestSetPackageNode();
+        testSetPackage.setName(name);
+        testSetPackage.setPath(PARENT.resolve(name));
+        testSetPackage.getMarker().setStatus(status);
+        return testSetPackage;
     }
 
     private static <T extends AbstractNode> T createdAt(final T node, final int daysAgo) {

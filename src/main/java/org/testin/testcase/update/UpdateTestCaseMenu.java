@@ -33,13 +33,13 @@ import java.util.function.BiConsumer;
 
 public class UpdateTestCaseMenu {
     private final @NotNull Project p;
-    private final @NotNull List<TestCaseDto> items;
-    private final @NotNull BiConsumer<@NotNull List<TestCaseDto>, @NotNull UpdateTestCaseFields> updatedItems;
+    private final @NotNull List<TestCaseDto> testCases;
+    private final @NotNull BiConsumer<@NotNull List<TestCaseDto>, @NotNull UpdateTestCaseFields> updatedTestCases;
 
-    public UpdateTestCaseMenu(final @NotNull Project p, final @NotNull List<TestCaseDto> items, final @NotNull BiConsumer<@NotNull List<TestCaseDto>, @NotNull UpdateTestCaseFields> updatedItems) {
+    public UpdateTestCaseMenu(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases, final @NotNull BiConsumer<@NotNull List<TestCaseDto>, @NotNull UpdateTestCaseFields> updatedTestCases) {
         this.p = p;
-        this.items = items;
-        this.updatedItems = updatedItems;
+        this.testCases = testCases;
+        this.updatedTestCases = updatedTestCases;
     }
 
     public static void applyAftermath(final @NotNull Project p, final @NotNull List<TestCaseDto> updated, final @NotNull GenType<TestCaseDto> gt) {
@@ -56,12 +56,12 @@ public class UpdateTestCaseMenu {
 
     // UC-EDITOR-PANEL-006
     public void show() {
-        final @NotNull String title = items.size() == 1
+        final @NotNull String title = testCases.size() == 1
                 ? Bundle.message("update.dialog.title.one")
-                : Bundle.message("update.dialog.title.many", String.valueOf(items.size()));
+                : Bundle.message("update.dialog.title.many", String.valueOf(testCases.size()));
 
         new ShortcutMenuPopup<>(p, title, UpdateTestCaseFields.values(), this::open)
-                .refusing(field -> field == UpdateTestCaseFields.ORDER && items.size() > 1
+                .refusing(field -> field == UpdateTestCaseFields.ORDER && testCases.size() > 1
                         ? Optional.of(Bundle.message("update.order.one.at.a.time"))
                         : Optional.empty())
                 .show();
@@ -72,18 +72,18 @@ public class UpdateTestCaseMenu {
         final @NotNull GenType<TestCaseDto> gt = field.getGt();
         TestinLogger.trace("Update field -> " + field.getName() + " | changeType = " + gt);
 
-        if (items.size() == 1) {
-            new UpdateTestCaseDialog(p, items.getFirst(), field, edited -> {
+        if (testCases.size() == 1) {
+            new UpdateTestCaseDialog(p, testCases.getFirst(), field, edited -> {
                 TestinLogger.trace("Single Edit Save -> changeType = " + gt);
-                updatedItems.accept(List.of(edited), field);
+                updatedTestCases.accept(List.of(edited), field);
             }).show();
 
             return;
         }
 
-        field.getBulkAction().execute(p, items, list -> {
+        field.getBulkAction().execute(p, testCases, list -> {
             TestinLogger.trace("Bulk Edit Save -> changeType = " + gt);
-            updatedItems.accept(list, field);
+            updatedTestCases.accept(list, field);
         });
     }
 }

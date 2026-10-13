@@ -251,14 +251,14 @@ record ImportWork(@NotNull Project p, @NotNull Notifier notifier, @NotNull Testi
 
         final @NotNull List<TestCaseDto> written = new ArrayList<>(testCases.size());
         int tried = 0;
-        for (final TestCaseDto tc : placed) {
+        for (final TestCaseDto testCase : placed) {
             if (indicator.isCanceled()) break;
 
-            if (indexedTestCases.putTestCaseVerbatim(into.getPath(), tc)) written.add(tc);
+            if (indexedTestCases.putTestCaseVerbatim(into.getPath(), testCase)) written.add(testCase);
 
             tried++;
             indicator.setFraction((done + tried) / (double) total);
-            indicator.setText2(tc.getDescription());
+            indicator.setText2(testCase.getDescription());
         }
 
         return written;

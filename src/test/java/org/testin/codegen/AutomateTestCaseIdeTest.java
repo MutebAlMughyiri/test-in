@@ -43,15 +43,15 @@ public class AutomateTestCaseIdeTest extends AbstractCodegenIdeTest {
         return Optional.ofNullable(ActionManager.getInstance().getAction("Testin.AutomateTestCase")).orElseThrow(() -> new AssertionError("Automate Test Case is not registered"));
     }
 
-    private @NotNull AnActionEvent selecting(final @NotNull TestCaseDto tc) {
+    private @NotNull AnActionEvent selecting(final @NotNull TestCaseDto testCase) {
         return TestActionEvent.createTestEvent(automate(), SimpleDataContext.builder()
                 .add(CommonDataKeys.PROJECT, getProject())
-                .add(TestinDataKeys.SELECTED_TEST_CASES, List.of(tc))
+                .add(TestinDataKeys.SELECTED_TEST_CASES, List.of(testCase))
                 .build());
     }
 
-    private @NotNull AnActionEvent updated(final @NotNull TestCaseDto tc) {
-        final @NotNull AnActionEvent e = selecting(tc);
+    private @NotNull AnActionEvent updated(final @NotNull TestCaseDto testCase) {
+        final @NotNull AnActionEvent e = selecting(testCase);
         ActionUtil.updateAction(automate(), e);
         return e;
     }
@@ -70,17 +70,17 @@ public class AutomateTestCaseIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-CODEGEN-025
     public void testAutomateWritesTheMethodAndItsClassAndTellsATestCaseThatHasOne() {
-        final @NotNull TestCaseDto tc = indexedTestCase(indexedTestSet("Login", indexedPackage("Checkout", theTestCasesDirectory())), "Log in with a valid user", "b");
+        final @NotNull TestCaseDto testCase = indexedTestCase(indexedTestSet("Login", indexedPackage("Checkout", theTestCasesDirectory())), "Log in with a valid user", "b");
 
-        ActionUtil.performAction(automate(), selecting(tc));
-        Await.until("Automate Test Case wrote no method, class or package folder", () -> methodOf(CHECKOUT_LOGIN_TEST, tc).isPresent());
+        ActionUtil.performAction(automate(), selecting(testCase));
+        Await.until("Automate Test Case wrote no method, class or package folder", () -> methodOf(CHECKOUT_LOGIN_TEST, testCase).isPresent());
 
         final @NotNull AutomationState state = Services.getInstance(getProject(), AutomationState.class);
-        state.read(getProject(), List.of(tc), () -> {
+        state.read(getProject(), List.of(testCase), () -> {
         });
-        Await.until("the automation state never learned the test case has a method", () -> state.hasMethod(tc.getId()));
+        Await.until("the automation state never learned the test case has a method", () -> state.hasMethod(testCase.getId()));
 
-        final @NotNull AnActionEvent again = updated(tc);
+        final @NotNull AnActionEvent again = updated(testCase);
         assertFalse("Automate Test Case is live for a test case whose method is already written", again.getPresentation().isEnabled());
         assertEquals("the tester is not told the method is already there", Bundle.message("automate.already.written.description"), again.getPresentation().getDescription());
     }

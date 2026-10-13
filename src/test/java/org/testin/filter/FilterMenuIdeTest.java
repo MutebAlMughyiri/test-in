@@ -118,7 +118,7 @@ public class FilterMenuIdeTest extends AbstractTempRootIdeTest {
     private @NotNull List<TestCaseDto> createdTestCases(final @NotNull TestSetNode testSet, final int count) {
         final @NotNull List<TestCaseDto> made = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            final @NotNull TestCaseDto tc = TestCaseDto.builder()
+            final @NotNull TestCaseDto testCase = TestCaseDto.builder()
                     .id(UUID.randomUUID())
                     .description("Test case number " + (i + 1))
                     .order(String.format("m%04d", i))
@@ -126,9 +126,9 @@ public class FilterMenuIdeTest extends AbstractTempRootIdeTest {
                     .groups(new ArrayList<>(i % 2 == 0 ? List.of("Smoke") : List.of()))
                     .module(i % 3 == 0 ? "Payments" : "")
                     .build();
-            tc.setParent(testSet);
-            Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), tc);
-            made.add(tc);
+            testCase.setParent(testSet);
+            Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase);
+            made.add(testCase);
         }
         return made;
     }
@@ -236,7 +236,7 @@ public class FilterMenuIdeTest extends AbstractTempRootIdeTest {
     public void testFilteringSaysNothingAndATestCaseItHidesIsReportedRatherThanShown() {
         final @NotNull TestSetEditor editor = openedTestSet(6);
         final @NotNull FilterPopupBtn filter = filterOf(editor);
-        final @NotNull TestCaseDto hidden = editor.getAllTestCases().stream().filter(tc -> tc.getPriority() == Priority.LOW).findFirst().orElseThrow();
+        final @NotNull TestCaseDto hidden = editor.getAllTestCases().stream().filter(testCase -> testCase.getPriority() == Priority.LOW).findFirst().orElseThrow();
         final @NotNull Said balloons = Said.listening(getProject(), getTestRootDisposable());
 
         tick(filter, TestSetEditorAttributes.PRIORITY.getName(), Priority.HIGH.getLabel());

@@ -60,12 +60,12 @@ public enum FileKind {
     }
 
     // Rule-INTERNAL-012
-    public @NotNull String fileName(final @NotNull UUID id) {
+    public @NotNull String fileName(final @NotNull UUID testCaseId) {
         if (extension.isEmpty()) {
             throw new IllegalStateException("A " + this + " is not named by an id: its name is fixed, or it is not Testin's file");
         }
 
-        return id + extension;
+        return testCaseId + extension;
     }
 
     // Rule-INTERNAL-012, Rule-INTERNAL-084

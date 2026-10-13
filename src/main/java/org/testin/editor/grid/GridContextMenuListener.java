@@ -32,14 +32,14 @@ public class GridContextMenuListener extends MouseAdapter {
     private final @NotNull JBTable table;
     private final @NotNull JBList<TestCaseDto> list;
     private final @NotNull AbstractEditorContextMenu contextMenu;
-    private final @NotNull List<TestCaseDto> pageItems;
+    private final @NotNull List<TestCaseDto> pageTestCases;
     private boolean popupShownOnPress;
 
-    public GridContextMenuListener(final @NotNull JBTable table, final @NotNull JBList<TestCaseDto> list, final @NotNull AbstractEditorContextMenu contextMenu, final @NotNull List<TestCaseDto> pageItems) {
+    public GridContextMenuListener(final @NotNull JBTable table, final @NotNull JBList<TestCaseDto> list, final @NotNull AbstractEditorContextMenu contextMenu, final @NotNull List<TestCaseDto> pageTestCases) {
         this.table = table;
         this.list = list;
         this.contextMenu = contextMenu;
-        this.pageItems = pageItems;
+        this.pageTestCases = pageTestCases;
     }
 
     // UC-EDITOR-PANEL-024, Rule-EDITOR-PANEL-110
@@ -61,7 +61,7 @@ public class GridContextMenuListener extends MouseAdapter {
         if (!e.isPopupTrigger()) return;
         final int row = table.rowAtPoint(e.getPoint());
         final int column = table.columnAtPoint(e.getPoint());
-        if (row < 0 || row >= pageItems.size() || column < 0) return;
+        if (row < 0 || row >= pageTestCases.size() || column < 0) return;
 
         if (!table.isRowSelected(row)) {
             table.changeSelection(row, column, false, false);

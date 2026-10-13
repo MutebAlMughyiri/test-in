@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class GroupBulkSectionDialog extends AbstractJsonArraySplitBulkSectionDialog {
-    public GroupBulkSectionDialog(final @NotNull Project p, final @NotNull List<TestCaseDto> selectedItems, final @NotNull Consumer<List<TestCaseDto>> updatedItems) {
-        super(p, selectedItems, updatedItems);
+    public GroupBulkSectionDialog(final @NotNull Project p, final @NotNull List<TestCaseDto> selectedTestCases, final @NotNull Consumer<List<TestCaseDto>> updatedTestCases) {
+        super(p, selectedTestCases, updatedTestCases);
     }
 
     @Override
@@ -42,17 +42,17 @@ public class GroupBulkSectionDialog extends AbstractJsonArraySplitBulkSectionDia
     }
 
     @Override
-    protected @NotNull List<List<String>> extractOriginalValues(final @NotNull List<TestCaseDto> items) {
-        return items.stream().map(tc -> (List<String>) new ArrayList<>(tc.getGroups())).toList();
+    protected @NotNull List<List<String>> extractOriginalValues(final @NotNull List<TestCaseDto> testCases) {
+        return testCases.stream().map(testCase -> (List<String>) new ArrayList<>(testCase.getGroups())).toList();
     }
 
     // UC-EDITOR-PANEL-007
     @Override
-    protected @NotNull List<TestCaseDto> applyValues(final @NotNull List<TestCaseDto> items, final @NotNull List<List<String>> newValues) {
+    protected @NotNull List<TestCaseDto> applyValues(final @NotNull List<TestCaseDto> testCases, final @NotNull List<List<String>> newValues) {
         final @NotNull List<TestCaseDto> written = new ArrayList<>();
 
-        for (int i = 0; i < items.size(); i++) {
-            written.add(items.get(i).edit().groups(Groups.read(String.join(",", newValues.get(i)))).build());
+        for (int i = 0; i < testCases.size(); i++) {
+            written.add(testCases.get(i).edit().groups(Groups.read(String.join(",", newValues.get(i)))).build());
         }
 
         return written;

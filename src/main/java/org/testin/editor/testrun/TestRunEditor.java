@@ -208,14 +208,14 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
         runItemsById.clear();
     }
 
-    public @NotNull Optional<RunItem> runItem(final @NotNull UUID id) {
-        return Optional.ofNullable(runItemsById.get(id));
+    public @NotNull Optional<RunItem> runItem(final @NotNull UUID testCaseId) {
+        return Optional.ofNullable(runItemsById.get(testCaseId));
     }
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-014
     @Override
-    public int positionOf(final @NotNull TestCaseDto tc) {
-        return placesInTheirSets.getOrDefault(tc.getId(), 0);
+    public int positionOf(final @NotNull TestCaseDto testCase) {
+        return placesInTheirSets.getOrDefault(testCase.getId(), 0);
     }
 
     public @NotNull Optional<RunItems> loadedRunItems() {
@@ -259,11 +259,11 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
 
     // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-014, Rule-EDITOR-PANEL-239
     @Override
-    public @NotNull String cardTitle(final @NotNull TestCaseDto tc) {
+    public @NotNull String cardTitle(final @NotNull TestCaseDto testCase) {
         final @NotNull Set<TestRunEditorAttributes> selected = getSelectedDetails();
-        final @NotNull TestCaseDto shown = runItem(tc.getId()).map(RunItem::shownTestCase).orElse(tc);
+        final @NotNull TestCaseDto shown = runItem(testCase.getId()).map(RunItem::shownTestCase).orElse(testCase);
 
-        return AbstractCard.titleText(positionOf(tc),
+        return AbstractCard.titleText(positionOf(testCase),
                 selected.contains(TestRunEditorAttributes.ORDER),
                 selected.contains(TestRunEditorAttributes.DESCRIPTION) ? TestSetEditorAttributes.DESCRIPTION.displayValue(shown) : "");
     }
@@ -334,7 +334,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
     public @NotNull Map<Path, String> getAvailableTestSets() {
         final @NotNull Map<Path, String> testSets = new LinkedHashMap<>();
         testRuns.testCasesFolderOf(parent.getPath()).ifPresent(folder -> snapshotOfAll().stream()
-                .filter(tc -> placesInTheirSets.containsKey(tc.getId()))
+                .filter(testCase -> placesInTheirSets.containsKey(testCase.getId()))
                 .map(TestCaseDto::getParent)
                 .forEach(testSet -> testSets.putIfAbsent(testSet.getPath(), testSet.nameUnder(folder.getPath()))));
         return testSets;
@@ -356,8 +356,8 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
 
     // UC-EDITOR-PANEL-020, Rule-EDITOR-PANEL-094
     @Override
-    protected @NotNull List<String[]> gridRows(final @NotNull List<TestCaseDto> pageItems) {
-        return GridRows.ofRunItems(pageItems, runItemsById, firstRowOnPage(), this::positionOf);
+    protected @NotNull List<String[]> gridRows(final @NotNull List<TestCaseDto> pageTestCases) {
+        return GridRows.ofRunItems(pageTestCases, runItemsById, firstRowOnPage(), this::positionOf);
     }
 
     // UC-EDITOR-PANEL-020, Rule-EDITOR-PANEL-094
@@ -367,8 +367,8 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
     }
 
     @Override
-    protected void installEditListener(final @NotNull JBTable table, final @NotNull List<TestCaseDto> pageItems) {
-        table.getModel().addTableModelListener(new TestRunGridEditListener(p, this, pageItems, model::allContentsChanged));
+    protected void installEditListener(final @NotNull JBTable table, final @NotNull List<TestCaseDto> pageTestCases) {
+        table.getModel().addTableModelListener(new TestRunGridEditListener(p, this, pageTestCases, model::allContentsChanged));
     }
 
     @Override
@@ -424,8 +424,8 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
     }
 
     // UC-EDITOR-PANEL-044, Rule-EDITOR-PANEL-289
-    void showRunItem(final @NotNull TestCaseDto tc) {
-        final int index = getCurrentTestCases().indexOf(tc);
+    void showRunItem(final @NotNull TestCaseDto testCase) {
+        final int index = getCurrentTestCases().indexOf(testCase);
         if (index >= 0) showExecuting(index);
     }
 

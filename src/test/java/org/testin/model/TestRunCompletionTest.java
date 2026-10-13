@@ -36,8 +36,8 @@ public class TestRunCompletionTest {
         return RunItem.builder().id(UUID.randomUUID()).executions(List.of(RunItemExecution.builder().status(status).build())).build();
     }
 
-    private static @NotNull RunItems testRunOf(final RunItem... items) {
-        return RunItems.builder().all(List.of(items)).build();
+    private static @NotNull RunItems testRunOf(final RunItem... runItems) {
+        return RunItems.builder().all(List.of(runItems)).build();
     }
 
     @Test

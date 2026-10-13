@@ -104,11 +104,11 @@ final class PendingChangeFactory {
     // UC-SHARE-010, Rule-SHARE-047
     private static @NotNull PendingChange runItem(final @NotNull StatusKind type, final @NotNull String beforeJson, final @NotNull String afterJson, final @NotNull Path relativePath, final @NotNull JsonCodec mapper, final @NotNull Function<UUID, Optional<TestCaseDto>> testCases) {
         final @NotNull Optional<UUID> testCaseId = FileKind.RUN_ITEM.idIn(relativePath);
-        final @NotNull Optional<TestCaseDto> tc = testCaseId.flatMap(testCases);
+        final @NotNull Optional<TestCaseDto> testCase = testCaseId.flatMap(testCases);
 
-        final @NotNull String name = tc.map(TestCaseDto::getDescription).filter(description -> !description.isBlank())
+        final @NotNull String name = testCase.map(TestCaseDto::getDescription).filter(description -> !description.isBlank())
                 .orElseGet(() -> String.valueOf(relativePath.getFileName()));
-        final @NotNull String testSet = tc.map(TestCaseDto::getParent).map(AbstractNode::getName).orElse("");
+        final @NotNull String testSet = testCase.map(TestCaseDto::getParent).map(AbstractNode::getName).orElse("");
 
         final @NotNull List<FieldChange> changes = switch (type) {
             case ADDED -> List.of(new FieldChange(parentName(relativePath), "",

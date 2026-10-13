@@ -138,13 +138,13 @@ public class SampleProjectTest {
         assertFalse(testCases.isEmpty(), "The sample has no test cases, so it demonstrates nothing");
 
         for (final Path file : testCases) {
-            final @NotNull TestCaseDto tc = read(file, TestCaseDto.class);
+            final @NotNull TestCaseDto testCase = read(file, TestCaseDto.class);
 
-            assertEquals(tc.getId().toString(), file.getFileName().toString().replace(".tc", ""),
+            assertEquals(testCase.getId().toString(), file.getFileName().toString().replace(".tc", ""),
                     "A test case's file name is its identity, so the sample must agree with itself: " + file);
-            assertFalse(tc.getOrder().isEmpty(),
+            assertFalse(testCase.getOrder().isEmpty(),
                     "The sample is what a project written by the current build looks like, and that means ranked: " + file);
-            assertFalse(tc.getDescription().isBlank(),
+            assertFalse(testCase.getDescription().isBlank(),
                     "A test case with no description generates no method, which is not what this sample is showing: " + file);
         }
     }

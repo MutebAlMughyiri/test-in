@@ -65,7 +65,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
 
     private Path testProjectPath;
     private Path testSet;
-    private UUID id;
+    private UUID testCaseId;
 
     private static void write(final @NotNull Path file, final @NotNull String content) {
         try {
@@ -100,7 +100,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
         super.setUp();
         testProjectPath = aTestProjectAt(root.resolve("Shop"));
         testSet = marked(theTestCasesOf(testProjectPath).resolve("Login"), NodeType.TS);
-        id = aTestCaseIn(testSet);
+        testCaseId = aTestCaseIn(testSet);
     }
 
     @Override
@@ -112,7 +112,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
     private @NotNull Path aTestRun(final @NotNull String name, final @NotNull TestRunStatus status) {
         final @NotNull Path testRun = theTestRunsOf(testProjectPath).resolve(name);
         write(testRun.resolve(NodeType.TR.getMarker()), aTestRunMarker(status));
-        resultIn(testRun, FileKind.RUN_ITEM.fileName(id), id);
+        resultIn(testRun, FileKind.RUN_ITEM.fileName(testCaseId), testCaseId);
         return testRun;
     }
 
@@ -125,7 +125,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
     }
 
     private void theTestCaseReads(final @NotNull String description) {
-        theTestCaseReads(id, description);
+        theTestCaseReads(testCaseId, description);
     }
 
     private void theTestCaseReads(final @NotNull UUID testCaseId, final @NotNull String description) {
@@ -146,7 +146,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
     }
 
     private @NotNull RunItem theRunItemOf(final @NotNull Path testRun) {
-        return theRunItemOf(testRun, id);
+        return theRunItemOf(testRun, testCaseId);
     }
 
     private @NotNull RunItem theRunItemOf(final @NotNull Path testRun, final @NotNull UUID testCaseId) {
@@ -238,7 +238,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
         committedWithTheReview();
 
         try {
-            Files.delete(testSet.resolve(FileKind.TEST_CASE.fileName(id)));
+            Files.delete(testSet.resolve(FileKind.TEST_CASE.fileName(testCaseId)));
         } catch (final IOException ex) {
             throw new AssertionError("Could not delete the test case: " + ex.getMessage(), ex);
         }
@@ -252,7 +252,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
 
     private void theTestCaseIsDeleted() {
         try {
-            Files.delete(testSet.resolve(FileKind.TEST_CASE.fileName(id)));
+            Files.delete(testSet.resolve(FileKind.TEST_CASE.fileName(testCaseId)));
         } catch (final IOException ex) {
             throw new AssertionError("Could not delete the test case: " + ex.getMessage(), ex);
         }
@@ -262,7 +262,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
     private @NotNull List<TestCaseHistoryCard> theHistoryOfTheDeletedTestCase() {
         Services.getInstance(getProject(), BoundTestProject.class).choose(String.valueOf(testProjectPath.getFileName()));
         try {
-            return ApplicationManager.getApplication().executeOnPooledThread(() -> TestCaseHistory.deletedFile(getProject(), id)
+            return ApplicationManager.getApplication().executeOnPooledThread(() -> TestCaseHistory.deletedFile(getProject(), testCaseId)
                     .map(file -> TestCaseHistory.read(getProject(), file, Optional.empty()).entries())
                     .orElseThrow(() -> new AssertionError("Git was not asked where the deleted test case was"))).get();
         } catch (final InterruptedException | ExecutionException ex) {
@@ -279,7 +279,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
         final @NotNull RunItem runItem = theRunItemOf(inProgress);
         assertEquals("a deleted test case was not Removed", RunItemStatus.REMOVED, runItem.shownStatus());
         assertEquals("the run item did not show the last text Git holds", DESCRIPTION, runItem.shownTestCase().getDescription());
-        assertTrue("a deleted test case took a run item status", Services.getInstance(getProject(), RunItemRecorder.class).heldTestRun(inProgress).flatMap(testRun -> testRun.runItemOf(id)).filter(RunItem::isRemoved).isPresent());
+        assertTrue("a deleted test case took a run item status", Services.getInstance(getProject(), RunItemRecorder.class).heldTestRun(inProgress).flatMap(testRun -> testRun.runItemOf(testCaseId)).filter(RunItem::isRemoved).isPresent());
     }
 
     // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-113
@@ -373,9 +373,9 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
         committedWithTheReview();
 
         final @NotNull Path checkout = marked(theTestCasesOf(testProjectPath).resolve("Checkout"), NodeType.TS);
-        final @NotNull Path moved = checkout.resolve(FileKind.TEST_CASE.fileName(id));
+        final @NotNull Path moved = checkout.resolve(FileKind.TEST_CASE.fileName(testCaseId));
         try {
-            Files.move(testSet.resolve(FileKind.TEST_CASE.fileName(id)), moved);
+            Files.move(testSet.resolve(FileKind.TEST_CASE.fileName(testCaseId)), moved);
         } catch (final IOException ex) {
             throw new AssertionError("Could not move the test case: " + ex.getMessage(), ex);
         }
@@ -500,7 +500,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
         committedAsItIs();
         theTestCaseIsDeleted();
 
-        final @NotNull RunItem runItem = indexedTestRuns().getRunItems(committed).runItemOf(id).orElseThrow();
+        final @NotNull RunItem runItem = indexedTestRuns().getRunItems(committed).runItemOf(testCaseId).orElseThrow();
         assertFalse("a Committed test run reads Removed for a test case it has not read from its commit yet", runItem.isRemoved());
         assertEquals(RunItemStatus.PASSED, runItem.shownStatus());
     }
@@ -536,11 +536,11 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
         final @NotNull Path committed = aTestRun(COMPLETED, TestRunStatus.COMMITTED);
         final @NotNull Path completed = aTestRun("Cycle 5", TestRunStatus.COMPLETED);
         readEverything();
-        final @NotNull TestCaseDto tc = Services.getInstance(getProject(), TestCases.class).findTestCase(id).orElseThrow();
+        final @NotNull TestCaseDto testCase = Services.getInstance(getProject(), TestCases.class).findTestCase(testCaseId).orElseThrow();
 
-        assertTrue("Run was offered on a Committed test run", TestCaseQuickAction.RUN_TEST_METHOD.whyNotHere(Optional.of(theTestRunAt(committed)), tc).isPresent());
-        assertTrue("Run was refused on a Completed test run", TestCaseQuickAction.RUN_TEST_METHOD.whyNotHere(Optional.of(theTestRunAt(completed)), tc).isEmpty());
-        assertTrue("Run was refused outside any test run", TestCaseQuickAction.RUN_TEST_METHOD.whyNotHere(Optional.empty(), tc).isEmpty());
+        assertTrue("Run was offered on a Committed test run", TestCaseQuickAction.RUN_TEST_METHOD.whyNotHere(Optional.of(theTestRunAt(committed)), testCase).isPresent());
+        assertTrue("Run was refused on a Completed test run", TestCaseQuickAction.RUN_TEST_METHOD.whyNotHere(Optional.of(theTestRunAt(completed)), testCase).isEmpty());
+        assertTrue("Run was refused outside any test run", TestCaseQuickAction.RUN_TEST_METHOD.whyNotHere(Optional.empty(), testCase).isEmpty());
     }
 
     // UC-INTERNAL-002, Rule-EDITOR-PANEL-239
@@ -552,7 +552,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
 
         readEverything();
 
-        Await.until("the record was not read once the index was", () -> indexedTestRuns().getRunItems(committed).runItemOf(id)
+        Await.until("the record was not read once the index was", () -> indexedTestRuns().getRunItems(committed).runItemOf(testCaseId)
                 .map(runItem -> runItem.shownTestCase().getDescription().equals(DESCRIPTION)).orElse(false));
     }
 

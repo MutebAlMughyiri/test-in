@@ -185,7 +185,7 @@ public class DragToReorderIdeTest extends AbstractTempRootIdeTest {
             theTestCases().putTestCaseVerbatim(testSet.getPath(), raised);
         }
         editor.onToolBarRefreshButtonClicked();
-        Await.until("the editor never read the new priorities", () -> !editor.isLoading() && editor.getAllTestCases().stream().filter(tc -> tc.getPriority() == Priority.HIGH).count() == 2);
+        Await.until("the editor never read the new priorities", () -> !editor.isLoading() && editor.getAllTestCases().stream().filter(testCase -> testCase.getPriority() == Priority.HIGH).count() == 2);
         final @NotNull SortPopupBtn sort = editor.getToolBar().getToolbarItem(SortPopupBtn.class);
         Sorting.choose(sort, SortField.PRIORITY.getLabel());
         Sorting.choose(sort, SortDirection.DESCENDING.getLabel());

@@ -189,31 +189,31 @@ public class RunItemTest {
 
     @Test
     public void shownTestCaseIsTheWiredTestCase() {
-        final TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).build();
-        final RunItem runItem = RunItem.builder().id(UUID.randomUUID()).build().showing(Optional.of(tc), Optional.empty(), Optional.empty(), false);
+        final TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).build();
+        final RunItem runItem = RunItem.builder().id(UUID.randomUUID()).build().showing(Optional.of(testCase), Optional.empty(), Optional.empty(), false);
 
-        assertSame(runItem.shownTestCase(), tc);
+        assertSame(runItem.shownTestCase(), testCase);
         assertFalse(runItem.isRemoved(), "a row showing a live test case is not removed");
     }
 
     @Test
     public void showingNoTestCaseMarksTheRowRemovedAndNamesIt() {
-        final UUID id = UUID.randomUUID();
-        final RunItem runItem = RunItem.builder().id(id).build()
-                .showing(Optional.of(TestCaseDto.builder().id(id).build()), Optional.empty(), Optional.empty(), false)
+        final UUID testCaseId = UUID.randomUUID();
+        final RunItem runItem = RunItem.builder().id(testCaseId).build()
+                .showing(Optional.of(TestCaseDto.builder().id(testCaseId).build()), Optional.empty(), Optional.empty(), false)
                 .showing(Optional.empty(), Optional.empty(), Optional.empty(), false);
 
         assertTrue(runItem.isRemoved(), "the live test case and the removed mark are set by one call, so they cannot disagree");
-        assertEquals(runItem.shownTestCase().getDescription(), TestCaseDto.deleted(id).getDescription());
+        assertEquals(runItem.shownTestCase().getDescription(), TestCaseDto.deleted(testCaseId).getDescription());
     }
 
     @Test
     public void anUnwiredItemShowsAsARemovedTestCaseRatherThanThrowing() {
-        final UUID id = UUID.randomUUID();
-        final RunItem runItem = RunItem.builder().id(id).build();
+        final UUID testCaseId = UUID.randomUUID();
+        final RunItem runItem = RunItem.builder().id(testCaseId).build();
 
-        assertEquals(runItem.shownTestCase().getDescription(), TestCaseDto.deleted(id).getDescription());
-        assertEquals(runItem.shownTestCase().getId(), id);
+        assertEquals(runItem.shownTestCase().getDescription(), TestCaseDto.deleted(testCaseId).getDescription());
+        assertEquals(runItem.shownTestCase().getId(), testCaseId);
     }
 
     @Test

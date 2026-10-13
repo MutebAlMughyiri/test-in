@@ -257,7 +257,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableAttribute
     @Override
     public void repaint(final @NotNull UUID testCaseId) {
         model.getItems().stream()
-                .filter(tc -> tc.getId().equals(testCaseId))
+                .filter(testCase -> testCase.getId().equals(testCaseId))
                 .findFirst()
                 .ifPresent(model::contentsChanged);
     }
@@ -322,11 +322,11 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableAttribute
         });
     }
 
-    protected abstract @NotNull List<String[]> gridRows(final @NotNull List<TestCaseDto> pageItems);
+    protected abstract @NotNull List<String[]> gridRows(final @NotNull List<TestCaseDto> pageTestCases);
 
     protected abstract @NotNull JBTable buildTable(final @NotNull List<String[]> rows, final @NotNull Set<A> attributes);
 
-    protected abstract void installEditListener(final @NotNull JBTable table, final @NotNull List<TestCaseDto> pageItems);
+    protected abstract void installEditListener(final @NotNull JBTable table, final @NotNull List<TestCaseDto> pageTestCases);
 
     protected void loadDataAsync() {
         loadDataAsync(() -> {
@@ -390,11 +390,11 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableAttribute
 
     // UC-EDITOR-PANEL-022, Rule-EDITOR-PANEL-104, Rule-EDITOR-PANEL-009
     @Override
-    public void selectWhenLoaded(final @NotNull UUID id) {
+    public void selectWhenLoaded(final @NotNull UUID testCaseId) {
         final @NotNull Optional<TestCaseDto> loaded;
         synchronized (allTestCases) {
             loaded = allTestCases.stream()
-                    .filter(tc -> id.equals(tc.getId()))
+                    .filter(testCase -> testCaseId.equals(testCase.getId()))
                     .findFirst();
         }
 
@@ -403,7 +403,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableAttribute
             return;
         }
 
-        pending.waitFor(id);
+        pending.waitFor(testCaseId);
     }
 
     protected void focusIfGoingTo() {
@@ -412,10 +412,10 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableAttribute
 
     // UC-EDITOR-PANEL-025, Rule-EDITOR-PANEL-009
     @Override
-    public void selectTestCase(final @NotNull TestCaseDto tc) {
-        final int index = currentTestCases.indexOf(tc);
+    public void selectTestCase(final @NotNull TestCaseDto testCase) {
+        final int index = currentTestCases.indexOf(testCase);
         if (index < 0) {
-            notOnAnyPage(tc);
+            notOnAnyPage(testCase);
             return;
         }
 
@@ -430,7 +430,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableAttribute
         ApplicationManager.getApplication().invokeLater(() -> selectVisibleIndex(placeOnPage));
     }
 
-    protected void notOnAnyPage(final @NotNull TestCaseDto tc) {
+    protected void notOnAnyPage(final @NotNull TestCaseDto testCase) {
     }
 
     protected void selectVisibleIndex(final int index) {
@@ -472,16 +472,16 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableAttribute
         final int totalItems = currentTestCases.size();
         final @NotNull PageWindow page = paging.settle(totalItems);
 
-        final @NotNull List<TestCaseDto> pageItems = new ArrayList<>(currentTestCases.subList(page.fromIndex(), page.toIndex()));
+        final @NotNull List<TestCaseDto> pageTestCases = new ArrayList<>(currentTestCases.subList(page.fromIndex(), page.toIndex()));
 
         final @NotNull Optional<UUID> selectedId = pending.take()
                 .or(() -> Optional.ofNullable(list.getSelectedValue()).map(TestCaseDto::getId));
 
-        replaceModel(pageItems);
+        replaceModel(pageTestCases);
 
-        selectedId.ifPresent(id -> {
-            for (final TestCaseDto testCase : pageItems) {
-                if (id.equals(testCase.getId())) {
+        selectedId.ifPresent(testCaseId -> {
+            for (final TestCaseDto testCase : pageTestCases) {
+                if (testCaseId.equals(testCase.getId())) {
                     list.setSelectedValue(testCase, true);
                     break;
                 }
@@ -503,9 +503,9 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableAttribute
         afterViewRefreshed();
     }
 
-    protected void replaceModel(final @NotNull List<TestCaseDto> pageItems) {
-        if (model.getItems().equals(pageItems)) refreshCards();
-        else model.replaceAll(pageItems);
+    protected void replaceModel(final @NotNull List<TestCaseDto> pageTestCases) {
+        if (model.getItems().equals(pageTestCases)) refreshCards();
+        else model.replaceAll(pageTestCases);
     }
 
     protected abstract void drawStatus(final @NotNull PageWindow page);
@@ -578,8 +578,8 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableAttribute
 
     // UC-EDITOR-PANEL-027, Rule-EDITOR-PANEL-118
     protected void jumpToPageOfPendingSelection() {
-        pending.waiting().ifPresent(id -> {
-            if (!paging.turnToPageHolding(id, currentTestCases)) pending.forget();
+        pending.waiting().ifPresent(testCaseId -> {
+            if (!paging.turnToPageHolding(testCaseId, currentTestCases)) pending.forget();
         });
     }
 }

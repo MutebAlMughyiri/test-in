@@ -30,10 +30,10 @@ import java.util.List;
 
 public final class TestCaseBadges {
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-085
-    public static @NotNull List<JComponent> of(final @NotNull Project p, final @NotNull TestCaseDto dto) {
-        final @NotNull List<Badge> badges = Badges.testCaseBadges(dto);
+    public static @NotNull List<JComponent> of(final @NotNull Project p, final @NotNull TestCaseDto testCase) {
+        final @NotNull List<Badge> badges = Badges.testCaseBadges(testCase);
 
-        final @NotNull ExecutionStatus tempStatus = Services.getInstance(p, TestNGExecution.class).statusOf(dto);
+        final @NotNull ExecutionStatus tempStatus = Services.getInstance(p, TestNGExecution.class).statusOf(testCase);
         if (tempStatus.hasBadge()) badges.add(Badges.createExecutionStatusBadge(tempStatus.getBadge()));
 
         return Badges.pills(badges);

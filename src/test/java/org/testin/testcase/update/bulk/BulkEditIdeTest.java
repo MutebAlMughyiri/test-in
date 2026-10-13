@@ -105,10 +105,10 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
         testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
         final @NotNull List<TestCaseDto> made = new ArrayList<>();
         for (int i = 0; i < modules.length; i++) {
-            final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description("Test case number " + (i + 1)).order(String.format("m%04d", i)).module(modules[i]).build();
-            tc.setParent(testSet);
-            theTestCases().putTestCaseVerbatim(testSet.getPath(), tc);
-            made.add(theTestCases().findTestCase(tc.getId()).orElseThrow());
+            final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description("Test case number " + (i + 1)).order(String.format("m%04d", i)).module(modules[i]).build();
+            testCase.setParent(testSet);
+            theTestCases().putTestCaseVerbatim(testSet.getPath(), testCase);
+            made.add(theTestCases().findTestCase(testCase.getId()).orElseThrow());
         }
         return made;
     }
@@ -162,8 +162,8 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
         }
     }
 
-    private @NotNull String moduleOf(final @NotNull TestCaseDto tc) {
-        return theTestCases().findTestCase(tc.getId()).orElseThrow().getModule();
+    private @NotNull String moduleOf(final @NotNull TestCaseDto testCase) {
+        return theTestCases().findTestCase(testCase.getId()).orElseThrow().getModule();
     }
 
     private @NotNull List<RangeHighlighter> greenIn(final @NotNull Editor editor) {

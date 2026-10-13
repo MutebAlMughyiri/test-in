@@ -149,12 +149,12 @@ public class BadgesTest {
     // Rule-EDITOR-PANEL-267
     @Test
     public void anEditorsCardDrawsThePriorityAsNeitherABadgeNorALine() {
-        final TestCaseDto tc = new TestCaseDto().setPriority(Priority.HIGH);
+        final TestCaseDto testCase = new TestCaseDto().setPriority(Priority.HIGH);
         final List<Badge> badges = new ArrayList<>();
         final Map<String, String> details = new HashMap<>();
 
-        TestSetEditorAttributes.PRIORITY.applyToUI(tc, badges, details);
-        TestRunEditorAttributes.PRIORITY.applyToUI(RunItem.pendingFor(tc), badges, details);
+        TestSetEditorAttributes.PRIORITY.applyToUI(testCase, badges, details);
+        TestRunEditorAttributes.PRIORITY.applyToUI(RunItem.pendingFor(testCase), badges, details);
 
         assertTrue(badges.isEmpty(), "an editor's card still draws the priority as a badge");
         assertTrue(details.isEmpty(), "an editor's card draws the priority as a detail line");

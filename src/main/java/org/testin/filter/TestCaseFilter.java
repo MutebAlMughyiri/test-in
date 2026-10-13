@@ -71,8 +71,8 @@ public final class TestCaseFilter {
         return matchesSearch && matchesPriority && matchesGroup && matchesModule && matchesTestCaseStatus && matchesRunItemStatus && matchesTestSet;
     }
 
-    private static boolean matchesStatus(final @NotNull UUID id, final @NotNull Set<RunItemStatus> statuses, final @NotNull Function<UUID, Optional<RunItem>> runItemProvider) {
-        return runItemProvider.apply(id)
+    private static boolean matchesStatus(final @NotNull UUID testCaseId, final @NotNull Set<RunItemStatus> statuses, final @NotNull Function<UUID, Optional<RunItem>> runItemProvider) {
+        return runItemProvider.apply(testCaseId)
                 .map(RunItem::shownStatus)
                 .filter(statuses::contains)
                 .isPresent();

@@ -52,8 +52,8 @@ public class UpdateOneFieldIdeTest extends AbstractTempRootIdeTest {
     private final @NotNull List<TestCaseDto> saved = new ArrayList<>();
     private @NotNull TestSetNode testSet = new TestSetNode();
 
-    private static @NotNull TestCaseDto with(final @NotNull TestCaseDto tc, final @NotNull String description, final @NotNull String expectedResult) {
-        return tc.edit().description(description).expectedResult(expectedResult).build();
+    private static @NotNull TestCaseDto with(final @NotNull TestCaseDto testCase, final @NotNull String description, final @NotNull String expectedResult) {
+        return testCase.edit().description(description).expectedResult(expectedResult).build();
     }
 
     private static boolean gray(final @NotNull TestCaseSection section) {
@@ -74,14 +74,14 @@ public class UpdateOneFieldIdeTest extends AbstractTempRootIdeTest {
         if (testSet.getPath().toString().isEmpty())
             testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
 
-        final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description(description).expectedResult(expectedResult).order("m" + description.length()).build();
-        tc.setParent(testSet);
-        theTestCases().putTestCaseVerbatim(testSet.getPath(), tc);
-        return theTestCases().findTestCase(tc.getId()).orElseThrow();
+        final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description(description).expectedResult(expectedResult).order("m" + description.length()).build();
+        testCase.setParent(testSet);
+        theTestCases().putTestCaseVerbatim(testSet.getPath(), testCase);
+        return theTestCases().findTestCase(testCase.getId()).orElseThrow();
     }
 
-    private @NotNull UpdateTestCaseDialog shown(final @NotNull TestCaseDto tc, final @NotNull UpdateTestCaseFields field) {
-        final @NotNull UpdateTestCaseDialog dialog = new UpdateTestCaseDialog(getProject(), tc, field, saved::add);
+    private @NotNull UpdateTestCaseDialog shown(final @NotNull TestCaseDto testCase, final @NotNull UpdateTestCaseFields field) {
+        final @NotNull UpdateTestCaseDialog dialog = new UpdateTestCaseDialog(getProject(), testCase, field, saved::add);
         ShownDialog.open(getProject(), UpdateTestCaseDialog.class, dialog::show);
         return dialog;
     }
@@ -90,17 +90,17 @@ public class UpdateOneFieldIdeTest extends AbstractTempRootIdeTest {
         ShownDialog.press(getProject(), UpdateTestCaseDialog.class, Shortcuts.Enter.getKey());
     }
 
-    private @NotNull TestSetEditor anEditorSelecting(final @NotNull TestCaseDto tc) {
+    private @NotNull TestSetEditor anEditorSelecting(final @NotNull TestCaseDto testCase) {
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         for (int i = 0; i < editor.getList().getModel().getSize(); i++)
-            if (editor.getList().getModel().getElementAt(i).getId().equals(tc.getId()))
+            if (editor.getList().getModel().getElementAt(i).getId().equals(testCase.getId()))
                 editor.getList().setSelectedIndex(i);
         return editor;
     }
 
-    private @NotNull String fileOf(final @NotNull TestCaseDto tc) {
+    private @NotNull String fileOf(final @NotNull TestCaseDto testCase) {
         try (final Stream<Path> files = Files.list(testSet.getPath())) {
-            final @NotNull Path file = files.filter(candidate -> candidate.getFileName().toString().startsWith(tc.getId().toString())).findFirst().orElseThrow(() -> new AssertionError("no file holds " + tc.getDescription()));
+            final @NotNull Path file = files.filter(candidate -> candidate.getFileName().toString().startsWith(testCase.getId().toString())).findFirst().orElseThrow(() -> new AssertionError("no file holds " + testCase.getDescription()));
             return Files.readString(file) + "@" + file.toFile().lastModified();
         } catch (final IOException ex) {
             throw new AssertionError("the test set could not be read", ex);
@@ -115,14 +115,14 @@ public class UpdateOneFieldIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-035
     public void testOnlyTheOpenedFieldIsWrittenBackAndEveryOtherFieldIsGray() {
-        final @NotNull TestCaseDto tc = aTestCase("Log in", "Dashboard opens");
-        final @NotNull UpdateTestCaseDialog dialog = shown(tc, UpdateTestCaseFields.EXPECTED_RESULT);
+        final @NotNull TestCaseDto testCase = aTestCase("Log in", "Dashboard opens");
+        final @NotNull UpdateTestCaseDialog dialog = shown(testCase, UpdateTestCaseFields.EXPECTED_RESULT);
 
         assertTrue("the description beside the opened field is not gray", gray(dialog.getDescriptionSection()));
         assertFalse("the opened field is gray", gray(dialog.getExpectedResultSection()));
 
-        dialog.getDescriptionSection().fillData(with(tc, "Log out", ""));
-        dialog.getExpectedResultSection().fillData(with(tc, "", "The dashboard opens"));
+        dialog.getDescriptionSection().fillData(with(testCase, "Log out", ""));
+        dialog.getExpectedResultSection().fillData(with(testCase, "", "The dashboard opens"));
         save();
 
         assertEquals("the dialog did not save once", 1, saved.size());
@@ -145,9 +145,9 @@ public class UpdateOneFieldIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-006
     public void testASaveThatLeftEveryFieldAsItWasWritesNothingAndSaysNothing() {
-        final @NotNull TestCaseDto tc = aTestCase("Log in", "Dashboard opens");
-        final @NotNull String before = fileOf(tc);
-        final @NotNull TestSetEditor editor = anEditorSelecting(tc);
+        final @NotNull TestCaseDto testCase = aTestCase("Log in", "Dashboard opens");
+        final @NotNull String before = fileOf(testCase);
+        final @NotNull TestSetEditor editor = anEditorSelecting(testCase);
         final @NotNull Said balloons = Said.listening(getProject(), getTestRootDisposable());
         final @NotNull UndoScope scope = UndoScope.of(testSet.getPath());
 
@@ -157,7 +157,7 @@ public class UpdateOneFieldIdeTest extends AbstractTempRootIdeTest {
 
         assertEquals("a save that changed nothing said something", List.of(), balloons.shown());
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
-        assertEquals("a save that changed nothing wrote the file", before, fileOf(tc));
+        assertEquals("a save that changed nothing wrote the file", before, fileOf(testCase));
         assertFalse("a save that changed nothing went on the undo history", Services.getInstance(getProject(), UndoHistories.class).canUndo(scope));
     }
 
@@ -167,21 +167,21 @@ public class UpdateOneFieldIdeTest extends AbstractTempRootIdeTest {
         final @NotNull String tester = settings.testerName;
         settings.testerName = "Sara";
         try {
-            final @NotNull TestCaseDto tc = aTestCase("Log in", "Dashboard opens");
+            final @NotNull TestCaseDto testCase = aTestCase("Log in", "Dashboard opens");
             final @NotNull JsonCodec mapper = Services.getInstance(getProject(), JsonCodec.class);
-            final @NotNull String original = mapper.writeValueAsString(tc.copy());
-            final @NotNull TestSetEditor editor = anEditorSelecting(tc);
+            final @NotNull String original = mapper.writeValueAsString(testCase.copy());
+            final @NotNull TestSetEditor editor = anEditorSelecting(testCase);
             final @NotNull UndoScope scope = UndoScope.of(testSet.getPath());
 
             ShownDialog.open(getProject(), UpdateTestCaseDialog.class, () -> UpdateTestCaseAction.openField(getProject(), editor, UpdateTestCaseFields.EXPECTED_RESULT));
             theOpenField().setText("The dashboard opens");
             save();
             Await.until("the update never reached the undo history", () -> Services.getInstance(getProject(), UndoHistories.class).canUndo(scope));
-            assertEquals("the update did not record who changed the test case", "Sara", theTestCases().findTestCase(tc.getId()).orElseThrow().getUpdatedBy());
+            assertEquals("the update did not record who changed the test case", "Sara", theTestCases().findTestCase(testCase.getId()).orElseThrow().getUpdatedBy());
 
             assertTrue("the update could not be taken back", Services.getInstance(getProject(), UndoHistories.class).undo(scope));
 
-            assertEquals("undo did not put the test case back exactly", original, mapper.writeValueAsString(theTestCases().findTestCase(tc.getId()).orElseThrow()));
+            assertEquals("undo did not put the test case back exactly", original, mapper.writeValueAsString(theTestCases().findTestCase(testCase.getId()).orElseThrow()));
         } finally {
             settings.testerName = tester;
         }

@@ -27,8 +27,8 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 public class StepsBulkSectionDialog extends AbstractJsonArraySplitBulkSectionDialog {
-    public StepsBulkSectionDialog(final @NotNull Project p, final @NotNull List<TestCaseDto> selectedItems, final @NotNull Consumer<List<TestCaseDto>> updatedItems) {
-        super(p, selectedItems, updatedItems);
+    public StepsBulkSectionDialog(final @NotNull Project p, final @NotNull List<TestCaseDto> selectedTestCases, final @NotNull Consumer<List<TestCaseDto>> updatedTestCases) {
+        super(p, selectedTestCases, updatedTestCases);
     }
 
     @Override
@@ -42,21 +42,21 @@ public class StepsBulkSectionDialog extends AbstractJsonArraySplitBulkSectionDia
     }
 
     @Override
-    protected @NotNull List<List<String>> extractOriginalValues(final @NotNull List<TestCaseDto> items) {
+    protected @NotNull List<List<String>> extractOriginalValues(final @NotNull List<TestCaseDto> testCases) {
         final @NotNull List<List<String>> originalSteps = new ArrayList<>();
 
-        for (final TestCaseDto tc : items) {
-            originalSteps.add(new ArrayList<>(tc.getSteps()));
+        for (final TestCaseDto testCase : testCases) {
+            originalSteps.add(new ArrayList<>(testCase.getSteps()));
         }
 
         return originalSteps;
     }
 
     @Override
-    protected @NotNull List<TestCaseDto> applyValues(final @NotNull List<TestCaseDto> items, final @NotNull List<List<String>> newValues) {
+    protected @NotNull List<TestCaseDto> applyValues(final @NotNull List<TestCaseDto> testCases, final @NotNull List<List<String>> newValues) {
         final @NotNull List<TestCaseDto> written = new ArrayList<>();
 
-        for (int i = 0; i < items.size(); i++) {
+        for (int i = 0; i < testCases.size(); i++) {
             final @NotNull List<String> cleanSteps = new ArrayList<>();
 
             for (final String step : newValues.get(i)) {
@@ -67,7 +67,7 @@ public class StepsBulkSectionDialog extends AbstractJsonArraySplitBulkSectionDia
                 }
             }
 
-            written.add(items.get(i).edit().steps(cleanSteps).build());
+            written.add(testCases.get(i).edit().steps(cleanSteps).build());
         }
 
         return written;

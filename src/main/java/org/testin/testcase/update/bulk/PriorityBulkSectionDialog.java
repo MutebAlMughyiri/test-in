@@ -28,8 +28,8 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 public class PriorityBulkSectionDialog extends AbstractJsonSplitBulkSectionDialog {
-    public PriorityBulkSectionDialog(final @NotNull Project p, final @NotNull List<TestCaseDto> selectedItems, final @NotNull Consumer<List<TestCaseDto>> updatedItems) {
-        super(p, selectedItems, updatedItems);
+    public PriorityBulkSectionDialog(final @NotNull Project p, final @NotNull List<TestCaseDto> selectedTestCases, final @NotNull Consumer<List<TestCaseDto>> updatedTestCases) {
+        super(p, selectedTestCases, updatedTestCases);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class PriorityBulkSectionDialog extends AbstractJsonSplitBulkSectionDialo
 
     // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-206
     @Override
-    protected @NotNull Optional<TestCaseDto> withValue(final @NotNull TestCaseDto tc, final @NotNull String value) {
-        return super.withValue(tc, value.isEmpty() ? Priority.DEFAULT.getLabel() : value);
+    protected @NotNull Optional<TestCaseDto> withValue(final @NotNull TestCaseDto testCase, final @NotNull String value) {
+        return super.withValue(testCase, value.isEmpty() ? Priority.DEFAULT.getLabel() : value);
     }
 }

@@ -34,44 +34,44 @@ public class UpdateTestMethodIdeTest extends AbstractCodegenIdeTest {
         return createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
     }
 
-    private void described(final @NotNull TestCaseDto tc, final @NotNull String description) {
-        tc.setDescription(description);
-        GenType.UPDATE_TEST_CASE_DESCRIPTION.execute(getProject(), tc);
+    private void described(final @NotNull TestCaseDto testCase, final @NotNull String description) {
+        testCase.setDescription(description);
+        GenType.UPDATE_TEST_CASE_DESCRIPTION.execute(getProject(), testCase);
         settled();
     }
 
     // Rule-CODEGEN-001
     public void testARenamedTestCaseFindsItsMethodByIdentityNotByName() {
-        final @NotNull TestCaseDto tc = aTestCaseWithAMethod();
-        final @NotNull PsiMethod pm = writtenMethodOf(LOGIN_TEST, tc);
+        final @NotNull TestCaseDto testCase = aTestCaseWithAMethod();
+        final @NotNull PsiMethod pm = writtenMethodOf(LOGIN_TEST, testCase);
         WriteCommandAction.runWriteCommandAction(getProject(), () -> {
             pm.setName("whatTheTesterCalledIt");
         });
 
-        described(tc, "Sign in with a valid user");
+        described(testCase, "Sign in with a valid user");
 
-        assertEquals("the method was looked up by a name it no longer has, and the rename lost it", "signInWithAValidUser", writtenMethodOf(LOGIN_TEST, tc).getName());
+        assertEquals("the method was looked up by a name it no longer has, and the rename lost it", "signInWithAValidUser", writtenMethodOf(LOGIN_TEST, testCase).getName());
         assertEquals("a second method was written beside the one the test case already had", 1, generatedClass(LOGIN_TEST).orElseThrow().getMethods().length);
     }
 
     // Rule-CODEGEN-020, Rule-CODEGEN-040
     public void testANewDescriptionRewritesTheAnnotationAndTheMethodName() {
-        final @NotNull TestCaseDto tc = aTestCaseWithAMethod();
+        final @NotNull TestCaseDto testCase = aTestCaseWithAMethod();
 
-        described(tc, "Sign in with a valid user");
+        described(testCase, "Sign in with a valid user");
 
-        final @NotNull PsiMethod pm = writtenMethodOf(LOGIN_TEST, tc);
+        final @NotNull PsiMethod pm = writtenMethodOf(LOGIN_TEST, testCase);
         assertEquals("signInWithAValidUser", pm.getName());
         assertEquals("\"Sign in with a valid user\"", attributeOf(pm, "description"));
     }
 
     // Rule-CODEGEN-079
     public void testADescriptionThatCannotNameAMethodLeavesTheNameAndStillSavesTheDescription() {
-        final @NotNull TestCaseDto tc = aTestCaseWithAMethod();
+        final @NotNull TestCaseDto testCase = aTestCaseWithAMethod();
 
-        described(tc, "Class");
+        described(testCase, "Class");
 
-        final @NotNull PsiMethod pm = writtenMethodOf(LOGIN_TEST, tc);
+        final @NotNull PsiMethod pm = writtenMethodOf(LOGIN_TEST, testCase);
         assertEquals("the method took a name Java refuses", "logInWithAValidUser", pm.getName());
         assertEquals("the description was not saved into the annotation", "\"Class\"", attributeOf(pm, "description"));
     }
@@ -91,53 +91,53 @@ public class UpdateTestMethodIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-CODEGEN-045
     public void testTheGroupsAreWrittenAsAListEachAsTyped() {
-        final @NotNull TestCaseDto tc = aTestCaseWithAMethod();
+        final @NotNull TestCaseDto testCase = aTestCaseWithAMethod();
 
-        tc.setGroups(List.of("smoke", "Log in & out"));
-        GenType.UPDATE_TEST_CASE_GROUP.execute(getProject(), tc);
+        testCase.setGroups(List.of("smoke", "Log in & out"));
+        GenType.UPDATE_TEST_CASE_GROUP.execute(getProject(), testCase);
         settled();
 
-        assertEquals("{\"smoke\", \"Log in & out\"}", attributeOf(writtenMethodOf(LOGIN_TEST, tc), "groups"));
+        assertEquals("{\"smoke\", \"Log in & out\"}", attributeOf(writtenMethodOf(LOGIN_TEST, testCase), "groups"));
     }
 
     // Rule-CODEGEN-046
     public void testATestCaseInNoGroupHasNoGroupsAttribute() {
-        final @NotNull TestCaseDto tc = aTestCaseWithAMethod();
-        assertEquals("a test case created in no group was written with groups", "", attributeOf(writtenMethodOf(LOGIN_TEST, tc), "groups"));
+        final @NotNull TestCaseDto testCase = aTestCaseWithAMethod();
+        assertEquals("a test case created in no group was written with groups", "", attributeOf(writtenMethodOf(LOGIN_TEST, testCase), "groups"));
 
-        tc.setGroups(List.of("smoke"));
-        GenType.UPDATE_TEST_CASE_GROUP.execute(getProject(), tc);
+        testCase.setGroups(List.of("smoke"));
+        GenType.UPDATE_TEST_CASE_GROUP.execute(getProject(), testCase);
         settled();
-        tc.setGroups(List.of());
-        GenType.UPDATE_TEST_CASE_GROUP.execute(getProject(), tc);
+        testCase.setGroups(List.of());
+        GenType.UPDATE_TEST_CASE_GROUP.execute(getProject(), testCase);
         settled();
 
-        assertEquals("a test case taken out of every group kept a groups attribute", "", attributeOf(writtenMethodOf(LOGIN_TEST, tc), "groups"));
+        assertEquals("a test case taken out of every group kept a groups attribute", "", attributeOf(writtenMethodOf(LOGIN_TEST, testCase), "groups"));
     }
 
     // Rule-CODEGEN-047
     public void testTurningATestCaseOffWritesEnabledFalse() {
-        final @NotNull TestCaseDto tc = aTestCaseWithAMethod();
+        final @NotNull TestCaseDto testCase = aTestCaseWithAMethod();
 
-        tc.setStatus(TestCaseStatus.DISABLED);
-        GenType.UPDATE_TEST_CASE_STATUS.execute(getProject(), tc);
+        testCase.setStatus(TestCaseStatus.DISABLED);
+        GenType.UPDATE_TEST_CASE_STATUS.execute(getProject(), testCase);
         settled();
 
-        assertEquals("false", attributeOf(writtenMethodOf(LOGIN_TEST, tc), "enabled"));
+        assertEquals("false", attributeOf(writtenMethodOf(LOGIN_TEST, testCase), "enabled"));
     }
 
     // Rule-CODEGEN-048
     public void testTurningItBackOnTakesTheAttributeOff() {
-        final @NotNull TestCaseDto tc = aTestCaseWithAMethod();
-        tc.setStatus(TestCaseStatus.DISABLED);
-        GenType.UPDATE_TEST_CASE_STATUS.execute(getProject(), tc);
+        final @NotNull TestCaseDto testCase = aTestCaseWithAMethod();
+        testCase.setStatus(TestCaseStatus.DISABLED);
+        GenType.UPDATE_TEST_CASE_STATUS.execute(getProject(), testCase);
         settled();
 
-        tc.setStatus(TestCaseStatus.PENDING);
-        GenType.UPDATE_TEST_CASE_STATUS.execute(getProject(), tc);
+        testCase.setStatus(TestCaseStatus.PENDING);
+        GenType.UPDATE_TEST_CASE_STATUS.execute(getProject(), testCase);
         settled();
 
-        final @NotNull PsiMethod pm = writtenMethodOf(LOGIN_TEST, tc);
+        final @NotNull PsiMethod pm = writtenMethodOf(LOGIN_TEST, testCase);
         assertFalse("turning the test case back on wrote an enabled attribute: " + pm.getModifierList().getText(), pm.getModifierList().getText().contains("enabled"));
     }
 

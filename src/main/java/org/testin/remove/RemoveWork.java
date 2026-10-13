@@ -99,8 +99,8 @@ record RemoveWork(@NotNull Project p, @NotNull Nodes nodes, @NotNull TestinEdito
         removeEach(nodesToRemove, went -> {
             TestinLogger.info("Removed " + went.size() + " of " + nodesToRemove.size() + " node(s).");
 
-            final @NotNull List<Kept> undoable = kept.stream().filter(one -> went.contains(one.dto())).toList();
-            kept.stream().filter(one -> !went.contains(one.dto())).forEach(one -> nodes.forgetKept(one.copy()));
+            final @NotNull List<Kept> undoable = kept.stream().filter(one -> went.contains(one.node())).toList();
+            kept.stream().filter(one -> !went.contains(one.node())).forEach(one -> nodes.forgetKept(one.copy()));
 
             if (went.isEmpty()) return;
 
@@ -171,6 +171,6 @@ record RemoveWork(@NotNull Project p, @NotNull Nodes nodes, @NotNull TestinEdito
 
     // UC-TREE-PANEL-017
     private void removeAll(final @NotNull List<Kept> kept) {
-        removeEach(kept.stream().map(Kept::dto).toList(), went -> TestinLogger.info("Removed " + went.size() + " node(s) again."));
+        removeEach(kept.stream().map(Kept::node).toList(), went -> TestinLogger.info("Removed " + went.size() + " node(s) again."));
     }
 }

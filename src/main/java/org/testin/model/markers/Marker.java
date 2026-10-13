@@ -31,7 +31,7 @@ public interface Marker {
 
     @NotNull String getId();
 
-    void setId(@NotNull String id);
+    void setId(@NotNull String markerId);
 
     int getOrder();
 

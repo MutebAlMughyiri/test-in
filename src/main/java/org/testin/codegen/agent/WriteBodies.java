@@ -58,8 +58,8 @@ public final class WriteBodies {
 
     // UC-CODEGEN-021, Rule-CODEGEN-084, Rule-CODEGEN-091
     private static void askOrConfirm(final @NotNull Project p, final @NotNull AgentConnection connection, final @NotNull List<TestCaseDto> testCases, final @NotNull Set<UUID> written, final @NotNull Optional<TestinEditor> editor) {
-        final @NotNull List<TestCaseDto> theirs = testCases.stream().filter(tc -> written.contains(tc.getId())).toList();
-        final @NotNull List<TestCaseDto> empty = testCases.stream().filter(tc -> !written.contains(tc.getId())).toList();
+        final @NotNull List<TestCaseDto> theirs = testCases.stream().filter(testCase -> written.contains(testCase.getId())).toList();
+        final @NotNull List<TestCaseDto> empty = testCases.stream().filter(testCase -> !written.contains(testCase.getId())).toList();
 
         if (theirs.isEmpty()) {
             ask(p, connection, empty, List.of(), editor);
@@ -100,25 +100,25 @@ public final class WriteBodies {
         for (int next = 0; next < asked.size(); next++) {
             if (indicator.isCanceled()) return;
 
-            final @NotNull TestCaseDto tc = asked.get(next);
-            indicator.setText2(tc.getDescription());
+            final @NotNull TestCaseDto testCase = asked.get(next);
+            indicator.setText2(testCase.getDescription());
             indicator.setFraction((double) next / asked.size());
 
-            askFor(p, agent, connection, tc, transcript, theirs.contains(tc));
+            askFor(p, agent, connection, testCase, transcript, theirs.contains(testCase));
         }
     }
 
     // UC-CODEGEN-003, Rule-CODEGEN-090, Rule-CODEGEN-091
-    private static void askFor(final @NotNull Project p, final @NotNull AgentCli agent, final @NotNull AgentConnection connection, final @NotNull TestCaseDto tc, final @NotNull AgentTranscript transcript, final boolean overWhatIsThere) {
-        final @NotNull String prompt = BodyPrompt.of(connection.promptTemplate(), tc, Fqcn.methodNameOf(tc));
+    private static void askFor(final @NotNull Project p, final @NotNull AgentCli agent, final @NotNull AgentConnection connection, final @NotNull TestCaseDto testCase, final @NotNull AgentTranscript transcript, final boolean overWhatIsThere) {
+        final @NotNull String prompt = BodyPrompt.of(connection.promptTemplate(), testCase, Fqcn.methodNameOf(testCase));
         final @NotNull Optional<String> said = agent.ask(connection, prompt);
         final @NotNull Optional<String> statements = said.flatMap(AgentAnswer::statementsIn);
 
         final boolean landed = statements.flatMap(written -> overWhatIsThere
-                ? TestMethodCode.available().replaceBody(p, tc, written)
-                : TestMethodCode.available().fillBody(p, tc, written)).isPresent();
+                ? TestMethodCode.available().replaceBody(p, testCase, written)
+                : TestMethodCode.available().fillBody(p, testCase, written)).isPresent();
 
-        transcript.record(tc, prompt, said.orElse(Bundle.message("agent.said.nothing")), landed, outcomeOf(landed, said, statements));
+        transcript.record(testCase, prompt, said.orElse(Bundle.message("agent.said.nothing")), landed, outcomeOf(landed, said, statements));
     }
 
     // Rule-CODEGEN-090

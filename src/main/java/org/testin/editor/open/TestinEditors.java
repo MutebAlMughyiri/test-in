@@ -125,8 +125,8 @@ public final class TestinEditors {
     }
 
     // UC-EDITOR-PANEL-048, Rule-EDITOR-PANEL-233, Rule-VIEW-PANEL-016
-    public void openAndSelect(final @NotNull AbstractNode dir, final @NotNull TestCaseDto tc) {
-        openThen(dir, editor -> editor.selectWhenLoaded(tc.getId()));
+    public void openAndSelect(final @NotNull AbstractNode dir, final @NotNull TestCaseDto testCase) {
+        openThen(dir, editor -> editor.selectWhenLoaded(testCase.getId()));
     }
 
     public @NotNull Optional<TestRunEditor> testRunEditorFor(final @NotNull TestRunNode testRun) {

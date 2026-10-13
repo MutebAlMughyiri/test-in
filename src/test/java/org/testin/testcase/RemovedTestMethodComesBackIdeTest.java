@@ -44,16 +44,16 @@ public class RemovedTestMethodComesBackIdeTest extends AbstractCodegenIdeTest {
     // Rule-EDITOR-PANEL-069
     public void testATestCaseComingBackFromARemovalGetsItsTestMethodAgain() {
         final @NotNull TestSetNode login = createdTestSet("Login");
-        final @NotNull TestCaseDto tc = createdTestCase(login, "Log in with a valid user", "m");
+        final @NotNull TestCaseDto testCase = createdTestCase(login, "Log in with a valid user", "m");
         settled();
-        writtenMethodOf(LOGIN_CLASS, tc);
+        writtenMethodOf(LOGIN_CLASS, testCase);
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), login, getTestRootDisposable());
 
-        ShownDialog.open(getProject(), ConfirmDialog.class, () -> new RemoveTestCaseWork(getProject(), editor, login, List.of(tc)).remove());
+        ShownDialog.open(getProject(), ConfirmDialog.class, () -> new RemoveTestCaseWork(getProject(), editor, login, List.of(testCase)).remove());
         ShownDialog.press(getProject(), ConfirmDialog.class, Shortcuts.Enter.getKey());
         Await.until("the test method never went with the test case", () -> {
             settled();
-            return methodOf(LOGIN_CLASS, tc).isEmpty();
+            return methodOf(LOGIN_CLASS, testCase).isEmpty();
         });
 
         final @NotNull UndoScope scope = UndoScope.of(login.getPath());
@@ -62,7 +62,7 @@ public class RemovedTestMethodComesBackIdeTest extends AbstractCodegenIdeTest {
 
         Await.until("the test case came back without its test method", () -> {
             settled();
-            return methodOf(LOGIN_CLASS, tc).isPresent();
+            return methodOf(LOGIN_CLASS, testCase).isPresent();
         });
     }
 }

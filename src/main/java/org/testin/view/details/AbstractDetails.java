@@ -77,12 +77,12 @@ public abstract class AbstractDetails {
     }
 
     // UC-VIEW-PANEL-016, UC-VIEW-PANEL-004
-    static void redraw(final @NotNull Project p, final @NotNull TestCaseDto dto, final @NotNull TestRunNode testRunNode) {
-        ViewToolWindowFactory.refreshIfShowing(p, List.of(dto));
+    static void redraw(final @NotNull Project p, final @NotNull TestCaseDto testCase, final @NotNull TestRunNode testRunNode) {
+        ViewToolWindowFactory.refreshIfShowing(p, List.of(testCase));
         Services.getInstance(p, TestinEditors.class).testRunEditorFor(testRunNode).ifPresent(TestRunEditor::refreshView);
     }
 
-    public abstract int render(final @NotNull Project p, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto dto, final int currentRow);
+    public abstract int render(final @NotNull Project p, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto testCase, final int currentRow);
 
     protected int addRow(final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull String caption, final @NotNull String value, final int row) {
         return CaptionValueRow.add(panel, gbc, caption, value, row);

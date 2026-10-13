@@ -28,7 +28,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestCaseOrder {
     private static final @NotNull Comparator<TestCaseDto> BY_RANK = Comparator
-            .comparing((TestCaseDto tc) -> tc.getOrder().isEmpty())
+            .comparing((TestCaseDto testCase) -> testCase.getOrder().isEmpty())
             .thenComparing(TestCaseDto::getOrder)
             .thenComparing(TestCaseDto::getCreatedAt)
             .thenComparing(TestCaseDto::getId);
@@ -39,9 +39,9 @@ public final class TestCaseOrder {
     }
 
     // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-014
-    public static int positionOf(final @NotNull List<TestCaseDto> ordered, final @NotNull TestCaseDto tc) {
+    public static int positionOf(final @NotNull List<TestCaseDto> ordered, final @NotNull TestCaseDto testCase) {
         for (int i = 0; i < ordered.size(); i++) {
-            if (ordered.get(i).getId().equals(tc.getId())) return i + 1;
+            if (ordered.get(i).getId().equals(testCase.getId())) return i + 1;
         }
 
         return ordered.size() + 1;

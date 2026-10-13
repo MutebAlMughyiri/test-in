@@ -58,8 +58,8 @@ public final class GeneratedMethod {
     }
 
     // Rule-CODEGEN-001
-    public static @NotNull Optional<PsiMethod> forTestCase(final @NotNull PsiClass pc, final @NotNull TestCaseDto tc) {
-        return Optional.ofNullable(byTestCaseId(pc).get(tc.getId().toString()));
+    public static @NotNull Optional<PsiMethod> forTestCase(final @NotNull PsiClass pc, final @NotNull TestCaseDto testCase) {
+        return Optional.ofNullable(byTestCaseId(pc).get(testCase.getId().toString()));
     }
 
     // Rule-CODEGEN-001
@@ -67,7 +67,7 @@ public final class GeneratedMethod {
         final @NotNull Map<String, PsiMethod> byId = new LinkedHashMap<>();
 
         for (final PsiMethod pm : pc.getMethods()) {
-            testCaseIdOf(pm).ifPresent(id -> byId.putIfAbsent(id, pm));
+            testCaseIdOf(pm).ifPresent(testCaseId -> byId.putIfAbsent(testCaseId, pm));
         }
 
         return byId;
@@ -84,12 +84,12 @@ public final class GeneratedMethod {
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-001
-    public static void adopt(final @NotNull Project p, final @NotNull PsiMethod pm, final @NotNull TestCaseDto tc) {
+    public static void adopt(final @NotNull Project p, final @NotNull PsiMethod pm, final @NotNull TestCaseDto testCase) {
         if (testCaseIdOf(pm).isPresent()) return;
 
         testAnnotationOf(pm).ifPresent(annotation -> {
             final @NotNull PsiAnnotation written = JavaPsiFacade.getElementFactory(p)
-                    .createAnnotationFromText("@Test(" + TEST_NAME + " = " + JavaLiteral.of(tc.getId().toString()) + ")", pm);
+                    .createAnnotationFromText("@Test(" + TEST_NAME + " = " + JavaLiteral.of(testCase.getId().toString()) + ")", pm);
 
             Optional.ofNullable(written.findDeclaredAttributeValue(TEST_NAME))
                     .ifPresent(value -> annotation.setDeclaredAttributeValue(TEST_NAME, value));

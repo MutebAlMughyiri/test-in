@@ -32,12 +32,12 @@ public class ReferenceSection extends AbstractOneLineSection {
 
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-032
     @Override
-    public @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto dto) {
-        return dto.edit().reference(field.getText().trim()).build();
+    public @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto testCase) {
+        return testCase.edit().reference(field.getText().trim()).build();
     }
 
     @Override
-    public void fillData(final @NotNull TestCaseDto dto) {
-        field.setText(dto.getReference());
+    public void fillData(final @NotNull TestCaseDto testCase) {
+        field.setText(testCase.getReference());
     }
 }

@@ -62,8 +62,8 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
         return index < 0 ? new UUID(0L, 0L) : editor.getCurrentTestCases().get(index).getId();
     }
 
-    private static void awaitWalkOn(final @NotNull TestRunEditor editor, final @NotNull TestCaseDto tc) {
-        Await.until("the walk never reached '" + tc.getDescription() + "'", () -> walkingOn(editor).equals(tc.getId()));
+    private static void awaitWalkOn(final @NotNull TestRunEditor editor, final @NotNull TestCaseDto testCase) {
+        Await.until("the walk never reached '" + testCase.getDescription() + "'", () -> walkingOn(editor).equals(testCase.getId()));
     }
 
     private @NotNull TestRuns theTestRuns() {
@@ -93,12 +93,12 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
         return EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());
     }
 
-    private @NotNull RunItemStatus statusOf(final @NotNull TestRunNode testRun, final @NotNull TestCaseDto tc) {
-        return theTestRuns().getRunItems(testRun.getPath()).runItemOf(tc.getId()).map(RunItem::getStatus).orElseThrow();
+    private @NotNull RunItemStatus statusOf(final @NotNull TestRunNode testRun, final @NotNull TestCaseDto testCase) {
+        return theTestRuns().getRunItems(testRun.getPath()).runItemOf(testCase.getId()).map(RunItem::getStatus).orElseThrow();
     }
 
-    private @NotNull RunItem runItemOf(final @NotNull TestRunNode testRun, final @NotNull TestCaseDto tc) {
-        return theTestRuns().getRunItems(testRun.getPath()).runItemOf(tc.getId()).orElseThrow();
+    private @NotNull RunItem runItemOf(final @NotNull TestRunNode testRun, final @NotNull TestCaseDto testCase) {
+        return theTestRuns().getRunItems(testRun.getPath()).runItemOf(testCase.getId()).orElseThrow();
     }
 
     private void record(final @NotNull TestRunEditor editor, final @NotNull RunItemStatus status) {
@@ -106,12 +106,12 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
 
-    private @NotNull String fileOf(final @NotNull TestRunNode testRun, final @NotNull TestCaseDto tc) {
+    private @NotNull String fileOf(final @NotNull TestRunNode testRun, final @NotNull TestCaseDto testCase) {
         theTestRuns().awaitWrites();
         try {
-            return Files.readString(testRun.getPath().resolve(FileKind.RUN_ITEM.fileName(tc.getId())));
+            return Files.readString(testRun.getPath().resolve(FileKind.RUN_ITEM.fileName(testCase.getId())));
         } catch (final IOException ex) {
-            throw new AssertionError("the run item of '" + tc.getDescription() + "' was never written", ex);
+            throw new AssertionError("the run item of '" + testCase.getDescription() + "' was never written", ex);
         }
     }
 

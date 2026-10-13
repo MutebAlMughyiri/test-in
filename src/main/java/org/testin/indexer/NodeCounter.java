@@ -33,15 +33,15 @@ import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NodeCounter {
-    public static @NotNull NodeFigures figures(final @NotNull Project p, final @NotNull AbstractNode dto) {
-        return FiguresByStatistics.valueOf(dto.getType().getStatistics().name()).getGather().of(p, dto);
+    public static @NotNull NodeFigures figures(final @NotNull Project p, final @NotNull AbstractNode node) {
+        return FiguresByStatistics.valueOf(node.getType().getStatistics().name()).getGather().of(p, node);
     }
 
     // UC-INTERNAL-006, Rule-INTERNAL-046, Rule-INTERNAL-047, Rule-INTERNAL-050
-    public static @NotNull NodeFigures childCounts(final @NotNull Project p, final @NotNull AbstractNode dto) {
+    public static @NotNull NodeFigures childCounts(final @NotNull Project p, final @NotNull AbstractNode parent) {
         final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
         final @NotNull Nodes nodes = Services.getInstance(p, Nodes.class);
-        final @NotNull List<AbstractNode> beneath = beneath(nodes, dto);
+        final @NotNull List<AbstractNode> beneath = beneath(nodes, parent);
 
         final @NotNull Map<NodeType, Long> byType = beneath.stream()
                 .collect(Collectors.groupingBy(AbstractNode::getType, Collectors.counting()));
@@ -49,15 +49,15 @@ public final class NodeCounter {
         return NodeFigures.ofChildren(
                 counted(byType, NodeType.TS),
                 counted(byType, NodeType.TSP) + counted(byType, NodeType.TRP),
-                testCases.testCaseCountOf(dto.getPath())
+                testCases.testCaseCountOf(parent.getPath())
                         + beneath.stream().mapToLong(node -> testCases.testCaseCountOf(node.getPath())).sum(),
-                activeTestCasesUnder(testCases, nodes, dto),
+                activeTestCasesUnder(testCases, nodes, parent),
                 counted(byType, NodeType.TR));
     }
 
     // UC-INTERNAL-006, Rule-INTERNAL-048, Rule-INTERNAL-049, Rule-INTERNAL-051
-    public static @NotNull NodeFigures testRunFigures(final @NotNull Project p, final @NotNull AbstractNode dto) {
-        return Services.getInstance(p, TestRuns.class).findRunItems(dto.getPath())
+    public static @NotNull NodeFigures testRunFigures(final @NotNull Project p, final @NotNull AbstractNode node) {
+        return Services.getInstance(p, TestRuns.class).findRunItems(node.getPath())
                 .map(testRun -> NodeFigures.ofTestRun(TestRunSummary.of(testRun.getAll())))
                 .orElse(NodeFigures.NONE);
     }

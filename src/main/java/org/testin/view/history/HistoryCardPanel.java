@@ -76,12 +76,12 @@ final class HistoryCardPanel {
     private static final int CAPTION_CHARACTERS = 12;
 
     // Rule-VIEW-PANEL-096, Rule-VIEW-PANEL-105, Rule-VIEW-PANEL-115
-    static @NotNull JComponent of(final @NotNull Project p, final @NotNull HistoryCard card, final @NotNull TestCaseDto tc, final int index) {
+    static @NotNull JComponent of(final @NotNull Project p, final @NotNull HistoryCard card, final @NotNull TestCaseDto testCase, final int index) {
         return switch (card) {
             case TestCaseHistoryCard entry ->
-                    openDiffOnClick(p, card(index, head(card, Stream.empty(), Stream.of(muted(entry.message()))), summed(rows(entry)), Optional.empty()), entry, tc);
+                    openDiffOnClick(p, card(index, head(card, Stream.empty(), Stream.of(muted(entry.message()))), summed(rows(entry)), Optional.empty()), entry, testCase);
             case BugCard bug ->
-                    card(index, head(card, Stream.of(testRun(p, bug.event(), tc)), Stream.empty()), bugRows(p, bug.event()), Optional.of(bug.event().kind().barOf(bug.event().runItem())));
+                    card(index, head(card, Stream.of(testRun(p, bug.event(), testCase)), Stream.empty()), bugRows(p, bug.event()), Optional.of(bug.event().kind().barOf(bug.event().runItem())));
         };
     }
 
@@ -138,12 +138,12 @@ final class HistoryCardPanel {
     }
 
     // Rule-VIEW-PANEL-117
-    private static @NotNull JComponent openDiffOnClick(final @NotNull Project p, final @NotNull JComponent card, final @NotNull TestCaseHistoryCard entry, final @NotNull TestCaseDto tc) {
+    private static @NotNull JComponent openDiffOnClick(final @NotNull Project p, final @NotNull JComponent card, final @NotNull TestCaseHistoryCard entry, final @NotNull TestCaseDto testCase) {
         final @NotNull MouseAdapter open = new MouseAdapter() {
             @Override
             public void mouseClicked(final @NotNull MouseEvent click) {
                 final @NotNull DiffContentFactory contents = DiffContentFactory.getInstance();
-                DiffManager.getInstance().showDiff(p, new SimpleDiffRequest(tc.getDescription(), contents.create(entry.was()), contents.create(entry.now()),
+                DiffManager.getInstance().showDiff(p, new SimpleDiffRequest(testCase.getDescription(), contents.create(entry.was()), contents.create(entry.now()),
                         Bundle.message("view.history.diff.before"), Bundle.message("view.history.diff.after")));
             }
         };
@@ -154,10 +154,10 @@ final class HistoryCardPanel {
     }
 
     // Rule-VIEW-PANEL-109
-    private static @NotNull JComponent testRun(final @NotNull Project p, final @NotNull BugEvent event, final @NotNull TestCaseDto tc) {
+    private static @NotNull JComponent testRun(final @NotNull Project p, final @NotNull BugEvent event, final @NotNull TestCaseDto testCase) {
         return Services.getInstance(p, TestRuns.class).findTestRunNode(event.testRun())
                 .map(dir -> {
-                    final @NotNull JComponent link = AbstractDetails.link(event.testRunName(), _ -> Services.getInstance(p, TestinEditors.class).openAndSelect(dir, tc));
+                    final @NotNull JComponent link = AbstractDetails.link(event.testRunName(), _ -> Services.getInstance(p, TestinEditors.class).openAndSelect(dir, testCase));
                     link.setFont(Fonts.strong());
                     return link;
                 })

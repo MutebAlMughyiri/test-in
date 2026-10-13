@@ -40,14 +40,14 @@ public class CopyTestCaseAction extends AbstractAnyProjectAction {
     // UC-EDITOR-PANEL-015
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        final @NotNull List<TestCaseDto> tcs = TestinDataKeys.selectedTestCases(e);
+        final @NotNull List<TestCaseDto> testCases = TestinDataKeys.selectedTestCases(e);
 
-        if (!tcs.isEmpty()) {
+        if (!testCases.isEmpty()) {
             try {
-                final @NotNull String json = Services.getInstance(p, JsonCodec.class).writeValueAsString(tcs);
+                final @NotNull String json = Services.getInstance(p, JsonCodec.class).writeValueAsString(testCases);
                 CopyPasteManager.getInstance().setContents(new StringSelection(json));
 
-                Services.getInstance(p, Notifier.class).softShowCounted(p, Done.COPIED, tcs.size());
+                Services.getInstance(p, Notifier.class).softShowCounted(p, Done.COPIED, testCases.size());
 
             } catch (final Exception ex) {
                 TestinLogger.error("Copy Node failed: " + FailureText.of(ex));

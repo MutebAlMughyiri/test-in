@@ -50,21 +50,21 @@ public class SearchTest {
     }
 
     private static @NotNull TestCaseDto testCase(final String description, final TestSetNode in) {
-        final TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description(description).build();
-        tc.setParent(in);
+        final TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description(description).build();
+        testCase.setParent(in);
 
-        return tc;
+        return testCase;
     }
 
     @Test
     public void aTestCasePointsAtTheTestSetThatHoldsIt() {
         final TestSetNode login = testSet("Login", "test-01", "Test Cases", "Login");
-        final TestCaseDto tc = testCase("Sign in with a valid user", login);
+        final TestCaseDto testCase = testCase("Sign in with a valid user", login);
 
-        final Hit hit = Hit.of(tc);
+        final Hit hit = Hit.of(testCase);
 
         assertSame(hit.node(), login, "a test case is not a node of its own, so the tree goes to its set");
-        assertEquals(hit.testCase(), Optional.of(tc), "and the editor lands on the test case");
+        assertEquals(hit.testCase(), Optional.of(testCase), "and the editor lands on the test case");
         assertEquals(hit.name(), "Sign in with a valid user");
     }
 

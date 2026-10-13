@@ -51,7 +51,7 @@ public class TestRunFormFilterIdeTest extends AbstractTempRootIdeTest {
 
     private static @NotNull CheckedTreeNode holding(final @NotNull TestSetNode testSet, final @NotNull TestCaseDto... testCases) {
         final @NotNull CheckedTreeNode node = new CheckedTreeNode(testSet);
-        for (final TestCaseDto tc : testCases) node.add(new CheckedTreeNode(tc));
+        for (final TestCaseDto testCase : testCases) node.add(new CheckedTreeNode(testCase));
         return node;
     }
 
@@ -77,10 +77,10 @@ public class TestRunFormFilterIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull TestCaseDto aTestCase(final @NotNull TestSetNode testSet, final @NotNull Priority priority, final @NotNull String order) {
-        final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description("Pay with a " + priority + " card").order(order).priority(priority).build();
-        tc.setParent(testSet);
-        assertTrue(Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), tc));
-        return tc;
+        final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description("Pay with a " + priority + " card").order(order).priority(priority).build();
+        testCase.setParent(testSet);
+        assertTrue(Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase));
+        return testCase;
     }
 
     private @NotNull FilterPopupBtn button() {

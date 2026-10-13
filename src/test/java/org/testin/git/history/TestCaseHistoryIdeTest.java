@@ -41,8 +41,8 @@ public class TestCaseHistoryIdeTest extends AbstractGitRemoteIdeTest {
         return TestCaseDto.builder().id(ID).description("Log in with a valid user").expectedResult(expectedResult).createdBy("Muteb").build();
     }
 
-    private void save(final @NotNull String relativePath, final @NotNull TestCaseDto tc) {
-        write(work, relativePath, Services.getInstance(getProject(), JsonCodec.class).writeValueAsString(tc));
+    private void save(final @NotNull String relativePath, final @NotNull TestCaseDto testCase) {
+        write(work, relativePath, Services.getInstance(getProject(), JsonCodec.class).writeValueAsString(testCase));
     }
 
     private @NotNull History historyOf(final @NotNull Path testProjectPath, final @NotNull String relativePath, final @NotNull TestCaseDto now) {

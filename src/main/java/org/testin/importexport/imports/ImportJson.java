@@ -69,8 +69,8 @@ public class ImportJson {
         for (final Map.Entry<String, List<TestCaseDto>> entry : data.entrySet()) {
             final @NotNull List<TestCaseDto> sanitized = new ArrayList<>();
 
-            for (final TestCaseDto tc : entry.getValue()) {
-                sanitized.add(asNewTestCase(tc));
+            for (final TestCaseDto testCase : entry.getValue()) {
+                sanitized.add(asNewTestCase(testCase));
             }
 
             if (!sanitized.isEmpty()) {

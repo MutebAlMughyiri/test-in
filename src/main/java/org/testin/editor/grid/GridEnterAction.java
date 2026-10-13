@@ -41,14 +41,14 @@ import java.util.Optional;
 public final class GridEnterAction extends AbstractBoundProjectAction {
     private final @NotNull TestinEditor editor;
     private final @NotNull JBTable table;
-    private final @NotNull List<TestCaseDto> pageItems;
+    private final @NotNull List<TestCaseDto> pageTestCases;
     private final @NotNull List<String> path;
 
-    public GridEnterAction(final @NotNull TestinEditor editor, final @NotNull JBTable table, final @NotNull List<TestCaseDto> pageItems, final @NotNull List<String> path) {
+    public GridEnterAction(final @NotNull TestinEditor editor, final @NotNull JBTable table, final @NotNull List<TestCaseDto> pageTestCases, final @NotNull List<String> path) {
         super(editor.getProject(), Bundle.message("grid.enter.text"), Bundle.message("grid.enter.description"), AllIcons.Actions.PreviewDetails);
         this.editor = editor;
         this.table = table;
-        this.pageItems = pageItems;
+        this.pageTestCases = pageTestCases;
         this.path = path;
         this.registerCustomShortcutSet(new CustomShortcutSet(GridKeys.enter()), table);
 
@@ -101,9 +101,9 @@ public final class GridEnterAction extends AbstractBoundProjectAction {
     }
 
     private void showDetails(final int row) {
-        if (row < 0 || row >= pageItems.size()) return;
+        if (row < 0 || row >= pageTestCases.size()) return;
 
-        ViewToolWindowFactory.showPanel(p, List.of(pageItems.get(row)), path, ViewPanel::focusDetailsTab);
+        ViewToolWindowFactory.showPanel(p, List.of(pageTestCases.get(row)), path, ViewPanel::focusDetailsTab);
     }
 
     // UC-EDITOR-PANEL-025

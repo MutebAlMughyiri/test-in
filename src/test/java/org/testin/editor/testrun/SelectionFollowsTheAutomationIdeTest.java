@@ -55,8 +55,8 @@ public class SelectionFollowsTheAutomationIdeTest extends AbstractCodegenIdeTest
         return editor;
     }
 
-    private void started(final @NotNull TestCaseDto tc) {
-        CapturedRunner.startedByTestNg(getProject(), tc);
+    private void started(final @NotNull TestCaseDto testCase) {
+        CapturedRunner.startedByTestNg(getProject(), testCase);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
 
@@ -88,7 +88,7 @@ public class SelectionFollowsTheAutomationIdeTest extends AbstractCodegenIdeTest
             pressOnTheFirstCard(editor.getList());
             editor.getList().setSelectedIndex(0);
             final @NotNull TestCaseDto pressed = editor.getList().getSelectedValue();
-            final @NotNull TestCaseDto next = testCases.stream().filter(tc -> tc != pressed).findFirst().orElseThrow();
+            final @NotNull TestCaseDto next = testCases.stream().filter(testCase -> testCase != pressed).findFirst().orElseThrow();
 
             started(next);
 

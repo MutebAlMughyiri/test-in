@@ -58,10 +58,10 @@ public record TestRunFixture(@NotNull Project p, @NotNull List<TestCaseDto> test
         final @NotNull TestSetNode testSet = EditorFixtures.testSet(p, testProject, "Checkout");
         final @NotNull List<TestCaseDto> made = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description("Test case number " + (i + 1)).expectedResult("It works " + (i + 1)).order(String.format("m%04d", i)).build();
-            tc.setParent(testSet);
-            Services.getInstance(p, TestCases.class).putTestCaseVerbatim(testSet.getPath(), tc);
-            made.add(tc);
+            final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description("Test case number " + (i + 1)).expectedResult("It works " + (i + 1)).order(String.format("m%04d", i)).build();
+            testCase.setParent(testSet);
+            Services.getInstance(p, TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase);
+            made.add(testCase);
         }
         return made;
     }
@@ -86,12 +86,12 @@ public record TestRunFixture(@NotNull Project p, @NotNull List<TestCaseDto> test
         return EditorFixtures.openTestRunEditor(p, testRun, owner);
     }
 
-    public @NotNull RunItem runItemOf(final @NotNull TestCaseDto tc) {
-        return Services.getInstance(p, TestRuns.class).getRunItems(testRun.getPath()).runItemOf(tc.getId()).orElseThrow();
+    public @NotNull RunItem runItemOf(final @NotNull TestCaseDto testCase) {
+        return Services.getInstance(p, TestRuns.class).getRunItems(testRun.getPath()).runItemOf(testCase.getId()).orElseThrow();
     }
 
-    public @NotNull RunItemStatus statusOf(final @NotNull TestCaseDto tc) {
-        return runItemOf(tc).getStatus();
+    public @NotNull RunItemStatus statusOf(final @NotNull TestCaseDto testCase) {
+        return runItemOf(testCase).getStatus();
     }
 
     public void press(final @NotNull TestRunEditor editor, final @NotNull RunItemStatus status) {

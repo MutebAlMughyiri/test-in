@@ -39,8 +39,8 @@ import java.util.List;
 public class CardWrapIdeTest extends AbstractTempRootIdeTest {
     private static final @NotNull String LONG = "Invocation 4, all pass - expect stay through 4 invocations, then Passed.";
 
-    private static @NotNull RunItem passed(final @NotNull TestCaseDto tc) {
-        return RunItem.builder().id(tc.getId()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())).build();
+    private static @NotNull RunItem passed(final @NotNull TestCaseDto testCase) {
+        return RunItem.builder().id(testCase.getId()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())).build();
     }
 
     private static int heightAt(final @NotNull JBList<TestCaseDto> list, final int width) {

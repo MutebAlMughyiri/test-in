@@ -25,14 +25,14 @@ import javax.swing.Icon;
 import java.util.Optional;
 
 public record Hit(@NotNull Icon icon, @NotNull String name, @NotNull String where, @NotNull AbstractNode node, @NotNull Optional<TestCaseDto> testCase) {
-    public static @NotNull Hit of(final @NotNull TestCaseDto tc) {
-        return new Hit(Icons.TEST_CASE, tc.getDescription(), where(tc.getParent()),
-                tc.getParent(), Optional.of(tc));
+    public static @NotNull Hit of(final @NotNull TestCaseDto testCase) {
+        return new Hit(Icons.TEST_CASE, testCase.getDescription(), where(testCase.getParent()),
+                testCase.getParent(), Optional.of(testCase));
     }
 
     // UC-INTERNAL-001, Rule-INTERNAL-072, Rule-INTERNAL-098
-    public static @NotNull Hit of(final @NotNull TestCaseDto tc, final @NotNull AbstractNode testRun) {
-        return new Hit(testRun.iconShownInTree(), tc.getDescription(), where(testRun), testRun, Optional.of(tc));
+    public static @NotNull Hit of(final @NotNull TestCaseDto testCase, final @NotNull AbstractNode testRun) {
+        return new Hit(testRun.iconShownInTree(), testCase.getDescription(), where(testRun), testRun, Optional.of(testCase));
     }
 
     // UC-INTERNAL-001, Rule-INTERNAL-072

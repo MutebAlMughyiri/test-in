@@ -49,29 +49,29 @@ public class SetRunItemStatusAction extends AbstractAnyProjectAction {
     // UC-EDITOR-PANEL-032, UC-EDITOR-PANEL-033, UC-EDITOR-PANEL-034, UC-EDITOR-PANEL-037, Rule-EDITOR-PANEL-156
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        final @NotNull List<TestCaseDto> selectedItems = TestinDataKeys.selectedTestCases(e);
-        if (selectedItems.isEmpty()) return;
+        final @NotNull List<TestCaseDto> selectedTestCases = TestinDataKeys.selectedTestCases(e);
+        if (selectedTestCases.isEmpty()) return;
 
-        TestinDataKeys.testRunEditor(e).ifPresent(editor -> record(p, editor, selectedItems));
+        TestinDataKeys.testRunEditor(e).ifPresent(editor -> record(p, editor, selectedTestCases));
     }
 
     // UC-EDITOR-PANEL-032, UC-EDITOR-PANEL-033
-    private void record(final @NotNull Project p, final @NotNull TestRunEditor editor, final @NotNull List<TestCaseDto> selectedItems) {
-        final @NotNull Optional<RunItem> runItem = askingForFailureDetails(editor, selectedItems);
+    private void record(final @NotNull Project p, final @NotNull TestRunEditor editor, final @NotNull List<TestCaseDto> selectedTestCases) {
+        final @NotNull Optional<RunItem> runItem = askingForFailureDetails(editor, selectedTestCases);
         if (runItem.isEmpty()) {
-            Services.getInstance(p, RunItemRecorder.class).applyStatus(editor, selectedItems, status);
+            Services.getInstance(p, RunItemRecorder.class).applyStatus(editor, selectedTestCases, status);
             return;
         }
 
         new FailureDetailDialog(p, editor.getParent().getPath(), runItem.orElseThrow(),
-                fields -> Services.getInstance(p, RunItemRecorder.class).applyFailure(editor, selectedItems.getFirst(), fields)).show();
+                fields -> Services.getInstance(p, RunItemRecorder.class).applyFailure(editor, selectedTestCases.getFirst(), fields)).show();
     }
 
     // UC-EDITOR-PANEL-034
-    private @NotNull Optional<RunItem> askingForFailureDetails(final @NotNull TestRunEditor editor, final @NotNull List<TestCaseDto> selectedItems) {
-        if (!status.isCollectsFailureDetails() || selectedItems.size() != 1) return Optional.empty();
+    private @NotNull Optional<RunItem> askingForFailureDetails(final @NotNull TestRunEditor editor, final @NotNull List<TestCaseDto> selectedTestCases) {
+        if (!status.isCollectsFailureDetails() || selectedTestCases.size() != 1) return Optional.empty();
 
-        return editor.runItem(selectedItems.getFirst().getId()).filter(runItem -> !runItem.isRemoved());
+        return editor.runItem(selectedTestCases.getFirst().getId()).filter(runItem -> !runItem.isRemoved());
     }
 
     // UC-EDITOR-PANEL-032, Rule-TREE-PANEL-009

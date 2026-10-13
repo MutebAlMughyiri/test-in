@@ -92,10 +92,10 @@ public class BugFilingIdeTest extends AbstractTempRootIdeTest {
             return set;
         });
 
-        final TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
-        tc.setParent(testSet);
-        indexedTestCases().putTestCase(testSet.getPath(), tc);
-        return tc.getId();
+        final TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
+        testCase.setParent(testSet);
+        indexedTestCases().putTestCase(testSet.getPath(), testCase);
+        return testCase.getId();
     }
 
     private @NotNull String storedLink(final RunItemPath runItemPath) {
@@ -109,7 +109,7 @@ public class BugFilingIdeTest extends AbstractTempRootIdeTest {
         assertEquals(Optional.empty(), BugFiling.store(getProject(), runItemPath, ISSUE));
         assertEquals("the run item the indexer holds did not take the link", ISSUE, storedLink(runItemPath));
 
-        final Path result = runItemPath.testRunPath().resolve(FileKind.RUN_ITEM.fileName(runItemPath.id()));
+        final Path result = runItemPath.testRunPath().resolve(FileKind.RUN_ITEM.fileName(runItemPath.testCaseId()));
         Await.until("the link did not reach the test case's own result file", () -> read(result).contains(ISSUE));
     }
 

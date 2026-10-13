@@ -46,18 +46,18 @@ public class TestCaseMethodIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-CODEGEN-013
     public void testTestNameCarriesTheTestCaseId() {
-        final @NotNull TestCaseDto tc = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
+        final @NotNull TestCaseDto testCase = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
 
         final @NotNull PsiMethod pm = generatedClass(LOGIN_TEST).orElseThrow().getMethods()[0];
 
-        assertEquals("testName does not carry the test case id, so nothing could find the method afterward", "\"" + tc.getId() + "\"", attributeOf(pm, "testName"));
+        assertEquals("testName does not carry the test case id, so nothing could find the method afterward", "\"" + testCase.getId() + "\"", attributeOf(pm, "testName"));
     }
 
     // Rule-CODEGEN-003
     public void testTestinWritesTheDeclarationAndOneTodoAndLeavesTheBodyToTheTester() {
-        final @NotNull TestCaseDto tc = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
+        final @NotNull TestCaseDto testCase = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
 
-        final @NotNull PsiMethod pm = writtenMethodOf(LOGIN_TEST, tc);
+        final @NotNull PsiMethod pm = writtenMethodOf(LOGIN_TEST, testCase);
         final @NotNull PsiCodeBlock body = Optional.ofNullable(pm.getBody()).orElseThrow(() -> new AssertionError("the method was written without a body"));
         final @NotNull Collection<PsiComment> comments = PsiTreeUtil.findChildrenOfType(body, PsiComment.class);
 
@@ -81,13 +81,13 @@ public class TestCaseMethodIdeTest extends AbstractCodegenIdeTest {
     // Rule-CODEGEN-014
     public void testTheTestCasesOwnPriorityWritesNothingIntoTheCode() {
         final @NotNull TestSetNode login = createdTestSet("Login");
-        final @NotNull TestCaseDto tc = indexedTestCase(login, "Log in with a valid user", "b");
-        tc.setPriority(Priority.HIGH);
+        final @NotNull TestCaseDto testCase = indexedTestCase(login, "Log in with a valid user", "b");
+        testCase.setPriority(Priority.HIGH);
 
-        GenType.CREATE_TEST_CASE.execute(getProject(), tc);
+        GenType.CREATE_TEST_CASE.execute(getProject(), testCase);
 
-        final @NotNull String annotation = writtenMethodOf(LOGIN_TEST, tc).getModifierList().getText();
-        assertEquals("the test case's High was written as the execution position", "1", attributeOf(writtenMethodOf(LOGIN_TEST, tc), "priority"));
+        final @NotNull String annotation = writtenMethodOf(LOGIN_TEST, testCase).getModifierList().getText();
+        assertEquals("the test case's High was written as the execution position", "1", attributeOf(writtenMethodOf(LOGIN_TEST, testCase), "priority"));
         assertFalse("the test case's own priority reached the code: " + annotation, annotation.toLowerCase(Locale.ROOT).contains("high"));
     }
 

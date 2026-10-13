@@ -78,17 +78,17 @@ public class UpdateTestMethodOrder extends BaseTestMethodChange implements CodeC
     }
 
     @Override
-    public void execute(final @NotNull Project p, final @NotNull TestCaseDto tc) {
-        executeAll(p, List.of(tc));
+    public void execute(final @NotNull Project p, final @NotNull TestCaseDto testCase) {
+        executeAll(p, List.of(testCase));
     }
 
     // UC-CODEGEN-011, Rule-CODEGEN-042, Rule-CODEGEN-067
     @Override
-    public void executeAll(final @NotNull Project p, final @NotNull List<? extends TestCaseDto> items) {
+    public void executeAll(final @NotNull Project p, final @NotNull List<? extends TestCaseDto> testCases) {
         final @NotNull Map<Path, List<TestCaseDto>> sets = new LinkedHashMap<>();
 
-        for (final TestCaseDto tc : items) {
-            sets.computeIfAbsent(tc.getParent().getPath(), _ -> ExecutionPosition.setOf(p, tc));
+        for (final TestCaseDto testCase : testCases) {
+            sets.computeIfAbsent(testCase.getParent().getPath(), _ -> ExecutionPosition.setOf(p, testCase));
         }
         if (sets.isEmpty()) return;
 
@@ -117,10 +117,10 @@ public class UpdateTestMethodOrder extends BaseTestMethodChange implements CodeC
         int position = 0;
         int written = 0;
 
-        for (final TestCaseDto tc : inSet) {
+        for (final TestCaseDto testCase : inSet) {
             position++;
 
-            final @Nullable PsiMethod pm = methods.get(tc.getId().toString());
+            final @Nullable PsiMethod pm = methods.get(testCase.getId().toString());
             if (pm == null) continue;
 
             updateTestAnnotationAttribute(p, pm, "priority", String.valueOf(position));

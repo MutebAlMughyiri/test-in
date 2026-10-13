@@ -38,7 +38,7 @@ public interface TestMethodCode {
     }
 
     @FromContentModule
-    void toCode(final @NotNull Project p, final @NotNull TestCaseDto tc);
+    void toCode(final @NotNull Project p, final @NotNull TestCaseDto testCase);
 
     @FromContentModule
     @NotNull Map<UUID, List<String>> methodFqcnsOf(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases);
@@ -50,8 +50,8 @@ public interface TestMethodCode {
     @NotNull Set<UUID> withAWrittenBody(@NotNull Project p, @NotNull List<TestCaseDto> testCases);
 
     @FromContentModule
-    @NotNull Optional<String> fillBody(@NotNull Project p, @NotNull TestCaseDto tc, @NotNull String statements);
+    @NotNull Optional<String> fillBody(@NotNull Project p, @NotNull TestCaseDto testCase, @NotNull String statements);
 
     @FromContentModule
-    @NotNull Optional<String> replaceBody(@NotNull Project p, @NotNull TestCaseDto tc, @NotNull String statements);
+    @NotNull Optional<String> replaceBody(@NotNull Project p, @NotNull TestCaseDto testCase, @NotNull String statements);
 }

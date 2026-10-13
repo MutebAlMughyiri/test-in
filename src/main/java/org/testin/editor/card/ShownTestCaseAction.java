@@ -45,7 +45,7 @@ public final class ShownTestCaseAction extends DumbAwareAction {
 
     @Override
     public void actionPerformed(final @NotNull AnActionEvent e) {
-        shown.get().ifPresent(tc -> press.accept(button.gestureOn(p, tc), tc));
+        shown.get().ifPresent(testCase -> press.accept(button.gestureOn(p, testCase), testCase));
     }
 
     @Override

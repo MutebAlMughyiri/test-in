@@ -70,17 +70,17 @@ public class TestCaseSnapshotIdeTest extends AbstractTempRootIdeTest {
                 .order("m")
                 .build();
         moved.setParent(destination);
-        final List<UUID> ids = List.of(moved.getId());
+        final List<UUID> testCaseIds = List.of(moved.getId());
 
         final TestCaseSnapshot sourceBefore = new TestCaseSnapshot(source, List.of(moved), List.of());
-        final TestCaseSnapshot destinationBefore = TestCaseSnapshot.of(getProject(), destination.getPath(), ids);
+        final TestCaseSnapshot destinationBefore = TestCaseSnapshot.of(getProject(), destination.getPath(), testCaseIds);
 
         indexedTestCases().putTestCaseVerbatim(destination.getPath(), moved);
 
         final UndoScope scope = UndoScope.of(destination.getPath());
         TestCaseSnapshot.record(getProject(), scope, "Paste",
                 List.of(sourceBefore, destinationBefore),
-                List.of(TestCaseSnapshot.of(getProject(), source, ids), TestCaseSnapshot.of(getProject(), destination.getPath(), ids)));
+                List.of(TestCaseSnapshot.of(getProject(), source, testCaseIds), TestCaseSnapshot.of(getProject(), destination.getPath(), testCaseIds)));
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
         assertFalse("an undo into a set no longer indexed was not refused",
@@ -98,13 +98,13 @@ public class TestCaseSnapshotIdeTest extends AbstractTempRootIdeTest {
                 .build();
         removed.setParent(testSet);
         indexedTestCases().putTestCaseVerbatim(testSet.getPath(), removed);
-        final List<UUID> ids = List.of(removed.getId());
+        final List<UUID> testCaseIds = List.of(removed.getId());
 
-        final TestCaseSnapshot before = TestCaseSnapshot.of(getProject(), testSet.getPath(), ids);
+        final TestCaseSnapshot before = TestCaseSnapshot.of(getProject(), testSet.getPath(), testCaseIds);
         assertTrue("the removal being undone did not happen", indexedTestCases().removeTestCase(testSet.getPath(), removed.getId()));
 
         final UndoScope scope = UndoScope.of(testSet.getPath());
-        TestCaseSnapshot.record(getProject(), scope, "Remove", List.of(before), List.of(TestCaseSnapshot.of(getProject(), testSet.getPath(), ids)));
+        TestCaseSnapshot.record(getProject(), scope, "Remove", List.of(before), List.of(TestCaseSnapshot.of(getProject(), testSet.getPath(), testCaseIds)));
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
         assertTrue("the undo said it could not put the test case back", Services.getInstance(getProject(), UndoHistories.class).undo(scope));

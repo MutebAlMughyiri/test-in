@@ -49,8 +49,8 @@ public class PrioritySection implements TestCaseSection {
     }
 
     @Override
-    public @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto dto) {
-        return dto.edit().priority(priority.getSelected()).build();
+    public @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto testCase) {
+        return testCase.edit().priority(priority.getSelected()).build();
     }
 
     @Override
@@ -72,7 +72,7 @@ public class PrioritySection implements TestCaseSection {
     }
 
     @Override
-    public void fillData(final @NotNull TestCaseDto dto) {
-        priority.select(dto.getPriority());
+    public void fillData(final @NotNull TestCaseDto testCase) {
+        priority.select(testCase.getPriority());
     }
 }

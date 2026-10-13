@@ -56,18 +56,18 @@ public class TestCaseTransferHandler extends TransferHandler {
         this.notifier = Services.getInstance(p, Notifier.class);
     }
 
-    private static int landingIndex(final @NotNull List<TestCaseDto> allItems, final @NotNull Optional<TestCaseDto> above, final @NotNull Optional<TestCaseDto> below) {
-        return above.map(tc -> Math.min(indexOfId(allItems, tc.getId()) + 1, allItems.size()))
-                .or(() -> below.map(tc -> indexOfId(allItems, tc.getId())))
-                .orElse(allItems.size());
+    private static int landingIndex(final @NotNull List<TestCaseDto> allTestCases, final @NotNull Optional<TestCaseDto> above, final @NotNull Optional<TestCaseDto> below) {
+        return above.map(testCase -> Math.min(indexOfId(allTestCases, testCase.getId()) + 1, allTestCases.size()))
+                .or(() -> below.map(testCase -> indexOfId(allTestCases, testCase.getId())))
+                .orElse(allTestCases.size());
     }
 
-    private static int indexOfId(final @NotNull List<TestCaseDto> items, final @NotNull UUID id) {
-        for (int i = 0; i < items.size(); i++) {
-            if (id.equals(items.get(i).getId())) return i;
+    private static int indexOfId(final @NotNull List<TestCaseDto> testCases, final @NotNull UUID testCaseId) {
+        for (int i = 0; i < testCases.size(); i++) {
+            if (testCaseId.equals(testCases.get(i).getId())) return i;
         }
 
-        return items.size();
+        return testCases.size();
     }
 
     // UC-EDITOR-PANEL-010, Rule-EDITOR-PANEL-058
@@ -80,7 +80,7 @@ public class TestCaseTransferHandler extends TransferHandler {
     protected @Nullable Transferable createTransferable(final JComponent c) {
         if (!(c instanceof JBList<?> rawList)) return null;
 
-        final @NotNull List<TestCaseDto> items = rawList.getSelectedValuesList().stream()
+        final @NotNull List<TestCaseDto> testCases = rawList.getSelectedValuesList().stream()
                 .filter(TestCaseDto.class::isInstance)
                 .map(TestCaseDto.class::cast)
                 .toList();
@@ -99,7 +99,7 @@ public class TestCaseTransferHandler extends TransferHandler {
             @Override
             public @NotNull Object getTransferData(final @NotNull DataFlavor flavor) throws UnsupportedFlavorException {
                 if (!FLAVOR.equals(flavor)) throw new UnsupportedFlavorException(flavor);
-                return items;
+                return testCases;
             }
         };
     }
@@ -120,41 +120,41 @@ public class TestCaseTransferHandler extends TransferHandler {
             final @NotNull Object data = support.getTransferable().getTransferData(FLAVOR);
             if (!(data instanceof List<?> rawList)) return false;
 
-            final @NotNull List<TestCaseDto> itemsToMove = rawList.stream()
+            final @NotNull List<TestCaseDto> testCasesToMove = rawList.stream()
                     .filter(TestCaseDto.class::isInstance)
                     .map(TestCaseDto.class::cast)
                     .toList();
 
-            if (itemsToMove.isEmpty()) return false;
+            if (testCasesToMove.isEmpty()) return false;
 
-            final @NotNull Set<UUID> movedIds = itemsToMove.stream().map(TestCaseDto::getId).collect(Collectors.toSet());
+            final @NotNull Set<UUID> movedIds = testCasesToMove.stream().map(TestCaseDto::getId).collect(Collectors.toSet());
 
             final @NotNull Optional<TestCaseDto> above = anchorAboveDrop(support, movedIds);
             final @NotNull Optional<TestCaseDto> below = anchorBelowDrop(support, movedIds);
 
-            final @NotNull List<TestCaseDto> allItems = editor.getAllTestCases();
-            final @NotNull List<UUID> ids;
+            final @NotNull List<TestCaseDto> allTestCases = editor.getAllTestCases();
+            final @NotNull List<UUID> testCaseIds;
 
-            synchronized (allItems) {
-                final @NotNull Set<UUID> here = allItems.stream().map(TestCaseDto::getId).collect(Collectors.toSet());
+            synchronized (allTestCases) {
+                final @NotNull Set<UUID> here = allTestCases.stream().map(TestCaseDto::getId).collect(Collectors.toSet());
                 if (!here.containsAll(movedIds)) return false;
 
-                allItems.removeIf(tc -> movedIds.contains(tc.getId()));
-                allItems.addAll(landingIndex(allItems, above, below), itemsToMove);
-                ids = TestCaseSnapshot.idsOf(allItems);
+                allTestCases.removeIf(testCase -> movedIds.contains(testCase.getId()));
+                allTestCases.addAll(landingIndex(allTestCases, above, below), testCasesToMove);
+                testCaseIds = TestCaseSnapshot.idsOf(allTestCases);
             }
 
-            if (ids.equals(TestCaseSnapshot.idsOf(orderBefore))) return false;
+            if (testCaseIds.equals(TestCaseSnapshot.idsOf(orderBefore))) return false;
 
             final @NotNull Path setPath = editor.getParent().getPath();
-            final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(p, setPath, ids);
+            final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(p, setPath, testCaseIds);
 
             editor.updateSequenceAndSaveAll(() -> {
-                TestCaseSnapshot.record(p, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.reorder"), itemsToMove), before, TestCaseSnapshot.of(p, setPath, ids));
-                notifier.softShowCounted(p, Done.RE_SORTED, itemsToMove.size());
+                TestCaseSnapshot.record(p, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.reorder"), testCasesToMove), before, TestCaseSnapshot.of(p, setPath, testCaseIds));
+                notifier.softShowCounted(p, Done.RE_SORTED, testCasesToMove.size());
             });
 
-            itemsToMove.stream().findFirst().ifPresentOrElse(
+            testCasesToMove.stream().findFirst().ifPresentOrElse(
                     editor::selectTestCase,
                     editor::refreshView
             );
@@ -171,11 +171,11 @@ public class TestCaseTransferHandler extends TransferHandler {
 
     // UC-EDITOR-PANEL-015
     private void putBack(final @NotNull List<TestCaseDto> orderBefore) {
-        final @NotNull List<TestCaseDto> allItems = editor.getAllTestCases();
+        final @NotNull List<TestCaseDto> allTestCases = editor.getAllTestCases();
 
-        synchronized (allItems) {
-            allItems.clear();
-            allItems.addAll(orderBefore);
+        synchronized (allTestCases) {
+            allTestCases.clear();
+            allTestCases.addAll(orderBefore);
         }
 
         editor.refreshView();
@@ -192,8 +192,8 @@ public class TestCaseTransferHandler extends TransferHandler {
         final @NotNull ListModel<?> rows = target.getModel();
 
         for (int row = Math.max(0, dropIndex(support)); row < rows.getSize(); row++) {
-            if (rows.getElementAt(row) instanceof TestCaseDto tc && !movedIds.contains(tc.getId()))
-                return Optional.of(tc);
+            if (rows.getElementAt(row) instanceof TestCaseDto testCase && !movedIds.contains(testCase.getId()))
+                return Optional.of(testCase);
         }
 
         return Optional.empty();
@@ -207,8 +207,8 @@ public class TestCaseTransferHandler extends TransferHandler {
         final int drop = Math.min(dropIndex(support), rows.getSize());
 
         for (int row = drop - 1; row >= 0; row--) {
-            if (rows.getElementAt(row) instanceof TestCaseDto tc && !movedIds.contains(tc.getId()))
-                return Optional.of(tc);
+            if (rows.getElementAt(row) instanceof TestCaseDto testCase && !movedIds.contains(testCase.getId()))
+                return Optional.of(testCase);
         }
 
         return Optional.empty();

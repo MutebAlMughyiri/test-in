@@ -89,7 +89,7 @@ public class WithoutGitIdeTest extends AbstractTempRootIdeTest {
     public void testWithoutGitThereIsNoSyncAndNoCloneAndTheDataIsStillUsable() {
         final @NotNull NodesOnDisk onDisk = new NodesOnDisk(getProject());
         final @NotNull TestProjectNode testProject = onDisk.testProject(root.resolve("NAFATH"));
-        final @NotNull TestCaseDto tc = onDisk.testCase(onDisk.testSet(testProject.getTestCasesFolder(), "Login"));
+        final @NotNull TestCaseDto testCase = onDisk.testCase(onDisk.testSet(testProject.getTestCasesFolder(), "Login"));
 
         final @NotNull AnAction sync = Optional.ofNullable(ActionManager.getInstance().getAction("Testin.SyncWithRemote")).orElseThrow(() -> new AssertionError("Sync is not registered"));
         final @NotNull AnActionEvent e = TestActionEvent.createTestEvent(sync, SimpleDataContext.builder()
@@ -113,6 +113,6 @@ public class WithoutGitIdeTest extends AbstractTempRootIdeTest {
         final @NotNull ProjectIndexer indexer = Services.getInstance(getProject(), ProjectIndexer.class);
         indexer.resetForReindex();
         ApplicationManager.getApplication().executeOnPooledThread(indexer::awaitIndexing);
-        Await.until("without Git the test cases on disk are not read", () -> Services.getInstance(getProject(), TestCases.class).findTestCase(tc.getId()).isPresent());
+        Await.until("without Git the test cases on disk are not read", () -> Services.getInstance(getProject(), TestCases.class).findTestCase(testCase.getId()).isPresent());
     }
 }

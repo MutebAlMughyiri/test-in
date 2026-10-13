@@ -86,12 +86,12 @@ public class AgentCommandTest {
     // Rule-CODEGEN-086
     @Test
     public void thePromptCarriesTheTestCaseAndNothingElse() {
-        final TestCaseDto tc = aTestCase();
-        final String written = BodyPrompt.of("{method}: {description} / {expectedResult} / {testData} / {preConditions} / {module} / {steps}", tc, "signInWithAValidAccount");
+        final TestCaseDto testCase = aTestCase();
+        final String written = BodyPrompt.of("{method}: {description} / {expectedResult} / {testData} / {preConditions} / {module} / {steps}", testCase, "signInWithAValidAccount");
 
         assertEquals(written, "signInWithAValidAccount: Sign in with a valid account / The dashboard opens"
                 + " / 1098765432 / Passw0rd! / The account is active / Accounts / ");
-        assertFalse(written.contains(tc.getId().toString()), "the test case id is not the agent's business");
+        assertFalse(written.contains(testCase.getId().toString()), "the test case id is not the agent's business");
     }
 
     // Rule-CODEGEN-086
@@ -99,11 +99,11 @@ public class AgentCommandTest {
     public void thePromptSaysWhereTheTestCaseSitsAndWhichClassHoldsItsMethod() {
         final TestSetNode login = new TestSetNode();
         login.setPath2(new ArrayList<>(List.of("NAFATH", "Test Cases", "Accounts", "Login")));
-        final TestCaseDto tc = aTestCase();
-        tc.setParent(login);
+        final TestCaseDto testCase = aTestCase();
+        testCase.setParent(login);
 
-        assertEquals(BodyPrompt.of("{testSetPath} | {class}", tc, "signInWithAValidAccount"), "NAFATH > Test Cases > Accounts > Login | " + Fqcn.classOfMethod(tc));
-        assertFalse(Fqcn.classOfMethod(tc).isEmpty(), "a class that does not exist yet is still named");
+        assertEquals(BodyPrompt.of("{testSetPath} | {class}", testCase, "signInWithAValidAccount"), "NAFATH > Test Cases > Accounts > Login | " + Fqcn.classOfMethod(testCase));
+        assertFalse(Fqcn.classOfMethod(testCase).isEmpty(), "a class that does not exist yet is still named");
     }
 
     // Rule-CODEGEN-086

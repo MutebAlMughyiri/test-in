@@ -112,12 +112,12 @@ public class ScreenReaderNamesIdeTest extends BasePlatformTestCase {
 
     // Rule-INTERNAL-122
     public void testACardSaysItsTitleThenTheRunItemStatusItShows() {
-        final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
-        final @NotNull RunItem runItem = new RunItem().setId(tc.getId()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).showing(Optional.of(tc), Optional.empty(), Optional.empty(), false);
+        final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
+        final @NotNull RunItem runItem = new RunItem().setId(testCase.getId()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).showing(Optional.of(testCase), Optional.empty(), Optional.empty(), false);
         final @NotNull RunItemCard card = new RunItemCard(getProject());
 
         final @NotNull CardView view = CardPanelBuilder.build(getProject(), getTestRootDisposable(), StandIn.of(TestinEditor.class));
-        view.model().add(tc);
+        view.model().add(testCase);
         final @NotNull JBList<TestCaseDto> list = view.list();
         list.setCellRenderer((_, shown, index, _, _) -> {
             card.updateData(index, Set.of(TestRunEditorAttributes.RUN_STATUS), runItem, AbstractCard.titleText(index + 1, true, shown.getDescription()));

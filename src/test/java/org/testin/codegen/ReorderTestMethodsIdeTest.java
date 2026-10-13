@@ -46,8 +46,8 @@ public class ReorderTestMethodsIdeTest extends AbstractCodegenIdeTest {
         return new Reordered(openThePage, logIn, logOut, lockTheAccount);
     }
 
-    private @NotNull String priorityOf(final @NotNull TestCaseDto tc) {
-        return attributeOf(writtenMethodOf(LOGIN_TEST, tc), "priority");
+    private @NotNull String priorityOf(final @NotNull TestCaseDto testCase) {
+        return attributeOf(writtenMethodOf(LOGIN_TEST, testCase), "priority");
     }
 
     // Rule-CODEGEN-042

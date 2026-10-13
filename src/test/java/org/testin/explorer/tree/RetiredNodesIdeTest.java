@@ -71,13 +71,13 @@ public class RetiredNodesIdeTest extends AbstractTempRootIdeTest {
         final @NotNull NodesOnDisk onDisk = new NodesOnDisk(getProject());
         final @NotNull TestProjectNode testProject = onDisk.testProject(root.resolve("NAFATH"));
         final @NotNull TestSetNode login = onDisk.testSet(testProject.getTestCasesFolder(), "Login");
-        final @NotNull TestCaseDto tc = onDisk.testCase(login);
+        final @NotNull TestCaseDto testCase = onDisk.testCase(login);
 
         marked(login, TestSetStatus.DEPRECATED);
 
         assertTrue("deprecating the test set deleted its folder", Files.isDirectory(login.getPath()));
         assertTrue("deprecating the test set dropped it from the tree", nodes().find(login.getPath()).isPresent());
-        assertTrue("deprecating the test set lost its test cases", Services.getInstance(getProject(), TestCases.class).findTestCase(tc.getId()).isPresent());
+        assertTrue("deprecating the test set lost its test cases", Services.getInstance(getProject(), TestCases.class).findTestCase(testCase.getId()).isPresent());
         assertEquals("the deprecated test set is not drawn as deprecated", List.of(login.getName() + " [grayed]", " " + TestSetStatus.DEPRECATED.getLabel()), drawn(login));
     }
 

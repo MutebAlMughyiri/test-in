@@ -38,13 +38,13 @@ public class AdoptByDescriptionIdeTest extends AbstractCodegenIdeTest {
                     "@org.testng.annotations.Test(description = \"Log in with a valid user\")\npublic void signIn() { login(\"sara\"); }", written));
         });
 
-        final @NotNull TestCaseDto tc = TestCaseDto.builder().parent(login).description("Log in with a valid user").build();
-        GenType.CREATE_TEST_CASE.executeAllNow(getProject(), List.of(tc));
+        final @NotNull TestCaseDto testCase = TestCaseDto.builder().parent(login).description("Log in with a valid user").build();
+        GenType.CREATE_TEST_CASE.executeAllNow(getProject(), List.of(testCase));
 
         final @NotNull PsiClass after = generatedClass("nafath.LoginTest").orElseThrow();
         assertEquals("a stub was written beside the tester's own method", 1, after.getMethods().length);
         final @NotNull PsiMethod signIn = after.findMethodsByName("signIn", false)[0];
-        assertTrue("the tester's method was not tagged with the test case", signIn.getText().contains(tc.getId().toString()));
+        assertTrue("the tester's method was not tagged with the test case", signIn.getText().contains(testCase.getId().toString()));
         assertTrue("the tester's body was not kept", signIn.getText().contains("login(\"sara\")"));
     }
 }

@@ -114,8 +114,8 @@ final class IndexerDataStore {
         return testCaseStore.unreadableIn(testSetPath);
     }
 
-    @NotNull Path testCaseFileOf(final @NotNull TestCaseDto tc) {
-        return testCaseStore.fileOf(tc.getParent().getPath(), tc.getId());
+    @NotNull Path testCaseFileOf(final @NotNull TestCaseDto testCase) {
+        return testCaseStore.fileOf(testCase.getParent().getPath(), testCase.getId());
     }
 
     @NotNull Map<String, List<UUID>> getTestCaseIdsByTestSet() {
@@ -141,38 +141,38 @@ final class IndexerDataStore {
     }
 
     @NotNull
-    Optional<TestCaseDto> findTestCase(final @NotNull UUID id) {
-        return Optional.ofNullable(testCaseStore.getTestCasesById().get(id));
+    Optional<TestCaseDto> findTestCase(final @NotNull UUID testCaseId) {
+        return Optional.ofNullable(testCaseStore.getTestCasesById().get(testCaseId));
     }
 
     // UC-INTERNAL-004, Rule-INTERNAL-033
-    boolean putTestCase(final @NotNull Path testSetPath, final @NotNull TestCaseDto tc) {
-        if (!testCaseStore.put(testSetPath, tc)) return false;
+    boolean putTestCase(final @NotNull Path testSetPath, final @NotNull TestCaseDto testCase) {
+        if (!testCaseStore.put(testSetPath, testCase)) return false;
 
         markTestSetModified(testSetPath);
         return true;
     }
 
     // UC-INTERNAL-004, Rule-INTERNAL-035
-    boolean putTestCaseVerbatim(final @NotNull Path testSetPath, final @NotNull TestCaseDto tc) {
-        Optional.ofNullable(testSetNodesByPath.get(testSetPath.toString())).ifPresent(tc::setParent);
-        if (!testCaseStore.putVerbatim(testSetPath, tc)) return false;
+    boolean putTestCaseVerbatim(final @NotNull Path testSetPath, final @NotNull TestCaseDto testCase) {
+        Optional.ofNullable(testSetNodesByPath.get(testSetPath.toString())).ifPresent(testCase::setParent);
+        if (!testCaseStore.putVerbatim(testSetPath, testCase)) return false;
 
         markTestSetModified(testSetPath);
         return true;
     }
 
     // UC-EDITOR-PANEL-017, Rule-INTERNAL-035
-    boolean moveTestCase(final @NotNull Path fromSet, final @NotNull Path toSet, final @NotNull TestCaseDto tc) {
-        if (!testCaseStore.move(fromSet, toSet, tc)) return false;
+    boolean moveTestCase(final @NotNull Path fromSet, final @NotNull Path toSet, final @NotNull TestCaseDto testCase) {
+        if (!testCaseStore.move(fromSet, toSet, testCase)) return false;
 
         markTestSetModified(toSet);
         if (!fromSet.equals(toSet)) markTestSetModified(fromSet);
         return true;
     }
 
-    boolean removeTestCase(final @NotNull Path testSetPath, final @NotNull UUID tcId) {
-        if (!testCaseStore.remove(testSetPath, tcId)) return false;
+    boolean removeTestCase(final @NotNull Path testSetPath, final @NotNull UUID testCaseId) {
+        if (!testCaseStore.remove(testSetPath, testCaseId)) return false;
 
         markTestSetModified(testSetPath);
         return true;
@@ -211,12 +211,12 @@ final class IndexerDataStore {
         return addNode(testRunPackagesByPath, testRunPackage, NodeType.TRP.getMarker(), testRunPackage.getMarker());
     }
 
-    private <V extends AbstractNode> boolean addNode(final @NotNull Map<String, V> map, final @NotNull V dto, final @NotNull String markerFileName, final @NotNull Marker marker) {
-        if (!markers.write(dto.getPath(), markerFileName, marker)) return false;
+    private <V extends AbstractNode> boolean addNode(final @NotNull Map<String, V> map, final @NotNull V node, final @NotNull String markerFileName, final @NotNull Marker marker) {
+        if (!markers.write(node.getPath(), markerFileName, marker)) return false;
 
-        map.put(dto.getPath().toString(), dto);
+        map.put(node.getPath().toString(), node);
         childrenIndex.invalidate();
-        refreshDir(dto.getPath());
+        refreshDir(node.getPath());
         return true;
     }
 
@@ -393,10 +393,10 @@ final class IndexerDataStore {
         return true;
     }
 
-    boolean persistMarker(final @NotNull AbstractNode dto) {
-        final boolean written = markers.write(dto.getPath(), dto.getMarkerFileName(), dto.getMarker());
+    boolean persistMarker(final @NotNull AbstractNode node) {
+        final boolean written = markers.write(node.getPath(), node.getMarkerFileName(), node.getMarker());
         childrenIndex.invalidate();
-        refresh(dto.getPath().resolve(dto.getMarkerFileName()), false);
+        refresh(node.getPath().resolve(node.getMarkerFileName()), false);
         return written;
     }
 
@@ -417,7 +417,7 @@ final class IndexerDataStore {
                 .orElse(null);
 
         for (final Map<String, ? extends AbstractNode> map : dirMaps) {
-            rename.moveEntry(map, dto -> updatePathAndParent(dto, newPath, newParentNode));
+            rename.moveEntry(map, node -> updatePathAndParent(node, newPath, newParentNode));
             rename.moveNodesUnder(map);
         }
 
@@ -440,10 +440,10 @@ final class IndexerDataStore {
                 .ifPresent(renamed -> markers.touched(renamed.getPath(), renamed.getMarkerFileName(), renamed.getMarker()));
     }
 
-    private void updatePathAndParent(final @NotNull AbstractNode dto, final @NotNull Path newPath, final @Nullable AbstractNode newParent) {
-        dto.setPath(newPath);
-        dto.setName(newPath.getFileName().toString());
-        dto.setParent(newParent);
+    private void updatePathAndParent(final @NotNull AbstractNode node, final @NotNull Path newPath, final @Nullable AbstractNode newParent) {
+        node.setPath(newPath);
+        node.setName(newPath.getFileName().toString());
+        node.setParent(newParent);
     }
 
     private void rebuildPath2Under(final @NotNull Path newPath) {
@@ -463,12 +463,12 @@ final class IndexerDataStore {
                 .findFirst();
     }
 
-    private void rebuildPath2(final @NotNull AbstractNode dto) {
+    private void rebuildPath2(final @NotNull AbstractNode node) {
         final @NotNull ArrayList<String> path2 = new ArrayList<>();
-        for (final AbstractNode ancestor : dto.selfAndAncestors()) {
+        for (final AbstractNode ancestor : node.selfAndAncestors()) {
             path2.addFirst(ancestor.getName());
         }
-        dto.setPath2(path2);
+        node.setPath2(path2);
     }
 
     @NotNull List<AbstractNode> getChildren(final @NotNull Path parentPath) {

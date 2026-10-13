@@ -119,8 +119,8 @@ final class RunItemWriter {
 
     // UC-TREE-PANEL-022, Rule-INTERNAL-011
     private void removeRunItemsOf(final @NotNull Path testRunPath, final @NotNull Set<UUID> gone) {
-        for (final UUID id : gone) {
-            final @NotNull Path file = testRunPath.resolve(FileKind.RUN_ITEM.fileName(id));
+        for (final UUID testCaseId : gone) {
+            final @NotNull Path file = testRunPath.resolve(FileKind.RUN_ITEM.fileName(testCaseId));
             if (!Files.exists(file)) continue;
 
             TestinLogger.info("Removing the run item of a test case the test run no longer covers: " + file.getFileName());

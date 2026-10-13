@@ -76,9 +76,9 @@ public enum OptionalPlugin {
     }
 
     private boolean isEnabledInIde() {
-        final @NotNull PluginId id = PluginId.getId(pluginId);
+        final @NotNull PluginId platformId = PluginId.getId(pluginId);
 
-        return PluginManagerCore.isPluginInstalled(id) && !PluginManagerCore.isDisabled(id);
+        return PluginManagerCore.isPluginInstalled(platformId) && !PluginManagerCore.isDisabled(platformId);
     }
 
     // Rule-CODEGEN-062, Rule-INTERNAL-127

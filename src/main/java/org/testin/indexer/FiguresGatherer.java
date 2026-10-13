@@ -26,5 +26,5 @@ import org.testin.model.node.AbstractNode;
 @Immutable
 public interface FiguresGatherer {
     @NotNull
-    NodeFigures of(final @NotNull Project p, final @NotNull AbstractNode dto);
+    NodeFigures of(final @NotNull Project p, final @NotNull AbstractNode node);
 }

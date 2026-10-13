@@ -46,8 +46,8 @@ public class TestCaseNumberIdeTest extends AbstractCodegenIdeTest {
 
     private @NotNull Set<TestSetEditorAttributes> shownBefore = Set.of();
 
-    private static int numberOnTheCard(final @NotNull TestSetEditor editor, final @NotNull TestCaseDto tc) {
-        final @NotNull String title = editor.cardTitle(tc);
+    private static int numberOnTheCard(final @NotNull TestSetEditor editor, final @NotNull TestCaseDto testCase) {
+        final @NotNull String title = editor.cardTitle(testCase);
         return Integer.parseInt(title.substring(0, title.indexOf('.')));
     }
 
@@ -59,15 +59,15 @@ public class TestCaseNumberIdeTest extends AbstractCodegenIdeTest {
         return drawn;
     }
 
-    private static int numberInTheGrid(final @NotNull TestSetEditor editor, final @NotNull TestCaseDto tc) {
+    private static int numberInTheGrid(final @NotNull TestSetEditor editor, final @NotNull TestCaseDto testCase) {
         editor.onToolBarSwitchedToGridView();
         final @NotNull JBTable grid = Drawn.components(editor.getComponent()).stream().filter(JBTable.class::isInstance).map(JBTable.class::cast).findFirst()
                 .orElseThrow(() -> new AssertionError("the editor draws no grid"));
         for (int row = 0; row < grid.getModel().getRowCount(); row++) {
-            if (tc.getDescription().equals(grid.getModel().getValueAt(row, TestSetEditorAttributes.DESCRIPTION.column())))
+            if (testCase.getDescription().equals(grid.getModel().getValueAt(row, TestSetEditorAttributes.DESCRIPTION.column())))
                 return Integer.parseInt(String.valueOf(grid.getModel().getValueAt(row, TestSetEditorAttributes.ORDER.column())));
         }
-        throw new AssertionError("the grid has no row for '" + tc.getDescription() + "'");
+        throw new AssertionError("the grid has no row for '" + testCase.getDescription() + "'");
     }
 
     private static void filteredTo(final @NotNull TestSetEditor editor, final @NotNull String query) {
@@ -75,8 +75,8 @@ public class TestCaseNumberIdeTest extends AbstractCodegenIdeTest {
         editor.onToolBarSearchValueChanged();
     }
 
-    private static byte @NotNull [] fileOf(final @NotNull TestCaseDto tc) {
-        final @NotNull Path file = tc.getParent().getPath().resolve(FileKind.TEST_CASE.fileName(tc.getId()));
+    private static byte @NotNull [] fileOf(final @NotNull TestCaseDto testCase) {
+        final @NotNull Path file = testCase.getParent().getPath().resolve(FileKind.TEST_CASE.fileName(testCase.getId()));
         try {
             return Files.readAllBytes(file);
         } catch (final IOException ex) {
@@ -141,10 +141,10 @@ public class TestCaseNumberIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestSetEditor editor = opened(login);
         filteredTo(editor, "Log");
 
-        for (final TestCaseDto tc : List.of(logIn, logOut)) {
-            final int onTheCard = numberOnTheCard(editor, tc);
-            assertEquals("the grid row and the card disagree on '" + tc.getDescription() + "'", onTheCard, numberInTheGrid(editor, tc));
-            assertEquals("the generated method and the card disagree on '" + tc.getDescription() + "'", String.valueOf(onTheCard), attributeOf(writtenMethodOf(LOGIN_TEST, tc), "priority"));
+        for (final TestCaseDto testCase : List.of(logIn, logOut)) {
+            final int onTheCard = numberOnTheCard(editor, testCase);
+            assertEquals("the grid row and the card disagree on '" + testCase.getDescription() + "'", onTheCard, numberInTheGrid(editor, testCase));
+            assertEquals("the generated method and the card disagree on '" + testCase.getDescription() + "'", String.valueOf(onTheCard), attributeOf(writtenMethodOf(LOGIN_TEST, testCase), "priority"));
         }
         assertEquals("1", attributeOf(writtenMethodOf(LOGIN_TEST, open), "priority"));
     }

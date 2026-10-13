@@ -451,8 +451,8 @@ public class GitWorkflowTest {
             final List<TestCaseDto> ordered = TestCaseOrder.ordered(after);
             assertEquals(ordered, TestCaseOrder.ordered(new ArrayList<>(after.reversed())),
                     "the order does not depend on what order the files were read in");
-            assertTrue(ordered.stream().anyMatch(tc -> tc.getId().equals(theirNewTestCase.getId())));
-            assertTrue(ordered.stream().anyMatch(tc -> tc.getId().equals(myNewTestCase.getId())));
+            assertTrue(ordered.stream().anyMatch(testCase -> testCase.getId().equals(theirNewTestCase.getId())));
+            assertTrue(ordered.stream().anyMatch(testCase -> testCase.getId().equals(myNewTestCase.getId())));
             assertEquals(mustGit(work, "status", "--porcelain", "-uall").strip(), "");
         } catch (final IOException ex) {
             throw new AssertionError(ex);

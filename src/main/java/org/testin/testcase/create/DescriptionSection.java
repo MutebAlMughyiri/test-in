@@ -115,8 +115,8 @@ public class DescriptionSection extends AbstractOneLineSection {
 
     // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-032
     @Override
-    public @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto dto) {
-        return dto.edit().description(typed()).build();
+    public @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto testCase) {
+        return testCase.edit().description(typed()).build();
     }
 
     public @NotNull String typed() {
@@ -124,13 +124,13 @@ public class DescriptionSection extends AbstractOneLineSection {
     }
 
     @Override
-    public void fillData(final @NotNull TestCaseDto dto) {
-        field.setText(dto.getDescription());
+    public void fillData(final @NotNull TestCaseDto testCase) {
+        field.setText(testCase.getDescription());
     }
 
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-036
     @Override
-    public boolean isShownWith(final @NotNull TestCaseDto dto) {
+    public boolean isShownWith(final @NotNull TestCaseDto testCase) {
         return true;
     }
 }

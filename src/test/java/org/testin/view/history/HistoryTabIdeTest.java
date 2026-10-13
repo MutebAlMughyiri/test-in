@@ -61,8 +61,8 @@ public class HistoryTabIdeTest extends AbstractTempRootIdeTest {
 
     private final @NotNull JBPanel<?> tab = new JBPanel<>(new BorderLayout());
 
-    private static @NotNull RunItem failed(final @NotNull TestCaseDto tc) {
-        return RunItem.builder().id(tc.getId()).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl("https://github.com/mtb550/test-in/issues/412").executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The basket was emptied").build())).build();
+    private static @NotNull RunItem failed(final @NotNull TestCaseDto testCase) {
+        return RunItem.builder().id(testCase.getId()).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl("https://github.com/mtb550/test-in/issues/412").executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The basket was emptied").build())).build();
     }
 
     private @NotNull TestCaseDto aTestCase() {
@@ -73,11 +73,11 @@ public class HistoryTabIdeTest extends AbstractTempRootIdeTest {
     public void testABugIsACardOfItsOwnWithItsAttributesAndItsTestRunOpensTheRunItem() {
         final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
         final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), testProject, "Login");
-        final @NotNull TestCaseDto tc = EditorFixtures.testCase(getProject(), testSet, "Log in with a valid user", "a");
-        final @NotNull TestRunNode testRun = EditorFixtures.testRun(getProject(), testProject, List.of(failed(tc)));
-        Services.getInstance(getProject(), TestRuns.class).putRunItems(testProject.getTestRunsFolder().getPath().resolve("Cycle-0"), RunItems.builder().all(new ArrayList<>(List.of(failed(tc)))).build());
+        final @NotNull TestCaseDto testCase = EditorFixtures.testCase(getProject(), testSet, "Log in with a valid user", "a");
+        final @NotNull TestRunNode testRun = EditorFixtures.testRun(getProject(), testProject, List.of(failed(testCase)));
+        Services.getInstance(getProject(), TestRuns.class).putRunItems(testProject.getTestRunsFolder().getPath().resolve("Cycle-0"), RunItems.builder().all(new ArrayList<>(List.of(failed(testCase)))).build());
 
-        new HistoryTab().load(getProject(), tab, Optional.of(tc));
+        new HistoryTab().load(getProject(), tab, Optional.of(testCase));
         Await.until("the bug cards were never drawn: " + Drawn.words(tab), () -> Drawn.holds(Drawn.words(tab), Bundle.message("view.history.not.under.git")));
 
         final @NotNull List<String> words = Drawn.words(tab);
@@ -95,7 +95,7 @@ public class HistoryTabIdeTest extends AbstractTempRootIdeTest {
             ((ActionLink) Drawn.reading(tab, testRun.getName())).doClick();
             Await.until("the test run did not open", () -> editors.editorFor(testRun).filter(TestRunEditor.class::isInstance).isPresent());
             final @NotNull TestRunEditor opened = (TestRunEditor) editors.editorFor(testRun).orElseThrow();
-            Await.until("the run item was not selected in its test run", () -> Optional.ofNullable(opened.getList().getSelectedValue()).map(TestCaseDto::getId).filter(tc.getId()::equals).isPresent());
+            Await.until("the run item was not selected in its test run", () -> Optional.ofNullable(opened.getList().getSelectedValue()).map(TestCaseDto::getId).filter(testCase.getId()::equals).isPresent());
         } finally {
             editors.closeAll();
         }

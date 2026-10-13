@@ -34,16 +34,16 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Fqcn {
     // UC-CODEGEN-002, Rule-CODEGEN-012
-    public static @NotNull String methodNameOf(final @NotNull TestCaseDto tc) {
-        return NameSanitizer.methodName(tc.getDescription());
+    public static @NotNull String methodNameOf(final @NotNull TestCaseDto testCase) {
+        return NameSanitizer.methodName(testCase.getDescription());
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-002
-    public static @NotNull List<String> ofMethod(final @NotNull TestCaseDto tc) {
-        final @NotNull String methodName = NameSanitizer.methodName(tc.getDescription());
+    public static @NotNull List<String> ofMethod(final @NotNull TestCaseDto testCase) {
+        final @NotNull String methodName = NameSanitizer.methodName(testCase.getDescription());
         if (methodName.isEmpty()) return new ArrayList<>();
 
-        final @NotNull List<String> generatedFqcn = withoutTestCasesDir(tc.getParent().getPath2());
+        final @NotNull List<String> generatedFqcn = withoutTestCasesDir(testCase.getParent().getPath2());
 
         if (generatedFqcn.isEmpty()) {
             generatedFqcn.add("DefaultTest");
@@ -57,8 +57,8 @@ public final class Fqcn {
 
     // UC-CODEGEN-002, Rule-CODEGEN-002
     @FromContentModule
-    public static @NotNull String classOfMethod(final @NotNull TestCaseDto tc) {
-        final @NotNull List<String> method = ofMethod(tc);
+    public static @NotNull String classOfMethod(final @NotNull TestCaseDto testCase) {
+        final @NotNull List<String> method = ofMethod(testCase);
         return method.isEmpty() ? "" : String.join(".", method.subList(0, method.size() - 1));
     }
 
@@ -67,9 +67,9 @@ public final class Fqcn {
     public static @NotNull Map<String, List<TestCaseDto>> byClassOfMethod(final @NotNull List<? extends TestCaseDto> testCases) {
         final @NotNull Map<String, List<TestCaseDto>> byClass = new LinkedHashMap<>();
 
-        for (final TestCaseDto tc : testCases) {
-            final @NotNull String classFqcn = classOfMethod(tc);
-            if (!classFqcn.isEmpty()) byClass.computeIfAbsent(classFqcn, _ -> new ArrayList<>()).add(tc);
+        for (final TestCaseDto testCase : testCases) {
+            final @NotNull String classFqcn = classOfMethod(testCase);
+            if (!classFqcn.isEmpty()) byClass.computeIfAbsent(classFqcn, _ -> new ArrayList<>()).add(testCase);
         }
 
         return byClass;

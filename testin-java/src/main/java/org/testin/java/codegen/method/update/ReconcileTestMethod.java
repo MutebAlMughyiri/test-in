@@ -39,8 +39,8 @@ import java.util.Optional;
 // Rule-CODEGEN-044
 public class ReconcileTestMethod extends BaseTestMethodChange implements CodeChange<TestCaseDto> {
     @Override
-    public void execute(final @NotNull Project p, final @NotNull TestCaseDto tc) {
-        executeAll(p, List.of(tc));
+    public void execute(final @NotNull Project p, final @NotNull TestCaseDto testCase) {
+        executeAll(p, List.of(testCase));
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-068
@@ -49,8 +49,8 @@ public class ReconcileTestMethod extends BaseTestMethodChange implements CodeCha
         if (testCases.isEmpty()) return;
 
         final @NotNull Map<Path, List<TestCaseDto>> byClass = new LinkedHashMap<>();
-        for (final TestCaseDto tc : testCases) {
-            byClass.computeIfAbsent(tc.getParent().getPath(), _ -> new ArrayList<>()).add(tc);
+        for (final TestCaseDto testCase : testCases) {
+            byClass.computeIfAbsent(testCase.getParent().getPath(), _ -> new ArrayList<>()).add(testCase);
         }
 
         final @NotNull Runnable inCommand = () ->
@@ -71,13 +71,13 @@ public class ReconcileTestMethod extends BaseTestMethodChange implements CodeCha
         final @NotNull Map<String, PsiMethod> methods = GeneratedMethod.byTestCaseId(pc);
 
         int written = 0;
-        for (final TestCaseDto tc : inClass) {
-            final @Nullable PsiMethod pm = methods.get(tc.getId().toString());
+        for (final TestCaseDto testCase : inClass) {
+            final @Nullable PsiMethod pm = methods.get(testCase.getId().toString());
             if (pm == null) continue;
 
-            writeDescription(p, pm, tc);
-            writeGroups(p, pm, tc);
-            writeEnabled(p, pm, tc);
+            writeDescription(p, pm, testCase);
+            writeGroups(p, pm, testCase);
+            writeEnabled(p, pm, testCase);
             written++;
         }
 

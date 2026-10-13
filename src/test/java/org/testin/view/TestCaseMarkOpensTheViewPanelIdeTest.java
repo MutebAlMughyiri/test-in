@@ -59,12 +59,12 @@ public class TestCaseMarkOpensTheViewPanelIdeTest extends AbstractCodegenIdeTest
         view = ViewOnScreen.closed(getProject(), getTestRootDisposable());
     }
 
-    private @NotNull GutterMark theMarkBeside(final @NotNull TestCaseDto tc) {
-        final @NotNull String id = tc.getId().toString();
-        final @NotNull String text = LoginTestSource.withTestNg(id);
+    private @NotNull GutterMark theMarkBeside(final @NotNull TestCaseDto testCase) {
+        final @NotNull String testCaseId = testCase.getId().toString();
+        final @NotNull String text = LoginTestSource.withTestNg(testCaseId);
         final @NotNull PsiFile file = myFixture.addFileToProject("nafath/LoginTest.java", text);
         myFixture.configureFromExistingVirtualFile(file.getVirtualFile());
-        myFixture.getEditor().getCaretModel().moveToOffset(text.indexOf(id));
+        myFixture.getEditor().getCaretModel().moveToOffset(text.indexOf(testCaseId));
 
         return myFixture.findGuttersAtCaret().stream()
                 .filter(mark -> Bundle.message("gutter.view.details").equals(mark.getTooltipText()))
@@ -72,21 +72,21 @@ public class TestCaseMarkOpensTheViewPanelIdeTest extends AbstractCodegenIdeTest
                 .orElseThrow(() -> new AssertionError("the method has no mark beside its identity"));
     }
 
-    private boolean showing(final @NotNull TestCaseDto tc) {
-        return view.getPanel().getCurrentTestCase().filter(shown -> shown.getId().equals(tc.getId())).isPresent();
+    private boolean showing(final @NotNull TestCaseDto testCase) {
+        return view.getPanel().getCurrentTestCase().filter(shown -> shown.getId().equals(testCase.getId())).isPresent();
     }
 
     // Rule-CODEGEN-070
     public void testTheMarkOpensTheViewPanelOnTheTestCaseAndMovesNothingElse() {
-        final @NotNull TestCaseDto tc = indexedTestCase(indexedTestSet("Login", theTestCasesDirectory()), "Log in", "b");
-        final @NotNull GutterMark mark = theMarkBeside(tc);
+        final @NotNull TestCaseDto testCase = indexedTestCase(indexedTestSet("Login", theTestCasesDirectory()), "Log in", "b");
+        final @NotNull GutterMark mark = theMarkBeside(testCase);
         final @NotNull FileEditorManager editors = FileEditorManager.getInstance(getProject());
         final @NotNull List<VirtualFile> openBefore = Arrays.asList(editors.getOpenFiles());
         final @NotNull List<VirtualFile> selectedBefore = Arrays.asList(editors.getSelectedFiles());
         final int caretBefore = myFixture.getEditor().getCaretModel().getOffset();
 
         clicked(mark);
-        Await.until("the mark did not open the view panel on its test case", () -> showing(tc));
+        Await.until("the mark did not open the view panel on its test case", () -> showing(testCase));
 
         assertTrue("the mark did not open the view panel", view.isOpen());
         assertEquals("the mark opened or closed an editor tab", openBefore, Arrays.asList(editors.getOpenFiles()));
@@ -96,19 +96,19 @@ public class TestCaseMarkOpensTheViewPanelIdeTest extends AbstractCodegenIdeTest
 
     // Rule-CODEGEN-030
     public void testTheJumpWaitsForIndexingToFinish() {
-        final @NotNull TestCaseDto tc = indexedTestCase(indexedTestSet("Login", theTestCasesDirectory()), "Log in", "b");
-        final @NotNull GutterMark mark = theMarkBeside(tc);
+        final @NotNull TestCaseDto testCase = indexedTestCase(indexedTestSet("Login", theTestCasesDirectory()), "Log in", "b");
+        final @NotNull GutterMark mark = theMarkBeside(testCase);
         final @NotNull AppSettingsState settings = Services.getInstance(AppSettingsState.class);
         final @NotNull String wasRoot = settings.rootTestinPath;
         final @NotNull ProjectIndexer indexer = Services.getInstance(getProject(), ProjectIndexer.class);
         settings.rootTestinPath = root.toString();
         try {
             indexer.resetForReindex();
-            assertTrue("the test case is still known before indexing, so waiting proves nothing", Services.getInstance(getProject(), TestCases.class).findTestCase(tc.getId()).isEmpty());
+            assertTrue("the test case is still known before indexing, so waiting proves nothing", Services.getInstance(getProject(), TestCases.class).findTestCase(testCase.getId()).isEmpty());
 
             clicked(mark);
 
-            Await.until("the jump did not wait for indexing, and found no test case to open", () -> showing(tc));
+            Await.until("the jump did not wait for indexing, and found no test case to open", () -> showing(testCase));
         } finally {
             settings.rootTestinPath = wasRoot;
         }

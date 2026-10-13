@@ -124,13 +124,13 @@ public class CreateTestCaseDialogIdeTest extends AbstractTempRootIdeTest {
 
         save();
 
-        final @NotNull TestCaseDto tc = theOneSaved();
-        assertEquals("Pay with a saved card", tc.getDescription());
-        assertEquals("The order is placed", tc.getExpectedResult());
-        assertEquals("Payments", tc.getModule());
-        assertEquals("A card is saved", tc.getPreConditions());
-        assertEquals("4111 1111 1111 1111", tc.getTestData());
-        assertEquals("a blank step was kept, or a step was not trimmed", List.of("Open the cart", "Pay"), tc.getSteps());
+        final @NotNull TestCaseDto testCase = theOneSaved();
+        assertEquals("Pay with a saved card", testCase.getDescription());
+        assertEquals("The order is placed", testCase.getExpectedResult());
+        assertEquals("Payments", testCase.getModule());
+        assertEquals("A card is saved", testCase.getPreConditions());
+        assertEquals("4111 1111 1111 1111", testCase.getTestData());
+        assertEquals("a blank step was kept, or a step was not trimmed", List.of("Open the cart", "Pay"), testCase.getSteps());
     }
 
     // Rule-EDITOR-PANEL-034

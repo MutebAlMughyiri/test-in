@@ -34,12 +34,12 @@ public class ModuleSection extends AbstractOneLineSection {
 
     // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-032
     @Override
-    public @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto dto) {
-        return dto.edit().module(field.getText().trim()).build();
+    public @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto testCase) {
+        return testCase.edit().module(field.getText().trim()).build();
     }
 
     @Override
-    public void fillData(final @NotNull TestCaseDto dto) {
-        field.setText(dto.getModule());
+    public void fillData(final @NotNull TestCaseDto testCase) {
+        field.setText(testCase.getModule());
     }
 }

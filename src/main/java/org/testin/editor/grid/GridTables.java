@@ -241,8 +241,8 @@ public class GridTables {
         });
     }
 
-    public static void restoreSelection(final @NotNull JBTable table, final @NotNull JBList<TestCaseDto> list, final @NotNull List<TestCaseDto> pageItems, final int columnToRestore) {
-        final int selectedRow = pageItems.indexOf(list.getSelectedValue());
+    public static void restoreSelection(final @NotNull JBTable table, final @NotNull JBList<TestCaseDto> list, final @NotNull List<TestCaseDto> pageTestCases, final int columnToRestore) {
+        final int selectedRow = pageTestCases.indexOf(list.getSelectedValue());
         if (selectedRow < 0) return;
 
         final int column = columnToRestore >= 0 && columnToRestore < table.getColumnCount() ? columnToRestore : 0;
@@ -252,8 +252,8 @@ public class GridTables {
     }
 
     // UC-EDITOR-PANEL-015, Rule-EDITOR-PANEL-077
-    public static @NotNull GridView finishRebuild(final @NotNull JBTable table, final @NotNull JBList<TestCaseDto> list, final @NotNull List<TestCaseDto> pageItems, final @NotNull Disposable fontSync, final boolean keepKeyboard, final @NotNull UiDataProvider data) {
-        restoreSelection(table, list, pageItems, 0);
+    public static @NotNull GridView finishRebuild(final @NotNull JBTable table, final @NotNull JBList<TestCaseDto> list, final @NotNull List<TestCaseDto> pageTestCases, final @NotNull Disposable fontSync, final boolean keepKeyboard, final @NotNull UiDataProvider data) {
+        restoreSelection(table, list, pageTestCases, 0);
 
         if (keepKeyboard) ApplicationManager.getApplication().invokeLater(table::requestFocusInWindow);
 

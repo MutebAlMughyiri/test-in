@@ -29,8 +29,8 @@ public final class Modules {
     public static @NotNull Set<String> in(final @NotNull List<TestCaseDto> testCases) {
         final @NotNull Set<String> modules = new HashSet<>();
 
-        for (final TestCaseDto tc : testCases) {
-            final @NotNull String module = tc.getModule().trim();
+        for (final TestCaseDto testCase : testCases) {
+            final @NotNull String module = testCase.getModule().trim();
             if (!module.isEmpty()) modules.add(module);
         }
 

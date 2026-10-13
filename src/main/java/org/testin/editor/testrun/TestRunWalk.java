@@ -76,9 +76,9 @@ public final class TestRunWalk {
     public int getCurrentlyExecutingIndex() {
         final @NotNull List<TestCaseDto> shown = editor.getCurrentTestCases();
 
-        return executingTestCase.map(id -> {
+        return executingTestCase.map(testCaseId -> {
             for (int i = 0; i < shown.size(); i++) {
-                if (shown.get(i).getId().equals(id)) return i;
+                if (shown.get(i).getId().equals(testCaseId)) return i;
             }
             return -1;
         }).orElse(-1);
@@ -94,8 +94,8 @@ public final class TestRunWalk {
         final @NotNull Optional<UUID> left = executingTestCase;
         executingTestCase = testCaseId;
 
-        left.ifPresent(id -> ExecutingNow.changed(p, id));
-        testCaseId.ifPresent(id -> ExecutingNow.changed(p, id));
+        left.ifPresent(leftTestCaseId -> ExecutingNow.changed(p, leftTestCaseId));
+        testCaseId.ifPresent(reachedTestCaseId -> ExecutingNow.changed(p, reachedTestCaseId));
     }
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-227
@@ -120,13 +120,13 @@ public final class TestRunWalk {
             return;
         }
 
-        final @NotNull TestCaseDto currentTc = shown.get(globalIndex);
-        walkTo(Optional.of(currentTc.getId()));
+        final @NotNull TestCaseDto currentTestCase = shown.get(globalIndex);
+        walkTo(Optional.of(currentTestCase.getId()));
 
         editor.showExecuting(globalIndex);
 
-        editor.runItem(currentTc.getId()).ifPresent(runItem -> executionTimer.start(runItem, () -> {
-            editor.repaint(currentTc.getId());
+        editor.runItem(currentTestCase.getId()).ifPresent(runItem -> executionTimer.start(runItem, () -> {
+            editor.repaint(currentTestCase.getId());
             editor.showElapsed();
         }));
 
@@ -183,8 +183,8 @@ public final class TestRunWalk {
         if (!editor.getParent().isOpen()) return;
 
         final @NotNull List<TestCaseDto> automated = editor.snapshotOfAll().stream()
-                .filter(tc -> editor.runItem(tc.getId()).filter(runItem -> !runItem.isRemoved()).isPresent())
-                .filter(tc -> !testNGExecution.isRunning(tc.getId()))
+                .filter(testCase -> editor.runItem(testCase.getId()).filter(runItem -> !runItem.isRemoved()).isPresent())
+                .filter(testCase -> !testNGExecution.isRunning(testCase.getId()))
                 .toList();
 
         if (automated.isEmpty()) {
@@ -194,40 +194,40 @@ public final class TestRunWalk {
 
         TestinLogger.info("Running " + editor.getParent().getName() + " with " + automated.size() + " test case(s)");
 
-        automated.forEach(tc -> {
-            launchedByRunTests.add(tc.getId());
-            launching(tc.getId());
+        automated.forEach(testCase -> {
+            launchedByRunTests.add(testCase.getId());
+            launching(testCase.getId());
         });
 
         ExecuteTestCases.run(p, automated);
     }
 
     // UC-EDITOR-PANEL-043, UC-EDITOR-PANEL-044, Rule-EDITOR-PANEL-182, Rule-EDITOR-PANEL-289
-    void executionReported(final @NotNull TestCaseDto tc, final @NotNull ExecutionStatus status, final @NotNull List<RunItemExecution> executions, final int written) {
-        if (!launchedHere.contains(tc.getId())) return;
+    void executionReported(final @NotNull TestCaseDto testCase, final @NotNull ExecutionStatus status, final @NotNull List<RunItemExecution> executions, final int written) {
+        if (!launchedHere.contains(testCase.getId())) return;
 
         if (!status.stillGoing()) {
-            launchedHere.remove(tc.getId());
-            launchedByRunTests.remove(tc.getId());
+            launchedHere.remove(testCase.getId());
+            launchedByRunTests.remove(testCase.getId());
         }
 
-        if (editor.runItem(tc.getId()).filter(runItem -> !runItem.isRemoved()).isEmpty()) return;
+        if (editor.runItem(testCase.getId()).filter(runItem -> !runItem.isRemoved()).isEmpty()) return;
 
         if (!editor.getParent().takesRunItemStatuses()) return;
 
         if (status.stillGoing() && !executions.isEmpty())
-            runItemStatusService.showAttempts(editor, tc, executions, written);
+            runItemStatusService.showAttempts(editor, testCase, executions, written);
 
         status.getRunItemStatus().ifPresent(runItemStatus -> {
-            runItemStatusService.recordReported(editor, tc, runItemStatus, executions, written);
+            runItemStatusService.recordReported(editor, testCase, runItemStatus, executions, written);
 
             if (launchedHere.isEmpty()) sayWhatTheTestRunRecorded();
         });
 
-        if (launchedByRunTests.contains(tc.getId()) && testNGExecution.isExecutingNow(tc.getId()))
-            editor.showRunItem(tc);
+        if (launchedByRunTests.contains(testCase.getId()) && testNGExecution.isExecutingNow(testCase.getId()))
+            editor.showRunItem(testCase);
 
-        editor.repaint(tc.getId());
+        editor.repaint(testCase.getId());
         editor.showTestRunTotals();
 
         editor.onExecutionStateChanged();

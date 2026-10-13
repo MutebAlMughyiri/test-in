@@ -77,28 +77,28 @@ public class DetailsRowsIdeTest extends BasePlatformTestCase {
         return ((GridBagLayout) component.getParent().getLayout()).getConstraints(component);
     }
 
-    private @NotNull JBPanel<?> drawn(final @NotNull TestCaseDto tc) {
-        return Drawn.detailsTab(getProject(), tc, Optional.empty(), PATH);
+    private @NotNull JBPanel<?> drawn(final @NotNull TestCaseDto testCase) {
+        return Drawn.detailsTab(getProject(), testCase, Optional.empty(), PATH);
     }
 
-    private @NotNull List<String> words(final @NotNull TestCaseDto tc) {
-        return Drawn.words(drawn(tc));
+    private @NotNull List<String> words(final @NotNull TestCaseDto testCase) {
+        return Drawn.words(drawn(testCase));
     }
 
     // Rule-VIEW-PANEL-023
     public void testTheRowsAreDrawnInOneFixedOrder() {
-        final @NotNull TestCaseDto tc = everyFieldFilled();
+        final @NotNull TestCaseDto testCase = everyFieldFilled();
         final @NotNull TestSetNode login = new TestSetNode();
         login.setPath(Path.of(String.join("/", PATH)));
-        tc.setParent(login);
+        testCase.setParent(login);
         final @NotNull TestCases testCases = Services.getInstance(getProject(), TestCases.class);
-        testCases.putTestCaseVerbatim(login.getPath(), tc);
+        testCases.putTestCaseVerbatim(login.getPath(), testCase);
         try {
-            final @NotNull List<String> captions = words(tc).stream().filter(ROWS_IN_ORDER::contains).toList();
+            final @NotNull List<String> captions = words(testCase).stream().filter(ROWS_IN_ORDER::contains).toList();
 
             assertEquals("the test case's rows were drawn out of their fixed order", ROWS_IN_ORDER, captions);
         } finally {
-            testCases.removeTestCase(login.getPath(), tc.getId());
+            testCases.removeTestCase(login.getPath(), testCase.getId());
         }
     }
 

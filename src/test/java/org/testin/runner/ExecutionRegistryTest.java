@@ -54,8 +54,8 @@ public class ExecutionRegistryTest {
         return new Attempt(status, Duration.ZERO, new Failure(message, "", List.of()), "", DateFormats.NOT_EXECUTED);
     }
 
-    private static @NotNull ExecutionStatus statusIn(final Map<UUID, Attempts> decided, final TestCaseDto tc) {
-        return Optional.ofNullable(decided.get(tc.getId())).map(Attempts::status).orElse(ExecutionStatus.IDLE);
+    private static @NotNull ExecutionStatus statusIn(final Map<UUID, Attempts> decided, final TestCaseDto testCase) {
+        return Optional.ofNullable(decided.get(testCase.getId())).map(Attempts::status).orElse(ExecutionStatus.IDLE);
     }
 
     private static @NotNull ExecutionRegistry launchedWith(final TestCaseDto... testCases) {
@@ -158,25 +158,25 @@ public class ExecutionRegistryTest {
     @Test
     public void aTestCaseStoppedBeforeItsLaunchIsLeftOutOfTheExecution() {
         final ExecutionRegistry registry = new ExecutionRegistry();
-        final TestCaseDto tc = aTestCase("stopped in the second before the process");
+        final TestCaseDto testCase = aTestCase("stopped in the second before the process");
 
-        registry.starting(tc.getId());
-        registry.stopping(List.of(tc.getId()));
+        registry.starting(testCase.getId());
+        registry.stopping(List.of(testCase.getId()));
 
-        assertFalse(registry.take(tc.getId()), "the launch finds it gone when its turn comes");
+        assertFalse(registry.take(testCase.getId()), "the launch finds it gone when its turn comes");
     }
 
     @Test
     public void runningAgainClearsTheStopThatEndedTheLastExecution() {
         final ExecutionRegistry registry = new ExecutionRegistry();
-        final TestCaseDto tc = aTestCase("run, stopped, run again");
+        final TestCaseDto testCase = aTestCase("run, stopped, run again");
 
-        registry.launched(List.of(tc.getId()), RUN);
-        registry.stopping(List.of(tc.getId()));
-        assertTrue(registry.isStopped(tc.getId()), "its next report belongs to the execution that was killed");
+        registry.launched(List.of(testCase.getId()), RUN);
+        registry.stopping(List.of(testCase.getId()));
+        assertTrue(registry.isStopped(testCase.getId()), "its next report belongs to the execution that was killed");
 
-        registry.starting(tc.getId());
-        assertFalse(registry.isStopped(tc.getId()), "but this is a new execution, and its reports are real");
+        registry.starting(testCase.getId());
+        assertFalse(registry.isStopped(testCase.getId()), "but this is a new execution, and its reports are real");
     }
 
     @Test
@@ -194,28 +194,28 @@ public class ExecutionRegistryTest {
     @Test
     public void aTestCaseThatNeverStartedKeepsItsLastRunItemStatus() {
         final ExecutionRegistry registry = new ExecutionRegistry();
-        final TestCaseDto tc = aTestCase("passed earlier, run again during indexing");
+        final TestCaseDto testCase = aTestCase("passed earlier, run again during indexing");
 
-        registry.reported(tc.getId(), ExecutionStatus.PASSED);
-        registry.notStarting(tc.getId());
-        registry.reported(tc.getId(), ExecutionStatus.IDLE);
+        registry.reported(testCase.getId(), ExecutionStatus.PASSED);
+        registry.notStarting(testCase.getId());
+        registry.reported(testCase.getId(), ExecutionStatus.IDLE);
 
-        assertEquals(registry.statusOf(tc.getId()), ExecutionStatus.PASSED, "an execution that never started wiped the last run item status");
+        assertEquals(registry.statusOf(testCase.getId()), ExecutionStatus.PASSED, "an execution that never started wiped the last run item status");
     }
 
     @Test
     public void aStoppedTestCaseIsRecordedAsNotRun() {
         final ExecutionRegistry registry = new ExecutionRegistry();
-        final TestCaseDto tc = aTestCase("passed earlier, stopped this time");
+        final TestCaseDto testCase = aTestCase("passed earlier, stopped this time");
 
-        registry.reported(tc.getId(), ExecutionStatus.PASSED);
-        registry.starting(tc.getId());
-        registry.take(tc.getId());
-        registry.launched(List.of(tc.getId()), RUN);
-        registry.stopping(List.of(tc.getId()));
-        registry.reported(tc.getId(), ExecutionStatus.IDLE);
+        registry.reported(testCase.getId(), ExecutionStatus.PASSED);
+        registry.starting(testCase.getId());
+        registry.take(testCase.getId());
+        registry.launched(List.of(testCase.getId()), RUN);
+        registry.stopping(List.of(testCase.getId()));
+        registry.reported(testCase.getId(), ExecutionStatus.IDLE);
 
-        assertEquals(registry.statusOf(tc.getId()), ExecutionStatus.IDLE, "a stopped test case kept the run item status of the execution before");
+        assertEquals(registry.statusOf(testCase.getId()), ExecutionStatus.IDLE, "a stopped test case kept the run item status of the execution before");
     }
 
     @Test
@@ -232,23 +232,23 @@ public class ExecutionRegistryTest {
     @Test
     public void runningBeatsWhateverTheLastExecutionSaid() {
         final ExecutionRegistry registry = new ExecutionRegistry();
-        final TestCaseDto tc = aTestCase("failed once, running again");
+        final TestCaseDto testCase = aTestCase("failed once, running again");
 
-        registry.reported(tc.getId(), ExecutionStatus.FAILED);
-        registry.starting(tc.getId());
+        registry.reported(testCase.getId(), ExecutionStatus.FAILED);
+        registry.starting(testCase.getId());
 
-        assertEquals(registry.statusOf(tc.getId()), ExecutionStatus.RUNNING, "the card shows what it is doing now");
+        assertEquals(registry.statusOf(testCase.getId()), ExecutionStatus.RUNNING, "the card shows what it is doing now");
     }
 
     @Test
     public void aReportOfRunningIsNotARunItemStatus() {
         final ExecutionRegistry registry = new ExecutionRegistry();
-        final TestCaseDto tc = aTestCase("reports itself started");
+        final TestCaseDto testCase = aTestCase("reports itself started");
 
-        registry.launched(List.of(tc.getId()), RUN);
-        registry.reported(tc.getId(), ExecutionStatus.RUNNING);
+        registry.launched(List.of(testCase.getId()), RUN);
+        registry.reported(testCase.getId(), ExecutionStatus.RUNNING);
 
-        assertTrue(registry.isRunning(tc.getId()), "a test case does not stop running by saying that it is");
+        assertTrue(registry.isRunning(testCase.getId()), "a test case does not stop running by saying that it is");
     }
 
     // Rule-CODEGEN-110
@@ -346,13 +346,13 @@ public class ExecutionRegistryTest {
     @Test
     public void anExecutionThatEndedWithEveryRunItemInLeavesNothingBehind() {
         final ExecutionRegistry registry = new ExecutionRegistry();
-        final TestCaseDto tc = aTestCase("passes");
+        final TestCaseDto testCase = aTestCase("passes");
 
-        registry.launched(List.of(tc.getId()), RUN);
-        registry.reported(tc.getId(), ExecutionStatus.PASSED);
+        registry.launched(List.of(testCase.getId()), RUN);
+        registry.reported(testCase.getId(), ExecutionStatus.PASSED);
 
         assertTrue(registry.ended(RUN).isEmpty(), "nothing to put back, so no card is repainted");
-        assertEquals(registry.statusOf(tc.getId()), ExecutionStatus.PASSED, "and the run item status is untouched by the execution ending");
+        assertEquals(registry.statusOf(testCase.getId()), ExecutionStatus.PASSED, "and the run item status is untouched by the execution ending");
     }
 
     @Test
@@ -380,9 +380,9 @@ public class ExecutionRegistryTest {
     @Test
     public void anExecutionStopsBeingHeldOnceItEnds() {
         final ExecutionRegistry registry = new ExecutionRegistry();
-        final TestCaseDto tc = aTestCase("one run");
+        final TestCaseDto testCase = aTestCase("one run");
 
-        registry.launched(List.of(tc.getId()), RUN);
+        registry.launched(List.of(testCase.getId()), RUN);
         assertTrue(registry.launchedHere(RUN), "the stop may kill this one");
 
         registry.ended(RUN);

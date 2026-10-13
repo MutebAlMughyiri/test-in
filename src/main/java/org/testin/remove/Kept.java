@@ -21,5 +21,5 @@ import org.testin.model.node.AbstractNode;
 
 import java.nio.file.Path;
 
-record Kept(@NotNull AbstractNode dto, @NotNull Path original, @NotNull Path copy) {
+record Kept(@NotNull AbstractNode node, @NotNull Path original, @NotNull Path copy) {
 }

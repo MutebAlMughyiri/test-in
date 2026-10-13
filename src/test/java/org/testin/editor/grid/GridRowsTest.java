@@ -32,8 +32,8 @@ public class GridRowsTest {
     private static final @NotNull TestCaseDto LOGIN = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
     private static final @NotNull TestCaseDto LOGOUT = TestCaseDto.builder().id(UUID.randomUUID()).description("Log out").build();
 
-    private static int position(final @NotNull TestCaseDto tc) {
-        return tc == LOGIN ? 7 : 8;
+    private static int position(final @NotNull TestCaseDto testCase) {
+        return testCase == LOGIN ? 7 : 8;
     }
 
     // Rule-EDITOR-PANEL-020, Rule-EDITOR-PANEL-272

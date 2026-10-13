@@ -108,8 +108,8 @@ public class RunItem {
     private boolean removed;
 
     // UC-EDITOR-PANEL-030
-    public static @NotNull RunItem pendingFor(final @NotNull TestCaseDto tc) {
-        return RunItem.builder().id(tc.getId()).build().showing(Optional.of(tc), Optional.empty(), Optional.empty(), false);
+    public static @NotNull RunItem pendingFor(final @NotNull TestCaseDto testCase) {
+        return RunItem.builder().id(testCase.getId()).build().showing(Optional.of(testCase), Optional.empty(), Optional.empty(), false);
     }
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-126, Rule-EDITOR-PANEL-239
@@ -118,7 +118,7 @@ public class RunItem {
         recorded = inCommit;
         lastInGit = lastVersion;
         removed = now.isEmpty() && inCommit.isEmpty() && !committed;
-        inCommit.ifPresent(asCommitted -> now.ifPresent(tc -> asCommitted.setParent(tc.getParent())));
+        inCommit.ifPresent(asCommitted -> now.ifPresent(testCase -> asCommitted.setParent(testCase.getParent())));
         return this;
     }
 

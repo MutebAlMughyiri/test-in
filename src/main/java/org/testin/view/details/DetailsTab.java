@@ -68,24 +68,24 @@ public class DetailsTab {
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-087, Rule-VIEW-PANEL-103
     private static @NotNull List<AbstractDetails> testCaseFields() {
         return List.of(
-                new AttributeRow(TestSetEditorAttributes.EXPECTED_RESULT.getName(), (_, dto) -> TestSetEditorAttributes.EXPECTED_RESULT.displayValue(dto)),
+                new AttributeRow(TestSetEditorAttributes.EXPECTED_RESULT.getName(), (_, node) -> TestSetEditorAttributes.EXPECTED_RESULT.displayValue(node)),
                 new Steps(),
-                new AttributeRow(TestSetEditorAttributes.PRE_CONDITIONS.getName(), (_, dto) -> TestSetEditorAttributes.PRE_CONDITIONS.displayValue(dto)),
-                new AttributeRow(TestSetEditorAttributes.TEST_DATA.getName(), (_, dto) -> TestSetEditorAttributes.TEST_DATA.displayValue(dto)),
-                new AttributeRow(TestSetEditorAttributes.REFERENCE.getName(), (_, dto) -> TestSetEditorAttributes.REFERENCE.displayValue(dto)),
-                new AttributeRow(TestSetEditorAttributes.MODULE.getName(), (_, dto) -> TestSetEditorAttributes.MODULE.displayValue(dto)),
-                new AttributeRow(TestSetEditorAttributes.ORDER.getName(), (p, dto) -> TestCaseOrder.placeText(ExecutionPosition.placesOf(p, List.of(dto)).getOrDefault(dto.getId(), 0))),
-                new AttributeRow(Bundle.message("details.created"), (_, dto) -> Display.whoAndWhen(dto.getCreatedBy(), dto.getCreatedAt())),
-                new AttributeRow(Bundle.message("details.updated"), (_, dto) -> Display.whoAndWhen(dto.getUpdatedBy(), dto.getUpdatedAt())));
+                new AttributeRow(TestSetEditorAttributes.PRE_CONDITIONS.getName(), (_, node) -> TestSetEditorAttributes.PRE_CONDITIONS.displayValue(node)),
+                new AttributeRow(TestSetEditorAttributes.TEST_DATA.getName(), (_, node) -> TestSetEditorAttributes.TEST_DATA.displayValue(node)),
+                new AttributeRow(TestSetEditorAttributes.REFERENCE.getName(), (_, node) -> TestSetEditorAttributes.REFERENCE.displayValue(node)),
+                new AttributeRow(TestSetEditorAttributes.MODULE.getName(), (_, node) -> TestSetEditorAttributes.MODULE.displayValue(node)),
+                new AttributeRow(TestSetEditorAttributes.ORDER.getName(), (p, node) -> TestCaseOrder.placeText(ExecutionPosition.placesOf(p, List.of(node)).getOrDefault(node.getId(), 0))),
+                new AttributeRow(Bundle.message("details.created"), (_, node) -> Display.whoAndWhen(node.getCreatedBy(), node.getCreatedAt())),
+                new AttributeRow(Bundle.message("details.updated"), (_, node) -> Display.whoAndWhen(node.getUpdatedBy(), node.getUpdatedAt())));
     }
 
     // UC-VIEW-PANEL-004
-    public void load(final @NotNull Project p, final @NotNull JBPanel<?> detailsTab, final @NotNull Optional<TestCaseDto> dto, final @NotNull Optional<RunItem> runItem, final @NotNull List<String> currentPath, final @NotNull OptionalInt shownLine, final @NotNull Consumer<OptionalInt> showExecution) {
+    public void load(final @NotNull Project p, final @NotNull JBPanel<?> detailsTab, final @NotNull Optional<TestCaseDto> shownTestCase, final @NotNull Optional<RunItem> runItem, final @NotNull List<String> currentPath, final @NotNull OptionalInt shownLine, final @NotNull Consumer<OptionalInt> showExecution) {
         detailsTab.removeAll();
         detailsTab.setLayout(new BorderLayout());
         detailsTab.setBorder(BorderFactory.createEmptyBorder());
 
-        dto.ifPresentOrElse(
+        shownTestCase.ifPresentOrElse(
                 testCase -> renderTestCase(p, detailsTab, testCase, detailRows(runItem, currentPath, shownLine, showExecution)),
                 () -> renderPlaceholder(detailsTab));
 
@@ -93,11 +93,11 @@ public class DetailsTab {
         detailsTab.repaint();
     }
 
-    private void renderTestCase(final @NotNull Project p, final @NotNull JBPanel<?> detailsTab, final @NotNull TestCaseDto dto, final @NotNull List<AbstractDetails> rows) {
+    private void renderTestCase(final @NotNull Project p, final @NotNull JBPanel<?> detailsTab, final @NotNull TestCaseDto testCase, final @NotNull List<AbstractDetails> rows) {
         final @NotNull JBPanel<?> contentPanel = new JBPanel<>(new GridBagLayout());
         contentPanel.setOpaque(false);
 
-        renderRows(p, contentPanel, dto, rows);
+        renderRows(p, contentPanel, testCase, rows);
 
         FontSync.attachWheelZoom(p, contentPanel);
 
@@ -117,14 +117,14 @@ public class DetailsTab {
         panel.add(placeholder, BorderLayout.NORTH);
     }
 
-    private void renderRows(final @NotNull Project p, final @NotNull JBPanel<?> panel, final @NotNull TestCaseDto dto, final @NotNull List<AbstractDetails> rows) {
+    private void renderRows(final @NotNull Project p, final @NotNull JBPanel<?> panel, final @NotNull TestCaseDto testCase, final @NotNull List<AbstractDetails> rows) {
         final @NotNull GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = JBUI.insets(INSETS_DEFAULT);
         gbc.anchor = GridBagConstraints.NORTHWEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = WEIGHT_X;
 
-        final int row = setupFixedRows(p, panel, gbc, dto, rows);
+        final int row = setupFixedRows(p, panel, gbc, testCase, rows);
         addVerticalSpacer(panel, row);
     }
 
@@ -140,10 +140,10 @@ public class DetailsTab {
         return List.copyOf(rows);
     }
 
-    private int setupFixedRows(final @NotNull Project p, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto dto, final @NotNull List<AbstractDetails> rows) {
+    private int setupFixedRows(final @NotNull Project p, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto testCase, final @NotNull List<AbstractDetails> rows) {
         int row = 0;
         for (final AbstractDetails component : rows) {
-            row = component.render(p, panel, (GridBagConstraints) gbc.clone(), dto, row);
+            row = component.render(p, panel, (GridBagConstraints) gbc.clone(), testCase, row);
         }
         return row;
     }

@@ -39,16 +39,16 @@ public abstract class AbstractGridEditListener implements TableModelListener {
 
     protected final @NotNull Notifier notifier;
 
-    private final @NotNull List<TestCaseDto> pageItems;
+    private final @NotNull List<TestCaseDto> pageTestCases;
 
     private final @NotNull Set<UUID> writtenThisGesture = new HashSet<>();
 
     private boolean updating = false;
 
-    protected AbstractGridEditListener(final @NotNull Project p, final @NotNull List<TestCaseDto> pageItems) {
+    protected AbstractGridEditListener(final @NotNull Project p, final @NotNull List<TestCaseDto> pageTestCases) {
         this.p = p;
         this.notifier = Services.getInstance(p, Notifier.class);
-        this.pageItems = pageItems;
+        this.pageTestCases = pageTestCases;
     }
 
     private static @NotNull String shortened(final @NotNull String value) {
@@ -68,11 +68,11 @@ public abstract class AbstractGridEditListener implements TableModelListener {
         if (row < 0 || col < 0) return;
         if (!(e.getSource() instanceof DefaultTableModel model)
                 || row >= model.getRowCount()
-                || row >= pageItems.size()
+                || row >= pageTestCases.size()
                 || col >= model.getColumnCount()
                 || col >= columnCount()) return;
 
-        final @NotNull TestCaseDto edited = pageItems.get(row);
+        final @NotNull TestCaseDto edited = pageTestCases.get(row);
 
         updating = true;
         try {

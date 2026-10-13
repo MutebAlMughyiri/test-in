@@ -65,12 +65,12 @@ public class TestRunCoverageTest {
                         .build()));
     }
 
-    private static @NotNull RunItems aTestRunOf(final @NotNull RunItem... items) {
-        return new RunItems().setAll(new ArrayList<>(List.of(items)));
+    private static @NotNull RunItems aTestRunOf(final @NotNull RunItem... runItems) {
+        return new RunItems().setAll(new ArrayList<>(List.of(runItems)));
     }
 
-    private static @NotNull Set<UUID> ids(final @NotNull UUID... ids) {
-        return new LinkedHashSet<>(List.of(ids));
+    private static @NotNull Set<UUID> setOf(final @NotNull UUID... testCaseIds) {
+        return new LinkedHashSet<>(List.of(testCaseIds));
     }
 
     private static @NotNull List<UUID> coveredBy(final @NotNull RunItems runItems) {
@@ -80,7 +80,7 @@ public class TestRunCoverageTest {
     @Test
     public void aTestCaseThatStaysKeepsEverythingItRecorded() {
         final @NotNull RunItem before = executed();
-        final @NotNull RunItems after = aTestRunOf(before).coverOnly(ids(EXECUTED, ADDED));
+        final @NotNull RunItems after = aTestRunOf(before).coverOnly(setOf(EXECUTED, ADDED));
 
         final @NotNull RunItem kept = after.getAll().getFirst();
 
@@ -98,7 +98,7 @@ public class TestRunCoverageTest {
 
     @Test
     public void aTestCaseThatArrivesIsPending() {
-        final @NotNull RunItems after = aTestRunOf(executed()).coverOnly(ids(EXECUTED, ADDED));
+        final @NotNull RunItems after = aTestRunOf(executed()).coverOnly(setOf(EXECUTED, ADDED));
 
         final @NotNull RunItem fresh = after.getAll().get(1);
 
@@ -111,7 +111,7 @@ public class TestRunCoverageTest {
 
     @Test
     public void aTestCaseThatGoesIsGoneWithWhatItRecorded() {
-        final @NotNull RunItems after = aTestRunOf(executed(), new RunItem().setId(UNTOUCHED)).coverOnly(ids(UNTOUCHED));
+        final @NotNull RunItems after = aTestRunOf(executed(), new RunItem().setId(UNTOUCHED)).coverOnly(setOf(UNTOUCHED));
 
         assertEquals(coveredBy(after), List.of(UNTOUCHED),
                 "Unticking an executed test case discards its result, with no confirmation - decided 2026-09-03."
@@ -122,7 +122,7 @@ public class TestRunCoverageTest {
     public void theTestRunKeepsItsOwnOrderAndNewTestCasesGoOnTheEnd() {
         final @NotNull RunItems runItems = aTestRunOf(new RunItem().setId(UNTOUCHED), executed());
 
-        final @NotNull RunItems after = runItems.coverOnly(ids(ADDED, EXECUTED, UNTOUCHED));
+        final @NotNull RunItems after = runItems.coverOnly(setOf(ADDED, EXECUTED, UNTOUCHED));
 
         assertEquals(coveredBy(after), List.of(UNTOUCHED, EXECUTED, ADDED),
                 "Editing a test run is not a re-sort. The test cases it already covered stay where they were and new ones append");
@@ -131,7 +131,7 @@ public class TestRunCoverageTest {
     @Test
     public void theTestRunItWasIsLeftAlone() {
         final @NotNull RunItems runItems = aTestRunOf(executed(), new RunItem().setId(UNTOUCHED));
-        final @NotNull RunItems after = runItems.coverOnly(ids(EXECUTED));
+        final @NotNull RunItems after = runItems.coverOnly(setOf(EXECUTED));
 
         assertNotSame(after, runItems);
         assertEquals(coveredBy(runItems), List.of(EXECUTED, UNTOUCHED),
@@ -149,7 +149,7 @@ public class TestRunCoverageTest {
         marker.getConfiguration().put(TestRunConfiguration.PLATFORM, "Web");
         marker.getResultAnalysis().put(TestRunResultAnalysis.FAILED, "The lockout counter is the one to chase");
 
-        aTestRunOf(executed()).coverOnly(ids(EXECUTED));
+        aTestRunOf(executed()).coverOnly(setOf(EXECUTED));
 
         assertEquals(marker.getExecutionStartedAt(), started, "Changing what a test run covers does not restart it");
         assertEquals(marker.getConfiguration().get(TestRunConfiguration.PLATFORM), "Web");

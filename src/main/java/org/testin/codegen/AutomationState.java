@@ -53,12 +53,12 @@ public final class AutomationState implements Disposable {
     private volatile long readAtCodeVersion = NEVER_READ;
 
     // UC-EDITOR-PANEL-047, Rule-EDITOR-PANEL-195, Rule-CODEGEN-002
-    private static @NotNull Automated stateOf(final @NotNull TestCaseDto tc, final @NotNull Map<UUID, Boolean> methods) {
-        final @NotNull Optional<Boolean> method = Optional.ofNullable(methods.get(tc.getId()));
+    private static @NotNull Automated stateOf(final @NotNull TestCaseDto testCase, final @NotNull Map<UUID, Boolean> methods) {
+        final @NotNull Optional<Boolean> method = Optional.ofNullable(methods.get(testCase.getId()));
 
         if (method.isPresent()) return method.orElseThrow() ? Automated.WRITTEN : Automated.NONE;
 
-        return Fqcn.methodNameOf(tc).isEmpty() ? Automated.NONE : Automated.MISSING;
+        return Fqcn.methodNameOf(testCase).isEmpty() ? Automated.NONE : Automated.MISSING;
     }
 
     private static @NotNull AutomationReading answer(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases) {
@@ -69,9 +69,9 @@ public final class AutomationState implements Disposable {
         try {
             final @NotNull Map<UUID, Boolean> methods = TestMethodCode.available().methodsFor(p, testCases);
 
-            for (final TestCaseDto tc : testCases) {
-                answers.put(tc.getId(), stateOf(tc, methods));
-                if (methods.containsKey(tc.getId())) found.add(tc.getId());
+            for (final TestCaseDto testCase : testCases) {
+                answers.put(testCase.getId(), stateOf(testCase, methods));
+                if (methods.containsKey(testCase.getId())) found.add(testCase.getId());
             }
         } catch (final ProcessCanceledException cancelled) {
             throw cancelled;
@@ -83,13 +83,13 @@ public final class AutomationState implements Disposable {
     }
 
     // UC-EDITOR-PANEL-047, Rule-EDITOR-PANEL-197
-    public @NotNull Automated of(final @NotNull UUID id) {
-        return known.getOrDefault(id, Automated.UNKNOWN);
+    public @NotNull Automated of(final @NotNull UUID testCaseId) {
+        return known.getOrDefault(testCaseId, Automated.UNKNOWN);
     }
 
     // UC-CODEGEN-005, Rule-CODEGEN-025
-    public boolean hasMethod(final @NotNull UUID id) {
-        return withAMethod.contains(id);
+    public boolean hasMethod(final @NotNull UUID testCaseId) {
+        return withAMethod.contains(testCaseId);
     }
 
     // UC-EDITOR-PANEL-047, Rule-EDITOR-PANEL-196
@@ -111,7 +111,7 @@ public final class AutomationState implements Disposable {
 
         final @NotNull List<TestCaseDto> reading = List.copyOf(testCases);
         final @NotNull Map<UUID, Automated> asking = reading.stream()
-                .collect(Collectors.toMap(TestCaseDto::getId, tc -> of(tc.getId()), (first, _) -> first));
+                .collect(Collectors.toMap(TestCaseDto::getId, testCase -> of(testCase.getId()), (first, _) -> first));
 
         BackgroundWork.logged(ReadAction.nonBlocking(() -> answer(p, reading))
                 .inSmartMode(p)
@@ -124,7 +124,7 @@ public final class AutomationState implements Disposable {
     // UC-EDITOR-PANEL-047, Rule-EDITOR-PANEL-197
     private boolean alreadyAnswered(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases) {
         return readAtCodeVersion == PsiModificationTracker.getInstance(p).getModificationCount()
-                && testCases.stream().allMatch(tc -> known.containsKey(tc.getId()));
+                && testCases.stream().allMatch(testCase -> known.containsKey(testCase.getId()));
     }
 
     // Rule-CODEGEN-082, Rule-EDITOR-PANEL-211
@@ -134,9 +134,9 @@ public final class AutomationState implements Disposable {
         known.putAll(answer.states());
         readAtCodeVersion = answer.codeVersion();
 
-        for (final TestCaseDto tc : testCases) {
-            if (answer.withMethods().contains(tc.getId())) withAMethod.add(tc.getId());
-            else withAMethod.remove(tc.getId());
+        for (final TestCaseDto testCase : testCases) {
+            if (answer.withMethods().contains(testCase.getId())) withAMethod.add(testCase.getId());
+            else withAMethod.remove(testCase.getId());
         }
 
         if (answer.states().equals(asking)) return;
@@ -149,19 +149,19 @@ public final class AutomationState implements Disposable {
 
     // UC-EDITOR-PANEL-047, Rule-EDITOR-PANEL-210
     public int writtenIn(final @NotNull List<TestCaseDto> testCases) {
-        return (int) testCases.stream().filter(tc -> of(tc.getId()) == Automated.WRITTEN).count();
+        return (int) testCases.stream().filter(testCase -> of(testCase.getId()) == Automated.WRITTEN).count();
     }
 
     // UC-EDITOR-PANEL-047, Rule-EDITOR-PANEL-211
     public int knownIn(final @NotNull List<TestCaseDto> testCases) {
-        return (int) testCases.stream().filter(tc -> of(tc.getId()) != Automated.UNKNOWN).count();
+        return (int) testCases.stream().filter(testCase -> of(testCase.getId()) != Automated.UNKNOWN).count();
     }
 
     // UC-EDITOR-PANEL-047, Rule-EDITOR-PANEL-198
     public @NotNull List<TestCaseDto> matching(final @NotNull List<TestCaseDto> testCases, final @NotNull Set<Automated> wanted) {
         if (wanted.isEmpty()) return testCases;
 
-        return testCases.stream().filter(tc -> wanted.contains(of(tc.getId()))).toList();
+        return testCases.stream().filter(testCase -> wanted.contains(of(testCase.getId()))).toList();
     }
 
     @Override

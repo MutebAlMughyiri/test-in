@@ -38,13 +38,13 @@ public final class CapturedRunner implements AutomationExecutor {
         return runner;
     }
 
-    public static void reports(final @NotNull Project p, final @NotNull TestCaseDto tc, final @NotNull ExecutionStatus status, final @NotNull Duration duration) {
-        ExecutionReported.broadcast(p, tc.getId().toString(), status, duration, Failure.NONE);
+    public static void reports(final @NotNull Project p, final @NotNull TestCaseDto testCase, final @NotNull ExecutionStatus status, final @NotNull Duration duration) {
+        ExecutionReported.broadcast(p, testCase.getId().toString(), status, duration, Failure.NONE);
     }
 
-    public static void startedByTestNg(final @NotNull Project p, final @NotNull TestCaseDto tc) {
-        Services.getInstance(p, TestNGExecution.class).launched(List.of(tc), "Testin: captured");
-        reports(p, tc, ExecutionStatus.RUNNING, Duration.ZERO);
+    public static void startedByTestNg(final @NotNull Project p, final @NotNull TestCaseDto testCase) {
+        Services.getInstance(p, TestNGExecution.class).launched(List.of(testCase), "Testin: captured");
+        reports(p, testCase, ExecutionStatus.RUNNING, Duration.ZERO);
     }
 
     public @NotNull List<List<TestCaseDto>> runs() {

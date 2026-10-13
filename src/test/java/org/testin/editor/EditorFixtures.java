@@ -65,10 +65,10 @@ public final class EditorFixtures {
     }
 
     public static @NotNull TestCaseDto testCase(final @NotNull Project p, final @NotNull TestSetNode testSet, final @NotNull String description, final @NotNull String order) {
-        final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description(description).order(order).build();
-        tc.setParent(testSet);
-        Services.getInstance(p, TestCases.class).putTestCaseVerbatim(testSet.getPath(), tc);
-        return tc;
+        final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description(description).order(order).build();
+        testCase.setParent(testSet);
+        Services.getInstance(p, TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase);
+        return testCase;
     }
 
     public static @NotNull List<TestCaseDto> testCases(final @NotNull Project p, final @NotNull TestSetNode testSet, final int count) {
@@ -100,8 +100,8 @@ public final class EditorFixtures {
         return editors.testRunEditorFor(testRun).orElseThrow();
     }
 
-    public static @NotNull RunItem pending(final @NotNull TestCaseDto tc) {
-        return new RunItem().setId(tc.getId());
+    public static @NotNull RunItem pending(final @NotNull TestCaseDto testCase) {
+        return new RunItem().setId(testCase.getId());
     }
 
     public static @NotNull TestSetEditor openTestSetEditor(final @NotNull Project p, final @NotNull TestSetNode testSet, final @NotNull Disposable owner) {

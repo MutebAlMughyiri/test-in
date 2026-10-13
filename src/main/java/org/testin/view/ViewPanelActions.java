@@ -30,8 +30,8 @@ public class ViewPanelActions {
     public @NotNull List<AnAction> create(final @NotNull ViewPanel panel, final @NotNull JComponent component) {
         final @NotNull Project p = panel.getP();
 
-        ShownTestCaseAction.bind(p, TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD, panel::getCurrentTestCase, (action, tc) -> action.execute(p, tc), component);
-        ShownTestCaseAction.bind(p, TestCaseQuickAction.RUN_TEST_METHOD, panel::getCurrentTestCase, (action, tc) -> action.execute(p, tc), component);
+        ShownTestCaseAction.bind(p, TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD, panel::getCurrentTestCase, (action, testCase) -> action.execute(p, testCase), component);
+        ShownTestCaseAction.bind(p, TestCaseQuickAction.RUN_TEST_METHOD, panel::getCurrentTestCase, (action, testCase) -> action.execute(p, testCase), component);
 
         return List.of(
                 new PreviousTestCaseAction(panel.getPage(), component),
