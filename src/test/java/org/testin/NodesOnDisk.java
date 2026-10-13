@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
@@ -75,8 +75,8 @@ public record NodesOnDisk(@NotNull Project project) {
         });
     }
 
-    public @NotNull TestCaseDto testCase(final @NotNull TestSetNode testSet) {
-        final @NotNull TestCaseDto testCase = TestCaseDto.builder()
+    public @NotNull TestCase testCase(final @NotNull TestSetNode testSet) {
+        final @NotNull TestCase testCase = TestCase.builder()
                 .id(UUID.randomUUID())
                 .description("Log in with a valid user")
                 .order("m")

@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.clipboard.CutState;
 import org.testin.editor.card.AbstractCard;
 import org.testin.model.Priority;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.status.ExecutionStatus;
 import org.testin.runner.TestNGExecution;
 import org.testin.services.Services;
@@ -51,7 +51,7 @@ public class TestCaseCard extends AbstractCard {
     }
 
     // UC-EDITOR-PANEL-003, Rule-EDITOR-PANEL-021, Rule-EDITOR-PANEL-267, Rule-EDITOR-PANEL-294
-    public void updateData(final int index, final @NotNull TestCaseDto testCase, final @NotNull Set<?> activeDetails, final @NotNull String title) {
+    public void updateData(final int index, final @NotNull TestCase testCase, final @NotNull Set<?> activeDetails, final @NotNull String title) {
         badges.clear();
         details.clear();
 

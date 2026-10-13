@@ -17,7 +17,7 @@
 package org.testin.testcase;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testng.annotations.Test;
 
 import java.time.ZoneId;
@@ -31,8 +31,8 @@ import static org.testng.Assert.assertEquals;
 
 public class TestCaseOrderTest {
 
-    private static @NotNull TestCaseDto testCase(final String description, final String rank) {
-        return TestCaseDto.builder()
+    private static @NotNull TestCase testCase(final String description, final String rank) {
+        return TestCase.builder()
                 .id(UUID.randomUUID())
                 .description(description)
                 .order(rank)
@@ -43,9 +43,9 @@ public class TestCaseOrderTest {
     // Rule-INTERNAL-029, Rule-EDITOR-PANEL-013
     @Test
     public void testCasesAreShownInRankOrderWhateverOrderTheyWereRead() {
-        final TestCaseDto first = testCase("sign in", "c");
-        final TestCaseDto second = testCase("sign out", "m");
-        final TestCaseDto third = testCase("a wrong password is refused", "s");
+        final TestCase first = testCase("sign in", "c");
+        final TestCase second = testCase("sign out", "m");
+        final TestCase third = testCase("a wrong password is refused", "s");
 
         assertEquals(TestCaseOrder.ordered(List.of(third, first, second)), List.of(first, second, third));
         assertEquals(TestCaseOrder.ordered(List.of(second, third, first)), List.of(first, second, third));
@@ -54,10 +54,10 @@ public class TestCaseOrderTest {
     // Rule-INTERNAL-030, Rule-EDITOR-PANEL-013
     @Test
     public void aTestCaseWithNoRankIsShownLastRatherThanHidden() {
-        final TestCaseDto ranked = testCase("sign in", "c");
-        final TestCaseDto arrived = testCase("copied in from somewhere", "");
+        final TestCase ranked = testCase("sign in", "c");
+        final TestCase arrived = testCase("copied in from somewhere", "");
 
-        final List<TestCaseDto> ordered = TestCaseOrder.ordered(List.of(arrived, ranked));
+        final List<TestCase> ordered = TestCaseOrder.ordered(List.of(arrived, ranked));
 
         assertEquals(ordered.size(), 2);
         assertEquals(ordered, List.of(ranked, arrived));
@@ -67,9 +67,9 @@ public class TestCaseOrderTest {
     @Test
     public void testCasesWithNoRankComeLastWithTheOldestFirst() {
         final @NotNull ZonedDateTime now = ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS);
-        final @NotNull TestCaseDto ranked = testCase("sign in", "c");
-        final @NotNull TestCaseDto older = TestCaseDto.builder().id(UUID.randomUUID()).description("copied in last week").createdAt(now.minusDays(7)).build();
-        final @NotNull TestCaseDto newer = TestCaseDto.builder().id(UUID.randomUUID()).description("copied in today").createdAt(now).build();
+        final @NotNull TestCase ranked = testCase("sign in", "c");
+        final @NotNull TestCase older = TestCase.builder().id(UUID.randomUUID()).description("copied in last week").createdAt(now.minusDays(7)).build();
+        final @NotNull TestCase newer = TestCase.builder().id(UUID.randomUUID()).description("copied in today").createdAt(now).build();
 
         assertEquals(TestCaseOrder.ordered(List.of(newer, ranked, older)), List.of(ranked, older, newer),
                 "test cases with no place yet sort after every placed one, the oldest of them first");
@@ -78,8 +78,8 @@ public class TestCaseOrderTest {
 
     @Test
     public void equalRanksStillGiveEveryMachineTheSameOrder() {
-        final TestCaseDto mine = testCase("a signed-in user signs out", "s");
-        final TestCaseDto theirs = testCase("a locked account cannot sign in", "s");
+        final TestCase mine = testCase("a signed-in user signs out", "s");
+        final TestCase theirs = testCase("a locked account cannot sign in", "s");
 
         assertEquals(TestCaseOrder.ordered(List.of(mine, theirs)), TestCaseOrder.ordered(List.of(theirs, mine)));
     }
@@ -87,13 +87,13 @@ public class TestCaseOrderTest {
     // Rule-INTERNAL-031, Rule-EDITOR-PANEL-060
     @Test
     public void placingWritesOnlyTheTestCaseThatMoved() {
-        final TestCaseDto first = testCase("sign in", "c");
-        final TestCaseDto second = testCase("sign out", "m");
-        final TestCaseDto third = testCase("a wrong password is refused", "s");
+        final TestCase first = testCase("sign in", "c");
+        final TestCase second = testCase("sign out", "m");
+        final TestCase third = testCase("a wrong password is refused", "s");
 
-        final List<TestCaseDto> arranged = new ArrayList<>(List.of(first, third, second));
-        final List<TestCaseDto> moved = TestCaseOrder.place(arranged);
-        final List<TestCaseDto> placed = arranged.stream()
+        final List<TestCase> arranged = new ArrayList<>(List.of(first, third, second));
+        final List<TestCase> moved = TestCaseOrder.place(arranged);
+        final List<TestCase> placed = arranged.stream()
                 .map(testCase -> moved.stream().filter(copy -> copy.getId().equals(testCase.getId())).findFirst().orElse(testCase))
                 .toList();
 
@@ -105,10 +105,10 @@ public class TestCaseOrderTest {
 
     @Test
     public void placingGivesAnUnrankedTestCaseARank() {
-        final TestCaseDto ranked = testCase("sign in", "c");
-        final TestCaseDto arrived = testCase("copied in from somewhere", "");
+        final TestCase ranked = testCase("sign in", "c");
+        final TestCase arrived = testCase("copied in from somewhere", "");
 
-        final List<TestCaseDto> moved = TestCaseOrder.place(new ArrayList<>(List.of(ranked, arrived)));
+        final List<TestCase> moved = TestCaseOrder.place(new ArrayList<>(List.of(ranked, arrived)));
 
         assertEquals(moved.size(), 1);
         assertEquals(moved.getFirst().getId(), arrived.getId());
@@ -126,10 +126,10 @@ public class TestCaseOrderTest {
     @Test
     public void testCasesWithNoPlaceComeAfterThePlacedOnesOldestFirst() {
         final @NotNull ZonedDateTime now = ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS);
-        final @NotNull TestCaseDto placed = testCase("sign in", "c");
-        final @NotNull TestCaseDto older = testCase("imported first", "");
+        final @NotNull TestCase placed = testCase("sign in", "c");
+        final @NotNull TestCase older = testCase("imported first", "");
         older.setCreatedAt(now.minusDays(2));
-        final @NotNull TestCaseDto newer = testCase("imported later", "");
+        final @NotNull TestCase newer = testCase("imported later", "");
         newer.setCreatedAt(now.minusDays(1));
 
         assertEquals(TestCaseOrder.ordered(List.of(newer, older, placed)), List.of(placed, older, newer));
@@ -138,7 +138,7 @@ public class TestCaseOrderTest {
     // Rule-EDITOR-PANEL-014
     @Test
     public void theNumberIsThePlaceInTheWholeTestSet() {
-        final @NotNull List<TestCaseDto> all = new ArrayList<>();
+        final @NotNull List<TestCase> all = new ArrayList<>();
         for (int i = 0; i < 120; i++) all.add(testCase("test case " + i, ""));
 
         assertEquals(TestCaseOrder.positionOf(all, all.getFirst()), 1, "the first is one, not zero");

@@ -25,7 +25,7 @@ import org.testin.NodesOnDisk;
 import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunPackageNode;
@@ -71,7 +71,7 @@ public class RetiredNodesIdeTest extends AbstractTempRootIdeTest {
         final @NotNull NodesOnDisk onDisk = new NodesOnDisk(getProject());
         final @NotNull TestProjectNode testProject = onDisk.testProject(root.resolve("NAFATH"));
         final @NotNull TestSetNode login = onDisk.testSet(testProject.getTestCasesFolder(), "Login");
-        final @NotNull TestCaseDto testCase = onDisk.testCase(login);
+        final @NotNull TestCase testCase = onDisk.testCase(login);
 
         marked(login, TestSetStatus.DEPRECATED);
 

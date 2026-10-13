@@ -19,24 +19,24 @@ package org.testin.git.history;
 import org.jetbrains.annotations.NotNull;
 import org.testin.clipboard.CopyChoice;
 import org.testin.git.change.FieldChange;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
 public record TestCaseHistoryCard(@NotNull TestCaseHistoryKind kind, @NotNull String hash, @NotNull String who, @NotNull ZonedDateTime when, @NotNull String message, @NotNull String note, @NotNull List<FieldChange> changes, @NotNull String was, @NotNull String now) implements HistoryCard {
-    static @NotNull TestCaseHistoryCard of(final @NotNull TestCaseHistoryKind kind, final @NotNull HistoryCommit commit, final @NotNull String note, final @NotNull List<FieldChange> changes, final @NotNull Optional<TestCaseDto> was, final @NotNull Optional<TestCaseDto> now) {
+    static @NotNull TestCaseHistoryCard of(final @NotNull TestCaseHistoryKind kind, final @NotNull HistoryCommit commit, final @NotNull String note, final @NotNull List<FieldChange> changes, final @NotNull Optional<TestCase> was, final @NotNull Optional<TestCase> now) {
         return new TestCaseHistoryCard(kind, commit.hash(), commit.who(), commit.when(), commit.message(), note, changes, asText(was), asText(now));
     }
 
     // Rule-VIEW-PANEL-098
-    static @NotNull TestCaseHistoryCard uncommitted(final @NotNull TestCaseHistoryKind kind, final @NotNull String who, final @NotNull ZonedDateTime when, final @NotNull List<FieldChange> changes, final @NotNull Optional<TestCaseDto> was, final @NotNull Optional<TestCaseDto> now) {
+    static @NotNull TestCaseHistoryCard uncommitted(final @NotNull TestCaseHistoryKind kind, final @NotNull String who, final @NotNull ZonedDateTime when, final @NotNull List<FieldChange> changes, final @NotNull Optional<TestCase> was, final @NotNull Optional<TestCase> now) {
         return new TestCaseHistoryCard(kind, "", who, when, "", "", changes, asText(was), asText(now));
     }
 
     // Rule-VIEW-PANEL-117
-    private static @NotNull String asText(final @NotNull Optional<TestCaseDto> version) {
+    private static @NotNull String asText(final @NotNull Optional<TestCase> version) {
         return version.map(CopyChoice.ALL_DETAILS::from).orElse("");
     }
 }

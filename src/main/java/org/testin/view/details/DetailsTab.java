@@ -24,7 +24,7 @@ import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.ExecutionPosition;
 import org.testin.editor.WheelForwarding;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.testcase.TestCaseOrder;
@@ -80,7 +80,7 @@ public class DetailsTab {
     }
 
     // UC-VIEW-PANEL-004
-    public void load(final @NotNull Project project, final @NotNull JBPanel<?> detailsTab, final @NotNull Optional<TestCaseDto> shownTestCase, final @NotNull Optional<RunItem> runItem, final @NotNull List<String> treePath, final @NotNull OptionalInt shownLine, final @NotNull Consumer<OptionalInt> showExecution) {
+    public void load(final @NotNull Project project, final @NotNull JBPanel<?> detailsTab, final @NotNull Optional<TestCase> shownTestCase, final @NotNull Optional<RunItem> runItem, final @NotNull List<String> treePath, final @NotNull OptionalInt shownLine, final @NotNull Consumer<OptionalInt> showExecution) {
         detailsTab.removeAll();
         detailsTab.setLayout(new BorderLayout());
         detailsTab.setBorder(BorderFactory.createEmptyBorder());
@@ -93,7 +93,7 @@ public class DetailsTab {
         detailsTab.repaint();
     }
 
-    private void renderTestCase(final @NotNull Project project, final @NotNull JBPanel<?> detailsTab, final @NotNull TestCaseDto testCase, final @NotNull List<AbstractDetails> rows) {
+    private void renderTestCase(final @NotNull Project project, final @NotNull JBPanel<?> detailsTab, final @NotNull TestCase testCase, final @NotNull List<AbstractDetails> rows) {
         final @NotNull JBPanel<?> contentPanel = new JBPanel<>(new GridBagLayout());
         contentPanel.setOpaque(false);
 
@@ -117,7 +117,7 @@ public class DetailsTab {
         panel.add(placeholder, BorderLayout.NORTH);
     }
 
-    private void renderRows(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull TestCaseDto testCase, final @NotNull List<AbstractDetails> rows) {
+    private void renderRows(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull TestCase testCase, final @NotNull List<AbstractDetails> rows) {
         final @NotNull GridBagConstraints constraints = new GridBagConstraints();
         constraints.insets = JBUI.insets(INSETS_DEFAULT);
         constraints.anchor = GridBagConstraints.NORTHWEST;
@@ -140,7 +140,7 @@ public class DetailsTab {
         return List.copyOf(rows);
     }
 
-    private int setupFixedRows(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull TestCaseDto testCase, final @NotNull List<AbstractDetails> rows) {
+    private int setupFixedRows(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull TestCase testCase, final @NotNull List<AbstractDetails> rows) {
         int row = 0;
         for (final AbstractDetails component : rows) {
             row = component.render(project, panel, (GridBagConstraints) constraints.clone(), testCase, row);

@@ -27,7 +27,7 @@ import org.testin.filter.SortField;
 import org.testin.filter.SortPopupButton;
 import org.testin.filter.Sorting;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
 import org.testin.testcase.TestCaseOrder;
@@ -81,7 +81,7 @@ public class OrderByNumberIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull List<String> storedOrder() {
-        return TestCaseOrder.ordered(Services.getInstance(getProject(), TestCases.class).getTestCasesForTestSet(testSet.getPath())).stream().map(TestCaseDto::getDescription).map(description -> description.replace("Test case number ", "")).toList();
+        return TestCaseOrder.ordered(Services.getInstance(getProject(), TestCases.class).getTestCasesForTestSet(testSet.getPath())).stream().map(TestCase::getDescription).map(description -> description.replace("Test case number ", "")).toList();
     }
 
     private void moveToThird(final @NotNull TestSetEditor editor, final @NotNull String description) {

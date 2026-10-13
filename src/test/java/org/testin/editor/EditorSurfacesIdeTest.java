@@ -32,7 +32,7 @@ import org.testin.editor.testrun.TestRunEditor;
 import org.testin.editor.toolbar.AbstractToolbarPanel;
 import org.testin.editor.toolbar.GridViewButton;
 import org.testin.editor.toolbar.SearchText;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
@@ -99,7 +99,7 @@ public class EditorSurfacesIdeTest extends AbstractTempRootIdeTest {
     private @NotNull TestRunEditor aTestRunEditor() {
         final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
         final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), testProject, "Payments");
-        final @NotNull List<TestCaseDto> covered = EditorFixtures.testCases(getProject(), testSet, 2);
+        final @NotNull List<TestCase> covered = EditorFixtures.testCases(getProject(), testSet, 2);
         final @NotNull TestRunNode testRun = EditorFixtures.testRun(getProject(), testProject, covered.stream().map(EditorFixtures::pending).toList());
         return EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());
     }

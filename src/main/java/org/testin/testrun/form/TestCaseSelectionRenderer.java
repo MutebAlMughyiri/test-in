@@ -23,7 +23,7 @@ import com.intellij.ui.SimpleTextAttributes;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.util.Icons;
 
@@ -40,7 +40,7 @@ public final class TestCaseSelectionRenderer {
                 if (treeNode.getUserObject() instanceof AbstractNode node) {
                     getTextRenderer().setIcon(node.iconShownInTree());
                     getTextRenderer().append(node.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
-                } else if (treeNode.getUserObject() instanceof TestCaseDto testCase) {
+                } else if (treeNode.getUserObject() instanceof TestCase testCase) {
                     getTextRenderer().setIcon(Icons.TEST_CASE_LETTER);
                     getTextRenderer().append(testCase.getDescription(), treeNode.isEnabled() ? SimpleTextAttributes.REGULAR_ATTRIBUTES : SimpleTextAttributes.GRAYED_ATTRIBUTES);
                     // Rule-TREE-PANEL-138

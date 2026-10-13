@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.CodeChangeType;
 import org.testin.indexer.TestCases;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.notifications.Refused;
 import org.testin.services.Services;
 import org.testin.testcase.Can;
@@ -52,7 +52,7 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
 
     private final @NotNull Map<UUID, Changed> changedThisGesture = new LinkedHashMap<>();
 
-    public TestSetGridEditListener(final @NotNull Project project, final @NotNull List<TestCaseDto> pageTestCases, final @NotNull Runnable onEdited, final @NotNull Path testSetPath) {
+    public TestSetGridEditListener(final @NotNull Project project, final @NotNull List<TestCase> pageTestCases, final @NotNull Runnable onEdited, final @NotNull Path testSetPath) {
         super(project, pageTestCases);
         this.onEdited = onEdited;
         this.testSetPath = testSetPath;
@@ -70,7 +70,7 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
 
     // UC-EDITOR-PANEL-008, Rule-EDITOR-PANEL-050
     @Override
-    protected @NotNull GridEdit apply(final @NotNull DefaultTableModel model, final @NotNull TestCaseDto testCase, final int row, final int column) {
+    protected @NotNull GridEdit apply(final @NotNull DefaultTableModel model, final @NotNull TestCase testCase, final int row, final int column) {
         final @NotNull TestSetEditorFields field = TestSetEditorFields.atColumn(column);
 
         if (!field.can(Can.EDIT)) return GridEdit.UNCHANGED;
@@ -78,12 +78,12 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
         final @NotNull Optional<Changed> pending = Optional.ofNullable(changedThisGesture.get(testCase.getId()));
         final @NotNull TestCaseSnapshot undoFrom = pending.map(Changed::before)
                 .orElseGet(() -> TestCaseSnapshot.of(project, testSetPath, List.of(testCase.getId())));
-        final @NotNull TestCaseDto current = pending.map(Changed::testCase).orElse(testCase);
+        final @NotNull TestCase current = pending.map(Changed::testCase).orElse(testCase);
 
         final @NotNull String typed = String.valueOf(model.getValueAt(row, column));
 
         final @NotNull Object before = field.gridValue(current);
-        final @NotNull Optional<TestCaseDto> took = field.getImportSetter().execute(project, current, typed);
+        final @NotNull Optional<TestCase> took = field.getImportSetter().execute(project, current, typed);
         final @NotNull Object after = field.gridValue(took.orElse(current));
 
         model.setValueAt(after, row, column);
@@ -102,14 +102,14 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
     }
 
     // UC-EDITOR-PANEL-008, Rule-EDITOR-PANEL-053
-    private void persistAndGenerate(final @NotNull TestCaseDto edited, final @NotNull TestSetEditorFields field, final @NotNull TestCaseSnapshot undoFrom) {
+    private void persistAndGenerate(final @NotNull TestCase edited, final @NotNull TestSetEditorFields field, final @NotNull TestCaseSnapshot undoFrom) {
         if (testSetPath.toString().isEmpty()) {
             TestinLogger.warn("[grid] edit not persisted - the editor has no test set path");
             return;
         }
 
         final boolean first = changedThisGesture.isEmpty();
-        final @NotNull Set<CodeChangeType<TestCaseDto>> generators = Optional.ofNullable(changedThisGesture.get(edited.getId()))
+        final @NotNull Set<CodeChangeType<TestCase>> generators = Optional.ofNullable(changedThisGesture.get(edited.getId()))
                 .map(Changed::generators)
                 .orElseGet(LinkedHashSet::new);
         generators.add(field.getCodeChangeType());
@@ -124,7 +124,7 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
         changedThisGesture.clear();
 
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
-            final @NotNull List<TestCaseDto> written = new ArrayList<>();
+            final @NotNull List<TestCase> written = new ArrayList<>();
             final @NotNull List<TestCaseSnapshot> before = new ArrayList<>();
 
             for (final Changed changed : gesture) {

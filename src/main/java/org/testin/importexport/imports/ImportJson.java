@@ -20,7 +20,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.services.Services;
 import org.testin.util.FailureText;
 import org.testin.util.JsonCodec;
@@ -37,8 +37,8 @@ import java.util.UUID;
 
 public class ImportJson {
     // UC-SHARE-005, Rule-SHARE-029
-    private static @NotNull TestCaseDto asNewTestCase(final @NotNull TestCaseDto read) {
-        final @NotNull TestCaseDto fresh = TestCaseDto.builder().build();
+    private static @NotNull TestCase asNewTestCase(final @NotNull TestCase read) {
+        final @NotNull TestCase fresh = TestCase.builder().build();
 
         return read.edit()
                 .id(UUID.randomUUID())
@@ -57,19 +57,19 @@ public class ImportJson {
     }
 
     // UC-SHARE-006
-    public @NotNull Map<String, List<TestCaseDto>> processImport(final @NotNull Project project, final @NotNull File file) {
+    public @NotNull Map<String, List<TestCase>> processImport(final @NotNull Project project, final @NotNull File file) {
         return parseFile(project, file);
     }
 
     // UC-SHARE-005, Rule-SHARE-024
-    public @NotNull Map<String, List<TestCaseDto>> parseFile(final @NotNull Project project, final @NotNull File file) {
-        final @NotNull Map<String, List<TestCaseDto>> data = Services.getInstance(project, JsonCodec.class).readValue(bytesOf(file), new TypeReference<>() {
+    public @NotNull Map<String, List<TestCase>> parseFile(final @NotNull Project project, final @NotNull File file) {
+        final @NotNull Map<String, List<TestCase>> data = Services.getInstance(project, JsonCodec.class).readValue(bytesOf(file), new TypeReference<>() {
         });
-        final @NotNull Map<String, List<TestCaseDto>> result = new LinkedHashMap<>();
-        for (final Map.Entry<String, List<TestCaseDto>> entry : data.entrySet()) {
-            final @NotNull List<TestCaseDto> sanitized = new ArrayList<>();
+        final @NotNull Map<String, List<TestCase>> result = new LinkedHashMap<>();
+        for (final Map.Entry<String, List<TestCase>> entry : data.entrySet()) {
+            final @NotNull List<TestCase> sanitized = new ArrayList<>();
 
-            for (final TestCaseDto testCase : entry.getValue()) {
+            for (final TestCase testCase : entry.getValue()) {
                 sanitized.add(asNewTestCase(testCase));
             }
 

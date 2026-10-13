@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.editor.grid.GridTables;
 import org.testin.logger.TestinLogger;
 import org.testin.model.Priority;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.ui.Tooltip;
 import org.testin.ui.dialogs.DialogStyle;
@@ -50,7 +50,7 @@ public class TablePanelBuilder {
     }
 
     // UC-SHARE-003, Rule-SHARE-017
-    public @NotNull DefaultTableModel createModel(final @NotNull List<TestSetEditorFields> importFields, final @NotNull List<TestCaseDto> testCases) {
+    public @NotNull DefaultTableModel createModel(final @NotNull List<TestSetEditorFields> importFields, final @NotNull List<TestCase> testCases) {
         final String @NotNull [] columns = buildColumnNames(importFields);
         final @NotNull DefaultTableModel model = new DefaultTableModel(columns, 0) {
             @Override
@@ -65,7 +65,7 @@ public class TablePanelBuilder {
         };
 
         int index = 1;
-        for (final TestCaseDto testCase : testCases) {
+        for (final TestCase testCase : testCases) {
             final Object @NotNull [] rowData = new Object[columns.length];
             rowData[0] = true;
             rowData[1] = String.valueOf(index++);

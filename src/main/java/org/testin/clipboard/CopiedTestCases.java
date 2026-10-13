@@ -22,7 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.services.Services;
 import org.testin.util.ClipboardContents;
 import org.testin.util.FailureText;
@@ -38,18 +38,18 @@ import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CopiedTestCases {
-    public static @NotNull List<TestCaseDto> onTheClipboard(final @NotNull Project project) {
+    public static @NotNull List<TestCase> onTheClipboard(final @NotNull Project project) {
         return ClipboardContents.withFlavor(DataFlavor.stringFlavor)
                 .map(contents -> in(project, contents))
                 .orElseGet(List::of);
     }
 
-    static @NotNull List<TestCaseDto> in(final @NotNull Project project, final @NotNull Transferable contents) {
+    static @NotNull List<TestCase> in(final @NotNull Project project, final @NotNull Transferable contents) {
         try {
             final @NotNull String json = (String) contents.getTransferData(DataFlavor.stringFlavor);
             if (!json.trim().startsWith("[")) return List.of();
 
-            final @NotNull List<TestCaseDto> parsed = Services.getInstance(project, JsonCodec.class).readValue(json, new TypeReference<>() {
+            final @NotNull List<TestCase> parsed = Services.getInstance(project, JsonCodec.class).readValue(json, new TypeReference<>() {
             });
 
             return parsed.stream().filter(Objects::nonNull).toList();

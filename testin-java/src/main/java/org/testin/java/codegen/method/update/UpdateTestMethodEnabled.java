@@ -20,14 +20,14 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.CodeChange;
 import org.testin.codegen.CodeChangeType;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.util.List;
 
-public class UpdateTestMethodEnabled extends BaseTestMethodChange implements CodeChange<TestCaseDto> {
+public class UpdateTestMethodEnabled extends BaseTestMethodChange implements CodeChange<TestCase> {
     // UC-CODEGEN-013, Rule-CODEGEN-047, Rule-CODEGEN-048
     @Override
-    public void execute(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
+    public void execute(final @NotNull Project project, final @NotNull TestCase testCase) {
         applyUpdate(project, testCase, CodeChangeType.UPDATE_TEST_CASE_STATUS.description(), testMethod -> {
             writeEnabled(project, testMethod, testCase);
             reformat(project, testMethod);
@@ -35,7 +35,7 @@ public class UpdateTestMethodEnabled extends BaseTestMethodChange implements Cod
     }
 
     @Override
-    public void executeAll(final @NotNull Project project, final @NotNull List<? extends TestCaseDto> testCases) {
+    public void executeAll(final @NotNull Project project, final @NotNull List<? extends TestCase> testCases) {
         applyToEach(project, testCases, CodeChangeType.UPDATE_TEST_CASE_STATUS.description(), (testMethod, testCase) -> writeEnabled(project, testMethod, testCase));
     }
 }

@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
 import org.testin.model.Groups;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.util.Display;
 import org.testin.util.FailureText;
@@ -36,7 +36,7 @@ import java.util.stream.IntStream;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestCaseFieldChanges {
-    public static @NotNull List<FieldChange> compare(final @NotNull TestCaseDto oldState, final @NotNull TestCaseDto newState) {
+    public static @NotNull List<FieldChange> compare(final @NotNull TestCase oldState, final @NotNull TestCase newState) {
         final @NotNull List<FieldChange> changes = new ArrayList<>();
         addIfChanged(changes, TestSetEditorFields.DESCRIPTION.getName(), oldState.getDescription(), newState.getDescription(), ChangeType.CHANGE_DESCRIPTION);
         addIfChanged(changes, TestSetEditorFields.EXPECTED_RESULT.getName(), oldState.getExpectedResult(), newState.getExpectedResult(), ChangeType.CHANGE_EXPECTED_RESULT);

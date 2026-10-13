@@ -20,7 +20,7 @@ import com.intellij.openapi.extensions.ExtensionPointName;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.util.Bundle;
 
 import java.util.List;
@@ -36,5 +36,5 @@ public interface AutomationExecutor {
     }
 
     // UC-CODEGEN-008, Rule-CODEGEN-031
-    void run(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases);
+    void run(final @NotNull Project project, final @NotNull List<TestCase> testCases);
 }

@@ -29,7 +29,7 @@ import org.testin.actions.TestinEscapeAction;
 import org.testin.clipboard.CutState;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.toolbar.GridViewButton;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
@@ -45,10 +45,10 @@ import java.util.Optional;
 
 public class DetailsPanelAndStepBackIdeTest extends AbstractTempRootIdeTest {
 
-    private @NotNull List<TestCaseDto> createdTestCases = List.of();
+    private @NotNull List<TestCase> createdTestCases = List.of();
 
     private static @NotNull Optional<String> shown(final @NotNull ViewOnScreen window) {
-        return window.getPanel().getCurrentTestCase().map(TestCaseDto::getDescription);
+        return window.getPanel().getCurrentTestCase().map(TestCase::getDescription);
     }
 
     private static int editableColumnOf(final @NotNull JBTable table) {

@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.Await;
 import org.testin.actions.TestinDataKeys;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
@@ -43,14 +43,14 @@ public class AutomateTestCaseIdeTest extends AbstractCodegenIdeTest {
         return Optional.ofNullable(ActionManager.getInstance().getAction("Testin.AutomateTestCase")).orElseThrow(() -> new AssertionError("Automate Test Case is not registered"));
     }
 
-    private @NotNull AnActionEvent selecting(final @NotNull TestCaseDto testCase) {
+    private @NotNull AnActionEvent selecting(final @NotNull TestCase testCase) {
         return TestActionEvent.createTestEvent(automate(), SimpleDataContext.builder()
                 .add(CommonDataKeys.PROJECT, getProject())
                 .add(TestinDataKeys.SELECTED_TEST_CASES, List.of(testCase))
                 .build());
     }
 
-    private @NotNull AnActionEvent updated(final @NotNull TestCaseDto testCase) {
+    private @NotNull AnActionEvent updated(final @NotNull TestCase testCase) {
         final @NotNull AnActionEvent e = selecting(testCase);
         ActionUtil.updateAction(automate(), e);
         return e;
@@ -70,7 +70,7 @@ public class AutomateTestCaseIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-CODEGEN-025
     public void testAutomateWritesTheMethodAndItsClassAndTellsATestCaseThatHasOne() {
-        final @NotNull TestCaseDto testCase = indexedTestCase(indexedTestSet("Login", indexedPackage("Checkout", theTestCasesDirectory())), "Log in with a valid user", "b");
+        final @NotNull TestCase testCase = indexedTestCase(indexedTestSet("Login", indexedPackage("Checkout", theTestCasesDirectory())), "Log in with a valid user", "b");
 
         ActionUtil.performAction(automate(), selecting(testCase));
         Await.until("Automate Test Case wrote no method, class or package folder", () -> methodOf(CHECKOUT_LOGIN_TEST, testCase).isPresent());

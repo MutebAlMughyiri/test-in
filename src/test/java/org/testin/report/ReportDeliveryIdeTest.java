@@ -52,7 +52,7 @@ import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
@@ -209,7 +209,7 @@ public class ReportDeliveryIdeTest extends AbstractTempRootIdeTest {
     }
 
     private void aTestCase(final @NotNull UUID testCaseId, final @NotNull String description) {
-        final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(testCaseId).description(description).order(testCaseId.toString()).build();
+        final @NotNull TestCase testCase = TestCase.builder().id(testCaseId).description(description).order(testCaseId.toString()).build();
         testCase.setParent(login);
         Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(login.getPath(), testCase);
     }

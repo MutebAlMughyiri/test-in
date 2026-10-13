@@ -21,7 +21,7 @@ import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestCasesFolderNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.testrun.RunItems;
@@ -47,8 +47,8 @@ import java.util.stream.Collectors;
 public final class TestRuns {
     private final @NotNull Project project;
     private final @NotNull ProjectIndexer indexer;
-    private final @NotNull Map<String, Map<UUID, Optional<TestCaseDto>>> recorded = new ConcurrentHashMap<>();
-    private final @NotNull Map<UUID, TestCaseDto> lastInGit = new ConcurrentHashMap<>();
+    private final @NotNull Map<String, Map<UUID, Optional<TestCase>>> recorded = new ConcurrentHashMap<>();
+    private final @NotNull Map<UUID, TestCase> lastInGit = new ConcurrentHashMap<>();
     private final @NotNull Map<Path, String> recordedAt = new ConcurrentHashMap<>();
 
     public TestRuns(final @NotNull Project project) {
@@ -75,7 +75,7 @@ public final class TestRuns {
                 .map(Services.getInstance(project, TestCases.class)::getTestCasesUnder)
                 .orElse(List.of())
                 .stream()
-                .map(TestCaseDto::getId)
+                .map(TestCase::getId)
                 .toList();
     }
 
@@ -90,7 +90,7 @@ public final class TestRuns {
     private @NotNull RunItems withTestCasesShown(final @NotNull Path testRunPath, final @NotNull RunItems runItems) {
         final @NotNull IndexerDataStore store = store();
         final @NotNull String commit = commitOf(testRunPath);
-        final @NotNull Map<UUID, Optional<TestCaseDto>> inCommit = recorded.getOrDefault(recordedAt.getOrDefault(testRunPath, commit), Map.of());
+        final @NotNull Map<UUID, Optional<TestCase>> inCommit = recorded.getOrDefault(recordedAt.getOrDefault(testRunPath, commit), Map.of());
         runItems.getAll().forEach(runItem -> runItem.showing(store.findTestCase(runItem.getId()), inCommit.getOrDefault(runItem.getId(), Optional.empty()), Optional.ofNullable(lastInGit.get(runItem.getId())), !commit.isEmpty()));
         return runItems;
     }
@@ -107,17 +107,17 @@ public final class TestRuns {
 
     // Rule-EDITOR-PANEL-239
     public @NotNull Set<UUID> notReadFrom(final @NotNull String commit, final @NotNull Set<UUID> testCaseIds) {
-        final @NotNull Map<UUID, Optional<TestCaseDto>> read = recorded.getOrDefault(commit, Map.of());
+        final @NotNull Map<UUID, Optional<TestCase>> read = recorded.getOrDefault(commit, Map.of());
         return testCaseIds.stream().filter(testCaseId -> !read.containsKey(testCaseId)).collect(Collectors.toSet());
     }
 
     // Rule-EDITOR-PANEL-126
-    public void rememberLastInGit(final @NotNull Map<UUID, TestCaseDto> testCases) {
+    public void rememberLastInGit(final @NotNull Map<UUID, TestCase> testCases) {
         lastInGit.putAll(testCases);
     }
 
     // Rule-EDITOR-PANEL-239
-    public void rememberRecorded(final @NotNull String commit, final @NotNull Map<UUID, Optional<TestCaseDto>> testCases) {
+    public void rememberRecorded(final @NotNull String commit, final @NotNull Map<UUID, Optional<TestCase>> testCases) {
         recorded.computeIfAbsent(commit, _ -> new ConcurrentHashMap<>()).putAll(testCases);
     }
 

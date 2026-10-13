@@ -23,7 +23,7 @@ import com.intellij.ui.components.JBList;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.editor.EditorFixtures;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.status.RunItemStatus;
@@ -50,7 +50,7 @@ public class ExecutionByKeyboardIdeTest extends AbstractTempRootIdeTest {
     public void testEveryStepOfExecutingATestRunHasAKey() {
         final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
         final @NotNull TestSetNode login = EditorFixtures.testSet(getProject(), testProject, "Login");
-        final @NotNull List<TestCaseDto> testCases = EditorFixtures.testCases(getProject(), login, 2);
+        final @NotNull List<TestCase> testCases = EditorFixtures.testCases(getProject(), login, 2);
         final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), EditorFixtures.testRun(getProject(), testProject, testCases.stream().map(EditorFixtures::pending).toList()), getTestRootDisposable());
         final @NotNull JBList<?> list = Drawn.components(editor.getComponent()).stream()
                 .filter(JBList.class::isInstance)

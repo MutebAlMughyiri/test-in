@@ -16,7 +16,7 @@
 package org.testin.testcase;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -25,7 +25,7 @@ import static org.testng.Assert.assertEquals;
 
 public class TestCaseDisplayValueTest {
 
-    private static final @NotNull TestCaseDto TYPED = TestCaseDto.builder()
+    private static final @NotNull TestCase TYPED = TestCase.builder()
             .description("log in with a valid user")
             .expectedResult("the dashboard opens")
             .steps(List.of("open the login page"))

@@ -28,7 +28,7 @@ import org.testin.Notified;
 import org.testin.Said;
 import org.testin.config.TestinYml;
 import org.testin.editor.EditorFixtures;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.bug.BugPriority;
 import org.testin.model.bug.BugSeverity;
 import org.testin.model.node.TestProjectNode;
@@ -81,7 +81,7 @@ public class ReportBugFromThePanelIdeTest extends AbstractTempRootIdeTest {
     private final @NotNull List<String> bodies = new CopyOnWriteArrayList<>();
     private final @NotNull List<ProcessOutput> answers = new CopyOnWriteArrayList<>();
 
-    private TestCaseDto testCase;
+    private TestCase testCase;
     private TestRunNode testRun;
     private RunItem failed;
     private RunItemPath runItemPath;

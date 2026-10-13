@@ -23,7 +23,7 @@ import com.intellij.psi.PsiMethod;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.Await;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,8 +32,8 @@ public class TestMethodCodeIdeTest extends AbstractCodegenIdeTest {
 
     private static final @NotNull String LOGIN_TEST = "nafath.LoginTest";
 
-    private @NotNull TestCaseDto aRenamedTestCaseWhoseMethodHasAnotherName() {
-        final @NotNull TestCaseDto testCase = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
+    private @NotNull TestCase aRenamedTestCaseWhoseMethodHasAnotherName() {
+        final @NotNull TestCase testCase = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
         final @NotNull PsiMethod testMethod = writtenMethodOf(LOGIN_TEST, testCase);
         WriteCommandAction.runWriteCommandAction(getProject(), () -> {
             testMethod.setName("whatTheTesterCalledIt");
@@ -52,7 +52,7 @@ public class TestMethodCodeIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-CODEGEN-001
     public void testGoToCodeFindsTheMethodOfARenamedTestCase() {
-        final @NotNull TestCaseDto testCase = aRenamedTestCaseWhoseMethodHasAnotherName();
+        final @NotNull TestCase testCase = aRenamedTestCaseWhoseMethodHasAnotherName();
         final @NotNull PsiMethod testMethod = writtenMethodOf(LOGIN_TEST, testCase);
 
         TestMethodCode.available().toCode(getProject(), testCase);
@@ -62,14 +62,14 @@ public class TestMethodCodeIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-CODEGEN-001
     public void testRunningFindsTheMethodByIdentityNeverByName() {
-        final @NotNull TestCaseDto testCase = aRenamedTestCaseWhoseMethodHasAnotherName();
+        final @NotNull TestCase testCase = aRenamedTestCaseWhoseMethodHasAnotherName();
 
         assertEquals("the method to run was named from the description rather than found by the test case id", List.of("nafath", "LoginTest", "whatTheTesterCalledIt"), TestMethodCode.available().methodFqcnsOf(getProject(), List.of(testCase)).get(testCase.getId()));
     }
 
     // Rule-CODEGEN-003
     public void testAnAgentWritesTheBodyOnlyWhereTheTodoStillStands() {
-        final @NotNull TestCaseDto testCase = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
+        final @NotNull TestCase testCase = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
 
         assertTrue("the agent's body did not replace the TODO", TestMethodCode.available().fillBody(getProject(), testCase, "int signedIn = 1;").isPresent());
         assertFalse("the agent wrote over a body that was already written", TestMethodCode.available().fillBody(getProject(), testCase, "int signedOut = 0;").isPresent());

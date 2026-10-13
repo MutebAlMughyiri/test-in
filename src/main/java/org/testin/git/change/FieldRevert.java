@@ -18,8 +18,8 @@ package org.testin.git.change;
 
 import com.google.errorprone.annotations.Immutable;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
-import org.testin.model.TestCaseDto.TestCaseDtoBuilder;
+import org.testin.model.TestCase;
+import org.testin.model.TestCase.TestCaseBuilder;
 
 @FunctionalInterface
 @Immutable
@@ -27,5 +27,5 @@ public interface FieldRevert {
     FieldRevert NONE = (_, _) -> {
     };
 
-    void apply(final @NotNull TestCaseDtoBuilder draft, final @NotNull TestCaseDto oldTestCase);
+    void apply(final @NotNull TestCaseBuilder draft, final @NotNull TestCase oldTestCase);
 }

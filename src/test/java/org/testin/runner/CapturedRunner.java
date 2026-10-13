@@ -20,7 +20,7 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
 import com.intellij.testFramework.ExtensionTestUtil;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.Failure;
 import org.testin.model.status.ExecutionStatus;
 import org.testin.services.Services;
@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class CapturedRunner implements AutomationExecutor {
-    private final @NotNull List<List<TestCaseDto>> runs = new CopyOnWriteArrayList<>();
+    private final @NotNull List<List<TestCase>> runs = new CopyOnWriteArrayList<>();
 
     public static @NotNull CapturedRunner installed(final @NotNull Disposable owner) {
         final @NotNull CapturedRunner runner = new CapturedRunner();
@@ -38,21 +38,21 @@ public final class CapturedRunner implements AutomationExecutor {
         return runner;
     }
 
-    public static void reports(final @NotNull Project project, final @NotNull TestCaseDto testCase, final @NotNull ExecutionStatus status, final @NotNull Duration duration) {
+    public static void reports(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull ExecutionStatus status, final @NotNull Duration duration) {
         ExecutionReported.broadcast(project, testCase.getId().toString(), status, duration, Failure.NONE);
     }
 
-    public static void startedByTestNg(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
+    public static void startedByTestNg(final @NotNull Project project, final @NotNull TestCase testCase) {
         Services.getInstance(project, TestNGExecution.class).launched(List.of(testCase), "Testin: captured");
         reports(project, testCase, ExecutionStatus.RUNNING, Duration.ZERO);
     }
 
-    public @NotNull List<List<TestCaseDto>> runs() {
+    public @NotNull List<List<TestCase>> runs() {
         return List.copyOf(runs);
     }
 
     @Override
-    public void run(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases) {
+    public void run(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
         runs.add(List.copyOf(testCases));
         testCases.forEach(Services.getInstance(project, TestNGExecution.class)::starting);
     }

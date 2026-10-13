@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.ProjectIndexer;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.testrun.TestRunConfiguration;
 import org.testin.services.Services;
@@ -55,7 +55,7 @@ public final class TestRunFormOpener {
         final @NotNull Set<UUID> testCaseIds = new LinkedHashSet<>();
 
         selection.forEachChecked(checked -> {
-            if (checked instanceof TestCaseDto testCase) testCaseIds.add(testCase.getId());
+            if (checked instanceof TestCase testCase) testCaseIds.add(testCase.getId());
         });
 
         return testCaseIds;
@@ -66,21 +66,21 @@ public final class TestRunFormOpener {
         final @NotNull Set<UUID> testCaseIds = new LinkedHashSet<>();
 
         selection.forEachLeaf(leaf -> {
-            if (leaf instanceof TestCaseDto testCase) testCaseIds.add(testCase.getId());
+            if (leaf instanceof TestCase testCase) testCaseIds.add(testCase.getId());
         });
 
         return testCaseIds;
     }
 
     // UC-TREE-PANEL-022, Rule-TREE-PANEL-134
-    private static @NotNull CheckedTreeNode deletedFolder(final @NotNull List<TestCaseDto> deleted) {
+    private static @NotNull CheckedTreeNode deletedFolder(final @NotNull List<TestCase> deleted) {
         final @NotNull CheckedTreeNode folder = new CheckedTreeNode(Bundle.message("test.run.deleted.test.cases"));
         deleted.forEach(testCase -> folder.add(new CheckedTreeNode(testCase)));
         return folder;
     }
 
     // UC-TREE-PANEL-009, UC-TREE-PANEL-021, UC-TREE-PANEL-022
-    public void open(final @NotNull AbstractNode testCasesRoot, final @NotNull String name, final @NotNull Set<UUID> checked, final @NotNull List<TestCaseDto> deleted, final @NotNull Map<TestRunConfiguration, String> configuration, final @NotNull TestRunFormPurpose action) {
+    public void open(final @NotNull AbstractNode testCasesRoot, final @NotNull String name, final @NotNull Set<UUID> checked, final @NotNull List<TestCase> deleted, final @NotNull Map<TestRunConfiguration, String> configuration, final @NotNull TestRunFormPurpose action) {
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             final @NotNull DefaultMutableTreeNode fullModelNode = buildDirectoryTree(testCasesRoot.getPath(), testCasesRoot);
 
@@ -98,7 +98,7 @@ public final class TestRunFormOpener {
 
     // UC-TREE-PANEL-022, Rule-TREE-PANEL-093, Rule-TREE-PANEL-076
     private boolean checkOnly(final @NotNull CheckedTreeNode treeNode, final @NotNull Set<UUID> wanted) {
-        if (treeNode.getUserObject() instanceof TestCaseDto testCase) {
+        if (treeNode.getUserObject() instanceof TestCase testCase) {
             final boolean covered = wanted.contains(testCase.getId());
             treeNode.setChecked(covered);
 
@@ -122,7 +122,7 @@ public final class TestRunFormOpener {
         final @NotNull DefaultMutableTreeNode node = new DefaultMutableTreeNode(thisNode);
 
         if (thisNode.holdsTestCases()) {
-            for (final TestCaseDto testCase : testCases.getTestCasesForTestSet(folder)) {
+            for (final TestCase testCase : testCases.getTestCasesForTestSet(folder)) {
                 node.add(new DefaultMutableTreeNode(testCase));
             }
             return node;
@@ -143,7 +143,7 @@ public final class TestRunFormOpener {
     private @NotNull CheckedTreeNode convertToCheckedNodes(final @NotNull DefaultMutableTreeNode node) {
         final @NotNull Object userObject = node.getUserObject();
         final @NotNull CheckedTreeNode newNode = new CheckedTreeNode(userObject);
-        if (userObject instanceof TestCaseDto testCase) newNode.setEnabled(testCase.getStatus().isEnabled());
+        if (userObject instanceof TestCase testCase) newNode.setEnabled(testCase.getStatus().isEnabled());
         for (int i = 0; i < node.getChildCount(); i++) {
             newNode.add(convertToCheckedNodes((DefaultMutableTreeNode) node.getChildAt(i)));
         }

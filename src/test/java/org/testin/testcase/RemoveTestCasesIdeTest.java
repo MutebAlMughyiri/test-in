@@ -32,7 +32,7 @@ import org.testin.clipboard.CutState;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
 import org.testin.ui.framework.ConfirmDialog;
@@ -60,7 +60,7 @@ public class RemoveTestCasesIdeTest extends AbstractTempRootIdeTest {
                 .findFirst().orElseThrow(() -> new AssertionError("nothing on the cards takes a change back on Ctrl+Z"));
     }
 
-    private static @NotNull String stamp(final @NotNull Path testSet, final @NotNull TestCaseDto testCase) {
+    private static @NotNull String stamp(final @NotNull Path testSet, final @NotNull TestCase testCase) {
         try (final Stream<Path> files = Files.list(testSet)) {
             final @NotNull Path file = files.filter(candidate -> candidate.getFileName().toString().startsWith(testCase.getId().toString())).findFirst().orElseThrow();
             return Files.readString(file) + "@" + file.toFile().lastModified();
@@ -106,7 +106,7 @@ public class RemoveTestCasesIdeTest extends AbstractTempRootIdeTest {
         ShownDialog.press(getProject(), ConfirmDialog.class, Shortcuts.Enter.getKey());
     }
 
-    private void awaitGone(final @NotNull TestCaseDto testCase) {
+    private void awaitGone(final @NotNull TestCase testCase) {
         Await.until("'" + testCase.getDescription() + "' was never removed", () -> theTestCases().findTestCase(testCase.getId()).isEmpty());
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
@@ -131,7 +131,7 @@ public class RemoveTestCasesIdeTest extends AbstractTempRootIdeTest {
     public void testARemovalIsTakenBackWithControlZ() {
         final @NotNull TestSetEditor editor = aTestSetOf("Log in", "Log out");
         editor.getList().setSelectedIndex(0);
-        final @NotNull TestCaseDto removed = editor.getList().getSelectedValue();
+        final @NotNull TestCase removed = editor.getList().getSelectedValue();
 
         askedToRemove(editor);
         confirm();
@@ -148,14 +148,14 @@ public class RemoveTestCasesIdeTest extends AbstractTempRootIdeTest {
     public void testNothingIsRenumberedAndTheNumbersOnScreenCloseUp() {
         final @NotNull TestSetEditor editor = aTestSetOf("Log in", "Log out", "Reset the password");
         final @NotNull Path testSet = editor.getParent().getPath();
-        final @NotNull TestCaseDto first = editor.getList().getModel().getElementAt(0);
-        final @NotNull TestCaseDto last = editor.getList().getModel().getElementAt(2);
+        final @NotNull TestCase first = editor.getList().getModel().getElementAt(0);
+        final @NotNull TestCase last = editor.getList().getModel().getElementAt(2);
         final @NotNull String firstBefore = stamp(testSet, first);
         final @NotNull String lastBefore = stamp(testSet, last);
         assertEquals(3, editor.positionOf(last));
 
         editor.getList().setSelectedIndex(1);
-        final @NotNull TestCaseDto removed = editor.getList().getSelectedValue();
+        final @NotNull TestCase removed = editor.getList().getSelectedValue();
         askedToRemove(editor);
         confirm();
         awaitGone(removed);
@@ -169,7 +169,7 @@ public class RemoveTestCasesIdeTest extends AbstractTempRootIdeTest {
     public void testATestCaseWaitingToBePastedIsAskedAboutAndItsRemovalCallsOffTheCut() {
         final @NotNull TestSetEditor editor = aTestSetOf("Log in", "Log out");
         editor.getList().setSelectedIndex(0);
-        final @NotNull TestCaseDto waiting = editor.getList().getSelectedValue();
+        final @NotNull TestCase waiting = editor.getList().getSelectedValue();
         final @NotNull CutState cutState = Services.getInstance(getProject(), CutState.class);
         cutState.cut(editor, List.of(waiting));
 

@@ -27,7 +27,7 @@ import org.testin.indexer.TestCases;
 import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
 import org.testin.model.FileKind;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.services.Services;
 import org.testin.util.FailureText;
 import org.testin.util.JsonCodec;
@@ -59,7 +59,7 @@ public final class PendingChangeReader {
     }
 
     // UC-SHARE-010
-    public static @NotNull List<PendingChange> toDiffs(final @NotNull List<String> statusLines, final @NotNull Path repositoryRoot, final @NotNull JsonCodec mapper, final @NotNull Function<List<String>, Map<String, String>> committedContents, final @NotNull Function<UUID, Optional<TestCaseDto>> testCases) {
+    public static @NotNull List<PendingChange> toDiffs(final @NotNull List<String> statusLines, final @NotNull Path repositoryRoot, final @NotNull JsonCodec mapper, final @NotNull Function<List<String>, Map<String, String>> committedContents, final @NotNull Function<UUID, Optional<TestCase>> testCases) {
         final @NotNull Path root = repositoryRoot.toAbsolutePath().normalize();
         final @NotNull List<PendingChange> result = new ArrayList<>();
 

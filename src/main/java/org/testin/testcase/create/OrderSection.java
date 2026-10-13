@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.ExecutionPosition;
 import org.testin.indexer.TestCases;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.testcase.Rank;
@@ -83,8 +83,8 @@ public class OrderSection implements TestCaseSection {
     }
 
     @Override
-    public void fillData(final @NotNull TestCaseDto testCase) {
-        final @NotNull List<TestCaseDto> inSet = ExecutionPosition.setOf(project, testCase);
+    public void fillData(final @NotNull TestCase testCase) {
+        final @NotNull List<TestCase> inSet = ExecutionPosition.setOf(project, testCase);
         final int size = Math.max(1, inSet.size());
         final int current = Math.min(TestCaseOrder.positionOf(inSet, testCase), size);
 
@@ -111,13 +111,13 @@ public class OrderSection implements TestCaseSection {
 
     // UC-EDITOR-PANEL-009, Rule-EDITOR-PANEL-055, Rule-EDITOR-PANEL-282
     @Override
-    public @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto ordered) {
-        final @NotNull List<TestCaseDto> inSet = ExecutionPosition.setOf(project, ordered);
+    public @NotNull TestCase applyTo(final @NotNull TestCase ordered) {
+        final @NotNull List<TestCase> inSet = ExecutionPosition.setOf(project, ordered);
         final int target = position.getValue();
 
         if (target == TestCaseOrder.positionOf(inSet, ordered)) return ordered;
 
-        final @NotNull List<TestCaseDto> others = rankTheUnranked(inSet, ordered).stream()
+        final @NotNull List<TestCase> others = rankTheUnranked(inSet, ordered).stream()
                 .filter(testCase -> !testCase.getId().equals(ordered.getId()))
                 .toList();
 
@@ -128,12 +128,12 @@ public class OrderSection implements TestCaseSection {
     }
 
     // UC-EDITOR-PANEL-009, Rule-EDITOR-PANEL-055
-    private @NotNull List<TestCaseDto> rankTheUnranked(final @NotNull List<TestCaseDto> inSet, final @NotNull TestCaseDto ordered) {
+    private @NotNull List<TestCase> rankTheUnranked(final @NotNull List<TestCase> inSet, final @NotNull TestCase ordered) {
         if (inSet.stream().noneMatch(testCase -> testCase.getOrder().isEmpty())) return inSet;
 
-        final @NotNull Map<UUID, TestCaseDto> placed = TestCaseOrder.place(inSet).stream()
-                .collect(Collectors.toMap(TestCaseDto::getId, moved -> moved));
-        final @NotNull List<TestCaseDto> ranked = placed.values().stream()
+        final @NotNull Map<UUID, TestCase> placed = TestCaseOrder.place(inSet).stream()
+                .collect(Collectors.toMap(TestCase::getId, moved -> moved));
+        final @NotNull List<TestCase> ranked = placed.values().stream()
                 .filter(moved -> !moved.getId().equals(ordered.getId()))
                 .toList();
 

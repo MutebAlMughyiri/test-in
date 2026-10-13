@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.actions.Declared;
 import org.testin.editor.grid.GridKeys;
 import org.testin.editor.grid.NotWhileEditing;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.ui.ActionsMenu;
 import org.testin.undo.TestinUndoAction;
@@ -62,10 +62,10 @@ public abstract class AbstractEditorContextMenu extends DefaultActionGroup {
                 .anyMatch(GridKeys.keptFromMenus()::contains);
     }
 
-    public abstract void registerShortcuts(final @NotNull JBList<TestCaseDto> list);
+    public abstract void registerShortcuts(final @NotNull JBList<TestCase> list);
 
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-213
-    protected @NotNull DefaultActionGroup actions(final @NotNull Project project, final @NotNull AbstractNode node, final @NotNull JBList<TestCaseDto> list) {
+    protected @NotNull DefaultActionGroup actions(final @NotNull Project project, final @NotNull AbstractNode node, final @NotNull JBList<TestCase> list) {
         final @NotNull DefaultActionGroup actions = ActionsMenu.group();
 
         actions.add(Declared.forMenu("Testin.CopyTestCase"));

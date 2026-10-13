@@ -28,7 +28,7 @@ import org.testin.git.history.History;
 import org.testin.git.history.HistoryCard;
 import org.testin.git.history.TestCaseHistory;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
 
@@ -54,7 +54,7 @@ public class HistoryTab {
     }
 
     // Rule-VIEW-PANEL-100
-    private static void show(final @NotNull Project project, final @NotNull JPanel historyTab, final @NotNull History history, final @NotNull TestCaseDto testCase, final @NotNull Object request) {
+    private static void show(final @NotNull Project project, final @NotNull JPanel historyTab, final @NotNull History history, final @NotNull TestCase testCase, final @NotNull Object request) {
         final @NotNull List<HistoryCard> cards = history.cards();
         if (cards.isEmpty()) {
             line(historyTab, history.problem());
@@ -73,7 +73,7 @@ public class HistoryTab {
     }
 
     // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-099, Rule-VIEW-PANEL-101
-    private static void draw(final @NotNull Project project, final @NotNull JPanel historyTab, final @NotNull JBPanel<?> entriesPanel, final @NotNull List<HistoryCard> cards, final @NotNull TestCaseDto testCase, final int from, final @NotNull Object request) {
+    private static void draw(final @NotNull Project project, final @NotNull JPanel historyTab, final @NotNull JBPanel<?> entriesPanel, final @NotNull List<HistoryCard> cards, final @NotNull TestCase testCase, final int from, final @NotNull Object request) {
         if (!isCurrent(historyTab, request)) return;
 
         IntStream.range(from, Math.min(cards.size(), from + GROUP)).forEach(at -> entriesPanel.add(HistoryCardPanel.of(project, cards.get(at), testCase, at)));
@@ -101,7 +101,7 @@ public class HistoryTab {
     }
 
     // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-099
-    public void load(final @NotNull Project project, final @NotNull JPanel historyTab, final @NotNull Optional<TestCaseDto> shown) {
+    public void load(final @NotNull Project project, final @NotNull JPanel historyTab, final @NotNull Optional<TestCase> shown) {
         final @NotNull Object request = new Object();
         historyTab.putClientProperty(REQUEST, request);
         historyTab.removeAll();
@@ -110,7 +110,7 @@ public class HistoryTab {
         historyTab.repaint();
 
         if (shown.isEmpty()) return;
-        final @NotNull TestCaseDto testCase = shown.orElseThrow();
+        final @NotNull TestCase testCase = shown.orElseThrow();
 
         final @NotNull Timer reading = new Timer(READING_AFTER_MILLIS, _ -> {
             if (isCurrent(historyTab, request)) line(historyTab, Bundle.message("view.history.reading"));

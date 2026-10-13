@@ -20,7 +20,7 @@ import com.intellij.ui.components.JBPanel;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.ShownFields;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
 import org.testin.testcase.TestSetEditorFields;
@@ -58,9 +58,9 @@ public class DetailsRowsIdeTest extends BasePlatformTestCase {
         return Bundle.message(key).toUpperCase(Locale.ROOT);
     }
 
-    private static @NotNull TestCaseDto everyFieldFilled() {
+    private static @NotNull TestCase everyFieldFilled() {
         final @NotNull ZonedDateTime at = ZonedDateTime.of(2026, 9, 13, 14, 14, 0, 0, ZoneOffset.UTC);
-        return TestCaseDto.builder()
+        return TestCase.builder()
                 .description("Log in with a valid user")
                 .expectedResult("The dashboard opens")
                 .steps(List.of("Open the login page"))
@@ -77,17 +77,17 @@ public class DetailsRowsIdeTest extends BasePlatformTestCase {
         return ((GridBagLayout) component.getParent().getLayout()).getConstraints(component);
     }
 
-    private @NotNull JBPanel<?> drawn(final @NotNull TestCaseDto testCase) {
+    private @NotNull JBPanel<?> drawn(final @NotNull TestCase testCase) {
         return Drawn.detailsTab(getProject(), testCase, Optional.empty(), PATH);
     }
 
-    private @NotNull List<String> words(final @NotNull TestCaseDto testCase) {
+    private @NotNull List<String> words(final @NotNull TestCase testCase) {
         return Drawn.words(drawn(testCase));
     }
 
     // Rule-VIEW-PANEL-023
     public void testTheRowsAreDrawnInOneFixedOrder() {
-        final @NotNull TestCaseDto testCase = everyFieldFilled();
+        final @NotNull TestCase testCase = everyFieldFilled();
         final @NotNull TestSetNode login = new TestSetNode();
         login.setPath(Path.of(String.join("/", PATH)));
         testCase.setParent(login);

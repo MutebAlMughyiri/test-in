@@ -26,7 +26,7 @@ import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.services.Services;
 import org.testin.setting.TestinStartup;
 
@@ -55,19 +55,19 @@ public class ViewToolWindowFactory implements ToolWindowFactory, DumbAware {
     }
 
     // Rule-VIEW-PANEL-005
-    public static void refreshIfShowing(final @NotNull Project project, final @NotNull Collection<TestCaseDto> written) {
+    public static void refreshIfShowing(final @NotNull Project project, final @NotNull Collection<TestCase> written) {
         panel(project).ifPresent(view -> view.refreshIfShowing(written));
     }
 
     // UC-VIEW-PANEL-001, Rule-VIEW-PANEL-010
-    public static void showPanel(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases, final @NotNull List<String> treePath, final @NotNull Consumer<ViewPanel> onReadyAction) {
+    public static void showPanel(final @NotNull Project project, final @NotNull List<TestCase> testCases, final @NotNull List<String> treePath, final @NotNull Consumer<ViewPanel> onReadyAction) {
         toolWindow(project).ifPresent(toolWindow -> toolWindow.show(() -> panel(project).ifPresent(viewer -> {
             viewer.show(testCases, treePath);
             onReadyAction.accept(viewer);
         })));
     }
 
-    public static void showPanel(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases, final @NotNull List<String> treePath) {
+    public static void showPanel(final @NotNull Project project, final @NotNull List<TestCase> testCases, final @NotNull List<String> treePath) {
         showPanel(project, testCases, treePath, _ -> {
         });
     }

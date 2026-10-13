@@ -27,7 +27,7 @@ import org.testin.importexport.exports.ExportJson;
 import org.testin.importexport.imports.ImportCsv;
 import org.testin.importexport.imports.ImportExcel;
 import org.testin.importexport.imports.ImportJson;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestRunNode;
 import org.testin.report.generators.TestRunExcelGenerator;
@@ -155,12 +155,12 @@ public enum FileFormat {
         return !reportHandler.equals(ReportHandler.UNSUPPORTED);
     }
 
-    public void exportToFile(final @NotNull Project project, final @NotNull File destFile, final @NotNull Map<String, List<TestCaseDto>> sheetsData) {
+    public void exportToFile(final @NotNull Project project, final @NotNull File destFile, final @NotNull Map<String, List<TestCase>> sheetsData) {
         if (!isExportable()) throw new IllegalStateException(label + " cannot be exported to");
         exportHandler.execute(project, destFile, sheetsData);
     }
 
-    public @NotNull Map<String, List<TestCaseDto>> importToFile(final @NotNull Project project, final @NotNull File importFile) {
+    public @NotNull Map<String, List<TestCase>> importToFile(final @NotNull Project project, final @NotNull File importFile) {
         if (!isImportable()) throw new IllegalStateException(label + " cannot be imported from");
         return importHandler.execute(project, importFile);
     }

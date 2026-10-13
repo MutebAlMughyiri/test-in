@@ -20,7 +20,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopupListener;
 import com.intellij.openapi.ui.popup.LightweightWindowEvent;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.ui.framework.AbstractFrameworkDialog;
 import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.DialogSize;
@@ -36,14 +36,14 @@ import java.util.function.Consumer;
 public abstract class AbstractJsonArraySplitBulkSectionDialog extends AbstractFrameworkDialog {
     private static final @NotNull ItemRecorder RECORDS_NOTHING = (_, _, _, _) -> {
     };
-    private final @NotNull List<TestCaseDto> selectedTestCases;
-    private final @NotNull Consumer<List<TestCaseDto>> updatedTestCases;
+    private final @NotNull List<TestCase> selectedTestCases;
+    private final @NotNull Consumer<List<TestCase>> updatedTestCases;
     private final @NotNull BulkJsonEditors editors;
     private final @NotNull List<List<String>> originalValues = new ArrayList<>();
     private final @NotNull List<List<String>> activeValues = new ArrayList<>();
     private final @NotNull List<int[]> spanOwners = new ArrayList<>();
 
-    protected AbstractJsonArraySplitBulkSectionDialog(final @NotNull Project project, final @NotNull List<TestCaseDto> selectedTestCases, final @NotNull Consumer<List<TestCaseDto>> updatedTestCases) {
+    protected AbstractJsonArraySplitBulkSectionDialog(final @NotNull Project project, final @NotNull List<TestCase> selectedTestCases, final @NotNull Consumer<List<TestCase>> updatedTestCases) {
         super(project);
         this.selectedTestCases = selectedTestCases;
         this.updatedTestCases = updatedTestCases;
@@ -81,13 +81,13 @@ public abstract class AbstractJsonArraySplitBulkSectionDialog extends AbstractFr
         editors.bindKeysToEditor(shortcuts);
     }
 
-    protected abstract @NotNull List<TestCaseDto> applyValues(final @NotNull List<TestCaseDto> testCases, final @NotNull List<List<String>> newValues);
+    protected abstract @NotNull List<TestCase> applyValues(final @NotNull List<TestCase> testCases, final @NotNull List<List<String>> newValues);
 
     protected abstract @NotNull String getPopupTitle();
 
     protected abstract @NotNull String getArrayFieldName();
 
-    protected abstract @NotNull List<List<String>> extractOriginalValues(final @NotNull List<TestCaseDto> testCases);
+    protected abstract @NotNull List<List<String>> extractOriginalValues(final @NotNull List<TestCase> testCases);
 
     // UC-EDITOR-PANEL-007
     public void open() {
@@ -110,7 +110,7 @@ public abstract class AbstractJsonArraySplitBulkSectionDialog extends AbstractFr
     protected void submit() {
         readEditorIntoValues();
 
-        final @NotNull List<TestCaseDto> edited = new ArrayList<>();
+        final @NotNull List<TestCase> edited = new ArrayList<>();
         final @NotNull List<List<String>> editedValues = new ArrayList<>();
 
         for (int i = 0; i < selectedTestCases.size(); i++) {
@@ -190,7 +190,7 @@ public abstract class AbstractJsonArraySplitBulkSectionDialog extends AbstractFr
         spanOwners.clear();
 
         for (int i = 0; i < selectedTestCases.size(); i++) {
-            final @NotNull TestCaseDto selectedTestCase = selectedTestCases.get(i);
+            final @NotNull TestCase selectedTestCase = selectedTestCases.get(i);
             final @NotNull String prefix = "  {\n    \"id\": \"" + BulkValueText.escape(selectedTestCase.getId().toString())
                     + "\",\n    \"description\": \"" + BulkValueText.escape(selectedTestCase.getDescription())
                     + "\",\n    \"" + getArrayFieldName() + "\": [\n";

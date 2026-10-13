@@ -36,7 +36,7 @@ import org.testin.git.history.CardKind;
 import org.testin.git.history.HistoryCard;
 import org.testin.git.history.TestCaseHistoryCard;
 import org.testin.indexer.TestRuns;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItem;
 import org.testin.services.Services;
 import org.testin.testcase.UpdateTestCaseFields;
@@ -76,7 +76,7 @@ final class HistoryCardPanel {
     private static final int CAPTION_CHARACTERS = 12;
 
     // Rule-VIEW-PANEL-096, Rule-VIEW-PANEL-105, Rule-VIEW-PANEL-115
-    static @NotNull JComponent of(final @NotNull Project project, final @NotNull HistoryCard card, final @NotNull TestCaseDto testCase, final int index) {
+    static @NotNull JComponent of(final @NotNull Project project, final @NotNull HistoryCard card, final @NotNull TestCase testCase, final int index) {
         return switch (card) {
             case TestCaseHistoryCard entry ->
                     openDiffOnClick(project, card(index, head(card, Stream.empty(), Stream.of(muted(entry.message()))), summed(rows(entry)), Optional.empty()), entry, testCase);
@@ -138,7 +138,7 @@ final class HistoryCardPanel {
     }
 
     // Rule-VIEW-PANEL-117
-    private static @NotNull JComponent openDiffOnClick(final @NotNull Project project, final @NotNull JComponent card, final @NotNull TestCaseHistoryCard entry, final @NotNull TestCaseDto testCase) {
+    private static @NotNull JComponent openDiffOnClick(final @NotNull Project project, final @NotNull JComponent card, final @NotNull TestCaseHistoryCard entry, final @NotNull TestCase testCase) {
         final @NotNull MouseAdapter open = new MouseAdapter() {
             @Override
             public void mouseClicked(final @NotNull MouseEvent click) {
@@ -154,7 +154,7 @@ final class HistoryCardPanel {
     }
 
     // Rule-VIEW-PANEL-109
-    private static @NotNull JComponent testRun(final @NotNull Project project, final @NotNull BugEvent event, final @NotNull TestCaseDto testCase) {
+    private static @NotNull JComponent testRun(final @NotNull Project project, final @NotNull BugEvent event, final @NotNull TestCase testCase) {
         return Services.getInstance(project, TestRuns.class).findTestRunNode(event.testRun())
                 .map(node -> {
                     final @NotNull JComponent link = AbstractDetails.link(event.testRunName(), _ -> Services.getInstance(project, TestinEditors.class).openAndSelect(node, testCase));

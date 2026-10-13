@@ -26,7 +26,7 @@ import org.testin.codegen.event.MovedNode;
 import org.testin.codegen.event.MovedTestCase;
 import org.testin.codegen.event.NoOpCodeUpdate;
 import org.testin.codegen.event.RenamedNode;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.util.Bundle;
 
@@ -89,14 +89,14 @@ public record CodeChangeType<T>(@NotNull Class<T> payload, @NotNull String descr
             GeneratedCodeUpdate.INSTANCE
     );
 
-    public static final @NotNull CodeChangeType<TestCaseDto> CREATE_TEST_CASE = new CodeChangeType<>(
-            TestCaseDto.class,
+    public static final @NotNull CodeChangeType<TestCase> CREATE_TEST_CASE = new CodeChangeType<>(
+            TestCase.class,
             Bundle.message("codegen.create.test.case"),
             GeneratedCodeUpdate.INSTANCE
     );
 
-    public static final @NotNull CodeChangeType<TestCaseDto> REMOVE_TEST_CASE = new CodeChangeType<>(
-            TestCaseDto.class,
+    public static final @NotNull CodeChangeType<TestCase> REMOVE_TEST_CASE = new CodeChangeType<>(
+            TestCase.class,
             Bundle.message("codegen.remove.test.case"),
             GeneratedCodeUpdate.INSTANCE
     );
@@ -115,74 +115,74 @@ public record CodeChangeType<T>(@NotNull Class<T> payload, @NotNull String descr
             GeneratedCodeUpdate.INSTANCE
     );
 
-    public static final @NotNull CodeChangeType<TestCaseDto> UPDATE_TEST_CASE_DESCRIPTION = new CodeChangeType<>(
-            TestCaseDto.class,
+    public static final @NotNull CodeChangeType<TestCase> UPDATE_TEST_CASE_DESCRIPTION = new CodeChangeType<>(
+            TestCase.class,
             Bundle.message("codegen.update.test.case.description"),
             GeneratedCodeUpdate.INSTANCE
     );
 
-    public static final @NotNull CodeChangeType<TestCaseDto> UPDATE_TEST_CASE_EXPECTED_RESULT = new CodeChangeType<>(
-            TestCaseDto.class,
+    public static final @NotNull CodeChangeType<TestCase> UPDATE_TEST_CASE_EXPECTED_RESULT = new CodeChangeType<>(
+            TestCase.class,
             Bundle.message("codegen.update.test.case"),
             new NoOpCodeUpdate("expected result")
     );
 
-    public static final @NotNull CodeChangeType<TestCaseDto> UPDATE_TEST_CASE_MODULE = new CodeChangeType<>(
-            TestCaseDto.class,
+    public static final @NotNull CodeChangeType<TestCase> UPDATE_TEST_CASE_MODULE = new CodeChangeType<>(
+            TestCase.class,
             Bundle.message("codegen.update.test.case"),
             new NoOpCodeUpdate("module")
     );
 
-    public static final @NotNull CodeChangeType<TestCaseDto> UPDATE_TEST_CASE_TEST_DATA = new CodeChangeType<>(
-            TestCaseDto.class,
+    public static final @NotNull CodeChangeType<TestCase> UPDATE_TEST_CASE_TEST_DATA = new CodeChangeType<>(
+            TestCase.class,
             Bundle.message("codegen.update.test.case"),
             new NoOpCodeUpdate("test data")
     );
 
-    public static final @NotNull CodeChangeType<TestCaseDto> UPDATE_TEST_CASE_PRE_CONDITIONS = new CodeChangeType<>(
-            TestCaseDto.class,
+    public static final @NotNull CodeChangeType<TestCase> UPDATE_TEST_CASE_PRE_CONDITIONS = new CodeChangeType<>(
+            TestCase.class,
             Bundle.message("codegen.update.test.case"),
             new NoOpCodeUpdate("pre-conditions")
     );
 
-    public static final @NotNull CodeChangeType<TestCaseDto> UPDATE_TEST_CASE_STEPS = new CodeChangeType<>(
-            TestCaseDto.class,
+    public static final @NotNull CodeChangeType<TestCase> UPDATE_TEST_CASE_STEPS = new CodeChangeType<>(
+            TestCase.class,
             Bundle.message("codegen.update.test.case"),
             new NoOpCodeUpdate("steps")
     );
 
-    public static final @NotNull CodeChangeType<TestCaseDto> UPDATE_TEST_CASE_GROUP = new CodeChangeType<>(
-            TestCaseDto.class,
+    public static final @NotNull CodeChangeType<TestCase> UPDATE_TEST_CASE_GROUP = new CodeChangeType<>(
+            TestCase.class,
             Bundle.message("codegen.update.test.case.group"),
             GeneratedCodeUpdate.INSTANCE
     );
 
-    public static final @NotNull CodeChangeType<TestCaseDto> UPDATE_TEST_CASE_PRIORITY = new CodeChangeType<>(
-            TestCaseDto.class,
+    public static final @NotNull CodeChangeType<TestCase> UPDATE_TEST_CASE_PRIORITY = new CodeChangeType<>(
+            TestCase.class,
             Bundle.message("codegen.update.test.case"),
             new NoOpCodeUpdate("priority")
     );
 
-    public static final @NotNull CodeChangeType<TestCaseDto> UPDATE_TEST_CASE_ORDER = new CodeChangeType<>(
-            TestCaseDto.class,
+    public static final @NotNull CodeChangeType<TestCase> UPDATE_TEST_CASE_ORDER = new CodeChangeType<>(
+            TestCase.class,
             Bundle.message("codegen.update.test.case.order"),
             GeneratedCodeUpdate.INSTANCE
     );
 
-    public static final @NotNull CodeChangeType<TestCaseDto> RECONCILE_TEST_CASE = new CodeChangeType<>(
-            TestCaseDto.class,
+    public static final @NotNull CodeChangeType<TestCase> RECONCILE_TEST_CASE = new CodeChangeType<>(
+            TestCase.class,
             Bundle.message("codegen.restore.test.case"),
             GeneratedCodeUpdate.INSTANCE
     );
 
-    public static final @NotNull CodeChangeType<TestCaseDto> UPDATE_TEST_CASE_STATUS = new CodeChangeType<>(
-            TestCaseDto.class,
+    public static final @NotNull CodeChangeType<TestCase> UPDATE_TEST_CASE_STATUS = new CodeChangeType<>(
+            TestCase.class,
             Bundle.message("codegen.update.test.case.status"),
             GeneratedCodeUpdate.INSTANCE
     );
 
-    public static final @NotNull CodeChangeType<TestCaseDto> NO_CODE_CHANGE = new CodeChangeType<>(
-            TestCaseDto.class,
+    public static final @NotNull CodeChangeType<TestCase> NO_CODE_CHANGE = new CodeChangeType<>(
+            TestCase.class,
             Bundle.message("codegen.no.code.change"),
             new NoOpCodeUpdate("read-only field")
     );

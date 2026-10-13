@@ -19,7 +19,7 @@ package org.testin.testcase.create;
 import com.intellij.ui.components.JBPanel;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.Priority;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.testcase.CreateTestCaseFields;
 import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.RadioSelection;
@@ -49,7 +49,7 @@ public class PrioritySection implements TestCaseSection {
     }
 
     @Override
-    public @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto testCase) {
+    public @NotNull TestCase applyTo(final @NotNull TestCase testCase) {
         return testCase.edit().priority(priority.getSelected()).build();
     }
 
@@ -72,7 +72,7 @@ public class PrioritySection implements TestCaseSection {
     }
 
     @Override
-    public void fillData(final @NotNull TestCaseDto testCase) {
+    public void fillData(final @NotNull TestCase testCase) {
         priority.select(testCase.getPriority());
     }
 }

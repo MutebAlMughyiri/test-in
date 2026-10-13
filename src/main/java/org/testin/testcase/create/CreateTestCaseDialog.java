@@ -23,7 +23,7 @@ import org.testin.codegen.CodeChangeType;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
 import org.testin.model.StatusBarItem;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
 import org.testin.testcase.CreateTestCaseFields;
@@ -45,8 +45,8 @@ public class CreateTestCaseDialog extends AbstractTestCaseDialog {
     private final @NotNull Nodes nodes = Services.getInstance(project, Nodes.class);
 
     // UC-EDITOR-PANEL-005, Rule-CODEGEN-001
-    public CreateTestCaseDialog(final @NotNull Project project, final @NotNull TestSetNode testSet, final @NotNull Consumer<@NotNull TestCaseDto> onSave) {
-        super(project, TestCaseDto.builder().parent(testSet).build(), onSave, ADD_FIELD, TestCaseDialogKey.SAVE, TestCaseDialogKey.CANCEL);
+    public CreateTestCaseDialog(final @NotNull Project project, final @NotNull TestSetNode testSet, final @NotNull Consumer<@NotNull TestCase> onSave) {
+        super(project, TestCase.builder().parent(testSet).build(), onSave, ADD_FIELD, TestCaseDialogKey.SAVE, TestCaseDialogKey.CANCEL);
         this.testSet = testSet;
 
         descriptionSection.compareAgainst(() -> testCases.getTestCasesForTestSet(testSet.getPath()));

@@ -22,7 +22,7 @@ import com.intellij.ui.components.panels.HorizontalLayout;
 import com.intellij.util.ui.EmptyIcon;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.testcase.CreateTestCaseFields;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.ui.Badge;
@@ -43,7 +43,7 @@ import java.util.Optional;
 class TestCaseDetails extends JBPanel<TestCaseDetails> {
     static final int GAP = 10;
 
-    private @NotNull Optional<TestCaseDto> shown = Optional.empty();
+    private @NotNull Optional<TestCase> shown = Optional.empty();
 
     private float zoom = 1.0f;
 
@@ -55,7 +55,7 @@ class TestCaseDetails extends JBPanel<TestCaseDetails> {
 
     }
 
-    void show(final @NotNull TestCaseDto testCase) {
+    void show(final @NotNull TestCase testCase) {
         shown = Optional.of(testCase);
 
         render();
@@ -82,7 +82,7 @@ class TestCaseDetails extends JBPanel<TestCaseDetails> {
         shown.ifPresent(this::rows);
     }
 
-    private void rows(final @NotNull TestCaseDto testCase) {
+    private void rows(final @NotNull TestCase testCase) {
         addTags(testCase);
 
         addRow(CreateTestCaseFields.STEPS.getIcon(), Display.numberedSteps(testCase.getSteps()));
@@ -128,7 +128,7 @@ class TestCaseDetails extends JBPanel<TestCaseDetails> {
         add(value, constraints);
     }
 
-    private void addTags(final @NotNull TestCaseDto testCase) {
+    private void addTags(final @NotNull TestCase testCase) {
         final @NotNull List<Badge> badges = Badges.testCaseBadges(testCase);
 
         if (badges.isEmpty()) return;

@@ -22,7 +22,7 @@ import org.testin.AbstractTempRootIdeTest;
 import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
@@ -57,20 +57,20 @@ public class TesterNameStampIdeTest extends AbstractTempRootIdeTest {
         });
     }
 
-    private @NotNull TestCaseDto aTestCaseIn(final @NotNull TestSetNode testSet) {
-        final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
+    private @NotNull TestCase aTestCaseIn(final @NotNull TestSetNode testSet) {
+        final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
         testCase.setParent(testSet);
         return testCase;
     }
 
-    private void put(final @NotNull TestSetNode testSet, final @NotNull TestCaseDto testCase) {
+    private void put(final @NotNull TestSetNode testSet, final @NotNull TestCase testCase) {
         assertTrue("the test case was not written", Services.getInstance(getProject(), TestCases.class).putTestCase(testSet.getPath(), testCase));
     }
 
     // Rule-SETTING-018
     public void testTheNameIsReadAtTheMomentItIsStamped() {
         final @NotNull TestSetNode testSet = loginTestSet();
-        final @NotNull TestCaseDto testCase = aTestCaseIn(testSet);
+        final @NotNull TestCase testCase = aTestCaseIn(testSet);
 
         asTester("Sara", () -> put(testSet, testCase));
         assertEquals("Sara", testCase.getCreatedBy());
@@ -84,7 +84,7 @@ public class TesterNameStampIdeTest extends AbstractTempRootIdeTest {
     // Rule-SETTING-019
     public void testAnEmptyNameWritesNoName() {
         final @NotNull TestSetNode testSet = loginTestSet();
-        final @NotNull TestCaseDto testCase = aTestCaseIn(testSet);
+        final @NotNull TestCase testCase = aTestCaseIn(testSet);
 
         asTester("", () -> put(testSet, testCase));
         assertEquals("an empty tester name was replaced by a name of Testin's own", "", testCase.getCreatedBy());

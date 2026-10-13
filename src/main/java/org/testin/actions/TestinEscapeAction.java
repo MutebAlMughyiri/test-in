@@ -30,7 +30,7 @@ import org.testin.clipboard.CopiedTestCases;
 import org.testin.clipboard.CutState;
 import org.testin.explorer.tree.TreeTransferHandler;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
@@ -53,7 +53,7 @@ public class TestinEscapeAction extends AbstractBoundProjectAction {
         this.registerCustomShortcutSet(Shortcuts.Escape.getCustomShortcut(), tree);
     }
 
-    public TestinEscapeAction(final @NotNull Project project, final @NotNull JBList<TestCaseDto> list) {
+    public TestinEscapeAction(final @NotNull Project project, final @NotNull JBList<TestCase> list) {
         super(project, TITLE, Bundle.message("escape.editor"), AllIcons.Actions.InlayGear);
         this.onEscape = () -> stepBack(list::clearSelection);
         this.registerCustomShortcutSet(Shortcuts.Escape.getCustomShortcut(), list);

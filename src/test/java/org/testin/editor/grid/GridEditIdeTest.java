@@ -26,7 +26,7 @@ import org.testin.editor.EditorFixtures;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.toolbar.GridViewButton;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.notifications.Done;
 import org.testin.services.Services;
@@ -91,7 +91,7 @@ public class GridEditIdeTest extends AbstractTempRootIdeTest {
     private @NotNull TestSetEditor aGridOver(final @NotNull String... descriptions) {
         testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
         for (int i = 0; i < descriptions.length; i++) {
-            final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description(descriptions[i]).order(String.format("m%04d", i)).groups(new ArrayList<>(List.of("Smoke"))).build();
+            final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description(descriptions[i]).order(String.format("m%04d", i)).groups(new ArrayList<>(List.of("Smoke"))).build();
             testCase.setParent(testSet);
             theTestCases().putTestCaseVerbatim(testSet.getPath(), testCase);
         }
@@ -103,7 +103,7 @@ public class GridEditIdeTest extends AbstractTempRootIdeTest {
         return editor;
     }
 
-    private @NotNull TestCaseDto stored(final @NotNull TestCaseDto testCase) {
+    private @NotNull TestCase stored(final @NotNull TestCase testCase) {
         return theTestCases().findTestCase(testCase.getId()).orElseThrow();
     }
 
@@ -119,7 +119,7 @@ public class GridEditIdeTest extends AbstractTempRootIdeTest {
     public void testTestinStoresTheValueItMadeAndTheCellSaysItWasAdjusted() {
         final @NotNull TestSetEditor editor = aGridOver("Log in");
         final @NotNull JBTable table = gridOf(editor);
-        final @NotNull TestCaseDto testCase = editor.getList().getModel().getElementAt(0);
+        final @NotNull TestCase testCase = editor.getList().getModel().getElementAt(0);
         final @NotNull Said balloons = Said.listening(getProject(), getTestRootDisposable());
 
         typeInto(table, 0, TestSetEditorFields.GROUP, " Smoke ,  Regression ,Smoke");
@@ -162,7 +162,7 @@ public class GridEditIdeTest extends AbstractTempRootIdeTest {
     public void testClickingAwayFromAnOpenCellSavesIt() {
         final @NotNull TestSetEditor editor = aGridOver("Log in", "Log out");
         final @NotNull JBTable table = gridOf(editor);
-        final @NotNull TestCaseDto testCase = editor.getList().getModel().getElementAt(0);
+        final @NotNull TestCase testCase = editor.getList().getModel().getElementAt(0);
         table.setSize(1200, 600);
 
         assertTrue(table.editCellAt(0, column(table, TestSetEditorFields.DESCRIPTION)));

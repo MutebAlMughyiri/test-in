@@ -25,7 +25,7 @@ import org.testin.Said;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
 import org.testin.setting.AppSettingsState;
@@ -49,10 +49,10 @@ import java.util.stream.Stream;
 
 public class UpdateOneFieldIdeTest extends AbstractTempRootIdeTest {
 
-    private final @NotNull List<TestCaseDto> saved = new ArrayList<>();
+    private final @NotNull List<TestCase> saved = new ArrayList<>();
     private @NotNull TestSetNode testSet = new TestSetNode();
 
-    private static @NotNull TestCaseDto with(final @NotNull TestCaseDto testCase, final @NotNull String description, final @NotNull String expectedResult) {
+    private static @NotNull TestCase with(final @NotNull TestCase testCase, final @NotNull String description, final @NotNull String expectedResult) {
         return testCase.edit().description(description).expectedResult(expectedResult).build();
     }
 
@@ -70,17 +70,17 @@ public class UpdateOneFieldIdeTest extends AbstractTempRootIdeTest {
         return Services.getInstance(getProject(), TestCases.class);
     }
 
-    private @NotNull TestCaseDto aTestCase(final @NotNull String description, final @NotNull String expectedResult) {
+    private @NotNull TestCase aTestCase(final @NotNull String description, final @NotNull String expectedResult) {
         if (testSet.getPath().toString().isEmpty())
             testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
 
-        final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description(description).expectedResult(expectedResult).order("m" + description.length()).build();
+        final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description(description).expectedResult(expectedResult).order("m" + description.length()).build();
         testCase.setParent(testSet);
         theTestCases().putTestCaseVerbatim(testSet.getPath(), testCase);
         return theTestCases().findTestCase(testCase.getId()).orElseThrow();
     }
 
-    private @NotNull UpdateTestCaseDialog shown(final @NotNull TestCaseDto testCase, final @NotNull UpdateTestCaseFields field) {
+    private @NotNull UpdateTestCaseDialog shown(final @NotNull TestCase testCase, final @NotNull UpdateTestCaseFields field) {
         final @NotNull UpdateTestCaseDialog dialog = new UpdateTestCaseDialog(getProject(), testCase, field, saved::add);
         ShownDialog.open(getProject(), UpdateTestCaseDialog.class, dialog::show);
         return dialog;
@@ -90,7 +90,7 @@ public class UpdateOneFieldIdeTest extends AbstractTempRootIdeTest {
         ShownDialog.press(getProject(), UpdateTestCaseDialog.class, Shortcuts.Enter.getKey());
     }
 
-    private @NotNull TestSetEditor anEditorSelecting(final @NotNull TestCaseDto testCase) {
+    private @NotNull TestSetEditor anEditorSelecting(final @NotNull TestCase testCase) {
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         for (int i = 0; i < editor.getList().getModel().getSize(); i++)
             if (editor.getList().getModel().getElementAt(i).getId().equals(testCase.getId()))
@@ -98,7 +98,7 @@ public class UpdateOneFieldIdeTest extends AbstractTempRootIdeTest {
         return editor;
     }
 
-    private @NotNull String fileOf(final @NotNull TestCaseDto testCase) {
+    private @NotNull String fileOf(final @NotNull TestCase testCase) {
         try (final Stream<Path> files = Files.list(testSet.getPath())) {
             final @NotNull Path file = files.filter(candidate -> candidate.getFileName().toString().startsWith(testCase.getId().toString())).findFirst().orElseThrow(() -> new AssertionError("no file holds " + testCase.getDescription()));
             return Files.readString(file) + "@" + file.toFile().lastModified();
@@ -115,7 +115,7 @@ public class UpdateOneFieldIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-035
     public void testOnlyTheOpenedFieldIsWrittenBackAndEveryOtherFieldIsGray() {
-        final @NotNull TestCaseDto testCase = aTestCase("Log in", "Dashboard opens");
+        final @NotNull TestCase testCase = aTestCase("Log in", "Dashboard opens");
         final @NotNull UpdateTestCaseDialog dialog = shown(testCase, UpdateTestCaseFields.EXPECTED_RESULT);
 
         assertTrue("the description beside the opened field is not gray", gray(dialog.getDescriptionSection()));
@@ -145,7 +145,7 @@ public class UpdateOneFieldIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-006
     public void testASaveThatLeftEveryFieldAsItWasWritesNothingAndSaysNothing() {
-        final @NotNull TestCaseDto testCase = aTestCase("Log in", "Dashboard opens");
+        final @NotNull TestCase testCase = aTestCase("Log in", "Dashboard opens");
         final @NotNull String before = fileOf(testCase);
         final @NotNull TestSetEditor editor = anEditorSelecting(testCase);
         final @NotNull Said balloons = Said.listening(getProject(), getTestRootDisposable());
@@ -167,7 +167,7 @@ public class UpdateOneFieldIdeTest extends AbstractTempRootIdeTest {
         final @NotNull String tester = settings.testerName;
         settings.testerName = "Sara";
         try {
-            final @NotNull TestCaseDto testCase = aTestCase("Log in", "Dashboard opens");
+            final @NotNull TestCase testCase = aTestCase("Log in", "Dashboard opens");
             final @NotNull JsonCodec mapper = Services.getInstance(getProject(), JsonCodec.class);
             final @NotNull String original = mapper.writeValueAsString(testCase.copy());
             final @NotNull TestSetEditor editor = anEditorSelecting(testCase);

@@ -26,7 +26,7 @@ import org.testin.Await;
 import org.testin.editor.AbstractTestinEditor;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.testset.TestSetEditor;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.testcase.TestSetEditorFields;
@@ -91,7 +91,7 @@ public class OrderCellIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-273, Rule-EDITOR-PANEL-111
     public void testChoosingFirstFromAnOrderCellMovesTheRowAndTheGridFollowsIt() {
         final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
-        final @NotNull List<TestCaseDto> testCases = EditorFixtures.testCases(getProject(), testSet, 3);
+        final @NotNull List<TestCase> testCases = EditorFixtures.testCases(getProject(), testSet, 3);
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         final @NotNull JBTable grid = gridOf(editor);
         onTheOrderCellOfRow(grid, 2);
@@ -105,7 +105,7 @@ public class OrderCellIdeTest extends AbstractTempRootIdeTest {
                 .setValue(1);
         ShownDialog.press(getProject(), UpdateTestCaseDialog.class, Shortcuts.Enter.getKey());
 
-        final @NotNull TestCaseDto moved = testCases.getLast();
+        final @NotNull TestCase moved = testCases.getLast();
         Await.until("the test case never moved to the top of its set", () -> editor.getAllTestCases().getFirst().getId().equals(moved.getId()));
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
@@ -117,7 +117,7 @@ public class OrderCellIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-273
     public void testAnOrderCellInATestRunOpensNothing() {
         final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
-        final @NotNull List<TestCaseDto> testCases = EditorFixtures.testCases(getProject(), EditorFixtures.testSet(getProject(), testProject, "Checkout"), 2);
+        final @NotNull List<TestCase> testCases = EditorFixtures.testCases(getProject(), EditorFixtures.testSet(getProject(), testProject, "Checkout"), 2);
         final @NotNull JBTable grid = gridOf(EditorFixtures.openTestRunEditor(getProject(), EditorFixtures.testRun(getProject(), testProject, testCases.stream().map(EditorFixtures::pending).toList()), getTestRootDisposable()));
         onTheOrderCellOfRow(grid, 0);
 

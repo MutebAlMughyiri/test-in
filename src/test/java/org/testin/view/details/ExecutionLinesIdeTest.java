@@ -19,7 +19,7 @@ package org.testin.view.details;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.TestRuns;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.status.TestRunStatus;
@@ -37,7 +37,7 @@ import java.util.OptionalInt;
 
 public class ExecutionLinesIdeTest extends AbstractViewPanelIdeTest {
 
-    private TestCaseDto testCase;
+    private TestCase testCase;
 
     private static @NotNull RunItemExecution execution(final @NotNull RunItemStatus status, final int invocation, final int retry, final boolean retried, final @NotNull String actual) {
         return RunItemExecution.builder().status(status).invocation(invocation).retry(retry).retried(retried).actualResult(actual).build();

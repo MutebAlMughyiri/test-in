@@ -21,7 +21,7 @@ import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.ui.dialogs.DialogStyle;
 import org.testin.ui.framework.Spacing;
 
@@ -51,7 +51,7 @@ public interface TestCaseSection {
     }
 
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-036
-    default boolean isShownWith(final @NotNull TestCaseDto testCase) {
+    default boolean isShownWith(final @NotNull TestCase testCase) {
         return false;
     }
 
@@ -63,7 +63,7 @@ public interface TestCaseSection {
     default void addBox(final @NotNull Runnable refit) {
     }
 
-    @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto testCase);
+    @NotNull TestCase applyTo(final @NotNull TestCase testCase);
 
     void setupShortcut(final @NotNull JComponent mainPanel, final @NotNull JBPanel<?> slot, final @NotNull AbstractTestCaseDialog base, final @NotNull Runnable repackAction);
 
@@ -75,7 +75,7 @@ public interface TestCaseSection {
 
     void setEditable(final boolean editable);
 
-    void fillData(final @NotNull TestCaseDto testCase);
+    void fillData(final @NotNull TestCase testCase);
 
     default void styleField(final @NotNull EditorTextField field, final @NotNull String placeholder) {
         DialogStyle.asField(field);

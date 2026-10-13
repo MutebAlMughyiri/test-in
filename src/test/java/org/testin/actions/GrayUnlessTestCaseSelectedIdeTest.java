@@ -29,7 +29,7 @@ import org.testin.clipboard.CopyTestCaseValueAction;
 import org.testin.clipboard.CutTestCaseAction;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.testset.TestSetEditor;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.navigate.NavigateToTestCaseAction;
 import org.testin.testcase.RemoveTestCaseAction;
@@ -45,7 +45,7 @@ public class GrayUnlessTestCaseSelectedIdeTest extends AbstractTempRootIdeTest {
         return List.of(new CopyTestCaseAction(), new CopyTestCaseValueAction(), new CutTestCaseAction(), new NavigateToTestCaseAction(), new RemoveTestCaseAction(), new UpdateTestCaseAction(), new ViewDetailsAction());
     }
 
-    private @NotNull AnActionEvent updated(final @NotNull AnAction action, final @NotNull TestSetEditor editor, final @NotNull List<TestCaseDto> selected) {
+    private @NotNull AnActionEvent updated(final @NotNull AnAction action, final @NotNull TestSetEditor editor, final @NotNull List<TestCase> selected) {
         final @NotNull AnActionEvent e = TestActionEvent.createTestEvent(action, SimpleDataContext.builder()
                 .add(CommonDataKeys.PROJECT, getProject())
                 .add(TestinDataKeys.EDITOR, editor)
@@ -58,7 +58,7 @@ public class GrayUnlessTestCaseSelectedIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-230
     public void testEveryTestCaseActionIsGrayAndSaysSoUntilATestCaseIsSelected() {
         final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Login");
-        final @NotNull TestCaseDto testCase = EditorFixtures.testCase(getProject(), testSet, "Log in with a valid user", "a");
+        final @NotNull TestCase testCase = EditorFixtures.testCase(getProject(), testSet, "Log in with a valid user", "a");
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
 
         for (final AnAction action : theSevenActions()) {
@@ -76,7 +76,7 @@ public class GrayUnlessTestCaseSelectedIdeTest extends AbstractTempRootIdeTest {
         final @NotNull UpdateTestCaseAction update = new UpdateTestCaseAction();
         final @NotNull AnActionEvent e = TestActionEvent.createTestEvent(update, SimpleDataContext.builder()
                 .add(CommonDataKeys.PROJECT, getProject())
-                .add(TestinDataKeys.SELECTED_TEST_CASES, List.of(new TestCaseDto()))
+                .add(TestinDataKeys.SELECTED_TEST_CASES, List.of(new TestCase()))
                 .build());
         ActionUtil.updateAction(update, e);
 

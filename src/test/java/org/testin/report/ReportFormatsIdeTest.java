@@ -37,7 +37,7 @@ import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
@@ -133,7 +133,7 @@ public class ReportFormatsIdeTest extends AbstractTempRootIdeTest {
     }
 
     private void aTestCase(final @NotNull UUID testCaseId, final @NotNull String description) {
-        final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(testCaseId).description(description).order(testCaseId.toString()).build();
+        final @NotNull TestCase testCase = TestCase.builder().id(testCaseId).description(description).order(testCaseId.toString()).build();
         testCase.setParent(login);
         Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(login.getPath(), testCase);
     }
@@ -328,7 +328,7 @@ public class ReportFormatsIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-REPORT-026
     public void testEveryFormatListsTheRunItemsInTheTestRunsOrder() {
-        final @NotNull List<UUID> inTheSet = Services.getInstance(getProject(), TestCases.class).getTestCasesUnder(testProject.getTestCasesFolder()).stream().map(TestCaseDto::getId).toList();
+        final @NotNull List<UUID> inTheSet = Services.getInstance(getProject(), TestCases.class).getTestCasesUnder(testProject.getTestCasesFolder()).stream().map(TestCase::getId).toList();
         final @NotNull UUID first = inTheSet.getFirst();
         final @NotNull UUID second = inTheSet.get(1);
         final @NotNull TestRunNode testRun = aTestRun("Stored backwards", List.of(

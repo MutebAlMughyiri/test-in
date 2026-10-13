@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.TestinEditor;
 import org.testin.editor.testrun.TestRunEditor;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 
 import java.util.List;
@@ -39,9 +39,9 @@ public final class TestinDataKeys {
 
     public static final @NotNull DataKey<TestinEditor> EDITOR = DataKey.create("testin.editor");
 
-    public static final @NotNull DataKey<List<TestCaseDto>> SELECTED_TEST_CASES = DataKey.create("testin.selectedCases");
+    public static final @NotNull DataKey<List<TestCase>> SELECTED_TEST_CASES = DataKey.create("testin.selectedCases");
 
-    public static void from(final @NotNull DataSink sink, final @NotNull TestinEditor editor, final @NotNull List<TestCaseDto> selected) {
+    public static void from(final @NotNull DataSink sink, final @NotNull TestinEditor editor, final @NotNull List<TestCase> selected) {
         sink.set(EDITOR, editor);
         sink.set(SELECTED_TEST_CASES, selected);
     }
@@ -55,12 +55,12 @@ public final class TestinDataKeys {
         return editor(e).filter(TestRunEditor.class::isInstance).map(TestRunEditor.class::cast);
     }
 
-    public static @NotNull List<TestCaseDto> selectedTestCases(final @NotNull AnActionEvent e) {
+    public static @NotNull List<TestCase> selectedTestCases(final @NotNull AnActionEvent e) {
         return Optional.ofNullable(SELECTED_TEST_CASES.getData(e.getDataContext())).orElse(List.of());
     }
 
-    public static @NotNull Optional<TestCaseDto> singleSelectedTestCase(final @NotNull AnActionEvent e) {
-        final @NotNull List<TestCaseDto> selected = selectedTestCases(e);
+    public static @NotNull Optional<TestCase> singleSelectedTestCase(final @NotNull AnActionEvent e) {
+        final @NotNull List<TestCase> selected = selectedTestCases(e);
 
         return selected.size() == 1 ? Optional.of(selected.getFirst()) : Optional.empty();
     }

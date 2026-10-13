@@ -23,7 +23,7 @@ import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.editor.testrun.TestRunEditor;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.testrun.RunItemExecution;
@@ -39,17 +39,17 @@ import java.util.List;
 public class CardWrapIdeTest extends AbstractTempRootIdeTest {
     private static final @NotNull String LONG = "Invocation 4, all pass - expect stay through 4 invocations, then Passed.";
 
-    private static @NotNull RunItem passed(final @NotNull TestCaseDto testCase) {
+    private static @NotNull RunItem passed(final @NotNull TestCase testCase) {
         return RunItem.builder().id(testCase.getId()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())).build();
     }
 
-    private static int heightAt(final @NotNull JBList<TestCaseDto> list, final int width) {
+    private static int heightAt(final @NotNull JBList<TestCase> list, final int width) {
         list.setSize(width, 4000);
-        ((CollectionListModel<TestCaseDto>) list.getModel()).allContentsChanged();
+        ((CollectionListModel<TestCase>) list.getModel()).allContentsChanged();
         return list.getCellBounds(1, 1).height;
     }
 
-    private static int lastLineBottom(final @NotNull JBList<TestCaseDto> list) {
+    private static int lastLineBottom(final @NotNull JBList<TestCase> list) {
         final @NotNull Rectangle cell = list.getCellBounds(1, 1);
         final @NotNull Component card = list.getCellRenderer().getListCellRendererComponent(list, list.getModel().getElementAt(1), 1, false, false);
         card.setBounds(0, 0, cell.width, cell.height);
@@ -64,11 +64,11 @@ public class CardWrapIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-003
     public void testANarrowerEditorGivesAWrappedTitleItsExtraLineEvenWhenTheCardAboveSaysTheSame() {
         final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
-        final @NotNull List<TestCaseDto> testCases = List.of(
+        final @NotNull List<TestCase> testCases = List.of(
                 EditorFixtures.testCase(getProject(), EditorFixtures.testSet(getProject(), testProject, "Login"), LONG, "1"),
                 EditorFixtures.testCase(getProject(), EditorFixtures.testSet(getProject(), testProject, "Logout"), LONG, "1"));
         final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), EditorFixtures.testRun(getProject(), testProject, testCases.stream().map(CardWrapIdeTest::passed).toList()), getTestRootDisposable());
-        final @NotNull JBList<TestCaseDto> list = editor.getList();
+        final @NotNull JBList<TestCase> list = editor.getList();
 
         final int wide = heightAt(list, 1400);
         final int narrow = heightAt(list, 420);

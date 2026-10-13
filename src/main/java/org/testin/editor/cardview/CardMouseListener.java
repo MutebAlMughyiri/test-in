@@ -31,7 +31,7 @@ import org.testin.editor.card.CardTitle;
 import org.testin.editor.card.Offered;
 import org.testin.editor.testrun.ExecutingNow;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
@@ -52,15 +52,15 @@ import java.util.Optional;
 
 public class CardMouseListener extends MouseAdapter {
     private final @NotNull Project project;
-    private final @NotNull JBList<TestCaseDto> list;
-    private final @NotNull CollectionListModel<TestCaseDto> model;
+    private final @NotNull JBList<TestCase> list;
+    private final @NotNull CollectionListModel<TestCase> model;
     private final @NotNull AbstractEditorContextMenu contextMenu;
     private final @NotNull List<String> treePath;
     private final @NotNull TestinEditor editor;
     private final @NotNull Notifier notifier;
     private @NotNull String shownTip = "";
 
-    public CardMouseListener(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull JBList<TestCaseDto> list, final @NotNull CollectionListModel<TestCaseDto> model, final @NotNull AbstractNode node, final @NotNull AbstractEditorContextMenu contextMenu) {
+    public CardMouseListener(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull JBList<TestCase> list, final @NotNull CollectionListModel<TestCase> model, final @NotNull AbstractNode node, final @NotNull AbstractEditorContextMenu contextMenu) {
         this.project = project;
         this.editor = editor;
         this.list = list;
@@ -109,7 +109,7 @@ public class CardMouseListener extends MouseAdapter {
         if (!bounds.contains(e.getPoint())) return;
 
         getActionAtPoint(index, e.getX() - bounds.x, e.getY() - bounds.y).ifPresent(button -> {
-            final @NotNull TestCaseDto testCase = list.getModel().getElementAt(index);
+            final @NotNull TestCase testCase = list.getModel().getElementAt(index);
 
             TestinLogger.trace(button.action().getTooltip() + ", tc: " + testCase.getDescription());
 
@@ -192,7 +192,7 @@ public class CardMouseListener extends MouseAdapter {
     private @NotNull Optional<Offered> getActionAtPoint(final int index, final int xInCell, final int yInCell) {
         if (index == -1) return Optional.empty();
 
-        final @NotNull TestCaseDto testCase = list.getModel().getElementAt(index);
+        final @NotNull TestCase testCase = list.getModel().getElementAt(index);
         final @NotNull List<Offered> buttons = TestCaseQuickAction.onCard(project, editor.getParent(), testCase);
         final boolean executing = ExecutingNow.is(project, testCase.getId());
         final int titleWidth = CardTitle.titleWidth(list, editor.cardTitle(testCase), CardTitle.slotCount(buttons, executing));

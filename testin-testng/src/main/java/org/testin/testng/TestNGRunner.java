@@ -33,7 +33,7 @@ import com.theoryinpractice.testng.configuration.TestNGConfigurationType;
 import com.theoryinpractice.testng.model.TestType;
 import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.navigate.TestMethodCode;
 import org.testin.runner.TestNGExecution;
 import org.testin.runner.AutomationExecutor;
@@ -68,7 +68,7 @@ public final class TestNGRunner implements AutomationExecutor {
     }
 
     @Override
-    public void run(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases) {
+    public void run(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
         if (testCases.isEmpty()) return;
 
         final @NotNull TestNGExecution execution = Services.getInstance(project, TestNGExecution.class);
@@ -90,14 +90,14 @@ public final class TestNGRunner implements AutomationExecutor {
                 .submit(AppExecutorUtil.getAppExecutorService()), "Preparing the TestNG run");
     }
 
-    private @NotNull Optional<Prepared> prepare(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases) {
+    private @NotNull Optional<Prepared> prepare(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
         try {
             final @NotNull Map<UUID, List<String>> methods = TestMethodCode.available().methodFqcnsOf(project, testCases);
 
             final @NotNull List<Generated> found = new ArrayList<>();
-            final @NotNull List<TestCaseDto> withoutCode = new ArrayList<>();
+            final @NotNull List<TestCase> withoutCode = new ArrayList<>();
 
-            for (final TestCaseDto testCase : testCases) {
+            for (final TestCase testCase : testCases) {
                 Optional.ofNullable(methods.get(testCase.getId())).ifPresentOrElse(
                         method -> found.add(new Generated(testCase, method)),
                         () -> withoutCode.add(testCase));
@@ -114,7 +114,7 @@ public final class TestNGRunner implements AutomationExecutor {
         }
     }
 
-    private void interrupted(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases) {
+    private void interrupted(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
         testCases.forEach(Services.getInstance(project, TestNGExecution.class)::notStarting);
 
         DumbService.getInstance(project).showDumbModeNotification(Bundle.message("testng.indexing.interrupted"));
@@ -140,14 +140,14 @@ public final class TestNGRunner implements AutomationExecutor {
     private void launch(final @NotNull Project project, final @NotNull List<Generated> found, final @NotNull Optional<Module> module) {
         final @NotNull TestNGExecution execution = Services.getInstance(project, TestNGExecution.class);
 
-        final @NotNull Set<TestCaseDto> stillWanted = new HashSet<>(execution.stillWanted(found.stream().map(Generated::testCase).toList()));
+        final @NotNull Set<TestCase> stillWanted = new HashSet<>(execution.stillWanted(found.stream().map(Generated::testCase).toList()));
         if (stillWanted.isEmpty()) {
             TestinLogger.info("Not starting: every test case in the execution was stopped before it began");
             return;
         }
 
         final @NotNull List<Generated> generated = found.stream().filter(one -> stillWanted.contains(one.testCase())).toList();
-        final @NotNull List<TestCaseDto> testCases = generated.stream().map(Generated::testCase).toList();
+        final @NotNull List<TestCase> testCases = generated.stream().map(Generated::testCase).toList();
 
         final @NotNull LinkedHashSet<String> patterns = new LinkedHashSet<>(generated.stream().map(Generated::pattern).toList());
         final @NotNull String name = execution.freeRunName(configNameFor(generated));

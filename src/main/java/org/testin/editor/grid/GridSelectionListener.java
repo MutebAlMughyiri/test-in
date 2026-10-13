@@ -22,7 +22,7 @@ import com.intellij.ui.table.JBTable;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.TestinEditor;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -33,8 +33,8 @@ import java.util.List;
 public class GridSelectionListener implements ListSelectionListener {
     private final @NotNull TestinEditor editor;
     private final @NotNull JBTable table;
-    private final @NotNull JBList<TestCaseDto> list;
-    private final @NotNull List<TestCaseDto> pageTestCases;
+    private final @NotNull JBList<TestCase> list;
+    private final @NotNull List<TestCase> pageTestCases;
 
     // UC-EDITOR-PANEL-024, Rule-EDITOR-PANEL-111
     @Override

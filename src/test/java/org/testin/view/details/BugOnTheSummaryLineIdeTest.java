@@ -18,7 +18,7 @@ package org.testin.view.details;
 import com.intellij.ui.components.ActionLink;
 import com.intellij.ui.components.JBPanel;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.bug.BugPriority;
 import org.testin.model.bug.BugSeverity;
 import org.testin.model.node.TestRunNode;
@@ -39,10 +39,10 @@ public class BugOnTheSummaryLineIdeTest extends AbstractViewPanelIdeTest {
 
     private static final @NotNull String ISSUE = "https://github.com/mtb550/test-in/issues/412";
 
-    private TestCaseDto testCase;
+    private TestCase testCase;
     private TestRunNode testRun;
 
-    private static @NotNull RunItem recorded(final @NotNull TestCaseDto testCase, final @NotNull RunItemStatus status, final @NotNull String bugIssueUrl) {
+    private static @NotNull RunItem recorded(final @NotNull TestCase testCase, final @NotNull RunItemStatus status, final @NotNull String bugIssueUrl) {
         return RunItem.builder().id(testCase.getId()).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl(bugIssueUrl).executions(List.of(RunItemExecution.builder().status(status).build())).build();
     }
 

@@ -19,7 +19,7 @@ package org.testin.navigate;
 import com.intellij.openapi.extensions.ExtensionPointName;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.util.FromContentModule;
 
 import java.util.List;
@@ -38,20 +38,20 @@ public interface TestMethodCode {
     }
 
     @FromContentModule
-    void toCode(final @NotNull Project project, final @NotNull TestCaseDto testCase);
+    void toCode(final @NotNull Project project, final @NotNull TestCase testCase);
 
     @FromContentModule
-    @NotNull Map<UUID, List<String>> methodFqcnsOf(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases);
+    @NotNull Map<UUID, List<String>> methodFqcnsOf(final @NotNull Project project, final @NotNull List<TestCase> testCases);
 
     @FromContentModule
-    @NotNull Map<UUID, Boolean> methodsFor(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases);
+    @NotNull Map<UUID, Boolean> methodsFor(final @NotNull Project project, final @NotNull List<TestCase> testCases);
 
     @FromContentModule
-    @NotNull Set<UUID> withAWrittenBody(@NotNull Project project, @NotNull List<TestCaseDto> testCases);
+    @NotNull Set<UUID> withAWrittenBody(@NotNull Project project, @NotNull List<TestCase> testCases);
 
     @FromContentModule
-    @NotNull Optional<String> fillBody(@NotNull Project project, @NotNull TestCaseDto testCase, @NotNull String statements);
+    @NotNull Optional<String> fillBody(@NotNull Project project, @NotNull TestCase testCase, @NotNull String statements);
 
     @FromContentModule
-    @NotNull Optional<String> replaceBody(@NotNull Project project, @NotNull TestCaseDto testCase, @NotNull String statements);
+    @NotNull Optional<String> replaceBody(@NotNull Project project, @NotNull TestCase testCase, @NotNull String statements);
 }

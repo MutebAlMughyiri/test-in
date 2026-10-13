@@ -19,7 +19,7 @@ package org.testin.testcase.update.bulk;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.Priority;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.util.Bundle;
 
@@ -28,7 +28,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 public class PriorityBulkSectionDialog extends AbstractJsonSplitBulkSectionDialog {
-    public PriorityBulkSectionDialog(final @NotNull Project project, final @NotNull List<TestCaseDto> selectedTestCases, final @NotNull Consumer<List<TestCaseDto>> updatedTestCases) {
+    public PriorityBulkSectionDialog(final @NotNull Project project, final @NotNull List<TestCase> selectedTestCases, final @NotNull Consumer<List<TestCase>> updatedTestCases) {
         super(project, selectedTestCases, updatedTestCases);
     }
 
@@ -49,7 +49,7 @@ public class PriorityBulkSectionDialog extends AbstractJsonSplitBulkSectionDialo
 
     // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-206
     @Override
-    protected @NotNull Optional<TestCaseDto> withValue(final @NotNull TestCaseDto testCase, final @NotNull String value) {
+    protected @NotNull Optional<TestCase> withValue(final @NotNull TestCase testCase, final @NotNull String value) {
         return super.withValue(testCase, value.isEmpty() ? Priority.DEFAULT.getLabel() : value);
     }
 }

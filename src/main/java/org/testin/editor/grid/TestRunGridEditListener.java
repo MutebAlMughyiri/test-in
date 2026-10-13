@@ -20,7 +20,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.indexer.TestRuns;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItem;
 import org.testin.services.Services;
 import org.testin.testrun.RunItemRecorder;
@@ -40,7 +40,7 @@ public class TestRunGridEditListener extends AbstractGridEditListener {
 
     private final @NotNull TestRuns testRuns;
 
-    public TestRunGridEditListener(final @NotNull Project project, final @NotNull TestRunEditor editor, final @NotNull List<TestCaseDto> pageTestCases, final @NotNull Runnable onEdited) {
+    public TestRunGridEditListener(final @NotNull Project project, final @NotNull TestRunEditor editor, final @NotNull List<TestCase> pageTestCases, final @NotNull Runnable onEdited) {
         super(project, pageTestCases);
         this.editor = editor;
         this.onEdited = onEdited;
@@ -55,7 +55,7 @@ public class TestRunGridEditListener extends AbstractGridEditListener {
 
     // UC-EDITOR-PANEL-041, Rule-EDITOR-PANEL-174
     @Override
-    protected @NotNull GridEdit apply(final @NotNull DefaultTableModel model, final @NotNull TestCaseDto onThisRow, final int row, final int column) {
+    protected @NotNull GridEdit apply(final @NotNull DefaultTableModel model, final @NotNull TestCase onThisRow, final int row, final int column) {
         final @NotNull TestRunEditorFields field = TestRunEditorFields.atColumn(column);
 
         if (!field.isEdited()) return GridEdit.UNCHANGED;

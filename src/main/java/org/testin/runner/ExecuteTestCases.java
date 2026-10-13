@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.CodeOn;
 import org.testin.help.Guide;
 import org.testin.help.Guides;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.services.OptionalPlugin;
 import org.testin.services.Services;
 
@@ -32,7 +32,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExecuteTestCases {
     // UC-CODEGEN-008, Rule-CODEGEN-031, Rule-CODEGEN-033, Rule-CODEGEN-035
-    public static void run(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases) {
+    public static void run(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
         if (testCases.isEmpty()) return;
         Services.getInstance(project, Guides.class).add(Guide.AUTOMATION_CODE);
 
@@ -42,7 +42,7 @@ public final class ExecuteTestCases {
 
         final @NotNull TestNGExecution execution = Services.getInstance(project, TestNGExecution.class);
 
-        final @NotNull List<TestCaseDto> starting = testCases.stream()
+        final @NotNull List<TestCase> starting = testCases.stream()
                 .filter(testCase -> !execution.isRunning(testCase.getId()))
                 .toList();
 

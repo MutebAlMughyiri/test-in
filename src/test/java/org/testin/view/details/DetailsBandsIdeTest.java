@@ -19,7 +19,7 @@ import com.intellij.icons.AllIcons;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.ui.components.JBPanel;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
@@ -53,8 +53,8 @@ public class DetailsBandsIdeTest extends BasePlatformTestCase {
                 at four
                 at five""";
 
-    private static @NotNull TestCaseDto aTestCase() {
-        return TestCaseDto.builder().id(ID).description("Log in with a valid user").expectedResult("The dashboard opens").module("Accounts").build();
+    private static @NotNull TestCase aTestCase() {
+        return TestCase.builder().id(ID).description("Log in with a valid user").expectedResult("The dashboard opens").module("Accounts").build();
     }
 
     private static @NotNull RunItem failed() {

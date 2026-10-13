@@ -25,7 +25,7 @@ import org.testin.codegen.WaitForIndexing;
 import org.testin.editor.TestinEditor;
 import org.testin.editor.open.TestinEditors;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
@@ -37,14 +37,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-record RemoveTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor, @NotNull AbstractNode node, @NotNull List<TestCaseDto> selected, @NotNull CutState cutState, @NotNull TestCases testCases, @NotNull TestinEditors editors, @NotNull Notifier notifier) {
-    RemoveTestCaseWork(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull AbstractNode node, final @NotNull List<TestCaseDto> selected) {
+record RemoveTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor, @NotNull AbstractNode node, @NotNull List<TestCase> selected, @NotNull CutState cutState, @NotNull TestCases testCases, @NotNull TestinEditors editors, @NotNull Notifier notifier) {
+    RemoveTestCaseWork(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull AbstractNode node, final @NotNull List<TestCase> selected) {
         this(project, editor, node, selected, Services.getInstance(project, CutState.class), Services.getInstance(project, TestCases.class), Services.getInstance(project, TestinEditors.class), Services.getInstance(project, Notifier.class));
     }
 
     // UC-EDITOR-PANEL-011, Rule-EDITOR-PANEL-062
     void remove() {
-        final @NotNull List<TestCaseDto> selectedTestCases = selected;
+        final @NotNull List<TestCase> selectedTestCases = selected;
         if (selectedTestCases.isEmpty()) return;
 
         final @NotNull Runnable delete = () -> {
@@ -61,7 +61,7 @@ record RemoveTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor
     }
 
     // UC-EDITOR-PANEL-011, Rule-EDITOR-PANEL-064
-    private void performDeletion(final @NotNull List<TestCaseDto> selectedTestCases) {
+    private void performDeletion(final @NotNull List<TestCase> selectedTestCases) {
         editor.getAllTestCases().removeAll(selectedTestCases);
 
         cutState.clear();
@@ -70,12 +70,12 @@ record RemoveTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor
     }
 
     // UC-EDITOR-PANEL-011, Rule-EDITOR-PANEL-064
-    private void removeFromDisk(final @NotNull List<TestCaseDto> selectedTestCases) {
+    private void removeFromDisk(final @NotNull List<TestCase> selectedTestCases) {
         final @NotNull List<UUID> testCaseIds = TestCaseSnapshot.idsOf(selectedTestCases);
         final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(project, node.getPath(), testCaseIds);
 
-        final @NotNull List<TestCaseDto> removed = new ArrayList<>();
-        for (final TestCaseDto testCase : selectedTestCases) {
+        final @NotNull List<TestCase> removed = new ArrayList<>();
+        for (final TestCase testCase : selectedTestCases) {
             if (testCases.removeTestCase(node.getPath(), testCase.getId())) removed.add(testCase);
         }
 

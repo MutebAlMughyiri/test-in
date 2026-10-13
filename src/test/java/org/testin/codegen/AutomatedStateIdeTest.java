@@ -27,7 +27,7 @@ import org.testin.editor.EditorFixtures;
 import org.testin.editor.statusbar.EditorStatusBar;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.model.Automated;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
@@ -52,18 +52,18 @@ public class AutomatedStateIdeTest extends AbstractCodegenIdeTest {
         return Services.getInstance(getProject(), AutomationState.class);
     }
 
-    private @NotNull List<TestCaseDto> threeStatesOfAutomation() {
+    private @NotNull List<TestCase> threeStatesOfAutomation() {
         testSet = createdTestSet("Checkout");
-        final @NotNull TestCaseDto written = createdTestCase(testSet, "Log in with a valid user", "m0001");
-        final @NotNull TestCaseDto empty = createdTestCase(testSet, "Log in with a wrong password", "m0002");
-        final @NotNull TestCaseDto missing = indexedTestCase(testSet, "Log in with a locked account", "m0003");
+        final @NotNull TestCase written = createdTestCase(testSet, "Log in with a valid user", "m0001");
+        final @NotNull TestCase empty = createdTestCase(testSet, "Log in with a wrong password", "m0002");
+        final @NotNull TestCase missing = indexedTestCase(testSet, "Log in with a locked account", "m0003");
         settled();
         writtenByTheTester(writtenMethodOf(GENERATED_CLASS, written), "System.out.println(1);");
         settled();
         return List.of(written, empty, missing);
     }
 
-    private void readAndAwait(final @NotNull List<TestCaseDto> testCases) {
+    private void readAndAwait(final @NotNull List<TestCase> testCases) {
         state().read(getProject(), testCases, () -> {
         });
         Await.until("the automation state never arrived", () -> testCases.stream().noneMatch(testCase -> state().of(testCase.getId()) == Automated.UNKNOWN));
@@ -71,8 +71,8 @@ public class AutomatedStateIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-EDITOR-PANEL-195
     public void testATestCaseIsWrittenMissingOrNotAutomatedAndAnEmptyGeneratedMethodIsNotAutomation() {
-        final @NotNull List<TestCaseDto> testCases = threeStatesOfAutomation();
-        final @NotNull TestCaseDto nameless = indexedTestCase(testSet, "!!!", "m0004");
+        final @NotNull List<TestCase> testCases = threeStatesOfAutomation();
+        final @NotNull TestCase nameless = indexedTestCase(testSet, "!!!", "m0004");
 
         readAndAwait(List.of(testCases.getFirst(), testCases.get(1), testCases.get(2), nameless));
 
@@ -84,12 +84,12 @@ public class AutomatedStateIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-EDITOR-PANEL-196
     public void testTheStateIsReadAwayFromTheScreenAndNothingUnreadIsCalledNotAutomated() {
-        final @NotNull List<TestCaseDto> testCases = threeStatesOfAutomation();
+        final @NotNull List<TestCase> testCases = threeStatesOfAutomation();
 
         state().read(getProject(), testCases, () -> {
         });
 
-        for (final TestCaseDto testCase : testCases) {
+        for (final TestCase testCase : testCases) {
             assertEquals("the state was read on the screen's thread, or reported before it was read", Automated.UNKNOWN, state().of(testCase.getId()));
         }
         Await.until("the answers never arrived", () -> testCases.stream().noneMatch(testCase -> state().of(testCase.getId()) == Automated.UNKNOWN));
@@ -97,7 +97,7 @@ public class AutomatedStateIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-EDITOR-PANEL-197
     public void testNothingIsSavedAndAChangedMethodShowsTheNextTimeTheTesterLooks() {
-        final @NotNull List<TestCaseDto> testCases = threeStatesOfAutomation();
+        final @NotNull List<TestCase> testCases = threeStatesOfAutomation();
         final @NotNull Map<String, String> before = FilesUnder.snapshot(root);
 
         readAndAwait(testCases);

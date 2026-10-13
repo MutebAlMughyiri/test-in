@@ -18,7 +18,7 @@ package org.testin.view.details;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.testcase.CreateTestCaseFields;
 import org.testin.testrun.TestRunEditorFields;
 import org.testin.ui.framework.AbstractFrameworkDialog;
@@ -34,7 +34,7 @@ public final class StacktraceDialog extends AbstractFrameworkDialog {
     private static final int VISIBLE_ROWS = 22;
 
     // UC-VIEW-PANEL-006, Rule-VIEW-PANEL-036
-    public StacktraceDialog(final @NotNull Project project, final @NotNull TestCaseDto testCase, final @NotNull String actualResult, final @NotNull String stacktrace) {
+    public StacktraceDialog(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull String actualResult, final @NotNull String stacktrace) {
         super(project);
 
         title = Bundle.message("dialog.stacktrace.title");

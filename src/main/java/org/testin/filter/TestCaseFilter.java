@@ -20,7 +20,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.Groups;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.testcase.TestSetEditorFields;
@@ -36,26 +36,26 @@ import java.util.function.Function;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestCaseFilter {
-    public static @NotNull List<TestCaseDto> filter(final @NotNull Collection<TestCaseDto> source, final @NotNull FilterAndSortChoice wanted) {
+    public static @NotNull List<TestCase> filter(final @NotNull Collection<TestCase> source, final @NotNull FilterAndSortChoice wanted) {
         return filter(source, wanted, _ -> Optional.empty());
     }
 
     // UC-EDITOR-PANEL-019, UC-EDITOR-PANEL-020, UC-EDITOR-PANEL-049
-    public static @NotNull List<TestCaseDto> filter(final @NotNull Collection<TestCaseDto> source, final @NotNull FilterAndSortChoice wanted, final @NotNull Function<UUID, Optional<RunItem>> runItemProvider) {
+    public static @NotNull List<TestCase> filter(final @NotNull Collection<TestCase> source, final @NotNull FilterAndSortChoice wanted, final @NotNull Function<UUID, Optional<RunItem>> runItemProvider) {
         if (source.isEmpty()) {
             return Collections.emptyList();
         }
 
         final @NotNull String normalizedQuery = wanted.query().trim().toLowerCase(Locale.ROOT);
-        final @NotNull List<TestCaseDto> matched = source.stream()
+        final @NotNull List<TestCase> matched = source.stream()
                 .filter(testCase -> matches(testCase, normalizedQuery, wanted, runItemProvider))
                 .toList();
         return wanted.sortBy().sorted(matched, wanted.direction(), runItemProvider);
     }
 
     // UC-EDITOR-PANEL-019, Rule-EDITOR-PANEL-091, Rule-EDITOR-PANEL-239, Rule-EDITOR-PANEL-260, Rule-EDITOR-PANEL-261
-    private static boolean matches(final @NotNull TestCaseDto testCase, final @NotNull String query, final @NotNull FilterAndSortChoice wanted, final @NotNull Function<UUID, Optional<RunItem>> runItemProvider) {
-        final @NotNull TestCaseDto shown = runItemProvider.apply(testCase.getId()).map(RunItem::shownTestCase).orElse(testCase);
+    private static boolean matches(final @NotNull TestCase testCase, final @NotNull String query, final @NotNull FilterAndSortChoice wanted, final @NotNull Function<UUID, Optional<RunItem>> runItemProvider) {
+        final @NotNull TestCase shown = runItemProvider.apply(testCase.getId()).map(RunItem::shownTestCase).orElse(testCase);
 
         final boolean matchesSearch = query.isEmpty() || TestSetEditorFields.anyContains(shown, query);
         final boolean matchesPriority = wanted.priorities().isEmpty() || wanted.priorities().contains(shown.getPriority());

@@ -28,7 +28,7 @@ import org.testin.editor.EditorFixtures;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
@@ -46,19 +46,19 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public record TestRunFixture(@NotNull Project project, @NotNull List<TestCaseDto> testCases, @NotNull TestRunNode testRun) {
+public record TestRunFixture(@NotNull Project project, @NotNull List<TestCase> testCases, @NotNull TestRunNode testRun) {
 
-    public static @NotNull TestRunFixture of(final @NotNull Project project, final @NotNull Path root, final @NotNull List<RunItem> runItems, final @NotNull List<TestCaseDto> testCases) {
+    public static @NotNull TestRunFixture of(final @NotNull Project project, final @NotNull Path root, final @NotNull List<RunItem> runItems, final @NotNull List<TestCase> testCases) {
         final @NotNull TestProjectNode testProject = EditorFixtures.testProject(project, root);
         return new TestRunFixture(project, testCases, EditorFixtures.testRun(project, testProject, runItems));
     }
 
-    public static @NotNull List<TestCaseDto> testCasesIn(final @NotNull Project project, final @NotNull Path root, final int count) {
+    public static @NotNull List<TestCase> testCasesIn(final @NotNull Project project, final @NotNull Path root, final int count) {
         final @NotNull TestProjectNode testProject = EditorFixtures.testProject(project, root);
         final @NotNull TestSetNode testSet = EditorFixtures.testSet(project, testProject, "Checkout");
-        final @NotNull List<TestCaseDto> made = new ArrayList<>();
+        final @NotNull List<TestCase> made = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description("Test case number " + (i + 1)).expectedResult("It works " + (i + 1)).order(String.format("m%04d", i)).build();
+            final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description("Test case number " + (i + 1)).expectedResult("It works " + (i + 1)).order(String.format("m%04d", i)).build();
             testCase.setParent(testSet);
             Services.getInstance(project, TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase);
             made.add(testCase);
@@ -67,7 +67,7 @@ public record TestRunFixture(@NotNull Project project, @NotNull List<TestCaseDto
     }
 
     public static @NotNull TestRunFixture pending(final @NotNull Project project, final @NotNull Path root, final int count) {
-        final @NotNull List<TestCaseDto> testCases = testCasesIn(project, root, count);
+        final @NotNull List<TestCase> testCases = testCasesIn(project, root, count);
         return of(project, root, testCases.stream().map(EditorFixtures::pending).toList(), testCases);
     }
 
@@ -86,11 +86,11 @@ public record TestRunFixture(@NotNull Project project, @NotNull List<TestCaseDto
         return EditorFixtures.openTestRunEditor(project, testRun, owner);
     }
 
-    public @NotNull RunItem runItemOf(final @NotNull TestCaseDto testCase) {
+    public @NotNull RunItem runItemOf(final @NotNull TestCase testCase) {
         return Services.getInstance(project, TestRuns.class).getRunItems(testRun.getPath()).runItemOf(testCase.getId()).orElseThrow();
     }
 
-    public @NotNull RunItemStatus statusOf(final @NotNull TestCaseDto testCase) {
+    public @NotNull RunItemStatus statusOf(final @NotNull TestCase testCase) {
         return runItemOf(testCase).getStatus();
     }
 

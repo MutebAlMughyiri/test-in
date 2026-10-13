@@ -24,7 +24,7 @@ import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.TestinDataKeys;
 import org.testin.editor.TestinEditor;
 import org.testin.editor.card.TestCaseQuickAction;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +33,7 @@ public class ExecuteOrStopTestMethodsAction extends AbstractAnyProjectAction {
     // UC-EDITOR-PANEL-035, Rule-EDITOR-PANEL-150
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
-        final @NotNull List<TestCaseDto> selected = TestinDataKeys.selectedTestCases(e);
+        final @NotNull List<TestCase> selected = TestinDataKeys.selectedTestCases(e);
 
         TestCaseQuickAction.executionSlot(project, selected).executeFor(project, TestinDataKeys.editor(e), selected);
     }
@@ -41,7 +41,7 @@ public class ExecuteOrStopTestMethodsAction extends AbstractAnyProjectAction {
     // UC-CODEGEN-009, Rule-CODEGEN-036
     @Override
     protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
-        final @NotNull List<TestCaseDto> selected = TestinDataKeys.selectedTestCases(e);
+        final @NotNull List<TestCase> selected = TestinDataKeys.selectedTestCases(e);
         final @NotNull TestCaseQuickAction offered = TestCaseQuickAction.executionSlot(project, selected);
 
         e.getPresentation().setText(offered.getTooltip());

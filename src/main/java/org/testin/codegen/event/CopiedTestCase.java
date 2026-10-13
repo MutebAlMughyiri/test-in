@@ -17,8 +17,8 @@
 package org.testin.codegen.event;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 // UC-CODEGEN-002, Rule-CODEGEN-078
-public record CopiedTestCase(@NotNull TestCaseDto copy, @NotNull TestCaseDto original) {
+public record CopiedTestCase(@NotNull TestCase copy, @NotNull TestCase original) {
 }

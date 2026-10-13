@@ -18,7 +18,7 @@ package org.testin.view.details;
 import org.jetbrains.annotations.NotNull;
 import org.testin.Said;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
 import org.testin.undo.UndoHistories;
@@ -56,8 +56,8 @@ public class ChangeOneFieldIdeTest extends AbstractViewPanelIdeTest {
         testSet = aTestSet("Login");
     }
 
-    private @NotNull String descriptionOf(final @NotNull TestCaseDto testCase) {
-        return Services.getInstance(getProject(), TestCases.class).findTestCase(testCase.getId()).map(TestCaseDto::getDescription).orElse("");
+    private @NotNull String descriptionOf(final @NotNull TestCase testCase) {
+        return Services.getInstance(getProject(), TestCases.class).findTestCase(testCase.getId()).map(TestCase::getDescription).orElse("");
     }
 
     private void changeTheDescriptionTo(final @NotNull String now) {
@@ -67,7 +67,7 @@ public class ChangeOneFieldIdeTest extends AbstractViewPanelIdeTest {
         settled();
     }
 
-    private @NotNull Path fileOf(final @NotNull TestCaseDto testCase) {
+    private @NotNull Path fileOf(final @NotNull TestCase testCase) {
         try (final Stream<Path> files = Files.walk(testSet.getPath())) {
             return files.filter(Files::isRegularFile).filter(file -> file.getFileName().toString().contains(testCase.getId().toString())).findFirst()
                     .orElseThrow(() -> new AssertionError("the test case has no file in " + testSet.getPath()));
@@ -78,7 +78,7 @@ public class ChangeOneFieldIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-044
     public void testF2WorksOnlyOnceATestCaseHasBeenDrawn() {
-        final @NotNull TestCaseDto testCase = aTestCase(testSet, "Log in with a valid user", "a");
+        final @NotNull TestCase testCase = aTestCase(testSet, "Log in with a valid user", "a");
 
         assertTrue("F2 answers on a panel that has never drawn a test case", KeyPress.boundTo(view.keyboardTarget(ViewTab.DETAILS), FieldChange.f2()).isEmpty());
 
@@ -93,9 +93,9 @@ public class ChangeOneFieldIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-045
     public void testThePanelChangesOnlyTheOneTestCaseItShows() {
-        final @NotNull TestCaseDto first = aTestCase(testSet, "Log in with a valid user", "a");
-        final @NotNull TestCaseDto second = aTestCase(testSet, "Log in with a locked user", "b");
-        final @NotNull TestCaseDto third = aTestCase(testSet, "Log in with no password", "c");
+        final @NotNull TestCase first = aTestCase(testSet, "Log in with a valid user", "a");
+        final @NotNull TestCase second = aTestCase(testSet, "Log in with a locked user", "b");
+        final @NotNull TestCase third = aTestCase(testSet, "Log in with no password", "c");
         view.getPanel().show(List.of(first, second, third), testSet.treePath());
 
         FieldChange.pressF2(getProject(), view);
@@ -112,8 +112,8 @@ public class ChangeOneFieldIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-046
     public void testAnEditOfACopyHandedOverWithoutItsTestSetIsWrittenToTheTestSetThatHoldsIt() {
-        final @NotNull TestCaseDto testCase = aTestCase(testSet, "Log in with a valid user", "a");
-        final @NotNull TestCaseDto handed = TestCaseDto.builder().id(testCase.getId()).description(testCase.getDescription()).build();
+        final @NotNull TestCase testCase = aTestCase(testSet, "Log in with a valid user", "a");
+        final @NotNull TestCase handed = TestCase.builder().id(testCase.getId()).description(testCase.getDescription()).build();
         view.getPanel().show(List.of(handed), List.of());
 
         changeTheDescriptionTo("Sign in with a valid user");
@@ -123,7 +123,7 @@ public class ChangeOneFieldIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-110
     public void testAnEditOfATestCaseTestinDoesNotHoldIsRefusedAndSaysSo() {
-        final @NotNull TestCaseDto found = TestCaseDto.builder().description("Log in with a valid user").build();
+        final @NotNull TestCase found = TestCase.builder().description("Log in with a valid user").build();
         view.getPanel().show(List.of(found), List.of());
 
         final @NotNull List<String> said = Said.during(getProject(), () -> FieldChange.pressF2(getProject(), view));
@@ -134,7 +134,7 @@ public class ChangeOneFieldIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-047
     public void testASaveThatChangesNothingWritesNothingAndSaysNothing() {
-        final @NotNull TestCaseDto testCase = aTestCase(testSet, "Log in with a valid user", "a");
+        final @NotNull TestCase testCase = aTestCase(testSet, "Log in with a valid user", "a");
         final @NotNull Path file = fileOf(testCase);
         final @NotNull FileTime before = writtenAt(file);
         view.getPanel().show(List.of(testCase), testSet.treePath());
@@ -148,7 +148,7 @@ public class ChangeOneFieldIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-048
     public void testASavedChangeIsOneEntryOnTheUndoHistory() {
-        final @NotNull TestCaseDto testCase = aTestCase(testSet, "Log in with a valid user", "a");
+        final @NotNull TestCase testCase = aTestCase(testSet, "Log in with a valid user", "a");
         view.getPanel().show(List.of(testCase), testSet.treePath());
         final @NotNull UndoHistories undo = Services.getInstance(getProject(), UndoHistories.class);
 

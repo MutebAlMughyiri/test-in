@@ -18,7 +18,7 @@ package org.testin.testcase.update.bulk;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.util.Bundle;
 
@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class ExpectedResultBulkSectionDialog extends AbstractJsonSplitBulkSectionDialog {
-    public ExpectedResultBulkSectionDialog(final @NotNull Project project, final @NotNull List<TestCaseDto> selectedTestCases, final @NotNull Consumer<List<TestCaseDto>> updatedTestCases) {
+    public ExpectedResultBulkSectionDialog(final @NotNull Project project, final @NotNull List<TestCase> selectedTestCases, final @NotNull Consumer<List<TestCase>> updatedTestCases) {
         super(project, selectedTestCases, updatedTestCases);
     }
 

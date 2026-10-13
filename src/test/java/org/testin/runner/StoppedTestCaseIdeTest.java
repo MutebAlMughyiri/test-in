@@ -18,7 +18,7 @@ package org.testin.runner;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.Failure;
 import org.testin.model.status.ExecutionStatus;
 import org.testin.services.Services;
@@ -30,7 +30,7 @@ public class StoppedTestCaseIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-CODEGEN-038
     public void testATestCaseTheTesterStoppedIsRecordedAsNotRunNeverAsFailed() {
-        final @NotNull TestCaseDto testCase = indexedTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
+        final @NotNull TestCase testCase = indexedTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
         ExecutionRecorder.startRecording(getProject());
         final @NotNull TestNGExecution execution = Services.getInstance(getProject(), TestNGExecution.class);
 

@@ -19,7 +19,7 @@ package org.testin.navigate;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.util.List;
 import java.util.Map;
@@ -29,36 +29,36 @@ import java.util.UUID;
 
 public final class NoTestMethodCode implements TestMethodCode {
     @Override
-    public void toCode(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
+    public void toCode(final @NotNull Project project, final @NotNull TestCase testCase) {
         TestinLogger.debug("No code navigation in this IDE; nothing opened for '" + testCase.getDescription() + "'");
     }
 
     @Override
-    public @NotNull Map<UUID, Boolean> methodsFor(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases) {
+    public @NotNull Map<UUID, Boolean> methodsFor(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
         TestinLogger.debug("No code navigation in this IDE; no generated methods for " + testCases.size() + " test case(s)");
 
         return Map.of();
     }
 
     @Override
-    public @NotNull Set<UUID> withAWrittenBody(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases) {
+    public @NotNull Set<UUID> withAWrittenBody(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
         return Set.of();
     }
 
     @Override
-    public @NotNull Optional<String> fillBody(final @NotNull Project project, final @NotNull TestCaseDto testCase, final @NotNull String statements) {
+    public @NotNull Optional<String> fillBody(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull String statements) {
         TestinLogger.debug("No code navigation in this IDE; no body written for '" + testCase.getDescription() + "'");
 
         return Optional.empty();
     }
 
     @Override
-    public @NotNull Optional<String> replaceBody(final @NotNull Project project, final @NotNull TestCaseDto testCase, final @NotNull String statements) {
+    public @NotNull Optional<String> replaceBody(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull String statements) {
         return fillBody(project, testCase, statements);
     }
 
     @Override
-    public @NotNull Map<UUID, List<String>> methodFqcnsOf(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases) {
+    public @NotNull Map<UUID, List<String>> methodFqcnsOf(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
         TestinLogger.debug("No code navigation in this IDE; no generated methods for " + testCases.size() + " test case(s)");
 
         return Map.of();

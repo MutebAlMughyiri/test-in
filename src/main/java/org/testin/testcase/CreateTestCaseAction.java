@@ -25,7 +25,7 @@ import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.TestinDataKeys;
 import org.testin.codegen.CodeChangeType;
 import org.testin.editor.TestinEditor;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
@@ -43,7 +43,7 @@ public class CreateTestCaseAction extends AbstractAnyProjectAction {
     // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-008, Rule-EDITOR-PANEL-030
     public static void openCreateDialog(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull TestSetNode testSet) {
         new CreateTestCaseDialog(project, testSet, testCase -> {
-            final @NotNull List<TestCaseDto> affectedNodes = List.of(testCase);
+            final @NotNull List<TestCase> affectedNodes = List.of(testCase);
 
             final @NotNull List<UUID> testCaseIds = TestCaseSnapshot.idsOf(affectedNodes);
             final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(project, testSet.getPath(), testCaseIds);

@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.markers.AbstractMarker;
 import org.testin.model.markers.Marker;
@@ -106,7 +106,7 @@ final class IndexerDataStore {
         held.keySet().removeIf(key -> Path.of(key).startsWith(projectPath) && !found.containsKey(key));
     }
 
-    @NotNull Map<UUID, TestCaseDto> getTestCasesById() {
+    @NotNull Map<UUID, TestCase> getTestCasesById() {
         return testCaseStore.getTestCasesById();
     }
 
@@ -114,7 +114,7 @@ final class IndexerDataStore {
         return testCaseStore.unreadableIn(testSetPath);
     }
 
-    @NotNull Path testCaseFileOf(final @NotNull TestCaseDto testCase) {
+    @NotNull Path testCaseFileOf(final @NotNull TestCase testCase) {
         return testCaseStore.fileOf(testCase.getParent().getPath(), testCase.getId());
     }
 
@@ -122,7 +122,7 @@ final class IndexerDataStore {
         return testCaseStore.getTestCaseIdsByTestSet();
     }
 
-    @NotNull List<TestCaseDto> getTestCasesForTestSet(final @NotNull Path testSetPath) {
+    @NotNull List<TestCase> getTestCasesForTestSet(final @NotNull Path testSetPath) {
         return testCaseStore.getForTestSet(testSetPath);
     }
 
@@ -141,12 +141,12 @@ final class IndexerDataStore {
     }
 
     @NotNull
-    Optional<TestCaseDto> findTestCase(final @NotNull UUID testCaseId) {
+    Optional<TestCase> findTestCase(final @NotNull UUID testCaseId) {
         return Optional.ofNullable(testCaseStore.getTestCasesById().get(testCaseId));
     }
 
     // UC-INTERNAL-004, Rule-INTERNAL-033
-    boolean putTestCase(final @NotNull Path testSetPath, final @NotNull TestCaseDto testCase) {
+    boolean putTestCase(final @NotNull Path testSetPath, final @NotNull TestCase testCase) {
         if (!testCaseStore.put(testSetPath, testCase)) return false;
 
         markTestSetModified(testSetPath);
@@ -154,7 +154,7 @@ final class IndexerDataStore {
     }
 
     // UC-INTERNAL-004, Rule-INTERNAL-035
-    boolean putTestCaseVerbatim(final @NotNull Path testSetPath, final @NotNull TestCaseDto testCase) {
+    boolean putTestCaseVerbatim(final @NotNull Path testSetPath, final @NotNull TestCase testCase) {
         Optional.ofNullable(testSetNodesByPath.get(testSetPath.toString())).ifPresent(testCase::setParent);
         if (!testCaseStore.putVerbatim(testSetPath, testCase)) return false;
 
@@ -163,7 +163,7 @@ final class IndexerDataStore {
     }
 
     // UC-EDITOR-PANEL-017, Rule-INTERNAL-035
-    boolean moveTestCase(final @NotNull Path fromSet, final @NotNull Path toSet, final @NotNull TestCaseDto testCase) {
+    boolean moveTestCase(final @NotNull Path fromSet, final @NotNull Path toSet, final @NotNull TestCase testCase) {
         if (!testCaseStore.move(fromSet, toSet, testCase)) return false;
 
         markTestSetModified(toSet);
@@ -179,7 +179,7 @@ final class IndexerDataStore {
     }
 
     // UC-INTERNAL-004, Rule-INTERNAL-031
-    boolean updateSequence(final @NotNull Path testSetPath, final @NotNull List<TestCaseDto> orderedList, final @NotNull List<TestCaseDto> moved) {
+    boolean updateSequence(final @NotNull Path testSetPath, final @NotNull List<TestCase> orderedList, final @NotNull List<TestCase> moved) {
         final boolean allWritten = testCaseStore.updateSequence(testSetPath, orderedList, moved);
         markTestSetModified(testSetPath);
         return allWritten;

@@ -21,7 +21,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.testin.importexport.FileFormat;
 import org.testin.importexport.shared.SheetPreview;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.ui.dialogs.Destination;
 import org.testin.ui.dialogs.DestinationForm;
@@ -42,9 +42,9 @@ public final class ExportDialog extends AbstractFrameworkDialog {
 
     private final @NotNull SheetPreview preview;
     private final @NotNull BiConsumer<@NotNull Destination,
-            @NotNull Map<String, List<TestCaseDto>>> onExport;
+            @NotNull Map<String, List<TestCase>>> onExport;
 
-    public ExportDialog(final @NotNull Project project, final @NotNull List<TestSetEditorFields> exportFields, final @NotNull Map<String, List<TestCaseDto>> sheetsData, final @NotNull VirtualFile exportTarget, final @NotNull BiConsumer<@NotNull Destination, @NotNull Map<String, List<TestCaseDto>>> onExport) {
+    public ExportDialog(final @NotNull Project project, final @NotNull List<TestSetEditorFields> exportFields, final @NotNull Map<String, List<TestCase>> sheetsData, final @NotNull VirtualFile exportTarget, final @NotNull BiConsumer<@NotNull Destination, @NotNull Map<String, List<TestCase>>> onExport) {
         super(project);
         this.onExport = onExport;
 
@@ -77,7 +77,7 @@ public final class ExportDialog extends AbstractFrameworkDialog {
     @Override
     protected void submit() {
         form.resolve().ifPresent(destination -> {
-            final @NotNull Map<String, List<TestCaseDto>> selected = preview.selected();
+            final @NotNull Map<String, List<TestCase>> selected = preview.selected();
             if (selected.isEmpty()) {
                 notifier.softRefuse(project, Bundle.message("notification.export.empty.title"), Bundle.message("notification.export.empty.message"));
                 return;

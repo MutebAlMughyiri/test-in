@@ -28,7 +28,7 @@ import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.AbstractEditorContextMenu;
 import org.testin.editor.TestinEditor;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.ui.FontSync;
 import org.testin.util.Bundle;
@@ -49,10 +49,10 @@ public final class CardPanelBuilder {
     private static final int RESIZE_SETTLES_MILLIS = 100;
 
     public static @NotNull CardView build(final @NotNull Project project, final @NotNull Disposable fontSyncDisposable, final @NotNull TestinEditor editor) {
-        final @NotNull CollectionListModel<TestCaseDto> model = new CollectionListModel<>(new ArrayList<>());
+        final @NotNull CollectionListModel<TestCase> model = new CollectionListModel<>(new ArrayList<>());
 
         // UC-EDITOR-PANEL-001, UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-003
-        final @NotNull JBList<TestCaseDto> list = new CardList(model, editor);
+        final @NotNull JBList<TestCase> list = new CardList(model, editor);
         list.setBackground(UIUtil.getPanelBackground());
         list.setOpaque(true);
         list.setPaintBusy(true);
@@ -87,8 +87,8 @@ public final class CardPanelBuilder {
         return new CardView(model, list, scrollPane);
     }
 
-    public static void wireCommonListeners(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull CardView view, final @NotNull AbstractNode node, final @NotNull AbstractEditorContextMenu contextMenu, final @NotNull Supplier<Optional<JBTable>> gridTableSupplier, final @NotNull ToIntFunction<TestCaseDto> rowOnGrid, final @NotNull BooleanSupplier gridActiveSupplier) {
-        final @NotNull JBList<TestCaseDto> list = view.list();
+    public static void wireCommonListeners(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull CardView view, final @NotNull AbstractNode node, final @NotNull AbstractEditorContextMenu contextMenu, final @NotNull Supplier<Optional<JBTable>> gridTableSupplier, final @NotNull ToIntFunction<TestCase> rowOnGrid, final @NotNull BooleanSupplier gridActiveSupplier) {
+        final @NotNull JBList<TestCase> list = view.list();
 
         final @NotNull CardMouseListener mouseListener = new CardMouseListener(project, editor, list, view.model(), node, contextMenu);
         list.addMouseListener(mouseListener);

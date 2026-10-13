@@ -34,7 +34,7 @@ import org.testin.editor.EditorColors;
 import org.testin.editor.WheelForwarding;
 import org.testin.editor.open.EditorKind;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.ShowableField;
 import org.testin.testcase.Can;
 import org.testin.testcase.TestSetEditorFields;
@@ -241,7 +241,7 @@ public class GridTables {
         });
     }
 
-    public static void restoreSelection(final @NotNull JBTable table, final @NotNull JBList<TestCaseDto> list, final @NotNull List<TestCaseDto> pageTestCases, final int columnToRestore) {
+    public static void restoreSelection(final @NotNull JBTable table, final @NotNull JBList<TestCase> list, final @NotNull List<TestCase> pageTestCases, final int columnToRestore) {
         final int selectedRow = pageTestCases.indexOf(list.getSelectedValue());
         if (selectedRow < 0) return;
 
@@ -252,7 +252,7 @@ public class GridTables {
     }
 
     // UC-EDITOR-PANEL-015, Rule-EDITOR-PANEL-077
-    public static @NotNull GridView finishRebuild(final @NotNull JBTable table, final @NotNull JBList<TestCaseDto> list, final @NotNull List<TestCaseDto> pageTestCases, final @NotNull Disposable fontSync, final boolean keepKeyboard, final @NotNull UiDataProvider data) {
+    public static @NotNull GridView finishRebuild(final @NotNull JBTable table, final @NotNull JBList<TestCase> list, final @NotNull List<TestCase> pageTestCases, final @NotNull Disposable fontSync, final boolean keepKeyboard, final @NotNull UiDataProvider data) {
         restoreSelection(table, list, pageTestCases, 0);
 
         if (keepKeyboard) ApplicationManager.getApplication().invokeLater(table::requestFocusInWindow);

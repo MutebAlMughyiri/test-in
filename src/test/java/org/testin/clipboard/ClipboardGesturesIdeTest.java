@@ -34,7 +34,7 @@ import org.testin.editor.EditorFixtures;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.toolbar.GridViewButton;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
@@ -67,16 +67,16 @@ public class ClipboardGesturesIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull TestProjectNode testProject = new TestProjectNode();
 
-    private static @NotNull TestCaseDto at(final @NotNull TestSetEditor editor, final int index) {
+    private static @NotNull TestCase at(final @NotNull TestSetEditor editor, final int index) {
         return editor.getList().getModel().getElementAt(index);
     }
 
-    private static @NotNull List<String> descriptionsOf(final @NotNull List<TestCaseDto> testCases) {
-        return testCases.stream().map(TestCaseDto::getDescription).toList();
+    private static @NotNull List<String> descriptionsOf(final @NotNull List<TestCase> testCases) {
+        return testCases.stream().map(TestCase::getDescription).toList();
     }
 
     private static int opacityOfCard(final @NotNull TestSetEditor editor, final int index) {
-        final @NotNull JBList<TestCaseDto> list = editor.getList();
+        final @NotNull JBList<TestCase> list = editor.getList();
         list.setSize(900, 2000);
         final @NotNull Component card = list.getCellRenderer().getListCellRendererComponent(list, at(editor, index), index, false, false);
         card.setSize(900, Math.max(40, card.getPreferredSize().height));
@@ -117,7 +117,7 @@ public class ClipboardGesturesIdeTest extends AbstractTempRootIdeTest {
     private @NotNull TestSetEditor aTestSetOf(final @NotNull String name, final @NotNull String... descriptions) {
         final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), testProject, name);
         for (int i = 0; i < descriptions.length; i++) {
-            final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description(descriptions[i]).order(String.format("m%04d", i)).createdBy("Ann").build();
+            final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description(descriptions[i]).order(String.format("m%04d", i)).createdBy("Ann").build();
             testCase.setParent(testSet);
             theTestCases().putTestCaseVerbatim(testSet.getPath(), testCase);
         }
@@ -142,7 +142,7 @@ public class ClipboardGesturesIdeTest extends AbstractTempRootIdeTest {
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
 
-    private @NotNull List<TestCaseDto> orderedIn(final @NotNull TestSetEditor editor) {
+    private @NotNull List<TestCase> orderedIn(final @NotNull TestSetEditor editor) {
         return TestCaseOrder.ordered(theTestCases().getTestCasesForTestSet(editor.getParent().getPath()));
     }
 
@@ -161,8 +161,8 @@ public class ClipboardGesturesIdeTest extends AbstractTempRootIdeTest {
 
         choose(COPY, login.getList());
 
-        final @NotNull List<TestCaseDto> onTheClipboard = CopiedTestCases.onTheClipboard(getProject());
-        assertEquals("the clipboard does not hold the test cases copied", List.of(at(login, 0).getId(), at(login, 2).getId()), onTheClipboard.stream().map(TestCaseDto::getId).toList());
+        final @NotNull List<TestCase> onTheClipboard = CopiedTestCases.onTheClipboard(getProject());
+        assertEquals("the clipboard does not hold the test cases copied", List.of(at(login, 0).getId(), at(login, 2).getId()), onTheClipboard.stream().map(TestCase::getId).toList());
         assertEquals("the clipboard holds less than the whole test case", "Ann", onTheClipboard.getFirst().getCreatedBy());
     }
 
@@ -199,7 +199,7 @@ public class ClipboardGesturesIdeTest extends AbstractTempRootIdeTest {
 
         choose(COPY, grid);
 
-        assertEquals("Copy Test Case in the grid did not copy the selected row", List.of(at(login, 0).getId()), CopiedTestCases.onTheClipboard(getProject()).stream().map(TestCaseDto::getId).toList());
+        assertEquals("Copy Test Case in the grid did not copy the selected row", List.of(at(login, 0).getId()), CopiedTestCases.onTheClipboard(getProject()).stream().map(TestCase::getId).toList());
     }
 
     // Rule-EDITOR-PANEL-079
@@ -246,7 +246,7 @@ public class ClipboardGesturesIdeTest extends AbstractTempRootIdeTest {
 
         Await.until("the copies were never pasted", () -> orderedIn(checkout).size() == 5);
         assertEquals("the copies did not land under the selected test case in the order they were pasted", List.of("Open the cart", "Pay", "Log in (Copy)", "Log out (Copy)", "Get a receipt"), descriptionsOf(orderedIn(checkout)));
-        final @NotNull TestCaseDto copy = orderedIn(checkout).get(2);
+        final @NotNull TestCase copy = orderedIn(checkout).get(2);
         assertNotEquals("a pasted copy kept the original's identity", at(login, 0).getId(), copy.getId());
         assertEquals("the original was touched by a copy", 2, orderedIn(login).size());
     }
@@ -281,7 +281,7 @@ public class ClipboardGesturesIdeTest extends AbstractTempRootIdeTest {
             choose(PASTE, checkout.getList());
 
             Await.until("the cut was never pasted", () -> orderedIn(checkout).size() == 2 && orderedIn(login).size() == 1);
-            final @NotNull TestCaseDto arrived = theTestCases().findTestCase(moved).orElseThrow();
+            final @NotNull TestCase arrived = theTestCases().findTestCase(moved).orElseThrow();
             assertEquals("the pasted cut lost its identity", moved, arrived.getId());
             assertEquals("the pasted cut lost who created it", "Ann", arrived.getCreatedBy());
             assertEquals("the tester who pasted is not recorded as the one who changed it", "Sara", arrived.getUpdatedBy());

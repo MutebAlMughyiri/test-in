@@ -20,7 +20,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.services.Services;
 import org.testin.util.FailureText;
 import org.testin.util.JsonCodec;
@@ -33,7 +33,7 @@ import java.util.Map;
 
 public class ExportJson {
     // UC-SHARE-001, Rule-SHARE-010
-    public void exportToFile(final @NotNull Project project, final @NotNull File destFile, final @NotNull Map<String, List<TestCaseDto>> sheetsData) {
+    public void exportToFile(final @NotNull Project project, final @NotNull File destFile, final @NotNull Map<String, List<TestCase>> sheetsData) {
         try {
             FileUtil.createParentDirs(destFile);
 

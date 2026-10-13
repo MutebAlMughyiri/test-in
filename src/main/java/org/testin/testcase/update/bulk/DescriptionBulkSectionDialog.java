@@ -19,7 +19,7 @@ package org.testin.testcase.update.bulk;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.services.Services;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.util.Bundle;
@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 public class DescriptionBulkSectionDialog extends AbstractJsonSplitBulkSectionDialog {
     private final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
 
-    public DescriptionBulkSectionDialog(final @NotNull Project project, final @NotNull List<TestCaseDto> selectedTestCases, final @NotNull Consumer<List<TestCaseDto>> updatedTestCases) {
+    public DescriptionBulkSectionDialog(final @NotNull Project project, final @NotNull List<TestCase> selectedTestCases, final @NotNull Consumer<List<TestCase>> updatedTestCases) {
         super(project, selectedTestCases, updatedTestCases);
     }
 
@@ -79,12 +79,12 @@ public class DescriptionBulkSectionDialog extends AbstractJsonSplitBulkSectionDi
 
     // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-224
     @Override
-    protected @NotNull Set<Integer> clashing(final @NotNull List<TestCaseDto> testCases, final @NotNull List<EditedValue> newValues) {
-        final @NotNull Set<UUID> inThisDialog = testCases.stream().map(TestCaseDto::getId).collect(Collectors.toSet());
+    protected @NotNull Set<Integer> clashing(final @NotNull List<TestCase> testCases, final @NotNull List<EditedValue> newValues) {
+        final @NotNull Set<UUID> inThisDialog = testCases.stream().map(TestCase::getId).collect(Collectors.toSet());
         final @NotNull Map<Path, Set<String>> taken = new HashMap<>();
 
         for (int i = 0; i < testCases.size(); i++) {
-            final @NotNull TestCaseDto testCase = testCases.get(i);
+            final @NotNull TestCase testCase = testCases.get(i);
             final @NotNull Set<String> inItsSet = taken.computeIfAbsent(testCase.getParent().getPath(), path -> keysOutside(path, inThisDialog));
 
             if (!newValues.get(i).changed()) keyOf(testCase.getDescription()).ifPresent(inItsSet::add);

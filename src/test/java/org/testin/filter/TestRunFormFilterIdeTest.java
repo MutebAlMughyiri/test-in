@@ -27,7 +27,7 @@ import org.testin.AbstractTempRootIdeTest;
 import org.testin.NodesOnDisk;
 import org.testin.indexer.TestCases;
 import org.testin.model.Priority;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
@@ -44,14 +44,14 @@ import java.util.UUID;
 
 public class TestRunFormFilterIdeTest extends AbstractTempRootIdeTest {
 
-    private TestCaseDto urgent;
-    private TestCaseDto later;
-    private TestCaseDto paid;
+    private TestCase urgent;
+    private TestCase later;
+    private TestCase paid;
     private TestRunFormFilter filter;
 
-    private static @NotNull CheckedTreeNode holding(final @NotNull TestSetNode testSet, final @NotNull TestCaseDto... testCases) {
+    private static @NotNull CheckedTreeNode holding(final @NotNull TestSetNode testSet, final @NotNull TestCase... testCases) {
         final @NotNull CheckedTreeNode treeNode = new CheckedTreeNode(testSet);
-        for (final TestCaseDto testCase : testCases) treeNode.add(new CheckedTreeNode(testCase));
+        for (final TestCase testCase : testCases) treeNode.add(new CheckedTreeNode(testCase));
         return treeNode;
     }
 
@@ -76,8 +76,8 @@ public class TestRunFormFilterIdeTest extends AbstractTempRootIdeTest {
         filter = new TestRunFormFilter(getProject(), testProject.getTestCasesFolder().getPath(), top);
     }
 
-    private @NotNull TestCaseDto aTestCase(final @NotNull TestSetNode testSet, final @NotNull Priority priority, final @NotNull String order) {
-        final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description("Pay with a " + priority + " card").order(order).priority(priority).build();
+    private @NotNull TestCase aTestCase(final @NotNull TestSetNode testSet, final @NotNull Priority priority, final @NotNull String order) {
+        final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description("Pay with a " + priority + " card").order(order).priority(priority).build();
         testCase.setParent(testSet);
         assertTrue(Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase));
         return testCase;
@@ -102,7 +102,7 @@ public class TestRunFormFilterIdeTest extends AbstractTempRootIdeTest {
         final @NotNull List<Object> leaves = new ArrayList<>();
         for (final Object each : Collections.list(((CheckedTreeNode) tree.getModel().getRoot()).depthFirstEnumeration())) {
             final @NotNull Object held = ((CheckedTreeNode) each).getUserObject();
-            if (held instanceof TestCaseDto) leaves.add(held);
+            if (held instanceof TestCase) leaves.add(held);
         }
         return leaves;
     }

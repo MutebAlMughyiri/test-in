@@ -20,7 +20,7 @@ import com.intellij.ui.components.JBLabel;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.testset.TestCaseCard;
 import org.testin.editor.testrun.RunItemCard;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
@@ -52,7 +52,7 @@ public class CardDetailIconsIdeTest extends BasePlatformTestCase {
     }
 
     private @NotNull TestCaseCard aCardWithItsExpectedResult() {
-        final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").expectedResult(EXPECTED).build();
+        final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description("Log in with a valid user").expectedResult(EXPECTED).build();
         final @NotNull TestCaseCard card = new TestCaseCard(getProject());
         card.updateData(0, testCase, Set.of(TestSetEditorFields.EXPECTED_RESULT), AbstractCard.titleText(1, true, testCase.getDescription()));
         card.layOutAs(CELL);
@@ -72,7 +72,7 @@ public class CardDetailIconsIdeTest extends BasePlatformTestCase {
 
     // Rule-EDITOR-PANEL-269
     public void testAReferenceLineLeadsWithItsR() {
-        final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").reference(REFERENCE).build();
+        final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description("Log in with a valid user").reference(REFERENCE).build();
         final @NotNull TestCaseCard card = new TestCaseCard(getProject());
         card.updateData(0, testCase, Set.of(TestSetEditorFields.REFERENCE), AbstractCard.titleText(1, true, testCase.getDescription()));
         card.layOutAs(CELL);
@@ -92,7 +92,7 @@ public class CardDetailIconsIdeTest extends BasePlatformTestCase {
 
     // Rule-EDITOR-PANEL-269
     public void testAFieldWithNoIconKeepsItsName() {
-        final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
+        final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
         final @NotNull RunItem runItem = new RunItem().setId(testCase.getId()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).showing(Optional.of(testCase), Optional.empty(), Optional.empty(), false);
         final @NotNull RunItemCard card = new RunItemCard(getProject());
         card.updateData(0, Set.of(TestRunEditorFields.RUN_STATUS), runItem, AbstractCard.titleText(1, true, testCase.getDescription()));
@@ -103,7 +103,7 @@ public class CardDetailIconsIdeTest extends BasePlatformTestCase {
 
     // Rule-EDITOR-PANEL-270
     public void testHoveringTheDurationBadgeOnACardSaysDuration() {
-        final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
+        final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
         final @NotNull RunItem runItem = new RunItem().setId(testCase.getId()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).duration(Duration.ofSeconds(42)).build())).showing(Optional.of(testCase), Optional.empty(), Optional.empty(), false);
         final @NotNull RunItemCard card = new RunItemCard(getProject());
         card.updateData(0, Set.of(TestRunEditorFields.DURATION), runItem, AbstractCard.titleText(1, true, testCase.getDescription()));

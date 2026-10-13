@@ -31,7 +31,7 @@ import org.testin.actions.Declared;
 import org.testin.config.TestinYml;
 import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.model.Automated;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.testrun.Failure;
 import org.testin.model.status.ExecutionStatus;
@@ -107,11 +107,11 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
         view = ViewOnScreen.closed(getProject(), getTestRootDisposable());
     }
 
-    private @NotNull TestCaseDto aTestCase() {
+    private @NotNull TestCase aTestCase() {
         return indexedTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
     }
 
-    private @NotNull List<JBLabel> buttonsOn(final @NotNull TestCaseDto testCase) {
+    private @NotNull List<JBLabel> buttonsOn(final @NotNull TestCase testCase) {
         final @NotNull JBPanel<?> tab = Drawn.detailsTab(getProject(), testCase, Optional.empty(), List.of());
         final @NotNull Container actions = Drawn.components(tab).stream()
                 .filter(JBLabel.class::isInstance)
@@ -141,7 +141,7 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-VIEW-PANEL-050
     public void testTheRunButtonIsDrawnGrayAndSaysWhyWhereItCannotWork() {
-        final @NotNull TestCaseDto testCase = aTestCase();
+        final @NotNull TestCase testCase = aTestCase();
         codeIsOff();
 
         final @NotNull JBLabel runButton = buttonsOn(testCase).get(1);
@@ -152,7 +152,7 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-VIEW-PANEL-051, Rule-VIEW-PANEL-053
     public void testTheRunButtonAndTheStopButtonShareOnePlaceAndNeverShowTogether() {
-        final @NotNull TestCaseDto testCase = aTestCase();
+        final @NotNull TestCase testCase = aTestCase();
         final @NotNull TestNGExecution execution = Services.getInstance(getProject(), TestNGExecution.class);
 
         final @NotNull List<String> idle = buttonsOn(testCase).stream().map(PanelActionsIdeTest::nameOf).toList();
@@ -184,7 +184,7 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-VIEW-PANEL-056
     public void testTheGoToCodeButtonIsDrawnGrayAndSaysWhyWhereItCannotWork() {
-        final @NotNull TestCaseDto testCase = aTestCase();
+        final @NotNull TestCase testCase = aTestCase();
         codeIsOff();
 
         final @NotNull JBLabel code = buttonsOn(testCase).getFirst();
@@ -209,7 +209,7 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
         assertEquals("the test case opens from the panel but its icon is gray: " + whyGray(withASet), "", whyGray(withASet));
         assertEquals(Cursor.HAND_CURSOR, withASet.getCursor().getType());
 
-        final @NotNull TestCaseDto removedFromItsSet = TestCaseDto.builder().description("Log in with a valid user").build();
+        final @NotNull TestCase removedFromItsSet = TestCase.builder().description("Log in with a valid user").build();
         final @NotNull JBLabel gray = buttonsOn(removedFromItsSet).get(2);
         assertEquals("the icon does not say there is no test set to open", Bundle.message("navigate.test.case.nowhere"), whyGray(gray));
         assertGrayAndSaysWhy(gray, "the icon that opens the test case");
@@ -220,7 +220,7 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-VIEW-PANEL-084, Rule-VIEW-PANEL-055
     public void testF5StopsTheTestCaseOnDisplayAndItIsRecordedAsNotRun() {
-        final @NotNull TestCaseDto testCase = aTestCase();
+        final @NotNull TestCase testCase = aTestCase();
         final @NotNull TestNGExecution execution = Services.getInstance(getProject(), TestNGExecution.class);
         ExecutionRecorder.startRecording(getProject());
         view.getPanel().show(List.of(testCase), testCase.getParent().treePath());
@@ -241,7 +241,7 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
     // Rule-VIEW-PANEL-049
     public void testSavingAChangeRewritesTheAutomationCodeForThatField() {
         final @NotNull TestSetNode testSet = createdTestSet("Login");
-        final @NotNull TestCaseDto testCase = createdTestCase(testSet, "Log in with a valid user", "b");
+        final @NotNull TestCase testCase = createdTestCase(testSet, "Log in with a valid user", "b");
         settled();
         assertEquals("\"Log in with a valid user\"", attributeOf(writtenMethodOf(LOGIN_TEST, testCase), "description"));
         final @NotNull PopupsBuilt popups = PopupsBuilt.recording(getTestRootDisposable());
@@ -259,7 +259,7 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-VIEW-PANEL-010, Rule-VIEW-PANEL-011, Rule-VIEW-PANEL-022
     public void testClickingTheMarkBesideATestMethodOpensThePanelOnThatOneTestCase() {
-        final @NotNull TestCaseDto testCase = aTestCase();
+        final @NotNull TestCase testCase = aTestCase();
         final @NotNull String text = LoginTestSource.withTestNg(testCase.getId().toString());
         final @NotNull PsiFile file = myFixture.addFileToProject("nafath/LoginMarkTest.java", text);
         myFixture.configureFromExistingVirtualFile(file.getVirtualFile());

@@ -17,7 +17,7 @@
 package org.testin.testcase;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
-public record ImportedRow(@NotNull TestCaseDto testCase, int refused) {
+public record ImportedRow(@NotNull TestCase testCase, int refused) {
 }

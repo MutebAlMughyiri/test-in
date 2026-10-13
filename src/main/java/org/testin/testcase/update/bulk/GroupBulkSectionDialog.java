@@ -19,7 +19,7 @@ package org.testin.testcase.update.bulk;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.Groups;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.util.Bundle;
 
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class GroupBulkSectionDialog extends AbstractJsonArraySplitBulkSectionDialog {
-    public GroupBulkSectionDialog(final @NotNull Project project, final @NotNull List<TestCaseDto> selectedTestCases, final @NotNull Consumer<List<TestCaseDto>> updatedTestCases) {
+    public GroupBulkSectionDialog(final @NotNull Project project, final @NotNull List<TestCase> selectedTestCases, final @NotNull Consumer<List<TestCase>> updatedTestCases) {
         super(project, selectedTestCases, updatedTestCases);
     }
 
@@ -42,14 +42,14 @@ public class GroupBulkSectionDialog extends AbstractJsonArraySplitBulkSectionDia
     }
 
     @Override
-    protected @NotNull List<List<String>> extractOriginalValues(final @NotNull List<TestCaseDto> testCases) {
+    protected @NotNull List<List<String>> extractOriginalValues(final @NotNull List<TestCase> testCases) {
         return testCases.stream().map(testCase -> (List<String>) new ArrayList<>(testCase.getGroups())).toList();
     }
 
     // UC-EDITOR-PANEL-007
     @Override
-    protected @NotNull List<TestCaseDto> applyValues(final @NotNull List<TestCaseDto> testCases, final @NotNull List<List<String>> newValues) {
-        final @NotNull List<TestCaseDto> written = new ArrayList<>();
+    protected @NotNull List<TestCase> applyValues(final @NotNull List<TestCase> testCases, final @NotNull List<List<String>> newValues) {
+        final @NotNull List<TestCase> written = new ArrayList<>();
 
         for (int i = 0; i < testCases.size(); i++) {
             written.add(testCases.get(i).edit().groups(Groups.read(String.join(",", newValues.get(i)))).build());

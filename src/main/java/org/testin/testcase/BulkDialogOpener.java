@@ -19,7 +19,7 @@ package org.testin.testcase;
 import com.google.errorprone.annotations.Immutable;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -27,5 +27,5 @@ import java.util.function.Consumer;
 @FunctionalInterface
 @Immutable
 public interface BulkDialogOpener {
-    void execute(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases, final @NotNull Consumer<List<TestCaseDto>> updatedTestCases);
+    void execute(final @NotNull Project project, final @NotNull List<TestCase> testCases, final @NotNull Consumer<List<TestCase>> updatedTestCases);
 }

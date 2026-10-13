@@ -17,10 +17,10 @@
 package org.testin.filter;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItem;
 
 import java.util.Optional;
 
-record SortedTestCase(@NotNull TestCaseDto testCase, @NotNull Optional<RunItem> runItem) {
+record SortedTestCase(@NotNull TestCase testCase, @NotNull Optional<RunItem> runItem) {
 }

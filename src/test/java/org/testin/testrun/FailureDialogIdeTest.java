@@ -36,7 +36,7 @@ import org.testin.editor.EditorFixtures;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestRuns;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.bug.BugPriority;
 import org.testin.model.bug.BugSeverity;
 import org.testin.model.node.TestRunNode;
@@ -230,7 +230,7 @@ public class FailureDialogIdeTest extends AbstractTempRootIdeTest {
             final @NotNull JComponent dialog = fixture.openFailureDialog();
             actualResultBox(dialog).setText("The dashboard stayed blank");
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
-            final @NotNull TestCaseDto walked = fixture.testCases().getFirst();
+            final @NotNull TestCase walked = fixture.testCases().getFirst();
             Services.getInstance(getProject(), TestRuns.class).changeRunItems(fixture.testRun().getPath(), testRun -> testRun.getAll().removeIf(runItem -> runItem.getId().equals(walked.getId())));
 
             OnScreen.pressKey(dialog, Shortcuts.Enter.getKey());
@@ -330,7 +330,7 @@ public class FailureDialogIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-167
     public void testEditingTheDetailLeavesTheRunItemStatusAndWritesOnlyTheFourFields() {
-        final @NotNull List<TestCaseDto> testCases = TestRunFixture.testCasesIn(getProject(), root, 2);
+        final @NotNull List<TestCase> testCases = TestRunFixture.testCasesIn(getProject(), root, 2);
         final @NotNull RunItem failed = EditorFixtures.pending(testCases.getFirst()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).executedBy("Sara").actualResult("It froze").build()));
         final @NotNull TestRunFixture fixture = TestRunFixture.of(getProject(), root, List.of(failed, EditorFixtures.pending(testCases.get(1))), testCases);
         final @NotNull TestRunEditor editor = fixture.opened(getTestRootDisposable());
@@ -359,7 +359,7 @@ public class FailureDialogIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-168
     public void testTheEntryWorksOnExactlyOneFailedTestCase() {
-        final @NotNull List<TestCaseDto> testCases = TestRunFixture.testCasesIn(getProject(), root, 3);
+        final @NotNull List<TestCase> testCases = TestRunFixture.testCasesIn(getProject(), root, 3);
         final @NotNull TestRunFixture fixture = TestRunFixture.of(getProject(), root, List.of(
                 EditorFixtures.pending(testCases.getFirst()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())),
                 EditorFixtures.pending(testCases.get(1)).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())),
@@ -384,7 +384,7 @@ public class FailureDialogIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-169
     public void testTheMessageComesOnlyAfterTheTestRunIsWritten() {
-        final @NotNull List<TestCaseDto> testCases = TestRunFixture.testCasesIn(getProject(), root, 2);
+        final @NotNull List<TestCase> testCases = TestRunFixture.testCasesIn(getProject(), root, 2);
         final @NotNull TestRunFixture fixture = TestRunFixture.of(getProject(), root, List.of(
                 EditorFixtures.pending(testCases.getFirst()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())),
                 EditorFixtures.pending(testCases.get(1)).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build()))), testCases);
@@ -422,7 +422,7 @@ public class FailureDialogIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-170
     public void testEditingOpensTheSameDialogFFilledInWithWhatIsThere() {
-        final @NotNull List<TestCaseDto> testCases = TestRunFixture.testCasesIn(getProject(), root, 1);
+        final @NotNull List<TestCase> testCases = TestRunFixture.testCasesIn(getProject(), root, 1);
         final @NotNull TestRunFixture fixture = TestRunFixture.of(getProject(), root, List.of(
                 EditorFixtures.pending(testCases.getFirst()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("It froze").stacktrace("java.lang.IllegalStateException").build()))
                         .setBugSeverity(BugSeverity.BLOCKER).setBugPriority(BugPriority.HIGH)), testCases);

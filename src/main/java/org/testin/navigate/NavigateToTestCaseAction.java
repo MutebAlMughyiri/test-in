@@ -25,7 +25,7 @@ import org.testin.actions.GrayWithReason;
 import org.testin.actions.TestinDataKeys;
 import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.editor.open.TestinEditors;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
@@ -39,14 +39,14 @@ public class NavigateToTestCaseAction extends AbstractAnyProjectAction {
     }
 
     // UC-EDITOR-PANEL-048, Rule-EDITOR-PANEL-236
-    public static @NotNull Optional<String> whyNot(final @NotNull TestCaseDto testCase) {
+    public static @NotNull Optional<String> whyNot(final @NotNull TestCase testCase) {
         return testCase.getParent().getPath().toString().isEmpty()
                 ? Optional.of(Bundle.message("navigate.test.case.nowhere"))
                 : Optional.empty();
     }
 
     // UC-EDITOR-PANEL-048, UC-VIEW-PANEL-009, Rule-EDITOR-PANEL-233, Rule-EDITOR-PANEL-236, Rule-VIEW-PANEL-063
-    public static void execute(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
+    public static void execute(final @NotNull Project project, final @NotNull TestCase testCase) {
         final @NotNull Optional<String> whyNot = whyNot(testCase);
         if (whyNot.isPresent()) {
             Services.getInstance(project, Notifier.class).softRefuse(project, whyNot.orElseThrow());

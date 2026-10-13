@@ -22,7 +22,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.NodeType;
 import org.testin.model.FileKind;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.markers.TestProjectMarker;
 import org.testin.model.markers.TestRunMarker;
 import org.testin.model.markers.TestSetMarker;
@@ -138,7 +138,7 @@ public class SampleProjectTest {
         assertFalse(testCases.isEmpty(), "The sample has no test cases, so it demonstrates nothing");
 
         for (final Path file : testCases) {
-            final @NotNull TestCaseDto testCase = read(file, TestCaseDto.class);
+            final @NotNull TestCase testCase = read(file, TestCase.class);
 
             assertEquals(testCase.getId().toString(), file.getFileName().toString().replace(".tc", ""),
                     "A test case's file name is its identity, so the sample must agree with itself: " + file);

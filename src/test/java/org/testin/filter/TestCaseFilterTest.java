@@ -19,7 +19,7 @@ package org.testin.filter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.node.NodeChain;
 import org.testin.model.Priority;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
@@ -44,20 +44,20 @@ public class TestCaseFilterTest {
 
     @Test
     public void filtersSearchAndMetadataTogether() {
-        final TestCaseDto matching = TestCaseDto.builder()
+        final TestCase matching = TestCase.builder()
                 .description("Login succeeds")
                 .expectedResult("Dashboard")
                 .priority(Priority.HIGH)
                 .groups(List.of("Regression"))
                 .module("accounts")
                 .build();
-        final TestCaseDto other = TestCaseDto.builder()
+        final TestCase other = TestCase.builder()
                 .description("Logout")
                 .priority(Priority.LOW)
                 .module("accounts")
                 .build();
 
-        final List<TestCaseDto> result = TestCaseFilter.filter(
+        final List<TestCase> result = TestCaseFilter.filter(
                 List.of(matching, other),
                 new FilterAndSortChoice("  LOGIN ", Set.of("Regression"), Set.of(Priority.HIGH), Set.of("accounts"), Set.of(), Set.of(), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING));
 
@@ -66,8 +66,8 @@ public class TestCaseFilterTest {
 
     @Test
     public void filtersRunItemStatusOnlyWhenRunItemExists() {
-        final TestCaseDto passed = TestCaseDto.builder().description("passed").build();
-        final TestCaseDto missing = TestCaseDto.builder().description("missing").build();
+        final TestCase passed = TestCase.builder().description("passed").build();
+        final TestCase missing = TestCase.builder().description("missing").build();
         final RunItem runItem = RunItem.builder()
                 .id(passed.getId())
                 .executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()))
@@ -76,7 +76,7 @@ public class TestCaseFilterTest {
 
         final Map<UUID, RunItem> recorded = Map.of(passed.getId(), runItem);
 
-        final List<TestCaseDto> result = TestCaseFilter.filter(
+        final List<TestCase> result = TestCaseFilter.filter(
                 List.of(passed, missing),
                 new FilterAndSortChoice("", Set.of(), Set.of(), Set.of(), Set.of(), Set.of(RunItemStatus.PASSED), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING),
                 testCaseId -> Optional.ofNullable(recorded.get(testCaseId)));
@@ -86,7 +86,7 @@ public class TestCaseFilterTest {
 
     @Test
     public void theSearchReadsEveryFieldTheTesterWrites() {
-        final TestCaseDto testCase = TestCaseDto.builder()
+        final TestCase testCase = TestCase.builder()
                 .description("Log in")
                 .module("accounts")
                 .testData("admin@example.com")
@@ -96,7 +96,7 @@ public class TestCaseFilterTest {
                 .build();
 
         for (final String wanted : List.of("accounts", "admin@example.com", "The account exists", "JIRA-123", "Regression")) {
-            final List<TestCaseDto> result = TestCaseFilter.filter(List.of(testCase), new FilterAndSortChoice(wanted, Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING));
+            final List<TestCase> result = TestCaseFilter.filter(List.of(testCase), new FilterAndSortChoice(wanted, Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING));
 
             assertEquals(result, List.of(testCase), "the search did not read the field holding '" + wanted + "'");
         }
@@ -104,17 +104,17 @@ public class TestCaseFilterTest {
 
     @Test
     public void filtersOnTheTestCaseStatus() {
-        final TestCaseDto reviewed = TestCaseDto.builder().description("reviewed").status(TestCaseStatus.REVIEWED).build();
-        final TestCaseDto pending = TestCaseDto.builder().description("pending").status(TestCaseStatus.PENDING).build();
+        final TestCase reviewed = TestCase.builder().description("reviewed").status(TestCaseStatus.REVIEWED).build();
+        final TestCase pending = TestCase.builder().description("pending").status(TestCaseStatus.PENDING).build();
 
-        final List<TestCaseDto> result = TestCaseFilter.filter(List.of(reviewed, pending), new FilterAndSortChoice("", Set.of(), Set.of(), Set.of(), Set.of(TestCaseStatus.REVIEWED), Set.of(), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING));
+        final List<TestCase> result = TestCaseFilter.filter(List.of(reviewed, pending), new FilterAndSortChoice("", Set.of(), Set.of(), Set.of(), Set.of(TestCaseStatus.REVIEWED), Set.of(), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING));
 
         assertEquals(result, List.of(reviewed));
     }
 
     @Test
     public void aQueryNoFieldHoldsFindsNothing() {
-        final TestCaseDto testCase = TestCaseDto.builder().description("Log in").build();
+        final TestCase testCase = TestCase.builder().description("Log in").build();
 
         assertEquals(TestCaseFilter.filter(List.of(testCase), new FilterAndSortChoice("nothing holds this", Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING)), List.of());
     }
@@ -123,7 +123,7 @@ public class TestCaseFilterTest {
     @Test
     public void theSearchReadsEveryFieldTheFieldsPopupLists() {
         final @NotNull TestSetNode set = NodeChain.testSetAt("Shop", "Checkout");
-        final @NotNull TestCaseDto testCase = TestCaseDto.builder()
+        final @NotNull TestCase testCase = TestCase.builder()
                 .id(UUID.randomUUID())
                 .description("Refuse an expired card")
                 .expectedResult("The payment is declined")
@@ -157,11 +157,11 @@ public class TestCaseFilterTest {
     // Rule-EDITOR-PANEL-096
     @Test
     public void choosingNothingInAFilterMatchesEveryTestCase() {
-        final @NotNull TestCaseDto high = TestCaseDto.builder().description("one").priority(Priority.HIGH).groups(List.of("Smoke")).module("accounts").status(TestCaseStatus.REVIEWED).build();
-        final @NotNull TestCaseDto low = TestCaseDto.builder().description("two").priority(Priority.LOW).module("payments").status(TestCaseStatus.DISABLED).build();
-        final @NotNull TestCaseDto bare = TestCaseDto.builder().description("three").build();
+        final @NotNull TestCase high = TestCase.builder().description("one").priority(Priority.HIGH).groups(List.of("Smoke")).module("accounts").status(TestCaseStatus.REVIEWED).build();
+        final @NotNull TestCase low = TestCase.builder().description("two").priority(Priority.LOW).module("payments").status(TestCaseStatus.DISABLED).build();
+        final @NotNull TestCase bare = TestCase.builder().description("three").build();
 
-        final @NotNull List<TestCaseDto> result = TestCaseFilter.filter(List.of(high, low, bare), new FilterAndSortChoice("", Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING), _ -> Optional.empty());
+        final @NotNull List<TestCase> result = TestCaseFilter.filter(List.of(high, low, bare), new FilterAndSortChoice("", Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING), _ -> Optional.empty());
 
         assertEquals(result, List.of(high, low, bare));
     }
@@ -171,12 +171,12 @@ public class TestCaseFilterTest {
     public void theTestSetFilterKeepsOnlyTestCasesOfTheChosenTestSets() {
         final @NotNull TestSetNode login = TestSetNode.builder().path(Path.of("Login")).build();
         final @NotNull TestSetNode checkout = TestSetNode.builder().path(Path.of("Checkout")).build();
-        final @NotNull TestCaseDto inLogin = TestCaseDto.builder().description("Sign in").build();
-        final @NotNull TestCaseDto inCheckout = TestCaseDto.builder().description("Pay").build();
+        final @NotNull TestCase inLogin = TestCase.builder().description("Sign in").build();
+        final @NotNull TestCase inCheckout = TestCase.builder().description("Pay").build();
         inLogin.setParent(login);
         inCheckout.setParent(checkout);
 
-        final @NotNull List<TestCaseDto> result = TestCaseFilter.filter(List.of(inLogin, inCheckout), new FilterAndSortChoice("", Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(checkout.getPath()), SortField.ORDER, SortDirection.ASCENDING));
+        final @NotNull List<TestCase> result = TestCaseFilter.filter(List.of(inLogin, inCheckout), new FilterAndSortChoice("", Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(checkout.getPath()), SortField.ORDER, SortDirection.ASCENDING));
 
         assertEquals(result, List.of(inCheckout), "a test case outside the chosen test set was kept");
     }

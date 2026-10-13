@@ -25,7 +25,7 @@ import org.testin.editor.EditorFixtures;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.git.GitFailureNotice;
 import org.testin.git.conflict.GitConflictOffer;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.status.RunItemStatus;
@@ -69,7 +69,7 @@ public class GuidesOfferedIdeTest extends AbstractTempRootIdeTest {
     public void testATestRunOffersItsShortcutsAndAFailedRunItemOffersBugReports() {
         guides().forgetAll();
         final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
-        final @NotNull List<TestCaseDto> testCases = EditorFixtures.testCases(getProject(), EditorFixtures.testSet(getProject(), testProject, "Login"), 2);
+        final @NotNull List<TestCase> testCases = EditorFixtures.testCases(getProject(), EditorFixtures.testSet(getProject(), testProject, "Login"), 2);
         final @NotNull TestRunNode testRun = EditorFixtures.testRun(getProject(), testProject, testCases.stream().map(EditorFixtures::pending).toList());
 
         final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());

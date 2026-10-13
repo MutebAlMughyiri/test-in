@@ -20,7 +20,7 @@ import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.status.TestCaseStatus;
 import org.testin.util.FixedColors;
 import org.testin.view.Drawn;
@@ -33,7 +33,7 @@ public class DescriptionColorIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull TestCaseCard bound(final @NotNull TestCaseStatus status) {
         final @NotNull TestCaseCard card = new TestCaseCard(getProject());
-        final @NotNull TestCaseDto testCase = TestCaseDto.builder().description("Log in with a locked user").status(status).build();
+        final @NotNull TestCase testCase = TestCase.builder().description("Log in with a locked user").status(status).build();
         card.updateData(0, testCase, Set.of(), testCase.getDescription());
         return card;
     }
@@ -71,9 +71,9 @@ public class DescriptionColorIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-294
     public void testTheColorFollowsTheCardWhenItIsReusedForAnotherTestCase() {
         final @NotNull TestCaseCard card = new TestCaseCard(getProject());
-        card.updateData(0, TestCaseDto.builder().description("Pay with a saved card").status(TestCaseStatus.DISABLED).build(), Set.of(), "Pay with a saved card");
+        card.updateData(0, TestCase.builder().description("Pay with a saved card").status(TestCaseStatus.DISABLED).build(), Set.of(), "Pay with a saved card");
 
-        card.updateData(1, TestCaseDto.builder().description("Pay with a new card").status(TestCaseStatus.PENDING).build(), Set.of(), "Pay with a new card");
+        card.updateData(1, TestCase.builder().description("Pay with a new card").status(TestCaseStatus.PENDING).build(), Set.of(), "Pay with a new card");
 
         assertEquals("a reused card kept the previous test case's gray", UIUtil.getLabelForeground(), Drawn.first(card, JTextArea.class).getForeground());
     }

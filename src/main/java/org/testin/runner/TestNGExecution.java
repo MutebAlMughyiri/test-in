@@ -30,7 +30,7 @@ import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.Failure;
 import org.testin.model.status.ExecutionStatus;
 import org.testin.notifications.Notifier;
@@ -93,14 +93,14 @@ public final class TestNGExecution implements Disposable {
 
     // UC-CODEGEN-008, Rule-CODEGEN-034
     @FromContentModule
-    public void starting(final @NotNull TestCaseDto testCase) {
+    public void starting(final @NotNull TestCase testCase) {
         registry.starting(testCase.getId());
 
         ExecutionReported.broadcast(project, key(testCase.getId()), ExecutionStatus.RUNNING, Duration.ZERO, Failure.NONE);
     }
 
     @FromContentModule
-    public @NotNull List<TestCaseDto> stillWanted(final @NotNull List<TestCaseDto> testCases) {
+    public @NotNull List<TestCase> stillWanted(final @NotNull List<TestCase> testCases) {
         return testCases.stream().filter(testCase -> registry.take(testCase.getId())).toList();
     }
 
@@ -112,26 +112,26 @@ public final class TestNGExecution implements Disposable {
 
     // UC-CODEGEN-008, Rule-CODEGEN-031
     @FromContentModule
-    public void launch(final @NotNull List<TestCaseDto> testCases, final @NotNull RunnerAndConfigurationSettings settings) {
+    public void launch(final @NotNull List<TestCase> testCases, final @NotNull RunnerAndConfigurationSettings settings) {
         launched(testCases, settings.getName());
 
         TestinLogger.info("Starting " + settings.getName() + " with " + testCases.size() + " test case(s)");
         ProgramRunnerUtil.executeConfiguration(settings, DefaultRunExecutor.getRunExecutorInstance());
     }
 
-    void launched(final @NotNull List<TestCaseDto> testCases, final @NotNull String testRunName) {
-        registry.launched(testCases.stream().map(TestCaseDto::getId).toList(), testRunName);
+    void launched(final @NotNull List<TestCase> testCases, final @NotNull String testRunName) {
+        registry.launched(testCases.stream().map(TestCase::getId).toList(), testRunName);
     }
 
     // UC-CODEGEN-008, Rule-CODEGEN-097
     @FromContentModule
-    public void acrossModules(final @NotNull List<TestCaseDto> testCases, final @NotNull List<String> modules) {
+    public void acrossModules(final @NotNull List<TestCase> testCases, final @NotNull List<String> modules) {
         TestinLogger.warn("Not running " + testCases.size() + " test case(s): their methods live in the modules " + modules);
         testCases.forEach(this::notStarting);
         notifier.softRefuse(project, Refused.ACROSS_MODULES, String.join(", ", modules));
     }
 
-    public void notStarting(final @NotNull TestCaseDto testCase) {
+    public void notStarting(final @NotNull TestCase testCase) {
         registry.notStarting(testCase.getId());
 
         ExecutionReported.broadcast(project, key(testCase.getId()), ExecutionStatus.IDLE, Duration.ZERO, Failure.NONE);
@@ -139,14 +139,14 @@ public final class TestNGExecution implements Disposable {
 
     // UC-CODEGEN-008
     @FromContentModule
-    public void noGeneratedCode(final @NotNull TestCaseDto testCase) {
+    public void noGeneratedCode(final @NotNull TestCase testCase) {
         TestinLogger.warn("Not running '" + testCase.getDescription() + "': it has no generated code");
         notStarting(testCase);
     }
 
     // UC-CODEGEN-008, Rule-CODEGEN-033, Rule-CODEGEN-074, Rule-CODEGEN-034
     @FromContentModule
-    public void started(final @NotNull List<TestCaseDto> running, final @NotNull List<TestCaseDto> withoutCode) {
+    public void started(final @NotNull List<TestCase> running, final @NotNull List<TestCase> withoutCode) {
         notifier.softShowCounted(project, Bundle.message("execution.status.running"), running.size());
         if (withoutCode.isEmpty()) return;
 
@@ -156,7 +156,7 @@ public final class TestNGExecution implements Disposable {
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-038
-    public boolean isStopped(final @NotNull TestCaseDto testCase) {
+    public boolean isStopped(final @NotNull TestCase testCase) {
         return registry.isStopped(testCase.getId());
     }
 
@@ -170,7 +170,7 @@ public final class TestNGExecution implements Disposable {
         return registry.isExecutingNow(testCaseId);
     }
 
-    public @NotNull ExecutionStatus statusOf(final @NotNull TestCaseDto testCase) {
+    public @NotNull ExecutionStatus statusOf(final @NotNull TestCase testCase) {
         return registry.statusOf(testCase.getId());
     }
 
@@ -190,8 +190,8 @@ public final class TestNGExecution implements Disposable {
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-037
-    public int stop(final @NotNull List<TestCaseDto> testCases) {
-        return stopTestCases(testCases.stream().map(TestCaseDto::getId).toList());
+    public int stop(final @NotNull List<TestCase> testCases) {
+        return stopTestCases(testCases.stream().map(TestCase::getId).toList());
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-037

@@ -26,13 +26,13 @@ import org.testin.codegen.CodeOn;
 import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.help.Guide;
 import org.testin.help.Guides;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.services.Services;
 
 // UC-CODEGEN-006
 public class NavigateToTestMethodAction extends AbstractAnyProjectAction {
     // UC-CODEGEN-006, Rule-INTERNAL-129
-    public static void execute(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
+    public static void execute(final @NotNull Project project, final @NotNull TestCase testCase) {
         Services.getInstance(project, Guides.class).add(Guide.AUTOMATION_CODE);
         if (CodeOn.isOffAndWarned(project)) return;
 

@@ -20,7 +20,7 @@ package org.testin.codegen.agent;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.node.NodeChain;
 import org.testin.codegen.Fqcn;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testng.annotations.Test;
 
@@ -34,8 +34,8 @@ import static org.testng.Assert.assertTrue;
 
 public class AgentCommandTest {
 
-    private static @NotNull TestCaseDto aTestCase() {
-        return TestCaseDto.builder()
+    private static @NotNull TestCase aTestCase() {
+        return TestCase.builder()
                 .id(UUID.randomUUID())
                 .description("Sign in with a valid account")
                 .expectedResult("The dashboard opens")
@@ -86,7 +86,7 @@ public class AgentCommandTest {
     // Rule-CODEGEN-086
     @Test
     public void thePromptCarriesTheTestCaseAndNothingElse() {
-        final TestCaseDto testCase = aTestCase();
+        final TestCase testCase = aTestCase();
         final String written = BodyPrompt.of("{method}: {description} / {expectedResult} / {testData} / {preConditions} / {module} / {steps}", testCase, "signInWithAValidAccount");
 
         assertEquals(written, "signInWithAValidAccount: Sign in with a valid account / The dashboard opens"
@@ -98,7 +98,7 @@ public class AgentCommandTest {
     @Test
     public void thePromptSaysWhereTheTestCaseSitsAndWhichClassHoldsItsMethod() {
         final TestSetNode login = NodeChain.testSetAt("NAFATH", "Test Cases", "Accounts", "Login");
-        final TestCaseDto testCase = aTestCase();
+        final TestCase testCase = aTestCase();
         testCase.setParent(login);
 
         assertEquals(BodyPrompt.of("{testSetPath} | {class}", testCase, "signInWithAValidAccount"), "NAFATH > Test Cases > Accounts > Login | " + Fqcn.classOfMethod(testCase));

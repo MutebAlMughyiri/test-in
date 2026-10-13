@@ -20,7 +20,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,20 +28,20 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ShownTestCaseCursor {
     private final @NotNull ViewPanel viewPanel;
-    private @NotNull List<TestCaseDto> shownTestCases = List.of();
+    private @NotNull List<TestCase> shownTestCases = List.of();
     private int currentIndex = 0;
 
     @Getter
     private @NotNull List<String> treePath = List.of();
 
     // UC-VIEW-PANEL-002, Rule-VIEW-PANEL-018
-    public void updateList(final @NotNull List<TestCaseDto> testCases, final @NotNull List<String> treePath) {
+    public void updateList(final @NotNull List<TestCase> testCases, final @NotNull List<String> treePath) {
         this.shownTestCases = testCases;
         this.currentIndex = 0;
         this.treePath = treePath;
     }
 
-    public @NotNull Optional<TestCaseDto> getCurrentItem() {
+    public @NotNull Optional<TestCase> getCurrentItem() {
         return currentIndex >= 0 && currentIndex < shownTestCases.size()
                 ? Optional.of(shownTestCases.get(currentIndex))
                 : Optional.empty();

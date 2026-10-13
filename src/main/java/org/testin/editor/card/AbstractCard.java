@@ -30,7 +30,7 @@ import org.testin.editor.EditorColors;
 import org.testin.editor.testrun.ExecutingNow;
 import org.testin.model.Automated;
 import org.testin.model.Priority;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.services.Services;
 import org.testin.testcase.TestCaseOrder;
@@ -135,7 +135,7 @@ public abstract class AbstractCard extends JBPanel<AbstractCard> {
     }
 
     // UC-EDITOR-PANEL-047, Rule-EDITOR-PANEL-235, Rule-EDITOR-PANEL-291
-    public void showTitleIcons(final @NotNull AbstractNode parent, final @NotNull TestCaseDto testCase) {
+    public void showTitleIcons(final @NotNull AbstractNode parent, final @NotNull TestCase testCase) {
         hoverButtons = TestCaseQuickAction.onCard(project, parent, testCase);
         executing = ExecutingNow.is(project, testCase.getId());
     }

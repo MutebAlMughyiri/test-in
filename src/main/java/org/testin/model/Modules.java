@@ -26,10 +26,10 @@ import java.util.Set;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Modules {
-    public static @NotNull Set<String> in(final @NotNull List<TestCaseDto> testCases) {
+    public static @NotNull Set<String> in(final @NotNull List<TestCase> testCases) {
         final @NotNull Set<String> modules = new HashSet<>();
 
-        for (final TestCaseDto testCase : testCases) {
+        for (final TestCase testCase : testCases) {
             final @NotNull String module = testCase.getModule().trim();
             if (!module.isEmpty()) modules.add(module);
         }

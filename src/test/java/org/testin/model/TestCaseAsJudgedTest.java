@@ -37,8 +37,8 @@ import static org.testng.Assert.assertTrue;
 public class TestCaseAsJudgedTest {
     private static final JsonCodec MAPPER = RealJsonCodec.build();
 
-    private static @NotNull TestCaseDto testCaseReading(final UUID testCaseId, final String description) {
-        return TestCaseDto.builder().id(testCaseId).description(description).build();
+    private static @NotNull TestCase testCaseReading(final UUID testCaseId, final String description) {
+        return TestCase.builder().id(testCaseId).description(description).build();
     }
 
     private static @NotNull RunItem passed(final UUID testCaseId) {
@@ -106,7 +106,7 @@ public class TestCaseAsJudgedTest {
 
         runItem.showing(Optional.empty(), Optional.empty(), Optional.empty(), false);
 
-        assertEquals(runItem.shownTestCase().getDescription(), TestCaseDto.deleted(testCaseId).getDescription());
+        assertEquals(runItem.shownTestCase().getDescription(), TestCase.deleted(testCaseId).getDescription());
     }
 
     // Rule-EDITOR-PANEL-239
@@ -128,7 +128,7 @@ public class TestCaseAsJudgedTest {
         final TestSetNode set = new TestSetNode();
         final RunItem runItem = passed(testCaseId);
 
-        runItem.showing(Optional.of(TestCaseDto.builder().id(testCaseId).parent(set).build()), Optional.of(testCaseReading(testCaseId, "before")), Optional.empty(), false);
+        runItem.showing(Optional.of(TestCase.builder().id(testCaseId).parent(set).build()), Optional.of(testCaseReading(testCaseId, "before")), Optional.empty(), false);
 
         assertSame(runItem.shownTestCase().getParent(), set, "where the test case sits is the live test case's, so navigation still works");
     }

@@ -17,7 +17,7 @@
 package org.testin.editor;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.util.List;
 import java.util.UUID;
@@ -34,7 +34,7 @@ public record PageWindow(int page, int totalPages, int fromIndex, int toIndex) {
     }
 
     // UC-EDITOR-PANEL-022, Rule-EDITOR-PANEL-104
-    public static int pageContaining(final @NotNull UUID testCaseId, final @NotNull List<TestCaseDto> testCases, final int pageSize) {
+    public static int pageContaining(final @NotNull UUID testCaseId, final @NotNull List<TestCase> testCases, final int pageSize) {
         final int safePageSize = Math.max(1, pageSize);
         for (int i = 0; i < testCases.size(); i++) {
             if (testCaseId.equals(testCases.get(i).getId())) return (i / safePageSize) + 1;

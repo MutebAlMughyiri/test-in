@@ -17,7 +17,7 @@
 package org.testin.editor.grid;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.testrun.TestRunEditorFields;
 import org.testng.annotations.Test;
@@ -29,10 +29,10 @@ import java.util.UUID;
 import static org.testng.Assert.assertEquals;
 
 public class GridRowsTest {
-    private static final @NotNull TestCaseDto LOGIN = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
-    private static final @NotNull TestCaseDto LOGOUT = TestCaseDto.builder().id(UUID.randomUUID()).description("Log out").build();
+    private static final @NotNull TestCase LOGIN = TestCase.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
+    private static final @NotNull TestCase LOGOUT = TestCase.builder().id(UUID.randomUUID()).description("Log out").build();
 
-    private static int position(final @NotNull TestCaseDto testCase) {
+    private static int position(final @NotNull TestCase testCase) {
         return testCase == LOGIN ? 7 : 8;
     }
 

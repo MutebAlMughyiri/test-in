@@ -20,7 +20,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBPanel;
 import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.services.Services;
 import org.testin.testcase.TestCaseDialogKey;
 import org.testin.testcase.UpdateTestCaseFields;
@@ -38,7 +38,7 @@ public class UpdateTestCaseDialog extends AbstractTestCaseDialog {
     private final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
 
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-036
-    public UpdateTestCaseDialog(final @NotNull Project project, final @NotNull TestCaseDto existingTestCase, final @NotNull UpdateTestCaseFields selectedItem, final @NotNull Consumer<@NotNull TestCaseDto> onSave) {
+    public UpdateTestCaseDialog(final @NotNull Project project, final @NotNull TestCase existingTestCase, final @NotNull UpdateTestCaseFields selectedItem, final @NotNull Consumer<@NotNull TestCase> onSave) {
         super(project, existingTestCase, onSave, TestCaseDialogKey.SAVE, TestCaseDialogKey.CANCEL);
 
         // Rule-CODEGEN-001

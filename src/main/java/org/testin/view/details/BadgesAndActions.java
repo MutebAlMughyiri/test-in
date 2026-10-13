@@ -22,7 +22,7 @@ import com.intellij.util.ui.JBUI;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.Nodes;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.services.Services;
 import org.testin.setting.TestinRoot;
 
@@ -39,7 +39,7 @@ public final class BadgesAndActions extends AbstractDetails {
 
     // UC-VIEW-PANEL-004, UC-VIEW-PANEL-012, Rule-VIEW-PANEL-085
     @Override
-    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull TestCaseDto testCase, final int currentRow) {
+    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull TestCase testCase, final int currentRow) {
         final @NotNull JBPanel<?> line = line(GAP);
 
         TestCaseBadges.of(project, testCase).forEach(line::add);

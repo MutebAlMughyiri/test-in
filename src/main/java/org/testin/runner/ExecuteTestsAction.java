@@ -28,7 +28,7 @@ import org.testin.editor.testrun.ExecutionMode;
 import org.testin.editor.open.TestinEditors;
 import org.testin.indexer.TestCases;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.notifications.Notifier;
@@ -84,7 +84,7 @@ public class ExecuteTestsAction extends AbstractAnyProjectAction {
 
     // UC-CODEGEN-008, Rule-CODEGEN-031
     private void run(final @NotNull Project project, final @NotNull AbstractNode node) {
-        final @NotNull List<TestCaseDto> testCases = Services.getInstance(project, TestCases.class).getTestCasesUnder(node);
+        final @NotNull List<TestCase> testCases = Services.getInstance(project, TestCases.class).getTestCasesUnder(node);
 
         if (testCases.isEmpty()) {
             Services.getInstance(project, Notifier.class).softRefuse(project, Refused.NOTHING_TO_RUN, node.getName());

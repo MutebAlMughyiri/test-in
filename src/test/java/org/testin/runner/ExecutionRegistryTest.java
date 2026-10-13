@@ -18,7 +18,7 @@ package org.testin.runner;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.DateFormats;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.status.ExecutionStatus;
 import org.testin.model.testrun.Failure;
 import org.testng.annotations.Test;
@@ -42,33 +42,33 @@ public class ExecutionRegistryTest {
 
     private static final String RUN = "Testin: three cases";
 
-    private static @NotNull TestCaseDto reloaded(final TestCaseDto original) {
-        return TestCaseDto.builder().id(original.getId()).description(original.getDescription()).build();
+    private static @NotNull TestCase reloaded(final TestCase original) {
+        return TestCase.builder().id(original.getId()).description(original.getDescription()).build();
     }
 
-    private static @NotNull TestCaseDto aTestCase(final String description) {
-        return TestCaseDto.builder().description(description).build();
+    private static @NotNull TestCase aTestCase(final String description) {
+        return TestCase.builder().description(description).build();
     }
 
     private static @NotNull Attempt attempt(final ExecutionStatus status, final String message) {
         return new Attempt(status, Duration.ZERO, new Failure(message, "", List.of()), "", DateFormats.NOT_EXECUTED);
     }
 
-    private static @NotNull ExecutionStatus statusIn(final Map<UUID, Attempts> decided, final TestCaseDto testCase) {
+    private static @NotNull ExecutionStatus statusIn(final Map<UUID, Attempts> decided, final TestCase testCase) {
         return Optional.ofNullable(decided.get(testCase.getId())).map(Attempts::status).orElse(ExecutionStatus.IDLE);
     }
 
-    private static @NotNull ExecutionRegistry launchedWith(final TestCaseDto... testCases) {
+    private static @NotNull ExecutionRegistry launchedWith(final TestCase... testCases) {
         final ExecutionRegistry registry = new ExecutionRegistry();
-        registry.launched(Arrays.stream(testCases).map(TestCaseDto::getId).toList(), RUN);
+        registry.launched(Arrays.stream(testCases).map(TestCase::getId).toList(), RUN);
         return registry;
     }
 
     // Rule-EDITOR-PANEL-291
     @Test
     public void onlyTheTestCaseTestNgHasStartedIsExecutingNow() {
-        final TestCaseDto first = aTestCase("Log in with Nafath");
-        final TestCaseDto waiting = aTestCase("Log out from the profile page");
+        final TestCase first = aTestCase("Log in with Nafath");
+        final TestCase waiting = aTestCase("Log out from the profile page");
         final ExecutionRegistry registry = launchedWith(first, waiting);
 
         assertFalse(registry.isExecutingNow(first.getId()), "a test case handed over and waiting its turn is not executing");
@@ -84,7 +84,7 @@ public class ExecutionRegistryTest {
     // Rule-EDITOR-PANEL-291
     @Test
     public void aStoppedTestCaseIsNoLongerExecuting() {
-        final TestCaseDto started = aTestCase("Pay with a saved card");
+        final TestCase started = aTestCase("Pay with a saved card");
         final ExecutionRegistry registry = launchedWith(started);
 
         registry.attempted(started.getId(), attempt(ExecutionStatus.RUNNING, ""));
@@ -96,13 +96,13 @@ public class ExecutionRegistryTest {
     @Test
     public void aStopReachesATestCaseThroughAnyNumberOfReloads() {
         final ExecutionRegistry registry = new ExecutionRegistry();
-        final TestCaseDto original = aTestCase("logs in");
+        final TestCase original = aTestCase("logs in");
 
         registry.starting(original.getId());
         registry.take(original.getId());
         registry.launched(List.of(original.getId()), RUN);
 
-        final TestCaseDto afterReload = reloaded(reloaded(reloaded(original)));
+        final TestCase afterReload = reloaded(reloaded(reloaded(original)));
         assertNotSame(afterReload, original, "a rescan hands the editors a new instance");
 
         assertTrue(registry.isRunning(afterReload.getId()), "the fresh instance is the same running test case");
@@ -126,9 +126,9 @@ public class ExecutionRegistryTest {
     @Test
     public void stoppingOneTestCaseStopsTheOnesSharingItsProcess() {
         final ExecutionRegistry registry = new ExecutionRegistry();
-        final TestCaseDto first = aTestCase("first");
-        final TestCaseDto second = aTestCase("second");
-        final TestCaseDto alone = aTestCase("in a run of its own");
+        final TestCase first = aTestCase("first");
+        final TestCase second = aTestCase("second");
+        final TestCase alone = aTestCase("in a run of its own");
 
         registry.launched(List.of(first.getId(), second.getId()), RUN);
         registry.launched(List.of(alone.getId()), "Testin: one case");
@@ -143,8 +143,8 @@ public class ExecutionRegistryTest {
     @Test
     public void aTestCaseThatAlreadyReportedIsNotSweptUpByALaterStop() {
         final ExecutionRegistry registry = new ExecutionRegistry();
-        final TestCaseDto finished = aTestCase("finished early");
-        final TestCaseDto stillGoing = aTestCase("still going");
+        final TestCase finished = aTestCase("finished early");
+        final TestCase stillGoing = aTestCase("still going");
 
         registry.launched(List.of(finished.getId(), stillGoing.getId()), RUN);
         registry.reported(finished.getId(), ExecutionStatus.PASSED);
@@ -158,7 +158,7 @@ public class ExecutionRegistryTest {
     @Test
     public void aTestCaseStoppedBeforeItsLaunchIsLeftOutOfTheExecution() {
         final ExecutionRegistry registry = new ExecutionRegistry();
-        final TestCaseDto testCase = aTestCase("stopped in the second before the process");
+        final TestCase testCase = aTestCase("stopped in the second before the process");
 
         registry.starting(testCase.getId());
         registry.stopping(List.of(testCase.getId()));
@@ -169,7 +169,7 @@ public class ExecutionRegistryTest {
     @Test
     public void runningAgainClearsTheStopThatEndedTheLastExecution() {
         final ExecutionRegistry registry = new ExecutionRegistry();
-        final TestCaseDto testCase = aTestCase("run, stopped, run again");
+        final TestCase testCase = aTestCase("run, stopped, run again");
 
         registry.launched(List.of(testCase.getId()), RUN);
         registry.stopping(List.of(testCase.getId()));
@@ -182,7 +182,7 @@ public class ExecutionRegistryTest {
     @Test
     public void aRunItemStatusSurvivesAReload() {
         final ExecutionRegistry registry = new ExecutionRegistry();
-        final TestCaseDto original = aTestCase("passes");
+        final TestCase original = aTestCase("passes");
 
         registry.launched(List.of(original.getId()), RUN);
         registry.reported(original.getId(), ExecutionStatus.PASSED);
@@ -194,7 +194,7 @@ public class ExecutionRegistryTest {
     @Test
     public void aTestCaseThatNeverStartedKeepsItsLastRunItemStatus() {
         final ExecutionRegistry registry = new ExecutionRegistry();
-        final TestCaseDto testCase = aTestCase("passed earlier, run again during indexing");
+        final TestCase testCase = aTestCase("passed earlier, run again during indexing");
 
         registry.reported(testCase.getId(), ExecutionStatus.PASSED);
         registry.notStarting(testCase.getId());
@@ -206,7 +206,7 @@ public class ExecutionRegistryTest {
     @Test
     public void aStoppedTestCaseIsRecordedAsNotRun() {
         final ExecutionRegistry registry = new ExecutionRegistry();
-        final TestCaseDto testCase = aTestCase("passed earlier, stopped this time");
+        final TestCase testCase = aTestCase("passed earlier, stopped this time");
 
         registry.reported(testCase.getId(), ExecutionStatus.PASSED);
         registry.starting(testCase.getId());
@@ -232,7 +232,7 @@ public class ExecutionRegistryTest {
     @Test
     public void runningBeatsWhateverTheLastExecutionSaid() {
         final ExecutionRegistry registry = new ExecutionRegistry();
-        final TestCaseDto testCase = aTestCase("failed once, running again");
+        final TestCase testCase = aTestCase("failed once, running again");
 
         registry.reported(testCase.getId(), ExecutionStatus.FAILED);
         registry.starting(testCase.getId());
@@ -243,7 +243,7 @@ public class ExecutionRegistryTest {
     @Test
     public void aReportOfRunningIsNotARunItemStatus() {
         final ExecutionRegistry registry = new ExecutionRegistry();
-        final TestCaseDto testCase = aTestCase("reports itself started");
+        final TestCase testCase = aTestCase("reports itself started");
 
         registry.launched(List.of(testCase.getId()), RUN);
         registry.reported(testCase.getId(), ExecutionStatus.RUNNING);
@@ -254,8 +254,8 @@ public class ExecutionRegistryTest {
     // Rule-CODEGEN-110
     @Test
     public void aResultIsHeldUntilTestNGMovesToAnotherTestCase() {
-        final TestCaseDto retried = aTestCase("fails once, passes on the retry");
-        final TestCaseDto next = aTestCase("runs after it");
+        final TestCase retried = aTestCase("fails once, passes on the retry");
+        final TestCase next = aTestCase("runs after it");
         final ExecutionRegistry registry = launchedWith(retried, next);
 
         assertTrue(registry.attempted(retried.getId(), attempt(ExecutionStatus.SKIPPED, "expected true")).isEmpty(), "a skipped attempt may be retried");
@@ -272,8 +272,8 @@ public class ExecutionRegistryTest {
     // Rule-CODEGEN-111
     @Test
     public void eachAttemptIsShownTheMomentItArrivesAndOnlyOnce() {
-        final TestCaseDto invoked = aTestCase("invocationCount = 2");
-        final TestCaseDto next = aTestCase("runs after it");
+        final TestCase invoked = aTestCase("invocationCount = 2");
+        final TestCase next = aTestCase("runs after it");
         final ExecutionRegistry registry = launchedWith(invoked, next);
 
         registry.attempted(invoked.getId(), attempt(ExecutionStatus.PASSED, ""));
@@ -295,7 +295,7 @@ public class ExecutionRegistryTest {
     // Rule-CODEGEN-110
     @Test
     public void anyFailedInvocationFailsTheTestCase() {
-        final TestCaseDto invoked = aTestCase("invocationCount = 4");
+        final TestCase invoked = aTestCase("invocationCount = 4");
         final ExecutionRegistry registry = launchedWith(invoked);
 
         registry.attempted(invoked.getId(), attempt(ExecutionStatus.PASSED, ""));
@@ -309,7 +309,7 @@ public class ExecutionRegistryTest {
     // Rule-CODEGEN-075, Rule-CODEGEN-110
     @Test
     public void aSkipNoAttemptFollowsIsAFailureWhenTheExecutionEnds() {
-        final TestCaseDto skipped = aTestCase("its dependency failed");
+        final TestCase skipped = aTestCase("its dependency failed");
         final ExecutionRegistry registry = launchedWith(skipped);
 
         registry.attempted(skipped.getId(), attempt(ExecutionStatus.SKIPPED, "Skipped/Terminated"));
@@ -321,7 +321,7 @@ public class ExecutionRegistryTest {
     // Rule-CODEGEN-110
     @Test
     public void aTestCaseThisPluginDidNotStartIsDecidedAtOnce() {
-        final TestCaseDto fromTheGutter = aTestCase("run from the class");
+        final TestCase fromTheGutter = aTestCase("run from the class");
 
         final Map<UUID, Attempts> decided = new ExecutionRegistry().attempted(fromTheGutter.getId(), attempt(ExecutionStatus.FAILED, "expected true"));
 
@@ -331,8 +331,8 @@ public class ExecutionRegistryTest {
     @Test
     public void anExecutionThatEndsWithoutReportingPutsItsTestCasesBack() {
         final ExecutionRegistry registry = new ExecutionRegistry();
-        final TestCaseDto first = aTestCase("never reached");
-        final TestCaseDto second = aTestCase("never reached either");
+        final TestCase first = aTestCase("never reached");
+        final TestCase second = aTestCase("never reached either");
 
         registry.launched(List.of(first.getId(), second.getId()), RUN);
 
@@ -346,7 +346,7 @@ public class ExecutionRegistryTest {
     @Test
     public void anExecutionThatEndedWithEveryRunItemInLeavesNothingBehind() {
         final ExecutionRegistry registry = new ExecutionRegistry();
-        final TestCaseDto testCase = aTestCase("passes");
+        final TestCase testCase = aTestCase("passes");
 
         registry.launched(List.of(testCase.getId()), RUN);
         registry.reported(testCase.getId(), ExecutionStatus.PASSED);
@@ -380,7 +380,7 @@ public class ExecutionRegistryTest {
     @Test
     public void anExecutionStopsBeingHeldOnceItEnds() {
         final ExecutionRegistry registry = new ExecutionRegistry();
-        final TestCaseDto testCase = aTestCase("one run");
+        final TestCase testCase = aTestCase("one run");
 
         registry.launched(List.of(testCase.getId()), RUN);
         assertTrue(registry.launchedHere(RUN), "the stop may kill this one");

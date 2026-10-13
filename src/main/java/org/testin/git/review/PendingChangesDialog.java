@@ -26,8 +26,8 @@ import org.testin.git.change.PendingChange;
 import org.testin.git.change.TestCaseFieldChanges;
 import org.testin.indexer.TestCases;
 import org.testin.model.NodeType;
-import org.testin.model.TestCaseDto;
-import org.testin.model.TestCaseDto.TestCaseDtoBuilder;
+import org.testin.model.TestCase;
+import org.testin.model.TestCase.TestCaseBuilder;
 import org.testin.notifications.Done;
 import org.testin.services.Services;
 import org.testin.testcase.TestCaseSnapshot;
@@ -170,7 +170,7 @@ public final class PendingChangesDialog extends AbstractFrameworkDialog {
             if (!reverted) return;
 
             final @NotNull TestCaseSnapshot after = TestCaseSnapshot.of(project, testSetPath, List.of(testCaseId));
-            final @NotNull List<TestCaseDto> named = before.present().isEmpty() ? after.present() : before.present();
+            final @NotNull List<TestCase> named = before.present().isEmpty() ? after.present() : before.present();
             TestCaseSnapshot.record(project, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.revert"), named), before, after);
 
             removeRow(row);
@@ -196,16 +196,16 @@ public final class PendingChangesDialog extends AbstractFrameworkDialog {
             return false;
         }
 
-        final @NotNull Optional<TestCaseDto> current = testCases.findTestCase(UUID.fromString(diff.testCaseId()));
+        final @NotNull Optional<TestCase> current = testCases.findTestCase(UUID.fromString(diff.testCaseId()));
         if (current.isEmpty()) {
             notifier.softRefuse(project, Bundle.message("dialog.pending.revert.gone"));
             return false;
         }
 
-        final @NotNull TestCaseDtoBuilder draft = current.orElseThrow().edit();
-        final @NotNull TestCaseDto committed = diff.committed();
+        final @NotNull TestCaseBuilder draft = current.orElseThrow().edit();
+        final @NotNull TestCase committed = diff.committed();
         changeType.getRevertAction().apply(draft, committed);
-        final @NotNull TestCaseDto working = draft.build();
+        final @NotNull TestCase working = draft.build();
 
         if (TestCaseFieldChanges.compare(committed, working).isEmpty()) {
             working.takeAuditOf(committed);

@@ -28,7 +28,7 @@ import org.testin.Said;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.indexer.TestRuns;
 import org.testin.model.DateFormats;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.TestRunSummary;
 import org.testin.model.status.RunItemStatus;
@@ -132,7 +132,7 @@ public class RecordRunItemStatusIdeTest extends AbstractTempRootIdeTest {
             fixture.press(editor, RunItemStatus.BLOCKED);
 
             assertEquals("five recorded at once were not one message with a count", List.of(Done.counted(RunItemStatus.BLOCKED.getLabel(), 5)), balloons);
-            for (final TestCaseDto testCase : fixture.testCases().subList(0, 5))
+            for (final TestCase testCase : fixture.testCases().subList(0, 5))
                 assertEquals(RunItemStatus.BLOCKED, fixture.statusOf(testCase));
         } finally {
             Disposer.dispose(editor);
@@ -255,7 +255,7 @@ public class RecordRunItemStatusIdeTest extends AbstractTempRootIdeTest {
             fixture.press(editor, RunItemStatus.FAILED);
 
             assertTrue("failing several opened the failure dialog", fixture.failureDialog().isEmpty());
-            for (final TestCaseDto testCase : List.of(fixture.testCases().getFirst(), fixture.testCases().get(2))) {
+            for (final TestCase testCase : List.of(fixture.testCases().getFirst(), fixture.testCases().get(2))) {
                 final @NotNull RunItem failed = fixture.runItemOf(testCase);
                 assertEquals(RunItemStatus.FAILED, failed.getStatus());
                 assertEquals("a test case failed with several was given detail", "", failed.getActualResult());

@@ -17,7 +17,7 @@
 package org.testin.importexport.shared;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.testcase.Can;
 import org.testin.testcase.TestSetEditorFields;
 import org.testng.annotations.Test;
@@ -31,8 +31,8 @@ public class TablePanelBuilderTest {
 
     private static @NotNull DefaultTableModel model() {
         return new TablePanelBuilder().createModel(TestSetEditorFields.all(Can.EXPORT), List.of(
-                TestCaseDto.builder().description("log in with a valid user").build(),
-                TestCaseDto.builder().description("log in with a wrong password").build()));
+                TestCase.builder().description("log in with a valid user").build(),
+                TestCase.builder().description("log in with a wrong password").build()));
     }
 
     // Rule-SHARE-017

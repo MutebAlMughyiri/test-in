@@ -21,7 +21,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.jetbrains.annotations.NotNull;
 import org.testin.TempTree;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItem;
 import org.testng.SkipException;
 import org.testng.annotations.Test;
@@ -89,7 +89,7 @@ public class IndexerBudgetTest {
 
     private static long heldKilobytes(final @NotNull List<String> documents) {
         final long before = usedBytes();
-        final @NotNull List<TestCaseDto> weighed = parse(documents);
+        final @NotNull List<TestCase> weighed = parse(documents);
         final long after = usedBytes();
 
         assertEquals(weighed.size(), TEST_CASES, "The test cases were collected before they could be weighed");
@@ -112,14 +112,14 @@ public class IndexerBudgetTest {
         return elapsed;
     }
 
-    private static @NotNull List<TestCaseDto> readAll(final @NotNull Path project) {
-        final @NotNull List<TestCaseDto> testCases = new ArrayList<>();
+    private static @NotNull List<TestCase> readAll(final @NotNull Path project) {
+        final @NotNull List<TestCase> testCases = new ArrayList<>();
 
         try (Stream<Path> walk = Files.walk(project)) {
             for (final Path file : walk.toList()) {
                 if (!file.getFileName().toString().endsWith(".tc")) continue;
 
-                testCases.add(MAPPER.readValue(file.toFile(), TestCaseDto.class));
+                testCases.add(MAPPER.readValue(file.toFile(), TestCase.class));
             }
         } catch (final IOException ex) {
             throw new AssertionError("Could not read the generated tree at " + project + ": " + ex.getMessage(), ex);
@@ -128,12 +128,12 @@ public class IndexerBudgetTest {
         return testCases;
     }
 
-    private static @NotNull List<TestCaseDto> parse(final @NotNull List<String> documents) {
-        final @NotNull List<TestCaseDto> testCases = new ArrayList<>(documents.size());
+    private static @NotNull List<TestCase> parse(final @NotNull List<String> documents) {
+        final @NotNull List<TestCase> testCases = new ArrayList<>(documents.size());
 
         for (final String document : documents) {
             try {
-                testCases.add(MAPPER.readValue(document, TestCaseDto.class));
+                testCases.add(MAPPER.readValue(document, TestCase.class));
             } catch (final IOException ex) {
                 throw new AssertionError("A generated test case no longer parses: " + ex.getMessage(), ex);
             }
@@ -164,7 +164,7 @@ public class IndexerBudgetTest {
 
         for (int pass = 0; pass < PASSES; pass++) {
             final long started = System.nanoTime();
-            final @NotNull List<TestCaseDto> parsed = parse(documents);
+            final @NotNull List<TestCase> parsed = parse(documents);
             final long elapsed = System.nanoTime() - started;
 
             assertEquals(parsed.size(), TEST_CASES, "The parse read a different number of test cases than it was given");

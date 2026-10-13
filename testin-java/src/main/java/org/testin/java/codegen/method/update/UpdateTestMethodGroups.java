@@ -20,14 +20,14 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.CodeChange;
 import org.testin.codegen.CodeChangeType;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.util.List;
 
-public class UpdateTestMethodGroups extends BaseTestMethodChange implements CodeChange<TestCaseDto> {
+public class UpdateTestMethodGroups extends BaseTestMethodChange implements CodeChange<TestCase> {
     // UC-CODEGEN-012, Rule-CODEGEN-045
     @Override
-    public void execute(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
+    public void execute(final @NotNull Project project, final @NotNull TestCase testCase) {
         applyUpdate(project, testCase, CodeChangeType.UPDATE_TEST_CASE_GROUP.description(), testMethod -> {
             writeGroups(project, testMethod, testCase);
             reformat(project, testMethod);
@@ -35,7 +35,7 @@ public class UpdateTestMethodGroups extends BaseTestMethodChange implements Code
     }
 
     @Override
-    public void executeAll(final @NotNull Project project, final @NotNull List<? extends TestCaseDto> testCases) {
+    public void executeAll(final @NotNull Project project, final @NotNull List<? extends TestCase> testCases) {
         applyToEach(project, testCases, CodeChangeType.UPDATE_TEST_CASE_GROUP.description(), (testMethod, testCase) -> writeGroups(project, testMethod, testCase));
     }
 }

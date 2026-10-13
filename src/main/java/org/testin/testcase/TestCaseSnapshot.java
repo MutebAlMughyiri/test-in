@@ -20,7 +20,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.services.Services;
 import org.testin.undo.Operation;
 import org.testin.undo.UndoHistories;
@@ -33,11 +33,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public record TestCaseSnapshot(@NotNull Path testSetPath, @NotNull List<TestCaseDto> present, @NotNull List<UUID> absent) {
+public record TestCaseSnapshot(@NotNull Path testSetPath, @NotNull List<TestCase> present, @NotNull List<UUID> absent) {
     // UC-EDITOR-PANEL-012, Rule-EDITOR-PANEL-228
     public static @NotNull TestCaseSnapshot of(final @NotNull Project project, final @NotNull Path testSetPath, final @NotNull List<UUID> testCaseIds) {
         final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
-        final @NotNull List<TestCaseDto> present = new ArrayList<>(testCaseIds.size());
+        final @NotNull List<TestCase> present = new ArrayList<>(testCaseIds.size());
         final @NotNull List<UUID> absent = new ArrayList<>();
 
         for (final UUID testCaseId : testCaseIds)
@@ -49,14 +49,14 @@ public record TestCaseSnapshot(@NotNull Path testSetPath, @NotNull List<TestCase
     }
 
     // UC-EDITOR-PANEL-012, Rule-EDITOR-PANEL-067
-    public static @NotNull String describe(final @NotNull String verb, final @NotNull List<TestCaseDto> testCases) {
+    public static @NotNull String describe(final @NotNull String verb, final @NotNull List<TestCase> testCases) {
         return testCases.size() == 1
                 ? Bundle.message("snapshot.undo.one", verb, testCases.getFirst().getDescription())
                 : Bundle.message("snapshot.undo.many", verb, String.valueOf(testCases.size()));
     }
 
-    public static @NotNull List<UUID> idsOf(final @NotNull List<TestCaseDto> testCases) {
-        return testCases.stream().map(TestCaseDto::getId).toList();
+    public static @NotNull List<UUID> idsOf(final @NotNull List<TestCase> testCases) {
+        return testCases.stream().map(TestCase::getId).toList();
     }
 
     // UC-EDITOR-PANEL-012, Rule-EDITOR-PANEL-038

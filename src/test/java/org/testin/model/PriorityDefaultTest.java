@@ -26,7 +26,7 @@ public class PriorityDefaultTest {
     @Test
     public void aNewTestCaseStartsAtTheDefaultPriorityWhichIsTheLowestChoice() {
         assertEquals(Priority.DEFAULT, Priority.CHOICES.getLast(), "the default priority is not the lowest the tester can choose");
-        assertEquals(new TestCaseDto().getPriority(), Priority.DEFAULT, "a new test case does not start at the default priority");
-        assertEquals(TestCaseDto.builder().build().getPriority(), Priority.DEFAULT, "a built test case does not start at the default priority");
+        assertEquals(new TestCase().getPriority(), Priority.DEFAULT, "a new test case does not start at the default priority");
+        assertEquals(TestCase.builder().build().getPriority(), Priority.DEFAULT, "a built test case does not start at the default priority");
     }
 }

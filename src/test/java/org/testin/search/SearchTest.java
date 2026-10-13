@@ -18,7 +18,7 @@ package org.testin.search;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.node.NodeChain;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestCasesFolderNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
@@ -48,8 +48,8 @@ public class SearchTest {
         return set;
     }
 
-    private static @NotNull TestCaseDto testCase(final String description, final TestSetNode in) {
-        final TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description(description).build();
+    private static @NotNull TestCase testCase(final String description, final TestSetNode in) {
+        final TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description(description).build();
         testCase.setParent(in);
 
         return testCase;
@@ -58,7 +58,7 @@ public class SearchTest {
     @Test
     public void aTestCasePointsAtTheTestSetThatHoldsIt() {
         final TestSetNode login = testSet("test-01", "Test Cases", "Login");
-        final TestCaseDto testCase = testCase("Sign in with a valid user", login);
+        final TestCase testCase = testCase("Sign in with a valid user", login);
 
         final Hit hit = Hit.of(testCase);
 
@@ -105,10 +105,10 @@ public class SearchTest {
     @Test
     public void testCasesThatMatchOnTheirDescriptionComeFirst() {
         final TestSetNode set = testSet("test-01", "Login");
-        final TestCaseDto onADescription = testCase("Login with a valid user", set);
-        final TestCaseDto onSomethingUnseen = testCase("Check the balance", set);
+        final TestCase onADescription = testCase("Login with a valid user", set);
+        final TestCase onSomethingUnseen = testCase("Check the balance", set);
 
-        final List<TestCaseDto> sorted = new ArrayList<>(List.of(onSomethingUnseen, onADescription));
+        final List<TestCase> sorted = new ArrayList<>(List.of(onSomethingUnseen, onADescription));
         sorted.sort(GlobalSearch.byDescriptionMatchThenText("login"));
 
         assertSame(sorted.getFirst(), onADescription,
@@ -118,10 +118,10 @@ public class SearchTest {
     @Test
     public void testCasesMatchingEquallyWellAreAlphabetical() {
         final TestSetNode set = testSet("test-01", "Login");
-        final TestCaseDto second = testCase("Login with a valid user", set);
-        final TestCaseDto first = testCase("Login fails on a bad password", set);
+        final TestCase second = testCase("Login with a valid user", set);
+        final TestCase first = testCase("Login fails on a bad password", set);
 
-        final List<TestCaseDto> sorted = new ArrayList<>(List.of(second, first));
+        final List<TestCase> sorted = new ArrayList<>(List.of(second, first));
         sorted.sort(GlobalSearch.byDescriptionMatchThenText("login"));
 
         assertSame(sorted.getFirst(), first);

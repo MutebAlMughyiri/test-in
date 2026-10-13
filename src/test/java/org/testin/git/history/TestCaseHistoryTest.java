@@ -19,7 +19,7 @@ package org.testin.git.history;
 import org.jetbrains.annotations.NotNull;
 import org.testin.clipboard.CopyChoice;
 import org.testin.model.Priority;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.util.Bundle;
 import org.testin.util.JsonCodec;
 import org.testin.util.RealJsonCodec;
@@ -47,8 +47,8 @@ public class TestCaseHistoryTest {
     private static final @NotNull UUID ID = UUID.fromString("77777777-7777-4777-8777-777777777150");
     private static final @NotNull String PATH = "Test Cases/Login/" + ID + ".tc";
 
-    private static @NotNull TestCaseDto version(final @NotNull String expectedResult) {
-        return TestCaseDto.builder().id(ID).description("Log in with a valid user").expectedResult(expectedResult).createdBy("Muteb").build();
+    private static @NotNull TestCase version(final @NotNull String expectedResult) {
+        return TestCase.builder().id(ID).description("Log in with a valid user").expectedResult(expectedResult).createdBy("Muteb").build();
     }
 
     private static @NotNull HistoryCommit commit(final int at, final @NotNull String message) {
@@ -64,7 +64,7 @@ public class TestCaseHistoryTest {
         assertEquals(at.toInstant(), ZonedDateTime.parse("2026-10-08T01:00:00+03:00").toInstant(), "the same moment");
     }
 
-    private static @NotNull Map<String, String> versions(final @NotNull List<HistoryCommit> commits, final @NotNull List<TestCaseDto> versions) {
+    private static @NotNull Map<String, String> versions(final @NotNull List<HistoryCommit> commits, final @NotNull List<TestCase> versions) {
         final @NotNull Map<String, String> byObject = new HashMap<>();
         for (int at = 0; at < commits.size(); at++)
             byObject.put(commits.get(at).objectName(), MAPPER.writeValueAsString(versions.get(at)));
@@ -92,7 +92,7 @@ public class TestCaseHistoryTest {
     @Test
     public void eachCommitIsComparedWithTheOneBeforeItAndTheOldestIsCreated() {
         final @NotNull List<HistoryCommit> commits = List.of(commit(2, "Cycle 4 review"), commit(1, "UC-10"));
-        final @NotNull TestCaseDto now = version("The dashboard opens within 2 seconds");
+        final @NotNull TestCase now = version("The dashboard opens within 2 seconds");
 
         final @NotNull List<TestCaseHistoryCard> entries = TestCaseHistory.entries(MAPPER, commits, versions(commits, List.of(now, version("The dashboard opens"))), Optional.of(now));
 
@@ -109,7 +109,7 @@ public class TestCaseHistoryTest {
     @Test
     public void anEditNotYetCommittedHeadsTheListWithNoHash() {
         final @NotNull List<HistoryCommit> commits = List.of(commit(1, "UC-10"));
-        final @NotNull TestCaseDto now = version("The home page opens");
+        final @NotNull TestCase now = version("The home page opens");
         now.setPriority(Priority.HIGH);
         now.setUpdatedBy("Muteb");
 
@@ -136,7 +136,7 @@ public class TestCaseHistoryTest {
     @Test
     public void aVersionThatNoLongerParsesStillShowsWhoAndWhen() {
         final @NotNull List<HistoryCommit> commits = List.of(commit(2, "broken"), commit(1, "UC-10"));
-        final @NotNull TestCaseDto now = version("The dashboard opens");
+        final @NotNull TestCase now = version("The dashboard opens");
         final @NotNull Map<String, String> versions = versions(commits, List.of(now, now));
         versions.put(commits.getFirst().objectName(), "{ not a test case");
 
@@ -152,7 +152,7 @@ public class TestCaseHistoryTest {
     @Test
     public void theVersionAfterAnUnreadableOneIsNotCalledReordered() {
         final @NotNull List<HistoryCommit> commits = List.of(commit(3, "Cycle 4 review"), commit(2, "broken"), commit(1, "UC-10"));
-        final @NotNull TestCaseDto now = version("The dashboard opens");
+        final @NotNull TestCase now = version("The dashboard opens");
         final @NotNull Map<String, String> versions = versions(commits, List.of(now, now, now));
         versions.put(commits.get(1).objectName(), "{ not a test case");
 
@@ -167,8 +167,8 @@ public class TestCaseHistoryTest {
     @Test
     public void anEntryCarriesTheTestCaseAsItWasAndAsItBecame() {
         final @NotNull List<HistoryCommit> commits = List.of(commit(2, "Cycle 4 review"), commit(1, "UC-10"));
-        final @NotNull TestCaseDto before = version("The dashboard opens");
-        final @NotNull TestCaseDto after = version("The dashboard opens within a second");
+        final @NotNull TestCase before = version("The dashboard opens");
+        final @NotNull TestCase after = version("The dashboard opens within a second");
 
         final @NotNull List<TestCaseHistoryCard> entries = TestCaseHistory.entries(MAPPER, commits, versions(commits, List.of(after, before)), Optional.of(after));
 
@@ -181,7 +181,7 @@ public class TestCaseHistoryTest {
     @Test
     public void aCommitThatChangedNoneOfTheFieldsHasNoRows() {
         final @NotNull List<HistoryCommit> commits = List.of(commit(2, "Reordered"), commit(1, "UC-10"));
-        final @NotNull TestCaseDto now = version("The dashboard opens");
+        final @NotNull TestCase now = version("The dashboard opens");
 
         final @NotNull TestCaseHistoryCard reordered = TestCaseHistory.entries(MAPPER, commits, versions(commits, List.of(now, now)), Optional.of(now)).getFirst();
 
@@ -194,7 +194,7 @@ public class TestCaseHistoryTest {
     @Test
     public void aLongHistoryIsReadWhole() {
         final @NotNull List<HistoryCommit> commits = IntStream.range(0, 200).mapToObj(at -> commit(200 - at, "Edit " + (200 - at))).toList();
-        final @NotNull List<TestCaseDto> versions = new ArrayList<>();
+        final @NotNull List<TestCase> versions = new ArrayList<>();
         commits.forEach(commit -> versions.add(version(commit.message())));
 
         assertEquals(TestCaseHistory.entries(MAPPER, commits, versions(commits, versions), Optional.of(versions.getFirst())).size(), 200);

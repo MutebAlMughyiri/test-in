@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
 import org.testin.model.FileKind;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestCasesFolderNode;
@@ -79,7 +79,7 @@ final class IndexingScanner {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-012
-    private static @NotNull UUID identityOf(final @NotNull Path filePath, final @NotNull TestCaseDto testCase) {
+    private static @NotNull UUID identityOf(final @NotNull Path filePath, final @NotNull TestCase testCase) {
         final @NotNull Optional<UUID> fromTheName = FileKind.TEST_CASE.idIn(filePath);
 
         if (fromTheName.isPresent()) {
@@ -238,7 +238,7 @@ final class IndexingScanner {
                         .parallel()
                         .forEach(filePath -> {
                             try {
-                                final @NotNull TestCaseDto testCase = mapper.readValue(Files.readAllBytes(filePath), TestCaseDto.class);
+                                final @NotNull TestCase testCase = mapper.readValue(Files.readAllBytes(filePath), TestCase.class);
                                 testCase.setParent(testSet);
                                 testCase.setId(identityOf(filePath, testCase));
 

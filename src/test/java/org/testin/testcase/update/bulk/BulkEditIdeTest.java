@@ -33,7 +33,7 @@ import org.testin.Said;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.notifications.Done;
 import org.testin.services.Services;
@@ -101,11 +101,11 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
         return Services.getInstance(getProject(), UndoHistories.class);
     }
 
-    private @NotNull List<TestCaseDto> aTestSetWithModules(final @NotNull String... modules) {
+    private @NotNull List<TestCase> aTestSetWithModules(final @NotNull String... modules) {
         testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
-        final @NotNull List<TestCaseDto> made = new ArrayList<>();
+        final @NotNull List<TestCase> made = new ArrayList<>();
         for (int i = 0; i < modules.length; i++) {
-            final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description("Test case number " + (i + 1)).order(String.format("m%04d", i)).module(modules[i]).build();
+            final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description("Test case number " + (i + 1)).order(String.format("m%04d", i)).module(modules[i]).build();
             testCase.setParent(testSet);
             theTestCases().putTestCaseVerbatim(testSet.getPath(), testCase);
             made.add(theTestCases().findTestCase(testCase.getId()).orElseThrow());
@@ -162,7 +162,7 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
         }
     }
 
-    private @NotNull String moduleOf(final @NotNull TestCaseDto testCase) {
+    private @NotNull String moduleOf(final @NotNull TestCase testCase) {
         return theTestCases().findTestCase(testCase.getId()).orElseThrow().getModule();
     }
 
@@ -172,7 +172,7 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-040, Rule-EDITOR-PANEL-045
     public void testTheValuesAreEditedInPlaceBesideTheOriginalsAndAnEmptyOneStillGetsALine() {
-        final @NotNull List<TestCaseDto> testCases = aTestSetWithModules("Payments", "", "Cart");
+        final @NotNull List<TestCase> testCases = aTestSetWithModules("Payments", "", "Cart");
         bulkEditTheModules();
 
         assertTrue("the originals can be typed into", originals().isViewer() && !originals().getDocument().isWritable());
@@ -190,7 +190,7 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-041, Rule-EDITOR-PANEL-042
     public void testOnlyTheRowsTheTesterEditedAreWrittenAndTheyAreTrimmed() {
-        final @NotNull List<TestCaseDto> testCases = aTestSetWithModules("  Payments  ", "Cart");
+        final @NotNull List<TestCase> testCases = aTestSetWithModules("  Payments  ", "Cart");
         final @NotNull String untouched = everyFile().stream().filter(file -> file.contains(testCases.getFirst().getId().toString())).findFirst().orElseThrow();
         bulkEditTheModules();
 
@@ -224,7 +224,7 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-046, Rule-EDITOR-PANEL-038, Rule-EDITOR-PANEL-008
     public void testTheWholeGestureIsOneUndoEntryAndOneMessageWithACount() {
-        final @NotNull List<TestCaseDto> testCases = aTestSetWithModules("Payments", "Cart", "Search");
+        final @NotNull List<TestCase> testCases = aTestSetWithModules("Payments", "Cart", "Search");
         final @NotNull UndoScope scope = UndoScope.of(testSet.getPath());
         bulkEditTheModules();
 

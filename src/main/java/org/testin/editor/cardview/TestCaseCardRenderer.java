@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.editor.TestinEditor;
 import org.testin.editor.testset.TestCaseCard;
 import org.testin.editor.testset.TestSetEditor;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import javax.swing.JList;
 
@@ -35,7 +35,7 @@ public class TestCaseCardRenderer extends AbstractCardRenderer<TestinEditor> {
 
     // UC-EDITOR-PANEL-001
     @Override
-    protected @NotNull TestCaseCard bindDataAndGetCard(final @NotNull JList<? extends TestCaseDto> list, final @NotNull TestCaseDto testCase, final int row, final boolean isSelected, final boolean isRowHovered, final @NotNull String hover) {
+    protected @NotNull TestCaseCard bindDataAndGetCard(final @NotNull JList<? extends TestCase> list, final @NotNull TestCase testCase, final int row, final boolean isSelected, final boolean isRowHovered, final @NotNull String hover) {
         card.updateData(row, testCase, editor.getSelectedDetails(), editor.cardTitle(testCase));
         card.showTitleIcons(editor.getParent(), testCase);
         card.setActionsState(isSelected, isRowHovered, hover);

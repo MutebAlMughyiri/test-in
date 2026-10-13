@@ -21,7 +21,7 @@ import org.testin.AbstractTempRootIdeTest;
 import org.testin.NodesOnDisk;
 import org.testin.creator.NodeCreators;
 import org.testin.model.NodeType;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.markers.TestSetMarker;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
@@ -73,8 +73,8 @@ public class TreeNodesIdeTest extends AbstractTempRootIdeTest {
         }
     }
 
-    private static @NotNull List<UUID> idsOf(final @NotNull List<TestCaseDto> testCases) {
-        return testCases.stream().map(TestCaseDto::getId).toList();
+    private static @NotNull List<UUID> idsOf(final @NotNull List<TestCase> testCases) {
+        return testCases.stream().map(TestCase::getId).toList();
     }
 
     private @NotNull NodesOnDisk made() {
@@ -97,7 +97,7 @@ public class TreeNodesIdeTest extends AbstractTempRootIdeTest {
     public void testRetiringAPackageDeletesNothingInIt() {
         final @NotNull TestSetPackageNode payments = made().testSetPackage(aTestProject().getTestCasesFolder(), "Payments");
         final @NotNull TestSetNode refunds = made().testSet(payments, "Refunds");
-        final @NotNull TestCaseDto testCase = made().testCase(refunds);
+        final @NotNull TestCase testCase = made().testCase(refunds);
         final @NotNull Map<Path, String> before = filesUnder(refunds.getPath(), "");
 
         assertTrue("the package was not archived", nodes().mark(payments, PackageStatus.ARCHIVED, TESTER));
@@ -129,10 +129,10 @@ public class TreeNodesIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestProjectNode testProject = aTestProject();
         final @NotNull AbstractNode testCasesRoot = testProject.getTestCasesFolder();
 
-        final @NotNull TestCaseDto live = made().testCase(made().testSet(testCasesRoot, "Login"));
+        final @NotNull TestCase live = made().testCase(made().testSet(testCasesRoot, "Login"));
 
         final @NotNull TestSetNode deprecated = made().testSet(testCasesRoot, "Legacy Login");
-        final @NotNull TestCaseDto inTheDeprecatedSet = made().testCase(deprecated);
+        final @NotNull TestCase inTheDeprecatedSet = made().testCase(deprecated);
         assertTrue(nodes().mark(deprecated, TestSetStatus.DEPRECATED, TESTER));
 
         final @NotNull TestSetPackageNode archived = made().testSetPackage(testCasesRoot, "Old Payments");
@@ -185,7 +185,7 @@ public class TreeNodesIdeTest extends AbstractTempRootIdeTest {
             login.getMarker().setUpdatedAt(yesterday);
 
             settings().testerName = "Muteb";
-            final @NotNull TestCaseDto added = made().testCase(login);
+            final @NotNull TestCase added = made().testCase(login);
             assertEquals("adding a test case did not name who did it", "Muteb", markerOnDisk(login).getUpdatedBy());
             assertTrue("adding a test case did not move the Updated row", markerOnDisk(login).getUpdatedAt().isAfter(yesterday));
 

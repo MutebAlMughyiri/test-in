@@ -30,7 +30,7 @@ import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.editor.open.TestinEditors;
 import org.testin.editor.toolbar.StartExecutionButton;
 import org.testin.editor.toolbar.StopExecutionButton;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.runner.CapturedRunner;
@@ -51,9 +51,9 @@ public class ExecutionModeIdeTest extends AbstractCodegenIdeTest {
         runner = CapturedRunner.installed(getTestRootDisposable());
     }
 
-    private @NotNull List<TestCaseDto> loginTestCases() {
+    private @NotNull List<TestCase> loginTestCases() {
         final @NotNull TestSetNode login = createdTestSet("Login");
-        final @NotNull List<TestCaseDto> made = List.of(
+        final @NotNull List<TestCase> made = List.of(
                 createdTestCase(login, "Log in with Nafath", "logInWithNafath"),
                 createdTestCase(login, "Log in with a wrong password", "logInWithAWrongPassword"),
                 createdTestCase(login, "Log out from the profile page", "logOutFromTheProfilePage"));
@@ -71,7 +71,7 @@ public class ExecutionModeIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-EDITOR-PANEL-290
     public void testASingleRunButtonLeavesStartExecutionAvailable() {
-        final @NotNull List<TestCaseDto> testCases = loginTestCases();
+        final @NotNull List<TestCase> testCases = loginTestCases();
         final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), EditorFixtures.testRunOver(getProject(), root, testCases), getTestRootDisposable());
         try {
             TestCaseQuickAction.RUN_TEST_METHOD.executeFor(editor, testCases.getFirst());

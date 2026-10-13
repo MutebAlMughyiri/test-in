@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.actions.Declared;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.setting.TestinRoot;
@@ -69,12 +69,12 @@ public final class EditShownTestCase {
     }
 
     // UC-VIEW-PANEL-011, Rule-VIEW-PANEL-110
-    static void openIfEditable(final @NotNull Project project, final @NotNull TestCaseDto testCase, final @NotNull List<String> treePath) {
+    static void openIfEditable(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull List<String> treePath) {
         whyNotEditable(project, testCase, treePath).ifPresentOrElse(reason -> Services.getInstance(project, Notifier.class).softRefuse(project, reason), () -> open(project, testCase));
     }
 
     // Rule-VIEW-PANEL-110
-    private static @NotNull Optional<String> whyNotEditable(final @NotNull Project project, final @NotNull TestCaseDto testCase, final @NotNull List<String> treePath) {
+    private static @NotNull Optional<String> whyNotEditable(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull List<String> treePath) {
         if (Services.getInstance(project, TestCases.class).findTestCase(testCase.getId()).isEmpty())
             return Optional.of(Bundle.message("details.deleted.no.edit"));
 
@@ -86,8 +86,8 @@ public final class EditShownTestCase {
     }
 
     // UC-VIEW-PANEL-011, Rule-VIEW-PANEL-007
-    private static void open(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
-        final @NotNull List<TestCaseDto> shownTestCases = List.of(testCase);
+    private static void open(final @NotNull Project project, final @NotNull TestCase testCase) {
+        final @NotNull List<TestCase> shownTestCases = List.of(testCase);
         final @NotNull List<UUID> testCaseIds = TestCaseSnapshot.idsOf(shownTestCases);
         final @NotNull Optional<TestCaseSnapshot> before = testSetOf(project, testCase).map(testSet -> TestCaseSnapshot.of(project, testSet, testCaseIds));
 
@@ -95,12 +95,12 @@ public final class EditShownTestCase {
     }
 
     // UC-VIEW-PANEL-011, Rule-VIEW-PANEL-007, Rule-VIEW-PANEL-046
-    private static void save(final @NotNull Project project, final @NotNull TestCaseDto shownTestCase, final @NotNull List<TestCaseDto> updatedTestCases, final @NotNull UpdateTestCaseFields field, final @NotNull List<UUID> testCaseIds, final @NotNull Optional<TestCaseSnapshot> before) {
+    private static void save(final @NotNull Project project, final @NotNull TestCase shownTestCase, final @NotNull List<TestCase> updatedTestCases, final @NotNull UpdateTestCaseFields field, final @NotNull List<UUID> testCaseIds, final @NotNull Optional<TestCaseSnapshot> before) {
         final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
 
         testSetOf(project, shownTestCase).ifPresentOrElse(testSet -> {
             boolean changed = false;
-            for (final TestCaseDto testCase : updatedTestCases) changed |= testCases.putTestCase(testSet, testCase);
+            for (final TestCase testCase : updatedTestCases) changed |= testCases.putTestCase(testSet, testCase);
 
             if (!changed) return;
 
@@ -113,7 +113,7 @@ public final class EditShownTestCase {
     }
 
     // Rule-VIEW-PANEL-046
-    private static @NotNull Optional<Path> testSetOf(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
+    private static @NotNull Optional<Path> testSetOf(final @NotNull Project project, final @NotNull TestCase testCase) {
         return Services.getInstance(project, TestCases.class).findTestCase(testCase.getId()).map(held -> held.getParent().getPath());
     }
 }

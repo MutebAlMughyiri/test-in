@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.config.TestinYml;
 import org.testin.model.Priority;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 
 import java.util.Collection;
@@ -46,7 +46,7 @@ public class TestCaseMethodIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-CODEGEN-013
     public void testTestNameCarriesTheTestCaseId() {
-        final @NotNull TestCaseDto testCase = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
+        final @NotNull TestCase testCase = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
 
         final @NotNull PsiMethod testMethod = generatedClass(LOGIN_TEST).orElseThrow().getMethods()[0];
 
@@ -55,7 +55,7 @@ public class TestCaseMethodIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-CODEGEN-003
     public void testTestinWritesTheDeclarationAndOneTodoAndLeavesTheBodyToTheTester() {
-        final @NotNull TestCaseDto testCase = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
+        final @NotNull TestCase testCase = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
 
         final @NotNull PsiMethod testMethod = writtenMethodOf(LOGIN_TEST, testCase);
         final @NotNull PsiCodeBlock body = Optional.ofNullable(testMethod.getBody()).orElseThrow(() -> new AssertionError("the method was written without a body"));
@@ -69,9 +69,9 @@ public class TestCaseMethodIdeTest extends AbstractCodegenIdeTest {
     // Rule-CODEGEN-014
     public void testPriorityIsThePositionInTheTestSetCountingFromOne() {
         final @NotNull TestSetNode login = createdTestSet("Login");
-        final @NotNull TestCaseDto first = createdTestCase(login, "Open the login page", "b");
-        final @NotNull TestCaseDto second = createdTestCase(login, "Log in with a valid user", "c");
-        final @NotNull TestCaseDto third = createdTestCase(login, "Log out", "d");
+        final @NotNull TestCase first = createdTestCase(login, "Open the login page", "b");
+        final @NotNull TestCase second = createdTestCase(login, "Log in with a valid user", "c");
+        final @NotNull TestCase third = createdTestCase(login, "Log out", "d");
 
         assertEquals("1", attributeOf(writtenMethodOf(LOGIN_TEST, first), "priority"));
         assertEquals("2", attributeOf(writtenMethodOf(LOGIN_TEST, second), "priority"));
@@ -81,7 +81,7 @@ public class TestCaseMethodIdeTest extends AbstractCodegenIdeTest {
     // Rule-CODEGEN-014
     public void testTheTestCasesOwnPriorityWritesNothingIntoTheCode() {
         final @NotNull TestSetNode login = createdTestSet("Login");
-        final @NotNull TestCaseDto testCase = indexedTestCase(login, "Log in with a valid user", "b");
+        final @NotNull TestCase testCase = indexedTestCase(login, "Log in with a valid user", "b");
         testCase.setPriority(Priority.HIGH);
 
         CodeChangeType.CREATE_TEST_CASE.execute(getProject(), testCase);

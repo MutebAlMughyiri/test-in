@@ -20,7 +20,7 @@ import com.intellij.openapi.application.WriteAction;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.status.ProjectStatus;
@@ -108,7 +108,7 @@ public class RenameProjectIdeTest extends AbstractTempRootIdeTest {
 
         try {
             Files.writeString(testSet.getPath().resolve("login.tc"), Services.getInstance(getProject(), JsonCodec.class)
-                    .writeValueAsString(TestCaseDto.builder().id(testCaseId).description("Log in with a valid user").build()));
+                    .writeValueAsString(TestCase.builder().id(testCaseId).description("Log in with a valid user").build()));
         } catch (final Exception ex) {
             throw new AssertionError("Could not write the hand-named test case: " + ex.getMessage(), ex);
         }
@@ -117,7 +117,7 @@ public class RenameProjectIdeTest extends AbstractTempRootIdeTest {
         final Path to = root.resolve("Nafath_App");
         rename(testProject.getPath(), to);
 
-        final TestCaseDto testCase = indexedTestCases().findTestCase(testCaseId).orElseThrow();
+        final TestCase testCase = indexedTestCases().findTestCase(testCaseId).orElseThrow();
         final TestCaseFile file = indexedTestCases().testCaseFile(testCase).orElseThrow();
 
         assertEquals("the test case is placed in the renamed project", to, file.testProject());

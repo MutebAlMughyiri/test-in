@@ -18,7 +18,7 @@ package org.testin.importexport.imports;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -30,7 +30,7 @@ public class ImportCsvIdeTest extends AbstractTempRootIdeTest {
     private static final @NotNull String BOM = Character.toString(0xFEFF);
 
 
-    private @NotNull List<TestCaseDto> imported(final @NotNull String text) {
+    private @NotNull List<TestCase> imported(final @NotNull String text) {
         try {
             final @NotNull Path file = root.resolve("test cases.csv");
             Files.writeString(file, text, StandardCharsets.UTF_8);
@@ -43,7 +43,7 @@ public class ImportCsvIdeTest extends AbstractTempRootIdeTest {
 
     // UC-SHARE-005, Rule-SHARE-124
     public void testACsvFileIsReadTheWayASpreadsheetWritesIt() {
-        final @NotNull List<TestCaseDto> testCases = imported(BOM + """
+        final @NotNull List<TestCase> testCases = imported(BOM + """
                 Description,Expected Result,Module\r
                 log in with a valid user,"the dashboard opens, and ""Welcome"" shows",accounts\r
                 \r
@@ -60,7 +60,7 @@ public class ImportCsvIdeTest extends AbstractTempRootIdeTest {
 
     // UC-SHARE-005, Rule-SHARE-110
     public void testAHeadingIsMatchedWhateverItsCaseAndUnderscores() {
-        final @NotNull List<TestCaseDto> testCases = imported("""
+        final @NotNull List<TestCase> testCases = imported("""
                 description,EXPECTED_RESULT,pre conditions,Test_Data
                 log in with a valid user,the dashboard opens,a user exists,user = muteb
                 """);

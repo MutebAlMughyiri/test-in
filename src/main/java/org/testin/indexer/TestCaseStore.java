@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.FileKind;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.services.Services;
 import org.testin.setting.AppSettingsState;
 import org.testin.testcase.TestCaseOrder;
@@ -44,7 +44,7 @@ final class TestCaseStore {
     private final @NotNull TestDataFiles testDataFiles;
     private final @NotNull AppSettingsState settings;
     @Getter(AccessLevel.PACKAGE)
-    private final @NotNull Map<UUID, TestCaseDto> testCasesById = new ConcurrentHashMap<>();
+    private final @NotNull Map<UUID, TestCase> testCasesById = new ConcurrentHashMap<>();
     @Getter(AccessLevel.PACKAGE)
     private final @NotNull Map<String, List<UUID>> testCaseIdsByTestSet = new ConcurrentHashMap<>();
 
@@ -86,12 +86,12 @@ final class TestCaseStore {
     }
 
     // UC-INTERNAL-004, Rule-INTERNAL-030
-    @NotNull List<TestCaseDto> getForTestSet(final @NotNull Path testSetPath) {
+    @NotNull List<TestCase> getForTestSet(final @NotNull Path testSetPath) {
         final @NotNull List<UUID> testCaseIds = testCaseIdsByTestSet.getOrDefault(testSetPath.toString(), List.of());
         if (testCaseIds.isEmpty()) return List.of();
 
         final @NotNull Set<UUID> seen = new HashSet<>(testCaseIds.size());
-        final @NotNull List<TestCaseDto> testCases = new ArrayList<>(testCaseIds.size());
+        final @NotNull List<TestCase> testCases = new ArrayList<>(testCaseIds.size());
 
         for (final UUID testCaseId : testCaseIds) {
             if (seen.add(testCaseId)) Optional.ofNullable(testCasesById.get(testCaseId)).ifPresent(testCases::add);
@@ -101,7 +101,7 @@ final class TestCaseStore {
     }
 
     // UC-INTERNAL-004, Rule-INTERNAL-033, Rule-INTERNAL-034
-    boolean put(final @NotNull Path testSetPath, final @NotNull TestCaseDto testCase) {
+    boolean put(final @NotNull Path testSetPath, final @NotNull TestCase testCase) {
         if (testDataFiles.alreadyHolds(fileOf(testSetPath, testCase.getId()), testCase))
             return false;
 
@@ -120,20 +120,20 @@ final class TestCaseStore {
     }
 
     // UC-INTERNAL-004, Rule-INTERNAL-035
-    boolean putVerbatim(final @NotNull Path testSetPath, final @NotNull TestCaseDto testCase) {
+    boolean putVerbatim(final @NotNull Path testSetPath, final @NotNull TestCase testCase) {
         return store(testSetPath, testCase);
     }
 
     // UC-INTERNAL-004, Rule-INTERNAL-033, Rule-INTERNAL-117
-    private boolean store(final @NotNull Path testSetPath, final @NotNull TestCaseDto testCase) {
+    private boolean store(final @NotNull Path testSetPath, final @NotNull TestCase testCase) {
         if (failedToWrite(testSetPath, testCase)) return false;
 
-        testCasesById.merge(testCase.getId(), testCase, TestCaseDto::takeValuesOf);
+        testCasesById.merge(testCase.getId(), testCase, TestCase::takeValuesOf);
         return true;
     }
 
     // UC-INTERNAL-004, Rule-INTERNAL-033
-    private boolean failedToWrite(final @NotNull Path testSetPath, final @NotNull TestCaseDto testCase) {
+    private boolean failedToWrite(final @NotNull Path testSetPath, final @NotNull TestCase testCase) {
         final @NotNull Path file = named(testSetPath, testCase.getId());
         if (!testDataFiles.write(file, testCase)) return true;
 
@@ -160,11 +160,11 @@ final class TestCaseStore {
     }
 
     // UC-EDITOR-PANEL-017, Rule-INTERNAL-035
-    boolean move(final @NotNull Path fromSet, final @NotNull Path toSet, final @NotNull TestCaseDto testCase) {
+    boolean move(final @NotNull Path fromSet, final @NotNull Path toSet, final @NotNull TestCase testCase) {
         final @NotNull UUID testCaseId = testCase.getId();
         final @NotNull Path from = fileOf(fromSet, testCaseId);
         final @NotNull Path to = named(toSet, testCaseId);
-        final @NotNull Optional<TestCaseDto> was = Optional.ofNullable(testCasesById.get(testCaseId));
+        final @NotNull Optional<TestCase> was = Optional.ofNullable(testCasesById.get(testCaseId));
 
         final boolean wasHandNamed = handNamed.remove(testCaseId, from);
         if (failedToWrite(toSet, testCase)) {
@@ -203,19 +203,19 @@ final class TestCaseStore {
     }
 
     // UC-INTERNAL-004, Rule-INTERNAL-031, Rule-INTERNAL-117
-    boolean updateSequence(final @NotNull Path testSetPath, final @NotNull List<TestCaseDto> orderedList, final @NotNull List<TestCaseDto> moved) {
+    boolean updateSequence(final @NotNull Path testSetPath, final @NotNull List<TestCase> orderedList, final @NotNull List<TestCase> moved) {
         final @NotNull String path = testSetPath.toString();
         final @NotNull List<UUID> testCaseIds = new ArrayList<>(orderedList.size());
         final @NotNull Set<UUID> newIds = new HashSet<>();
 
-        final @NotNull Map<UUID, TestCaseDto> placed = new HashMap<>();
-        for (final TestCaseDto testCase : moved) placed.put(testCase.getId(), testCase);
+        final @NotNull Map<UUID, TestCase> placed = new HashMap<>();
+        for (final TestCase testCase : moved) placed.put(testCase.getId(), testCase);
 
         final @NotNull String tester = settings.testerName;
         boolean allWritten = true;
 
-        for (final TestCaseDto testCase : orderedList) {
-            final @NotNull TestCaseDto written = placed.getOrDefault(testCase.getId(), testCase);
+        for (final TestCase testCase : orderedList) {
+            final @NotNull TestCase written = placed.getOrDefault(testCase.getId(), testCase);
             final boolean firstSight = !testCasesById.containsKey(testCase.getId());
 
             if (firstSight) {
@@ -250,7 +250,7 @@ final class TestCaseStore {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-021
-    void swapIn(final @NotNull Path projectPath, final @NotNull Map<UUID, TestCaseDto> testCases, final @NotNull Map<String, List<UUID>> setTestCaseIds, final @NotNull Map<UUID, Path> handNamedFiles, final @NotNull Map<String, Set<String>> unreadableTestCases) {
+    void swapIn(final @NotNull Path projectPath, final @NotNull Map<UUID, TestCase> testCases, final @NotNull Map<String, List<UUID>> setTestCaseIds, final @NotNull Map<UUID, Path> handNamedFiles, final @NotNull Map<String, Set<String>> unreadableTestCases) {
         final @NotNull Set<UUID> held = testCaseIdsByTestSet.entrySet().stream()
                 .filter(entry -> Path.of(entry.getKey()).startsWith(projectPath))
                 .flatMap(entry -> entry.getValue().stream())

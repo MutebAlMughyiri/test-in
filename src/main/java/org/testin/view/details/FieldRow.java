@@ -20,7 +20,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBPanel;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.awt.GridBagConstraints;
 import java.util.function.BiFunction;
@@ -29,11 +29,11 @@ import java.util.function.BiFunction;
 @RequiredArgsConstructor
 public final class FieldRow extends AbstractDetails {
     private final @NotNull String caption;
-    private final @NotNull BiFunction<Project, TestCaseDto, String> extractor;
+    private final @NotNull BiFunction<Project, TestCase, String> extractor;
 
     // UC-VIEW-PANEL-004
     @Override
-    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull TestCaseDto testCase, final int currentRow) {
+    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull TestCase testCase, final int currentRow) {
         return addRow(panel, constraints, caption, extractor.apply(project, testCase), currentRow);
     }
 }

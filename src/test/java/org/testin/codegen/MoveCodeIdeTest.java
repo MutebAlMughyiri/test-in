@@ -26,7 +26,7 @@ import org.testin.codegen.event.MovedTestCase;
 import org.testin.codegen.event.RenamedNode;
 import org.testin.indexer.TestCases;
 import org.testin.model.NodeType;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
 import org.testin.services.Services;
@@ -88,7 +88,7 @@ public class MoveCodeIdeTest extends AbstractCodegenIdeTest {
     // Rule-CODEGEN-077
     public void testACutAndPastedTestCaseTakesItsMethodBodyAndAllIntoAClassWrittenForIt() {
         final @NotNull TestSetNode login = createdTestSet("Login");
-        final @NotNull TestCaseDto testCase = createdTestCase(login, "Log in with a valid user", "b");
+        final @NotNull TestCase testCase = createdTestCase(login, "Log in with a valid user", "b");
         writtenByTheTester(writtenMethodOf("nafath.LoginTest", testCase), WRITTEN_BY_THE_TESTER);
         final @NotNull TestSetNode visa = indexedTestSet("Visa", indexedPackage("Cards", theTestCasesDirectory()));
 

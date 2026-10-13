@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.NodesOnDisk;
 import org.testin.indexer.TestRuns;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
@@ -81,11 +81,11 @@ public class TestProjectOnDiskIdeTest extends AbstractTempRootIdeTest {
         }
     }
 
-    private @NotNull TestCaseDto aTestProjectWithEverythingInIt() {
+    private @NotNull TestCase aTestProjectWithEverythingInIt() {
         final @NotNull NodesOnDisk onDisk = new NodesOnDisk(getProject());
         testProject = onDisk.testProject(chosen.resolve("NAFATH"));
         final @NotNull TestSetNode login = onDisk.testSet(onDisk.testSetPackage(testProject.getTestCasesFolder(), "Accounts"), "Login");
-        final @NotNull TestCaseDto testCase = onDisk.testCase(login);
+        final @NotNull TestCase testCase = onDisk.testCase(login);
         final @NotNull TestRunNode testRun = onDisk.testRun(testProject.getTestRunsFolder(), "Cycle-1");
         final @NotNull TestRuns testRuns = Services.getInstance(getProject(), TestRuns.class);
         testRuns.putRunItems(testRun.getPath(), new RunItems().setAll(new ArrayList<>(List.of(new RunItem().setId(testCase.getId()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()))))));
@@ -95,7 +95,7 @@ public class TestProjectOnDiskIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-PRODUCT-001
     public void testEveryTestCaseIsAFileOnDiskInTheFolderTheTesterChose() {
-        final @NotNull TestCaseDto testCase = aTestProjectWithEverythingInIt();
+        final @NotNull TestCase testCase = aTestProjectWithEverythingInIt();
 
         final @NotNull List<Path> files = filesUnder(chosen);
         assertTrue("the test case is not a file in the folder the tester chose: " + files, files.stream().anyMatch(file -> file.getFileName().toString().startsWith(testCase.getId().toString())));

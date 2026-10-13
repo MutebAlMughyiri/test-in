@@ -120,7 +120,7 @@ annotation processing. **An error in an annotation stops that processing**, so
 every getter, every all-args constructor and every enum field it would have
 generated is simply absent — and javac then reports one error per use of them.
 
-What you see is a hundred `cannot find symbol` errors blaming `TestCaseDto` and
+What you see is a hundred `cannot find symbol` errors blaming `TestCase` and
 half the model. What is wrong is one line somewhere else entirely. A duplicated
 `@NotNull` produced exactly this: *"NotNull is not a repeatable annotation
 interface"* at the top of the list, and ninety-nine consequences under it.

@@ -26,7 +26,7 @@ import org.testin.actions.GrayWithReason;
 import org.testin.actions.TestinDataKeys;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItem;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
@@ -42,7 +42,7 @@ public class EditFailureDetailAction extends AbstractAnyProjectAction {
     // UC-EDITOR-PANEL-040, Rule-EDITOR-PANEL-167
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
-        final @NotNull Optional<TestCaseDto> selected = TestinDataKeys.singleSelectedTestCase(e);
+        final @NotNull Optional<TestCase> selected = TestinDataKeys.singleSelectedTestCase(e);
         final @NotNull Optional<TestRunEditor> testRunEditor = TestinDataKeys.testRunEditor(e);
         if (selected.isEmpty() || testRunEditor.isEmpty()) return;
 
@@ -50,7 +50,7 @@ public class EditFailureDetailAction extends AbstractAnyProjectAction {
     }
 
     // UC-EDITOR-PANEL-040, Rule-EDITOR-PANEL-167
-    private void edit(final @NotNull Project project, final @NotNull TestRunEditor testRunEditor, final @NotNull TestCaseDto testCase) {
+    private void edit(final @NotNull Project project, final @NotNull TestRunEditor testRunEditor, final @NotNull TestCase testCase) {
         final @NotNull Optional<RunItem> found = testRunEditor.runItem(testCase.getId());
         if (found.isEmpty()) return;
 

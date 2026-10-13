@@ -31,7 +31,7 @@ import org.testin.editor.TestinEditor;
 import org.testin.help.Guide;
 import org.testin.help.Guides;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.navigate.TestMethodCode;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
@@ -44,7 +44,7 @@ import java.util.Optional;
 
 // UC-CODEGEN-005
 public class AutomateTestCaseAction extends AbstractAnyProjectAction {
-    private static int writtenFor(final @NotNull Project project, final @NotNull List<TestCaseDto> asked) {
+    private static int writtenFor(final @NotNull Project project, final @NotNull List<TestCase> asked) {
         if (DumbService.isDumb(project)) return 0;
 
         try {
@@ -56,19 +56,19 @@ public class AutomateTestCaseAction extends AbstractAnyProjectAction {
     }
 
     // UC-CODEGEN-005, Rule-CODEGEN-025
-    private static @NotNull List<TestCaseDto> withoutAMethod(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases) {
+    private static @NotNull List<TestCase> withoutAMethod(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
         final @NotNull AutomationState state = Services.getInstance(project, AutomationState.class);
 
         return testCases.stream().filter(testCase -> !state.hasMethod(testCase.getId())).toList();
     }
 
     // Rule-CODEGEN-002
-    private static boolean canBeNamed(final @NotNull TestCaseDto testCase) {
+    private static boolean canBeNamed(final @NotNull TestCase testCase) {
         return !Fqcn.methodNameOf(testCase).isEmpty();
     }
 
     // Rule-CODEGEN-002
-    private static @NotNull List<TestCaseDto> nameable(final @NotNull AnActionEvent e) {
+    private static @NotNull List<TestCase> nameable(final @NotNull AnActionEvent e) {
         return TestinDataKeys.selectedTestCases(e).stream().filter(AutomateTestCaseAction::canBeNamed).toList();
     }
 
@@ -76,7 +76,7 @@ public class AutomateTestCaseAction extends AbstractAnyProjectAction {
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
         Services.getInstance(project, Guides.class).add(Guide.AUTOMATION_CODE);
-        final @NotNull List<TestCaseDto> toWrite = withoutAMethod(project, nameable(e));
+        final @NotNull List<TestCase> toWrite = withoutAMethod(project, nameable(e));
         if (toWrite.isEmpty() && !AgentConnection.stored().isConnected()) return;
 
         final @NotNull Optional<TestinEditor> editor = TestinDataKeys.editor(e);
@@ -103,14 +103,14 @@ public class AutomateTestCaseAction extends AbstractAnyProjectAction {
     protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
         if (CodeOn.grayedWithReason(this, e, project)) return;
 
-        final @NotNull List<TestCaseDto> selected = TestinDataKeys.selectedTestCases(e);
+        final @NotNull List<TestCase> selected = TestinDataKeys.selectedTestCases(e);
         if (selected.isEmpty()) {
             e.getPresentation().setEnabled(false);
             return;
         }
 
         // Rule-CODEGEN-002
-        final @NotNull List<TestCaseDto> nameable = selected.stream().filter(AutomateTestCaseAction::canBeNamed).toList();
+        final @NotNull List<TestCase> nameable = selected.stream().filter(AutomateTestCaseAction::canBeNamed).toList();
         if (nameable.isEmpty()) {
             e.getPresentation().setEnabled(false);
             e.getPresentation().setDescription(Bundle.message("automate.no.description.description"));

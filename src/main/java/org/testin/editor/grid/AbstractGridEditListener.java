@@ -19,7 +19,7 @@ package org.testin.editor.grid;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
@@ -39,13 +39,13 @@ public abstract class AbstractGridEditListener implements TableModelListener {
 
     protected final @NotNull Notifier notifier;
 
-    private final @NotNull List<TestCaseDto> pageTestCases;
+    private final @NotNull List<TestCase> pageTestCases;
 
     private final @NotNull Set<UUID> writtenThisGesture = new HashSet<>();
 
     private boolean updating = false;
 
-    protected AbstractGridEditListener(final @NotNull Project project, final @NotNull List<TestCaseDto> pageTestCases) {
+    protected AbstractGridEditListener(final @NotNull Project project, final @NotNull List<TestCase> pageTestCases) {
         this.project = project;
         this.notifier = Services.getInstance(project, Notifier.class);
         this.pageTestCases = pageTestCases;
@@ -72,7 +72,7 @@ public abstract class AbstractGridEditListener implements TableModelListener {
                 || column >= model.getColumnCount()
                 || column >= columnCount()) return;
 
-        final @NotNull TestCaseDto edited = pageTestCases.get(row);
+        final @NotNull TestCase edited = pageTestCases.get(row);
 
         updating = true;
         try {
@@ -94,10 +94,10 @@ public abstract class AbstractGridEditListener implements TableModelListener {
 
     protected abstract int columnCount();
 
-    protected abstract @NotNull GridEdit apply(final @NotNull DefaultTableModel model, final @NotNull TestCaseDto onThisRow, final int row, final int column);
+    protected abstract @NotNull GridEdit apply(final @NotNull DefaultTableModel model, final @NotNull TestCase onThisRow, final int row, final int column);
 
     // UC-EDITOR-PANEL-008, Rule-EDITOR-PANEL-008
-    private void confirmEdit(final @NotNull TestCaseDto edited) {
+    private void confirmEdit(final @NotNull TestCase edited) {
         final boolean first = writtenThisGesture.isEmpty();
         writtenThisGesture.add(edited.getId());
         if (!first) return;

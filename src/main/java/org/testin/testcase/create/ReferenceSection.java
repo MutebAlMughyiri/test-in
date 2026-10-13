@@ -18,7 +18,7 @@ package org.testin.testcase.create;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.testcase.CreateTestCaseFields;
 import org.testin.util.Shortcuts;
 import org.testin.util.EditorFields;
@@ -32,12 +32,12 @@ public class ReferenceSection extends AbstractOneLineSection {
 
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-032
     @Override
-    public @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto testCase) {
+    public @NotNull TestCase applyTo(final @NotNull TestCase testCase) {
         return testCase.edit().reference(field.getText().trim()).build();
     }
 
     @Override
-    public void fillData(final @NotNull TestCaseDto testCase) {
+    public void fillData(final @NotNull TestCase testCase) {
         field.setText(testCase.getReference());
     }
 }

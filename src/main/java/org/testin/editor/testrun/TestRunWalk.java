@@ -19,7 +19,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.TestRuns;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.markers.TestRunMarker;
 import org.testin.model.testrun.RunItemExecution;
@@ -74,7 +74,7 @@ public final class TestRunWalk {
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-227
     public int getCurrentlyExecutingIndex() {
-        final @NotNull List<TestCaseDto> shown = editor.getCurrentTestCases();
+        final @NotNull List<TestCase> shown = editor.getCurrentTestCases();
 
         return executingTestCase.map(testCaseId -> {
             for (int i = 0; i < shown.size(); i++) {
@@ -110,7 +110,7 @@ public final class TestRunWalk {
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-130, Rule-EDITOR-PANEL-134
     public void startTimerForIndex(final int from) {
-        final @NotNull List<TestCaseDto> shown = editor.getCurrentTestCases();
+        final @NotNull List<TestCase> shown = editor.getCurrentTestCases();
         final int globalIndex = nextPendingIndex(from);
 
         if (globalIndex >= shown.size()) {
@@ -120,7 +120,7 @@ public final class TestRunWalk {
             return;
         }
 
-        final @NotNull TestCaseDto currentTestCase = shown.get(globalIndex);
+        final @NotNull TestCase currentTestCase = shown.get(globalIndex);
         walkTo(Optional.of(currentTestCase.getId()));
 
         editor.showExecuting(globalIndex);
@@ -135,7 +135,7 @@ public final class TestRunWalk {
 
     // UC-EDITOR-PANEL-031, UC-EDITOR-PANEL-036, Rule-EDITOR-PANEL-130, Rule-EDITOR-PANEL-153, Rule-EDITOR-PANEL-283
     private int nextPendingIndex(final int from) {
-        final @NotNull List<TestCaseDto> shown = editor.getCurrentTestCases();
+        final @NotNull List<TestCase> shown = editor.getCurrentTestCases();
 
         for (int i = Math.max(from, 0); i < shown.size(); i++) {
             if (editor.runItem(shown.get(i).getId())
@@ -182,7 +182,7 @@ public final class TestRunWalk {
 
         if (!editor.getParent().isOpen()) return;
 
-        final @NotNull List<TestCaseDto> automated = editor.snapshotOfAll().stream()
+        final @NotNull List<TestCase> automated = editor.snapshotOfAll().stream()
                 .filter(testCase -> editor.runItem(testCase.getId()).filter(runItem -> !runItem.isRemoved()).isPresent())
                 .filter(testCase -> !testNGExecution.isRunning(testCase.getId()))
                 .toList();
@@ -203,7 +203,7 @@ public final class TestRunWalk {
     }
 
     // UC-EDITOR-PANEL-043, UC-EDITOR-PANEL-044, Rule-EDITOR-PANEL-182, Rule-EDITOR-PANEL-289
-    void executionReported(final @NotNull TestCaseDto testCase, final @NotNull ExecutionStatus status, final @NotNull List<RunItemExecution> executions, final int written) {
+    void executionReported(final @NotNull TestCase testCase, final @NotNull ExecutionStatus status, final @NotNull List<RunItemExecution> executions, final int written) {
         if (!launchedHere.contains(testCase.getId())) return;
 
         if (!status.stillGoing()) {

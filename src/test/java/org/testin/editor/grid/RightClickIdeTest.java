@@ -25,7 +25,7 @@ import org.testin.editor.EditorFixtures;
 import org.testin.editor.cardview.CardMouseListener;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.toolbar.GridViewButton;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.view.Drawn;
@@ -87,7 +87,7 @@ public class RightClickIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-110
     public void testRightClickingACardOutsideTheSelectionMovesTheSelectionThereFirst() {
         final @NotNull TestSetEditor editor = fourTestCases();
-        final @NotNull JBList<TestCaseDto> list = editor.getList();
+        final @NotNull JBList<TestCase> list = editor.getList();
         list.setSize(900, 2000);
         list.setSelectionInterval(0, 1);
 

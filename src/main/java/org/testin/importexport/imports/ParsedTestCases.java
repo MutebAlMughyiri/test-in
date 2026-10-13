@@ -17,10 +17,10 @@
 package org.testin.importexport.imports;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.util.List;
 
-record ParsedTestCases(@NotNull List<TestCaseDto> testCases, int refused) {
+record ParsedTestCases(@NotNull List<TestCase> testCases, int refused) {
     static final @NotNull ParsedTestCases NOTHING = new ParsedTestCases(List.of(), 0);
 }

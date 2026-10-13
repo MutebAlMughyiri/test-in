@@ -28,7 +28,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.bug.BugPriority;
 import org.testin.model.bug.BugSeverity;
 import org.testin.model.status.RunItemStatus;
@@ -60,21 +60,21 @@ public class RunItem {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     @Builder.Default
-    private @NotNull Optional<TestCaseDto> live = Optional.empty();
+    private @NotNull Optional<TestCase> live = Optional.empty();
 
     // Rule-EDITOR-PANEL-238, Rule-EDITOR-PANEL-239
     @JsonIgnore
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     @Builder.Default
-    private @NotNull Optional<TestCaseDto> recorded = Optional.empty();
+    private @NotNull Optional<TestCase> recorded = Optional.empty();
 
     // Rule-EDITOR-PANEL-126
     @JsonIgnore
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     @Builder.Default
-    private @NotNull Optional<TestCaseDto> lastInGit = Optional.empty();
+    private @NotNull Optional<TestCase> lastInGit = Optional.empty();
     @NotNull
     @Builder.Default
     private UUID id = new UUID(0L, 0L);
@@ -108,12 +108,12 @@ public class RunItem {
     private boolean removed;
 
     // UC-EDITOR-PANEL-030
-    public static @NotNull RunItem pendingFor(final @NotNull TestCaseDto testCase) {
+    public static @NotNull RunItem pendingFor(final @NotNull TestCase testCase) {
         return RunItem.builder().id(testCase.getId()).build().showing(Optional.of(testCase), Optional.empty(), Optional.empty(), false);
     }
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-126, Rule-EDITOR-PANEL-239
-    public @NotNull RunItem showing(final @NotNull Optional<TestCaseDto> now, final @NotNull Optional<TestCaseDto> inCommit, final @NotNull Optional<TestCaseDto> lastVersion, final boolean committed) {
+    public @NotNull RunItem showing(final @NotNull Optional<TestCase> now, final @NotNull Optional<TestCase> inCommit, final @NotNull Optional<TestCase> lastVersion, final boolean committed) {
         live = now;
         recorded = inCommit;
         lastInGit = lastVersion;
@@ -323,17 +323,17 @@ public class RunItem {
     }
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-239, Rule-REPORT-021, Rule-VIEW-PANEL-083
-    public @NotNull TestCaseDto shownTestCase() {
-        return recorded.or(() -> live).or(() -> lastInGit).orElseGet(() -> TestCaseDto.deleted(id));
+    public @NotNull TestCase shownTestCase() {
+        return recorded.or(() -> live).or(() -> lastInGit).orElseGet(() -> TestCase.deleted(id));
     }
 
     // Rule-EDITOR-PANEL-263
-    public @NotNull Optional<TestCaseDto> recordedTestCase() {
+    public @NotNull Optional<TestCase> recordedTestCase() {
         return recorded;
     }
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-126
-    public @NotNull TestCaseDto liveTestCase() {
-        return live.orElseGet(() -> TestCaseDto.deleted(id));
+    public @NotNull TestCase liveTestCase() {
+        return live.orElseGet(() -> TestCase.deleted(id));
     }
 }

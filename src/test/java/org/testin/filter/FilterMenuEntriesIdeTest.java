@@ -35,7 +35,7 @@ import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.indexer.TestCases;
 import org.testin.model.Automated;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
@@ -56,7 +56,7 @@ public class FilterMenuEntriesIdeTest extends AbstractCodegenIdeTest {
 
     private @NotNull TestSetNode testSet = new TestSetNode();
 
-    private @NotNull List<TestCaseDto> testCases = List.of();
+    private @NotNull List<TestCase> testCases = List.of();
 
     private static @NotNull List<AnAction> childrenOf(final @NotNull ActionGroup group) {
         return MenuChildren.of(group);
@@ -80,14 +80,14 @@ public class FilterMenuEntriesIdeTest extends AbstractCodegenIdeTest {
     }
 
     private static @NotNull List<String> shown(final @NotNull AbstractTestinEditor<?, ?> editor) {
-        return editor.getCurrentTestCases().stream().map(TestCaseDto::getDescription).toList();
+        return editor.getCurrentTestCases().stream().map(TestCase::getDescription).toList();
     }
 
     private void threeStatesOfAutomation() {
         testSet = createdTestSet("Checkout");
-        final @NotNull TestCaseDto written = createdTestCase(testSet, "Log in with a valid user", "m0001");
-        final @NotNull TestCaseDto empty = createdTestCase(testSet, "Log in with a wrong password", "m0002");
-        final @NotNull TestCaseDto missing = indexedTestCase(testSet, "Log in with a locked account", "m0003");
+        final @NotNull TestCase written = createdTestCase(testSet, "Log in with a valid user", "m0001");
+        final @NotNull TestCase empty = createdTestCase(testSet, "Log in with a wrong password", "m0002");
+        final @NotNull TestCase missing = indexedTestCase(testSet, "Log in with a locked account", "m0003");
         settled();
         final @NotNull PsiMethod method = writtenMethodOf(GENERATED_CLASS, written);
         writtenByTheTester(method, "System.out.println(1);");
@@ -95,7 +95,7 @@ public class FilterMenuEntriesIdeTest extends AbstractCodegenIdeTest {
         testCases = List.of(written, empty, missing);
     }
 
-    private @NotNull TestRunEditor aTestRunEditorOver(final @NotNull List<TestCaseDto> covered) {
+    private @NotNull TestRunEditor aTestRunEditorOver(final @NotNull List<TestCase> covered) {
         final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
         final @NotNull TestRunNode testRun = EditorFixtures.testRun(getProject(), testProject, covered.stream().map(EditorFixtures::pending).toList());
         return EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());
@@ -165,7 +165,7 @@ public class FilterMenuEntriesIdeTest extends AbstractCodegenIdeTest {
     // Rule-EDITOR-PANEL-261
     public void testStatusFiltersOnTheTestCasesOwnStatusAndRunItemStatusIsGrayInATestSetEditor() {
         threeStatesOfAutomation();
-        final @NotNull TestCaseDto reviewed = testCases.get(1).edit().status(TestCaseStatus.REVIEWED).build();
+        final @NotNull TestCase reviewed = testCases.get(1).edit().status(TestCaseStatus.REVIEWED).build();
         reviewed.setParent(testSet);
         Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), reviewed);
         final @NotNull TestSetEditor testSetEditor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());

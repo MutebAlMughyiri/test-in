@@ -22,7 +22,7 @@ import com.intellij.testFramework.ExtensionTestUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.event.MovedNode;
 import org.testin.codegen.event.RenamedNode;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ public final class CodegenRecorder implements CodeChangeRegistry {
 
     private static @NotNull String nameOf(final @NotNull Object payload) {
         return switch (payload) {
-            case final TestCaseDto testCase -> testCase.getDescription();
+            case final TestCase testCase -> testCase.getDescription();
             case final AbstractNode node -> node.getName();
             case final MovedNode moved -> moved.node().getName();
             case final RenamedNode renamed -> renamed.node().getName();

@@ -19,7 +19,7 @@ package org.testin.git.change;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.Priority;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.status.TestCaseStatus;
 import org.testng.annotations.Test;
 
@@ -35,8 +35,8 @@ import static org.testng.Assert.assertTrue;
 
 public class ChangeTypeRevertTest {
 
-    private static @NotNull TestCaseDto committed() {
-        return TestCaseDto.builder()
+    private static @NotNull TestCase committed() {
+        return TestCase.builder()
                 .description("committed description")
                 .expectedResult("committed result")
                 .steps(new ArrayList<>(List.of("committed first", "committed second")))
@@ -50,8 +50,8 @@ public class ChangeTypeRevertTest {
                 .build();
     }
 
-    private static @NotNull TestCaseDto edited() {
-        return TestCaseDto.builder()
+    private static @NotNull TestCase edited() {
+        return TestCase.builder()
                 .description("edited description")
                 .expectedResult("edited result")
                 .steps(new ArrayList<>(List.of("edited first")))
@@ -65,8 +65,8 @@ public class ChangeTypeRevertTest {
                 .build();
     }
 
-    private static @NotNull TestCaseDto reverted(final ChangeType type, final TestCaseDto current, final TestCaseDto committed) {
-        final TestCaseDto.TestCaseDtoBuilder draft = current.edit();
+    private static @NotNull TestCase reverted(final ChangeType type, final TestCase current, final TestCase committed) {
+        final TestCase.TestCaseBuilder draft = current.edit();
         type.getRevertAction().apply(draft, committed);
         return draft.build();
     }
@@ -92,7 +92,7 @@ public class ChangeTypeRevertTest {
     @Test
     public void eachRevertRestoresItsOwnFieldAndNothingElse() {
         for (final FieldChange change : TestCaseFieldChanges.compare(committed(), edited())) {
-            final TestCaseDto current = reverted(change.changeType(), edited(), committed());
+            final TestCase current = reverted(change.changeType(), edited(), committed());
 
             final List<FieldChange> left = TestCaseFieldChanges.compare(committed(), current);
 
@@ -105,7 +105,7 @@ public class ChangeTypeRevertTest {
 
     @Test
     public void revertingEveryChangeRestoresTheCommittedTestCase() {
-        TestCaseDto current = edited();
+        TestCase current = edited();
         for (final FieldChange change : TestCaseFieldChanges.compare(committed(), edited())) {
             current = reverted(change.changeType(), current, committed());
         }
@@ -117,11 +117,11 @@ public class ChangeTypeRevertTest {
     // Rule-SHARE-052
     @Test
     public void revertingTheLastChangePutsBackTheCommittedAudit() {
-        final TestCaseDto committed = committed()
+        final TestCase committed = committed()
                 .setCreatedBy("Mohammed AlZamil")
                 .setUpdatedBy("Mohammed AlZamil")
                 .setUpdatedAt(ZonedDateTime.parse("2026-09-01T10:00:00Z"));
-        final TestCaseDto current = reverted(ChangeType.CHANGE_MODULE, committed().setModule("edited module").setUpdatedBy("Muteb"), committed);
+        final TestCase current = reverted(ChangeType.CHANGE_MODULE, committed().setModule("edited module").setUpdatedBy("Muteb"), committed);
         assertEquals(TestCaseFieldChanges.compare(committed, current), List.of(), "nothing reviewable is left");
 
         current.takeAuditOf(committed);
@@ -134,8 +134,8 @@ public class ChangeTypeRevertTest {
 
     @Test
     public void revertingAListCopiesItRatherThanSharingIt() {
-        final TestCaseDto committed = committed();
-        final TestCaseDto current = reverted(ChangeType.CHANGE_GROUP, reverted(ChangeType.CHANGE_STEPS, edited(), committed), committed);
+        final TestCase committed = committed();
+        final TestCase current = reverted(ChangeType.CHANGE_GROUP, reverted(ChangeType.CHANGE_STEPS, edited(), committed), committed);
 
         current.getSteps().add("typed after the revert");
         current.getGroups().add("Regression");

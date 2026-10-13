@@ -17,11 +17,11 @@
 package org.testin.testng;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.util.List;
 
-record Generated(@NotNull TestCaseDto testCase, @NotNull List<String> fqcn) {
+record Generated(@NotNull TestCase testCase, @NotNull List<String> fqcn) {
     @NotNull String pattern() {
         return String.join(".", fqcn.subList(0, fqcn.size() - 1)) + "," + fqcn.getLast();
     }

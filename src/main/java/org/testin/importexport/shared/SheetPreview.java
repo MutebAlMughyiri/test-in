@@ -22,7 +22,7 @@ import com.intellij.ui.components.JBTabbedPane;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.ui.framework.DialogComponent;
 
@@ -43,10 +43,10 @@ public final class SheetPreview implements DialogComponent {
     private final @NotNull JBTabbedPane tabs = new JBTabbedPane();
     private final @NotNull Map<String, DefaultTableModel> models = new LinkedHashMap<>();
 
-    private @NotNull Map<String, List<TestCaseDto>> sheets = new LinkedHashMap<>();
+    private @NotNull Map<String, List<TestCase>> sheets = new LinkedHashMap<>();
 
     // UC-SHARE-007, Rule-SHARE-036
-    public void show(final @NotNull Map<String, List<TestCaseDto>> newSheets) {
+    public void show(final @NotNull Map<String, List<TestCase>> newSheets) {
         TestinLogger.debug("Import preview: showing " + newSheets.values().stream().mapToInt(List::size).sum()
                 + " test cases in " + newSheets.size() + " sheet(s), replacing " + sheets.size() + " sheet(s)");
         sheets = newSheets;
@@ -56,8 +56,8 @@ public final class SheetPreview implements DialogComponent {
             tabs.removeTabAt(0);
         }
 
-        for (final Map.Entry<String, List<TestCaseDto>> entry : sheets.entrySet()) {
-            final @NotNull List<TestCaseDto> testCases = entry.getValue();
+        for (final Map.Entry<String, List<TestCase>> entry : sheets.entrySet()) {
+            final @NotNull List<TestCase> testCases = entry.getValue();
 
             final @NotNull DefaultTableModel model = new TablePanelBuilder().createModel(fields, testCases);
             model.addTableModelListener(new CellEditListener(fields, project, testCases));
@@ -72,14 +72,14 @@ public final class SheetPreview implements DialogComponent {
     }
 
     // UC-SHARE-001, Rule-SHARE-008
-    public @NotNull Map<String, List<TestCaseDto>> selected() {
-        final @NotNull Map<String, List<TestCaseDto>> selectedBySheet = new LinkedHashMap<>();
+    public @NotNull Map<String, List<TestCase>> selected() {
+        final @NotNull Map<String, List<TestCase>> selectedBySheet = new LinkedHashMap<>();
 
-        for (final Map.Entry<String, List<TestCaseDto>> entry : sheets.entrySet()) {
+        for (final Map.Entry<String, List<TestCase>> entry : sheets.entrySet()) {
             final @NotNull DefaultTableModel model = models.getOrDefault(entry.getKey(), NO_MODEL);
 
-            final @NotNull List<TestCaseDto> testCasesInSheet = entry.getValue();
-            final @NotNull List<TestCaseDto> selected = new ArrayList<>();
+            final @NotNull List<TestCase> testCasesInSheet = entry.getValue();
+            final @NotNull List<TestCase> selected = new ArrayList<>();
 
             for (int row = 0; row < model.getRowCount(); row++) {
                 if (Boolean.TRUE.equals(model.getValueAt(row, 0))) selected.add(testCasesInSheet.get(row));

@@ -29,7 +29,7 @@ import org.testin.editor.EditorFixtures;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.toolbar.GridViewButton;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
 import org.testin.setting.AppSettingsState;
@@ -93,7 +93,7 @@ public class UndoMenuIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-067, Rule-EDITOR-PANEL-071, Rule-EDITOR-PANEL-068
     public void testTheEntriesSayWhatTheNextPressWouldTakeOrPutBackAndUndoIsExact() {
         final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
-        final @NotNull TestCaseDto testCase = EditorFixtures.testCase(getProject(), testSet, "Log in", "m");
+        final @NotNull TestCase testCase = EditorFixtures.testCase(getProject(), testSet, "Log in", "m");
         final @NotNull JsonCodec mapper = Services.getInstance(getProject(), JsonCodec.class);
         final @NotNull String original = mapper.writeValueAsString(theTestCases().findTestCase(testCase.getId()).orElseThrow());
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());

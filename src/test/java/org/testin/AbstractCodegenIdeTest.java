@@ -43,7 +43,7 @@ import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
 import org.testin.model.NodeType;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
@@ -148,15 +148,15 @@ public abstract class AbstractCodegenIdeTest extends AbstractTempRootIdeTest {
         return testSet;
     }
 
-    protected @NotNull TestCaseDto indexedTestCase(final @NotNull TestSetNode testSet, final @NotNull String description, final @NotNull String order) {
-        final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description(description).order(order).build();
+    protected @NotNull TestCase indexedTestCase(final @NotNull TestSetNode testSet, final @NotNull String description, final @NotNull String order) {
+        final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description(description).order(order).build();
         testCase.setParent(testSet);
         Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase);
         return testCase;
     }
 
-    protected @NotNull TestCaseDto createdTestCase(final @NotNull TestSetNode testSet, final @NotNull String description, final @NotNull String order) {
-        final @NotNull TestCaseDto testCase = indexedTestCase(testSet, description, order);
+    protected @NotNull TestCase createdTestCase(final @NotNull TestSetNode testSet, final @NotNull String description, final @NotNull String order) {
+        final @NotNull TestCase testCase = indexedTestCase(testSet, description, order);
         CodeChangeType.CREATE_TEST_CASE.execute(getProject(), testCase);
         return testCase;
     }
@@ -167,14 +167,14 @@ public abstract class AbstractCodegenIdeTest extends AbstractTempRootIdeTest {
         return Optional.ofNullable(JavaPsiFacade.getInstance(getProject()).findClass(qualifiedName, GlobalSearchScope.projectScope(getProject())));
     }
 
-    protected @NotNull Optional<PsiMethod> methodOf(final @NotNull String qualifiedName, final @NotNull TestCaseDto testCase) {
+    protected @NotNull Optional<PsiMethod> methodOf(final @NotNull String qualifiedName, final @NotNull TestCase testCase) {
         return generatedClass(qualifiedName).stream()
                 .flatMap(testClass -> Arrays.stream(testClass.getMethods()))
                 .filter(testMethod -> attributeOf(testMethod, "testName").equals("\"" + testCase.getId() + "\""))
                 .findFirst();
     }
 
-    protected @NotNull PsiMethod writtenMethodOf(final @NotNull String qualifiedName, final @NotNull TestCaseDto testCase) {
+    protected @NotNull PsiMethod writtenMethodOf(final @NotNull String qualifiedName, final @NotNull TestCase testCase) {
         Await.until("'" + testCase.getDescription() + "' has no method in " + qualifiedName, () -> methodOf(qualifiedName, testCase).isPresent());
         return methodOf(qualifiedName, testCase).orElseThrow();
     }

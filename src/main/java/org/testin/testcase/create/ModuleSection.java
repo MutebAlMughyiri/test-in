@@ -19,7 +19,7 @@ package org.testin.testcase.create;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.TextFieldWithAutoCompletion;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.services.Services;
 import org.testin.services.TestCaseCompletions;
 import org.testin.testcase.CreateTestCaseFields;
@@ -34,12 +34,12 @@ public class ModuleSection extends AbstractOneLineSection {
 
     // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-032
     @Override
-    public @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto testCase) {
+    public @NotNull TestCase applyTo(final @NotNull TestCase testCase) {
         return testCase.edit().module(field.getText().trim()).build();
     }
 
     @Override
-    public void fillData(final @NotNull TestCaseDto testCase) {
+    public void fillData(final @NotNull TestCase testCase) {
         field.setText(testCase.getModule());
     }
 }

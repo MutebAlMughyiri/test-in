@@ -22,7 +22,7 @@ import org.testin.indexer.AbstractReadTheRootIdeTest;
 import org.testin.indexer.TestCases;
 import org.testin.model.NodeType;
 import org.testin.model.FileKind;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
 
@@ -55,7 +55,7 @@ public class CommittedTestRunF2IdeTest extends AbstractReadTheRootIdeTest {
         }
         resultIn(testRun, FileKind.RUN_ITEM.fileName(testCaseId), testCaseId);
         readEverything();
-        final @NotNull TestCaseDto shown = Services.getInstance(getProject(), TestCases.class).findTestCase(testCaseId).orElseThrow();
+        final @NotNull TestCase shown = Services.getInstance(getProject(), TestCases.class).findTestCase(testCaseId).orElseThrow();
 
         final @NotNull List<String> said = Said.during(getProject(), () -> EditShownTestCase.openIfEditable(getProject(), shown, List.of("Shop", "Test Runs", "Cycle 4")));
 
@@ -74,7 +74,7 @@ public class CommittedTestRunF2IdeTest extends AbstractReadTheRootIdeTest {
         }
         readEverything();
 
-        final @NotNull List<String> said = Said.during(getProject(), () -> EditShownTestCase.openIfEditable(getProject(), TestCaseDto.deleted(testCaseId), List.of("Shop", "Test Cases", "Login")));
+        final @NotNull List<String> said = Said.during(getProject(), () -> EditShownTestCase.openIfEditable(getProject(), TestCase.deleted(testCaseId), List.of("Shop", "Test Cases", "Login")));
 
         assertTrue("F2 did not say the test case was deleted: " + said, said.stream().anyMatch(line -> line.contains(Bundle.message("details.deleted.no.edit"))));
     }

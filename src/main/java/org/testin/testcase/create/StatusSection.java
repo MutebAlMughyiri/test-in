@@ -18,7 +18,7 @@ package org.testin.testcase.create;
 
 import com.intellij.ui.components.JBPanel;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.status.TestCaseStatus;
 import org.testin.testcase.UpdateTestCaseFields;
 import org.testin.ui.framework.DialogPart;
@@ -49,7 +49,7 @@ public class StatusSection implements TestCaseSection {
     }
 
     @Override
-    public @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto testCase) {
+    public @NotNull TestCase applyTo(final @NotNull TestCase testCase) {
         return testCase.edit().status(status.getSelected()).build();
     }
 
@@ -69,7 +69,7 @@ public class StatusSection implements TestCaseSection {
     }
 
     @Override
-    public void fillData(final @NotNull TestCaseDto testCase) {
+    public void fillData(final @NotNull TestCase testCase) {
         status.select(testCase.getStatus());
     }
 }

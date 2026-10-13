@@ -26,7 +26,7 @@ import org.testin.codegen.event.CopiedTestCase;
 import org.testin.java.codegen.GeneratedMethod;
 import org.testin.java.codegen.method.update.BaseTestMethodChange;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.util.List;
 import java.util.Optional;
@@ -62,7 +62,7 @@ public class CopyTestMethod extends BaseTestMethodChange implements CodeChange<C
     }
 
     private boolean carryBody(final @NotNull Project project, final @NotNull PsiClass target, final @NotNull CopiedTestCase copied) {
-        final @NotNull TestCaseDto original = copied.original();
+        final @NotNull TestCase original = copied.original();
 
         if (original.getParent().getPath().toString().isEmpty()) {
             TestinLogger.debug("Nothing to carry into the copy of '" + original.getDescription() + "': its test set is not known");

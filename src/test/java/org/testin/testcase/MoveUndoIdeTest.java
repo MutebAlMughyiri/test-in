@@ -29,7 +29,7 @@ import org.testin.clipboard.CutState;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.notifications.Done;
@@ -75,11 +75,11 @@ public class MoveUndoIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull List<UUID> idsIn(final @NotNull TestSetNode testSet) {
-        return theTestCases().getTestCasesForTestSet(testSet.getPath()).stream().map(TestCaseDto::getId).toList();
+        return theTestCases().getTestCasesForTestSet(testSet.getPath()).stream().map(TestCase::getId).toList();
     }
 
-    private @NotNull TestCaseDto movedFromTheFirstSetToTheSecond(final @NotNull TestSetEditor source, final @NotNull TestSetEditor target, final @NotNull List<String> balloons) {
-        final @NotNull TestCaseDto moving = source.getAllTestCases().getFirst();
+    private @NotNull TestCase movedFromTheFirstSetToTheSecond(final @NotNull TestSetEditor source, final @NotNull TestSetEditor target, final @NotNull List<String> balloons) {
+        final @NotNull TestCase moving = source.getAllTestCases().getFirst();
         source.getList().setSelectedIndex(0);
         Gestures.press(getProject(), ActionManager.getInstance().getAction("Testin.CutTestCaseNode"), source.getList());
         target.getList().setSelectedIndex(0);
@@ -106,7 +106,7 @@ public class MoveUndoIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestSetEditor target = EditorFixtures.openTestSetEditor(getProject(), to, getTestRootDisposable());
         final @NotNull List<String> balloons = Said.listening(getProject(), getTestRootDisposable()).shown();
         try {
-            final @NotNull TestCaseDto moved = movedFromTheFirstSetToTheSecond(source, target, balloons);
+            final @NotNull TestCase moved = movedFromTheFirstSetToTheSecond(source, target, balloons);
 
             assertTrue("the move could not be undone", histories().undo(UndoScope.of(to.getPath())));
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
@@ -129,7 +129,7 @@ public class MoveUndoIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestSetEditor target = EditorFixtures.openTestSetEditor(getProject(), to, getTestRootDisposable());
         final @NotNull List<String> balloons = Said.listening(getProject(), getTestRootDisposable()).shown();
         try {
-            final @NotNull TestCaseDto moved = movedFromTheFirstSetToTheSecond(source, target, balloons);
+            final @NotNull TestCase moved = movedFromTheFirstSetToTheSecond(source, target, balloons);
             assertTrue(histories().undo(UndoScope.of(to.getPath())));
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
@@ -138,7 +138,7 @@ public class MoveUndoIdeTest extends AbstractTempRootIdeTest {
             assertTrue("redo did not move the test case again", idsIn(to).contains(moved.getId()) && !idsIn(from).contains(moved.getId()));
             assertFalse("a move was refused as somebody else's change: " + balloons, balloons.stream().anyMatch(said -> said.startsWith(Bundle.message("snapshot.changed.title"))));
 
-            final @NotNull TestCaseDto changedElsewhere = theTestCases().findTestCase(moved.getId()).orElseThrow().edit().description("Changed by somebody else").build();
+            final @NotNull TestCase changedElsewhere = theTestCases().findTestCase(moved.getId()).orElseThrow().edit().description("Changed by somebody else").build();
             theTestCases().putTestCaseVerbatim(to.getPath(), changedElsewhere);
             assertFalse("a change somebody else made was undone over", histories().undo(UndoScope.of(to.getPath())));
             assertTrue("a change somebody else made was not refused as one: " + balloons, balloons.stream().anyMatch(said -> said.startsWith(Bundle.message("snapshot.changed.title"))));

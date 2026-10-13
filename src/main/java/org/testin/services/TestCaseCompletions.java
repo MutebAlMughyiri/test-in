@@ -20,7 +20,7 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.components.Service;
 import com.intellij.util.concurrency.SequentialTaskExecutor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.util.Collections;
 import java.util.List;
@@ -91,21 +91,21 @@ public final class TestCaseCompletions implements Disposable {
         addTo(steps, step);
     }
 
-    public void load(final @NotNull List<TestCaseDto> testCases) {
+    public void load(final @NotNull List<TestCase> testCases) {
         cacheAsync(testCases);
     }
 
-    public void addNewItems(final @NotNull List<TestCaseDto> testCases) {
+    public void addNewItems(final @NotNull List<TestCase> testCases) {
         cacheAsync(testCases);
     }
 
-    public void reload(final @NotNull Supplier<@NotNull List<TestCaseDto>> source) {
+    public void reload(final @NotNull Supplier<@NotNull List<TestCase>> source) {
         if (!reloadScheduled.compareAndSet(false, true)) return;
 
         updates.execute(() -> {
             reloadScheduled.set(false);
 
-            final @NotNull List<TestCaseDto> testCases = source.get();
+            final @NotNull List<TestCase> testCases = source.get();
 
             final @NotNull Set<String> newDescriptions = ConcurrentHashMap.newKeySet();
             final @NotNull Set<String> newExpectedResults = ConcurrentHashMap.newKeySet();
@@ -113,7 +113,7 @@ public final class TestCaseCompletions implements Disposable {
             final @NotNull Set<String> newSteps = ConcurrentHashMap.newKeySet();
             final @NotNull Set<String> newGroups = ConcurrentHashMap.newKeySet();
 
-            for (final TestCaseDto testCase : testCases) {
+            for (final TestCase testCase : testCases) {
                 addTo(newDescriptions, testCase.getDescription());
                 addTo(newExpectedResults, testCase.getExpectedResult());
                 addTo(newModules, testCase.getModule());
@@ -129,12 +129,12 @@ public final class TestCaseCompletions implements Disposable {
         });
     }
 
-    private void cacheAsync(final @NotNull List<TestCaseDto> testCases) {
+    private void cacheAsync(final @NotNull List<TestCase> testCases) {
         if (testCases.isEmpty()) return;
         updates.execute(() -> testCases.forEach(this::cache));
     }
 
-    private void cache(final @NotNull TestCaseDto testCase) {
+    private void cache(final @NotNull TestCase testCase) {
         addDescription(testCase.getDescription());
         addExpectedResult(testCase.getExpectedResult());
         addModule(testCase.getModule());

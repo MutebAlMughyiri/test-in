@@ -27,7 +27,7 @@ import org.testin.help.Guide;
 import org.testin.help.Guides;
 import org.testin.indexer.TestRuns;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.testrun.RunItemExecution;
@@ -77,7 +77,7 @@ public final class RunItemRecorder {
             return false;
         }
 
-        final @NotNull TestCaseDto currentTestCase = editor.getCurrentTestCases().get(executingIndex);
+        final @NotNull TestCase currentTestCase = editor.getCurrentTestCases().get(executingIndex);
         if (editor.runItem(currentTestCase.getId()).filter(RunItem::isRemoved).isPresent()) {
             passDeleted(editor, executingIndex);
             return false;
@@ -129,7 +129,7 @@ public final class RunItemRecorder {
     }
 
     // UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-183, Rule-EDITOR-PANEL-241, Rule-EDITOR-PANEL-242
-    public void recordReported(final @NotNull TestRunEditor editor, final @NotNull TestCaseDto testCase, final @NotNull RunItemStatus status, final @NotNull List<RunItemExecution> executions, final int written) {
+    public void recordReported(final @NotNull TestRunEditor editor, final @NotNull TestCase testCase, final @NotNull RunItemStatus status, final @NotNull List<RunItemExecution> executions, final int written) {
         if (editor.getWalk().clockIsOn(testCase.getId())) editor.getWalk().stopTheClock();
 
         if (editor.getWalk().isExecuting(testCase.getId())) {
@@ -141,7 +141,7 @@ public final class RunItemRecorder {
     }
 
     // UC-EDITOR-PANEL-043, Rule-CODEGEN-111
-    public void showAttempts(final @NotNull TestRunEditor editor, final @NotNull TestCaseDto testCase, final @NotNull List<RunItemExecution> executions, final int written) {
+    public void showAttempts(final @NotNull TestRunEditor editor, final @NotNull TestCase testCase, final @NotNull List<RunItemExecution> executions, final int written) {
         final @NotNull Path testRunPath = editor.getParent().getPath();
         if (refused(testRunPath, testCase.getId())) return;
 
@@ -256,7 +256,7 @@ public final class RunItemRecorder {
     }
 
     // UC-EDITOR-PANEL-032, UC-EDITOR-PANEL-038, UC-EDITOR-PANEL-039, Rule-EDITOR-PANEL-284
-    public void applyStatus(final @NotNull TestRunEditor editor, final @NotNull List<TestCaseDto> selectedTestCases, final @NotNull RunItemStatus status) {
+    public void applyStatus(final @NotNull TestRunEditor editor, final @NotNull List<TestCase> selectedTestCases, final @NotNull RunItemStatus status) {
         if (selectedTestCases.isEmpty()) return;
 
         if (selectedTestCases.size() == 1) recordOne(status, editor, selectedTestCases.getFirst(), recording(status));
@@ -264,11 +264,11 @@ public final class RunItemRecorder {
     }
 
     // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-285
-    public void applyFailure(final @NotNull TestRunEditor editor, final @NotNull TestCaseDto testCase, final @NotNull FailureFields fields) {
+    public void applyFailure(final @NotNull TestRunEditor editor, final @NotNull TestCase testCase, final @NotNull FailureFields fields) {
         recordOne(RunItemStatus.FAILED, editor, testCase, failing(editor.getParent().getPath(), fields));
     }
 
-    private void recordOne(final @NotNull RunItemStatus status, final @NotNull TestRunEditor editor, final @NotNull TestCaseDto testCase, final @NotNull Consumer<RunItem> recording) {
+    private void recordOne(final @NotNull RunItemStatus status, final @NotNull TestRunEditor editor, final @NotNull TestCase testCase, final @NotNull Consumer<RunItem> recording) {
         if (editor.runItem(testCase.getId()).filter(RunItem::isRemoved).isPresent()) {
             refuseRemoved();
             return;
@@ -280,13 +280,13 @@ public final class RunItemRecorder {
         editor.getWalk().finishIfEverythingIsJudged();
     }
 
-    private void recordMany(final @NotNull RunItemStatus status, final @NotNull TestRunEditor editor, final @NotNull List<TestCaseDto> selectedTestCases) {
+    private void recordMany(final @NotNull RunItemStatus status, final @NotNull TestRunEditor editor, final @NotNull List<TestCase> selectedTestCases) {
         final @NotNull Optional<RunItems> held = heldTestRun(editor.getParent().getPath());
         if (held.isEmpty()) return;
 
         final @NotNull List<UUID> judged = new ArrayList<>();
 
-        for (final TestCaseDto testCase : selectedTestCases) {
+        for (final TestCase testCase : selectedTestCases) {
             if (held.orElseThrow().runItemOf(testCase.getId()).filter(runItem -> !runItem.isRemoved()).isEmpty())
                 continue;
 

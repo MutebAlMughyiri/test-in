@@ -18,7 +18,7 @@ package org.testin.editor;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +69,7 @@ public final class EditorPaging {
     }
 
     // UC-EDITOR-PANEL-022, Rule-EDITOR-PANEL-104
-    public boolean turnToPageHolding(final @NotNull UUID testCaseId, final @NotNull List<TestCaseDto> testCases) {
+    public boolean turnToPageHolding(final @NotNull UUID testCaseId, final @NotNull List<TestCase> testCases) {
         final int holding = PageWindow.pageContaining(testCaseId, testCases, size);
         if (holding == 0) return false;
 

@@ -21,7 +21,7 @@ import com.intellij.ui.components.JBList;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.TestinEditor;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.view.ViewToolWindowFactory;
 
 import javax.swing.event.ListSelectionEvent;
@@ -31,7 +31,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CardSelectionListener implements ListSelectionListener {
     private final @NotNull Project project;
-    private final @NotNull JBList<TestCaseDto> list;
+    private final @NotNull JBList<TestCase> list;
     private final @NotNull TestinEditor editor;
     private final @NotNull List<String> treePath;
 
@@ -39,7 +39,7 @@ public class CardSelectionListener implements ListSelectionListener {
     @Override
     public void valueChanged(final ListSelectionEvent e) {
         if (!e.getValueIsAdjusting()) {
-            final @NotNull List<TestCaseDto> selected = list.getSelectedValuesList();
+            final @NotNull List<TestCase> selected = list.getSelectedValuesList();
 
             if (!selected.isEmpty()) {
                 list.ensureIndexIsVisible(list.getSelectedIndex());

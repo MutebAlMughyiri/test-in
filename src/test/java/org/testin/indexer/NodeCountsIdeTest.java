@@ -20,7 +20,7 @@ import com.intellij.openapi.application.WriteAction;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.model.NodeFigures;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
@@ -74,7 +74,7 @@ public class NodeCountsIdeTest extends AbstractTempRootIdeTest {
 
         final @NotNull List<UUID> testCaseIds = new ArrayList<>();
         for (int i = 0; i < testCases; i++) {
-            final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in " + i).order("m" + i).build();
+            final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description("Log in " + i).order("m" + i).build();
             testCase.setParent(testSet);
             Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase);
             testCaseIds.add(testCase.getId());

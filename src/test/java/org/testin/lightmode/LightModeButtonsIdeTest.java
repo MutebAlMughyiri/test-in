@@ -32,7 +32,7 @@ import org.testin.actions.Declared;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.card.ShownTestCaseAction;
 import org.testin.editor.testrun.TestRunEditor;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
@@ -127,14 +127,14 @@ public class LightModeButtonsIdeTest extends AbstractCodegenIdeTest {
         super.tearDown();
     }
 
-    private @NotNull List<TestCaseDto> automatedTestCases() {
+    private @NotNull List<TestCase> automatedTestCases() {
         final @NotNull TestSetNode testSet = createdTestSet("Checkout");
-        final @NotNull List<TestCaseDto> made = List.of(createdTestCase(testSet, "Log in with a valid user", "m0001"), createdTestCase(testSet, "Log in with a wrong password", "m0002"));
+        final @NotNull List<TestCase> made = List.of(createdTestCase(testSet, "Log in with a valid user", "m0001"), createdTestCase(testSet, "Log in with a wrong password", "m0002"));
         settled();
         return made;
     }
 
-    private @NotNull TestRunEditor walkingThrough(final @NotNull List<TestCaseDto> testCases) {
+    private @NotNull TestRunEditor walkingThrough(final @NotNull List<TestCase> testCases) {
         final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
         final @NotNull TestRunNode testRun = EditorFixtures.testRun(getProject(), testProject, testCases.stream().map(EditorFixtures::pending).toList());
         final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());
@@ -153,7 +153,7 @@ public class LightModeButtonsIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-EDITOR-PANEL-243
     public void testLightModeOffersTheCardsThreeButtonsAtTheRightEndOfTheTestSetLine() {
-        final @NotNull List<TestCaseDto> testCases = automatedTestCases();
+        final @NotNull List<TestCase> testCases = automatedTestCases();
         final @NotNull TestRunEditor editor = walkingThrough(testCases);
         final @NotNull JFrame frame = lightModeOn(editor);
         try {
@@ -182,7 +182,7 @@ public class LightModeButtonsIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-EDITOR-PANEL-245
     public void testLightModeAnswersTheKeymapsKeysAndNamesThem() {
-        final @NotNull List<TestCaseDto> testCases = automatedTestCases();
+        final @NotNull List<TestCase> testCases = automatedTestCases();
         final @NotNull TestRunEditor editor = walkingThrough(testCases);
         final @NotNull JFrame frame = lightModeOn(editor);
         try {

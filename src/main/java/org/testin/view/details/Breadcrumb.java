@@ -24,7 +24,7 @@ import com.intellij.util.ui.JBUI;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.Nodes;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.search.GoTo;
 import org.testin.search.Hit;
 import org.testin.services.Services;
@@ -57,7 +57,7 @@ public class Breadcrumb extends AbstractDetails {
 
     // UC-VIEW-PANEL-010, Rule-VIEW-PANEL-041
     @Override
-    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull TestCaseDto testCase, final int currentRow) {
+    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull TestCase testCase, final int currentRow) {
         final @NotNull JBPanel<?> pathPanel = line(0);
 
         {

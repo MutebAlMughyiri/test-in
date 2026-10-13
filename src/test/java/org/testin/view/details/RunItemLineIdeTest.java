@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.bug.BugPriority;
 import org.testin.model.bug.BugSeverity;
 import org.testin.model.node.TestProjectNode;
@@ -48,8 +48,8 @@ public class RunItemLineIdeTest extends AbstractTempRootIdeTest {
     private static final @NotNull UUID TEST_CASE_ID = UUID.fromString("55555555-5555-4555-8555-555555555501");
     private static final @NotNull String ISSUE = "https://github.com/mtb550/test-in/issues/412";
 
-    private static @NotNull TestCaseDto aTestCase() {
-        return TestCaseDto.builder().id(TEST_CASE_ID).description("Log in with a valid user").expectedResult("The dashboard opens").build();
+    private static @NotNull TestCase aTestCase() {
+        return TestCase.builder().id(TEST_CASE_ID).description("Log in with a valid user").expectedResult("The dashboard opens").build();
     }
 
     private static @NotNull RunItem failed(final @NotNull String bugIssueUrl) {

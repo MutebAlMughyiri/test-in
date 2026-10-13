@@ -19,7 +19,7 @@ package org.testin.git.change;
 import org.jetbrains.annotations.NotNull;
 import org.testin.TempTree;
 import org.testin.model.Priority;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.util.RealJsonCodec;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -58,8 +58,8 @@ public class PendingChangeReaderTest {
         if (root != null) TempTree.delete(root);
     }
 
-    private @NotNull TestCaseDto testCase(final String description) {
-        return TestCaseDto.builder()
+    private @NotNull TestCase testCase(final String description) {
+        return TestCase.builder()
                 .description(description)
                 .expectedResult("the balance is shown")
                 .steps(new ArrayList<>(List.of("open the app", "log in")))
@@ -68,7 +68,7 @@ public class PendingChangeReaderTest {
                 .build();
     }
 
-    private void onDisk(final String relativePath, final TestCaseDto testCase) {
+    private void onDisk(final String relativePath, final TestCase testCase) {
         try {
             final Path file = root.resolve(relativePath);
             Files.createDirectories(file.getParent());
@@ -96,8 +96,8 @@ public class PendingChangeReaderTest {
 
     @Test
     public void anEditedTestCaseListsOnlyTheFieldsThatMoved() {
-        final TestCaseDto before = testCase("the original");
-        final TestCaseDto after = testCase("the original").setId(before.getId()).setModule("billing");
+        final TestCase before = testCase("the original");
+        final TestCase after = testCase("the original").setId(before.getId()).setModule("billing");
 
         committed.put("Test Cases/login/case.tc", RealJsonCodec.build().writeValueAsString(before));
         onDisk("Test Cases/login/case.tc", after);
@@ -112,7 +112,7 @@ public class PendingChangeReaderTest {
 
     @Test
     public void aDeletedTestCaseIsReviewedFromWhatWasCommitted() {
-        final TestCaseDto removed = testCase("a case that is going away");
+        final TestCase removed = testCase("a case that is going away");
         committed.put("Test Cases/login/case.tc", RealJsonCodec.build().writeValueAsString(removed));
 
         final List<PendingChange> review = review(" D Test Cases/login/case.tc");
@@ -145,7 +145,7 @@ public class PendingChangeReaderTest {
     // Rule-SHARE-046
     @Test
     public void aFileGitCallsModifiedIsAlwaysARow() {
-        final TestCaseDto unchanged = testCase("identical on both sides");
+        final TestCase unchanged = testCase("identical on both sides");
 
         committed.put("Test Cases/login/case.tc", RealJsonCodec.build().writeValueAsString(unchanged));
         onDisk("Test Cases/login/case.tc", unchanged);

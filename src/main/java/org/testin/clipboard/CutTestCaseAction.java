@@ -26,7 +26,7 @@ import org.testin.actions.GrayWithReason;
 import org.testin.actions.TestinDataKeys;
 import org.testin.editor.TestinEditor;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
@@ -46,7 +46,7 @@ public class CutTestCaseAction extends AbstractAnyProjectAction {
         if (found.isEmpty()) return;
 
         final @NotNull TestinEditor editor = found.orElseThrow();
-        final @NotNull List<TestCaseDto> selectedTestCases = TestinDataKeys.selectedTestCases(e);
+        final @NotNull List<TestCase> selectedTestCases = TestinDataKeys.selectedTestCases(e);
 
         if (!selectedTestCases.isEmpty()) {
             try {

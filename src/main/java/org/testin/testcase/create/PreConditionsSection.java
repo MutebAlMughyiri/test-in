@@ -18,7 +18,7 @@ package org.testin.testcase.create;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.testcase.CreateTestCaseFields;
 import org.testin.util.EditorFields;
 
@@ -30,12 +30,12 @@ public class PreConditionsSection extends AbstractMultiLineSection {
 
     // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-032
     @Override
-    public @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto testCase) {
+    public @NotNull TestCase applyTo(final @NotNull TestCase testCase) {
         return testCase.edit().preConditions(field.getText().trim()).build();
     }
 
     @Override
-    public void fillData(final @NotNull TestCaseDto testCase) {
+    public void fillData(final @NotNull TestCase testCase) {
         field.setText(testCase.getPreConditions());
     }
 }

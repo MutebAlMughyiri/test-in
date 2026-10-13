@@ -30,7 +30,7 @@ import org.testin.editor.TestinEditor;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.indexer.Nodes;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.services.Services;
@@ -125,7 +125,7 @@ public final class TestinEditors {
     }
 
     // UC-EDITOR-PANEL-048, Rule-EDITOR-PANEL-233, Rule-VIEW-PANEL-016
-    public void openAndSelect(final @NotNull AbstractNode node, final @NotNull TestCaseDto testCase) {
+    public void openAndSelect(final @NotNull AbstractNode node, final @NotNull TestCase testCase) {
         openThen(node, editor -> editor.selectWhenLoaded(testCase.getId()));
     }
 

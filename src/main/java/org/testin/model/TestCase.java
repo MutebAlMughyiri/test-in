@@ -50,7 +50,7 @@ import java.util.UUID;
 // Rule-INTERNAL-135
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 @ToString
-public final class TestCaseDto {
+public final class TestCase {
     @NonNull
     @Builder.Default
     private volatile String order = "";
@@ -123,8 +123,8 @@ public final class TestCaseDto {
     @Builder.Default
     private volatile String preConditions = "";
 
-    public static @NotNull TestCaseDto deleted(final @NotNull UUID testCaseId) {
-        return TestCaseDto.builder()
+    public static @NotNull TestCase deleted(final @NotNull UUID testCaseId) {
+        return TestCase.builder()
                 .id(testCaseId)
                 .description(Bundle.message("testcase.deleted", testCaseId))
                 .build();
@@ -143,7 +143,7 @@ public final class TestCaseDto {
         updatedAt = ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS);
     }
 
-    public void takeAuditOf(final @NotNull TestCaseDto other) {
+    public void takeAuditOf(final @NotNull TestCase other) {
         createdBy = other.createdBy;
         createdAt = other.createdAt;
         updatedBy = other.updatedBy;
@@ -151,17 +151,17 @@ public final class TestCaseDto {
     }
 
     // Rule-INTERNAL-117
-    public @NotNull TestCaseDtoBuilder edit() {
+    public @NotNull TestCaseBuilder edit() {
         return toBuilder().steps(new ArrayList<>(steps)).groups(new ArrayList<>(groups));
     }
 
     // Rule-INTERNAL-117, Rule-EDITOR-PANEL-238
-    public @NotNull TestCaseDto copy() {
+    public @NotNull TestCase copy() {
         return edit().build();
     }
 
     // Rule-INTERNAL-117
-    public @NotNull TestCaseDto takeValuesOf(final @NotNull TestCaseDto edited) {
+    public @NotNull TestCase takeValuesOf(final @NotNull TestCase edited) {
         order = edited.order;
         description = edited.description;
         expectedResult = edited.expectedResult;

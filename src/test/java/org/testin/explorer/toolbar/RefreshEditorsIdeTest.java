@@ -29,7 +29,7 @@ import org.testin.editor.TestinEditor;
 import org.testin.editor.open.TestinEditors;
 import org.testin.explorer.TreePanel;
 import org.testin.model.FileKind;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
@@ -49,15 +49,15 @@ public class RefreshEditorsIdeTest extends AbstractOpenEditorsIdeTest {
     private TestSetNode login;
     private TestSetNode checkout;
     private TestSetNode card;
-    private TestCaseDto inCheckout;
-    private TestCaseDto inCard;
+    private TestCase inCheckout;
+    private TestCase inCard;
     private TreePanel panel;
 
     private static @NotNull AppSettingsState settings() {
         return Services.getInstance(AppSettingsState.class);
     }
 
-    private static void aSecondTestCaseWrittenBesides(final @NotNull TestSetNode testSet, final @NotNull TestCaseDto first) {
+    private static void aSecondTestCaseWrittenBesides(final @NotNull TestSetNode testSet, final @NotNull TestCase first) {
         final @NotNull Path written = testSet.getPath().resolve(FileKind.TEST_CASE.fileName(first.getId()));
         final @NotNull UUID second = UUID.randomUUID();
         try {

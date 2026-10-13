@@ -23,7 +23,7 @@ import org.testin.Said;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.notifications.Done;
@@ -40,9 +40,9 @@ public class RemoveConfirmsOnceIdeTest extends AbstractTempRootIdeTest {
     public void testRemovingSeveralTestCasesConfirmsOnceInThePastTenseWithACount() {
         final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
         final @NotNull TestSetNode login = EditorFixtures.testSet(getProject(), testProject, "Login");
-        final @NotNull List<TestCaseDto> testCases = EditorFixtures.testCases(getProject(), login, 4);
+        final @NotNull List<TestCase> testCases = EditorFixtures.testCases(getProject(), login, 4);
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), login, getTestRootDisposable());
-        final @NotNull List<TestCaseDto> chosen = testCases.subList(0, 3);
+        final @NotNull List<TestCase> chosen = testCases.subList(0, 3);
         final @NotNull Said balloons = Said.listening(getProject(), getTestRootDisposable());
         new RemoveTestCaseWork(getProject(), editor, login, chosen).remove();
         ShownDialog.press(getProject(), ConfirmDialog.class, Shortcuts.Enter);

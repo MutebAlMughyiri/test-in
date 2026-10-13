@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.testin.editor.TestinEditor;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
@@ -56,13 +56,13 @@ public class TestCaseTransferHandler extends TransferHandler {
         this.notifier = Services.getInstance(project, Notifier.class);
     }
 
-    private static int landingIndex(final @NotNull List<TestCaseDto> allTestCases, final @NotNull Optional<TestCaseDto> above, final @NotNull Optional<TestCaseDto> below) {
+    private static int landingIndex(final @NotNull List<TestCase> allTestCases, final @NotNull Optional<TestCase> above, final @NotNull Optional<TestCase> below) {
         return above.map(testCase -> Math.min(indexOfId(allTestCases, testCase.getId()) + 1, allTestCases.size()))
                 .or(() -> below.map(testCase -> indexOfId(allTestCases, testCase.getId())))
                 .orElse(allTestCases.size());
     }
 
-    private static int indexOfId(final @NotNull List<TestCaseDto> testCases, final @NotNull UUID testCaseId) {
+    private static int indexOfId(final @NotNull List<TestCase> testCases, final @NotNull UUID testCaseId) {
         for (int i = 0; i < testCases.size(); i++) {
             if (testCaseId.equals(testCases.get(i).getId())) return i;
         }
@@ -80,9 +80,9 @@ public class TestCaseTransferHandler extends TransferHandler {
     protected @Nullable Transferable createTransferable(final JComponent component) {
         if (!(component instanceof JBList<?> rawList)) return null;
 
-        final @NotNull List<TestCaseDto> testCases = rawList.getSelectedValuesList().stream()
-                .filter(TestCaseDto.class::isInstance)
-                .map(TestCaseDto.class::cast)
+        final @NotNull List<TestCase> testCases = rawList.getSelectedValuesList().stream()
+                .filter(TestCase.class::isInstance)
+                .map(TestCase.class::cast)
                 .toList();
 
         return new Transferable() {
@@ -114,29 +114,29 @@ public class TestCaseTransferHandler extends TransferHandler {
     public boolean importData(final TransferSupport support) {
         if (!support.isDataFlavorSupported(FLAVOR)) return false;
 
-        final @NotNull List<TestCaseDto> orderBefore = editor.snapshotOfAll();
+        final @NotNull List<TestCase> orderBefore = editor.snapshotOfAll();
 
         try {
             final @NotNull Object data = support.getTransferable().getTransferData(FLAVOR);
             if (!(data instanceof List<?> rawList)) return false;
 
-            final @NotNull List<TestCaseDto> testCasesToMove = rawList.stream()
-                    .filter(TestCaseDto.class::isInstance)
-                    .map(TestCaseDto.class::cast)
+            final @NotNull List<TestCase> testCasesToMove = rawList.stream()
+                    .filter(TestCase.class::isInstance)
+                    .map(TestCase.class::cast)
                     .toList();
 
             if (testCasesToMove.isEmpty()) return false;
 
-            final @NotNull Set<UUID> movedIds = testCasesToMove.stream().map(TestCaseDto::getId).collect(Collectors.toSet());
+            final @NotNull Set<UUID> movedIds = testCasesToMove.stream().map(TestCase::getId).collect(Collectors.toSet());
 
-            final @NotNull Optional<TestCaseDto> above = anchorAboveDrop(support, movedIds);
-            final @NotNull Optional<TestCaseDto> below = anchorBelowDrop(support, movedIds);
+            final @NotNull Optional<TestCase> above = anchorAboveDrop(support, movedIds);
+            final @NotNull Optional<TestCase> below = anchorBelowDrop(support, movedIds);
 
-            final @NotNull List<TestCaseDto> allTestCases = editor.getAllTestCases();
+            final @NotNull List<TestCase> allTestCases = editor.getAllTestCases();
             final @NotNull List<UUID> testCaseIds;
 
             synchronized (allTestCases) {
-                final @NotNull Set<UUID> here = allTestCases.stream().map(TestCaseDto::getId).collect(Collectors.toSet());
+                final @NotNull Set<UUID> here = allTestCases.stream().map(TestCase::getId).collect(Collectors.toSet());
                 if (!here.containsAll(movedIds)) return false;
 
                 allTestCases.removeIf(testCase -> movedIds.contains(testCase.getId()));
@@ -170,8 +170,8 @@ public class TestCaseTransferHandler extends TransferHandler {
     }
 
     // UC-EDITOR-PANEL-015
-    private void putBack(final @NotNull List<TestCaseDto> orderBefore) {
-        final @NotNull List<TestCaseDto> allTestCases = editor.getAllTestCases();
+    private void putBack(final @NotNull List<TestCase> orderBefore) {
+        final @NotNull List<TestCase> allTestCases = editor.getAllTestCases();
 
         synchronized (allTestCases) {
             allTestCases.clear();
@@ -186,13 +186,13 @@ public class TestCaseTransferHandler extends TransferHandler {
         return ((JList.DropLocation) support.getDropLocation()).getIndex();
     }
 
-    private @NotNull Optional<TestCaseDto> anchorBelowDrop(final @NotNull TransferSupport support, final @NotNull Set<UUID> movedIds) {
+    private @NotNull Optional<TestCase> anchorBelowDrop(final @NotNull TransferSupport support, final @NotNull Set<UUID> movedIds) {
         if (!(support.getComponent() instanceof JBList<?> target)) return Optional.empty();
 
         final @NotNull ListModel<?> rows = target.getModel();
 
         for (int row = Math.max(0, dropIndex(support)); row < rows.getSize(); row++) {
-            if (rows.getElementAt(row) instanceof TestCaseDto testCase && !movedIds.contains(testCase.getId()))
+            if (rows.getElementAt(row) instanceof TestCase testCase && !movedIds.contains(testCase.getId()))
                 return Optional.of(testCase);
         }
 
@@ -200,14 +200,14 @@ public class TestCaseTransferHandler extends TransferHandler {
     }
 
     // UC-EDITOR-PANEL-010, Rule-EDITOR-PANEL-059
-    private @NotNull Optional<TestCaseDto> anchorAboveDrop(final @NotNull TransferSupport support, final @NotNull Set<UUID> movedIds) {
+    private @NotNull Optional<TestCase> anchorAboveDrop(final @NotNull TransferSupport support, final @NotNull Set<UUID> movedIds) {
         if (!(support.getComponent() instanceof JBList<?> target)) return Optional.empty();
 
         final @NotNull ListModel<?> rows = target.getModel();
         final int drop = Math.min(dropIndex(support), rows.getSize());
 
         for (int row = drop - 1; row >= 0; row--) {
-            if (rows.getElementAt(row) instanceof TestCaseDto testCase && !movedIds.contains(testCase.getId()))
+            if (rows.getElementAt(row) instanceof TestCase testCase && !movedIds.contains(testCase.getId()))
                 return Optional.of(testCase);
         }
 

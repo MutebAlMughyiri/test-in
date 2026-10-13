@@ -21,12 +21,12 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.CodeChange;
 import org.testin.java.codegen.method.update.BaseTestMethodChange;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
-public class RemoveTestMethod extends BaseTestMethodChange implements CodeChange<TestCaseDto> {
+public class RemoveTestMethod extends BaseTestMethodChange implements CodeChange<TestCase> {
     // UC-CODEGEN-014, Rule-CODEGEN-049, Rule-CODEGEN-050
     @Override
-    public void execute(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
+    public void execute(final @NotNull Project project, final @NotNull TestCase testCase) {
         applyToMethod(project, testCase, "Remove Test Method", testMethod -> {
             final @NotNull String name = testMethod.getName();
             testMethod.delete();

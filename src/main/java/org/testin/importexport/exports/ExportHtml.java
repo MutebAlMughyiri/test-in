@@ -20,7 +20,7 @@ import com.intellij.openapi.util.text.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
 import org.testin.model.ReportColor;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.testcase.Can;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.util.Bundle;
@@ -41,7 +41,7 @@ import java.util.Map;
 
 public class ExportHtml {
     // UC-SHARE-002, Rule-SHARE-022
-    public void exportToFile(final @NotNull File destFile, final @NotNull Map<String, List<TestCaseDto>> sheetsData) {
+    public void exportToFile(final @NotNull File destFile, final @NotNull Map<String, List<TestCase>> sheetsData) {
         try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(destFile), StandardCharsets.UTF_8))) {
             writeHtmlDocument(writer, sheetsData);
         } catch (final IOException ex) {
@@ -50,7 +50,7 @@ public class ExportHtml {
         }
     }
 
-    private void writeHtmlDocument(final @NotNull BufferedWriter writer, final @NotNull Map<String, List<TestCaseDto>> sheetsData) {
+    private void writeHtmlDocument(final @NotNull BufferedWriter writer, final @NotNull Map<String, List<TestCase>> sheetsData) {
         try {
             writer.write("<!DOCTYPE html>");
             writer.newLine();
@@ -92,9 +92,9 @@ public class ExportHtml {
 
             int totalExported = 0;
 
-            for (final Map.Entry<String, List<TestCaseDto>> entry : sheetsData.entrySet()) {
+            for (final Map.Entry<String, List<TestCase>> entry : sheetsData.entrySet()) {
                 final @NotNull String sheetName = entry.getKey();
-                final @NotNull List<TestCaseDto> testCases = entry.getValue();
+                final @NotNull List<TestCase> testCases = entry.getValue();
 
                 if (testCases.isEmpty()) continue;
 
@@ -111,7 +111,7 @@ public class ExportHtml {
                 writer.write("</tr>");
                 writer.newLine();
 
-                for (final TestCaseDto testCase : testCases) {
+                for (final TestCase testCase : testCases) {
                     writer.write("<tr>");
                     for (final TestSetEditorFields field : TestSetEditorFields.all(Can.EXPORT)) {
                         writer.write("<td>" + StringUtil.escapeXmlEntities(field.gridValue(testCase)) + "</td>");

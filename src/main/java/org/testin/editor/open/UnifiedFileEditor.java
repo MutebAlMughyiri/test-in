@@ -25,7 +25,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.TestinEditor;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.view.ViewToolWindowFactory;
 
 import javax.swing.JComponent;
@@ -91,7 +91,7 @@ public class UnifiedFileEditor extends UserDataHolderBase implements FileEditor 
     // UC-EDITOR-PANEL-025, Rule-EDITOR-PANEL-113
     @Override
     public void selectNotify() {
-        final @NotNull List<TestCaseDto> selected = editor.getSelectedTestCases();
+        final @NotNull List<TestCase> selected = editor.getSelectedTestCases();
 
         ViewToolWindowFactory.panel(project).ifPresent(viewer -> {
             if (selected.isEmpty()) {

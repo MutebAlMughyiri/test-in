@@ -37,7 +37,7 @@ import org.testin.editor.statusbar.PageStep;
 import org.testin.editor.statusbar.EditorStatusBar;
 import org.testin.editor.testrun.RunItemCard;
 import org.testin.explorer.tree.TestProjectTree;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
@@ -112,13 +112,13 @@ public class ScreenReaderNamesIdeTest extends BasePlatformTestCase {
 
     // Rule-INTERNAL-122
     public void testACardSaysItsTitleThenTheRunItemStatusItShows() {
-        final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
+        final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
         final @NotNull RunItem runItem = new RunItem().setId(testCase.getId()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).showing(Optional.of(testCase), Optional.empty(), Optional.empty(), false);
         final @NotNull RunItemCard card = new RunItemCard(getProject());
 
         final @NotNull CardView view = CardPanelBuilder.build(getProject(), getTestRootDisposable(), StandIn.of(TestinEditor.class));
         view.model().add(testCase);
-        final @NotNull JBList<TestCaseDto> list = view.list();
+        final @NotNull JBList<TestCase> list = view.list();
         list.setCellRenderer((_, shown, index, _, _) -> {
             card.updateData(index, Set.of(TestRunEditorFields.RUN_STATUS), runItem, AbstractCard.titleText(index + 1, true, shown.getDescription()));
             return card;

@@ -26,7 +26,7 @@ import org.testin.editor.statusbar.PageStep;
 import org.testin.editor.statusbar.EditorStatusBar;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.testrun.TestRunEditor;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
@@ -78,14 +78,14 @@ public class PagingIdeTest extends AbstractTempRootIdeTest {
     private static void reloadsOntoTheSelectedPage(final @NotNull AbstractTestinEditor<?, ?> editor, final @NotNull BooleanSupplier loaded) {
         onPage(editor, 3);
         editor.getList().setSelectedIndex(5);
-        final @NotNull TestCaseDto selected = editor.getList().getSelectedValue();
+        final @NotNull TestCase selected = editor.getList().getSelectedValue();
 
         editor.reloadData();
         Await.until("the editor never reloaded", loaded);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
         assertEquals("reloading did not land on the page that holds the selected test case", 3, editor.getCurrentPage());
-        assertEquals("the selected test case is not selected after reloading", Optional.of(selected.getId()), Optional.ofNullable(editor.getList().getSelectedValue()).map(TestCaseDto::getId));
+        assertEquals("the selected test case is not selected after reloading", Optional.of(selected.getId()), Optional.ofNullable(editor.getList().getSelectedValue()).map(TestCase::getId));
     }
 
     @Override

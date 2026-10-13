@@ -25,7 +25,7 @@ import org.testin.editor.open.TestinEditors;
 import org.testin.explorer.TreePanel;
 import org.testin.explorer.tree.TestProjectTree;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.services.Services;
 import org.testin.view.ViewToolWindowFactory;
 
@@ -47,7 +47,7 @@ public final class GoTo {
         hit.testCase().ifPresentOrElse(testCase -> toTestCase(project, hit, testCase), () -> toNode(project, hit));
     }
 
-    private static void toTestCase(final @NotNull Project project, final @NotNull Hit hit, final @NotNull TestCaseDto testCase) {
+    private static void toTestCase(final @NotNull Project project, final @NotNull Hit hit, final @NotNull TestCase testCase) {
         showTree(project, WITHOUT_FOCUS, tree -> tree.reveal(hit.node().getPath()));
 
         // Rule-VIEW-PANEL-010

@@ -29,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.Said;
 import org.testin.codegen.event.MovedNode;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
 
@@ -82,8 +82,8 @@ public class QuietCodeIdeTest extends AbstractCodegenIdeTest {
     // Rule-CODEGEN-050
     public void testRemovingATestCaseThatHasNoMethodSaysNothing() {
         final @NotNull TestSetNode login = createdTestSet("Login");
-        final @NotNull TestCaseDto kept = createdTestCase(login, "Log in with a valid user", "b");
-        final @NotNull TestCaseDto neverWritten = indexedTestCase(login, "Log out", "c");
+        final @NotNull TestCase kept = createdTestCase(login, "Log in with a valid user", "b");
+        final @NotNull TestCase neverWritten = indexedTestCase(login, "Log out", "c");
         settled();
 
         CodeChangeType.REMOVE_TEST_CASE.execute(getProject(), neverWritten);

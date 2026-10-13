@@ -25,7 +25,7 @@ import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.GrayWithReason;
 import org.testin.actions.TestinDataKeys;
 import org.testin.editor.testrun.TestRunEditor;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.services.Services;
@@ -49,14 +49,14 @@ public class SetRunItemStatusAction extends AbstractAnyProjectAction {
     // UC-EDITOR-PANEL-032, UC-EDITOR-PANEL-033, UC-EDITOR-PANEL-034, UC-EDITOR-PANEL-037, Rule-EDITOR-PANEL-156
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
-        final @NotNull List<TestCaseDto> selectedTestCases = TestinDataKeys.selectedTestCases(e);
+        final @NotNull List<TestCase> selectedTestCases = TestinDataKeys.selectedTestCases(e);
         if (selectedTestCases.isEmpty()) return;
 
         TestinDataKeys.testRunEditor(e).ifPresent(editor -> record(project, editor, selectedTestCases));
     }
 
     // UC-EDITOR-PANEL-032, UC-EDITOR-PANEL-033
-    private void record(final @NotNull Project project, final @NotNull TestRunEditor editor, final @NotNull List<TestCaseDto> selectedTestCases) {
+    private void record(final @NotNull Project project, final @NotNull TestRunEditor editor, final @NotNull List<TestCase> selectedTestCases) {
         final @NotNull Optional<RunItem> runItem = askingForFailureDetails(editor, selectedTestCases);
         if (runItem.isEmpty()) {
             Services.getInstance(project, RunItemRecorder.class).applyStatus(editor, selectedTestCases, status);
@@ -68,7 +68,7 @@ public class SetRunItemStatusAction extends AbstractAnyProjectAction {
     }
 
     // UC-EDITOR-PANEL-034
-    private @NotNull Optional<RunItem> askingForFailureDetails(final @NotNull TestRunEditor editor, final @NotNull List<TestCaseDto> selectedTestCases) {
+    private @NotNull Optional<RunItem> askingForFailureDetails(final @NotNull TestRunEditor editor, final @NotNull List<TestCase> selectedTestCases) {
         if (!status.isCollectsFailureDetails() || selectedTestCases.size() != 1) return Optional.empty();
 
         return editor.runItem(selectedTestCases.getFirst().getId()).filter(runItem -> !runItem.isRemoved());

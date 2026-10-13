@@ -20,7 +20,7 @@ import com.intellij.psi.PsiMethod;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
 
@@ -33,10 +33,10 @@ public class ReorderTestMethodsIdeTest extends AbstractCodegenIdeTest {
 
     private @NotNull Reordered openThePageMovedToTheEnd() {
         final @NotNull TestSetNode login = createdTestSet("Login");
-        final @NotNull TestCaseDto openThePage = createdTestCase(login, "Open the login page", "b");
-        final @NotNull TestCaseDto logIn = createdTestCase(login, "Log in with a valid user", "c");
-        final @NotNull TestCaseDto logOut = createdTestCase(login, "Log out", "d");
-        final @NotNull TestCaseDto lockTheAccount = indexedTestCase(login, "Lock the account", "e");
+        final @NotNull TestCase openThePage = createdTestCase(login, "Open the login page", "b");
+        final @NotNull TestCase logIn = createdTestCase(login, "Log in with a valid user", "c");
+        final @NotNull TestCase logOut = createdTestCase(login, "Log out", "d");
+        final @NotNull TestCase lockTheAccount = indexedTestCase(login, "Lock the account", "e");
 
         openThePage.setOrder("f");
         Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(login.getPath(), openThePage);
@@ -46,7 +46,7 @@ public class ReorderTestMethodsIdeTest extends AbstractCodegenIdeTest {
         return new Reordered(openThePage, logIn, logOut, lockTheAccount);
     }
 
-    private @NotNull String priorityOf(final @NotNull TestCaseDto testCase) {
+    private @NotNull String priorityOf(final @NotNull TestCase testCase) {
         return attributeOf(writtenMethodOf(LOGIN_TEST, testCase), "priority");
     }
 
@@ -83,6 +83,6 @@ public class ReorderTestMethodsIdeTest extends AbstractCodegenIdeTest {
         assertEquals("the class read top to bottom is not the test set read top to bottom", List.of("logInWithAValidUser", "logOut", "openTheLoginPage"), methods);
     }
 
-    private record Reordered(@NotNull TestCaseDto openThePage, @NotNull TestCaseDto logIn, @NotNull TestCaseDto logOut, @NotNull TestCaseDto lockTheAccount) {
+    private record Reordered(@NotNull TestCase openThePage, @NotNull TestCase logIn, @NotNull TestCase logOut, @NotNull TestCase lockTheAccount) {
     }
 }

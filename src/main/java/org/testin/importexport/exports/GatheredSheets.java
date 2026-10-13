@@ -17,10 +17,10 @@
 package org.testin.importexport.exports;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.util.List;
 import java.util.Map;
 
-record GatheredSheets(@NotNull Map<String, List<TestCaseDto>> sheets, @NotNull List<String> unreadable) {
+record GatheredSheets(@NotNull Map<String, List<TestCase>> sheets, @NotNull List<String> unreadable) {
 }

@@ -20,7 +20,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.ui.framework.Prose;
 import org.testin.util.Display;
@@ -36,7 +36,7 @@ public class Steps extends AbstractDetails {
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-027
     @Override
-    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull TestCaseDto testCase, final int row) {
+    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull TestCase testCase, final int row) {
         final @NotNull List<String> steps = testCase.getSteps();
 
         if (steps.isEmpty() || steps.stream().allMatch(String::isBlank))

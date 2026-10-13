@@ -19,7 +19,7 @@ import com.intellij.ui.components.ActionLink;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.Priority;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.testrun.RunItemExecution;
@@ -62,7 +62,7 @@ public class WrapsToWidthIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-124
     public void testANarrowerPanelWrapsTheValuesInsteadOfCuttingThemOff() {
-        final @NotNull TestCaseDto testCase = aTestCase(aTestSet("Login"), LONG, "1");
+        final @NotNull TestCase testCase = aTestCase(aTestSet("Login"), LONG, "1");
         testCase.setExpectedResult(LONG);
         view.getPanel().show(List.of(testCase), List.of("Demo", "Test Cases", "Login"));
         settled();
@@ -77,7 +77,7 @@ public class WrapsToWidthIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-124
     public void testANarrowerPanelMovesTheBugChipAndItsLinkToASecondRowRatherThanHidingThem() {
-        final @NotNull TestCaseDto testCase = aTestCase(aTestSet("Transfers"), "No retry, fails (transfer) - expect Failed at once.", "1");
+        final @NotNull TestCase testCase = aTestCase(aTestSet("Transfers"), "No retry, fails (transfer) - expect Failed at once.", "1");
         final @NotNull TestRunNode testRun = aTestRun(List.of(RunItem.builder().id(testCase.getId())
                 .executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The transfer went through although it was above the balance").build())).build()));
         view.getPanel().show(List.of(testCase), testRun.treePath());
@@ -111,7 +111,7 @@ public class WrapsToWidthIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-124
     public void testTheBadgesAndIconsStayWholeAndTheLayoutIsTheSameEveryTime() {
-        final @NotNull TestCaseDto testCase = aTestCase(aTestSet("Card Management"), "Retry 2, fails all 3 attempts - expect stay through 2 retries, then Failed.", "1");
+        final @NotNull TestCase testCase = aTestCase(aTestSet("Card Management"), "Retry 2, fails all 3 attempts - expect stay through 2 retries, then Failed.", "1");
         testCase.setPriority(Priority.HIGH);
         testCase.setGroups(List.of("SMOKE"));
         view.getPanel().show(List.of(testCase), List.of("test-02", "Test Cases", "Card Management"));

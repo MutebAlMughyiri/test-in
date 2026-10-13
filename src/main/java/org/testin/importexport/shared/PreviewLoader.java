@@ -21,7 +21,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.importexport.FileFormat;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.notifications.Notifier;
 import org.testin.services.BackgroundWork;
 import org.testin.services.Services;
@@ -48,12 +48,12 @@ public class PreviewLoader {
 
     private final @NotNull Consumer<String> onStatus;
 
-    private final @NotNull BiConsumer<FileFormat, Map<String, List<TestCaseDto>>> onDataLoaded;
-    private final @NotNull BiFunction<File, FileFormat, Map<String, List<TestCaseDto>>> importLoader;
+    private final @NotNull BiConsumer<FileFormat, Map<String, List<TestCase>>> onDataLoaded;
+    private final @NotNull BiFunction<File, FileFormat, Map<String, List<TestCase>>> importLoader;
 
     private final @NotNull AtomicReference<String> awaiting = new AtomicReference<>("");
 
-    public PreviewLoader(final @NotNull TextValue fileField, final @NotNull Project project, final @NotNull Consumer<String> onStatus, final @NotNull BiConsumer<FileFormat, Map<String, List<TestCaseDto>>> onDataLoaded, final @NotNull BiFunction<File, FileFormat, Map<String, List<TestCaseDto>>> importLoader) {
+    public PreviewLoader(final @NotNull TextValue fileField, final @NotNull Project project, final @NotNull Consumer<String> onStatus, final @NotNull BiConsumer<FileFormat, Map<String, List<TestCase>>> onDataLoaded, final @NotNull BiFunction<File, FileFormat, Map<String, List<TestCase>>> importLoader) {
         this.fileField = fileField;
         this.project = project;
         this.notifier = Services.getInstance(project, Notifier.class);
@@ -102,7 +102,7 @@ public class PreviewLoader {
 
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             try {
-                final @NotNull Map<String, List<TestCaseDto>> parsedData = importLoader.apply(importFile, format);
+                final @NotNull Map<String, List<TestCase>> parsedData = importLoader.apply(importFile, format);
 
                 ApplicationManager.getApplication().invokeLater(() -> {
                     onStatus.accept("");

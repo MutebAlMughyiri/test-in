@@ -49,7 +49,7 @@ import org.testin.indexer.TestRuns;
 import org.testin.lightmode.LightMode;
 import org.testin.logger.TestinLogger;
 import org.testin.model.Modules;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.testrun.TestRunResultAnalysis;
@@ -133,7 +133,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
                         .collect(Collectors.toMap(RunItem::getId, runItem -> runItem,
                                 (existingItem, _) -> existingItem));
 
-                final @NotNull List<TestCaseDto> ordered = fromDisk.getAll().stream().map(RunItem::liveTestCase).toList();
+                final @NotNull List<TestCase> ordered = fromDisk.getAll().stream().map(RunItem::liveTestCase).toList();
                 final @NotNull Map<UUID, Integer> places = ExecutionPosition.placesOf(project, ordered);
                 testCaseValues.load(ordered);
 
@@ -214,7 +214,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-014
     @Override
-    public int positionOf(final @NotNull TestCaseDto testCase) {
+    public int positionOf(final @NotNull TestCase testCase) {
         return placesInTheirSets.getOrDefault(testCase.getId(), 0);
     }
 
@@ -259,9 +259,9 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
 
     // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-014, Rule-EDITOR-PANEL-239
     @Override
-    public @NotNull String cardTitle(final @NotNull TestCaseDto testCase) {
+    public @NotNull String cardTitle(final @NotNull TestCase testCase) {
         final @NotNull Set<TestRunEditorFields> selected = getSelectedDetails();
-        final @NotNull TestCaseDto shown = runItem(testCase.getId()).map(RunItem::shownTestCase).orElse(testCase);
+        final @NotNull TestCase shown = runItem(testCase.getId()).map(RunItem::shownTestCase).orElse(testCase);
 
         return AbstractCard.titleText(positionOf(testCase),
                 selected.contains(TestRunEditorFields.ORDER),
@@ -335,7 +335,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
         final @NotNull Map<Path, String> testSets = new LinkedHashMap<>();
         testRuns.testCasesFolderOf(parent.getPath()).ifPresent(folder -> snapshotOfAll().stream()
                 .filter(testCase -> placesInTheirSets.containsKey(testCase.getId()))
-                .map(TestCaseDto::getParent)
+                .map(TestCase::getParent)
                 .forEach(testSet -> testSets.putIfAbsent(testSet.getPath(), testSet.nameUnder(folder.getPath()))));
         return testSets;
     }
@@ -356,7 +356,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
 
     // UC-EDITOR-PANEL-020, Rule-EDITOR-PANEL-094
     @Override
-    protected @NotNull List<String[]> gridRows(final @NotNull List<TestCaseDto> pageTestCases) {
+    protected @NotNull List<String[]> gridRows(final @NotNull List<TestCase> pageTestCases) {
         return GridRows.ofRunItems(pageTestCases, runItemsById, firstRowOnPage(), this::positionOf);
     }
 
@@ -367,15 +367,15 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
     }
 
     @Override
-    protected void installEditListener(final @NotNull JBTable table, final @NotNull List<TestCaseDto> pageTestCases) {
+    protected void installEditListener(final @NotNull JBTable table, final @NotNull List<TestCase> pageTestCases) {
         table.getModel().addTableModelListener(new TestRunGridEditListener(project, this, pageTestCases, model::allContentsChanged));
     }
 
     @Override
-    protected @NotNull List<TestCaseDto> getFilteredList() {
+    protected @NotNull List<TestCase> getFilteredList() {
         final @NotNull FilterAndSortChoice filters = FilterAndSortChoice.of(toolBar);
 
-        final @NotNull List<TestCaseDto> matched;
+        final @NotNull List<TestCase> matched;
         synchronized (allTestCases) {
             matched = TestCaseFilter.filter(allTestCases, filters, this::runItem);
         }
@@ -424,7 +424,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
     }
 
     // UC-EDITOR-PANEL-044, Rule-EDITOR-PANEL-289
-    void showRunItem(final @NotNull TestCaseDto testCase) {
+    void showRunItem(final @NotNull TestCase testCase) {
         final int index = getCurrentTestCases().indexOf(testCase);
         if (index >= 0) showExecuting(index);
     }

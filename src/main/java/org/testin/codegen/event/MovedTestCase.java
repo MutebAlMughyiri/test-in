@@ -17,9 +17,9 @@
 package org.testin.codegen.event;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 
 // UC-CODEGEN-002, Rule-CODEGEN-077
-public record MovedTestCase(@NotNull TestCaseDto testCase, @NotNull AbstractNode from) {
+public record MovedTestCase(@NotNull TestCase testCase, @NotNull AbstractNode from) {
 }

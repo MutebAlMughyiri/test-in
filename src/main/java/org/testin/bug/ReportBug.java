@@ -28,7 +28,7 @@ import org.testin.help.SetupStep;
 import org.testin.indexer.TestCaseFile;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.testrun.RunItem;
@@ -43,7 +43,7 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReportBug {
     // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-067
-    public static void start(final @NotNull Project project, final @NotNull TestRunNode testRunNode, final @NotNull UUID runItemId, final @NotNull TestCaseDto testCase, final @NotNull Runnable redraw) {
+    public static void start(final @NotNull Project project, final @NotNull TestRunNode testRunNode, final @NotNull UUID runItemId, final @NotNull TestCase testCase, final @NotNull Runnable redraw) {
         final @NotNull TestRuns testRuns = Services.getInstance(project, TestRuns.class);
         final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
         final @NotNull OpenBugReports reports = Services.getInstance(project, OpenBugReports.class);

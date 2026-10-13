@@ -17,9 +17,9 @@
 package org.testin.importexport.exports;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.util.List;
 
-record Sheet(@NotNull List<String> treePath, @NotNull List<TestCaseDto> testCases) {
+record Sheet(@NotNull List<String> treePath, @NotNull List<TestCase> testCases) {
 }

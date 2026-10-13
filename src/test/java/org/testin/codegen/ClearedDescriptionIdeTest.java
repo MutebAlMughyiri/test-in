@@ -19,14 +19,14 @@ package org.testin.codegen;
 import com.intellij.psi.PsiMethod;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 public class ClearedDescriptionIdeTest extends AbstractCodegenIdeTest {
 
     private static final @NotNull String LOGIN_TEST = "nafath.LoginTest";
 
-    private @NotNull TestCaseDto aTestCaseWhoseDescriptionWasCleared() {
-        final @NotNull TestCaseDto testCase = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
+    private @NotNull TestCase aTestCaseWhoseDescriptionWasCleared() {
+        final @NotNull TestCase testCase = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
         settled();
 
         testCase.setDescription("");
@@ -37,7 +37,7 @@ public class ClearedDescriptionIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-CODEGEN-021
     public void testAClearedDescriptionLeavesTheMethodUnderItsName() {
-        final @NotNull TestCaseDto testCase = aTestCaseWhoseDescriptionWasCleared();
+        final @NotNull TestCase testCase = aTestCaseWhoseDescriptionWasCleared();
 
         final @NotNull PsiMethod testMethod = writtenMethodOf(LOGIN_TEST, testCase);
         assertEquals("clearing the description renamed the method", "logInWithAValidUser", testMethod.getName());
@@ -46,7 +46,7 @@ public class ClearedDescriptionIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-CODEGEN-021
     public void testAClearedDescriptionIsRecordedInTheAnnotationAndTheNameStays() {
-        final @NotNull TestCaseDto testCase = aTestCaseWhoseDescriptionWasCleared();
+        final @NotNull TestCase testCase = aTestCaseWhoseDescriptionWasCleared();
 
         final @NotNull PsiMethod testMethod = writtenMethodOf(LOGIN_TEST, testCase);
         assertEquals("clearing the description renamed the method", "logInWithAValidUser", testMethod.getName());

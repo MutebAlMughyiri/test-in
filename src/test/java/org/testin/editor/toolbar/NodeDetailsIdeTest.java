@@ -23,7 +23,7 @@ import org.testin.FilesUnder;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.model.NodeFigureRow;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.ui.framework.ShownDialog;
@@ -50,7 +50,7 @@ public class NodeDetailsIdeTest extends AbstractTempRootIdeTest {
     public void testTheDialogIsAboutTheNodeTheEditorShowsNotTheSelectedTestCase() {
         final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
         final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), testProject, "Checkout");
-        final @NotNull List<TestCaseDto> testCases = EditorFixtures.testCases(getProject(), testSet, 2);
+        final @NotNull List<TestCase> testCases = EditorFixtures.testCases(getProject(), testSet, 2);
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         try {
             editor.getList().setSelectedIndex(1);

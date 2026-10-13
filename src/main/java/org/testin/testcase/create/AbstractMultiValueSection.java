@@ -24,7 +24,7 @@ import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.JBUI;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.services.Services;
 import org.testin.services.TestCaseCompletions;
 import org.testin.testcase.CreateTestCaseFields;
@@ -65,9 +65,9 @@ public abstract class AbstractMultiValueSection implements TestCaseSection {
 
     protected abstract @NotNull Set<String> completions(final @NotNull TestCaseCompletions cache);
 
-    protected abstract @NotNull List<String> valuesOf(final @NotNull TestCaseDto testCase);
+    protected abstract @NotNull List<String> valuesOf(final @NotNull TestCase testCase);
 
-    protected abstract @NotNull TestCaseDto write(final @NotNull TestCaseDto testCase, final @NotNull List<String> values);
+    protected abstract @NotNull TestCase write(final @NotNull TestCase testCase, final @NotNull List<String> values);
 
     protected @NotNull String placeholderFor(final int index) {
         return field().getPlaceholder();
@@ -127,7 +127,7 @@ public abstract class AbstractMultiValueSection implements TestCaseSection {
 
     // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-033
     @Override
-    public @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto testCase) {
+    public @NotNull TestCase applyTo(final @NotNull TestCase testCase) {
         final @NotNull List<String> values = new ArrayList<>();
 
         for (final EditorTextField box : fields) {
@@ -161,7 +161,7 @@ public abstract class AbstractMultiValueSection implements TestCaseSection {
     }
 
     @Override
-    public void fillData(final @NotNull TestCaseDto testCase) {
+    public void fillData(final @NotNull TestCase testCase) {
         setData(valuesOf(testCase));
     }
 

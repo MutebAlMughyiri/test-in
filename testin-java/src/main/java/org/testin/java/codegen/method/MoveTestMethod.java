@@ -33,7 +33,7 @@ import org.testin.java.codegen.GeneratedMethod;
 import org.testin.java.codegen.method.update.BaseTestMethodChange;
 import org.testin.java.codegen.method.update.UpdateTestMethodOrder;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -68,7 +68,7 @@ public class MoveTestMethod extends BaseTestMethodChange implements CodeChange<M
     }
 
     private @NotNull Optional<PsiClass> move(final @NotNull Project project, final @NotNull MovedTestCase moved) {
-        final @NotNull TestCaseDto testCase = moved.testCase();
+        final @NotNull TestCase testCase = moved.testCase();
 
         final @NotNull Optional<PsiClass> from = GeneratedClass.find(project, Fqcn.ofClass(moved.from()));
         if (from.isEmpty()) {

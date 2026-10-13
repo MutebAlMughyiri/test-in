@@ -20,23 +20,23 @@ import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.TestinEditor;
 import org.testin.editor.card.AbstractCard;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
 @AllArgsConstructor
-public abstract class AbstractCardRenderer<U extends TestinEditor> implements ListCellRenderer<TestCaseDto> {
+public abstract class AbstractCardRenderer<U extends TestinEditor> implements ListCellRenderer<TestCase> {
     protected final @NotNull U editor;
 
     // UC-EDITOR-PANEL-001, UC-EDITOR-PANEL-030
     @Override
-    public @NotNull AbstractCard getListCellRendererComponent(final JList<? extends TestCaseDto> list, final TestCaseDto testCase, final int index, final boolean isSelected, final boolean cellHasFocus) {
+    public @NotNull AbstractCard getListCellRendererComponent(final JList<? extends TestCase> list, final TestCase testCase, final int index, final boolean isSelected, final boolean cellHasFocus) {
         final boolean isRowHovered = (index == editor.getHoveredIndex());
         final @NotNull String hover = isRowHovered ? editor.getHoveredIconAction() : "";
 
         return bindDataAndGetCard(list, testCase, index, isSelected, isRowHovered, hover);
     }
 
-    protected abstract @NotNull AbstractCard bindDataAndGetCard(final @NotNull JList<? extends TestCaseDto> list, final @NotNull TestCaseDto testCase, final int row, final boolean isSelected, final boolean isRowHovered, final @NotNull String hover);
+    protected abstract @NotNull AbstractCard bindDataAndGetCard(final @NotNull JList<? extends TestCase> list, final @NotNull TestCase testCase, final int row, final boolean isSelected, final boolean isRowHovered, final @NotNull String hover);
 }

@@ -268,7 +268,7 @@ public class ArchitectureTest {
                         + " the instance it holds, never by calling a setter on it (Rule-INTERNAL-117, #376)");
 
         final @NotNull ArchRule oneWriter = methods()
-                .that().areDeclaredIn("org.testin.model.TestCaseDto")
+                .that().areDeclaredIn("org.testin.model.TestCase")
                 .and().haveName("takeValuesOf")
                 .should().onlyBeCalled().byClassesThat().resideInAPackage("org.testin.indexer..")
                 .because("an edited copy lands in the test case the index holds only once its file is written,"

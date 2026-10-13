@@ -20,7 +20,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import org.jetbrains.annotations.NotNull;
 import org.testin.git.AbstractGitRemoteIdeTest;
 import org.testin.indexer.TestCaseFile;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.services.Services;
 import org.testin.util.JsonCodec;
 
@@ -37,15 +37,15 @@ public class TestCaseHistoryIdeTest extends AbstractGitRemoteIdeTest {
     private static final @NotNull UUID ID = UUID.fromString("77777777-7777-4777-8777-777777777151");
     private static final @NotNull String FILE = ID + ".tc";
 
-    private @NotNull TestCaseDto version(final @NotNull String expectedResult) {
-        return TestCaseDto.builder().id(ID).description("Log in with a valid user").expectedResult(expectedResult).createdBy("Muteb").build();
+    private @NotNull TestCase version(final @NotNull String expectedResult) {
+        return TestCase.builder().id(ID).description("Log in with a valid user").expectedResult(expectedResult).createdBy("Muteb").build();
     }
 
-    private void save(final @NotNull String relativePath, final @NotNull TestCaseDto testCase) {
+    private void save(final @NotNull String relativePath, final @NotNull TestCase testCase) {
         write(work, relativePath, Services.getInstance(getProject(), JsonCodec.class).writeValueAsString(testCase));
     }
 
-    private @NotNull History historyOf(final @NotNull Path testProjectPath, final @NotNull String relativePath, final @NotNull TestCaseDto now) {
+    private @NotNull History historyOf(final @NotNull Path testProjectPath, final @NotNull String relativePath, final @NotNull TestCase now) {
         try {
             return ApplicationManager.getApplication().executeOnPooledThread(() -> TestCaseHistory.read(getProject(), new TestCaseFile(testProjectPath, Path.of(relativePath)), Optional.of(now))).get();
         } catch (final InterruptedException | ExecutionException ex) {
@@ -67,7 +67,7 @@ public class TestCaseHistoryIdeTest extends AbstractGitRemoteIdeTest {
         commitAll(work, "Side branch");
         mustGit(work, "checkout", MAIN);
 
-        final @NotNull TestCaseDto now = version("The home page opens");
+        final @NotNull TestCase now = version("The home page opens");
         save("Test Cases/Sign in/" + FILE, now);
         final @NotNull String onDisk = read(work, "Test Cases/Sign in/" + FILE);
 

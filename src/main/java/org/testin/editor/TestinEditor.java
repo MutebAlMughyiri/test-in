@@ -21,7 +21,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.statusbar.EditorStatusBar;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.testcase.TestCaseOrder;
@@ -99,7 +99,7 @@ public interface TestinEditor extends Disposable {
 
     @NotNull String sortedBy();
 
-    default @NotNull List<TestCaseDto> snapshotOfAll() {
+    default @NotNull List<TestCase> snapshotOfAll() {
         synchronized (getAllTestCases()) {
             return new ArrayList<>(getAllTestCases());
         }
@@ -108,8 +108,8 @@ public interface TestinEditor extends Disposable {
     @NotNull Project getProject();
 
     // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-014
-    default int positionOf(final @NotNull TestCaseDto testCase) {
-        final @NotNull List<TestCaseDto> all = getAllTestCases();
+    default int positionOf(final @NotNull TestCase testCase) {
+        final @NotNull List<TestCase> all = getAllTestCases();
 
         synchronized (all) {
             return TestCaseOrder.positionOf(all, testCase);
@@ -148,10 +148,10 @@ public interface TestinEditor extends Disposable {
         return false;
     }
 
-    @NotNull List<TestCaseDto> getSelectedTestCases();
+    @NotNull List<TestCase> getSelectedTestCases();
 
     // UC-EDITOR-PANEL-005
-    default void appendNewTestCase(final @NotNull TestCaseDto testCase, final @NotNull Runnable onPersisted) {
+    default void appendNewTestCase(final @NotNull TestCase testCase, final @NotNull Runnable onPersisted) {
         TestinLogger.debug("This editor does not create test cases; '" + testCase.getDescription() + "' was not added");
     }
 
@@ -161,7 +161,7 @@ public interface TestinEditor extends Disposable {
 
     @NotNull Set<?> getSelectedDetails();
 
-    @NotNull String cardTitle(final @NotNull TestCaseDto testCase);
+    @NotNull String cardTitle(final @NotNull TestCase testCase);
 
     // UC-EDITOR-PANEL-009, Rule-EDITOR-PANEL-013
     default void refreshOrdered() {
@@ -178,11 +178,11 @@ public interface TestinEditor extends Disposable {
         return Optional.empty();
     }
 
-    @NotNull List<TestCaseDto> getAllTestCases();
+    @NotNull List<TestCase> getAllTestCases();
 
     void updateSequenceAndSaveAll(final @NotNull Runnable onPersisted);
 
-    void selectTestCase(final @NotNull TestCaseDto testCase);
+    void selectTestCase(final @NotNull TestCase testCase);
 
     void selectWhenLoaded(final @NotNull UUID testCaseId);
 

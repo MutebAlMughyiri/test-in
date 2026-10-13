@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
 import org.testin.model.FileKind;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
 import org.testin.util.FailureText;
@@ -195,7 +195,7 @@ final class NodeFiles {
     // UC-TREE-PANEL-014, Rule-TREE-PANEL-051, Rule-INTERNAL-113
     private boolean reidentify(final @NotNull Path testCaseFile) {
         try {
-            final @NotNull TestCaseDto testCase = mapper.readValue(Files.readAllBytes(testCaseFile), TestCaseDto.class);
+            final @NotNull TestCase testCase = mapper.readValue(Files.readAllBytes(testCaseFile), TestCase.class);
             final @NotNull UUID fresh = UUID.randomUUID();
 
             testCase.setId(fresh);

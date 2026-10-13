@@ -30,7 +30,7 @@ import org.testin.editor.statusbar.EditorStatusBar;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.toolbar.GridViewButton;
 import org.testin.indexer.TestRuns;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.testrun.RunItemExecution;
@@ -74,7 +74,7 @@ public class TestRunProgressIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-172
     public void testTypingWhatHappenedDoesNotChangeTheRunItemStatus() {
-        final @NotNull List<TestCaseDto> testCases = TestRunFixture.testCasesIn(getProject(), root, 2);
+        final @NotNull List<TestCase> testCases = TestRunFixture.testCasesIn(getProject(), root, 2);
         final @NotNull TestRunFixture fixture = TestRunFixture.of(getProject(), root, List.of(
                 EditorFixtures.pending(testCases.getFirst()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())),
                 EditorFixtures.pending(testCases.get(1))), testCases);
@@ -95,7 +95,7 @@ public class TestRunProgressIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-173
     public void testACellTabbedThroughUnchangedWritesNothingAndSaysNothing() {
-        final @NotNull List<TestCaseDto> testCases = TestRunFixture.testCasesIn(getProject(), root, 1);
+        final @NotNull List<TestCase> testCases = TestRunFixture.testCasesIn(getProject(), root, 1);
         final @NotNull TestRunFixture fixture = TestRunFixture.of(getProject(), root, List.of(EditorFixtures.pending(testCases.getFirst()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("It froze").build()))), testCases);
         final @NotNull TestRunEditor editor = fixture.opened(getTestRootDisposable());
         final @NotNull List<String> balloons = Said.listening(getProject(), getTestRootDisposable()).shown();
@@ -116,7 +116,7 @@ public class TestRunProgressIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-174
     public void testWhatIsStoredIsWrittenBackIntoTheCell() {
-        final @NotNull List<TestCaseDto> testCases = TestRunFixture.testCasesIn(getProject(), root, 1);
+        final @NotNull List<TestCase> testCases = TestRunFixture.testCasesIn(getProject(), root, 1);
         final @NotNull UUID removed = UUID.randomUUID();
         final @NotNull TestRunFixture fixture = TestRunFixture.of(getProject(), root, List.of(
                 EditorFixtures.pending(testCases.getFirst()),
@@ -124,7 +124,7 @@ public class TestRunProgressIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestRunEditor editor = fixture.opened(getTestRootDisposable());
         try {
             final @NotNull JBTable grid = theGridOf(editor);
-            final int removedRow = editor.getCurrentTestCases().stream().map(TestCaseDto::getId).toList().indexOf(removed);
+            final int removedRow = editor.getCurrentTestCases().stream().map(TestCase::getId).toList().indexOf(removed);
             final int liveRow = 1 - removedRow;
 
             typedInto(grid, liveRow, "The dashboard stayed blank");
@@ -187,7 +187,7 @@ public class TestRunProgressIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-154
     public void testTheClockAddsToTheTimeATestCaseAlreadyCarried() {
-        final @NotNull List<TestCaseDto> testCases = TestRunFixture.testCasesIn(getProject(), root, 2);
+        final @NotNull List<TestCase> testCases = TestRunFixture.testCasesIn(getProject(), root, 2);
         final @NotNull TestRunFixture fixture = TestRunFixture.of(getProject(), root, List.of(
                 EditorFixtures.pending(testCases.getFirst()).setClock(Duration.ofSeconds(7)),
                 EditorFixtures.pending(testCases.get(1))), testCases);

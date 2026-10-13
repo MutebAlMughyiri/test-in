@@ -20,7 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.DateFormats;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItem;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.testrun.TestRunEditorFields;
@@ -118,14 +118,14 @@ public enum SortField {
     private final @NotNull Predicate<SortedTestCase> empty;
 
     // UC-EDITOR-PANEL-049, Rule-EDITOR-PANEL-274, Rule-EDITOR-PANEL-275, Rule-EDITOR-PANEL-277
-    public @NotNull List<TestCaseDto> sorted(final @NotNull List<TestCaseDto> testCases, final @NotNull SortDirection direction, final @NotNull Function<UUID, Optional<RunItem>> runItemProvider) {
+    public @NotNull List<TestCase> sorted(final @NotNull List<TestCase> testCases, final @NotNull SortDirection direction, final @NotNull Function<UUID, Optional<RunItem>> runItemProvider) {
         if (this == ORDER) return direction.arranged(testCases);
 
-        final @NotNull IdentityHashMap<TestCaseDto, SortedTestCase> shown = new IdentityHashMap<>();
-        final @NotNull List<TestCaseDto> filled = new ArrayList<>();
-        final @NotNull List<TestCaseDto> blank = new ArrayList<>();
+        final @NotNull IdentityHashMap<TestCase, SortedTestCase> shown = new IdentityHashMap<>();
+        final @NotNull List<TestCase> filled = new ArrayList<>();
+        final @NotNull List<TestCase> blank = new ArrayList<>();
 
-        for (final TestCaseDto testCase : testCases) {
+        for (final TestCase testCase : testCases) {
             final @NotNull Optional<RunItem> runItem = runItemProvider.apply(testCase.getId());
             final @NotNull SortedTestCase view = new SortedTestCase(runItem.map(RunItem::shownTestCase).orElse(testCase), runItem);
             shown.put(testCase, view);

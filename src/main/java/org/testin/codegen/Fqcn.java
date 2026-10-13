@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.util.FromContentModule;
 import org.testin.util.NameSanitizer;
@@ -34,12 +34,12 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Fqcn {
     // UC-CODEGEN-002, Rule-CODEGEN-012
-    public static @NotNull String methodNameOf(final @NotNull TestCaseDto testCase) {
+    public static @NotNull String methodNameOf(final @NotNull TestCase testCase) {
         return NameSanitizer.methodName(testCase.getDescription());
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-002
-    public static @NotNull List<String> ofMethod(final @NotNull TestCaseDto testCase) {
+    public static @NotNull List<String> ofMethod(final @NotNull TestCase testCase) {
         final @NotNull String methodName = NameSanitizer.methodName(testCase.getDescription());
         if (methodName.isEmpty()) return new ArrayList<>();
 
@@ -57,17 +57,17 @@ public final class Fqcn {
 
     // UC-CODEGEN-002, Rule-CODEGEN-002
     @FromContentModule
-    public static @NotNull String classOfMethod(final @NotNull TestCaseDto testCase) {
+    public static @NotNull String classOfMethod(final @NotNull TestCase testCase) {
         final @NotNull List<String> method = ofMethod(testCase);
         return method.isEmpty() ? "" : String.join(".", method.subList(0, method.size() - 1));
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-002
     @FromContentModule
-    public static @NotNull Map<String, List<TestCaseDto>> byClassOfMethod(final @NotNull List<? extends TestCaseDto> testCases) {
-        final @NotNull Map<String, List<TestCaseDto>> byClass = new LinkedHashMap<>();
+    public static @NotNull Map<String, List<TestCase>> byClassOfMethod(final @NotNull List<? extends TestCase> testCases) {
+        final @NotNull Map<String, List<TestCase>> byClass = new LinkedHashMap<>();
 
-        for (final TestCaseDto testCase : testCases) {
+        for (final TestCase testCase : testCases) {
             final @NotNull String classFqcn = classOfMethod(testCase);
             if (!classFqcn.isEmpty()) byClass.computeIfAbsent(classFqcn, _ -> new ArrayList<>()).add(testCase);
         }

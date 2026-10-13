@@ -26,7 +26,7 @@ import org.testin.NodesOnDisk;
 import org.testin.git.AbstractGitRemoteIdeTest;
 import org.testin.git.ShareGestures;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
@@ -50,8 +50,8 @@ import java.util.UUID;
 
 public class ReviewRowsIdeTest extends AbstractGitRemoteIdeTest {
     private TestSetNode login;
-    private TestCaseDto first;
-    private TestCaseDto second;
+    private TestCase first;
+    private TestCase second;
 
     private static int rowNamed(final @NotNull JBTable table, final @NotNull String name) {
         for (int row = 0; row < table.getRowCount(); row++) {
@@ -73,7 +73,7 @@ public class ReviewRowsIdeTest extends AbstractGitRemoteIdeTest {
         final @NotNull TestProjectNode demo = new NodesOnDisk(getProject()).testProject(work);
         login = new NodesOnDisk(getProject()).testSet(demo.getTestCasesFolder(), "Login");
         first = new NodesOnDisk(getProject()).testCase(login);
-        second = TestCaseDto.builder().id(UUID.randomUUID()).description("A wrong password is refused").order("n").build();
+        second = TestCase.builder().id(UUID.randomUUID()).description("A wrong password is refused").order("n").build();
         assertTrue(indexedTestCases().putTestCaseVerbatim(login.getPath(), second));
         commitAll(work, "the Login test set");
 
@@ -91,12 +91,12 @@ public class ReviewRowsIdeTest extends AbstractGitRemoteIdeTest {
         return Services.getInstance(getProject(), TestCases.class);
     }
 
-    private void typed(final @NotNull TestCaseDto testCase, final @NotNull String description) {
+    private void typed(final @NotNull TestCase testCase, final @NotNull String description) {
         assertTrue("the edit was not saved", indexedTestCases().putTestCase(login.getPath(), indexedTestCases().findTestCase(testCase.getId()).orElseThrow().edit().description(description).build()));
     }
 
-    private @NotNull String onDisk(final @NotNull TestCaseDto testCase) {
-        return Services.getInstance(getProject(), JsonCodec.class).readValue(read(work, work.relativize(login.getPath()).resolve(testCase.getId() + ".tc").toString()), TestCaseDto.class).getDescription();
+    private @NotNull String onDisk(final @NotNull TestCase testCase) {
+        return Services.getInstance(getProject(), JsonCodec.class).readValue(read(work, work.relativize(login.getPath()).resolve(testCase.getId() + ".tc").toString()), TestCase.class).getDescription();
     }
 
     private @NotNull JBTable theReviewTable() {

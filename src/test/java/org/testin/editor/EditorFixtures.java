@@ -32,7 +32,7 @@ import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
@@ -64,15 +64,15 @@ public final class EditorFixtures {
         });
     }
 
-    public static @NotNull TestCaseDto testCase(final @NotNull Project project, final @NotNull TestSetNode testSet, final @NotNull String description, final @NotNull String order) {
-        final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description(description).order(order).build();
+    public static @NotNull TestCase testCase(final @NotNull Project project, final @NotNull TestSetNode testSet, final @NotNull String description, final @NotNull String order) {
+        final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description(description).order(order).build();
         testCase.setParent(testSet);
         Services.getInstance(project, TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase);
         return testCase;
     }
 
-    public static @NotNull List<TestCaseDto> testCases(final @NotNull Project project, final @NotNull TestSetNode testSet, final int count) {
-        final @NotNull List<TestCaseDto> made = new ArrayList<>();
+    public static @NotNull List<TestCase> testCases(final @NotNull Project project, final @NotNull TestSetNode testSet, final int count) {
+        final @NotNull List<TestCase> made = new ArrayList<>();
         for (int i = 0; i < count; i++)
             made.add(testCase(project, testSet, "Test case number " + (i + 1), String.format("m%04d", i)));
         return made;
@@ -89,7 +89,7 @@ public final class EditorFixtures {
         return testRun;
     }
 
-    public static @NotNull TestRunNode testRunOver(final @NotNull Project project, final @NotNull Path root, final @NotNull List<TestCaseDto> testCases) {
+    public static @NotNull TestRunNode testRunOver(final @NotNull Project project, final @NotNull Path root, final @NotNull List<TestCase> testCases) {
         return testRun(project, testProject(project, root), testCases.stream().map(EditorFixtures::pending).toList());
     }
 
@@ -100,7 +100,7 @@ public final class EditorFixtures {
         return editors.testRunEditorFor(testRun).orElseThrow();
     }
 
-    public static @NotNull RunItem pending(final @NotNull TestCaseDto testCase) {
+    public static @NotNull RunItem pending(final @NotNull TestCase testCase) {
         return new RunItem().setId(testCase.getId());
     }
 

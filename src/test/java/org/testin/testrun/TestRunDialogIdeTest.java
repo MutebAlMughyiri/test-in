@@ -36,7 +36,7 @@ import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.ProjectIndexer;
 import org.testin.indexer.TestRuns;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
@@ -80,14 +80,14 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
 
     private TestProjectNode testProject;
     private TestSetNode login;
-    private TestCaseDto first;
-    private TestCaseDto second;
+    private TestCase first;
+    private TestCase second;
     private TestSetNode empty;
     private TestSetNode old;
-    private TestCaseDto inOld;
+    private TestCase inOld;
     private TestSetPackageNode archive;
     private TestSetNode inside;
-    private TestCaseDto inInside;
+    private TestCase inInside;
 
     private static @NotNull Map<TestRunConfiguration, String> everyQuestionAnswered() {
         final @NotNull Map<TestRunConfiguration, String> answers = new EnumMap<>(TestRunConfiguration.class);
@@ -250,7 +250,7 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
     // Rule-TREE-PANEL-093
     public void testTheEditDialogTicksWhatTheTestRunCoversAndAFolderOnlyWhenAllUnderItIs() {
         final @NotNull TestSetNode card = new NodesOnDisk(getProject()).testSet(testProject.getTestCasesFolder(), "Card");
-        final @NotNull TestCaseDto paid = new NodesOnDisk(getProject()).testCase(card);
+        final @NotNull TestCase paid = new NodesOnDisk(getProject()).testCase(card);
         final @NotNull TestRunNode testRun = cycle1In(testProject.getTestRunsFolder(), List.of(new RunItem().setId(first.getId()), new RunItem().setId(paid.getId())));
 
         theEditDialogOpenedOn(testRun);
@@ -263,7 +263,7 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
     }
 
     private @NotNull CheckedTreeNode theDeletedRow(final @NotNull UUID deleted) {
-        return rows().stream().filter(row -> row.getUserObject() instanceof final TestCaseDto testCase && testCase.getId().equals(deleted)).findFirst()
+        return rows().stream().filter(row -> row.getUserObject() instanceof final TestCase testCase && testCase.getId().equals(deleted)).findFirst()
                 .orElseThrow(() -> new AssertionError("a test case deleted since is not offered: " + offered()));
     }
 

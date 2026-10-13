@@ -41,7 +41,7 @@ import org.testin.editor.toolbar.AbstractToolbarPanel;
 import org.testin.editor.toolbar.GridViewButton;
 import org.testin.editor.toolbar.CardViewButton;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
@@ -107,7 +107,7 @@ public class EditorViewsIdeTest extends AbstractTempRootIdeTest {
     }
 
     private static @NotNull String spokenFirstCard(final @NotNull TestSetEditor editor) {
-        final @NotNull JBList<TestCaseDto> list = editor.getList();
+        final @NotNull JBList<TestCase> list = editor.getList();
         final @NotNull Component card = list.getCellRenderer().getListCellRendererComponent(list, list.getModel().getElementAt(0), 0, false, false);
         final @NotNull AccessibleContext spoken = card.getAccessibleContext();
         return Objects.toString(spoken.getAccessibleDescription(), "");
@@ -216,7 +216,7 @@ public class EditorViewsIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-018, Rule-EDITOR-PANEL-111
     public void testTheGridShowsTheSameRowsAndTheSelectionFollowsBothWays() {
         final @NotNull TestSetEditor editor = openedTestSet(4);
-        final @NotNull JBList<TestCaseDto> list = editor.getList();
+        final @NotNull JBList<TestCase> list = editor.getList();
         list.setSelectedIndex(2);
 
         switchToGrid(editor);
@@ -244,7 +244,7 @@ public class EditorViewsIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestSetEditor editor = openedTestSet(2);
         switchToGrid(editor);
         final @NotNull JBTable table = gridOf(editor);
-        final @NotNull TestCaseDto first = editor.getList().getModel().getElementAt(0);
+        final @NotNull TestCase first = editor.getList().getModel().getElementAt(0);
 
         assertTrue("the description cell did not open", table.editCellAt(0, descriptionColumn(table)));
         ((JTextComponent) table.getEditorComponent()).setText("Pay with a saved card");
@@ -253,7 +253,7 @@ public class EditorViewsIdeTest extends AbstractTempRootIdeTest {
         switchToGrid(editor);
 
         final @NotNull TestCases testCases = Services.getInstance(getProject(), TestCases.class);
-        Await.until("the half typed description was thrown away when the grid was rebuilt", () -> testCases.findTestCase(first.getId()).map(TestCaseDto::getDescription).filter("Pay with a saved card"::equals).isPresent());
+        Await.until("the half typed description was thrown away when the grid was rebuilt", () -> testCases.findTestCase(first.getId()).map(TestCase::getDescription).filter("Pay with a saved card"::equals).isPresent());
     }
 
     // Rule-EDITOR-PANEL-020
@@ -274,7 +274,7 @@ public class EditorViewsIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestSetEditor editor = openedTestSet(2);
         final @NotNull Set<TestSetEditorFields> chosen = editor.getSelectedDetails();
         chosen.remove(TestSetEditorFields.MODULE);
-        final @NotNull TestCaseDto first = editor.getList().getModel().getElementAt(0);
+        final @NotNull TestCase first = editor.getList().getModel().getElementAt(0);
         first.setModule("Payments");
 
         final @NotNull AtomicInteger redrawn = new AtomicInteger();
@@ -325,7 +325,7 @@ public class EditorViewsIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-108, Rule-EDITOR-PANEL-109
     public void testSeveralSeparateRunsCanBeSelectedAndAClickOutsideEveryCardClearsThem() {
         final @NotNull TestSetEditor editor = openedTestSet(6);
-        final @NotNull JBList<TestCaseDto> list = editor.getList();
+        final @NotNull JBList<TestCase> list = editor.getList();
         list.setSize(900, 4000);
 
         list.setSelectedIndices(new int[]{0, 1, 3, 5});

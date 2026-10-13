@@ -33,7 +33,7 @@ import org.testin.editor.testrun.TestRunEditor;
 import org.testin.editor.toolbar.GridViewButton;
 import org.testin.editor.toolbar.TestSetFieldsPopupButton;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
@@ -61,25 +61,25 @@ public class PageSizeAndGridIdeTest extends AbstractTempRootIdeTest {
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
 
-    private @NotNull List<TestCaseDto> aTestSetOfThree() {
+    private @NotNull List<TestCase> aTestSetOfThree() {
         final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
         testSet = EditorFixtures.testSet(getProject(), testProject, "Checkout");
         return EditorFixtures.testCases(getProject(), testSet, 3);
     }
 
-    private @NotNull TestRunEditor aTestRunEditorOver(final @NotNull List<TestCaseDto> covered) {
+    private @NotNull TestRunEditor aTestRunEditorOver(final @NotNull List<TestCase> covered) {
         final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
         final @NotNull TestRunNode testRun = EditorFixtures.testRun(getProject(), testProject, covered.stream().map(EditorFixtures::pending).toList());
         return EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());
     }
 
-    private @NotNull TestCaseDto stored(final @NotNull TestCaseDto testCase) {
+    private @NotNull TestCase stored(final @NotNull TestCase testCase) {
         return Services.getInstance(getProject(), TestCases.class).findTestCase(testCase.getId()).orElseThrow();
     }
 
     // Rule-EDITOR-PANEL-222
     public void testThePageSizeLastTypedIsWhereEveryEditorOpenedAfterwardStarts() {
-        final @NotNull List<TestCaseDto> testCases = aTestSetOfThree();
+        final @NotNull List<TestCase> testCases = aTestSetOfThree();
         final @NotNull TestSetEditor alreadyOpen = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         final @NotNull TestSetEditor typedIn = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         try {
@@ -103,7 +103,7 @@ public class PageSizeAndGridIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-226
     public void testACutOrAPasteOverCellsIsOneChangeOneMessageAndOneUndo() {
-        final @NotNull List<TestCaseDto> testCases = aTestSetOfThree();
+        final @NotNull List<TestCase> testCases = aTestSetOfThree();
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         final @NotNull List<String> balloons = Said.listening(getProject(), getTestRootDisposable()).shown();
         try {
@@ -128,7 +128,7 @@ public class PageSizeAndGridIdeTest extends AbstractTempRootIdeTest {
 
             Await.until("one Ctrl+Z was refused", () -> Services.getInstance(getProject(), UndoHistories.class).undo(UndoScope.of(testSet.getPath())));
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
-            for (final TestCaseDto testCase : testCases) {
+            for (final TestCase testCase : testCases) {
                 assertEquals("one Ctrl+Z did not take the whole paste back", "", stored(testCase).getModule());
             }
             assertFalse("the paste was more than one change", Services.getInstance(getProject(), UndoHistories.class).canUndo(UndoScope.of(testSet.getPath())));

@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestRunNode;
@@ -47,7 +47,7 @@ public final class GlobalSearch {
         final @NotNull String wanted = query.trim().toLowerCase(Locale.ROOT);
 
         final @NotNull List<AbstractNode> nodes = wanted.isEmpty() ? everywhereToGo(project) : nodesNamed(project, wanted);
-        final @NotNull List<TestCaseDto> testCases = testCasesMatching(project, wanted);
+        final @NotNull List<TestCase> testCases = testCasesMatching(project, wanted);
 
         final @NotNull List<Hit> inTestRuns = inTestRuns(project, testCases);
 
@@ -72,7 +72,7 @@ public final class GlobalSearch {
                 .toList();
     }
 
-    private static @NotNull List<TestCaseDto> testCasesMatching(final @NotNull Project project, final @NotNull String wanted) {
+    private static @NotNull List<TestCase> testCasesMatching(final @NotNull Project project, final @NotNull String wanted) {
         if (tooShort(wanted)) return List.of();
 
         return Services.getInstance(project, TestCases.class).getAllTestCases().stream()
@@ -81,7 +81,7 @@ public final class GlobalSearch {
     }
 
     // UC-INTERNAL-001, Rule-INTERNAL-098
-    private static @NotNull List<Hit> inTestRuns(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases) {
+    private static @NotNull List<Hit> inTestRuns(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
         if (testCases.isEmpty()) return List.of();
 
         final @NotNull TestRuns testRuns = Services.getInstance(project, TestRuns.class);
@@ -103,7 +103,7 @@ public final class GlobalSearch {
         return List.copyOf(rows);
     }
 
-    private static @NotNull List<Hit> topTestCases(final @NotNull List<TestCaseDto> testCases, final @NotNull String wanted, final int room) {
+    private static @NotNull List<Hit> topTestCases(final @NotNull List<TestCase> testCases, final @NotNull String wanted, final int room) {
         if (room <= 0) return List.of();
 
         return testCases.stream()
@@ -135,8 +135,8 @@ public final class GlobalSearch {
         return byLength != 0 ? byLength : one.getName().compareToIgnoreCase(other.getName());
     }
 
-    static @NotNull Comparator<TestCaseDto> byDescriptionMatchThenText(final @NotNull String wanted) {
-        return Comparator.comparingInt((TestCaseDto testCase) -> contains(testCase.getDescription(), wanted) ? 0 : 1)
-                .thenComparing(TestCaseDto::getDescription, String.CASE_INSENSITIVE_ORDER);
+    static @NotNull Comparator<TestCase> byDescriptionMatchThenText(final @NotNull String wanted) {
+        return Comparator.comparingInt((TestCase testCase) -> contains(testCase.getDescription(), wanted) ? 0 : 1)
+                .thenComparing(TestCase::getDescription, String.CASE_INSENSITIVE_ORDER);
     }
 }

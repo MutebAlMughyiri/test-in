@@ -32,7 +32,7 @@ import org.testin.git.history.TestRunFromGit;
 import org.testin.importexport.FileFormat;
 import org.testin.importexport.exports.ExportNotice;
 import org.testin.indexer.TestRuns;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestRunNode;
 import org.testin.notifications.Notifier;
@@ -67,7 +67,7 @@ public class GenerateReportAction extends AbstractBoundProjectAction {
         this.selectedTestRun = editor::shownTestRun;
     }
 
-    public GenerateReportAction(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull JBList<TestCaseDto> list) {
+    public GenerateReportAction(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull JBList<TestCase> list) {
         this(project, editor);
         registerCustomShortcutSet(Shortcuts.GenerateReport.getCustomShortcut(), list);
     }

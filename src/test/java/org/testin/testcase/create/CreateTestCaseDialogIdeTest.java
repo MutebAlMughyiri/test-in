@@ -25,7 +25,7 @@ import org.testin.editor.EditorFixtures;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.indexer.TestCases;
 import org.testin.model.Priority;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.notifications.Done;
 import org.testin.services.Services;
@@ -42,7 +42,7 @@ import java.util.List;
 
 public class CreateTestCaseDialogIdeTest extends AbstractTempRootIdeTest {
 
-    private final @NotNull List<TestCaseDto> saved = new ArrayList<>();
+    private final @NotNull List<TestCase> saved = new ArrayList<>();
 
     @Override
     protected void tearDown() {
@@ -67,7 +67,7 @@ public class CreateTestCaseDialogIdeTest extends AbstractTempRootIdeTest {
         ShownDialog.press(getProject(), CreateTestCaseDialog.class, Shortcuts.Enter.getKey());
     }
 
-    private @NotNull TestCaseDto theOneSaved() {
+    private @NotNull TestCase theOneSaved() {
         assertEquals("the dialog did not save exactly one test case", 1, saved.size());
         return saved.getFirst();
     }
@@ -97,7 +97,7 @@ public class CreateTestCaseDialogIdeTest extends AbstractTempRootIdeTest {
 
         assertEquals("a field the tester never opened was written", "", theOneSaved().getModule());
         assertEquals("a new test case did not start at the lowest priority", Priority.LOW, theOneSaved().getPriority());
-        assertEquals("the priority field does not start at the lowest priority", Priority.LOW, dialog.getPrioritySection().applyTo(TestCaseDto.builder().priority(Priority.HIGH).build()).getPriority());
+        assertEquals("the priority field does not start at the lowest priority", Priority.LOW, dialog.getPrioritySection().applyTo(TestCase.builder().priority(Priority.HIGH).build()).getPriority());
     }
 
     // Rule-EDITOR-PANEL-032, Rule-EDITOR-PANEL-033
@@ -124,7 +124,7 @@ public class CreateTestCaseDialogIdeTest extends AbstractTempRootIdeTest {
 
         save();
 
-        final @NotNull TestCaseDto testCase = theOneSaved();
+        final @NotNull TestCase testCase = theOneSaved();
         assertEquals("Pay with a saved card", testCase.getDescription());
         assertEquals("The order is placed", testCase.getExpectedResult());
         assertEquals("Payments", testCase.getModule());
@@ -155,9 +155,9 @@ public class CreateTestCaseDialogIdeTest extends AbstractTempRootIdeTest {
 
         final @NotNull TestCases testCases = Services.getInstance(getProject(), TestCases.class);
         Await.until("the new test case never reached the editor", () -> editor.getAllTestCases().size() == 4);
-        final @NotNull TestCaseDto created = editor.getAllTestCases().getLast();
+        final @NotNull TestCase created = editor.getAllTestCases().getLast();
         assertEquals("the new test case is not last", "Pay with a saved card", created.getDescription());
-        Await.until("the new test case was never given a place after the others", () -> testCases.findTestCase(created.getId()).map(TestCaseDto::getOrder).filter(order -> order.compareTo("m0002") > 0).isPresent());
+        Await.until("the new test case was never given a place after the others", () -> testCases.findTestCase(created.getId()).map(TestCase::getOrder).filter(order -> order.compareTo("m0002") > 0).isPresent());
         Await.until("the creation never confirmed itself", () -> balloons.shown().contains(Done.CREATED.getOutcome()));
         assertEquals("the creation confirmed itself more than once", 1, Collections.frequency(balloons.shown(), Done.CREATED.getOutcome()));
     }

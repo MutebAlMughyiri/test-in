@@ -1340,7 +1340,7 @@ function Read-HelpersNamedLikeTests([string[]] $scopes)
         A JUnit 3 class is one that extends an *IdeTest base or a platform
         TestCase; the TestNG tests name their methods freely.
     #>
-    $junit3 = 'extends\s+\w*(?:IdeTest|TestCase)\b'
+    $junit3 = 'class\s+\w+(?:<[^>]*>)?\s+extends\s+\w*(?:IdeTest|TestCase)\b'
     $helper = '^\s*(?:(?:public|protected|private|static|final|abstract|synchronized)\s+)+[^;=()]*?\b(test\w*)\s*\('
     $test = '^\s*public\s+void\s+test\w*\s*\(\s*\)'
 

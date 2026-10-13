@@ -19,7 +19,7 @@ package org.testin.indexer;
 import com.intellij.openapi.application.WriteAction;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
@@ -29,8 +29,8 @@ import java.util.UUID;
 
 public class TestCaseFileIdeTest extends AbstractTempRootIdeTest {
 
-    private static @NotNull TestCaseDto aTestCaseIn(final TestSetNode testSet) {
-        final TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
+    private static @NotNull TestCase aTestCaseIn(final TestSetNode testSet) {
+        final TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
         testCase.setParent(testSet);
         return testCase;
     }
@@ -63,7 +63,7 @@ public class TestCaseFileIdeTest extends AbstractTempRootIdeTest {
     public void testATestCaseIsFoundInsideTheTestProjectThatHoldsIt() {
         final TestProjectNode testProject = aTestProject("NAFATH");
         aTestProject("NAFATH2");
-        final TestCaseDto testCase = aTestCaseIn(aTestSetIn(testProject));
+        final TestCase testCase = aTestCaseIn(aTestSetIn(testProject));
 
         final TestCaseFile file = indexedTestCases().testCaseFile(testCase).orElseThrow();
 
@@ -73,7 +73,7 @@ public class TestCaseFileIdeTest extends AbstractTempRootIdeTest {
     }
 
     public void testATestCaseNoIndexedTestProjectHoldsHasNoFile() {
-        final TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).build();
+        final TestCase testCase = TestCase.builder().id(UUID.randomUUID()).build();
 
         assertTrue("a test case with no test set was given a file", indexedTestCases().testCaseFile(testCase).isEmpty());
     }

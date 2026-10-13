@@ -24,7 +24,7 @@ import org.testin.git.change.StatusKind;
 import org.testin.git.change.PendingChange;
 import org.testin.git.conflict.ConflictResolution;
 import org.testin.git.conflict.RebaseEnd;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.util.Bundle;
 
 import java.nio.file.Path;
@@ -42,7 +42,7 @@ public class GitCommitAndPushIdeTest extends AbstractGitRemoteIdeTest {
     private static final int WINDOWS_COMMAND_LINE_LIMIT = 32767;
 
     private static @NotNull PendingChange ticked(final @NotNull String relativePath, final @NotNull StatusKind type) {
-        return new PendingChange(ChangeSubject.TEST_CASE, "a test case", "login", UUID.randomUUID().toString(), Path.of(relativePath), type, TestCaseDto.builder().build(), List.of());
+        return new PendingChange(ChangeSubject.TEST_CASE, "a test case", "login", UUID.randomUUID().toString(), Path.of(relativePath), type, TestCase.builder().build(), List.of());
     }
 
     private @NotNull GitCommitAndPush commits() {

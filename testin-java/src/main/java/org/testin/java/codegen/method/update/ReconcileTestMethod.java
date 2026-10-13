@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import org.testin.codegen.CodeChange;
 import org.testin.codegen.CodeChangeType;
 import org.testin.java.codegen.GeneratedMethod;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -37,19 +37,19 @@ import java.util.Map;
 import java.util.Optional;
 
 // Rule-CODEGEN-044
-public class ReconcileTestMethod extends BaseTestMethodChange implements CodeChange<TestCaseDto> {
+public class ReconcileTestMethod extends BaseTestMethodChange implements CodeChange<TestCase> {
     @Override
-    public void execute(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
+    public void execute(final @NotNull Project project, final @NotNull TestCase testCase) {
         executeAll(project, List.of(testCase));
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-068
     @Override
-    public void executeAll(final @NotNull Project project, final @NotNull List<? extends TestCaseDto> testCases) {
+    public void executeAll(final @NotNull Project project, final @NotNull List<? extends TestCase> testCases) {
         if (testCases.isEmpty()) return;
 
-        final @NotNull Map<Path, List<TestCaseDto>> byClass = new LinkedHashMap<>();
-        for (final TestCaseDto testCase : testCases) {
+        final @NotNull Map<Path, List<TestCase>> byClass = new LinkedHashMap<>();
+        for (final TestCase testCase : testCases) {
             byClass.computeIfAbsent(testCase.getParent().getPath(), _ -> new ArrayList<>()).add(testCase);
         }
 
@@ -63,7 +63,7 @@ public class ReconcileTestMethod extends BaseTestMethodChange implements CodeCha
         else ApplicationManager.getApplication().invokeLater(inCommand);
     }
 
-    private void rewrite(final @NotNull Project project, final @NotNull List<TestCaseDto> inClass) {
+    private void rewrite(final @NotNull Project project, final @NotNull List<TestCase> inClass) {
         final @NotNull Optional<PsiClass> target = classOf(project, inClass.getFirst());
         if (target.isEmpty()) return;
 
@@ -71,7 +71,7 @@ public class ReconcileTestMethod extends BaseTestMethodChange implements CodeCha
         final @NotNull Map<String, PsiMethod> methods = GeneratedMethod.byTestCaseId(testClass);
 
         int written = 0;
-        for (final TestCaseDto testCase : inClass) {
+        for (final TestCase testCase : inClass) {
             final @Nullable PsiMethod testMethod = methods.get(testCase.getId().toString());
             if (testMethod == null) continue;
 

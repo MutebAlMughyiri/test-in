@@ -20,7 +20,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.Fqcn;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.util.List;
 import java.util.Map;
@@ -31,7 +31,7 @@ public final class BodyPrompt {
             List.of("{description}", "{expectedResult}", "{steps}", "{testData}", "{preConditions}", "{module}", "{testSetPath}", "{class}", "{method}");
 
     // UC-CODEGEN-021, Rule-CODEGEN-086
-    public static @NotNull String of(final @NotNull String template, final @NotNull TestCaseDto testCase, final @NotNull String methodName) {
+    public static @NotNull String of(final @NotNull String template, final @NotNull TestCase testCase, final @NotNull String methodName) {
         final @NotNull Map<String, String> values = Map.of(
                 "{description}", testCase.getDescription(),
                 "{expectedResult}", testCase.getExpectedResult(),

@@ -18,7 +18,7 @@ package org.testin.view.details;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.status.ExecutionStatus;
 import org.testin.runner.TestNGExecution;
 import org.testin.services.Services;
@@ -30,7 +30,7 @@ import java.util.List;
 
 public final class TestCaseBadges {
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-085
-    public static @NotNull List<JComponent> of(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
+    public static @NotNull List<JComponent> of(final @NotNull Project project, final @NotNull TestCase testCase) {
         final @NotNull List<Badge> badges = Badges.testCaseBadges(testCase);
 
         final @NotNull ExecutionStatus tempStatus = Services.getInstance(project, TestNGExecution.class).statusOf(testCase);

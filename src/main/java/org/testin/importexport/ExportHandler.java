@@ -19,7 +19,7 @@ package org.testin.importexport;
 import com.google.errorprone.annotations.Immutable;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.io.File;
 import java.util.List;
@@ -32,5 +32,5 @@ public interface ExportHandler {
         throw new IllegalStateException("This format cannot be exported to");
     };
 
-    void execute(final @NotNull Project project, final @NotNull File destFile, final @NotNull Map<String, List<TestCaseDto>> sheetsData);
+    void execute(final @NotNull Project project, final @NotNull File destFile, final @NotNull Map<String, List<TestCase>> sheetsData);
 }

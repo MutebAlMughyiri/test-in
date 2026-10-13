@@ -19,7 +19,7 @@ package org.testin.testcase.create;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.TextFieldWithAutoCompletion;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.services.Services;
 import org.testin.services.TestCaseCompletions;
 import org.testin.testcase.CreateTestCaseFields;
@@ -32,18 +32,18 @@ public class ExpectedResultSection extends AbstractMultiLineSection {
 
     // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-032
     @Override
-    public @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto testCase) {
+    public @NotNull TestCase applyTo(final @NotNull TestCase testCase) {
         return testCase.edit().expectedResult(field.getText().trim()).build();
     }
 
     @Override
-    public void fillData(final @NotNull TestCaseDto testCase) {
+    public void fillData(final @NotNull TestCase testCase) {
         field.setText(testCase.getExpectedResult());
     }
 
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-036
     @Override
-    public boolean isShownWith(final @NotNull TestCaseDto testCase) {
+    public boolean isShownWith(final @NotNull TestCase testCase) {
         return !testCase.getExpectedResult().isEmpty();
     }
 }

@@ -24,7 +24,7 @@ import org.testin.explorer.tree.TreeValues;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestRuns;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.testrun.TestRunConfiguration;
@@ -63,7 +63,7 @@ record EditTestRunWork(@NotNull Project project, @NotNull TestRuns testRuns, @No
 
     private void edit(final @NotNull TestRunNode testRun) {
         final @NotNull RunItems held = testRuns.getRunItems(testRun.getPath());
-        final @NotNull List<TestCaseDto> deleted = held.getAll().stream().filter(RunItem::isRemoved).map(RunItem::shownTestCase).toList();
+        final @NotNull List<TestCase> deleted = held.getAll().stream().filter(RunItem::isRemoved).map(RunItem::shownTestCase).toList();
 
         boundTestProject.get().ifPresentOrElse(
                 testProject -> new TestRunFormOpener(project).open(testProject.getTestCasesFolder(), testRun.getName(), held.coveredIds(), deleted, testRun.getMarker().getConfiguration(), saves(testRun)),

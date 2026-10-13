@@ -29,7 +29,7 @@ import org.testin.Said;
 import org.testin.importexport.FileFormat;
 import org.testin.indexer.ProjectIndexer;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
@@ -162,8 +162,8 @@ public class ExportFlowIdeTest extends AbstractTempRootIdeTest {
         return Services.getInstance(getProject(), TestCases.class);
     }
 
-    private @NotNull TestCaseDto aTestCase(final @NotNull TestSetNode testSet, final @NotNull String description) {
-        final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description(description).order("m" + description.length()).build();
+    private @NotNull TestCase aTestCase(final @NotNull TestSetNode testSet, final @NotNull String description) {
+        final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description(description).order("m" + description.length()).build();
         assertTrue("the test case was not written", indexedTestCases().putTestCaseVerbatim(testSet.getPath(), testCase));
         return testCase;
     }
@@ -176,8 +176,8 @@ public class ExportFlowIdeTest extends AbstractTempRootIdeTest {
     // UC-SHARE-001, Rule-SHARE-001, Rule-SHARE-011
     public void testExportingWithACorrectionChangesNoTestCase() {
         final @NotNull TestSetNode login = new NodesOnDisk(getProject()).testSet(testProject.getTestCasesFolder(), "Login");
-        final @NotNull TestCaseDto first = aTestCase(login, "log in with a valid user");
-        final @NotNull TestCaseDto second = aTestCase(login, "a wrong password is refused");
+        final @NotNull TestCase first = aTestCase(login, "log in with a valid user");
+        final @NotNull TestCase second = aTestCase(login, "a wrong password is refused");
         final @NotNull Path firstFile = login.getPath().resolve(first.getId() + ".tc");
         final byte @NotNull [] firstBefore = bytesOf(firstFile);
         final byte @NotNull [] secondBefore = bytesOf(login.getPath().resolve(second.getId() + ".tc"));

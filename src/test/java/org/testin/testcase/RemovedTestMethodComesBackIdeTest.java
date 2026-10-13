@@ -21,7 +21,7 @@ import org.testin.AbstractCodegenIdeTest;
 import org.testin.Await;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.testset.TestSetEditor;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
 import org.testin.ui.framework.ConfirmDialog;
@@ -44,7 +44,7 @@ public class RemovedTestMethodComesBackIdeTest extends AbstractCodegenIdeTest {
     // Rule-EDITOR-PANEL-069
     public void testATestCaseComingBackFromARemovalGetsItsTestMethodAgain() {
         final @NotNull TestSetNode login = createdTestSet("Login");
-        final @NotNull TestCaseDto testCase = createdTestCase(login, "Log in with a valid user", "m");
+        final @NotNull TestCase testCase = createdTestCase(login, "Log in with a valid user", "m");
         settled();
         writtenMethodOf(LOGIN_CLASS, testCase);
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), login, getTestRootDisposable());

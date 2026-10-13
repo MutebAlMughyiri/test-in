@@ -22,7 +22,7 @@ import com.intellij.util.ui.EmptyIcon;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.testrun.ExecutingNow;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.ui.framework.Prose;
 import org.testin.util.Bundle;
@@ -40,7 +40,7 @@ public class Title extends AbstractDetails {
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-025, Rule-VIEW-PANEL-125
     @Override
-    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull TestCaseDto testCase, final int currentRow) {
+    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull TestCase testCase, final int currentRow) {
         final @NotNull String titleText = TestSetEditorFields.DESCRIPTION.displayValue(testCase);
         final @NotNull String finalValue = titleText.trim().isEmpty() ? "-" : titleText;
 

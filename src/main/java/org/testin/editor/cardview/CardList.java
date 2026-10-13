@@ -25,13 +25,13 @@ import com.intellij.ui.components.JBList;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.TestinDataKeys;
 import org.testin.editor.TestinEditor;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 // UC-EDITOR-PANEL-001, UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-003
-public class CardList extends JBList<TestCaseDto> implements UiDataProvider {
+public class CardList extends JBList<TestCase> implements UiDataProvider {
     private final @NotNull TestinEditor editor;
 
-    public CardList(final @NotNull CollectionListModel<TestCaseDto> model, final @NotNull TestinEditor editor) {
+    public CardList(final @NotNull CollectionListModel<TestCase> model, final @NotNull TestinEditor editor) {
         super(model);
         this.editor = editor;
 

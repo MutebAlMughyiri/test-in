@@ -18,11 +18,11 @@ package org.testin.testng;
 
 import com.intellij.openapi.module.Module;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.util.List;
 
-record Prepared(@NotNull List<Generated> found, @NotNull List<TestCaseDto> withoutCode, @NotNull List<Module> modules) {
+record Prepared(@NotNull List<Generated> found, @NotNull List<TestCase> withoutCode, @NotNull List<Module> modules) {
 
     // Rule-CODEGEN-097
     boolean spansModules() {

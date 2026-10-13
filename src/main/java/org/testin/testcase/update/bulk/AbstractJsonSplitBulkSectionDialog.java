@@ -20,7 +20,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopupListener;
 import com.intellij.openapi.ui.popup.LightweightWindowEvent;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.ui.framework.AbstractFrameworkDialog;
 import org.testin.ui.framework.DialogPart;
@@ -36,13 +36,13 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public abstract class AbstractJsonSplitBulkSectionDialog extends AbstractFrameworkDialog {
-    private final @NotNull List<TestCaseDto> selectedTestCases;
-    private final @NotNull Consumer<List<TestCaseDto>> updatedTestCases;
+    private final @NotNull List<TestCase> selectedTestCases;
+    private final @NotNull Consumer<List<TestCase>> updatedTestCases;
     private final @NotNull BulkJsonEditors editors;
 
     private final @NotNull List<String> originalEscaped = new ArrayList<>();
 
-    protected AbstractJsonSplitBulkSectionDialog(final @NotNull Project project, final @NotNull List<TestCaseDto> selectedTestCases, final @NotNull Consumer<List<TestCaseDto>> updatedTestCases) {
+    protected AbstractJsonSplitBulkSectionDialog(final @NotNull Project project, final @NotNull List<TestCase> selectedTestCases, final @NotNull Consumer<List<TestCase>> updatedTestCases) {
         super(project);
         this.selectedTestCases = selectedTestCases;
         this.updatedTestCases = updatedTestCases;
@@ -77,11 +77,11 @@ public abstract class AbstractJsonSplitBulkSectionDialog extends AbstractFramewo
     protected abstract @NotNull TestSetEditorFields attribute();
 
     // Rule-EDITOR-PANEL-005
-    protected @NotNull String getOriginalValue(final @NotNull TestCaseDto testCase) {
+    protected @NotNull String getOriginalValue(final @NotNull TestCase testCase) {
         return attribute().gridValue(testCase);
     }
 
-    protected @NotNull Optional<TestCaseDto> withValue(final @NotNull TestCaseDto testCase, final @NotNull String value) {
+    protected @NotNull Optional<TestCase> withValue(final @NotNull TestCase testCase, final @NotNull String value) {
         return attribute().getImportSetter().execute(project, testCase, value);
     }
 
@@ -90,7 +90,7 @@ public abstract class AbstractJsonSplitBulkSectionDialog extends AbstractFramewo
     }
 
     // Rule-EDITOR-PANEL-224
-    protected @NotNull Set<Integer> clashing(final @NotNull List<TestCaseDto> testCases, final @NotNull List<EditedValue> newValues) {
+    protected @NotNull Set<Integer> clashing(final @NotNull List<TestCase> testCases, final @NotNull List<EditedValue> newValues) {
         return Set.of();
     }
 
@@ -99,8 +99,8 @@ public abstract class AbstractJsonSplitBulkSectionDialog extends AbstractFramewo
     }
 
     // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-041, Rule-EDITOR-PANEL-206
-    protected @NotNull List<TestCaseDto> applyValues(final @NotNull List<TestCaseDto> testCases, final @NotNull List<EditedValue> newValues) {
-        final @NotNull List<TestCaseDto> written = new ArrayList<>();
+    protected @NotNull List<TestCase> applyValues(final @NotNull List<TestCase> testCases, final @NotNull List<EditedValue> newValues) {
+        final @NotNull List<TestCase> written = new ArrayList<>();
         final @NotNull Set<Integer> clashing = clashing(testCases, newValues);
 
         int refused = 0;
@@ -113,7 +113,7 @@ public abstract class AbstractJsonSplitBulkSectionDialog extends AbstractFramewo
 
             if (clashing.contains(i)) continue;
 
-            final @NotNull Optional<TestCaseDto> took = withValue(testCases.get(i), edited.value());
+            final @NotNull Optional<TestCase> took = withValue(testCases.get(i), edited.value());
             if (took.isEmpty()) {
                 refused++;
                 continue;
@@ -167,7 +167,7 @@ public abstract class AbstractJsonSplitBulkSectionDialog extends AbstractFramewo
         final @NotNull List<int[]> editableRanges = new ArrayList<>();
 
         for (int i = 0; i < selectedTestCases.size(); i++) {
-            final @NotNull TestCaseDto testCase = selectedTestCases.get(i);
+            final @NotNull TestCase testCase = selectedTestCases.get(i);
             final @NotNull String escapedValue = BulkValueText.escape(getOriginalValue(testCase));
             originalEscaped.add(escapedValue);
 

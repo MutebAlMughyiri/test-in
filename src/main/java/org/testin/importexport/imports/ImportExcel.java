@@ -25,7 +25,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.testcase.Can;
 import org.testin.testcase.ImportedRow;
 import org.testin.testcase.TestSetEditorFields;
@@ -50,16 +50,16 @@ public class ImportExcel {
     }
 
     // UC-SHARE-006
-    public @NotNull Map<String, List<TestCaseDto>> processImport(final @NotNull Project project, final @NotNull File file) {
-        final @NotNull Map<String, List<TestCaseDto>> result = new LinkedHashMap<>(parseFile(project, file));
+    public @NotNull Map<String, List<TestCase>> processImport(final @NotNull Project project, final @NotNull File file) {
+        final @NotNull Map<String, List<TestCase>> result = new LinkedHashMap<>(parseFile(project, file));
 
         TestinLogger.info("Import: parsed " + result.values().stream().mapToInt(List::size).sum()
                 + " test cases from " + result.size() + " sheet(s) of " + file.getName());
         return result;
     }
 
-    public @NotNull Map<String, List<TestCaseDto>> parseFile(final @NotNull Project project, final @NotNull File file) {
-        final @NotNull Map<String, List<TestCaseDto>> result = new LinkedHashMap<>();
+    public @NotNull Map<String, List<TestCase>> parseFile(final @NotNull Project project, final @NotNull File file) {
+        final @NotNull Map<String, List<TestCase>> result = new LinkedHashMap<>();
         try (Workbook workbook = WorkbookFactory.create(file, null, true)) {
             parseWorkbook(workbook, project, result);
 
@@ -71,7 +71,7 @@ public class ImportExcel {
     }
 
     // UC-SHARE-005, Rule-SHARE-106
-    private void parseWorkbook(final @NotNull Workbook workbook, final @NotNull Project project, final @NotNull Map<String, List<TestCaseDto>> result) {
+    private void parseWorkbook(final @NotNull Workbook workbook, final @NotNull Project project, final @NotNull Map<String, List<TestCase>> result) {
         final @NotNull DataFormatter dataFormatter = new DataFormatter();
         int refused = 0;
 
@@ -108,7 +108,7 @@ public class ImportExcel {
             }
         }
 
-        final @NotNull List<TestCaseDto> sheetList = new ArrayList<>();
+        final @NotNull List<TestCase> sheetList = new ArrayList<>();
 
         int refused = 0;
 

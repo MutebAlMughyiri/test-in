@@ -17,7 +17,7 @@ package org.testin.importexport.imports;
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.status.TestCaseStatus;
 
 import java.io.File;
@@ -38,12 +38,12 @@ public class ImportJsonIdeTest extends BasePlatformTestCase {
             {"Login":[{"id":"8f7b1a52-0c44-4c1e-9d6b-2a3f5e7c9011","description":"Log in with a valid user",\
             "expectedResult":"The dashboard opens","module":"Accounts","status":"REVIEWED","order":"a5"}]}""";
 
-    private @NotNull TestCaseDto imported() {
+    private @NotNull TestCase imported() {
         try {
             final @NotNull Path file = Files.createTempFile("testin-import", ".json");
             Files.writeString(file, EXPORTED, StandardCharsets.UTF_8);
 
-            final @NotNull Map<String, List<TestCaseDto>> read = new ImportJson().parseFile(getProject(), new File(file.toString()));
+            final @NotNull Map<String, List<TestCase>> read = new ImportJson().parseFile(getProject(), new File(file.toString()));
 
             return read.values().iterator().next().getFirst();
         } catch (final Exception ex) {
@@ -68,7 +68,7 @@ public class ImportJsonIdeTest extends BasePlatformTestCase {
 
     // UC-SHARE-005, Rule-SHARE-029
     public void testTheThirteenThatMayBeImportedStillArrive() {
-        final @NotNull TestCaseDto imported = imported();
+        final @NotNull TestCase imported = imported();
 
         assertEquals("Log in with a valid user", imported.getDescription());
         assertEquals("The dashboard opens", imported.getExpectedResult());

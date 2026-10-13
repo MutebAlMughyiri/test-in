@@ -21,7 +21,7 @@ import com.intellij.openapi.command.CommandEvent;
 import com.intellij.openapi.command.CommandListener;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
 
@@ -34,9 +34,9 @@ public class SubtreeCodeOrderIdeTest extends AbstractCodegenIdeTest {
     public void testATestSetsClassIsWrittenBeforeItsTestCasesMethods() {
         final @NotNull TestSetPackageNode checkout = indexedPackage("Checkout", theTestCasesDirectory());
         final @NotNull TestSetNode payment = indexedTestSet("Payment", checkout);
-        final @NotNull TestCaseDto pay = indexedTestCase(payment, "Pay with a saved card", "b");
+        final @NotNull TestCase pay = indexedTestCase(payment, "Pay with a saved card", "b");
         final @NotNull TestSetNode visa = indexedTestSet("Visa", indexedPackage("Cards", checkout));
-        final @NotNull TestCaseDto payByVisa = indexedTestCase(visa, "Pay with a Visa card", "b");
+        final @NotNull TestCase payByVisa = indexedTestCase(visa, "Pay with a Visa card", "b");
         final @NotNull CodegenRecorder recorder = CodegenRecorder.installed(getTestRootDisposable());
 
         SubtreeCode.generate(getProject(), checkout);

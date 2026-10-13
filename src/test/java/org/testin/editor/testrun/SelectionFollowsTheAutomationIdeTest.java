@@ -20,7 +20,7 @@ import com.intellij.testFramework.PlatformTestUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.editor.EditorFixtures;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.runner.CapturedRunner;
 
@@ -37,9 +37,9 @@ public class SelectionFollowsTheAutomationIdeTest extends AbstractCodegenIdeTest
         CapturedRunner.installed(getTestRootDisposable());
     }
 
-    private @NotNull List<TestCaseDto> paymentTestCases() {
+    private @NotNull List<TestCase> paymentTestCases() {
         final @NotNull TestSetNode payment = createdTestSet("Payment");
-        final @NotNull List<TestCaseDto> made = List.of(
+        final @NotNull List<TestCase> made = List.of(
                 createdTestCase(payment, "Pay with a saved card", "payWithASavedCard"),
                 createdTestCase(payment, "Pay with Apple Pay", "payWithApplePay"),
                 createdTestCase(payment, "Refuse an expired card", "refuseAnExpiredCard"));
@@ -47,7 +47,7 @@ public class SelectionFollowsTheAutomationIdeTest extends AbstractCodegenIdeTest
         return made;
     }
 
-    private @NotNull TestRunEditor runningEverything(final @NotNull List<TestCaseDto> testCases) {
+    private @NotNull TestRunEditor runningEverything(final @NotNull List<TestCase> testCases) {
         final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), EditorFixtures.testRunOver(getProject(), root, testCases), getTestRootDisposable());
         editor.getList().setSelectedIndex(0);
         editor.runWhenLoaded();
@@ -55,19 +55,19 @@ public class SelectionFollowsTheAutomationIdeTest extends AbstractCodegenIdeTest
         return editor;
     }
 
-    private void started(final @NotNull TestCaseDto testCase) {
+    private void started(final @NotNull TestCase testCase) {
         CapturedRunner.startedByTestNg(getProject(), testCase);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
 
-    private static void pressOnTheFirstCard(final @NotNull JList<TestCaseDto> list) {
+    private static void pressOnTheFirstCard(final @NotNull JList<TestCase> list) {
         final @NotNull Rectangle cell = list.getCellBounds(0, 0);
         list.dispatchEvent(new MouseEvent(list, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0, cell.x + 2, cell.y + cell.height - 2, 1, false, MouseEvent.BUTTON1));
     }
 
     // Rule-EDITOR-PANEL-289
     public void testTheSelectionMovesToEachRunItemAsTestNgStartsIt() {
-        final @NotNull List<TestCaseDto> testCases = paymentTestCases();
+        final @NotNull List<TestCase> testCases = paymentTestCases();
         final @NotNull TestRunEditor editor = runningEverything(testCases);
         try {
             started(testCases.get(2));
@@ -82,13 +82,13 @@ public class SelectionFollowsTheAutomationIdeTest extends AbstractCodegenIdeTest
 
     // Rule-EDITOR-PANEL-289
     public void testAPressOnACardDoesNotStopTheSelectionFollowing() {
-        final @NotNull List<TestCaseDto> testCases = paymentTestCases();
+        final @NotNull List<TestCase> testCases = paymentTestCases();
         final @NotNull TestRunEditor editor = runningEverything(testCases);
         try {
             pressOnTheFirstCard(editor.getList());
             editor.getList().setSelectedIndex(0);
-            final @NotNull TestCaseDto pressed = editor.getList().getSelectedValue();
-            final @NotNull TestCaseDto next = testCases.stream().filter(testCase -> testCase != pressed).findFirst().orElseThrow();
+            final @NotNull TestCase pressed = editor.getList().getSelectedValue();
+            final @NotNull TestCase next = testCases.stream().filter(testCase -> testCase != pressed).findFirst().orElseThrow();
 
             started(next);
 

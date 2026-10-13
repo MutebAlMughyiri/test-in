@@ -20,7 +20,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.importexport.FileFormat;
 import org.testin.importexport.shared.SheetPreview;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.ui.framework.AbstractFrameworkDialog;
 import org.testin.ui.framework.DialogPart;
@@ -38,11 +38,11 @@ import java.util.function.Consumer;
 public final class ImportDialog extends AbstractFrameworkDialog {
     private final @NotNull SourceSection form;
 
-    private final @NotNull Consumer<@NotNull Map<String, List<TestCaseDto>>> onImport;
+    private final @NotNull Consumer<@NotNull Map<String, List<TestCase>>> onImport;
 
     private final @NotNull SheetPreview preview;
 
-    public ImportDialog(final @NotNull Project project, final @NotNull List<TestSetEditorFields> importFields, final @NotNull BiFunction<File, FileFormat, Map<String, List<TestCaseDto>>> importLoader, final @NotNull Consumer<@NotNull Map<String, List<TestCaseDto>>> onImport) {
+    public ImportDialog(final @NotNull Project project, final @NotNull List<TestSetEditorFields> importFields, final @NotNull BiFunction<File, FileFormat, Map<String, List<TestCase>>> importLoader, final @NotNull Consumer<@NotNull Map<String, List<TestCase>>> onImport) {
         super(project);
         this.onImport = onImport;
 
@@ -75,7 +75,7 @@ public final class ImportDialog extends AbstractFrameworkDialog {
             return;
         }
 
-        final @NotNull Map<String, List<TestCaseDto>> selected = preview.selected();
+        final @NotNull Map<String, List<TestCase>> selected = preview.selected();
         if (selected.isEmpty()) {
             notifier.softRefuse(project, Bundle.message("notification.import.empty.title"), Bundle.message("notification.import.empty.none.selected"));
             return;

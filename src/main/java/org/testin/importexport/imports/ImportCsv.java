@@ -19,7 +19,7 @@ package org.testin.importexport.imports;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.testcase.Can;
 import org.testin.testcase.ImportedRow;
 import org.testin.testcase.TestSetEditorFields;
@@ -39,9 +39,9 @@ import java.util.Optional;
 
 public class ImportCsv {
     // UC-SHARE-006
-    public @NotNull Map<String, List<TestCaseDto>> processImport(final @NotNull Project project, final @NotNull File file) {
-        final @NotNull Map<String, List<TestCaseDto>> result = new LinkedHashMap<>();
-        final @NotNull List<TestCaseDto> testCases = parseFile(project, file);
+    public @NotNull Map<String, List<TestCase>> processImport(final @NotNull Project project, final @NotNull File file) {
+        final @NotNull Map<String, List<TestCase>> result = new LinkedHashMap<>();
+        final @NotNull List<TestCase> testCases = parseFile(project, file);
         if (!testCases.isEmpty()) {
             final @NotNull String name = file.getName().replaceAll("\\.csv$", "").replaceAll("[\\\\/*?\\[\\]]", "_");
             result.put(name, testCases);
@@ -49,7 +49,7 @@ public class ImportCsv {
         return result;
     }
 
-    public @NotNull List<TestCaseDto> parseFile(final @NotNull Project project, final @NotNull File file) {
+    public @NotNull List<TestCase> parseFile(final @NotNull Project project, final @NotNull File file) {
         return parseCsvFile(file, project);
     }
 
@@ -66,8 +66,8 @@ public class ImportCsv {
         return byName;
     }
 
-    private @NotNull List<TestCaseDto> parseCsvFile(final @NotNull File file, final @NotNull Project project) {
-        final @NotNull List<TestCaseDto> result = new ArrayList<>();
+    private @NotNull List<TestCase> parseCsvFile(final @NotNull File file, final @NotNull Project project) {
+        final @NotNull List<TestCase> result = new ArrayList<>();
         final @NotNull List<List<String>> records = parseCsvRecords(file);
 
         if (records.isEmpty()) return result;

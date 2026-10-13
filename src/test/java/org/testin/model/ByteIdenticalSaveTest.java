@@ -39,8 +39,8 @@ public class ByteIdenticalSaveTest {
 
     private static final Path GOLDEN = Path.of("src", "test", "resources", "golden", "test-case.json");
 
-    private static @NotNull TestCaseDto typedByATester() {
-        final TestCaseDto testCase = new TestCaseDto();
+    private static @NotNull TestCase typedByATester() {
+        final TestCase testCase = new TestCase();
 
         testCase.setId(UUID.fromString("11111111-2222-3333-4444-555555555555"));
         testCase.setOrder("zo");
@@ -123,7 +123,7 @@ public class ByteIdenticalSaveTest {
     // Rule-INTERNAL-135
     @Test
     public void aTestCaseAtItsDefaultPriorityAndStatusStoresNeither() {
-        final String json = RealJsonCodec.build().writeValueAsString(TestCaseDto.builder().description("Log in with a valid user").build());
+        final String json = RealJsonCodec.build().writeValueAsString(TestCase.builder().description("Log in with a valid user").build());
 
         assertFalse(json.contains("\"priority\""), "the default priority, Low, was written: " + json);
         assertFalse(json.contains("\"status\""), "the default status, Pending, was written: " + json);

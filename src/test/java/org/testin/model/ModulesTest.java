@@ -29,11 +29,11 @@ public class ModulesTest {
     // Rule-EDITOR-PANEL-095
     @Test
     public void theModuleListOffersOnlyTheModulesTheTestCasesCarry() {
-        final @NotNull List<TestCaseDto> testCases = List.of(
-                TestCaseDto.builder().description("one").module("accounts").build(),
-                TestCaseDto.builder().description("two").module(" payments ").build(),
-                TestCaseDto.builder().description("three").module("accounts").build(),
-                TestCaseDto.builder().description("four").module("   ").build());
+        final @NotNull List<TestCase> testCases = List.of(
+                TestCase.builder().description("one").module("accounts").build(),
+                TestCase.builder().description("two").module(" payments ").build(),
+                TestCase.builder().description("three").module("accounts").build(),
+                TestCase.builder().description("four").module("   ").build());
 
         assertEquals(Modules.in(testCases), Set.of("accounts", "payments"), "a module no test case carries, or a blank one, is never offered");
     }

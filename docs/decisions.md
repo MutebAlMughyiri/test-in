@@ -46,7 +46,7 @@ for itself, "does this node exist" was a `Files.exists` in one place, a cache
 lookup in another, and a stale `AbstractNode` in a third.
 
 **Decision.** `org.testin.indexer` is the only package that touches test data.
-Everything else holds `AbstractNode` and `TestCaseDto` objects the indexer
+Everything else holds `AbstractNode` and `TestCase` objects the indexer
 served, and asks the indexer to create, move, rename, copy or delete. Inside the
 indexer, the VFS operation happens first and the cache is updated after it
 succeeds.

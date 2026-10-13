@@ -30,7 +30,7 @@ import org.testin.editor.grid.GridSelectionListener;
 import org.testin.editor.grid.GridView;
 import org.testin.editor.statusbar.PageAction;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.ShowableField;
 import org.testin.open.OpenContextMenuAction;
 import org.testin.ui.FontSync;
@@ -44,7 +44,7 @@ import java.util.Set;
 
 final class EditorGrid<A extends Enum<A> & ShowableField> {
     private final @NotNull AbstractTestinEditor<A, ?> editor;
-    private final @NotNull List<TestCaseDto> rowsOnGrid = new ArrayList<>();
+    private final @NotNull List<TestCase> rowsOnGrid = new ArrayList<>();
     private @NotNull Optional<GridView> view = Optional.empty();
 
     EditorGrid(final @NotNull AbstractTestinEditor<A, ?> editor) {
@@ -60,7 +60,7 @@ final class EditorGrid<A extends Enum<A> & ShowableField> {
     }
 
     // UC-EDITOR-PANEL-024, Rule-EDITOR-PANEL-111
-    int rowOf(final @NotNull TestCaseDto testCase) {
+    int rowOf(final @NotNull TestCase testCase) {
         return rowsOnGrid.indexOf(testCase);
     }
 
@@ -83,7 +83,7 @@ final class EditorGrid<A extends Enum<A> & ShowableField> {
     void rebuild() {
         final boolean keepKeyboard = view.map(GridView::handOver).orElse(false);
 
-        final @NotNull List<TestCaseDto> pageTestCases = showOnGrid(editor.getCurrentPageItems());
+        final @NotNull List<TestCase> pageTestCases = showOnGrid(editor.getCurrentPageItems());
         final @NotNull Set<A> fields = editor.getSelectedDetails();
         TestinLogger.debug("[grid] rebuildGrid start, pageItems=" + pageTestCases.size() + ", details=" + fields);
         final @NotNull Disposable fontSync = Disposer.newDisposable(editor.projectDisposable, "testin." + editor.getClass().getSimpleName() + ".gridFontSync");
@@ -123,14 +123,14 @@ final class EditorGrid<A extends Enum<A> & ShowableField> {
         final boolean keepKeyboard = shown.handOver();
         final int column = shown.table().getSelectedColumn();
 
-        final @NotNull List<TestCaseDto> pageTestCases = showOnGrid(editor.getCurrentPageItems());
+        final @NotNull List<TestCase> pageTestCases = showOnGrid(editor.getCurrentPageItems());
         GridTables.replaceRows(shown.table(), editor.gridRows(pageTestCases));
         GridTables.restoreSelection(shown.table(), editor.list, pageTestCases, column);
 
         if (keepKeyboard) ApplicationManager.getApplication().invokeLater(shown.table()::requestFocusInWindow);
     }
 
-    private @NotNull List<TestCaseDto> showOnGrid(final @NotNull List<TestCaseDto> pageTestCases) {
+    private @NotNull List<TestCase> showOnGrid(final @NotNull List<TestCase> pageTestCases) {
         rowsOnGrid.clear();
         rowsOnGrid.addAll(pageTestCases);
         return rowsOnGrid;

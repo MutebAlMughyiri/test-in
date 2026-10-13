@@ -18,7 +18,7 @@ package org.testin.view.details;
 import com.intellij.ui.components.JBPanel;
 import org.jetbrains.annotations.NotNull;
 import org.testin.TestinLog;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.view.AbstractViewPanelIdeTest;
 import org.testin.view.Drawn;
@@ -39,7 +39,7 @@ public class BreadcrumbStepsIdeTest extends AbstractViewPanelIdeTest {
     // Rule-VIEW-PANEL-042
     public void testEveryStepGoesToThePlaceItNamesAndBringsUpTheTree() {
         final @NotNull TestSetNode testSet = aTestSet("Login");
-        final @NotNull TestCaseDto testCase = aTestCase(testSet, "Log in with a valid user", "a");
+        final @NotNull TestCase testCase = aTestCase(testSet, "Log in with a valid user", "a");
         final @NotNull JBPanel<?> tab = Drawn.detailsTab(getProject(), testCase, Optional.empty(), testSet.treePath());
 
         final @NotNull List<String> container = TestinLog.during(() -> click(Drawn.reading(tab, "Test Cases")));

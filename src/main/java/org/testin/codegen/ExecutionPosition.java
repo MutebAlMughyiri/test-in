@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.services.Services;
 import org.testin.testcase.TestCaseOrder;
 import org.testin.util.FromContentModule;
@@ -37,24 +37,24 @@ import java.util.function.ToIntFunction;
 public final class ExecutionPosition {
     // UC-CODEGEN-002, Rule-CODEGEN-014
     @FromContentModule
-    public static int of(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
+    public static int of(final @NotNull Project project, final @NotNull TestCase testCase) {
         return ofEach(project).applyAsInt(testCase);
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-014
-    public static @NotNull ToIntFunction<TestCaseDto> ofEach(final @NotNull Project project) {
-        final @NotNull Map<Path, List<TestCaseDto>> sets = new HashMap<>();
+    public static @NotNull ToIntFunction<TestCase> ofEach(final @NotNull Project project) {
+        final @NotNull Map<Path, List<TestCase>> sets = new HashMap<>();
 
         return testCase -> TestCaseOrder.positionOf(sets.computeIfAbsent(testCase.getParent().getPath(), _ -> setOf(project, testCase)), testCase);
     }
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-014
-    public static @NotNull Map<UUID, Integer> placesOf(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases) {
-        final @NotNull Map<Path, List<TestCaseDto>> sets = new HashMap<>();
+    public static @NotNull Map<UUID, Integer> placesOf(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
+        final @NotNull Map<Path, List<TestCase>> sets = new HashMap<>();
         final @NotNull Map<UUID, Integer> places = new HashMap<>();
 
-        for (final TestCaseDto testCase : testCases) {
-            final @NotNull List<TestCaseDto> set = sets.computeIfAbsent(testCase.getParent().getPath(), _ -> setOf(project, testCase));
+        for (final TestCase testCase : testCases) {
+            final @NotNull List<TestCase> set = sets.computeIfAbsent(testCase.getParent().getPath(), _ -> setOf(project, testCase));
             final int place = TestCaseOrder.positionOf(set, testCase);
             if (place <= set.size()) places.put(testCase.getId(), place);
         }
@@ -63,7 +63,7 @@ public final class ExecutionPosition {
     }
 
     // UC-CODEGEN-011, Rule-CODEGEN-042
-    public static @NotNull List<TestCaseDto> setOf(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
+    public static @NotNull List<TestCase> setOf(final @NotNull Project project, final @NotNull TestCase testCase) {
         return TestCaseOrder.ordered(Services.getInstance(project, TestCases.class).getTestCasesForTestSet(testCase.getParent().getPath()));
     }
 }

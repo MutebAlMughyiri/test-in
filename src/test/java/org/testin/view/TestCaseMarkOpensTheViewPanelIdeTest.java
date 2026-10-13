@@ -28,7 +28,7 @@ import org.testin.Await;
 import org.testin.LoginTestSource;
 import org.testin.indexer.ProjectIndexer;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.services.Services;
 import org.testin.setting.AppSettingsState;
 import org.testin.util.Bundle;
@@ -59,7 +59,7 @@ public class TestCaseMarkOpensTheViewPanelIdeTest extends AbstractCodegenIdeTest
         view = ViewOnScreen.closed(getProject(), getTestRootDisposable());
     }
 
-    private @NotNull GutterMark theMarkBeside(final @NotNull TestCaseDto testCase) {
+    private @NotNull GutterMark theMarkBeside(final @NotNull TestCase testCase) {
         final @NotNull String testCaseId = testCase.getId().toString();
         final @NotNull String text = LoginTestSource.withTestNg(testCaseId);
         final @NotNull PsiFile file = myFixture.addFileToProject("nafath/LoginTest.java", text);
@@ -72,13 +72,13 @@ public class TestCaseMarkOpensTheViewPanelIdeTest extends AbstractCodegenIdeTest
                 .orElseThrow(() -> new AssertionError("the method has no mark beside its identity"));
     }
 
-    private boolean showing(final @NotNull TestCaseDto testCase) {
+    private boolean showing(final @NotNull TestCase testCase) {
         return view.getPanel().getCurrentTestCase().filter(shown -> shown.getId().equals(testCase.getId())).isPresent();
     }
 
     // Rule-CODEGEN-070
     public void testTheMarkOpensTheViewPanelOnTheTestCaseAndMovesNothingElse() {
-        final @NotNull TestCaseDto testCase = indexedTestCase(indexedTestSet("Login", theTestCasesDirectory()), "Log in", "b");
+        final @NotNull TestCase testCase = indexedTestCase(indexedTestSet("Login", theTestCasesDirectory()), "Log in", "b");
         final @NotNull GutterMark mark = theMarkBeside(testCase);
         final @NotNull FileEditorManager editors = FileEditorManager.getInstance(getProject());
         final @NotNull List<VirtualFile> openBefore = Arrays.asList(editors.getOpenFiles());
@@ -96,7 +96,7 @@ public class TestCaseMarkOpensTheViewPanelIdeTest extends AbstractCodegenIdeTest
 
     // Rule-CODEGEN-030
     public void testTheJumpWaitsForIndexingToFinish() {
-        final @NotNull TestCaseDto testCase = indexedTestCase(indexedTestSet("Login", theTestCasesDirectory()), "Log in", "b");
+        final @NotNull TestCase testCase = indexedTestCase(indexedTestSet("Login", theTestCasesDirectory()), "Log in", "b");
         final @NotNull GutterMark mark = theMarkBeside(testCase);
         final @NotNull AppSettingsState settings = Services.getInstance(AppSettingsState.class);
         final @NotNull String wasRoot = settings.rootTestinPath;

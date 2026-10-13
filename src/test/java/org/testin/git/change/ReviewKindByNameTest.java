@@ -18,7 +18,7 @@ package org.testin.git.change;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.TempTree;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.util.RealJsonCodec;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -71,7 +71,7 @@ public class ReviewKindByNameTest {
     // UC-SHARE-010, Rule-SHARE-047
     @Test
     public void aFileIsKnownByItsNameNotByWhatItHolds() {
-        final @NotNull String aTestCase = RealJsonCodec.build().writeValueAsString(TestCaseDto.builder().description("log in with a valid user").build());
+        final @NotNull String aTestCase = RealJsonCodec.build().writeValueAsString(TestCase.builder().description("log in with a valid user").build());
         onDisk("Test Cases/Login/notes.json", aTestCase);
         onDisk("Test Cases/Login/.ts", "{}");
 

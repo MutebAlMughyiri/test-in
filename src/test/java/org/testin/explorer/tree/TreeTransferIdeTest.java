@@ -24,7 +24,7 @@ import org.testin.Await;
 import org.testin.NodesOnDisk;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
@@ -50,7 +50,7 @@ public class TreeTransferIdeTest extends AbstractTempRootIdeTest {
     private final @NotNull List<Path> revealed = new CopyOnWriteArrayList<>();
     private TestSetPackageNode payments;
     private TestSetNode login;
-    private TestCaseDto loginTestCase;
+    private TestCase loginTestCase;
     private TreeTransferHandler handler;
 
     @Override
@@ -94,7 +94,7 @@ public class TreeTransferIdeTest extends AbstractTempRootIdeTest {
         return ClipboardContents.withFlavor(TreeTransferHandler.NODE_FLAVOR).isPresent();
     }
 
-    private @NotNull List<TestCaseDto> heldTestCasesIn(final @NotNull Path testSet) {
+    private @NotNull List<TestCase> heldTestCasesIn(final @NotNull Path testSet) {
         return Services.getInstance(getProject(), TestCases.class).getTestCasesForTestSet(testSet);
     }
 
@@ -150,11 +150,11 @@ public class TreeTransferIdeTest extends AbstractTempRootIdeTest {
     public void testACopiedTestCaseIsANewTestCase() {
         pasteAndWaitForTheCopy();
 
-        final @NotNull List<UUID> copied = heldTestCasesIn(inPayments()).stream().map(TestCaseDto::getId).toList();
+        final @NotNull List<UUID> copied = heldTestCasesIn(inPayments()).stream().map(TestCase::getId).toList();
 
         assertEquals(1, copied.size());
         assertFalse("the copy has the original's id", copied.contains(loginTestCase.getId()));
-        assertEquals("the original lost its test case", List.of(loginTestCase.getId()), heldTestCasesIn(login.getPath()).stream().map(TestCaseDto::getId).toList());
+        assertEquals("the original lost its test case", List.of(loginTestCase.getId()), heldTestCasesIn(login.getPath()).stream().map(TestCase::getId).toList());
     }
 
     // Rule-TREE-PANEL-052

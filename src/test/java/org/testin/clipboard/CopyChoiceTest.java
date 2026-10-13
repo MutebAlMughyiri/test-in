@@ -19,7 +19,7 @@ package org.testin.clipboard;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.node.NodeChain;
 import org.testin.model.Priority;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.status.TestCaseStatus;
 import org.testin.testcase.TestSetEditorFields;
@@ -39,10 +39,10 @@ import static org.testng.Assert.assertTrue;
 
 public class CopyChoiceTest {
 
-    private static @NotNull TestCaseDto writtenInFull() {
+    private static @NotNull TestCase writtenInFull() {
         final @NotNull TestSetNode set = NodeChain.testSetAt("shop", "checkout", "Payment");
 
-        final @NotNull TestCaseDto testCase = TestCaseDto.builder()
+        final @NotNull TestCase testCase = TestCase.builder()
                 .id(UUID.randomUUID())
                 .description("Refuse an expired card")
                 .expectedResult("The payment is declined")
@@ -100,7 +100,7 @@ public class CopyChoiceTest {
     public void theClassNameIsCopiedDotted() {
         final @NotNull TestSetNode set = NodeChain.testSetAt("shop", "checkout", "Payment");
 
-        final @NotNull TestCaseDto testCase = TestCaseDto.builder().description("card is declined").build();
+        final @NotNull TestCase testCase = TestCase.builder().description("card is declined").build();
         testCase.setParent(set);
 
         assertEquals(CopyChoice.FQCN.from(testCase), "shop.checkout.PaymentTest.cardIsDeclined");
@@ -109,7 +109,7 @@ public class CopyChoiceTest {
     // Rule-EDITOR-PANEL-073, Rule-EDITOR-PANEL-207
     @Test
     public void allDetailsCopiesEveryFieldTheTesterWroteAsNameColonValue() {
-        final @NotNull TestCaseDto testCase = writtenInFull();
+        final @NotNull TestCase testCase = writtenInFull();
         final @NotNull List<TestSetEditorFields> written = List.of(
                 TestSetEditorFields.DESCRIPTION, TestSetEditorFields.EXPECTED_RESULT, TestSetEditorFields.STEPS,
                 TestSetEditorFields.PRIORITY, TestSetEditorFields.REFERENCE, TestSetEditorFields.TEST_DATA,
@@ -131,7 +131,7 @@ public class CopyChoiceTest {
     // Rule-EDITOR-PANEL-207
     @Test
     public void aFieldLeftEmptyIsNotALine() {
-        final @NotNull TestCaseDto testCase = writtenInFull();
+        final @NotNull TestCase testCase = writtenInFull();
         testCase.setReference("");
 
         assertFalse(CopyChoice.ALL_DETAILS.from(testCase).contains(TestSetEditorFields.REFERENCE.getName() + ":"), "an empty reference still got a line");
@@ -140,8 +140,8 @@ public class CopyChoiceTest {
     // Rule-EDITOR-PANEL-074
     @Test
     public void severalTestCasesAreSeparatedByABlankLine() {
-        final @NotNull TestCaseDto first = TestCaseDto.builder().description("Log in").build();
-        final @NotNull TestCaseDto second = TestCaseDto.builder().description("Log out").build();
+        final @NotNull TestCase first = TestCase.builder().description("Log in").build();
+        final @NotNull TestCase second = TestCase.builder().description("Log out").build();
 
         assertEquals(CopyChoice.DESCRIPTION.from(List.of(first, second)), """
                 Log in
@@ -152,7 +152,7 @@ public class CopyChoiceTest {
     // Rule-EDITOR-PANEL-208
     @Test
     public void aSingleValueIsCopiedBareAndSoAreTheValuesTheTesterNeverWrites() {
-        final @NotNull TestCaseDto testCase = writtenInFull();
+        final @NotNull TestCase testCase = writtenInFull();
 
         assertEquals(CopyChoice.DESCRIPTION.from(testCase), "Refuse an expired card", "a single value carries no caption");
         assertEquals(CopyChoice.ID.from(testCase), testCase.getId().toString(), "the identity can be copied on its own");

@@ -25,7 +25,7 @@ import org.testin.filter.FilterAndSortChoice;
 import org.testin.filter.FilterSource;
 import org.testin.filter.TestCaseFilter;
 import org.testin.model.Modules;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.services.Services;
 import org.testin.services.TestCaseCompletions;
@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 public final class TestRunFormFilter implements FilterSource {
     private final @NotNull Project project;
     private final @NotNull AutomationState automation;
-    private final @NotNull List<TestCaseDto> offered = new ArrayList<>();
+    private final @NotNull List<TestCase> offered = new ArrayList<>();
     private final @NotNull Map<Path, String> testSets = new LinkedHashMap<>();
     private final @NotNull FilterPopupButton button;
     private final @NotNull SelectionTree selection;
@@ -95,10 +95,10 @@ public final class TestRunFormFilter implements FilterSource {
     public void onToolBarFilterSelectionChanged() {
         final @NotNull FilterAndSortChoice wanted = FilterAndSortChoice.of(button, "");
         final @NotNull Set<UUID> shown = automation.matching(TestCaseFilter.filter(offered, wanted), wanted.automation()).stream()
-                .map(TestCaseDto::getId)
+                .map(TestCase::getId)
                 .collect(Collectors.toSet());
 
-        selection.show(leaf -> leaf instanceof TestCaseDto testCase && shown.contains(testCase.getId()));
+        selection.show(leaf -> leaf instanceof TestCase testCase && shown.contains(testCase.getId()));
     }
 
     @Override
@@ -111,7 +111,7 @@ public final class TestRunFormFilter implements FilterSource {
         for (int i = 0; i < treeNode.getChildCount(); i++) {
             final @NotNull CheckedTreeNode child = (CheckedTreeNode) treeNode.getChildAt(i);
 
-            if (child.getUserObject() instanceof TestCaseDto testCase && treeNode.getUserObject() instanceof AbstractNode testSet) {
+            if (child.getUserObject() instanceof TestCase testCase && treeNode.getUserObject() instanceof AbstractNode testSet) {
                 offered.add(testCase);
                 testSets.putIfAbsent(testSet.getPath(), testSet.nameUnder(testCasesRoot));
             } else {

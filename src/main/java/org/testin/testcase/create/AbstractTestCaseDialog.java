@@ -27,7 +27,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.StatusBarItem;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.services.ProjectLifetime;
 import org.testin.testcase.CreateTestCaseFields;
 import org.testin.testcase.UpdateTestCaseFields;
@@ -68,16 +68,16 @@ public abstract class AbstractTestCaseDialog extends AbstractFrameworkDialog {
     protected final @NotNull Disposable dialogDisposable;
     protected final @NotNull Map<TestCaseSection, StatusBarItem[]> statusBarMapping;
     @Getter(AccessLevel.NONE)
-    private final @NotNull TestCaseDto testCase;
+    private final @NotNull TestCase testCase;
     @Getter(AccessLevel.NONE)
-    private final @NotNull Consumer<@NotNull TestCaseDto> onSave;
+    private final @NotNull Consumer<@NotNull TestCase> onSave;
     @Getter(AccessLevel.NONE)
     private final StatusBarItem @NotNull [] dialogKeys;
     private final @NotNull List<TestCaseSection> cachedSections;
     private @NotNull PropertyChangeListener focusListener = NOTHING_ON_FOCUS;
     private @NotNull Optional<TestCaseSection> editableSection = Optional.empty();
 
-    public AbstractTestCaseDialog(final @NotNull Project project, final @NotNull TestCaseDto testCase, final @NotNull Consumer<@NotNull TestCaseDto> onSave, final StatusBarItem @NotNull ... dialogKeys) {
+    public AbstractTestCaseDialog(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull Consumer<@NotNull TestCase> onSave, final StatusBarItem @NotNull ... dialogKeys) {
         super(project);
         this.testCase = testCase;
         this.onSave = onSave;
@@ -215,7 +215,7 @@ public abstract class AbstractTestCaseDialog extends AbstractFrameworkDialog {
             return;
         }
 
-        TestCaseDto edited = testCase;
+        TestCase edited = testCase;
         for (final TestCaseSection section : writers) edited = section.applyTo(edited);
         onSave.accept(edited);
 

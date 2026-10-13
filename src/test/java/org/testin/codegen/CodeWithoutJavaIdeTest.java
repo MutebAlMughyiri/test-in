@@ -40,7 +40,7 @@ import org.testin.actions.TestinDataKeys;
 import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.editor.card.Offered;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.OptionalPlugin;
 import org.testin.services.Services;
@@ -66,7 +66,7 @@ public class CodeWithoutJavaIdeTest extends AbstractCodegenIdeTest {
         return Optional.ofNullable(label.getIcon()).orElseThrow(() -> new AssertionError("the class button has no icon"));
     }
 
-    private @NotNull TestCaseDto aTestCase() {
+    private @NotNull TestCase aTestCase() {
         return indexedTestCase(indexedTestSet("Login", theTestCasesDirectory()), "Log in with a valid user", "b");
     }
 
@@ -74,7 +74,7 @@ public class CodeWithoutJavaIdeTest extends AbstractCodegenIdeTest {
         return JavaSourceRoot.find(getProject()).orElseThrow(() -> new AssertionError("the project has no test source folder"));
     }
 
-    private @NotNull AnActionEvent theMenuEntryFor(final @NotNull TestCaseDto testCase) {
+    private @NotNull AnActionEvent theMenuEntryFor(final @NotNull TestCase testCase) {
         final @NotNull AnAction action = Optional.ofNullable(ActionManager.getInstance().getAction("Testin.NavigateToTestMethod")).orElseThrow(() -> new AssertionError("Testin.NavigateToTestMethod is not registered"));
         final @NotNull AnActionEvent e = TestActionEvent.createTestEvent(action, SimpleDataContext.builder()
                 .add(CommonDataKeys.PROJECT, getProject())
@@ -84,14 +84,14 @@ public class CodeWithoutJavaIdeTest extends AbstractCodegenIdeTest {
         return e;
     }
 
-    private @NotNull JBLabel theClassButtonOnTheViewPanel(final @NotNull TestCaseDto testCase) {
+    private @NotNull JBLabel theClassButtonOnTheViewPanel(final @NotNull TestCase testCase) {
         return (JBLabel) TestCaseHoverButtons.of(getProject(), testCase, Optional.empty()).stream()
                 .filter(JBLabel.class::isInstance)
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("the view panel left the class button out"));
     }
 
-    private @NotNull String grayed(final @NotNull TestCaseDto testCase, final @NotNull JBLabel label) {
+    private @NotNull String grayed(final @NotNull TestCase testCase, final @NotNull JBLabel label) {
         final @NotNull Icon drawn = Services.getInstance(getProject(), AutomationState.class).of(testCase.getId()).getIcon();
         return String.valueOf(IconUtil.scale(IconLoader.getDisabledIcon(drawn), label, DRAWN_AT));
     }
@@ -101,7 +101,7 @@ public class CodeWithoutJavaIdeTest extends AbstractCodegenIdeTest {
         ExtensionTestUtil.maskExtensions(CodeChangeRegistry.EP, List.of(), getTestRootDisposable());
 
         final @NotNull TestSetNode login = createdTestSet("Login");
-        final @NotNull TestCaseDto testCase = createdTestCase(login, "Log in with a valid user", "b");
+        final @NotNull TestCase testCase = createdTestCase(login, "Log in with a valid user", "b");
         testCase.setDescription("Sign in with a valid user");
         CodeChangeType.UPDATE_TEST_CASE_DESCRIPTION.execute(getProject(), testCase);
         CodeChangeType.REMOVE_TEST_CASE.execute(getProject(), testCase);
@@ -135,7 +135,7 @@ public class CodeWithoutJavaIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-CODEGEN-027
     public void testWithoutTheJavaPluginTheClassButtonIsGrayAndTheMenuEntrySaysWhy() {
-        final @NotNull TestCaseDto testCase = aTestCase();
+        final @NotNull TestCase testCase = aTestCase();
         final @NotNull JBLabel working = theClassButtonOnTheViewPanel(testCase);
         assertNotEquals("the class button is gray even with the Java plugin, so gray proves nothing", grayed(testCase, working), String.valueOf(iconOf(working)));
 

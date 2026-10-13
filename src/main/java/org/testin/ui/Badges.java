@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.status.TestCaseStatus;
 import org.testin.model.Priority;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.status.ExecutionStatusBadge;
 import org.testin.util.Bundle;
 import org.testin.util.FixedColors;
@@ -59,14 +59,14 @@ public final class Badges {
     private static final @NotNull Icon CLOCK = IconUtil.resizeSquared(AllIcons.Vcs.History, 14);
 
     // Rule-VIEW-PANEL-114, Rule-EDITOR-PANEL-268
-    public static void addPriorityBadge(final @NotNull List<Badge> badges, final @NotNull TestCaseDto testCase) {
+    public static void addPriorityBadge(final @NotNull List<Badge> badges, final @NotNull TestCase testCase) {
         if (testCase.getPriority() == Priority.DEFAULT) return;
 
         badges.add(new Pill(testCase.getPriority().getLabel(), testCase.getPriority().getColor(), testCase.getPriority().tooltip()));
     }
 
     // UC-EDITOR-PANEL-001
-    public static @NotNull List<Badge> testCaseBadges(final @NotNull TestCaseDto testCase) {
+    public static @NotNull List<Badge> testCaseBadges(final @NotNull TestCase testCase) {
         final @NotNull List<Badge> badges = new ArrayList<>();
         addPriorityBadge(badges, testCase);
 

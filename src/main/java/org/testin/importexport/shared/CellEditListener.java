@@ -19,7 +19,7 @@ package org.testin.importexport.shared;
 import com.intellij.openapi.project.Project;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.testcase.TestSetEditorFields;
 
 import javax.swing.event.TableModelEvent;
@@ -32,7 +32,7 @@ import java.util.Optional;
 public class CellEditListener implements TableModelListener {
     private final @NotNull List<TestSetEditorFields> importFields;
     private final @NotNull Project project;
-    private final @NotNull List<TestCaseDto> testCases;
+    private final @NotNull List<TestCase> testCases;
     private boolean isUpdating = false;
 
     // UC-SHARE-003, Rule-SHARE-021
@@ -50,7 +50,7 @@ public class CellEditListener implements TableModelListener {
                     final @NotNull DefaultTableModel model = (DefaultTableModel) e.getSource();
                     final @NotNull String updatedValue = String.valueOf(model.getValueAt(row, column));
                     final @NotNull TestSetEditorFields currentField = importFields.get(column - 2);
-                    final @NotNull Optional<TestCaseDto> took = currentField.getImportSetter().execute(project, testCases.get(row), updatedValue);
+                    final @NotNull Optional<TestCase> took = currentField.getImportSetter().execute(project, testCases.get(row), updatedValue);
 
                     // Rule-SHARE-106
                     took.ifPresentOrElse(testCase -> testCases.set(row, testCase), () -> TestSetEditorFields.sayWhatWasRefused(project, 1));

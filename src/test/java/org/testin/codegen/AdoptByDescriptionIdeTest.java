@@ -22,7 +22,7 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 
 import java.util.List;
@@ -38,7 +38,7 @@ public class AdoptByDescriptionIdeTest extends AbstractCodegenIdeTest {
                     "@org.testng.annotations.Test(description = \"Log in with a valid user\")\npublic void signIn() { login(\"sara\"); }", written));
         });
 
-        final @NotNull TestCaseDto testCase = TestCaseDto.builder().parent(login).description("Log in with a valid user").build();
+        final @NotNull TestCase testCase = TestCase.builder().parent(login).description("Log in with a valid user").build();
         CodeChangeType.CREATE_TEST_CASE.executeAllNow(getProject(), List.of(testCase));
 
         final @NotNull PsiClass after = generatedClass("nafath.LoginTest").orElseThrow();

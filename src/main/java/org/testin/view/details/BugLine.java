@@ -25,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.bug.OpenBugReports;
 import org.testin.bug.ReportBug;
 import org.testin.bug.RunItemPath;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.testrun.RunItem;
 import org.testin.services.Services;
@@ -45,7 +45,7 @@ public final class BugLine {
     private static final int LINK_GAP = 10;
 
     // UC-VIEW-PANEL-005, UC-VIEW-PANEL-016, Rule-VIEW-PANEL-031, Rule-VIEW-PANEL-086
-    public static @NotNull Optional<JComponent> of(final @NotNull Project project, final @NotNull RunItem runItem, final @NotNull List<String> treePath, final @NotNull TestCaseDto testCase) {
+    public static @NotNull Optional<JComponent> of(final @NotNull Project project, final @NotNull RunItem runItem, final @NotNull List<String> treePath, final @NotNull TestCase testCase) {
         final @NotNull Optional<String> bugIssue = runItem.bugIssue();
         if (!runItem.recordsABug()) return Optional.empty();
 
@@ -53,7 +53,7 @@ public final class BugLine {
     }
 
     // UC-VIEW-PANEL-005, UC-VIEW-PANEL-016, Rule-VIEW-PANEL-066, Rule-VIEW-PANEL-075, Rule-VIEW-PANEL-086
-    private static @NotNull JComponent drawn(final @NotNull Project project, final @NotNull RunItem runItem, final @NotNull TestCaseDto testCase, final @NotNull Optional<String> bugIssue, final @NotNull TestRunNode testRunNode) {
+    private static @NotNull JComponent drawn(final @NotNull Project project, final @NotNull RunItem runItem, final @NotNull TestCase testCase, final @NotNull Optional<String> bugIssue, final @NotNull TestRunNode testRunNode) {
         final @NotNull JBPanel<?> line = AbstractDetails.row(LINK_GAP);
 
         chip(runItem).ifPresent(line::add);
@@ -65,7 +65,7 @@ public final class BugLine {
     }
 
     // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-066, Rule-VIEW-PANEL-075
-    private static @NotNull ActionLink report(final @NotNull Project project, final @NotNull RunItem runItem, final @NotNull TestCaseDto testCase, final @NotNull TestRunNode testRunNode) {
+    private static @NotNull ActionLink report(final @NotNull Project project, final @NotNull RunItem runItem, final @NotNull TestCase testCase, final @NotNull TestRunNode testRunNode) {
         final @NotNull Optional<String> off = Services.getInstance(project, OpenBugReports.class)
                 .whyReportBugIsOff(new RunItemPath(testRunNode.getPath(), runItem.getId()), runItem);
 

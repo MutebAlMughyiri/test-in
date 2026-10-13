@@ -19,7 +19,7 @@ package org.testin.editor.cardview;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testng.annotations.Test;
 
 import javax.swing.event.ListSelectionEvent;
@@ -31,17 +31,17 @@ import static org.testng.Assert.assertEquals;
 
 public class CardGridSelectionSynchronizerTest {
 
-    private static final @NotNull TestCaseDto ONE = TestCaseDto.builder().description("one").build();
+    private static final @NotNull TestCase ONE = TestCase.builder().description("one").build();
 
-    private static final @NotNull TestCaseDto TWO = TestCaseDto.builder().description("two").build();
+    private static final @NotNull TestCase TWO = TestCase.builder().description("two").build();
 
-    private static final @NotNull TestCaseDto THREE = TestCaseDto.builder().description("three").build();
+    private static final @NotNull TestCase THREE = TestCase.builder().description("three").build();
 
-    private static final @NotNull List<TestCaseDto> ON_THE_GRID = List.of(ONE, TWO, THREE);
+    private static final @NotNull List<TestCase> ON_THE_GRID = List.of(ONE, TWO, THREE);
 
     @Test
     public void mapsListRowToGridRowAndPreservesColumn() {
-        final @NotNull JBList<TestCaseDto> list = new JBList<>(ONE, TWO, THREE);
+        final @NotNull JBList<TestCase> list = new JBList<>(ONE, TWO, THREE);
         final @NotNull JBTable table = new JBTable(new DefaultTableModel(3, 2));
         table.setCellSelectionEnabled(true);
         table.changeSelection(0, 1, false, false);
@@ -62,7 +62,7 @@ public class CardGridSelectionSynchronizerTest {
     // Rule-EDITOR-PANEL-111
     @Test
     public void aGridStillShowingTheOldOrderSelectsTheSameTestCaseNotTheSameRow() {
-        final @NotNull JBList<TestCaseDto> list = new JBList<>(THREE, ONE, TWO);
+        final @NotNull JBList<TestCase> list = new JBList<>(THREE, ONE, TWO);
         final @NotNull JBTable table = new JBTable(new DefaultTableModel(3, 2));
         list.setSelectedIndex(0);
 

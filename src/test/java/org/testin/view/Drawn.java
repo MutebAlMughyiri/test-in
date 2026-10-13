@@ -22,7 +22,7 @@ import com.intellij.util.ui.UIUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItem;
 import org.testin.view.details.DetailsTab;
 
@@ -42,11 +42,11 @@ import java.util.function.Predicate;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Drawn {
 
-    public static @NotNull JBPanel<?> detailsTab(final @NotNull Project project, final @NotNull TestCaseDto testCase, final @NotNull Optional<RunItem> runItem, final @NotNull List<String> treePath) {
+    public static @NotNull JBPanel<?> detailsTab(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull Optional<RunItem> runItem, final @NotNull List<String> treePath) {
         return detailsTab(project, testCase, runItem, treePath, OptionalInt.empty());
     }
 
-    public static @NotNull JBPanel<?> detailsTab(final @NotNull Project project, final @NotNull TestCaseDto testCase, final @NotNull Optional<RunItem> runItem, final @NotNull List<String> treePath, final @NotNull OptionalInt shownLine) {
+    public static @NotNull JBPanel<?> detailsTab(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull Optional<RunItem> runItem, final @NotNull List<String> treePath, final @NotNull OptionalInt shownLine) {
         final @NotNull JBPanel<?> tab = new JBPanel<>();
         new DetailsTab().load(project, tab, Optional.of(testCase), runItem, treePath, shownLine, _ -> {
         });

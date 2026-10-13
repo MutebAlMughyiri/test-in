@@ -19,7 +19,7 @@ package org.testin.testcase;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -27,19 +27,19 @@ import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestCaseOrder {
-    private static final @NotNull Comparator<TestCaseDto> BY_RANK = Comparator
-            .comparing((TestCaseDto testCase) -> testCase.getOrder().isEmpty())
-            .thenComparing(TestCaseDto::getOrder)
-            .thenComparing(TestCaseDto::getCreatedAt)
-            .thenComparing(TestCaseDto::getId);
+    private static final @NotNull Comparator<TestCase> BY_RANK = Comparator
+            .comparing((TestCase testCase) -> testCase.getOrder().isEmpty())
+            .thenComparing(TestCase::getOrder)
+            .thenComparing(TestCase::getCreatedAt)
+            .thenComparing(TestCase::getId);
 
     // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-013
-    public static @NotNull List<TestCaseDto> ordered(final @NotNull List<TestCaseDto> testCases) {
+    public static @NotNull List<TestCase> ordered(final @NotNull List<TestCase> testCases) {
         return testCases.stream().sorted(BY_RANK).toList();
     }
 
     // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-014
-    public static int positionOf(final @NotNull List<TestCaseDto> ordered, final @NotNull TestCaseDto testCase) {
+    public static int positionOf(final @NotNull List<TestCase> ordered, final @NotNull TestCase testCase) {
         for (int i = 0; i < ordered.size(); i++) {
             if (ordered.get(i).getId().equals(testCase.getId())) return i + 1;
         }
@@ -53,13 +53,13 @@ public final class TestCaseOrder {
     }
 
     // UC-EDITOR-PANEL-010, Rule-EDITOR-PANEL-060
-    public static @NotNull List<TestCaseDto> place(final @NotNull List<TestCaseDto> arranged) {
-        final @NotNull List<TestCaseDto> moved = new ArrayList<>();
+    public static @NotNull List<TestCase> place(final @NotNull List<TestCase> arranged) {
+        final @NotNull List<TestCase> moved = new ArrayList<>();
         String previous = "";
         int i = 0;
 
         while (i < arranged.size()) {
-            final @NotNull TestCaseDto testCase = arranged.get(i);
+            final @NotNull TestCase testCase = arranged.get(i);
 
             if (!testCase.getOrder().isEmpty() && testCase.getOrder().compareTo(previous) > 0) {
                 previous = testCase.getOrder();

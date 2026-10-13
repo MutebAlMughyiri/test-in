@@ -21,7 +21,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.TextFieldWithAutoCompletion;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.services.TestCaseCompletions;
@@ -46,7 +46,7 @@ public class DescriptionSection extends AbstractOneLineSection {
 
     private final @NotNull TextAttributes hint = new TextAttributes();
 
-    private @NotNull Supplier<List<TestCaseDto>> siblings = List::of;
+    private @NotNull Supplier<List<TestCase>> siblings = List::of;
 
     public DescriptionSection(final @NotNull Project project) {
         super(EditorFields.createCompletionField(project, new TextFieldWithAutoCompletion.StringsCompletionProvider(Services.getInstance(project, TestCaseCompletions.class).getDescription(), CreateTestCaseFields.DESCRIPTION.getIcon()), ""),
@@ -58,13 +58,13 @@ public class DescriptionSection extends AbstractOneLineSection {
     }
 
     // UC-EDITOR-PANEL-005, Rule-CODEGEN-001
-    public void compareAgainst(final @NotNull Supplier<List<TestCaseDto>> siblings) {
+    public void compareAgainst(final @NotNull Supplier<List<TestCase>> siblings) {
         this.siblings = siblings;
     }
 
     private @NotNull Set<String> takenMethodKeys() {
         return siblings.get().stream()
-                .map(TestCaseDto::getDescription)
+                .map(TestCase::getDescription)
                 .map(NameSanitizer::methodName)
                 .filter(name -> !name.isEmpty())
                 .map(NameSanitizer::methodKey)
@@ -115,7 +115,7 @@ public class DescriptionSection extends AbstractOneLineSection {
 
     // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-032
     @Override
-    public @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto testCase) {
+    public @NotNull TestCase applyTo(final @NotNull TestCase testCase) {
         return testCase.edit().description(typed()).build();
     }
 
@@ -124,13 +124,13 @@ public class DescriptionSection extends AbstractOneLineSection {
     }
 
     @Override
-    public void fillData(final @NotNull TestCaseDto testCase) {
+    public void fillData(final @NotNull TestCase testCase) {
         field.setText(testCase.getDescription());
     }
 
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-036
     @Override
-    public boolean isShownWith(final @NotNull TestCaseDto testCase) {
+    public boolean isShownWith(final @NotNull TestCase testCase) {
         return true;
     }
 }

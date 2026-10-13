@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.GrayWithReason;
 import org.testin.actions.TestinDataKeys;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.ui.framework.ShortcutMenuPopup;
@@ -34,7 +34,7 @@ import java.awt.datatransfer.StringSelection;
 import java.util.List;
 
 public class CopyTestCaseValueAction extends AbstractAnyProjectAction {
-    private static void copy(final @NotNull Project project, final @NotNull CopyChoice choice, final @NotNull List<TestCaseDto> selected) {
+    private static void copy(final @NotNull Project project, final @NotNull CopyChoice choice, final @NotNull List<TestCase> selected) {
         CopyPasteManager.getInstance().setContents(new StringSelection(choice.from(selected)));
 
         Services.getInstance(project, Notifier.class).softShow(project, choice.copiedMessage(selected.size()));
@@ -43,7 +43,7 @@ public class CopyTestCaseValueAction extends AbstractAnyProjectAction {
     // UC-EDITOR-PANEL-014, Rule-EDITOR-PANEL-207
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
-        final @NotNull List<TestCaseDto> selected = TestinDataKeys.selectedTestCases(e);
+        final @NotNull List<TestCase> selected = TestinDataKeys.selectedTestCases(e);
         if (selected.isEmpty()) return;
 
         new ShortcutMenuPopup<>(project, Bundle.message("copy.menu.title"), CopyChoice.values(), choice -> copy(project, choice, selected)).show();

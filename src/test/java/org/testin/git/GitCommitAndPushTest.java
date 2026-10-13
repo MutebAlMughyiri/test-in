@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.git.change.ChangeSubject;
 import org.testin.git.change.StatusKind;
 import org.testin.git.change.PendingChange;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testng.annotations.Test;
 
 import java.nio.file.Path;
@@ -35,7 +35,7 @@ public class GitCommitAndPushTest {
     private static @NotNull PendingChange diff(final Path relativePath) {
         return new PendingChange(ChangeSubject.TEST_CASE, "a case", "a test set", UUID.randomUUID().toString(),
                 relativePath, StatusKind.MODIFIED,
-                TestCaseDto.builder().build(), List.of());
+                TestCase.builder().build(), List.of());
     }
 
     @Test

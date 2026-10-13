@@ -20,7 +20,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.testrun.RunItemCard;
 import org.testin.editor.testrun.TestRunEditor;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItem;
 
 import javax.swing.JList;
@@ -35,7 +35,7 @@ public class RunItemCardRenderer extends AbstractCardRenderer<TestRunEditor> {
 
     // UC-EDITOR-PANEL-030
     @Override
-    protected @NotNull RunItemCard bindDataAndGetCard(final @NotNull JList<? extends TestCaseDto> list, final @NotNull TestCaseDto testCase, final int row, final boolean isSelected, final boolean isRowHovered, final @NotNull String hover) {
+    protected @NotNull RunItemCard bindDataAndGetCard(final @NotNull JList<? extends TestCase> list, final @NotNull TestCase testCase, final int row, final boolean isSelected, final boolean isRowHovered, final @NotNull String hover) {
         final @NotNull RunItem runItem = editor.runItem(testCase.getId())
                 .orElseGet(() -> RunItem.pendingFor(testCase));
 

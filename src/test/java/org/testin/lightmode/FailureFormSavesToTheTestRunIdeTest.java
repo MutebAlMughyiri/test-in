@@ -23,7 +23,7 @@ import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
@@ -55,7 +55,7 @@ public class FailureFormSavesToTheTestRunIdeTest extends AbstractTempRootIdeTest
             final @NotNull TestSetNode testSet = mapper.getTestSetNode(testProject.getTestCasesFolder().getPath().resolve("Checkout"), testProject.getTestCasesFolder());
             nodes.addTestSet(testSet);
             Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(),
-                    TestCaseDto.builder().id(FAILED_TEST_CASE).description("Refuse an expired card").order("m").build());
+                    TestCase.builder().id(FAILED_TEST_CASE).description("Refuse an expired card").order("m").build());
 
             final @NotNull Path path = testProject.getTestRunsFolder().getPath().resolve("Cycle-1");
             nodes.addTestRunNode(mapper.setTestRunNode(path, testProject.getTestRunsFolder()));

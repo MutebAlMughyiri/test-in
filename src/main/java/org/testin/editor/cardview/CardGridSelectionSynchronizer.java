@@ -20,7 +20,7 @@ import com.intellij.ui.components.JBList;
 import com.intellij.ui.table.JBTable;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -31,10 +31,10 @@ import java.util.function.ToIntFunction;
 
 @AllArgsConstructor
 public final class CardGridSelectionSynchronizer implements ListSelectionListener {
-    private final @NotNull JBList<TestCaseDto> list;
+    private final @NotNull JBList<TestCase> list;
     private final @NotNull Supplier<Optional<JBTable>> tableSupplier;
     private final @NotNull BooleanSupplier gridActiveSupplier;
-    private final @NotNull ToIntFunction<TestCaseDto> rowOnGrid;
+    private final @NotNull ToIntFunction<TestCase> rowOnGrid;
 
     // UC-EDITOR-PANEL-024, Rule-EDITOR-PANEL-111
     @Override

@@ -36,7 +36,7 @@ import org.testin.filter.Sorting;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
 import org.testin.model.Priority;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
@@ -61,7 +61,7 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
     }
 
     private static @NotNull List<String> shownDescriptions(final @NotNull AbstractTestinEditor<?, ?> editor) {
-        return editor.getCurrentTestCases().stream().map(TestCaseDto::getDescription).toList();
+        return editor.getCurrentTestCases().stream().map(TestCase::getDescription).toList();
     }
 
     private @NotNull TestSetNode aTestSet() {
@@ -69,8 +69,8 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
         return EditorFixtures.testSet(getProject(), testProject, "Checkout");
     }
 
-    private @NotNull TestCaseDto aTestCase(final @NotNull TestSetNode testSet, final @NotNull String description, final @NotNull String order, final @NotNull Priority priority, final @NotNull String group) {
-        final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description(description).order(order).priority(priority).groups(new ArrayList<>(List.of(group))).build();
+    private @NotNull TestCase aTestCase(final @NotNull TestSetNode testSet, final @NotNull String description, final @NotNull String order, final @NotNull Priority priority, final @NotNull String group) {
+        final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description(description).order(order).priority(priority).groups(new ArrayList<>(List.of(group))).build();
         testCase.setParent(testSet);
         Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase);
         return testCase;
@@ -81,9 +81,9 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestSetNode testSet = aTestSet();
         final @NotNull String oldGroup = "Old-" + UUID.randomUUID();
         final @NotNull String newGroup = "New-" + UUID.randomUUID();
-        final @NotNull TestCaseDto renamed = aTestCase(testSet, "Log in with a valid user", "m0001", Priority.HIGH, oldGroup);
-        final @NotNull TestCaseDto wrongPassword = aTestCase(testSet, "Log in with a wrong password", "m0002", Priority.LOW, oldGroup);
-        final @NotNull TestCaseDto card = aTestCase(testSet, "Pay by card", "m0003", Priority.HIGH, oldGroup);
+        final @NotNull TestCase renamed = aTestCase(testSet, "Log in with a valid user", "m0001", Priority.HIGH, oldGroup);
+        final @NotNull TestCase wrongPassword = aTestCase(testSet, "Log in with a wrong password", "m0002", Priority.LOW, oldGroup);
+        final @NotNull TestCase card = aTestCase(testSet, "Pay by card", "m0003", Priority.HIGH, oldGroup);
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         final @NotNull List<String> balloons = Said.listening(getProject(), getTestRootDisposable()).shown();
         final @NotNull TestCaseCompletions values = Services.getInstance(getProject(), TestCaseCompletions.class);
@@ -100,7 +100,7 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
             Await.until("the group was never offered", () -> values.getGroups().contains(oldGroup));
 
             aTestCase(testSet, "Log in with a new user", "m0004", Priority.HIGH, newGroup);
-            for (final TestCaseDto regrouped : List.of(renamed, wrongPassword, card)) {
+            for (final TestCase regrouped : List.of(renamed, wrongPassword, card)) {
                 Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), regrouped.edit().groups(new ArrayList<>(List.of(newGroup))).build());
             }
 
@@ -123,7 +123,7 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-118
     public void testRefreshLandsOnThePageHoldingTheSelectedTestCase() {
         final @NotNull TestSetNode testSet = aTestSet();
-        final @NotNull List<TestCaseDto> testCases = EditorFixtures.testCases(getProject(), testSet, 5);
+        final @NotNull List<TestCase> testCases = EditorFixtures.testCases(getProject(), testSet, 5);
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         try {
             editor.choosePageSize(2);
@@ -149,7 +149,7 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-118
     public void testRefreshInATestRunEditorLandsOnThePageHoldingTheSelectedTestCase() {
         final @NotNull TestSetNode testSet = aTestSet();
-        final @NotNull List<TestCaseDto> testCases = EditorFixtures.testCases(getProject(), testSet, 5);
+        final @NotNull List<TestCase> testCases = EditorFixtures.testCases(getProject(), testSet, 5);
         final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
         final @NotNull TestRunNode testRun = EditorFixtures.testRun(getProject(), testProject, testCases.stream().map(EditorFixtures::pending).toList());
         final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());
@@ -227,7 +227,7 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-120
     public void testRefreshInATestRunEditorStopsTheExecutionAndReadsTheTestRunAgain() {
         final @NotNull TestSetNode testSet = aTestSet();
-        final @NotNull List<TestCaseDto> testCases = EditorFixtures.testCases(getProject(), testSet, 2);
+        final @NotNull List<TestCase> testCases = EditorFixtures.testCases(getProject(), testSet, 2);
         final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
         final @NotNull TestRunNode testRun = EditorFixtures.testRun(getProject(), testProject, testCases.stream().map(EditorFixtures::pending).toList());
         final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());

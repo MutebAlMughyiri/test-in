@@ -29,7 +29,7 @@ import org.testin.editor.EditorFixtures;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.editor.toolbar.GridViewButton;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
@@ -44,7 +44,7 @@ import java.util.Optional;
 
 public class ContextMenuKeyIdeTest extends AbstractTempRootIdeTest {
 
-    private @NotNull List<TestCaseDto> testCases = List.of();
+    private @NotNull List<TestCase> testCases = List.of();
 
     private static @NotNull Optional<Point> whereTheKeyOpensTheMenu(final @NotNull JComponent on) {
         return ((OpenContextMenuAction) Gestures.boundTo(on, OpenContextMenuAction.class)).whereItOpens();

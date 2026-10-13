@@ -22,7 +22,7 @@ import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
@@ -38,7 +38,7 @@ import java.util.UUID;
 
 public class SearchFindsTestRunsIdeTest extends AbstractTempRootIdeTest {
 
-    private TestCaseDto testCase;
+    private TestCase testCase;
 
     private Path ranIt;
 
@@ -76,7 +76,7 @@ public class SearchFindsTestRunsIdeTest extends AbstractTempRootIdeTest {
         return Services.getInstance(getProject(), Nodes.class);
     }
 
-    private @NotNull TestCaseDto aTestCaseIn(final TestProjectNode testProject) {
+    private @NotNull TestCase aTestCaseIn(final TestProjectNode testProject) {
         final TestSetNode login = WriteAction.computeAndWait(() -> {
             final TestSetNode set = mapper().getTestSetNode(testProject.getTestCasesFolder().getPath().resolve("Login"), testProject.getTestCasesFolder());
             nodes().addTestSet(set);
@@ -84,7 +84,7 @@ public class SearchFindsTestRunsIdeTest extends AbstractTempRootIdeTest {
             return set;
         });
 
-        final TestCaseDto testCase = TestCaseDto.builder()
+        final TestCase testCase = TestCase.builder()
                 .id(UUID.randomUUID())
                 .description("Log in with a valid user")
                 .order("m")

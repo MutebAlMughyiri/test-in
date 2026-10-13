@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.Fqcn;
 import org.testin.editor.TestinEditor;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.navigate.TestMethodCode;
 import org.testin.notifications.Notifier;
 import org.testin.services.BackgroundWork;
@@ -46,7 +46,7 @@ import java.util.stream.Stream;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WriteBodies {
     // UC-CODEGEN-021, Rule-CODEGEN-084, Rule-CODEGEN-091
-    public static void forAll(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases, final @NotNull Optional<TestinEditor> editor) {
+    public static void forAll(final @NotNull Project project, final @NotNull List<TestCase> testCases, final @NotNull Optional<TestinEditor> editor) {
         final @NotNull AgentConnection connection = AgentConnection.stored();
         if (!connection.isConnected() || testCases.isEmpty()) return;
 
@@ -57,9 +57,9 @@ public final class WriteBodies {
     }
 
     // UC-CODEGEN-021, Rule-CODEGEN-084, Rule-CODEGEN-091
-    private static void askOrConfirm(final @NotNull Project project, final @NotNull AgentConnection connection, final @NotNull List<TestCaseDto> testCases, final @NotNull Set<UUID> written, final @NotNull Optional<TestinEditor> editor) {
-        final @NotNull List<TestCaseDto> theirs = testCases.stream().filter(testCase -> written.contains(testCase.getId())).toList();
-        final @NotNull List<TestCaseDto> empty = testCases.stream().filter(testCase -> !written.contains(testCase.getId())).toList();
+    private static void askOrConfirm(final @NotNull Project project, final @NotNull AgentConnection connection, final @NotNull List<TestCase> testCases, final @NotNull Set<UUID> written, final @NotNull Optional<TestinEditor> editor) {
+        final @NotNull List<TestCase> theirs = testCases.stream().filter(testCase -> written.contains(testCase.getId())).toList();
+        final @NotNull List<TestCase> empty = testCases.stream().filter(testCase -> !written.contains(testCase.getId())).toList();
 
         if (theirs.isEmpty()) {
             ask(project, connection, empty, List.of(), editor);
@@ -77,7 +77,7 @@ public final class WriteBodies {
     }
 
     // UC-CODEGEN-021, Rule-CODEGEN-084, Rule-CODEGEN-089
-    private static void ask(final @NotNull Project project, final @NotNull AgentConnection connection, final @NotNull List<TestCaseDto> empty, final @NotNull List<TestCaseDto> theirs, final @NotNull Optional<TestinEditor> editor) {
+    private static void ask(final @NotNull Project project, final @NotNull AgentConnection connection, final @NotNull List<TestCase> empty, final @NotNull List<TestCase> theirs, final @NotNull Optional<TestinEditor> editor) {
         if (empty.isEmpty() && theirs.isEmpty()) return;
 
         final @NotNull AgentTranscript transcript = new AgentTranscript();
@@ -92,15 +92,15 @@ public final class WriteBodies {
     }
 
     // UC-CODEGEN-021, Rule-CODEGEN-084, Rule-CODEGEN-088
-    private static void write(final @NotNull Project project, final @NotNull AgentConnection connection, final @NotNull List<TestCaseDto> empty, final @NotNull List<TestCaseDto> theirs, final @NotNull AgentTranscript transcript, final @NotNull ProgressIndicator indicator) {
+    private static void write(final @NotNull Project project, final @NotNull AgentConnection connection, final @NotNull List<TestCase> empty, final @NotNull List<TestCase> theirs, final @NotNull AgentTranscript transcript, final @NotNull ProgressIndicator indicator) {
         final @NotNull AgentCli agent = AgentCli.onPath(indicator);
-        final @NotNull List<TestCaseDto> asked = Stream.concat(empty.stream(), theirs.stream()).toList();
+        final @NotNull List<TestCase> asked = Stream.concat(empty.stream(), theirs.stream()).toList();
 
         indicator.setIndeterminate(false);
         for (int next = 0; next < asked.size(); next++) {
             if (indicator.isCanceled()) return;
 
-            final @NotNull TestCaseDto testCase = asked.get(next);
+            final @NotNull TestCase testCase = asked.get(next);
             indicator.setText2(testCase.getDescription());
             indicator.setFraction((double) next / asked.size());
 
@@ -109,7 +109,7 @@ public final class WriteBodies {
     }
 
     // UC-CODEGEN-003, Rule-CODEGEN-090, Rule-CODEGEN-091
-    private static void askFor(final @NotNull Project project, final @NotNull AgentCli agent, final @NotNull AgentConnection connection, final @NotNull TestCaseDto testCase, final @NotNull AgentTranscript transcript, final boolean overWhatIsThere) {
+    private static void askFor(final @NotNull Project project, final @NotNull AgentCli agent, final @NotNull AgentConnection connection, final @NotNull TestCase testCase, final @NotNull AgentTranscript transcript, final boolean overWhatIsThere) {
         final @NotNull String prompt = BodyPrompt.of(connection.promptTemplate(), testCase, Fqcn.methodNameOf(testCase));
         final @NotNull Optional<String> said = agent.ask(connection, prompt);
         final @NotNull Optional<String> statements = said.flatMap(AgentAnswer::statementsIn);

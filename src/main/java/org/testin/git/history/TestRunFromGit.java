@@ -27,7 +27,7 @@ import org.testin.indexer.WatchedPath;
 import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
 import org.testin.model.FileKind;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItem;
 import org.testin.services.Services;
 import org.testin.setting.TestinRoot;
@@ -108,7 +108,7 @@ public final class TestRunFromGit {
                     .toList();
             final @NotNull Map<String, String> files = git.contents(testProjectPath, commit, listed);
 
-            final @NotNull Map<UUID, Optional<TestCaseDto>> testCases = new HashMap<>();
+            final @NotNull Map<UUID, Optional<TestCase>> testCases = new HashMap<>();
             wanted.values().forEach(testCaseId -> testCases.put(testCaseId, Optional.empty()));
             listed.forEach(path -> testCases.remove(wanted.get(fileName(path))));
             files.forEach((path, json) -> testCases.put(wanted.get(fileName(path)), parsed(project, json)));
@@ -128,7 +128,7 @@ public final class TestRunFromGit {
                     deleted.stream().map(testCaseId -> BugHistory.pathspec(NodeType.TEST_CASES_FOLDER, FileKind.TEST_CASE, testCaseId))).toArray(String[]::new)), wanted);
             if (lastVersions.isEmpty()) return;
 
-            final @NotNull Map<UUID, TestCaseDto> testCases = new HashMap<>();
+            final @NotNull Map<UUID, TestCase> testCases = new HashMap<>();
             git.objects(testProjectPath, List.copyOf(lastVersions.keySet())).forEach((objectName, json) ->
                     parsed(project, json).ifPresent(testCase -> testCases.put(lastVersions.get(objectName), testCase)));
             Services.getInstance(project, TestRuns.class).rememberLastInGit(testCases);
@@ -154,7 +154,7 @@ public final class TestRunFromGit {
         return found;
     }
 
-    private static @NotNull Optional<TestCaseDto> parsed(final @NotNull Project project, final @NotNull String json) {
+    private static @NotNull Optional<TestCase> parsed(final @NotNull Project project, final @NotNull String json) {
         return TestCaseHistory.parsed(Services.getInstance(project, JsonCodec.class), json);
     }
 

@@ -16,7 +16,7 @@
 
 package org.testin.bug;
 
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.bug.BugPriority;
 import org.testin.model.bug.BugSeverity;
 import org.testin.model.markers.TestRunMarker;
@@ -41,7 +41,7 @@ public class BugFactsTest {
     @Test
     public void theFactsAreReadOffTheRunItemItsTestCaseAndItsTestRun() {
         final UUID testCaseId = UUID.randomUUID();
-        final TestCaseDto testCase = TestCaseDto.builder().id(testCaseId).description("  Log in with a valid user ").expectedResult("Welcome")
+        final TestCase testCase = TestCase.builder().id(testCaseId).description("  Log in with a valid user ").expectedResult("Welcome")
                 .steps(List.of("Open", "Log in")).testData("user=a").build();
         final RunItem runItem = RunItem.builder().id(testCaseId)
                 .bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("Error page").stacktrace("boom").executedBy("Muteb").executedAt(ZonedDateTime.of(2026, 9, 13, 14, 14, 0, 0, ZoneId.of("Asia/Riyadh"))).build())).build();
@@ -70,7 +70,7 @@ public class BugFactsTest {
 
     @Test
     public void aRunItemNobodyExecutedHasNoExecuted() {
-        final TestCaseDto testCase = TestCaseDto.builder().build();
+        final TestCase testCase = TestCase.builder().build();
         final RunItem runItem = RunItem.builder().id(testCase.getId()).build();
 
         assertEquals(BugFacts.of(runItem, testCase, new TestRunMarker(), "Sprint 7", List.of()).executed(), "");

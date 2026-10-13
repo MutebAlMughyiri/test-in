@@ -26,7 +26,7 @@ import org.testin.clipboard.CopyChoice;
 import org.testin.codegen.CodeChangeType;
 import org.testin.model.MenuItem;
 import org.testin.model.StatusBarItem;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
@@ -187,7 +187,7 @@ public enum UpdateTestCaseFields implements MenuItem {
     private final @NotNull String name;
     private final @NotNull Shortcuts shortcut;
     private final @NotNull Icon icon;
-    private final @NotNull CodeChangeType<TestCaseDto> codeChangeType;
+    private final @NotNull CodeChangeType<TestCase> codeChangeType;
     private final @NotNull Done done;
     private final @NotNull BulkDialogOpener bulkAction;
     private final @NotNull Function<AbstractTestCaseDialog, TestCaseSection> sectionExtractor;

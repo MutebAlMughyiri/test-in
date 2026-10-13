@@ -18,7 +18,7 @@ package org.testin.codegen.agent;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.util.Bundle;
 
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ public final class AgentTranscript {
     private int landed;
 
     // UC-CODEGEN-021, Rule-CODEGEN-090
-    public void record(final @NotNull TestCaseDto testCase, final @NotNull String prompt, final @NotNull String said, final boolean bodyLanded, final @NotNull String outcome) {
+    public void record(final @NotNull TestCase testCase, final @NotNull String prompt, final @NotNull String said, final boolean bodyLanded, final @NotNull String outcome) {
         if (bodyLanded) landed++;
         TestinLogger.debug("""
                 Agent asked for '%s':

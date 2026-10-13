@@ -26,8 +26,8 @@ import org.testin.codegen.Fqcn;
 import org.testin.codegen.CodeChangeType;
 import org.testin.importexport.imports.ImportSetter;
 import org.testin.model.Groups;
-import org.testin.model.TestCaseDto;
-import org.testin.model.TestCaseDto.TestCaseDtoBuilder;
+import org.testin.model.TestCase;
+import org.testin.model.TestCase.TestCaseBuilder;
 import org.testin.model.ShowableField;
 import org.testin.model.FieldDefault;
 import org.testin.notifications.Notifier;
@@ -62,7 +62,7 @@ public enum TestSetEditorFields implements ShowableField {
             CodeChangeType.NO_CODE_CHANGE
     ) {
         @Override
-        public void applyToUI(final @NotNull TestCaseDto testCase, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
+        public void applyToUI(final @NotNull TestCase testCase, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
         }
     },
 
@@ -74,20 +74,20 @@ public enum TestSetEditorFields implements ShowableField {
             CodeChangeType.NO_CODE_CHANGE
     ) {
         @Override
-        public void applyToUI(final @NotNull TestCaseDto testCase, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
+        public void applyToUI(final @NotNull TestCase testCase, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
         }
     },
 
     DESCRIPTION(
             Bundle.message("field.description"),
             FieldDefault.LOCKED_CHECKED,
-            TestCaseDto::getDescription,
+            TestCase::getDescription,
             always((draft, value) -> draft.description(NameSanitizer.description(value))),
             CodeChangeType.UPDATE_TEST_CASE_DESCRIPTION,
             Can.EDIT, Can.IMPORT, Can.COPY, Can.EXPORT
     ) {
         @Override
-        public void applyToUI(final @NotNull TestCaseDto testCase, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
+        public void applyToUI(final @NotNull TestCase testCase, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
         }
     },
 
@@ -103,8 +103,8 @@ public enum TestSetEditorFields implements ShowableField {
     EXPECTED_RESULT(
             Bundle.message("field.expected.result"),
             FieldDefault.ON,
-            TestCaseDto::getExpectedResult,
-            always(TestCaseDtoBuilder::expectedResult),
+            TestCase::getExpectedResult,
+            always(TestCaseBuilder::expectedResult),
             CodeChangeType.UPDATE_TEST_CASE_EXPECTED_RESULT,
             Can.EDIT, Can.IMPORT, Can.COPY, Can.EXPORT
     ),
@@ -127,7 +127,7 @@ public enum TestSetEditorFields implements ShowableField {
             Can.EDIT, Can.IMPORT, Can.COPY, Can.EXPORT
     ) {
         @Override
-        public void applyToUI(final @NotNull TestCaseDto testCase, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
+        public void applyToUI(final @NotNull TestCase testCase, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
         }
     },
 
@@ -143,8 +143,8 @@ public enum TestSetEditorFields implements ShowableField {
     REFERENCE(
             Bundle.message("field.reference"),
             FieldDefault.OFF,
-            TestCaseDto::getReference,
-            always(TestCaseDtoBuilder::reference),
+            TestCase::getReference,
+            always(TestCaseBuilder::reference),
             CodeChangeType.NO_CODE_CHANGE,
             Can.EDIT, Can.IMPORT, Can.COPY, Can.EXPORT
     ),
@@ -152,8 +152,8 @@ public enum TestSetEditorFields implements ShowableField {
     TEST_DATA(
             Bundle.message("field.test.data"),
             FieldDefault.OFF,
-            TestCaseDto::getTestData,
-            always(TestCaseDtoBuilder::testData),
+            TestCase::getTestData,
+            always(TestCaseBuilder::testData),
             CodeChangeType.UPDATE_TEST_CASE_TEST_DATA,
             Can.EDIT, Can.IMPORT, Can.COPY, Can.EXPORT
     ),
@@ -161,8 +161,8 @@ public enum TestSetEditorFields implements ShowableField {
     PRE_CONDITIONS(
             Bundle.message("field.pre.conditions"),
             FieldDefault.OFF,
-            TestCaseDto::getPreConditions,
-            always(TestCaseDtoBuilder::preConditions),
+            TestCase::getPreConditions,
+            always(TestCaseBuilder::preConditions),
             CodeChangeType.UPDATE_TEST_CASE_PRE_CONDITIONS,
             Can.EDIT, Can.IMPORT, Can.COPY, Can.EXPORT
     ),
@@ -176,7 +176,7 @@ public enum TestSetEditorFields implements ShowableField {
             Can.EDIT, Can.IMPORT, Can.COPY, Can.EXPORT
     ) {
         @Override
-        public void applyToUI(final @NotNull TestCaseDto testCase, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
+        public void applyToUI(final @NotNull TestCase testCase, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
             testCase.getGroups().stream().map(Badges::createGroupBadge).forEach(badges::add);
         }
     },
@@ -193,8 +193,8 @@ public enum TestSetEditorFields implements ShowableField {
     MODULE(
             Bundle.message("field.module"),
             FieldDefault.OFF,
-            TestCaseDto::getModule,
-            always(TestCaseDtoBuilder::module),
+            TestCase::getModule,
+            always(TestCaseBuilder::module),
             CodeChangeType.UPDATE_TEST_CASE_MODULE,
             Can.EDIT, Can.IMPORT, Can.COPY, Can.EXPORT
     ),
@@ -211,8 +211,8 @@ public enum TestSetEditorFields implements ShowableField {
     CREATED_BY(
             Bundle.message("field.created.by"),
             FieldDefault.OFF,
-            TestCaseDto::getCreatedBy,
-            always(TestCaseDtoBuilder::createdBy),
+            TestCase::getCreatedBy,
+            always(TestCaseBuilder::createdBy),
             CodeChangeType.NO_CODE_CHANGE,
             Can.IMPORT, Can.EXPORT
     ),
@@ -220,8 +220,8 @@ public enum TestSetEditorFields implements ShowableField {
     UPDATED_BY(
             Bundle.message("field.updated.by"),
             FieldDefault.OFF,
-            TestCaseDto::getUpdatedBy,
-            always(TestCaseDtoBuilder::updatedBy),
+            TestCase::getUpdatedBy,
+            always(TestCaseBuilder::updatedBy),
             CodeChangeType.NO_CODE_CHANGE,
             Can.IMPORT, Can.EXPORT
     ),
@@ -253,13 +253,13 @@ public enum TestSetEditorFields implements ShowableField {
             .collect(Collectors.toUnmodifiableMap(capability -> capability, capability -> Arrays.stream(values()).filter(field -> field.can(capability)).toList()));
     private final @NotNull String name;
     private final @NotNull FieldDefault toolBarDefault;
-    private final @NotNull Function<TestCaseDto, String> testValueExtractor;
+    private final @NotNull Function<TestCase, String> testValueExtractor;
     private final @NotNull ImportSetter importSetter;
-    private final @NotNull CodeChangeType<TestCaseDto> codeChangeType;
+    private final @NotNull CodeChangeType<TestCase> codeChangeType;
     @Getter(AccessLevel.NONE)
     private final @NotNull ImmutableSet<Can> can;
 
-    TestSetEditorFields(final @NotNull String name, final @NotNull FieldDefault toolBarDefault, final @NotNull Function<TestCaseDto, String> testValueExtractor, final @NotNull ImportSetter importSetter, final @NotNull CodeChangeType<TestCaseDto> codeChangeType, final @NotNull Can... can) {
+    TestSetEditorFields(final @NotNull String name, final @NotNull FieldDefault toolBarDefault, final @NotNull Function<TestCase, String> testValueExtractor, final @NotNull ImportSetter importSetter, final @NotNull CodeChangeType<TestCase> codeChangeType, final @NotNull Can... can) {
         this.name = name;
         this.toolBarDefault = toolBarDefault;
         this.testValueExtractor = testValueExtractor;
@@ -269,7 +269,7 @@ public enum TestSetEditorFields implements ShowableField {
     }
 
     // UC-EDITOR-PANEL-019, UC-INTERNAL-001, Rule-EDITOR-PANEL-091
-    public static boolean anyContains(final @NotNull TestCaseDto testCase, final @NotNull String wanted) {
+    public static boolean anyContains(final @NotNull TestCase testCase, final @NotNull String wanted) {
         final @NotNull String lowered = wanted.toLowerCase(Locale.ROOT);
 
         for (final TestSetEditorFields field : values()) {
@@ -281,13 +281,13 @@ public enum TestSetEditorFields implements ShowableField {
 
     // UC-SHARE-006, Rule-SHARE-106, Rule-EDITOR-PANEL-206
     public static @NotNull ImportedRow importRow(final @NotNull Project project, final @NotNull Function<TestSetEditorFields, String> cell) {
-        TestCaseDto testCase = TestCaseDto.builder().build();
+        TestCase testCase = TestCase.builder().build();
         int refused = 0;
 
         for (final TestSetEditorFields field : values()) {
             if (!field.can(Can.IMPORT)) continue;
 
-            final @NotNull Optional<TestCaseDto> took = field.importSetter.execute(project, testCase, cell.apply(field));
+            final @NotNull Optional<TestCase> took = field.importSetter.execute(project, testCase, cell.apply(field));
             if (took.isPresent()) testCase = took.orElseThrow();
             else refused++;
         }
@@ -330,18 +330,18 @@ public enum TestSetEditorFields implements ShowableField {
         return can.contains(capability);
     }
 
-    public @NotNull String gridValue(final @NotNull TestCaseDto testCase) {
+    public @NotNull String gridValue(final @NotNull TestCase testCase) {
         return this == STEPS ? String.join("\n", testCase.getSteps()) : testValueExtractor.apply(testCase);
     }
 
     // Rule-VIEW-PANEL-026, Rule-EDITOR-PANEL-005
-    public @NotNull String displayValue(final @NotNull TestCaseDto testCase) {
+    public @NotNull String displayValue(final @NotNull TestCase testCase) {
         final @NotNull String raw = testValueExtractor.apply(testCase);
 
         return PROSE.contains(this) ? Display.format(raw) : raw;
     }
 
-    public void applyToUI(final @NotNull TestCaseDto testCase, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
+    public void applyToUI(final @NotNull TestCase testCase, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
         details.put(name, displayValue(testCase));
     }
 }

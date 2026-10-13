@@ -18,7 +18,7 @@ package org.testin.view.details;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.ui.components.JBLabel;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.testcase.CreateTestCaseFields;
 import org.testin.testrun.TestRunEditorFields;
 import org.testin.ui.framework.ShownDialog;
@@ -63,7 +63,7 @@ public class StacktraceWindowIdeTest extends BasePlatformTestCase {
     }
 
     private @NotNull JComponent shownWindow() {
-        final @NotNull TestCaseDto testCase = TestCaseDto.builder().description("Log in with a valid user").expectedResult("The session stays until the tester signs out").build();
+        final @NotNull TestCase testCase = TestCase.builder().description("Log in with a valid user").expectedResult("The session stays until the tester signs out").build();
         assertTrue("the Stacktrace window did not open", new StacktraceDialog(getProject(), testCase, "The session was dropped", STACKTRACE).show());
 
         final @NotNull JComponent window = ShownDialog.content(getProject(), StacktraceDialog.class);

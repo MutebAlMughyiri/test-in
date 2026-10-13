@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.Await;
 import org.testin.editor.ShownFields;
 import org.testin.indexer.TestRuns;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.bug.BugPriority;
 import org.testin.model.bug.BugSeverity;
 import org.testin.model.node.TestRunNode;
@@ -63,7 +63,7 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
 
     private static final @NotNull String ORDER = TestSetEditorFields.ORDER.getName().toUpperCase(Locale.ROOT);
 
-    private static @NotNull TestCaseDto everyFieldFilled(final @NotNull TestCaseDto testCase) {
+    private static @NotNull TestCase everyFieldFilled(final @NotNull TestCase testCase) {
         testCase.setExpectedResult("The dashboard opens");
         testCase.setSteps(List.of("Open the login page", "Type the credentials"));
         testCase.setPreConditions("An account exists");
@@ -73,7 +73,7 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
         return testCase;
     }
 
-    private static @NotNull RunItem failedWith(final @NotNull TestCaseDto testCase, final @NotNull List<String> screenshots) {
+    private static @NotNull RunItem failedWith(final @NotNull TestCase testCase, final @NotNull List<String> screenshots) {
         return RunItem.builder().id(testCase.getId())
                 .bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The session was dropped").duration(Duration.ofSeconds(134)).executedBy("muteb").stacktrace("java.lang.AssertionError: expected [true]").screenshots(screenshots).build())).build();
     }
@@ -94,7 +94,7 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
         return Optional.ofNullable(icon).map(Icon::getIconWidth).orElse(0);
     }
 
-    private @NotNull JBPanel<?> drawnWithEveryBandOpen(final @NotNull TestCaseDto testCase, final @NotNull Optional<RunItem> runItem, final @NotNull List<String> treePath) {
+    private @NotNull JBPanel<?> drawnWithEveryBandOpen(final @NotNull TestCase testCase, final @NotNull Optional<RunItem> runItem, final @NotNull List<String> treePath) {
         final boolean wasOpen = PropertiesComponent.getInstance().getBoolean(DetailsTab.TEST_CASE_OPEN, false);
         PropertiesComponent.getInstance().setValue(DetailsTab.TEST_CASE_OPEN, true, false);
         try {
@@ -113,7 +113,7 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
     // Rule-VIEW-PANEL-028
     public void testNoValueCanBeTypedIntoOrTakesTheKeyboard() {
         final @NotNull TestSetNode testSet = aTestSet("Login");
-        final @NotNull TestCaseDto testCase = everyFieldFilled(aTestCase(testSet, "Log in with a valid user", "a"));
+        final @NotNull TestCase testCase = everyFieldFilled(aTestCase(testSet, "Log in with a valid user", "a"));
         final @NotNull TestRunNode testRun = aTestRun(List.of(failedWith(testCase, List.of())));
         final @NotNull JBPanel<?> tab = drawnWithEveryBandOpen(testCase, Services.getInstance(getProject(), TestRuns.class).findRunItems(testRun.getPath()).flatMap(runItems -> runItems.runItemOf(testCase.getId())), testRun.treePath());
 
@@ -135,7 +135,7 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
     // Rule-VIEW-PANEL-041
     public void testTheBreadcrumbIsOneStepForEachFolderAboveTheTestCase() {
         final @NotNull List<String> treePath = List.of("Demo", "Test Cases", "Accounts", "Login");
-        final @NotNull JBPanel<?> tab = Drawn.detailsTab(getProject(), TestCaseDto.builder().description("Log in with a valid user").build(), Optional.empty(), treePath);
+        final @NotNull JBPanel<?> tab = Drawn.detailsTab(getProject(), TestCase.builder().description("Log in with a valid user").build(), Optional.empty(), treePath);
 
         final @NotNull Container breadcrumb = lineOf(Drawn.reading(tab, "Demo"));
         final @NotNull List<JLabel> parts = Arrays.stream(breadcrumb.getComponents()).filter(JLabel.class::isInstance).map(JLabel.class::cast).toList();
@@ -145,7 +145,7 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
         assertEquals("the breadcrumb does not show one step for each folder, in order", treePath, steps);
         assertEquals("the steps are not joined by one arrow between each two", treePath.size() - 1, arrows);
 
-        final @NotNull JBPanel<?> noPath = Drawn.detailsTab(getProject(), TestCaseDto.builder().description("Log in with a valid user").build(), Optional.empty(), List.of());
+        final @NotNull JBPanel<?> noPath = Drawn.detailsTab(getProject(), TestCase.builder().description("Log in with a valid user").build(), Optional.empty(), List.of());
         assertFalse("a panel handed no path drew a step: " + Drawn.words(noPath), Drawn.holds(Drawn.words(noPath), "Demo"));
     }
 
@@ -153,7 +153,7 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
     public void testOrderIsWhereTheTestCaseSitsInItsTestSet() {
         final @NotNull TestSetNode testSet = aTestSet("Login");
         aTestCase(testSet, "Log in with a valid user", "a");
-        final @NotNull TestCaseDto middle = aTestCase(testSet, "Log in with a locked user", "m");
+        final @NotNull TestCase middle = aTestCase(testSet, "Log in with a locked user", "m");
         aTestCase(testSet, "Log in with no password", "z");
 
         assertEquals("Order was not read as the test case's place in its test set", "2", orderIn(Drawn.words(Drawn.detailsTab(getProject(), middle, Optional.empty(), testSet.treePath()))));
@@ -166,7 +166,7 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
     public void testATestCaseNoLongerInItsTestSetHasNoOrder() {
         final @NotNull TestSetNode testSet = aTestSet("Login");
         aTestCase(testSet, "Log in with a valid user", "a");
-        final @NotNull TestCaseDto deleted = TestCaseDto.builder().parent(testSet).description("Log in with a locked user").build();
+        final @NotNull TestCase deleted = TestCase.builder().parent(testSet).description("Log in with a locked user").build();
 
         final @NotNull List<String> words = Drawn.words(Drawn.detailsTab(getProject(), deleted, Optional.empty(), testSet.treePath()));
 
@@ -176,7 +176,7 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
     // Rule-VIEW-PANEL-081
     public void testTheStacktraceLinkComesFirstThenOneThumbnailForEachScreenshot() {
         final @NotNull TestSetNode testSet = aTestSet("Login");
-        final @NotNull TestCaseDto testCase = aTestCase(testSet, "Log in with a valid user", "a");
+        final @NotNull TestCase testCase = aTestCase(testSet, "Log in with a valid user", "a");
         final @NotNull TestRunNode testRun = aTestRun(List.of(RunItem.builder().id(testCase.getId()).build()));
         final @NotNull TestRuns testRuns = Services.getInstance(getProject(), TestRuns.class);
         final @NotNull List<String> names = testRuns.storeScreenshots(testRun.getPath(), List.of(aScreenshot(320, 200), aScreenshot(640, 400)));
@@ -213,7 +213,7 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
     // Rule-VIEW-PANEL-103, Rule-VIEW-PANEL-081
     public void testTheStacktraceAndScreenshotsAreDrawnWhenFieldsHidesTheStacktrace() {
         final @NotNull TestSetNode testSet = aTestSet("Login");
-        final @NotNull TestCaseDto testCase = aTestCase(testSet, "Log in with a valid user", "a");
+        final @NotNull TestCase testCase = aTestCase(testSet, "Log in with a valid user", "a");
         final @NotNull TestRunNode testRun = aTestRun(List.of(RunItem.builder().id(testCase.getId()).build()));
         final @NotNull List<String> names = Services.getInstance(getProject(), TestRuns.class).storeScreenshots(testRun.getPath(), List.of(aScreenshot(320, 200)));
         final @NotNull Set<TestRunEditorFields> was = ShownFields.read(ShownFields.IN_TEST_RUNS, TestRunEditorFields.class);

@@ -28,7 +28,7 @@ import org.testin.AbstractCodegenIdeTest;
 import org.testin.Await;
 import org.testin.Said;
 import org.testin.editor.EditorFixtures;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
@@ -69,7 +69,7 @@ public class TestNGHandOverIdeTest extends AbstractCodegenIdeTest {
         }), getTestRootDisposable());
     }
 
-    private @NotNull TestRunEditor runningTheWholeTestRunOf(final @NotNull List<TestCaseDto> covered) {
+    private @NotNull TestRunEditor runningTheWholeTestRunOf(final @NotNull List<TestCase> covered) {
         final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
         final @NotNull TestRunNode testRun = EditorFixtures.testRun(getProject(), testProject, covered.stream().map(EditorFixtures::pending).toList());
         final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());
@@ -81,8 +81,8 @@ public class TestNGHandOverIdeTest extends AbstractCodegenIdeTest {
     // Rule-EDITOR-PANEL-188
     public void testATestCaseWithNoGeneratedMethodIsDroppedAndTheRestStillRun() {
         final @NotNull TestSetNode testSet = createdTestSet("Checkout");
-        final @NotNull TestCaseDto withoutCode = indexedTestCase(testSet, "Log in with a wrong password", "m0002");
-        final @NotNull List<TestCaseDto> testCases = List.of(createdTestCase(testSet, "Log in with a valid user", "m0001"), withoutCode, createdTestCase(testSet, "Log out", "m0003"));
+        final @NotNull TestCase withoutCode = indexedTestCase(testSet, "Log in with a wrong password", "m0002");
+        final @NotNull List<TestCase> testCases = List.of(createdTestCase(testSet, "Log in with a valid user", "m0001"), withoutCode, createdTestCase(testSet, "Log out", "m0003"));
         settled();
         final @NotNull List<String> balloons = Said.listening(getProject(), getTestRootDisposable()).shown();
         final @NotNull TestRunEditor editor = runningTheWholeTestRunOf(testCases);
@@ -97,7 +97,7 @@ public class TestNGHandOverIdeTest extends AbstractCodegenIdeTest {
     // Rule-EDITOR-PANEL-185, Rule-EDITOR-PANEL-187
     public void testTheWholeSetIsOneConfigurationRunInTheOrderOfTheTestSet() {
         final @NotNull TestSetNode testSet = createdTestSet("Checkout");
-        final @NotNull List<TestCaseDto> testCases = List.of(createdTestCase(testSet, "Log in with a valid user", "m0001"), createdTestCase(testSet, "Log in with a wrong password", "m0002"), createdTestCase(testSet, "Log out", "m0003"));
+        final @NotNull List<TestCase> testCases = List.of(createdTestCase(testSet, "Log in with a valid user", "m0001"), createdTestCase(testSet, "Log in with a wrong password", "m0002"), createdTestCase(testSet, "Log out", "m0003"));
         settled();
         final @NotNull TestRunEditor editor = runningTheWholeTestRunOf(List.of(testCases.get(2), testCases.getFirst(), testCases.get(1)));
         try {

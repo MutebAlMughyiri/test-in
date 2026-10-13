@@ -24,7 +24,7 @@ import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractBoundProjectAction;
 import org.testin.editor.TestinEditor;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.testcase.UpdateTestCaseAction;
 import org.testin.testcase.UpdateTestCaseFields;
 import org.testin.util.Bundle;
@@ -41,10 +41,10 @@ import java.util.Optional;
 public final class GridEnterAction extends AbstractBoundProjectAction {
     private final @NotNull TestinEditor editor;
     private final @NotNull JBTable table;
-    private final @NotNull List<TestCaseDto> pageTestCases;
+    private final @NotNull List<TestCase> pageTestCases;
     private final @NotNull List<String> treePath;
 
-    public GridEnterAction(final @NotNull TestinEditor editor, final @NotNull JBTable table, final @NotNull List<TestCaseDto> pageTestCases, final @NotNull List<String> treePath) {
+    public GridEnterAction(final @NotNull TestinEditor editor, final @NotNull JBTable table, final @NotNull List<TestCase> pageTestCases, final @NotNull List<String> treePath) {
         super(editor.getProject(), Bundle.message("grid.enter.text"), Bundle.message("grid.enter.description"), AllIcons.Actions.PreviewDetails);
         this.editor = editor;
         this.table = table;

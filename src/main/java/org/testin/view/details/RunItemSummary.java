@@ -25,7 +25,7 @@ import com.intellij.util.ui.UIUtil;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.card.HoverButton;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.testrun.RunItemExecution;
@@ -119,7 +119,7 @@ public final class RunItemSummary extends AbstractDetails {
 
     // UC-VIEW-PANEL-005, Rule-VIEW-PANEL-086, Rule-VIEW-PANEL-123
     @Override
-    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull TestCaseDto testCase, final int currentRow) {
+    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull TestCase testCase, final int currentRow) {
         int row = currentRow;
         if (runItem.executedAtMostOnce()) {
             final @NotNull JBPanel<?> line = line(GAP);
@@ -149,7 +149,7 @@ public final class RunItemSummary extends AbstractDetails {
     }
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-086, Rule-VIEW-PANEL-119
-    private @NotNull JBPanel<?> executionLine(final @NotNull Project project, final @NotNull TestCaseDto testCase, final int at, final boolean isDefault) {
+    private @NotNull JBPanel<?> executionLine(final @NotNull Project project, final @NotNull TestCase testCase, final int at, final boolean isDefault) {
         final @NotNull RunItemExecution execution = runItem.getExecutions().get(at);
 
         final @NotNull JBPanel<?> line = line(GAP);
@@ -172,7 +172,7 @@ public final class RunItemSummary extends AbstractDetails {
     }
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-120, Rule-VIEW-PANEL-121
-    private @NotNull JBPanel<?> actions(final @NotNull Project project, final @NotNull TestCaseDto testCase, final @NotNull TestRunNode testRun, final int at, final boolean isDefault, final @NotNull Optional<String> whyNot) {
+    private @NotNull JBPanel<?> actions(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull TestRunNode testRun, final int at, final boolean isDefault, final @NotNull Optional<String> whyNot) {
         final @NotNull RunItemRecorder statuses = Services.getInstance(project, RunItemRecorder.class);
         final @NotNull JBPanel<?> actions = row(0);
 

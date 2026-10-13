@@ -29,7 +29,7 @@ import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
 import org.testin.model.NodeType;
 import org.testin.model.FileKind;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.testrun.RunItem;
@@ -536,7 +536,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
         final @NotNull Path committed = aTestRun(COMPLETED, TestRunStatus.COMMITTED);
         final @NotNull Path completed = aTestRun("Cycle 5", TestRunStatus.COMPLETED);
         readEverything();
-        final @NotNull TestCaseDto testCase = Services.getInstance(getProject(), TestCases.class).findTestCase(testCaseId).orElseThrow();
+        final @NotNull TestCase testCase = Services.getInstance(getProject(), TestCases.class).findTestCase(testCaseId).orElseThrow();
 
         assertTrue("Run was offered on a Committed test run", TestCaseQuickAction.RUN_TEST_METHOD.whyNotHere(Optional.of(theTestRunAt(committed)), testCase).isPresent());
         assertTrue("Run was refused on a Completed test run", TestCaseQuickAction.RUN_TEST_METHOD.whyNotHere(Optional.of(theTestRunAt(completed)), testCase).isEmpty());

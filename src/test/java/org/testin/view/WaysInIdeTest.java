@@ -27,7 +27,7 @@ import org.testin.editor.EditorFixtures;
 import org.testin.editor.grid.GridKeys;
 import org.testin.editor.grid.GridTables;
 import org.testin.editor.testset.TestSetEditor;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 
 import java.awt.event.InputEvent;
@@ -41,7 +41,7 @@ import static org.testin.view.Drawn.holds;
 public class WaysInIdeTest extends AbstractViewPanelIdeTest {
 
     private TestSetNode testSet;
-    private List<TestCaseDto> testCases;
+    private List<TestCase> testCases;
 
     @Override
     protected void setUp() {

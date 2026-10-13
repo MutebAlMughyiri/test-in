@@ -19,12 +19,12 @@ package org.testin.testcase;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.CodeChangeType;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.util.ArrayList;
 import java.util.List;
 
-record RestoredTestCases(@NotNull List<TestCaseDto> removed, @NotNull List<TestCaseDto> comingBack, @NotNull List<TestCaseDto> landed) {
+record RestoredTestCases(@NotNull List<TestCase> removed, @NotNull List<TestCase> comingBack, @NotNull List<TestCase> landed) {
     RestoredTestCases() {
         this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
     }

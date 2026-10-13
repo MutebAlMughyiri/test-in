@@ -43,7 +43,7 @@ import org.testin.filter.SortPopupButton;
 import org.testin.filter.Sorting;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.testrun.RunItem;
@@ -193,12 +193,12 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
         return buttons(frame).stream().map(button -> button.getAccessibleContext().getAccessibleName()).toList();
     }
 
-    private @NotNull List<TestCaseDto> aTestSetWithSteps(final int count, final int steps) {
+    private @NotNull List<TestCase> aTestSetWithSteps(final int count, final int steps) {
         final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
         final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), testProject, "Checkout");
-        final @NotNull List<TestCaseDto> made = new ArrayList<>();
+        final @NotNull List<TestCase> made = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description("Test case number " + (i + 1)).expectedResult("It works " + (i + 1))
+            final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description("Test case number " + (i + 1)).expectedResult("It works " + (i + 1))
                     .steps(new ArrayList<>(IntStream.rangeClosed(1, steps).mapToObj(step -> "Do step " + step + " of the test case and look at what happens").toList()))
                     .order(String.format("m%04d", i)).build();
             testCase.setParent(testSet);
@@ -208,7 +208,7 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
         return made;
     }
 
-    private @NotNull TestRunFixture aTestRunOf(final @NotNull List<TestCaseDto> testCases) {
+    private @NotNull TestRunFixture aTestRunOf(final @NotNull List<TestCase> testCases) {
         return TestRunFixture.of(getProject(), root, testCases.stream().map(EditorFixtures::pending).toList(), testCases);
     }
 
@@ -491,7 +491,7 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
             final @NotNull EditorTextField typed = Drawn.components(form).stream().filter(EditorTextField.class::isInstance).map(EditorTextField.class::cast).findFirst().orElseThrow();
             typed.setText("The dashboard stayed blank");
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
-            final @NotNull TestCaseDto walked = fixture.testCases().getFirst();
+            final @NotNull TestCase walked = fixture.testCases().getFirst();
             Services.getInstance(getProject(), TestRuns.class).changeRunItems(fixture.testRun().getPath(), testRun -> testRun.getAll().removeIf(runItem -> runItem.getId().equals(walked.getId())));
 
             press(frame, Shortcuts.Enter.getKey());
@@ -515,7 +515,7 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
             press(frame, RunItemStatus.FAILED.getMenuEntry().shortcut());
             final @NotNull List<String> inTheForm = Drawn.words(theOne(frame, FailureForm.class));
 
-            final @NotNull TestCaseDto walked = fixture.testCases().getFirst();
+            final @NotNull TestCase walked = fixture.testCases().getFirst();
             final @NotNull FailureDetailDialog dialog = new FailureDetailDialog(getProject(), fixture.testRun().getPath(), fixture.runItemOf(walked), _ -> {
             });
             final @NotNull List<String> inTheDialog = ShownDialog.wordsOf(dialog).stream()

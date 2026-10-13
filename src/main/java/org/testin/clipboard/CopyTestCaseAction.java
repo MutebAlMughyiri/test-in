@@ -25,7 +25,7 @@ import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.GrayWithReason;
 import org.testin.actions.TestinDataKeys;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
@@ -40,7 +40,7 @@ public class CopyTestCaseAction extends AbstractAnyProjectAction {
     // UC-EDITOR-PANEL-015
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
-        final @NotNull List<TestCaseDto> testCases = TestinDataKeys.selectedTestCases(e);
+        final @NotNull List<TestCase> testCases = TestinDataKeys.selectedTestCases(e);
 
         if (!testCases.isEmpty()) {
             try {

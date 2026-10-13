@@ -16,7 +16,7 @@
 
 package org.testin.util;
 
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testng.annotations.Test;
 
 import java.io.UncheckedIOException;
@@ -27,7 +27,7 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.expectThrows;
 
-public class MapperFailureTest {
+public class JsonCodecFailureTest {
 
     @Test
     public void aSerializationFailureRaisesRatherThanReturningNothing() {
@@ -49,7 +49,7 @@ public class MapperFailureTest {
 
     @Test
     public void whatIsWrittenIsNeverEmpty() {
-        final byte[] testCase = RealJsonCodec.build().writeValueAsBytes(TestCaseDto.builder().description("a case").build());
+        final byte[] testCase = RealJsonCodec.build().writeValueAsBytes(TestCase.builder().description("a case").build());
 
         assertTrue(testCase.length > 0);
         assertTrue(new String(testCase, StandardCharsets.UTF_8).contains("a case"));
@@ -58,9 +58,9 @@ public class MapperFailureTest {
     @Test
     public void aTestCaseSurvivesTheRoundTrip() {
         final JsonCodec mapper = RealJsonCodec.build();
-        final TestCaseDto original = TestCaseDto.builder().description("written and read back").build();
+        final TestCase original = TestCase.builder().description("written and read back").build();
 
-        final TestCaseDto readBack = mapper.readValue(mapper.writeValueAsString(original), TestCaseDto.class);
+        final TestCase readBack = mapper.readValue(mapper.writeValueAsString(original), TestCase.class);
 
         assertEquals(readBack.getDescription(), original.getDescription());
         assertEquals(readBack.getId(), original.getId());
@@ -69,9 +69,9 @@ public class MapperFailureTest {
     @Test
     public void aFileThatIsNotJsonFailsAsUnreadableAndNamesWhatWasExpected() {
         final UncheckedIOException failure = expectThrows(UncheckedIOException.class,
-                () -> RealJsonCodec.build().readValue("not json".getBytes(StandardCharsets.UTF_8), TestCaseDto.class));
+                () -> RealJsonCodec.build().readValue("not json".getBytes(StandardCharsets.UTF_8), TestCase.class));
 
-        assertTrue(String.valueOf(failure.getMessage()).contains("TestCaseDto"), "the message names what could not be read: " + failure.getMessage());
+        assertTrue(String.valueOf(failure.getMessage()).contains(TestCase.class.getSimpleName()), "the message names what could not be read: " + failure.getMessage());
     }
 
     private static final class NotSerializable {

@@ -32,7 +32,7 @@ import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
 import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.notifications.Done;
@@ -98,7 +98,7 @@ record ImportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
     }
 
     // UC-SHARE-005, UC-SHARE-006
-    private void executeImportWriteAction(final @NotNull AbstractNode selectedNode, final @NotNull Map<String, List<TestCaseDto>> selectedTestCasesBySheet) {
+    private void executeImportWriteAction(final @NotNull AbstractNode selectedNode, final @NotNull Map<String, List<TestCase>> selectedTestCasesBySheet) {
         final boolean generateCode = CodeOn.isOnOrHinted(project);
 
         final int total = selectedTestCasesBySheet.values().stream().mapToInt(List::size).sum();
@@ -108,7 +108,7 @@ record ImportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
     }
 
     // UC-SHARE-005, UC-SHARE-006
-    void importInBackground(final @NotNull AbstractNode selectedNode, final @NotNull Map<String, List<TestCaseDto>> selectedTestCasesBySheet, final boolean generateCode, final int total, final @NotNull ProgressIndicator indicator) {
+    void importInBackground(final @NotNull AbstractNode selectedNode, final @NotNull Map<String, List<TestCase>> selectedTestCasesBySheet, final boolean generateCode, final int total, final @NotNull ProgressIndicator indicator) {
         final @NotNull Path targetPath = selectedNode.getPath();
 
         indicator.setIndeterminate(false);
@@ -125,16 +125,16 @@ record ImportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
         final @NotNull Set<String> stillEmpty = new LinkedHashSet<>();
 
         try {
-            final @NotNull Map<TestSetNode, List<TestCaseDto>> targets =
+            final @NotNull Map<TestSetNode, List<TestCase>> targets =
                     targetSets(selectedNode, targetPath, selectedTestCasesBySheet);
             targets.keySet().forEach(made -> stillEmpty.add(made.getName()));
 
-            for (final Map.Entry<TestSetNode, List<TestCaseDto>> set : targets.entrySet()) {
+            for (final Map.Entry<TestSetNode, List<TestCase>> set : targets.entrySet()) {
                 final @NotNull TestSetNode into = set.getKey();
-                final @NotNull List<TestCaseDto> testCases = set.getValue();
+                final @NotNull List<TestCase> testCases = set.getValue();
                 final @NotNull Path setPath = into.getPath();
 
-                final @NotNull List<TestCaseDto> written = linkAndSaveTestCases(into, testCases, rankOfTail(setPath), indicator, imported, total);
+                final @NotNull List<TestCase> written = linkAndSaveTestCases(into, testCases, rankOfTail(setPath), indicator, imported, total);
                 if (!written.isEmpty()) stillEmpty.remove(into.getName());
 
                 if (generateCode) generateTestMethods(written, into.getName(), indicator);
@@ -189,15 +189,15 @@ record ImportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
     }
 
     // UC-SHARE-006, Rule-SHARE-031
-    private @NotNull Map<TestSetNode, List<TestCaseDto>> targetSets(final @NotNull AbstractNode selectedNode, final @NotNull Path targetPath, final @NotNull Map<String, List<TestCaseDto>> testCasesBySheet) {
+    private @NotNull Map<TestSetNode, List<TestCase>> targetSets(final @NotNull AbstractNode selectedNode, final @NotNull Path targetPath, final @NotNull Map<String, List<TestCase>> testCasesBySheet) {
         if (selectedNode instanceof TestSetNode testSet) {
-            final @NotNull List<TestCaseDto> everything = new ArrayList<>();
+            final @NotNull List<TestCase> everything = new ArrayList<>();
             testCasesBySheet.values().forEach(everything::addAll);
 
             return Map.of(testSet, everything);
         }
 
-        final @NotNull Map<TestSetNode, List<TestCaseDto>> sets = new LinkedHashMap<>();
+        final @NotNull Map<TestSetNode, List<TestCase>> sets = new LinkedHashMap<>();
         testCasesBySheet.forEach((sheetName, testCases) -> {
             final @NotNull String name = testSetNameOf(sheetName);
             final @NotNull Path path = targetPath.resolve(name);
@@ -220,14 +220,14 @@ record ImportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
         return sets;
     }
 
-    void generateTestMethods(final @NotNull List<TestCaseDto> testCases, final @NotNull String targetName, final @NotNull ProgressIndicator indicator) {
+    void generateTestMethods(final @NotNull List<TestCase> testCases, final @NotNull String targetName, final @NotNull ProgressIndicator indicator) {
         TestinLogger.info("Import: generating test methods for '" + targetName + "' with " + testCases.size() + " cases");
         final long startedAt = System.currentTimeMillis();
         // Rule-CODEGEN-018
         final @NotNull String oneUndo = UUID.randomUUID().toString();
 
         for (int from = 0; from < testCases.size(); from += METHODS_PER_COMMAND) {
-            final @NotNull List<TestCaseDto> batch =
+            final @NotNull List<TestCase> batch =
                     testCases.subList(from, Math.min(from + METHODS_PER_COMMAND, testCases.size()));
             final int written = from + batch.size();
 
@@ -240,18 +240,18 @@ record ImportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
     }
 
     // UC-SHARE-005, Rule-SHARE-025, Rule-SHARE-037
-    private @NotNull List<TestCaseDto> linkAndSaveTestCases(final @NotNull TestSetNode into, final @NotNull List<TestCaseDto> testCases, final @NotNull String tailRank, final @NotNull ProgressIndicator indicator, final int done, final int total) {
+    private @NotNull List<TestCase> linkAndSaveTestCases(final @NotNull TestSetNode into, final @NotNull List<TestCase> testCases, final @NotNull String tailRank, final @NotNull ProgressIndicator indicator, final int done, final int total) {
         String rank = tailRank;
 
-        final @NotNull List<TestCaseDto> placed = new ArrayList<>(testCases.size());
-        for (final TestCaseDto currentTestCase : testCases) {
+        final @NotNull List<TestCase> placed = new ArrayList<>(testCases.size());
+        for (final TestCase currentTestCase : testCases) {
             rank = Rank.after(rank);
             placed.add(currentTestCase.edit().order(rank).parent(into).build());
         }
 
-        final @NotNull List<TestCaseDto> written = new ArrayList<>(testCases.size());
+        final @NotNull List<TestCase> written = new ArrayList<>(testCases.size());
         int tried = 0;
-        for (final TestCaseDto testCase : placed) {
+        for (final TestCase testCase : placed) {
             if (indicator.isCanceled()) break;
 
             if (indexedTestCases.putTestCaseVerbatim(into.getPath(), testCase)) written.add(testCase);
@@ -265,11 +265,11 @@ record ImportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
     }
 
     private @NotNull String rankOfTail(final @NotNull Path directory) {
-        return findExistingTail(directory).map(TestCaseDto::getOrder).orElse("");
+        return findExistingTail(directory).map(TestCase::getOrder).orElse("");
     }
 
-    private @NotNull Optional<TestCaseDto> findExistingTail(final @NotNull Path directory) {
-        final @NotNull List<TestCaseDto> existing =
+    private @NotNull Optional<TestCase> findExistingTail(final @NotNull Path directory) {
+        final @NotNull List<TestCase> existing =
                 TestCaseOrder.ordered(indexedTestCases.getTestCasesForTestSet(directory));
 
         return existing.isEmpty() ? Optional.empty() : Optional.of(existing.getLast());

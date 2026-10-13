@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.GrayWithReason;
 import org.testin.actions.TestinDataKeys;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ public class ViewDetailsAction extends AbstractAnyProjectAction {
     // UC-VIEW-PANEL-001, Rule-VIEW-PANEL-011, Rule-VIEW-PANEL-013
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
-        final @NotNull List<TestCaseDto> selected = TestinDataKeys.selectedTestCases(e);
+        final @NotNull List<TestCase> selected = TestinDataKeys.selectedTestCases(e);
         if (selected.isEmpty()) return;
 
         TestinDataKeys.editor(e).ifPresent(editor ->

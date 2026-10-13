@@ -17,21 +17,21 @@
 package org.testin.search;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.util.Icons;
 
 import javax.swing.Icon;
 import java.util.Optional;
 
-public record Hit(@NotNull Icon icon, @NotNull String name, @NotNull String where, @NotNull AbstractNode node, @NotNull Optional<TestCaseDto> testCase) {
-    public static @NotNull Hit of(final @NotNull TestCaseDto testCase) {
+public record Hit(@NotNull Icon icon, @NotNull String name, @NotNull String where, @NotNull AbstractNode node, @NotNull Optional<TestCase> testCase) {
+    public static @NotNull Hit of(final @NotNull TestCase testCase) {
         return new Hit(Icons.TEST_CASE, testCase.getDescription(), where(testCase.getParent()),
                 testCase.getParent(), Optional.of(testCase));
     }
 
     // UC-INTERNAL-001, Rule-INTERNAL-072, Rule-INTERNAL-098
-    public static @NotNull Hit of(final @NotNull TestCaseDto testCase, final @NotNull AbstractNode testRun) {
+    public static @NotNull Hit of(final @NotNull TestCase testCase, final @NotNull AbstractNode testRun) {
         return new Hit(testRun.iconShownInTree(), testCase.getDescription(), where(testRun), testRun, Optional.of(testCase));
     }
 

@@ -20,7 +20,7 @@ import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.psi.PsiMethod;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.status.TestCaseStatus;
 
@@ -30,11 +30,11 @@ public class UpdateTestMethodIdeTest extends AbstractCodegenIdeTest {
 
     private static final @NotNull String LOGIN_TEST = "nafath.LoginTest";
 
-    private @NotNull TestCaseDto aTestCaseWithAMethod() {
+    private @NotNull TestCase aTestCaseWithAMethod() {
         return createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
     }
 
-    private void described(final @NotNull TestCaseDto testCase, final @NotNull String description) {
+    private void described(final @NotNull TestCase testCase, final @NotNull String description) {
         testCase.setDescription(description);
         CodeChangeType.UPDATE_TEST_CASE_DESCRIPTION.execute(getProject(), testCase);
         settled();
@@ -42,7 +42,7 @@ public class UpdateTestMethodIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-CODEGEN-001
     public void testARenamedTestCaseFindsItsMethodByIdentityNotByName() {
-        final @NotNull TestCaseDto testCase = aTestCaseWithAMethod();
+        final @NotNull TestCase testCase = aTestCaseWithAMethod();
         final @NotNull PsiMethod testMethod = writtenMethodOf(LOGIN_TEST, testCase);
         WriteCommandAction.runWriteCommandAction(getProject(), () -> {
             testMethod.setName("whatTheTesterCalledIt");
@@ -56,7 +56,7 @@ public class UpdateTestMethodIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-CODEGEN-020, Rule-CODEGEN-040
     public void testANewDescriptionRewritesTheAnnotationAndTheMethodName() {
-        final @NotNull TestCaseDto testCase = aTestCaseWithAMethod();
+        final @NotNull TestCase testCase = aTestCaseWithAMethod();
 
         described(testCase, "Sign in with a valid user");
 
@@ -67,7 +67,7 @@ public class UpdateTestMethodIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-CODEGEN-079
     public void testADescriptionThatCannotNameAMethodLeavesTheNameAndStillSavesTheDescription() {
-        final @NotNull TestCaseDto testCase = aTestCaseWithAMethod();
+        final @NotNull TestCase testCase = aTestCaseWithAMethod();
 
         described(testCase, "Class");
 
@@ -79,7 +79,7 @@ public class UpdateTestMethodIdeTest extends AbstractCodegenIdeTest {
     // Rule-CODEGEN-079
     public void testADescriptionThatNamesAnotherTestCasesMethodLeavesTheName() {
         final @NotNull TestSetNode login = createdTestSet("Login");
-        final @NotNull TestCaseDto logIn = createdTestCase(login, "Log in", "b");
+        final @NotNull TestCase logIn = createdTestCase(login, "Log in", "b");
         createdTestCase(login, "Log out", "c");
 
         described(logIn, "log out!");
@@ -91,7 +91,7 @@ public class UpdateTestMethodIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-CODEGEN-045
     public void testTheGroupsAreWrittenAsAListEachAsTyped() {
-        final @NotNull TestCaseDto testCase = aTestCaseWithAMethod();
+        final @NotNull TestCase testCase = aTestCaseWithAMethod();
 
         testCase.setGroups(List.of("smoke", "Log in & out"));
         CodeChangeType.UPDATE_TEST_CASE_GROUP.execute(getProject(), testCase);
@@ -102,7 +102,7 @@ public class UpdateTestMethodIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-CODEGEN-046
     public void testATestCaseInNoGroupHasNoGroupsAttribute() {
-        final @NotNull TestCaseDto testCase = aTestCaseWithAMethod();
+        final @NotNull TestCase testCase = aTestCaseWithAMethod();
         assertEquals("a test case created in no group was written with groups", "", attributeOf(writtenMethodOf(LOGIN_TEST, testCase), "groups"));
 
         testCase.setGroups(List.of("smoke"));
@@ -117,7 +117,7 @@ public class UpdateTestMethodIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-CODEGEN-047
     public void testTurningATestCaseOffWritesEnabledFalse() {
-        final @NotNull TestCaseDto testCase = aTestCaseWithAMethod();
+        final @NotNull TestCase testCase = aTestCaseWithAMethod();
 
         testCase.setStatus(TestCaseStatus.DISABLED);
         CodeChangeType.UPDATE_TEST_CASE_STATUS.execute(getProject(), testCase);
@@ -128,7 +128,7 @@ public class UpdateTestMethodIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-CODEGEN-048
     public void testTurningItBackOnTakesTheAttributeOff() {
-        final @NotNull TestCaseDto testCase = aTestCaseWithAMethod();
+        final @NotNull TestCase testCase = aTestCaseWithAMethod();
         testCase.setStatus(TestCaseStatus.DISABLED);
         CodeChangeType.UPDATE_TEST_CASE_STATUS.execute(getProject(), testCase);
         settled();
@@ -144,8 +144,8 @@ public class UpdateTestMethodIdeTest extends AbstractCodegenIdeTest {
     // Rule-CODEGEN-068
     public void testUndoWritesEveryPartTestinOwnsAndCreatesNoMissingMethod() {
         final @NotNull TestSetNode login = createdTestSet("Login");
-        final @NotNull TestCaseDto restored = createdTestCase(login, "Log in with a valid user", "b");
-        final @NotNull TestCaseDto withoutAMethod = indexedTestCase(login, "Log out", "c");
+        final @NotNull TestCase restored = createdTestCase(login, "Log in with a valid user", "b");
+        final @NotNull TestCase withoutAMethod = indexedTestCase(login, "Log out", "c");
 
         restored.setDescription("Sign in");
         restored.setGroups(List.of("smoke"));

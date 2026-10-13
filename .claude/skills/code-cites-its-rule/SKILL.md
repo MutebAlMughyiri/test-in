@@ -72,7 +72,7 @@ only comment a method carries, so it is always the `//` line above the signature
 
 ```java
 // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-144
-public void recordRunItemStatus(final @NotNull TestCaseDto testCase) {
+public void recordRunItemStatus(final @NotNull TestCase testCase) {
 }
 ```
 

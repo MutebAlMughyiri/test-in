@@ -25,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.editor.open.TestinEditors;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.indexer.TestRuns;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestRunNode;
 import org.testin.services.Services;
 import org.testin.setting.TestinRoot;
@@ -77,12 +77,12 @@ public abstract class AbstractDetails {
     }
 
     // UC-VIEW-PANEL-016, UC-VIEW-PANEL-004
-    static void redraw(final @NotNull Project project, final @NotNull TestCaseDto testCase, final @NotNull TestRunNode testRunNode) {
+    static void redraw(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull TestRunNode testRunNode) {
         ViewToolWindowFactory.refreshIfShowing(project, List.of(testCase));
         Services.getInstance(project, TestinEditors.class).testRunEditorFor(testRunNode).ifPresent(TestRunEditor::refreshView);
     }
 
-    public abstract int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull TestCaseDto testCase, final int currentRow);
+    public abstract int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull TestCase testCase, final int currentRow);
 
     protected int addRow(final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull String caption, final @NotNull String value, final int row) {
         return CaptionValueRow.add(panel, constraints, caption, value, row);

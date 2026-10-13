@@ -22,7 +22,7 @@ import com.intellij.ui.components.JBTabbedPane;
 import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.Priority;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.testcase.Can;
 import org.testin.testcase.TestSetEditorFields;
 
@@ -37,12 +37,12 @@ import java.util.Objects;
 
 public class SheetPreviewIdeTest extends BasePlatformTestCase {
 
-    private static @NotNull TestCaseDto aTestCase(final @NotNull String description) {
-        return TestCaseDto.builder().description(description).priority(Priority.HIGH).build();
+    private static @NotNull TestCase aTestCase(final @NotNull String description) {
+        return TestCase.builder().description(description).priority(Priority.HIGH).build();
     }
 
-    private static @NotNull Map<String, List<TestCaseDto>> sheets(final @NotNull String name, final @NotNull TestCaseDto... testCases) {
-        final @NotNull Map<String, List<TestCaseDto>> sheets = new LinkedHashMap<>();
+    private static @NotNull Map<String, List<TestCase>> sheets(final @NotNull String name, final @NotNull TestCase... testCases) {
+        final @NotNull Map<String, List<TestCase>> sheets = new LinkedHashMap<>();
         sheets.put(name, new ArrayList<>(List.of(testCases)));
         return sheets;
     }
@@ -72,7 +72,7 @@ public class SheetPreviewIdeTest extends BasePlatformTestCase {
         return ticks;
     }
 
-    private @NotNull SheetPreview shown(final @NotNull Can capability, final @NotNull Map<String, List<TestCaseDto>> sheets) {
+    private @NotNull SheetPreview shown(final @NotNull Can capability, final @NotNull Map<String, List<TestCase>> sheets) {
         final @NotNull SheetPreview preview = new SheetPreview(getProject(), TestSetEditorFields.all(capability));
         preview.show(sheets);
         return preview;
@@ -80,9 +80,9 @@ public class SheetPreviewIdeTest extends BasePlatformTestCase {
 
     // UC-SHARE-001, Rule-SHARE-008
     public void testOnlyWhatIsTickedIsWritten() {
-        final @NotNull TestCaseDto first = aTestCase("log in with a valid user");
-        final @NotNull TestCaseDto second = aTestCase("a wrong password is refused");
-        final @NotNull TestCaseDto third = aTestCase("a locked account cannot log in");
+        final @NotNull TestCase first = aTestCase("log in with a valid user");
+        final @NotNull TestCase second = aTestCase("a wrong password is refused");
+        final @NotNull TestCase third = aTestCase("a locked account cannot log in");
         final @NotNull SheetPreview preview = shown(Can.EXPORT, sheets("Login", first, second, third));
 
         table(preview).getModel().setValueAt(false, 1, 0);
@@ -105,7 +105,7 @@ public class SheetPreviewIdeTest extends BasePlatformTestCase {
 
     // UC-SHARE-003, Rule-SHARE-020
     public void testACorrectionChangesTheFileAndNeverTheTestCase() {
-        final @NotNull TestCaseDto typed = aTestCase("log in with a valid user");
+        final @NotNull TestCase typed = aTestCase("log in with a valid user");
         final @NotNull SheetPreview preview = shown(Can.EXPORT, sheets("Login", typed));
 
         table(preview).getModel().setValueAt("log in with a valid user and a remembered device", 0, column(Can.EXPORT, TestSetEditorFields.DESCRIPTION));
@@ -116,7 +116,7 @@ public class SheetPreviewIdeTest extends BasePlatformTestCase {
 
     // UC-SHARE-007, Rule-SHARE-038
     public void testACorrectionChangesWhatIsImportedAndNotWhatWasRead() {
-        final @NotNull TestCaseDto read = aTestCase("log in with a valid user");
+        final @NotNull TestCase read = aTestCase("log in with a valid user");
         final @NotNull SheetPreview preview = shown(Can.IMPORT, sheets("Login", read));
 
         table(preview).getModel().setValueAt("the account dashboard opens", 0, column(Can.IMPORT, TestSetEditorFields.EXPECTED_RESULT));
@@ -139,12 +139,12 @@ public class SheetPreviewIdeTest extends BasePlatformTestCase {
 
     // UC-SHARE-007, Rule-SHARE-036
     public void testChoosingASecondFileReplacesEveryTab() {
-        final @NotNull Map<String, List<TestCaseDto>> first = sheets("Login", aTestCase("log in with a valid user"));
+        final @NotNull Map<String, List<TestCase>> first = sheets("Login", aTestCase("log in with a valid user"));
         first.put("Signup", new ArrayList<>(List.of(aTestCase("sign up with a new email address"))));
         final @NotNull SheetPreview preview = shown(Can.IMPORT, first);
         assertEquals(2, tabs(preview).getTabCount());
 
-        final @NotNull TestCaseDto checkout = aTestCase("pay with a saved card");
+        final @NotNull TestCase checkout = aTestCase("pay with a saved card");
         preview.show(sheets("Checkout", checkout));
 
         assertEquals(1, tabs(preview).getTabCount());

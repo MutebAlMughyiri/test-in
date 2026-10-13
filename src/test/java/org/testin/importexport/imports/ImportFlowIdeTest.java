@@ -39,7 +39,7 @@ import org.testin.Said;
 import org.testin.editor.open.UnifiedVirtualFile;
 import org.testin.importexport.FileFormat;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
@@ -78,12 +78,12 @@ public class ImportFlowIdeTest extends AbstractTempRootIdeTest {
     private final @NotNull StandInEditorProvider standIn = new StandInEditorProvider();
     private TestProjectNode testProject;
 
-    private static @NotNull TestCaseDto aTestCase(final @NotNull String description) {
-        return TestCaseDto.builder().description(description).createdBy("Sara").createdAt(CREATED).updatedBy("Sara").updatedAt(CREATED).build();
+    private static @NotNull TestCase aTestCase(final @NotNull String description) {
+        return TestCase.builder().description(description).createdBy("Sara").createdAt(CREATED).updatedBy("Sara").updatedAt(CREATED).build();
     }
 
-    private static @NotNull Map<String, List<TestCaseDto>> sheets(final @NotNull String name, final @NotNull TestCaseDto... testCases) {
-        final @NotNull Map<String, List<TestCaseDto>> sheets = new LinkedHashMap<>();
+    private static @NotNull Map<String, List<TestCase>> sheets(final @NotNull String name, final @NotNull TestCase... testCases) {
+        final @NotNull Map<String, List<TestCase>> sheets = new LinkedHashMap<>();
         sheets.put(name, new ArrayList<>(List.of(testCases)));
         return sheets;
     }
@@ -143,21 +143,21 @@ public class ImportFlowIdeTest extends AbstractTempRootIdeTest {
         return Services.getInstance(getProject(), TestCases.class);
     }
 
-    private @NotNull File aFile(final @NotNull String name, final @NotNull Map<String, List<TestCaseDto>> sheets) {
+    private @NotNull File aFile(final @NotNull String name, final @NotNull Map<String, List<TestCase>> sheets) {
         final @NotNull File file = root.resolve(name).toFile();
         FileFormat.JSON.exportToFile(getProject(), file, sheets);
         return file;
     }
 
-    private @NotNull Map<String, List<TestCaseDto>> read(final @NotNull File file) {
+    private @NotNull Map<String, List<TestCase>> read(final @NotNull File file) {
         return FileFormat.JSON.importToFile(getProject(), file);
     }
 
-    private void imported(final @NotNull AbstractNode into, final @NotNull Map<String, List<TestCaseDto>> sheets) {
+    private void imported(final @NotNull AbstractNode into, final @NotNull Map<String, List<TestCase>> sheets) {
         imported(into, sheets, new EmptyProgressIndicator());
     }
 
-    private void imported(final @NotNull AbstractNode into, final @NotNull Map<String, List<TestCaseDto>> sheets, final @NotNull ProgressIndicator indicator) {
+    private void imported(final @NotNull AbstractNode into, final @NotNull Map<String, List<TestCase>> sheets, final @NotNull ProgressIndicator indicator) {
         if (into.holdsTestCases()) anEditorStandsOpenOn(into);
         final int total = sheets.values().stream().mapToInt(List::size).sum();
         final @NotNull Future<?> running = ApplicationManager.getApplication().executeOnPooledThread(() -> new ImportWork(getProject()).importInBackground(into, sheets, false, total, indicator));
@@ -179,23 +179,23 @@ public class ImportFlowIdeTest extends AbstractTempRootIdeTest {
         FileEditorManager.getInstance(getProject()).openFile(file, false);
     }
 
-    private @NotNull List<TestCaseDto> indexedTestCasesIn(final @NotNull Path testSet) {
+    private @NotNull List<TestCase> indexedTestCasesIn(final @NotNull Path testSet) {
         return indexedTestCases().getTestCasesForTestSet(testSet);
     }
 
     // UC-SHARE-005, Rule-SHARE-002
     public void testAnImportNeverOverwritesAnExistingTestCase() {
         final @NotNull TestSetNode login = new NodesOnDisk(getProject()).testSet(testProject.getTestCasesFolder(), "Login");
-        final @NotNull TestCaseDto existing = new NodesOnDisk(getProject()).testCase(login);
+        final @NotNull TestCase existing = new NodesOnDisk(getProject()).testCase(login);
         final @NotNull Path existingFile = login.getPath().resolve(existing.getId() + ".tc");
         final byte @NotNull [] before = bytesOf(existingFile);
-        final @NotNull TestCaseDto sameId = existing.edit().description("a colleague's wording of the same test case").build();
+        final @NotNull TestCase sameId = existing.edit().description("a colleague's wording of the same test case").build();
 
         imported(login, read(aFile("Login.json", sheets("Login", sameId))));
 
         assertArrayEquals("the existing test case was written over", before, bytesOf(existingFile));
         assertEquals("the imported test case is not a new one", 2, indexedTestCasesIn(login.getPath()).size());
-        assertEquals(2, indexedTestCasesIn(login.getPath()).stream().map(TestCaseDto::getId).distinct().count());
+        assertEquals(2, indexedTestCasesIn(login.getPath()).stream().map(TestCase::getId).distinct().count());
     }
 
     // UC-SHARE-005, Rule-SHARE-026
@@ -204,7 +204,7 @@ public class ImportFlowIdeTest extends AbstractTempRootIdeTest {
 
         imported(login, read(aFile("Login.json", sheets("Login", aTestCase("log in with a valid user")))));
 
-        final @NotNull TestCaseDto written = indexedTestCasesIn(login.getPath()).getFirst();
+        final @NotNull TestCase written = indexedTestCasesIn(login.getPath()).getFirst();
         assertEquals("Sara", written.getCreatedBy());
         assertEquals("the import stamped its own time over the file's", CREATED.toInstant(), written.getCreatedAt().toInstant());
         assertEquals(CREATED.toInstant(), written.getUpdatedAt().toInstant());
@@ -213,7 +213,7 @@ public class ImportFlowIdeTest extends AbstractTempRootIdeTest {
     // UC-SHARE-005, Rule-SHARE-027
     public void testEverySheetGoesIntoTheOneTestSet() {
         final @NotNull TestSetNode login = new NodesOnDisk(getProject()).testSet(testProject.getTestCasesFolder(), "Login");
-        final @NotNull Map<String, List<TestCaseDto>> twoSheets = sheets("Login", aTestCase("log in with a valid user"), aTestCase("a wrong password is refused"));
+        final @NotNull Map<String, List<TestCase>> twoSheets = sheets("Login", aTestCase("log in with a valid user"), aTestCase("a wrong password is refused"));
         twoSheets.put("Checkout", new ArrayList<>(List.of(aTestCase("pay with a saved card"))));
         final @NotNull List<String> foldersBefore = foldersIn(testProject.getTestCasesFolder().getPath());
 
@@ -231,16 +231,16 @@ public class ImportFlowIdeTest extends AbstractTempRootIdeTest {
         imported(login, read(file));
         imported(login, read(file));
 
-        final @NotNull List<TestCaseDto> all = indexedTestCasesIn(login.getPath());
+        final @NotNull List<TestCase> all = indexedTestCasesIn(login.getPath());
         assertEquals(4, all.size());
         assertEquals(4, filesOfTestCasesIn(login.getPath()).size());
-        assertEquals(Map.of("log in with a valid user", 2L, "a wrong password is refused", 2L), all.stream().collect(Collectors.groupingBy(TestCaseDto::getDescription, Collectors.counting())));
+        assertEquals(Map.of("log in with a valid user", 2L, "a wrong password is refused", 2L), all.stream().collect(Collectors.groupingBy(TestCase::getDescription, Collectors.counting())));
     }
 
     // UC-SHARE-006, Rule-SHARE-031
     public void testOneTestSetIsMadeForEachSheetNamedWithoutItsSpecialCharacters() {
         final @NotNull TestSetPackageNode web = new NodesOnDisk(getProject()).testSetPackage(testProject.getTestCasesFolder(), "Web");
-        final @NotNull Map<String, List<TestCaseDto>> twoSheets = sheets("Log/in: Flow*", aTestCase("log in with a valid user"));
+        final @NotNull Map<String, List<TestCase>> twoSheets = sheets("Log/in: Flow*", aTestCase("log in with a valid user"));
         twoSheets.put("Checkout", new ArrayList<>(List.of(aTestCase("pay with a saved card"))));
 
         imported(web, read(aFile("Plan.json", twoSheets)));
@@ -260,7 +260,7 @@ public class ImportFlowIdeTest extends AbstractTempRootIdeTest {
     // UC-SHARE-006, Rule-SHARE-032
     public void testTheTestSetsAreMadeBeforeAnyTestCaseIsWritten() {
         final @NotNull TestSetPackageNode web = new NodesOnDisk(getProject()).testSetPackage(testProject.getTestCasesFolder(), "Web");
-        final @NotNull Map<String, List<TestCaseDto>> twoSheets = sheets("Login", aTestCase("log in with a valid user"));
+        final @NotNull Map<String, List<TestCase>> twoSheets = sheets("Login", aTestCase("log in with a valid user"));
         twoSheets.put("Checkout", new ArrayList<>(List.of(aTestCase("pay with a saved card"))));
         final @NotNull List<String> atTheFirstWrite = new CopyOnWriteArrayList<>();
 
@@ -288,7 +288,7 @@ public class ImportFlowIdeTest extends AbstractTempRootIdeTest {
     // UC-SHARE-007, Rule-SHARE-037
     public void testAnImportThatStopsSaysHowManyWereWrittenAndKeepsThem() {
         final @NotNull TestSetPackageNode web = new NodesOnDisk(getProject()).testSetPackage(testProject.getTestCasesFolder(), "Web");
-        final @NotNull Map<String, List<TestCaseDto>> twoSheets = sheets("A Login", aTestCase("log in with a valid user"), aTestCase("a wrong password is refused"));
+        final @NotNull Map<String, List<TestCase>> twoSheets = sheets("A Login", aTestCase("log in with a valid user"), aTestCase("a wrong password is refused"));
         twoSheets.put("B Checkout", new ArrayList<>(List.of(aTestCase("pay with a saved card"), aTestCase("pay with a wallet"), aTestCase("pay on delivery"))));
         final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
         final @NotNull AtomicInteger asked = new AtomicInteger();

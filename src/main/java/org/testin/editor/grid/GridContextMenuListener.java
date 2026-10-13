@@ -22,7 +22,7 @@ import com.intellij.ui.components.JBList;
 import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.AbstractEditorContextMenu;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -30,12 +30,12 @@ import java.util.List;
 
 public class GridContextMenuListener extends MouseAdapter {
     private final @NotNull JBTable table;
-    private final @NotNull JBList<TestCaseDto> list;
+    private final @NotNull JBList<TestCase> list;
     private final @NotNull AbstractEditorContextMenu contextMenu;
-    private final @NotNull List<TestCaseDto> pageTestCases;
+    private final @NotNull List<TestCase> pageTestCases;
     private boolean popupShownOnPress;
 
-    public GridContextMenuListener(final @NotNull JBTable table, final @NotNull JBList<TestCaseDto> list, final @NotNull AbstractEditorContextMenu contextMenu, final @NotNull List<TestCaseDto> pageTestCases) {
+    public GridContextMenuListener(final @NotNull JBTable table, final @NotNull JBList<TestCase> list, final @NotNull AbstractEditorContextMenu contextMenu, final @NotNull List<TestCase> pageTestCases) {
         this.table = table;
         this.list = list;
         this.contextMenu = contextMenu;

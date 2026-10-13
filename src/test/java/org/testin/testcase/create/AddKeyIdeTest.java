@@ -20,7 +20,7 @@ import com.intellij.ui.EditorTextField;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.editor.EditorFixtures;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.testcase.CreateTestCaseFields;
 import org.testin.testcase.UpdateTestCaseFields;
@@ -119,7 +119,7 @@ public class AddKeyIdeTest extends AbstractTempRootIdeTest {
 
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-293
     public void testTheUpdateDialogAddsToTheFieldBeingUpdated() {
-        final @NotNull TestCaseDto testCase = EditorFixtures.testCase(getProject(), checkout(), "Pay with a saved card", "1")
+        final @NotNull TestCase testCase = EditorFixtures.testCase(getProject(), checkout(), "Pay with a saved card", "1")
                 .edit().steps(List.of("Open the cart")).build();
         final @NotNull AbstractTestCaseDialog dialog = new UpdateTestCaseDialog(getProject(), testCase, UpdateTestCaseFields.STEPS, _ -> {
         });

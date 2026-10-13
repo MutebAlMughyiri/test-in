@@ -33,7 +33,7 @@ import org.testin.editor.open.TestinEditors;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.model.Automated;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
@@ -71,9 +71,9 @@ public class NavigateToTestCaseIdeTest extends AbstractCodegenIdeTest {
         return names;
     }
 
-    private @NotNull List<TestCaseDto> automatedTestCases() {
+    private @NotNull List<TestCase> automatedTestCases() {
         testSet = createdTestSet("Checkout");
-        final @NotNull List<TestCaseDto> made = List.of(createdTestCase(testSet, "Log in with a valid user", "m0001"), createdTestCase(testSet, "Log in with a wrong password", "m0002"));
+        final @NotNull List<TestCase> made = List.of(createdTestCase(testSet, "Log in with a valid user", "m0001"), createdTestCase(testSet, "Log in with a wrong password", "m0002"));
         settled();
         return made;
     }
@@ -86,7 +86,7 @@ public class NavigateToTestCaseIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-EDITOR-PANEL-233
     public void testItOpensTheTestCasesOwnTestSetAndSelectsItThere() {
-        final @NotNull List<TestCaseDto> testCases = automatedTestCases();
+        final @NotNull List<TestCase> testCases = automatedTestCases();
         final @NotNull TestinEditors editors = Services.getInstance(getProject(), TestinEditors.class);
         final @NotNull TestRunEditor testRun = aTestRunEditorOver(testCases.stream().map(EditorFixtures::pending).toList());
         try {
@@ -97,7 +97,7 @@ public class NavigateToTestCaseIdeTest extends AbstractCodegenIdeTest {
             Await.until("the test case's own test set did not open in the test set editor", () -> editors.editorFor(testSet).filter(TestSetEditor.class::isInstance).isPresent());
             final @NotNull TestSetEditor opened = (TestSetEditor) editors.editorFor(testSet).orElseThrow();
             assertEquals("a test set other than the test case's own opened", List.of(testSet.getPath().toAbsolutePath()), editors.openNodePaths());
-            Await.until("the test case was not selected in its test set", () -> Optional.ofNullable(opened.getList().getSelectedValue()).map(TestCaseDto::getId).filter(testCases.get(1).getId()::equals).isPresent());
+            Await.until("the test case was not selected in its test set", () -> Optional.ofNullable(opened.getList().getSelectedValue()).map(TestCase::getId).filter(testCases.get(1).getId()::equals).isPresent());
         } finally {
             Disposer.dispose(testRun);
             editors.closeAll();
@@ -106,7 +106,7 @@ public class NavigateToTestCaseIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-EDITOR-PANEL-234
     public void testItIsOfferedOnATestRunsCardsAndMenuAndNotInATestSet() {
-        final @NotNull List<TestCaseDto> testCases = automatedTestCases();
+        final @NotNull List<TestCase> testCases = automatedTestCases();
         final @NotNull TestRunEditor testRun = aTestRunEditorOver(testCases.stream().map(EditorFixtures::pending).toList());
         final @NotNull TestSetEditor testSetEditor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         try {
@@ -141,7 +141,7 @@ public class NavigateToTestCaseIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-EDITOR-PANEL-237
     public void testOneGestureHasOneNameWhereverItIsOffered() {
-        final @NotNull List<TestCaseDto> testCases = automatedTestCases();
+        final @NotNull List<TestCase> testCases = automatedTestCases();
         final @NotNull AutomationState state = Services.getInstance(getProject(), AutomationState.class);
         state.read(getProject(), testCases, () -> {
         });

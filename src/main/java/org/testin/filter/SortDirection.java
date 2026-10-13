@@ -19,7 +19,7 @@ package org.testin.filter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.util.Bundle;
 
 import java.util.Comparator;
@@ -44,7 +44,7 @@ public enum SortDirection {
     }
 
     // UC-EDITOR-PANEL-049, Rule-EDITOR-PANEL-274
-    @NotNull List<TestCaseDto> arranged(final @NotNull List<TestCaseDto> testCases) {
+    @NotNull List<TestCase> arranged(final @NotNull List<TestCase> testCases) {
         return this == ASCENDING ? testCases : testCases.reversed();
     }
 }

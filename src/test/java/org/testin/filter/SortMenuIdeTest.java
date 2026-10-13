@@ -28,7 +28,7 @@ import org.testin.editor.testrun.TestRunEditor;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.indexer.TestCases;
 import org.testin.model.Priority;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
@@ -50,7 +50,7 @@ public class SortMenuIdeTest extends AbstractTempRootIdeTest {
     }
 
     private static @NotNull List<String> shown(final @NotNull AbstractTestinEditor<?, ?> editor) {
-        return editor.getCurrentTestCases().stream().map(TestCaseDto::getDescription).toList();
+        return editor.getCurrentTestCases().stream().map(TestCase::getDescription).toList();
     }
 
     private @NotNull List<String> filesOnDisk() {
@@ -61,12 +61,12 @@ public class SortMenuIdeTest extends AbstractTempRootIdeTest {
         }
     }
 
-    private @NotNull List<TestCaseDto> lowHighMedium(final @NotNull TestProjectNode testProject) {
+    private @NotNull List<TestCase> lowHighMedium(final @NotNull TestProjectNode testProject) {
         testSet = EditorFixtures.testSet(getProject(), testProject, "Checkout");
-        final @NotNull List<TestCaseDto> made = EditorFixtures.testCases(getProject(), testSet, 3);
+        final @NotNull List<TestCase> made = EditorFixtures.testCases(getProject(), testSet, 3);
         final @NotNull List<Priority> priorities = List.of(Priority.LOW, Priority.HIGH, Priority.MEDIUM);
         for (int i = 0; i < made.size(); i++) {
-            final @NotNull TestCaseDto prioritised = made.get(i).edit().priority(priorities.get(i)).build();
+            final @NotNull TestCase prioritised = made.get(i).edit().priority(priorities.get(i)).build();
             prioritised.setParent(testSet);
             Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), prioritised);
         }
@@ -75,7 +75,7 @@ public class SortMenuIdeTest extends AbstractTempRootIdeTest {
 
     // UC-EDITOR-PANEL-049, Rule-EDITOR-PANEL-274, Rule-EDITOR-PANEL-277
     public void testSortingRearrangesTheScreenKeepsEveryNumberAndWritesNothing() {
-        final @NotNull List<TestCaseDto> made = lowHighMedium(EditorFixtures.testProject(getProject(), root));
+        final @NotNull List<TestCase> made = lowHighMedium(EditorFixtures.testProject(getProject(), root));
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         final @NotNull List<String> before = filesOnDisk();
         final @NotNull List<Integer> numbersBefore = editor.getAllTestCases().stream().map(editor::positionOf).toList();
@@ -92,7 +92,7 @@ public class SortMenuIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-276
     public void testTheRunFieldsAreGrayInATestSetEditorAndWorkInATestRun() {
         final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
-        final @NotNull List<TestCaseDto> made = lowHighMedium(testProject);
+        final @NotNull List<TestCase> made = lowHighMedium(testProject);
         final @NotNull TestSetEditor testSetEditor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         final @NotNull TestRunEditor testRunEditor = EditorFixtures.openTestRunEditor(getProject(), EditorFixtures.testRun(getProject(), testProject, made.stream().map(EditorFixtures::pending).toList()), getTestRootDisposable());
         try {

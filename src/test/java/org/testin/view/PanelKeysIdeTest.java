@@ -25,7 +25,7 @@ import org.testin.Said;
 import org.testin.clipboard.CutState;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.testset.TestSetEditor;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
 import org.testin.util.Shortcuts;
@@ -39,7 +39,7 @@ import static org.testin.view.Drawn.holds;
 public class PanelKeysIdeTest extends AbstractViewPanelIdeTest {
 
     private TestSetNode testSet;
-    private List<TestCaseDto> testCases;
+    private List<TestCase> testCases;
 
     private static @NotNull KeyStroke key(final @NotNull Shortcuts shortcut) {
         return ((KeyboardShortcut) shortcut.getCustomShortcut().getShortcuts()[0]).getFirstKeyStroke();

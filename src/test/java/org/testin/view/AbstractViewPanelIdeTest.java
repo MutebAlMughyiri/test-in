@@ -19,7 +19,7 @@ import com.intellij.testFramework.PlatformTestUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.editor.EditorFixtures;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
@@ -57,7 +57,7 @@ public abstract class AbstractViewPanelIdeTest extends AbstractTempRootIdeTest {
         return EditorFixtures.testSet(getProject(), testProject, name);
     }
 
-    protected @NotNull TestCaseDto aTestCase(final @NotNull TestSetNode testSet, final @NotNull String description, final @NotNull String order) {
+    protected @NotNull TestCase aTestCase(final @NotNull TestSetNode testSet, final @NotNull String description, final @NotNull String order) {
         return EditorFixtures.testCase(getProject(), testSet, description, order);
     }
 

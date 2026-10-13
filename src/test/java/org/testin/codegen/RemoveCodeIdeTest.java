@@ -19,7 +19,7 @@ package org.testin.codegen;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
 
@@ -34,8 +34,8 @@ public class RemoveCodeIdeTest extends AbstractCodegenIdeTest {
     // Rule-CODEGEN-049
     public void testRemovingATestCaseDeletesItsMethodAndKeepsTheClass() {
         final @NotNull TestSetNode login = createdTestSet("Login");
-        final @NotNull TestCaseDto removed = createdTestCase(login, "Log in with a valid user", "b");
-        final @NotNull TestCaseDto kept = createdTestCase(login, "Log out", "c");
+        final @NotNull TestCase removed = createdTestCase(login, "Log in with a valid user", "b");
+        final @NotNull TestCase kept = createdTestCase(login, "Log out", "c");
 
         CodeChangeType.REMOVE_TEST_CASE.execute(getProject(), removed);
         settled();

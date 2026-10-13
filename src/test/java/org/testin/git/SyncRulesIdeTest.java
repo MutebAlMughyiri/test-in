@@ -26,7 +26,7 @@ import org.testin.Said;
 import org.testin.git.review.PendingChangesDialog;
 import org.testin.git.review.ViewPendingCommitsWork;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
@@ -117,7 +117,7 @@ public class SyncRulesIdeTest extends AbstractGitRemoteIdeTest {
         commitAll(work, "the Login test set");
         mustGit(work, "push", "origin", MAIN);
 
-        final @NotNull TestCaseDto theirs = TestCaseDto.builder().id(UUID.randomUUID()).description("sign in with a passkey").order("z").build();
+        final @NotNull TestCase theirs = TestCase.builder().id(UUID.randomUUID()).description("sign in with a passkey").order("z").build();
         final @NotNull String relative = work.relativize(login.getPath()).resolve(theirs.getId() + ".tc").toString().replace('\\', '/');
         theColleagueAdds(relative, Services.getInstance(getProject(), JsonCodec.class).writeValueAsString(theirs));
 

@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
 import org.testin.importexport.FileFormat;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.ui.framework.TextValue;
 import org.testin.util.Bundle;
 
@@ -67,11 +67,11 @@ public class PreviewLoaderIdeTest extends AbstractTempRootIdeTest {
         return new PreviewLoader(box, getProject(), statuses::add, (_, data) -> loaded.addAll(data.keySet()), (file, _) -> readFile(file, failing));
     }
 
-    private @NotNull Map<String, List<TestCaseDto>> readFile(final @NotNull File file, final boolean failing) {
+    private @NotNull Map<String, List<TestCase>> readFile(final @NotNull File file, final boolean failing) {
         read.add(file.getName());
         if (failing) throw new IllegalStateException("the file could not be parsed");
 
-        return Map.of(file.getName(), List.of(TestCaseDto.builder().description("log in with a valid user").build()));
+        return Map.of(file.getName(), List.of(TestCase.builder().description("log in with a valid user").build()));
     }
 
     private @NotNull String file(final @NotNull String name) {

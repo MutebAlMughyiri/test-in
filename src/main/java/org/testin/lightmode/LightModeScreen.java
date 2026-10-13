@@ -39,7 +39,7 @@ import org.testin.editor.testrun.TestRunEditor;
 import org.testin.editor.toolbar.StartExecutionButton;
 import org.testin.model.Automated;
 import org.testin.model.StatusBarItem;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
@@ -170,7 +170,7 @@ final class LightModeScreen {
 
     // Rule-EDITOR-PANEL-283
     void refresh() {
-        final @NotNull List<TestCaseDto> testCases = editor.getCurrentTestCases();
+        final @NotNull List<TestCase> testCases = editor.getCurrentTestCases();
         final int index = editor.getWalk().getCurrentlyExecutingIndex();
         final boolean executing = index >= 0 && index < testCases.size();
 
@@ -215,7 +215,7 @@ final class LightModeScreen {
     }
 
     // UC-EDITOR-PANEL-046, Rule-EDITOR-PANEL-201
-    private void showTestCase(final @NotNull TestCaseDto testCase) {
+    private void showTestCase(final @NotNull TestCase testCase) {
         final boolean arrived = shownTestCase.map(previous -> !previous.equals(testCase.getId())).orElse(false);
         shownTestCase = Optional.of(testCase.getId());
 
@@ -432,12 +432,12 @@ final class LightModeScreen {
     }
 
     // UC-EDITOR-PANEL-046, Rule-EDITOR-PANEL-245
-    private @NotNull Optional<TestCaseDto> testCaseForButtons() {
+    private @NotNull Optional<TestCase> testCaseForButtons() {
         return capture.isPresent() ? Optional.empty() : executingTestCase();
     }
 
-    private @NotNull Optional<TestCaseDto> executingTestCase() {
-        final @NotNull List<TestCaseDto> testCases = editor.getCurrentTestCases();
+    private @NotNull Optional<TestCase> executingTestCase() {
+        final @NotNull List<TestCase> testCases = editor.getCurrentTestCases();
         final int index = editor.getWalk().getCurrentlyExecutingIndex();
 
         return index >= 0 && index < testCases.size() ? Optional.of(testCases.get(index)) : Optional.empty();

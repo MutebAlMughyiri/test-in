@@ -21,7 +21,7 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTabbedPane;
 import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.testcase.Can;
 import org.testin.testcase.TestSetEditorFields;
 
@@ -40,8 +40,8 @@ public class LeavingACellIdeTest extends BasePlatformTestCase {
 
     // UC-SHARE-003, Rule-SHARE-021
     public void testMovingAwayFromACellSavesWhatWasTypedInIt() {
-        final @NotNull Map<String, List<TestCaseDto>> sheets = new LinkedHashMap<>();
-        sheets.put("Login", new ArrayList<>(List.of(TestCaseDto.builder().description("log in with a valid user").build())));
+        final @NotNull Map<String, List<TestCase>> sheets = new LinkedHashMap<>();
+        sheets.put("Login", new ArrayList<>(List.of(TestCase.builder().description("log in with a valid user").build())));
         final @NotNull SheetPreview preview = new SheetPreview(getProject(), TestSetEditorFields.all(Can.EXPORT));
         preview.show(sheets);
         final @NotNull JBTable table = (JBTable) ((JBScrollPane) ((JBTabbedPane) preview.getPanel()).getComponentAt(0)).getViewport().getView();

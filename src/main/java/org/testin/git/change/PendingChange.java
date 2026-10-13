@@ -17,12 +17,12 @@
 package org.testin.git.change;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.nio.file.Path;
 import java.util.List;
 
-public record PendingChange(@NotNull ChangeSubject subject, @NotNull String name, @NotNull String testSet, @NotNull String testCaseId, @NotNull Path relativeFilePath, @NotNull StatusKind type, @NotNull TestCaseDto committed, @NotNull List<FieldChange> fieldChanges) {
+public record PendingChange(@NotNull ChangeSubject subject, @NotNull String name, @NotNull String testSet, @NotNull String testCaseId, @NotNull Path relativeFilePath, @NotNull StatusKind type, @NotNull TestCase committed, @NotNull List<FieldChange> fieldChanges) {
     public boolean isRevertible() {
         return subject == ChangeSubject.TEST_CASE && !testCaseId.isEmpty();
     }

@@ -20,14 +20,14 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.CodeChange;
 import org.testin.codegen.CodeChangeType;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.util.List;
 
-public class UpdateTestMethodDescription extends BaseTestMethodChange implements CodeChange<TestCaseDto> {
+public class UpdateTestMethodDescription extends BaseTestMethodChange implements CodeChange<TestCase> {
     // UC-CODEGEN-010, Rule-CODEGEN-001, Rule-CODEGEN-040
     @Override
-    public void execute(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
+    public void execute(final @NotNull Project project, final @NotNull TestCase testCase) {
         applyOrCreate(project, testCase, CodeChangeType.UPDATE_TEST_CASE_DESCRIPTION.description(), testMethod -> {
             writeDescription(project, testMethod, testCase);
             reformat(project, testMethod);
@@ -36,7 +36,7 @@ public class UpdateTestMethodDescription extends BaseTestMethodChange implements
 
     // UC-CODEGEN-010, UC-CODEGEN-003, Rule-CODEGEN-019
     @Override
-    public void executeAll(final @NotNull Project project, final @NotNull List<? extends TestCaseDto> testCases) {
+    public void executeAll(final @NotNull Project project, final @NotNull List<? extends TestCase> testCases) {
         applyToEach(project, testCases, CodeChangeType.UPDATE_TEST_CASE_DESCRIPTION.description(), (testMethod, testCase) -> writeDescription(project, testMethod, testCase));
         CodeChangeType.CREATE_TEST_CASE.executeAllNow(project, testCases);
     }

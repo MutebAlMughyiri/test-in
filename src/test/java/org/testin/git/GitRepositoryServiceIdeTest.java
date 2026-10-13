@@ -21,7 +21,7 @@ import org.testin.git.change.ChangeSubject;
 import org.testin.git.change.StatusKind;
 import org.testin.git.change.PendingChangeReader;
 import org.testin.git.change.PendingChange;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.util.RealJsonCodec;
 
 import java.nio.file.Files;
@@ -63,7 +63,7 @@ public class GitRepositoryServiceIdeTest extends AbstractGitRemoteIdeTest {
 
     // UC-SHARE-010, Rule-SHARE-044
     public void testTheReviewReadsGitForARepositoryTheIdeDoesNotTrack() {
-        final @NotNull TestCaseDto neverSeen = TestCaseDto.builder().description("a test case Git has never seen").build();
+        final @NotNull TestCase neverSeen = TestCase.builder().description("a test case Git has never seen").build();
         write(work, "Test Cases/login/" + neverSeen.getId() + ".tc", RealJsonCodec.build().writeValueAsString(neverSeen));
 
         final @NotNull List<PendingChange> review = PendingChangeReader.getPendingChanges(getProject(), work);

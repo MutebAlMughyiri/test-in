@@ -18,7 +18,7 @@ package org.testin.testcase.update.bulk;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.util.Bundle;
 
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 public class StepsBulkSectionDialog extends AbstractJsonArraySplitBulkSectionDialog {
-    public StepsBulkSectionDialog(final @NotNull Project project, final @NotNull List<TestCaseDto> selectedTestCases, final @NotNull Consumer<List<TestCaseDto>> updatedTestCases) {
+    public StepsBulkSectionDialog(final @NotNull Project project, final @NotNull List<TestCase> selectedTestCases, final @NotNull Consumer<List<TestCase>> updatedTestCases) {
         super(project, selectedTestCases, updatedTestCases);
     }
 
@@ -42,10 +42,10 @@ public class StepsBulkSectionDialog extends AbstractJsonArraySplitBulkSectionDia
     }
 
     @Override
-    protected @NotNull List<List<String>> extractOriginalValues(final @NotNull List<TestCaseDto> testCases) {
+    protected @NotNull List<List<String>> extractOriginalValues(final @NotNull List<TestCase> testCases) {
         final @NotNull List<List<String>> originalSteps = new ArrayList<>();
 
-        for (final TestCaseDto testCase : testCases) {
+        for (final TestCase testCase : testCases) {
             originalSteps.add(new ArrayList<>(testCase.getSteps()));
         }
 
@@ -53,8 +53,8 @@ public class StepsBulkSectionDialog extends AbstractJsonArraySplitBulkSectionDia
     }
 
     @Override
-    protected @NotNull List<TestCaseDto> applyValues(final @NotNull List<TestCaseDto> testCases, final @NotNull List<List<String>> newValues) {
-        final @NotNull List<TestCaseDto> written = new ArrayList<>();
+    protected @NotNull List<TestCase> applyValues(final @NotNull List<TestCase> testCases, final @NotNull List<List<String>> newValues) {
+        final @NotNull List<TestCase> written = new ArrayList<>();
 
         for (int i = 0; i < testCases.size(); i++) {
             final @NotNull List<String> cleanSteps = new ArrayList<>();

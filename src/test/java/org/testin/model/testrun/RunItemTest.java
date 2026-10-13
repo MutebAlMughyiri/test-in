@@ -17,7 +17,7 @@
 package org.testin.model.testrun;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.bug.BugPriority;
 import org.testin.model.bug.BugSeverity;
 import org.testin.model.status.RunItemStatus;
@@ -189,7 +189,7 @@ public class RunItemTest {
 
     @Test
     public void shownTestCaseIsTheWiredTestCase() {
-        final TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).build();
+        final TestCase testCase = TestCase.builder().id(UUID.randomUUID()).build();
         final RunItem runItem = RunItem.builder().id(UUID.randomUUID()).build().showing(Optional.of(testCase), Optional.empty(), Optional.empty(), false);
 
         assertSame(runItem.shownTestCase(), testCase);
@@ -200,11 +200,11 @@ public class RunItemTest {
     public void showingNoTestCaseMarksTheRowRemovedAndNamesIt() {
         final UUID testCaseId = UUID.randomUUID();
         final RunItem runItem = RunItem.builder().id(testCaseId).build()
-                .showing(Optional.of(TestCaseDto.builder().id(testCaseId).build()), Optional.empty(), Optional.empty(), false)
+                .showing(Optional.of(TestCase.builder().id(testCaseId).build()), Optional.empty(), Optional.empty(), false)
                 .showing(Optional.empty(), Optional.empty(), Optional.empty(), false);
 
         assertTrue(runItem.isRemoved(), "the live test case and the removed mark are set by one call, so they cannot disagree");
-        assertEquals(runItem.shownTestCase().getDescription(), TestCaseDto.deleted(testCaseId).getDescription());
+        assertEquals(runItem.shownTestCase().getDescription(), TestCase.deleted(testCaseId).getDescription());
     }
 
     @Test
@@ -212,7 +212,7 @@ public class RunItemTest {
         final UUID testCaseId = UUID.randomUUID();
         final RunItem runItem = RunItem.builder().id(testCaseId).build();
 
-        assertEquals(runItem.shownTestCase().getDescription(), TestCaseDto.deleted(testCaseId).getDescription());
+        assertEquals(runItem.shownTestCase().getDescription(), TestCase.deleted(testCaseId).getDescription());
         assertEquals(runItem.shownTestCase().getId(), testCaseId);
     }
 

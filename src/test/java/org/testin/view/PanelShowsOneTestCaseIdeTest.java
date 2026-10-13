@@ -25,7 +25,7 @@ import org.testin.editor.EditorFixtures;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.testrun.RunItemExecution;
@@ -48,13 +48,13 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
 
     private static final @NotNull String RUN_BAND = Bundle.message("details.band.run").toUpperCase(Locale.ROOT);
 
-    private static @NotNull TestCaseDto handedCopy(final @NotNull TestCaseDto testCase, final @NotNull String description) {
-        final @NotNull TestCaseDto copy = TestCaseDto.builder().id(testCase.getId()).description(description).build();
+    private static @NotNull TestCase handedCopy(final @NotNull TestCase testCase, final @NotNull String description) {
+        final @NotNull TestCase copy = TestCase.builder().id(testCase.getId()).description(description).build();
         copy.setParent(testCase.getParent());
         return copy;
     }
 
-    private @NotNull List<TestCaseDto> threeTestCases() {
+    private @NotNull List<TestCase> threeTestCases() {
         final @NotNull TestSetNode testSet = aTestSet("Login");
         return List.of(aTestCase(testSet, "Log in with a valid user", "a"), aTestCase(testSet, "Log in with a locked user", "b"), aTestCase(testSet, "Log in with no password", "c"));
     }
@@ -65,7 +65,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-002
     public void testThePanelDrawsTheFirstOfTheTestCasesItWasHandedAndNoOther() {
-        final @NotNull List<TestCaseDto> handed = threeTestCases();
+        final @NotNull List<TestCase> handed = threeTestCases();
 
         view.getPanel().show(handed, handed.getFirst().getParent().treePath());
 
@@ -77,7 +77,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-003
     public void testNothingButAskingOpensThePanel() {
-        final @NotNull List<TestCaseDto> handed = threeTestCases();
+        final @NotNull List<TestCase> handed = threeTestCases();
         final @NotNull List<String> treePath = handed.getFirst().getParent().treePath();
 
         view.getPanel().showIfOpen(handed, treePath);
@@ -92,7 +92,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-004
     public void testAnOpenPanelFollowsAndAClosedOneStaysClosedUntilAskedAgain() {
-        final @NotNull List<TestCaseDto> handed = threeTestCases();
+        final @NotNull List<TestCase> handed = threeTestCases();
         final @NotNull List<String> treePath = handed.getFirst().getParent().treePath();
 
         view.getPanel().show(List.of(handed.getFirst()), treePath);
@@ -109,7 +109,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-005
     public void testThePanelDrawsWhatTestinHoldsNotTheCopyItWasHanded() {
-        final @NotNull TestCaseDto testCase = threeTestCases().getFirst();
+        final @NotNull TestCase testCase = threeTestCases().getFirst();
 
         view.getPanel().show(List.of(handedCopy(testCase, "The copy the editor handed over")), testCase.getParent().treePath());
         assertTrue("the panel drew the copy it was handed rather than what Testin holds: " + details(), holds(details(), "Log in with a valid user"));
@@ -122,7 +122,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-007
     public void testOpeningPagingAndClosingSayNothing() {
-        final @NotNull List<TestCaseDto> handed = threeTestCases();
+        final @NotNull List<TestCase> handed = threeTestCases();
         final @NotNull List<String> treePath = handed.getFirst().getParent().treePath();
 
         final @NotNull List<String> said = Said.during(getProject(), () -> {
@@ -141,7 +141,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-008
     public void testEveryRefreshDrawsBothTabs() {
-        final @NotNull TestCaseDto testCase = threeTestCases().getFirst();
+        final @NotNull TestCase testCase = threeTestCases().getFirst();
 
         view.getPanel().show(List.of(testCase), testCase.getParent().treePath());
         assertTrue("the Details tab was not drawn: " + details(), holds(details(), "Log in with a valid user"));
@@ -154,7 +154,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-012
     public void testThePanelOpensOnDetailsWhicheverTabWasInFront() {
-        final @NotNull TestCaseDto testCase = threeTestCases().getFirst();
+        final @NotNull TestCase testCase = threeTestCases().getFirst();
         view.bringToFront(ViewTab.HISTORY);
         assertEquals(ViewTab.HISTORY.getDisplayName(), view.tabInFront());
 
@@ -165,7 +165,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-014
     public void testTheFolderThePanelWasOpenedFromDecidesWhetherTheTestRunIsDrawn() {
-        final @NotNull TestCaseDto testCase = threeTestCases().getFirst();
+        final @NotNull TestCase testCase = threeTestCases().getFirst();
         final @NotNull TestRunNode testRun = aTestRun(List.of(RunItem.builder().id(testCase.getId()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build()));
 
         view.getPanel().show(List.of(testCase), treePathOf(testRun));
@@ -177,9 +177,9 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-018
     public void testEveryFillStartsAgainAtTheFirstTestCase() {
-        final @NotNull List<TestCaseDto> first = threeTestCases();
+        final @NotNull List<TestCase> first = threeTestCases();
         final @NotNull TestSetNode other = aTestSet("Logout");
-        final @NotNull List<TestCaseDto> second = List.of(aTestCase(other, "Log out from the menu", "a"), aTestCase(other, "Log out by closing the tab", "b"), aTestCase(other, "Log out after a timeout", "c"));
+        final @NotNull List<TestCase> second = List.of(aTestCase(other, "Log out from the menu", "a"), aTestCase(other, "Log out by closing the tab", "b"), aTestCase(other, "Log out after a timeout", "c"));
 
         view.getPanel().show(first, first.getFirst().getParent().treePath());
         view.getPanel().getPage().goNext();
@@ -195,7 +195,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-029
     public void testTheTestRunBandIsDrawnOnlyWhenTheTestRunHoldsTheTestCase() {
-        final @NotNull List<TestCaseDto> handed = threeTestCases();
+        final @NotNull List<TestCase> handed = threeTestCases();
         final @NotNull TestRunNode testRun = aTestRun(List.of(RunItem.builder().id(handed.getFirst().getId()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build()));
 
         view.getPanel().show(List.of(handed.get(1)), treePathOf(testRun));
@@ -208,7 +208,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-030
     public void testTheTestRunBandIsReadFromTheTestRunItself() {
-        final @NotNull TestCaseDto testCase = threeTestCases().getFirst();
+        final @NotNull TestCase testCase = threeTestCases().getFirst();
         final @NotNull TestRunNode testRun = aTestRun(List.of(EditorFixtures.pending(testCase)));
         view.getPanel().show(List.of(testCase), treePathOf(testRun));
         assertTrue(details().contains(RunItemStatus.PENDING.getLabel()));
@@ -228,7 +228,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-005
     public void testAStatusSetInTheEditorShowsInThePanelAtOnce() {
-        final @NotNull TestCaseDto testCase = threeTestCases().getFirst();
+        final @NotNull TestCase testCase = threeTestCases().getFirst();
         final @NotNull TestRunNode testRun = aTestRun(List.of(EditorFixtures.pending(testCase)));
         final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());
         try {
@@ -248,7 +248,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-083
     public void testOpenedFromATestRunThePanelShowsTheTestCaseAsTheRowShowsIt() {
-        final @NotNull TestCaseDto testCase = threeTestCases().getFirst();
+        final @NotNull TestCase testCase = threeTestCases().getFirst();
         final @NotNull RunItem row = EditorFixtures.pending(testCase);
         row.recordRunItemStatus(RunItemStatus.FAILED, "muteb", Duration.ZERO, Failure.NONE);
         final @NotNull TestRunNode testRun = aTestRun(List.of(row));
@@ -265,7 +265,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-112, Rule-EDITOR-PANEL-239
     public void testFromACommittedTestRunTheDetailsShowTheCommitAndTheHistoryTheTestCaseNow() {
-        final @NotNull TestCaseDto testCase = threeTestCases().getFirst();
+        final @NotNull TestCase testCase = threeTestCases().getFirst();
         final @NotNull TestRunNode testRun = aTestRun(List.of(EditorFixtures.pending(testCase)));
         final @NotNull TestRuns testRuns = Services.getInstance(getProject(), TestRuns.class);
         testRuns.changeTestRunMarker(testRun.getPath(), marker -> marker.recordCommit("ea9a501"));

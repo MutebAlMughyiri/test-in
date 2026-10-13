@@ -23,7 +23,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.notifications.Notifier;
 import org.testin.services.BackgroundWork;
@@ -81,7 +81,7 @@ record ExportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
 
         BackgroundWork.run(project, Bundle.message("export.task.reading", node.getName()), Bundle.message("export.failed.title"), _ -> {
             final @NotNull GatheredSheets gathered = gather(node);
-            final @NotNull Map<String, List<TestCaseDto>> sheets = gathered.sheets();
+            final @NotNull Map<String, List<TestCase>> sheets = gathered.sheets();
             if (sheets.isEmpty()) {
                 ApplicationManager.getApplication().invokeLater(() ->
                         notifier.softRefuse(project, Bundle.message("notification.export.empty.title"), Bundle.message("export.none.found")));
@@ -100,12 +100,12 @@ record ExportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
         });
     }
 
-    private void chooseWhatToExport(final @NotNull Map<String, List<TestCaseDto>> sheets, final @NotNull VirtualFile targetDirectory) {
+    private void chooseWhatToExport(final @NotNull Map<String, List<TestCase>> sheets, final @NotNull VirtualFile targetDirectory) {
         new ExportDialog(project, TestSetEditorFields.all(Can.EXPORT), sheets, targetDirectory, this::writeExport).show();
     }
 
     // UC-SHARE-001, Rule-SHARE-005
-    private void writeExport(final @NotNull Destination destination, final @NotNull Map<String, List<TestCaseDto>> selected) {
+    private void writeExport(final @NotNull Destination destination, final @NotNull Map<String, List<TestCase>> selected) {
         final int testCases = selected.values().stream().mapToInt(List::size).sum();
 
         BackgroundWork.run(project, Bundle.message("export.task.writing", String.valueOf(testCases), destination.file().getName()),
@@ -123,21 +123,21 @@ record ExportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
 
         walk(node, List.of(node.getName()), found, unreadable);
 
-        final @NotNull Map<String, List<TestCaseDto>> sheets = new LinkedHashMap<>();
+        final @NotNull Map<String, List<TestCase>> sheets = new LinkedHashMap<>();
         for (final Sheet sheet : found) sheets.put(uniqueKey(sheets, sheet.treePath()), sheet.testCases());
 
         return new GatheredSheets(sheets, unreadable);
     }
 
     // UC-SHARE-003, Rule-SHARE-020
-    private @NotNull List<TestCaseDto> detached(final @NotNull List<TestCaseDto> testCases) {
+    private @NotNull List<TestCase> detached(final @NotNull List<TestCase> testCases) {
         return testCases.stream()
-                .map(TestCaseDto::copy)
+                .map(TestCase::copy)
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
     private void walk(final @NotNull AbstractNode node, final @NotNull List<String> treePath, final @NotNull List<Sheet> found, final @NotNull List<String> unreadable) {
-        final @NotNull List<TestCaseDto> here = testCases.getTestCasesForTestSet(node.getPath());
+        final @NotNull List<TestCase> here = testCases.getTestCasesForTestSet(node.getPath());
         if (!here.isEmpty()) found.add(new Sheet(treePath, detached(here)));
 
         unreadable.addAll(testCases.unreadableTestCasesIn(node.getPath()).stream().sorted().toList());

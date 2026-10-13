@@ -19,7 +19,7 @@ package org.testin.indexer;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.services.Services;
 import org.testin.services.TestCaseCompletions;
@@ -45,7 +45,7 @@ public final class TestCases {
         return indexer.getStore();
     }
 
-    public @NotNull List<TestCaseDto> getTestCasesForTestSet(final @NotNull Path testSetPath) {
+    public @NotNull List<TestCase> getTestCasesForTestSet(final @NotNull Path testSetPath) {
         return store().getTestCasesForTestSet(testSetPath);
     }
 
@@ -55,8 +55,8 @@ public final class TestCases {
     }
 
     // Rule-TREE-PANEL-008
-    public @NotNull List<TestCaseDto> getTestCasesUnder(final @NotNull AbstractNode node) {
-        final @NotNull List<TestCaseDto> testCases = new ArrayList<>(getTestCasesForTestSet(node.getPath()));
+    public @NotNull List<TestCase> getTestCasesUnder(final @NotNull AbstractNode node) {
+        final @NotNull List<TestCase> testCases = new ArrayList<>(getTestCasesForTestSet(node.getPath()));
 
         for (final AbstractNode child : store().getChildren(node.getPath())) {
             if (child.isRetired()) continue;
@@ -67,22 +67,22 @@ public final class TestCases {
         return testCases;
     }
 
-    public @NotNull Optional<TestCaseDto> findTestCase(final @NotNull UUID testCaseId) {
+    public @NotNull Optional<TestCase> findTestCase(final @NotNull UUID testCaseId) {
         return store().findTestCase(testCaseId);
     }
 
     // UC-INTERNAL-004, Rule-INTERNAL-033
-    public boolean putTestCase(final @NotNull Path testSetPath, final @NotNull TestCaseDto testCase) {
+    public boolean putTestCase(final @NotNull Path testSetPath, final @NotNull TestCase testCase) {
         return store().putTestCase(testSetPath, testCase);
     }
 
     // UC-INTERNAL-004, Rule-INTERNAL-035
-    public boolean putTestCaseVerbatim(final @NotNull Path testSetPath, final @NotNull TestCaseDto testCase) {
+    public boolean putTestCaseVerbatim(final @NotNull Path testSetPath, final @NotNull TestCase testCase) {
         return store().putTestCaseVerbatim(testSetPath, testCase);
     }
 
     // UC-EDITOR-PANEL-017, Rule-INTERNAL-035
-    public boolean moveTestCase(final @NotNull Path fromSet, final @NotNull Path toSet, final @NotNull TestCaseDto testCase) {
+    public boolean moveTestCase(final @NotNull Path fromSet, final @NotNull Path toSet, final @NotNull TestCase testCase) {
         return store().moveTestCase(fromSet, toSet, testCase);
     }
 
@@ -94,12 +94,12 @@ public final class TestCases {
         return true;
     }
 
-    public @NotNull List<TestCaseDto> getAllTestCases() {
+    public @NotNull List<TestCase> getAllTestCases() {
         return List.copyOf(store().getTestCasesById().values());
     }
 
     // UC-INTERNAL-004, Rule-INTERNAL-031
-    public boolean updateSequence(final @NotNull Path testSetPath, final @NotNull List<TestCaseDto> orderedList, final @NotNull List<TestCaseDto> moved) {
+    public boolean updateSequence(final @NotNull Path testSetPath, final @NotNull List<TestCase> orderedList, final @NotNull List<TestCase> moved) {
         return store().updateSequence(testSetPath, orderedList, moved);
     }
 
@@ -109,7 +109,7 @@ public final class TestCases {
     }
 
     // UC-INTERNAL-004, Rule-INTERNAL-034
-    public @NotNull Optional<TestCaseFile> testCaseFile(final @NotNull TestCaseDto testCase) {
+    public @NotNull Optional<TestCaseFile> testCaseFile(final @NotNull TestCase testCase) {
         final @NotNull Path file = store().testCaseFileOf(testCase);
         return indexer.testProjectHolding(file).map(testProject -> new TestCaseFile(testProject, testProject.relativize(file)));
     }

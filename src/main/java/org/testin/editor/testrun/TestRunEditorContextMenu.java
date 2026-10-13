@@ -23,7 +23,7 @@ import org.testin.actions.Declared;
 import org.testin.actions.TestinEscapeAction;
 import org.testin.editor.AbstractEditorContextMenu;
 import org.testin.editor.TestinEditor;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.open.OpenContextMenuAction;
 import org.testin.report.GenerateReportAction;
@@ -33,7 +33,7 @@ public class TestRunEditorContextMenu extends AbstractEditorContextMenu {
     private final @NotNull Project project;
     private final @NotNull TestinEditor editor;
 
-    public TestRunEditorContextMenu(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull AbstractNode node, final @NotNull JBList<TestCaseDto> list) {
+    public TestRunEditorContextMenu(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull AbstractNode node, final @NotNull JBList<TestCase> list) {
         super();
         this.project = project;
         this.editor = editor;
@@ -55,7 +55,7 @@ public class TestRunEditorContextMenu extends AbstractEditorContextMenu {
 
     // UC-EDITOR-PANEL-026, UC-EDITOR-PANEL-029
     @Override
-    public void registerShortcuts(final @NotNull JBList<TestCaseDto> list) {
+    public void registerShortcuts(final @NotNull JBList<TestCase> list) {
         new TestinEscapeAction(project, list);
         new OpenContextMenuAction(list, this);
         new GenerateReportAction(project, editor, list);

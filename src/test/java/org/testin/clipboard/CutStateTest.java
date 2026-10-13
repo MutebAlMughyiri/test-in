@@ -19,7 +19,7 @@ package org.testin.clipboard;
 import org.jetbrains.annotations.NotNull;
 import org.testin.StandIn;
 import org.testin.editor.TestinEditor;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -34,14 +34,14 @@ public class CutStateTest {
         return StandIn.of(TestinEditor.class);
     }
 
-    private static @NotNull TestCaseDto testCase() {
-        return TestCaseDto.builder().id(UUID.randomUUID()).build();
+    private static @NotNull TestCase testCase() {
+        return TestCase.builder().id(UUID.randomUUID()).build();
     }
 
     @Test
     public void theTestCasesThatWereCutArePastedAsAMove() {
-        final @NotNull TestCaseDto first = testCase();
-        final @NotNull TestCaseDto second = testCase();
+        final @NotNull TestCase first = testCase();
+        final @NotNull TestCase second = testCase();
         final @NotNull CutState state = new CutState();
 
         state.cut(anyEditor(), List.of(first, second));
@@ -61,7 +61,7 @@ public class CutStateTest {
 
     @Test
     public void aClipboardHoldingTheCutAndMoreIsNotTheCut() {
-        final @NotNull TestCaseDto cut = testCase();
+        final @NotNull TestCase cut = testCase();
         final @NotNull CutState state = new CutState();
 
         state.cut(anyEditor(), List.of(cut));

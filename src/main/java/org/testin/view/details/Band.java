@@ -24,7 +24,7 @@ import com.intellij.util.ui.JBUI;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.ui.Caption;
 import org.testin.ui.dialogs.DialogStyle;
 import org.testin.util.Fonts;
@@ -60,7 +60,7 @@ public final class Band extends AbstractDetails {
 
     // UC-VIEW-PANEL-004, UC-VIEW-PANEL-005, Rule-VIEW-PANEL-085, Rule-VIEW-PANEL-087
     @Override
-    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull TestCaseDto testCase, final int currentRow) {
+    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull TestCase testCase, final int currentRow) {
         int row = addFullWidthRow(panel, (GridBagConstraints) constraints.clone(), heading(project), JBUI.insets(INSETS_TOP, INSETS_SIDE, 0, INSETS_SIDE), currentRow);
 
         if (!isOpen()) return row;

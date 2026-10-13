@@ -20,7 +20,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestCasesFolderNode;
 import org.testin.model.node.TestProjectNode;
@@ -50,7 +50,7 @@ final class ScannedProject {
     private final @NotNull Map<String, TestSetNode> testSets = new ConcurrentHashMap<>();
     private final @NotNull Map<String, TestRunNode> testRunNodes = new ConcurrentHashMap<>();
     private final @NotNull Map<String, RunItems> runItemsByPath = new ConcurrentHashMap<>();
-    private final @NotNull Map<UUID, TestCaseDto> testCasesById = new ConcurrentHashMap<>();
+    private final @NotNull Map<UUID, TestCase> testCasesById = new ConcurrentHashMap<>();
     private final @NotNull Map<String, List<UUID>> testCaseIdsByTestSet = new ConcurrentHashMap<>();
 
     // UC-INTERNAL-002, Rule-INTERNAL-082

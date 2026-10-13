@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.editor.open.TestinEditors;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.notifications.Notifier;
 import org.testin.services.BackgroundWork;
 import org.testin.services.Services;
@@ -76,10 +76,10 @@ final class TestCaseRestore {
     private static boolean removeAbsent(final @NotNull Project project, final @NotNull TestCaseSnapshot snapshot, final @NotNull RestoredTestCases written) {
         final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
 
-        final @NotNull List<TestCaseDto> stillThere = snapshot.absent().stream().flatMap(testCaseId -> testCases.findTestCase(testCaseId).stream()).toList();
+        final @NotNull List<TestCase> stillThere = snapshot.absent().stream().flatMap(testCaseId -> testCases.findTestCase(testCaseId).stream()).toList();
 
         boolean allWent = true;
-        for (final TestCaseDto testCase : stillThere) {
+        for (final TestCase testCase : stillThere) {
             if (testCases.removeTestCase(snapshot.testSetPath(), testCase.getId())) written.removed().add(testCase);
             else allWent = false;
         }
@@ -92,10 +92,10 @@ final class TestCaseRestore {
         final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
 
         boolean allBack = true;
-        for (final TestCaseDto testCase : snapshot.present()) {
+        for (final TestCase testCase : snapshot.present()) {
             final boolean isComingBack = testCases.findTestCase(testCase.getId()).isEmpty();
 
-            final @NotNull TestCaseDto stored = testCase.copy();
+            final @NotNull TestCase stored = testCase.copy();
             if (!testCases.putTestCaseVerbatim(snapshot.testSetPath(), stored)) {
                 allBack = false;
                 continue;

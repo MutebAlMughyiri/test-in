@@ -31,7 +31,7 @@ import org.testin.filter.SortPopupButton;
 import org.testin.filter.Sorting;
 import org.testin.indexer.TestCases;
 import org.testin.model.Priority;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
 import org.testin.testcase.TestCaseOrder;
@@ -82,7 +82,7 @@ public class DragToReorderIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull List<String> storedOrder() {
-        return TestCaseOrder.ordered(theTestCases().getTestCasesForTestSet(testSet.getPath())).stream().map(TestCaseDto::getDescription).toList();
+        return TestCaseOrder.ordered(theTestCases().getTestCasesForTestSet(testSet.getPath())).stream().map(TestCase::getDescription).toList();
     }
 
     private void awaitStoredOrder(final @NotNull List<String> expected) {
@@ -115,13 +115,13 @@ public class DragToReorderIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-058
     public void testADragIsAlwaysAMove() {
         final @NotNull TestSetEditor editor = aTestSetOf("Log in", "Log out", "Reset the password");
-        final @NotNull Set<UUID> before = theTestCases().getTestCasesForTestSet(testSet.getPath()).stream().map(TestCaseDto::getId).collect(Collectors.toSet());
+        final @NotNull Set<UUID> before = theTestCases().getTestCasesForTestSet(testSet.getPath()).stream().map(TestCase::getId).collect(Collectors.toSet());
 
         assertEquals("a drag offers something other than a move", TransferHandler.MOVE, new TestCaseTransferHandler(getProject(), editor).getSourceActions(editor.getList()));
         assertTrue("the drop was refused", drag(editor, new int[]{0}, 3));
 
         awaitStoredOrder(List.of("Log out", "Reset the password", "Log in"));
-        assertEquals("the drag copied or lost a test case", before, theTestCases().getTestCasesForTestSet(testSet.getPath()).stream().map(TestCaseDto::getId).collect(Collectors.toSet()));
+        assertEquals("the drag copied or lost a test case", before, theTestCases().getTestCasesForTestSet(testSet.getPath()).stream().map(TestCase::getId).collect(Collectors.toSet()));
     }
 
     // Rule-EDITOR-PANEL-059
@@ -178,9 +178,9 @@ public class DragToReorderIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-282
     public void testUnderASortACardLandsAfterTheCardAboveTheDropInTheSet() {
         final @NotNull TestSetEditor editor = aTestSetOf("A", "B", "C", "D");
-        for (final TestCaseDto high : theTestCases().getTestCasesForTestSet(testSet.getPath())) {
+        for (final TestCase high : theTestCases().getTestCasesForTestSet(testSet.getPath())) {
             if (!List.of("B", "D").contains(high.getDescription())) continue;
-            final @NotNull TestCaseDto raised = high.edit().priority(Priority.HIGH).build();
+            final @NotNull TestCase raised = high.edit().priority(Priority.HIGH).build();
             raised.setParent(testSet);
             theTestCases().putTestCaseVerbatim(testSet.getPath(), raised);
         }
@@ -189,11 +189,11 @@ public class DragToReorderIdeTest extends AbstractTempRootIdeTest {
         final @NotNull SortPopupButton sort = editor.getToolBar().getToolbarItem(SortPopupButton.class);
         Sorting.choose(sort, SortField.PRIORITY.getLabel());
         Sorting.choose(sort, SortDirection.DESCENDING.getLabel());
-        Await.until("the sort never put the high ones first", () -> editor.getCurrentTestCases().stream().map(TestCaseDto::getDescription).toList().equals(List.of("B", "D", "A", "C")));
+        Await.until("the sort never put the high ones first", () -> editor.getCurrentTestCases().stream().map(TestCase::getDescription).toList().equals(List.of("B", "D", "A", "C")));
 
         assertTrue("the drop was refused under a sort", drag(editor, new int[]{2}, 1));
 
         awaitStoredOrder(List.of("B", "A", "C", "D"));
-        Await.until("the sort was lost after the drop", () -> editor.getCurrentTestCases().stream().map(TestCaseDto::getDescription).toList().equals(List.of("B", "D", "A", "C")));
+        Await.until("the sort was lost after the drop", () -> editor.getCurrentTestCases().stream().map(TestCase::getDescription).toList().equals(List.of("B", "D", "A", "C")));
     }
 }

@@ -18,7 +18,7 @@ package org.testin.git.change;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.Priority;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.util.RealJsonCodec;
 import org.testng.annotations.Test;
 
@@ -40,8 +40,8 @@ public class PendingChangeFactoryTest {
 
     private static final Path PATH = Path.of("Test Cases", "login", "case.tc");
 
-    private static @NotNull TestCaseDto testCase(final String description) {
-        return TestCaseDto.builder()
+    private static @NotNull TestCase testCase(final String description) {
+        return TestCase.builder()
                 .description(description)
                 .expectedResult("the balance is shown")
                 .steps(new ArrayList<>(List.of("open the app", "log in")))
@@ -50,13 +50,13 @@ public class PendingChangeFactoryTest {
                 .build();
     }
 
-    private static @NotNull String json(final TestCaseDto testCase) {
+    private static @NotNull String json(final TestCase testCase) {
         return RealJsonCodec.build().writeValueAsString(testCase);
     }
 
     @Test
     public void anAddedFileIsOneCreateChangeCarryingTheDescription() {
-        final TestCaseDto added = testCase("a brand new case");
+        final TestCase added = testCase("a brand new case");
 
         final PendingChange diff = PendingChangeFactory.fromFile(
                 StatusKind.ADDED, "", json(added), PATH, RealJsonCodec.build(), _ -> Optional.empty());
@@ -76,7 +76,7 @@ public class PendingChangeFactoryTest {
 
     @Test
     public void aDeletedFileIsOneRemoveChangeCarryingTheDescription() {
-        final TestCaseDto removed = testCase("a case that is going away");
+        final TestCase removed = testCase("a case that is going away");
 
         final PendingChange diff = PendingChangeFactory.fromFile(
                 StatusKind.DELETED, json(removed), "", PATH, RealJsonCodec.build(), _ -> Optional.empty());
@@ -95,8 +95,8 @@ public class PendingChangeFactoryTest {
     // Rule-SHARE-045
     @Test
     public void aModifiedFileListsOnlyTheFieldsThatChanged() {
-        final TestCaseDto before = testCase("the original description");
-        final TestCaseDto after = testCase("the original description")
+        final TestCase before = testCase("the original description");
+        final TestCase after = testCase("the original description")
                 .setId(before.getId())
                 .setModule("billing")
                 .setPriority(Priority.HIGH);
@@ -116,7 +116,7 @@ public class PendingChangeFactoryTest {
     // Rule-SHARE-046
     @Test
     public void aModifiedFileWithNoComparedFieldStillGetsARow() {
-        final TestCaseDto unchanged = testCase("identical on both sides");
+        final TestCase unchanged = testCase("identical on both sides");
 
         final PendingChange change = PendingChangeFactory.fromFile(
                 StatusKind.MODIFIED, json(unchanged), json(unchanged), PATH, RealJsonCodec.build(), _ -> Optional.empty());
@@ -178,7 +178,7 @@ public class PendingChangeFactoryTest {
 
     @Test
     public void aMissingRevisionFailsByName() {
-        final TestCaseDto present = testCase("only one side survived");
+        final TestCase present = testCase("only one side survived");
 
         assertThrows(IllegalStateException.class, () -> PendingChangeFactory.fromFile(
                 StatusKind.MODIFIED, "", json(present), PATH, RealJsonCodec.build(), _ -> Optional.empty()));
@@ -195,9 +195,9 @@ public class PendingChangeFactoryTest {
 
     @Test
     public void everyKindOfChangeCanNameItsTestCase() {
-        final TestCaseDto added = testCase("added");
-        final TestCaseDto before = testCase("before");
-        final TestCaseDto after = testCase("after").setId(before.getId());
+        final TestCase added = testCase("added");
+        final TestCase before = testCase("before");
+        final TestCase after = testCase("after").setId(before.getId());
 
         assertEquals(PendingChangeFactory.fromFile(StatusKind.ADDED, "", json(added), PATH, RealJsonCodec.build(), _ -> Optional.empty())
                 .name(), "added");
@@ -211,13 +211,13 @@ public class PendingChangeFactoryTest {
 
     @Test
     public void aTestCaseSurvivesBeingWrittenAndReadBack() {
-        final TestCaseDto original = testCase("survives the round trip");
+        final TestCase original = testCase("survives the round trip");
 
         final PendingChange diff = PendingChangeFactory.fromFile(
                 StatusKind.DELETED, json(original), "", PATH, RealJsonCodec.build(), _ -> Optional.empty());
 
         assertNotNull(diff);
-        final TestCaseDto readBack = diff.committed();
+        final TestCase readBack = diff.committed();
 
         assertEquals(TestCaseFieldChanges.compare(original, readBack), List.of(),
                 "a test case written and read back must compare as unchanged");
@@ -226,8 +226,8 @@ public class PendingChangeFactoryTest {
     // Rule-SHARE-051
     @Test
     public void onlyAChangeToATestCaseCanBePutBack() {
-        final @NotNull TestCaseDto before = testCase("before");
-        final @NotNull TestCaseDto after = testCase("after").setId(before.getId());
+        final @NotNull TestCase before = testCase("before");
+        final @NotNull TestCase after = testCase("after").setId(before.getId());
         final @NotNull UUID testCaseId = UUID.randomUUID();
 
         assertTrue(PendingChangeFactory.fromFile(StatusKind.ADDED, "", json(after), PATH, RealJsonCodec.build(), _ -> Optional.empty()).isRevertible(),

@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.editor.TestinEditor;
 import org.testin.indexer.TestCases;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.testcase.update.UpdateTestCaseMenu;
@@ -40,12 +40,12 @@ record UpdateTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor
     }
 
     void overSelection(final @NotNull Consumer<UpdateTestCaseMenu> open) {
-        final @NotNull List<TestCaseDto> selectedTestCases = editor.getSelectedTestCases();
+        final @NotNull List<TestCase> selectedTestCases = editor.getSelectedTestCases();
         if (selectedTestCases.isEmpty()) return;
 
         final @NotNull Path path = editor.getParent().getPath();
 
-        TestinLogger.trace("update test cases: " + selectedTestCases.stream().map(TestCaseDto::getDescription).collect(Collectors.joining(", ")));
+        TestinLogger.trace("update test cases: " + selectedTestCases.stream().map(TestCase::getDescription).collect(Collectors.joining(", ")));
 
         final @NotNull List<UUID> testCaseIds = TestCaseSnapshot.idsOf(selectedTestCases);
         final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(project, path, testCaseIds);
@@ -54,9 +54,9 @@ record UpdateTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor
                 save(path, testCaseIds, before, updatedTestCases, field))));
     }
 
-    private void save(final @NotNull Path path, final @NotNull List<UUID> testCaseIds, final @NotNull TestCaseSnapshot before, final @NotNull List<TestCaseDto> updatedTestCases, final @NotNull UpdateTestCaseFields field) {
+    private void save(final @NotNull Path path, final @NotNull List<UUID> testCaseIds, final @NotNull TestCaseSnapshot before, final @NotNull List<TestCase> updatedTestCases, final @NotNull UpdateTestCaseFields field) {
         int counted = 0;
-        for (final TestCaseDto testCase : updatedTestCases)
+        for (final TestCase testCase : updatedTestCases)
             if (testCases.putTestCase(path, testCase)) counted++;
         final int written = counted;
 

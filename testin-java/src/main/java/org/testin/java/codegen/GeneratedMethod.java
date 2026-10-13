@@ -29,7 +29,7 @@ import com.intellij.psi.search.GlobalSearchScope;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -58,7 +58,7 @@ public final class GeneratedMethod {
     }
 
     // Rule-CODEGEN-001
-    public static @NotNull Optional<PsiMethod> forTestCase(final @NotNull PsiClass testClass, final @NotNull TestCaseDto testCase) {
+    public static @NotNull Optional<PsiMethod> forTestCase(final @NotNull PsiClass testClass, final @NotNull TestCase testCase) {
         return Optional.ofNullable(byTestCaseId(testClass).get(testCase.getId().toString()));
     }
 
@@ -84,7 +84,7 @@ public final class GeneratedMethod {
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-001
-    public static void adopt(final @NotNull Project project, final @NotNull PsiMethod testMethod, final @NotNull TestCaseDto testCase) {
+    public static void adopt(final @NotNull Project project, final @NotNull PsiMethod testMethod, final @NotNull TestCase testCase) {
         if (testCaseIdOf(testMethod).isPresent()) return;
 
         testAnnotationOf(testMethod).ifPresent(annotation -> {

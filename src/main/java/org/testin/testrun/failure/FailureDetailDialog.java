@@ -18,7 +18,7 @@ package org.testin.testrun.failure;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItem;
 import org.testin.testcase.CreateTestCaseFields;
 import org.testin.ui.framework.AbstractFrameworkDialog;
@@ -40,7 +40,7 @@ public class FailureDetailDialog extends AbstractFrameworkDialog {
         super(project);
         this.onSave = onSave;
 
-        final @NotNull TestCaseDto testCase = runItem.shownTestCase();
+        final @NotNull TestCase testCase = runItem.shownTestCase();
 
         fields = new FailureFields(project, testRunPath, runItem);
         fields.onResized(this::refit);

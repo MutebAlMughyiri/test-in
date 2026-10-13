@@ -30,7 +30,7 @@ import org.testin.codegen.ExecutionPosition;
 import org.testin.codegen.CodeChange;
 import org.testin.codegen.CodeChangeType;
 import org.testin.java.codegen.GeneratedMethod;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -41,7 +41,7 @@ import java.util.Map;
 import java.util.Optional;
 
 // Rule-CODEGEN-014
-public class UpdateTestMethodOrder extends BaseTestMethodChange implements CodeChange<TestCaseDto> {
+public class UpdateTestMethodOrder extends BaseTestMethodChange implements CodeChange<TestCase> {
     // UC-CODEGEN-011, Rule-CODEGEN-067
     private static @NotNull PsiElement place(final @NotNull PsiClass testClass, final @NotNull PsiMethod testMethod, final @NotNull Optional<PsiElement> after) {
         return after.map(previous -> placeAfter(testClass, testMethod, previous)).orElseGet(() -> placeFirst(testClass, testMethod));
@@ -78,21 +78,21 @@ public class UpdateTestMethodOrder extends BaseTestMethodChange implements CodeC
     }
 
     @Override
-    public void execute(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
+    public void execute(final @NotNull Project project, final @NotNull TestCase testCase) {
         executeAll(project, List.of(testCase));
     }
 
     // UC-CODEGEN-011, Rule-CODEGEN-042, Rule-CODEGEN-067
     @Override
-    public void executeAll(final @NotNull Project project, final @NotNull List<? extends TestCaseDto> testCases) {
-        final @NotNull Map<Path, List<TestCaseDto>> sets = new LinkedHashMap<>();
+    public void executeAll(final @NotNull Project project, final @NotNull List<? extends TestCase> testCases) {
+        final @NotNull Map<Path, List<TestCase>> sets = new LinkedHashMap<>();
 
-        for (final TestCaseDto testCase : testCases) {
+        for (final TestCase testCase : testCases) {
             sets.computeIfAbsent(testCase.getParent().getPath(), _ -> ExecutionPosition.setOf(project, testCase));
         }
         if (sets.isEmpty()) return;
 
-        final @NotNull List<List<TestCaseDto>> ordered = new ArrayList<>(sets.values());
+        final @NotNull List<List<TestCase>> ordered = new ArrayList<>(sets.values());
 
         final @NotNull Runnable inCommand = () ->
                 WriteCommandAction.runWriteCommandAction(project, CodeChangeType.UPDATE_TEST_CASE_ORDER.description(), null,
@@ -103,7 +103,7 @@ public class UpdateTestMethodOrder extends BaseTestMethodChange implements CodeC
     }
 
     // UC-CODEGEN-011, Rule-CODEGEN-043, Rule-CODEGEN-067, Rule-CODEGEN-044
-    private void arrange(final @NotNull Project project, final @NotNull List<TestCaseDto> inSet) {
+    private void arrange(final @NotNull Project project, final @NotNull List<TestCase> inSet) {
         if (inSet.isEmpty()) return;
 
         final @NotNull Optional<PsiClass> target = classOf(project, inSet.getFirst());
@@ -117,7 +117,7 @@ public class UpdateTestMethodOrder extends BaseTestMethodChange implements CodeC
         int position = 0;
         int written = 0;
 
-        for (final TestCaseDto testCase : inSet) {
+        for (final TestCase testCase : inSet) {
             position++;
 
             final @Nullable PsiMethod testMethod = methods.get(testCase.getId().toString());

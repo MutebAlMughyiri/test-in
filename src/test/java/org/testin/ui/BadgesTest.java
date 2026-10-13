@@ -17,7 +17,7 @@
 package org.testin.ui;
 
 import org.testin.model.Priority;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.bug.BugPriority;
 import org.testin.model.bug.BugSeverity;
 import org.testin.model.testrun.RunItemExecution;
@@ -140,7 +140,7 @@ public class BadgesTest {
     public void thePriorityBadgeNamesItsFieldOnHover() {
         final List<Badge> badges = new ArrayList<>();
 
-        Badges.addPriorityBadge(badges, new TestCaseDto().setPriority(Priority.HIGH));
+        Badges.addPriorityBadge(badges, new TestCase().setPriority(Priority.HIGH));
 
         assertEquals(badges.getFirst().text(), "High", "the badge does not say the priority's word");
         assertTrue(badges.getFirst() instanceof Pill pill && pill.tooltip().equals("Priority: High"), "hovering the badge does not name the field, so it reads like the bug's priority");
@@ -149,7 +149,7 @@ public class BadgesTest {
     // Rule-EDITOR-PANEL-267
     @Test
     public void anEditorsCardDrawsThePriorityAsNeitherABadgeNorALine() {
-        final TestCaseDto testCase = new TestCaseDto().setPriority(Priority.HIGH);
+        final TestCase testCase = new TestCase().setPriority(Priority.HIGH);
         final List<Badge> badges = new ArrayList<>();
         final Map<String, String> details = new HashMap<>();
 
@@ -164,11 +164,11 @@ public class BadgesTest {
     public void theDefaultPriorityDrawsNoPill() {
         final List<Badge> badges = new ArrayList<>();
 
-        Badges.addPriorityBadge(badges, new TestCaseDto().setPriority(Priority.DEFAULT));
+        Badges.addPriorityBadge(badges, new TestCase().setPriority(Priority.DEFAULT));
         assertEquals(badges.size(), 0, "the default priority needs no badge");
 
-        Badges.addPriorityBadge(badges, new TestCaseDto().setPriority(Priority.HIGH));
-        Badges.addPriorityBadge(badges, new TestCaseDto().setPriority(Priority.MEDIUM));
+        Badges.addPriorityBadge(badges, new TestCase().setPriority(Priority.HIGH));
+        Badges.addPriorityBadge(badges, new TestCase().setPriority(Priority.MEDIUM));
         assertEquals(badges.size(), 2, "a priority somebody chose is still drawn");
     }
 

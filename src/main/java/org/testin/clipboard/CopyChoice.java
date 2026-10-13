@@ -24,7 +24,7 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.Fqcn;
 import org.testin.model.MenuItem;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.testcase.Can;
 import org.testin.testcase.CreateTestCaseFields;
 import org.testin.testcase.TestSetEditorFields;
@@ -137,17 +137,17 @@ public enum CopyChoice implements MenuItem {
     private final @NotNull Optional<TestSetEditorFields> field;
 
     @Getter(AccessLevel.NONE)
-    private final @NotNull Function<TestCaseDto, String> copied;
+    private final @NotNull Function<TestCase, String> copied;
 
     CopyChoice(final @NotNull TestSetEditorFields field, final @NotNull Shortcuts shortcut, final Icons.@NotNull LetterIcon icon) {
         this(field, shortcut, icon, field::gridValue);
     }
 
-    CopyChoice(final @NotNull TestSetEditorFields field, final @NotNull Shortcuts shortcut, final Icons.@NotNull LetterIcon icon, final @NotNull Function<TestCaseDto, String> copied) {
+    CopyChoice(final @NotNull TestSetEditorFields field, final @NotNull Shortcuts shortcut, final Icons.@NotNull LetterIcon icon, final @NotNull Function<TestCase, String> copied) {
         this(field.getName(), shortcut, icon, Optional.of(field), copied);
     }
 
-    private static @NotNull String allDetailsOf(final @NotNull TestCaseDto testCase) {
+    private static @NotNull String allDetailsOf(final @NotNull TestCase testCase) {
         return Arrays.stream(TestSetEditorFields.values())
                 .filter(field -> field.can(Can.COPY))
                 .filter(field -> !field.gridValue(testCase).isBlank())
@@ -156,7 +156,7 @@ public enum CopyChoice implements MenuItem {
     }
 
     // UC-EDITOR-PANEL-014, Rule-EDITOR-PANEL-208
-    public @NotNull String from(final @NotNull TestCaseDto testCase) {
+    public @NotNull String from(final @NotNull TestCase testCase) {
         return copied.apply(testCase);
     }
 
@@ -181,7 +181,7 @@ public enum CopyChoice implements MenuItem {
         }.registerCustomShortcutSet(shortcut.getCustomShortcut(), component);
     }
 
-    public @NotNull String from(final @NotNull List<TestCaseDto> testCases) {
+    public @NotNull String from(final @NotNull List<TestCase> testCases) {
         return testCases.stream().map(this::from).collect(Collectors.joining("\n\n"));
     }
 }

@@ -18,7 +18,7 @@ package org.testin.git.change;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.Priority;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.status.TestCaseStatus;
 import org.testng.annotations.Test;
 
@@ -30,8 +30,8 @@ import static org.testng.Assert.assertTrue;
 
 public class TestCaseFieldChangesTest {
 
-    private static @NotNull TestCaseDto base() {
-        return TestCaseDto.builder()
+    private static @NotNull TestCase base() {
+        return TestCase.builder()
                 .description("a login case")
                 .expectedResult("the balance is shown")
                 .steps(new ArrayList<>(List.of("open the app", "log in")))
@@ -45,7 +45,7 @@ public class TestCaseFieldChangesTest {
                 .build();
     }
 
-    private static @NotNull FieldChange onlyChange(final TestCaseDto after) {
+    private static @NotNull FieldChange onlyChange(final TestCase after) {
         final List<FieldChange> changes = TestCaseFieldChanges.compare(base(), after);
         assertEquals(changes.size(), 1, "expected exactly one changed field, got " + changes);
         return changes.getFirst();
@@ -53,8 +53,8 @@ public class TestCaseFieldChangesTest {
 
     @Test
     public void comparesAllEditableFields() {
-        final TestCaseDto oldState = TestCaseDto.builder().build();
-        final TestCaseDto newState = TestCaseDto.builder()
+        final TestCase oldState = TestCase.builder().build();
+        final TestCase newState = TestCase.builder()
                 .description("new description")
                 .expectedResult("new result")
                 .steps(List.of("first", "second"))
@@ -149,8 +149,8 @@ public class TestCaseFieldChangesTest {
 
     @Test
     public void reorderingGroupsIsAChangeBecauseTheFileChanged() {
-        final TestCaseDto before = base().setGroups(new ArrayList<>(List.of("Smoke", "Regression")));
-        final TestCaseDto after = base().setGroups(new ArrayList<>(List.of("Regression", "Smoke")));
+        final TestCase before = base().setGroups(new ArrayList<>(List.of("Smoke", "Regression")));
+        final TestCase after = base().setGroups(new ArrayList<>(List.of("Regression", "Smoke")));
 
         final List<FieldChange> changes = TestCaseFieldChanges.compare(before, after);
 
@@ -160,7 +160,7 @@ public class TestCaseFieldChangesTest {
 
     @Test
     public void editingAFieldBackToItsOldValueLeavesNothing() {
-        final TestCaseDto edited = base().setDescription("something else").setDescription("a login case");
+        final TestCase edited = base().setDescription("something else").setDescription("a login case");
 
         assertEquals(TestCaseFieldChanges.compare(base(), edited), List.of());
     }

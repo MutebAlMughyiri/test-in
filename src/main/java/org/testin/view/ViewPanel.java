@@ -31,7 +31,7 @@ import org.testin.actions.TestinEscapeAction;
 import org.testin.editor.WheelForwarding;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.status.ExecutionStatus;
 import org.testin.model.testrun.RunItem;
 import org.testin.runner.ExecutionRecorder;
@@ -148,7 +148,7 @@ public class ViewPanel implements Disposable {
     }
 
     // UC-VIEW-PANEL-001, Rule-VIEW-PANEL-010, Rule-VIEW-PANEL-012
-    public void show(final @NotNull List<TestCaseDto> testCases, final @NotNull List<String> treePath) {
+    public void show(final @NotNull List<TestCase> testCases, final @NotNull List<String> treePath) {
         if (testCases.isEmpty()) return;
 
         ViewToolWindowFactory.toolWindow(project).ifPresent(toolWindow -> toolWindow.show(() -> {
@@ -158,7 +158,7 @@ public class ViewPanel implements Disposable {
     }
 
     // UC-VIEW-PANEL-002, Rule-VIEW-PANEL-015, Rule-VIEW-PANEL-016, Rule-VIEW-PANEL-102
-    public void showIfOpen(final @NotNull List<TestCaseDto> testCases, final @NotNull List<String> treePath) {
+    public void showIfOpen(final @NotNull List<TestCase> testCases, final @NotNull List<String> treePath) {
         if (isClosed() || testCases.isEmpty()) return;
 
         this.updateList(testCases, treePath);
@@ -201,7 +201,7 @@ public class ViewPanel implements Disposable {
         this.hide();
     }
 
-    public void updateList(final @NotNull List<TestCaseDto> testCases, final @NotNull List<String> treePath) {
+    public void updateList(final @NotNull List<TestCase> testCases, final @NotNull List<String> treePath) {
         shownLine = OptionalInt.empty();
         this.page.updateList(testCases, treePath);
         this.refreshCurrentView();
@@ -219,7 +219,7 @@ public class ViewPanel implements Disposable {
     }
 
     // Rule-VIEW-PANEL-005, Rule-CODEGEN-111
-    private void executionReported(final @NotNull TestCaseDto testCase, final @NotNull ExecutionStatus status) {
+    private void executionReported(final @NotNull TestCase testCase, final @NotNull ExecutionStatus status) {
         if (status.stillGoing()) reloadDetailsIfShowing(testCase.getId());
         else if (shows(testCase.getId())) refreshCurrentView();
     }
@@ -239,27 +239,27 @@ public class ViewPanel implements Disposable {
     }
 
     // Rule-VIEW-PANEL-005
-    public void refreshIfShowing(final @NotNull Collection<TestCaseDto> updated) {
+    public void refreshIfShowing(final @NotNull Collection<TestCase> updated) {
         getCurrentTestCase()
                 .filter(current -> updated.stream().anyMatch(testCase -> testCase.getId().equals(current.getId())))
                 .ifPresent(_ -> refreshCurrentView());
     }
 
-    public @NotNull Optional<TestCaseDto> getCurrentTestCase() {
+    public @NotNull Optional<TestCase> getCurrentTestCase() {
         return page.getCurrentItem();
     }
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-083
-    @NotNull Optional<TestCaseDto> shownTestCase() {
+    @NotNull Optional<TestCase> shownTestCase() {
         return getCurrentTestCase().map(shown -> shownRunItem().map(RunItem::shownTestCase).orElseGet(() -> liveOf(shown)));
     }
 
     // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-112
-    @NotNull Optional<TestCaseDto> liveTestCase() {
+    @NotNull Optional<TestCase> liveTestCase() {
         return getCurrentTestCase().map(this::liveOf);
     }
 
-    private @NotNull TestCaseDto liveOf(final @NotNull TestCaseDto shown) {
+    private @NotNull TestCase liveOf(final @NotNull TestCase shown) {
         return testCases.findTestCase(shown.getId()).orElse(shown);
     }
 

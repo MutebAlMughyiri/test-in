@@ -24,7 +24,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.Declared;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import javax.swing.JComponent;
 import java.util.Optional;
@@ -36,10 +36,10 @@ import java.util.function.Supplier;
 public final class ShownTestCaseAction extends DumbAwareAction {
     private final @NotNull Project project;
     private final @NotNull TestCaseQuickAction button;
-    private final @NotNull Supplier<Optional<TestCaseDto>> shown;
-    private final @NotNull BiConsumer<TestCaseQuickAction, TestCaseDto> press;
+    private final @NotNull Supplier<Optional<TestCase>> shown;
+    private final @NotNull BiConsumer<TestCaseQuickAction, TestCase> press;
 
-    public static void bind(final @NotNull Project project, final @NotNull TestCaseQuickAction button, final @NotNull Supplier<Optional<TestCaseDto>> shown, final @NotNull BiConsumer<TestCaseQuickAction, TestCaseDto> press, final @NotNull JComponent component) {
+    public static void bind(final @NotNull Project project, final @NotNull TestCaseQuickAction button, final @NotNull Supplier<Optional<TestCase>> shown, final @NotNull BiConsumer<TestCaseQuickAction, TestCase> press, final @NotNull JComponent component) {
         new ShownTestCaseAction(project, button, shown, press).registerCustomShortcutSet(Declared.shortcutSet(button.getActionId()), component);
     }
 

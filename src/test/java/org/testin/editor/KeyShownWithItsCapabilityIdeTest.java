@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.editor.card.Offered;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,7 +32,7 @@ public class KeyShownWithItsCapabilityIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-PRODUCT-016
     public void testAKeyIsShownWhereverTheCapabilityItTriggersIsShown() {
-        final @NotNull TestCaseDto testCase = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
+        final @NotNull TestCase testCase = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
 
         for (final TestCaseQuickAction button : List.of(TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD, TestCaseQuickAction.RUN_TEST_METHOD)) {
             final @NotNull AnAction action = Optional.ofNullable(ActionManager.getInstance().getAction(button.getActionId())).orElseThrow(() -> new AssertionError(button.getActionId() + " is not registered"));

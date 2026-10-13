@@ -46,7 +46,7 @@ import org.testin.indexer.Nodes;
 import org.testin.indexer.ProjectIndexer;
 import org.testin.indexer.TestCases;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.ShowableField;
 import org.testin.model.node.AbstractNode;
 import org.testin.notifications.Done;
@@ -72,9 +72,9 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
     @Getter
     protected final @NotNull Project project;
     @Getter
-    protected final @NotNull List<TestCaseDto> allTestCases;
+    protected final @NotNull List<TestCase> allTestCases;
     @Getter
-    protected final @NotNull List<TestCaseDto> currentTestCases;
+    protected final @NotNull List<TestCase> currentTestCases;
     protected final @NotNull ProjectIndexer indexer;
     protected final @NotNull Nodes nodes;
     protected final @NotNull TestCases testCases;
@@ -86,8 +86,8 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
     protected final @NotNull JBPanel<?> mainPanel;
     protected final @NotNull EditorCenter center;
     @Getter
-    protected final @NotNull JBList<TestCaseDto> list;
-    protected final @NotNull CollectionListModel<TestCaseDto> model;
+    protected final @NotNull JBList<TestCase> list;
+    protected final @NotNull CollectionListModel<TestCase> model;
     protected final @NotNull JBScrollPane scrollPane;
     protected final @NotNull CardView cardView;
     protected final @NotNull AbstractEditorContextMenu contextMenu;
@@ -157,7 +157,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
     @Override
     public abstract @NotNull Set<A> getSelectedDetails();
 
-    protected abstract @NotNull List<TestCaseDto> getFilteredList();
+    protected abstract @NotNull List<TestCase> getFilteredList();
 
     protected abstract void loadDataAsync(final @NotNull Runnable onLoaded);
 
@@ -213,7 +213,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
         return getTotalPages(currentTestCases);
     }
 
-    protected int getTotalPages(final @NotNull List<TestCaseDto> filtered) {
+    protected int getTotalPages(final @NotNull List<TestCase> filtered) {
         return paging.window(filtered.size()).totalPages();
     }
 
@@ -223,7 +223,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
         return getToolBar().getToolbarItem(SortPopupButton.class).sortedBy();
     }
 
-    protected @NotNull List<TestCaseDto> getCurrentPageItems() {
+    protected @NotNull List<TestCase> getCurrentPageItems() {
         return paging.itemsOn(currentTestCases);
     }
 
@@ -233,7 +233,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
     }
 
     @Override
-    public @NotNull List<TestCaseDto> getSelectedTestCases() {
+    public @NotNull List<TestCase> getSelectedTestCases() {
         return list.getSelectedValuesList();
     }
 
@@ -322,11 +322,11 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
         });
     }
 
-    protected abstract @NotNull List<String[]> gridRows(final @NotNull List<TestCaseDto> pageTestCases);
+    protected abstract @NotNull List<String[]> gridRows(final @NotNull List<TestCase> pageTestCases);
 
     protected abstract @NotNull JBTable buildTable(final @NotNull List<String[]> rows, final @NotNull Set<A> fields);
 
-    protected abstract void installEditListener(final @NotNull JBTable table, final @NotNull List<TestCaseDto> pageTestCases);
+    protected abstract void installEditListener(final @NotNull JBTable table, final @NotNull List<TestCase> pageTestCases);
 
     protected void loadDataAsync() {
         loadDataAsync(() -> {
@@ -391,7 +391,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
     // UC-EDITOR-PANEL-022, Rule-EDITOR-PANEL-104, Rule-EDITOR-PANEL-009
     @Override
     public void selectWhenLoaded(final @NotNull UUID testCaseId) {
-        final @NotNull Optional<TestCaseDto> loaded;
+        final @NotNull Optional<TestCase> loaded;
         synchronized (allTestCases) {
             loaded = allTestCases.stream()
                     .filter(testCase -> testCaseId.equals(testCase.getId()))
@@ -412,7 +412,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
 
     // UC-EDITOR-PANEL-025, Rule-EDITOR-PANEL-009
     @Override
-    public void selectTestCase(final @NotNull TestCaseDto testCase) {
+    public void selectTestCase(final @NotNull TestCase testCase) {
         final int index = currentTestCases.indexOf(testCase);
         if (index < 0) {
             notOnAnyPage(testCase);
@@ -430,7 +430,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
         ApplicationManager.getApplication().invokeLater(() -> selectVisibleIndex(placeOnPage));
     }
 
-    protected void notOnAnyPage(final @NotNull TestCaseDto testCase) {
+    protected void notOnAnyPage(final @NotNull TestCase testCase) {
     }
 
     protected void selectVisibleIndex(final int index) {
@@ -442,7 +442,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
     }
 
     protected void rememberSelection() {
-        pending.keep(Optional.ofNullable(list.getSelectedValue()).map(TestCaseDto::getId));
+        pending.keep(Optional.ofNullable(list.getSelectedValue()).map(TestCase::getId));
     }
 
     protected void wireList() {
@@ -472,15 +472,15 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
         final int totalItems = currentTestCases.size();
         final @NotNull PageWindow page = paging.settle(totalItems);
 
-        final @NotNull List<TestCaseDto> pageTestCases = new ArrayList<>(currentTestCases.subList(page.fromIndex(), page.toIndex()));
+        final @NotNull List<TestCase> pageTestCases = new ArrayList<>(currentTestCases.subList(page.fromIndex(), page.toIndex()));
 
         final @NotNull Optional<UUID> selectedId = pending.take()
-                .or(() -> Optional.ofNullable(list.getSelectedValue()).map(TestCaseDto::getId));
+                .or(() -> Optional.ofNullable(list.getSelectedValue()).map(TestCase::getId));
 
         replaceModel(pageTestCases);
 
         selectedId.ifPresent(testCaseId -> {
-            for (final TestCaseDto testCase : pageTestCases) {
+            for (final TestCase testCase : pageTestCases) {
                 if (testCaseId.equals(testCase.getId())) {
                     list.setSelectedValue(testCase, true);
                     break;
@@ -503,7 +503,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
         afterViewRefreshed();
     }
 
-    protected void replaceModel(final @NotNull List<TestCaseDto> pageTestCases) {
+    protected void replaceModel(final @NotNull List<TestCase> pageTestCases) {
         if (model.getItems().equals(pageTestCases)) refreshCards();
         else model.replaceAll(pageTestCases);
     }

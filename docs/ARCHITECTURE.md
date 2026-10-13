@@ -177,7 +177,7 @@ fails if something does (#361, Rule-INTERNAL-114).
 test case, test run and marker, and the EDT and pooled threads read the same
 one. Only `model` and `indexer` call a setter on them, and `ArchitectureTest`
 fails if anything else does (#376, Rule-INTERNAL-117). A test case is edited as
-a copy - `TestCaseDto.edit()` - and handed to `TestCases`. It writes the file
+a copy - `TestCase.edit()` - and handed to `TestCases`. It writes the file
 first, then writes the copy into the instance it holds. So every surface showing
 that test case sees the change without being handed a new object. A run item, a
 test run or a marker is changed inside the lambda `TestRuns` runs before it
@@ -245,7 +245,7 @@ one cache and one `IndexChanged` announcement per change.
   `Files.exists`.
 - Need to create, move, rename, copy or delete? Call the indexer. It performs the
   VFS operation and updates the cache, in that order.
-- UI code holds `AbstractNode` and `TestCaseDto` objects the indexer served, and
+- UI code holds `AbstractNode` and `TestCase` objects the indexer served, and
   never touches disk.
 
 Test runs in particular are saved and read only through the indexer —
@@ -405,7 +405,7 @@ surfaces gives that; two independent subscriptions would have run in whichever
 order the message bus chose.
 
 **The run item status is recorded against the id, not the object.** The
-`TestCaseDto` in hand is replaced by the next rescan, and a run item status that
+`TestCase` in hand is replaced by the next rescan, and a run item status that
 lived on it went with it — which is how a test case that had just passed lost
 its badge at the tester's next keystroke (#116).
 

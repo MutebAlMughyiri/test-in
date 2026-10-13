@@ -37,7 +37,7 @@ import org.testin.Said;
 import org.testin.actions.TestinDataKeys;
 import org.testin.codegen.CodeChangeType;
 import org.testin.editor.card.TestCaseQuickAction;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.notifications.Done;
 import org.testin.notifications.Refused;
@@ -55,7 +55,7 @@ public class OneExecutionIdeTest extends AbstractCodegenIdeTest {
 
     private final @NotNull List<RunProfile> launched = new ArrayList<>();
 
-    private final @NotNull List<TestCaseDto> involved = new ArrayList<>();
+    private final @NotNull List<TestCase> involved = new ArrayList<>();
 
     private @NotNull List<String> balloons = List.of();
 
@@ -100,7 +100,7 @@ public class OneExecutionIdeTest extends AbstractCodegenIdeTest {
         ExtensionTestUtil.maskExtensions(ProgramRunner.PROGRAM_RUNNER_EP, List.of(standIn), getTestRootDisposable());
     }
 
-    private @NotNull List<TestCaseDto> theTestCases(final @NotNull List<TestCaseDto> testCases) {
+    private @NotNull List<TestCase> theTestCases(final @NotNull List<TestCase> testCases) {
         involved.addAll(testCases);
         return testCases;
     }
@@ -109,7 +109,7 @@ public class OneExecutionIdeTest extends AbstractCodegenIdeTest {
         return Done.counted(Bundle.message("execution.status.running"), howMany);
     }
 
-    private @NotNull AnActionEvent theRunEntryFor(final @NotNull TestCaseDto testCase) {
+    private @NotNull AnActionEvent theRunEntryFor(final @NotNull TestCase testCase) {
         final @NotNull AnAction action = Optional.ofNullable(ActionManager.getInstance().getAction("Testin.RunTestMethod")).orElseThrow(() -> new AssertionError("Run Test Method is not registered"));
         final @NotNull AnActionEvent e = TestActionEvent.createTestEvent(action, SimpleDataContext.builder()
                 .add(CommonDataKeys.PROJECT, getProject())
@@ -122,7 +122,7 @@ public class OneExecutionIdeTest extends AbstractCodegenIdeTest {
     // Rule-CODEGEN-097
     public void testAnExecutionAcrossModulesStartsNothingAndNamesThem() {
         final @NotNull TestSetNode login = createdTestSet("Login");
-        final @NotNull List<TestCaseDto> selected = theTestCases(List.of(createdTestCase(login, "Log in", "b"), createdTestCase(login, "Log out", "c")));
+        final @NotNull List<TestCase> selected = theTestCases(List.of(createdTestCase(login, "Log in", "b"), createdTestCase(login, "Log out", "c")));
         selected.forEach(execution()::starting);
 
         execution().acrossModules(selected, List.of("app", "api"));
@@ -135,8 +135,8 @@ public class OneExecutionIdeTest extends AbstractCodegenIdeTest {
     // Rule-CODEGEN-031
     public void testWhateverIsSelectedIsOneExecution() {
         final @NotNull TestSetNode login = createdTestSet("Login");
-        final @NotNull List<TestCaseDto> selected = theTestCases(List.of(createdTestCase(login, "Log in", "b"), createdTestCase(login, "Log out", "c"), createdTestCase(createdTestSet("Payment"), "Pay", "b")));
-        final @NotNull List<List<TestCaseDto>> handedOver = new ArrayList<>();
+        final @NotNull List<TestCase> selected = theTestCases(List.of(createdTestCase(login, "Log in", "b"), createdTestCase(login, "Log out", "c"), createdTestCase(createdTestSet("Payment"), "Pay", "b")));
+        final @NotNull List<List<TestCase>> handedOver = new ArrayList<>();
         ExtensionTestUtil.maskExtensions(AutomationExecutor.EP, List.of((_, testCases) -> handedOver.add(testCases)), getTestRootDisposable());
 
         ExecuteTestCases.run(getProject(), selected);
@@ -149,7 +149,7 @@ public class OneExecutionIdeTest extends AbstractCodegenIdeTest {
     public void testOneMessageCountsTheTestCasesThatStartedOnceTheirMethodsAreFound() {
         nothingIsReallyStarted();
         final @NotNull TestSetNode login = createdTestSet("Login");
-        final @NotNull List<TestCaseDto> selected = theTestCases(List.of(createdTestCase(login, "Log in", "b"), createdTestCase(login, "Log out", "c"), indexedTestCase(login, "Lock the account", "d")));
+        final @NotNull List<TestCase> selected = theTestCases(List.of(createdTestCase(login, "Log in", "b"), createdTestCase(login, "Log out", "c"), indexedTestCase(login, "Lock the account", "d")));
         settled();
 
         ExecuteTestCases.run(getProject(), selected);
@@ -166,9 +166,9 @@ public class OneExecutionIdeTest extends AbstractCodegenIdeTest {
     public void testTheMethodsRunInTheOrderOfTheTestCasesInTheirTestSet() {
         nothingIsReallyStarted();
         final @NotNull TestSetNode login = createdTestSet("Login");
-        final @NotNull TestCaseDto third = indexedTestCase(login, "Lock the account", "d");
-        final @NotNull TestCaseDto first = indexedTestCase(login, "Log in", "b");
-        final @NotNull TestCaseDto second = indexedTestCase(login, "Log out", "c");
+        final @NotNull TestCase third = indexedTestCase(login, "Lock the account", "d");
+        final @NotNull TestCase first = indexedTestCase(login, "Log in", "b");
+        final @NotNull TestCase second = indexedTestCase(login, "Log out", "c");
         CodeChangeType.CREATE_TEST_CASE.executeAllNow(getProject(), List.of(third, first, second));
         settled();
 
@@ -183,7 +183,7 @@ public class OneExecutionIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-CODEGEN-036
     public void testWhileATestCaseIsRunningTheRunButtonAndTheMenuEntryBecomeTheStop() {
-        final @NotNull TestCaseDto testCase = theTestCases(List.of(createdTestCase(createdTestSet("Login"), "Log in", "b"))).getFirst();
+        final @NotNull TestCase testCase = theTestCases(List.of(createdTestCase(createdTestSet("Login"), "Log in", "b"))).getFirst();
         assertEquals("the menu entry is not the run before anything runs", Bundle.message("action.Testin.RunTestMethod.text"), theRunEntryFor(testCase).getPresentation().getText());
 
         execution().starting(testCase);
@@ -198,13 +198,13 @@ public class OneExecutionIdeTest extends AbstractCodegenIdeTest {
     // Rule-CODEGEN-074
     public void testATestCaseThatCannotRunIsReportedOnceByDescriptionAndSeveralByCount() {
         final @NotNull TestSetNode login = createdTestSet("Login");
-        final @NotNull TestCaseDto alone = indexedTestCase(login, "Lock the account", "b");
+        final @NotNull TestCase alone = indexedTestCase(login, "Lock the account", "b");
         settled();
 
         ExecuteTestCases.run(getProject(), theTestCases(List.of(alone)));
         Await.until("a test case with no method was never reported", () -> balloons.contains(Refused.NO_GENERATED_CODE.about(alone.getDescription())));
 
-        final @NotNull List<TestCaseDto> several = theTestCases(List.of(indexedTestCase(login, "Unlock the account", "c"), indexedTestCase(login, "Reset the password", "d"), indexedTestCase(login, "Change the password", "e")));
+        final @NotNull List<TestCase> several = theTestCases(List.of(indexedTestCase(login, "Unlock the account", "c"), indexedTestCase(login, "Reset the password", "d"), indexedTestCase(login, "Change the password", "e")));
         ExecuteTestCases.run(getProject(), several);
         Await.until("several test cases with no method were never reported", () -> balloons.contains(Refused.NO_GENERATED_CODE_COUNTED.about("3")));
         settled();

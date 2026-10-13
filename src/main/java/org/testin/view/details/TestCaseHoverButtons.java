@@ -25,7 +25,7 @@ import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.editor.card.HoverButton;
 import org.testin.editor.card.Offered;
 import org.testin.model.Automated;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.services.Services;
 import org.testin.view.ViewPanel;
@@ -38,7 +38,7 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestCaseHoverButtons {
     // UC-VIEW-PANEL-009, UC-VIEW-PANEL-012, UC-VIEW-PANEL-014, Rule-VIEW-PANEL-050, Rule-VIEW-PANEL-056, Rule-VIEW-PANEL-057, Rule-VIEW-PANEL-063, Rule-EDITOR-PANEL-237
-    public static @NotNull List<JComponent> of(final @NotNull Project project, final @NotNull TestCaseDto shownTestCase, final @NotNull Optional<AbstractNode> shownIn) {
+    public static @NotNull List<JComponent> of(final @NotNull Project project, final @NotNull TestCase shownTestCase, final @NotNull Optional<AbstractNode> shownIn) {
         final @NotNull Offered navigate = TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD.offer(project, shownIn, shownTestCase);
         final @NotNull Offered testRun = TestCaseQuickAction.RUN_TEST_METHOD.offer(project, shownIn, shownTestCase);
         final @NotNull Offered testCase = TestCaseQuickAction.NAVIGATE_TO_TEST_CASE.offer(project, shownIn, shownTestCase);

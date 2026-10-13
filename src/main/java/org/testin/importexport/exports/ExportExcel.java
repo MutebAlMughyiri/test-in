@@ -26,7 +26,7 @@ import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.testcase.Can;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.util.FailureText;
@@ -60,7 +60,7 @@ public class ExportExcel {
     }
 
     // UC-SHARE-002, Rule-SHARE-012
-    public void exportToFile(final @NotNull File destFile, final @NotNull Map<String, List<TestCaseDto>> sheetsData) {
+    public void exportToFile(final @NotNull File destFile, final @NotNull Map<String, List<TestCase>> sheetsData) {
         try (SXSSFWorkbook workbook = new SXSSFWorkbook()) {
             final @NotNull CellStyle headerStyle = workbook.createCellStyle();
             final @NotNull Font headerFont = workbook.createFont();
@@ -68,7 +68,7 @@ public class ExportExcel {
             headerFont.setBold(true);
             headerStyle.setFont(headerFont);
 
-            for (final Map.Entry<String, List<TestCaseDto>> entry : sheetsData.entrySet()) {
+            for (final Map.Entry<String, List<TestCase>> entry : sheetsData.entrySet()) {
                 final @NotNull SXSSFSheet sheet = workbook.createSheet(uniqueSheetName(workbook, entry.getKey()));
                 sheet.trackAllColumnsForAutoSizing();
 
@@ -80,7 +80,7 @@ public class ExportExcel {
                 }
 
                 int rowIndex = 1;
-                for (final TestCaseDto testCase : entry.getValue()) {
+                for (final TestCase testCase : entry.getValue()) {
                     final @NotNull Row row = sheet.createRow(rowIndex++);
                     for (int i = 0; i < TestSetEditorFields.all(Can.EXPORT).size(); i++) {
                         final @NotNull Cell cell = row.createCell(i);

@@ -25,7 +25,7 @@ import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
 import org.testin.model.FileKind;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
@@ -92,7 +92,7 @@ public class BugFilingIdeTest extends AbstractTempRootIdeTest {
             return set;
         });
 
-        final TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
+        final TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
         testCase.setParent(testSet);
         indexedTestCases().putTestCase(testSet.getPath(), testCase);
         return testCase.getId();

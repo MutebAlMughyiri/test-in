@@ -59,7 +59,7 @@ public class DeletedTestCaseInATestRunTest {
         final UUID testCaseId = UUID.randomUUID();
         final RunItem runItem = removedItem(testCaseId);
 
-        final TestCaseDto shown = runItem.shownTestCase();
+        final TestCase shown = runItem.shownTestCase();
 
         assertEquals(shown.getId(), testCaseId, "the id is the only identity a deleted test case has left");
         assertTrue(shown.getDescription().contains(testCaseId.toString()),

@@ -24,7 +24,7 @@ import org.dhatim.fastexcel.Worksheet;
 import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
 import org.testin.model.ReportColor;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.bug.BugIssueUrl;
 import org.testin.model.markers.DetailRow;
@@ -117,7 +117,7 @@ public final class TestRunExcelGenerator {
         for (final RunItem runItem : runItems.getAll()) {
             ProgressManager.checkCanceled();
             final @NotNull UUID testCaseId = runItem.getId();
-            final @NotNull TestCaseDto details = runItem.shownTestCase();
+            final @NotNull TestCase details = runItem.shownTestCase();
 
             worksheet.value(row, 0, testCaseId.toString());
             worksheet.value(row, 1, orNotAvailable(details.getDescription()));

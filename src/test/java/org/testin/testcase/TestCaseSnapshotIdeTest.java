@@ -23,7 +23,7 @@ import org.testin.AbstractTempRootIdeTest;
 import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
@@ -64,7 +64,7 @@ public class TestCaseSnapshotIdeTest extends AbstractTempRootIdeTest {
 
         final Path source = destination.getPath().resolveSibling("Login");
 
-        final TestCaseDto moved = TestCaseDto.builder()
+        final TestCase moved = TestCase.builder()
                 .id(UUID.randomUUID())
                 .description("Log in with a valid user")
                 .order("m")
@@ -91,7 +91,7 @@ public class TestCaseSnapshotIdeTest extends AbstractTempRootIdeTest {
 
     public void testUndoingARemovalPutsTheTestCaseBack() {
         final TestSetNode testSet = checkoutSet();
-        final TestCaseDto removed = TestCaseDto.builder()
+        final TestCase removed = TestCase.builder()
                 .id(UUID.randomUUID())
                 .description("Pay with a saved card")
                 .order("m")

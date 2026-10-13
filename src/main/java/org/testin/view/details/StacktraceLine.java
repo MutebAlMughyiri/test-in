@@ -25,7 +25,7 @@ import com.intellij.util.ui.JBUI;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.TestRuns;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.services.Services;
 import org.testin.setting.TestinRoot;
@@ -61,7 +61,7 @@ public final class StacktraceLine extends AbstractDetails {
 
     // UC-VIEW-PANEL-006, Rule-VIEW-PANEL-034, Rule-VIEW-PANEL-081
     @Override
-    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull TestCaseDto testCase, final int currentRow) {
+    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull TestCase testCase, final int currentRow) {
         final @NotNull String stacktrace = shown.getStacktrace();
         final @NotNull List<String> screenshots = shown.getScreenshots();
         final boolean link = !stacktrace.isBlank();
@@ -78,7 +78,7 @@ public final class StacktraceLine extends AbstractDetails {
     }
 
     // UC-VIEW-PANEL-006, Rule-VIEW-PANEL-034
-    private @NotNull ActionLink stacktraceLink(final @NotNull Project project, final @NotNull TestCaseDto testCase, final @NotNull String stacktrace) {
+    private @NotNull ActionLink stacktraceLink(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull String stacktrace) {
         return link(Bundle.message("view.stacktrace.link"),
                 _ -> new StacktraceDialog(project, testCase, shown.getActualResult(), stacktrace).show());
     }

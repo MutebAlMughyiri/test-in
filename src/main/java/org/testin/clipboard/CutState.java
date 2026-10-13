@@ -22,7 +22,7 @@ import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.TestinEditor;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.services.Services;
 
 import javax.swing.JComponent;
@@ -45,7 +45,7 @@ public final class CutState implements Disposable {
         CopyPasteManager.getInstance().addContentChangedListener((_, _) -> state.clear(), state);
     }
 
-    public void cut(final @NotNull TestinEditor editor, final @NotNull List<TestCaseDto> testCases) {
+    public void cut(final @NotNull TestinEditor editor, final @NotNull List<TestCase> testCases) {
         pending.clear();
         testCases.forEach(testCase -> pending.add(testCase.getId()));
         source = Optional.of(editor);
@@ -56,7 +56,7 @@ public final class CutState implements Disposable {
     }
 
     // UC-EDITOR-PANEL-017, Rule-EDITOR-PANEL-079, Rule-EDITOR-PANEL-082
-    public boolean isCutOf(final @NotNull List<TestCaseDto> testCases) {
+    public boolean isCutOf(final @NotNull List<TestCase> testCases) {
         return !testCases.isEmpty() && testCases.stream().allMatch(testCase -> pending.contains(testCase.getId()));
     }
 

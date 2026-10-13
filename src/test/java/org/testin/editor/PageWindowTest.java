@@ -17,7 +17,7 @@
 package org.testin.editor;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
@@ -29,10 +29,10 @@ import static org.testng.Assert.assertTrue;
 
 public class PageWindowTest {
 
-    private static @NotNull List<TestCaseDto> testCasesOf(final int count) {
-        final List<TestCaseDto> testCases = new ArrayList<>();
+    private static @NotNull List<TestCase> testCasesOf(final int count) {
+        final List<TestCase> testCases = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            final TestCaseDto testCase = new TestCaseDto();
+            final TestCase testCase = new TestCase();
             testCase.setId(UUID.randomUUID());
             testCases.add(testCase);
         }
@@ -72,7 +72,7 @@ public class PageWindowTest {
 
     @Test
     public void findsThePageHoldingATestCase() {
-        final List<TestCaseDto> testCases = testCasesOf(125);
+        final List<TestCase> testCases = testCasesOf(125);
 
         assertEquals(PageWindow.pageContaining(testCases.getFirst().getId(), testCases, 50), 1);
         assertEquals(PageWindow.pageContaining(testCases.get(49).getId(), testCases, 50), 1);
@@ -88,7 +88,7 @@ public class PageWindowTest {
 
     @Test
     public void protectsAgainstInvalidPageSizeWhenSearching() {
-        final List<TestCaseDto> testCases = testCasesOf(3);
+        final List<TestCase> testCases = testCasesOf(3);
 
         assertEquals(PageWindow.pageContaining(testCases.get(2).getId(), testCases, 0), 3);
     }

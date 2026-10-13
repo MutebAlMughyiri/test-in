@@ -24,7 +24,7 @@ import org.testin.AbstractTempRootIdeTest;
 import org.testin.editor.EditorFixtures;
 import org.testin.model.Priority;
 import org.testin.model.StatusBarItem;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.status.TestCaseStatus;
@@ -161,7 +161,7 @@ public class TestCaseFormIdeTest extends AbstractTempRootIdeTest {
         assertEquals("status does not offer all four as radio buttons", four, creating.stream().map(JRadioButton::getText).toList());
         assertEquals("a new test case does not start Pending", Optional.of(TestCaseStatus.PENDING.getLabel()), chosen(creating));
 
-        final @NotNull TestCaseDto reviewed = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in").status(TestCaseStatus.REVIEWED).parent(aTestSet()).build();
+        final @NotNull TestCase reviewed = TestCase.builder().id(UUID.randomUUID()).description("Log in").status(TestCaseStatus.REVIEWED).parent(aTestSet()).build();
         final @NotNull UpdateTestCaseDialog update = new UpdateTestCaseDialog(getProject(), reviewed, UpdateTestCaseFields.STATUS, _ -> {
         });
         assertEquals("an update does not start on the test case's own status", Optional.of(TestCaseStatus.REVIEWED.getLabel()), chosen(radiosIn(update.statusSection.getWrapper())));

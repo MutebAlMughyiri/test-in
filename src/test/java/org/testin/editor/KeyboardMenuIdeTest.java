@@ -38,7 +38,7 @@ import org.testin.editor.grid.GridKeys;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.editor.toolbar.GridViewButton;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
@@ -135,7 +135,7 @@ public class KeyboardMenuIdeTest extends AbstractTempRootIdeTest {
     private @NotNull TestRunEditor aTestRunEditor() {
         final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
         final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), testProject, "Payments");
-        final @NotNull List<TestCaseDto> inTheTestRun = EditorFixtures.testCases(getProject(), testSet, 2);
+        final @NotNull List<TestCase> inTheTestRun = EditorFixtures.testCases(getProject(), testSet, 2);
         final @NotNull TestRunNode testRun = EditorFixtures.testRun(getProject(), testProject, inTheTestRun.stream().map(EditorFixtures::pending).toList());
         return EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());
     }

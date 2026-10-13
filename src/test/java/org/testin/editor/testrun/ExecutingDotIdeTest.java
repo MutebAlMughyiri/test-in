@@ -26,7 +26,7 @@ import org.testin.editor.card.CardTitle;
 import org.testin.editor.card.Offered;
 import org.testin.editor.card.Slot;
 import org.testin.editor.open.TestinEditors;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.status.RunItemStatus;
 import org.testin.runner.CapturedRunner;
@@ -49,16 +49,16 @@ public class ExecutingDotIdeTest extends AbstractCodegenIdeTest {
         CapturedRunner.installed(getTestRootDisposable());
     }
 
-    private @NotNull List<TestCaseDto> profileTestCases() {
+    private @NotNull List<TestCase> profileTestCases() {
         final @NotNull TestSetNode profile = createdTestSet("Profile");
-        final @NotNull List<TestCaseDto> made = List.of(
+        final @NotNull List<TestCase> made = List.of(
                 createdTestCase(profile, "Change the profile photo", "changeTheProfilePhoto"),
                 createdTestCase(profile, "Change the mobile number", "changeTheMobileNumber"));
         settled();
         return made;
     }
 
-    private boolean executingNow(final @NotNull TestCaseDto testCase) {
+    private boolean executingNow(final @NotNull TestCase testCase) {
         return ExecutingNow.is(getProject(), testCase.getId());
     }
 
@@ -70,7 +70,7 @@ public class ExecutingDotIdeTest extends AbstractCodegenIdeTest {
     public void testTheWalkedTestCaseIsExecutingAndTheOneItLeftIsNot() {
         final @NotNull TestRunEditor editor = EditorFixtures.openTestRunInTheIde(getProject(), EditorFixtures.testRunOver(getProject(), root, profileTestCases()));
         try {
-            final @NotNull List<TestCaseDto> shown = editor.getCurrentTestCases();
+            final @NotNull List<TestCase> shown = editor.getCurrentTestCases();
             assertFalse("a test case shows as executing before anything started", executingNow(shown.getFirst()));
 
             editor.onStartExecutionClicked();
@@ -91,7 +91,7 @@ public class ExecutingDotIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-EDITOR-PANEL-291
     public void testATestCaseWaitingForTheAutomationShowsNoDot() {
-        final @NotNull List<TestCaseDto> testCases = profileTestCases();
+        final @NotNull List<TestCase> testCases = profileTestCases();
         final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), EditorFixtures.testRunOver(getProject(), root, testCases), getTestRootDisposable());
         try {
             TestCaseQuickAction.RUN_TEST_METHOD.executeFor(editor, testCases.getFirst());
@@ -117,7 +117,7 @@ public class ExecutingDotIdeTest extends AbstractCodegenIdeTest {
     public void testTheViewPanelTitleSaysExecutingOnlyWhileItIs() {
         final @NotNull TestRunEditor editor = EditorFixtures.openTestRunInTheIde(getProject(), EditorFixtures.testRunOver(getProject(), root, profileTestCases()));
         try {
-            final @NotNull TestCaseDto first = editor.getCurrentTestCases().getFirst();
+            final @NotNull TestCase first = editor.getCurrentTestCases().getFirst();
             assertFalse("the title says executing before anything started", titleSaysExecuting(first));
 
             editor.onStartExecutionClicked();
@@ -130,7 +130,7 @@ public class ExecutingDotIdeTest extends AbstractCodegenIdeTest {
         }
     }
 
-    private boolean titleSaysExecuting(final @NotNull TestCaseDto testCase) {
+    private boolean titleSaysExecuting(final @NotNull TestCase testCase) {
         return Drawn.components(Drawn.detailsTab(getProject(), testCase, Optional.empty(), List.of())).stream()
                 .filter(JTextArea.class::isInstance)
                 .anyMatch(area -> Bundle.message("execution.executing").equals(area.getAccessibleContext().getAccessibleDescription()));

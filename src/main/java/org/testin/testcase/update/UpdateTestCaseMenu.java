@@ -21,7 +21,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.CodeChangeType;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.testcase.UpdateTestCaseFields;
 import org.testin.ui.framework.ShortcutMenuPopup;
 import org.testin.util.Bundle;
@@ -33,16 +33,16 @@ import java.util.function.BiConsumer;
 
 public class UpdateTestCaseMenu {
     private final @NotNull Project project;
-    private final @NotNull List<TestCaseDto> testCases;
-    private final @NotNull BiConsumer<@NotNull List<TestCaseDto>, @NotNull UpdateTestCaseFields> updatedTestCases;
+    private final @NotNull List<TestCase> testCases;
+    private final @NotNull BiConsumer<@NotNull List<TestCase>, @NotNull UpdateTestCaseFields> updatedTestCases;
 
-    public UpdateTestCaseMenu(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases, final @NotNull BiConsumer<@NotNull List<TestCaseDto>, @NotNull UpdateTestCaseFields> updatedTestCases) {
+    public UpdateTestCaseMenu(final @NotNull Project project, final @NotNull List<TestCase> testCases, final @NotNull BiConsumer<@NotNull List<TestCase>, @NotNull UpdateTestCaseFields> updatedTestCases) {
         this.project = project;
         this.testCases = testCases;
         this.updatedTestCases = updatedTestCases;
     }
 
-    public static void applyAftermath(final @NotNull Project project, final @NotNull List<TestCaseDto> updated, final @NotNull CodeChangeType<TestCaseDto> codeChangeType) {
+    public static void applyAftermath(final @NotNull Project project, final @NotNull List<TestCase> updated, final @NotNull CodeChangeType<TestCase> codeChangeType) {
         ViewToolWindowFactory.refreshIfShowing(project, updated);
 
         TestinLogger.trace("Generating automation code for " + updated.size() + ": " + codeChangeType);
@@ -69,7 +69,7 @@ public class UpdateTestCaseMenu {
 
     // UC-EDITOR-PANEL-006, UC-EDITOR-PANEL-007
     public void open(final @NotNull UpdateTestCaseFields field) {
-        final @NotNull CodeChangeType<TestCaseDto> codeChangeType = field.getCodeChangeType();
+        final @NotNull CodeChangeType<TestCase> codeChangeType = field.getCodeChangeType();
         TestinLogger.trace("Update field -> " + field.getName() + " | changeType = " + codeChangeType);
 
         if (testCases.size() == 1) {

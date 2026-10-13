@@ -25,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.TestName;
 import org.testin.indexer.TestCases;
 import org.testin.logger.TestinLogger;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.Failure;
 import org.testin.model.status.ExecutionStatus;
@@ -81,14 +81,14 @@ public final class ExecutionRecorder implements Disposable {
     }
 
     // Rule-CODEGEN-111
-    private void show(final @NotNull TestCaseDto testCase, final @NotNull Attempts live) {
+    private void show(final @NotNull TestCase testCase, final @NotNull Attempts live) {
         final @NotNull List<RunItemExecution> executions = live.executions();
 
         surfaces.forEach(surface -> surface.accept(testCase, ExecutionStatus.RUNNING, executions, live.written()));
     }
 
     // Rule-CODEGEN-110, Rule-CODEGEN-111
-    private void report(final @NotNull TestCaseDto testCase, final @NotNull Attempts decided) {
+    private void report(final @NotNull TestCase testCase, final @NotNull Attempts decided) {
         final @NotNull ExecutionStatus reportedStatus = runItemStatusFor(testCase, decided.status());
         final @NotNull List<RunItemExecution> executions = reportedStatus == ExecutionStatus.IDLE ? List.of() : decided.decidedExecutions();
 
@@ -105,7 +105,7 @@ public final class ExecutionRecorder implements Disposable {
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-038
-    private @NotNull ExecutionStatus runItemStatusFor(final @NotNull TestCaseDto testCase, final @NotNull ExecutionStatus status) {
+    private @NotNull ExecutionStatus runItemStatusFor(final @NotNull TestCase testCase, final @NotNull ExecutionStatus status) {
         final boolean stopped = status == ExecutionStatus.FAILED
                 && Services.getInstance(project, TestNGExecution.class).isStopped(testCase);
 
@@ -114,6 +114,6 @@ public final class ExecutionRecorder implements Disposable {
 
     @FunctionalInterface
     public interface Reported {
-        void accept(final @NotNull TestCaseDto testCase, final @NotNull ExecutionStatus status, final @NotNull List<RunItemExecution> executions, final int written);
+        void accept(final @NotNull TestCase testCase, final @NotNull ExecutionStatus status, final @NotNull List<RunItemExecution> executions, final int written);
     }
 }

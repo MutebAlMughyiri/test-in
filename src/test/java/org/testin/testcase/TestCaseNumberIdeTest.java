@@ -25,7 +25,7 @@ import org.testin.editor.EditorFixtures;
 import org.testin.editor.ShownFields;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.model.FileKind;
-import org.testin.model.TestCaseDto;
+import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.view.Drawn;
 
@@ -46,20 +46,20 @@ public class TestCaseNumberIdeTest extends AbstractCodegenIdeTest {
 
     private @NotNull Set<TestSetEditorFields> shownBefore = Set.of();
 
-    private static int numberOnTheCard(final @NotNull TestSetEditor editor, final @NotNull TestCaseDto testCase) {
+    private static int numberOnTheCard(final @NotNull TestSetEditor editor, final @NotNull TestCase testCase) {
         final @NotNull String title = editor.cardTitle(testCase);
         return Integer.parseInt(title.substring(0, title.indexOf('.')));
     }
 
-    private static @NotNull List<TestCaseDto> cardsDrawn(final @NotNull TestSetEditor editor) {
+    private static @NotNull List<TestCase> cardsDrawn(final @NotNull TestSetEditor editor) {
         final @NotNull ListModel<?> cards = Drawn.components(editor.getComponent()).stream().filter(JBList.class::isInstance).map(JBList.class::cast).findFirst()
                 .orElseThrow(() -> new AssertionError("the editor draws no card list")).getModel();
-        final @NotNull List<TestCaseDto> drawn = new ArrayList<>();
-        IntStream.range(0, cards.getSize()).forEach(i -> drawn.add((TestCaseDto) cards.getElementAt(i)));
+        final @NotNull List<TestCase> drawn = new ArrayList<>();
+        IntStream.range(0, cards.getSize()).forEach(i -> drawn.add((TestCase) cards.getElementAt(i)));
         return drawn;
     }
 
-    private static int numberInTheGrid(final @NotNull TestSetEditor editor, final @NotNull TestCaseDto testCase) {
+    private static int numberInTheGrid(final @NotNull TestSetEditor editor, final @NotNull TestCase testCase) {
         editor.onToolBarSwitchedToGridView();
         final @NotNull JBTable grid = Drawn.components(editor.getComponent()).stream().filter(JBTable.class::isInstance).map(JBTable.class::cast).findFirst()
                 .orElseThrow(() -> new AssertionError("the editor draws no grid"));
@@ -75,7 +75,7 @@ public class TestCaseNumberIdeTest extends AbstractCodegenIdeTest {
         editor.onToolBarSearchValueChanged();
     }
 
-    private static byte @NotNull [] fileOf(final @NotNull TestCaseDto testCase) {
+    private static byte @NotNull [] fileOf(final @NotNull TestCase testCase) {
         final @NotNull Path file = testCase.getParent().getPath().resolve(FileKind.TEST_CASE.fileName(testCase.getId()));
         try {
             return Files.readAllBytes(file);
@@ -104,9 +104,9 @@ public class TestCaseNumberIdeTest extends AbstractCodegenIdeTest {
     // UC-INTERNAL-004, Rule-INTERNAL-025
     public void testATestCasesNumberIsItsPlaceInItsTestSetCountingFromOne() {
         final @NotNull TestSetNode payment = indexedTestSet("Payment", theTestCasesDirectory());
-        final @NotNull TestCaseDto accepted = indexedTestCase(payment, "Card is accepted", "d");
-        final @NotNull TestCaseDto declined = indexedTestCase(payment, "Card is declined", "b");
-        final @NotNull TestCaseDto expired = indexedTestCase(payment, "Card has expired", "c");
+        final @NotNull TestCase accepted = indexedTestCase(payment, "Card is accepted", "d");
+        final @NotNull TestCase declined = indexedTestCase(payment, "Card is declined", "b");
+        final @NotNull TestCase expired = indexedTestCase(payment, "Card has expired", "c");
 
         final @NotNull TestSetEditor editor = opened(payment);
 
@@ -118,7 +118,7 @@ public class TestCaseNumberIdeTest extends AbstractCodegenIdeTest {
     // UC-INTERNAL-004, Rule-INTERNAL-026
     public void testTheNumberIsWorkedOutWhenDrawnAndStoredNowhere() {
         final @NotNull TestSetNode payment = indexedTestSet("Payment", theTestCasesDirectory());
-        final @NotNull TestCaseDto declined = indexedTestCase(payment, "Card is declined", "b");
+        final @NotNull TestCase declined = indexedTestCase(payment, "Card is declined", "b");
         indexedTestCase(payment, "Card is accepted", "c");
         final @NotNull TestSetEditor editor = opened(payment);
         assertEquals(1, numberOnTheCard(editor, declined));
@@ -134,14 +134,14 @@ public class TestCaseNumberIdeTest extends AbstractCodegenIdeTest {
     // UC-INTERNAL-004, Rule-INTERNAL-027
     public void testTheCardTheGridRowAndTheGeneratedMethodReadTheSameNumber() {
         final @NotNull TestSetNode login = createdTestSet("Login");
-        final @NotNull TestCaseDto open = createdTestCase(login, "Open the start page", "b");
-        final @NotNull TestCaseDto logIn = createdTestCase(login, "Log in with a valid user", "c");
-        final @NotNull TestCaseDto logOut = createdTestCase(login, "Log out", "d");
+        final @NotNull TestCase open = createdTestCase(login, "Open the start page", "b");
+        final @NotNull TestCase logIn = createdTestCase(login, "Log in with a valid user", "c");
+        final @NotNull TestCase logOut = createdTestCase(login, "Log out", "d");
 
         final @NotNull TestSetEditor editor = opened(login);
         filteredTo(editor, "Log");
 
-        for (final TestCaseDto testCase : List.of(logIn, logOut)) {
+        for (final TestCase testCase : List.of(logIn, logOut)) {
             final int onTheCard = numberOnTheCard(editor, testCase);
             assertEquals("the grid row and the card disagree on '" + testCase.getDescription() + "'", onTheCard, numberInTheGrid(editor, testCase));
             assertEquals("the generated method and the card disagree on '" + testCase.getDescription() + "'", String.valueOf(onTheCard), attributeOf(writtenMethodOf(LOGIN_TEST, testCase), "priority"));
@@ -154,7 +154,7 @@ public class TestCaseNumberIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestSetNode payment = indexedTestSet("Payment", theTestCasesDirectory());
         indexedTestCase(payment, "Card is declined", "b");
         indexedTestCase(payment, "Card has expired", "c");
-        final @NotNull TestCaseDto accepted = indexedTestCase(payment, "Card is accepted", "d");
+        final @NotNull TestCase accepted = indexedTestCase(payment, "Card is accepted", "d");
         final @NotNull TestSetEditor editor = opened(payment);
 
         filteredTo(editor, "accepted");
