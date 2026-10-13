@@ -43,18 +43,18 @@ public abstract class AbstractReadTheRootIdeTest extends AbstractTempRootIdeTest
     }
 
     protected static @NotNull Path aTestProjectAt(final @NotNull Path folder) {
-        marked(folder, NodeType.TP);
-        marked(theTestCasesOf(folder), NodeType.TCF);
-        marked(theTestRunsOf(folder), NodeType.TRF);
+        marked(folder, NodeType.TEST_PROJECT);
+        marked(theTestCasesOf(folder), NodeType.TEST_CASES_FOLDER);
+        marked(theTestRunsOf(folder), NodeType.TEST_RUNS_FOLDER);
         return folder;
     }
 
     protected static @NotNull Path theTestCasesOf(final @NotNull Path testProjectPath) {
-        return testProjectPath.resolve(NodeType.TCF.getFolderName());
+        return testProjectPath.resolve(NodeType.TEST_CASES_FOLDER.getFolderName());
     }
 
     protected static @NotNull Path theTestRunsOf(final @NotNull Path testProjectPath) {
-        return testProjectPath.resolve(NodeType.TRF.getFolderName());
+        return testProjectPath.resolve(NodeType.TEST_RUNS_FOLDER.getFolderName());
     }
 
     protected static @NotNull Path marked(final @NotNull Path folder, final @NotNull NodeType kind) {

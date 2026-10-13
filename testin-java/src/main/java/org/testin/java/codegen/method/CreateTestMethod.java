@@ -34,7 +34,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.ExecutionPosition;
 import org.testin.codegen.Fqcn;
 import org.testin.codegen.CodeChange;
-import org.testin.codegen.GenType;
+import org.testin.codegen.CodeChangeType;
 import org.testin.codegen.JavaSourceRoot;
 import org.testin.java.codegen.GeneratedClass;
 import org.testin.java.codegen.GeneratedMethod;
@@ -132,7 +132,7 @@ public class CreateTestMethod implements CodeChange<TestCaseDto> {
                     () -> noMethodFor(testCase, fqcn));
         }
 
-        WriteCommandAction.runWriteCommandAction(project, GenType.CREATE_TEST_CASE.description(), null,
+        WriteCommandAction.runWriteCommandAction(project, CodeChangeType.CREATE_TEST_CASE.description(), null,
                 () -> byClass.values().forEach(group -> createMethods(project, group)));
     }
 

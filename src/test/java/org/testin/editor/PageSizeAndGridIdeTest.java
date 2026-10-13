@@ -30,8 +30,8 @@ import org.testin.editor.grid.GridKeys;
 import org.testin.editor.open.UnifiedVirtualFile;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.testrun.TestRunEditor;
-import org.testin.editor.toolbar.GridViewBtn;
-import org.testin.editor.toolbar.TestSetFieldsPopupBtn;
+import org.testin.editor.toolbar.GridViewButton;
+import org.testin.editor.toolbar.TestSetFieldsPopupButton;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestProjectNode;
@@ -107,9 +107,9 @@ public class PageSizeAndGridIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         final @NotNull List<String> balloons = Said.listening(getProject(), getTestRootDisposable()).shown();
         try {
-            final @NotNull Set<TestSetEditorFields> fields = editor.getToolBar().getToolbarItem(TestSetFieldsPopupBtn.class).getSelectedDetails();
+            final @NotNull Set<TestSetEditorFields> fields = editor.getToolBar().getToolbarItem(TestSetFieldsPopupButton.class).getSelectedDetails();
             fields.add(TestSetEditorFields.MODULE);
-            editor.getToolBar().getToolbarItem(GridViewBtn.class).doClick();
+            editor.getToolBar().getToolbarItem(GridViewButton.class).doClick();
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
             final @NotNull JBTable grid = (JBTable) editor.getPreferredFocusedComponent();
             final int module = grid.convertColumnIndexToView(TestSetEditorFields.MODULE.column());
@@ -169,7 +169,7 @@ public class PageSizeAndGridIdeTest extends AbstractTempRootIdeTest {
         Await.until("the test set editor never loaded", () -> !editor.isLoading());
         final @NotNull List<String> balloons = Said.listening(getProject(), getTestRootDisposable()).shown();
         try {
-            editor.getToolBar().getToolbarItem(GridViewBtn.class).doClick();
+            editor.getToolBar().getToolbarItem(GridViewButton.class).doClick();
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
             final @NotNull BorderLayout layout = (BorderLayout) editor.getComponent().getLayout();

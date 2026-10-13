@@ -1,6 +1,6 @@
 ---
 name: import-never-qualify
-description: In Testin's Java, a class is named by its simple name with an import — never written out in full as java.util.Optional or org.testin.codegen.GenType in the code. Use when writing or editing any Java class or test, especially one-line fixes and test helpers where a fully qualified name is the quick way to avoid adding an import. Triggers on "java.util.", "org.testin." or any package path in the middle of a line of code.
+description: In Testin's Java, a class is named by its simple name with an import — never written out in full as java.util.Optional or org.testin.codegen.CodeChangeType in the code. Use when writing or editing any Java class or test, especially one-line fixes and test helpers where a fully qualified name is the quick way to avoid adding an import. Triggers on "java.util.", "org.testin." or any package path in the middle of a line of code.
 ---
 
 # Import, never qualify

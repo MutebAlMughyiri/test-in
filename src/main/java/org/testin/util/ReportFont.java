@@ -78,11 +78,11 @@ public enum ReportFont {
     private final float points;
     private final int pixels;
 
-    public float pt() {
+    public float points() {
         return points;
     }
 
-    public int ptRounded() {
+    public int roundedPoints() {
         return Math.round(points);
     }
 

@@ -200,7 +200,7 @@ final class IndexingScanner {
     private void scanTestSetOrPackage(final @NotNull Path dirPath, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedProject scanned) {
         store.markedAs(dirPath, NodeType.UNDER_TEST_CASES).ifPresentOrElse(
                 marked -> {
-                    if (marked == NodeType.TS) scanTestSet(dirPath, parent, indicator, scanned);
+                    if (marked == NodeType.TEST_SET) scanTestSet(dirPath, parent, indicator, scanned);
                     else scanTestSetPackage(dirPath, parent, indicator, unread, scanned);
                 },
                 () -> skipped(dirPath, NodeType.UNDER_TEST_CASES, unread));
@@ -294,7 +294,7 @@ final class IndexingScanner {
     private void scanTestRunOrPackage(final @NotNull Path dirPath, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedProject scanned) {
         store.markedAs(dirPath, NodeType.UNDER_TEST_RUNS).ifPresentOrElse(
                 marked -> {
-                    if (marked == NodeType.TR) scanTestRun(dirPath, parent, indicator, scanned);
+                    if (marked == NodeType.TEST_RUN) scanTestRun(dirPath, parent, indicator, scanned);
                     else scanTestRunPackageNode(dirPath, parent, indicator, unread, scanned);
                 },
                 () -> skipped(dirPath, NodeType.UNDER_TEST_RUNS, unread));

@@ -58,7 +58,7 @@ public final class EditShownTestCase {
             @Override
             public void actionPerformed(final @NotNull AnActionEvent e) {
                 ViewToolWindowFactory.panel(project).ifPresent(viewPanel -> viewPanel.getCurrentTestCase()
-                        .ifPresent(currentDto -> openIfEditable(project, currentDto, viewPanel.getPage().getTreePath())));
+                        .ifPresent(currentTestCase -> openIfEditable(project, currentTestCase, viewPanel.getPage().getTreePath())));
             }
 
             @Override

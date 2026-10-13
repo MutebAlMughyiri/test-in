@@ -43,7 +43,7 @@ public final class SubtreeCode {
         TestinLogger.info("Generating code for " + node.getName());
         NodeCode.of(node.getType()).getCreated().execute(project, node);
 
-        GenType.CREATE_TEST_CASE.executeAllNow(project, testCases.getTestCasesForTestSet(node.getPath()));
+        CodeChangeType.CREATE_TEST_CASE.executeAllNow(project, testCases.getTestCasesForTestSet(node.getPath()));
 
         for (final AbstractNode child : nodes.getChildren(node.getPath())) {
             walk(project, child);

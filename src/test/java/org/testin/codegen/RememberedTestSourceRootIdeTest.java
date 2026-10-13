@@ -119,7 +119,7 @@ public class RememberedTestSourceRootIdeTest extends AbstractCodegenIdeTest {
         aRememberedFolderThatWasDeleted();
         PsiTestUtil.removeSourceRoot(getModule(), sources);
         try {
-            GenType.REMOVE_TEST_SET.execute(getProject(), indexedTestSet("Payment", theTestCasesDirectory()));
+            CodeChangeType.REMOVE_TEST_SET.execute(getProject(), indexedTestSet("Payment", theTestCasesDirectory()));
             assertEquals("a removal said something about the missing folder", List.of(), folderHint());
 
             createdTestSet("Login");

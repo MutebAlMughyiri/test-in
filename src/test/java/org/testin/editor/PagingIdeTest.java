@@ -49,7 +49,7 @@ public class PagingIdeTest extends AbstractTempRootIdeTest {
     private @NotNull String pageSizeBefore = "";
 
     private static void searchForNumber1(final @NotNull TestSetEditor editor) {
-        editor.getToolBar().getSearchTxt().setText(SEARCHED);
+        editor.getToolBar().getSearchText().setText(SEARCHED);
         Await.until("the search for '" + SEARCHED + "' never narrowed the list to " + NARROWED_TO, () -> editor.getCurrentTestCases().size() == NARROWED_TO);
     }
 
@@ -166,7 +166,7 @@ public class PagingIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestSetEditor editor = opened(aLongTestSet());
         onPage(editor, 2);
 
-        editor.getToolBar().getSearchTxt().setText("Test case");
+        editor.getToolBar().getSearchText().setText("Test case");
         Await.until("the search never went back to the first page", () -> editor.getCurrentPage() == 1);
     }
 

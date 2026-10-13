@@ -32,12 +32,12 @@ import org.testin.editor.grid.TestRunGridEditListener;
 import org.testin.editor.cardview.RunItemCardRenderer;
 import org.testin.editor.open.UnifiedVirtualFile;
 import org.testin.editor.statusbar.EditorStatusBarPaging;
-import org.testin.editor.toolbar.GenerateReportBtn;
-import org.testin.editor.toolbar.LightModeBtn;
-import org.testin.editor.toolbar.TestRunResultAnalysisBtn;
-import org.testin.editor.toolbar.StartExecutionBtn;
-import org.testin.editor.toolbar.StopExecutionBtn;
-import org.testin.editor.toolbar.TestRunFieldsPopupBtn;
+import org.testin.editor.toolbar.GenerateReportButton;
+import org.testin.editor.toolbar.LightModeButton;
+import org.testin.editor.toolbar.TestRunResultAnalysisButton;
+import org.testin.editor.toolbar.StartExecutionButton;
+import org.testin.editor.toolbar.StopExecutionButton;
+import org.testin.editor.toolbar.TestRunFieldsPopupButton;
 import org.testin.editor.toolbar.TestRunToolbar;
 import org.testin.editor.toolbar.ToolbarCallbacks;
 import org.testin.filter.FilterAndSortChoice;
@@ -285,7 +285,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
 
     @Override
     public @NotNull Set<TestRunEditorFields> getSelectedDetails() {
-        return getToolBar().getToolbarItem(TestRunFieldsPopupBtn.class).getSelectedDetails();
+        return getToolBar().getToolbarItem(TestRunFieldsPopupButton.class).getSelectedDetails();
     }
 
     @Override
@@ -475,15 +475,15 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
 
         final @NotNull ExecutionMode mode = walk.mode();
 
-        final @NotNull StartExecutionBtn startBtn = toolBar.getToolbarItem(StartExecutionBtn.class);
-        final @NotNull StopExecutionBtn stopBtn = toolBar.getToolbarItem(StopExecutionBtn.class);
+        final @NotNull StartExecutionButton startButton = toolBar.getToolbarItem(StartExecutionButton.class);
+        final @NotNull StopExecutionButton stopButton = toolBar.getToolbarItem(StopExecutionButton.class);
 
-        startBtn.setVisible(mode.showsStart());
-        stopBtn.setVisible(mode.showsStop());
-        startBtn.updateEnabledState();
-        toolBar.getToolbarItem(TestRunResultAnalysisBtn.class).updateEnabledState();
-        toolBar.getToolbarItem(GenerateReportBtn.class).updateEnabledState();
-        toolBar.getToolbarItem(LightModeBtn.class).updateState();
+        startButton.setVisible(mode.showsStart());
+        stopButton.setVisible(mode.showsStop());
+        startButton.updateEnabledState();
+        toolBar.getToolbarItem(TestRunResultAnalysisButton.class).updateEnabledState();
+        toolBar.getToolbarItem(GenerateReportButton.class).updateEnabledState();
+        toolBar.getToolbarItem(LightModeButton.class).updateState();
 
         toolBar.revalidate();
         toolBar.repaint();

@@ -21,9 +21,9 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.ui.framework.AbstractIconButton;
 import org.testin.util.Bundle;
 
-public class RefreshBtn extends AbstractIconButton implements ToolbarItem {
+public class RefreshButton extends AbstractIconButton implements ToolbarItem {
     // UC-EDITOR-PANEL-027
-    public RefreshBtn(final @NotNull Runnable onToolBarRefreshClicked) {
+    public RefreshButton(final @NotNull Runnable onToolBarRefreshClicked) {
         super(Bundle.message("toolbar.refresh"), AllIcons.Actions.Refresh);
 
         addActionListener(_ -> onToolBarRefreshClicked.run());

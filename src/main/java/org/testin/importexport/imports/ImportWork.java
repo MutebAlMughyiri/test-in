@@ -24,7 +24,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.util.concurrency.ThreadingAssertions;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.CodeOn;
-import org.testin.codegen.GenType;
+import org.testin.codegen.CodeChangeType;
 import org.testin.codegen.NodeCode;
 import org.testin.creator.CreateTestSet;
 import org.testin.editor.open.TestinEditors;
@@ -208,7 +208,7 @@ record ImportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
                         .orElseThrow(() -> new IllegalStateException(Bundle.message("import.set.not.made", name)));
 
                 try {
-                    NodeCode.of(NodeType.TS).getCreated().execute(project, made);
+                    NodeCode.of(NodeType.TEST_SET).getCreated().execute(project, made);
                 } catch (final Exception ex) {
                     TestinLogger.error("Failed to create Java class: " + FailureText.of(ex));
                 }
@@ -232,7 +232,7 @@ record ImportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
             final int written = from + batch.size();
 
             indicator.setText2(Bundle.message("import.progress.generating", String.valueOf(written), String.valueOf(testCases.size())));
-            onEdt(() -> GenType.CREATE_TEST_CASE.executeAllNow(project, batch, oneUndo));
+            onEdt(() -> CodeChangeType.CREATE_TEST_CASE.executeAllNow(project, batch, oneUndo));
         }
 
         TestinLogger.info("Import: generated " + testCases.size() + " test methods in "

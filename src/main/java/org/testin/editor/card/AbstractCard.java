@@ -180,21 +180,21 @@ public abstract class AbstractCard extends JBPanel<AbstractCard> {
         if (priority != Priority.DEFAULT) spoken.add(priority.getLabel());
         spoken.addAll(badges.stream().map(Badge::text).toList());
 
-        details.forEach((attrName, value) -> {
+        details.forEach((fieldName, value) -> {
             if (value.isBlank()) return;
 
-            final @NotNull JBLabel label = fieldLabels.computeIfAbsent(attrName, _ -> {
+            final @NotNull JBLabel label = fieldLabels.computeIfAbsent(fieldName, _ -> {
                 final @NotNull JBLabel newLabel = createDetailLabel();
                 content.add(newLabel);
                 return newLabel;
             });
 
-            final @NotNull Optional<Icon> icon = UpdateTestCaseFields.iconOf(attrName);
+            final @NotNull Optional<Icon> icon = UpdateTestCaseFields.iconOf(fieldName);
             label.setIcon(icon.orElse(EmptyIcon.ICON_0));
-            label.setText(Display.shortDates(icon.isPresent() ? value : attrName + ": " + value));
-            lineTooltips.put(attrName, Display.dateTooltip(value));
+            label.setText(Display.shortDates(icon.isPresent() ? value : fieldName + ": " + value));
+            lineTooltips.put(fieldName, Display.dateTooltip(value));
             label.setVisible(true);
-            spoken.add(attrName + ": " + value);
+            spoken.add(fieldName + ": " + value);
         });
 
         getAccessibleContext().setAccessibleName(executing ? title + ", " + Bundle.message("execution.executing") : title);
@@ -246,8 +246,8 @@ public abstract class AbstractCard extends JBPanel<AbstractCard> {
                 .orElse("");
     }
 
-    private boolean isOnIcon(final @NotNull String attrName, final @NotNull JBLabel line, final @NotNull Point at) {
-        return UpdateTestCaseFields.iconOf(attrName).isPresent() && iconOf(line).contains(at);
+    private boolean isOnIcon(final @NotNull String fieldName, final @NotNull JBLabel line, final @NotNull Point at) {
+        return UpdateTestCaseFields.iconOf(fieldName).isPresent() && iconOf(line).contains(at);
     }
 
     // Rule-EDITOR-PANEL-269

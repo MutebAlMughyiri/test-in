@@ -100,9 +100,9 @@ public final class ZoomIndicator implements Disposable {
         currentPopup = Optional.of(popup);
 
         final @NotNull Dimension popupSize = panel.getPreferredSize();
-        final @NotNull Rectangle visibleRect = parent.getVisibleRect();
-        final int x = visibleRect.x + (visibleRect.width - popupSize.width) / 2;
-        final int y = visibleRect.y + visibleRect.height - popupSize.height - JBUI.scale(25);
+        final @NotNull Rectangle visibleArea = parent.getVisibleRect();
+        final int x = visibleArea.x + (visibleArea.width - popupSize.width) / 2;
+        final int y = visibleArea.y + visibleArea.height - popupSize.height - JBUI.scale(25);
 
         popup.show(new RelativePoint(parent, new Point(x, y)));
 

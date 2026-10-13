@@ -104,7 +104,7 @@ final class VfsExecutor {
     }
 
     // UC-INTERNAL-005, Rule-INTERNAL-036
-    void removeVf(final @NotNull Object requester, final @NotNull Path path, final @NotNull Consumer<@NotNull Boolean> onDeleted) {
+    void removeFile(final @NotNull Object requester, final @NotNull Path path, final @NotNull Consumer<@NotNull Boolean> onDeleted) {
         claim(path);
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             if (Trash.accepted(project, path)) {

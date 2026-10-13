@@ -114,14 +114,14 @@ public class TreeNodesIdeTest extends AbstractTempRootIdeTest {
         made().testCase(login);
         made().testCase(login);
         assertTrue(nodes().reorder(login, 2));
-        final @NotNull Map<Path, String> left = filesUnder(login.getPath(), NodeType.TS.getMarker());
+        final @NotNull Map<Path, String> left = filesUnder(login.getPath(), NodeType.TEST_SET.getMarker());
 
         assertTrue("the test set was not deprecated", nodes().mark(login, TestSetStatus.DEPRECATED, TESTER));
         assertTrue("the test set was not brought back", nodes().mark(login, TestSetStatus.ACTIVE, TESTER));
 
         assertEquals(TestSetStatus.ACTIVE, login.getMarker().getStatus());
         assertEquals("bringing the test set back lost its order number", 2, login.getOrder());
-        assertEquals("bringing the test set back changed what it holds", left, filesUnder(login.getPath(), NodeType.TS.getMarker()));
+        assertEquals("bringing the test set back changed what it holds", left, filesUnder(login.getPath(), NodeType.TEST_SET.getMarker()));
     }
 
     // Rule-TREE-PANEL-077
@@ -199,7 +199,7 @@ public class TreeNodesIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull TestSetMarker markerOnDisk(final @NotNull TestSetNode testSet) {
-        return nodes().readMarker(testSet.getPath(), NodeType.TS, TestSetMarker.class);
+        return nodes().readMarker(testSet.getPath(), NodeType.TEST_SET, TestSetMarker.class);
     }
 
     // Rule-TREE-PANEL-027
@@ -208,7 +208,7 @@ public class TreeNodesIdeTest extends AbstractTempRootIdeTest {
 
         for (final String name : List.of("Payments", "Refunds", "Partial")) {
             final @NotNull Path wanted = parent.getPath().resolve(name);
-            final @NotNull Optional<AbstractNode> created = NodeCreators.of(getProject(), NodeType.TSP).execute(name, parent, wanted);
+            final @NotNull Optional<AbstractNode> created = NodeCreators.of(getProject(), NodeType.TEST_SET_PACKAGE).execute(name, parent, wanted);
 
             assertTrue("a test set package was not created under " + parent.getName(), created.isPresent());
             assertTrue(nodes().nodeExists(wanted));
@@ -224,7 +224,7 @@ public class TreeNodesIdeTest extends AbstractTempRootIdeTest {
 
         for (final String name : List.of("Release 4", "Sprint 12", "Smoke")) {
             final @NotNull Path wanted = parent.getPath().resolve(name);
-            final @NotNull Optional<AbstractNode> created = NodeCreators.of(getProject(), NodeType.TRP).execute(name, parent, wanted);
+            final @NotNull Optional<AbstractNode> created = NodeCreators.of(getProject(), NodeType.TEST_RUN_PACKAGE).execute(name, parent, wanted);
 
             assertTrue("a test run package was not created under " + parent.getName(), created.isPresent());
             assertTrue(nodes().nodeExists(wanted));

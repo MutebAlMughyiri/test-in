@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-package org.testin.lightmode;
+package org.testin.editor.toolbar;
 
+import com.intellij.icons.AllIcons;
 import org.jetbrains.annotations.NotNull;
 import org.testin.ui.framework.AbstractIconButton;
+import org.testin.util.Bundle;
+import org.testin.view.marker.NodeDetailsDialog;
 
-import javax.swing.Icon;
+public class NodeDetailsButton extends AbstractIconButton implements ToolbarItem {
+    // UC-EDITOR-PANEL-028, Rule-EDITOR-PANEL-121
+    public NodeDetailsButton(final @NotNull ToolbarCallbacks editor) {
+        super(Bundle.message("toolbar.node.details"), AllIcons.General.IndentDetected);
 
-class TitleBarBtn extends AbstractIconButton {
-    TitleBarBtn(final @NotNull String tooltip, final @NotNull Icon icon) {
-        super(tooltip, icon);
+        addActionListener(_ -> new NodeDetailsDialog(editor.getProject(), editor.getEditedNode()).show());
     }
 }

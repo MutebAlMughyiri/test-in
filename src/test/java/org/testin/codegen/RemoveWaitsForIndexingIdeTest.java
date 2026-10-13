@@ -38,6 +38,6 @@ public class RemoveWaitsForIndexingIdeTest extends AbstractCodegenIdeTest {
     public void testOnlyANodeThatHasCodeWaitsForIndexing() {
         final @NotNull Set<NodeType> withCode = Arrays.stream(NodeType.values()).filter(type -> NodeCode.of(type).getRemoved().generates()).collect(Collectors.toCollection(() -> EnumSet.noneOf(NodeType.class)));
 
-        assertEquals("a test run would wait for indexing, or a test set would not", EnumSet.of(NodeType.TP, NodeType.TSP, NodeType.TS), withCode);
+        assertEquals("a test run would wait for indexing, or a test set would not", EnumSet.of(NodeType.TEST_PROJECT, NodeType.TEST_SET_PACKAGE, NodeType.TEST_SET), withCode);
     }
 }

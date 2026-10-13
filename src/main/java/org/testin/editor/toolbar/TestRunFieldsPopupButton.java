@@ -16,16 +16,16 @@
 
 package org.testin.editor.toolbar;
 
-import com.intellij.icons.AllIcons;
 import org.jetbrains.annotations.NotNull;
-import org.testin.ui.framework.AbstractIconButton;
-import org.testin.util.Bundle;
+import org.testin.editor.ShownFields;
+import org.testin.testrun.TestRunEditorFields;
 
-public class CardViewBtn extends AbstractIconButton implements ToolbarItem {
-    // UC-EDITOR-PANEL-002, Rule-EDITOR-PANEL-016
-    public CardViewBtn(final @NotNull Runnable onSwitchToList) {
-        super(Bundle.message("toolbar.card.view"), AllIcons.General.LayoutEditorOnly);
-
-        addActionListener(_ -> onSwitchToList.run());
+public class TestRunFieldsPopupButton extends AbstractFieldsPopupButton<TestRunEditorFields> {
+    // UC-EDITOR-PANEL-003, Rule-EDITOR-PANEL-022
+    public TestRunFieldsPopupButton(final @NotNull Runnable onToolBarDetailsSelectedChanged) {
+        super(FIELDS,
+                ShownFields.IN_TEST_RUNS,
+                TestRunEditorFields.class,
+                onToolBarDetailsSelectedChanged);
     }
 }

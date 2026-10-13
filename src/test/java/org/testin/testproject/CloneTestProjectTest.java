@@ -44,9 +44,9 @@ public class CloneTestProjectTest {
     // Rule-TREE-PANEL-107
     @Test
     public void aNameJavaRefusesIsMadeIntoOneItAccepts() {
-        assertTrue(NodeType.TP.canTakeName(CloneTestProject.repositoryName("https://github.com/acme/new.git")),
+        assertTrue(NodeType.TEST_PROJECT.canTakeName(CloneTestProject.repositoryName("https://github.com/acme/new.git")),
                 "new is a word Java keeps for itself");
-        assertTrue(NodeType.TP.canTakeName(CloneTestProject.repositoryName("https://github.com/acme/nafath-test-cases.git")),
+        assertTrue(NodeType.TEST_PROJECT.canTakeName(CloneTestProject.repositoryName("https://github.com/acme/nafath-test-cases.git")),
                 "and a name it already accepts is kept as it is");
     }
 }

@@ -32,7 +32,7 @@ import org.testin.Await;
 import org.testin.Gestures;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.testset.TestSetEditor;
-import org.testin.editor.toolbar.GridViewBtn;
+import org.testin.editor.toolbar.GridViewButton;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestProjectNode;
@@ -95,7 +95,7 @@ public class ClipboardGesturesIdeTest extends AbstractTempRootIdeTest {
     @Override
     protected void setUp() {
         super.setUp();
-        CutState.initClipboardWatch(getProject());
+        CutState.startClipboardWatch(getProject());
         testProject = EditorFixtures.testProject(getProject(), root);
     }
 
@@ -191,7 +191,7 @@ public class ClipboardGesturesIdeTest extends AbstractTempRootIdeTest {
         login.getList().setSelectedIndex(1);
         assertTrue("Copy Test Case is gray on a selected card", offered(COPY, login.getList()));
 
-        login.getToolBar().getToolbarItem(GridViewBtn.class).doClick();
+        login.getToolBar().getToolbarItem(GridViewButton.class).doClick();
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
         final @NotNull JBTable grid = Drawn.components(login.getComponent()).stream().filter(JBTable.class::isInstance).map(JBTable.class::cast).findFirst().orElseThrow();
         grid.changeSelection(0, 1, false, false);

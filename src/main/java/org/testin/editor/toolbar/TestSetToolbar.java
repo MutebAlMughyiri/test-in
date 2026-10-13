@@ -17,8 +17,8 @@
 package org.testin.editor.toolbar;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.filter.FilterPopupBtn;
-import org.testin.filter.SortPopupBtn;
+import org.testin.filter.FilterPopupButton;
+import org.testin.filter.SortPopupButton;
 
 import java.util.List;
 
@@ -32,13 +32,13 @@ public class TestSetToolbar extends AbstractToolbarPanel {
     @Override
     public @NotNull List<ToolbarItem> getCustomComponents() {
         return List.of(
-                new CreateTestCaseBtn(getCallbacks()::onToolBarCreateTestCaseClicked),
-                new RefreshBtn(getCallbacks()::onToolBarRefreshButtonClicked),
-                new TestSetFieldsPopupBtn(getCallbacks()::onToolBarDetailsSelectionChanged),
-                new FilterPopupBtn(getCallbacks()),
-                new SortPopupBtn(getCallbacks()),
-                new CardViewBtn(getCallbacks()::onToolBarSwitchedToCardView),
-                new GridViewBtn(getCallbacks()::onToolBarSwitchedToGridView)
+                new CreateTestCaseButton(getCallbacks()::onToolBarCreateTestCaseClicked),
+                new RefreshButton(getCallbacks()::onToolBarRefreshButtonClicked),
+                new TestSetFieldsPopupButton(getCallbacks()::onToolBarDetailsSelectionChanged),
+                new FilterPopupButton(getCallbacks()),
+                new SortPopupButton(getCallbacks()),
+                new CardViewButton(getCallbacks()::onToolBarSwitchedToCardView),
+                new GridViewButton(getCallbacks()::onToolBarSwitchedToGridView)
         );
     }
 }

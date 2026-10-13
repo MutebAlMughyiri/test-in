@@ -158,7 +158,7 @@ public final class SettingsConfigurable implements SearchableConfigurable {
             return Optional.of(new ConfigurationException(Bundle.message("settings.not.a.folder", root), Bundle.message("settings.not.a.folder.title")));
 
         // Rule-SETTING-045
-        if (Files.isRegularFile(root.resolve(NodeType.TP.getMarker())))
+        if (Files.isRegularFile(root.resolve(NodeType.TEST_PROJECT.getMarker())))
             return Optional.of(new ConfigurationException(Bundle.message("settings.test.project", root, Objects.requireNonNullElse(root.getParent(), root)), Bundle.message("settings.test.project.title")));
 
         return Optional.empty();

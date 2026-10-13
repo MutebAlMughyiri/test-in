@@ -389,8 +389,8 @@ public class GitWorkflowTest {
             final List<String> conflicting = GitStatusLines.records(mustGit(work, "diff", "--name-only", "--diff-filter=U", "-z"));
             assertEquals(conflicting, List.of(relativePath));
 
-            final Path gitDir = Path.of(mustGit(work, "rev-parse", "--absolute-git-dir").trim());
-            assertTrue(Files.isDirectory(gitDir.resolve("rebase-merge")) || Files.isDirectory(gitDir.resolve("rebase-apply")),
+            final Path gitDirectory = Path.of(mustGit(work, "rev-parse", "--absolute-git-dir").trim());
+            assertTrue(Files.isDirectory(gitDirectory.resolve("rebase-merge")) || Files.isDirectory(gitDirectory.resolve("rebase-apply")),
                     "the stopped rebase is found under the directory Git names");
 
             final String base = contents(work, ":1", conflicting).get(relativePath);

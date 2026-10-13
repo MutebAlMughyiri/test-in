@@ -47,12 +47,12 @@ public final class NodeCounter {
                 .collect(Collectors.groupingBy(AbstractNode::getType, Collectors.counting()));
 
         return NodeFigures.ofChildren(
-                counted(byType, NodeType.TS),
-                counted(byType, NodeType.TSP) + counted(byType, NodeType.TRP),
+                counted(byType, NodeType.TEST_SET),
+                counted(byType, NodeType.TEST_SET_PACKAGE) + counted(byType, NodeType.TEST_RUN_PACKAGE),
                 testCases.testCaseCountOf(parent.getPath())
                         + beneath.stream().mapToLong(node -> testCases.testCaseCountOf(node.getPath())).sum(),
                 activeTestCasesUnder(testCases, nodes, parent),
-                counted(byType, NodeType.TR));
+                counted(byType, NodeType.TEST_RUN));
     }
 
     // UC-INTERNAL-006, Rule-INTERNAL-048, Rule-INTERNAL-049, Rule-INTERNAL-051

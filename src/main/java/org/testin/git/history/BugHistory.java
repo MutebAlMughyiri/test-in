@@ -67,7 +67,7 @@ public final class BugHistory {
             return history.with(notCommitted(testProjectPath, List.of(), now, Map.of(), mapper), List.of());
 
         try {
-            final @NotNull List<BugCommit> commits = commits(git.log(testProjectPath, FORMAT, "--name-status", "--", pathspec(NodeType.TRF, FileKind.RUN_ITEM, testCaseId), pathspec(NodeType.TCF, FileKind.TEST_CASE, testCaseId)));
+            final @NotNull List<BugCommit> commits = commits(git.log(testProjectPath, FORMAT, "--name-status", "--", pathspec(NodeType.TEST_RUNS_FOLDER, FileKind.RUN_ITEM, testCaseId), pathspec(NodeType.TEST_CASES_FOLDER, FileKind.TEST_CASE, testCaseId)));
             final @NotNull List<String> paths = commits.stream().flatMap(BugCommit::paths).distinct().toList();
             final @NotNull Map<String, String> versions = commits.isEmpty()
                     ? Map.of()

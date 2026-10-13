@@ -40,7 +40,7 @@ public class ReorderTestMethodsIdeTest extends AbstractCodegenIdeTest {
 
         openThePage.setOrder("f");
         Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(login.getPath(), openThePage);
-        GenType.UPDATE_TEST_CASE_ORDER.execute(getProject(), openThePage);
+        CodeChangeType.UPDATE_TEST_CASE_ORDER.execute(getProject(), openThePage);
         settled();
 
         return new Reordered(openThePage, logIn, logOut, lockTheAccount);

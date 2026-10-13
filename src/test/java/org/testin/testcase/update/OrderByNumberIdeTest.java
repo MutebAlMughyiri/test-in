@@ -24,7 +24,7 @@ import org.testin.editor.EditorFixtures;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.filter.SortDirection;
 import org.testin.filter.SortField;
-import org.testin.filter.SortPopupBtn;
+import org.testin.filter.SortPopupButton;
 import org.testin.filter.Sorting;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCaseDto;
@@ -101,7 +101,7 @@ public class OrderByNumberIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-054
     public void testTheNumberIsThePositionInTheWholeTestSet() {
         final @NotNull TestSetEditor editor = sixTestCases();
-        editor.getToolBar().getSearchTxt().setText("number 5");
+        editor.getToolBar().getSearchText().setText("number 5");
         Await.until("the search never narrowed the list to one", () -> editor.getList().getModel().getSize() == 1);
 
         select(editor, "Test case number 5");
@@ -132,7 +132,7 @@ public class OrderByNumberIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-282
     public void testUnderASortTheBoxHoldsThePlaceInTheSetAndThatIsWhatIsWritten() {
         final @NotNull TestSetEditor editor = sixTestCases();
-        final @NotNull SortPopupBtn sort = editor.getToolBar().getToolbarItem(SortPopupBtn.class);
+        final @NotNull SortPopupButton sort = editor.getToolBar().getToolbarItem(SortPopupButton.class);
         Sorting.choose(sort, SortField.DESCRIPTION.getLabel());
         Sorting.choose(sort, SortDirection.DESCENDING.getLabel());
         Await.until("the sort never put number 6 first", () -> editor.getList().getModel().getSize() > 0 && editor.getList().getModel().getElementAt(0).getDescription().equals("Test case number 6"));

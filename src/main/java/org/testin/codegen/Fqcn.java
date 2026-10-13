@@ -115,7 +115,7 @@ public final class Fqcn {
 
     private static @NotNull List<String> withoutTestCasesFolder(final @NotNull List<String> treePath) {
         final @NotNull List<String> names = new ArrayList<>(treePath);
-        names.remove(NodeType.TCF.getFolderName());
+        names.remove(NodeType.TEST_CASES_FOLDER.getFolderName());
         return names;
     }
 

@@ -192,7 +192,7 @@ public abstract class AbstractFrameworkDialog implements DialogHost {
         bindShortcutKeys(contentPanel);
         bindSubmitGesture();
 
-        final @NotNull ComponentPopupBuilder builder = DialogStyle.createPopupBuilder(contentPanel, focusComponent(), dto().title(), dismissOnClickOutside);
+        final @NotNull ComponentPopupBuilder builder = DialogStyle.createPopupBuilder(contentPanel, focusComponent(), dialogDto().title(), dismissOnClickOutside);
         size.applyTo(project, contentPanel);
 
         // Rule-INTERNAL-101, Rule-INTERNAL-138
@@ -200,7 +200,7 @@ public abstract class AbstractFrameworkDialog implements DialogHost {
             builder.setResizable(true).setMovable(true).setCommandButton(TitleButtons.beside(titleButtons(), Maximized.button(() -> maximized.toggle(getPopup(), DialogSize.frameOn(project)))));
 
         // Rule-INTERNAL-059
-        builder.setCancelKeyEnabled(dto().shortcuts().stream().noneMatch(one -> one.shortcut() == Shortcuts.Escape));
+        builder.setCancelKeyEnabled(dialogDto().shortcuts().stream().noneMatch(one -> one.shortcut() == Shortcuts.Escape));
         builder.addListener(new JBPopupListener() {
             @Override
             public void onClosed(final @NotNull LightweightWindowEvent event) {
@@ -295,7 +295,7 @@ public abstract class AbstractFrameworkDialog implements DialogHost {
         return popup.orElseThrow(() -> new IllegalStateException("Dialog popup is created on first show()"));
     }
 
-    private @NotNull DialogDto dto() {
+    private @NotNull DialogDto dialogDto() {
         if (dialog.isEmpty()) {
             dialog = Optional.of(new DialogDto(title, components, shortcuts));
         }
@@ -305,7 +305,7 @@ public abstract class AbstractFrameworkDialog implements DialogHost {
     private @NotNull List<DialogComponent> builtComponents() {
         if (built.isEmpty()) {
             final @NotNull List<DialogComponent> dialogComponents = new ArrayList<>();
-            for (final DialogPart<?> holder : dto().components()) {
+            for (final DialogPart<?> holder : dialogDto().components()) {
                 dialogComponents.add(holder.getComponent());
             }
             if (dialogComponents.isEmpty()) {
@@ -352,7 +352,7 @@ public abstract class AbstractFrameworkDialog implements DialogHost {
             stack.add(verticalStack(all.subList(fillIndex + 1, all.size())), BorderLayout.SOUTH);
         }
 
-        final @NotNull ShortcutStrip statusBar = new ShortcutStrip(keysShown.orElseGet(() -> dto().shortcuts().toArray(StatusBarItem[]::new)));
+        final @NotNull ShortcutStrip statusBar = new ShortcutStrip(keysShown.orElseGet(() -> dialogDto().shortcuts().toArray(StatusBarItem[]::new)));
         strip = Optional.of(statusBar);
 
         final @NotNull JBPanel<?> contentPanel = DialogStyle.styleContent(new JBPanel<>(new BorderLayout()));
@@ -369,7 +369,7 @@ public abstract class AbstractFrameworkDialog implements DialogHost {
 
     // UC-INTERNAL-007, Rule-INTERNAL-054, Rule-INTERNAL-055, Rule-INTERNAL-056
     private void bindShortcutKeys(final @NotNull JBPanel<?> contentPanel) {
-        final @NotNull List<StatusBarShortcut> declared = dto().shortcuts();
+        final @NotNull List<StatusBarShortcut> declared = dialogDto().shortcuts();
 
         DialogKeys.install(contentPanel, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, declared);
 

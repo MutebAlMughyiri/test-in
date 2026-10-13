@@ -342,7 +342,7 @@ anything else happens at all.
 | 7  | `indexer/TestCaseStore.put`                              | Stamps the audit — `touch` if the index already knows this id, `stampCreated` if it does not.                                                |
 | 8  | `indexer/TestCaseStore.store`                            | Updates the two maps, then writes.                                                                                                           |
 | 9  | `indexer/TestDataFiles.write`                            | Refuses a zero-byte write, claims the path in `OwnWrites` **before** `Files.write`, writes, then records what landed.                        |
-| 10 | back in `TestSetGridEditListener`                        | The field's `GenType` regenerates the test method, and `TestCaseSnapshot.record` files the undo entry.                                       |
+| 10 | back in `TestSetGridEditListener`                        | The field's `CodeChangeType` regenerates the test method, and `TestCaseSnapshot.record` files the undo entry.                                |
 
 **Why the bytes are identical.** Step 6 puts the rule's question in the rule's
 own terms: would this write leave the file the same. It has to be asked as

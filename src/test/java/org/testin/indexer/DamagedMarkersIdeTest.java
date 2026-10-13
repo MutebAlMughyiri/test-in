@@ -33,16 +33,16 @@ public class DamagedMarkersIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull Path damagedTestSet(final @NotNull String testProject) {
-        final @NotNull Path testSet = root.resolve(testProject).resolve(NodeType.TCF.getFolderName()).resolve("Login");
+        final @NotNull Path testSet = root.resolve(testProject).resolve(NodeType.TEST_CASES_FOLDER.getFolderName()).resolve("Login");
 
         try {
             Files.createDirectories(testSet);
-            Files.writeString(testSet.resolve(NodeType.TS.getMarker()), "{ not a marker");
+            Files.writeString(testSet.resolve(NodeType.TEST_SET.getMarker()), "{ not a marker");
         } catch (final Exception ex) {
             throw new AssertionError("Could not write a damaged marker: " + ex.getMessage(), ex);
         }
 
-        store().readMarker(testSet, NodeType.TS, TestSetMarker.class);
+        store().readMarker(testSet, NodeType.TEST_SET, TestSetMarker.class);
         return testSet;
     }
 

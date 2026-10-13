@@ -46,7 +46,7 @@ public final class TestCaseMerger {
     public static boolean isTestCase(final @NotNull String relativePath) {
         final @NotNull String slashed = relativePath.replace('\\', '/');
 
-        return FileKind.of(Path.of(relativePath)) == FileKind.TEST_CASE && slashed.contains(NodeType.TCF.getFolderName() + "/");
+        return FileKind.of(Path.of(relativePath)) == FileKind.TEST_CASE && slashed.contains(NodeType.TEST_CASES_FOLDER.getFolderName() + "/");
     }
 
     // UC-SHARE-018, Rule-SHARE-080

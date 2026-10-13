@@ -16,16 +16,15 @@
 
 package org.testin.editor.toolbar;
 
-import com.intellij.icons.AllIcons;
 import org.jetbrains.annotations.NotNull;
+import org.testin.editor.testrun.ExecutionControl;
 import org.testin.ui.framework.AbstractIconButton;
-import org.testin.util.Bundle;
 
-public class GridViewBtn extends AbstractIconButton implements ToolbarItem {
-    // UC-EDITOR-PANEL-002, Rule-EDITOR-PANEL-002
-    public GridViewBtn(final @NotNull Runnable onSwitchToGrid) {
-        super(Bundle.message("toolbar.grid.view"), AllIcons.General.Groups);
+public class StopExecutionButton extends AbstractIconButton implements ToolbarItem {
+    // UC-EDITOR-PANEL-035
+    public StopExecutionButton(final @NotNull Runnable onStopExecutionClicked) {
+        super(ExecutionControl.STOP.getLabel(), ExecutionControl.STOP.getIcon());
 
-        addActionListener(_ -> onSwitchToGrid.run());
+        addActionListener(_ -> onStopExecutionClicked.run());
     }
 }

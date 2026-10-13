@@ -27,7 +27,7 @@ import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.testset.TestSetEditor;
-import org.testin.editor.toolbar.GridViewBtn;
+import org.testin.editor.toolbar.GridViewButton;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestSetNode;
@@ -63,7 +63,7 @@ public class UndoMenuIdeTest extends AbstractTempRootIdeTest {
     }
 
     private static void typeSignInAsTheDescription(final @NotNull TestSetEditor editor) {
-        editor.getToolBar().getToolbarItem(GridViewBtn.class).doClick();
+        editor.getToolBar().getToolbarItem(GridViewButton.class).doClick();
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
         final @NotNull JBTable grid = Drawn.components(editor.getComponent()).stream().filter(JBTable.class::isInstance).map(JBTable.class::cast).findFirst().orElseThrow();
 

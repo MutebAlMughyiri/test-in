@@ -19,7 +19,7 @@ package org.testin.testcase.update;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.codegen.GenType;
+import org.testin.codegen.CodeChangeType;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.UpdateTestCaseFields;
@@ -42,7 +42,7 @@ public class UpdateTestCaseMenu {
         this.updatedTestCases = updatedTestCases;
     }
 
-    public static void applyAftermath(final @NotNull Project project, final @NotNull List<TestCaseDto> updated, final @NotNull GenType<TestCaseDto> codeChangeType) {
+    public static void applyAftermath(final @NotNull Project project, final @NotNull List<TestCaseDto> updated, final @NotNull CodeChangeType<TestCaseDto> codeChangeType) {
         ViewToolWindowFactory.refreshIfShowing(project, updated);
 
         TestinLogger.trace("Generating automation code for " + updated.size() + ": " + codeChangeType);
@@ -69,7 +69,7 @@ public class UpdateTestCaseMenu {
 
     // UC-EDITOR-PANEL-006, UC-EDITOR-PANEL-007
     public void open(final @NotNull UpdateTestCaseFields field) {
-        final @NotNull GenType<TestCaseDto> codeChangeType = field.getCodeChangeType();
+        final @NotNull CodeChangeType<TestCaseDto> codeChangeType = field.getCodeChangeType();
         TestinLogger.trace("Update field -> " + field.getName() + " | changeType = " + codeChangeType);
 
         if (testCases.size() == 1) {

@@ -39,7 +39,7 @@ public final class CutState implements Disposable {
     private @NotNull Optional<TestinEditor> source = Optional.empty();
 
     // UC-EDITOR-PANEL-017, Rule-EDITOR-PANEL-080
-    public static void initClipboardWatch(final @NotNull Project project) {
+    public static void startClipboardWatch(final @NotNull Project project) {
         final @NotNull CutState state = Services.getInstance(project, CutState.class);
 
         CopyPasteManager.getInstance().addContentChangedListener((_, _) -> state.clear(), state);

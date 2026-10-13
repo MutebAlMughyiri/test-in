@@ -19,11 +19,11 @@ package org.testin.java.codegen;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.CodeChange;
-import org.testin.codegen.GenType;
+import org.testin.codegen.CodeChangeType;
 
 import java.util.List;
 
-record GenBinding<X>(@NotNull GenType<X> type, @NotNull CodeChange<X> action) {
+record CodeChangeBinding<X>(@NotNull CodeChangeType<X> type, @NotNull CodeChange<X> action) {
     <T> @NotNull CodeChange<T> typed() {
         return new CodeChange<>() {
             @Override

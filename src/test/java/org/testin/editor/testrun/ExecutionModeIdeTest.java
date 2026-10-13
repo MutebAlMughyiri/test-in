@@ -28,8 +28,8 @@ import org.testin.TreeGesture;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.editor.open.TestinEditors;
-import org.testin.editor.toolbar.StartExecutionBtn;
-import org.testin.editor.toolbar.StopExecutionBtn;
+import org.testin.editor.toolbar.StartExecutionButton;
+import org.testin.editor.toolbar.StopExecutionButton;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
@@ -61,7 +61,7 @@ public class ExecutionModeIdeTest extends AbstractCodegenIdeTest {
         return made;
     }
 
-    private static @NotNull String tooltipOf(final @NotNull StartExecutionBtn start) {
+    private static @NotNull String tooltipOf(final @NotNull StartExecutionButton start) {
         return Objects.requireNonNullElse(start.getAccessibleContext().getAccessibleName(), "");
     }
 
@@ -78,10 +78,10 @@ public class ExecutionModeIdeTest extends AbstractCodegenIdeTest {
             assertTrue("the run button did not start its test case", Services.getInstance(getProject(), TestNGExecution.class).isRunning(testCases.getFirst().getId()));
 
             assertEquals("a single run button put the test run in a mode", ExecutionMode.IDLE, editor.getWalk().mode());
-            final @NotNull StartExecutionBtn start = editor.getToolBar().getToolbarItem(StartExecutionBtn.class);
+            final @NotNull StartExecutionButton start = editor.getToolBar().getToolbarItem(StartExecutionButton.class);
             assertTrue("a single run button hid Start Execution", start.isVisible());
             assertTrue("a single run button grayed Start Execution", start.isEnabled());
-            assertFalse("a single run button showed Stop Execution", editor.getToolBar().getToolbarItem(StopExecutionBtn.class).isVisible());
+            assertFalse("a single run button showed Stop Execution", editor.getToolBar().getToolbarItem(StopExecutionButton.class).isVisible());
         } finally {
             Disposer.dispose(editor);
         }
@@ -95,11 +95,11 @@ public class ExecutionModeIdeTest extends AbstractCodegenIdeTest {
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
             assertEquals("Run Tests did not put the test run in automation", ExecutionMode.AUTOMATION, editor.getWalk().mode());
 
-            final @NotNull StartExecutionBtn start = editor.getToolBar().getToolbarItem(StartExecutionBtn.class);
+            final @NotNull StartExecutionButton start = editor.getToolBar().getToolbarItem(StartExecutionButton.class);
             assertTrue("Start Execution left the toolbar while Run Tests executes", start.isVisible());
             assertFalse("Start Execution is not gray while Run Tests executes", start.isEnabled());
             assertEquals(Bundle.message("execution.mode.automation"), tooltipOf(start));
-            assertTrue("Stop Execution is not offered while Run Tests executes", editor.getToolBar().getToolbarItem(StopExecutionBtn.class).isVisible());
+            assertTrue("Stop Execution is not offered while Run Tests executes", editor.getToolBar().getToolbarItem(StopExecutionButton.class).isVisible());
 
             editor.onStopExecutionClicked();
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();

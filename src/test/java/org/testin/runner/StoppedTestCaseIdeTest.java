@@ -31,7 +31,7 @@ public class StoppedTestCaseIdeTest extends AbstractCodegenIdeTest {
     // Rule-CODEGEN-038
     public void testATestCaseTheTesterStoppedIsRecordedAsNotRunNeverAsFailed() {
         final @NotNull TestCaseDto testCase = indexedTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
-        ExecutionRecorder.initRecording(getProject());
+        ExecutionRecorder.startRecording(getProject());
         final @NotNull TestNGExecution execution = Services.getInstance(getProject(), TestNGExecution.class);
 
         execution.starting(testCase);

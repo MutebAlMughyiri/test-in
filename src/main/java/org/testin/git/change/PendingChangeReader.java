@@ -105,9 +105,9 @@ public final class PendingChangeReader {
     // Rule-INTERNAL-011
     private static @NotNull NodeType folderKindOf(final @NotNull Path repositoryRoot, final @NotNull Path relativePath) {
         final @NotNull Optional<Path> folder = Optional.ofNullable(repositoryRoot.resolve(relativePath).getParent());
-        final boolean isTestRun = folder.filter(at -> Files.exists(at.resolve(NodeType.TR.getMarker()))).isPresent();
+        final boolean isTestRun = folder.filter(at -> Files.exists(at.resolve(NodeType.TEST_RUN.getMarker()))).isPresent();
 
-        return isTestRun ? NodeType.TR : NodeType.TRF;
+        return isTestRun ? NodeType.TEST_RUN : NodeType.TEST_RUNS_FOLDER;
     }
 
     private static @NotNull String workingContent(final @NotNull Path root, final @NotNull Path relativePath, final @NotNull StatusEntry entry) {

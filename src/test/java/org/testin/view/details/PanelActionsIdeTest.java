@@ -222,7 +222,7 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
     public void testF5StopsTheTestCaseOnDisplayAndItIsRecordedAsNotRun() {
         final @NotNull TestCaseDto testCase = aTestCase();
         final @NotNull TestNGExecution execution = Services.getInstance(getProject(), TestNGExecution.class);
-        ExecutionRecorder.initRecording(getProject());
+        ExecutionRecorder.startRecording(getProject());
         view.getPanel().show(List.of(testCase), testCase.getParent().treePath());
         execution.starting(testCase);
 

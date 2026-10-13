@@ -123,10 +123,10 @@ public class TreeMenuIdeTest extends BasePlatformTestCase {
             assertEquals("Create Testin Node on " + kindOf(node), holdsNewNodes, shown.isEnabled());
             if (holdsNewNodes) continue;
 
-            assertTrue("Create Testin Node on " + kindOf(node) + " does not name " + NodeType.TSP.getDescription() + ": " + said(shown),
-                    said(shown).contains(NodeType.TSP.getDescription()));
-            assertTrue("Create Testin Node on " + kindOf(node) + " does not name " + NodeType.TRP.getDescription() + ": " + said(shown),
-                    said(shown).contains(NodeType.TRP.getDescription()));
+            assertTrue("Create Testin Node on " + kindOf(node) + " does not name " + NodeType.TEST_SET_PACKAGE.getDescription() + ": " + said(shown),
+                    said(shown).contains(NodeType.TEST_SET_PACKAGE.getDescription()));
+            assertTrue("Create Testin Node on " + kindOf(node) + " does not name " + NodeType.TEST_RUN_PACKAGE.getDescription() + ": " + said(shown),
+                    said(shown).contains(NodeType.TEST_RUN_PACKAGE.getDescription()));
         }
     }
 

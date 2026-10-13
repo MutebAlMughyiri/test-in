@@ -36,7 +36,7 @@ import org.testin.editor.card.HoverButton;
 import org.testin.editor.card.ShownTestCaseAction;
 import org.testin.editor.testrun.ExecutionControl;
 import org.testin.editor.testrun.TestRunEditor;
-import org.testin.editor.toolbar.StartExecutionBtn;
+import org.testin.editor.toolbar.StartExecutionButton;
 import org.testin.model.Automated;
 import org.testin.model.StatusBarItem;
 import org.testin.model.TestCaseDto;
@@ -90,8 +90,8 @@ final class LightModeScreen {
     private final @NotNull AutomationState automationState;
     private final @NotNull Runnable onClosed;
 
-    private final @NotNull TitleBarBtn start = new TitleBarBtn(ExecutionControl.START.getLabel(), ExecutionControl.START.getIcon());
-    private final @NotNull TitleBarBtn stop = new TitleBarBtn(ExecutionControl.STOP.getLabel(), ExecutionControl.STOP.getIcon());
+    private final @NotNull TitleBarButton start = new TitleBarButton(ExecutionControl.START.getLabel(), ExecutionControl.START.getIcon());
+    private final @NotNull TitleBarButton stop = new TitleBarButton(ExecutionControl.STOP.getLabel(), ExecutionControl.STOP.getIcon());
     private final @NotNull JBLabel counter = new JBLabel();
 
     private final @NotNull Font setFont = Fonts.label();
@@ -119,7 +119,7 @@ final class LightModeScreen {
     private final @NotNull JBPanel<?> footer = new JBPanel<>(new BorderLayout());
     private final @NotNull JComponent runItemStatusRow = runItemStatusButtons();
     private final @NotNull ShortcutStrip statusBar = new ShortcutStrip(new StatusBarItem[0]);
-    private final @NotNull ViewMenuBtn viewMenu = new ViewMenuBtn(this::applyView);
+    private final @NotNull ViewMenuButton viewMenu = new ViewMenuButton(this::applyView);
     private final @NotNull LightModeZoom zoom = LightModeZoom.remembered();
     private @NotNull Optional<UUID> shownTestCase = Optional.empty();
     private @NotNull Optional<Animator> slideMotion = Optional.empty();
@@ -188,7 +188,7 @@ final class LightModeScreen {
 
         // Rule-EDITOR-PANEL-135
         start.setEnabled(editor.getWalk().canStartManualExecution());
-        Tooltip.set(start, StartExecutionBtn.tooltipFor(editor));
+        Tooltip.set(start, StartExecutionButton.tooltipFor(editor));
 
         final @NotNull Optional<UUID> wasShowing = shownTestCase;
         if (executing) showTestCase(testCases.get(index));
@@ -553,7 +553,7 @@ final class LightModeScreen {
         for (final RunItemStatus status : RunItemStatus.values()) {
             if (!status.isRunItemStatus()) continue;
 
-            runItemStatuses.add(new RunItemStatusBtn(keyOf(status), status.getLabel(), () -> judge(status)));
+            runItemStatuses.add(new RunItemStatusButton(keyOf(status), status.getLabel(), () -> judge(status)));
         }
 
         return runItemStatuses;

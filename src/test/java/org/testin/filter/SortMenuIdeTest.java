@@ -45,8 +45,8 @@ public class SortMenuIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull TestSetNode testSet = new TestSetNode();
 
-    private static @NotNull SortPopupBtn sortOf(final @NotNull AbstractTestinEditor<?, ?> editor) {
-        return editor.getToolBar().getToolbarItem(SortPopupBtn.class);
+    private static @NotNull SortPopupButton sortOf(final @NotNull AbstractTestinEditor<?, ?> editor) {
+        return editor.getToolBar().getToolbarItem(SortPopupButton.class);
     }
 
     private static @NotNull List<String> shown(final @NotNull AbstractTestinEditor<?, ?> editor) {

@@ -25,7 +25,7 @@ import com.intellij.psi.PsiMethod;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.Await;
-import org.testin.codegen.GenType;
+import org.testin.codegen.CodeChangeType;
 import org.testin.editor.open.UnifiedVirtualFile;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.indexer.TestCases;
@@ -48,7 +48,7 @@ public class PasteTestCaseCodeIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").order("m").build();
         testCase.setParent(testSet);
         Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase);
-        GenType.CREATE_TEST_CASE.execute(getProject(), testCase);
+        CodeChangeType.CREATE_TEST_CASE.execute(getProject(), testCase);
 
         final @NotNull PsiCodeBlock body = methodOf(testCase).map(PsiMethod::getBody).orElseThrow(() -> new AssertionError("the test case to copy got no method"));
         WriteCommandAction.runWriteCommandAction(getProject(), () -> {

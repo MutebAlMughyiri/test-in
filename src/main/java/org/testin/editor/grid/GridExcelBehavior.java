@@ -103,8 +103,8 @@ public final class GridExcelBehavior {
         if (text.isEmpty()) return;
 
         final int anchorRow = table.getSelectedRow();
-        final int anchorCol = table.getSelectedColumn();
-        if (anchorRow < 0 || anchorCol < 0) return;
+        final int anchorColumn = table.getSelectedColumn();
+        if (anchorRow < 0 || anchorColumn < 0) return;
 
         final @NotNull List<List<String>> block = SeparatedValues.split(text, '\t');
         if (block.isEmpty()) return;
@@ -114,7 +114,7 @@ public final class GridExcelBehavior {
             return;
         }
 
-        layBlock(table, block, anchorRow, anchorCol);
+        layBlock(table, block, anchorRow, anchorColumn);
     }
 
     // UC-EDITOR-PANEL-018, Rule-EDITOR-PANEL-088
@@ -125,13 +125,13 @@ public final class GridExcelBehavior {
     }
 
     // UC-EDITOR-PANEL-018, Rule-EDITOR-PANEL-088
-    private static void layBlock(final @NotNull JBTable table, final @NotNull List<List<String>> block, final int anchorRow, final int anchorCol) {
+    private static void layBlock(final @NotNull JBTable table, final @NotNull List<List<String>> block, final int anchorRow, final int anchorColumn) {
         final int rowsThatFit = Math.min(block.size(), table.getRowCount() - anchorRow);
         for (int row = 0; row < rowsThatFit; row++) {
             final @NotNull List<String> fields = block.get(row);
-            final int columnsThatFit = Math.min(fields.size(), table.getColumnCount() - anchorCol);
+            final int columnsThatFit = Math.min(fields.size(), table.getColumnCount() - anchorColumn);
             for (int column = 0; column < columnsThatFit; column++)
-                setIfEditable(table, fields.get(column), anchorRow + row, anchorCol + column);
+                setIfEditable(table, fields.get(column), anchorRow + row, anchorColumn + column);
         }
     }
 

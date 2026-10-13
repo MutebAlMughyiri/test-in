@@ -65,7 +65,7 @@ final class NodeFiles {
     void remove(final @NotNull Path path, final @NotNull Runnable cacheUpdate, final @NotNull Consumer<@NotNull Boolean> onRemoved) {
         final @NotNull Path folder = Optional.ofNullable(path.getParent()).orElse(path);
 
-        vfs.removeVf(indexer, path,
+        vfs.removeFile(indexer, path,
                 deleted -> ApplicationManager.getApplication().executeOnPooledThread(() ->
                         LocalFileSystem.getInstance().refreshNioFiles(List.of(folder), true, false, () -> {
                             if (deleted) cacheUpdate.run();
@@ -172,7 +172,7 @@ final class NodeFiles {
             final @NotNull List<Path> all = files.filter(Files::isRegularFile).toList();
 
             testCaseFiles = all.stream()
-                    .filter(file -> ProjectIndexer.isTestCaseFile(file, node -> store.hasMarker(node, NodeType.TS)))
+                    .filter(file -> ProjectIndexer.isTestCaseFile(file, node -> store.hasMarker(node, NodeType.TEST_SET)))
                     .toList();
 
             markerFiles = all.stream()

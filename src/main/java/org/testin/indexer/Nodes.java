@@ -93,23 +93,23 @@ public final class Nodes {
 
     // UC-INTERNAL-005
     public void removeTestProject(final @NotNull Path path, final @NotNull Consumer<@NotNull Boolean> onRemoved) {
-        removeVf(path, IndexerDataStore::removeTestProject, onRemoved);
+        removeFile(path, IndexerDataStore::removeTestProject, onRemoved);
     }
 
     public void removeTestSet(final @NotNull Path path, final @NotNull Consumer<@NotNull Boolean> onRemoved) {
-        removeVf(path, IndexerDataStore::removeTestSet, onRemoved);
+        removeFile(path, IndexerDataStore::removeTestSet, onRemoved);
     }
 
     public void removeTestRun(final @NotNull Path path, final @NotNull Consumer<@NotNull Boolean> onRemoved) {
-        removeVf(path, IndexerDataStore::removeTestRun, onRemoved);
+        removeFile(path, IndexerDataStore::removeTestRun, onRemoved);
     }
 
     public void removeTestSetPackage(final @NotNull Path path, final @NotNull Consumer<@NotNull Boolean> onRemoved) {
-        removeVf(path, IndexerDataStore::removeTestSetPackage, onRemoved);
+        removeFile(path, IndexerDataStore::removeTestSetPackage, onRemoved);
     }
 
     public void removeTestRunPackage(final @NotNull Path path, final @NotNull Consumer<@NotNull Boolean> onRemoved) {
-        removeVf(path, IndexerDataStore::removeTestRunPackage, onRemoved);
+        removeFile(path, IndexerDataStore::removeTestRunPackage, onRemoved);
     }
 
     // UC-TREE-PANEL-012, Rule-TREE-PANEL-042
@@ -118,7 +118,7 @@ public final class Nodes {
         onRemoved.accept(false);
     }
 
-    private void removeVf(final @NotNull Path path, final @NotNull BiConsumer<IndexerDataStore, Path> cacheUpdate, final @NotNull Consumer<@NotNull Boolean> onRemoved) {
+    private void removeFile(final @NotNull Path path, final @NotNull BiConsumer<IndexerDataStore, Path> cacheUpdate, final @NotNull Consumer<@NotNull Boolean> onRemoved) {
         final @NotNull ProjectIndexer indexer = indexer();
         indexer.getNodeFiles().remove(path, () -> cacheUpdate.accept(indexer.getStore(), path), removed -> {
             onRemoved.accept(removed);

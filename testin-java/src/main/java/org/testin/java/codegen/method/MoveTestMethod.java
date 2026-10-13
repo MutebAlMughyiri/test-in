@@ -26,7 +26,7 @@ import com.intellij.psi.PsiMethod;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.Fqcn;
 import org.testin.codegen.CodeChange;
-import org.testin.codegen.GenType;
+import org.testin.codegen.CodeChangeType;
 import org.testin.codegen.event.MovedTestCase;
 import org.testin.java.codegen.GeneratedClass;
 import org.testin.java.codegen.GeneratedMethod;
@@ -55,7 +55,7 @@ public class MoveTestMethod extends BaseTestMethodChange implements CodeChange<M
         if (moves.isEmpty()) return;
 
         final @NotNull Runnable inCommand = () ->
-                WriteCommandAction.runWriteCommandAction(project, GenType.MOVE_TEST_CASE.description(), null, () -> {
+                WriteCommandAction.runWriteCommandAction(project, CodeChangeType.MOVE_TEST_CASE.description(), null, () -> {
                     final @NotNull Set<PsiClass> left = new LinkedHashSet<>();
                     moves.forEach(moved -> move(project, moved).ifPresent(left::add));
                     left.forEach(testClass -> reformat(project, testClass));

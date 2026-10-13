@@ -20,7 +20,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.CheckedTreeNode;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.AutomationState;
-import org.testin.filter.FilterPopupBtn;
+import org.testin.filter.FilterPopupButton;
 import org.testin.filter.FilterAndSortChoice;
 import org.testin.filter.FilterSource;
 import org.testin.filter.TestCaseFilter;
@@ -48,7 +48,7 @@ public final class TestRunFormFilter implements FilterSource {
     private final @NotNull AutomationState automation;
     private final @NotNull List<TestCaseDto> offered = new ArrayList<>();
     private final @NotNull Map<Path, String> testSets = new LinkedHashMap<>();
-    private final @NotNull FilterPopupBtn button;
+    private final @NotNull FilterPopupButton button;
     private final @NotNull SelectionTree selection;
 
     public TestRunFormFilter(final @NotNull Project project, final @NotNull Path testCasesRoot, final @NotNull CheckedTreeNode root) {
@@ -56,7 +56,7 @@ public final class TestRunFormFilter implements FilterSource {
         this.automation = Services.getInstance(project, AutomationState.class);
         collect(root, testCasesRoot);
 
-        this.button = new FilterPopupBtn(this);
+        this.button = new FilterPopupButton(this);
         this.selection = new SelectionTree(Bundle.message("test.run.form.test.cases.caption"), root, TestCaseSelectionRenderer.create(), Optional.of(button));
 
         automation.read(project, offered, () -> {

@@ -19,7 +19,7 @@ package org.testin.testcase.create;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBPanel;
 import org.jetbrains.annotations.NotNull;
-import org.testin.codegen.GenType;
+import org.testin.codegen.CodeChangeType;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
 import org.testin.model.StatusBarItem;
@@ -54,7 +54,7 @@ public class CreateTestCaseDialog extends AbstractTestCaseDialog {
         final @NotNull TestCaseForm form = new TestCaseForm(descriptionSection::getFocusComponent, true);
         final @NotNull JComponent keys = form.getPanel();
 
-        initDynamicStatusBar(keys);
+        installDynamicStatusBar(keys);
         showSectionKeys(CreateTestCaseFields.DESCRIPTION.getStatusBarItems());
 
         for (final TestCaseSection section : getAllSections()) {
@@ -67,7 +67,7 @@ public class CreateTestCaseDialog extends AbstractTestCaseDialog {
             }
         }
 
-        title = GenType.CREATE_TEST_CASE.description();
+        title = CodeChangeType.CREATE_TEST_CASE.description();
         components = List.of(DialogPart.of(form));
         // Rule-INTERNAL-100
         resizable = true;

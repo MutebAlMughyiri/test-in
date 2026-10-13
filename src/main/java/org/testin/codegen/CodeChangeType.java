@@ -34,154 +34,154 @@ import java.util.List;
 import java.util.UUID;
 
 @Immutable
-public record GenType<T>(@NotNull Class<T> payload, @NotNull String description, @NotNull CodeUpdate update) {
-    public static final @NotNull GenType<AbstractNode> REMOVE_TEST_PROJECT = new GenType<>(
+public record CodeChangeType<T>(@NotNull Class<T> payload, @NotNull String description, @NotNull CodeUpdate update) {
+    public static final @NotNull CodeChangeType<AbstractNode> REMOVE_TEST_PROJECT = new CodeChangeType<>(
             AbstractNode.class,
             Bundle.message("codegen.remove.test.project"),
             GeneratedCodeUpdate.INSTANCE
     );
 
-    public static final @NotNull GenType<RenamedNode> RENAME_TEST_PROJECT = new GenType<>(
+    public static final @NotNull CodeChangeType<RenamedNode> RENAME_TEST_PROJECT = new CodeChangeType<>(
             RenamedNode.class,
             Bundle.message("codegen.rename.test.project"),
             GeneratedCodeUpdate.INSTANCE
     );
 
-    public static final @NotNull GenType<AbstractNode> REMOVE_TEST_SET_PACKAGE = new GenType<>(
+    public static final @NotNull CodeChangeType<AbstractNode> REMOVE_TEST_SET_PACKAGE = new CodeChangeType<>(
             AbstractNode.class,
             Bundle.message("codegen.remove.test.set.package"),
             GeneratedCodeUpdate.INSTANCE
     );
 
-    public static final @NotNull GenType<RenamedNode> RENAME_TEST_SET_PACKAGE = new GenType<>(
+    public static final @NotNull CodeChangeType<RenamedNode> RENAME_TEST_SET_PACKAGE = new CodeChangeType<>(
             RenamedNode.class,
             Bundle.message("codegen.rename.test.set.package"),
             GeneratedCodeUpdate.INSTANCE
     );
 
-    public static final @NotNull GenType<MovedNode> MOVE_TEST_SET_PACKAGE = new GenType<>(
+    public static final @NotNull CodeChangeType<MovedNode> MOVE_TEST_SET_PACKAGE = new CodeChangeType<>(
             MovedNode.class,
             Bundle.message("codegen.move.test.set.package"),
             GeneratedCodeUpdate.INSTANCE
     );
 
-    public static final @NotNull GenType<AbstractNode> CREATE_TEST_SET = new GenType<>(
+    public static final @NotNull CodeChangeType<AbstractNode> CREATE_TEST_SET = new CodeChangeType<>(
             AbstractNode.class,
             Bundle.message("codegen.create.test.set"),
             GeneratedCodeUpdate.INSTANCE
     );
 
-    public static final @NotNull GenType<AbstractNode> REMOVE_TEST_SET = new GenType<>(
+    public static final @NotNull CodeChangeType<AbstractNode> REMOVE_TEST_SET = new CodeChangeType<>(
             AbstractNode.class,
             Bundle.message("codegen.remove.test.set"),
             GeneratedCodeUpdate.INSTANCE
     );
 
-    public static final @NotNull GenType<RenamedNode> RENAME_TEST_SET = new GenType<>(
+    public static final @NotNull CodeChangeType<RenamedNode> RENAME_TEST_SET = new CodeChangeType<>(
             RenamedNode.class,
             Bundle.message("codegen.rename.test.set"),
             GeneratedCodeUpdate.INSTANCE
     );
 
-    public static final @NotNull GenType<MovedNode> MOVE_TEST_SET = new GenType<>(
+    public static final @NotNull CodeChangeType<MovedNode> MOVE_TEST_SET = new CodeChangeType<>(
             MovedNode.class,
             Bundle.message("codegen.move.test.set"),
             GeneratedCodeUpdate.INSTANCE
     );
 
-    public static final @NotNull GenType<TestCaseDto> CREATE_TEST_CASE = new GenType<>(
+    public static final @NotNull CodeChangeType<TestCaseDto> CREATE_TEST_CASE = new CodeChangeType<>(
             TestCaseDto.class,
             Bundle.message("codegen.create.test.case"),
             GeneratedCodeUpdate.INSTANCE
     );
 
-    public static final @NotNull GenType<TestCaseDto> REMOVE_TEST_CASE = new GenType<>(
+    public static final @NotNull CodeChangeType<TestCaseDto> REMOVE_TEST_CASE = new CodeChangeType<>(
             TestCaseDto.class,
             Bundle.message("codegen.remove.test.case"),
             GeneratedCodeUpdate.INSTANCE
     );
 
     // UC-CODEGEN-002, Rule-CODEGEN-077
-    public static final @NotNull GenType<MovedTestCase> MOVE_TEST_CASE = new GenType<>(
+    public static final @NotNull CodeChangeType<MovedTestCase> MOVE_TEST_CASE = new CodeChangeType<>(
             MovedTestCase.class,
             Bundle.message("codegen.move.test.case"),
             GeneratedCodeUpdate.INSTANCE
     );
 
     // UC-CODEGEN-002, Rule-CODEGEN-078
-    public static final @NotNull GenType<CopiedTestCase> COPY_TEST_CASE = new GenType<>(
+    public static final @NotNull CodeChangeType<CopiedTestCase> COPY_TEST_CASE = new CodeChangeType<>(
             CopiedTestCase.class,
             Bundle.message("codegen.copy.test.case"),
             GeneratedCodeUpdate.INSTANCE
     );
 
-    public static final @NotNull GenType<TestCaseDto> UPDATE_TEST_CASE_DESCRIPTION = new GenType<>(
+    public static final @NotNull CodeChangeType<TestCaseDto> UPDATE_TEST_CASE_DESCRIPTION = new CodeChangeType<>(
             TestCaseDto.class,
             Bundle.message("codegen.update.test.case.description"),
             GeneratedCodeUpdate.INSTANCE
     );
 
-    public static final @NotNull GenType<TestCaseDto> UPDATE_TEST_CASE_EXPECTED_RESULT = new GenType<>(
+    public static final @NotNull CodeChangeType<TestCaseDto> UPDATE_TEST_CASE_EXPECTED_RESULT = new CodeChangeType<>(
             TestCaseDto.class,
             Bundle.message("codegen.update.test.case"),
             new NoOpCodeUpdate("expected result")
     );
 
-    public static final @NotNull GenType<TestCaseDto> UPDATE_TEST_CASE_MODULE = new GenType<>(
+    public static final @NotNull CodeChangeType<TestCaseDto> UPDATE_TEST_CASE_MODULE = new CodeChangeType<>(
             TestCaseDto.class,
             Bundle.message("codegen.update.test.case"),
             new NoOpCodeUpdate("module")
     );
 
-    public static final @NotNull GenType<TestCaseDto> UPDATE_TEST_CASE_TEST_DATA = new GenType<>(
+    public static final @NotNull CodeChangeType<TestCaseDto> UPDATE_TEST_CASE_TEST_DATA = new CodeChangeType<>(
             TestCaseDto.class,
             Bundle.message("codegen.update.test.case"),
             new NoOpCodeUpdate("test data")
     );
 
-    public static final @NotNull GenType<TestCaseDto> UPDATE_TEST_CASE_PRE_CONDITIONS = new GenType<>(
+    public static final @NotNull CodeChangeType<TestCaseDto> UPDATE_TEST_CASE_PRE_CONDITIONS = new CodeChangeType<>(
             TestCaseDto.class,
             Bundle.message("codegen.update.test.case"),
             new NoOpCodeUpdate("pre-conditions")
     );
 
-    public static final @NotNull GenType<TestCaseDto> UPDATE_TEST_CASE_STEPS = new GenType<>(
+    public static final @NotNull CodeChangeType<TestCaseDto> UPDATE_TEST_CASE_STEPS = new CodeChangeType<>(
             TestCaseDto.class,
             Bundle.message("codegen.update.test.case"),
             new NoOpCodeUpdate("steps")
     );
 
-    public static final @NotNull GenType<TestCaseDto> UPDATE_TEST_CASE_GROUP = new GenType<>(
+    public static final @NotNull CodeChangeType<TestCaseDto> UPDATE_TEST_CASE_GROUP = new CodeChangeType<>(
             TestCaseDto.class,
             Bundle.message("codegen.update.test.case.group"),
             GeneratedCodeUpdate.INSTANCE
     );
 
-    public static final @NotNull GenType<TestCaseDto> UPDATE_TEST_CASE_PRIORITY = new GenType<>(
+    public static final @NotNull CodeChangeType<TestCaseDto> UPDATE_TEST_CASE_PRIORITY = new CodeChangeType<>(
             TestCaseDto.class,
             Bundle.message("codegen.update.test.case"),
             new NoOpCodeUpdate("priority")
     );
 
-    public static final @NotNull GenType<TestCaseDto> UPDATE_TEST_CASE_ORDER = new GenType<>(
+    public static final @NotNull CodeChangeType<TestCaseDto> UPDATE_TEST_CASE_ORDER = new CodeChangeType<>(
             TestCaseDto.class,
             Bundle.message("codegen.update.test.case.order"),
             GeneratedCodeUpdate.INSTANCE
     );
 
-    public static final @NotNull GenType<TestCaseDto> RECONCILE_TEST_CASE = new GenType<>(
+    public static final @NotNull CodeChangeType<TestCaseDto> RECONCILE_TEST_CASE = new CodeChangeType<>(
             TestCaseDto.class,
             Bundle.message("codegen.restore.test.case"),
             GeneratedCodeUpdate.INSTANCE
     );
 
-    public static final @NotNull GenType<TestCaseDto> UPDATE_TEST_CASE_STATUS = new GenType<>(
+    public static final @NotNull CodeChangeType<TestCaseDto> UPDATE_TEST_CASE_STATUS = new CodeChangeType<>(
             TestCaseDto.class,
             Bundle.message("codegen.update.test.case.status"),
             GeneratedCodeUpdate.INSTANCE
     );
 
-    public static final @NotNull GenType<TestCaseDto> NO_CODE_CHANGE = new GenType<>(
+    public static final @NotNull CodeChangeType<TestCaseDto> NO_CODE_CHANGE = new CodeChangeType<>(
             TestCaseDto.class,
             Bundle.message("codegen.no.code.change"),
             new NoOpCodeUpdate("read-only field")

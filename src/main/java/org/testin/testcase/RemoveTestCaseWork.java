@@ -20,7 +20,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.clipboard.CutState;
-import org.testin.codegen.GenType;
+import org.testin.codegen.CodeChangeType;
 import org.testin.codegen.WaitForIndexing;
 import org.testin.editor.TestinEditor;
 import org.testin.editor.open.TestinEditors;
@@ -82,7 +82,7 @@ record RemoveTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor
         TestCaseSnapshot.record(project, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.remove"), removed), before, TestCaseSnapshot.of(project, node.getPath(), testCaseIds));
 
         ApplicationManager.getApplication().invokeLater(() -> {
-            if (!removed.isEmpty()) GenType.REMOVE_TEST_CASE.executeAll(project, removed);
+            if (!removed.isEmpty()) CodeChangeType.REMOVE_TEST_CASE.executeAll(project, removed);
 
             if (removed.size() == selectedTestCases.size()) editor.refreshView();
             else editors.reloadOpen(node.getPath());

@@ -19,8 +19,8 @@ package org.testin.editor.toolbar;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.testrun.TestRunEditor;
-import org.testin.filter.FilterPopupBtn;
-import org.testin.filter.SortPopupBtn;
+import org.testin.filter.FilterPopupButton;
+import org.testin.filter.SortPopupButton;
 
 import java.util.List;
 
@@ -40,21 +40,21 @@ public class TestRunToolbar extends AbstractToolbarPanel {
     @Override
     public @NotNull List<ToolbarItem> getCustomComponents() {
         return List.of(
-                new StartExecutionBtn(editor, getCallbacks()::onStartExecutionClicked),
-                new StopExecutionBtn(getCallbacks()::onStopExecutionClicked),
-                new LightModeBtn(editor),
-                new GenerateReportBtn(project, editor),
-                new RefreshBtn(getCallbacks()::onToolBarRefreshButtonClicked),
-                new TestRunFieldsPopupBtn(getCallbacks()::onToolBarDetailsSelectionChanged),
-                new FilterPopupBtn(getCallbacks()),
-                new SortPopupBtn(getCallbacks()),
-                new CardViewBtn(getCallbacks()::onToolBarSwitchedToCardView),
-                new GridViewBtn(getCallbacks()::onToolBarSwitchedToGridView)
+                new StartExecutionButton(editor, getCallbacks()::onStartExecutionClicked),
+                new StopExecutionButton(getCallbacks()::onStopExecutionClicked),
+                new LightModeButton(editor),
+                new GenerateReportButton(project, editor),
+                new RefreshButton(getCallbacks()::onToolBarRefreshButtonClicked),
+                new TestRunFieldsPopupButton(getCallbacks()::onToolBarDetailsSelectionChanged),
+                new FilterPopupButton(getCallbacks()),
+                new SortPopupButton(getCallbacks()),
+                new CardViewButton(getCallbacks()::onToolBarSwitchedToCardView),
+                new GridViewButton(getCallbacks()::onToolBarSwitchedToGridView)
         );
     }
 
     @Override
     protected @NotNull List<ToolbarItem> getTrailingComponents() {
-        return List.of(new TestRunResultAnalysisBtn(editor, getCallbacks()::onToolBarTestRunResultAnalysisClicked));
+        return List.of(new TestRunResultAnalysisButton(editor, getCallbacks()::onToolBarTestRunResultAnalysisClicked));
     }
 }

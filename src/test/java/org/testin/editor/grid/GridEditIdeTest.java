@@ -24,7 +24,7 @@ import org.testin.Await;
 import org.testin.Said;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.testset.TestSetEditor;
-import org.testin.editor.toolbar.GridViewBtn;
+import org.testin.editor.toolbar.GridViewButton;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestSetNode;
@@ -98,7 +98,7 @@ public class GridEditIdeTest extends AbstractTempRootIdeTest {
 
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         editor.getSelectedDetails().add(TestSetEditorFields.GROUP);
-        editor.getToolBar().getToolbarItem(GridViewBtn.class).doClick();
+        editor.getToolBar().getToolbarItem(GridViewButton.class).doClick();
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
         return editor;
     }

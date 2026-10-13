@@ -103,9 +103,9 @@ public class CodeWithoutJavaIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestSetNode login = createdTestSet("Login");
         final @NotNull TestCaseDto testCase = createdTestCase(login, "Log in with a valid user", "b");
         testCase.setDescription("Sign in with a valid user");
-        GenType.UPDATE_TEST_CASE_DESCRIPTION.execute(getProject(), testCase);
-        GenType.REMOVE_TEST_CASE.execute(getProject(), testCase);
-        GenType.REMOVE_TEST_SET.execute(getProject(), login);
+        CodeChangeType.UPDATE_TEST_CASE_DESCRIPTION.execute(getProject(), testCase);
+        CodeChangeType.REMOVE_TEST_CASE.execute(getProject(), testCase);
+        CodeChangeType.REMOVE_TEST_SET.execute(getProject(), login);
         settled();
 
         assertNull("code was written without the Java code generators", theTestSourceRoot().findFileByRelativePath("nafath/LoginTest.java"));

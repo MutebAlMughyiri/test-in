@@ -88,7 +88,7 @@ public final class GitCommitAndPush {
 
         return GitStatusLines.parseStatus(statusLines).stream()
                 .map(StatusEntry::path)
-                .filter(path -> FileKind.of(Path.of(path), NodeType.TR) == FileKind.SCREENSHOT)
+                .filter(path -> FileKind.of(Path.of(path), NodeType.TEST_RUN) == FileKind.SCREENSHOT)
                 .filter(path -> testRunFolders.contains(folderOf(path)))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }

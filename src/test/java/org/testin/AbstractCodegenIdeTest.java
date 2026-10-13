@@ -36,7 +36,7 @@ import com.intellij.util.PathUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jps.model.java.JavaSourceRootType;
 import org.jetbrains.jps.model.module.JpsModuleSourceRootType;
-import org.testin.codegen.GenType;
+import org.testin.codegen.CodeChangeType;
 import org.testin.codegen.NodeCode;
 import org.testin.config.TestinYml;
 import org.testin.indexer.NodeMapper;
@@ -144,7 +144,7 @@ public abstract class AbstractCodegenIdeTest extends AbstractTempRootIdeTest {
     protected @NotNull TestSetNode createdTestSet(final @NotNull String name, final @NotNull AbstractNode parent) {
         final @NotNull TestSetNode testSet = indexedTestSet(name, parent);
 
-        NodeCode.of(NodeType.TS).getCreated().execute(getProject(), testSet);
+        NodeCode.of(NodeType.TEST_SET).getCreated().execute(getProject(), testSet);
         return testSet;
     }
 
@@ -157,7 +157,7 @@ public abstract class AbstractCodegenIdeTest extends AbstractTempRootIdeTest {
 
     protected @NotNull TestCaseDto createdTestCase(final @NotNull TestSetNode testSet, final @NotNull String description, final @NotNull String order) {
         final @NotNull TestCaseDto testCase = indexedTestCase(testSet, description, order);
-        GenType.CREATE_TEST_CASE.execute(getProject(), testCase);
+        CodeChangeType.CREATE_TEST_CASE.execute(getProject(), testCase);
         return testCase;
     }
 

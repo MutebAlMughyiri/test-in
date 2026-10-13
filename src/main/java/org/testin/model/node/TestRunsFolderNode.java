@@ -56,7 +56,7 @@ public class TestRunsFolderNode extends AbstractNode {
 
     @Override
     public @NotNull NodeType getType() {
-        return NodeType.TRF;
+        return NodeType.TEST_RUNS_FOLDER;
     }
 
     @Override

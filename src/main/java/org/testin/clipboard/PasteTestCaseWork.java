@@ -19,7 +19,7 @@ package org.testin.clipboard;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.codegen.GenType;
+import org.testin.codegen.CodeChangeType;
 import org.testin.codegen.event.CopiedTestCase;
 import org.testin.codegen.event.MovedTestCase;
 import org.testin.editor.TestinEditor;
@@ -61,11 +61,11 @@ record PasteTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor,
         if (pastedTestCases.isEmpty()) return;
 
         ApplicationManager.getApplication().invokeLater(() -> {
-            if (editor instanceof TestSetEditor destUI) pasteInto(destUI, pastedTestCases);
+            if (editor instanceof TestSetEditor destinationEditor) pasteInto(destinationEditor, pastedTestCases);
         });
     }
 
-    private void pasteInto(final @NotNull TestSetEditor destUI, final @NotNull List<TestCaseDto> pastedTestCases) {
+    private void pasteInto(final @NotNull TestSetEditor destinationEditor, final @NotNull List<TestCaseDto> pastedTestCases) {
         final boolean isCut = cutState.isCutOf(pastedTestCases);
 
         final @NotNull Optional<AbstractNode> cutFromSet =
@@ -74,33 +74,33 @@ record PasteTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor,
         if (!isCut) cutState.clear();
 
         final @NotNull List<TestCaseDto> cutTestCases = cutState.source()
-                .map(sourceUI -> sourceUI.getAllTestCases().stream().filter(testCase -> cutState.isPending(testCase.getId())).toList())
+                .map(sourceEditor -> sourceEditor.getAllTestCases().stream().filter(testCase -> cutState.isPending(testCase.getId())).toList())
                 .orElseGet(List::of);
         final @NotNull Optional<TestCaseSnapshot> cutFrom = cutState.source()
-                .map(sourceUI -> TestCaseSnapshot.of(project, sourceUI.getParent().getPath(), TestCaseSnapshot.idsOf(cutTestCases)));
+                .map(sourceEditor -> TestCaseSnapshot.of(project, sourceEditor.getParent().getPath(), TestCaseSnapshot.idsOf(cutTestCases)));
 
         // Rule-EDITOR-PANEL-083
-        final @NotNull List<String> ranks = ranksUnderTheSelection(destUI, isCut ? Set.copyOf(TestCaseSnapshot.idsOf(pastedTestCases)) : Set.of(), pastedTestCases.size());
+        final @NotNull List<String> ranks = ranksUnderTheSelection(destinationEditor, isCut ? Set.copyOf(TestCaseSnapshot.idsOf(pastedTestCases)) : Set.of(), pastedTestCases.size());
 
-        final @NotNull List<TestCaseDto> pastedHere = new ArrayList<>(clonesInto(destUI, pastedTestCases, isCut, ranks));
+        final @NotNull List<TestCaseDto> pastedHere = new ArrayList<>(clonesInto(destinationEditor, pastedTestCases, isCut, ranks));
 
         // Rule-CODEGEN-078
         final @NotNull List<CopiedTestCase> copied = isCut ? List.of() : copiedFrom(pastedTestCases, pastedHere);
 
-        final @NotNull Path destPath = destUI.getParent().getPath();
+        final @NotNull Path destPath = destinationEditor.getParent().getPath();
         final @NotNull List<UUID> pastedIds = TestCaseSnapshot.idsOf(pastedHere);
         final @NotNull List<TestCaseSnapshot> before = new ArrayList<>();
         cutFrom.ifPresent(before::add);
         before.add(TestCaseSnapshot.of(project, destPath, pastedIds));
 
         // Rule-EDITOR-PANEL-082, Rule-INTERNAL-035
-        cutState.source().ifPresent(sourceUI -> moveCut(sourceUI, destUI, cutTestCases, pastedHere));
+        cutState.source().ifPresent(sourceEditor -> moveCut(sourceEditor, destinationEditor, cutTestCases, pastedHere));
 
         if (pastedHere.isEmpty()) return;
 
         final int pasted = pastedHere.size();
 
-        destUI.reorderAndPersist(() -> {
+        destinationEditor.reorderAndPersist(() -> {
             final @NotNull List<TestCaseSnapshot> after = new ArrayList<>();
             cutFrom.ifPresent(taken -> after.add(TestCaseSnapshot.of(project, taken.testSetPath(), taken.ids())));
             after.add(TestCaseSnapshot.of(project, destPath, pastedIds));
@@ -108,9 +108,9 @@ record PasteTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor,
             TestCaseSnapshot.record(project, UndoScope.of(destPath), TestCaseSnapshot.describe(isCut ? Bundle.message("snapshot.verb.move") : Bundle.message("snapshot.verb.paste"), pastedHere), before, after);
 
             // UC-EDITOR-PANEL-017, UC-CODEGEN-002, Rule-CODEGEN-078
-            if (!isCut) GenType.COPY_TEST_CASE.executeAll(project, copied);
+            if (!isCut) CodeChangeType.COPY_TEST_CASE.executeAll(project, copied);
 
-            else cutFromSet.ifPresent(source -> GenType.MOVE_TEST_CASE.executeAll(project,
+            else cutFromSet.ifPresent(source -> CodeChangeType.MOVE_TEST_CASE.executeAll(project,
                     pastedHere.stream().map(moved -> new MovedTestCase(moved, source)).toList()));
 
             notifier.softShowCounted(project, Done.PASTED, pasted);
@@ -119,12 +119,12 @@ record PasteTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor,
         if (isCut) cutState.clear();
     }
 
-    private @NotNull List<TestCaseDto> clonesInto(final @NotNull TestSetEditor destUI, final @NotNull List<TestCaseDto> pastedTestCases, final boolean isCut, final @NotNull List<String> ranks) {
+    private @NotNull List<TestCaseDto> clonesInto(final @NotNull TestSetEditor destinationEditor, final @NotNull List<TestCaseDto> pastedTestCases, final boolean isCut, final @NotNull List<String> ranks) {
         final @NotNull List<TestCaseDto> clones = new ArrayList<>(pastedTestCases.size());
         for (int i = 0; i < pastedTestCases.size(); i++) {
-            final @NotNull TestCaseDto clonedTestCase = cloneForPasting(pastedTestCases.get(i), isCut, destUI.getParent(), ranks.get(i));
+            final @NotNull TestCaseDto clonedTestCase = cloneForPasting(pastedTestCases.get(i), isCut, destinationEditor.getParent(), ranks.get(i));
 
-            destUI.getAllTestCases().add(clonedTestCase);
+            destinationEditor.getAllTestCases().add(clonedTestCase);
             clones.add(clonedTestCase);
         }
 
@@ -143,9 +143,9 @@ record PasteTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor,
     }
 
     // UC-EDITOR-PANEL-017, Rule-INTERNAL-035
-    private void moveCut(final @NotNull TestinEditor sourceUI, final @NotNull TestSetEditor destUI, final @NotNull List<TestCaseDto> cutTestCases, final @NotNull List<TestCaseDto> pastedHere) {
-        final @NotNull Path from = sourceUI.getParent().getPath();
-        final @NotNull Path to = destUI.getParent().getPath();
+    private void moveCut(final @NotNull TestinEditor sourceEditor, final @NotNull TestSetEditor destinationEditor, final @NotNull List<TestCaseDto> cutTestCases, final @NotNull List<TestCaseDto> pastedHere) {
+        final @NotNull Path from = sourceEditor.getParent().getPath();
+        final @NotNull Path to = destinationEditor.getParent().getPath();
 
         final @NotNull List<TestCaseDto> stayed = new ArrayList<>();
         for (final TestCaseDto moved : pastedHere) {
@@ -153,11 +153,11 @@ record PasteTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor,
         }
 
         pastedHere.removeAll(stayed);
-        destUI.getAllTestCases().removeAll(stayed);
+        destinationEditor.getAllTestCases().removeAll(stayed);
 
         final @NotNull Set<UUID> arrived = new HashSet<>(TestCaseSnapshot.idsOf(pastedHere));
-        sourceUI.getAllTestCases().removeAll(cutTestCases.stream().filter(testCase -> arrived.contains(testCase.getId())).toList());
-        if (!sourceUI.equals(destUI)) sourceUI.reorderAndPersist();
+        sourceEditor.getAllTestCases().removeAll(cutTestCases.stream().filter(testCase -> arrived.contains(testCase.getId())).toList());
+        if (!sourceEditor.equals(destinationEditor)) sourceEditor.reorderAndPersist();
     }
 
     boolean holdsTestCases(final @NotNull Transferable contents) {
@@ -165,9 +165,9 @@ record PasteTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor,
     }
 
     // UC-EDITOR-PANEL-017, Rule-EDITOR-PANEL-083
-    private @NotNull List<String> ranksUnderTheSelection(final @NotNull TestSetEditor destUI, final @NotNull Set<UUID> leaving, final int count) {
-        final @NotNull List<TestCaseDto> ordered = TestCaseOrder.ordered(destUI.getAllTestCases().stream().filter(testCase -> !leaving.contains(testCase.getId())).toList());
-        final @NotNull Optional<TestCaseDto> anchor = destUI.getSelectedTestCases().stream()
+    private @NotNull List<String> ranksUnderTheSelection(final @NotNull TestSetEditor destinationEditor, final @NotNull Set<UUID> leaving, final int count) {
+        final @NotNull List<TestCaseDto> ordered = TestCaseOrder.ordered(destinationEditor.getAllTestCases().stream().filter(testCase -> !leaving.contains(testCase.getId())).toList());
+        final @NotNull Optional<TestCaseDto> anchor = destinationEditor.getSelectedTestCases().stream()
                 .filter(selected -> !selected.getOrder().isEmpty())
                 .reduce((_, last) -> last);
 

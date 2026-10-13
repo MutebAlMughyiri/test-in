@@ -29,31 +29,31 @@ public final class RemoveHandlers {
     // UC-TREE-PANEL-013, Rule-TREE-PANEL-046
     public static @NotNull RemoveHandler of(final @NotNull NodeType type) {
         return switch (type) {
-            case TP ->
+            case TEST_PROJECT ->
                     (project, node, onRemoved) -> Services.getInstance(project, Nodes.class).removeTestProject(node.getPath(), removed -> {
                         if (removed) NodeCode.of(type).getRemoved().execute(project, node);
                         onRemoved.accept(removed);
                     });
 
-            case TCF, TRF ->
+            case TEST_CASES_FOLDER, TEST_RUNS_FOLDER ->
                     (project, node, onRemoved) -> Services.getInstance(project, Nodes.class).refuseRemove(node.getPath(), onRemoved);
 
-            case TSP ->
+            case TEST_SET_PACKAGE ->
                     (project, node, onRemoved) -> Services.getInstance(project, Nodes.class).removeTestSetPackage(node.getPath(), removed -> {
                         if (removed) NodeCode.of(type).getRemoved().execute(project, node);
                         onRemoved.accept(removed);
                     });
 
-            case TRP ->
+            case TEST_RUN_PACKAGE ->
                     (project, node, onRemoved) -> Services.getInstance(project, Nodes.class).removeTestRunPackage(node.getPath(), onRemoved);
 
-            case TS ->
+            case TEST_SET ->
                     (project, node, onRemoved) -> Services.getInstance(project, Nodes.class).removeTestSet(node.getPath(), removed -> {
                         if (removed) NodeCode.of(type).getRemoved().execute(project, node);
                         onRemoved.accept(removed);
                     });
 
-            case TR ->
+            case TEST_RUN ->
                     (project, node, onRemoved) -> Services.getInstance(project, Nodes.class).removeTestRun(node.getPath(), onRemoved);
         };
     }

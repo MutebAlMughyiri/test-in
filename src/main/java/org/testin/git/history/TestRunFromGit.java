@@ -70,7 +70,7 @@ public final class TestRunFromGit {
     static @NotNull String recordedRevision(final @NotNull GitRepositoryService git, final @NotNull Path testProjectPath, final @NotNull Path testRunPath, final @NotNull String commit) {
         if (commit.isEmpty() || isInTheBranch(git, testProjectPath, commit)) return commit;
 
-        final @NotNull String marker = testProjectPath.relativize(testRunPath.resolve(NodeType.TR.getMarker())).toString().replace('\\', '/');
+        final @NotNull String marker = testProjectPath.relativize(testRunPath.resolve(NodeType.TEST_RUN.getMarker())).toString().replace('\\', '/');
         try {
             final @NotNull String record = git.log(testProjectPath, "-1", "--format=%H", "-G\"commit\"", "--", marker).strip();
             return record.isEmpty() ? commit : record + "^";
@@ -103,7 +103,7 @@ public final class TestRunFromGit {
 
         final @NotNull Map<String, UUID> wanted = unread.stream().collect(Collectors.toMap(FileKind.TEST_CASE::fileName, Function.identity()));
         try {
-            final @NotNull List<String> listed = git.files(testProjectPath, commit, NodeType.TCF.getFolderName()).stream()
+            final @NotNull List<String> listed = git.files(testProjectPath, commit, NodeType.TEST_CASES_FOLDER.getFolderName()).stream()
                     .filter(path -> wanted.containsKey(fileName(path)))
                     .toList();
             final @NotNull Map<String, String> files = git.contents(testProjectPath, commit, listed);
@@ -125,7 +125,7 @@ public final class TestRunFromGit {
         final @NotNull Map<String, UUID> wanted = deleted.stream().collect(Collectors.toMap(FileKind.TEST_CASE::fileName, Function.identity()));
         try {
             final @NotNull Map<String, UUID> lastVersions = lastVersions(git.log(testProjectPath, Stream.concat(Stream.of(FORMAT, "--name-status", "--"),
-                    deleted.stream().map(testCaseId -> BugHistory.pathspec(NodeType.TCF, FileKind.TEST_CASE, testCaseId))).toArray(String[]::new)), wanted);
+                    deleted.stream().map(testCaseId -> BugHistory.pathspec(NodeType.TEST_CASES_FOLDER, FileKind.TEST_CASE, testCaseId))).toArray(String[]::new)), wanted);
             if (lastVersions.isEmpty()) return;
 
             final @NotNull Map<UUID, TestCaseDto> testCases = new HashMap<>();

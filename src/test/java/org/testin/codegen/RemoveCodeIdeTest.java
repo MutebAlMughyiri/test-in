@@ -37,7 +37,7 @@ public class RemoveCodeIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestCaseDto removed = createdTestCase(login, "Log in with a valid user", "b");
         final @NotNull TestCaseDto kept = createdTestCase(login, "Log out", "c");
 
-        GenType.REMOVE_TEST_CASE.execute(getProject(), removed);
+        CodeChangeType.REMOVE_TEST_CASE.execute(getProject(), removed);
         settled();
 
         assertTrue("the removed test case's method is still in the class", methodOf(LOGIN_TEST, removed).isEmpty());
@@ -50,7 +50,7 @@ public class RemoveCodeIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestSetNode login = createdTestSet("Login");
         assertNotNull("the test set's class was never written", theTestSourceRoot().findFileByRelativePath("nafath/LoginTest.java"));
 
-        GenType.REMOVE_TEST_SET.execute(getProject(), login);
+        CodeChangeType.REMOVE_TEST_SET.execute(getProject(), login);
 
         assertNull("the class file outlived its test set", theTestSourceRoot().findFileByRelativePath("nafath/LoginTest.java"));
     }
@@ -62,7 +62,7 @@ public class RemoveCodeIdeTest extends AbstractCodegenIdeTest {
         createdTestSet("Visa", indexedPackage("Cards", checkout));
         assertNotNull("the nested class was never written", theTestSourceRoot().findFileByRelativePath("nafath/checkout/cards/VisaTest.java"));
 
-        GenType.REMOVE_TEST_SET_PACKAGE.execute(getProject(), checkout);
+        CodeChangeType.REMOVE_TEST_SET_PACKAGE.execute(getProject(), checkout);
 
         assertNull("the package folder outlived the package", theTestSourceRoot().findFileByRelativePath("nafath/checkout"));
     }

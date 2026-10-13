@@ -36,7 +36,7 @@ public class UpdateTestMethodIdeTest extends AbstractCodegenIdeTest {
 
     private void described(final @NotNull TestCaseDto testCase, final @NotNull String description) {
         testCase.setDescription(description);
-        GenType.UPDATE_TEST_CASE_DESCRIPTION.execute(getProject(), testCase);
+        CodeChangeType.UPDATE_TEST_CASE_DESCRIPTION.execute(getProject(), testCase);
         settled();
     }
 
@@ -94,7 +94,7 @@ public class UpdateTestMethodIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestCaseDto testCase = aTestCaseWithAMethod();
 
         testCase.setGroups(List.of("smoke", "Log in & out"));
-        GenType.UPDATE_TEST_CASE_GROUP.execute(getProject(), testCase);
+        CodeChangeType.UPDATE_TEST_CASE_GROUP.execute(getProject(), testCase);
         settled();
 
         assertEquals("{\"smoke\", \"Log in & out\"}", attributeOf(writtenMethodOf(LOGIN_TEST, testCase), "groups"));
@@ -106,10 +106,10 @@ public class UpdateTestMethodIdeTest extends AbstractCodegenIdeTest {
         assertEquals("a test case created in no group was written with groups", "", attributeOf(writtenMethodOf(LOGIN_TEST, testCase), "groups"));
 
         testCase.setGroups(List.of("smoke"));
-        GenType.UPDATE_TEST_CASE_GROUP.execute(getProject(), testCase);
+        CodeChangeType.UPDATE_TEST_CASE_GROUP.execute(getProject(), testCase);
         settled();
         testCase.setGroups(List.of());
-        GenType.UPDATE_TEST_CASE_GROUP.execute(getProject(), testCase);
+        CodeChangeType.UPDATE_TEST_CASE_GROUP.execute(getProject(), testCase);
         settled();
 
         assertEquals("a test case taken out of every group kept a groups attribute", "", attributeOf(writtenMethodOf(LOGIN_TEST, testCase), "groups"));
@@ -120,7 +120,7 @@ public class UpdateTestMethodIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestCaseDto testCase = aTestCaseWithAMethod();
 
         testCase.setStatus(TestCaseStatus.DISABLED);
-        GenType.UPDATE_TEST_CASE_STATUS.execute(getProject(), testCase);
+        CodeChangeType.UPDATE_TEST_CASE_STATUS.execute(getProject(), testCase);
         settled();
 
         assertEquals("false", attributeOf(writtenMethodOf(LOGIN_TEST, testCase), "enabled"));
@@ -130,11 +130,11 @@ public class UpdateTestMethodIdeTest extends AbstractCodegenIdeTest {
     public void testTurningItBackOnTakesTheAttributeOff() {
         final @NotNull TestCaseDto testCase = aTestCaseWithAMethod();
         testCase.setStatus(TestCaseStatus.DISABLED);
-        GenType.UPDATE_TEST_CASE_STATUS.execute(getProject(), testCase);
+        CodeChangeType.UPDATE_TEST_CASE_STATUS.execute(getProject(), testCase);
         settled();
 
         testCase.setStatus(TestCaseStatus.PENDING);
-        GenType.UPDATE_TEST_CASE_STATUS.execute(getProject(), testCase);
+        CodeChangeType.UPDATE_TEST_CASE_STATUS.execute(getProject(), testCase);
         settled();
 
         final @NotNull PsiMethod testMethod = writtenMethodOf(LOGIN_TEST, testCase);
@@ -150,7 +150,7 @@ public class UpdateTestMethodIdeTest extends AbstractCodegenIdeTest {
         restored.setDescription("Sign in");
         restored.setGroups(List.of("smoke"));
         restored.setStatus(TestCaseStatus.DISABLED);
-        GenType.RECONCILE_TEST_CASE.executeAllNow(getProject(), List.of(restored, withoutAMethod));
+        CodeChangeType.RECONCILE_TEST_CASE.executeAllNow(getProject(), List.of(restored, withoutAMethod));
         settled();
 
         final @NotNull PsiMethod testMethod = writtenMethodOf(LOGIN_TEST, restored);

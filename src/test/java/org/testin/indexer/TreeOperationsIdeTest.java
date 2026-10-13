@@ -82,7 +82,7 @@ public class TreeOperationsIdeTest extends AbstractTempRootIdeTest {
 
         assertFalse("a folder Testin wrote carries an id", stamped.isEmpty());
         assertFalse("and so do the two containers under it",
-                nodes().readMarker(testProjectPath.resolve(NodeType.TCF.getFolderName()), NodeType.TCF, TestCasesFolderMarker.class).getId().isEmpty());
+                nodes().readMarker(testProjectPath.resolve(NodeType.TEST_CASES_FOLDER.getFolderName()), NodeType.TEST_CASES_FOLDER, TestCasesFolderMarker.class).getId().isEmpty());
 
         WriteAction.runAndWait(() -> {
             testProject.getMarker().setStatus(ProjectStatus.INACTIVE);
@@ -91,7 +91,7 @@ public class TreeOperationsIdeTest extends AbstractTempRootIdeTest {
 
         assertEquals("the id a folder has is the id it keeps",
                 stamped,
-                nodes().readMarker(testProjectPath, NodeType.TP, TestProjectMarker.class).getId());
+                nodes().readMarker(testProjectPath, NodeType.TEST_PROJECT, TestProjectMarker.class).getId());
     }
 
     public void testACreatedNodeIsOnDiskAndInTheCache() {
@@ -112,9 +112,9 @@ public class TreeOperationsIdeTest extends AbstractTempRootIdeTest {
         create(testProjectPath);
 
         assertTrue("the test cases directory is missing",
-                Files.isDirectory(testProjectPath.resolve(NodeType.TCF.getFolderName())));
+                Files.isDirectory(testProjectPath.resolve(NodeType.TEST_CASES_FOLDER.getFolderName())));
         assertTrue("the test runs directory is missing",
-                Files.isDirectory(testProjectPath.resolve(NodeType.TRF.getFolderName())));
+                Files.isDirectory(testProjectPath.resolve(NodeType.TEST_RUNS_FOLDER.getFolderName())));
     }
 
     public void testAnAbsentNodeIsNotInTheCache() {

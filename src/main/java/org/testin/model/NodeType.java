@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 @Getter
 @AllArgsConstructor
 public enum NodeType {
-    TP(
+    TEST_PROJECT(
             Bundle.message("node.tp"),
             "",
             AllIcons.Nodes.Project,
@@ -56,7 +56,7 @@ public enum NodeType {
             ImmutableList.of(NodeFigureRow.TEST_SETS, NodeFigureRow.PACKAGES, NodeFigureRow.TEST_CASES, NodeFigureRow.TEST_RUNS)
     ),
 
-    TCF(
+    TEST_CASES_FOLDER(
             Bundle.message("node.tcf"),
             "Test Cases",
             AllIcons.Nodes.Bookmark,
@@ -67,7 +67,7 @@ public enum NodeType {
             ImmutableList.of(NodeFigureRow.TEST_SETS, NodeFigureRow.PACKAGES, NodeFigureRow.TEST_CASES)
     ),
 
-    TRF(
+    TEST_RUNS_FOLDER(
             Bundle.message("node.trf"),
             "Test Runs",
             AllIcons.Nodes.Bookmark,
@@ -78,7 +78,7 @@ public enum NodeType {
             ImmutableList.of(NodeFigureRow.PACKAGES, NodeFigureRow.TEST_RUNS)
     ),
 
-    TSP(
+    TEST_SET_PACKAGE(
             Bundle.message("node.tsp"),
             "",
             AllIcons.Nodes.WebFolder,
@@ -89,7 +89,7 @@ public enum NodeType {
             ImmutableList.of(NodeFigureRow.TEST_SETS, NodeFigureRow.PACKAGES, NodeFigureRow.TEST_CASES)
     ),
 
-    TRP(
+    TEST_RUN_PACKAGE(
             Bundle.message("node.trp"),
             "",
             AllIcons.Nodes.WebFolder,
@@ -100,7 +100,7 @@ public enum NodeType {
             ImmutableList.of(NodeFigureRow.PACKAGES, NodeFigureRow.TEST_RUNS)
     ),
 
-    TS(
+    TEST_SET(
             Bundle.message("node.ts"),
             "",
             AllIcons.Vcs.Changelist,
@@ -111,7 +111,7 @@ public enum NodeType {
             ImmutableList.of(NodeFigureRow.TEST_CASES)
     ),
 
-    TR(
+    TEST_RUN(
             Bundle.message("node.tr"),
             "",
             AllIcons.Toolwindows.ToolWindowRunWithCoverage,
@@ -122,22 +122,22 @@ public enum NodeType {
             ImmutableList.of(NodeFigureRow.TOTAL)
     );
 
-    public static final @NotNull List<NodeType> UNDER_TEST_CASES = List.of(TS, TSP);
+    public static final @NotNull List<NodeType> UNDER_TEST_CASES = List.of(TEST_SET, TEST_SET_PACKAGE);
 
-    public static final @NotNull List<NodeType> UNDER_TEST_RUNS = List.of(TR, TRP);
+    public static final @NotNull List<NodeType> UNDER_TEST_RUNS = List.of(TEST_RUN, TEST_RUN_PACKAGE);
 
     // UC-TREE-PANEL-008, Rule-TREE-PANEL-095, Rule-CODEGEN-008
-    public static final @NotNull List<NodeType> BECOME_JAVA_PACKAGES = List.of(TP, TSP);
+    public static final @NotNull List<NodeType> BECOME_JAVA_PACKAGES = List.of(TEST_PROJECT, TEST_SET_PACKAGE);
 
     // UC-TREE-PANEL-013, UC-TREE-PANEL-014, Rule-TREE-PANEL-043, Rule-TREE-PANEL-044
     private static final @NotNull Map<NodeType, Set<NodeType>> ACCEPTS = Map.of(
-            TP, Set.of(),
-            TCF, Set.of(TS, TSP),
-            TRF, Set.of(TR, TRP),
-            TSP, Set.of(TS, TSP),
-            TRP, Set.of(TR, TRP),
-            TS, Set.of(),
-            TR, Set.of());
+            TEST_PROJECT, Set.of(),
+            TEST_CASES_FOLDER, Set.of(TEST_SET, TEST_SET_PACKAGE),
+            TEST_RUNS_FOLDER, Set.of(TEST_RUN, TEST_RUN_PACKAGE),
+            TEST_SET_PACKAGE, Set.of(TEST_SET, TEST_SET_PACKAGE),
+            TEST_RUN_PACKAGE, Set.of(TEST_RUN, TEST_RUN_PACKAGE),
+            TEST_SET, Set.of(),
+            TEST_RUN, Set.of());
 
     private final @NotNull String description;
 
@@ -196,7 +196,7 @@ public enum NodeType {
 
     // Rule-INTERNAL-011
     public boolean holdsScreenshots() {
-        return this == TR;
+        return this == TEST_RUN;
     }
 
     public @NotNull String getMarkerKind() {

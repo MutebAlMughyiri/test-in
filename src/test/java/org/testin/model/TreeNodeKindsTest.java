@@ -64,19 +64,19 @@ public class TreeNodeKindsTest {
     @Test
     public void theTwoContainersAreNeverCreatedAndComeWithTheTestProject() {
         for (final AbstractNode node : everyKind()) {
-            assertFalse(node.childKinds().contains(NodeType.TCF), name(node) + " offers to create Test Cases");
-            assertFalse(node.childKinds().contains(NodeType.TRF), name(node) + " offers to create Test Runs");
+            assertFalse(node.childKinds().contains(NodeType.TEST_CASES_FOLDER), name(node) + " offers to create Test Cases");
+            assertFalse(node.childKinds().contains(NodeType.TEST_RUNS_FOLDER), name(node) + " offers to create Test Runs");
         }
 
         final @NotNull Project project = StandIn.of(Project.class);
         final @NotNull AbstractNode parent = new TestProjectNode();
-        for (final NodeType container : List.of(NodeType.TCF, NodeType.TRF)) {
+        for (final NodeType container : List.of(NodeType.TEST_CASES_FOLDER, NodeType.TEST_RUNS_FOLDER)) {
             assertTrue(NodeCreators.of(project, container).execute("Extra", parent, Path.of("root", "Extra")).isEmpty(),
                     container.getDescription() + " was created from the tree");
         }
 
         final @NotNull TestProjectNode testProject = new TestProjectNode();
-        assertEquals(testProject.fixedChildren().stream().map(AbstractNode::getType).toList(), List.of(NodeType.TCF, NodeType.TRF),
+        assertEquals(testProject.fixedChildren().stream().map(AbstractNode::getType).toList(), List.of(NodeType.TEST_CASES_FOLDER, NodeType.TEST_RUNS_FOLDER),
                 "a test project does not arrive holding its two containers");
     }
 
@@ -93,15 +93,15 @@ public class TreeNodeKindsTest {
     // Rule-TREE-PANEL-024
     @Test
     public void underTestCasesOnlyATestSetOrATestSetPackageIsCreated() {
-        assertEquals(new TestCasesFolderNode().childKinds(), List.of(NodeType.TS, NodeType.TSP));
-        assertEquals(new TestSetPackageNode().childKinds(), List.of(NodeType.TS, NodeType.TSP));
+        assertEquals(new TestCasesFolderNode().childKinds(), List.of(NodeType.TEST_SET, NodeType.TEST_SET_PACKAGE));
+        assertEquals(new TestSetPackageNode().childKinds(), List.of(NodeType.TEST_SET, NodeType.TEST_SET_PACKAGE));
     }
 
     // Rule-TREE-PANEL-032
     @Test
     public void underTestRunsOnlyATestRunOrATestRunPackageIsCreated() {
-        assertEquals(new TestRunsFolderNode().childKinds(), List.of(NodeType.TR, NodeType.TRP));
-        assertEquals(new TestRunPackageNode().childKinds(), List.of(NodeType.TR, NodeType.TRP));
+        assertEquals(new TestRunsFolderNode().childKinds(), List.of(NodeType.TEST_RUN, NodeType.TEST_RUN_PACKAGE));
+        assertEquals(new TestRunPackageNode().childKinds(), List.of(NodeType.TEST_RUN, NodeType.TEST_RUN_PACKAGE));
     }
 
     // Rule-TREE-PANEL-025
@@ -116,14 +116,14 @@ public class TreeNodeKindsTest {
     // Rule-TREE-PANEL-028
     @Test
     public void aTestSetPackageHoldsAnotherTestSetPackage() {
-        assertTrue(new TestSetPackageNode().childKinds().contains(NodeType.TSP));
+        assertTrue(new TestSetPackageNode().childKinds().contains(NodeType.TEST_SET_PACKAGE));
         assertTrue(new TestSetPackageNode().acceptsTransferred(new TestSetPackageNode()));
     }
 
     // Rule-TREE-PANEL-034
     @Test
     public void aTestRunPackageHoldsAnotherTestRunPackage() {
-        assertTrue(new TestRunPackageNode().childKinds().contains(NodeType.TRP));
+        assertTrue(new TestRunPackageNode().childKinds().contains(NodeType.TEST_RUN_PACKAGE));
         assertTrue(new TestRunPackageNode().acceptsTransferred(new TestRunPackageNode()));
     }
 
@@ -200,7 +200,7 @@ public class TreeNodeKindsTest {
             assertEquals(Refused.ofName(kind, "Login"), Optional.empty(), kind + " refuses an ordinary name");
         }
 
-        for (final NodeType becomesAJavaPackage : List.of(NodeType.TP, NodeType.TSP)) {
+        for (final NodeType becomesAJavaPackage : List.of(NodeType.TEST_PROJECT, NodeType.TEST_SET_PACKAGE)) {
             for (final String javaWord : List.of("new", "class", "import")) {
                 assertEquals(Refused.ofName(becomesAJavaPackage, javaWord), Optional.of(Refused.NOT_A_JAVA_NAME),
                         becomesAJavaPackage + " takes '" + javaWord + "', which Java refuses as a package");

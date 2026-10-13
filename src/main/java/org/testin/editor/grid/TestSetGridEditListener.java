@@ -19,7 +19,7 @@ package org.testin.editor.grid;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.codegen.GenType;
+import org.testin.codegen.CodeChangeType;
 import org.testin.indexer.TestCases;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
@@ -109,10 +109,10 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
         }
 
         final boolean first = changedThisGesture.isEmpty();
-        final @NotNull Set<GenType<TestCaseDto>> generators = Optional.ofNullable(changedThisGesture.get(edited.getId()))
+        final @NotNull Set<CodeChangeType<TestCaseDto>> generators = Optional.ofNullable(changedThisGesture.get(edited.getId()))
                 .map(Changed::generators)
                 .orElseGet(LinkedHashSet::new);
-        generators.add(field.getGenType());
+        generators.add(field.getCodeChangeType());
         changedThisGesture.put(edited.getId(), new Changed(edited, undoFrom, generators));
 
         if (first) ApplicationManager.getApplication().invokeLater(this::saveTheGesture);

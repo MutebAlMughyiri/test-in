@@ -39,7 +39,7 @@ import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.filter.SortDirection;
 import org.testin.filter.SortField;
-import org.testin.filter.SortPopupBtn;
+import org.testin.filter.SortPopupButton;
 import org.testin.filter.Sorting;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
@@ -471,7 +471,7 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
             assertEquals("the frame is not in the gray of the letter frames", Icons.GRAY, frameColorOf(name));
             assertTrue("the frame is as loud as the description", contrast(Icons.GRAY, frame.getContentPane().getBackground()) < contrast(description.getForeground(), frame.getContentPane().getBackground()));
 
-            theOne(frame, ViewMenuBtn.class).getSelectedDetails().remove(LightModePart.SET_NAME);
+            theOne(frame, ViewMenuButton.class).getSelectedDetails().remove(LightModePart.SET_NAME);
             lightMode().refresh(editor.getParent());
             assertFalse("the name stayed after it was turned off", name.isShowing());
         } finally {
@@ -596,7 +596,7 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestRunEditor editor = walking(fixture);
         final @NotNull JFrame frame = lightModeOn(editor);
         try {
-            final @NotNull ViewMenuBtn view = theOne(frame, ViewMenuBtn.class);
+            final @NotNull ViewMenuButton view = theOne(frame, ViewMenuButton.class);
             final @NotNull List<String> entries = Arrays.stream(LightModePart.values()).map(LightModePart::getName).toList();
             for (final String button : buttonNames(frame))
                 assertTrue("the View menu has no entry named " + button + ": " + entries, entries.contains(button));
@@ -617,7 +617,7 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestRunFixture fixture = aTestRunOf(aTestSetWithSteps(3, 1));
         final @NotNull TestRunEditor editor = fixture.opened(getTestRootDisposable());
         try {
-            final @NotNull SortPopupBtn sort = editor.getToolBar().getToolbarItem(SortPopupBtn.class);
+            final @NotNull SortPopupButton sort = editor.getToolBar().getToolbarItem(SortPopupButton.class);
             Sorting.choose(sort, SortField.DESCRIPTION.getLabel());
             Sorting.choose(sort, SortDirection.DESCENDING.getLabel());
             editor.onStartExecutionClicked();

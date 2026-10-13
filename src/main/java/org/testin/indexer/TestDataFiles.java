@@ -112,7 +112,7 @@ final class TestDataFiles {
 
     @NotNull List<Path> screenshotsIn(final @NotNull Path testRunPath) {
         try (Stream<Path> inside = Files.list(testRunPath)) {
-            return inside.filter(file -> FileKind.of(file, NodeType.TR) == FileKind.SCREENSHOT).toList();
+            return inside.filter(file -> FileKind.of(file, NodeType.TEST_RUN) == FileKind.SCREENSHOT).toList();
         } catch (final IOException ex) {
             TestinLogger.warn("Could not list the screenshots in " + testRunPath + ": " + FailureText.of(ex));
             return List.of();

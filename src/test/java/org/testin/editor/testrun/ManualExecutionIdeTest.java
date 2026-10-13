@@ -23,11 +23,11 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
 import org.testin.editor.EditorFixtures;
-import org.testin.editor.toolbar.StartExecutionBtn;
-import org.testin.editor.toolbar.StopExecutionBtn;
+import org.testin.editor.toolbar.StartExecutionButton;
+import org.testin.editor.toolbar.StopExecutionButton;
 import org.testin.filter.SortDirection;
 import org.testin.filter.SortField;
-import org.testin.filter.SortPopupBtn;
+import org.testin.filter.SortPopupButton;
 import org.testin.filter.Sorting;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
@@ -132,11 +132,11 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
     public void testStartIsOnTheToolbarWhenATestRunOpens() {
         final @NotNull TestRunEditor editor = opened(aPendingTestRunOver(createdTestCases(2)));
         try {
-            final @NotNull StartExecutionBtn start = editor.getToolBar().getToolbarItem(StartExecutionBtn.class);
+            final @NotNull StartExecutionButton start = editor.getToolBar().getToolbarItem(StartExecutionButton.class);
 
             assertTrue("Start Manual Execution is not on the toolbar of a test run just opened", start.isVisible());
             assertTrue("Start Manual Execution is gray on a test run with test cases waiting", start.isEnabled());
-            assertFalse("Stop Execution is offered on a test run that is not executing", editor.getToolBar().getToolbarItem(StopExecutionBtn.class).isVisible());
+            assertFalse("Stop Execution is offered on a test run that is not executing", editor.getToolBar().getToolbarItem(StopExecutionButton.class).isVisible());
         } finally {
             Disposer.dispose(editor);
         }
@@ -185,8 +185,8 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
             editor.onStartExecutionClicked();
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
-            assertTrue("Stop Execution is not shown while the walk is going", editor.getToolBar().getToolbarItem(StopExecutionBtn.class).isVisible());
-            assertFalse("Start is still shown while the walk is going", editor.getToolBar().getToolbarItem(StartExecutionBtn.class).isVisible());
+            assertTrue("Stop Execution is not shown while the walk is going", editor.getToolBar().getToolbarItem(StopExecutionButton.class).isVisible());
+            assertFalse("Start is still shown while the walk is going", editor.getToolBar().getToolbarItem(StartExecutionButton.class).isVisible());
         } finally {
             Disposer.dispose(editor);
         }
@@ -198,7 +198,7 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestRunNode testRun = aPendingTestRunOver(testCases);
         final @NotNull TestRunEditor editor = opened(testRun);
         try {
-            editor.getToolBar().getSearchTxt().setText(testCases.getFirst().getDescription());
+            editor.getToolBar().getSearchText().setText(testCases.getFirst().getDescription());
             Await.until("the search never narrowed the list", () -> editor.getCurrentTestCases().size() == 1);
 
             editor.onStartExecutionClicked();
@@ -239,7 +239,7 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
                 EditorFixtures.pending(testCases.getFirst()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())),
                 EditorFixtures.pending(testCases.get(1)).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.BLOCKED).build())))));
         try {
-            assertFalse("Start is offered on a test run with nothing to walk", editor.getToolBar().getToolbarItem(StartExecutionBtn.class).isEnabled());
+            assertFalse("Start is offered on a test run with nothing to walk", editor.getToolBar().getToolbarItem(StartExecutionButton.class).isEnabled());
 
             editor.onStartExecutionClicked();
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
@@ -255,10 +255,10 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
     public void testStartIsGrayWhenTheFilterMatchesNothing() {
         final @NotNull TestRunEditor editor = opened(aPendingTestRunOver(createdTestCases(2)));
         try {
-            editor.getToolBar().getSearchTxt().setText("no test case reads this");
+            editor.getToolBar().getSearchText().setText("no test case reads this");
             Await.until("the search never emptied the list", () -> editor.getCurrentTestCases().isEmpty());
 
-            assertFalse("Start is offered with a filter that matches nothing", editor.getToolBar().getToolbarItem(StartExecutionBtn.class).isEnabled());
+            assertFalse("Start is offered with a filter that matches nothing", editor.getToolBar().getToolbarItem(StartExecutionButton.class).isEnabled());
         } finally {
             Disposer.dispose(editor);
         }
@@ -386,7 +386,7 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
             editor.onStartExecutionClicked();
             awaitWalkOn(editor, testCases.getFirst());
 
-            editor.getToolBar().getSearchTxt().setText(testCases.get(2).getDescription());
+            editor.getToolBar().getSearchText().setText(testCases.get(2).getDescription());
             Await.until("the search never narrowed the list", () -> editor.getCurrentTestCases().size() == 1);
 
             record(editor, RunItemStatus.PASSED);
@@ -394,7 +394,7 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
             assertEquals("a run item status key moved onto the test case left in view", RunItemStatus.PENDING, statusOf(testRun, testCases.get(2)));
             assertEquals("the hidden test case being executed was judged", RunItemStatus.PENDING, statusOf(testRun, testCases.getFirst()));
 
-            editor.getToolBar().getSearchTxt().setText("");
+            editor.getToolBar().getSearchText().setText("");
             Await.until("clearing the filter did not bring the test case being executed back", () -> walkingOn(editor).equals(testCases.getFirst().getId()));
         } finally {
             Disposer.dispose(editor);
@@ -495,7 +495,7 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestRunNode testRun = aPendingTestRunOver(testCases);
         final @NotNull TestRunEditor editor = opened(testRun);
         try {
-            final @NotNull SortPopupBtn sort = editor.getToolBar().getToolbarItem(SortPopupBtn.class);
+            final @NotNull SortPopupButton sort = editor.getToolBar().getToolbarItem(SortPopupButton.class);
             Sorting.choose(sort, SortField.RUN_ITEM_STATUS.getLabel());
             Sorting.choose(sort, SortDirection.DESCENDING.getLabel());
 

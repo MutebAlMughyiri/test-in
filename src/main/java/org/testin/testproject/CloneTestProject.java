@@ -94,7 +94,7 @@ public final class CloneTestProject {
         if (path.toLowerCase(Locale.ROOT).endsWith(".git")) path = path.substring(0, path.length() - ".git".length());
 
         final @NotNull String last = path.substring(Math.max(path.lastIndexOf('/'), path.lastIndexOf(':')) + 1);
-        return NodeType.TP.canTakeName(last) ? last : NameSanitizer.packageName(last);
+        return NodeType.TEST_PROJECT.canTakeName(last) ? last : NameSanitizer.packageName(last);
     }
 
     // UC-TREE-PANEL-003, Rule-TREE-PANEL-107, Rule-SHARE-062

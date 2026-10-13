@@ -31,7 +31,7 @@ import com.intellij.psi.codeStyle.CodeStyleManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.testin.codegen.Fqcn;
-import org.testin.codegen.GenType;
+import org.testin.codegen.CodeChangeType;
 import org.testin.java.codegen.GeneratedClass;
 import org.testin.java.codegen.GeneratedMethod;
 import org.testin.java.codegen.JavaLiteral;
@@ -78,16 +78,16 @@ public class BaseTestMethodChange {
         return GeneratedMethod.testAnnotationOf(testMethod);
     }
 
-    protected void updateAnnotationAttribute(final @NotNull PsiElementFactory factory, final @NotNull PsiAnnotation annotation, final @NotNull String attrName, final @NotNull String newValue) {
+    protected void updateAnnotationAttribute(final @NotNull PsiElementFactory factory, final @NotNull PsiAnnotation annotation, final @NotNull String attributeName, final @NotNull String newValue) {
         final @NotNull PsiAnnotation parsed = factory.createAnnotationFromText("@A(v = " + newValue + ")", annotation);
 
         final PsiAnnotationMemberValue value = parsed.findDeclaredAttributeValue("v");
         if (value == null) {
-            TestinLogger.warn("Could not read '" + newValue + "' as a value for " + attrName);
+            TestinLogger.warn("Could not read '" + newValue + "' as a value for " + attributeName);
             return;
         }
 
-        annotation.setDeclaredAttributeValue(attrName, value);
+        annotation.setDeclaredAttributeValue(attributeName, value);
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-012, Rule-CODEGEN-040
@@ -125,9 +125,9 @@ public class BaseTestMethodChange {
         else updateTestAnnotationAttribute(project, testMethod, "enabled", "false");
     }
 
-    protected void updateTestAnnotationAttribute(final @NotNull Project project, final @NotNull PsiMethod testMethod, final @NotNull String attrName, final @NotNull String newValue) {
+    protected void updateTestAnnotationAttribute(final @NotNull Project project, final @NotNull PsiMethod testMethod, final @NotNull String attributeName, final @NotNull String newValue) {
         getTestAnnotation(testMethod).ifPresentOrElse(testAnnotation ->
-                        updateAnnotationAttribute(JavaPsiFacade.getElementFactory(project), testAnnotation, attrName, newValue),
+                        updateAnnotationAttribute(JavaPsiFacade.getElementFactory(project), testAnnotation, attributeName, newValue),
                 () -> TestinLogger.warn("Update: method has no @Test annotation"));
     }
 
@@ -135,8 +135,8 @@ public class BaseTestMethodChange {
         CodeStyleManager.getInstance(project).reformat(element);
     }
 
-    protected void removeTestAnnotationAttribute(final @NotNull PsiMethod testMethod, final @NotNull String attrName) {
-        getTestAnnotation(testMethod).ifPresentOrElse(testAnnotation -> testAnnotation.setDeclaredAttributeValue(attrName, null),
+    protected void removeTestAnnotationAttribute(final @NotNull PsiMethod testMethod, final @NotNull String attributeName) {
+        getTestAnnotation(testMethod).ifPresentOrElse(testAnnotation -> testAnnotation.setDeclaredAttributeValue(attributeName, null),
                 () -> TestinLogger.warn("Update: method has no @Test annotation"));
     }
 
@@ -154,7 +154,7 @@ public class BaseTestMethodChange {
     protected void applyOrCreate(final @NotNull Project project, final @NotNull TestCaseDto testCase, final @NotNull String title, final @NotNull Consumer<PsiMethod> updater) {
         applyToMethod(project, testCase, title, updater, detail -> {
             TestinLogger.info("Writing the method for '" + testCase.getDescription() + "' now that it has a name: " + detail);
-            GenType.CREATE_TEST_CASE.execute(project, testCase);
+            CodeChangeType.CREATE_TEST_CASE.execute(project, testCase);
         });
     }
 

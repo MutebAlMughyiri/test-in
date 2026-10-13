@@ -51,7 +51,7 @@ import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
-public class FilterPopupBtn extends AbstractIconButton implements ToolbarItem {
+public class FilterPopupButton extends AbstractIconButton implements ToolbarItem {
     @Getter
     @NotNull
     private final Set<String> selectedGroup = new HashSet<>();
@@ -82,7 +82,7 @@ public class FilterPopupBtn extends AbstractIconButton implements ToolbarItem {
     @NotNull
     private final DefaultActionGroup cachedActionGroup;
 
-    public FilterPopupBtn(final @NotNull FilterSource source) {
+    public FilterPopupButton(final @NotNull FilterSource source) {
         super(Bundle.message("filter.button"), AllIcons.General.Filter);
         this.source = source;
 
@@ -141,9 +141,9 @@ public class FilterPopupBtn extends AbstractIconButton implements ToolbarItem {
             source.onToolBarFilterSelectionChanged();
         };
 
-        final @NotNull DefaultActionGroup filterResetBtn = new DefaultActionGroup();
+        final @NotNull DefaultActionGroup filterGroup = new DefaultActionGroup();
 
-        filterResetBtn.add(new DumbAwareAction(Bundle.message("filter.reset"), Bundle.message("filter.reset.description"), AllIcons.Actions.Cancel) {
+        filterGroup.add(new DumbAwareAction(Bundle.message("filter.reset"), Bundle.message("filter.reset.description"), AllIcons.Actions.Cancel) {
             // UC-EDITOR-PANEL-021, Rule-EDITOR-PANEL-099
             @Override
             public void update(final @NotNull AnActionEvent e) {
@@ -160,18 +160,18 @@ public class FilterPopupBtn extends AbstractIconButton implements ToolbarItem {
                 resetToolBarFilter();
             }
         });
-        filterResetBtn.addSeparator();
+        filterGroup.addSeparator();
 
         final @NotNull DefaultActionGroup filterPriorityMenu = new DefaultActionGroup(TestSetEditorFields.PRIORITY.getName(), true);
         Arrays.stream(Priority.values()).forEach(priority ->
                 filterPriorityMenu.add(new ToggleFilterAction<>(priority.getLabel(), Icons.dot(priority.getColor()),
                         priority, selectedPriority, FilterMembership.plain(), onChanged)));
-        filterResetBtn.add(filterPriorityMenu);
+        filterGroup.add(filterPriorityMenu);
 
         final @NotNull DefaultActionGroup filterAutomationMenu = new DefaultActionGroup(Bundle.message("filter.automation"), true);
         Automated.FILTERABLE.forEach(automated -> filterAutomationMenu.add(new ToggleFilterAction<>(automated.getLabel(), automated.getIcon(),
                 automated, selectedAutomation, FilterMembership.plain(), onChanged)));
-        filterResetBtn.add(filterAutomationMenu);
+        filterGroup.add(filterAutomationMenu);
 
         final @NotNull ActionGroup filterGroupMenu = new ActionGroup(TestSetEditorFields.GROUP.getName(), true) {
             // UC-EDITOR-PANEL-020, Rule-EDITOR-PANEL-095
@@ -188,7 +188,7 @@ public class FilterPopupBtn extends AbstractIconButton implements ToolbarItem {
                 return actions.toArray(new AnAction[0]);
             }
         };
-        filterResetBtn.add(filterGroupMenu);
+        filterGroup.add(filterGroupMenu);
 
         final @NotNull ActionGroup filterModuleMenu = new ActionGroup(TestSetEditorFields.MODULE.getName(), true) {
             // UC-EDITOR-PANEL-020, Rule-EDITOR-PANEL-095
@@ -205,24 +205,24 @@ public class FilterPopupBtn extends AbstractIconButton implements ToolbarItem {
                 return actions.toArray(new AnAction[0]);
             }
         };
-        filterResetBtn.add(filterModuleMenu);
+        filterGroup.add(filterModuleMenu);
 
         final @NotNull DefaultActionGroup filterTestCaseStatusMenu = new DefaultActionGroup(Bundle.message("filter.test.case.status"), true);
         Arrays.stream(TestCaseStatus.values()).forEach(status ->
                 filterTestCaseStatusMenu.add(new ToggleFilterAction<>(status.getLabel(), null,
                         status, selectedTestCaseStatus, FilterMembership.plain(), onChanged)));
-        filterResetBtn.add(filterTestCaseStatusMenu);
+        filterGroup.add(filterTestCaseStatusMenu);
 
-        filterResetBtn.add(submenu(Bundle.message("filter.run.item.status"), source::hasRunItemStatuses, Bundle.message("filter.run.only"), () -> Arrays.stream(RunItemStatus.values())
+        filterGroup.add(submenu(Bundle.message("filter.run.item.status"), source::hasRunItemStatuses, Bundle.message("filter.run.only"), () -> Arrays.stream(RunItemStatus.values())
                 .<AnAction>map(status -> new ToggleFilterAction<>(status.getLabel(), null, status, selectedStatus, FilterMembership.plain(), onChanged))
                 .toList()));
 
         // Rule-EDITOR-PANEL-260, Rule-TREE-PANEL-129
-        filterResetBtn.add(submenu(Bundle.message("filter.test.set"), source::holdsSeveralTestSets, Bundle.message("filter.test.set.one"), () -> source.getAvailableTestSets().entrySet().stream()
+        filterGroup.add(submenu(Bundle.message("filter.test.set"), source::holdsSeveralTestSets, Bundle.message("filter.test.set.one"), () -> source.getAvailableTestSets().entrySet().stream()
                 .<AnAction>map(testSet -> new ToggleFilterAction<>(testSet.getValue(), null, testSet.getKey(), selectedTestSet, FilterMembership.plain(), onChanged))
                 .toList()));
 
-        return filterResetBtn;
+        return filterGroup;
     }
 
     // UC-EDITOR-PANEL-020, Rule-EDITOR-PANEL-094

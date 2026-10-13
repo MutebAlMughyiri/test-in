@@ -25,7 +25,7 @@ import com.intellij.psi.PsiMethod;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.testin.codegen.CodeChange;
-import org.testin.codegen.GenType;
+import org.testin.codegen.CodeChangeType;
 import org.testin.java.codegen.GeneratedMethod;
 import org.testin.model.TestCaseDto;
 
@@ -54,7 +54,7 @@ public class ReconcileTestMethod extends BaseTestMethodChange implements CodeCha
         }
 
         final @NotNull Runnable inCommand = () ->
-                WriteCommandAction.runWriteCommandAction(project, GenType.RECONCILE_TEST_CASE.description(), null, () -> {
+                WriteCommandAction.runWriteCommandAction(project, CodeChangeType.RECONCILE_TEST_CASE.description(), null, () -> {
                     byClass.values().forEach(inClass -> rewrite(project, inClass));
                     new UpdateTestMethodOrder().executeAll(project, testCases);
                 });

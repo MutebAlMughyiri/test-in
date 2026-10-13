@@ -338,12 +338,12 @@ public final class ProjectIndexer {
     private boolean isListedTestProject(final @NotNull Path folder) {
         final boolean marked = isTestProjectFolder(folder);
         if (!marked)
-            TestinLogger.warn("Skipping directory without a " + NodeType.TP.getMarker() + " marker (not a test project): " + folder);
+            TestinLogger.warn("Skipping directory without a " + NodeType.TEST_PROJECT.getMarker() + " marker (not a test project): " + folder);
         return marked;
     }
 
     private boolean isTestProjectFolder(final @NotNull Path folder) {
-        return store.hasMarker(folder, NodeType.TP);
+        return store.hasMarker(folder, NodeType.TEST_PROJECT);
     }
 
     private void logSummary() {

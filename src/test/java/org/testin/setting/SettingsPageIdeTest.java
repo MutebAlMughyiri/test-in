@@ -145,7 +145,7 @@ public class SettingsPageIdeTest extends AbstractTempRootIdeTest {
         final @NotNull Path testProjectPath = root.resolve("test-02");
         try {
             Files.createDirectories(testProjectPath);
-            Files.writeString(testProjectPath.resolve(NodeType.TP.getMarker()), "{}");
+            Files.writeString(testProjectPath.resolve(NodeType.TEST_PROJECT.getMarker()), "{}");
         } catch (final IOException ex) {
             throw new AssertionError("Could not make the test project " + testProjectPath + ": " + ex.getMessage(), ex);
         }
@@ -159,7 +159,7 @@ public class SettingsPageIdeTest extends AbstractTempRootIdeTest {
     public void testTheFolderHoldingATestProjectIsTaken() {
         try {
             Files.createDirectories(root.resolve("test-02"));
-            Files.writeString(root.resolve("test-02").resolve(NodeType.TP.getMarker()), "{}");
+            Files.writeString(root.resolve("test-02").resolve(NodeType.TEST_PROJECT.getMarker()), "{}");
         } catch (final IOException ex) {
             throw new AssertionError("Could not make a test project under " + root + ": " + ex.getMessage(), ex);
         }

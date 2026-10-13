@@ -37,7 +37,7 @@ import org.testin.clipboard.PasteTestCaseAction;
 import org.testin.editor.grid.GridKeys;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.testrun.TestRunEditor;
-import org.testin.editor.toolbar.GridViewBtn;
+import org.testin.editor.toolbar.GridViewButton;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
@@ -96,7 +96,7 @@ public class KeyboardMenuIdeTest extends AbstractTempRootIdeTest {
     }
 
     private static @NotNull JBTable theGridOf(final @NotNull AbstractTestinEditor<?, ?> editor) {
-        editor.getToolBar().getToolbarItem(GridViewBtn.class).doClick();
+        editor.getToolBar().getToolbarItem(GridViewButton.class).doClick();
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
         return (JBTable) editor.getPreferredFocusedComponent();
     }

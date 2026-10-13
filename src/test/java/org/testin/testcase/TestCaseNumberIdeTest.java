@@ -71,7 +71,7 @@ public class TestCaseNumberIdeTest extends AbstractCodegenIdeTest {
     }
 
     private static void filteredTo(final @NotNull TestSetEditor editor, final @NotNull String query) {
-        editor.getToolBar().getSearchTxt().setText(query);
+        editor.getToolBar().getSearchText().setText(query);
         editor.onToolBarSearchValueChanged();
     }
 

@@ -36,7 +36,7 @@ public class BulkDescriptionIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestCaseDto first = described(login, "Logs in");
         final @NotNull TestCaseDto second = described(login, "Logs out");
 
-        GenType.UPDATE_TEST_CASE_DESCRIPTION.executeAllNow(getProject(), List.of(first, second));
+        CodeChangeType.UPDATE_TEST_CASE_DESCRIPTION.executeAllNow(getProject(), List.of(first, second));
 
         final @NotNull PsiClass written = generatedClass("nafath.LoginTest").orElseThrow();
         assertEquals("a test case filled in alongside another got no method", 1, written.findMethodsByName("logsIn", false).length);
@@ -47,10 +47,10 @@ public class BulkDescriptionIdeTest extends AbstractCodegenIdeTest {
     public void testAMethodAlreadyThereIsRenamedNotWrittenAgain() {
         final @NotNull TestSetNode login = createdTestSet("Login");
         final @NotNull TestCaseDto hasOne = described(login, "Logs in");
-        GenType.CREATE_TEST_CASE.executeAllNow(getProject(), List.of(hasOne));
+        CodeChangeType.CREATE_TEST_CASE.executeAllNow(getProject(), List.of(hasOne));
 
         hasOne.setDescription("Signs in");
-        GenType.UPDATE_TEST_CASE_DESCRIPTION.executeAllNow(getProject(), List.of(hasOne, described(login, "Logs out")));
+        CodeChangeType.UPDATE_TEST_CASE_DESCRIPTION.executeAllNow(getProject(), List.of(hasOne, described(login, "Logs out")));
 
         final @NotNull PsiClass written = generatedClass("nafath.LoginTest").orElseThrow();
         assertEquals("the method already there was not renamed", 1, written.findMethodsByName("signsIn", false).length);

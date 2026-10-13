@@ -23,7 +23,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.TestinDataKeys;
-import org.testin.codegen.GenType;
+import org.testin.codegen.CodeChangeType;
 import org.testin.editor.TestinEditor;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestSetNode;
@@ -53,7 +53,7 @@ public class CreateTestCaseAction extends AbstractAnyProjectAction {
 
                 ApplicationManager.getApplication().invokeLater(() -> {
                     Services.getInstance(project, Notifier.class).softShow(project, Done.CREATED);
-                    GenType.CREATE_TEST_CASE.execute(project, testCase);
+                    CodeChangeType.CREATE_TEST_CASE.execute(project, testCase);
                 });
             });
             Services.getInstance(project, TestCaseCompletions.class).addNewItems(affectedNodes);

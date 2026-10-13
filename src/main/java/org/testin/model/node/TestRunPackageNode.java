@@ -42,7 +42,7 @@ public class TestRunPackageNode extends AbstractNode {
 
     @Override
     public @NotNull NodeType getType() {
-        return NodeType.TRP;
+        return NodeType.TEST_RUN_PACKAGE;
     }
 
     @Override

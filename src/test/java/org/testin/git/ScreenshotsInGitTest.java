@@ -42,7 +42,7 @@ public class ScreenshotsInGitTest {
         try {
             final Path at = root.resolve("runs/cycle38");
             Files.createDirectories(at);
-            Files.writeString(at.resolve(NodeType.TR.getMarker()), "{}");
+            Files.writeString(at.resolve(NodeType.TEST_RUN.getMarker()), "{}");
         } catch (final Exception ex) {
             throw new AssertionError("could not write the test run's marker", ex);
         }

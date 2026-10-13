@@ -61,7 +61,7 @@ public final class TestCaseHistory {
                 .filter(testProject -> !git.isNotRepository(testProject))
                 .flatMap(testProject -> {
                     try {
-                        return git.log(testProject, "-1", "--format=", "--name-only", "--", BugHistory.pathspec(NodeType.TCF, FileKind.TEST_CASE, testCaseId)).lines()
+                        return git.log(testProject, "-1", "--format=", "--name-only", "--", BugHistory.pathspec(NodeType.TEST_CASES_FOLDER, FileKind.TEST_CASE, testCaseId)).lines()
                                 .filter(line -> !line.isBlank())
                                 .findFirst()
                                 .map(path -> new TestCaseFile(testProject, Path.of(path.strip())));

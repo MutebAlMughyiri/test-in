@@ -82,7 +82,7 @@ Two halves, and a pair of names must sit on the same half:
 |----------------------------------------|----------------------------------------------|
 | `TestCaseEditor`, `TestCaseToolbar`    | `TestSetEditor`, `TestSetToolbar`            |
 | `TestRunCard`, `TestRunListRenderer`   | `RunItemCard`, `RunItemCardRenderer`         |
-| `ListView`, `ListViewBtn`, `LIST_VIEW` | `CardView`, `CardViewBtn`, `CARD_VIEW`       |
+| `ListView`, `ListViewBtn`, `LIST_VIEW` | `CardView`, `CardViewButton`, `CARD_VIEW`    |
 | `TestRunItems`, `getResults()`         | `RunItem`, `getRunItems()`                   |
 | `bug.RunItem` (a test run and an id)   | `RunItemPath`                                |
 | `FailedResultDialog`                   | `FailureDetailDialog`                        |

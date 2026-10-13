@@ -40,8 +40,8 @@ import org.testin.editor.statusbar.PageAction;
 import org.testin.editor.statusbar.EditorStatusBar;
 import org.testin.editor.toolbar.AbstractToolbarPanel;
 import org.testin.editor.toolbar.ToolbarCallbacks;
-import org.testin.filter.FilterPopupBtn;
-import org.testin.filter.SortPopupBtn;
+import org.testin.filter.FilterPopupButton;
+import org.testin.filter.SortPopupButton;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.ProjectIndexer;
 import org.testin.indexer.TestCases;
@@ -220,7 +220,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
     // UC-EDITOR-PANEL-049, Rule-EDITOR-PANEL-280
     @Override
     public @NotNull String sortedBy() {
-        return getToolBar().getToolbarItem(SortPopupBtn.class).sortedBy();
+        return getToolBar().getToolbarItem(SortPopupButton.class).sortedBy();
     }
 
     protected @NotNull List<TestCaseDto> getCurrentPageItems() {
@@ -374,8 +374,8 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
     @Override
     public void onToolBarRefreshButtonClicked() {
         TestinLogger.debug("[refresh] clicked, currentView=" + getToolBar().getCurrentView());
-        getToolBar().getToolbarItem(FilterPopupBtn.class).clearFilters();
-        getToolBar().getToolbarItem(SortPopupBtn.class).reset();
+        getToolBar().getToolbarItem(FilterPopupButton.class).clearFilters();
+        getToolBar().getToolbarItem(SortPopupButton.class).reset();
 
         final @NotNull Done message = refreshed();
 

@@ -26,12 +26,12 @@ import org.testin.Said;
 import org.testin.editor.open.TestinEditors;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.testrun.TestRunEditor;
-import org.testin.editor.toolbar.GridViewBtn;
-import org.testin.editor.toolbar.RefreshBtn;
-import org.testin.editor.toolbar.TestSetFieldsPopupBtn;
-import org.testin.filter.FilterPopupBtn;
+import org.testin.editor.toolbar.GridViewButton;
+import org.testin.editor.toolbar.RefreshButton;
+import org.testin.editor.toolbar.TestSetFieldsPopupButton;
+import org.testin.filter.FilterPopupButton;
 import org.testin.filter.SortField;
-import org.testin.filter.SortPopupBtn;
+import org.testin.filter.SortPopupButton;
 import org.testin.filter.Sorting;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
@@ -57,7 +57,7 @@ import java.util.UUID;
 public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
 
     private static void pressRefresh(final @NotNull AbstractTestinEditor<?, ?> editor) {
-        editor.getToolBar().getToolbarItem(RefreshBtn.class).doClick();
+        editor.getToolBar().getToolbarItem(RefreshButton.class).doClick();
     }
 
     private static @NotNull List<String> shownDescriptions(final @NotNull AbstractTestinEditor<?, ?> editor) {
@@ -88,15 +88,15 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
         final @NotNull List<String> balloons = Said.listening(getProject(), getTestRootDisposable()).shown();
         final @NotNull TestCaseCompletions values = Services.getInstance(getProject(), TestCaseCompletions.class);
         try {
-            final @NotNull FilterPopupBtn filters = editor.getToolBar().getToolbarItem(FilterPopupBtn.class);
+            final @NotNull FilterPopupButton filters = editor.getToolBar().getToolbarItem(FilterPopupButton.class);
             filters.getSelectedPriority().add(Priority.HIGH);
             editor.onToolBarFilterSelectionChanged();
-            final @NotNull SortPopupBtn sort = editor.getToolBar().getToolbarItem(SortPopupBtn.class);
+            final @NotNull SortPopupButton sort = editor.getToolBar().getToolbarItem(SortPopupButton.class);
             Sorting.choose(sort, SortField.DESCRIPTION.getLabel());
-            editor.getToolBar().getSearchTxt().setText("Log in");
+            editor.getToolBar().getSearchText().setText("Log in");
             Await.until("the search never narrowed the list", () -> editor.getCurrentTestCases().size() == 1);
-            editor.getToolBar().getToolbarItem(GridViewBtn.class).doClick();
-            final @NotNull Set<TestSetEditorFields> fields = editor.getToolBar().getToolbarItem(TestSetFieldsPopupBtn.class).getSelectedDetails();
+            editor.getToolBar().getToolbarItem(GridViewButton.class).doClick();
+            final @NotNull Set<TestSetEditorFields> fields = editor.getToolBar().getToolbarItem(TestSetFieldsPopupButton.class).getSelectedDetails();
             Await.until("the group was never offered", () -> values.getGroups().contains(oldGroup));
 
             aTestCase(testSet, "Log in with a new user", "m0004", Priority.HIGH, newGroup);
@@ -108,11 +108,11 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
 
             Await.until("refresh did not read the new test case", () -> editor.getAllTestCases().size() == 4 && !editor.isLoading());
             assertEquals("refresh kept the filter or the sort, or threw the search away", List.of("Log in with a valid user", "Log in with a wrong password", "Log in with a new user"), shownDescriptions(editor));
-            assertEquals("refresh threw the search away", "Log in", editor.getToolBar().getSearchTxt().getText());
+            assertEquals("refresh threw the search away", "Log in", editor.getToolBar().getSearchText().getText());
             assertEquals("refresh kept the filter", Set.of(), filters.getSelectedPriority());
             assertEquals("refresh kept the sort", SortField.ORDER, sort.sortBy());
             assertEquals("refresh left the grid", ViewMode.GRID_VIEW, editor.getToolBar().getCurrentView());
-            assertEquals("refresh changed the fields shown", fields, editor.getToolBar().getToolbarItem(TestSetFieldsPopupBtn.class).getSelectedDetails());
+            assertEquals("refresh changed the fields shown", fields, editor.getToolBar().getToolbarItem(TestSetFieldsPopupButton.class).getSelectedDetails());
             Await.until("the group filter still offers a group no test case uses", () -> values.getGroups().contains(newGroup) && !values.getGroups().contains(oldGroup));
             Await.until("refresh did not say so", () -> balloons.contains(Done.REFRESHED.getOutcome()));
         } finally {
@@ -178,7 +178,7 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
         EditorFixtures.testCases(getProject(), testSet, 2);
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         try {
-            editor.getToolBar().getToolbarItem(GridViewBtn.class).doClick();
+            editor.getToolBar().getToolbarItem(GridViewButton.class).doClick();
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
             final @NotNull JBTable table = (JBTable) editor.getPreferredFocusedComponent();
             assertTrue("the cell did not open", table.editCellAt(0, table.getColumnCount() - 1) || table.editCellAt(0, 1));
@@ -203,7 +203,7 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestSetEditor editor = (TestSetEditor) editors.editorFor(testSet).orElseThrow();
         Await.until("the test set editor never loaded", () -> !editor.isLoading());
         try {
-            editor.getToolBar().getToolbarItem(GridViewBtn.class).doClick();
+            editor.getToolBar().getToolbarItem(GridViewButton.class).doClick();
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
             final @NotNull JBTable table = (JBTable) editor.getPreferredFocusedComponent();
             assertTrue("the cell did not open", table.editCellAt(0, table.getColumnCount() - 1) || table.editCellAt(0, 1));

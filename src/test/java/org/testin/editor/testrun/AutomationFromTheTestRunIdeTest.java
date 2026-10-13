@@ -26,7 +26,7 @@ import org.testin.Await;
 import org.testin.Gestures;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.card.TestCaseQuickAction;
-import org.testin.editor.toolbar.RefreshBtn;
+import org.testin.editor.toolbar.RefreshButton;
 import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestRuns;
@@ -196,7 +196,7 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
             TestCaseQuickAction.RUN_TEST_METHOD.executeFor(editor, testCases.getFirst());
             assertTrue(execution.isRunning(testCases.getFirst().getId()));
 
-            editor.getToolBar().getToolbarItem(RefreshBtn.class).doClick();
+            editor.getToolBar().getToolbarItem(RefreshButton.class).doClick();
             Await.until("refresh never finished", () -> editor.loadedRunItems().isPresent());
             editor.getList().setSelectedIndex(1);
             Gestures.press(getProject(), TestRunFixture.keyFor(editor, RunItemStatus.BLOCKED), editor.getList());

@@ -29,8 +29,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class SearchBoxIdeTest extends BasePlatformTestCase {
 
-    private @NotNull SearchTxt aSearchBox(final @NotNull Runnable onNarrow, final @NotNull Runnable onRelease) {
-        final @NotNull SearchTxt box = new SearchTxt(onNarrow, onRelease);
+    private @NotNull SearchText aSearchBox(final @NotNull Runnable onNarrow, final @NotNull Runnable onRelease) {
+        final @NotNull SearchText box = new SearchText(onNarrow, onRelease);
         Disposer.register(getTestRootDisposable(), box);
         return box;
     }
@@ -39,7 +39,7 @@ public class SearchBoxIdeTest extends BasePlatformTestCase {
     public void testTheListNarrowsThreeTenthsOfASecondAfterTheLastKeystroke() {
         final @NotNull AtomicInteger narrowed = new AtomicInteger();
         final @NotNull AtomicLong narrowedAt = new AtomicLong();
-        final @NotNull SearchTxt box = aSearchBox(() -> {
+        final @NotNull SearchText box = aSearchBox(() -> {
             narrowed.incrementAndGet();
             narrowedAt.set(System.nanoTime());
         }, () -> {
@@ -69,7 +69,7 @@ public class SearchBoxIdeTest extends BasePlatformTestCase {
     // Rule-EDITOR-PANEL-093
     public void testEscapeHandsTheKeyboardBackAndLeavesTheText() {
         final @NotNull AtomicInteger handedBack = new AtomicInteger();
-        final @NotNull SearchTxt box = aSearchBox(() -> {
+        final @NotNull SearchText box = aSearchBox(() -> {
         }, handedBack::incrementAndGet);
         box.setText("log in");
 

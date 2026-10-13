@@ -57,8 +57,8 @@ import java.util.UUID;
 
 public class FilterMenuIdeTest extends AbstractTempRootIdeTest {
 
-    private static @NotNull FilterPopupBtn filterOf(final @NotNull AbstractTestinEditor<?, ?> editor) {
-        return editor.getToolBar().getToolbarItem(FilterPopupBtn.class);
+    private static @NotNull FilterPopupButton filterOf(final @NotNull AbstractTestinEditor<?, ?> editor) {
+        return editor.getToolBar().getToolbarItem(FilterPopupButton.class);
     }
 
     private static @NotNull String textOf(final @NotNull AnAction action) {
@@ -69,7 +69,7 @@ public class FilterMenuIdeTest extends AbstractTempRootIdeTest {
         return MenuChildren.of(group);
     }
 
-    private static @NotNull List<String> entriesOf(final @NotNull FilterPopupBtn filter) {
+    private static @NotNull List<String> entriesOf(final @NotNull FilterPopupButton filter) {
         return childrenOf(filter.menu()).stream().skip(1).map(FilterMenuIdeTest::textOf).toList();
     }
 
@@ -78,13 +78,13 @@ public class FilterMenuIdeTest extends AbstractTempRootIdeTest {
                 .orElseThrow(() -> new AssertionError("no '" + text + "' in " + childrenOf(group).stream().map(FilterMenuIdeTest::textOf).toList()));
     }
 
-    private static void tick(final @NotNull FilterPopupBtn filter, final @NotNull String submenu, final @NotNull String value) {
+    private static void tick(final @NotNull FilterPopupButton filter, final @NotNull String submenu, final @NotNull String value) {
         final @NotNull AnAction toggle = entry((ActionGroup) entry(filter.menu(), submenu), value);
         ((ToggleAction) toggle).setSelected(TestActionEvent.createTestEvent(toggle), true);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
 
-    private static void reset(final @NotNull FilterPopupBtn filter) {
+    private static void reset(final @NotNull FilterPopupButton filter) {
         final @NotNull AnAction resetEntry = childrenOf(filter.menu()).getFirst();
         ActionUtil.performAction(resetEntry, TestActionEvent.createTestEvent(resetEntry));
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
@@ -97,7 +97,7 @@ public class FilterMenuIdeTest extends AbstractTempRootIdeTest {
     }
 
     private static void searchForNumberOne(final @NotNull AbstractTestinEditor<?, ?> editor) {
-        editor.getToolBar().getSearchTxt().setText("number 1");
+        editor.getToolBar().getSearchText().setText("number 1");
         Await.until("the search for 'number 1' never narrowed the list to 32", () -> editor.getCurrentTestCases().size() == 32);
     }
 
@@ -150,16 +150,16 @@ public class FilterMenuIdeTest extends AbstractTempRootIdeTest {
     public void testSevenThingsCanBeFilteredOnEachWhereItBelongs() {
         final @NotNull List<String> everywhere = List.of(TestSetEditorFields.PRIORITY.getName(), Bundle.message("filter.automation"), TestSetEditorFields.GROUP.getName(), TestSetEditorFields.MODULE.getName(), Bundle.message("filter.test.case.status"));
 
-        final @NotNull FilterPopupBtn inATestSet = filterOf(openedTestSet(3));
+        final @NotNull FilterPopupButton inATestSet = filterOf(openedTestSet(3));
         assertEquals("a test set editor does not filter on the priority, the automation, the group, the module and the status", everywhere, entriesOf(inATestSet).subList(0, everywhere.size()));
         assertFalse("the run item status works in a test set editor", enabled(entry(inATestSet.menu(), Bundle.message("filter.run.item.status"))));
         assertFalse("a test set editor offers to pick across test sets", enabled(entry(inATestSet.menu(), Bundle.message("filter.test.set"))));
 
-        final @NotNull FilterPopupBtn inATestRun = filterOf(openedTestRun(3));
+        final @NotNull FilterPopupButton inATestRun = filterOf(openedTestRun(3));
         assertEquals("a test run editor does not add the run item status to the five", Bundle.message("filter.run.item.status"), entriesOf(inATestRun).get(everywhere.size()));
 
         final @NotNull Path checkout = root.resolve("Checkout");
-        final @NotNull FilterPopupBtn inCreateTestRun = new FilterPopupBtn(new FilterSource() {
+        final @NotNull FilterPopupButton inCreateTestRun = new FilterPopupButton(new FilterSource() {
             @Override
             public boolean holdsSeveralTestSets() {
                 return true;
@@ -195,7 +195,7 @@ public class FilterMenuIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-097, Rule-EDITOR-PANEL-098
     public void testFilteringGoesBackToTheFirstPageAndTheButtonCountsTheFiltersOn() {
         final @NotNull TestSetEditor editor = openedTestSet(120);
-        final @NotNull FilterPopupBtn filter = filterOf(editor);
+        final @NotNull FilterPopupButton filter = filterOf(editor);
         onThirdPage(editor);
 
         tick(filter, TestSetEditorFields.PRIORITY.getName(), Priority.LOW.getLabel());
@@ -210,7 +210,7 @@ public class FilterMenuIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-099, Rule-EDITOR-PANEL-100
     public void testResetClearsEveryFilterAndLeavesTheSearchText() {
         final @NotNull TestRunEditor editor = openedTestRun(120);
-        final @NotNull FilterPopupBtn filter = filterOf(editor);
+        final @NotNull FilterPopupButton filter = filterOf(editor);
         searchForNumberOne(editor);
 
         tick(filter, TestSetEditorFields.PRIORITY.getName(), Priority.LOW.getLabel());
@@ -228,14 +228,14 @@ public class FilterMenuIdeTest extends AbstractTempRootIdeTest {
         assertTrue("Reset Filters left the module on", filter.getSelectedModule().isEmpty());
         assertTrue("Reset Filters left the run item status on", filter.getSelectedStatus().isEmpty());
         assertFalse("the button still counts filters after Reset Filters", filter.hasActiveFilters());
-        assertEquals("Reset Filters cleared the search text", "number 1", editor.getToolBar().getSearchTxt().getText());
+        assertEquals("Reset Filters cleared the search text", "number 1", editor.getToolBar().getSearchText().getText());
         assertEquals("the search stopped narrowing the list after Reset Filters", 32, editor.getCurrentTestCases().size());
     }
 
     // Rule-EDITOR-PANEL-009
     public void testFilteringSaysNothingAndATestCaseItHidesIsReportedRatherThanShown() {
         final @NotNull TestSetEditor editor = openedTestSet(6);
-        final @NotNull FilterPopupBtn filter = filterOf(editor);
+        final @NotNull FilterPopupButton filter = filterOf(editor);
         final @NotNull TestCaseDto hidden = editor.getAllTestCases().stream().filter(testCase -> testCase.getPriority() == Priority.LOW).findFirst().orElseThrow();
         final @NotNull Said balloons = Said.listening(getProject(), getTestRootDisposable());
 

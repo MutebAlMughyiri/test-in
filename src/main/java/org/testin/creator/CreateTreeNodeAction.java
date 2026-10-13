@@ -42,14 +42,14 @@ public class CreateTreeNodeAction extends AbstractAnyProjectAction {
     // UC-TREE-PANEL-007, Rule-TREE-PANEL-096
     private static @NotNull String whyNot(final @NotNull Optional<AbstractNode> selected) {
         if (selected.isEmpty()) {
-            return Bundle.message("create.node.why.select", NodeType.TCF.getMarkerKind(), NodeType.TRF.getMarkerKind(),
-                    NodeType.TSP.getMarkerKind(), NodeType.TRP.getMarkerKind());
+            return Bundle.message("create.node.why.select", NodeType.TEST_CASES_FOLDER.getMarkerKind(), NodeType.TEST_RUNS_FOLDER.getMarkerKind(),
+                    NodeType.TEST_SET_PACKAGE.getMarkerKind(), NodeType.TEST_RUN_PACKAGE.getMarkerKind());
         }
 
         final @NotNull AbstractNode node = selected.orElseThrow();
         if (node.canCreateChildren()) return CREATES;
 
-        return Bundle.message("create.node.why.holds", node.getType().getMarkerKind(), NodeType.TSP.getDescription(), NodeType.TRP.getDescription());
+        return Bundle.message("create.node.why.holds", node.getType().getMarkerKind(), NodeType.TEST_SET_PACKAGE.getDescription(), NodeType.TEST_RUN_PACKAGE.getDescription());
     }
 
     // UC-TREE-PANEL-007, UC-TREE-PANEL-009

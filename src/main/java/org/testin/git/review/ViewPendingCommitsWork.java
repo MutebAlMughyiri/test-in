@@ -259,7 +259,7 @@ public record ViewPendingCommitsWork(@NotNull Project project, @NotNull GitRepos
 
         final @NotNull List<String> names = completed.stream().map(TestRunNode::getName).toList();
         commits.commit(repoPath, Bundle.message("test.run.record.commit", Display.andJoin(names)), completed.stream()
-                .map(testRun -> repoPath.relativize(testRun.getPath().resolve(NodeType.TR.getMarker())).toString().replace('\\', '/'))
+                .map(testRun -> repoPath.relativize(testRun.getPath().resolve(NodeType.TEST_RUN.getMarker())).toString().replace('\\', '/'))
                 .collect(Collectors.toCollection(LinkedHashSet::new)));
     }
 

@@ -40,7 +40,7 @@ public class MarkerNotSavedIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestRunNode testRun = made.testRun(testProject.getTestRunsFolder(), "Cycle-1");
         Services.getInstance(getProject(), TestRuns.class).putRunItems(testRun.getPath(), new RunItems());
 
-        final @NotNull Path marker = testRun.getPath().resolve(NodeType.TR.getMarker());
+        final @NotNull Path marker = testRun.getPath().resolve(NodeType.TEST_RUN.getMarker());
         try {
             Files.delete(marker);
             Files.createDirectory(marker);

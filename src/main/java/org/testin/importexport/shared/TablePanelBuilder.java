@@ -101,15 +101,15 @@ public class TablePanelBuilder {
         );
 
         try {
-            final @NotNull TableColumn priorityCol = table.getColumn(TestSetEditorFields.PRIORITY.getName());
+            final @NotNull TableColumn priorityColumn = table.getColumn(TestSetEditorFields.PRIORITY.getName());
             final @NotNull ComboBox<String> priorityBox = new ComboBox<>();
             for (final Priority priority : Priority.values()) {
                 priorityBox.addItem(priority.getLabel());
             }
-            priorityCol.setCellEditor(new DefaultCellEditor(priorityBox));
+            priorityColumn.setCellEditor(new DefaultCellEditor(priorityBox));
 
-            final @NotNull TableColumn groupCol = table.getColumn(TestSetEditorFields.GROUP.getName());
-            groupCol.setCellEditor(new GroupMultiSelectEditor(project));
+            final @NotNull TableColumn groupColumn = table.getColumn(TestSetEditorFields.GROUP.getName());
+            groupColumn.setCellEditor(new GroupMultiSelectEditor(project));
         } catch (final IllegalArgumentException ex) {
             TestinLogger.error(FailureText.of(ex));
         }

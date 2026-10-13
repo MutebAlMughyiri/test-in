@@ -30,8 +30,8 @@ import org.testin.editor.grid.GridTables;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.editor.toolbar.AbstractToolbarPanel;
-import org.testin.editor.toolbar.GridViewBtn;
-import org.testin.editor.toolbar.SearchTxt;
+import org.testin.editor.toolbar.GridViewButton;
+import org.testin.editor.toolbar.SearchText;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
@@ -65,7 +65,7 @@ public class EditorSurfacesIdeTest extends AbstractTempRootIdeTest {
 
     private static void assertTheSearchFieldIsLastAndTakesWhatIsLeft(final @NotNull String editor, final @NotNull AbstractToolbarPanel toolbar) {
         laidOut(toolbar, 1400);
-        final @NotNull SearchTxt search = toolbar.getSearchTxt();
+        final @NotNull SearchText search = toolbar.getSearchText();
         final int wide = search.getWidth();
         for (final Component item : toolbar.getComponents()) {
             if (item.equals(search) || !item.isVisible()) continue;
@@ -136,7 +136,7 @@ public class EditorSurfacesIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestSetEditor editor = aTestSetEditor();
         final @NotNull JFrame frame = OnScreen.shown(editor.getComponent(), getTestRootDisposable());
         try {
-            editor.getToolBar().getToolbarItem(GridViewBtn.class).doClick();
+            editor.getToolBar().getToolbarItem(GridViewButton.class).doClick();
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
             final @NotNull JBTable grid = (JBTable) editor.getPreferredFocusedComponent();
             final int description = TestSetEditorFields.DESCRIPTION.column();

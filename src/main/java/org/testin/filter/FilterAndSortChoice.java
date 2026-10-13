@@ -29,15 +29,15 @@ import java.util.Set;
 public record FilterAndSortChoice(@NotNull String query, @NotNull Set<String> groups, @NotNull Set<Priority> priorities, @NotNull Set<String> modules, @NotNull Set<TestCaseStatus> testCaseStatuses, @NotNull Set<RunItemStatus> runItemStatuses, @NotNull Set<Automated> automation, @NotNull Set<Path> testSets, @NotNull SortField sortBy, @NotNull SortDirection direction) {
     // UC-EDITOR-PANEL-020, UC-EDITOR-PANEL-049
     public static @NotNull FilterAndSortChoice of(final @NotNull AbstractToolbarPanel toolBar) {
-        final @NotNull SortPopupBtn sort = toolBar.getToolbarItem(SortPopupBtn.class);
-        return of(toolBar.getToolbarItem(FilterPopupBtn.class), toolBar.getSearchTxt().getSearchQuery(), sort.sortBy(), sort.direction());
+        final @NotNull SortPopupButton sort = toolBar.getToolbarItem(SortPopupButton.class);
+        return of(toolBar.getToolbarItem(FilterPopupButton.class), toolBar.getSearchText().getSearchQuery(), sort.sortBy(), sort.direction());
     }
 
-    public static @NotNull FilterAndSortChoice of(final @NotNull FilterPopupBtn filters, final @NotNull String query) {
+    public static @NotNull FilterAndSortChoice of(final @NotNull FilterPopupButton filters, final @NotNull String query) {
         return of(filters, query, SortField.ORDER, SortDirection.ASCENDING);
     }
 
-    private static @NotNull FilterAndSortChoice of(final @NotNull FilterPopupBtn filters, final @NotNull String query, final @NotNull SortField sortBy, final @NotNull SortDirection direction) {
+    private static @NotNull FilterAndSortChoice of(final @NotNull FilterPopupButton filters, final @NotNull String query, final @NotNull SortField sortBy, final @NotNull SortDirection direction) {
         return new FilterAndSortChoice(
                 query,
                 filters.getSelectedGroup(),

@@ -32,7 +32,7 @@ import org.testin.util.Bundle;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SortPopupBtn extends AbstractIconButton implements ToolbarItem {
+public class SortPopupButton extends AbstractIconButton implements ToolbarItem {
     private final @NotNull Set<SortField> selectedSort = new HashSet<>(Set.of(SortField.ORDER));
 
     private final @NotNull Set<SortDirection> selectedDirection = new HashSet<>(Set.of(SortDirection.ASCENDING));
@@ -40,7 +40,7 @@ public class SortPopupBtn extends AbstractIconButton implements ToolbarItem {
     private final @NotNull DefaultActionGroup menu = new DefaultActionGroup();
 
     // UC-EDITOR-PANEL-049, Rule-EDITOR-PANEL-274, Rule-EDITOR-PANEL-276, Rule-EDITOR-PANEL-278
-    public SortPopupBtn(final @NotNull FilterSource source) {
+    public SortPopupButton(final @NotNull FilterSource source) {
         super(Bundle.message("sort.button"), AllIcons.ObjectBrowser.Sorted);
 
         final @NotNull Runnable onChanged = () -> {

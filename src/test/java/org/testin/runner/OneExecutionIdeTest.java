@@ -35,7 +35,7 @@ import org.testin.AbstractCodegenIdeTest;
 import org.testin.Await;
 import org.testin.Said;
 import org.testin.actions.TestinDataKeys;
-import org.testin.codegen.GenType;
+import org.testin.codegen.CodeChangeType;
 import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestSetNode;
@@ -169,7 +169,7 @@ public class OneExecutionIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestCaseDto third = indexedTestCase(login, "Lock the account", "d");
         final @NotNull TestCaseDto first = indexedTestCase(login, "Log in", "b");
         final @NotNull TestCaseDto second = indexedTestCase(login, "Log out", "c");
-        GenType.CREATE_TEST_CASE.executeAllNow(getProject(), List.of(third, first, second));
+        CodeChangeType.CREATE_TEST_CASE.executeAllNow(getProject(), List.of(third, first, second));
         settled();
 
         ExecuteTestCases.run(getProject(), theTestCases(List.of(third, second, first)));

@@ -162,8 +162,8 @@ final class LightModeFrame {
         return heightMotion;
     }
 
-    @NotNull TitleBarBtn pin() {
-        final @NotNull TitleBarBtn button = new TitleBarBtn(Bundle.message("light.pin"), AllIcons.General.Pin_tab);
+    @NotNull TitleBarButton pin() {
+        final @NotNull TitleBarButton button = new TitleBarButton(Bundle.message("light.pin"), AllIcons.General.Pin_tab);
 
         button.setOn(frame.isAlwaysOnTop());
         button.addActionListener(_ -> {

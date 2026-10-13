@@ -70,7 +70,7 @@ public final class Fonts {
 
 
     public static @NotNull Font panelCaption() {
-        return mono(panelSize(), LABEL);
+        return monospaced(panelSize(), LABEL);
     }
 
     public static @NotNull Font field() {
@@ -95,7 +95,7 @@ public final class Fonts {
     }
 
     public static @NotNull Font caption() {
-        return mono(dialogSize(), CAPTION);
+        return monospaced(dialogSize(), CAPTION);
     }
 
     public static @NotNull Font row() {
@@ -134,7 +134,7 @@ public final class Fonts {
         return JBUI.Fonts.label().getSize2D();
     }
 
-    private static @NotNull Font mono(final float base, final float delta) {
+    private static @NotNull Font monospaced(final float base, final float delta) {
         return UIUtil.getFontWithFallback(new Font(CAPTION_FAMILY, Font.PLAIN, 1)).deriveFont(sizeOn(base, delta));
     }
 

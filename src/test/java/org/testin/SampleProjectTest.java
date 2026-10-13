@@ -72,7 +72,7 @@ public class SampleProjectTest {
     }
 
     private static @NotNull List<Path> testRunFolders() {
-        return filesNamed(demo(), NodeType.TR.getMarker()).stream().map(Path::getParent).toList();
+        return filesNamed(demo(), NodeType.TEST_RUN.getMarker()).stream().map(Path::getParent).toList();
     }
 
     private static @NotNull List<Path> resultFilesIn(final @NotNull Path folder) {
@@ -115,20 +115,20 @@ public class SampleProjectTest {
 
     @Test
     public void everyMarkerInTheSampleParses() {
-        read(demo().resolve(NodeType.TP.getMarker()), TestProjectMarker.class);
+        read(demo().resolve(NodeType.TEST_PROJECT.getMarker()), TestProjectMarker.class);
 
-        for (final Path marker : filesNamed(demo(), NodeType.TS.getMarker())) {
+        for (final Path marker : filesNamed(demo(), NodeType.TEST_SET.getMarker())) {
             read(marker, TestSetMarker.class);
         }
 
-        for (final Path marker : filesNamed(demo(), NodeType.TR.getMarker())) {
+        for (final Path marker : filesNamed(demo(), NodeType.TEST_RUN.getMarker())) {
             read(marker, TestRunMarker.class);
         }
     }
 
     @Test
     public void theSampleCarriesThisBuildsFormat() {
-        assertEquals(read(demo().resolve(NodeType.TP.getMarker()), TestProjectMarker.class).getFormat(),
+        assertEquals(read(demo().resolve(NodeType.TEST_PROJECT.getMarker()), TestProjectMarker.class).getFormat(),
                 TestProjectMarker.FORMAT, "The sample says it is in another format than this build writes");
     }
 

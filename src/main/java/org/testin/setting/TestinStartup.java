@@ -57,9 +57,9 @@ public final class TestinStartup implements ProjectActivity {
 
         Services.getInstance(DeletedNodes.class).sweep();
 
-        CutState.initClipboardWatch(project);
+        CutState.startClipboardWatch(project);
 
-        ExecutionRecorder.initRecording(project);
+        ExecutionRecorder.startRecording(project);
     }
 
     // UC-SETTING-002, Rule-SETTING-014, Rule-SETTING-046

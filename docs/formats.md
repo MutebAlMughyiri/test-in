@@ -46,7 +46,7 @@ only thing that makes it one — the folder name is the node's name and carries 
 meaning beyond it.
 
 **The names `Test Cases` and `Test Runs` are fixed.** They are the folder
-names of `NodeType.TCF` and `NodeType.TRF` and a test project has
+names of `NodeType.TEST_CASES_FOLDER` and `NodeType.TEST_RUNS_FOLDER` and a test project has
 exactly one of each.
 
 ---

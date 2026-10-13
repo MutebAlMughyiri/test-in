@@ -97,21 +97,21 @@ public class NodeKindTablesTest {
     // Rule-TREE-PANEL-003, Rule-TREE-PANEL-043, Rule-TREE-PANEL-044
     @Test
     public void theTwoFamiliesNeverMix() {
-        assertTrue(NodeType.TCF.accepts(NodeType.TS), "a test set belongs under Test Cases");
-        assertTrue(NodeType.TSP.accepts(NodeType.TSP), "a package belongs in a package");
-        assertTrue(NodeType.TRF.accepts(NodeType.TR), "a test run belongs under Test Runs");
-        assertTrue(NodeType.TRP.accepts(NodeType.TR), "a test run belongs in a test run package");
+        assertTrue(NodeType.TEST_CASES_FOLDER.accepts(NodeType.TEST_SET), "a test set belongs under Test Cases");
+        assertTrue(NodeType.TEST_SET_PACKAGE.accepts(NodeType.TEST_SET_PACKAGE), "a package belongs in a package");
+        assertTrue(NodeType.TEST_RUNS_FOLDER.accepts(NodeType.TEST_RUN), "a test run belongs under Test Runs");
+        assertTrue(NodeType.TEST_RUN_PACKAGE.accepts(NodeType.TEST_RUN), "a test run belongs in a test run package");
 
-        assertFalse(NodeType.TCF.accepts(NodeType.TR), "a test run does not belong under Test Cases");
-        assertFalse(NodeType.TRF.accepts(NodeType.TS), "a test set does not belong under Test Runs");
-        assertFalse(NodeType.TSP.accepts(NodeType.TRP), "a test run package does not belong in a set package");
+        assertFalse(NodeType.TEST_CASES_FOLDER.accepts(NodeType.TEST_RUN), "a test run does not belong under Test Cases");
+        assertFalse(NodeType.TEST_RUNS_FOLDER.accepts(NodeType.TEST_SET), "a test set does not belong under Test Runs");
+        assertFalse(NodeType.TEST_SET_PACKAGE.accepts(NodeType.TEST_RUN_PACKAGE), "a test run package does not belong in a set package");
 
         for (final NodeType source : NodeType.values()) {
-            assertFalse(NodeType.TR.accepts(source), "a test run holds run items, so " + source + " cannot be dropped into it");
-            assertFalse(NodeType.TS.accepts(source), "a test set holds test cases, so " + source + " cannot be dropped into it");
-            assertFalse(NodeType.TP.accepts(source), "a test project holds its two containers, so " + source + " cannot be dropped into it");
+            assertFalse(NodeType.TEST_RUN.accepts(source), "a test run holds run items, so " + source + " cannot be dropped into it");
+            assertFalse(NodeType.TEST_SET.accepts(source), "a test set holds test cases, so " + source + " cannot be dropped into it");
+            assertFalse(NodeType.TEST_PROJECT.accepts(source), "a test project holds its two containers, so " + source + " cannot be dropped into it");
         }
 
-        assertFalse(NodeType.TR.acceptsAnything(), "a test run takes nothing, so the tree must not draw a drop highlight over one");
+        assertFalse(NodeType.TEST_RUN.acceptsAnything(), "a test run takes nothing, so the tree must not draw a drop highlight over one");
     }
 }

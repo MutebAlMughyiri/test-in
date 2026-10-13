@@ -55,11 +55,11 @@ public final class JsonCodec {
         }
     }
 
-    public @NotNull <T> T readValue(final byte @NotNull [] bytes, final @NotNull TypeReference<T> valueTypeRef) {
+    public @NotNull <T> T readValue(final byte @NotNull [] bytes, final @NotNull TypeReference<T> valueType) {
         try {
-            return mapper.readValue(bytes, valueTypeRef);
+            return mapper.readValue(bytes, valueType);
         } catch (final IOException ex) {
-            throw unreadable(valueTypeRef.getType().getTypeName(), ex);
+            throw unreadable(valueType.getType().getTypeName(), ex);
         }
     }
 
@@ -71,11 +71,11 @@ public final class JsonCodec {
         }
     }
 
-    public @NotNull <T> T readValue(final @NotNull String content, final @NotNull TypeReference<T> valueTypeRef) {
+    public @NotNull <T> T readValue(final @NotNull String content, final @NotNull TypeReference<T> valueType) {
         try {
-            return mapper.readValue(content, valueTypeRef);
+            return mapper.readValue(content, valueType);
         } catch (final JsonProcessingException ex) {
-            throw unreadable(valueTypeRef.getType().getTypeName(), ex);
+            throw unreadable(valueType.getType().getTypeName(), ex);
         }
     }
 

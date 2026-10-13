@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-package org.testin.editor.toolbar;
+package org.testin.lightmode;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.editor.testrun.ExecutionControl;
 import org.testin.ui.framework.AbstractIconButton;
 
-public class StopExecutionBtn extends AbstractIconButton implements ToolbarItem {
-    // UC-EDITOR-PANEL-035
-    public StopExecutionBtn(final @NotNull Runnable onStopExecutionClicked) {
-        super(ExecutionControl.STOP.getLabel(), ExecutionControl.STOP.getIcon());
+import javax.swing.Icon;
 
-        addActionListener(_ -> onStopExecutionClicked.run());
+class TitleBarButton extends AbstractIconButton {
+    TitleBarButton(final @NotNull String tooltip, final @NotNull Icon icon) {
+        super(tooltip, icon);
     }
 }

@@ -129,7 +129,7 @@ public abstract class AbstractTestCaseDialog extends AbstractFrameworkDialog {
                 .findFirst();
     }
 
-    protected void initDynamicStatusBar(final @NotNull JComponent parentPanel) {
+    protected void installDynamicStatusBar(final @NotNull JComponent parentPanel) {
         focusListener = e -> Optional.ofNullable((Component) e.getNewValue())
                 .filter(focusOwner -> UIUtil.isDescendingFrom(focusOwner, parentPanel))
                 .flatMap(this::sectionHolding)

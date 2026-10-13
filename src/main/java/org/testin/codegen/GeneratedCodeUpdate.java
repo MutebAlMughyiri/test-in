@@ -52,7 +52,7 @@ public enum GeneratedCodeUpdate implements CodeUpdate {
 
     // UC-CODEGEN-019, Rule-CODEGEN-005
     @Override
-    public <T> void execute(final @NotNull GenType<T> type, final @NotNull Project project, final @NotNull T payload) {
+    public <T> void execute(final @NotNull CodeChangeType<T> type, final @NotNull Project project, final @NotNull T payload) {
         if (cannotGenerate(project, type.description())) return;
 
         CodeChangeRegistry.find(type).execute(project, payload);
@@ -60,7 +60,7 @@ public enum GeneratedCodeUpdate implements CodeUpdate {
 
     // UC-CODEGEN-019, Rule-CODEGEN-005, Rule-EDITOR-PANEL-046
     @Override
-    public <T> void executeAll(final @NotNull GenType<T> type, final @NotNull Project project, final @NotNull List<? extends T> payloads, final @NotNull String undoGroup) {
+    public <T> void executeAll(final @NotNull CodeChangeType<T> type, final @NotNull Project project, final @NotNull List<? extends T> payloads, final @NotNull String undoGroup) {
         if (cannotGenerate(project, type.description()) || payloads.isEmpty()) return;
 
         WriteCommandAction.runWriteCommandAction(project, type.description(), undoGroup,

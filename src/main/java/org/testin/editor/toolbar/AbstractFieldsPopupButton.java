@@ -35,7 +35,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public abstract class AbstractFieldsPopupBtn<E extends Enum<E> & ShowableField> extends AbstractIconButton implements ToolbarItem {
+public abstract class AbstractFieldsPopupButton<E extends Enum<E> & ShowableField> extends AbstractIconButton implements ToolbarItem {
     protected static final @NotNull String FIELDS = Bundle.message("toolbar.fields");
 
     @Getter
@@ -46,7 +46,7 @@ public abstract class AbstractFieldsPopupBtn<E extends Enum<E> & ShowableField> 
 
     private final @NotNull AtomicBoolean refreshQueued = new AtomicBoolean();
 
-    protected AbstractFieldsPopupBtn(final @NotNull String tooltip, final @NotNull String propertyKey, final @NotNull Class<E> fieldType, final @NotNull Runnable onToolBarDetailsSelectedChanged) {
+    protected AbstractFieldsPopupButton(final @NotNull String tooltip, final @NotNull String propertyKey, final @NotNull Class<E> fieldType, final @NotNull Runnable onToolBarDetailsSelectedChanged) {
         super(tooltip, AllIcons.Actions.Selectall);
 
         this.propertyKey = propertyKey;

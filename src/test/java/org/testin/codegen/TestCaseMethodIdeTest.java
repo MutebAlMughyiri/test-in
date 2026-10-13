@@ -84,7 +84,7 @@ public class TestCaseMethodIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestCaseDto testCase = indexedTestCase(login, "Log in with a valid user", "b");
         testCase.setPriority(Priority.HIGH);
 
-        GenType.CREATE_TEST_CASE.execute(getProject(), testCase);
+        CodeChangeType.CREATE_TEST_CASE.execute(getProject(), testCase);
 
         final @NotNull String annotation = writtenMethodOf(LOGIN_TEST, testCase).getModifierList().getText();
         assertEquals("the test case's High was written as the execution position", "1", attributeOf(writtenMethodOf(LOGIN_TEST, testCase), "priority"));

@@ -16,16 +16,17 @@
 
 package org.testin.editor.toolbar;
 
+import com.intellij.icons.AllIcons;
 import org.jetbrains.annotations.NotNull;
-import org.testin.editor.ShownFields;
-import org.testin.testcase.TestSetEditorFields;
+import org.testin.actions.Declared;
+import org.testin.ui.framework.AbstractIconButton;
+import org.testin.util.Bundle;
 
-public class TestSetFieldsPopupBtn extends AbstractFieldsPopupBtn<TestSetEditorFields> {
-    // UC-EDITOR-PANEL-003, Rule-EDITOR-PANEL-022
-    public TestSetFieldsPopupBtn(final @NotNull Runnable onToolBarDetailsSelectedChanged) {
-        super(FIELDS,
-                ShownFields.IN_TEST_SETS,
-                TestSetEditorFields.class,
-                onToolBarDetailsSelectedChanged);
+public class CreateTestCaseButton extends AbstractIconButton implements ToolbarItem {
+    // UC-EDITOR-PANEL-005
+    public CreateTestCaseButton(final @NotNull Runnable onToolBarCreateTestCaseClicked) {
+        super(Bundle.message("action.Testin.CreateTestCase.text"), AllIcons.General.Add, Declared.shortcutText("Testin.CreateTestCase"));
+
+        addActionListener(_ -> onToolBarCreateTestCaseClicked.run());
     }
 }

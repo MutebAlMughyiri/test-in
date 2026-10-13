@@ -65,7 +65,7 @@ public class EditorStatusBar extends JBPanel<EditorStatusBar> {
 
     private final @NotNull JBLabel automatedLabel = new JBLabel();
 
-    private final @NotNull Map<PageStep, PageBtn> pageButtons = new EnumMap<>(PageStep.class);
+    private final @NotNull Map<PageStep, PageButton> pageButtons = new EnumMap<>(PageStep.class);
 
     private final @NotNull JBLabel currentPageLabel = new JBLabel(Bundle.message("statusbar.page.of", "1", "1"));
 
@@ -110,7 +110,7 @@ public class EditorStatusBar extends JBPanel<EditorStatusBar> {
         // Rule-INTERNAL-122
         pageSizeField.getAccessibleContext().setAccessibleName(pageSize);
 
-        for (final PageStep step : PageStep.values()) pageButtons.put(step, new PageBtn(step));
+        for (final PageStep step : PageStep.values()) pageButtons.put(step, new PageButton(step));
 
         navigationRow = centeredRow(button(PageStep.FIRST), button(PageStep.PREVIOUS), currentPageLabel,
                 button(PageStep.NEXT), button(PageStep.LAST));
@@ -263,7 +263,7 @@ public class EditorStatusBar extends JBPanel<EditorStatusBar> {
         pageButtons.forEach((step, button) -> button.setEnabled(step.isAvailable(currentPage, totalPages)));
     }
 
-    public @NotNull PageBtn button(final @NotNull PageStep step) {
+    public @NotNull PageButton button(final @NotNull PageStep step) {
         return Objects.requireNonNull(pageButtons.get(step), step.name());
     }
 

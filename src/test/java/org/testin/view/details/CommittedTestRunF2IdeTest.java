@@ -38,12 +38,12 @@ public class CommittedTestRunF2IdeTest extends AbstractReadTheRootIdeTest {
     // UC-VIEW-PANEL-011, Rule-VIEW-PANEL-110
     public void testF2OnARunItemOfACommittedTestRunChangesNothingAndSaysWhere() {
         final @NotNull Path testProjectPath = aTestProjectAt(root.resolve("Shop"));
-        final @NotNull Path testSet = marked(theTestCasesOf(testProjectPath).resolve("Login"), NodeType.TS);
+        final @NotNull Path testSet = marked(theTestCasesOf(testProjectPath).resolve("Login"), NodeType.TEST_SET);
         final @NotNull UUID testCaseId = aTestCaseIn(testSet);
         final @NotNull Path testRun = theTestRunsOf(testProjectPath).resolve("Cycle 4");
         try {
             Files.createDirectories(testRun);
-            Files.writeString(testRun.resolve(NodeType.TR.getMarker()), """
+            Files.writeString(testRun.resolve(NodeType.TEST_RUN.getMarker()), """
                     {
                       "createdBy" : "Sara",
                       "createdAt" : "Friday 28-08-2026 At 01:12:47 [Asia/Riyadh]",
@@ -65,7 +65,7 @@ public class CommittedTestRunF2IdeTest extends AbstractReadTheRootIdeTest {
     // UC-VIEW-PANEL-011, Rule-VIEW-PANEL-110
     public void testF2OnADeletedTestCaseChangesNothingAndSaysWhy() {
         final @NotNull Path testProjectPath = aTestProjectAt(root.resolve("Shop"));
-        final @NotNull Path login = marked(theTestCasesOf(testProjectPath).resolve("Login"), NodeType.TS);
+        final @NotNull Path login = marked(theTestCasesOf(testProjectPath).resolve("Login"), NodeType.TEST_SET);
         final @NotNull UUID testCaseId = aTestCaseIn(login);
         try {
             Files.delete(login.resolve(FileKind.TEST_CASE.fileName(testCaseId)));

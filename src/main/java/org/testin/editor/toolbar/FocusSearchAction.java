@@ -25,18 +25,18 @@ import org.testin.util.Shortcuts;
 import javax.swing.JComponent;
 
 public class FocusSearchAction extends DumbAwareAction {
-    private final @NotNull SearchTxt searchTxt;
+    private final @NotNull SearchText searchText;
 
-    public FocusSearchAction(final @NotNull SearchTxt searchTxt, final @NotNull JComponent scope) {
+    public FocusSearchAction(final @NotNull SearchText searchText, final @NotNull JComponent scope) {
         super(Bundle.message("toolbar.focus.search"));
-        this.searchTxt = searchTxt;
+        this.searchText = searchText;
         registerCustomShortcutSet(Shortcuts.FocusSearch.getCustomShortcut(), scope);
     }
 
     // UC-EDITOR-PANEL-019
     @Override
     public void actionPerformed(final @NotNull AnActionEvent e) {
-        searchTxt.getTextEditor().requestFocusInWindow();
-        searchTxt.getTextEditor().selectAll();
+        searchText.getTextEditor().requestFocusInWindow();
+        searchText.getTextEditor().selectAll();
     }
 }

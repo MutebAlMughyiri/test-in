@@ -43,32 +43,32 @@ public final class NodeCode {
     public static @NotNull NodeCode of(final @NotNull NodeType type) {
         final @NotNull String nodeType = type.getDescription();
         return switch (type) {
-            case TP -> new NodeCode(
+            case TEST_PROJECT -> new NodeCode(
                     new NoCodeChange<>(nodeType),
-                    GenType.RENAME_TEST_PROJECT::execute,
+                    CodeChangeType.RENAME_TEST_PROJECT::execute,
                     new NoCodeChange<>(nodeType),
-                    GenType.REMOVE_TEST_PROJECT::execute
+                    CodeChangeType.REMOVE_TEST_PROJECT::execute
             );
 
-            case TCF, TRF, TRP, TR -> new NodeCode(
+            case TEST_CASES_FOLDER, TEST_RUNS_FOLDER, TEST_RUN_PACKAGE, TEST_RUN -> new NodeCode(
                     new NoCodeChange<>(nodeType),
                     new NoCodeChange<>(nodeType),
                     new NoCodeChange<>(nodeType),
                     new NoCodeChange<>(nodeType)
             );
 
-            case TSP -> new NodeCode(
+            case TEST_SET_PACKAGE -> new NodeCode(
                     new NoCodeChange<>(nodeType),
-                    GenType.RENAME_TEST_SET_PACKAGE::execute,
-                    GenType.MOVE_TEST_SET_PACKAGE::execute,
-                    GenType.REMOVE_TEST_SET_PACKAGE::execute
+                    CodeChangeType.RENAME_TEST_SET_PACKAGE::execute,
+                    CodeChangeType.MOVE_TEST_SET_PACKAGE::execute,
+                    CodeChangeType.REMOVE_TEST_SET_PACKAGE::execute
             );
 
-            case TS -> new NodeCode(
-                    GenType.CREATE_TEST_SET::execute,
-                    GenType.RENAME_TEST_SET::execute,
-                    GenType.MOVE_TEST_SET::execute,
-                    GenType.REMOVE_TEST_SET::execute
+            case TEST_SET -> new NodeCode(
+                    CodeChangeType.CREATE_TEST_SET::execute,
+                    CodeChangeType.RENAME_TEST_SET::execute,
+                    CodeChangeType.MOVE_TEST_SET::execute,
+                    CodeChangeType.REMOVE_TEST_SET::execute
             );
         };
     }

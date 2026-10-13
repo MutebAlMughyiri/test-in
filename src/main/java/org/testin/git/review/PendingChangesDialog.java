@@ -18,7 +18,7 @@ package org.testin.git.review;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.codegen.GenType;
+import org.testin.codegen.CodeChangeType;
 import org.testin.git.change.ChangeSubject;
 import org.testin.git.change.ChangeType;
 import org.testin.git.change.FieldChange;
@@ -74,7 +74,7 @@ public final class PendingChangesDialog extends AbstractFrameworkDialog {
 
         final @NotNull DialogPart<SelectionTable> table = DialogPart.table()
                 .column(Bundle.message("dialog.pending.column.change.type"), 150)
-                .column(NodeType.TS.getDescription(), 150)
+                .column(NodeType.TEST_SET.getDescription(), 150)
                 .column(Bundle.message("caption.name"), 240)
                 .column(Bundle.message("dialog.pending.column.before"), 180)
                 .column(Bundle.message("dialog.pending.column.after"), 180)
@@ -185,7 +185,7 @@ public final class PendingChangesDialog extends AbstractFrameworkDialog {
     private boolean removeNewTestCase(final @NotNull Path testSetPath, final @NotNull UUID testCaseId, final @NotNull TestCaseSnapshot before) {
         if (!testCases.removeTestCase(testSetPath, testCaseId)) return false;
 
-        GenType.REMOVE_TEST_CASE.executeAll(project, before.present());
+        CodeChangeType.REMOVE_TEST_CASE.executeAll(project, before.present());
         return true;
     }
 

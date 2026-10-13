@@ -106,7 +106,7 @@ public class TestRunNode extends AbstractNode {
 
     @Override
     public @NotNull NodeType getType() {
-        return NodeType.TR;
+        return NodeType.TEST_RUN;
     }
 
     @Override

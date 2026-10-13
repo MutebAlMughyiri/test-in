@@ -24,10 +24,10 @@ import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.TestinEditor;
-import org.testin.editor.toolbar.GridViewBtn;
+import org.testin.editor.toolbar.GridViewButton;
 import org.testin.filter.SortDirection;
 import org.testin.filter.SortField;
-import org.testin.filter.SortPopupBtn;
+import org.testin.filter.SortPopupButton;
 import org.testin.filter.Sorting;
 import org.testin.indexer.TestCases;
 import org.testin.model.Priority;
@@ -104,7 +104,7 @@ public class DragToReorderIdeTest extends AbstractTempRootIdeTest {
         assertTrue("the cards cannot be dragged", editor.getList().getDragEnabled());
         assertTrue("the cards take no drop", editor.getList().getTransferHandler() instanceof TestCaseTransferHandler);
 
-        editor.getToolBar().getToolbarItem(GridViewBtn.class).doClick();
+        editor.getToolBar().getToolbarItem(GridViewButton.class).doClick();
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
         final @NotNull JBTable grid = Drawn.components(editor.getComponent()).stream().filter(JBTable.class::isInstance).map(JBTable.class::cast).findFirst().orElseThrow();
 
@@ -127,7 +127,7 @@ public class DragToReorderIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-059
     public void testACardLandsUnderTheVisibleCardItWasDroppedOnAndHiddenOnesMoveDown() {
         final @NotNull TestSetEditor editor = aTestSetOf("Keep A", "Hide B", "Hide C", "Keep D", "Keep E");
-        editor.getToolBar().getSearchTxt().setText("keep");
+        editor.getToolBar().getSearchText().setText("keep");
         Await.until("the search never hid the two test cases", () -> editor.getList().getModel().getSize() == 3);
 
         assertTrue("the drop was refused", drag(editor, new int[]{2}, 1));
@@ -186,7 +186,7 @@ public class DragToReorderIdeTest extends AbstractTempRootIdeTest {
         }
         editor.onToolBarRefreshButtonClicked();
         Await.until("the editor never read the new priorities", () -> !editor.isLoading() && editor.getAllTestCases().stream().filter(testCase -> testCase.getPriority() == Priority.HIGH).count() == 2);
-        final @NotNull SortPopupBtn sort = editor.getToolBar().getToolbarItem(SortPopupBtn.class);
+        final @NotNull SortPopupButton sort = editor.getToolBar().getToolbarItem(SortPopupButton.class);
         Sorting.choose(sort, SortField.PRIORITY.getLabel());
         Sorting.choose(sort, SortDirection.DESCENDING.getLabel());
         Await.until("the sort never put the high ones first", () -> editor.getCurrentTestCases().stream().map(TestCaseDto::getDescription).toList().equals(List.of("B", "D", "A", "C")));

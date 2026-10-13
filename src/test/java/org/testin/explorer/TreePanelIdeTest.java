@@ -110,7 +110,7 @@ public class TreePanelIdeTest extends AbstractReadTheRootIdeTest {
     public void testThePanelShowsOnlyTheBoundTestProjectAndNoTestCase() {
         final @NotNull Path checkout = aTestProjectAt(root.resolve("Checkout"));
         aTestProjectAt(root.resolve("Payments"));
-        aTestCaseIn(marked(theTestCasesOf(checkout).resolve("Login"), NodeType.TS));
+        aTestCaseIn(marked(theTestCasesOf(checkout).resolve("Login"), NodeType.TEST_SET));
         readEverything();
         bound().choose("Checkout");
 
@@ -146,7 +146,7 @@ public class TreePanelIdeTest extends AbstractReadTheRootIdeTest {
     // Rule-TREE-PANEL-064
     public void testAnInactiveTestProjectIsOpenedAndBoundAndHoldsNothing() {
         final @NotNull Path checkout = aTestProjectAt(root.resolve("Checkout"));
-        aTestCaseIn(marked(theTestCasesOf(checkout).resolve("Login"), NodeType.TS));
+        aTestCaseIn(marked(theTestCasesOf(checkout).resolve("Login"), NodeType.TEST_SET));
         readEverything();
         final @NotNull TestProjectNode testProject = (TestProjectNode) nodes().find(checkout).orElseThrow();
         WriteAction.runAndWait(() -> {

@@ -28,7 +28,7 @@ import org.testin.Said;
 import org.testin.actions.TestinEscapeAction;
 import org.testin.clipboard.CutState;
 import org.testin.editor.testset.TestSetEditor;
-import org.testin.editor.toolbar.GridViewBtn;
+import org.testin.editor.toolbar.GridViewButton;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
@@ -155,7 +155,7 @@ public class DetailsPanelAndStepBackIdeTest extends AbstractTempRootIdeTest {
             pressEnterOn(editor);
             cutState().cut(editor, List.of(createdTestCases.getFirst()));
 
-            editor.getToolBar().getToolbarItem(GridViewBtn.class).doClick();
+            editor.getToolBar().getToolbarItem(GridViewButton.class).doClick();
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
             final @NotNull JBTable table = (JBTable) editor.getPreferredFocusedComponent();
             final int column = editableColumnOf(table);
@@ -185,7 +185,7 @@ public class DetailsPanelAndStepBackIdeTest extends AbstractTempRootIdeTest {
             frame.add(editor.getComponent());
             frame.setSize(800, 600);
             frame.setVisible(true);
-            final @NotNull JTextField search = editor.getToolBar().getSearchTxt().getTextEditor();
+            final @NotNull JTextField search = editor.getToolBar().getSearchText().getTextEditor();
             search.setText("number 2");
             search.requestFocus();
             Await.until("the search box never took the keyboard", search::isFocusOwner);

@@ -83,8 +83,8 @@ public class TestRunFormFilterIdeTest extends AbstractTempRootIdeTest {
         return testCase;
     }
 
-    private @NotNull FilterPopupBtn button() {
-        return Drawn.first(filter.getSelection().getPanel(), FilterPopupBtn.class);
+    private @NotNull FilterPopupButton button() {
+        return Drawn.first(filter.getSelection().getPanel(), FilterPopupButton.class);
     }
 
     private @NotNull List<AnAction> menu() {

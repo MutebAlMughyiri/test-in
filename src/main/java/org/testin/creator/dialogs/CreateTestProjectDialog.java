@@ -43,7 +43,7 @@ public final class CreateTestProjectDialog extends AbstractFrameworkDialog {
         title = Bundle.message("dialog.create.project.title");
 
         final @NotNull DialogPart<TextInput> built = DialogPart.textInput()
-                .icon(NodeType.TP.getIcon())
+                .icon(NodeType.TEST_PROJECT.getIcon())
                 .placeholder(Bundle.message("dialog.create.project.placeholder"))
                 .build();
         nameInput = built.getComponent();
@@ -56,7 +56,7 @@ public final class CreateTestProjectDialog extends AbstractFrameworkDialog {
 
     // UC-TREE-PANEL-002, UC-TREE-PANEL-003, Rule-TREE-PANEL-095, Rule-TREE-PANEL-107
     private static boolean isNameOrUrl(final @NotNull String typed) {
-        return GitRemotes.isRepositoryUrl(typed) || NodeType.TP.canTakeName(typed);
+        return GitRemotes.isRepositoryUrl(typed) || NodeType.TEST_PROJECT.canTakeName(typed);
     }
 
     // UC-TREE-PANEL-002, Rule-TREE-PANEL-005, Rule-TREE-PANEL-095

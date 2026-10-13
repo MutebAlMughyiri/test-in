@@ -22,7 +22,7 @@ import com.intellij.psi.PsiClass;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.Fqcn;
 import org.testin.codegen.CodeChange;
-import org.testin.codegen.GenType;
+import org.testin.codegen.CodeChangeType;
 import org.testin.codegen.event.RenamedNode;
 import org.testin.java.codegen.GeneratedClass;
 import org.testin.logger.TestinLogger;
@@ -40,7 +40,7 @@ public class RenameJavaClass implements CodeChange<RenamedNode> {
         if (fqcn.isEmpty()) return;
         final @NotNull String path = String.join(".", fqcn);
 
-        WriteCommandAction.runWriteCommandAction(project, GenType.RENAME_TEST_SET.description(), null, () -> {
+        WriteCommandAction.runWriteCommandAction(project, CodeChangeType.RENAME_TEST_SET.description(), null, () -> {
             final @NotNull Optional<PsiClass> found = GeneratedClass.byName(project, path);
             if (found.isEmpty()) {
                 TestinLogger.warn("RenameJavaClass: class not found: " + path);

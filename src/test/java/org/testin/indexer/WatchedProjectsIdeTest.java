@@ -62,7 +62,7 @@ public class WatchedProjectsIdeTest extends AbstractTempRootIdeTest {
         assertTrue("a test project with its marker was not read again", nodes().nodeExists(project));
 
         try {
-            Files.delete(project.resolve(NodeType.TP.getMarker()));
+            Files.delete(project.resolve(NodeType.TEST_PROJECT.getMarker()));
         } catch (final IOException ex) {
             throw new AssertionError("could not remove the marker", ex);
         }

@@ -40,7 +40,7 @@ public class ReadProblemsIdeTest extends AbstractReadTheRootIdeTest {
     // UC-INTERNAL-002, Rule-INTERNAL-124
     public void testAReadThatFailsPartWayIsSaidIsNotCountedAndIsReadAgainNextTime() {
         final @NotNull Path testRuns = theTestRunsOf(project());
-        final @NotNull UUID testCase = aTestCaseIn(marked(theTestCasesOf(project()).resolve("Login"), NodeType.TS));
+        final @NotNull UUID testCase = aTestCaseIn(marked(theTestCasesOf(project()).resolve("Login"), NodeType.TEST_SET));
         TempTree.delete(testRuns);
         SyntheticTree.write(testRuns, "a file where the test runs folder should be");
 
@@ -49,10 +49,10 @@ public class ReadProblemsIdeTest extends AbstractReadTheRootIdeTest {
         Await.until("a read that failed part-way said nothing", () -> !said(Bundle.message("indexer.failed.title", PROJECT)).isEmpty());
 
         assertFalse("a read that failed part-way was counted as read", indexer().isIndexed());
-        assertTrue("the failure did not say which folder could not be read: " + said(Bundle.message("indexer.failed.title", PROJECT)), names(said(Bundle.message("indexer.failed.title", PROJECT)), NodeType.TRF.getFolderName()));
+        assertTrue("the failure did not say which folder could not be read: " + said(Bundle.message("indexer.failed.title", PROJECT)), names(said(Bundle.message("indexer.failed.title", PROJECT)), NodeType.TEST_RUNS_FOLDER.getFolderName()));
 
         TempTree.delete(testRuns);
-        marked(testRuns, NodeType.TRF);
+        marked(testRuns, NodeType.TEST_RUNS_FOLDER);
         Await.until("the test project was not read again on the next request", () -> {
             indexer().indexWithProgress();
             return indexer().isIndexed();
@@ -62,7 +62,7 @@ public class ReadProblemsIdeTest extends AbstractReadTheRootIdeTest {
 
     // UC-INTERNAL-002, Rule-INTERNAL-014
     public void testOneTestCaseThatCannotBeReadDoesNotStopTheRest() {
-        final @NotNull Path testSet = marked(theTestCasesOf(project()).resolve("Login"), NodeType.TS);
+        final @NotNull Path testSet = marked(theTestCasesOf(project()).resolve("Login"), NodeType.TEST_SET);
         final @NotNull UUID first = aTestCaseIn(testSet);
         final @NotNull UUID second = aTestCaseIn(testSet);
         SyntheticTree.write(testSet.resolve(FileKind.TEST_CASE.fileName(UUID.randomUUID())), "{ this is not a test case");
@@ -77,7 +77,7 @@ public class ReadProblemsIdeTest extends AbstractReadTheRootIdeTest {
     // UC-INTERNAL-002, Rule-INTERNAL-014
     public void testANodeWhoseMarkerWillNotParseIsDrawnAndNamedByItsPlace() {
         final @NotNull Path testSet = theTestCasesOf(project()).resolve("Login");
-        SyntheticTree.write(testSet.resolve(NodeType.TS.getMarker()), "{ this is not a marker");
+        SyntheticTree.write(testSet.resolve(NodeType.TEST_SET.getMarker()), "{ this is not a marker");
         final @NotNull UUID testCase = aTestCaseIn(testSet);
 
         readEverything();
@@ -104,8 +104,8 @@ public class ReadProblemsIdeTest extends AbstractReadTheRootIdeTest {
 
     // UC-INTERNAL-002, Rule-INTERNAL-082
     public void testTwoTestCaseFilesClaimingOneIdentityAreReported() {
-        final @NotNull Path login = marked(theTestCasesOf(project()).resolve("Login"), NodeType.TS);
-        final @NotNull Path signUp = marked(theTestCasesOf(project()).resolve("Sign up"), NodeType.TS);
+        final @NotNull Path login = marked(theTestCasesOf(project()).resolve("Login"), NodeType.TEST_SET);
+        final @NotNull Path signUp = marked(theTestCasesOf(project()).resolve("Sign up"), NodeType.TEST_SET);
         final @NotNull UUID shared = aTestCaseIn(login);
         SyntheticTree.write(signUp.resolve(FileKind.TEST_CASE.fileName(shared)), SyntheticTree.testCase(shared, "m"));
 
@@ -118,7 +118,7 @@ public class ReadProblemsIdeTest extends AbstractReadTheRootIdeTest {
 
     // UC-INTERNAL-002, Rule-INTERNAL-094
     public void testARunItemNotNamedByATestCaseIdIsNotReadAndIsNamed() {
-        final @NotNull Path testRun = marked(theTestRunsOf(project()).resolve("Cycle 1"), NodeType.TR);
+        final @NotNull Path testRun = marked(theTestRunsOf(project()).resolve("Cycle 1"), NodeType.TEST_RUN);
         final @NotNull UUID named = UUID.randomUUID();
         final @NotNull UUID handNamed = UUID.randomUUID();
         resultIn(testRun, FileKind.RUN_ITEM.fileName(named), named);

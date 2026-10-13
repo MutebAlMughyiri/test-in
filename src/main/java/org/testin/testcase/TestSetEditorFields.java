@@ -23,7 +23,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.Fqcn;
-import org.testin.codegen.GenType;
+import org.testin.codegen.CodeChangeType;
 import org.testin.importexport.imports.ImportSetter;
 import org.testin.model.Groups;
 import org.testin.model.TestCaseDto;
@@ -59,7 +59,7 @@ public enum TestSetEditorFields implements ShowableField {
             FieldDefault.STRUCTURE,
             _ -> "",
             (_, testCase, _) -> Optional.of(testCase),
-            GenType.NO_CODE_CHANGE
+            CodeChangeType.NO_CODE_CHANGE
     ) {
         @Override
         public void applyToUI(final @NotNull TestCaseDto testCase, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
@@ -71,7 +71,7 @@ public enum TestSetEditorFields implements ShowableField {
             FieldDefault.ON,
             _ -> "",
             (_, testCase, _) -> Optional.of(testCase),
-            GenType.NO_CODE_CHANGE
+            CodeChangeType.NO_CODE_CHANGE
     ) {
         @Override
         public void applyToUI(final @NotNull TestCaseDto testCase, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
@@ -83,7 +83,7 @@ public enum TestSetEditorFields implements ShowableField {
             FieldDefault.LOCKED_CHECKED,
             TestCaseDto::getDescription,
             always((draft, value) -> draft.description(NameSanitizer.description(value))),
-            GenType.UPDATE_TEST_CASE_DESCRIPTION,
+            CodeChangeType.UPDATE_TEST_CASE_DESCRIPTION,
             Can.EDIT, Can.IMPORT, Can.COPY, Can.EXPORT
     ) {
         @Override
@@ -96,7 +96,7 @@ public enum TestSetEditorFields implements ShowableField {
             FieldDefault.OFF,
             testCase -> String.valueOf(testCase.getId()),
             (_, testCase, _) -> Optional.of(testCase),
-            GenType.NO_CODE_CHANGE,
+            CodeChangeType.NO_CODE_CHANGE,
             Can.EXPORT
     ),
 
@@ -105,7 +105,7 @@ public enum TestSetEditorFields implements ShowableField {
             FieldDefault.ON,
             TestCaseDto::getExpectedResult,
             always(TestCaseDtoBuilder::expectedResult),
-            GenType.UPDATE_TEST_CASE_EXPECTED_RESULT,
+            CodeChangeType.UPDATE_TEST_CASE_EXPECTED_RESULT,
             Can.EDIT, Can.IMPORT, Can.COPY, Can.EXPORT
     ),
 
@@ -114,7 +114,7 @@ public enum TestSetEditorFields implements ShowableField {
             FieldDefault.OFF,
             testCase -> String.join(", ", testCase.getSteps()),
             always((draft, value) -> draft.steps(TestCaseFieldParser.steps(value))),
-            GenType.UPDATE_TEST_CASE_STEPS,
+            CodeChangeType.UPDATE_TEST_CASE_STEPS,
             Can.EDIT, Can.IMPORT, Can.COPY, Can.EXPORT
     ),
 
@@ -123,7 +123,7 @@ public enum TestSetEditorFields implements ShowableField {
             FieldDefault.ON,
             testCase -> testCase.getPriority().getLabel(),
             (_, testCase, value) -> TestCaseFieldParser.priority(value, testCase.getPriority()).map(priority -> testCase.edit().priority(priority).build()),
-            GenType.UPDATE_TEST_CASE_PRIORITY,
+            CodeChangeType.UPDATE_TEST_CASE_PRIORITY,
             Can.EDIT, Can.IMPORT, Can.COPY, Can.EXPORT
     ) {
         @Override
@@ -136,7 +136,7 @@ public enum TestSetEditorFields implements ShowableField {
             FieldDefault.OFF,
             testCase -> String.join(" > ", Fqcn.ofMethod(testCase)),
             (_, testCase, _) -> Optional.of(testCase),
-            GenType.NO_CODE_CHANGE,
+            CodeChangeType.NO_CODE_CHANGE,
             Can.EXPORT
     ),
 
@@ -145,7 +145,7 @@ public enum TestSetEditorFields implements ShowableField {
             FieldDefault.OFF,
             TestCaseDto::getReference,
             always(TestCaseDtoBuilder::reference),
-            GenType.NO_CODE_CHANGE,
+            CodeChangeType.NO_CODE_CHANGE,
             Can.EDIT, Can.IMPORT, Can.COPY, Can.EXPORT
     ),
 
@@ -154,7 +154,7 @@ public enum TestSetEditorFields implements ShowableField {
             FieldDefault.OFF,
             TestCaseDto::getTestData,
             always(TestCaseDtoBuilder::testData),
-            GenType.UPDATE_TEST_CASE_TEST_DATA,
+            CodeChangeType.UPDATE_TEST_CASE_TEST_DATA,
             Can.EDIT, Can.IMPORT, Can.COPY, Can.EXPORT
     ),
 
@@ -163,7 +163,7 @@ public enum TestSetEditorFields implements ShowableField {
             FieldDefault.OFF,
             TestCaseDto::getPreConditions,
             always(TestCaseDtoBuilder::preConditions),
-            GenType.UPDATE_TEST_CASE_PRE_CONDITIONS,
+            CodeChangeType.UPDATE_TEST_CASE_PRE_CONDITIONS,
             Can.EDIT, Can.IMPORT, Can.COPY, Can.EXPORT
     ),
 
@@ -172,7 +172,7 @@ public enum TestSetEditorFields implements ShowableField {
             FieldDefault.ON,
             testCase -> Groups.text(testCase.getGroups()),
             (_, testCase, value) -> TestCaseFieldParser.groups(value).map(groups -> testCase.edit().groups(groups).build()),
-            GenType.UPDATE_TEST_CASE_GROUP,
+            CodeChangeType.UPDATE_TEST_CASE_GROUP,
             Can.EDIT, Can.IMPORT, Can.COPY, Can.EXPORT
     ) {
         @Override
@@ -186,7 +186,7 @@ public enum TestSetEditorFields implements ShowableField {
             FieldDefault.OFF,
             testCase -> String.join(" > ", testCase.getParent().treePath()),
             (_, testCase, _) -> Optional.of(testCase),
-            GenType.NO_CODE_CHANGE,
+            CodeChangeType.NO_CODE_CHANGE,
             Can.EXPORT
     ),
 
@@ -195,7 +195,7 @@ public enum TestSetEditorFields implements ShowableField {
             FieldDefault.OFF,
             TestCaseDto::getModule,
             always(TestCaseDtoBuilder::module),
-            GenType.UPDATE_TEST_CASE_MODULE,
+            CodeChangeType.UPDATE_TEST_CASE_MODULE,
             Can.EDIT, Can.IMPORT, Can.COPY, Can.EXPORT
     ),
 
@@ -204,7 +204,7 @@ public enum TestSetEditorFields implements ShowableField {
             FieldDefault.OFF,
             testCase -> testCase.getStatus().getLabel(),
             (_, testCase, value) -> TestCaseFieldParser.testCaseStatus(value, testCase.getStatus()).map(status -> testCase.edit().status(status).build()),
-            GenType.UPDATE_TEST_CASE_STATUS,
+            CodeChangeType.UPDATE_TEST_CASE_STATUS,
             Can.EDIT, Can.COPY, Can.EXPORT
     ),
 
@@ -213,7 +213,7 @@ public enum TestSetEditorFields implements ShowableField {
             FieldDefault.OFF,
             TestCaseDto::getCreatedBy,
             always(TestCaseDtoBuilder::createdBy),
-            GenType.NO_CODE_CHANGE,
+            CodeChangeType.NO_CODE_CHANGE,
             Can.IMPORT, Can.EXPORT
     ),
 
@@ -222,7 +222,7 @@ public enum TestSetEditorFields implements ShowableField {
             FieldDefault.OFF,
             TestCaseDto::getUpdatedBy,
             always(TestCaseDtoBuilder::updatedBy),
-            GenType.NO_CODE_CHANGE,
+            CodeChangeType.NO_CODE_CHANGE,
             Can.IMPORT, Can.EXPORT
     ),
 
@@ -231,7 +231,7 @@ public enum TestSetEditorFields implements ShowableField {
             FieldDefault.OFF,
             testCase -> Display.formatDate(testCase.getCreatedAt()),
             (_, testCase, value) -> TestCaseFieldParser.date(value).map(at -> testCase.edit().createdAt(at).build()),
-            GenType.NO_CODE_CHANGE,
+            CodeChangeType.NO_CODE_CHANGE,
             Can.IMPORT, Can.EXPORT
     ),
 
@@ -240,7 +240,7 @@ public enum TestSetEditorFields implements ShowableField {
             FieldDefault.OFF,
             testCase -> Display.formatDate(testCase.getUpdatedAt()),
             (_, testCase, value) -> TestCaseFieldParser.date(value).map(at -> testCase.edit().updatedAt(at).build()),
-            GenType.NO_CODE_CHANGE,
+            CodeChangeType.NO_CODE_CHANGE,
             Can.IMPORT, Can.EXPORT
     );
 
@@ -255,16 +255,16 @@ public enum TestSetEditorFields implements ShowableField {
     private final @NotNull FieldDefault toolBarDefault;
     private final @NotNull Function<TestCaseDto, String> testValueExtractor;
     private final @NotNull ImportSetter importSetter;
-    private final @NotNull GenType<TestCaseDto> genType;
+    private final @NotNull CodeChangeType<TestCaseDto> codeChangeType;
     @Getter(AccessLevel.NONE)
     private final @NotNull ImmutableSet<Can> can;
 
-    TestSetEditorFields(final @NotNull String name, final @NotNull FieldDefault toolBarDefault, final @NotNull Function<TestCaseDto, String> testValueExtractor, final @NotNull ImportSetter importSetter, final @NotNull GenType<TestCaseDto> genType, final @NotNull Can... can) {
+    TestSetEditorFields(final @NotNull String name, final @NotNull FieldDefault toolBarDefault, final @NotNull Function<TestCaseDto, String> testValueExtractor, final @NotNull ImportSetter importSetter, final @NotNull CodeChangeType<TestCaseDto> codeChangeType, final @NotNull Can... can) {
         this.name = name;
         this.toolBarDefault = toolBarDefault;
         this.testValueExtractor = testValueExtractor;
         this.importSetter = importSetter;
-        this.genType = genType;
+        this.codeChangeType = codeChangeType;
         this.can = Sets.immutableEnumSet(List.of(can));
     }
 

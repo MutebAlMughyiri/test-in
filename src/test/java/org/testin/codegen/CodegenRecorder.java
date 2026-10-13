@@ -43,7 +43,7 @@ public final class CodegenRecorder implements CodeChangeRegistry {
         return recorder;
     }
 
-    public static @NotNull String step(final @NotNull GenType<?> type, final @NotNull String name) {
+    public static @NotNull String step(final @NotNull CodeChangeType<?> type, final @NotNull String name) {
         return type.description() + ": " + name;
     }
 
@@ -62,7 +62,7 @@ public final class CodegenRecorder implements CodeChangeRegistry {
     }
 
     @Override
-    public <T> @NotNull CodeChange<T> actionFor(final @NotNull GenType<T> type) {
+    public <T> @NotNull CodeChange<T> actionFor(final @NotNull CodeChangeType<T> type) {
         final @NotNull CodeChange<T> action = real.actionFor(type);
 
         return new CodeChange<>() {

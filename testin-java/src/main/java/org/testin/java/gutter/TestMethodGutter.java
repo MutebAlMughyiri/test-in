@@ -82,8 +82,8 @@ public class TestMethodGutter extends RelatedItemLineMarkerProvider implements D
     }
 
     // UC-CODEGEN-007, Rule-CODEGEN-069
-    private static void refuseMissingTestCase(final @NotNull Project project, final @NotNull UUID uuid, final @NotNull String methodName) {
-        TestinLogger.info("No test case behind " + methodName + ": " + uuid);
+    private static void refuseMissingTestCase(final @NotNull Project project, final @NotNull UUID testCaseId, final @NotNull String methodName) {
+        TestinLogger.info("No test case behind " + methodName + ": " + testCaseId);
 
         ApplicationManager.getApplication().invokeLater(() ->
                 Services.getInstance(project, Notifier.class).softRefuse(project, Refused.NO_TEST_CASE_BEHIND_IT, methodName));
@@ -115,8 +115,8 @@ public class TestMethodGutter extends RelatedItemLineMarkerProvider implements D
     }
 
     // UC-CODEGEN-007, Rule-CODEGEN-030, Rule-CODEGEN-069
-    private void openViewPanel(final @NotNull Project project, final @NotNull UUID uuid, final @NotNull String methodName) {
-        TestinLogger.info("Searching for UUID: " + uuid);
+    private void openViewPanel(final @NotNull Project project, final @NotNull UUID testCaseId, final @NotNull String methodName) {
+        TestinLogger.info("Searching for UUID: " + testCaseId);
 
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             try {
@@ -124,14 +124,14 @@ public class TestMethodGutter extends RelatedItemLineMarkerProvider implements D
                 final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
                 indexer.awaitIndexing();
 
-                testCases.findTestCase(uuid).ifPresentOrElse(
+                testCases.findTestCase(testCaseId).ifPresentOrElse(
                         node -> {
                             TestinLogger.info("Found in indexer: " + node.getDescription());
 
                             ApplicationManager.getApplication().invokeLater(() ->
                                     ViewToolWindowFactory.showPanel(project, List.of(node), node.getParent().treePath(), ViewPanel::focusDetailsTab));
                         },
-                        () -> refuseMissingTestCase(project, uuid, methodName));
+                        () -> refuseMissingTestCase(project, testCaseId, methodName));
 
             } catch (final Exception ex) {
                 TestinLogger.error("Could not open the test case behind this mark: " + FailureText.of(ex));

@@ -39,7 +39,7 @@ public class AdoptByDescriptionIdeTest extends AbstractCodegenIdeTest {
         });
 
         final @NotNull TestCaseDto testCase = TestCaseDto.builder().parent(login).description("Log in with a valid user").build();
-        GenType.CREATE_TEST_CASE.executeAllNow(getProject(), List.of(testCase));
+        CodeChangeType.CREATE_TEST_CASE.executeAllNow(getProject(), List.of(testCase));
 
         final @NotNull PsiClass after = generatedClass("nafath.LoginTest").orElseThrow();
         assertEquals("a stub was written beside the tester's own method", 1, after.getMethods().length);

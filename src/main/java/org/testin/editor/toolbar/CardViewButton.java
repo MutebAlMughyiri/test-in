@@ -18,15 +18,14 @@ package org.testin.editor.toolbar;
 
 import com.intellij.icons.AllIcons;
 import org.jetbrains.annotations.NotNull;
-import org.testin.actions.Declared;
 import org.testin.ui.framework.AbstractIconButton;
 import org.testin.util.Bundle;
 
-public class CreateTestCaseBtn extends AbstractIconButton implements ToolbarItem {
-    // UC-EDITOR-PANEL-005
-    public CreateTestCaseBtn(final @NotNull Runnable onToolBarCreateTestCaseClicked) {
-        super(Bundle.message("action.Testin.CreateTestCase.text"), AllIcons.General.Add, Declared.shortcutText("Testin.CreateTestCase"));
+public class CardViewButton extends AbstractIconButton implements ToolbarItem {
+    // UC-EDITOR-PANEL-002, Rule-EDITOR-PANEL-016
+    public CardViewButton(final @NotNull Runnable onSwitchToList) {
+        super(Bundle.message("toolbar.card.view"), AllIcons.General.LayoutEditorOnly);
 
-        addActionListener(_ -> onToolBarCreateTestCaseClicked.run());
+        addActionListener(_ -> onSwitchToList.run());
     }
 }

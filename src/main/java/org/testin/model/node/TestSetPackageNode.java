@@ -47,7 +47,7 @@ public class TestSetPackageNode extends AbstractNode {
 
     @Override
     public @NotNull NodeType getType() {
-        return NodeType.TSP;
+        return NodeType.TEST_SET_PACKAGE;
     }
 
     @Override

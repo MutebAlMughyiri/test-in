@@ -76,7 +76,7 @@ public class FieldsPopupIdeTest extends BasePlatformTestCase {
 
     // Rule-EDITOR-PANEL-023
     public void testDescriptionIsAlwaysShownOrderCanBeSwitchedOffAndIdOn() {
-        final @NotNull TestSetFieldsPopupBtn button = new TestSetFieldsPopupBtn(() -> {
+        final @NotNull TestSetFieldsPopupButton button = new TestSetFieldsPopupButton(() -> {
         });
         final @NotNull CheckBoxList<TestSetEditorFields> fields = button.fieldList(() -> {
         });
@@ -100,7 +100,7 @@ public class FieldsPopupIdeTest extends BasePlatformTestCase {
 
     // Rule-EDITOR-PANEL-272
     public void testTheGridNumberIsNotAFieldToChoose() {
-        final @NotNull CheckBoxList<TestSetEditorFields> fields = new TestSetFieldsPopupBtn(() -> {
+        final @NotNull CheckBoxList<TestSetEditorFields> fields = new TestSetFieldsPopupButton(() -> {
         }).fieldList(() -> {
         });
 
@@ -113,7 +113,7 @@ public class FieldsPopupIdeTest extends BasePlatformTestCase {
     // Rule-EDITOR-PANEL-024
     public void testABurstOfTicksCostsOneRedraw() {
         final @NotNull AtomicInteger redraws = new AtomicInteger();
-        final @NotNull TestSetFieldsPopupBtn button = new TestSetFieldsPopupBtn(redraws::incrementAndGet);
+        final @NotNull TestSetFieldsPopupButton button = new TestSetFieldsPopupButton(redraws::incrementAndGet);
         final @NotNull CheckBoxList<TestSetEditorFields> fields = button.fieldList(redraws::incrementAndGet);
         drawn(fields);
 

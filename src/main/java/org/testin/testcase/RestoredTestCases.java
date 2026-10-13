@@ -18,7 +18,7 @@ package org.testin.testcase;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.codegen.GenType;
+import org.testin.codegen.CodeChangeType;
 import org.testin.model.TestCaseDto;
 
 import java.util.ArrayList;
@@ -30,10 +30,10 @@ record RestoredTestCases(@NotNull List<TestCaseDto> removed, @NotNull List<TestC
     }
 
     void generate(final @NotNull Project project) {
-        if (!removed.isEmpty()) GenType.REMOVE_TEST_CASE.executeAll(project, removed);
-        if (!comingBack.isEmpty()) GenType.CREATE_TEST_CASE.executeAll(project, comingBack);
+        if (!removed.isEmpty()) CodeChangeType.REMOVE_TEST_CASE.executeAll(project, removed);
+        if (!comingBack.isEmpty()) CodeChangeType.CREATE_TEST_CASE.executeAll(project, comingBack);
 
         // UC-CODEGEN-002, Rule-CODEGEN-068
-        if (!landed.isEmpty()) GenType.RECONCILE_TEST_CASE.executeAll(project, landed);
+        if (!landed.isEmpty()) CodeChangeType.RECONCILE_TEST_CASE.executeAll(project, landed);
     }
 }

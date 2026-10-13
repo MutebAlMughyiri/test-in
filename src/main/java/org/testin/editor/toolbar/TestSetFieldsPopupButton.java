@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package org.testin.lightmode;
+package org.testin.editor.toolbar;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.editor.toolbar.AbstractFieldsPopupBtn;
-import org.testin.util.Bundle;
+import org.testin.editor.ShownFields;
+import org.testin.testcase.TestSetEditorFields;
 
-class ViewMenuBtn extends AbstractFieldsPopupBtn<LightModePart> {
-    ViewMenuBtn(final @NotNull Runnable onChanged) {
-        super(Bundle.message("light.view.menu"),
-                "testin.lightMode.parts.v3",
-                LightModePart.class,
-                onChanged);
+public class TestSetFieldsPopupButton extends AbstractFieldsPopupButton<TestSetEditorFields> {
+    // UC-EDITOR-PANEL-003, Rule-EDITOR-PANEL-022
+    public TestSetFieldsPopupButton(final @NotNull Runnable onToolBarDetailsSelectedChanged) {
+        super(FIELDS,
+                ShownFields.IN_TEST_SETS,
+                TestSetEditorFields.class,
+                onToolBarDetailsSelectedChanged);
     }
 }

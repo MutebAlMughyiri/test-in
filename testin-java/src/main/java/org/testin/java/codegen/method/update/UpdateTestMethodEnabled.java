@@ -19,7 +19,7 @@ package org.testin.java.codegen.method.update;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.CodeChange;
-import org.testin.codegen.GenType;
+import org.testin.codegen.CodeChangeType;
 import org.testin.model.TestCaseDto;
 
 import java.util.List;
@@ -28,7 +28,7 @@ public class UpdateTestMethodEnabled extends BaseTestMethodChange implements Cod
     // UC-CODEGEN-013, Rule-CODEGEN-047, Rule-CODEGEN-048
     @Override
     public void execute(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
-        applyUpdate(project, testCase, GenType.UPDATE_TEST_CASE_STATUS.description(), testMethod -> {
+        applyUpdate(project, testCase, CodeChangeType.UPDATE_TEST_CASE_STATUS.description(), testMethod -> {
             writeEnabled(project, testMethod, testCase);
             reformat(project, testMethod);
         });
@@ -36,6 +36,6 @@ public class UpdateTestMethodEnabled extends BaseTestMethodChange implements Cod
 
     @Override
     public void executeAll(final @NotNull Project project, final @NotNull List<? extends TestCaseDto> testCases) {
-        applyToEach(project, testCases, GenType.UPDATE_TEST_CASE_STATUS.description(), (testMethod, testCase) -> writeEnabled(project, testMethod, testCase));
+        applyToEach(project, testCases, CodeChangeType.UPDATE_TEST_CASE_STATUS.description(), (testMethod, testCase) -> writeEnabled(project, testMethod, testCase));
     }
 }

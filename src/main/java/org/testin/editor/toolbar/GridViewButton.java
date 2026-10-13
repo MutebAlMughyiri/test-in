@@ -16,16 +16,16 @@
 
 package org.testin.editor.toolbar;
 
+import com.intellij.icons.AllIcons;
 import org.jetbrains.annotations.NotNull;
-import org.testin.editor.ShownFields;
-import org.testin.testrun.TestRunEditorFields;
+import org.testin.ui.framework.AbstractIconButton;
+import org.testin.util.Bundle;
 
-public class TestRunFieldsPopupBtn extends AbstractFieldsPopupBtn<TestRunEditorFields> {
-    // UC-EDITOR-PANEL-003, Rule-EDITOR-PANEL-022
-    public TestRunFieldsPopupBtn(final @NotNull Runnable onToolBarDetailsSelectedChanged) {
-        super(FIELDS,
-                ShownFields.IN_TEST_RUNS,
-                TestRunEditorFields.class,
-                onToolBarDetailsSelectedChanged);
+public class GridViewButton extends AbstractIconButton implements ToolbarItem {
+    // UC-EDITOR-PANEL-002, Rule-EDITOR-PANEL-002
+    public GridViewButton(final @NotNull Runnable onSwitchToGrid) {
+        super(Bundle.message("toolbar.grid.view"), AllIcons.General.Groups);
+
+        addActionListener(_ -> onSwitchToGrid.run());
     }
 }

@@ -27,11 +27,11 @@ public final class NodeCreators {
     // UC-TREE-PANEL-002, Rule-TREE-PANEL-011
     public static @NotNull NodeCreator of(final @NotNull Project project, final @NotNull NodeType type) {
         return switch (type) {
-            case TP, TCF, TRF -> new NotCreatableFromTree(type.getDescription());
-            case TSP -> new CreateTestSetPackage(project);
-            case TRP -> new CreateTestRunPackage(project);
-            case TS -> new CreateTestSet(project);
-            case TR -> new CreateTestRun(project);
+            case TEST_PROJECT, TEST_CASES_FOLDER, TEST_RUNS_FOLDER -> new NotCreatableFromTree(type.getDescription());
+            case TEST_SET_PACKAGE -> new CreateTestSetPackage(project);
+            case TEST_RUN_PACKAGE -> new CreateTestRunPackage(project);
+            case TEST_SET -> new CreateTestSet(project);
+            case TEST_RUN -> new CreateTestRun(project);
         };
     }
 }

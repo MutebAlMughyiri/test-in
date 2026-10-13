@@ -29,12 +29,12 @@ import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import java.awt.event.KeyEvent;
 
-public class SearchTxt extends SearchTextField implements Disposable, ToolbarItem {
+public class SearchText extends SearchTextField implements Disposable, ToolbarItem {
     private final @NotNull Timer searchDebounceTimer;
     private final @NotNull Runnable onFocusReleased;
 
     // UC-EDITOR-PANEL-019, Rule-EDITOR-PANEL-090
-    public SearchTxt(final @NotNull Runnable onToolBarSearchValueChanged, final @NotNull Runnable onFocusReleased) {
+    public SearchText(final @NotNull Runnable onToolBarSearchValueChanged, final @NotNull Runnable onFocusReleased) {
         super();
         this.onFocusReleased = onFocusReleased;
 

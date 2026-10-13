@@ -293,13 +293,13 @@ They are a catalog, not code: no dialog declares its kind.
 
 ### Outside the framework, on purpose
 
-| Surface                                  | Owner                     | Why it stays outside                                                                                                              |
-|:-----------------------------------------|:--------------------------|:----------------------------------------------------------------------------------------------------------------------------------|
-| The Fields popup on the editor toolbar   | `AbstractFieldsPopupBtn`  | A toolbar control, not a question                                                                                                 |
-| The Filter popup                         | `FilterPopupBtn`          | The platform's own action-group popup. One menu for the two editors and the Create Test Run dialog, each answering `FilterSource` |
-| The zoom indicator in light mode         | `ZoomIndicator`           | An indicator that asks nothing                                                                                                    |
-| The group picker in an import table cell | `GroupMultiSelectEditor`  | A table cell editor, which takes the table's look                                                                                 |
-| Balloons                                 | `Notifier`                | The platform's notifications                                                                                                      |
+| Surface                                  | Owner                       | Why it stays outside                                                                                                              |
+|:-----------------------------------------|:----------------------------|:----------------------------------------------------------------------------------------------------------------------------------|
+| The Fields popup on the editor toolbar   | `AbstractFieldsPopupButton` | A toolbar control, not a question                                                                                                 |
+| The Filter popup                         | `FilterPopupButton`         | The platform's own action-group popup. One menu for the two editors and the Create Test Run dialog, each answering `FilterSource` |
+| The zoom indicator in light mode         | `ZoomIndicator`             | An indicator that asks nothing                                                                                                    |
+| The group picker in an import table cell | `GroupMultiSelectEditor`    | A table cell editor, which takes the table's look                                                                                 |
+| Balloons                                 | `Notifier`                  | The platform's notifications                                                                                                      |
 
 ## What the tester sees
 

@@ -95,7 +95,7 @@ public final class ConflictResolution {
         if (TestCaseMerger.isTestCase(relativePath)) return Optional.of(TestCaseMerger::of);
         if (FileKind.of(file) == FileKind.RUN_ITEM)
             return Optional.of((mapper, _, mine, theirs) -> RunItemMerger.of(mapper, mine, theirs));
-        if (NodeType.TR.isMarkerOf(String.valueOf(file.getFileName()))) {
+        if (NodeType.TEST_RUN.isMarkerOf(String.valueOf(file.getFileName()))) {
             return Optional.of(TestRunMarkerMerger::of);
         }
 

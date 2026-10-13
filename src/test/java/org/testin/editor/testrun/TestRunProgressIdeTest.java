@@ -28,7 +28,7 @@ import org.testin.Said;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.statusbar.EditorStatusBar;
 import org.testin.editor.testset.TestSetEditor;
-import org.testin.editor.toolbar.GridViewBtn;
+import org.testin.editor.toolbar.GridViewButton;
 import org.testin.indexer.TestRuns;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestProjectNode;
@@ -53,7 +53,7 @@ public class TestRunProgressIdeTest extends AbstractTempRootIdeTest {
     private static final int ACTUAL_RESULT = TestRunEditorFields.ACTUAL_RESULT.column();
 
     private static @NotNull JBTable theGridOf(final @NotNull TestRunEditor editor) {
-        editor.getToolBar().getToolbarItem(GridViewBtn.class).doClick();
+        editor.getToolBar().getToolbarItem(GridViewButton.class).doClick();
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
         return (JBTable) editor.getPreferredFocusedComponent();
     }

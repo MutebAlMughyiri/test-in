@@ -24,12 +24,12 @@ import org.testin.services.Services;
 import org.testin.ui.framework.AbstractIconButton;
 import org.testin.util.Bundle;
 
-public class LightModeBtn extends AbstractIconButton implements ToolbarItem {
+public class LightModeButton extends AbstractIconButton implements ToolbarItem {
     private final @NotNull TestRunEditor editor;
     private final @NotNull LightMode lightMode;
 
     // UC-EDITOR-PANEL-046
-    public LightModeBtn(final @NotNull TestRunEditor editor) {
+    public LightModeButton(final @NotNull TestRunEditor editor) {
         super(Bundle.message("toolbar.light.mode"), AllIcons.MeetNewUi.LightTheme);
         this.editor = editor;
         this.lightMode = Services.getInstance(editor.getProject(), LightMode.class);

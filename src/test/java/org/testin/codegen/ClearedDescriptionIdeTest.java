@@ -30,7 +30,7 @@ public class ClearedDescriptionIdeTest extends AbstractCodegenIdeTest {
         settled();
 
         testCase.setDescription("");
-        GenType.UPDATE_TEST_CASE_DESCRIPTION.execute(getProject(), testCase);
+        CodeChangeType.UPDATE_TEST_CASE_DESCRIPTION.execute(getProject(), testCase);
         settled();
         return testCase;
     }

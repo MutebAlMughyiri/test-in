@@ -66,16 +66,16 @@ public class FilterMenuEntriesIdeTest extends AbstractCodegenIdeTest {
         return Objects.requireNonNullElse(action.getTemplatePresentation().getText(), "");
     }
 
-    private static @NotNull FilterPopupBtn filterOf(final @NotNull AbstractTestinEditor<?, ?> editor) {
-        return editor.getToolBar().getToolbarItem(FilterPopupBtn.class);
+    private static @NotNull FilterPopupButton filterOf(final @NotNull AbstractTestinEditor<?, ?> editor) {
+        return editor.getToolBar().getToolbarItem(FilterPopupButton.class);
     }
 
-    private static @NotNull AnAction entry(final @NotNull FilterPopupBtn filter, final @NotNull String name) {
+    private static @NotNull AnAction entry(final @NotNull FilterPopupButton filter, final @NotNull String name) {
         return childrenOf(filter.menu()).stream().filter(action -> nameOf(action).equals(name)).findFirst()
                 .orElseThrow(() -> new AssertionError("the Filter menu has no " + name + ": " + childrenOf(filter.menu()).stream().map(FilterMenuEntriesIdeTest::nameOf).toList()));
     }
 
-    private static @NotNull List<String> namesUnder(final @NotNull FilterPopupBtn filter, final @NotNull String name) {
+    private static @NotNull List<String> namesUnder(final @NotNull FilterPopupButton filter, final @NotNull String name) {
         return childrenOf((DefaultActionGroup) entry(filter, name)).stream().map(FilterMenuEntriesIdeTest::nameOf).toList();
     }
 
@@ -189,7 +189,7 @@ public class FilterMenuEntriesIdeTest extends AbstractCodegenIdeTest {
             testCases.forEach(testCase -> set.add(new CheckedTreeNode(testCase.getId().equals(reviewed.getId()) ? reviewed : testCase)));
             tree.add(set);
             final @NotNull TestRunFormFilter form = new TestRunFormFilter(getProject(), theTestCasesDirectory().getPath(), tree);
-            final @NotNull FilterPopupBtn formFilter = (FilterPopupBtn) Drawn.components(form.getSelection().getPanel()).stream().filter(FilterPopupBtn.class::isInstance).findFirst().orElseThrow();
+            final @NotNull FilterPopupButton formFilter = (FilterPopupButton) Drawn.components(form.getSelection().getPanel()).stream().filter(FilterPopupButton.class::isInstance).findFirst().orElseThrow();
             assertEquals("Status is not in the Create Test Run dialog", fourStatuses, namesUnder(formFilter, Bundle.message("filter.test.case.status")));
             final @NotNull AnAction reviewedOnly = childrenOf((DefaultActionGroup) entry(formFilter, Bundle.message("filter.test.case.status"))).stream().filter(action -> nameOf(action).equals(TestCaseStatus.REVIEWED.getLabel())).findFirst().orElseThrow();
             Gestures.press(getProject(), reviewedOnly, form.getSelection().getPanel());

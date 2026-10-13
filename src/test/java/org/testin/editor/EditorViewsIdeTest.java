@@ -38,8 +38,8 @@ import org.testin.editor.statusbar.EditorStatusBar;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.editor.toolbar.AbstractToolbarPanel;
-import org.testin.editor.toolbar.GridViewBtn;
-import org.testin.editor.toolbar.CardViewBtn;
+import org.testin.editor.toolbar.GridViewButton;
+import org.testin.editor.toolbar.CardViewButton;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestProjectNode;
@@ -86,12 +86,12 @@ public class EditorViewsIdeTest extends AbstractTempRootIdeTest {
     }
 
     private static void switchToGrid(final @NotNull AbstractTestinEditor<?, ?> editor) {
-        editor.getToolBar().getToolbarItem(GridViewBtn.class).doClick();
+        editor.getToolBar().getToolbarItem(GridViewButton.class).doClick();
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
 
     private static void switchToCards(final @NotNull AbstractTestinEditor<?, ?> editor) {
-        editor.getToolBar().getToolbarItem(CardViewBtn.class).doClick();
+        editor.getToolBar().getToolbarItem(CardViewButton.class).doClick();
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
 
@@ -198,8 +198,8 @@ public class EditorViewsIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-016
     public void testTheToolbarOffersOnlyTheViewTheTesterIsNotIn() {
         final @NotNull TestSetEditor editor = openedTestSet(2);
-        final @NotNull GridViewBtn grid = editor.getToolBar().getToolbarItem(GridViewBtn.class);
-        final @NotNull CardViewBtn cards = editor.getToolBar().getToolbarItem(CardViewBtn.class);
+        final @NotNull GridViewButton grid = editor.getToolBar().getToolbarItem(GridViewButton.class);
+        final @NotNull CardViewButton cards = editor.getToolBar().getToolbarItem(CardViewButton.class);
 
         assertTrue("the grid button is missing while the cards are shown", grid.isVisible());
         assertFalse("the cards button is offered while the cards are shown", cards.isVisible());

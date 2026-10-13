@@ -42,10 +42,10 @@ public class SubtreeCodeOrderIdeTest extends AbstractCodegenIdeTest {
         SubtreeCode.generate(getProject(), checkout);
 
         final @NotNull List<String> asked = recorder.asked();
-        final int paymentClass = asked.indexOf(CodegenRecorder.step(GenType.CREATE_TEST_SET, payment.getName()));
-        final int payMethod = asked.indexOf(CodegenRecorder.step(GenType.CREATE_TEST_CASE, pay.getDescription()));
-        final int visaClass = asked.indexOf(CodegenRecorder.step(GenType.CREATE_TEST_SET, visa.getName()));
-        final int visaMethod = asked.indexOf(CodegenRecorder.step(GenType.CREATE_TEST_CASE, payByVisa.getDescription()));
+        final int paymentClass = asked.indexOf(CodegenRecorder.step(CodeChangeType.CREATE_TEST_SET, payment.getName()));
+        final int payMethod = asked.indexOf(CodegenRecorder.step(CodeChangeType.CREATE_TEST_CASE, pay.getDescription()));
+        final int visaClass = asked.indexOf(CodegenRecorder.step(CodeChangeType.CREATE_TEST_SET, visa.getName()));
+        final int visaMethod = asked.indexOf(CodegenRecorder.step(CodeChangeType.CREATE_TEST_CASE, payByVisa.getDescription()));
 
         assertTrue("the test set's class was never asked for: " + asked, paymentClass >= 0 && visaClass >= 0);
         assertTrue("a method was written before the class it goes into: " + asked, paymentClass < payMethod && visaClass < visaMethod);

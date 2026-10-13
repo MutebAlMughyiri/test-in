@@ -42,20 +42,20 @@ public class MarkerWritesIdeTest extends AbstractReadTheRootIdeTest {
     }
 
     private @NotNull TestProjectMarker markerOf(final @NotNull Path testProjectPath) {
-        return nodes().readMarker(testProjectPath, NodeType.TP, TestProjectMarker.class);
+        return nodes().readMarker(testProjectPath, NodeType.TEST_PROJECT, TestProjectMarker.class);
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-083
     public void testAMarkerThatWillNotParseIsNeverWrittenOver() {
         final @NotNull Path project = aTestProjectAt(root.resolve("Checkout"));
         final @NotNull Path testSet = theTestCasesOf(project).resolve("Login");
-        SyntheticTree.write(testSet.resolve(NodeType.TS.getMarker()), DAMAGED);
+        SyntheticTree.write(testSet.resolve(NodeType.TEST_SET.getMarker()), DAMAGED);
         indexer().scanSingleProject(project);
 
         final @NotNull AbstractNode drawn = nodes().find(testSet).orElseThrow();
         WriteAction.runAndWait(() -> nodes().persistMarker(drawn));
 
-        assertEquals("the marker that would not parse was written over with defaults", DAMAGED, read(testSet.resolve(NodeType.TS.getMarker())));
+        assertEquals("the marker that would not parse was written over with defaults", DAMAGED, read(testSet.resolve(NodeType.TEST_SET.getMarker())));
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-083

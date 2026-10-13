@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.testin.codegen.ExecutionPosition;
 import org.testin.codegen.CodeChange;
-import org.testin.codegen.GenType;
+import org.testin.codegen.CodeChangeType;
 import org.testin.java.codegen.GeneratedMethod;
 import org.testin.model.TestCaseDto;
 
@@ -95,7 +95,7 @@ public class UpdateTestMethodOrder extends BaseTestMethodChange implements CodeC
         final @NotNull List<List<TestCaseDto>> ordered = new ArrayList<>(sets.values());
 
         final @NotNull Runnable inCommand = () ->
-                WriteCommandAction.runWriteCommandAction(project, GenType.UPDATE_TEST_CASE_ORDER.description(), null,
+                WriteCommandAction.runWriteCommandAction(project, CodeChangeType.UPDATE_TEST_CASE_ORDER.description(), null,
                         () -> ordered.forEach(inSet -> arrange(project, inSet)));
 
         if (CommandProcessor.getInstance().getCurrentCommand() != null) inCommand.run();

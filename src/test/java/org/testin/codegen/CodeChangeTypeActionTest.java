@@ -24,18 +24,18 @@ import java.util.List;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-public class GenTypeActionTest {
+public class CodeChangeTypeActionTest {
 
     @Test
     public void aDataOnlyFieldCarriesTheNoOp() {
-        for (final GenType<?> type : List.of(
-                GenType.UPDATE_TEST_CASE_EXPECTED_RESULT,
-                GenType.UPDATE_TEST_CASE_MODULE,
-                GenType.UPDATE_TEST_CASE_TEST_DATA,
-                GenType.UPDATE_TEST_CASE_PRE_CONDITIONS,
-                GenType.UPDATE_TEST_CASE_STEPS,
-                GenType.UPDATE_TEST_CASE_PRIORITY,
-                GenType.NO_CODE_CHANGE)) {
+        for (final CodeChangeType<?> type : List.of(
+                CodeChangeType.UPDATE_TEST_CASE_EXPECTED_RESULT,
+                CodeChangeType.UPDATE_TEST_CASE_MODULE,
+                CodeChangeType.UPDATE_TEST_CASE_TEST_DATA,
+                CodeChangeType.UPDATE_TEST_CASE_PRE_CONDITIONS,
+                CodeChangeType.UPDATE_TEST_CASE_STEPS,
+                CodeChangeType.UPDATE_TEST_CASE_PRIORITY,
+                CodeChangeType.NO_CODE_CHANGE)) {
 
             assertTrue(type.update() instanceof NoOpCodeUpdate,
                     type + " writes no code, so it must carry the no-op rather than look for a generator");
@@ -44,15 +44,15 @@ public class GenTypeActionTest {
 
     @Test
     public void anOperationThatWritesCodeDoesNot() {
-        for (final GenType<?> type : List.of(
-                GenType.CREATE_TEST_CASE,
-                GenType.REMOVE_TEST_CASE,
-                GenType.UPDATE_TEST_CASE_DESCRIPTION,
-                GenType.UPDATE_TEST_CASE_GROUP,
-                GenType.UPDATE_TEST_CASE_ORDER,
-                GenType.UPDATE_TEST_CASE_STATUS,
-                GenType.CREATE_TEST_SET,
-                GenType.RENAME_TEST_SET)) {
+        for (final CodeChangeType<?> type : List.of(
+                CodeChangeType.CREATE_TEST_CASE,
+                CodeChangeType.REMOVE_TEST_CASE,
+                CodeChangeType.UPDATE_TEST_CASE_DESCRIPTION,
+                CodeChangeType.UPDATE_TEST_CASE_GROUP,
+                CodeChangeType.UPDATE_TEST_CASE_ORDER,
+                CodeChangeType.UPDATE_TEST_CASE_STATUS,
+                CodeChangeType.CREATE_TEST_SET,
+                CodeChangeType.RENAME_TEST_SET)) {
 
             assertFalse(type.update() instanceof NoOpCodeUpdate,
                     type + " writes code, so it must reach a generator");

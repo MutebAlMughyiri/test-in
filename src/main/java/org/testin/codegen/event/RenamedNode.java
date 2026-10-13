@@ -48,7 +48,7 @@ public record RenamedNode(@NotNull AbstractNode node, @NotNull List<String> from
 
     // UC-TREE-PANEL-011, Rule-CODEGEN-082
     public boolean toTheFilesName(final @NotNull Project project) {
-        return node.getType() == NodeType.TP && TestinYml.names(project, newName);
+        return node.getType() == NodeType.TEST_PROJECT && TestinYml.names(project, newName);
     }
 
     // Rule-CODEGEN-082

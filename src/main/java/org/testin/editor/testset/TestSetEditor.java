@@ -23,7 +23,7 @@ import com.intellij.util.ui.StatusText;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.Declared;
-import org.testin.codegen.GenType;
+import org.testin.codegen.CodeChangeType;
 import org.testin.editor.AbstractTestinEditor;
 import org.testin.editor.PageWindow;
 import org.testin.editor.card.AbstractCard;
@@ -32,7 +32,7 @@ import org.testin.editor.grid.GridRows;
 import org.testin.editor.cardview.TestCaseCardRenderer;
 import org.testin.editor.open.UnifiedVirtualFile;
 import org.testin.editor.statusbar.EditorStatusBarPaging;
-import org.testin.editor.toolbar.TestSetFieldsPopupBtn;
+import org.testin.editor.toolbar.TestSetFieldsPopupButton;
 import org.testin.editor.toolbar.TestSetToolbar;
 import org.testin.editor.toolbar.ToolbarCallbacks;
 import org.testin.filter.FilterAndSortChoice;
@@ -188,7 +188,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorFields, Tes
                     return;
                 }
 
-                if (!snapshot.isEmpty()) GenType.UPDATE_TEST_CASE_ORDER.executeAll(project, snapshot);
+                if (!snapshot.isEmpty()) CodeChangeType.UPDATE_TEST_CASE_ORDER.executeAll(project, snapshot);
 
                 onPersisted.run();
 
@@ -274,7 +274,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorFields, Tes
 
     @Override
     public @NotNull Set<TestSetEditorFields> getSelectedDetails() {
-        return getToolBar().getToolbarItem(TestSetFieldsPopupBtn.class).getSelectedDetails();
+        return getToolBar().getToolbarItem(TestSetFieldsPopupButton.class).getSelectedDetails();
     }
 
     @Override

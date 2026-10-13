@@ -17,35 +17,32 @@
 package org.testin.editor.toolbar;
 
 import com.intellij.icons.AllIcons;
-import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.model.status.TestRunStatus;
-import org.testin.report.GenerateReportAction;
 import org.testin.ui.framework.AbstractIconButton;
 import org.testin.util.Bundle;
-import org.testin.util.Shortcuts;
 
-public class GenerateReportBtn extends AbstractIconButton implements ToolbarItem {
+public class TestRunResultAnalysisButton extends AbstractIconButton implements ToolbarItem {
     private final @NotNull TestRunEditor editor;
 
-    // UC-REPORT-001
-    public GenerateReportBtn(final @NotNull Project project, final @NotNull TestRunEditor editor) {
-        super(Bundle.message("toolbar.report"), AllIcons.ToolbarDecorator.Export, Shortcuts.GenerateReport);
+    // UC-EDITOR-PANEL-045
+    public TestRunResultAnalysisButton(final @NotNull TestRunEditor editor, final @NotNull Runnable onTestRunResultAnalysisClicked) {
+        super(Bundle.message("toolbar.analysis"), AllIcons.Actions.ProjectWideAnalysisOff);
         this.editor = editor;
 
-        addActionListener(_ -> new GenerateReportAction(project, editor).execute());
-
+        addActionListener(_ -> onTestRunResultAnalysisClicked.run());
         updateEnabledState();
     }
 
-    // UC-REPORT-001, Rule-REPORT-016
+    // UC-EDITOR-PANEL-045, Rule-EDITOR-PANEL-189
     public void updateEnabledState() {
         final @NotNull TestRunStatus status = editor.getParent().getMarker().getStatus();
+        final boolean shown = status == TestRunStatus.COMPLETED || status.isRecord();
 
-        setEnabled(status.isReportable());
-        describe(status.isReportable()
-                ? Bundle.message("toolbar.report")
-                : Bundle.message("toolbar.report.disabled", status.getLabel()));
+        setEnabled(shown);
+        describe(shown
+                ? Bundle.message("toolbar.analysis")
+                : Bundle.message("toolbar.analysis.disabled", status.getLabel()));
     }
 }

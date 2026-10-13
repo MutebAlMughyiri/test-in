@@ -24,10 +24,10 @@ import org.testin.model.status.TestRunStatus;
 import org.testin.ui.framework.AbstractIconButton;
 import org.testin.util.Bundle;
 
-public class StartExecutionBtn extends AbstractIconButton implements ToolbarItem {
+public class StartExecutionButton extends AbstractIconButton implements ToolbarItem {
     private final @NotNull TestRunEditor editor;
 
-    public StartExecutionBtn(final @NotNull TestRunEditor editor, final @NotNull Runnable onStartExecutionClicked) {
+    public StartExecutionButton(final @NotNull TestRunEditor editor, final @NotNull Runnable onStartExecutionClicked) {
         super(ExecutionControl.START.getLabel(), ExecutionControl.START.getIcon());
         this.editor = editor;
 

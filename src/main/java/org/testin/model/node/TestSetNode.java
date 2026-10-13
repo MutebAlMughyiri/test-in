@@ -55,7 +55,7 @@ public class TestSetNode extends AbstractNode {
 
     @Override
     public @NotNull NodeType getType() {
-        return NodeType.TS;
+        return NodeType.TEST_SET;
     }
 
     @Override

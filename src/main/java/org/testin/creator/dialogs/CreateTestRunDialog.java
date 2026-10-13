@@ -42,10 +42,10 @@ public final class CreateTestRunDialog extends AbstractFrameworkDialog {
         title = Bundle.message("dialog.create.test.run.title");
 
         final @NotNull DialogPart<TextFieldWithSelections<NodeType>> built = DialogPart.<NodeType>textFieldWithSelections()
-                .icon(NodeType.TR.getIcon())
+                .icon(NodeType.TEST_RUN.getIcon())
                 .placeholder(Bundle.message("dialog.create.test.run.placeholder"))
-                .selection(NodeType.TR.getIcon(), NodeType.TR.getDescription(), Bundle.message("dialog.create.test.run.hint.tr"), NodeType.TR)
-                .selection(NodeType.TRP.getIcon(), NodeType.TRP.getDescription(), Bundle.message("dialog.create.test.run.hint.trp"), NodeType.TRP)
+                .selection(NodeType.TEST_RUN.getIcon(), NodeType.TEST_RUN.getDescription(), Bundle.message("dialog.create.test.run.hint.tr"), NodeType.TEST_RUN)
+                .selection(NodeType.TEST_RUN_PACKAGE.getIcon(), NodeType.TEST_RUN_PACKAGE.getDescription(), Bundle.message("dialog.create.test.run.hint.trp"), NodeType.TEST_RUN_PACKAGE)
                 .build();
         nameAndType = built.getComponent();
         components = List.of(built);

@@ -17,11 +17,11 @@
 package org.testin.editor.grid;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.codegen.GenType;
+import org.testin.codegen.CodeChangeType;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.TestCaseSnapshot;
 
 import java.util.Set;
 
-record Changed(@NotNull TestCaseDto testCase, @NotNull TestCaseSnapshot before, @NotNull Set<GenType<TestCaseDto>> generators) {
+record Changed(@NotNull TestCaseDto testCase, @NotNull TestCaseSnapshot before, @NotNull Set<CodeChangeType<TestCaseDto>> generators) {
 }

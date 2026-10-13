@@ -28,7 +28,7 @@ import org.testin.editor.AbstractTestinEditor;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.testrun.TestRunEditor;
-import org.testin.editor.toolbar.GridViewBtn;
+import org.testin.editor.toolbar.GridViewButton;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
@@ -60,7 +60,7 @@ public class ContextMenuKeyIdeTest extends AbstractTempRootIdeTest {
     }
 
     private static void assertOpensOnTheSelectedCell(final @NotNull String editor, final @NotNull AbstractTestinEditor<?, ?> shown) {
-        shown.getToolBar().getToolbarItem(GridViewBtn.class).doClick();
+        shown.getToolBar().getToolbarItem(GridViewButton.class).doClick();
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
         final @NotNull JBTable table = (JBTable) shown.getPreferredFocusedComponent();
         table.setSize(600, 400);

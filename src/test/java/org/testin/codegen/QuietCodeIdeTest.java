@@ -86,7 +86,7 @@ public class QuietCodeIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestCaseDto neverWritten = indexedTestCase(login, "Log out", "c");
         settled();
 
-        GenType.REMOVE_TEST_CASE.execute(getProject(), neverWritten);
+        CodeChangeType.REMOVE_TEST_CASE.execute(getProject(), neverWritten);
         settled();
 
         assertNothingWasSaid("a test case with no method was removed");
@@ -102,7 +102,7 @@ public class QuietCodeIdeTest extends AbstractCodegenIdeTest {
         final @NotNull String before = stampOf("nafath/checkout/PaymentTest.java");
         watchingTheCode();
 
-        GenType.MOVE_TEST_SET.execute(getProject(), new MovedNode(payment, checkout.getPath()));
+        CodeChangeType.MOVE_TEST_SET.execute(getProject(), new MovedNode(payment, checkout.getPath()));
         settled();
 
         assertTrue("a test set dropped where it already is moved or rewrote its class: " + touched, touched.isEmpty());
@@ -121,8 +121,8 @@ public class QuietCodeIdeTest extends AbstractCodegenIdeTest {
         final @NotNull String visa = stampOf("nafath/checkout/cards/VisaTest.java");
         watchingTheCode();
 
-        GenType.MOVE_TEST_SET_PACKAGE.execute(getProject(), new MovedNode(checkout, checkout.getPath()));
-        GenType.MOVE_TEST_SET_PACKAGE.execute(getProject(), new MovedNode(checkout, cards.getPath()));
+        CodeChangeType.MOVE_TEST_SET_PACKAGE.execute(getProject(), new MovedNode(checkout, checkout.getPath()));
+        CodeChangeType.MOVE_TEST_SET_PACKAGE.execute(getProject(), new MovedNode(checkout, cards.getPath()));
         settled();
 
         assertTrue("a package dropped into itself moved or rewrote code: " + touched, touched.isEmpty());
@@ -136,8 +136,8 @@ public class QuietCodeIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestSetPackageNode noFolder = indexedPackage("Checkout", theTestCasesDirectory());
         settled();
 
-        GenType.REMOVE_TEST_SET.execute(getProject(), neverWritten);
-        GenType.REMOVE_TEST_SET_PACKAGE.execute(getProject(), noFolder);
+        CodeChangeType.REMOVE_TEST_SET.execute(getProject(), neverWritten);
+        CodeChangeType.REMOVE_TEST_SET_PACKAGE.execute(getProject(), noFolder);
         settled();
 
         assertNothingWasSaid("a removal found no code to delete");

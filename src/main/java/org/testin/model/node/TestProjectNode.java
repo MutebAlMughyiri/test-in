@@ -58,6 +58,6 @@ public class TestProjectNode extends AbstractNode {
 
     @Override
     public @NotNull NodeType getType() {
-        return NodeType.TP;
+        return NodeType.TEST_PROJECT;
     }
 }

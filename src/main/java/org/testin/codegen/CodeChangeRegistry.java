@@ -23,12 +23,12 @@ public interface CodeChangeRegistry {
     @NotNull ExtensionPointName<CodeChangeRegistry> EP = ExtensionPointName.create("org.testin.codeGenerators");
 
     // UC-CODEGEN-019, Rule-CODEGEN-005
-    static <T> @NotNull CodeChange<T> find(final @NotNull GenType<T> type) {
+    static <T> @NotNull CodeChange<T> find(final @NotNull CodeChangeType<T> type) {
         return EP.getExtensionList().stream()
                 .findFirst()
                 .map(generators -> generators.actionFor(type))
                 .orElseGet(() -> new NoCodeChange<>(type.description()));
     }
 
-    <T> @NotNull CodeChange<T> actionFor(final @NotNull GenType<T> type);
+    <T> @NotNull CodeChange<T> actionFor(final @NotNull CodeChangeType<T> type);
 }

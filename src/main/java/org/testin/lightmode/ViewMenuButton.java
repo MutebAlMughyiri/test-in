@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-package org.testin.editor.toolbar;
+package org.testin.lightmode;
 
-import com.intellij.icons.AllIcons;
 import org.jetbrains.annotations.NotNull;
-import org.testin.ui.framework.AbstractIconButton;
+import org.testin.editor.toolbar.AbstractFieldsPopupButton;
 import org.testin.util.Bundle;
-import org.testin.view.marker.NodeDetailsDialog;
 
-public class NodeDetailsBtn extends AbstractIconButton implements ToolbarItem {
-    // UC-EDITOR-PANEL-028, Rule-EDITOR-PANEL-121
-    public NodeDetailsBtn(final @NotNull ToolbarCallbacks editor) {
-        super(Bundle.message("toolbar.node.details"), AllIcons.General.IndentDetected);
-
-        addActionListener(_ -> new NodeDetailsDialog(editor.getProject(), editor.getEditedNode()).show());
+class ViewMenuButton extends AbstractFieldsPopupButton<LightModePart> {
+    ViewMenuButton(final @NotNull Runnable onChanged) {
+        super(Bundle.message("light.view.menu"),
+                "testin.lightMode.parts.v3",
+                LightModePart.class,
+                onChanged);
     }
 }

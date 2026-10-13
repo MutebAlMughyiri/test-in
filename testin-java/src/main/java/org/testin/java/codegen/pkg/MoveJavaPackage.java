@@ -22,7 +22,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.Fqcn;
 import org.testin.codegen.CodeChange;
-import org.testin.codegen.GenType;
+import org.testin.codegen.CodeChangeType;
 import org.testin.codegen.JavaSourceRoot;
 import org.testin.codegen.event.MovedNode;
 import org.testin.java.codegen.PackageDeclarations;
@@ -45,7 +45,7 @@ public class MoveJavaPackage implements CodeChange<MovedNode> {
 
         final @NotNull List<String> destination = destinationFound.get();
 
-        JavaSourceRoot.commandInRoot(project, GenType.MOVE_TEST_SET_PACKAGE.description(), sourceRoot -> {
+        JavaSourceRoot.commandInRoot(project, CodeChangeType.MOVE_TEST_SET_PACKAGE.description(), sourceRoot -> {
             final @NotNull Optional<VirtualFile> found = Optional.ofNullable(sourceRoot.findFileByRelativePath(String.join("/", fqcn)))
                     .filter(VirtualFile::isDirectory);
 

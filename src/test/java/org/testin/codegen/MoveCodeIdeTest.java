@@ -42,7 +42,7 @@ public class MoveCodeIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestSetNode login = createdTestSet("Login");
         final @NotNull TestSetPackageNode checkout = indexedPackage("Checkout", theTestCasesDirectory());
 
-        NodeCode.of(NodeType.TS).getMoved().execute(getProject(), new MovedNode(login, checkout.getPath()));
+        NodeCode.of(NodeType.TEST_SET).getMoved().execute(getProject(), new MovedNode(login, checkout.getPath()));
 
         assertTrue("the class did not land in the package it was moved to, under that package's name", generatedClass("nafath.checkout.LoginTest").isPresent());
         assertTrue("the class was left behind in its old package", generatedClass("nafath.LoginTest").isEmpty());
@@ -53,7 +53,7 @@ public class MoveCodeIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestSetNode login = createdTestSet("Login");
         final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
 
-        NodeCode.of(NodeType.TS).getMoved().execute(getProject(), new MovedNode(login, root.resolve("Never read")));
+        NodeCode.of(NodeType.TEST_SET).getMoved().execute(getProject(), new MovedNode(login, root.resolve("Never read")));
 
         assertTrue("the class moved into a place the tree does not know", generatedClass("nafath.LoginTest").isPresent());
         assertTrue("the tester was not told the code stayed behind, naming the class: " + said, said.stream().anyMatch(notification -> notification.getType() == NotificationType.WARNING && notification.getContent().contains("nafath.LoginTest")));
@@ -65,7 +65,7 @@ public class MoveCodeIdeTest extends AbstractCodegenIdeTest {
         createdTestSet("Login", checkout);
         createdTestSet("Visa", indexedPackage("Cards", checkout));
 
-        NodeCode.of(NodeType.TSP).getRenamed().execute(getProject(), new RenamedNode(checkout, "Payment methods"));
+        NodeCode.of(NodeType.TEST_SET_PACKAGE).getRenamed().execute(getProject(), new RenamedNode(checkout, "Payment methods"));
 
         assertTrue("the class directly in the package does not carry its new name", generatedClass("nafath.paymentmethods.LoginTest").isPresent());
         assertTrue("a class deeper in the package does not carry its new name", generatedClass("nafath.paymentmethods.cards.VisaTest").isPresent());
@@ -79,7 +79,7 @@ public class MoveCodeIdeTest extends AbstractCodegenIdeTest {
         createdTestSet("Visa", cards);
         final @NotNull TestSetPackageNode payment = indexedPackage("Payment", theTestCasesDirectory());
 
-        NodeCode.of(NodeType.TSP).getMoved().execute(getProject(), new MovedNode(cards, payment.getPath()));
+        NodeCode.of(NodeType.TEST_SET_PACKAGE).getMoved().execute(getProject(), new MovedNode(cards, payment.getPath()));
 
         assertTrue("the moved package's class is not in its new place under its new name", generatedClass("nafath.payment.cards.VisaTest").isPresent());
         assertTrue("the class was left in the package it was moved out of", generatedClass("nafath.checkout.cards.VisaTest").isEmpty());
@@ -96,7 +96,7 @@ public class MoveCodeIdeTest extends AbstractCodegenIdeTest {
         testCases.removeTestCase(login.getPath(), testCase.getId());
         testCase.setParent(visa);
         testCases.putTestCaseVerbatim(visa.getPath(), testCase);
-        GenType.MOVE_TEST_CASE.execute(getProject(), new MovedTestCase(testCase, login));
+        CodeChangeType.MOVE_TEST_CASE.execute(getProject(), new MovedTestCase(testCase, login));
         settled();
 
         assertTrue("the method stayed in the class the test case was cut from", methodOf("nafath.LoginTest", testCase).isEmpty());

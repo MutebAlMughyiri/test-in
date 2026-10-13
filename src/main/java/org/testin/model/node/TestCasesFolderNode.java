@@ -61,7 +61,7 @@ public class TestCasesFolderNode extends AbstractNode {
 
     @Override
     public @NotNull NodeType getType() {
-        return NodeType.TCF;
+        return NodeType.TEST_CASES_FOLDER;
     }
 
     @Override

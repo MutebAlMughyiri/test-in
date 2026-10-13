@@ -24,7 +24,7 @@ import org.testin.AbstractTempRootIdeTest;
 import org.testin.OnScreen;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.testrun.TestRunEditor;
-import org.testin.editor.toolbar.TestRunResultAnalysisBtn;
+import org.testin.editor.toolbar.TestRunResultAnalysisButton;
 import org.testin.model.TestCaseDto;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.status.TestRunStatus;
@@ -92,7 +92,7 @@ public class TestRunResultAnalysisIdeTest extends AbstractTempRootIdeTest {
             final @NotNull TestRunFixture fixture = aJudgedTestRunIn(status);
             final @NotNull TestRunEditor editor = fixture.opened(getTestRootDisposable());
             try {
-                final @NotNull TestRunResultAnalysisBtn analysis = editor.getToolBar().getToolbarItem(TestRunResultAnalysisBtn.class);
+                final @NotNull TestRunResultAnalysisButton analysis = editor.getToolBar().getToolbarItem(TestRunResultAnalysisButton.class);
                 assertEquals("Result Analysis on a " + status.getLabel() + " test run", status == TestRunStatus.COMPLETED, analysis.isEnabled());
             } finally {
                 Disposer.dispose(editor);
@@ -105,7 +105,7 @@ public class TestRunResultAnalysisIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestRunFixture fixture = aJudgedTestRunIn(TestRunStatus.COMPLETED);
         final @NotNull TestRunEditor editor = fixture.opened(getTestRootDisposable());
         try {
-            editor.getToolBar().getToolbarItem(TestRunResultAnalysisBtn.class).doClick();
+            editor.getToolBar().getToolbarItem(TestRunResultAnalysisButton.class).doClick();
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
             final @NotNull JComponent dialog = ShownDialog.content(getProject(), TestRunResultAnalysisDialog.class);
             final @NotNull JBTextArea box = Drawn.components(dialog).stream().filter(JBTextArea.class::isInstance).map(JBTextArea.class::cast).findFirst().orElseThrow();

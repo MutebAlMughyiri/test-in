@@ -89,14 +89,14 @@ public final class TestRunWordGenerator {
             try (XWPFDocument document = new XWPFDocument()) {
                 final @NotNull String projectName = Services.getInstance(project, BoundTestProject.class).name();
 
-                addText(document, Bundle.message("report.title"), ReportFont.TITLE.ptRounded(), true, DARK_NAVY, NO_BORDER, 2);
+                addText(document, Bundle.message("report.title"), ReportFont.TITLE.roundedPoints(), true, DARK_NAVY, NO_BORDER, 2);
 
                 addText(document, ReportText.joined("  |  ", projectName, ReportText.joined(", ", TestRunConfiguration.PLATFORM.valueIn(testRunNode.getMarker()), TestRunConfiguration.COMPONENT.valueIn(testRunNode.getMarker()))),
-                        ReportFont.SUBTITLE.ptRounded(), false, MEDIUM_BLUE, NO_BORDER, 0);
-                addText(document, testRunNode.getName(), ReportFont.LEAD.ptRounded(), false, MEDIUM_BLUE, DARK_NAVY, 1);
+                        ReportFont.SUBTITLE.roundedPoints(), false, MEDIUM_BLUE, NO_BORDER, 0);
+                addText(document, testRunNode.getName(), ReportFont.LEAD.roundedPoints(), false, MEDIUM_BLUE, DARK_NAVY, 1);
 
-                XWPFParagraph conf = addText(document, Bundle.message("report.confidential"), ReportFont.CAPTION.ptRounded(), false, DARK_GRAY, NO_BORDER, 20);
-                setItalic(conf);
+                XWPFParagraph confidentialNotice = addText(document, Bundle.message("report.confidential"), ReportFont.CAPTION.roundedPoints(), false, DARK_GRAY, NO_BORDER, 20);
+                setItalic(confidentialNotice);
 
                 addHeading(document, Bundle.message("report.heading.overview"), 0, 15);
 
@@ -118,7 +118,7 @@ public final class TestRunWordGenerator {
 
                 addText(document, Bundle.message("report.summary.named", testRunNode.getName(),
                                 String.valueOf(summary.total()), String.valueOf(summary.executed()), summary.passRate() + "%"),
-                        ReportFont.LEAD.ptRounded(), false, BLACK, NO_BORDER, 12);
+                        ReportFont.LEAD.roundedPoints(), false, BLACK, NO_BORDER, 12);
 
                 final @NotNull List<ReportTile> headline = ReportTile.shownFor(summary);
                 final int tiles = headline.size();
@@ -131,7 +131,7 @@ public final class TestRunWordGenerator {
 
                 for (int tile = 0; tile < tiles; tile++) {
                     final @NotNull ReportTile figure = headline.get(tile);
-                    addStatCell(statsTable, tile, figure.valueIn(summary), figure.getLabel(), figure.getHex());
+                    addStatisticCell(statsTable, tile, figure.valueIn(summary), figure.getLabel(), figure.getHex());
                 }
 
                 final boolean analyzed = TestRunResultAnalysis.anyWrittenIn(testRunNode.getMarker().getResultAnalysis());
@@ -144,7 +144,7 @@ public final class TestRunWordGenerator {
                         if (written.isEmpty()) continue;
 
                         addColoredCount(document, section.heading(summary), section.getHexColor());
-                        addText(document, written, ReportFont.BODY.ptRounded(), false, BLACK, NO_BORDER, 8);
+                        addText(document, written, ReportFont.BODY.roundedPoints(), false, BLACK, NO_BORDER, 8);
                     }
                 }
 
@@ -194,13 +194,13 @@ public final class TestRunWordGenerator {
         }
     }
 
-    private void addHeading(final @NotNull XWPFDocument document, final @NotNull String text, final int beforePt, final int afterPt) {
+    private void addHeading(final @NotNull XWPFDocument document, final @NotNull String text, final int pointsBefore, final int pointsAfter) {
         final @NotNull XWPFParagraph paragraph = document.createParagraph();
-        paragraph.setSpacingBefore(beforePt * 20);
-        paragraph.setSpacingAfter(afterPt * 20);
+        paragraph.setSpacingBefore(pointsBefore * 20);
+        paragraph.setSpacingAfter(pointsAfter * 20);
         final @NotNull XWPFRun textRun = paragraph.createRun();
         textRun.setText(text);
-        textRun.setFontSize(ReportFont.SECTION.ptRounded());
+        textRun.setFontSize(ReportFont.SECTION.roundedPoints());
         textRun.setFontFamily(ReportFont.FAMILY);
         textRun.setBold(true);
         textRun.setColor(DARK_NAVY);
@@ -210,23 +210,23 @@ public final class TestRunWordGenerator {
         headingBottom.setColor(DARK_NAVY);
     }
 
-    private void addOverviewRow(final @NotNull XWPFTable table, final int rowIdx, final @NotNull String label, final @NotNull String value) {
-        final @NotNull XWPFTableRow row = rowIdx == 0 ? table.getRow(0) : table.createRow();
+    private void addOverviewRow(final @NotNull XWPFTable table, final int rowIndex, final @NotNull String label, final @NotNull String value) {
+        final @NotNull XWPFTableRow row = rowIndex == 0 ? table.getRow(0) : table.createRow();
         final @NotNull XWPFTableCell labelCell = row.getCell(0);
         final @NotNull XWPFTableCell valueCell = row.getCell(1);
         shadeCell(labelCell, LIGHT_BG);
         setCellPadding(labelCell, 4, 8, 4, 8);
         setCellPadding(valueCell, 4, 8, 4, 8);
-        setCellText(labelCell, label, ReportFont.HEADING.ptRounded(), true, DARK_NAVY);
-        setCellText(valueCell, value, ReportFont.BODY.ptRounded(), false, BLACK);
+        setCellText(labelCell, label, ReportFont.HEADING.roundedPoints(), true, DARK_NAVY);
+        setCellText(valueCell, value, ReportFont.BODY.roundedPoints(), false, BLACK);
     }
 
-    private void addStatCell(final @NotNull XWPFTable table, final int column, final @NotNull String number, final @NotNull String label, final @NotNull String numberColor) {
+    private void addStatisticCell(final @NotNull XWPFTable table, final int column, final @NotNull String number, final @NotNull String label, final @NotNull String numberColor) {
         final @NotNull XWPFTableRow row = table.getRow(0);
         final @NotNull XWPFTableCell cell = row.getCell(column);
         shadeCell(cell, LIGHT_BG);
         setCellPadding(cell, 8, 6, 8, 6);
-        setCellText(cell, number, ReportFont.FIGURE.ptRounded(), true, numberColor);
+        setCellText(cell, number, ReportFont.FIGURE.roundedPoints(), true, numberColor);
 
         cell.getParagraphs().getFirst().setAlignment(ParagraphAlignment.CENTER);
 
@@ -235,7 +235,7 @@ public final class TestRunWordGenerator {
         labelParagraph.setSpacingBefore(80);
         final @NotNull XWPFRun labelTextRun = labelParagraph.createRun();
         labelTextRun.setText(label);
-        labelTextRun.setFontSize(ReportFont.SMALL.ptRounded());
+        labelTextRun.setFontSize(ReportFont.SMALL.roundedPoints());
         labelTextRun.setFontFamily(ReportFont.FAMILY);
         labelTextRun.setBold(true);
         labelTextRun.setColor(DARK_GRAY);
@@ -247,7 +247,7 @@ public final class TestRunWordGenerator {
 
         final @NotNull XWPFRun headingTextRun = headingParagraph.createRun();
         headingTextRun.setText(heading);
-        headingTextRun.setFontSize(ReportFont.LEAD.ptRounded());
+        headingTextRun.setFontSize(ReportFont.LEAD.roundedPoints());
         headingTextRun.setFontFamily(ReportFont.FAMILY);
         headingTextRun.setBold(true);
         headingTextRun.setColor(headingColor);
@@ -255,7 +255,7 @@ public final class TestRunWordGenerator {
 
     private void buildTestCaseTable(final @NotNull XWPFDocument document, final @NotNull String sectionNumber, final @NotNull ReportSection section, final @NotNull String description, final @NotNull RunItems runItems) {
         addHeading(document, sectionNumber + ". " + section.getTitle(), 20, 12);
-        addText(document, description, ReportFont.LEAD.ptRounded(), false, BLACK, NO_BORDER, 12);
+        addText(document, description, ReportFont.LEAD.roundedPoints(), false, BLACK, NO_BORDER, 12);
 
         final @NotNull List<TestRunEditorFields> failureDetail = section.getFailureDetailColumns();
         XWPFTable table = document.createTable(1, 2 + failureDetail.size());
@@ -285,7 +285,7 @@ public final class TestRunWordGenerator {
             XWPFTableCell numberCell = row.getCell(0);
             shadeCell(numberCell, rowBackground);
             setCellPadding(numberCell, 4, 6, 4, 6);
-            setCellText(numberCell, String.valueOf(index), ReportFont.BODY.ptRounded(), false, DARK_GRAY);
+            setCellText(numberCell, String.valueOf(index), ReportFont.BODY.roundedPoints(), false, DARK_GRAY);
             numberCell.getParagraphs().getFirst().setAlignment(ParagraphAlignment.CENTER);
 
             XWPFTableCell testCaseCell = row.getCell(1);
@@ -293,7 +293,7 @@ public final class TestRunWordGenerator {
             setCellPadding(testCaseCell, 4, 6, 4, 6);
             final @NotNull String testCaseName = runItem.shownTestCase().getDescription();
             final @NotNull String shownTestCaseName = testCaseName.isEmpty() ? "—" : testCaseName;
-            setCellText(testCaseCell, shownTestCaseName, ReportFont.BODY.ptRounded(), false, BLACK);
+            setCellText(testCaseCell, shownTestCaseName, ReportFont.BODY.roundedPoints(), false, BLACK);
 
             // Rule-REPORT-027
             ReportText.otherExecutions(runItem).ifPresent(others -> styledRun(testCaseCell.addParagraph().createRun(), others, ReportFont.SMALL, DARK_GRAY));
@@ -324,13 +324,13 @@ public final class TestRunWordGenerator {
         shadeCell(priorityCell, rowBackground);
         setCellPadding(priorityCell, 4, 6, 4, 6);
         final @NotNull BugPriority priority = runItem.getBugPriority();
-        setCellText(priorityCell, priority.getLabel(), ReportFont.BODY.ptRounded(), true, priority.getEmphasis().getHexColor());
+        setCellText(priorityCell, priority.getLabel(), ReportFont.BODY.roundedPoints(), true, priority.getEmphasis().getHexColor());
 
         final @NotNull XWPFTableCell severityCell = row.getCell(3);
         shadeCell(severityCell, rowBackground);
         setCellPadding(severityCell, 4, 6, 4, 6);
         final @NotNull BugSeverity severity = runItem.getBugSeverity();
-        setCellText(severityCell, severity.getLabel(), ReportFont.BODY.ptRounded(), true, severity.getEmphasis().getHexColor());
+        setCellText(severityCell, severity.getLabel(), ReportFont.BODY.roundedPoints(), true, severity.getEmphasis().getHexColor());
     }
 
     private void autoFitToContent(final @NotNull XWPFTable table) {
@@ -352,7 +352,7 @@ public final class TestRunWordGenerator {
         final @NotNull XWPFTableCell cell = headerRow.getCell(column);
         shadeCell(cell, bgColor);
         setCellPadding(cell, 5, 6, 5, 6);
-        setCellText(cell, text, ReportFont.HEADING.ptRounded(), true, textColor);
+        setCellText(cell, text, ReportFont.HEADING.roundedPoints(), true, textColor);
     }
 
     // UC-REPORT-001, Rule-REPORT-023
@@ -474,7 +474,7 @@ public final class TestRunWordGenerator {
 
     private void styledRun(final @NotNull XWPFRun textRun, final @NotNull String text, final @NotNull ReportFont font, final @NotNull String color) {
         textRun.setText(text);
-        textRun.setFontSize(font.ptRounded());
+        textRun.setFontSize(font.roundedPoints());
         textRun.setFontFamily(ReportFont.FAMILY);
         textRun.setColor(color);
     }

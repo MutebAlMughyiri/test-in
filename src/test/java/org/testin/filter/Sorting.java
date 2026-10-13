@@ -29,20 +29,20 @@ import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Sorting {
-    public static void choose(final @NotNull SortPopupBtn sort, final @NotNull String label) {
+    public static void choose(final @NotNull SortPopupButton sort, final @NotNull String label) {
         final @NotNull AnAction entry = entry(sort, label);
         ((ToggleAction) entry).setSelected(TestActionEvent.createTestEvent(entry), true);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
 
-    static @NotNull AnAction entry(final @NotNull SortPopupBtn sort, final @NotNull String label) {
+    static @NotNull AnAction entry(final @NotNull SortPopupButton sort, final @NotNull String label) {
         return MenuChildren.of(sort.menu()).stream()
                 .filter(action -> label.equals(Objects.requireNonNullElse(action.getTemplatePresentation().getText(), "")))
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("the Sort menu has no " + label));
     }
 
-    static void press(final @NotNull SortPopupBtn sort, final @NotNull String label) {
+    static void press(final @NotNull SortPopupButton sort, final @NotNull String label) {
         final @NotNull AnAction entry = entry(sort, label);
         ActionUtil.performAction(entry, TestActionEvent.createTestEvent(entry));
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();

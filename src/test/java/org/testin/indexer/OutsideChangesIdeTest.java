@@ -229,7 +229,7 @@ public class OutsideChangesIdeTest extends AbstractReadTheRootIdeTest {
         });
 
         final @NotNull CompletableFuture<Boolean> deleted = new CompletableFuture<>();
-        Services.getInstance(getProject(), VfsExecutor.class).removeVf(this, doomed, deleted::complete);
+        Services.getInstance(getProject(), VfsExecutor.class).removeFile(this, doomed, deleted::complete);
         Await.until("the delete never finished", deleted::isDone);
 
         assertTrue("the delete did not happen", deleted.join());

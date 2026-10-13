@@ -53,7 +53,7 @@ public final class ExecutionRecorder implements Disposable {
                                 () -> record(testName, status, duration, failure)));
     }
 
-    public static void initRecording(final @NotNull Project project) {
+    public static void startRecording(final @NotNull Project project) {
         Services.getInstance(project, ExecutionRecorder.class);
     }
 

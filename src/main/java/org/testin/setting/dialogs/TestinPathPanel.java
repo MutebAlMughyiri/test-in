@@ -42,7 +42,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public final class TestinPathPanel {
     private final @NotNull TextFieldWithBrowseButton pathField = new TextFieldWithBrowseButton();
-    private final @NotNull JButton openFolderBtn = new JButton(Bundle.message("settings.path.open"));
+    private final @NotNull JButton openFolderButton = new JButton(Bundle.message("settings.path.open"));
 
     private final @NotNull ExecutorService probe = AppExecutorUtil.createBoundedApplicationPoolExecutor("Testin Folder Probe", 1);
 
@@ -78,10 +78,10 @@ public final class TestinPathPanel {
     }
 
     private void setupOpenButton() {
-        openFolderBtn.setIcon(AllIcons.Actions.MenuOpen);
-        openFolderBtn.setDisabledIcon(IconLoader.getDisabledIcon(AllIcons.Actions.MenuOpen));
-        openFolderBtn.setEnabled(false);
-        openFolderBtn.addActionListener(_ -> RevealFileAction.openDirectory(Path.of(pathField.getText())));
+        openFolderButton.setIcon(AllIcons.Actions.MenuOpen);
+        openFolderButton.setDisabledIcon(IconLoader.getDisabledIcon(AllIcons.Actions.MenuOpen));
+        openFolderButton.setEnabled(false);
+        openFolderButton.addActionListener(_ -> RevealFileAction.openDirectory(Path.of(pathField.getText())));
     }
 
     private void setupValidationListener() {
@@ -113,7 +113,7 @@ public final class TestinPathPanel {
 
             final boolean folder = isFolder(pathText);
             ApplicationManager.getApplication().invokeLater(() -> {
-                if (pathText.equals(asked.get())) openFolderBtn.setEnabled(folder);
+                if (pathText.equals(asked.get())) openFolderButton.setEnabled(folder);
             }, ModalityState.any());
         });
     }
@@ -122,7 +122,7 @@ public final class TestinPathPanel {
     public @NotNull JBPanel<?> getComponent() {
         final @NotNull JBPanel<?> panel = new JBPanel<>(new BorderLayout(5, 0));
         panel.add(pathField, BorderLayout.CENTER);
-        panel.add(openFolderBtn, BorderLayout.EAST);
+        panel.add(openFolderButton, BorderLayout.EAST);
         return panel;
     }
 

@@ -32,18 +32,18 @@ public enum EditorKind {
     // UC-EDITOR-PANEL-001
     TEST_SET(
             "test",
-            new EditorFileType("Test Case", Bundle.message("editor.type.test.set.description"), NodeType.TS.getIcon(), TestSetEditor::new)
+            new EditorFileType("Test Case", Bundle.message("editor.type.test.set.description"), NodeType.TEST_SET.getIcon(), TestSetEditor::new)
     ),
 
     TEST_RUN(
             "run",
-            new EditorFileType("Test Run", Bundle.message("editor.type.test.run.description"), NodeType.TR.getIcon(), TestRunEditor::new)
+            new EditorFileType("Test Run", Bundle.message("editor.type.test.run.description"), NodeType.TEST_RUN.getIcon(), TestRunEditor::new)
     );
 
     // Rule-EDITOR-PANEL-001
     private static final @NotNull Map<NodeType, EditorKind> OPENS = Map.of(
-            NodeType.TS, TEST_SET,
-            NodeType.TR, TEST_RUN);
+            NodeType.TEST_SET, TEST_SET,
+            NodeType.TEST_RUN, TEST_RUN);
 
     private final @NotNull String word;
     @Getter

@@ -37,7 +37,7 @@ import java.util.Optional;
 public abstract class AbstractToolbarPanel extends JBPanel<AbstractToolbarPanel> implements Disposable {
     public static final int BAR_HEIGHT = JBUI.scale(30);
     @Getter
-    protected final @NotNull SearchTxt searchTxt;
+    protected final @NotNull SearchText searchText;
     @Getter
     private final @NotNull ToolbarCallbacks callbacks;
     @Getter
@@ -50,7 +50,7 @@ public abstract class AbstractToolbarPanel extends JBPanel<AbstractToolbarPanel>
         this.callbacks = callbacks;
 
         setBackground(JBUI.CurrentTheme.EditorTabs.background());
-        this.searchTxt = new SearchTxt(callbacks::onToolBarSearchValueChanged, callbacks::onToolBarSearchFocusReleased);
+        this.searchText = new SearchText(callbacks::onToolBarSearchValueChanged, callbacks::onToolBarSearchFocusReleased);
     }
 
     public static int barHeight(final int naturalHeight) {
@@ -79,7 +79,7 @@ public abstract class AbstractToolbarPanel extends JBPanel<AbstractToolbarPanel>
 
     // UC-EDITOR-PANEL-019
     public void installSearchFocusShortcut(final @NotNull JComponent scope) {
-        new FocusSearchAction(searchTxt, scope);
+        new FocusSearchAction(searchText, scope);
     }
 
     @Override
@@ -100,9 +100,9 @@ public abstract class AbstractToolbarPanel extends JBPanel<AbstractToolbarPanel>
 
         addItems(getTrailingComponents(), constraints);
 
-        final @NotNull NodeDetailsBtn details = new NodeDetailsBtn(callbacks);
+        final @NotNull NodeDetailsButton details = new NodeDetailsButton(callbacks);
         add(details, constraints);
-        toolbarItems.put(NodeDetailsBtn.class, details);
+        toolbarItems.put(NodeDetailsButton.class, details);
 
         constraints.gridx++;
         addSearch(constraints);
@@ -115,16 +115,16 @@ public abstract class AbstractToolbarPanel extends JBPanel<AbstractToolbarPanel>
         constraints.weightx = 1.0;
         constraints.fill = GridBagConstraints.HORIZONTAL;
 
-        add(searchTxt, constraints);
-        toolbarItems.put(SearchTxt.class, searchTxt);
+        add(searchText, constraints);
+        toolbarItems.put(SearchText.class, searchText);
     }
 
     private void wireViewButtons() {
-        final @NotNull GridViewBtn gridBtn = getToolbarItem(GridViewBtn.class);
-        final @NotNull CardViewBtn listBtn = getToolbarItem(CardViewBtn.class);
+        final @NotNull GridViewButton gridViewButton = getToolbarItem(GridViewButton.class);
+        final @NotNull CardViewButton cardViewButton = getToolbarItem(CardViewButton.class);
 
-        gridBtn.addActionListener(_ -> setView(ViewMode.GRID_VIEW));
-        listBtn.addActionListener(_ -> setView(ViewMode.CARD_VIEW));
+        gridViewButton.addActionListener(_ -> setView(ViewMode.GRID_VIEW));
+        cardViewButton.addActionListener(_ -> setView(ViewMode.CARD_VIEW));
 
         updateViewButtons();
     }
@@ -137,11 +137,11 @@ public abstract class AbstractToolbarPanel extends JBPanel<AbstractToolbarPanel>
 
     // UC-EDITOR-PANEL-002, Rule-EDITOR-PANEL-016
     private void updateViewButtons() {
-        final @NotNull GridViewBtn gridBtn = getToolbarItem(GridViewBtn.class);
-        final @NotNull CardViewBtn listBtn = getToolbarItem(CardViewBtn.class);
+        final @NotNull GridViewButton gridViewButton = getToolbarItem(GridViewButton.class);
+        final @NotNull CardViewButton cardViewButton = getToolbarItem(CardViewButton.class);
 
-        gridBtn.setVisible(currentView == ViewMode.CARD_VIEW);
-        listBtn.setVisible(currentView == ViewMode.GRID_VIEW);
+        gridViewButton.setVisible(currentView == ViewMode.CARD_VIEW);
+        cardViewButton.setVisible(currentView == ViewMode.GRID_VIEW);
 
         revalidate();
         repaint();
@@ -157,6 +157,6 @@ public abstract class AbstractToolbarPanel extends JBPanel<AbstractToolbarPanel>
     public void dispose() {
         this.removeAll();
         this.toolbarItems.clear();
-        Disposer.dispose(this.searchTxt);
+        Disposer.dispose(this.searchText);
     }
 }
