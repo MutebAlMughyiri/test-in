@@ -47,7 +47,7 @@ public final class SourceSection implements DialogComponent {
         source = SourceFileField.of(project);
         hint = FileTypeHint.of(importFields);
 
-        final @NotNull PreviewLoader preview = new PreviewLoader(source.field(), project, hint::showStatus, (format, parsedData) -> {
+        final @NotNull PreviewLoader preview = new PreviewLoader(source.field(), project, hint::showMessage, (format, parsedData) -> {
             hint.showFor(format);
             onDataLoaded.accept(parsedData);
         }, importLoader);

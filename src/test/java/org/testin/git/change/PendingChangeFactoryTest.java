@@ -38,7 +38,7 @@ import static org.testng.Assert.assertTrue;
 
 public class PendingChangeFactoryTest {
 
-    private static final Path PATH = Path.of("Test Cases", "login", "case.testcase");
+    private static final Path PATH = Path.of("Test Cases", "login", "testCase.testcase");
 
     private static @NotNull TestCase testCase(final String description) {
         return TestCase.builder()
@@ -56,13 +56,13 @@ public class PendingChangeFactoryTest {
 
     @Test
     public void anAddedFileIsOneCreateChangeCarryingTheDescription() {
-        final TestCase added = testCase("a brand new case");
+        final TestCase added = testCase("a brand new test case");
 
         final PendingChange diff = PendingChangeFactory.fromFile(
-                StatusKind.ADDED, "", json(added), PATH, RealJsonCodec.build(), _ -> Optional.empty());
+                GitStatusKind.ADDED, "", json(added), PATH, RealJsonCodec.build(), _ -> Optional.empty());
 
         assertNotNull(diff);
-        assertEquals(diff.type(), StatusKind.ADDED);
+        assertEquals(diff.type(), GitStatusKind.ADDED);
         assertEquals(diff.testCaseId(), added.getId().toString());
         assertEquals(diff.relativeFilePath(), PATH);
         assertTrue(diff.committed().getDescription().isEmpty(), "an added file has no before state");
@@ -71,7 +71,7 @@ public class PendingChangeFactoryTest {
         final FieldChange change = diff.fieldChanges().getFirst();
         assertEquals(change.changeType(), ChangeType.CREATE_TEST_CASE);
         assertEquals(change.oldValue(), "");
-        assertEquals(change.newValue(), "a brand new case");
+        assertEquals(change.newValue(), "a brand new test case");
     }
 
     @Test
@@ -79,10 +79,10 @@ public class PendingChangeFactoryTest {
         final TestCase removed = testCase("a case that is going away");
 
         final PendingChange diff = PendingChangeFactory.fromFile(
-                StatusKind.DELETED, json(removed), "", PATH, RealJsonCodec.build(), _ -> Optional.empty());
+                GitStatusKind.DELETED, json(removed), "", PATH, RealJsonCodec.build(), _ -> Optional.empty());
 
         assertNotNull(diff);
-        assertEquals(diff.type(), StatusKind.DELETED);
+        assertEquals(diff.type(), GitStatusKind.DELETED);
         assertEquals(diff.committed().getDescription(), "a case that is going away");
 
         assertEquals(diff.fieldChanges().size(), 1);
@@ -102,10 +102,10 @@ public class PendingChangeFactoryTest {
                 .setPriority(Priority.HIGH);
 
         final PendingChange diff = PendingChangeFactory.fromFile(
-                StatusKind.MODIFIED, json(before), json(after), PATH, RealJsonCodec.build(), _ -> Optional.empty());
+                GitStatusKind.MODIFIED, json(before), json(after), PATH, RealJsonCodec.build(), _ -> Optional.empty());
 
         assertNotNull(diff);
-        assertEquals(diff.type(), StatusKind.MODIFIED);
+        assertEquals(diff.type(), GitStatusKind.MODIFIED);
         assertEquals(diff.committed().getDescription(), "the original description");
 
         assertEquals(diff.fieldChanges().size(), 2, "two fields moved, so two rows in the review");
@@ -119,7 +119,7 @@ public class PendingChangeFactoryTest {
         final TestCase unchanged = testCase("identical on both sides");
 
         final PendingChange change = PendingChangeFactory.fromFile(
-                StatusKind.MODIFIED, json(unchanged), json(unchanged), PATH, RealJsonCodec.build(), _ -> Optional.empty());
+                GitStatusKind.MODIFIED, json(unchanged), json(unchanged), PATH, RealJsonCodec.build(), _ -> Optional.empty());
 
         assertNotNull(change, "a file git calls modified is a change to commit");
         assertEquals(change.fieldChanges().size(), 1);
@@ -135,7 +135,7 @@ public class PendingChangeFactoryTest {
                 {"id":"%s","executions":[{"status":"PASSED","actualResult":"Signed in"}]}""".formatted(testCaseId);
 
         final PendingChange change = PendingChangeFactory.fromFile(
-                StatusKind.MODIFIED, before, after, Path.of("Test Runs", "cycle 4", testCaseId + ".runitem"), RealJsonCodec.build(), _ -> Optional.empty());
+                GitStatusKind.MODIFIED, before, after, Path.of("Test Runs", "cycle 4", testCaseId + ".runitem"), RealJsonCodec.build(), _ -> Optional.empty());
 
         assertEquals(change.subject(), ChangeSubject.RUN_ITEM);
         assertEquals(change.testCaseId(), testCaseId.toString(), "the result says which test case it is about");
@@ -147,7 +147,7 @@ public class PendingChangeFactoryTest {
     @Test
     public void aTestRunsMarkerSaysWhichOfItsFactsChanged() {
         final PendingChange change = PendingChangeFactory.fromFile(
-                StatusKind.MODIFIED,
+                GitStatusKind.MODIFIED,
                 "{\"status\":\"CREATED\",\"createdBy\":\"mtb\",\"configuration\":{\"platform\":\"Web\"}}",
                 "{\"status\":\"IN_PROGRESS\",\"createdBy\":\"mtb\",\"configuration\":{\"platform\":\"Mobile\"}}",
                 Path.of("Test Runs", "cycle 4", ".testrun"), RealJsonCodec.build(), _ -> Optional.empty());
@@ -160,7 +160,7 @@ public class PendingChangeFactoryTest {
     @Test
     public void aMarkerChangeIsListedWithItsStatus() {
         final PendingChange change = PendingChangeFactory.fromFile(
-                StatusKind.MODIFIED,
+                GitStatusKind.MODIFIED,
                 "{\"status\":\"ACTIVE\",\"createdBy\":\"mtb\"}",
                 "{\"status\":\"ARCHIVED\",\"createdBy\":\"mtb\"}",
                 Path.of("Test Cases", "login", ".testset"), RealJsonCodec.build(), _ -> Optional.empty());
@@ -170,10 +170,10 @@ public class PendingChangeFactoryTest {
         assertEquals(change.name(), "login", "a marker is named by the node it belongs to");
         assertFalse(change.isRevertible());
 
-        final FieldChange status = change.fieldChanges().getFirst();
-        assertEquals(status.changeType(), ChangeType.CHANGE_MARKER);
-        assertEquals(status.oldValue(), "ACTIVE");
-        assertEquals(status.newValue(), "ARCHIVED");
+        final FieldChange markerStatusChange = change.fieldChanges().getFirst();
+        assertEquals(markerStatusChange.changeType(), ChangeType.CHANGE_MARKER);
+        assertEquals(markerStatusChange.oldValue(), "ACTIVE");
+        assertEquals(markerStatusChange.newValue(), "ARCHIVED");
     }
 
     @Test
@@ -181,16 +181,16 @@ public class PendingChangeFactoryTest {
         final TestCase present = testCase("only one side survived");
 
         assertThrows(IllegalStateException.class, () -> PendingChangeFactory.fromFile(
-                StatusKind.MODIFIED, "", json(present), PATH, RealJsonCodec.build(), _ -> Optional.empty()));
+                GitStatusKind.MODIFIED, "", json(present), PATH, RealJsonCodec.build(), _ -> Optional.empty()));
 
         assertThrows(IllegalStateException.class, () -> PendingChangeFactory.fromFile(
-                StatusKind.MODIFIED, json(present), "", PATH, RealJsonCodec.build(), _ -> Optional.empty()));
+                GitStatusKind.MODIFIED, json(present), "", PATH, RealJsonCodec.build(), _ -> Optional.empty()));
 
         assertThrows(IllegalStateException.class, () -> PendingChangeFactory.fromFile(
-                StatusKind.ADDED, json(present), "", PATH, RealJsonCodec.build(), _ -> Optional.empty()));
+                GitStatusKind.ADDED, json(present), "", PATH, RealJsonCodec.build(), _ -> Optional.empty()));
 
         assertThrows(IllegalStateException.class, () -> PendingChangeFactory.fromFile(
-                StatusKind.DELETED, "", json(present), PATH, RealJsonCodec.build(), _ -> Optional.empty()));
+                GitStatusKind.DELETED, "", json(present), PATH, RealJsonCodec.build(), _ -> Optional.empty()));
     }
 
     @Test
@@ -199,13 +199,13 @@ public class PendingChangeFactoryTest {
         final TestCase before = testCase("before");
         final TestCase after = testCase("after").setId(before.getId());
 
-        assertEquals(PendingChangeFactory.fromFile(StatusKind.ADDED, "", json(added), PATH, RealJsonCodec.build(), _ -> Optional.empty())
+        assertEquals(PendingChangeFactory.fromFile(GitStatusKind.ADDED, "", json(added), PATH, RealJsonCodec.build(), _ -> Optional.empty())
                 .name(), "added");
 
-        assertEquals(PendingChangeFactory.fromFile(StatusKind.DELETED, json(before), "", PATH, RealJsonCodec.build(), _ -> Optional.empty())
+        assertEquals(PendingChangeFactory.fromFile(GitStatusKind.DELETED, json(before), "", PATH, RealJsonCodec.build(), _ -> Optional.empty())
                 .name(), "before", "a deletion is about the test case that was there");
 
-        assertEquals(PendingChangeFactory.fromFile(StatusKind.MODIFIED, json(before), json(after), PATH, RealJsonCodec.build(), _ -> Optional.empty())
+        assertEquals(PendingChangeFactory.fromFile(GitStatusKind.MODIFIED, json(before), json(after), PATH, RealJsonCodec.build(), _ -> Optional.empty())
                 .name(), "after", "a modification is about the test case as it is now");
     }
 
@@ -214,7 +214,7 @@ public class PendingChangeFactoryTest {
         final TestCase original = testCase("survives the round trip");
 
         final PendingChange diff = PendingChangeFactory.fromFile(
-                StatusKind.DELETED, json(original), "", PATH, RealJsonCodec.build(), _ -> Optional.empty());
+                GitStatusKind.DELETED, json(original), "", PATH, RealJsonCodec.build(), _ -> Optional.empty());
 
         assertNotNull(diff);
         final TestCase readBack = diff.committed();
@@ -230,18 +230,18 @@ public class PendingChangeFactoryTest {
         final @NotNull TestCase after = testCase("after").setId(before.getId());
         final @NotNull UUID testCaseId = UUID.randomUUID();
 
-        assertTrue(PendingChangeFactory.fromFile(StatusKind.ADDED, "", json(after), PATH, RealJsonCodec.build(), _ -> Optional.empty()).isRevertible(),
+        assertTrue(PendingChangeFactory.fromFile(GitStatusKind.ADDED, "", json(after), PATH, RealJsonCodec.build(), _ -> Optional.empty()).isRevertible(),
                 "a new test case can be taken out again");
-        assertTrue(PendingChangeFactory.fromFile(StatusKind.DELETED, json(before), "", PATH, RealJsonCodec.build(), _ -> Optional.empty()).isRevertible(),
+        assertTrue(PendingChangeFactory.fromFile(GitStatusKind.DELETED, json(before), "", PATH, RealJsonCodec.build(), _ -> Optional.empty()).isRevertible(),
                 "a removed test case can be put back");
-        assertTrue(PendingChangeFactory.fromFile(StatusKind.MODIFIED, json(before), json(after), PATH, RealJsonCodec.build(), _ -> Optional.empty()).isRevertible(),
+        assertTrue(PendingChangeFactory.fromFile(GitStatusKind.MODIFIED, json(before), json(after), PATH, RealJsonCodec.build(), _ -> Optional.empty()).isRevertible(),
                 "a changed field can be put back");
 
-        assertFalse(PendingChangeFactory.fromFile(StatusKind.MODIFIED, "{\"status\":\"PENDING\"}", "{\"status\":\"PASSED\"}",
+        assertFalse(PendingChangeFactory.fromFile(GitStatusKind.MODIFIED, "{\"status\":\"PENDING\"}", "{\"status\":\"PASSED\"}",
                 Path.of("Test Runs", "cycle 4", testCaseId + ".runitem"), RealJsonCodec.build(), _ -> Optional.empty()).isRevertible(), "a run item status is not a change to a test case");
-        assertFalse(PendingChangeFactory.fromFile(StatusKind.MODIFIED, "{\"status\":\"ACTIVE\"}", "{\"status\":\"ARCHIVED\"}",
+        assertFalse(PendingChangeFactory.fromFile(GitStatusKind.MODIFIED, "{\"status\":\"ACTIVE\"}", "{\"status\":\"ARCHIVED\"}",
                 Path.of("Test Cases", "login", ".testset"), RealJsonCodec.build(), _ -> Optional.empty()).isRevertible(), "a marker is not a change to a test case");
-        assertFalse(PendingChangeFactory.fromFile(StatusKind.ADDED, "", "notes",
+        assertFalse(PendingChangeFactory.fromFile(GitStatusKind.ADDED, "", "notes",
                 Path.of("Test Cases", "login", "notes.txt"), RealJsonCodec.build(), _ -> Optional.empty()).isRevertible(), "a file Testin does not own is not a change to a test case");
     }
 }

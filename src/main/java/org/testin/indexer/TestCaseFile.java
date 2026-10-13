@@ -20,5 +20,5 @@ import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 
-public record TestCaseFile(@NotNull Path testProject, @NotNull Path inProject) {
+public record TestCaseFile(@NotNull Path testProject, @NotNull Path inTestProject) {
 }

@@ -22,7 +22,7 @@ import org.testin.model.NodeType;
 import org.testin.model.markers.TestProjectMarker;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
-import org.testin.model.status.ProjectStatus;
+import org.testin.model.status.TestProjectStatus;
 import org.testin.services.Services;
 
 import java.io.IOException;
@@ -47,10 +47,10 @@ public class MarkerWritesIdeTest extends AbstractReadTheRootIdeTest {
 
     // UC-INTERNAL-002, Rule-INTERNAL-083
     public void testAMarkerThatWillNotParseIsNeverWrittenOver() {
-        final @NotNull Path project = aTestProjectAt(root.resolve("Checkout"));
-        final @NotNull Path testSet = theTestCasesOf(project).resolve("Login");
+        final @NotNull Path testProjectPath = aTestProjectAt(root.resolve("Checkout"));
+        final @NotNull Path testSet = theTestCasesOf(testProjectPath).resolve("Login");
         SyntheticTree.write(testSet.resolve(NodeType.TEST_SET.getMarker()), DAMAGED);
-        indexer().scanSingleProject(project);
+        indexer().scanSingleTestProject(testProjectPath);
 
         final @NotNull AbstractNode drawn = nodes().find(testSet).orElseThrow();
         WriteAction.runAndWait(() -> nodes().persistMarker(drawn));
@@ -73,14 +73,14 @@ public class MarkerWritesIdeTest extends AbstractReadTheRootIdeTest {
 
             settings().testerName = "Mohammed AlZamil";
             WriteAction.runAndWait(() -> {
-                testProject.getMarker().setStatus(ProjectStatus.INACTIVE);
+                testProject.getMarker().setStatus(TestProjectStatus.INACTIVE);
                 nodes().persistMarker(testProject);
             });
         } finally {
             settings().testerName = was;
         }
 
-        assertEquals("the marker was written again with a status the second write did not keep", ProjectStatus.INACTIVE, markerOf(path).getStatus());
+        assertEquals("the marker was written again with a status the second write did not keep", TestProjectStatus.INACTIVE, markerOf(path).getStatus());
         assertEquals("a later write stamped the creation again because the first had no tester name", "", markerOf(path).getCreatedBy());
     }
 }

@@ -76,15 +76,15 @@ enum ReportSection {
     private final @NotNull ToLongFunction<TestRunSummary> count;
     @Getter
     private final @NotNull ImmutableList<TestRunEditorFields> failureDetailColumns;
-    private final @NotNull ImmutableSet<RunItemStatus> statuses;
+    private final @NotNull ImmutableSet<RunItemStatus> runItemStatuses;
 
-    ReportSection(final @NotNull String title, final @NotNull String descriptionFormat, final @NotNull ToLongFunction<TestRunSummary> count, final @NotNull ImmutableList<TestRunEditorFields> failureDetailColumns, final @NotNull RunItemStatus... statuses) {
+    ReportSection(final @NotNull String title, final @NotNull String descriptionFormat, final @NotNull ToLongFunction<TestRunSummary> count, final @NotNull ImmutableList<TestRunEditorFields> failureDetailColumns, final @NotNull RunItemStatus... runItemStatuses) {
         this.title = title;
         this.descriptionFormat = descriptionFormat;
-        this.hexColor = statuses[0].getReportHex();
+        this.hexColor = runItemStatuses[0].getReportHex();
         this.count = count;
         this.failureDetailColumns = failureDetailColumns;
-        this.statuses = Sets.immutableEnumSet(Arrays.asList(statuses));
+        this.runItemStatuses = Sets.immutableEnumSet(Arrays.asList(runItemStatuses));
     }
 
     private static double contrast(final @NotNull String one, final @NotNull String other) {
@@ -126,6 +126,6 @@ enum ReportSection {
     }
 
     public boolean matches(final @NotNull RunItem runItem) {
-        return statuses.contains(runItem.shownStatus());
+        return runItemStatuses.contains(runItem.shownStatus());
     }
 }

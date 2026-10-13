@@ -58,7 +58,7 @@ public class DetailsTab {
         // Rule-VIEW-PANEL-122
         final @NotNull RunItemExecution shown = runItem.shownExecution(shownLine);
 
-        return Band.of(Bundle.message("details.band.run"), List.of(
+        return Band.of(Bundle.message("details.band.run.item"), List.of(
                 new RunItemSummary(runItem, treePath, showExecution),
                 new FieldRow(TestRunEditorFields.ACTUAL_RESULT.getName(), (_, _) -> shown.getActualResult()),
                 new StacktraceLine(shown, treePath),

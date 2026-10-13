@@ -250,25 +250,25 @@ final class TestCaseStore {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-021
-    void swapIn(final @NotNull Path projectPath, final @NotNull Map<UUID, TestCase> testCases, final @NotNull Map<String, List<UUID>> setTestCaseIds, final @NotNull Map<UUID, Path> handNamedFiles, final @NotNull Map<String, Set<String>> unreadableTestCases) {
+    void swapIn(final @NotNull Path testProjectPath, final @NotNull Map<UUID, TestCase> testCases, final @NotNull Map<String, List<UUID>> setTestCaseIds, final @NotNull Map<UUID, Path> handNamedFiles, final @NotNull Map<String, Set<String>> unreadableTestCases) {
         final @NotNull Set<UUID> held = testCaseIdsByTestSet.entrySet().stream()
-                .filter(entry -> Path.of(entry.getKey()).startsWith(projectPath))
+                .filter(entry -> Path.of(entry.getKey()).startsWith(testProjectPath))
                 .flatMap(entry -> entry.getValue().stream())
                 .collect(Collectors.toCollection(HashSet::new));
 
         testCasesById.putAll(testCases);
         testCaseIdsByTestSet.putAll(setTestCaseIds);
 
-        testCaseIdsByTestSet.keySet().removeIf(path -> Path.of(path).startsWith(projectPath) && !setTestCaseIds.containsKey(path));
+        testCaseIdsByTestSet.keySet().removeIf(path -> Path.of(path).startsWith(testProjectPath) && !setTestCaseIds.containsKey(path));
 
         held.removeAll(testCases.keySet());
         held.forEach(testCasesById::remove);
 
         handNamed.putAll(handNamedFiles);
-        handNamed.entrySet().removeIf(entry -> entry.getValue().startsWith(projectPath) && !handNamedFiles.containsKey(entry.getKey()));
+        handNamed.entrySet().removeIf(entry -> entry.getValue().startsWith(testProjectPath) && !handNamedFiles.containsKey(entry.getKey()));
 
         unreadable.putAll(unreadableTestCases);
-        unreadable.keySet().removeIf(set -> Path.of(set).startsWith(projectPath) && !unreadableTestCases.containsKey(set));
+        unreadable.keySet().removeIf(set -> Path.of(set).startsWith(testProjectPath) && !unreadableTestCases.containsKey(set));
     }
 
     void clear() {

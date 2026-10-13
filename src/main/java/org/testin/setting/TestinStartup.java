@@ -31,7 +31,7 @@ import org.testin.help.SetupHint;
 import org.testin.help.Hints;
 import org.testin.help.SetupStep;
 import org.testin.indexer.DeletedNodes;
-import org.testin.indexer.ProjectIndexer;
+import org.testin.indexer.TestProjectIndexer;
 import org.testin.logger.TestinLogger;
 import org.testin.runner.ExecutionRecorder;
 import org.testin.services.Services;
@@ -76,7 +76,7 @@ public final class TestinStartup implements ProjectActivity {
         if (!Once.claim(project, READ)) return;
 
         TestinLogger.info("testin Path: " + testinPath);
-        Services.getInstance(project, ProjectIndexer.class).indexWithProgress();
+        Services.getInstance(project, TestProjectIndexer.class).indexWithProgress();
     }
 
     // UC-SETTING-002, Rule-SETTING-014, Rule-INTERNAL-127, Rule-INTERNAL-129

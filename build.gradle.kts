@@ -481,9 +481,9 @@ tasks {
         // How many test cases IndexerBudgetTest measures against. Forwarded
         // rather than inherited: a -D on the Gradle command line reaches the
         // Gradle daemon, not the JVM the tests run in, so without this the
-        // documented `-Dtestin.budget.cases=10000` would silently measure the
+        // documented `-Dtestin.budget.testCases=10000` would silently measure the
         // default instead (#125).
-        System.getProperty("testin.budget.cases")?.let { systemProperty("testin.budget.cases", it) }
+        System.getProperty("testin.budget.testCases")?.let { systemProperty("testin.budget.testCases", it) }
 
         // The documents are an input to the tests that read them - RuleNumbersTest
         // scans every page for the numbers the code cites. Without this Gradle
@@ -669,7 +669,7 @@ mapOf("runIde" to "config", "runPyCharm" to "config_runPyCharm").forEach { (runT
             // project to the root it runs under, so a sandbox aimed at anyone's own test
             // data resolves nothing for `testinProject: Demo` and rebinds it - writing
             // that root's project name straight back into a committed file. It happened
-            // twice; SampleProjectTest is what caught it.
+            // twice; SampleTestProjectTest is what caught it.
             //
             // Copied once and then left alone, so test runs created while testing survive
             // to the next launch. Deleting .sandbox/sample is how to get the sample back.

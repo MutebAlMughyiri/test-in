@@ -301,7 +301,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
 
     // UC-EDITOR-PANEL-022, Rule-EDITOR-PANEL-101
     @Override
-    protected void drawStatus(final @NotNull PageWindow page) {
+    protected void drawStatusBar(final @NotNull PageWindow page) {
         statusBar.updatePaginationState(page.page(), page.totalPages());
 
         automationState.read(project, snapshotOfAll(), this::refreshView);
@@ -441,10 +441,10 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
 
     // UC-EDITOR-PANEL-042, Rule-EDITOR-PANEL-177
     void showTestRunTotals() {
-        final @NotNull TestRunStatus status = parent.getMarker().getStatus();
+        final @NotNull TestRunStatus testRunStatus = parent.getMarker().getStatus();
 
         statusBar.showTestRunStatus(parent.getMarker());
-        statusBar.showRunItemStatuses(TestRunResultAnalysis.segments(TestRunSummary.of(runItems()), status));
+        statusBar.showRunItemStatuses(TestRunResultAnalysis.segments(TestRunSummary.of(runItems()), testRunStatus));
 
         showElapsed();
     }

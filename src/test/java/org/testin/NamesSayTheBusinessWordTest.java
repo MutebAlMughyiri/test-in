@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -34,7 +35,12 @@ public class NamesSayTheBusinessWordTest {
 
     private static final @NotNull List<Path> ROOTS = List.of(Path.of("src"), Path.of("testin-java", "src"), Path.of("testin-testng", "src"), Path.of("testin-apimodel", "src"));
 
-    private static final @NotNull Pattern BARE = Pattern.compile("(?<!Test)Run(?!Item|ner|ning|nable)|(?<!Test)(?<!Use)Cases?(?![a-z])|Verdict");
+    private static final @NotNull Pattern BARE = Pattern.compile("(?<!Test)Run(?!Item|ner|ning|nable)|(?<!Test)(?<!Use)Cases?(?![a-z])|Verdict"
+            + "|(?<!Run)(?<!Toolbar)(?<!StatusBar)(?<!Menu)Items?(?![a-z])"
+            + "|(?<!Test)(?<!Testin)Projects?(?![a-z])"
+            + "|(?<!TestCase)(?<!RunItem)(?<!TestRun)(?<!Execution)(?<!Node)(?<!TestSet)(?<!Package)(?<!TestProject)(?<!Git)Status(?!Bar)");
+
+    private static final @NotNull Set<String> CODE_PROJECT = Set.of("AbstractAnyProjectAction", "ProjectLifetime", "SaveOnProjectClose", "SaveOnProjectCloseIdeTest");
 
     private static @NotNull List<String> bareTypeNames() {
         final @NotNull List<String> found = new ArrayList<>();
@@ -46,7 +52,7 @@ public class NamesSayTheBusinessWordTest {
                 files.map(file -> file.getFileName().toString())
                         .filter(name -> name.endsWith(".java"))
                         .map(name -> name.substring(0, name.length() - ".java".length()))
-                        .filter(name -> BARE.matcher(name).find())
+                        .filter(name -> BARE.matcher(name).find() && !CODE_PROJECT.contains(name))
                         .forEach(found::add);
             } catch (final IOException ex) {
                 throw new AssertionError("could not walk " + root, ex);
@@ -57,10 +63,11 @@ public class NamesSayTheBusinessWordTest {
     }
 
     @Test
-    public void noTypeIsNamedWithABareRunCaseOrVerdict() {
+    public void noTypeIsNamedWithABareRunCaseItemProjectStatusOrVerdict() {
         assertEquals(bareTypeNames(), List.of(),
                 "A type name says the business word in full: Test Run or Run Item, never Run alone; Test Case, never Case;"
-                        + " Run Item Status, never Verdict. Executing automated test methods is Execution.");
+                        + " Run Item or Test Case, never Item; Test Project, never Project, unless it is IntelliJ's project;"
+                        + " which status it is, never Status alone; Run Item Status, never Verdict. Executing automated test methods is Execution.");
     }
 
     @Test
@@ -72,5 +79,13 @@ public class NamesSayTheBusinessWordTest {
         assertFalse(BARE.matcher("RunItemStatus").find());
         assertFalse(BARE.matcher("TestCaseCard").find());
         assertFalse(BARE.matcher("TestNGRunner").find(), "a runner is a tool, not a test run");
+        assertTrue(BARE.matcher("ItemRecorder").find());
+        assertTrue(BARE.matcher("ProjectIndexer").find());
+        assertTrue(BARE.matcher("UpdateStatusAction").find());
+        assertFalse(BARE.matcher("ToolbarItem").find());
+        assertFalse(BARE.matcher("TestProjectIndexer").find());
+        assertFalse(BARE.matcher("TestinProjectConfig").find());
+        assertFalse(BARE.matcher("UpdateNodeStatusAction").find());
+        assertFalse(BARE.matcher("EditorStatusBar").find(), "the status bar is a place on screen, not a status");
     }
 }

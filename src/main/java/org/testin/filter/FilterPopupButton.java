@@ -66,7 +66,7 @@ public class FilterPopupButton extends AbstractIconButton implements ToolbarItem
 
     @Getter
     @NotNull
-    private final Set<RunItemStatus> selectedStatus = new HashSet<>();
+    private final Set<RunItemStatus> selectedRunItemStatuses = new HashSet<>();
 
     @Getter
     private final @NotNull Set<TestCaseStatus> selectedTestCaseStatus = new HashSet<>();
@@ -93,7 +93,7 @@ public class FilterPopupButton extends AbstractIconButton implements ToolbarItem
     }
 
     private @NotNull List<Set<?>> filters() {
-        return List.of(selectedPriority, selectedGroup, selectedModule, selectedTestCaseStatus, selectedStatus, selectedAutomation, selectedTestSet);
+        return List.of(selectedPriority, selectedGroup, selectedModule, selectedTestCaseStatus, selectedRunItemStatuses, selectedAutomation, selectedTestSet);
     }
 
     // UC-EDITOR-PANEL-020, Rule-EDITOR-PANEL-098
@@ -208,13 +208,13 @@ public class FilterPopupButton extends AbstractIconButton implements ToolbarItem
         filterGroup.add(filterModuleMenu);
 
         final @NotNull DefaultActionGroup filterTestCaseStatusMenu = new DefaultActionGroup(Bundle.message("filter.test.case.status"), true);
-        Arrays.stream(TestCaseStatus.values()).forEach(status ->
-                filterTestCaseStatusMenu.add(new ToggleFilterAction<>(status.getLabel(), null,
-                        status, selectedTestCaseStatus, FilterMembership.plain(), onChanged)));
+        Arrays.stream(TestCaseStatus.values()).forEach(testCaseStatus ->
+                filterTestCaseStatusMenu.add(new ToggleFilterAction<>(testCaseStatus.getLabel(), null,
+                        testCaseStatus, selectedTestCaseStatus, FilterMembership.plain(), onChanged)));
         filterGroup.add(filterTestCaseStatusMenu);
 
-        filterGroup.add(submenu(Bundle.message("filter.run.item.status"), source::hasRunItemStatuses, Bundle.message("filter.run.only"), () -> Arrays.stream(RunItemStatus.values())
-                .<AnAction>map(status -> new ToggleFilterAction<>(status.getLabel(), null, status, selectedStatus, FilterMembership.plain(), onChanged))
+        filterGroup.add(submenu(Bundle.message("filter.run.item.status"), source::hasRunItemStatuses, Bundle.message("filter.test.run.only"), () -> Arrays.stream(RunItemStatus.values())
+                .<AnAction>map(runItemStatus -> new ToggleFilterAction<>(runItemStatus.getLabel(), null, runItemStatus, selectedRunItemStatuses, FilterMembership.plain(), onChanged))
                 .toList()));
 
         // Rule-EDITOR-PANEL-260, Rule-TREE-PANEL-129

@@ -236,7 +236,7 @@ public class ReportFormatsIdeTest extends AbstractTempRootIdeTest {
     }
 
     // Rule-REPORT-005
-    public void testTheProjectNamedIsTheTestProject() {
+    public void testTheTestProjectNamedIsTheOneOnTheReport() {
         final @NotNull TestRunNode testRun = theTestRun();
         final @NotNull String codeProject = getProject().getName();
 

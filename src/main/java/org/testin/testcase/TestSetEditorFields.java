@@ -200,10 +200,10 @@ public enum TestSetEditorFields implements ShowableField {
     ),
 
     STATUS(
-            Bundle.message("field.status"),
+            Bundle.message("field.test.case.status"),
             FieldDefault.OFF,
             testCase -> testCase.getStatus().getLabel(),
-            (_, testCase, value) -> TestCaseFieldParser.testCaseStatus(value, testCase.getStatus()).map(status -> testCase.edit().status(status).build()),
+            (_, testCase, value) -> TestCaseFieldParser.testCaseStatus(value, testCase.getStatus()).map(testCaseStatus -> testCase.edit().status(testCaseStatus).build()),
             CodeChangeType.UPDATE_TEST_CASE_STATUS,
             Can.EDIT, Can.COPY, Can.EXPORT
     ),

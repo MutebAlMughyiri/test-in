@@ -111,7 +111,7 @@ public enum SortField {
 
     private final @NotNull String label;
 
-    private final boolean runOnly;
+    private final boolean testRunOnly;
 
     private final @NotNull Comparator<SortedTestCase> comparator;
 

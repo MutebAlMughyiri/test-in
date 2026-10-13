@@ -26,7 +26,7 @@ public interface CodeChange<T> {
     void execute(final @NotNull Project project, final @NotNull T payload);
 
     default void executeAll(final @NotNull Project project, final @NotNull List<? extends T> payloads) {
-        for (final T item : payloads) execute(project, item);
+        for (final T payload : payloads) execute(project, payload);
     }
 
     // Rule-CODEGEN-081

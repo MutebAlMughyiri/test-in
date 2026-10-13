@@ -142,7 +142,7 @@ public class FilterMenuEntriesIdeTest extends AbstractCodegenIdeTest {
     }
 
     // Rule-EDITOR-PANEL-260
-    public void testTestSetIsGrayWithItsReasonInATestSetEditorAndListsTheRunsTestSets() {
+    public void testTestSetIsGrayWithItsReasonInATestSetEditorAndListsTheTestRunsTestSets() {
         threeStatesOfAutomation();
         final @NotNull TestSetEditor testSetEditor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         final @NotNull TestRunEditor testRunEditor = aTestRunEditorOver(testCases);
@@ -163,7 +163,7 @@ public class FilterMenuEntriesIdeTest extends AbstractCodegenIdeTest {
     }
 
     // Rule-EDITOR-PANEL-261
-    public void testStatusFiltersOnTheTestCasesOwnStatusAndRunItemStatusIsGrayInATestSetEditor() {
+    public void testTheStatusFilterReadsTheTestCaseStatusAndRunItemStatusIsGrayInATestSetEditor() {
         threeStatesOfAutomation();
         final @NotNull TestCase reviewed = testCases.get(1).edit().status(TestCaseStatus.REVIEWED).build();
         reviewed.setParent(testSet);
@@ -171,9 +171,9 @@ public class FilterMenuEntriesIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestSetEditor testSetEditor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         final @NotNull TestRunEditor testRunEditor = aTestRunEditorOver(testCases);
         try {
-            final @NotNull List<String> fourStatuses = Arrays.stream(TestCaseStatus.values()).map(TestCaseStatus::getLabel).toList();
+            final @NotNull List<String> fourTestCaseStatuses = Arrays.stream(TestCaseStatus.values()).map(TestCaseStatus::getLabel).toList();
             for (final AbstractTestinEditor<?, ?> editor : List.<AbstractTestinEditor<?, ?>>of(testSetEditor, testRunEditor)) {
-                assertEquals("Status does not offer the test case's own four", fourStatuses, namesUnder(filterOf(editor), Bundle.message("filter.test.case.status")));
+                assertEquals("Status does not offer the test case's own four", fourTestCaseStatuses, namesUnder(filterOf(editor), Bundle.message("filter.test.case.status")));
                 choose(editor, Bundle.message("filter.test.case.status"), TestCaseStatus.REVIEWED.getLabel());
                 assertEquals("Status did not filter on the test case's own status in " + editor.getClass().getSimpleName(), List.of(reviewed.getDescription()), shown(editor));
                 filterOf(editor).resetToolBarFilter();
@@ -181,7 +181,7 @@ public class FilterMenuEntriesIdeTest extends AbstractCodegenIdeTest {
 
             final @NotNull Presentation inATestSet = Gestures.updated(getProject(), entry(filterOf(testSetEditor), Bundle.message("filter.run.item.status")), testSetEditor.getList());
             assertFalse("Run Item Status works in a test set editor", inATestSet.isEnabled());
-            assertEquals("Run Item Status does not say why it is gray", Bundle.message("filter.run.only"), inATestSet.getDescription());
+            assertEquals("Run Item Status does not say why it is gray", Bundle.message("filter.test.run.only"), inATestSet.getDescription());
             assertTrue("Run Item Status does not work in a test run editor", Gestures.updated(getProject(), entry(filterOf(testRunEditor), Bundle.message("filter.run.item.status")), testRunEditor.getList()).isEnabled());
 
             final @NotNull CheckedTreeNode tree = new CheckedTreeNode("all");
@@ -190,7 +190,7 @@ public class FilterMenuEntriesIdeTest extends AbstractCodegenIdeTest {
             tree.add(set);
             final @NotNull TestRunFormFilter form = new TestRunFormFilter(getProject(), theTestCasesDirectory().getPath(), tree);
             final @NotNull FilterPopupButton formFilter = (FilterPopupButton) Drawn.components(form.getSelection().getPanel()).stream().filter(FilterPopupButton.class::isInstance).findFirst().orElseThrow();
-            assertEquals("Status is not in the Create Test Run dialog", fourStatuses, namesUnder(formFilter, Bundle.message("filter.test.case.status")));
+            assertEquals("Status is not in the Create Test Run dialog", fourTestCaseStatuses, namesUnder(formFilter, Bundle.message("filter.test.case.status")));
             final @NotNull AnAction reviewedOnly = childrenOf((DefaultActionGroup) entry(formFilter, Bundle.message("filter.test.case.status"))).stream().filter(action -> nameOf(action).equals(TestCaseStatus.REVIEWED.getLabel())).findFirst().orElseThrow();
             Gestures.press(getProject(), reviewedOnly, form.getSelection().getPanel());
             final @NotNull TreeModel offered = Drawn.components(form.getSelection().getPanel()).stream().filter(Tree.class::isInstance).map(Tree.class::cast).findFirst().orElseThrow().getModel();

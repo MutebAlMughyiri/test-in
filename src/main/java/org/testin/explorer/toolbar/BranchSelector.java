@@ -54,7 +54,7 @@ public class BranchSelector {
     private final @NotNull ComboBox<String> comboBox;
     private final @NotNull DefaultComboBoxModel<String> model;
 
-    private @NotNull Path projectPath = Path.of("");
+    private @NotNull Path testProjectPath = Path.of("");
 
     private volatile @NotNull String currentBranch = "";
 
@@ -81,15 +81,15 @@ public class BranchSelector {
 
         comboBox.addActionListener(_ -> onSelection());
 
-        updateProject(testProjectNode);
+        updateTestProject(testProjectNode);
     }
 
     // UC-TREE-PANEL-026, Rule-TREE-PANEL-108
-    public void updateProject(final @NotNull Optional<TestProjectNode> testProjectNode) {
+    public void updateTestProject(final @NotNull Optional<TestProjectNode> testProjectNode) {
         final @NotNull Path path = testProjectNode.map(TestProjectNode::getPath).orElse(Path.of(""));
 
-        final boolean projectChanged = !path.equals(projectPath);
-        this.projectPath = path;
+        final boolean testProjectChanged = !path.equals(testProjectPath);
+        this.testProjectPath = path;
 
         currentBranch = "";
 
@@ -104,14 +104,14 @@ public class BranchSelector {
         }
 
         showPlaceholder(Bundle.message("branch.loading"));
-        loadGitBranches(path, projectChanged);
+        loadGitBranches(path, testProjectChanged);
     }
 
     // UC-TREE-PANEL-026, Rule-TREE-PANEL-108
     public void fetchBranches() {
-        if (projectPath.toString().isEmpty() || git.isNotRepository(projectPath)) return;
+        if (testProjectPath.toString().isEmpty() || git.isNotRepository(testProjectPath)) return;
 
-        loadGitBranches(projectPath, true);
+        loadGitBranches(testProjectPath, true);
     }
 
     // UC-TREE-PANEL-026
@@ -143,7 +143,7 @@ public class BranchSelector {
 
     // UC-TREE-PANEL-026, Rule-TREE-PANEL-085
     private void checkoutBranchAndRefreshTree(final @NotNull String targetBranch) {
-        final @NotNull Path repositoryPath = projectPath;
+        final @NotNull Path repositoryPath = testProjectPath;
         if (repositoryPath.toString().isEmpty()) return;
 
         BackgroundWork.start(new Task.Backgroundable(project, Bundle.message("branch.task.checking", targetBranch), false) {
@@ -151,7 +151,7 @@ public class BranchSelector {
             public void run(final @NotNull ProgressIndicator indicator) {
                 indicator.setIndeterminate(true);
 
-                final int pending = GitStatusLines.changeCount(git.status(repositoryPath));
+                final int pending = GitStatusLines.changeCount(git.gitStatus(repositoryPath));
 
                 ApplicationManager.getApplication().invokeLater(() -> {
                     if (pending == 0) {

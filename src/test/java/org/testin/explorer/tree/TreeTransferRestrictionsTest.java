@@ -34,7 +34,7 @@ import static org.testng.Assert.assertTrue;
 
 public class TreeTransferRestrictionsTest {
 
-    private static @NotNull AbstractNode project(final String name) {
+    private static @NotNull AbstractNode testProject(final String name) {
         final TestProjectNode testProject = new TestProjectNode();
         testProject.setPath(Path.of("Testin", name));
         return testProject;
@@ -147,7 +147,7 @@ public class TreeTransferRestrictionsTest {
 
     // Rule-PRODUCT-005, Rule-TREE-PANEL-044
     @Test
-    public void testRunAcceptsNoRunStructure() {
+    public void testATestRunAcceptsNoTestRunStructure() {
         final AbstractNode testRun = new TestRunNode();
 
         assertFalse(testRun.acceptsTransferred(new TestRunNode()),
@@ -194,7 +194,7 @@ public class TreeTransferRestrictionsTest {
         final Path occupiedPath = Path.of("root", "test-cases", "other", "pkg");
 
         assertFalse(TreeTransferHandler.isValidDestination(source, target, occupiedPath::equals),
-                "a target already containing the name must be invalid - the 'already exists in VFS' case");
+                "a target already containing the name must be invalid - the 'already exists in VFS' situation");
         assertTrue(TreeTransferHandler.isValidDestination(source, target, _ -> false),
                 "the same target is valid when the name is free");
     }
@@ -202,12 +202,12 @@ public class TreeTransferRestrictionsTest {
     // Rule-TREE-PANEL-013
     @Test
     public void transfersNeverCrossTestProjects() {
-        final AbstractNode projectA = project("projectA");
-        final AbstractNode packageInA = childPackage(projectA, "pkg");
-        final AbstractNode testCasesFolderInA = childPackage(projectA, "Test Cases");
+        final AbstractNode testProjectA = testProject("projectA");
+        final AbstractNode packageInA = childPackage(testProjectA, "pkg");
+        final AbstractNode testCasesFolderInA = childPackage(testProjectA, "Test Cases");
 
-        final AbstractNode projectB = project("projectB");
-        final AbstractNode packageInB = childPackage(projectB, "pkg2");
+        final AbstractNode testProjectB = testProject("projectB");
+        final AbstractNode packageInB = childPackage(testProjectB, "pkg2");
 
         assertTrue(TreeTransferHandler.sameTestProject(packageInA, testCasesFolderInA),
                 "within one project must stay allowed");

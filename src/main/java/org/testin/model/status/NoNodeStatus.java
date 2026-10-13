@@ -14,19 +14,25 @@
  * limitations under the License.
  */
 
-package org.testin.actions;
+package org.testin.model.status;
 
-import com.intellij.openapi.project.DumbAwareAction;
-import com.intellij.openapi.project.Project;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.Icon;
+@Getter
+@AllArgsConstructor
+public enum NoNodeStatus implements NodeStatus {
+    NONE(
+            "",
+            "",
+            "",
+            true
+    );
 
-public abstract class AbstractBoundProjectAction extends DumbAwareAction {
-    protected final @NotNull Project project;
+    private final @NotNull String label;
+    private final @NotNull String buttonName;
+    private final @NotNull String buttonDescription;
 
-    protected AbstractBoundProjectAction(final @NotNull Project project, final @NotNull String title, final @NotNull String description, final @NotNull Icon icon) {
-        super(title, description, icon);
-        this.project = project;
-    }
+    private final boolean active;
 }

@@ -55,7 +55,7 @@ import java.util.Objects;
 public class EditorStatusBar extends JBPanel<EditorStatusBar> {
     private static final int EDGE = 2;
 
-    private final @NotNull JBLabel statusLabel = new JBLabel();
+    private final @NotNull JBLabel statusBarLabel = new JBLabel();
 
     private final @NotNull JBLabel testRunStatusLabel = new JBLabel();
 
@@ -83,7 +83,7 @@ public class EditorStatusBar extends JBPanel<EditorStatusBar> {
                 JBUI.Borders.empty(0, EDGE)
         ));
         setBackground(JBUI.CurrentTheme.EditorTabs.background());
-        statusLabel.setForeground(UIUtil.getContextHelpForeground());
+        statusBarLabel.setForeground(UIUtil.getContextHelpForeground());
         testRunStatusLabel.setForeground(UIUtil.getContextHelpForeground());
         testRunStatusLabel.setBorder(JBUI.Borders.emptyRight(10));
         testRunStatusLabel.setIconTextGap(JBUI.scale(4));
@@ -116,7 +116,7 @@ public class EditorStatusBar extends JBPanel<EditorStatusBar> {
                 button(PageStep.NEXT), button(PageStep.LAST));
         rightRow = centeredRow(testRunStatusLabel, runItemStatusesRow, executionTimeLabel, automatedLabel, pageSizeField);
 
-        add(statusLabel);
+        add(statusBarLabel);
         add(navigationRow);
         add(rightRow);
     }
@@ -182,11 +182,11 @@ public class EditorStatusBar extends JBPanel<EditorStatusBar> {
 
         final int arrows = navigationRow.getPreferredSize().width;
         final int figures = rightRow.getPreferredSize().width;
-        final int arrowsAt = arrowsAt(right - left, statusLabel.getPreferredSize().width, arrows, figures);
+        final int arrowsAt = arrowsAt(right - left, statusBarLabel.getPreferredSize().width, arrows, figures);
 
         rightRow.setBounds(right - figures, top, figures, height);
         navigationRow.setBounds(left + arrowsAt, top, arrows, height);
-        statusLabel.setBounds(left, top, arrowsAt, height);
+        statusBarLabel.setBounds(left, top, arrowsAt, height);
     }
 
     @Override
@@ -248,11 +248,11 @@ public class EditorStatusBar extends JBPanel<EditorStatusBar> {
 
     // UC-EDITOR-PANEL-042, Rule-EDITOR-PANEL-179, Rule-EDITOR-PANEL-265
     public void showTestRunStatus(final @NotNull TestRunMarker marker) {
-        final @NotNull TestRunStatus status = marker.getStatus();
-        testRunStatusLabel.setIcon(status.getIcon());
+        final @NotNull TestRunStatus testRunStatus = marker.getStatus();
+        testRunStatusLabel.setIcon(testRunStatus.getIcon());
         testRunStatusLabel.setText(besideTheIcon(marker));
-        Tooltip.set(testRunStatusLabel, Bundle.message("statusbar.test.run.status.tip", status.getLabel()));
-        testRunStatusLabel.getAccessibleContext().setAccessibleName(status.getLabel());
+        Tooltip.set(testRunStatusLabel, Bundle.message("statusbar.test.run.status.tip", testRunStatus.getLabel()));
+        testRunStatusLabel.getAccessibleContext().setAccessibleName(testRunStatus.getLabel());
         testRunStatusLabel.setVisible(true);
     }
 
@@ -276,13 +276,13 @@ public class EditorStatusBar extends JBPanel<EditorStatusBar> {
         final @NotNull String of = testCases + narrowedFrom(shownCount, totalCount) + (sortedBy.isEmpty() ? "" : " " + Bundle.message("statusbar.sorted", sortedBy));
 
         if (selectedCount > 1) {
-            statusLabel.setText(oneLine(Bundle.message("statusbar.selected.of", String.valueOf(selectedCount), of)));
+            statusBarLabel.setText(oneLine(Bundle.message("statusbar.selected.of", String.valueOf(selectedCount), of)));
 
         } else if (selectedCount == 1) {
-            statusLabel.setText(oneLine(Bundle.message("statusbar.position.of", String.valueOf(firstSelectedPosition + 1), of)));
+            statusBarLabel.setText(oneLine(Bundle.message("statusbar.position.of", String.valueOf(firstSelectedPosition + 1), of)));
 
         } else {
-            statusLabel.setText(oneLine(of));
+            statusBarLabel.setText(oneLine(of));
         }
     }
 }

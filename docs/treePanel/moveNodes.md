@@ -137,7 +137,7 @@ verb, **Move** or **Copy**. Everything else on the dialog is the same.
 **Drag and drop**
 
 1. The tester drags one or more nodes. A small label follows the mouse. It
-   reads *'\<name\>'*, or *N items* for several.
+   reads *'\<name\>'*, or *N nodes* for several.
 2. Over a row that cannot take them, the pointer turns into the no-entry sign.
    The row does not light up.
 3. The tester releases on a folder that can hold them. The **Move** dialog asks
@@ -166,7 +166,7 @@ all there.
 
 **If the destination already holds a node with the same name** — that node stays
 where it is, and *'\<name\>' already exists in '\<folder\>'* is shown in red,
-or *N items already exist in '\<folder\>'*. The other nodes in the same paste
+or *N nodes already exist in '\<folder\>'*. The other nodes in the same paste
 still move.
 
 **If nodes were cut in one test project and the code project was then bound to

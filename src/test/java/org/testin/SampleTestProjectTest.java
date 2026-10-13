@@ -41,7 +41,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-public class SampleProjectTest {
+public class SampleTestProjectTest {
 
     private static @NotNull Path demo() {
         return RepositoryRoot.resolve("samples").resolve("testin-root").resolve("Demo");
@@ -178,7 +178,7 @@ public class SampleProjectTest {
     }
 
     @Test
-    public void theSampleStillNamesItsOwnProject() {
+    public void theSampleStillNamesItsOwnTestProject() {
         final @NotNull Path config = RepositoryRoot.resolve("samples").resolve("automation").resolve("testin.yml");
 
         final @NotNull List<String> bindings;

@@ -243,7 +243,7 @@ public record ViewPendingCommitsWork(@NotNull Project project, @NotNull GitRepos
     // UC-SHARE-012, Rule-SHARE-130
     private void recordCompletedTestRuns(final @NotNull Path repoPath) {
         final @NotNull TestRuns testRuns = Services.getInstance(project, TestRuns.class);
-        final @NotNull List<String> leftOut = git.status(repoPath).stream().filter(change -> change.length() > 3).map(change -> change.substring(3)).toList();
+        final @NotNull List<String> leftOut = git.gitStatus(repoPath).stream().filter(change -> change.length() > 3).map(change -> change.substring(3)).toList();
         final @NotNull List<TestRunNode> completed = testRuns.getAllRunItems().keySet().stream()
                 .filter(testRun -> testRun.startsWith(repoPath))
                 .map(testRuns::findTestRunNode)

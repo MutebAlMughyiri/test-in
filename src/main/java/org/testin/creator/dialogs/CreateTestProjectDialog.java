@@ -40,11 +40,11 @@ public final class CreateTestProjectDialog extends AbstractFrameworkDialog {
         super(project);
         this.onCreate = onCreate;
 
-        title = Bundle.message("dialog.create.project.title");
+        title = Bundle.message("dialog.create.test.project.title");
 
         final @NotNull DialogPart<TextInput> built = DialogPart.textInput()
                 .icon(NodeType.TEST_PROJECT.getIcon())
-                .placeholder(Bundle.message("dialog.create.project.placeholder"))
+                .placeholder(Bundle.message("dialog.create.test.project.placeholder"))
                 .build();
         nameInput = built.getComponent();
         components = List.of(built);

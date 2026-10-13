@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class CapturedRunner implements AutomationExecutor {
-    private final @NotNull List<List<TestCase>> runs = new CopyOnWriteArrayList<>();
+    private final @NotNull List<List<TestCase>> executions = new CopyOnWriteArrayList<>();
 
     public static @NotNull CapturedRunner installed(final @NotNull Disposable owner) {
         final @NotNull CapturedRunner runner = new CapturedRunner();
@@ -38,8 +38,8 @@ public final class CapturedRunner implements AutomationExecutor {
         return runner;
     }
 
-    public static void reports(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull ExecutionStatus status, final @NotNull Duration duration) {
-        ExecutionReported.broadcast(project, testCase.getId().toString(), status, duration, Failure.NONE);
+    public static void reports(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull ExecutionStatus executionStatus, final @NotNull Duration duration) {
+        ExecutionReported.broadcast(project, testCase.getId().toString(), executionStatus, duration, Failure.NONE);
     }
 
     public static void startedByTestNg(final @NotNull Project project, final @NotNull TestCase testCase) {
@@ -47,13 +47,13 @@ public final class CapturedRunner implements AutomationExecutor {
         reports(project, testCase, ExecutionStatus.RUNNING, Duration.ZERO);
     }
 
-    public @NotNull List<List<TestCase>> runs() {
-        return List.copyOf(runs);
+    public @NotNull List<List<TestCase>> executions() {
+        return List.copyOf(executions);
     }
 
     @Override
     public void run(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
-        runs.add(List.copyOf(testCases));
+        executions.add(List.copyOf(testCases));
         testCases.forEach(Services.getInstance(project, TestNGExecution.class)::starting);
     }
 }

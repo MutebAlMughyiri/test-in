@@ -39,8 +39,8 @@ public class StartExecutionButton extends AbstractIconButton implements ToolbarI
         final @NotNull ExecutionMode mode = editor.getWalk().mode();
         if (mode != ExecutionMode.IDLE) return mode.getRefusal();
 
-        final @NotNull TestRunStatus status = editor.getParent().getMarker().getStatus();
-        if (status.isTerminal()) return Bundle.message("toolbar.execution.disabled", status.getLabel());
+        final @NotNull TestRunStatus testRunStatus = editor.getParent().getMarker().getStatus();
+        if (testRunStatus.isTerminal()) return Bundle.message("toolbar.execution.disabled", testRunStatus.getLabel());
 
         return editor.getWalk().hasSomethingToWalk()
                 ? ExecutionControl.START.getLabel()

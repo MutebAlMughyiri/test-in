@@ -55,16 +55,16 @@ public class RunItemStatusPerTestRunIdeTest extends AbstractTempRootIdeTest {
         return testRunPath;
     }
 
-    private @NotNull RunItemStatus statusIn(final @NotNull Path testRunPath) {
+    private @NotNull RunItemStatus runItemStatusIn(final @NotNull Path testRunPath) {
         return indexedTestRuns().getRunItems(testRunPath).runItemOf(testCaseId).orElseThrow().getStatus();
     }
 
     // Rule-PRODUCT-009
     public void testATestCaseCarriesItsOwnRunItemStatusInEachTestRun() {
         final @NotNull TestProjectNode testProject = WriteAction.computeAndWait(() -> {
-            final @NotNull TestProjectNode project = Services.getInstance(getProject(), NodeMapper.class).setTestProjectNode(root.resolve("NAFATH"));
-            Services.getInstance(getProject(), Nodes.class).addTestProject(project);
-            return project;
+            final @NotNull TestProjectNode testProjectNode = Services.getInstance(getProject(), NodeMapper.class).setTestProjectNode(root.resolve("NAFATH"));
+            Services.getInstance(getProject(), Nodes.class).addTestProject(testProjectNode);
+            return testProjectNode;
         });
         final @NotNull Path cycle1 = aTestRunOver(testProject, "Cycle-1");
         final @NotNull Path cycle2 = aTestRunOver(testProject, "Cycle-2");
@@ -72,7 +72,7 @@ public class RunItemStatusPerTestRunIdeTest extends AbstractTempRootIdeTest {
         indexedTestRuns().changeRunItem(cycle1, testCaseId, result -> result.recordRunItemStatus(RunItemStatus.FAILED, "Sara", Duration.ZERO, Failure.NONE));
         indexedTestRuns().changeRunItem(cycle2, testCaseId, result -> result.recordRunItemStatus(RunItemStatus.PASSED, "Omar", Duration.ZERO, Failure.NONE));
 
-        assertEquals(RunItemStatus.FAILED, statusIn(cycle1));
-        assertEquals("passing the test case in one test run changed what another recorded", RunItemStatus.PASSED, statusIn(cycle2));
+        assertEquals(RunItemStatus.FAILED, runItemStatusIn(cycle1));
+        assertEquals("passing the test case in one test run changed what another recorded", RunItemStatus.PASSED, runItemStatusIn(cycle2));
     }
 }

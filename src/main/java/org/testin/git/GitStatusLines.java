@@ -20,7 +20,7 @@ package org.testin.git;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.git.change.StatusKind;
+import org.testin.git.change.GitStatusKind;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,27 +31,27 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GitStatusLines {
     // UC-SHARE-010, Rule-SHARE-048
-    public static @NotNull List<StatusEntry> parseStatus(final @NotNull List<String> statusRecords) {
-        final @NotNull List<StatusEntry> entries = new ArrayList<>();
+    public static @NotNull List<GitStatusEntry> parseGitStatus(final @NotNull List<String> gitStatusRecords) {
+        final @NotNull List<GitStatusEntry> entries = new ArrayList<>();
 
-        for (final Map.Entry<String, String> change : changes(statusRecords)) {
+        for (final Map.Entry<String, String> change : changes(gitStatusRecords)) {
             final @NotNull String code = change.getKey().substring(0, 2);
             final @NotNull String from = change.getValue();
-            if (code.indexOf('R') >= 0 && !from.isEmpty()) entries.add(new StatusEntry(StatusKind.DELETED, from));
+            if (code.indexOf('R') >= 0 && !from.isEmpty()) entries.add(new GitStatusEntry(GitStatusKind.DELETED, from));
 
-            entries.add(new StatusEntry(typeOf(code), change.getKey().substring(3)));
+            entries.add(new GitStatusEntry(typeOf(code), change.getKey().substring(3)));
         }
         return entries;
     }
 
     // UC-TREE-PANEL-026, Rule-TREE-PANEL-085
-    public static int changeCount(final @NotNull List<String> statusRecords) {
-        return changes(statusRecords).size();
+    public static int changeCount(final @NotNull List<String> gitStatusRecords) {
+        return changes(gitStatusRecords).size();
     }
 
-    private static @NotNull List<Map.Entry<String, String>> changes(final @NotNull List<String> statusRecords) {
+    private static @NotNull List<Map.Entry<String, String>> changes(final @NotNull List<String> gitStatusRecords) {
         final @NotNull List<Map.Entry<String, String>> changes = new ArrayList<>();
-        final @NotNull Iterator<String> records = statusRecords.iterator();
+        final @NotNull Iterator<String> records = gitStatusRecords.iterator();
 
         while (records.hasNext()) {
             final @NotNull String record = records.next();
@@ -69,12 +69,12 @@ public final class GitStatusLines {
         return Arrays.stream(nulSeparated.split("\0")).filter(record -> !record.isEmpty()).toList();
     }
 
-    private static @NotNull StatusKind typeOf(final @NotNull String code) {
-        if (code.equals("??") || code.indexOf('A') >= 0) return StatusKind.ADDED;
-        if (code.indexOf('D') >= 0) return StatusKind.DELETED;
+    private static @NotNull GitStatusKind typeOf(final @NotNull String code) {
+        if (code.equals("??") || code.indexOf('A') >= 0) return GitStatusKind.ADDED;
+        if (code.indexOf('D') >= 0) return GitStatusKind.DELETED;
 
-        if (code.indexOf('R') >= 0) return StatusKind.ADDED;
+        if (code.indexOf('R') >= 0) return GitStatusKind.ADDED;
 
-        return StatusKind.MODIFIED;
+        return GitStatusKind.MODIFIED;
     }
 }

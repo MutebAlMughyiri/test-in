@@ -43,18 +43,18 @@ public final class EditorPaging {
         this.page = page;
     }
 
-    public @NotNull PageWindow window(final int itemCount) {
-        return PageWindow.of(itemCount, page, size);
+    public @NotNull PageWindow window(final int testCaseCount) {
+        return PageWindow.of(testCaseCount, page, size);
     }
 
     // UC-EDITOR-PANEL-022, Rule-EDITOR-PANEL-101
-    public @NotNull PageWindow settle(final int itemCount) {
-        final @NotNull PageWindow window = window(itemCount);
+    public @NotNull PageWindow settle(final int testCaseCount) {
+        final @NotNull PageWindow window = window(testCaseCount);
         page = window.page();
         return window;
     }
 
-    public <T> @NotNull List<T> itemsOn(final @NotNull List<T> all) {
+    public <T> @NotNull List<T> onCurrentPage(final @NotNull List<T> all) {
         final @NotNull PageWindow window = window(all.size());
         return new ArrayList<>(all.subList(window.fromIndex(), window.toIndex()));
     }

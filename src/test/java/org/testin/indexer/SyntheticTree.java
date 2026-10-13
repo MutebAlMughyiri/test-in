@@ -66,13 +66,13 @@ final class SyntheticTree {
     }
 
     static @NotNull Path write(final @NotNull Path root, final int sets, final int perSet) {
-        final @NotNull Path project = root.resolve("BENCHMARK");
-        write(project.resolve(".testproject"), MARKER);
-        write(project.resolve("Test Cases").resolve(".testcasesfolder"), MARKER);
-        write(project.resolve("Test Runs").resolve(".testrunsfolder"), MARKER);
+        final @NotNull Path testProjectPath = root.resolve("BENCHMARK");
+        write(testProjectPath.resolve(".testproject"), MARKER);
+        write(testProjectPath.resolve("Test Cases").resolve(".testcasesfolder"), MARKER);
+        write(testProjectPath.resolve("Test Runs").resolve(".testrunsfolder"), MARKER);
 
         for (int setIndex = 0; setIndex < sets; setIndex++) {
-            final @NotNull Path set = project.resolve("Test Cases").resolve("set-" + setIndex);
+            final @NotNull Path set = testProjectPath.resolve("Test Cases").resolve("set-" + setIndex);
             write(set.resolve(".testset"), MARKER);
 
             for (int testCaseIndex = 0; testCaseIndex < perSet; testCaseIndex++) {
@@ -81,7 +81,7 @@ final class SyntheticTree {
             }
         }
 
-        return project;
+        return testProjectPath;
     }
 
     static @NotNull Path tempRoot() {

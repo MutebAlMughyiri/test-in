@@ -29,7 +29,7 @@ import java.util.List;
 public class DamagedMarkersIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull IndexerDataStore store() {
-        return Services.getInstance(getProject(), ProjectIndexer.class).getStore();
+        return Services.getInstance(getProject(), TestProjectIndexer.class).getStore();
     }
 
     private @NotNull Path damagedTestSet(final @NotNull String testProject) {

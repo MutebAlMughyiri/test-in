@@ -467,7 +467,7 @@ function Get-DeclaredName([object] $problem)
         the line number can point just above the declaration - at the close of
         its javadoc - when the file has been edited since the inspector ran.
         The next declaration below a javadoc is the one that javadoc documents,
-        so this is the right answer for the case that actually happens, and a
+        so this is the right answer for what actually happens, and a
         few lines is not enough drift to reach a different method.
 
         Empty when nothing there looks like a declaration, which leaves the

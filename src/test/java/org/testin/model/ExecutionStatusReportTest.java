@@ -36,10 +36,10 @@ public class ExecutionStatusReportTest {
 
     @Test
     public void everyRunItemStatusEndsTheExecutionItReportsOn() {
-        for (final ExecutionStatus status : ExecutionStatus.values()) {
-            if (status.getRunItemStatus().isEmpty()) continue;
+        for (final ExecutionStatus executionStatus : ExecutionStatus.values()) {
+            if (executionStatus.getRunItemStatus().isEmpty()) continue;
 
-            assertFalse(status.stillGoing(), status + " reports a run item status while claiming to still be running");
+            assertFalse(executionStatus.stillGoing(), executionStatus + " reports a run item status while claiming to still be running");
         }
     }
 

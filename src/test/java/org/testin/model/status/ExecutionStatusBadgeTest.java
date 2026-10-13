@@ -42,13 +42,13 @@ public class ExecutionStatusBadgeTest {
     }
 
     @Test
-    public void aDecidedStatusDrawsOne() {
-        for (final ExecutionStatus status : List.of(ExecutionStatus.PASSED, ExecutionStatus.FAILED)) {
-            assertTrue(status.hasBadge(), status + " should draw a badge");
+    public void aDecidedExecutionStatusDrawsOne() {
+        for (final ExecutionStatus executionStatus : List.of(ExecutionStatus.PASSED, ExecutionStatus.FAILED)) {
+            assertTrue(executionStatus.hasBadge(), executionStatus + " should draw a badge");
 
-            final ExecutionStatusBadge badge = status.getBadge();
-            assertNotSame(badge, ExecutionStatusBadge.NONE, status + " needs a badge of its own");
-            assertFalse(badge.label().isBlank(), status + " has a visible label");
+            final ExecutionStatusBadge badge = executionStatus.getBadge();
+            assertNotSame(badge, ExecutionStatusBadge.NONE, executionStatus + " needs a badge of its own");
+            assertFalse(badge.label().isBlank(), executionStatus + " has a visible label");
         }
     }
 
@@ -59,9 +59,9 @@ public class ExecutionStatusBadgeTest {
     }
 
     @Test
-    public void everyStatusHasAnIcon() {
-        for (final ExecutionStatus status : ExecutionStatus.values()) {
-            assertNotNull(status.getIcon(), status + " needs an icon for the gutter");
+    public void everyExecutionStatusHasAnIcon() {
+        for (final ExecutionStatus executionStatus : ExecutionStatus.values()) {
+            assertNotNull(executionStatus.getIcon(), executionStatus + " needs an icon for the gutter");
         }
     }
 }

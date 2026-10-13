@@ -42,7 +42,7 @@ public final class TestCaseFieldChanges {
         addIfChanged(changes, TestSetEditorFields.EXPECTED_RESULT.getName(), oldState.getExpectedResult(), newState.getExpectedResult(), ChangeType.CHANGE_EXPECTED_RESULT);
         addStepsIfChanged(changes, oldState.getSteps(), newState.getSteps());
         addIfChanged(changes, TestSetEditorFields.PRIORITY.getName(), oldState.getPriority().getLabel(), newState.getPriority().getLabel(), ChangeType.CHANGE_PRIORITY);
-        addIfChanged(changes, TestSetEditorFields.STATUS.getName(), oldState.getStatus().getLabel(), newState.getStatus().getLabel(), ChangeType.CHANGE_STATUS);
+        addIfChanged(changes, TestSetEditorFields.STATUS.getName(), oldState.getStatus().getLabel(), newState.getStatus().getLabel(), ChangeType.CHANGE_TEST_CASE_STATUS);
         addIfChanged(changes, TestSetEditorFields.REFERENCE.getName(), oldState.getReference(), newState.getReference(), ChangeType.CHANGE_REFERENCE);
         addIfChanged(changes, TestSetEditorFields.MODULE.getName(), oldState.getModule(), newState.getModule(), ChangeType.CHANGE_MODULE);
         addIfChanged(changes, TestSetEditorFields.TEST_DATA.getName(), oldState.getTestData(), newState.getTestData(), ChangeType.CHANGE_TEST_DATA);

@@ -34,7 +34,7 @@ import org.testin.NodesOnDisk;
 import org.testin.creator.CreateTestRun;
 import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
-import org.testin.indexer.ProjectIndexer;
+import org.testin.indexer.TestProjectIndexer;
 import org.testin.indexer.TestRuns;
 import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItems;
@@ -111,7 +111,7 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
     @Override
     public void setUp() {
         super.setUp();
-        Services.getInstance(getProject(), ProjectIndexer.class).resetForReindex();
+        Services.getInstance(getProject(), TestProjectIndexer.class).resetForReindex();
         final @NotNull NodesOnDisk made = new NodesOnDisk(getProject());
         testProject = made.testProject(root.resolve("NAFATH"));
         login = made.testSet(testProject.getTestCasesFolder(), "Login");

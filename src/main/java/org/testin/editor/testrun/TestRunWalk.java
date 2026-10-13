@@ -164,8 +164,8 @@ public final class TestRunWalk {
 
     // UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-181
     private void markStartedByAutomation() {
-        final @NotNull TestRunStatus status = editor.getParent().getMarker().getStatus();
-        if (status == TestRunStatus.IN_PROGRESS || status.isTerminal()) return;
+        final @NotNull TestRunStatus testRunStatus = editor.getParent().getMarker().getStatus();
+        if (testRunStatus == TestRunStatus.IN_PROGRESS || testRunStatus.isTerminal()) return;
 
         markStarted();
     }
@@ -203,10 +203,10 @@ public final class TestRunWalk {
     }
 
     // UC-EDITOR-PANEL-043, UC-EDITOR-PANEL-044, Rule-EDITOR-PANEL-182, Rule-EDITOR-PANEL-289
-    void executionReported(final @NotNull TestCase testCase, final @NotNull ExecutionStatus status, final @NotNull List<RunItemExecution> executions, final int written) {
+    void executionReported(final @NotNull TestCase testCase, final @NotNull ExecutionStatus executionStatus, final @NotNull List<RunItemExecution> executions, final int written) {
         if (!launchedHere.contains(testCase.getId())) return;
 
-        if (!status.stillGoing()) {
+        if (!executionStatus.stillGoing()) {
             launchedHere.remove(testCase.getId());
             launchedByRunTests.remove(testCase.getId());
         }
@@ -215,10 +215,10 @@ public final class TestRunWalk {
 
         if (!editor.getParent().takesRunItemStatuses()) return;
 
-        if (status.stillGoing() && !executions.isEmpty())
+        if (executionStatus.stillGoing() && !executions.isEmpty())
             runItemStatusService.showAttempts(editor, testCase, executions, written);
 
-        status.getRunItemStatus().ifPresent(runItemStatus -> {
+        executionStatus.getRunItemStatus().ifPresent(runItemStatus -> {
             runItemStatusService.recordReported(editor, testCase, runItemStatus, executions, written);
 
             if (launchedHere.isEmpty()) sayWhatTheTestRunRecorded();

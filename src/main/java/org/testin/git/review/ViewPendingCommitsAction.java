@@ -41,7 +41,7 @@ public class ViewPendingCommitsAction extends AbstractAnyProjectAction {
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
         Services.getInstance(project, Guides.class).add(Guide.SHARE_OVER_GIT);
-        TestinDataKeys.tree(e).flatMap(TreeValues::projectPath).ifPresent(path -> reviewFor(project, path));
+        TestinDataKeys.tree(e).flatMap(TreeValues::testProjectPath).ifPresent(path -> reviewFor(project, path));
     }
 
     // UC-SHARE-010

@@ -58,7 +58,7 @@ public final class NodeRename {
         NodeCode.of(node.getType()).getRenamed().execute(project, renamed);
 
         Services.getInstance(project, Nodes.class).renameNode(oldPath, newPath, () -> {
-            if (node instanceof TestProjectNode) projectFollows(project, oldName, newName);
+            if (node instanceof TestProjectNode) testProjectFollows(project, oldName, newName);
 
             TestinLogger.info("Success! Renamed to: " + newName);
 
@@ -99,7 +99,7 @@ public final class NodeRename {
     }
 
     // UC-TREE-PANEL-011, Rule-TREE-PANEL-110, Rule-TREE-PANEL-112
-    private static void projectFollows(final @NotNull Project project, final @NotNull String oldName, final @NotNull String newName) {
+    private static void testProjectFollows(final @NotNull Project project, final @NotNull String oldName, final @NotNull String newName) {
         Services.getInstance(project, BoundTestProject.class).follow(oldName, newName);
         if (!TestinYml.names(project, oldName)) return;
 

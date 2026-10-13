@@ -71,11 +71,11 @@ public record TestRunFixture(@NotNull Project project, @NotNull List<TestCase> t
         return of(project, root, testCases.stream().map(EditorFixtures::pending).toList(), testCases);
     }
 
-    public static @NotNull AnAction keyFor(final @NotNull TestRunEditor editor, final @NotNull RunItemStatus status) {
+    public static @NotNull AnAction keyFor(final @NotNull TestRunEditor editor, final @NotNull RunItemStatus runItemStatus) {
         return ActionUtil.getActions(editor.getList()).stream()
-                .filter(action -> action instanceof final SetRunItemStatusAction key && key.getStatus() == status)
+                .filter(action -> action instanceof final SetRunItemStatusAction key && key.getRunItemStatus() == runItemStatus)
                 .findFirst()
-                .orElseThrow(() -> new AssertionError("no key records " + status));
+                .orElseThrow(() -> new AssertionError("no key records " + runItemStatus));
     }
 
     public static @NotNull List<EditorTextField> boxesOf(final @NotNull JComponent dialog) {
@@ -90,12 +90,12 @@ public record TestRunFixture(@NotNull Project project, @NotNull List<TestCase> t
         return Services.getInstance(project, TestRuns.class).getRunItems(testRun.getPath()).runItemOf(testCase.getId()).orElseThrow();
     }
 
-    public @NotNull RunItemStatus statusOf(final @NotNull TestCase testCase) {
+    public @NotNull RunItemStatus runItemStatusOf(final @NotNull TestCase testCase) {
         return runItemOf(testCase).getStatus();
     }
 
-    public void press(final @NotNull TestRunEditor editor, final @NotNull RunItemStatus status) {
-        Gestures.press(project, keyFor(editor, status), editor.getList());
+    public void press(final @NotNull TestRunEditor editor, final @NotNull RunItemStatus runItemStatus) {
+        Gestures.press(project, keyFor(editor, runItemStatus), editor.getList());
     }
 
     public @NotNull Optional<JComponent> failureDialog() {

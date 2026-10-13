@@ -36,11 +36,11 @@ public final class ReportOverview {
     private static final @NotNull String NOT_RECORDED = Bundle.message("report.overview.not.recorded");
 
     // Rule-REPORT-002
-    public static @NotNull List<DetailRow> rowsFor(final @NotNull String projectName, final @NotNull TestRunNode testRunNode, final @NotNull TestRunSummary summary) {
+    public static @NotNull List<DetailRow> rowsFor(final @NotNull String testProjectName, final @NotNull TestRunNode testRunNode, final @NotNull TestRunSummary summary) {
         final @NotNull TestRunMarker marker = testRunNode.getMarker();
         final @NotNull List<DetailRow> rows = new ArrayList<>();
 
-        rows.add(new DetailRow(Bundle.message("report.overview.project"), projectName));
+        rows.add(new DetailRow(Bundle.message("report.overview.test.project"), testProjectName));
         rows.add(new DetailRow(Bundle.message("node.test.run"), testRunNode.getName()));
 
         for (final TestRunConfiguration field : TestRunConfiguration.values()) addConfiguration(rows, field, marker);

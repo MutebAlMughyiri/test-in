@@ -92,7 +92,7 @@ public class CommitRulesIdeTest extends AbstractGitRemoteIdeTest {
         return empty;
     }
 
-    private void theProjectFolderExists() {
+    private void theTestProjectFolderExists() {
         final @NotNull Path folder = TestinYml.savePath(getProject()).map(Path::getParent).orElseThrow(() -> new AssertionError("the project has no folder for testin.yml"));
         try {
             Files.createDirectories(folder);
@@ -157,7 +157,7 @@ public class CommitRulesIdeTest extends AbstractGitRemoteIdeTest {
     public void testARepositoryWithNoRemoteTakesTheAddressTestinYmlGives() {
         final @NotNull Path solo = aRepositoryWithNoRemote();
         final @NotNull Path empty = anEmptyRemote();
-        theProjectFolderExists();
+        theTestProjectFolderExists();
         assertTrue("could not write testin.yml", TestinYml.save(getProject(), TestinYml.lines("solo", addressOf(empty))));
         final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
 

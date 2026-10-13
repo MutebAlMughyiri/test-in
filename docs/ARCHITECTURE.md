@@ -36,7 +36,7 @@ explorer          editor           view          lightmode      the surfaces
              (Services, Notifier, settings, testin.yml)
                             |
                         indexer                                 the only door
-        ProjectIndexer   TestCases   TestRuns   Nodes           to test data
+        TestProjectIndexer   TestCases   TestRuns   Nodes           to test data
              -> IndexerDataStore -> TestCaseStore
              -> TestDataFiles
                             |
@@ -77,7 +77,7 @@ a package in the row it was already in.
 
 `TestinEscapeAction` and `ShowNodeDetailsAction` were in `org.testin` itself, which is
 in no row of this table at all. They are in `actions` and `view.marker` now -
-where the first already extends `AbstractBoundProjectAction`, and the second opens
+where the first already extends `AbstractBoundTestProjectAction`, and the second opens
 `NodeDetailsDialog` and does nothing else.
 
 `testset` held one action and the group that built it. Both were a copy of the
@@ -142,7 +142,7 @@ goes stale the same week (#66, findings 61 and 77).
 
 | From                                                          | To                                  | Why                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 |---------------------------------------------------------------|-------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `indexer/ProjectIndexer`                                      | `editor/open/LastOpenEditors`       | Indexing finishes, and the editors the tester had open are reopened.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `indexer/TestProjectIndexer`                                  | `editor/open/LastOpenEditors`       | Indexing finishes, and the editors the tester had open are reopened.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `indexer/Rescan`                                              | `explorer/TreePanel`                | Only to ask `Services.isNotCreated(project, TreePanel.class)` before scanning: a project that never opened the Testin tool window must not be indexed behind the tester's back (#77). It no longer tells the surfaces anything - the indexer announces on `IndexChanged` (#361).                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `setting/SettingsConfigurable`                                | `explorer/TreePanel`                | Applying the settings page rebuilds the tree, because the Testin folder it names is what the tree is built from. Not an action, so it is not the first shape above.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | `codegen/AutomationState`                                     | `navigate/TestMethodCode`           | Whether a test case has automation behind it is answered by resolving the generated method, and resolving is what `navigate` knows how to do.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
@@ -230,15 +230,15 @@ lookup rather than a disk hit.
 The package is one owner with four doors, one per area, and a caller asks the
 one for what it holds:
 
-| Service          | Answers for                                                                              |
-|------------------|------------------------------------------------------------------------------------------|
-| `ProjectIndexer` | Scanning and the index's lifecycle: the first read, a rescan, whether it is indexed yet  |
-| `TestCases`      | Test cases: find, save, move, remove, order, and the file each one lives in              |
-| `TestRuns`       | Test runs: find, change a test run, a result or its marker, and a test run's screenshots |
-| `Nodes`          | The tree's folders: find, add, rename, move, copy, remove and restore, and their markers |
+| Service              | Answers for                                                                              |
+|----------------------|------------------------------------------------------------------------------------------|
+| `TestProjectIndexer` | Scanning and the index's lifecycle: the first read, a rescan, whether it is indexed yet  |
+| `TestCases`          | Test cases: find, save, move, remove, order, and the file each one lives in              |
+| `TestRuns`           | Test runs: find, change a test run, a result or its marker, and a test run's screenshots |
+| `Nodes`              | The tree's folders: find, add, rename, move, copy, remove and restore, and their markers |
 
 All four share one store, one test run writer and one announcer, which
-`ProjectIndexer` builds and hands out inside the package only, so there is still
+`TestProjectIndexer` builds and hands out inside the package only, so there is still
 one cache and one `IndexChanged` announcement per change.
 
 - Need to know whether a node exists? Ask the indexer's cache — never

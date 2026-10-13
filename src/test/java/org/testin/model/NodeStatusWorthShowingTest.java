@@ -17,10 +17,10 @@
 package org.testin.model;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.status.NoStatus;
+import org.testin.model.status.NoNodeStatus;
 import org.testin.model.status.NodeStatus;
 import org.testin.model.status.PackageStatus;
-import org.testin.model.status.ProjectStatus;
+import org.testin.model.status.TestProjectStatus;
 import org.testin.model.status.TestSetStatus;
 import org.testng.annotations.Test;
 
@@ -31,7 +31,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-public class StatusWorthShowingTest {
+public class NodeStatusWorthShowingTest {
 
     private static void assertActiveIs(final @NotNull NodeStatus @NotNull [] values, final @NotNull NodeStatus expected) {
         final @NotNull List<NodeStatus> active = Arrays.stream(values).filter(NodeStatus::isActive).toList();
@@ -41,22 +41,22 @@ public class StatusWorthShowingTest {
     }
 
     @Test
-    public void exactlyOneStatusPerEnumIsTheActiveOne() {
-        assertActiveIs(ProjectStatus.values(), ProjectStatus.ACTIVE);
+    public void exactlyOneNodeStatusPerEnumIsTheActiveOne() {
+        assertActiveIs(TestProjectStatus.values(), TestProjectStatus.ACTIVE);
         assertActiveIs(TestSetStatus.values(), TestSetStatus.ACTIVE);
         assertActiveIs(PackageStatus.values(), PackageStatus.ACTIVE);
     }
 
     @Test
-    public void theStatusesATesterSeesAreTheOnesThatAreNotActive() {
-        assertFalse(ProjectStatus.INACTIVE.isActive(), "an inactive test project says so beside its name");
+    public void theNodeStatusesATesterSeesAreTheOnesThatAreNotActive() {
+        assertFalse(TestProjectStatus.INACTIVE.isActive(), "an inactive test project says so beside its name");
         assertFalse(TestSetStatus.DEPRECATED.isActive(), "a deprecated test set says so");
         assertFalse(PackageStatus.ARCHIVED.isActive(), "an archived package says so");
     }
 
     @Test
-    public void noStatusAtAllIsNothingToSay() {
-        assertTrue(NoStatus.NONE.isActive(), "a marker with no status has nothing to draw");
-        assertTrue(NoStatus.NONE.getLabel().isEmpty(), "and nothing to draw it with");
+    public void noNodeStatusAtAllIsNothingToSay() {
+        assertTrue(NoNodeStatus.NONE.isActive(), "a marker with no status has nothing to draw");
+        assertTrue(NoNodeStatus.NONE.getLabel().isEmpty(), "and nothing to draw it with");
     }
 }

@@ -65,12 +65,12 @@ public class RunItemCard extends AbstractCard {
         // Rule-EDITOR-PANEL-263
         changedSince.setVisible(ChangedSinceCommit.of(runItem));
 
-        Optional.ofNullable(fieldLabels.get(TestRunEditorFields.RUN_STATUS.getName())).ifPresent(statusLabel -> {
-            statusLabel.setFont(Fonts.strong());
-            statusLabel.setForeground(runItem.shownStatus().getRowColor());
+        Optional.ofNullable(fieldLabels.get(TestRunEditorFields.RUN_STATUS.getName())).ifPresent(runItemStatusLabel -> {
+            runItemStatusLabel.setFont(Fonts.strong());
+            runItemStatusLabel.setForeground(runItem.shownStatus().getRowColor());
             // Rule-EDITOR-PANEL-287
-            statusLabel.setIcon(ExecutionDots.of(runItem, statusLabel.getFont()));
-            statusLabel.setHorizontalTextPosition(SwingConstants.LEADING);
+            runItemStatusLabel.setIcon(ExecutionDots.of(runItem, runItemStatusLabel.getFont()));
+            runItemStatusLabel.setHorizontalTextPosition(SwingConstants.LEADING);
         });
     }
 }

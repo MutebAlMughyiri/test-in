@@ -39,7 +39,7 @@ public class ImportColumnsTest {
         assertTrue(TestSetEditorFields.CREATED_AT.isColumn("Created At"), "the name Testin shows");
         assertTrue(TestSetEditorFields.CREATED_AT.isColumn("created at"), "letter case does not matter");
         assertTrue(TestSetEditorFields.CREATED_AT.isColumn("CREATED_AT"), "the name in the code");
-        assertTrue(TestSetEditorFields.CREATED_AT.isColumn("created_at"), "the name in the code, in any case");
+        assertTrue(TestSetEditorFields.CREATED_AT.isColumn("created_at"), "the name in the code, in any capitals");
         assertTrue(TestSetEditorFields.PRE_CONDITIONS.isColumn("  pre conditions "), "the space around a heading is not part of it");
     }
 

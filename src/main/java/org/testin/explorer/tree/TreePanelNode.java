@@ -24,11 +24,11 @@ import com.intellij.ui.tree.LeafState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.testin.indexer.Nodes;
-import org.testin.indexer.ProjectIndexer;
+import org.testin.indexer.TestProjectIndexer;
 import org.testin.logger.TestinLogger;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
-import org.testin.model.status.ProjectStatus;
+import org.testin.model.status.TestProjectStatus;
 import org.testin.services.Services;
 import org.testin.util.FailureText;
 
@@ -40,13 +40,13 @@ import java.util.Optional;
 
 public final class TreePanelNode extends AbstractTreeNode<Object> {
     private final @NotNull Project project;
-    private final @NotNull ProjectIndexer indexer;
+    private final @NotNull TestProjectIndexer indexer;
     private final @NotNull Nodes nodes;
 
     public TreePanelNode(final @NotNull Project project, final @NotNull Object value) {
         super(project, value);
         this.project = project;
-        this.indexer = Services.getInstance(project, ProjectIndexer.class);
+        this.indexer = Services.getInstance(project, TestProjectIndexer.class);
         this.nodes = Services.getInstance(project, Nodes.class);
     }
 
@@ -70,7 +70,7 @@ public final class TreePanelNode extends AbstractTreeNode<Object> {
     public @NotNull Collection<? extends AbstractTreeNode<?>> getChildren() {
         final @NotNull Object value = getValue();
         if (value instanceof TestProjectNode testProjectNode) {
-            if (testProjectNode.getMarker().getStatus() != ProjectStatus.ACTIVE) return List.of();
+            if (testProjectNode.getMarker().getStatus() != TestProjectStatus.ACTIVE) return List.of();
             return List.of(
                     child(testProjectNode.getTestCasesFolder()),
                     child(testProjectNode.getTestRunsFolder())

@@ -47,7 +47,7 @@ public class CardSelectionListener implements ListSelectionListener {
                 ViewToolWindowFactory.panel(project).ifPresent(viewer -> viewer.showIfOpen(selected, treePath));
             }
 
-            editor.refreshSelectionStatus(list.getSelectedIndices());
+            editor.refreshStatusBarSelection(list.getSelectedIndices());
         }
     }
 }

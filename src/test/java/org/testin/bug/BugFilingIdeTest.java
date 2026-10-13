@@ -71,12 +71,12 @@ public class BugFilingIdeTest extends AbstractTempRootIdeTest {
         return root.resolve("NAFATH").resolve("Test Runs").resolve("Sprint 7");
     }
 
-    private @NotNull RunItemPath indexedRunItemPath(final RunItemStatus status) {
-        return runItemPathOf(indexedTestCase(), status);
+    private @NotNull RunItemPath indexedRunItemPath(final RunItemStatus runItemStatus) {
+        return runItemPathOf(indexedTestCase(), runItemStatus);
     }
 
-    private @NotNull RunItemPath runItemPathOf(final UUID testCaseId, final RunItemStatus status) {
-        final RunItem runItem = RunItem.builder().id(testCaseId).executions(List.of(RunItemExecution.builder().status(status).build())).build();
+    private @NotNull RunItemPath runItemPathOf(final UUID testCaseId, final RunItemStatus runItemStatus) {
+        final RunItem runItem = RunItem.builder().id(testCaseId).executions(List.of(RunItemExecution.builder().status(runItemStatus).build())).build();
         indexedTestRuns().putRunItems(sprint7TestRunPath(), RunItems.builder().all(new ArrayList<>(List.of(runItem))).build());
         return new RunItemPath(sprint7TestRunPath(), testCaseId);
     }

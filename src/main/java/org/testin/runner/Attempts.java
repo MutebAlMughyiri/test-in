@@ -45,15 +45,15 @@ record Attempts(@NotNull List<Attempt> all, int written) {
     }
 
     // Rule-CODEGEN-075, Rule-CODEGEN-111
-    @NotNull ExecutionStatus status() {
-        return statusAt(deciding());
+    @NotNull ExecutionStatus executionStatus() {
+        return executionStatusAt(deciding());
     }
 
     // Rule-CODEGEN-111
     int deciding() {
         final @NotNull List<Integer> lastAttempts = IntStream.range(0, all.size()).filter(at -> !retriedAt(at)).boxed().toList();
 
-        return lastAttempts.stream().filter(at -> statusAt(at) == ExecutionStatus.FAILED).reduce((_, last) -> last).orElse(lastAttempts.getLast());
+        return lastAttempts.stream().filter(at -> executionStatusAt(at) == ExecutionStatus.FAILED).reduce((_, last) -> last).orElse(lastAttempts.getLast());
     }
 
     // Rule-CODEGEN-111
@@ -81,7 +81,7 @@ record Attempts(@NotNull List<Attempt> all, int written) {
 
         return IntStream.range(0, all.size())
                 .filter(this::isExecution)
-                .mapToObj(at -> RunItemExecution.from(statusAt(at).getRunItemStatus().orElseThrow(), all.get(at).duration(), all.get(at).failure())
+                .mapToObj(at -> RunItemExecution.from(executionStatusAt(at).getRunItemStatus().orElseThrow(), all.get(at).duration(), all.get(at).failure())
                         .executedAt(all.get(at).at())
                         .invocation(invokedMoreThanOnce ? invocation[at] : 0)
                         .retry(retry[at])
@@ -93,15 +93,15 @@ record Attempts(@NotNull List<Attempt> all, int written) {
     }
 
     private boolean isExecution(final int at) {
-        return statusAt(at).getRunItemStatus().isPresent();
+        return executionStatusAt(at).getRunItemStatus().isPresent();
     }
 
     // Rule-CODEGEN-110
     private boolean retriedAt(final int at) {
-        return all.get(at).status() == ExecutionStatus.SKIPPED && at < all.size() - 1;
+        return all.get(at).executionStatus() == ExecutionStatus.SKIPPED && at < all.size() - 1;
     }
 
-    private @NotNull ExecutionStatus statusAt(final int at) {
-        return all.get(at).status() == ExecutionStatus.SKIPPED ? ExecutionStatus.FAILED : all.get(at).status();
+    private @NotNull ExecutionStatus executionStatusAt(final int at) {
+        return all.get(at).executionStatus() == ExecutionStatus.SKIPPED ? ExecutionStatus.FAILED : all.get(at).executionStatus();
     }
 }

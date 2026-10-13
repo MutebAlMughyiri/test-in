@@ -41,9 +41,9 @@ public record FileTypeHint(@NotNull JBLabel label, @NotNull List<TestSetEditorFi
     }
 
     // UC-SHARE-005, Rule-SHARE-107
-    public void showStatus(final @NotNull String status) {
-        label.setText(status);
-        label.setVisible(!status.isBlank());
+    public void showMessage(final @NotNull String message) {
+        label.setText(message);
+        label.setVisible(!message.isBlank());
     }
 
     // UC-SHARE-005

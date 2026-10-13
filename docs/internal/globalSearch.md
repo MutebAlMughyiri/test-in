@@ -22,7 +22,7 @@ This is the fastest way to reach one test set, one test run or one test case.
     4. where it sits in the tree, and its generated code
     5. who created or last changed it, and when
 
-  Case does not matter, and spaces at either end are dropped.
+  Capitals do not matter, and spaces at either end are dropped.
 - **Rule-INTERNAL-002** — Choosing a result always takes the tree to it. Only a
   test set and a test run open an editor.
 - **Rule-INTERNAL-066** — A key a tester can rebind is declared to the IDE, so

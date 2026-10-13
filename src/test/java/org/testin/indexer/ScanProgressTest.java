@@ -48,21 +48,21 @@ public class ScanProgressTest {
     @Test
     public void theScanCanBeGivenAProgressBar() {
         try {
-            assertNotNull(ProjectIndexer.class.getDeclaredMethod("scanSingleProject", Path.class, ProgressIndicator.class));
+            assertNotNull(TestProjectIndexer.class.getDeclaredMethod("scanSingleTestProject", Path.class, ProgressIndicator.class));
         } catch (final NoSuchMethodException missing) {
-            fail("ProjectIndexer has no scanSingleProject(Path, ProgressIndicator): "
+            fail("TestProjectIndexer has no scanSingleTestProject(Path, ProgressIndicator): "
                     + "a caller with a progress bar has nowhere to hand it, so the bar reports nothing");
         }
     }
 
     @Test
     public void theRescanHandsItsIndicatorToTheScan() {
-        assertTrue(read("Rescan.java").contains("rescanChangedProject(testProjectPath, indicator)"),
+        assertTrue(read("Rescan.java").contains("rescanChangedTestProject(testProjectPath, indicator)"),
                 "Rescan builds a progress bar and must hand it to the rescan; calling it without the bar "
                         + "leaves the tester watching a bar that names nothing and cannot be stopped");
 
-        assertTrue(read("ProjectIndexer.java").contains("scanSingleProject(projectPath, indicator)"),
-                "rescanChangedProject must hand the rescan's progress bar to the scan, not start one of its own");
+        assertTrue(read("TestProjectIndexer.java").contains("scanSingleTestProject(testProjectPath, indicator)"),
+                "rescanChangedTestProject must hand the rescan's progress bar to the scan, not start one of its own");
     }
 
     // Rule-INTERNAL-013

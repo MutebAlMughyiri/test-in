@@ -46,7 +46,7 @@ public final class TestNGEventRelay extends SMTRunnerEventsAdapter {
     @Override
     public void onTestFinished(final @NotNull SMTestProxy test) {
         final @NotNull FinishedAttempt finished = finished(test);
-        ExecutionReported.broadcast(project, test.getPresentableName(), finished.status(), durationOf(test), finished.failure());
+        ExecutionReported.broadcast(project, test.getPresentableName(), finished.executionStatus(), durationOf(test), finished.failure());
     }
 
     // Rule-CODEGEN-075, Rule-CODEGEN-110

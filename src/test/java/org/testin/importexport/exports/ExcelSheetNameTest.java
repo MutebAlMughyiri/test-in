@@ -103,13 +103,13 @@ public class ExcelSheetNameTest {
     }
 
     @Test
-    public void twoNamesDifferingOnlyInCaseAreStillTwoSheets() {
+    public void twoNamesDifferingOnlyInCapitalsAreStillTwoSheets() {
         try {
             try (Workbook workbook = new XSSFWorkbook()) {
                 workbook.createSheet(ExportExcel.uniqueSheetName(workbook, "Login"));
 
                 final String second = ExportExcel.uniqueSheetName(workbook, "login");
-                assertNotEquals(second.toLowerCase(Locale.ROOT), "login", "Excel refuses two sheets differing only in case");
+                assertNotEquals(second.toLowerCase(Locale.ROOT), "login", "Excel refuses two sheets differing only in capitals");
 
                 workbook.createSheet(second);
                 assertEquals(workbook.getNumberOfSheets(), 2);

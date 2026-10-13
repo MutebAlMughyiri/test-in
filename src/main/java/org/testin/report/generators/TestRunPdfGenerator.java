@@ -94,13 +94,13 @@ public final class TestRunPdfGenerator {
             printsWith = Optional.of(regularFont);
             PdfFont italicFont = PdfFontFactory.createFont(ReportFont.PDF_ITALIC);
 
-            final @NotNull String projectName = Services.getInstance(project, BoundTestProject.class).name();
+            final @NotNull String testProjectName = Services.getInstance(project, BoundTestProject.class).name();
 
             document.add(paragraph(Bundle.message("report.title"))
                     .setFont(boldFont).setFontSize(ReportFont.TITLE.points()).setFontColor(DARK_NAVY)
                     .setMarginBottom(2));
 
-            document.add(paragraph(ReportText.joined("  |  ", projectName, ReportText.joined(", ", TestRunConfiguration.PLATFORM.valueIn(testRunNode.getMarker()), TestRunConfiguration.COMPONENT.valueIn(testRunNode.getMarker()))))
+            document.add(paragraph(ReportText.joined("  |  ", testProjectName, ReportText.joined(", ", TestRunConfiguration.PLATFORM.valueIn(testRunNode.getMarker()), TestRunConfiguration.COMPONENT.valueIn(testRunNode.getMarker()))))
                     .setFont(regularFont).setFontSize(ReportFont.SUBTITLE.points()).setFontColor(MEDIUM_BLUE)
                     .setMarginBottom(0));
 
@@ -129,7 +129,7 @@ public final class TestRunPdfGenerator {
                     .useAllAvailableWidth()
                     .setBorder(Border.NO_BORDER);
 
-            for (final DetailRow row : ReportOverview.rowsFor(projectName, testRunNode, summary)) {
+            for (final DetailRow row : ReportOverview.rowsFor(testProjectName, testRunNode, summary)) {
                 addOverviewRow(overviewTable, row.caption(), row.value(), boldFont, regularFont);
             }
 

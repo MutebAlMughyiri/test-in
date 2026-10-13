@@ -255,7 +255,7 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
     }
 
     // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-293
-    public void testTheAddKeyAddsAnItemToABulkList() {
+    public void testTheAddKeyAddsAnEntryToABulkList() {
         aTestSetWithModules("Payments", "Cart");
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         editor.getList().setSelectionInterval(0, editor.getList().getModel().getSize() - 1);

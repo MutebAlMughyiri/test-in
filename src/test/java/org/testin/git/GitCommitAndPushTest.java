@@ -18,7 +18,7 @@ package org.testin.git;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.git.change.ChangeSubject;
-import org.testin.git.change.StatusKind;
+import org.testin.git.change.GitStatusKind;
 import org.testin.git.change.PendingChange;
 import org.testin.model.TestCase;
 import org.testng.annotations.Test;
@@ -33,30 +33,30 @@ import static org.testng.Assert.assertEquals;
 public class GitCommitAndPushTest {
 
     private static @NotNull PendingChange diff(final Path relativePath) {
-        return new PendingChange(ChangeSubject.TEST_CASE, "a case", "a test set", UUID.randomUUID().toString(),
-                relativePath, StatusKind.MODIFIED,
+        return new PendingChange(ChangeSubject.TEST_CASE, "a test case", "a test set", UUID.randomUUID().toString(),
+                relativePath, GitStatusKind.MODIFIED,
                 TestCase.builder().build(), List.of());
     }
 
     @Test
     public void pathsAreForwardSlashedForGitWhateverThePlatformUses() {
         final Set<String> paths = GitCommitAndPush.repoRelativePaths(List.of(
-                diff(Path.of("testCases", "login", "case-1.json"))));
+                diff(Path.of("testCases", "login", "testCase-1.json"))));
 
-        assertEquals(paths, Set.of("testCases/login/case-1.json"));
+        assertEquals(paths, Set.of("testCases/login/testCase-1.json"));
     }
 
     @Test
     public void theSameFileSelectedTwiceIsStagedOnce() {
-        final Path shared = Path.of("testCases", "login", "case-1.json");
+        final Path shared = Path.of("testCases", "login", "testCase-1.json");
 
         final Set<String> paths = GitCommitAndPush.repoRelativePaths(List.of(
                 diff(shared),
-                diff(Path.of("testCases", "login", "case-2.json")),
+                diff(Path.of("testCases", "login", "testCase-2.json")),
                 diff(shared)));
 
         assertEquals(List.copyOf(paths),
-                List.of("testCases/login/case-1.json", "testCases/login/case-2.json"));
+                List.of("testCases/login/testCase-1.json", "testCases/login/testCase-2.json"));
     }
 
     @Test

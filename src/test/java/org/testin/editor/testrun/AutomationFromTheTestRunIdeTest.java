@@ -94,8 +94,8 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
         return Services.getInstance(getProject(), TestRuns.class).getRunItems(testRun.getPath()).runItemOf(testCase.getId()).orElseThrow();
     }
 
-    private void reported(final @NotNull TestCase testCase, final @NotNull ExecutionStatus status, final @NotNull Duration duration) {
-        CapturedRunner.reports(getProject(), testCase, status, duration);
+    private void reported(final @NotNull TestCase testCase, final @NotNull ExecutionStatus executionStatus, final @NotNull Duration duration) {
+        CapturedRunner.reports(getProject(), testCase, executionStatus, duration);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
 
@@ -109,7 +109,7 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
     }
 
     // Rule-EDITOR-PANEL-180
-    public void testTheEditorClaimsTheTestCaseSoTheStatusComesBackToItsOwnTestRun() {
+    public void testTheEditorClaimsTheTestCaseSoTheRunItemStatusComesBackToItsOwnTestRun() {
         final @NotNull TestCase testCase = automatedTestCases(1).getFirst();
         final @NotNull TestRunNode running = aTestRun("Cycle-1", List.of(EditorFixtures.pending(testCase)));
         final @NotNull TestRunNode alsoShowing = aTestRun("Cycle-2", List.of(EditorFixtures.pending(testCase)));
@@ -117,7 +117,7 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestRunEditor other = opened(alsoShowing);
         try {
             TestCaseQuickAction.RUN_TEST_METHOD.executeFor(claiming, testCase);
-            assertEquals("the test case was not handed to TestNG", List.of(List.of(testCase)), runner.runs());
+            assertEquals("the test case was not handed to TestNG", List.of(List.of(testCase)), runner.executions());
 
             reported(testCase, ExecutionStatus.PASSED, Duration.ofMillis(84));
 
@@ -247,7 +247,7 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
             editor.runWhenLoaded();
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
-            assertEquals("the whole test run was not one execution of every test case, judged or not", List.of(testCases), runner.runs());
+            assertEquals("the whole test run was not one execution of every test case, judged or not", List.of(testCases), runner.executions());
 
             reported(testCases.getFirst(), ExecutionStatus.FAILED, Duration.ofMillis(5));
             Await.until("the second run of a judged test case was not recorded", () -> runItemOf(testRun, testCases.getFirst()).getExecutions().size() == 2);
@@ -270,7 +270,7 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
             editor.runWhenLoaded();
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
-            assertEquals("the methods were not handed over in the order of the test set", List.of(testCases), runner.runs());
+            assertEquals("the methods were not handed over in the order of the test set", List.of(testCases), runner.executions());
         } finally {
             Disposer.dispose(editor);
         }

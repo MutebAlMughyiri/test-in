@@ -54,7 +54,7 @@ public class CountsStoredNowhereIdeTest extends AbstractTempRootIdeTest {
         onDisk.testCase(cards);
 
         assertEquals(2, theTestCasesBeneath(payments));
-        final @NotNull String projectMarker = markerOf(checkout);
+        final @NotNull String testProjectMarker = markerOf(checkout);
         final @NotNull String packageMarker = markerOf(payments);
         final @NotNull String setMarker = markerOf(cards);
 
@@ -62,7 +62,7 @@ public class CountsStoredNowhereIdeTest extends AbstractTempRootIdeTest {
 
         assertEquals("the count was not worked out again when it was asked for, so it read what was stored before", 3, theTestCasesBeneath(payments));
         assertEquals("the count of the test set was not worked out again", 3, theTestCasesBeneath(cards));
-        assertEquals("a test case added beneath a test project wrote a count into its marker", projectMarker, markerOf(checkout));
+        assertEquals("a test case added beneath a test project wrote a count into its marker", testProjectMarker, markerOf(checkout));
         assertEquals("a test case added beneath a test set package wrote a count into its marker", packageMarker, markerOf(payments));
         assertEquals("a test case added to a test set wrote a count into its marker", setMarker, markerOf(cards));
     }

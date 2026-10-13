@@ -28,19 +28,19 @@ import javax.swing.JComponent;
 import java.util.List;
 
 // Rule-EDITOR-PANEL-258
-public class StatusSection implements TestCaseSection {
-    private final @NotNull RadioSelection<TestCaseStatus> status;
+public class TestCaseStatusSection implements TestCaseSection {
+    private final @NotNull RadioSelection<TestCaseStatus> testCaseStatus;
     private final @NotNull JBPanel<?> wrapper;
 
     // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-194, Rule-EDITOR-PANEL-258
-    public StatusSection() {
-        status = DialogPart.<TestCaseStatus>radios("")
+    public TestCaseStatusSection() {
+        testCaseStatus = DialogPart.<TestCaseStatus>radios("")
                 .options(List.of(TestCaseStatus.values()), TestCaseStatus::getLabel)
                 .select(TestCaseStatus.PENDING)
                 .build()
                 .getComponent();
 
-        wrapper = createWrapper(UpdateTestCaseFields.STATUS.getIcon(), status.getPanel());
+        wrapper = createWrapper(UpdateTestCaseFields.STATUS.getIcon(), testCaseStatus.getPanel());
     }
 
     @Override
@@ -50,7 +50,7 @@ public class StatusSection implements TestCaseSection {
 
     @Override
     public @NotNull TestCase applyTo(final @NotNull TestCase testCase) {
-        return testCase.edit().status(status.getSelected()).build();
+        return testCase.edit().status(testCaseStatus.getSelected()).build();
     }
 
     // Rule-EDITOR-PANEL-194, Rule-PRODUCT-017
@@ -60,16 +60,16 @@ public class StatusSection implements TestCaseSection {
 
     @Override
     public @NotNull JComponent getFocusComponent() {
-        return status.getFocusComponent();
+        return testCaseStatus.getFocusComponent();
     }
 
     @Override
     public void setEditable(final boolean editable) {
-        status.setEnabled(editable);
+        testCaseStatus.setEnabled(editable);
     }
 
     @Override
     public void fillData(final @NotNull TestCase testCase) {
-        status.select(testCase.getStatus());
+        testCaseStatus.select(testCase.getStatus());
     }
 }

@@ -187,9 +187,9 @@ public class GridIdeTest extends BasePlatformTestCase {
             if (table.isEditing()) table.getCellEditor().cancelCellEditing();
         }
 
-        final @NotNull List<String[]> runRow = List.<String[]>of(new String[TestRunEditorFields.values().length]);
-        final @NotNull JBTable open = new GridTables().buildTestRunTable(runRow, EnumSet.allOf(TestRunEditorFields.class), () -> true);
-        final @NotNull JBTable closed = new GridTables().buildTestRunTable(runRow, EnumSet.allOf(TestRunEditorFields.class), () -> false);
+        final @NotNull List<String[]> testRunRow = List.<String[]>of(new String[TestRunEditorFields.values().length]);
+        final @NotNull JBTable open = new GridTables().buildTestRunTable(testRunRow, EnumSet.allOf(TestRunEditorFields.class), () -> true);
+        final @NotNull JBTable closed = new GridTables().buildTestRunTable(testRunRow, EnumSet.allOf(TestRunEditorFields.class), () -> false);
         for (int column = 0; column < open.getColumnCount(); column++) {
             final @NotNull TestRunEditorFields field = TestRunEditorFields.atColumn(open.convertColumnIndexToModel(column));
             assertEquals(field.getName() + " in an open test run", field.isEdited(), open.isCellEditable(0, column));
@@ -242,7 +242,7 @@ public class GridIdeTest extends BasePlatformTestCase {
     }
 
     // Rule-EDITOR-PANEL-108
-    public void testTheOrderColumnTakesWholeRowsInSeparateRuns() {
+    public void testTheOrderColumnTakesWholeRowsInSeparateBlocks() {
         final @NotNull JBTable table = aGrid(aRow(1, "a", "", "1"), aRow(2, "b", "", "2"), aRow(3, "c", "", "3"), aRow(4, "d", "", "4"), aRow(5, "e", "", "5"));
         table.setSize(800, 600);
 

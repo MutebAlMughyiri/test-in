@@ -69,8 +69,8 @@ public class OneExecutionIdeTest extends AbstractCodegenIdeTest {
     protected void tearDown() {
         try {
             execution().stop(involved);
-            final @NotNull RunManager runs = RunManager.getInstance(getProject());
-            runs.getAllSettings().stream().filter(settings -> settings.getConfiguration() instanceof TestNGConfiguration).toList().forEach(runs::removeConfiguration);
+            final @NotNull RunManager runManager = RunManager.getInstance(getProject());
+            runManager.getAllSettings().stream().filter(settings -> settings.getConfiguration() instanceof TestNGConfiguration).toList().forEach(runManager::removeConfiguration);
         } finally {
             super.tearDown();
         }

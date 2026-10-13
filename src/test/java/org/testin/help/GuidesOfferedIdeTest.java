@@ -76,11 +76,11 @@ public class GuidesOfferedIdeTest extends AbstractTempRootIdeTest {
         try {
             assertEquals("opening a test run did not offer its shortcuts", List.of(Guide.TEST_RUN_EDITOR_SHORTCUTS), guides().offered());
 
-            Services.getInstance(getProject(), RunItemRecorder.class).applyStatus(editor, List.of(testCases.getFirst()), RunItemStatus.PASSED);
+            Services.getInstance(getProject(), RunItemRecorder.class).applyRunItemStatus(editor, List.of(testCases.getFirst()), RunItemStatus.PASSED);
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
             assertFalse("a pass offered the bug reports guide", guides().offered().contains(Guide.RAISE_BUG_REPORTS));
 
-            Services.getInstance(getProject(), RunItemRecorder.class).applyStatus(editor, List.of(testCases.getLast()), RunItemStatus.FAILED);
+            Services.getInstance(getProject(), RunItemRecorder.class).applyRunItemStatus(editor, List.of(testCases.getLast()), RunItemStatus.FAILED);
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
             assertTrue("a failure did not offer the bug reports guide", guides().offered().contains(Guide.RAISE_BUG_REPORTS));
         } finally {

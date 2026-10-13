@@ -27,7 +27,7 @@ import org.testin.Await;
 import org.testin.NodesOnDisk;
 import org.testin.Said;
 import org.testin.importexport.FileFormat;
-import org.testin.indexer.ProjectIndexer;
+import org.testin.indexer.TestProjectIndexer;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
@@ -202,7 +202,7 @@ public class ExportFlowIdeTest extends AbstractTempRootIdeTest {
         aTestCase(login, "log in with a valid user");
         write(login.getPath().resolve("notes.txt"), "remember to ask about the locked account");
         write(login.getPath().resolve("draft.json"), "{\"id\":\"" + UUID.randomUUID() + "\",\"description\":\"a draft that is not a test case\"}");
-        Services.getInstance(getProject(), ProjectIndexer.class).scanSingleProject(testProject.getPath());
+        Services.getInstance(getProject(), TestProjectIndexer.class).scanSingleTestProject(testProject.getPath());
 
         final @NotNull JComponent dialog = theExportDialogFor(login);
 
@@ -282,7 +282,7 @@ public class ExportFlowIdeTest extends AbstractTempRootIdeTest {
         aTestCase(login, "log in with a valid user");
         final @NotNull String broken = UUID.randomUUID() + ".testcase";
         write(login.getPath().resolve(broken), "{ this is not a test case");
-        Services.getInstance(getProject(), ProjectIndexer.class).scanSingleProject(testProject.getPath());
+        Services.getInstance(getProject(), TestProjectIndexer.class).scanSingleTestProject(testProject.getPath());
 
         new ExportWork(getProject()).exportFrom(login);
         final @NotNull JComponent warning = ShownDialog.waitedFor(getProject(), ConfirmDialog.class);

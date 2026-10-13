@@ -23,8 +23,8 @@ import static org.testng.Assert.assertEquals;
 
 public class PanelStateTest {
 
-    private static @NotNull PanelState of(final boolean rootConfigured, final boolean indexed, final boolean projectResolved, final boolean boundProjectMissing, final boolean cloneUrlKnown, final boolean anyProjectsUnderRoot) {
-        return PanelState.of(rootConfigured, indexed, projectResolved, boundProjectMissing, cloneUrlKnown, anyProjectsUnderRoot);
+    private static @NotNull PanelState of(final boolean rootConfigured, final boolean indexed, final boolean testProjectResolved, final boolean boundTestProjectMissing, final boolean cloneUrlKnown, final boolean anyTestProjectsUnderRoot) {
+        return PanelState.of(rootConfigured, indexed, testProjectResolved, boundTestProjectMissing, cloneUrlKnown, anyTestProjectsUnderRoot);
     }
 
     // Rule-TREE-PANEL-118
@@ -41,7 +41,7 @@ public class PanelStateTest {
     }
 
     @Test
-    public void aResolvedProjectBeatsTheWait() {
+    public void aResolvedTestProjectBeatsTheWait() {
         assertEquals(of(true, false, true, false, false, true), PanelState.TREE);
     }
 
@@ -52,21 +52,21 @@ public class PanelStateTest {
     }
 
     @Test
-    public void aResolvedProjectIsTheTree() {
+    public void aResolvedTestProjectIsTheTree() {
         assertEquals(of(true, true, true, false, false, true), PanelState.TREE);
         assertEquals(of(true, true, true, false, true, true), PanelState.TREE);
     }
 
     @Test
-    public void aMissingProjectWithAUrlIsCloned() {
+    public void aMissingTestProjectWithAUrlIsCloned() {
         assertEquals(of(true, true, false, true, true, false), PanelState.CLONE_BOUND);
 
         assertEquals(of(true, true, false, true, true, true), PanelState.CLONE_BOUND);
     }
 
     @Test
-    public void aMissingProjectWithoutAUrlFallsBack() {
-        assertEquals(of(true, true, false, true, false, false), PanelState.NO_PROJECTS);
+    public void aMissingTestProjectWithoutAUrlFallsBack() {
+        assertEquals(of(true, true, false, true, false, false), PanelState.NO_TEST_PROJECTS);
         assertEquals(of(true, true, false, true, false, true), PanelState.CHOOSE);
     }
 
@@ -76,12 +76,12 @@ public class PanelStateTest {
     }
 
     @Test
-    public void anArchivedProjectChooses() {
+    public void anArchivedTestProjectChooses() {
         assertEquals(of(true, true, false, false, true, true), PanelState.CHOOSE);
     }
 
     @Test
     public void anEmptyRootCreates() {
-        assertEquals(of(true, true, false, false, false, false), PanelState.NO_PROJECTS);
+        assertEquals(of(true, true, false, false, false, false), PanelState.NO_TEST_PROJECTS);
     }
 }

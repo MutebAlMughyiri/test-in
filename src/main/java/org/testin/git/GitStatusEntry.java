@@ -17,7 +17,7 @@
 package org.testin.git;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.git.change.StatusKind;
+import org.testin.git.change.GitStatusKind;
 
-public record StatusEntry(@NotNull StatusKind type, @NotNull String path) {
+public record GitStatusEntry(@NotNull GitStatusKind type, @NotNull String path) {
 }

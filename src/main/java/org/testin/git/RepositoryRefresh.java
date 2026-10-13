@@ -22,7 +22,7 @@ import git4idea.GitUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.indexer.ProjectIndexer;
+import org.testin.indexer.TestProjectIndexer;
 import org.testin.services.Services;
 
 import java.nio.file.Path;
@@ -35,6 +35,6 @@ public final class RepositoryRefresh {
         Optional.ofNullable(LocalFileSystem.getInstance().refreshAndFindFileByIoFile(repoPath.toFile()))
                 .ifPresent(GitUtil::refreshVfsInRoot);
 
-        Services.getInstance(project, ProjectIndexer.class).scanSingleProject(repoPath);
+        Services.getInstance(project, TestProjectIndexer.class).scanSingleTestProject(repoPath);
     }
 }

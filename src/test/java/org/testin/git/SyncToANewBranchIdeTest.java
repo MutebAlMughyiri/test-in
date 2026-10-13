@@ -26,7 +26,7 @@ import java.nio.file.Path;
 import static org.testin.git.LocalGit.mustGit;
 
 public class SyncToANewBranchIdeTest extends AbstractTempRootIdeTest {
-    private static final @NotNull String BRANCH = "feature/new-cases";
+    private static final @NotNull String BRANCH = "feature/new-test-cases";
 
     private Path remote;
     private Path work;

@@ -35,7 +35,7 @@ import static org.testng.Assert.assertTrue;
 
 public class DeletedTestCaseInATestRunTest {
 
-    private static @NotNull RunItem removedItem(final UUID testCaseId) {
+    private static @NotNull RunItem removedRunItem(final UUID testCaseId) {
         return RunItem.builder()
                 .id(testCaseId).removed(true)
                 .build();
@@ -45,7 +45,7 @@ public class DeletedTestCaseInATestRunTest {
     public void aRowWhoseTestCaseIsGoneSaysSoByName() {
         final UUID testCaseId = UUID.randomUUID();
 
-        assertTrue(removedItem(testCaseId).isRemoved(),
+        assertTrue(removedRunItem(testCaseId).isRemoved(),
                 "the run item status path, the details editor and the walker all ask this");
     }
 
@@ -57,7 +57,7 @@ public class DeletedTestCaseInATestRunTest {
     @Test
     public void theRowStillShowsAndStillNamesItsTestCase() {
         final UUID testCaseId = UUID.randomUUID();
-        final RunItem runItem = removedItem(testCaseId);
+        final RunItem runItem = removedRunItem(testCaseId);
 
         final TestCase shown = runItem.shownTestCase();
 

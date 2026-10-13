@@ -27,7 +27,7 @@ exclusions is half the value.
 
 **Measured against `main`, not estimated.** Count the thing itself, per file;
 count the blast radius — how many call sites, in how many files, and how many
-already handle the case correctly; and give a baseline to compare against.
+already handle it correctly; and give a baseline to compare against.
 
 Then say what the numbers mean for the plan, in a sentence. Counting routinely
 changes the plan, and twice it has changed what the story was about.

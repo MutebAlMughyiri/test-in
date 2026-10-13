@@ -226,7 +226,7 @@ public class FilterMenuIdeTest extends AbstractTempRootIdeTest {
         assertTrue("Reset Filters left the automation on", filter.getSelectedAutomation().isEmpty());
         assertTrue("Reset Filters left the group on", filter.getSelectedGroup().isEmpty());
         assertTrue("Reset Filters left the module on", filter.getSelectedModule().isEmpty());
-        assertTrue("Reset Filters left the run item status on", filter.getSelectedStatus().isEmpty());
+        assertTrue("Reset Filters left the run item status on", filter.getSelectedRunItemStatuses().isEmpty());
         assertFalse("the button still counts filters after Reset Filters", filter.hasActiveFilters());
         assertEquals("Reset Filters cleared the search text", "number 1", editor.getToolBar().getSearchText().getText());
         assertEquals("the search stopped narrowing the list after Reset Filters", 32, editor.getCurrentTestCases().size());

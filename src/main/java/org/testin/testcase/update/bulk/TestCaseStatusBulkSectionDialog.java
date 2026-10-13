@@ -25,8 +25,8 @@ import org.testin.util.Bundle;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class StatusBulkSectionDialog extends AbstractJsonSplitBulkSectionDialog {
-    public StatusBulkSectionDialog(final @NotNull Project project, final @NotNull List<TestCase> selectedTestCases, final @NotNull Consumer<List<TestCase>> updatedTestCases) {
+public class TestCaseStatusBulkSectionDialog extends AbstractJsonSplitBulkSectionDialog {
+    public TestCaseStatusBulkSectionDialog(final @NotNull Project project, final @NotNull List<TestCase> selectedTestCases, final @NotNull Consumer<List<TestCase>> updatedTestCases) {
         super(project, selectedTestCases, updatedTestCases);
     }
 
@@ -37,7 +37,7 @@ public class StatusBulkSectionDialog extends AbstractJsonSplitBulkSectionDialog 
 
     @Override
     protected @NotNull String getPopupTitle() {
-        return Bundle.message("bulk.title.status");
+        return Bundle.message("bulk.title.test.case.status");
     }
 
     @Override

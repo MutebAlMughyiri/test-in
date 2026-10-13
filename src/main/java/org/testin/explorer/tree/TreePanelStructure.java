@@ -27,22 +27,22 @@ import org.testin.util.Bundle;
 import java.util.Optional;
 
 public final class TreePanelStructure extends AbstractTreeStructure {
-    private static final @NotNull String NO_PROJECT = Bundle.message("tree.root.project");
+    private static final @NotNull String NO_TEST_PROJECT = Bundle.message("tree.root.test.project");
 
     private final @NotNull Project project;
     private volatile @NotNull TreePanelNode root;
 
-    public TreePanelStructure(final @NotNull Project project, final @NotNull Optional<TestProjectNode> selectedProject) {
+    public TreePanelStructure(final @NotNull Project project, final @NotNull Optional<TestProjectNode> selectedTestProject) {
         this.project = project;
-        this.root = createRoot(selectedProject);
+        this.root = createRoot(selectedTestProject);
     }
 
-    public void setSelectedProject(final @NotNull Optional<TestProjectNode> selectedProject) {
-        root = createRoot(selectedProject);
+    public void setSelectedTestProject(final @NotNull Optional<TestProjectNode> selectedTestProject) {
+        root = createRoot(selectedTestProject);
     }
 
-    private @NotNull TreePanelNode createRoot(final @NotNull Optional<TestProjectNode> selectedProject) {
-        return new TreePanelNode(project, selectedProject.map(Object.class::cast).orElse(NO_PROJECT));
+    private @NotNull TreePanelNode createRoot(final @NotNull Optional<TestProjectNode> selectedTestProject) {
+        return new TreePanelNode(project, selectedTestProject.map(Object.class::cast).orElse(NO_TEST_PROJECT));
     }
 
     @Override

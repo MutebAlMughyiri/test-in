@@ -286,7 +286,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorFields, Tes
 
     // UC-EDITOR-PANEL-022, Rule-EDITOR-PANEL-101
     @Override
-    protected void drawStatus(final @NotNull PageWindow page) {
+    protected void drawStatusBar(final @NotNull PageWindow page) {
         final @NotNull List<TestCase> all = snapshotOfAll();
         automationState.read(project, all, this::refreshView);
 

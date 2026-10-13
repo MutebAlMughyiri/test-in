@@ -38,9 +38,9 @@ public class TestRunMergeTest {
     private static final String BOTH = """
             { "status" : "BLOCKED", "executedBy" : "Omar", "executedAt" : "Monday 14-09-2026 At 09:00:00 [Asia/Riyadh]" }""";
 
-    private static final String MINE_ITEM = runItem("MINOR", BOTH, EARLY);
+    private static final String MINE_RUN_ITEM = runItem("MINOR", BOTH, EARLY);
 
-    private static final String THEIRS_ITEM = runItem("MAJOR", BOTH, LATE);
+    private static final String THEIRS_RUN_ITEM = runItem("MAJOR", BOTH, LATE);
 
     private static final String BASE_MARKER = """
             {
@@ -75,7 +75,7 @@ public class TestRunMergeTest {
     // Rule-SHARE-080, Rule-SHARE-081
     @Test
     public void bothSidesExecutionsAreJoinedInTimeOrder() {
-        final MergeOutcome merge = RunItemMerger.of(RealJsonCodec.build(), MINE_ITEM, THEIRS_ITEM);
+        final MergeOutcome merge = RunItemMerger.of(RealJsonCodec.build(), MINE_RUN_ITEM, THEIRS_RUN_ITEM);
 
         assertTrue(merge.isSettled(), "a run item is settled by rule, never by asking");
         assertEquals(merge.merged().path("executions").size(), 3, "the execution both sides hold is kept once: " + merge.merged());
@@ -88,8 +88,8 @@ public class TestRunMergeTest {
     // Rule-SHARE-081
     @Test
     public void theBugFieldsComeFromWhoeverRecordedLastWhicheverSideIsMine() {
-        assertEquals(RunItemMerger.of(RealJsonCodec.build(), MINE_ITEM, THEIRS_ITEM).merged().path("bugSeverity").asText(), "MAJOR");
-        assertEquals(RunItemMerger.of(RealJsonCodec.build(), THEIRS_ITEM, MINE_ITEM).merged().path("bugSeverity").asText(), "MAJOR");
+        assertEquals(RunItemMerger.of(RealJsonCodec.build(), MINE_RUN_ITEM, THEIRS_RUN_ITEM).merged().path("bugSeverity").asText(), "MAJOR");
+        assertEquals(RunItemMerger.of(RealJsonCodec.build(), THEIRS_RUN_ITEM, MINE_RUN_ITEM).merged().path("bugSeverity").asText(), "MAJOR");
     }
 
     // Rule-SHARE-081, Rule-VIEW-PANEL-119
@@ -107,7 +107,7 @@ public class TestRunMergeTest {
 
     @Test
     public void twoIdenticalRunItemsAreNoDisagreement() {
-        final MergeOutcome merge = RunItemMerger.of(RealJsonCodec.build(), MINE_ITEM, MINE_ITEM);
+        final MergeOutcome merge = RunItemMerger.of(RealJsonCodec.build(), MINE_RUN_ITEM, MINE_RUN_ITEM);
 
         assertTrue(merge.isSettled());
         assertTrue(merge.settled().isEmpty(), "nothing was decided, because nothing differed");

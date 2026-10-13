@@ -36,7 +36,7 @@ import java.util.Set;
 final class TestRunMarkerMerger {
     private static final @NotNull String STARTED = "executionStartedAt";
     private static final @NotNull String ENDED = "executionEndedAt";
-    private static final @NotNull String STATUS = "status";
+    private static final @NotNull String TEST_RUN_STATUS_KEY = "status";
     private static final @NotNull String COMMIT = "commit";
     private static final @NotNull String MODIFIED_AT = "updatedAt";
     private static final @NotNull String MODIFIED_BY = "updatedBy";
@@ -48,7 +48,7 @@ final class TestRunMarkerMerger {
         final @NotNull ThreeWayMerge merging = ThreeWayMerge.read(mapper, base, mine, theirs);
 
         execution(merging);
-        status(merging);
+        mergeTestRunStatus(merging);
         audit(merging);
 
         for (final String object : WRITTEN_INTO) {
@@ -75,17 +75,17 @@ final class TestRunMarkerMerger {
         merging.settled().add(said);
     }
 
-    private static void status(final @NotNull ThreeWayMerge merging) {
-        final @NotNull TestRunStatus ours = statusIn(merging.mine());
-        final @NotNull TestRunStatus yours = statusIn(merging.theirs());
+    private static void mergeTestRunStatus(final @NotNull ThreeWayMerge merging) {
+        final @NotNull TestRunStatus ours = testRunStatusIn(merging.mine());
+        final @NotNull TestRunStatus yours = testRunStatusIn(merging.theirs());
         if (ours == yours) return;
 
         if (yours.isFurtherThan(ours)) {
-            merging.merged().set(STATUS, merging.theirs().path(STATUS).deepCopy());
+            merging.merged().set(TEST_RUN_STATUS_KEY, merging.theirs().path(TEST_RUN_STATUS_KEY).deepCopy());
             // Rule-SHARE-130
             if (merging.theirs().has(COMMIT)) merging.merged().set(COMMIT, merging.theirs().path(COMMIT).deepCopy());
         }
-        merging.settled().add(Bundle.message("git.merge.status"));
+        merging.settled().add(Bundle.message("git.merge.test.run.status"));
     }
 
     private static void audit(final @NotNull ThreeWayMerge merging) {
@@ -118,9 +118,9 @@ final class TestRunMarkerMerger {
         }
     }
 
-    private static @NotNull TestRunStatus statusIn(final @NotNull ObjectNode marker) {
+    private static @NotNull TestRunStatus testRunStatusIn(final @NotNull ObjectNode marker) {
         try {
-            return TestRunStatus.valueOf(marker.path(STATUS).asText(TestRunStatus.CREATED.name()));
+            return TestRunStatus.valueOf(marker.path(TEST_RUN_STATUS_KEY).asText(TestRunStatus.CREATED.name()));
         } catch (final IllegalArgumentException unknown) {
             return TestRunStatus.CREATED;
         }

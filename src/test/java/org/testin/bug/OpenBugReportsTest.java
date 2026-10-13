@@ -35,7 +35,7 @@ import static org.testng.Assert.assertTrue;
 public class OpenBugReportsTest {
 
     private static final RunItemPath RUN_ITEM_PATH = new RunItemPath(Path.of("NAFATH", "Test Runs", "Sprint 7"), UUID.randomUUID());
-    private static final RunItemPath SAME_TEST_CASE_OTHER_RUN = new RunItemPath(Path.of("NAFATH", "Test Runs", "Sprint 8"), RUN_ITEM_PATH.testCaseId());
+    private static final RunItemPath SAME_TEST_CASE_OTHER_TEST_RUN = new RunItemPath(Path.of("NAFATH", "Test Runs", "Sprint 8"), RUN_ITEM_PATH.testCaseId());
 
     private static @NotNull RunItem failed() {
         return RunItem.builder().id(RUN_ITEM_PATH.testCaseId()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build();
@@ -76,14 +76,14 @@ public class OpenBugReportsTest {
     @Test
     public void anOpenReportKeepsEveryOtherRunItemWaiting() {
         final OpenBugReports reports = new OpenBugReports();
-        reports.begin(SAME_TEST_CASE_OTHER_RUN);
+        reports.begin(SAME_TEST_CASE_OTHER_TEST_RUN);
 
         assertEquals(reports.whyReportBugIsOff(RUN_ITEM_PATH, failed()), Optional.empty(), "one being prepared, even for the same test case in another test run, does not hold the others");
 
-        reports.moveTo(SAME_TEST_CASE_OTHER_RUN, Stage.OPEN);
+        reports.moveTo(SAME_TEST_CASE_OTHER_TEST_RUN, Stage.OPEN);
         assertEquals(reports.whyReportBugIsOff(RUN_ITEM_PATH, failed()), Optional.of(Bundle.message("bug.finish.open.report")));
         assertTrue(reports.anotherIsOpen(RUN_ITEM_PATH));
-        assertFalse(reports.anotherIsOpen(SAME_TEST_CASE_OTHER_RUN), "its own dialog is not another one");
+        assertFalse(reports.anotherIsOpen(SAME_TEST_CASE_OTHER_TEST_RUN), "its own dialog is not another one");
     }
 
     @Test

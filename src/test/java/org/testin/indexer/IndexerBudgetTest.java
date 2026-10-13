@@ -103,26 +103,26 @@ public class IndexerBudgetTest {
         return runtime.totalMemory() - runtime.freeMemory();
     }
 
-    private static long timeWalk(final @NotNull Path project, final int expected) {
+    private static long timeWalk(final @NotNull Path testProject, final int expected) {
         final long started = System.nanoTime();
-        final int read = readAll(project).size();
+        final int read = readAll(testProject).size();
         final long elapsed = System.nanoTime() - started;
 
         assertEquals(read, expected, "The walk read the wrong number of test cases, so the timing is of the wrong thing");
         return elapsed;
     }
 
-    private static @NotNull List<TestCase> readAll(final @NotNull Path project) {
+    private static @NotNull List<TestCase> readAll(final @NotNull Path testProject) {
         final @NotNull List<TestCase> testCases = new ArrayList<>();
 
-        try (Stream<Path> walk = Files.walk(project)) {
+        try (Stream<Path> walk = Files.walk(testProject)) {
             for (final Path file : walk.toList()) {
                 if (!file.getFileName().toString().endsWith(".testcase")) continue;
 
                 testCases.add(MAPPER.readValue(file.toFile(), TestCase.class));
             }
         } catch (final IOException ex) {
-            throw new AssertionError("Could not read the generated tree at " + project + ": " + ex.getMessage(), ex);
+            throw new AssertionError("Could not read the generated tree at " + testProject + ": " + ex.getMessage(), ex);
         }
 
         return testCases;
@@ -176,7 +176,7 @@ public class IndexerBudgetTest {
         final double micros = fastest / 1_000.0 / TEST_CASES;
 
         TestinLogger.info(String.format(
-                "Indexer budget: parsed %,d test cases in %,.0f ms (%.1f us/case), slowest of %d passes %,.0f ms, holding %,d KB",
+                "Indexer budget: parsed %,d test cases in %,.0f ms (%.1f us/test case), slowest of %d passes %,.0f ms, holding %,d KB",
                 TEST_CASES, fastest / 1e6, micros, PASSES, slowest / 1e6, heldKilobytes(documents)));
 
         assertTrue(micros < BUDGET_MICROS_PER_TEST_CASE,
@@ -187,7 +187,7 @@ public class IndexerBudgetTest {
     }
 
     @Test(groups = "budget")
-    public void parsingAProjectsRunItemsStaysInsideTheBudget() {
+    public void parsingATestProjectsRunItemsStaysInsideTheBudget() {
         final @NotNull List<String> documents = runItems();
 
         parseRunItems(documents);
@@ -221,18 +221,18 @@ public class IndexerBudgetTest {
 
     @Test
     public void walkingATestProjectOnDiskIsMeasuredAndReported() {
-        final int testCases = Integer.getInteger("testin.budget.cases", 0);
-        if (testCases == 0) throw new SkipException("Set -Dtestin.budget.cases to measure the on-disk walk");
+        final int testCases = Integer.getInteger("testin.budget.testCases", 0);
+        if (testCases == 0) throw new SkipException("Set -Dtestin.budget.testCases to measure the on-disk walk");
 
         final @NotNull Path root = SyntheticTree.tempRoot();
 
         try {
-            final @NotNull Path project = SyntheticTree.write(root, Math.max(1, testCases / 100), Math.min(testCases, 100));
+            final @NotNull Path testProject = SyntheticTree.write(root, Math.max(1, testCases / 100), Math.min(testCases, 100));
 
-            final long cold = timeWalk(project, testCases);
-            final long warm = timeWalk(project, testCases);
+            final long cold = timeWalk(testProject, testCases);
+            final long warm = timeWalk(testProject, testCases);
 
-            TestinLogger.info(String.format("Indexer budget: %,d cases on disk · cold %,.0f ms (%.1f us/case) · warm %,.0f ms (%.1f us/case)",
+            TestinLogger.info(String.format("Indexer budget: %,d test cases on disk · cold %,.0f ms (%.1f us/test case) · warm %,.0f ms (%.1f us/test case)",
                     testCases, cold / 1e6, cold / 1_000.0 / testCases, warm / 1e6, warm / 1_000.0 / testCases));
         } finally {
             TempTree.delete(root);

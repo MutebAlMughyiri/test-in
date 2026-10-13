@@ -31,9 +31,9 @@ import static org.testng.Assert.assertEquals;
 
 public class ReportWarningTest {
 
-    private static @NotNull RunItem executed(final @NotNull RunItemStatus... statuses) {
+    private static @NotNull RunItem executed(final @NotNull RunItemStatus... runItemStatuses) {
         return RunItem.builder().id(UUID.randomUUID())
-                .executions(Arrays.stream(statuses).map(status -> RunItemExecution.builder().status(status).build()).toList())
+                .executions(Arrays.stream(runItemStatuses).map(runItemStatus -> RunItemExecution.builder().status(runItemStatus).build()).toList())
                 .build();
     }
 
@@ -52,7 +52,7 @@ public class ReportWarningTest {
 
     // Rule-REPORT-027
     @Test
-    public void severalOthersAreCountedByStatusInOneLine() {
+    public void severalOthersAreCountedByRunItemStatusInOneLine() {
         assertEquals(ReportText.otherExecutions(executed(RunItemStatus.BLOCKED, RunItemStatus.FAILED, RunItemStatus.FAILED, RunItemStatus.PASSED)),
                 Optional.of(Bundle.message("report.other.executions", RunItemStatus.FAILED.getLabel(), "2") + ", "
                         + Bundle.message("report.other.execution", RunItemStatus.BLOCKED.getLabel())));

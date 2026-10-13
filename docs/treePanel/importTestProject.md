@@ -72,7 +72,7 @@ This copies a test project from Git onto this machine.
 
 ## What the tester sees
 
-The **Create Project** dialog opens. It is the same one-field dialog a new test
+The **Create Test Project** dialog opens. It is the same one-field dialog a new test
 project uses, and it is drawn under
 [UC-TREE-PANEL-002](createTestProject.md). While Git copies the repository, a
 progress bar reads *Cloning repository*, with the line *Cloning into

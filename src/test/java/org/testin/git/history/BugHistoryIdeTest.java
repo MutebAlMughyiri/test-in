@@ -43,8 +43,8 @@ public class BugHistoryIdeTest extends AbstractGitRemoteIdeTest {
     private static final @NotNull UUID ID = UUID.fromString("77777777-7777-4777-8777-777777777397");
     private static final @NotNull String RUN_ITEM = ID + ".runitem";
 
-    private static @NotNull RunItem runItem(final @NotNull RunItemStatus status, final @NotNull BugSeverity severity) {
-        return RunItem.builder().id(ID).bugSeverity(severity).executions(List.of(RunItemExecution.builder().status(status).actualResult("The basket was emptied").executedBy("Sara").build())).build();
+    private static @NotNull RunItem runItem(final @NotNull RunItemStatus runItemStatus, final @NotNull BugSeverity severity) {
+        return RunItem.builder().id(ID).bugSeverity(severity).executions(List.of(RunItemExecution.builder().status(runItemStatus).actualResult("The basket was emptied").executedBy("Sara").build())).build();
     }
 
     private static @NotNull List<String> told(final @NotNull List<BugCard> bugs) {

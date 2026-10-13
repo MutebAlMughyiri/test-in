@@ -80,14 +80,14 @@ public final class GitCommitAndPush {
     }
 
     // UC-SHARE-012, Rule-SHARE-112
-    static @NotNull Set<String> screenshotsAlongside(final @NotNull List<String> statusLines, final @NotNull Set<String> paths) {
+    static @NotNull Set<String> screenshotsAlongside(final @NotNull List<String> gitStatusLines, final @NotNull Set<String> paths) {
         final @NotNull Set<String> testRunFolders = paths.stream()
                 .filter(path -> FileKind.of(Path.of(path)) == FileKind.RUN_ITEM)
                 .map(GitCommitAndPush::folderOf)
                 .collect(Collectors.toSet());
 
-        return GitStatusLines.parseStatus(statusLines).stream()
-                .map(StatusEntry::path)
+        return GitStatusLines.parseGitStatus(gitStatusLines).stream()
+                .map(GitStatusEntry::path)
                 .filter(path -> FileKind.of(Path.of(path), NodeType.TEST_RUN) == FileKind.SCREENSHOT)
                 .filter(path -> testRunFolders.contains(folderOf(path)))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
@@ -109,7 +109,7 @@ public final class GitCommitAndPush {
         final @NotNull Set<String> paths = repoRelativePaths(selectedChanges);
         if (paths.isEmpty()) throw new IllegalArgumentException("No Git changes were selected");
 
-        paths.addAll(screenshotsAlongside(repositories.status(repositoryPath), paths));
+        paths.addAll(screenshotsAlongside(repositories.gitStatus(repositoryPath), paths));
         paths.addAll(markersAlongside(repositoryPath, paths));
 
         commit(repositoryPath, message, paths);

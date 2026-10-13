@@ -74,21 +74,21 @@ public class CardMouseListener extends MouseAdapter {
     @Override
     public void mouseClicked(final MouseEvent e) {
         final int index = list.locationToIndex(e.getPoint());
-        final boolean isClickOnItem = index >= 0 && list.getCellBounds(index, index).contains(e.getPoint());
+        final boolean isClickOnCard = index >= 0 && list.getCellBounds(index, index).contains(e.getPoint());
 
         if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
-            if (isClickOnItem)
+            if (isClickOnCard)
                 Optional.ofNullable(model.getElementAt(index)).ifPresent(selected -> ViewToolWindowFactory.showPanel(project, List.of(selected), treePath, ViewPanel::focusDetailsTab));
 
             return;
         }
 
-        if (!isClickOnItem) {
+        if (!isClickOnCard) {
             list.getSelectionModel().clearSelection();
         }
 
         if (SwingUtilities.isRightMouseButton(e)) {
-            if (isClickOnItem && !list.getSelectionModel().isSelectedIndex(index))
+            if (isClickOnCard && !list.getSelectionModel().isSelectedIndex(index))
                 list.getSelectionModel().setSelectionInterval(index, index);
 
             final @NotNull ActionManager actionManager = ActionManager.getInstance();

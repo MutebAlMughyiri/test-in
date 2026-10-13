@@ -59,7 +59,7 @@ final class NodeMoveOrCopy {
     static @NotNull String describe(final @NotNull List<AbstractNode> sources) {
         return sources.size() == 1
                 ? "'" + sources.getFirst().getName() + "'"
-                : Bundle.message("transfer.items", String.valueOf(sources.size()));
+                : Bundle.message("transfer.nodes", String.valueOf(sources.size()));
     }
 
     // UC-TREE-PANEL-013, UC-TREE-PANEL-014, Rule-TREE-PANEL-006

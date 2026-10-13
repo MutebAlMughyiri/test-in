@@ -20,7 +20,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import org.jetbrains.annotations.NotNull;
 import org.testin.Await;
 import org.testin.git.change.ChangeSubject;
-import org.testin.git.change.StatusKind;
+import org.testin.git.change.GitStatusKind;
 import org.testin.git.change.PendingChange;
 import org.testin.git.conflict.ConflictResolution;
 import org.testin.git.conflict.RebaseEnd;
@@ -41,7 +41,7 @@ import static org.testin.git.LocalGit.mustGit;
 public class GitCommitAndPushIdeTest extends AbstractGitRemoteIdeTest {
     private static final int WINDOWS_COMMAND_LINE_LIMIT = 32767;
 
-    private static @NotNull PendingChange ticked(final @NotNull String relativePath, final @NotNull StatusKind type) {
+    private static @NotNull PendingChange ticked(final @NotNull String relativePath, final @NotNull GitStatusKind type) {
         return new PendingChange(ChangeSubject.TEST_CASE, "a test case", "login", UUID.randomUUID().toString(), Path.of(relativePath), type, TestCase.builder().build(), List.of());
     }
 
@@ -84,7 +84,7 @@ public class GitCommitAndPushIdeTest extends AbstractGitRemoteIdeTest {
         write(work, "Test Runs/.testrunsfolder", "{}");
         write(work, "Test Cases/login/a.testcase", "{}");
 
-        commits().stageAndCommit(work, "one test case", List.of(ticked("Test Cases/login/a.testcase", StatusKind.ADDED)));
+        commits().stageAndCommit(work, "one test case", List.of(ticked("Test Cases/login/a.testcase", GitStatusKind.ADDED)));
 
         final @NotNull List<String> committed = committedPaths();
         assertTrue(committed.toString(), committed.containsAll(List.of(".testproject", "Test Cases/.testcasesfolder", "Test Cases/login/.testset", "Test Cases/login/a.testcase")));
@@ -98,8 +98,8 @@ public class GitCommitAndPushIdeTest extends AbstractGitRemoteIdeTest {
         mustGit(work, "mv", "Test Cases/login/a.testcase", "Test Cases/a.testcase");
 
         commits().stageAndCommit(work, "moved the test case", List.of(
-                ticked("Test Cases/login/a.testcase", StatusKind.DELETED),
-                ticked("Test Cases/a.testcase", StatusKind.ADDED)));
+                ticked("Test Cases/login/a.testcase", GitStatusKind.DELETED),
+                ticked("Test Cases/a.testcase", GitStatusKind.ADDED)));
 
         final @NotNull List<String> committed = committedPaths();
         assertTrue(committed.toString(), committed.contains("Test Cases/a.testcase"));
@@ -114,7 +114,7 @@ public class GitCommitAndPushIdeTest extends AbstractGitRemoteIdeTest {
         for (int i = 0; i < 1200; i++) {
             final @NotNull String relativePath = "Test Cases/a package with a long name/a test set with a long name/" + UUID.randomUUID() + ".testcase";
             write(work, relativePath, "{}");
-            selected.add(ticked(relativePath, StatusKind.ADDED));
+            selected.add(ticked(relativePath, GitStatusKind.ADDED));
             asArguments += relativePath.length() + 3;
         }
         assertTrue("the paths would fit on the command line, so this proves nothing", asArguments > WINDOWS_COMMAND_LINE_LIMIT);

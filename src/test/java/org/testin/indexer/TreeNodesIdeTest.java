@@ -153,7 +153,7 @@ public class TreeNodesIdeTest extends AbstractTempRootIdeTest {
             settings().rootTestinPath = root.toString();
 
             assertEquals("a folder that is not a test project, or not directly under the Testin folder, was read as one",
-                    Set.of("NAFATH"), Services.getInstance(getProject(), ProjectIndexer.class).testProjects().keySet());
+                    Set.of("NAFATH"), Services.getInstance(getProject(), TestProjectIndexer.class).testProjects().keySet());
 
         } catch (final IOException ex) {
             throw new AssertionError("Could not make the folder that is not a test project: " + ex.getMessage(), ex);

@@ -34,7 +34,7 @@ public class TestNGEventRelayTest {
 
     private static @NotNull String finished(final @NotNull SMTestProxy test) {
         final @NotNull FinishedAttempt finished = TestNGEventRelay.finished(test);
-        return finished.status() + ": " + finished.failure().message();
+        return finished.executionStatus() + ": " + finished.failure().message();
     }
 
     // Rule-CODEGEN-075, Rule-CODEGEN-110

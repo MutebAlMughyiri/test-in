@@ -31,19 +31,19 @@ import java.util.Set;
 
 public class DescriptionColorIdeTest extends AbstractTempRootIdeTest {
 
-    private @NotNull TestCaseCard bound(final @NotNull TestCaseStatus status) {
+    private @NotNull TestCaseCard bound(final @NotNull TestCaseStatus testCaseStatus) {
         final @NotNull TestCaseCard card = new TestCaseCard(getProject());
-        final @NotNull TestCase testCase = TestCase.builder().description("Log in with a locked user").status(status).build();
+        final @NotNull TestCase testCase = TestCase.builder().description("Log in with a locked user").status(testCaseStatus).build();
         card.updateData(0, testCase, Set.of(), testCase.getDescription());
         return card;
     }
 
-    private @NotNull Color descriptionOf(final @NotNull TestCaseStatus status) {
-        return Drawn.first(bound(status), JTextArea.class).getForeground();
+    private @NotNull Color descriptionOf(final @NotNull TestCaseStatus testCaseStatus) {
+        return Drawn.first(bound(testCaseStatus), JTextArea.class).getForeground();
     }
 
-    private boolean saysToBeUpdated(final @NotNull TestCaseStatus status) {
-        return Drawn.words(bound(status)).contains(TestCaseStatus.TO_BE_UPDATED.getLabel());
+    private boolean saysToBeUpdated(final @NotNull TestCaseStatus testCaseStatus) {
+        return Drawn.words(bound(testCaseStatus)).contains(TestCaseStatus.TO_BE_UPDATED.getLabel());
     }
 
     // Rule-EDITOR-PANEL-294

@@ -46,18 +46,18 @@ public class PreviewLoader {
     private final @NotNull Project project;
     private final @NotNull Notifier notifier;
 
-    private final @NotNull Consumer<String> onStatus;
+    private final @NotNull Consumer<String> onMessage;
 
     private final @NotNull BiConsumer<FileFormat, Map<String, List<TestCase>>> onDataLoaded;
     private final @NotNull BiFunction<File, FileFormat, Map<String, List<TestCase>>> importLoader;
 
     private final @NotNull AtomicReference<String> awaiting = new AtomicReference<>("");
 
-    public PreviewLoader(final @NotNull TextValue fileField, final @NotNull Project project, final @NotNull Consumer<String> onStatus, final @NotNull BiConsumer<FileFormat, Map<String, List<TestCase>>> onDataLoaded, final @NotNull BiFunction<File, FileFormat, Map<String, List<TestCase>>> importLoader) {
+    public PreviewLoader(final @NotNull TextValue fileField, final @NotNull Project project, final @NotNull Consumer<String> onMessage, final @NotNull BiConsumer<FileFormat, Map<String, List<TestCase>>> onDataLoaded, final @NotNull BiFunction<File, FileFormat, Map<String, List<TestCase>>> importLoader) {
         this.fileField = fileField;
         this.project = project;
         this.notifier = Services.getInstance(project, Notifier.class);
-        this.onStatus = onStatus;
+        this.onMessage = onMessage;
         this.onDataLoaded = onDataLoaded;
         this.importLoader = importLoader;
     }
@@ -68,7 +68,7 @@ public class PreviewLoader {
         awaiting.set(typed);
 
         if (typed.isEmpty()) {
-            onStatus.accept("");
+            onMessage.accept("");
             return;
         }
 
@@ -98,14 +98,14 @@ public class PreviewLoader {
 
     // UC-SHARE-005, Rule-SHARE-107
     private void loadFile(final @NotNull File importFile, final @NotNull FileFormat format, final @NotNull String typed) {
-        onStatus.accept(Bundle.message("import.reading", importFile.getName()));
+        onMessage.accept(Bundle.message("import.reading", importFile.getName()));
 
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             try {
                 final @NotNull Map<String, List<TestCase>> parsedData = importLoader.apply(importFile, format);
 
                 ApplicationManager.getApplication().invokeLater(() -> {
-                    onStatus.accept("");
+                    onMessage.accept("");
 
                     if (!isStillWanted(typed)) return;
 
@@ -119,7 +119,7 @@ public class PreviewLoader {
             } catch (final Exception ex) {
                 TestinLogger.error("Import parse failed: " + FailureText.of(ex));
                 ApplicationManager.getApplication().invokeLater(() -> {
-                    onStatus.accept("");
+                    onMessage.accept("");
 
                     if (isStillWanted(typed)) {
                         notifier.error(project, Bundle.message("import.parse.error.format", format.getLabel()), FailureText.of(ex));

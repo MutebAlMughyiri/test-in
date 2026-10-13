@@ -23,7 +23,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.status.NodeStatus;
-import org.testin.model.status.ProjectStatus;
+import org.testin.model.status.TestProjectStatus;
 import org.testin.util.Bundle;
 
 import java.util.List;
@@ -37,7 +37,7 @@ public class TestProjectMarker extends AbstractMarker {
     public static final int FORMAT = 5;
 
     @NonNull
-    private ProjectStatus status = ProjectStatus.ACTIVE;
+    private TestProjectStatus status = TestProjectStatus.ACTIVE;
 
     // Rule-INTERNAL-091
     private int format;
@@ -59,11 +59,11 @@ public class TestProjectMarker extends AbstractMarker {
 
     @Override
     public @NotNull List<NodeStatus> statuses() {
-        return List.of(ProjectStatus.values());
+        return List.of(TestProjectStatus.values());
     }
 
     @Override
     public void applyStatus(final @NotNull NodeStatus status) {
-        setStatus((ProjectStatus) status);
+        setStatus((TestProjectStatus) status);
     }
 }

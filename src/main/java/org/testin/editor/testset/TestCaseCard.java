@@ -66,7 +66,7 @@ public class TestCaseCard extends AbstractCard {
 
         if (testCase.getStatus().isBadged()) badges.add(Badges.createTestCaseStatusBadge(testCase.getStatus()));
 
-        final @NotNull ExecutionStatus executionStatus = testNGExecution.statusOf(testCase);
+        final @NotNull ExecutionStatus executionStatus = testNGExecution.executionStatusOf(testCase);
 
         if (executionStatus.hasBadge()) badges.add(Badges.createExecutionStatusBadge(executionStatus.getBadge()));
 

@@ -42,7 +42,7 @@ it.
 Both halves move together on purpose. Opening the sample against somebody else's
 Testin root does not resolve `testinProject: Demo`, so the tester is asked to
 choose a project. Testin no longer writes that choice into `testin.yml` (it did,
-twice, before Decision-011), and `SampleProjectTest` still asserts the file
+twice, before Decision-011), and `SampleTestProjectTest` still asserts the file
 names `Demo`.
 
 To get the sample back, delete `.sandbox` and run again, or set the Testin root
@@ -50,7 +50,7 @@ to this folder in **Settings → Testin**.
 
 ## Changing it
 
-`SampleProjectTest` reads every file here through the same model the plugin
+`SampleTestProjectTest` reads every file here through the same model the plugin
 reads it with, and asserts that:
 
 - all seven markers are present;

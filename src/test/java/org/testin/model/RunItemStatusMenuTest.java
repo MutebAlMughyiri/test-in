@@ -50,25 +50,25 @@ public class RunItemStatusMenuTest {
     }
 
     @Test
-    public void theStatusesOffMenuCarryTheEmptyEntry() {
+    public void theRunItemStatusesOffMenuCarryTheEmptyEntry() {
         assertSame(RunItemStatus.PENDING.getMenuEntry(), RunItemStatusKey.NONE);
         assertSame(RunItemStatus.UNTESTED.getMenuEntry(), RunItemStatusKey.NONE);
     }
 
     @Test
-    public void everyOfferedStatusHasAKeyAndAnIcon() {
+    public void everyOfferedRunItemStatusHasAKeyAndAnIcon() {
         Arrays.stream(RunItemStatus.values())
                 .filter(RunItemStatus::isRunItemStatus)
-                .forEach(status -> {
-                    assertNotSame(status.getMenuEntry(), RunItemStatusKey.NONE,
-                            status + " is offered, so it needs an entry of its own");
-                    assertNotEquals(status.getMenuEntry().shortcut().getKeyCode(), KeyEvent.VK_UNDEFINED,
-                            status + " is offered, so it needs a key that reaches it");
+                .forEach(runItemStatus -> {
+                    assertNotSame(runItemStatus.getMenuEntry(), RunItemStatusKey.NONE,
+                            runItemStatus + " is offered, so it needs an entry of its own");
+                    assertNotEquals(runItemStatus.getMenuEntry().shortcut().getKeyCode(), KeyEvent.VK_UNDEFINED,
+                            runItemStatus + " is offered, so it needs a key that reaches it");
                 });
     }
 
     @Test
-    public void noTwoOfferedStatusesShareAKey() {
+    public void noTwoOfferedRunItemStatusesShareAKey() {
         final List<KeyStroke> keys = Arrays.stream(RunItemStatus.values())
                 .filter(RunItemStatus::isRunItemStatus)
                 .map(RunItemStatus::getMenuEntry)

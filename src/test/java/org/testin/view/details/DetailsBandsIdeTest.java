@@ -41,7 +41,7 @@ import static org.testin.view.Drawn.holds;
 
 public class DetailsBandsIdeTest extends BasePlatformTestCase {
 
-    private static final @NotNull String RUN = Bundle.message("details.band.run").toUpperCase(Locale.ROOT);
+    private static final @NotNull String RUN_ITEM_BAND = Bundle.message("details.band.run.item").toUpperCase(Locale.ROOT);
     private static final @NotNull String TEST_CASE = Bundle.message("details.band.test.case").toUpperCase(Locale.ROOT);
     private static final @NotNull UUID ID = UUID.fromString("3f2a05c1-8b44-4e2a-9f31-0c7d6b1a9c1b");
     private static final @NotNull String LAST_STEP = "Login";
@@ -77,16 +77,16 @@ public class DetailsBandsIdeTest extends BasePlatformTestCase {
     public void testTheTestRunBandComesBeforeTheTestCaseBand() {
         final @NotNull List<String> words = shown(Optional.of(failed()));
 
-        assertTrue("the test run band was not drawn for a test case the test run holds: " + words, words.contains(RUN));
+        assertTrue("the test run band was not drawn for a test case the test run holds: " + words, words.contains(RUN_ITEM_BAND));
         assertTrue("the test case band was not drawn: " + words, words.contains(TEST_CASE));
-        assertTrue("the test case band was drawn above the test run band", words.indexOf(RUN) < words.indexOf(TEST_CASE));
+        assertTrue("the test case band was drawn above the test run band", words.indexOf(RUN_ITEM_BAND) < words.indexOf(TEST_CASE));
     }
 
     // Rule-VIEW-PANEL-085
     public void testATestCaseWithNoTestRunIsDrawnWithNoBandsAtAll() {
         final @NotNull List<String> words = shown(Optional.empty());
 
-        assertFalse("the test run band was drawn with nothing to put in it: " + words, words.contains(RUN));
+        assertFalse("the test run band was drawn with nothing to put in it: " + words, words.contains(RUN_ITEM_BAND));
         assertFalse("a band's name was drawn over the only thing on the panel: " + words, words.contains(TEST_CASE));
         assertTrue("the test case's fields were not drawn: " + words, holds(words, "The dashboard opens"));
     }

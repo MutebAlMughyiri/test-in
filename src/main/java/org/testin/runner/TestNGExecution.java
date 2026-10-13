@@ -106,7 +106,7 @@ public final class TestNGExecution implements Disposable {
 
     // UC-CODEGEN-008, Rule-CODEGEN-076
     @FromContentModule
-    public @NotNull String freeRunName(final @NotNull String wanted) {
+    public @NotNull String freeConfigurationName(final @NotNull String wanted) {
         return registry.freeName(wanted);
     }
 
@@ -170,13 +170,13 @@ public final class TestNGExecution implements Disposable {
         return registry.isExecutingNow(testCaseId);
     }
 
-    public @NotNull ExecutionStatus statusOf(final @NotNull TestCase testCase) {
-        return registry.statusOf(testCase.getId());
+    public @NotNull ExecutionStatus executionStatusOf(final @NotNull TestCase testCase) {
+        return registry.executionStatusOf(testCase.getId());
     }
 
     // UC-CODEGEN-008
-    void reported(final @NotNull UUID testCaseId, final @NotNull ExecutionStatus status) {
-        registry.reported(testCaseId, status);
+    void reported(final @NotNull UUID testCaseId, final @NotNull ExecutionStatus executionStatus) {
+        registry.reported(testCaseId, executionStatus);
     }
 
     // Rule-CODEGEN-110

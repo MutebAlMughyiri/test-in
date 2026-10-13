@@ -39,10 +39,10 @@ import org.testin.explorer.tree.TestProjectTree;
 import org.testin.help.Guide;
 import org.testin.help.Guides;
 import org.testin.indexer.IndexChanged;
-import org.testin.indexer.ProjectIndexer;
+import org.testin.indexer.TestProjectIndexer;
 import org.testin.logger.TestinLogger;
 import org.testin.model.node.TestProjectNode;
-import org.testin.model.status.ProjectStatus;
+import org.testin.model.status.TestProjectStatus;
 import org.testin.services.OptionalPlugin;
 import org.testin.services.Services;
 import org.testin.setting.SettingsConfigurable;
@@ -67,7 +67,7 @@ public final class TreePanel implements Disposable {
     @NlsSafe String AUTHOR = "Muteb AlMughyiri";
     private final @NotNull Project project;
     private final @NotNull TestinRoot testinRoot;
-    private final @NotNull ProjectIndexer indexer;
+    private final @NotNull TestProjectIndexer indexer;
     private final @NotNull BoundTestProject boundTestProject;
     @Getter
     private final @NotNull JBPanelWithEmptyText panel = new JBPanelWithEmptyText(new BorderLayout());
@@ -79,28 +79,28 @@ public final class TreePanel implements Disposable {
     private final @NotNull RefreshTreeAction refreshAction;
 
     @Getter
-    private final @NotNull TestProjectTree projectTree;
+    private final @NotNull TestProjectTree testProjectTree;
     // UC-TREE-PANEL-028, Rule-TREE-PANEL-101
     private @NotNull Optional<Content> content = Optional.empty();
-    private @NotNull Map<String, ProjectStatus> underRoot = Map.of();
+    private @NotNull Map<String, TestProjectStatus> underRoot = Map.of();
 
     public TreePanel(final @NotNull Project project) {
         this.project = project;
         this.testinRoot = Services.getInstance(project, TestinRoot.class);
-        this.indexer = Services.getInstance(project, ProjectIndexer.class);
+        this.indexer = Services.getInstance(project, TestProjectIndexer.class);
         this.boundTestProject = Services.getInstance(project, BoundTestProject.class);
         TestinLogger.info("TreePanel.TreePanel()");
 
         refreshAction = new RefreshTreeAction(project, this);
         branchSelector = new BranchSelector(project, this, bound());
-        projectTree = new TestProjectTree(project);
-        Disposer.register(this, projectTree);
+        testProjectTree = new TestProjectTree(project);
+        Disposer.register(this, testProjectTree);
 
         final @NotNull JBPanel<?> topBar = new JBPanel<>(new BorderLayout());
         topBar.add(branchSelector.getComponent(), BorderLayout.SOUTH);
 
         treeView.add(topBar, BorderLayout.NORTH);
-        treeView.add(projectTree.getComponent(), BorderLayout.CENTER);
+        treeView.add(testProjectTree.getComponent(), BorderLayout.CENTER);
 
         panel.add(treeView, BorderLayout.CENTER);
 
@@ -114,7 +114,7 @@ public final class TreePanel implements Disposable {
         project.getMessageBus().connect(this).subscribe(IndexChanged.TOPIC, new IndexChanged() {
             @Override
             public void nodesChanged(final @NotNull Set<Path> folders) {
-                projectTree.refresh(folders);
+                testProjectTree.refresh(folders);
             }
 
             @Override
@@ -144,21 +144,21 @@ public final class TreePanel implements Disposable {
     // UC-TREE-PANEL-001, Rule-TREE-PANEL-001
     public void refresh() {
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
-            final @NotNull Map<String, ProjectStatus> listing = indexer.testProjects();
+            final @NotNull Map<String, TestProjectStatus> listing = indexer.testProjects();
 
-            if (bindTheOnlyProject(listing)) {
+            if (bindTheOnlyTestProject(listing)) {
                 ApplicationManager.getApplication().invokeLater(() -> {
                     if (!project.isDisposed()) reindex();
                 });
                 return;
             }
 
-            final @NotNull Optional<TestProjectNode> boundProject = bound();
-            final @NotNull PanelState state = state(listing, boundProject);
+            final @NotNull Optional<TestProjectNode> boundTestProjectNode = bound();
+            final @NotNull PanelState state = state(listing, boundTestProjectNode);
 
             ApplicationManager.getApplication().invokeLater(() -> {
                 if (project.isDisposed()) return;
-                draw(state, boundProject);
+                draw(state, boundTestProjectNode);
             });
         });
     }
@@ -167,13 +167,13 @@ public final class TreePanel implements Disposable {
         return treeView.isVisible();
     }
 
-    private void draw(final @NotNull PanelState state, final @NotNull Optional<TestProjectNode> boundProject) {
+    private void draw(final @NotNull PanelState state, final @NotNull Optional<TestProjectNode> boundTestProjectNode) {
         ThreadingAssertions.assertEventDispatchThread();
-        treeView.setVisible(boundProject.isPresent());
+        treeView.setVisible(boundTestProjectNode.isPresent());
         aimTheTitleBar();
         panel.getEmptyText().clear();
 
-        boundProject.ifPresentOrElse(this::showTree, () -> showWelcome(state));
+        boundTestProjectNode.ifPresentOrElse(this::showTree, () -> showWelcome(state));
 
         panel.revalidate();
         panel.repaint();
@@ -187,7 +187,7 @@ public final class TreePanel implements Disposable {
 
     // UC-TREE-PANEL-028, Rule-TREE-PANEL-101, Rule-TREE-PANEL-097
     private void aimTheTitleBar() {
-        final @NotNull JComponent onScreen = treeView.isVisible() ? projectTree.getMainTree() : panel;
+        final @NotNull JComponent onScreen = treeView.isVisible() ? testProjectTree.getMainTree() : panel;
         content.ifPresent(shownIn -> shownIn.setPreferredFocusableComponent(onScreen));
     }
 
@@ -202,23 +202,23 @@ public final class TreePanel implements Disposable {
     }
 
     // UC-TREE-PANEL-001, Rule-TREE-PANEL-015
-    private boolean bindTheOnlyProject(final @NotNull Map<String, ProjectStatus> projects) {
-        if (boundTestProject.isNamed() || projects.size() != 1) return false;
+    private boolean bindTheOnlyTestProject(final @NotNull Map<String, TestProjectStatus> testProjectsByName) {
+        if (boundTestProject.isNamed() || testProjectsByName.size() != 1) return false;
 
-        final @NotNull String only = projects.keySet().iterator().next();
+        final @NotNull String only = testProjectsByName.keySet().iterator().next();
         boundTestProject.choose(only);
 
         TestinLogger.info("Chose the only test project under the root: " + only);
         return true;
     }
 
-    private @NotNull PanelState state(final @NotNull Map<String, ProjectStatus> listing, final @NotNull Optional<TestProjectNode> boundProject) {
+    private @NotNull PanelState state(final @NotNull Map<String, TestProjectStatus> listing, final @NotNull Optional<TestProjectNode> boundTestProjectNode) {
         underRoot = listing;
 
         return PanelState.of(
                 testinRoot.isConfigured(),
                 indexer.isIndexed(),
-                boundProject.isPresent(),
+                boundTestProjectNode.isPresent(),
                 boundTestProject.isMissing(underRoot),
                 boundTestProject.cloneAddress().isPresent(),
                 !underRoot.isEmpty());
@@ -228,8 +228,8 @@ public final class TreePanel implements Disposable {
     private void showTree(final @NotNull TestProjectNode testProject) {
         TestinLogger.info("TreePanel.refresh(): showing '" + testProject.getName() + "'");
 
-        projectTree.refresh();
-        branchSelector.updateProject(Optional.of(testProject));
+        testProjectTree.refresh();
+        branchSelector.updateTestProject(Optional.of(testProject));
     }
 
     // UC-TREE-PANEL-001, Rule-TREE-PANEL-106
@@ -282,24 +282,24 @@ public final class TreePanel implements Disposable {
         emptyText.appendLine("");
 
         if (underRoot.isEmpty()) {
-            offerFirstProject(emptyText);
+            offerFirstTestProject(emptyText);
             return;
         }
 
         emptyText.appendLine(
                 AllIcons.Actions.ModuleDirectory,
-                Bundle.message("welcome.another.project"),
+                Bundle.message("welcome.another.test.project"),
                 SimpleTextAttributes.LINK_ATTRIBUTES,
                 _ -> new BindTestProjectDialog(project, underRoot, this::reindex).show());
     }
 
     // UC-TREE-PANEL-001, UC-TREE-PANEL-002, Rule-INTERNAL-129
-    void offerFirstProject(final @NotNull StatusText emptyText) {
+    void offerFirstTestProject(final @NotNull StatusText emptyText) {
         Services.getInstance(project, Guides.class).add(Guide.GETTING_STARTED);
         Services.getInstance(project, Guides.class).add(Guide.SET_UP_THIS_MACHINE);
         emptyText.appendLine(
                 AllIcons.General.Add,
-                Bundle.message("welcome.first.project"),
+                Bundle.message("welcome.first.test.project"),
                 SimpleTextAttributes.LINK_ATTRIBUTES,
                 _ -> new CreateTestProjectAction(project, this).execute());
     }
@@ -313,9 +313,9 @@ public final class TreePanel implements Disposable {
         }
 
         if (underRoot.size() <= INLINE_CHOICES) {
-            underRoot.forEach((name, status) -> emptyText.appendLine(
+            underRoot.forEach((name, testProjectStatus) -> emptyText.appendLine(
                     AllIcons.Actions.ModuleDirectory,
-                    name + "  " + status.getLabel(),
+                    name + "  " + testProjectStatus.getLabel(),
                     SimpleTextAttributes.LINK_ATTRIBUTES,
                     _ -> bindTo(name)));
             return;
@@ -323,7 +323,7 @@ public final class TreePanel implements Disposable {
 
         emptyText.appendLine(
                 AllIcons.Actions.ModuleDirectory,
-                Bundle.message("welcome.select.project"),
+                Bundle.message("welcome.select.test.project"),
                 SimpleTextAttributes.LINK_ATTRIBUTES,
                 _ -> new BindTestProjectDialog(project, underRoot, this::reindex).show());
     }

@@ -44,19 +44,19 @@ public class RetiredNodesTest {
 
     private static final Path PARENT = Path.of("root", "Test Cases");
 
-    private static @NotNull TestSetNode testSet(final String name, final TestSetStatus status) {
+    private static @NotNull TestSetNode testSet(final String name, final TestSetStatus testSetStatus) {
         final TestSetNode testSet = new TestSetNode();
         testSet.setName(name);
         testSet.setPath(PARENT.resolve(name));
-        testSet.getMarker().setStatus(status);
+        testSet.getMarker().setStatus(testSetStatus);
         return testSet;
     }
 
-    private static @NotNull TestSetPackageNode testSetPackage(final String name, final PackageStatus status) {
+    private static @NotNull TestSetPackageNode testSetPackage(final String name, final PackageStatus packageStatus) {
         final TestSetPackageNode testSetPackage = new TestSetPackageNode();
         testSetPackage.setName(name);
         testSetPackage.setPath(PARENT.resolve(name));
-        testSetPackage.getMarker().setStatus(status);
+        testSetPackage.getMarker().setStatus(packageStatus);
         return testSetPackage;
     }
 

@@ -82,9 +82,9 @@ public final class TestCaseFieldParser {
         final @NotNull String wanted = value.trim();
         if (wanted.isEmpty()) return Optional.of(current);
 
-        for (final TestCaseStatus status : TestCaseStatus.values()) {
-            if (status.getLabel().equalsIgnoreCase(wanted)) return Optional.of(status);
-            if (namesConstant(status, wanted)) return Optional.of(status);
+        for (final TestCaseStatus testCaseStatus : TestCaseStatus.values()) {
+            if (testCaseStatus.getLabel().equalsIgnoreCase(wanted)) return Optional.of(testCaseStatus);
+            if (namesConstant(testCaseStatus, wanted)) return Optional.of(testCaseStatus);
         }
 
         return Optional.empty();

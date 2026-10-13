@@ -41,11 +41,11 @@ public class GenerateReportButton extends AbstractIconButton implements ToolbarI
 
     // UC-REPORT-001, Rule-REPORT-016
     public void updateEnabledState() {
-        final @NotNull TestRunStatus status = editor.getParent().getMarker().getStatus();
+        final @NotNull TestRunStatus testRunStatus = editor.getParent().getMarker().getStatus();
 
-        setEnabled(status.isReportable());
-        describe(status.isReportable()
+        setEnabled(testRunStatus.isReportable());
+        describe(testRunStatus.isReportable()
                 ? Bundle.message("toolbar.report")
-                : Bundle.message("toolbar.report.disabled", status.getLabel()));
+                : Bundle.message("toolbar.report.disabled", testRunStatus.getLabel()));
     }
 }

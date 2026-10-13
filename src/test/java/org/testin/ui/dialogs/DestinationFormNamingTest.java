@@ -34,8 +34,8 @@ public class DestinationFormNamingTest {
 
     @Test
     public void aKnownExtensionIsReplaced() {
-        assertEquals(DestinationForm.withExtension("cases.xlsx", ".csv"), "cases.csv");
-        assertEquals(DestinationForm.withExtension("cases.json", ".xlsx"), "cases.xlsx");
+        assertEquals(DestinationForm.withExtension("testCases.xlsx", ".csv"), "testCases.csv");
+        assertEquals(DestinationForm.withExtension("testCases.json", ".xlsx"), "testCases.xlsx");
     }
 
     @Test
@@ -47,11 +47,11 @@ public class DestinationFormNamingTest {
 
     @Test
     public void anUnknownSuffixIsKeptRatherThanCutOff() {
-        assertEquals(DestinationForm.withExtension("cases.backup", ".csv"), "cases.backup.csv");
+        assertEquals(DestinationForm.withExtension("testCases.backup", ".csv"), "testCases.backup.csv");
     }
 
     @Test
-    public void theReplacedExtensionIsMatchedWhateverItsCase() {
-        assertEquals(DestinationForm.withExtension("cases.XLSX", ".csv"), "cases.csv");
+    public void theReplacedExtensionIsMatchedWhateverItsCapitals() {
+        assertEquals(DestinationForm.withExtension("testCases.XLSX", ".csv"), "testCases.csv");
     }
 }

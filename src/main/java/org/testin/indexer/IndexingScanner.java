@@ -71,9 +71,9 @@ final class IndexingScanner {
     }
 
     // Rule-INTERNAL-091
-    private static @NotNull ScannedProject scannedNode(final @NotNull Path projectPath, final @NotNull TestProjectNode testProject) {
-        final @NotNull ScannedProject scanned = new ScannedProject();
-        scanned.getProjects().put(projectPath.toString(), testProject);
+    private static @NotNull ScannedTestProject scannedNode(final @NotNull Path testProjectPath, final @NotNull TestProjectNode testProject) {
+        final @NotNull ScannedTestProject scanned = new ScannedTestProject();
+        scanned.getTestProjects().put(testProjectPath.toString(), testProject);
 
         return scanned;
     }
@@ -96,47 +96,47 @@ final class IndexingScanner {
     }
 
     // Rule-INTERNAL-124
-    @NotNull Optional<String> scanProject(final @NotNull Path projectPath, final @NotNull ProgressIndicator indicator) {
+    @NotNull Optional<String> scanTestProject(final @NotNull Path testProjectPath, final @NotNull ProgressIndicator indicator) {
         try {
-            return scanProjectContents(projectPath, indicator);
+            return scanTestProjectContents(testProjectPath, indicator);
         } finally {
             store.invalidateChildrenIndex();
         }
     }
 
-    void scanProject(final @NotNull Path projectPath) {
+    void scanTestProject(final @NotNull Path testProjectPath) {
         try {
-            scanProjectContents(projectPath, new EmptyProgressIndicator());
+            scanTestProjectContents(testProjectPath, new EmptyProgressIndicator());
         } finally {
             store.invalidateChildrenIndex();
         }
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-005, Rule-INTERNAL-007, Rule-INTERNAL-091
-    private @NotNull Optional<String> scanProjectContents(final @NotNull Path projectPath, final @NotNull ProgressIndicator indicator) {
+    private @NotNull Optional<String> scanTestProjectContents(final @NotNull Path testProjectPath, final @NotNull ProgressIndicator indicator) {
         try {
-            final @NotNull TestProjectNode testProject = directoryMapper.getTestProjectNode(projectPath);
+            final @NotNull TestProjectNode testProject = directoryMapper.getTestProjectNode(testProjectPath);
 
             // Rule-INTERNAL-091
             final @NotNull Optional<String> refused = testProject.getMarker().whyNotReadable();
             if (refused.isPresent()) {
-                TestinLogger.warn("Not reading " + projectPath.getFileName() + ": " + refused.orElseThrow());
+                TestinLogger.warn("Not reading " + testProjectPath.getFileName() + ": " + refused.orElseThrow());
 
-                store.refuse(projectPath, refused.orElseThrow());
-                store.swapIn(projectPath, scannedNode(projectPath, testProject));
+                store.refuse(testProjectPath, refused.orElseThrow());
+                store.swapIn(testProjectPath, scannedNode(testProjectPath, testProject));
                 indicator.setFraction(1.0);
                 return Optional.empty();
             }
 
             // UC-INTERNAL-003, Rule-INTERNAL-021
-            final @NotNull ScannedProject scanned = new ScannedProject();
-            scanned.getProjects().put(projectPath.toString(), testProject);
-            store.readable(projectPath);
+            final @NotNull ScannedTestProject scanned = new ScannedTestProject();
+            scanned.getTestProjects().put(testProjectPath.toString(), testProject);
+            store.readable(testProjectPath);
 
             // UC-TREE-PANEL-001, Rule-TREE-PANEL-100
             if (!testProject.getMarker().getStatus().isActive()) {
-                TestinLogger.info("Inactive project, indexed without its contents: " + projectPath.getFileName());
-                store.swapIn(projectPath, scanned);
+                TestinLogger.info("Inactive test project, indexed without its contents: " + testProjectPath.getFileName());
+                store.swapIn(testProjectPath, scanned);
                 indicator.setFraction(1.0);
                 return Optional.empty();
             }
@@ -158,29 +158,29 @@ final class IndexingScanner {
             scanTestRunNodes(testRunsFolder.getPath(), testRunsFolder, indicator, unread, scanned);
 
             if (indicator.isCanceled()) {
-                TestinLogger.info("Scan canceled, so the index was left as it was: " + projectPath.getFileName());
+                TestinLogger.info("Scan canceled, so the index was left as it was: " + testProjectPath.getFileName());
                 return Optional.empty();
             }
 
-            store.swapIn(projectPath, scanned);
+            store.swapIn(testProjectPath, scanned);
 
             indicator.setFraction(1.0);
-            indicator.setText(Bundle.message("indexer.progress.project.done", testProject.getName()));
+            indicator.setText(Bundle.message("indexer.progress.test.project.done", testProject.getName()));
 
             problems.unreadFolders(testProject.getName(), unread);
-            problems.damagedMarkers(testProject.getName(), store.takeDamagedMarkers(projectPath));
+            problems.damagedMarkers(testProject.getName(), store.takeDamagedMarkers(testProjectPath));
             problems.unreadableRunItems(testProject.getName(), scanned.getUnreadableRunItems());
             problems.handNamedRunItems(testProject.getName(), scanned.getHandNamedRunItems());
             problems.clashingTestCases(testProject.getName(), List.copyOf(scanned.getClashingTestCases()));
             return Optional.empty();
         } catch (final Exception ex) {
-            TestinLogger.error("Failed to scan project: " + projectPath.getFileName() + " - " + FailureText.of(ex));
+            TestinLogger.error("Failed to scan project: " + testProjectPath.getFileName() + " - " + FailureText.of(ex));
             return Optional.of(FailureText.of(ex));
         }
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-008, Rule-INTERNAL-015
-    private void scanTestSets(final @NotNull Path testCaseDirectory, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedProject scanned) {
+    private void scanTestSets(final @NotNull Path testCaseDirectory, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedTestProject scanned) {
         try (Stream<Path> paths = Files.list(testCaseDirectory)) {
             final @NotNull List<Path> directories = paths.filter(Files::isDirectory).toList();
 
@@ -197,7 +197,7 @@ final class IndexingScanner {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-008, Rule-INTERNAL-015
-    private void scanTestSetOrPackage(final @NotNull Path directory, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedProject scanned) {
+    private void scanTestSetOrPackage(final @NotNull Path directory, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedTestProject scanned) {
         store.markedAs(directory, NodeType.UNDER_TEST_CASES).ifPresentOrElse(
                 marked -> {
                     if (marked == NodeType.TEST_SET) scanTestSet(directory, parent, indicator, scanned);
@@ -207,7 +207,7 @@ final class IndexingScanner {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-008, Rule-INTERNAL-015
-    private void scanTestSetPackage(final @NotNull Path path, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedProject scanned) {
+    private void scanTestSetPackage(final @NotNull Path path, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedTestProject scanned) {
         try {
             final @NotNull TestSetPackageNode testSetPackage = directoryMapper.getTestSetPackageNode(path, parent);
 
@@ -224,7 +224,7 @@ final class IndexingScanner {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-011
-    private void scanTestSet(final @NotNull Path path, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull ScannedProject scanned) {
+    private void scanTestSet(final @NotNull Path path, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull ScannedTestProject scanned) {
         try {
             final @NotNull TestSetNode testSet = directoryMapper.getTestSetNode(path, parent);
 
@@ -274,7 +274,7 @@ final class IndexingScanner {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-010, Rule-INTERNAL-015
-    private void scanTestRunNodes(final @NotNull Path testRunDirectory, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedProject scanned) {
+    private void scanTestRunNodes(final @NotNull Path testRunDirectory, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedTestProject scanned) {
         try (Stream<Path> paths = Files.list(testRunDirectory)) {
             final @NotNull List<Path> directories = paths.filter(Files::isDirectory).toList();
 
@@ -291,7 +291,7 @@ final class IndexingScanner {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-010, Rule-INTERNAL-015
-    private void scanTestRunOrPackage(final @NotNull Path directory, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedProject scanned) {
+    private void scanTestRunOrPackage(final @NotNull Path directory, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedTestProject scanned) {
         store.markedAs(directory, NodeType.UNDER_TEST_RUNS).ifPresentOrElse(
                 marked -> {
                     if (marked == NodeType.TEST_RUN) scanTestRun(directory, parent, indicator, scanned);
@@ -301,7 +301,7 @@ final class IndexingScanner {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-010, Rule-INTERNAL-015
-    private void scanTestRunPackageNode(final @NotNull Path path, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedProject scanned) {
+    private void scanTestRunPackageNode(final @NotNull Path path, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedTestProject scanned) {
         try {
             final @NotNull TestRunPackageNode testRunPackage = directoryMapper.getTestRunPackageNode(path, parent);
 
@@ -333,7 +333,7 @@ final class IndexingScanner {
     }
 
     // UC-INTERNAL-002
-    private void scanTestRun(final @NotNull Path path, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull ScannedProject scanned) {
+    private void scanTestRun(final @NotNull Path path, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull ScannedTestProject scanned) {
         final @NotNull TestRunNode testRun = directoryMapper.getTestRunNode(path, parent);
 
         scanned.getTestRunNodes().put(path.toString(), testRun);
@@ -345,7 +345,7 @@ final class IndexingScanner {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-011, Rule-INTERNAL-012
-    private @NotNull List<RunItem> runItemsIn(final @NotNull Path testRunPath, final @NotNull ScannedProject scanned) {
+    private @NotNull List<RunItem> runItemsIn(final @NotNull Path testRunPath, final @NotNull ScannedTestProject scanned) {
         final @NotNull List<RunItem> read = new ArrayList<>();
 
         for (final Path file : testDataFiles.runItemsIn(testRunPath)) {

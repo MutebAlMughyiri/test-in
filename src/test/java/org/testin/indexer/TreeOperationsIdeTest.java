@@ -23,7 +23,7 @@ import org.testin.model.NodeType;
 import org.testin.model.markers.TestCasesFolderMarker;
 import org.testin.model.markers.TestProjectMarker;
 import org.testin.model.node.TestProjectNode;
-import org.testin.model.status.ProjectStatus;
+import org.testin.model.status.TestProjectStatus;
 import org.testin.services.Services;
 
 import java.nio.file.Files;
@@ -31,8 +31,8 @@ import java.nio.file.Path;
 
 public class TreeOperationsIdeTest extends AbstractTempRootIdeTest {
 
-    private @NotNull ProjectIndexer indexer() {
-        return Services.getInstance(getProject(), ProjectIndexer.class);
+    private @NotNull TestProjectIndexer indexer() {
+        return Services.getInstance(getProject(), TestProjectIndexer.class);
     }
 
     private @NotNull Nodes nodes() {
@@ -50,17 +50,17 @@ public class TreeOperationsIdeTest extends AbstractTempRootIdeTest {
     }
 
     // Rule-TREE-PANEL-100, Rule-INTERNAL-005
-    public void testAnInactiveProjectIsANodeWithNothingInIt() {
+    public void testAnInactiveTestProjectIsANodeWithNothingInIt() {
         final Path testProjectPath = root.resolve("NAFATH");
 
         final TestProjectNode testProject = create(testProjectPath);
 
         WriteAction.runAndWait(() -> {
-            testProject.getMarker().setStatus(ProjectStatus.INACTIVE);
+            testProject.getMarker().setStatus(TestProjectStatus.INACTIVE);
             nodes().persistMarker(testProject);
         });
 
-        indexer().scanSingleProject(testProjectPath);
+        indexer().scanSingleTestProject(testProjectPath);
 
         assertTrue("an inactive project is still a node, so the tree can say what it is",
                 nodes().nodeExists(testProjectPath));
@@ -69,7 +69,7 @@ public class TreeOperationsIdeTest extends AbstractTempRootIdeTest {
                 nodes().getChildren(testProjectPath).isEmpty());
 
         assertEquals("and it says which status it is",
-                ProjectStatus.INACTIVE,
+                TestProjectStatus.INACTIVE,
                 nodes().find(testProjectPath).orElseThrow().getMarker().status());
     }
 
@@ -85,7 +85,7 @@ public class TreeOperationsIdeTest extends AbstractTempRootIdeTest {
                 nodes().readMarker(testProjectPath.resolve(NodeType.TEST_CASES_FOLDER.getFolderName()), NodeType.TEST_CASES_FOLDER, TestCasesFolderMarker.class).getId().isEmpty());
 
         WriteAction.runAndWait(() -> {
-            testProject.getMarker().setStatus(ProjectStatus.INACTIVE);
+            testProject.getMarker().setStatus(TestProjectStatus.INACTIVE);
             nodes().persistMarker(testProject);
         });
 

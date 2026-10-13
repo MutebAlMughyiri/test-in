@@ -25,10 +25,10 @@ import static org.testng.Assert.assertTrue;
 public class TestCaseStatusParseTest {
 
     @Test
-    public void everyStatusCanBeTypedBackExactlyAsItIsShown() {
-        for (final TestCaseStatus status : TestCaseStatus.values()) {
-            assertEquals(TestCaseFieldParser.testCaseStatus(status.getLabel(), TestCaseStatus.PENDING).orElseThrow(), status,
-                    status.getLabel() + " is what the cell prints, so it has to be what the cell accepts");
+    public void everyTestCaseStatusCanBeTypedBackExactlyAsItIsShown() {
+        for (final TestCaseStatus testCaseStatus : TestCaseStatus.values()) {
+            assertEquals(TestCaseFieldParser.testCaseStatus(testCaseStatus.getLabel(), TestCaseStatus.PENDING).orElseThrow(), testCaseStatus,
+                    testCaseStatus.getLabel() + " is what the cell prints, so it has to be what the cell accepts");
         }
     }
 
@@ -38,7 +38,7 @@ public class TestCaseStatusParseTest {
     }
 
     @Test
-    public void caseAndSurroundingSpaceDoNotMatter() {
+    public void capitalsAndSurroundingSpaceDoNotMatter() {
         assertEquals(TestCaseFieldParser.testCaseStatus("  reviewed  ", TestCaseStatus.PENDING).orElseThrow(), TestCaseStatus.REVIEWED);
     }
 

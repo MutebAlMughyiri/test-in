@@ -38,7 +38,7 @@ public class UpdateTestCaseDialog extends AbstractTestCaseDialog {
     private final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
 
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-036
-    public UpdateTestCaseDialog(final @NotNull Project project, final @NotNull TestCase existingTestCase, final @NotNull UpdateTestCaseFields selectedItem, final @NotNull Consumer<@NotNull TestCase> onSave) {
+    public UpdateTestCaseDialog(final @NotNull Project project, final @NotNull TestCase existingTestCase, final @NotNull UpdateTestCaseFields selectedField, final @NotNull Consumer<@NotNull TestCase> onSave) {
         super(project, existingTestCase, onSave, TestCaseDialogKey.SAVE, TestCaseDialogKey.CANCEL);
 
         // Rule-CODEGEN-001
@@ -47,7 +47,7 @@ public class UpdateTestCaseDialog extends AbstractTestCaseDialog {
                 .filter(sibling -> !sibling.getId().equals(existingTestCase.getId()))
                 .toList());
 
-        final @NotNull TestCaseSection targetSection = selectedItem.getSectionExtractor().apply(this);
+        final @NotNull TestCaseSection targetSection = selectedField.getSectionExtractor().apply(this);
 
         final @NotNull TestCaseForm form = new TestCaseForm(targetSection::getFocusComponent, false);
         final @NotNull JComponent keys = form.getPanel();
@@ -71,9 +71,9 @@ public class UpdateTestCaseDialog extends AbstractTestCaseDialog {
             }
         }
 
-        showSectionKeys(selectedItem.getStatusBarItems());
+        showSectionKeys(selectedField.getStatusBarItems());
 
-        title = Bundle.message("update.dialog.title.field", selectedItem.getName());
+        title = Bundle.message("update.dialog.title.field", selectedField.getName());
 
         // Rule-INTERNAL-101
         resizable = true;

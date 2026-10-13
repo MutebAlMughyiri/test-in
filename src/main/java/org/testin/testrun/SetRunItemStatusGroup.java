@@ -41,10 +41,10 @@ public class SetRunItemStatusGroup extends DefaultActionGroup {
     private static @NotNull List<SetRunItemStatusAction> runItemStatuses() {
         return Arrays.stream(RunItemStatus.values())
                 .filter(RunItemStatus::isRunItemStatus)
-                .map(status -> {
-                    final @NotNull SetRunItemStatusAction action = new SetRunItemStatusAction(status);
+                .map(runItemStatus -> {
+                    final @NotNull SetRunItemStatusAction action = new SetRunItemStatusAction(runItemStatus);
 
-                    action.registerCustomShortcutSet(Shortcuts.customShortcut(status.getMenuEntry().shortcut()), null);
+                    action.registerCustomShortcutSet(Shortcuts.customShortcut(runItemStatus.getMenuEntry().shortcut()), null);
                     return action;
                 })
                 .toList();

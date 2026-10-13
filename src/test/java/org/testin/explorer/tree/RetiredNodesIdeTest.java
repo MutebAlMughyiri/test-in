@@ -62,8 +62,8 @@ public class RetiredNodesIdeTest extends AbstractTempRootIdeTest {
         return Services.getInstance(getProject(), Nodes.class);
     }
 
-    private void marked(final @NotNull AbstractNode node, final @NotNull NodeStatus status) {
-        assertTrue("the status was not written", nodes().mark(node, status, "Sara"));
+    private void marked(final @NotNull AbstractNode node, final @NotNull NodeStatus nodeStatus) {
+        assertTrue("the status was not written", nodes().mark(node, nodeStatus, "Sara"));
     }
 
     // Rule-PRODUCT-022
@@ -91,13 +91,13 @@ public class RetiredNodesIdeTest extends AbstractTempRootIdeTest {
             return made;
         });
 
-        for (final PackageStatus status : PackageStatus.values()) {
-            marked(accounts, status);
-            marked(release, status);
+        for (final PackageStatus packageStatus : PackageStatus.values()) {
+            marked(accounts, packageStatus);
+            marked(release, packageStatus);
 
-            assertEquals(status + " sets a test set package and a test run package apart differently", accounts.isRetired(), release.isRetired());
-            assertEquals(status + " leaves one kind of package out of Expand All and not the other", new TreePanelNode(getProject(), accounts).isIncludedInExpandAll(), new TreePanelNode(getProject(), release).isIncludedInExpandAll());
-            assertEquals(status + " is drawn differently on the two kinds of package", drawn(accounts).stream().map(fragment -> fragment.replace(accounts.getName(), "")).toList(), drawn(release).stream().map(fragment -> fragment.replace(release.getName(), "")).toList());
+            assertEquals(packageStatus + " sets a test set package and a test run package apart differently", accounts.isRetired(), release.isRetired());
+            assertEquals(packageStatus + " leaves one kind of package out of Expand All and not the other", new TreePanelNode(getProject(), accounts).isIncludedInExpandAll(), new TreePanelNode(getProject(), release).isIncludedInExpandAll());
+            assertEquals(packageStatus + " is drawn differently on the two kinds of package", drawn(accounts).stream().map(fragment -> fragment.replace(accounts.getName(), "")).toList(), drawn(release).stream().map(fragment -> fragment.replace(release.getName(), "")).toList());
         }
         assertTrue("an archived package is not set apart at all, so the two agreeing proves nothing", accounts.isRetired());
     }

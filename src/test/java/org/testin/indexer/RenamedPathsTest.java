@@ -32,8 +32,8 @@ import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 public class RenamedPathsTest {
-    private static final @NotNull Path CASES = Path.of("NAFATH", "Test Cases");
-    private static final @NotNull RenamedPaths ACCOUNTS = new RenamedPaths(CASES.resolve("Accounts"), CASES.resolve("Users"));
+    private static final @NotNull Path TEST_CASES = Path.of("NAFATH", "Test Cases");
+    private static final @NotNull RenamedPaths ACCOUNTS = new RenamedPaths(TEST_CASES.resolve("Accounts"), TEST_CASES.resolve("Users"));
 
     private static @NotNull TestSetNode aTestSetAt(final @NotNull Path path) {
         final @NotNull TestSetNode testSet = new TestSetNode();
@@ -44,43 +44,43 @@ public class RenamedPathsTest {
     // Rule-TREE-PANEL-100
     @Test
     public void onlyWhatIsInsideTheRenamedFolderIsUnderIt() {
-        assertTrue(ACCOUNTS.isUnder(CASES.resolve("Accounts").resolve("Login")));
-        assertFalse(ACCOUNTS.isUnder(CASES.resolve("Accounts")), "the renamed folder itself was taken for something under it");
-        assertFalse(ACCOUNTS.isUnder(CASES.resolve("Accounts and Roles")), "a sibling whose name starts the same was taken for something under it");
-        assertEquals(ACCOUNTS.moved(CASES.resolve("Accounts").resolve("Login")), CASES.resolve("Users").resolve("Login"));
+        assertTrue(ACCOUNTS.isUnder(TEST_CASES.resolve("Accounts").resolve("Login")));
+        assertFalse(ACCOUNTS.isUnder(TEST_CASES.resolve("Accounts")), "the renamed folder itself was taken for something under it");
+        assertFalse(ACCOUNTS.isUnder(TEST_CASES.resolve("Accounts and Roles")), "a sibling whose name starts the same was taken for something under it");
+        assertEquals(ACCOUNTS.moved(TEST_CASES.resolve("Accounts").resolve("Login")), TEST_CASES.resolve("Users").resolve("Login"));
     }
 
     // Rule-TREE-PANEL-100
     @Test
     public void aNodeUnderTheRenamedFolderMovesWithItAndKeepsItsIdentity() {
-        final @NotNull TestSetNode login = aTestSetAt(CASES.resolve("Accounts").resolve("Login"));
-        final @NotNull TestSetNode payments = aTestSetAt(CASES.resolve("Payments"));
+        final @NotNull TestSetNode login = aTestSetAt(TEST_CASES.resolve("Accounts").resolve("Login"));
+        final @NotNull TestSetNode payments = aTestSetAt(TEST_CASES.resolve("Payments"));
         final @NotNull Map<String, TestSetNode> testSets = new HashMap<>(Map.of(login.getPath().toString(), login, payments.getPath().toString(), payments));
 
         ACCOUNTS.moveNodesUnder(testSets);
 
-        final @NotNull Path movedTo = CASES.resolve("Users").resolve("Login");
+        final @NotNull Path movedTo = TEST_CASES.resolve("Users").resolve("Login");
         assertEquals(testSets.keySet(), Set.of(movedTo.toString(), payments.getPath().toString()), "the test sets are not keyed by where they now are");
         assertSame(testSets.get(movedTo.toString()), login, "the moved test set is a different object");
         assertEquals(login.getPath(), movedTo, "the moved test set does not know where it now is");
-        assertEquals(payments.getPath(), CASES.resolve("Payments"), "a test set elsewhere moved");
+        assertEquals(payments.getPath(), TEST_CASES.resolve("Payments"), "a test set elsewhere moved");
     }
 
     // Rule-TREE-PANEL-100
     @Test
     public void theRenamedEntryAndTheKeysUnderItMoveAndNothingElse() {
         final @NotNull Map<String, List<String>> held = new HashMap<>(Map.of(
-                CASES.resolve("Accounts").toString(), List.of("the folder"),
-                CASES.resolve("Accounts").resolve("Login").toString(), List.of("inside"),
-                CASES.resolve("Payments").toString(), List.of("elsewhere")));
+                TEST_CASES.resolve("Accounts").toString(), List.of("the folder"),
+                TEST_CASES.resolve("Accounts").resolve("Login").toString(), List.of("inside"),
+                TEST_CASES.resolve("Payments").toString(), List.of("elsewhere")));
 
         ACCOUNTS.moveEntry(held, _ -> {
         });
         ACCOUNTS.moveKeysUnder(held);
 
         assertEquals(held, Map.of(
-                CASES.resolve("Users").toString(), List.of("the folder"),
-                CASES.resolve("Users").resolve("Login").toString(), List.of("inside"),
-                CASES.resolve("Payments").toString(), List.of("elsewhere")));
+                TEST_CASES.resolve("Users").toString(), List.of("the folder"),
+                TEST_CASES.resolve("Users").resolve("Login").toString(), List.of("inside"),
+                TEST_CASES.resolve("Payments").toString(), List.of("elsewhere")));
     }
 }

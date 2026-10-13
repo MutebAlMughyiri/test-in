@@ -69,7 +69,7 @@ public class TestProjectTree implements Disposable {
     private final @NotNull Set<Path> changedFolders = ConcurrentHashMap.newKeySet();
     private final @NotNull AtomicBoolean foldersBooked = new AtomicBoolean();
 
-    private volatile @NotNull String expandedProjectPath = "";
+    private volatile @NotNull String expandedTestProjectPath = "";
     private volatile boolean disposed;
 
     private @NotNull Optional<Path> revealAfterRebuild = Optional.empty();
@@ -175,12 +175,12 @@ public class TestProjectTree implements Disposable {
     }
 
     private void rebuild() {
-        final @NotNull Optional<TestProjectNode> boundProject = bound();
-        treeStructure.setSelectedProject(boundProject);
+        final @NotNull Optional<TestProjectNode> boundTestProjectNode = bound();
+        treeStructure.setSelectedTestProject(boundTestProjectNode);
 
-        final @NotNull String projectPath = boundProject.map(node -> node.getPath().toString()).orElse("");
-        final boolean projectChanged = !projectPath.isEmpty() && !projectPath.equals(expandedProjectPath);
-        expandedProjectPath = projectPath;
+        final @NotNull String testProjectPath = boundTestProjectNode.map(node -> node.getPath().toString()).orElse("");
+        final boolean testProjectChanged = !testProjectPath.isEmpty() && !testProjectPath.equals(expandedTestProjectPath);
+        expandedTestProjectPath = testProjectPath;
 
         final long started = System.nanoTime();
 
@@ -188,14 +188,14 @@ public class TestProjectTree implements Disposable {
             if (disposed) return;
             TestinLogger.debug("Tree rebuilt in " + millisSince(started) + " ms");
 
-            ApplicationManager.getApplication().invokeLater(() -> expandAfterRebuild(projectChanged, started));
+            ApplicationManager.getApplication().invokeLater(() -> expandAfterRebuild(testProjectChanged, started));
         }), "Rebuilding the tree");
     }
 
-    private void expandAfterRebuild(final boolean projectChanged, final long started) {
+    private void expandAfterRebuild(final boolean testProjectChanged, final long started) {
         if (disposed) return;
 
-        if (projectChanged) TreeUtil.promiseExpandAll(mainTree);
+        if (testProjectChanged) TreeUtil.promiseExpandAll(mainTree);
 
         consumePendingReveal();
         TestinLogger.debug("Tree refreshed and expanded in " + millisSince(started) + " ms");

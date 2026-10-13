@@ -46,7 +46,7 @@ public class TestinConfigTest {
     public void aBugRepositoryIsReadFromItsOwnKey() {
         final TestinProjectConfig config = TestinYml.parse(
                 """
-                        testinProject: cases
+                        testinProject: checkout
                         bugRepoUrl: https://mtb550:ghp_secret@github.com/mtb550/product.git
                         """, "bug repo");
 
@@ -56,7 +56,7 @@ public class TestinConfigTest {
 
     @Test
     public void aBugRepoUrlThatNamesNoRepositoryIsKeptAndNotUsed() {
-        assertTrue(BugRepository.of(TestinYml.parse("testinProject: cases\n", "none").bugRepoUrl()).isEmpty());
+        assertTrue(BugRepository.of(TestinYml.parse("testinProject: checkout\n", "none").bugRepoUrl()).isEmpty());
         assertEquals(TestinProjectConfig.EMPTY.bugRepoUrl(), "");
 
         final TestinProjectConfig wrong = TestinYml.parse(
@@ -70,7 +70,7 @@ public class TestinConfigTest {
         final TestinProjectConfig config = TestinYml.parse(FULL, "full");
 
         assertEquals(config.repoUrl(), "https://github.com/acme/checkout-testcases");
-        assertEquals(config.projectName(), "checkout-testcases", "the key names the project");
+        assertEquals(config.testProjectName(), "checkout-testcases", "the key names the project");
         assertTrue(config.hasRepoUrl());
     }
 
@@ -79,7 +79,7 @@ public class TestinConfigTest {
         final TestinProjectConfig config = TestinYml.parse("# nothing but a comment\n", "partial");
 
         assertEquals(config.repoUrl(), "");
-        assertEquals(config.projectName(), "", "no name in the file and no URL to take one from");
+        assertEquals(config.testProjectName(), "", "no name in the file and no URL to take one from");
         assertFalse(config.hasRepoUrl());
     }
 
@@ -90,7 +90,7 @@ public class TestinConfigTest {
                 somethingFromALaterBuild: true
                 """, "unknown-key");
 
-        assertEquals(config.projectName(), "checkout-regression",
+        assertEquals(config.testProjectName(), "checkout-regression",
                 "a key from a later build must not cost this one its binding");
     }
 
@@ -118,22 +118,22 @@ public class TestinConfigTest {
         assertEquals(TestinYml.parse("repoUrl: \"https://x.com/r; rm -rf /\"\n", "injected").repoUrl(),
                 "https://x.com/r; rm -rf /", "kept in the file, and never offered as a clone");
         assertEquals(TestinYml.parse("repoUrl: file:///etc/passwd\n", "scheme").repoUrl(), "file:///etc/passwd");
-        assertEquals(TestinYml.parse("repoUrl: git@github.com:acme/cases.git\n", "ssh").repoUrl(),
-                "git@github.com:acme/cases.git");
+        assertEquals(TestinYml.parse("repoUrl: git@github.com:acme/checkout.git\n", "ssh").repoUrl(),
+                "git@github.com:acme/checkout.git");
     }
 
     // Rule-TREE-PANEL-117
     @Test
     public void stillTakesTheTokenOutOfARepoUrl() {
-        assertEquals(TestinYml.parse("repoUrl: https://ghp_secret@github.com/acme/cases.git\n", "token").repoUrl(),
-                "https://github.com/acme/cases.git");
+        assertEquals(TestinYml.parse("repoUrl: https://ghp_secret@github.com/acme/checkout.git\n", "token").repoUrl(),
+                "https://github.com/acme/checkout.git");
     }
 
     @Test
-    public void aProjectIsLocalUntilTheFileSaysOtherwise() {
+    public void aTestProjectIsLocalUntilTheFileSaysOtherwise() {
         final TestinProjectConfig quiet = TestinYml.parse("""
-                        testinProject: cases
-                        repoUrl: https://github.com/acme/cases.git
+                        testinProject: checkout
+                        repoUrl: https://github.com/acme/checkout.git
                         """,
                 "an address and no location");
 
@@ -142,11 +142,11 @@ public class TestinConfigTest {
     }
 
     @Test
-    public void anAddressAloneDoesNotMakeAProjectRemote() {
+    public void anAddressAloneDoesNotMakeATestProjectRemote() {
         final TestinProjectConfig stillLocal = TestinYml.parse(
                 """
                         location: local
-                        repoUrl: https://github.com/acme/cases.git
+                        repoUrl: https://github.com/acme/checkout.git
                         """, "local with an address left in");
 
         assertFalse(stillLocal.hasRepoUrl(), "local wins over everything below it");
@@ -158,12 +158,12 @@ public class TestinConfigTest {
                 """
                         location: remote
                         connection: git
-                        repoUrl: https://github.com/acme/cases.git
-                        testinProject: cases
+                        repoUrl: https://github.com/acme/checkout.git
+                        testinProject: checkout
                         """, "old git");
 
         assertTrue(old.hasRepoUrl());
-        assertEquals(old.projectName(), "cases");
+        assertEquals(old.testProjectName(), "checkout");
     }
 
     @Test
@@ -178,20 +178,20 @@ public class TestinConfigTest {
                 """, "sftp");
 
         assertFalse(old.hasRepoUrl());
-        assertEquals(old.projectName(), "test-01", "the server keys must not cost the file its project");
+        assertEquals(old.testProjectName(), "test-01", "the server keys must not cost the file its project");
     }
 
     @Test
-    public void aGitProjectIsReadFromItsUrl() {
+    public void aGitTestProjectIsReadFromItsUrl() {
         final TestinProjectConfig inGit = TestinYml.parse(
                 """
                         location: remote
-                        testinProject: cases
-                        repoUrl: https://github.com/acme/cases.git
+                        testinProject: checkout
+                        repoUrl: https://github.com/acme/checkout.git
                         """, "git");
 
         assertTrue(inGit.hasRepoUrl());
-        assertEquals(inGit.projectName(), "cases");
+        assertEquals(inGit.testProjectName(), "checkout");
     }
 
     // Rule-TREE-PANEL-124
@@ -203,26 +203,26 @@ public class TestinConfigTest {
 
     // Rule-TREE-PANEL-124
     @Test
-    public void aRemoteProjectWithNoAddressIsReadAsItIsWritten() {
+    public void aRemoteTestProjectWithNoAddressIsReadAsItIsWritten() {
         final @NotNull TestinProjectConfig remote = TestinYml.parse("""
                 location: remote
-                testinProject: cases
+                testinProject: checkout
                 """, "remote with no address");
 
         assertEquals(remote.location(), TestinLocation.REMOTE, "the file says remote, and it was read as something else");
-        assertEquals(remote.projectName(), "cases", "a remote project with no address cost the file its project");
+        assertEquals(remote.testProjectName(), "checkout", "a remote project with no address cost the file its project");
         assertFalse(remote.hasRepoUrl());
     }
 
     @Test
-    public void aGitProjectIsNamedByTheKey() {
+    public void aGitTestProjectIsNamedByTheKey() {
         final TestinProjectConfig named = TestinYml.parse("""
                 location: remote
                 repoUrl: https://github.com/mtb550/test-01.git
                 testinProject: checkout
                 """, "git");
 
-        assertEquals(named.projectName(), "checkout", "the file says so, not the URL");
+        assertEquals(named.testProjectName(), "checkout", "the file says so, not the URL");
         assertTrue(named.hasRepoUrl());
     }
 
@@ -233,19 +233,19 @@ public class TestinConfigTest {
                 repoUrl: https://github.com/mtb550/test-01.git
                 """, "no name");
 
-        assertEquals(unnamed.projectName(), "", "the tester picks once, on this machine");
+        assertEquals(unnamed.testProjectName(), "", "the tester picks once, on this machine");
         assertTrue(unnamed.hasRepoUrl(), "and it can still be cloned");
     }
 
     @Test
-    public void aLocalProjectIsNamedByTheKey() {
+    public void aLocalTestProjectIsNamedByTheKey() {
         final TestinProjectConfig here = TestinYml.parse(
                 """
                         location: local
                         testinProject: test-01
                         """, "local");
 
-        assertEquals(here.projectName(), "test-01");
+        assertEquals(here.testProjectName(), "test-01");
         assertFalse(here.hasRepoUrl());
     }
 
@@ -267,16 +267,16 @@ public class TestinConfigTest {
     public void aTokenWithNoColonIsStrippedOutOfAnHttpsUrl() {
         assertEquals(TestinProjectConfig.withoutCredentials("https://ghp_secret@github.com/mtb550/test-01.git"),
                 "https://github.com/mtb550/test-01.git");
-        assertEquals(TestinProjectConfig.withoutCredentials("HTTP://ghp_secret@intranet/qa/cases.git"),
-                "HTTP://intranet/qa/cases.git");
+        assertEquals(TestinProjectConfig.withoutCredentials("HTTP://ghp_secret@intranet/qa/checkout.git"),
+                "HTTP://intranet/qa/checkout.git");
     }
 
     @Test
     public void anSshAccountSurvives() {
         assertEquals(TestinProjectConfig.withoutCredentials("git@github.com:mtb550/test-01.git"),
                 "git@github.com:mtb550/test-01.git");
-        assertEquals(TestinProjectConfig.withoutCredentials("ssh://git@host:2222/qa/cases.git"),
-                "ssh://git@host:2222/qa/cases.git");
+        assertEquals(TestinProjectConfig.withoutCredentials("ssh://git@host:2222/qa/checkout.git"),
+                "ssh://git@host:2222/qa/checkout.git");
         assertEquals(TestinProjectConfig.withoutCredentials("https://github.com/mtb550/test-01.git"),
                 "https://github.com/mtb550/test-01.git");
     }
@@ -298,7 +298,7 @@ public class TestinConfigTest {
                 location: remote
                 repoUrl: https://github.com/acme/nafath-test-cases.git
                 """);
-        assertEquals(TestinYml.parse(written, "saved").projectName(), "NAFATH");
+        assertEquals(TestinYml.parse(written, "saved").testProjectName(), "NAFATH");
         assertTrue(TestinYml.parse(written, "saved").hasRepoUrl(), "and a colleague's first open can clone it");
     }
 
@@ -368,14 +368,14 @@ public class TestinConfigTest {
                 testinProject: NAFATH
                 testinProject: NAFATH
                 """);
-        assertEquals(TestinYml.parse(written, "twice").projectName(), "NAFATH");
+        assertEquals(TestinYml.parse(written, "twice").testProjectName(), "NAFATH");
     }
 
     @Test
     public void aNameYamlWouldMisreadIsQuoted() {
-        for (final String name : new String[]{"#1 Smoke", "Smoke #1", "Smoke:", "#1 O'Brien", "Tests: smoke", "null", "Yes", "- draft", "O'Brien's cases", "@home"}) {
+        for (final String name : new String[]{"#1 Smoke", "Smoke #1", "Smoke:", "#1 O'Brien", "Tests: smoke", "null", "Yes", "- draft", "O'Brien's test cases", "@home"}) {
             final String written = TestinYml.withLines("", Map.of("testinProject", name));
-            assertEquals(TestinYml.parse(written, name).projectName(), name, "written as " + written.strip());
+            assertEquals(TestinYml.parse(written, name).testProjectName(), name, "written as " + written.strip());
         }
         assertEquals(TestinYml.withLines("", Map.of("testinProject", "Nafath App")), "testinProject: Nafath App\n", "an ordinary name stays plain");
     }

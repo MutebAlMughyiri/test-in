@@ -121,9 +121,9 @@ public class MarkerJsonTest {
     @Test
     public void ignoresAKeyTheMarkerDoesNotHave() {
         try {
-            final String withStatus = "{\"createdBy\":\"a\",\"status\":\"ACTIVE\",\"whatever\":1}";
+            final String withMarkerStatus = "{\"createdBy\":\"a\",\"status\":\"ACTIVE\",\"whatever\":1}";
 
-            assertEquals(mapper.readValue(withStatus, TestCasesFolderMarker.class).getCreatedBy(), "a");
+            assertEquals(mapper.readValue(withMarkerStatus, TestCasesFolderMarker.class).getCreatedBy(), "a");
         } catch (final Exception ex) {
             throw new AssertionError(ex);
         }

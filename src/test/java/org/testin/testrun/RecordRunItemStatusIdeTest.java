@@ -138,7 +138,7 @@ public class RecordRunItemStatusIdeTest extends AbstractTempRootIdeTest {
 
             assertEquals("five recorded at once were not one message with a count", List.of(Done.counted(RunItemStatus.BLOCKED.getLabel(), 5)), balloons);
             for (final TestCase testCase : fixture.testCases().subList(0, 5))
-                assertEquals(RunItemStatus.BLOCKED, fixture.statusOf(testCase));
+                assertEquals(RunItemStatus.BLOCKED, fixture.runItemStatusOf(testCase));
         } finally {
             Disposer.dispose(editor);
         }
@@ -201,7 +201,7 @@ public class RecordRunItemStatusIdeTest extends AbstractTempRootIdeTest {
 
             fixture.press(editor, RunItemStatus.PASSED);
 
-            assertEquals("a deleted test case was given the run item status", RunItemStatus.PENDING, fixture.statusOf(fixture.testCases().getFirst()));
+            assertEquals("a deleted test case was given the run item status", RunItemStatus.PENDING, fixture.runItemStatusOf(fixture.testCases().getFirst()));
             assertEquals(List.of(Bundle.message("run.item.status.walk.passed.deleted")), balloons);
             awaitWalkOn(editor, 1);
         } finally {
@@ -217,12 +217,12 @@ public class RecordRunItemStatusIdeTest extends AbstractTempRootIdeTest {
             fixture.press(editor, RunItemStatus.FAILED);
 
             final @NotNull JComponent dialog = fixture.openFailureDialog();
-            assertEquals("Failed was recorded before the detail was asked for", RunItemStatus.PENDING, fixture.statusOf(fixture.testCases().getFirst()));
+            assertEquals("Failed was recorded before the detail was asked for", RunItemStatus.PENDING, fixture.runItemStatusOf(fixture.testCases().getFirst()));
 
             OnScreen.pressKey(dialog, Shortcuts.Enter.getKey());
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
-            assertEquals(RunItemStatus.FAILED, fixture.statusOf(fixture.testCases().getFirst()));
+            assertEquals(RunItemStatus.FAILED, fixture.runItemStatusOf(fixture.testCases().getFirst()));
             for (final RunItemStatus other : RunItemStatus.values()) {
                 if (!other.isRunItemStatus() || other == RunItemStatus.FAILED) continue;
                 assertFalse(other + " asks for detail", other.isCollectsFailureDetails());
@@ -305,7 +305,7 @@ public class RecordRunItemStatusIdeTest extends AbstractTempRootIdeTest {
                 assertEquals(RunItemStatus.FAILED, failed.getStatus());
                 assertEquals("a test case failed with several was given detail", "", failed.getActualResult());
             }
-            assertEquals(RunItemStatus.PENDING, fixture.statusOf(fixture.testCases().get(1)));
+            assertEquals(RunItemStatus.PENDING, fixture.runItemStatusOf(fixture.testCases().get(1)));
         } finally {
             Disposer.dispose(editor);
         }

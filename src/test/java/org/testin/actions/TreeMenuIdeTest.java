@@ -26,7 +26,7 @@ import com.intellij.testFramework.TestActionEvent;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.jetbrains.annotations.NotNull;
 import org.testin.creator.CreateTreeNodeAction;
-import org.testin.explorer.tree.UpdateStatusAction;
+import org.testin.explorer.tree.UpdateNodeStatusAction;
 import org.testin.model.NodeType;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestCasesFolderNode;
@@ -55,9 +55,9 @@ public class TreeMenuIdeTest extends BasePlatformTestCase {
                 new TestSetPackageNode(), new TestRunPackageNode(), new TestSetNode(), aTestRunIn(TestRunStatus.CREATED));
     }
 
-    private static @NotNull TestRunNode aTestRunIn(final @NotNull TestRunStatus status) {
+    private static @NotNull TestRunNode aTestRunIn(final @NotNull TestRunStatus testRunStatus) {
         final @NotNull TestRunNode testRun = new TestRunNode();
-        testRun.getMarker().changeStatus(status);
+        testRun.getMarker().changeStatus(testRunStatus);
         return testRun;
     }
 
@@ -98,18 +98,18 @@ public class TreeMenuIdeTest extends BasePlatformTestCase {
 
     // Rule-TREE-PANEL-069
     public void testReCreateWorksOnATestRunInEveryStatus() {
-        for (final TestRunStatus status : TestRunStatus.values()) {
-            assertTrue("Re-create is gray on a " + status + " test run", updated(new ReCreateTestRunAction(), aTestRunIn(status)).isEnabled());
+        for (final TestRunStatus testRunStatus : TestRunStatus.values()) {
+            assertTrue("Re-create is gray on a " + testRunStatus + " test run", updated(new ReCreateTestRunAction(), aTestRunIn(testRunStatus)).isEnabled());
         }
     }
 
     // Rule-TREE-PANEL-073
     public void testASignedOffTestRunCannotBeEdited() {
-        for (final TestRunStatus status : TestRunStatus.values()) {
-            final @NotNull Presentation shown = updated(new EditTestRunAction(), aTestRunIn(status));
+        for (final TestRunStatus testRunStatus : TestRunStatus.values()) {
+            final @NotNull Presentation shown = updated(new EditTestRunAction(), aTestRunIn(testRunStatus));
 
-            if (status.isTerminal()) assertGrayWithAReason("Edit on a " + status + " test run", shown);
-            else assertTrue("Edit is gray on a " + status + " test run", shown.isEnabled());
+            if (testRunStatus.isTerminal()) assertGrayWithAReason("Edit on a " + testRunStatus + " test run", shown);
+            else assertTrue("Edit is gray on a " + testRunStatus + " test run", shown.isEnabled());
         }
     }
 
@@ -152,12 +152,12 @@ public class TreeMenuIdeTest extends BasePlatformTestCase {
     public void testAStatusIsSetOnOneNodeAndTheCurrentOneIsGray() {
         final @NotNull TestSetNode testSet = new TestSetNode();
 
-        assertGrayWithAReason("Active on an active test set", updated(new UpdateStatusAction(TestSetStatus.ACTIVE), testSet));
-        assertTrue("the status a test set has is not shown", updated(new UpdateStatusAction(TestSetStatus.ACTIVE), testSet).isVisible());
-        assertTrue("Deprecated is gray on an active test set", updated(new UpdateStatusAction(TestSetStatus.DEPRECATED), testSet).isEnabled());
+        assertGrayWithAReason("Active on an active test set", updated(new UpdateNodeStatusAction(TestSetStatus.ACTIVE), testSet));
+        assertTrue("the status a test set has is not shown", updated(new UpdateNodeStatusAction(TestSetStatus.ACTIVE), testSet).isVisible());
+        assertTrue("Deprecated is gray on an active test set", updated(new UpdateNodeStatusAction(TestSetStatus.DEPRECATED), testSet).isEnabled());
 
         assertFalse("a status was offered for two nodes at once",
-                updated(new UpdateStatusAction(TestSetStatus.DEPRECATED), List.of(testSet, new TestSetNode())).isEnabled());
+                updated(new UpdateNodeStatusAction(TestSetStatus.DEPRECATED), List.of(testSet, new TestSetNode())).isEnabled());
     }
 
     // Rule-TREE-PANEL-104

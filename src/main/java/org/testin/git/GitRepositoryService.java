@@ -178,7 +178,7 @@ public final class GitRepositoryService {
     }
 
     // UC-SHARE-010, Rule-SHARE-044
-    public @NotNull List<String> status(final @NotNull Path path) {
+    public @NotNull List<String> gitStatus(final @NotNull Path path) {
         return GitStatusLines.records(run(path, GitCommand.STATUS, "--porcelain", "-z", "-uall").orElse(""));
     }
 

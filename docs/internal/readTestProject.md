@@ -53,7 +53,7 @@ There is no key for this. It starts on its own.
   it holds test cases, and named by its place in the tree as a damaged node is.
   The tester then knows which folder to go to rather than which name to look for.
   A folder holding none is skipped in silence, because a folder that is
-  deliberately not a test set is the ordinary case.
+  deliberately not a test set is the ordinary situation.
 - **Rule-INTERNAL-062** — Reading a test case costs no more than 40 microseconds
   and holds no more than 4 kilobytes. Ten thousand test cases is the size the
   budget is stated at.
@@ -163,7 +163,7 @@ test cases written out as files and walked took **3.5 seconds warm and 150
 seconds cold** on the same machine — a forty-fold spread on identical work,
 because a cold read of ten thousand freshly written files is the virus
 scanner's number rather than the plugin's. Those two figures are measured and
-reported by the same test with `-Dtestin.budget.cases=10000`, and deliberately
+reported by the same test with `-Dtestin.budget.testCases=10000`, and deliberately
 not asserted on: a budget that fails on a loaded runner and passes through a
 real regression on a fast disk is worse than none.
 
@@ -228,7 +228,7 @@ the bottom of the IDE, beside the other background jobs.
 shows its empty state instead.
 
 **If a folder under the Testin folder holds no `.testproject` file** — it is not a test
-project, and it is skipped without a word. This is the ordinary case. The
+project, and it is skipped without a word. This is the ordinary situation. The
 Testin folder usually holds other things.
 
 **If Testin itself fails while reading a test project** — the test project is

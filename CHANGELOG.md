@@ -688,7 +688,7 @@ sharing a test project should update together.
   rapid status changes.
 - **Zero-Setup Automation Path:** The Java test source root is detected automatically at startup — no manual
   configuration.
-- Many stability fixes: dialog lifecycle cleanups, unified keyboard shortcuts, and grid editing edge cases.
+- Many stability fixes: dialog lifecycle cleanups, unified keyboard shortcuts, and grid editing at its edges.
 
 ## 2.5 - 2026-06-27
 

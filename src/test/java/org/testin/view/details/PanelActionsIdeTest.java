@@ -234,7 +234,7 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
         ExecutionReported.broadcast(getProject(), testCase.getId().toString(), ExecutionStatus.FAILED, Duration.ZERO, Failure.NONE);
         settled();
         view.getPanel().refreshCurrentView();
-        assertEquals("the test case the tester stopped was recorded as failed", ExecutionStatus.IDLE, execution.statusOf(testCase));
+        assertEquals("the test case the tester stopped was recorded as failed", ExecutionStatus.IDLE, execution.executionStatusOf(testCase));
         assertFalse("the panel shows the stopped test case as failed: " + view.words(ViewTab.DETAILS), view.words(ViewTab.DETAILS).contains(ExecutionStatus.FAILED.getBadge().label()));
     }
 

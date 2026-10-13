@@ -66,7 +66,7 @@ public final class TestRunHtmlGenerator {
 
         final @NotNull String testRunName = testRunNode.getName();
 
-        final @NotNull String projectName = Services.getInstance(project, BoundTestProject.class).name();
+        final @NotNull String testProjectName = Services.getInstance(project, BoundTestProject.class).name();
 
         StringBuilder html = new StringBuilder();
 
@@ -82,13 +82,13 @@ public final class TestRunHtmlGenerator {
 
         html.append("<div class='report-title'>").append(Bundle.message("report.title")).append("</div>")
                 .append("<div class='report-subtitle'>")
-                .append(StringUtil.escapeXmlEntities(ReportText.joined("  |  ", projectName, ReportText.joined(", ", TestRunConfiguration.PLATFORM.valueIn(testRunNode.getMarker()), TestRunConfiguration.COMPONENT.valueIn(testRunNode.getMarker()))))).append("</div>")
+                .append(StringUtil.escapeXmlEntities(ReportText.joined("  |  ", testProjectName, ReportText.joined(", ", TestRunConfiguration.PLATFORM.valueIn(testRunNode.getMarker()), TestRunConfiguration.COMPONENT.valueIn(testRunNode.getMarker()))))).append("</div>")
                 .append("<div class='report-test-run-name'>").append(StringUtil.escapeXmlEntities(testRunName)).append("</div>")
                 .append("<div class='report-conf'>").append(Bundle.message("report.confidential")).append("</div>");
 
         html.append("<div class='section-title-bar'><div class='section-title'>").append(Bundle.message("report.heading.overview")).append("</div></div>");
         html.append("<table class='overview-table'>");
-        for (final DetailRow row : ReportOverview.rowsFor(projectName, testRunNode, summary)) {
+        for (final DetailRow row : ReportOverview.rowsFor(testProjectName, testRunNode, summary)) {
             overviewRow(html, row.caption(), row.value());
         }
         html.append("</table>");

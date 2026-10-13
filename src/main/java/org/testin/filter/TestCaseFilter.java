@@ -65,16 +65,16 @@ public final class TestCaseFilter {
         final boolean matchesModule = wanted.modules().isEmpty() || wanted.modules().contains(shown.getModule());
         final boolean matchesTestCaseStatus = wanted.testCaseStatuses().isEmpty() || wanted.testCaseStatuses().contains(shown.getStatus());
         final boolean matchesRunItemStatus = wanted.runItemStatuses().isEmpty()
-                || matchesStatus(testCase.getId(), wanted.runItemStatuses(), runItemProvider);
+                || matchesRunItemStatus(testCase.getId(), wanted.runItemStatuses(), runItemProvider);
         final boolean matchesTestSet = wanted.testSets().isEmpty() || wanted.testSets().contains(testCase.getParent().getPath());
 
         return matchesSearch && matchesPriority && matchesGroup && matchesModule && matchesTestCaseStatus && matchesRunItemStatus && matchesTestSet;
     }
 
-    private static boolean matchesStatus(final @NotNull UUID testCaseId, final @NotNull Set<RunItemStatus> statuses, final @NotNull Function<UUID, Optional<RunItem>> runItemProvider) {
+    private static boolean matchesRunItemStatus(final @NotNull UUID testCaseId, final @NotNull Set<RunItemStatus> runItemStatuses, final @NotNull Function<UUID, Optional<RunItem>> runItemProvider) {
         return runItemProvider.apply(testCaseId)
                 .map(RunItem::shownStatus)
-                .filter(statuses::contains)
+                .filter(runItemStatuses::contains)
                 .isPresent();
     }
 }

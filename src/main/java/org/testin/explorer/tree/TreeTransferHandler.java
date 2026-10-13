@@ -98,13 +98,13 @@ public class TreeTransferHandler extends TransferHandler {
 
     // Rule-TREE-PANEL-013
     static boolean sameTestProject(final @NotNull AbstractNode source, final @NotNull AbstractNode target) {
-        final @NotNull Optional<Path> sourceProject = owningProject(source).map(AbstractNode::getPath);
+        final @NotNull Optional<Path> sourceTestProject = owningTestProject(source).map(AbstractNode::getPath);
 
-        return sourceProject.isPresent()
-                && sourceProject.equals(owningProject(target).map(AbstractNode::getPath));
+        return sourceTestProject.isPresent()
+                && sourceTestProject.equals(owningTestProject(target).map(AbstractNode::getPath));
     }
 
-    private static @NotNull Optional<AbstractNode> owningProject(final @NotNull AbstractNode node) {
+    private static @NotNull Optional<AbstractNode> owningTestProject(final @NotNull AbstractNode node) {
         return node.selfAndAncestors().stream()
                 .filter(TestProjectNode.class::isInstance)
                 .findFirst();

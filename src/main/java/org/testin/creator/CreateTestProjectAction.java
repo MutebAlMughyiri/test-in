@@ -21,7 +21,7 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.actions.AbstractBoundProjectAction;
+import org.testin.actions.AbstractBoundTestProjectAction;
 import org.testin.actions.GrayWithReason;
 import org.testin.creator.dialogs.CreateTestProjectDialog;
 import org.testin.explorer.TreePanel;
@@ -35,12 +35,12 @@ import org.testin.testproject.TestProjectFolder;
 import org.testin.util.Bundle;
 
 
-public class CreateTestProjectAction extends AbstractBoundProjectAction {
+public class CreateTestProjectAction extends AbstractBoundTestProjectAction {
     private final @NotNull TreePanel treePanel;
     private final @NotNull TestinRoot testinRoot = Services.getInstance(project, TestinRoot.class);
 
     public CreateTestProjectAction(final @NotNull Project project, final @NotNull TreePanel treePanel) {
-        super(project, Bundle.message("project.new.text"), Bundle.message("project.new.description"), AllIcons.General.Add);
+        super(project, Bundle.message("test.project.new.text"), Bundle.message("test.project.new.description"), AllIcons.General.Add);
         this.treePanel = treePanel;
     }
 
@@ -61,10 +61,10 @@ public class CreateTestProjectAction extends AbstractBoundProjectAction {
             if (OptionalPlugin.GIT.isMissingAndWarned(project)) return;
 
             // Rule-TREE-PANEL-107
-            final @NotNull String projectName = CloneTestProject.nameFor(project, name);
-            if (TestProjectFolder.free(project, projectName).isEmpty()) return;
+            final @NotNull String testProjectName = CloneTestProject.nameFor(project, name);
+            if (TestProjectFolder.free(project, testProjectName).isEmpty()) return;
 
-            new CloneTestProject(project, name, projectName, treePanel).execute();
+            new CloneTestProject(project, name, testProjectName, treePanel).execute();
 
         }).show();
     }

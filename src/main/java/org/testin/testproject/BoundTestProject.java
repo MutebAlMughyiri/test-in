@@ -30,7 +30,7 @@ import org.testin.help.SetupStep;
 import org.testin.indexer.Nodes;
 import org.testin.logger.TestinLogger;
 import org.testin.model.node.TestProjectNode;
-import org.testin.model.status.ProjectStatus;
+import org.testin.model.status.TestProjectStatus;
 import org.testin.services.Services;
 import org.testin.setting.TestinRoot;
 import org.testin.util.Bundle;
@@ -58,7 +58,7 @@ public final class BoundTestProject {
 
     // UC-TREE-PANEL-004, Rule-TREE-PANEL-106
     public @NotNull String name() {
-        return resolve(TestinYml.projectName(project), choice());
+        return resolve(TestinYml.testProjectName(project), choice());
     }
 
     public boolean isNamed() {
@@ -76,12 +76,12 @@ public final class BoundTestProject {
                 .min(Comparator.comparing(testProject -> !testProject.getPath().startsWith(root)));
     }
 
-    public boolean isMissing(final @NotNull Map<String, ProjectStatus> underRoot) {
+    public boolean isMissing(final @NotNull Map<String, TestProjectStatus> underRoot) {
         return isNamed() && !underRoot.containsKey(name());
     }
 
     // UC-TREE-PANEL-001
-    public @NotNull String problem(final @NotNull Map<String, ProjectStatus> underRoot) {
+    public @NotNull String problem(final @NotNull Map<String, TestProjectStatus> underRoot) {
         if (!isNamed() || get().isPresent()) return "";
 
         final @NotNull String name = name();
@@ -95,10 +95,10 @@ public final class BoundTestProject {
     }
 
     // UC-TREE-PANEL-004, Rule-TREE-PANEL-106
-    public void choose(final @NotNull String projectName) {
-        TestinLogger.info("Chose test project '" + projectName + "' for " + project.getName() + " on this machine");
+    public void choose(final @NotNull String testProjectName) {
+        TestinLogger.info("Chose test project '" + testProjectName + "' for " + project.getName() + " on this machine");
 
-        PropertiesComponent.getInstance(project).setList(CHOICE, List.of(projectName, TestinYml.projectName(project)));
+        PropertiesComponent.getInstance(project).setList(CHOICE, List.of(testProjectName, TestinYml.testProjectName(project)));
         refreshGutter();
     }
 

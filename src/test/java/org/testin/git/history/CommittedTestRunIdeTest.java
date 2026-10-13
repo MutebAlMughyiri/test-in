@@ -84,7 +84,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
         }
     }
 
-    private static @NotNull String aTestRunMarker(final @NotNull TestRunStatus status) {
+    private static @NotNull String aTestRunMarker(final @NotNull TestRunStatus testRunStatus) {
         return """
                 {
                   "createdBy" : "Sara",
@@ -92,7 +92,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
                   "updatedBy" : "Sara",
                   "updatedAt" : "Friday 28-08-2026 At 01:12:47 [Asia/Riyadh]",
                   "status" : "%s"
-                }""".formatted(status.name());
+                }""".formatted(testRunStatus.name());
     }
 
     @Override
@@ -109,9 +109,9 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
         super.tearDown();
     }
 
-    private @NotNull Path aTestRun(final @NotNull String name, final @NotNull TestRunStatus status) {
+    private @NotNull Path aTestRun(final @NotNull String name, final @NotNull TestRunStatus testRunStatus) {
         final @NotNull Path testRun = theTestRunsOf(testProjectPath).resolve(name);
-        write(testRun.resolve(NodeType.TEST_RUN.getMarker()), aTestRunMarker(status));
+        write(testRun.resolve(NodeType.TEST_RUN.getMarker()), aTestRunMarker(testRunStatus));
         resultIn(testRun, FileKind.RUN_ITEM.fileName(testCaseId), testCaseId);
         return testRun;
     }

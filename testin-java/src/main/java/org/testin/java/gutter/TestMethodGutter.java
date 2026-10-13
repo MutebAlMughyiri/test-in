@@ -36,7 +36,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.CodeOn;
 import org.testin.codegen.TestName;
-import org.testin.indexer.ProjectIndexer;
+import org.testin.indexer.TestProjectIndexer;
 import org.testin.indexer.TestCases;
 import org.testin.java.codegen.GeneratedMethod;
 import org.testin.logger.TestinLogger;
@@ -120,7 +120,7 @@ public class TestMethodGutter extends RelatedItemLineMarkerProvider implements D
 
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             try {
-                final @NotNull ProjectIndexer indexer = Services.getInstance(project, ProjectIndexer.class);
+                final @NotNull TestProjectIndexer indexer = Services.getInstance(project, TestProjectIndexer.class);
                 final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
                 indexer.awaitIndexing();
 

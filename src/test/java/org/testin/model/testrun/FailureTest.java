@@ -30,7 +30,7 @@ import static org.testng.Assert.assertTrue;
 
 public class FailureTest {
 
-    private static final @NotNull String ISSUE = "https://github.com/acme/cases/issues/7";
+    private static final @NotNull String ISSUE = "https://github.com/acme/test-cases/issues/7";
 
     private static @NotNull RunItem row() {
         return RunItem.builder().id(UUID.randomUUID()).build();

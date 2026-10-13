@@ -104,19 +104,19 @@ public final class TestinYml {
         return !parsedFor(project).readable();
     }
 
-    public static @NotNull String projectName(final @NotNull Project project) {
-        return config(project).projectName();
+    public static @NotNull String testProjectName(final @NotNull Project project) {
+        return config(project).testProjectName();
     }
 
     // Rule-CODEGEN-082
-    public static boolean names(final @NotNull Project project, final @NotNull String projectName) {
-        return !projectName.isEmpty() && projectName.equals(projectName(project));
+    public static boolean names(final @NotNull Project project, final @NotNull String testProjectName) {
+        return !testProjectName.isEmpty() && testProjectName.equals(testProjectName(project));
     }
 
     // UC-TREE-PANEL-001, UC-TREE-PANEL-003, Rule-SHARE-060
-    public static @NotNull Optional<String> cloneAddress(final @NotNull Project project, final @NotNull String projectName) {
+    public static @NotNull Optional<String> cloneAddress(final @NotNull Project project, final @NotNull String testProjectName) {
         final @NotNull TestinProjectConfig config = config(project);
-        return names(project, projectName) && config.hasRepoUrl() ? Optional.of(config.repoUrl()) : Optional.empty();
+        return names(project, testProjectName) && config.hasRepoUrl() ? Optional.of(config.repoUrl()) : Optional.empty();
     }
 
     // UC-TREE-PANEL-003
@@ -140,15 +140,15 @@ public final class TestinYml {
     }
 
     // UC-TREE-PANEL-029, Rule-TREE-PANEL-113
-    public static @NotNull Map<String, String> lines(final @NotNull String projectName) {
+    public static @NotNull Map<String, String> lines(final @NotNull String testProjectName) {
         final @NotNull Map<String, String> lines = new LinkedHashMap<>();
-        lines.put(TestinProjectConfig.PROJECT_KEY, projectName);
+        lines.put(TestinProjectConfig.TEST_PROJECT_KEY, testProjectName);
         return lines;
     }
 
     // UC-TREE-PANEL-029, Rule-TREE-PANEL-113, Rule-SHARE-004
-    public static @NotNull Map<String, String> lines(final @NotNull String projectName, final @NotNull String remote) {
-        final @NotNull Map<String, String> lines = lines(projectName);
+    public static @NotNull Map<String, String> lines(final @NotNull String testProjectName, final @NotNull String remote) {
+        final @NotNull Map<String, String> lines = lines(testProjectName);
         // Rule-TREE-PANEL-117: an address this file's reader would drop is not written as one
         final @NotNull String address = GitRemotes.isRepositoryUrl(remote) ? TestinProjectConfig.withoutCredentials(remote) : "";
 
@@ -357,7 +357,7 @@ public final class TestinYml {
 
         try {
             final @NotNull TestinProjectConfig config = YAML.readValue(yaml, TestinProjectConfig.class);
-            TestinLogger.info("Read " + source + ": test project '" + config.projectName() + "'");
+            TestinLogger.info("Read " + source + ": test project '" + config.testProjectName() + "'");
             return new ParsedTestinYml(config, true);
 
         } catch (final JsonProcessingException ex) {

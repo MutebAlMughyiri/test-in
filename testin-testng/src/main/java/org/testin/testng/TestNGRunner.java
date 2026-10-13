@@ -150,7 +150,7 @@ public final class TestNGRunner implements AutomationExecutor {
         final @NotNull List<TestCase> testCases = generated.stream().map(Generated::testCase).toList();
 
         final @NotNull LinkedHashSet<String> patterns = new LinkedHashSet<>(generated.stream().map(Generated::pattern).toList());
-        final @NotNull String name = execution.freeRunName(configNameFor(generated));
+        final @NotNull String name = execution.freeConfigurationName(configNameFor(generated));
 
         final @NotNull RunManager runManager = RunManager.getInstance(project);
         final @NotNull TestNGConfigurationType configType = TestNGConfigurationType.getInstance();

@@ -33,7 +33,7 @@ public class RunItemStatusDonutTest {
 
     private static final List<NodeFigureRow> SLICES = DonutSlices.RUN_ITEM_STATUSES.getSlices();
 
-    private static @NotNull NodeFigures run(final long passed, final long failed, final long blocked, final long untested) {
+    private static @NotNull NodeFigures testRunFigures(final long passed, final long failed, final long blocked, final long untested) {
         final long total = passed + failed + blocked + untested;
 
         return NodeFigures.ofTestRun(new TestRunSummary(total, passed, failed, blocked, untested, 0, ""));
@@ -46,21 +46,21 @@ public class RunItemStatusDonutTest {
     // Rule-TREE-PANEL-126
     @Test
     public void oneFailureInFiveHundredIsStillVisible() {
-        final double[] sweeps = RunItemStatusDonut.sweeps(SLICES, run(499, 1, 0, 0));
+        final double[] sweeps = RunItemStatusDonut.sweeps(SLICES, testRunFigures(499, 1, 0, 0));
 
         assertTrue(sweeps[1] > 2.0, "a failure somebody recorded has to be visible: " + sweeps[1]);
     }
 
     @Test
     public void theRingStillClosesWhenASliverWasEnlarged() {
-        final double[] sweeps = RunItemStatusDonut.sweeps(SLICES, run(497, 1, 1, 1));
+        final double[] sweeps = RunItemStatusDonut.sweeps(SLICES, testRunFigures(497, 1, 1, 1));
 
         assertEquals(sum(sweeps), 360.0, 0.0001, "the arcs must still add up to a circle");
     }
 
     @Test
     public void aRunItemStatusWithNoTestCasesTakesNoneOfTheRing() {
-        final double[] sweeps = RunItemStatusDonut.sweeps(SLICES, run(420, 60, 40, 30));
+        final double[] sweeps = RunItemStatusDonut.sweeps(SLICES, testRunFigures(420, 60, 40, 30));
 
         assertEquals(sweeps[4], 0.0, 0.0, "nothing was removed, so nothing is drawn for it");
         assertEquals(sum(sweeps), 360.0, 0.0001);
@@ -68,7 +68,7 @@ public class RunItemStatusDonutTest {
 
     @Test
     public void theWholeRingGoesToTheOnlyRunItemStatusThereIs() {
-        final double[] sweeps = RunItemStatusDonut.sweeps(SLICES, run(550, 0, 0, 0));
+        final double[] sweeps = RunItemStatusDonut.sweeps(SLICES, testRunFigures(550, 0, 0, 0));
 
         assertEquals(sweeps[0], 360.0, 0.0001, "every test case passed");
     }

@@ -40,7 +40,7 @@ abstract class AbstractTreeAction extends DumbAwareAction {
     // UC-TREE-PANEL-028
     @Override
     public void actionPerformed(final @NotNull AnActionEvent e) {
-        operation.accept(treePanel.getProjectTree().getMainTree());
+        operation.accept(treePanel.getTestProjectTree().getMainTree());
     }
 
     // UC-TREE-PANEL-028, Rule-TREE-PANEL-101

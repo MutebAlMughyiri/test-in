@@ -13,7 +13,7 @@
   "resultAnalysis" : {
     "PASSED" : "Sign-in and the happy path through checkout both hold.",
     "FAILED" : "The lockout counter resets on a page reload, so the account never locks.",
-    "BLOCKED" : "The expired-card case needs a card the sandbox gateway will decline."
+    "BLOCKED" : "The expired-card test case needs a card the sandbox gateway will decline."
   },
   "executionStartedAt" : "Wednesday 07-01-2026 At 10:00:00 [UTC]",
   "executionEndedAt" : "Wednesday 07-01-2026 At 10:12:41 [UTC]"

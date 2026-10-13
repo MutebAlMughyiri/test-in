@@ -24,7 +24,7 @@ import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
-import org.testin.model.status.ProjectStatus;
+import org.testin.model.status.TestProjectStatus;
 
 import java.nio.file.Path;
 import java.util.Objects;
@@ -83,7 +83,7 @@ public class TreePanelNodeIdeTest extends BasePlatformTestCase {
 
         assertEquals("an active test project does not show its two containers", 2, new TreePanelNode(getProject(), testProject).getChildren().size());
 
-        testProject.getMarker().setStatus(ProjectStatus.INACTIVE);
+        testProject.getMarker().setStatus(TestProjectStatus.INACTIVE);
         assertTrue("an inactive test project shows what it holds", new TreePanelNode(getProject(), testProject).getChildren().isEmpty());
     }
 }

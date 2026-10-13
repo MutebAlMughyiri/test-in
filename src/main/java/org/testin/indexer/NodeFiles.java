@@ -44,14 +44,14 @@ import java.util.stream.Stream;
 
 final class NodeFiles {
     private final @NotNull Project project;
-    private final @NotNull ProjectIndexer indexer;
+    private final @NotNull TestProjectIndexer indexer;
     private final @NotNull IndexerDataStore store;
     private final @NotNull VfsExecutor vfs;
     private final @NotNull JsonCodec mapper;
     private final @NotNull TestDataFiles testDataFiles;
     private final @NotNull OwnWrites ownWrites;
 
-    NodeFiles(final @NotNull Project project, final @NotNull ProjectIndexer indexer, final @NotNull IndexerDataStore store) {
+    NodeFiles(final @NotNull Project project, final @NotNull TestProjectIndexer indexer, final @NotNull IndexerDataStore store) {
         this.project = project;
         this.indexer = indexer;
         this.store = store;
@@ -121,7 +121,7 @@ final class NodeFiles {
             ApplicationManager.getApplication().executeOnPooledThread(() -> {
                 arrived.forEach(this::reidentifyCopiedTestCases);
 
-                indexer.refreshIndexedProject(targetPath);
+                indexer.refreshIndexedTestProject(targetPath);
                 ApplicationManager.getApplication().invokeLater(() -> onComplete.accept(copied.get()));
             });
         };
@@ -172,7 +172,7 @@ final class NodeFiles {
             final @NotNull List<Path> all = files.filter(Files::isRegularFile).toList();
 
             testCaseFiles = all.stream()
-                    .filter(file -> ProjectIndexer.isTestCaseFile(file, node -> store.hasMarker(node, NodeType.TEST_SET)))
+                    .filter(file -> TestProjectIndexer.isTestCaseFile(file, node -> store.hasMarker(node, NodeType.TEST_SET)))
                     .toList();
 
             markerFiles = all.stream()

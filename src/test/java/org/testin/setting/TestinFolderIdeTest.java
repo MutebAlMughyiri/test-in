@@ -31,7 +31,7 @@ import org.testin.importexport.FileFormat;
 import org.testin.importexport.imports.SourceFileField;
 import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
-import org.testin.indexer.ProjectIndexer;
+import org.testin.indexer.TestProjectIndexer;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
@@ -67,8 +67,8 @@ public class TestinFolderIdeTest extends AbstractTempRootIdeTest {
                 .orElseThrow(() -> new AssertionError("the dialog has no folder box"));
     }
 
-    private @NotNull ProjectIndexer indexer() {
-        return Services.getInstance(getProject(), ProjectIndexer.class);
+    private @NotNull TestProjectIndexer indexer() {
+        return Services.getInstance(getProject(), TestProjectIndexer.class);
     }
 
     private @NotNull BoundTestProject bound() {

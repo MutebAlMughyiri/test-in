@@ -86,14 +86,14 @@ public interface TestinEditor extends Disposable {
     }
 
     // UC-EDITOR-PANEL-024
-    default void refreshSelectionStatus(final int @NotNull [] selectedIndices) {
+    default void refreshStatusBarSelection(final int @NotNull [] selectedIndices) {
         final int firstRow = selectedIndices.length == 0 ? 0 : selectedIndices[0];
 
         getStatusBar().updateSelectionState(
                 selectedIndices,
                 ((getCurrentPage() - 1) * getPageSize()) + firstRow,
-                getShownItemsCount(),
-                getTotalItemsCount(),
+                getShownTestCaseCount(),
+                getTotalTestCaseCount(),
                 sortedBy());
     }
 
@@ -118,9 +118,9 @@ public interface TestinEditor extends Disposable {
 
     int getTotalPageCount();
 
-    int getShownItemsCount();
+    int getShownTestCaseCount();
 
-    int getTotalItemsCount();
+    int getTotalTestCaseCount();
 
     void refreshView();
 

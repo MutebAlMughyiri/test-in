@@ -84,9 +84,9 @@ public final class RunItemSummary extends AbstractDetails {
     }
 
     // UC-VIEW-PANEL-005, Rule-VIEW-PANEL-086
-    private static @NotNull List<JComponent> pills(final @NotNull RunItemStatus status, final @NotNull String duration) {
+    private static @NotNull List<JComponent> pills(final @NotNull RunItemStatus runItemStatus, final @NotNull String duration) {
         final @NotNull List<Badge> badges = new ArrayList<>();
-        badges.add(new Pill(status.getLabel(), status.getRowColor()));
+        badges.add(new Pill(runItemStatus.getLabel(), runItemStatus.getRowColor()));
         Badges.addDurationBadge(badges, duration);
         return Badges.pills(badges);
     }
@@ -173,17 +173,17 @@ public final class RunItemSummary extends AbstractDetails {
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-120, Rule-VIEW-PANEL-121
     private @NotNull JBPanel<?> actions(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull TestRunNode testRun, final int at, final boolean isDefault, final @NotNull Optional<String> whyNot) {
-        final @NotNull RunItemRecorder statuses = Services.getInstance(project, RunItemRecorder.class);
+        final @NotNull RunItemRecorder runItemRecorder = Services.getInstance(project, RunItemRecorder.class);
         final @NotNull JBPanel<?> actions = row(0);
 
         if (!isDefault) {
             actions.add(HoverButton.of(project, whyNot, AllIcons.Nodes.NotFavoriteOnHover, Bundle.message("execution.set.default"), "", () -> {
-                if (statuses.chooseExecution(testRun.getPath(), runItem.getId(), at))
+                if (runItemRecorder.chooseExecution(testRun.getPath(), runItem.getId(), at))
                     redraw(project, testCase, testRun);
             }));
         }
         actions.add(HoverButton.of(project, whyNot, AllIcons.Actions.Close, Bundle.message("execution.remove"), "", () -> {
-            if (!statuses.removeExecution(testRun.getPath(), runItem.getId(), at)) return;
+            if (!runItemRecorder.removeExecution(testRun.getPath(), runItem.getId(), at)) return;
 
             showExecution.accept(OptionalInt.empty());
             redraw(project, testCase, testRun);

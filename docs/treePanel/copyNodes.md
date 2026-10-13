@@ -78,7 +78,7 @@ on [UC-TREE-PANEL-013](moveNodes.md).
 
 Nothing in the tree changes when the tester copies. The nodes stay black, and *Copied* shows above the status bar at the
 bottom right of the IDE. Pasting then
-opens the dialog drawn under [UC-TREE-PANEL-013](moveNodes.md). Its title reads **Paste**, and it asks *Copy N items
+opens the dialog drawn under [UC-TREE-PANEL-013](moveNodes.md). Its title reads **Paste**, and it asks *Copy N nodes
 into '\<folder\>'?*.
 
 ## Main flow

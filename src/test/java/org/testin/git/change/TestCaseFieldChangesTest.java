@@ -32,7 +32,7 @@ public class TestCaseFieldChangesTest {
 
     private static @NotNull TestCase base() {
         return TestCase.builder()
-                .description("a login case")
+                .description("a login test case")
                 .expectedResult("the balance is shown")
                 .steps(new ArrayList<>(List.of("open the app", "log in")))
                 .priority(Priority.LOW)
@@ -90,10 +90,10 @@ public class TestCaseFieldChangesTest {
     }
 
     @Test
-    public void aStatusChangeShowsTheLabels() {
+    public void aTestCaseStatusChangeShowsTheLabels() {
         final FieldChange change = onlyChange(base().setStatus(TestCaseStatus.REVIEWED));
 
-        assertEquals(change.changeType(), ChangeType.CHANGE_STATUS);
+        assertEquals(change.changeType(), ChangeType.CHANGE_TEST_CASE_STATUS);
         assertEquals(change.oldValue(), TestCaseStatus.PENDING.getLabel());
         assertEquals(change.newValue(), TestCaseStatus.REVIEWED.getLabel());
     }
@@ -160,7 +160,7 @@ public class TestCaseFieldChangesTest {
 
     @Test
     public void editingAFieldBackToItsOldValueLeavesNothing() {
-        final TestCase edited = base().setDescription("something else").setDescription("a login case");
+        final TestCase edited = base().setDescription("something else").setDescription("a login test case");
 
         assertEquals(TestCaseFieldChanges.compare(base(), edited), List.of());
     }

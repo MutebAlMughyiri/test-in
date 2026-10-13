@@ -83,23 +83,23 @@ public class ReportSectionTest {
     }
 
     @Test
-    public void everyStatusBelongsToExactlyOneSection() {
-        for (final RunItemStatus status : RunItemStatus.values()) {
+    public void everyRunItemStatusBelongsToExactlyOneSection() {
+        for (final RunItemStatus runItemStatus : RunItemStatus.values()) {
             final List<ReportSection> claiming = Arrays.stream(ReportSection.values())
-                    .filter(section -> section.matches(runItem(status)))
+                    .filter(section -> section.matches(runItem(runItemStatus)))
                     .toList();
 
             assertEquals(claiming.size(), 1,
-                    status + " is printed by " + claiming.size() + " sections, not one: " + claiming);
+                    runItemStatus + " is printed by " + claiming.size() + " sections, not one: " + claiming);
         }
     }
 
     @Test
     public void everySectionCountMatchesTheRowsItWillPrint() {
         final List<RunItem> runItems = new ArrayList<>();
-        for (final RunItemStatus status : RunItemStatus.values()) {
-            runItems.add(runItem(status));
-            runItems.add(runItem(status));
+        for (final RunItemStatus runItemStatus : RunItemStatus.values()) {
+            runItems.add(runItem(runItemStatus));
+            runItems.add(runItem(runItemStatus));
         }
 
         final TestRunSummary summary = TestRunSummary.of(runItems);
@@ -143,10 +143,10 @@ public class ReportSectionTest {
         assertTrue(description.contains("<b>7</b>"), description);
     }
 
-    private @NotNull RunItem runItem(final RunItemStatus status) {
+    private @NotNull RunItem runItem(final RunItemStatus runItemStatus) {
         final RunItem runItem = new RunItem();
         runItem.setId(UUID.randomUUID());
-        runItem.setExecutions(List.of(RunItemExecution.builder().status(status).build()));
+        runItem.setExecutions(List.of(RunItemExecution.builder().status(runItemStatus).build()));
         return runItem;
     }
 }

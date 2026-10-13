@@ -88,7 +88,7 @@ final class IndexerDataStore {
             testCasesFoldersByPath,
             testRunsFoldersByPath);
     // Rule-INTERNAL-091
-    private final @NotNull Map<String, String> refusedProjects = new ConcurrentHashMap<>();
+    private final @NotNull Map<String, String> refusedTestProjects = new ConcurrentHashMap<>();
 
     IndexerDataStore(final @NotNull Project project) {
         this.testCaseStore = new TestCaseStore(project);
@@ -102,8 +102,8 @@ final class IndexerDataStore {
         throw new IllegalStateException("No test run indexed at " + path);
     }
 
-    private static void dropUnseen(final @NotNull Map<String, ?> held, final @NotNull Path projectPath, final @NotNull Map<String, ?> found) {
-        held.keySet().removeIf(key -> Path.of(key).startsWith(projectPath) && !found.containsKey(key));
+    private static void dropUnseen(final @NotNull Map<String, ?> held, final @NotNull Path testProjectPath, final @NotNull Map<String, ?> found) {
+        held.keySet().removeIf(key -> Path.of(key).startsWith(testProjectPath) && !found.containsKey(key));
     }
 
     @NotNull Map<UUID, TestCase> getTestCasesById() {
@@ -225,20 +225,20 @@ final class IndexerDataStore {
         return markers.read(directory, kind, markerClass);
     }
 
-    @NotNull List<Path> takeDamagedMarkers(final @NotNull Path projectPath) {
-        return markers.takeDamaged(projectPath);
+    @NotNull List<Path> takeDamagedMarkers(final @NotNull Path testProjectPath) {
+        return markers.takeDamaged(testProjectPath);
     }
 
-    void refuse(final @NotNull Path projectPath, final @NotNull String reason) {
-        refusedProjects.put(projectPath.toString(), reason);
+    void refuse(final @NotNull Path testProjectPath, final @NotNull String reason) {
+        refusedTestProjects.put(testProjectPath.toString(), reason);
     }
 
-    void readable(final @NotNull Path projectPath) {
-        refusedProjects.remove(projectPath.toString());
+    void readable(final @NotNull Path testProjectPath) {
+        refusedTestProjects.remove(testProjectPath.toString());
     }
 
-    @NotNull Optional<String> whyNotRead(final @NotNull Path projectPath) {
-        return Optional.ofNullable(refusedProjects.get(projectPath.toString()));
+    @NotNull Optional<String> whyNotRead(final @NotNull Path testProjectPath) {
+        return Optional.ofNullable(refusedTestProjects.get(testProjectPath.toString()));
     }
 
     // Rule-INTERNAL-090, Rule-TREE-PANEL-051
@@ -264,8 +264,8 @@ final class IndexerDataStore {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-021
-    void swapIn(final @NotNull Path projectPath, final @NotNull ScannedProject scanned) {
-        testProjectsByPath.putAll(scanned.getProjects());
+    void swapIn(final @NotNull Path testProjectPath, final @NotNull ScannedTestProject scanned) {
+        testProjectsByPath.putAll(scanned.getTestProjects());
         testCasesFoldersByPath.putAll(scanned.getTestCasesFolders());
         testRunsFoldersByPath.putAll(scanned.getTestRunsFolders());
         testSetPackagesByPath.putAll(scanned.getTestSetPackages());
@@ -274,16 +274,16 @@ final class IndexerDataStore {
         testRunNodesByPath.putAll(scanned.getTestRunNodes());
         runItemsByPath.putAll(scanned.getRunItemsByPath());
 
-        testCaseStore.swapIn(projectPath, scanned.getTestCasesById(), scanned.getTestCaseIdsByTestSet(), scanned.handNamedFilesAlone(), scanned.getUnreadableTestCases());
+        testCaseStore.swapIn(testProjectPath, scanned.getTestCasesById(), scanned.getTestCaseIdsByTestSet(), scanned.handNamedFilesAlone(), scanned.getUnreadableTestCases());
 
-        dropUnseen(testProjectsByPath, projectPath, scanned.getProjects());
-        dropUnseen(testCasesFoldersByPath, projectPath, scanned.getTestCasesFolders());
-        dropUnseen(testRunsFoldersByPath, projectPath, scanned.getTestRunsFolders());
-        dropUnseen(testSetPackagesByPath, projectPath, scanned.getTestSetPackages());
-        dropUnseen(testRunPackagesByPath, projectPath, scanned.getTestRunPackages());
-        dropUnseen(testSetNodesByPath, projectPath, scanned.getTestSets());
-        dropUnseen(testRunNodesByPath, projectPath, scanned.getTestRunNodes());
-        dropUnseen(runItemsByPath, projectPath, scanned.getRunItemsByPath());
+        dropUnseen(testProjectsByPath, testProjectPath, scanned.getTestProjects());
+        dropUnseen(testCasesFoldersByPath, testProjectPath, scanned.getTestCasesFolders());
+        dropUnseen(testRunsFoldersByPath, testProjectPath, scanned.getTestRunsFolders());
+        dropUnseen(testSetPackagesByPath, testProjectPath, scanned.getTestSetPackages());
+        dropUnseen(testRunPackagesByPath, testProjectPath, scanned.getTestRunPackages());
+        dropUnseen(testSetNodesByPath, testProjectPath, scanned.getTestSets());
+        dropUnseen(testRunNodesByPath, testProjectPath, scanned.getTestRunNodes());
+        dropUnseen(runItemsByPath, testProjectPath, scanned.getRunItemsByPath());
 
         childrenIndex.invalidate();
     }

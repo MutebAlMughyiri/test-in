@@ -26,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.Await;
 import org.testin.LoginTestSource;
-import org.testin.indexer.ProjectIndexer;
+import org.testin.indexer.TestProjectIndexer;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCase;
 import org.testin.services.Services;
@@ -100,7 +100,7 @@ public class TestCaseMarkOpensTheViewPanelIdeTest extends AbstractCodegenIdeTest
         final @NotNull GutterMark mark = theMarkBeside(testCase);
         final @NotNull AppSettingsState settings = Services.getInstance(AppSettingsState.class);
         final @NotNull String wasRoot = settings.rootTestinPath;
-        final @NotNull ProjectIndexer indexer = Services.getInstance(getProject(), ProjectIndexer.class);
+        final @NotNull TestProjectIndexer indexer = Services.getInstance(getProject(), TestProjectIndexer.class);
         settings.rootTestinPath = root.toString();
         try {
             indexer.resetForReindex();

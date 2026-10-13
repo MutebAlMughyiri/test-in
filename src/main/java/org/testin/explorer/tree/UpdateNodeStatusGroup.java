@@ -29,8 +29,8 @@ import org.testin.model.status.NodeStatus;
 
 import java.util.List;
 
-public class UpdateStatusGroup extends DefaultActionGroup {
-    private static @NotNull List<NodeStatus> statuses(final @NotNull AnActionEvent e) {
+public class UpdateNodeStatusGroup extends DefaultActionGroup {
+    private static @NotNull List<NodeStatus> nodeStatuses(final @NotNull AnActionEvent e) {
         return TestinDataKeys.singleSelectedNode(e)
                 .map(AbstractNode::getMarker)
                 .map(Marker::statuses)
@@ -42,8 +42,8 @@ public class UpdateStatusGroup extends DefaultActionGroup {
     public AnAction @NotNull [] getChildren(final @Nullable AnActionEvent e) {
         if (e == null) return EMPTY_ARRAY;
 
-        return statuses(e).stream()
-                .map(UpdateStatusAction::new)
+        return nodeStatuses(e).stream()
+                .map(UpdateNodeStatusAction::new)
                 .toArray(AnAction[]::new);
     }
 

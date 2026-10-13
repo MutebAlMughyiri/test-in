@@ -46,8 +46,8 @@ public class BreadcrumbStepsIdeTest extends AbstractViewPanelIdeTest {
         assertEquals("the tree did not come up on the step", 1, view.timesTheTreeCameUp());
         assertTrue("the step did not go to the place it names: " + container, container.stream().anyMatch(line -> line.contains("Going to Test Cases in NAFATH > Test Cases")));
 
-        final @NotNull List<String> project = TestinLog.during(() -> click(Drawn.reading(tab, "NAFATH")));
+        final @NotNull List<String> testProjectLog = TestinLog.during(() -> click(Drawn.reading(tab, "NAFATH")));
         assertEquals("the tree did not come up on the step", 2, view.timesTheTreeCameUp());
-        assertTrue("the step did not go to the place it names: " + project, project.stream().anyMatch(line -> line.contains("Going to NAFATH in NAFATH")));
+        assertTrue("the step did not go to the place it names: " + testProjectLog, testProjectLog.stream().anyMatch(line -> line.contains("Going to NAFATH in NAFATH")));
     }
 }

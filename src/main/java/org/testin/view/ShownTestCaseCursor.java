@@ -41,7 +41,7 @@ public class ShownTestCaseCursor {
         this.treePath = treePath;
     }
 
-    public @NotNull Optional<TestCase> getCurrentItem() {
+    public @NotNull Optional<TestCase> getCurrentTestCase() {
         return currentIndex >= 0 && currentIndex < shownTestCases.size()
                 ? Optional.of(shownTestCases.get(currentIndex))
                 : Optional.empty();

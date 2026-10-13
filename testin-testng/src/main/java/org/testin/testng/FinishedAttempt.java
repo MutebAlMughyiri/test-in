@@ -21,5 +21,5 @@ import org.testin.model.status.ExecutionStatus;
 import org.testin.model.testrun.Failure;
 
 // Rule-CODEGEN-075, Rule-CODEGEN-110
-record FinishedAttempt(@NotNull ExecutionStatus status, @NotNull Failure failure) {
+record FinishedAttempt(@NotNull ExecutionStatus executionStatus, @NotNull Failure failure) {
 }

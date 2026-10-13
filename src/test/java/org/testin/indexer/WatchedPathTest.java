@@ -29,7 +29,7 @@ public class WatchedPathTest {
 
     private static final Path ROOT = Path.of("C:", "Users", "mtb", "Testin");
 
-    private static final Path PROJECT = ROOT.resolve("test-01");
+    private static final Path TEST_PROJECT = ROOT.resolve("test-01");
 
     private static @NotNull Optional<Path> of(final Path changed) {
         return WatchedPath.testProjectOf(changed, ROOT);
@@ -37,42 +37,42 @@ public class WatchedPathTest {
 
     // Rule-INTERNAL-021
     @Test
-    public void aTestCaseThatChangedNamesItsProject() {
-        assertEquals(of(PROJECT.resolve("Test Cases/Login/6197ec6e.json")), Optional.of(PROJECT),
+    public void aTestCaseThatChangedNamesItsTestProject() {
+        assertEquals(of(TEST_PROJECT.resolve("Test Cases/Login/6197ec6e.json")), Optional.of(TEST_PROJECT),
                 "the project is the unit the indexer re-reads, not the file");
     }
 
     @Test
-    public void aMarkerNamesItsProjectToo() {
-        assertEquals(of(PROJECT.resolve("Test Cases/Login/.testset")), Optional.of(PROJECT));
-        assertEquals(of(PROJECT.resolve(".testproject")), Optional.of(PROJECT));
+    public void aMarkerNamesItsTestProjectToo() {
+        assertEquals(of(TEST_PROJECT.resolve("Test Cases/Login/.testset")), Optional.of(TEST_PROJECT));
+        assertEquals(of(TEST_PROJECT.resolve(".testproject")), Optional.of(TEST_PROJECT));
     }
 
     // Rule-INTERNAL-021
     @Test
-    public void everyFileOfOneProjectAnswersTheSameProject() {
-        assertEquals(of(PROJECT.resolve("Test Runs/Cycle 1/Cycle 1.testrun")), of(PROJECT.resolve(".testproject")),
+    public void everyFileOfOneTestProjectAnswersTheSameTestProject() {
+        assertEquals(of(TEST_PROJECT.resolve("Test Runs/Cycle 1/Cycle 1.testrun")), of(TEST_PROJECT.resolve(".testproject")),
                 "forty files changed in one project have to collapse to one scan");
     }
 
     @Test
-    public void aSecondProjectIsItsOwnAnswer() {
+    public void aSecondTestProjectIsItsOwnAnswer() {
         assertEquals(of(ROOT.resolve("test-02/.testproject")), Optional.of(ROOT.resolve("test-02")));
     }
 
     // Rule-INTERNAL-017
     @Test
     public void gitsOwnFilesAreNotTestData() {
-        assertEquals(of(PROJECT.resolve(".git/HEAD")), Optional.empty(),
+        assertEquals(of(TEST_PROJECT.resolve(".git/HEAD")), Optional.empty(),
                 "a pull rewrites these constantly and none of it is test data");
-        assertEquals(of(PROJECT.resolve(".git/index")), Optional.empty());
-        assertEquals(of(PROJECT.resolve(".git/refs/heads/main")), Optional.empty());
+        assertEquals(of(TEST_PROJECT.resolve(".git/index")), Optional.empty());
+        assertEquals(of(TEST_PROJECT.resolve(".git/refs/heads/main")), Optional.empty());
     }
 
     // Rule-INTERNAL-017
     @Test
     public void aFolderCalledGitDeeperInIsStillGits() {
-        assertEquals(of(PROJECT.resolve("Test Cases/.git/config")), Optional.empty(),
+        assertEquals(of(TEST_PROJECT.resolve("Test Cases/.git/config")), Optional.empty(),
                 "checking only the top segment would let every pull through");
     }
 
@@ -87,13 +87,13 @@ public class WatchedPathTest {
 
     // Rule-INTERNAL-018
     @Test
-    public void theRootItselfIsAFolderOfProjectsAndNotOne() {
+    public void theRootItselfIsAFolderOfTestProjectsAndNotOne() {
         assertEquals(of(ROOT), Optional.empty());
     }
 
     @Test
     public void anUnconfiguredRootWatchesNothing() {
-        assertTrue(WatchedPath.testProjectOf(PROJECT.resolve(".testproject"), Path.of("")).isEmpty(),
+        assertTrue(WatchedPath.testProjectOf(TEST_PROJECT.resolve(".testproject"), Path.of("")).isEmpty(),
                 "there is nothing to watch before a tester has set a Testin folder");
     }
 }

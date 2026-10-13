@@ -30,7 +30,7 @@ import java.util.Objects;
 record TestinProjectConfig(@NotNull TestinLocation location, @NotNull String repoUrl, @NotNull String testinProject, @NotNull String bugRepoUrl) {
     public static final @NotNull TestinProjectConfig EMPTY = new TestinProjectConfig(
             TestinLocation.LOCAL, "", "", "");
-    static final @NotNull String PROJECT_KEY = "testinProject";
+    static final @NotNull String TEST_PROJECT_KEY = "testinProject";
     static final @NotNull String LOCATION_KEY = "location";
     static final @NotNull String REPO_URL_KEY = "repoUrl";
     static final @NotNull String BUG_REPO_URL_KEY = "bugRepoUrl";
@@ -51,7 +51,7 @@ record TestinProjectConfig(@NotNull TestinLocation location, @NotNull String rep
     }
 
     @JsonCreator
-    static @NotNull TestinProjectConfig read(@JsonProperty(LOCATION_KEY) final @Nullable String location, @JsonProperty(REPO_URL_KEY) final @Nullable String repoUrl, @JsonProperty(PROJECT_KEY) final @Nullable String testinProject, @JsonProperty(BUG_REPO_URL_KEY) final @Nullable String bugRepoUrl) {
+    static @NotNull TestinProjectConfig read(@JsonProperty(LOCATION_KEY) final @Nullable String location, @JsonProperty(REPO_URL_KEY) final @Nullable String repoUrl, @JsonProperty(TEST_PROJECT_KEY) final @Nullable String testinProject, @JsonProperty(BUG_REPO_URL_KEY) final @Nullable String bugRepoUrl) {
         return new TestinProjectConfig(TestinLocation.of(strip(location)),
                 strip(repoUrl),
                 strip(testinProject),
@@ -82,7 +82,7 @@ record TestinProjectConfig(@NotNull TestinLocation location, @NotNull String rep
         return url.substring(0, start) + authority.substring(at + 1) + (end < 0 ? "" : url.substring(end));
     }
 
-    public @NotNull String projectName() {
+    public @NotNull String testProjectName() {
         return testinProject;
     }
 

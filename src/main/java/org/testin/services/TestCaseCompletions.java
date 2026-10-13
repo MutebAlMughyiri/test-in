@@ -95,7 +95,7 @@ public final class TestCaseCompletions implements Disposable {
         cacheAsync(testCases);
     }
 
-    public void addNewItems(final @NotNull List<TestCase> testCases) {
+    public void addNewTestCases(final @NotNull List<TestCase> testCases) {
         cacheAsync(testCases);
     }
 

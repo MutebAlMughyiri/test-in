@@ -36,7 +36,7 @@ import static org.testng.Assert.assertFalse;
 public class TestRunLifeTest {
 
     private static @NotNull List<TestRunStatus> offeredFrom(final @NotNull TestRunStatus current) {
-        return Arrays.stream(TestRunStatus.values()).filter(status -> status.canBeSetFrom(current)).toList();
+        return Arrays.stream(TestRunStatus.values()).filter(testRunStatus -> testRunStatus.canBeSetFrom(current)).toList();
     }
 
     // Rule-TREE-PANEL-031

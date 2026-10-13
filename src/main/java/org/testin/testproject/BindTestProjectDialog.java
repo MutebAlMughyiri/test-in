@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.help.Guide;
 import org.testin.help.Guides;
 import org.testin.model.NodeType;
-import org.testin.model.status.ProjectStatus;
+import org.testin.model.status.TestProjectStatus;
 import org.testin.notifications.Done;
 import org.testin.services.Services;
 import org.testin.ui.framework.AbstractFrameworkDialog;
@@ -36,11 +36,11 @@ import java.util.Map;
 
 // Rule-TREE-PANEL-106
 public final class BindTestProjectDialog extends AbstractFrameworkDialog {
-    private final @NotNull SelectionTable projects;
+    private final @NotNull SelectionTable testProjects;
     private final @NotNull Runnable onBound;
     private final @NotNull BoundTestProject boundTestProject = Services.getInstance(project, BoundTestProject.class);
 
-    public BindTestProjectDialog(final @NotNull Project project, final @NotNull Map<String, ProjectStatus> underRoot, final @NotNull Runnable onBound) {
+    public BindTestProjectDialog(final @NotNull Project project, final @NotNull Map<String, TestProjectStatus> underRoot, final @NotNull Runnable onBound) {
         super(project);
         this.onBound = onBound;
         Services.getInstance(project, Guides.class).add(Guide.LINK_THIS_REPOSITORY);
@@ -49,7 +49,7 @@ public final class BindTestProjectDialog extends AbstractFrameworkDialog {
 
         final @NotNull DialogPart<SelectionTable> table = DialogPart.table()
                 .column(NodeType.TEST_PROJECT.getDescription(), 260)
-                .column(Bundle.message("caption.status"), 100)
+                .column(Bundle.message("caption.test.project.status"), 100)
                 .build();
 
         components = List.of(table);
@@ -58,10 +58,10 @@ public final class BindTestProjectDialog extends AbstractFrameworkDialog {
                 StatusBarShortcut.build(Shortcuts.Enter, StatusBarShortcut.SELECT, this::submit),
                 StatusBarShortcut.cancel(this::closeCancel));
 
-        projects = table.getComponent();
+        testProjects = table.getComponent();
 
-        for (final Map.Entry<String, ProjectStatus> entry : underRoot.entrySet()) {
-            projects.addRow(entry.getKey(), entry.getValue().getLabel());
+        for (final Map.Entry<String, TestProjectStatus> entry : underRoot.entrySet()) {
+            testProjects.addRow(entry.getKey(), entry.getValue().getLabel());
         }
 
         selectCurrent();
@@ -70,9 +70,9 @@ public final class BindTestProjectDialog extends AbstractFrameworkDialog {
     private void selectCurrent() {
         final @NotNull String bound = boundTestProject.name();
 
-        for (int row = 0; row < projects.getRowCount(); row++) {
-            if (projects.getValueAt(row, 0).equals(bound)) {
-                projects.selectRows(List.of(row));
+        for (int row = 0; row < testProjects.getRowCount(); row++) {
+            if (testProjects.getValueAt(row, 0).equals(bound)) {
+                testProjects.selectRows(List.of(row));
                 return;
             }
         }
@@ -81,10 +81,10 @@ public final class BindTestProjectDialog extends AbstractFrameworkDialog {
     // UC-TREE-PANEL-004, Rule-TREE-PANEL-106
     @Override
     protected void submit() {
-        final @NotNull List<Integer> selected = projects.getSelectedRows();
+        final @NotNull List<Integer> selected = testProjects.getSelectedRows();
         if (selected.isEmpty()) return;
 
-        boundTestProject.choose(projects.getValueAt(selected.getFirst(), 0));
+        boundTestProject.choose(testProjects.getValueAt(selected.getFirst(), 0));
         closeOk();
 
         notifier.softShow(project, Done.BOUND);

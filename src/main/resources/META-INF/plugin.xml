@@ -450,14 +450,14 @@
 
         <!-- One entry per status the selected node has, generated from its
              enum rather than written out here: a status is a constant on
-             ProjectStatus, TestSetStatus or PackageStatus, and a second list of
+             TestProjectStatus, TestSetStatus or PackageStatus, and a second list of
              them in this file is one that goes stale the day a status is added
              (#175, C9). One group rather than one per kind of node - the node
              says which statuses it has (#110). Compact, so the entries sit
              directly in the Actions menu the way they always have. -->
         <group
                 id="Testin.UpdateStatus"
-                class="org.testin.explorer.tree.UpdateStatusGroup"
+                class="org.testin.explorer.tree.UpdateNodeStatusGroup"
                 popup="false"
         />
 

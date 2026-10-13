@@ -36,14 +36,14 @@ import org.testin.util.FailureText;
 
 import java.util.Optional;
 
-public class UpdateStatusAction extends AbstractAnyProjectAction {
-    private final @NotNull NodeStatus status;
+public class UpdateNodeStatusAction extends AbstractAnyProjectAction {
+    private final @NotNull NodeStatus nodeStatus;
 
-    public UpdateStatusAction(final @NotNull NodeStatus status) {
-        super(status.getButtonName());
-        getTemplatePresentation().setDescription(status.getButtonDescription());
+    public UpdateNodeStatusAction(final @NotNull NodeStatus nodeStatus) {
+        super(nodeStatus.getButtonName());
+        getTemplatePresentation().setDescription(nodeStatus.getButtonDescription());
         getTemplatePresentation().setIcon(AllIcons.Actions.Edit);
-        this.status = status;
+        this.nodeStatus = nodeStatus;
     }
 
     // UC-TREE-PANEL-018, UC-TREE-PANEL-019
@@ -55,19 +55,19 @@ public class UpdateStatusAction extends AbstractAnyProjectAction {
     // UC-TREE-PANEL-018, Rule-TREE-PANEL-062
     private void mark(final @NotNull Project project, final @NotNull AbstractNode node) {
         try {
-            if (!Services.getInstance(project, Nodes.class).mark(node, status, Services.getInstance(project, AppSettingsState.class).testerName))
+            if (!Services.getInstance(project, Nodes.class).mark(node, nodeStatus, Services.getInstance(project, AppSettingsState.class).testerName))
                 return;
 
-            Services.getInstance(project, Notifier.class).softShow(project, status.getLabel());
+            Services.getInstance(project, Notifier.class).softShow(project, nodeStatus.getLabel());
 
         } catch (final Exception ex) {
-            TestinLogger.error("Unable to mark '" + node.getName() + "' " + status.getLabel() + ": " + FailureText.of(ex));
-            Services.getInstance(project, Notifier.class).error(project, Bundle.message("status.failed", status.getLabel()));
+            TestinLogger.error("Unable to mark '" + node.getName() + "' " + nodeStatus.getLabel() + ": " + FailureText.of(ex));
+            Services.getInstance(project, Notifier.class).error(project, Bundle.message("node.status.failed", nodeStatus.getLabel()));
         }
     }
 
     private @NotNull Optional<AbstractNode> selected(final @NotNull AnActionEvent e) {
-        return TestinDataKeys.singleSelectedNode(e).filter(node -> node.getMarker().statuses().contains(status));
+        return TestinDataKeys.singleSelectedNode(e).filter(node -> node.getMarker().statuses().contains(nodeStatus));
     }
 
     // UC-TREE-PANEL-018, Rule-TREE-PANEL-065
@@ -76,8 +76,8 @@ public class UpdateStatusAction extends AbstractAnyProjectAction {
         final @NotNull Optional<AbstractNode> selectedNode = selected(e);
 
         e.getPresentation().setVisible(selectedNode.isPresent());
-        GrayWithReason.unless(this, e, selectedNode.filter(node -> !status.equals(node.getMarker().status())).isPresent(),
-                Bundle.message("status.already.description", status.getLabel()));
+        GrayWithReason.unless(this, e, selectedNode.filter(node -> !nodeStatus.equals(node.getMarker().status())).isPresent(),
+                Bundle.message("node.status.already.description", nodeStatus.getLabel()));
     }
 
     @Override

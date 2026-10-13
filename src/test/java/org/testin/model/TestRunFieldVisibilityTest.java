@@ -35,7 +35,7 @@ public class TestRunFieldVisibilityTest {
     private static final @NotNull String FRONTEND = "Frontend";
     private static final @NotNull String BACKEND = "Backend";
 
-    private static @NotNull TestRunConfiguration.Chosen run(final @NotNull String platform, final @NotNull String component) {
+    private static @NotNull TestRunConfiguration.Chosen answers(final @NotNull String platform, final @NotNull String component) {
         final @NotNull Map<TestRunConfiguration, String> answers = new EnumMap<>(TestRunConfiguration.class);
         answers.put(TestRunConfiguration.PLATFORM, platform);
         answers.put(TestRunConfiguration.COMPONENT, component);
@@ -45,19 +45,19 @@ public class TestRunFieldVisibilityTest {
 
     @Test
     public void aWebFrontendIsAskedWhichBrowser() {
-        assertTrue(TestRunConfiguration.BROWSER.isShownFor(run(WEB, FRONTEND)));
+        assertTrue(TestRunConfiguration.BROWSER.isShownFor(answers(WEB, FRONTEND)));
     }
 
     @Test
     public void aMobileFrontendIsAskedWhichDevice() {
-        assertTrue(TestRunConfiguration.DEVICE_TYPE.isShownFor(run(MOBILE, FRONTEND)));
+        assertTrue(TestRunConfiguration.DEVICE_TYPE.isShownFor(answers(MOBILE, FRONTEND)));
     }
 
     @Test
     public void aTestRunIsNeverAskedForBothAtOnce() {
         for (final String platform : List.of(WEB, MOBILE, BACKEND, "")) {
             for (final String component : List.of(FRONTEND, BACKEND, "")) {
-                final @NotNull TestRunConfiguration.Chosen chosen = run(platform, component);
+                final @NotNull TestRunConfiguration.Chosen chosen = answers(platform, component);
 
                 assertFalse(TestRunConfiguration.BROWSER.isShownFor(chosen)
                                 && TestRunConfiguration.DEVICE_TYPE.isShownFor(chosen),
@@ -68,16 +68,16 @@ public class TestRunFieldVisibilityTest {
 
     @Test
     public void aBackendTestRunIsAskedForNeither() {
-        assertFalse(TestRunConfiguration.BROWSER.isShownFor(run(WEB, BACKEND)),
+        assertFalse(TestRunConfiguration.BROWSER.isShownFor(answers(WEB, BACKEND)),
                 "a backend has no browser");
-        assertFalse(TestRunConfiguration.DEVICE_TYPE.isShownFor(run(MOBILE, BACKEND)),
+        assertFalse(TestRunConfiguration.DEVICE_TYPE.isShownFor(answers(MOBILE, BACKEND)),
                 "a backend has no handset");
     }
 
     @Test
     public void nothingChosenYetMeansNeitherIsAskedFor() {
-        assertFalse(TestRunConfiguration.BROWSER.isShownFor(run("", "")));
-        assertFalse(TestRunConfiguration.DEVICE_TYPE.isShownFor(run("", "")));
+        assertFalse(TestRunConfiguration.BROWSER.isShownFor(answers("", "")));
+        assertFalse(TestRunConfiguration.DEVICE_TYPE.isShownFor(answers("", "")));
     }
 
     @Test
@@ -85,7 +85,7 @@ public class TestRunFieldVisibilityTest {
         for (final TestRunConfiguration field : TestRunConfiguration.values()) {
             if (field == TestRunConfiguration.BROWSER || field == TestRunConfiguration.DEVICE_TYPE) continue;
 
-            assertTrue(field.isShownFor(run("", "")),
+            assertTrue(field.isShownFor(answers("", "")),
                     field.getDisplayName() + " depends on an answer but nothing says when it applies");
         }
     }

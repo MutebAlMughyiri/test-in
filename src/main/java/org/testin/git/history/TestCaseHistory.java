@@ -76,7 +76,7 @@ public final class TestCaseHistory {
         final @NotNull GitRepositoryService git = new GitRepositoryService(project);
         if (git.isNotRepository(file.testProject())) return History.NOT_UNDER_GIT;
 
-        final @NotNull String path = file.inProject().toString().replace('\\', '/');
+        final @NotNull String path = file.inTestProject().toString().replace('\\', '/');
         try {
             final @NotNull List<HistoryCommit> commits = commits(git.log(file.testProject(), "--follow", FORMAT, "--name-only", "--", path), path);
             final @NotNull Map<String, String> versions = commits.isEmpty()

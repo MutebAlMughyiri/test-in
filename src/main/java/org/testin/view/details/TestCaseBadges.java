@@ -33,8 +33,8 @@ public final class TestCaseBadges {
     public static @NotNull List<JComponent> of(final @NotNull Project project, final @NotNull TestCase testCase) {
         final @NotNull List<Badge> badges = Badges.testCaseBadges(testCase);
 
-        final @NotNull ExecutionStatus tempStatus = Services.getInstance(project, TestNGExecution.class).statusOf(testCase);
-        if (tempStatus.hasBadge()) badges.add(Badges.createExecutionStatusBadge(tempStatus.getBadge()));
+        final @NotNull ExecutionStatus executionStatus = Services.getInstance(project, TestNGExecution.class).executionStatusOf(testCase);
+        if (executionStatus.hasBadge()) badges.add(Badges.createExecutionStatusBadge(executionStatus.getBadge()));
 
         return Badges.pills(badges);
     }

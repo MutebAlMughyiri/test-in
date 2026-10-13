@@ -56,7 +56,7 @@ public class CreateTestCaseAction extends AbstractAnyProjectAction {
                     CodeChangeType.CREATE_TEST_CASE.execute(project, testCase);
                 });
             });
-            Services.getInstance(project, TestCaseCompletions.class).addNewItems(affectedNodes);
+            Services.getInstance(project, TestCaseCompletions.class).addNewTestCases(affectedNodes);
         }).show();
     }
 

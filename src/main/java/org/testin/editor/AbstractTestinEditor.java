@@ -43,7 +43,7 @@ import org.testin.editor.toolbar.ToolbarCallbacks;
 import org.testin.filter.FilterPopupButton;
 import org.testin.filter.SortPopupButton;
 import org.testin.indexer.Nodes;
-import org.testin.indexer.ProjectIndexer;
+import org.testin.indexer.TestProjectIndexer;
 import org.testin.indexer.TestCases;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCase;
@@ -75,7 +75,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
     protected final @NotNull List<TestCase> allTestCases;
     @Getter
     protected final @NotNull List<TestCase> currentTestCases;
-    protected final @NotNull ProjectIndexer indexer;
+    protected final @NotNull TestProjectIndexer indexer;
     protected final @NotNull Nodes nodes;
     protected final @NotNull TestCases testCases;
     protected final @NotNull TestCaseCompletions testCaseValues;
@@ -111,7 +111,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
     protected AbstractTestinEditor(final @NotNull Project project, final @NotNull N parent) {
         this.project = project;
         this.parent = parent;
-        this.indexer = Services.getInstance(project, ProjectIndexer.class);
+        this.indexer = Services.getInstance(project, TestProjectIndexer.class);
         this.nodes = Services.getInstance(project, Nodes.class);
         this.testCases = Services.getInstance(project, TestCases.class);
         this.testCaseValues = Services.getInstance(project, TestCaseCompletions.class);
@@ -194,12 +194,12 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
     }
 
     @Override
-    public int getShownItemsCount() {
+    public int getShownTestCaseCount() {
         return currentTestCases.size();
     }
 
     @Override
-    public int getTotalItemsCount() {
+    public int getTotalTestCaseCount() {
         return allTestCases.size();
     }
 
@@ -218,8 +218,8 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
         return getToolBar().getToolbarItem(SortPopupButton.class).sortedBy();
     }
 
-    protected @NotNull List<TestCase> getCurrentPageItems() {
-        return paging.itemsOn(currentTestCases);
+    protected @NotNull List<TestCase> getCurrentPageTestCases() {
+        return paging.onCurrentPage(currentTestCases);
     }
 
     // Rule-EDITOR-PANEL-272
@@ -464,8 +464,8 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
         currentTestCases.clear();
         currentTestCases.addAll(getFilteredList());
 
-        final int totalItems = currentTestCases.size();
-        final @NotNull PageWindow page = paging.settle(totalItems);
+        final int totalTestCases = currentTestCases.size();
+        final @NotNull PageWindow page = paging.settle(totalTestCases);
 
         final @NotNull List<TestCase> pageTestCases = new ArrayList<>(currentTestCases.subList(page.fromIndex(), page.toIndex()));
 
@@ -483,10 +483,10 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
             }
         });
 
-        showEmptyStateIfNothingToDraw(totalItems);
-        drawStatus(page);
+        showEmptyStateIfNothingToDraw(totalTestCases);
+        drawStatusBar(page);
 
-        refreshSelectionStatus(list.getSelectedIndices());
+        refreshStatusBarSelection(list.getSelectedIndices());
         afterSelectionShown();
 
         if (getToolBar().getCurrentView() == ViewMode.GRID_VIEW) {
@@ -503,15 +503,15 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
         else model.replaceAll(pageTestCases);
     }
 
-    protected abstract void drawStatus(final @NotNull PageWindow page);
+    protected abstract void drawStatusBar(final @NotNull PageWindow page);
 
     protected abstract boolean isReading();
 
     protected abstract void sayItHoldsNothing(final @NotNull StatusText emptyText);
 
     // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-101
-    private void showEmptyStateIfNothingToDraw(final int totalItems) {
-        if (totalItems > 0 || isReading()) return;
+    private void showEmptyStateIfNothingToDraw(final int totalTestCases) {
+        if (totalTestCases > 0 || isReading()) return;
 
         if (allTestCases.isEmpty()) sayItHoldsNothing(list.getEmptyText());
         else list.getEmptyText().setText(Bundle.message("editor.test.no.match"));

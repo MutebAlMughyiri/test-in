@@ -66,7 +66,7 @@ public class TestRunStatusFollowsIdeTest extends AbstractOpenEditorsIdeTest {
     }
 
     // Rule-TREE-PANEL-091
-    public void testAStatusSetFromTheTreeOrTheEditorIsFollowedByBoth() {
+    public void testATestRunStatusSetFromTheTreeOrTheEditorIsFollowedByBoth() {
         opened(testRun);
         final @NotNull TestRunEditor editor = theEditor();
         final @NotNull TestRunNode treeRow = (TestRunNode) Services.getInstance(getProject(), Nodes.class).find(testRun.getPath()).orElseThrow();

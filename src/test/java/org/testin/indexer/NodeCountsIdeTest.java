@@ -64,10 +64,10 @@ public class NodeCountsIdeTest extends AbstractTempRootIdeTest {
         });
     }
 
-    private @NotNull List<UUID> aTestSet(final @NotNull AbstractNode parent, final @NotNull String name, final int testCases, final @NotNull TestSetStatus status) {
+    private @NotNull List<UUID> aTestSet(final @NotNull AbstractNode parent, final @NotNull String name, final int testCases, final @NotNull TestSetStatus testSetStatus) {
         final @NotNull TestSetNode testSet = WriteAction.computeAndWait(() -> {
             final @NotNull TestSetNode created = mapper().getTestSetNode(parent.getPath().resolve(name), parent);
-            created.getMarker().setStatus(status);
+            created.getMarker().setStatus(testSetStatus);
             nodes().addTestSet(created);
             return created;
         });

@@ -21,7 +21,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.CheckedTreeNode;
 import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.Nodes;
-import org.testin.indexer.ProjectIndexer;
+import org.testin.indexer.TestProjectIndexer;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
@@ -40,13 +40,13 @@ import java.util.UUID;
 
 public final class TestRunFormOpener {
     private final @NotNull Project project;
-    private final @NotNull ProjectIndexer indexer;
+    private final @NotNull TestProjectIndexer indexer;
     private final @NotNull TestCases testCases;
     private final @NotNull Nodes nodes;
 
     public TestRunFormOpener(final @NotNull Project project) {
         this.project = project;
-        this.indexer = Services.getInstance(project, ProjectIndexer.class);
+        this.indexer = Services.getInstance(project, TestProjectIndexer.class);
         this.testCases = Services.getInstance(project, TestCases.class);
         this.nodes = Services.getInstance(project, Nodes.class);
     }

@@ -151,7 +151,7 @@ are dropped first.
 
 **If a sibling already has the new name** — nothing is renamed, and *\<name\>
 Already Exists* is shown in red. For a test project the siblings are the other
-folders in the Testin folder. A rename that only changes the case of the name is
+folders in the Testin folder. A rename that only changes the capitals of the name is
 not in its own way.
 
 **If the automation code already has the package the new name makes** — nothing

@@ -49,10 +49,10 @@ public class SearchFindsTestRunsIdeTest extends AbstractTempRootIdeTest {
         super.setUp();
 
         final TestProjectNode testProject = WriteAction.computeAndWait(() -> {
-            final TestProjectNode project = mapper().setTestProjectNode(root.resolve("NAFATH"));
-            nodes().addTestProject(project);
+            final TestProjectNode testProjectNode = mapper().setTestProjectNode(root.resolve("NAFATH"));
+            nodes().addTestProject(testProjectNode);
 
-            return project;
+            return testProjectNode;
         });
 
         testCase = aTestCaseIn(testProject);

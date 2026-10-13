@@ -53,7 +53,7 @@ public class NavigateToTestCaseIdeTest extends AbstractCodegenIdeTest {
 
     private static final @NotNull String TO_THE_TEST_CASE = Bundle.message("action.Testin.NavigateToTestCase.text");
     private static final @NotNull String TO_THE_METHOD = Bundle.message("action.Testin.NavigateToTestMethod.text");
-    private static final @NotNull String RUN = Bundle.message("action.Testin.RunTestMethod.text");
+    private static final @NotNull String RUN_TEST_METHOD_TEXT = Bundle.message("action.Testin.RunTestMethod.text");
 
     private @NotNull TestSetNode testSet = new TestSetNode();
 
@@ -149,15 +149,15 @@ public class NavigateToTestCaseIdeTest extends AbstractCodegenIdeTest {
 
         assertEquals(TO_THE_TEST_CASE, navigateToTestCase().getTemplatePresentation().getText());
         assertEquals(TO_THE_METHOD, ActionManager.getInstance().getAction("Testin.NavigateToTestMethod").getTemplatePresentation().getText());
-        assertEquals(RUN, ActionManager.getInstance().getAction("Testin.RunTestMethod").getTemplatePresentation().getText());
+        assertEquals(RUN_TEST_METHOD_TEXT, ActionManager.getInstance().getAction("Testin.RunTestMethod").getTemplatePresentation().getText());
 
-        assertEquals("the card's buttons are named otherwise", List.of(TO_THE_METHOD, RUN, TO_THE_TEST_CASE),
+        assertEquals("the card's buttons are named otherwise", List.of(TO_THE_METHOD, RUN_TEST_METHOD_TEXT, TO_THE_TEST_CASE),
                 Arrays.asList(TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD.getTooltip(), TestCaseQuickAction.RUN_TEST_METHOD.getTooltip(), TestCaseQuickAction.NAVIGATE_TO_TEST_CASE.getTooltip()));
 
         final @NotNull List<String> named = TestCaseHoverButtons.of(getProject(), testCases.getFirst(), Optional.empty()).stream()
                 .map(button -> Objects.requireNonNullElse(button.getAccessibleContext().getAccessibleName(), ""))
                 .filter(name -> !name.isEmpty())
                 .toList();
-        assertEquals("the view panel names its buttons otherwise", List.of(TO_THE_METHOD, RUN, TO_THE_TEST_CASE), named);
+        assertEquals("the view panel names its buttons otherwise", List.of(TO_THE_METHOD, RUN_TEST_METHOD_TEXT, TO_THE_TEST_CASE), named);
     }
 }

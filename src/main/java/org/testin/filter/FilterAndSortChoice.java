@@ -44,7 +44,7 @@ public record FilterAndSortChoice(@NotNull String query, @NotNull Set<String> gr
                 filters.getSelectedPriority(),
                 filters.getSelectedModule(),
                 filters.getSelectedTestCaseStatus(),
-                filters.getSelectedStatus(),
+                filters.getSelectedRunItemStatuses(),
                 filters.getSelectedAutomation(),
                 filters.getSelectedTestSet(),
                 sortBy,

@@ -22,7 +22,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CustomShortcutSet;
 import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
-import org.testin.actions.AbstractBoundProjectAction;
+import org.testin.actions.AbstractBoundTestProjectAction;
 import org.testin.editor.TestinEditor;
 import org.testin.model.TestCase;
 import org.testin.testcase.UpdateTestCaseAction;
@@ -38,7 +38,7 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Optional;
 
-public final class GridEnterAction extends AbstractBoundProjectAction {
+public final class GridEnterAction extends AbstractBoundTestProjectAction {
     private final @NotNull TestinEditor editor;
     private final @NotNull JBTable table;
     private final @NotNull List<TestCase> pageTestCases;

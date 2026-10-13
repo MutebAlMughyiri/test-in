@@ -60,7 +60,7 @@ public class RenameNodeIdeTest extends AbstractCodegenIdeTest {
         return SwingUtilities.convertPoint(component.getParent(), component.getLocation(), within).y;
     }
 
-    private static @NotNull Component readingAnyCase(final @NotNull Container container, final @NotNull String text) {
+    private static @NotNull Component readingInAnyCapitals(final @NotNull Container container, final @NotNull String text) {
         return Drawn.components(container).stream()
                 .filter(component -> Drawn.text(component).equalsIgnoreCase(text))
                 .findFirst()
@@ -128,9 +128,9 @@ public class RenameNodeIdeTest extends AbstractCodegenIdeTest {
         final @NotNull JComponent content = ShownDialog.content(getProject(), RenameDialog.class);
         laidOut(content);
 
-        final @NotNull Component renaming = readingAnyCase(content, Bundle.message("caption.renaming"));
-        final @NotNull Component name = readingAnyCase(content, "Login");
-        final @NotNull Component in = readingAnyCase(content, Bundle.message("caption.in"));
+        final @NotNull Component renaming = readingInAnyCapitals(content, Bundle.message("caption.renaming"));
+        final @NotNull Component name = readingInAnyCapitals(content, "Login");
+        final @NotNull Component in = readingInAnyCapitals(content, Bundle.message("caption.in"));
         final @NotNull JTextComponent field = Drawn.first(content, JTextComponent.class, JTextComponent::isEditable);
 
         assertTrue("the place is not said: " + Drawn.words(content), Drawn.holds(Drawn.words(content), "Test Cases"));

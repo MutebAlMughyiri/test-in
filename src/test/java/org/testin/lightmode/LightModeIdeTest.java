@@ -160,7 +160,7 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
         return scaled <= 0.03928 ? scaled / 12.92 : Math.pow((scaled + 0.055) / 1.055, 2.4);
     }
 
-    private static int indexIgnoringCase(final @NotNull List<String> words, final @NotNull String wanted) {
+    private static int indexIgnoringCapitals(final @NotNull List<String> words, final @NotNull String wanted) {
         for (int i = 0; i < words.size(); i++) {
             if (words.get(i).equalsIgnoreCase(wanted)) return i;
         }
@@ -262,7 +262,7 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
             assertEquals("light mode recorded somewhere the editor does not see", RunItemStatus.PASSED, editor.runItem(fixture.testCases().getFirst().getId()).map(RunItem::getStatus).orElseThrow());
-            assertEquals(RunItemStatus.PASSED, fixture.statusOf(fixture.testCases().getFirst()));
+            assertEquals(RunItemStatus.PASSED, fixture.runItemStatusOf(fixture.testCases().getFirst()));
             Await.until("the editor's walk did not move with light mode", () -> editor.getWalk().getCurrentlyExecutingIndex() == 1);
 
             editor.getList().setSelectedIndex(1);
@@ -511,7 +511,7 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
             final @NotNull List<String> captions = List.of("Actual Result", "Bug Severity", "Bug Priority", "Stacktrace", Bundle.message("dialog.failure.caption.screenshots"));
             int at = -1;
             for (final String caption : captions) {
-                final int found = indexIgnoringCase(inTheForm, caption);
+                final int found = indexIgnoringCapitals(inTheForm, caption);
                 assertTrue("the form has no " + caption + " field after the one before it: " + inTheForm, found > at);
                 at = found;
             }

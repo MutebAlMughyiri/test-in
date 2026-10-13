@@ -62,8 +62,8 @@ public class TreePanelCellRenderer extends ColoredTreeCellRenderer {
             final boolean grayed = selectedNodes.contains(node.getPath()) || node.isRetired();
             append(node.getName(), grayed ? SimpleTextAttributes.GRAYED_ATTRIBUTES : type.getAttributes());
 
-            final @NotNull String status = node.statusShownInTree();
-            if (!status.isEmpty()) append(" " + status, SimpleTextAttributes.GRAY_ATTRIBUTES);
+            final @NotNull String nodeStatus = node.statusShownInTree();
+            if (!nodeStatus.isEmpty()) append(" " + nodeStatus, SimpleTextAttributes.GRAY_ATTRIBUTES);
 
         } catch (final Exception ex) {
             TestinLogger.error("Error rendering tree node: " + FailureText.of(ex));

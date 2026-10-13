@@ -96,7 +96,7 @@ public class SearchTest {
     }
 
     @Test
-    public void matchingIgnoresCase() {
+    public void matchingIgnoresCapitals() {
         assertTrue(GlobalSearch.contains("Sign in with a VALID user", "valid"));
         assertTrue(GlobalSearch.contains("Sign in", "SIGN"));
         assertFalse(GlobalSearch.contains("Sign in", "signed"));

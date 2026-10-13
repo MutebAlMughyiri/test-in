@@ -55,7 +55,7 @@ public class EditorPagingTest {
         final @NotNull EditorPaging paging = new EditorPaging(10);
         paging.turnTo(2);
 
-        assertEquals(paging.itemsOn(all), all.subList(10, 20), "the second page does not hold the second ten");
+        assertEquals(paging.onCurrentPage(all), all.subList(10, 20), "the second page does not hold the second ten");
     }
 
     // Rule-EDITOR-PANEL-009, Rule-EDITOR-PANEL-130

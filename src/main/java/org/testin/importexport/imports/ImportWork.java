@@ -221,7 +221,7 @@ record ImportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
     }
 
     void generateTestMethods(final @NotNull List<TestCase> testCases, final @NotNull String targetName, final @NotNull ProgressIndicator indicator) {
-        TestinLogger.info("Import: generating test methods for '" + targetName + "' with " + testCases.size() + " cases");
+        TestinLogger.info("Import: generating test methods for '" + targetName + "' with " + testCases.size() + " test cases");
         final long startedAt = System.currentTimeMillis();
         // Rule-CODEGEN-018
         final @NotNull String oneUndo = UUID.randomUUID().toString();

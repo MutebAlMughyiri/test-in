@@ -26,9 +26,9 @@ import org.testin.setting.AppSettingsState;
 import java.util.List;
 
 public class TestRunStatusLabelIdeTest extends BasePlatformTestCase {
-    private static @NotNull TestRunMarker aTestRunMarkerIn(final @NotNull TestRunStatus status) {
+    private static @NotNull TestRunMarker aTestRunMarkerIn(final @NotNull TestRunStatus testRunStatus) {
         final @NotNull TestRunMarker marker = new TestRunMarker();
-        marker.changeStatus(status);
+        marker.changeStatus(testRunStatus);
         return marker;
     }
 
@@ -53,9 +53,9 @@ public class TestRunStatusLabelIdeTest extends BasePlatformTestCase {
     }
 
     // Rule-EDITOR-PANEL-265
-    public void testEveryOtherStatusShowsTheIconAlone() {
-        for (final TestRunStatus status : List.of(TestRunStatus.CREATED, TestRunStatus.IN_PROGRESS, TestRunStatus.COMPLETED, TestRunStatus.CLOSED)) {
-            assertEquals("a " + status + " test run showed text beside its icon", "", EditorStatusBar.besideTheIcon(aTestRunMarkerIn(status)));
+    public void testEveryOtherTestRunStatusShowsTheIconAlone() {
+        for (final TestRunStatus testRunStatus : List.of(TestRunStatus.CREATED, TestRunStatus.IN_PROGRESS, TestRunStatus.COMPLETED, TestRunStatus.CLOSED)) {
+            assertEquals("a " + testRunStatus + " test run showed text beside its icon", "", EditorStatusBar.besideTheIcon(aTestRunMarkerIn(testRunStatus)));
         }
     }
 }

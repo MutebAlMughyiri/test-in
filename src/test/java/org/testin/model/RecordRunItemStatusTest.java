@@ -56,8 +56,8 @@ public class RecordRunItemStatusTest {
                 .build();
     }
 
-    private static void record(final @NotNull RunItem runItem, final @NotNull RunItemStatus status, final @NotNull String tester) {
-        runItem.recordRunItemStatus(status, tester, Duration.ZERO, Failure.NONE);
+    private static void record(final @NotNull RunItem runItem, final @NotNull RunItemStatus runItemStatus, final @NotNull String tester) {
+        runItem.recordRunItemStatus(runItemStatus, tester, Duration.ZERO, Failure.NONE);
     }
 
     // Rule-EDITOR-PANEL-284

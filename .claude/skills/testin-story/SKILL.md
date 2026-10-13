@@ -108,7 +108,7 @@ What to count depends on the story, but the useful ones are almost always:
   file. `grep -c` per file beats one total, because it shows whether the work is
   concentrated or spread.
 - **Blast radius** — how many call sites, in how many files, and how many of them
-  already handle the case correctly. This is the number that sizes the risk.
+  already handle it correctly. This is the number that sizes the risk.
 - **A baseline to compare against** — the same count across `src/main`, so
   "twenty" becomes "twenty, which is below the project average". Without a
   denominator a count reads as bad news whatever it says.

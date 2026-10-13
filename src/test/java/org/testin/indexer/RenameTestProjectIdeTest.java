@@ -23,7 +23,7 @@ import org.testin.Await;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
-import org.testin.model.status.ProjectStatus;
+import org.testin.model.status.TestProjectStatus;
 import org.testin.services.Services;
 import org.testin.util.JsonCodec;
 
@@ -33,10 +33,10 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class RenameProjectIdeTest extends AbstractTempRootIdeTest {
+public class RenameTestProjectIdeTest extends AbstractTempRootIdeTest {
 
-    private @NotNull ProjectIndexer indexer() {
-        return Services.getInstance(getProject(), ProjectIndexer.class);
+    private @NotNull TestProjectIndexer indexer() {
+        return Services.getInstance(getProject(), TestProjectIndexer.class);
     }
 
     private @NotNull TestCases indexedTestCases() {
@@ -71,9 +71,9 @@ public class RenameProjectIdeTest extends AbstractTempRootIdeTest {
         Await.until("the rename never finished", done::get);
     }
 
-    public void testARenamedProjectIsFoundUnderItsNewName() {
+    public void testARenamedTestProjectIsFoundUnderItsNewName() {
         final Path from = aTestProject("NAFATH").getPath();
-        indexer().scanSingleProject(from);
+        indexer().scanSingleTestProject(from);
 
         final Path to = root.resolve("Nafath_App");
         rename(from, to);
@@ -84,13 +84,13 @@ public class RenameProjectIdeTest extends AbstractTempRootIdeTest {
         assertTrue("its test cases folder did not follow", nodes().nodeExists(to.resolve("Test Cases")));
     }
 
-    public void testAnInactiveProjectsContainersFollowIt() {
+    public void testAnInactiveTestProjectsContainersFollowIt() {
         final TestProjectNode testProject = aTestProject("Checkout");
         WriteAction.runAndWait(() -> {
-            testProject.getMarker().setStatus(ProjectStatus.INACTIVE);
+            testProject.getMarker().setStatus(TestProjectStatus.INACTIVE);
             nodes().persistMarker(testProject);
         });
-        indexer().scanSingleProject(testProject.getPath());
+        indexer().scanSingleTestProject(testProject.getPath());
 
         final Path to = root.resolve("Checkout_App");
         rename(testProject.getPath(), to);
@@ -112,7 +112,7 @@ public class RenameProjectIdeTest extends AbstractTempRootIdeTest {
         } catch (final Exception ex) {
             throw new AssertionError("Could not write the hand-named test case: " + ex.getMessage(), ex);
         }
-        indexer().scanSingleProject(testProject.getPath());
+        indexer().scanSingleTestProject(testProject.getPath());
 
         final Path to = root.resolve("Nafath_App");
         rename(testProject.getPath(), to);
@@ -121,7 +121,7 @@ public class RenameProjectIdeTest extends AbstractTempRootIdeTest {
         final TestCaseFile file = indexedTestCases().testCaseFile(testCase).orElseThrow();
 
         assertEquals("the test case is placed in the renamed project", to, file.testProject());
-        assertEquals("the test case lost its hand-named file", "login.testcase", file.inProject().getFileName().toString());
+        assertEquals("the test case lost its hand-named file", "login.testcase", file.inTestProject().getFileName().toString());
     }
 
     // Rule-TREE-PANEL-004

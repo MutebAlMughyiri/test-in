@@ -38,7 +38,7 @@ public class GitRemotesTest {
     }
 
     @Test
-    public void aProjectNameIsNotAnAddress() {
+    public void aTestProjectNameIsNotAnAddress() {
         assertFalse(GitRemotes.isRepositoryUrl("NAFATH"));
         assertFalse(GitRemotes.isRepositoryUrl("Checkout Regression"));
         assertFalse(GitRemotes.isRepositoryUrl(""));

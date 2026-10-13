@@ -37,21 +37,21 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 public class SyncWithRemoteAction extends AbstractAnyProjectAction {
-    private static @NotNull Optional<Path> activeProjectPath(final @NotNull AnActionEvent e) {
-        return TestinDataKeys.tree(e).flatMap(SyncWithRemoteAction::activeProjectIn);
+    private static @NotNull Optional<Path> activeTestProjectPath(final @NotNull AnActionEvent e) {
+        return TestinDataKeys.tree(e).flatMap(SyncWithRemoteAction::activeTestProjectIn);
     }
 
-    private static @NotNull Optional<Path> activeProjectIn(final @NotNull SimpleTree tree) {
+    private static @NotNull Optional<Path> activeTestProjectIn(final @NotNull SimpleTree tree) {
         return Optional.ofNullable(tree.getSelectionPath())
-                .flatMap(SyncWithRemoteAction::projectOn)
-                .or(() -> TreeValues.projectPath(tree));
+                .flatMap(SyncWithRemoteAction::testProjectOn)
+                .or(() -> TreeValues.testProjectPath(tree));
     }
 
-    private static @NotNull Optional<Path> projectOn(final @NotNull TreePath selectionPath) {
+    private static @NotNull Optional<Path> testProjectOn(final @NotNull TreePath selectionPath) {
         for (final Object component : selectionPath.getPath()) {
-            final @NotNull Optional<Path> project = TreeValues.valueOf(component, TestProjectNode.class)
+            final @NotNull Optional<Path> testProject = TreeValues.valueOf(component, TestProjectNode.class)
                     .map(TestProjectNode::getPath);
-            if (project.isPresent()) return project;
+            if (testProject.isPresent()) return testProject;
         }
 
         return Optional.empty();
@@ -61,9 +61,9 @@ public class SyncWithRemoteAction extends AbstractAnyProjectAction {
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
         Services.getInstance(project, Guides.class).add(Guide.SHARE_OVER_GIT);
-        activeProjectPath(e).ifPresentOrElse(path -> new SyncWork(project).syncRepository(path), () ->
+        activeTestProjectPath(e).ifPresentOrElse(path -> new SyncWork(project).syncRepository(path), () ->
                 Services.getInstance(project, Notifier.class).softRefuse(project, Bundle.message("git.sync.error.title"),
-                        Bundle.message("git.sync.no.project")));
+                        Bundle.message("git.sync.no.test.project")));
     }
 
     // UC-SHARE-016

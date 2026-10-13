@@ -57,7 +57,7 @@ public class ImportJsonIdeTest extends BasePlatformTestCase {
     }
 
     // UC-SHARE-005, Rule-SHARE-029
-    public void testTheStatusInTheFileIsNotRead() {
+    public void testTheTestCaseStatusInTheFileIsNotRead() {
         assertEquals(TestCaseStatus.PENDING, imported().getStatus());
     }
 

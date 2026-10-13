@@ -317,11 +317,11 @@ public class FailureDialogIdeTest extends AbstractTempRootIdeTest {
             assertTrue("Ctrl+Enter is not bound in the box", Gestures.updated(getProject(), actionFor(typedIn, Shortcuts.InsertNewLine.getKey()), typedIn).isEnabled());
             Gestures.press(getProject(), actionFor(typedIn, Shortcuts.InsertNewLine.getKey()), typedIn);
             assertTrue("Ctrl+Enter did not add a line", box.getText().contains("\n"));
-            assertEquals("Ctrl+Enter recorded the failure", RunItemStatus.PENDING, fixture.statusOf(fixture.testCases().getFirst()));
+            assertEquals("Ctrl+Enter recorded the failure", RunItemStatus.PENDING, fixture.runItemStatusOf(fixture.testCases().getFirst()));
 
             Gestures.press(getProject(), actionFor(box, Shortcuts.Enter.getKey()), box);
 
-            assertEquals("Enter in the box did not record the failure", RunItemStatus.FAILED, fixture.statusOf(fixture.testCases().getFirst()));
+            assertEquals("Enter in the box did not record the failure", RunItemStatus.FAILED, fixture.runItemStatusOf(fixture.testCases().getFirst()));
             assertTrue(fixture.runItemOf(fixture.testCases().getFirst()).getActualResult().startsWith("The dashboard stayed blank"));
         } finally {
             Disposer.dispose(editor);

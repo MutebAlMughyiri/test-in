@@ -66,7 +66,7 @@ public class EditTestRunSaveIdeTest extends AbstractTempRootIdeTest {
         return testRun;
     }
 
-    private @NotNull RunItemStatus statusOf(final @NotNull TestRunNode testRun, final @NotNull UUID testCaseId) {
+    private @NotNull RunItemStatus runItemStatusOf(final @NotNull TestRunNode testRun, final @NotNull UUID testCaseId) {
         return indexedTestRuns().getRunItems(testRun.getPath()).runItemOf(testCaseId).map(RunItem::getStatus).orElse(RunItemStatus.REMOVED);
     }
 
@@ -84,17 +84,17 @@ public class EditTestRunSaveIdeTest extends AbstractTempRootIdeTest {
         indexedTestRuns().changeRunItems(testRun.getPath(), held -> held.runItemOf(JUDGED_WHILE_OPEN).ifPresent(result -> result.setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build()))));
 
         assertTrue("the edit was refused", save(testRun));
-        assertEquals("the run item status that arrived while the dialog was open was replaced", RunItemStatus.FAILED, statusOf(testRun, JUDGED_WHILE_OPEN));
-        assertEquals(RunItemStatus.PENDING, statusOf(testRun, STILL_PENDING));
-        assertEquals("a test case the edit added is not Pending", RunItemStatus.PENDING, statusOf(testRun, ADDED_BY_THE_EDIT));
+        assertEquals("the run item status that arrived while the dialog was open was replaced", RunItemStatus.FAILED, runItemStatusOf(testRun, JUDGED_WHILE_OPEN));
+        assertEquals(RunItemStatus.PENDING, runItemStatusOf(testRun, STILL_PENDING));
+        assertEquals("a test case the edit added is not Pending", RunItemStatus.PENDING, runItemStatusOf(testRun, ADDED_BY_THE_EDIT));
     }
 
-    private void refusedOnceSignedOff(final @NotNull TestRunStatus status) {
+    private void refusedOnceSignedOff(final @NotNull TestRunStatus testRunStatus) {
         final @NotNull TestRunNode testRun = anOpenTestRun();
-        testRun.getMarker().changeStatus(status);
+        testRun.getMarker().changeStatus(testRunStatus);
 
-        assertFalse("a " + status + " test run took an edit", save(testRun));
-        assertEquals("a " + status + " test run changed what it covers", Set.of(JUDGED_WHILE_OPEN, STILL_PENDING), indexedTestRuns().getRunItems(testRun.getPath()).coveredIds());
+        assertFalse("a " + testRunStatus + " test run took an edit", save(testRun));
+        assertEquals("a " + testRunStatus + " test run changed what it covers", Set.of(JUDGED_WHILE_OPEN, STILL_PENDING), indexedTestRuns().getRunItems(testRun.getPath()).coveredIds());
     }
 
     // Rule-TREE-PANEL-009, Rule-TREE-PANEL-073

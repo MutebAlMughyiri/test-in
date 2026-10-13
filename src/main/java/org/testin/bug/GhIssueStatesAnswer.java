@@ -29,7 +29,7 @@ import java.util.stream.StreamSupport;
 
 record GhIssueStatesAnswer(@NotNull Map<Integer, BugIssueState> states, boolean boardRefused, @NotNull String problem) {
     private static final int SIGNED_OUT = 4;
-    private static final @NotNull String NO_PROJECT_SCOPE = "INSUFFICIENT_SCOPES";
+    private static final @NotNull String NO_GITHUB_PROJECT_SCOPE = "INSUFFICIENT_SCOPES";
     private static final @NotNull Map<String, BugIssueState> BY_GITHUB = Map.of(
             "OPEN", BugIssueState.OPEN,
             "COMPLETED", BugIssueState.FIXED,
@@ -45,7 +45,7 @@ record GhIssueStatesAnswer(@NotNull Map<Integer, BugIssueState> states, boolean 
         if (answer.isTimeout()) return failed(Bundle.message("bug.states.timed.out", GitHubCli.TIMEOUT.toSeconds()));
 
         final @NotNull JsonNode said = mapper.readTree(answer.getStdout());
-        if (StreamSupport.stream(said.path("errors").spliterator(), false).anyMatch(error -> NO_PROJECT_SCOPE.equals(error.path("type").asText()))) {
+        if (StreamSupport.stream(said.path("errors").spliterator(), false).anyMatch(error -> NO_GITHUB_PROJECT_SCOPE.equals(error.path("type").asText()))) {
             return new GhIssueStatesAnswer(Map.of(), true, "");
         }
         if (!said.has("data")) return failed(problem(answer, host));

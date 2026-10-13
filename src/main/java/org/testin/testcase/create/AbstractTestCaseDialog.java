@@ -63,7 +63,7 @@ public abstract class AbstractTestCaseDialog extends AbstractFrameworkDialog {
     protected final @NotNull GroupSection groupSection;
     protected final @NotNull StepsSection stepsSection;
     protected final @NotNull OrderSection orderSection;
-    protected final @NotNull StatusSection statusSection;
+    protected final @NotNull TestCaseStatusSection testCaseStatusSection;
     protected final @NotNull ReferenceSection referenceSection;
     protected final @NotNull Disposable dialogDisposable;
     protected final @NotNull Map<TestCaseSection, StatusBarItem[]> statusBarMapping;
@@ -94,7 +94,7 @@ public abstract class AbstractTestCaseDialog extends AbstractFrameworkDialog {
         this.prioritySection = new PrioritySection();
         this.groupSection = new GroupSection(project);
         this.orderSection = new OrderSection(project);
-        this.statusSection = new StatusSection();
+        this.testCaseStatusSection = new TestCaseStatusSection();
         this.referenceSection = new ReferenceSection(project);
 
         this.cachedSections = Stream.concat(

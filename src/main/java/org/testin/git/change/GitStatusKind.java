@@ -14,25 +14,38 @@
  * limitations under the License.
  */
 
-package org.testin.model.status;
+package org.testin.git.change;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
-@Getter
+import java.util.function.Function;
+
 @AllArgsConstructor
-public enum NoStatus implements NodeStatus {
-    NONE(
-            "",
-            "",
-            "",
-            true
+public enum GitStatusKind {
+    ADDED(
+            ChangeSubject::getCreated
+    ),
+
+    MODIFIED(
+            ChangeSubject::getChanged
+    ),
+
+    DELETED(
+            ChangeSubject::getRemoved
     );
 
-    private final @NotNull String label;
-    private final @NotNull String buttonName;
-    private final @NotNull String buttonDescription;
+    private final @NotNull Function<ChangeSubject, ChangeType> change;
 
-    private final boolean active;
+    public @NotNull ChangeType changeOf(final @NotNull ChangeSubject subject) {
+        return change.apply(subject);
+    }
+
+    public boolean hasBefore() {
+        return this != ADDED;
+    }
+
+    public boolean hasAfter() {
+        return this != DELETED;
+    }
 }

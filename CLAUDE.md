@@ -104,10 +104,11 @@ silently has no effect costs more than the setting it was meant to hold.
   keys read like code — `@State(name = "testin.settings.AppSettingsState")`,
   `"testin.pageSize"` — and log lines contain ordinary words like `Setting`, so
   rewrite the qualified form rather than the bare word, then diff every string
-  literal in `src` before and after. On Windows a case-only package rename also
-  needs `--no-build-cache`: Gradle restores the pre-rename casing and javac
-  verifies classpath entries case-sensitively, which surfaces as a
-  package-private class being invisible to a test in its own package.
+  literal in `src` before and after. On Windows a package rename that changes
+  only capitals also needs `--no-build-cache`: Gradle restores the pre-rename
+  capitals and javac compares classpath entries capital for capital, which
+  surfaces as a package-private class being invisible to a test in its own
+  package.
 - **A method declaration is one line.** No matter how many parameters it has or
   how long the annotations make it, the signature does not wrap. A signature is
   one thing to read, and split over four lines it is four things to reassemble
@@ -150,7 +151,13 @@ silently has no effect costs more than the setting it was meant to hold.
   same holds for the documentation and for issues - *test case id*, never *case
   id*. Nothing Testin names is abbreviated: `testCase`, never `tc`;
   `testProject`, never `tp`; `button`, never `btn`. **Abbreviations** below
-  lists the Java idioms and known acronyms that stay. Read the
+  lists the Java idioms and known acronyms that stay. No business word stands
+  bare either (#431): `testProject`, never `project`, unless it is IntelliJ's
+  `Project`; `runItem`, never `item`; `testRun`, never `run` as a noun; and a
+  status says which one - `testCaseStatus`, `runItemStatus`, `testRunStatus`,
+  `executionStatus`, `nodeStatus`. A model field keeps its plain name
+  (`TestCase.status`), because its class already says whose it is and its name
+  is the key on disk. `NamesSayTheBusinessWordTest` holds the type names to it. Read the
   `names-say-the-business` skill under `.claude/skills/` before naming or
   renaming anything.
 - **A class is named by its import, never by its package path.** `Optional`,

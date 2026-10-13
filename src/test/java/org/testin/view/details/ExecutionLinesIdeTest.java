@@ -39,8 +39,8 @@ public class ExecutionLinesIdeTest extends AbstractViewPanelIdeTest {
 
     private TestCase testCase;
 
-    private static @NotNull RunItemExecution execution(final @NotNull RunItemStatus status, final int invocation, final int retry, final boolean retried, final @NotNull String actual) {
-        return RunItemExecution.builder().status(status).invocation(invocation).retry(retry).retried(retried).actualResult(actual).build();
+    private static @NotNull RunItemExecution execution(final @NotNull RunItemStatus runItemStatus, final int invocation, final int retry, final boolean retried, final @NotNull String actual) {
+        return RunItemExecution.builder().status(runItemStatus).invocation(invocation).retry(retry).retried(retried).actualResult(actual).build();
     }
 
     private @NotNull RunItem invokedThreeTimes() {
@@ -114,7 +114,7 @@ public class ExecutionLinesIdeTest extends AbstractViewPanelIdeTest {
     }
 
     // Rule-VIEW-PANEL-121, Rule-TREE-PANEL-009
-    public void testATestRunThatTakesNoMoreStatusesRefusesBoth() {
+    public void testATestRunThatTakesNoMoreRunItemStatusesRefusesBoth() {
         final @NotNull TestRunNode testRun = aTestRun(List.of(invokedThreeTimes()));
         theTestRuns().changeTestRunMarker(testRun.getPath(), marker -> marker.setStatus(TestRunStatus.COMMITTED));
 

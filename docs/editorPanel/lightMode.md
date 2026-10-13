@@ -74,7 +74,7 @@ start with.
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────┐
-│  [ >]  [pin]  [view]            Cycle-2                      6 cases       │
+│  [ >]  [pin]  [view]            Cycle-2                      6 test cases  │
 ├────────────────────────────────────────────────────────────────────────────┤
 │                                                                            │
 │            Press the play button to start test execution                   │
@@ -371,7 +371,7 @@ content.
 **Hiding the run item status buttons costs nothing, because the status bar
 still names the keys.** That is what makes the smallest window usable, rather
 than merely small. The buttons go. The row that says `P` Passed is still there.
-Nobody hides the buttons and thinks the window stopped working. This is also the one case
+Nobody hides the buttons and thinks the window stopped working. This is also the one place
 where the tail of that row matters, because no button is left to teach those
 three keys.
 

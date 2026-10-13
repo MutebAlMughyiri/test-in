@@ -33,8 +33,8 @@ public record BugIssueState(@NotNull String label, @NotNull Color color, @NotNul
     static final @NotNull BugIssueState NOT_PLANNED = new BugIssueState(Bundle.message("bug.state.not.planned"), JBColor.GRAY, "");
     static final @NotNull BugIssueState DUPLICATE = new BugIssueState(Bundle.message("bug.state.not.planned"), JBColor.GRAY, Bundle.message("bug.state.duplicate.tooltip"));
 
-    static @NotNull BugIssueState onBoard(final @NotNull String column, final @NotNull String colorName, final @NotNull String project) {
-        return new BugIssueState(column, BoardColor.of(colorName), Bundle.message("bug.state.board.tooltip", project));
+    static @NotNull BugIssueState onBoard(final @NotNull String column, final @NotNull String colorName, final @NotNull String gitHubProject) {
+        return new BugIssueState(column, BoardColor.of(colorName), Bundle.message("bug.state.board.tooltip", gitHubProject));
     }
 
     // UC-VIEW-PANEL-005, Rule-VIEW-PANEL-091

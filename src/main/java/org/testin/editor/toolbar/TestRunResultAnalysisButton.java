@@ -37,12 +37,12 @@ public class TestRunResultAnalysisButton extends AbstractIconButton implements T
 
     // UC-EDITOR-PANEL-045, Rule-EDITOR-PANEL-189
     public void updateEnabledState() {
-        final @NotNull TestRunStatus status = editor.getParent().getMarker().getStatus();
-        final boolean shown = status == TestRunStatus.COMPLETED || status.isRecord();
+        final @NotNull TestRunStatus testRunStatus = editor.getParent().getMarker().getStatus();
+        final boolean shown = testRunStatus == TestRunStatus.COMPLETED || testRunStatus.isRecord();
 
         setEnabled(shown);
         describe(shown
                 ? Bundle.message("toolbar.analysis")
-                : Bundle.message("toolbar.analysis.disabled", status.getLabel()));
+                : Bundle.message("toolbar.analysis.disabled", testRunStatus.getLabel()));
     }
 }

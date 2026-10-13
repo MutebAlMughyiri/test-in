@@ -22,16 +22,16 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.treeStructure.SimpleTree;
 import org.jetbrains.annotations.NotNull;
-import org.testin.actions.AbstractBoundProjectAction;
+import org.testin.actions.AbstractBoundTestProjectAction;
 import org.testin.actions.GrayWithReason;
 import org.testin.explorer.tree.TreeValues;
 import org.testin.model.node.TestRunNode;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
 
-public class SetTestRunStatusAction extends AbstractBoundProjectAction {
+public class SetTestRunStatusAction extends AbstractBoundTestProjectAction {
     final @NotNull SimpleTree tree;
-    private final @NotNull TestRunStatusChange statusChange = Services.getInstance(project, TestRunStatusChange.class);
+    private final @NotNull TestRunStatusChange testRunStatusChange = Services.getInstance(project, TestRunStatusChange.class);
 
     public SetTestRunStatusAction(final @NotNull Project project, final @NotNull SimpleTree tree) {
         super(project, Bundle.message("test.run.set.status.text"), Bundle.message("test.run.set.status.description"), AllIcons.Nodes.Test);
@@ -41,12 +41,12 @@ public class SetTestRunStatusAction extends AbstractBoundProjectAction {
     // UC-TREE-PANEL-020
     @Override
     public void actionPerformed(final @NotNull AnActionEvent e) {
-        TreeValues.selected(tree, TestRunNode.class).ifPresent(this::askForStatus);
+        TreeValues.selected(tree, TestRunNode.class).ifPresent(this::askForTestRunStatus);
     }
 
-    private void askForStatus(final @NotNull TestRunNode testRunNode) {
-        new TestRunStatusMenu(project, testRunNode.getMarker().getStatus(), selectedStatus ->
-                statusChange.apply(testRunNode, selectedStatus)).show();
+    private void askForTestRunStatus(final @NotNull TestRunNode testRunNode) {
+        new TestRunStatusMenu(project, testRunNode.getMarker().getStatus(), selectedTestRunStatus ->
+                testRunStatusChange.apply(testRunNode, selectedTestRunStatus)).show();
     }
 
     // UC-TREE-PANEL-020, Rule-TREE-PANEL-067

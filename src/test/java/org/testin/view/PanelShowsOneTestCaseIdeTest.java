@@ -46,7 +46,7 @@ import static org.testin.view.Drawn.holds;
 
 public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
 
-    private static final @NotNull String RUN_BAND = Bundle.message("details.band.run").toUpperCase(Locale.ROOT);
+    private static final @NotNull String RUN_ITEM_BAND = Bundle.message("details.band.run.item").toUpperCase(Locale.ROOT);
 
     private static @NotNull TestCase handedCopy(final @NotNull TestCase testCase, final @NotNull String description) {
         final @NotNull TestCase copy = TestCase.builder().id(testCase.getId()).description(description).build();
@@ -169,10 +169,10 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
         final @NotNull TestRunNode testRun = aTestRun(List.of(RunItem.builder().id(testCase.getId()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build()));
 
         view.getPanel().show(List.of(testCase), treePathOf(testRun));
-        assertTrue("opened from the test run, the panel drew no test run band: " + details(), details().contains(RUN_BAND));
+        assertTrue("opened from the test run, the panel drew no test run band: " + details(), details().contains(RUN_ITEM_BAND));
 
         view.getPanel().show(List.of(testCase), testCase.getParent().treePath());
-        assertFalse("opened from the test set, the panel drew the test run band: " + details(), details().contains(RUN_BAND));
+        assertFalse("opened from the test set, the panel drew the test run band: " + details(), details().contains(RUN_ITEM_BAND));
     }
 
     // Rule-VIEW-PANEL-018
@@ -199,11 +199,11 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
         final @NotNull TestRunNode testRun = aTestRun(List.of(RunItem.builder().id(handed.getFirst().getId()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build()));
 
         view.getPanel().show(List.of(handed.get(1)), treePathOf(testRun));
-        assertFalse("the test run band was drawn for a test case the test run does not hold: " + details(), details().contains(RUN_BAND));
+        assertFalse("the test run band was drawn for a test case the test run does not hold: " + details(), details().contains(RUN_ITEM_BAND));
         assertTrue("the test case the test run does not hold was not drawn on its own: " + details(), holds(details(), "Log in with a locked user"));
 
         view.getPanel().show(List.of(handed.getFirst()), treePathOf(testRun));
-        assertTrue("the test run band was not drawn for a test case the test run holds: " + details(), details().contains(RUN_BAND));
+        assertTrue("the test run band was not drawn for a test case the test run holds: " + details(), details().contains(RUN_ITEM_BAND));
     }
 
     // Rule-VIEW-PANEL-030
@@ -227,7 +227,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
     }
 
     // Rule-VIEW-PANEL-005
-    public void testAStatusSetInTheEditorShowsInThePanelAtOnce() {
+    public void testARunItemStatusSetInTheEditorShowsInThePanelAtOnce() {
         final @NotNull TestCase testCase = threeTestCases().getFirst();
         final @NotNull TestRunNode testRun = aTestRun(List.of(EditorFixtures.pending(testCase)));
         final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());

@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.git.GitStatusLines;
 import org.testin.git.GitRepositoryService;
-import org.testin.git.StatusEntry;
+import org.testin.git.GitStatusEntry;
 import org.testin.indexer.TestCases;
 import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
@@ -52,26 +52,26 @@ public final class PendingChangeReader {
 
         final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
 
-        return toDiffs(repositories.status(root), root,
+        return toDiffs(repositories.gitStatus(root), root,
                 Services.getInstance(project, JsonCodec.class),
                 paths -> repositories.contents(root, "HEAD", paths),
                 testCases::findTestCase);
     }
 
     // UC-SHARE-010
-    public static @NotNull List<PendingChange> toDiffs(final @NotNull List<String> statusLines, final @NotNull Path repositoryRoot, final @NotNull JsonCodec mapper, final @NotNull Function<List<String>, Map<String, String>> committedContents, final @NotNull Function<UUID, Optional<TestCase>> testCases) {
+    public static @NotNull List<PendingChange> toDiffs(final @NotNull List<String> gitStatusLines, final @NotNull Path repositoryRoot, final @NotNull JsonCodec mapper, final @NotNull Function<List<String>, Map<String, String>> committedContents, final @NotNull Function<UUID, Optional<TestCase>> testCases) {
         final @NotNull Path root = repositoryRoot.toAbsolutePath().normalize();
         final @NotNull List<PendingChange> result = new ArrayList<>();
 
-        final @NotNull List<StatusEntry> listed = GitStatusLines.parseStatus(statusLines).stream()
+        final @NotNull List<GitStatusEntry> listed = GitStatusLines.parseGitStatus(gitStatusLines).stream()
                 .filter(entry -> isListed(root, entry))
                 .toList();
         final @NotNull Map<String, String> committed = committedContents.apply(listed.stream()
                 .filter(entry -> entry.type().hasBefore())
-                .map(StatusEntry::path)
+                .map(GitStatusEntry::path)
                 .toList());
 
-        for (final StatusEntry entry : listed) {
+        for (final GitStatusEntry entry : listed) {
             final @NotNull Path relativePath = Path.of(entry.path());
 
             try {
@@ -91,7 +91,7 @@ public final class PendingChangeReader {
         return result;
     }
 
-    private static boolean isListed(final @NotNull Path root, final @NotNull StatusEntry entry) {
+    private static boolean isListed(final @NotNull Path root, final @NotNull GitStatusEntry entry) {
         final @NotNull Path relativePath = Path.of(entry.path());
         if (FileKind.of(relativePath, folderKindOf(root, relativePath)) == FileKind.SCREENSHOT) return false;
 
@@ -110,7 +110,7 @@ public final class PendingChangeReader {
         return isTestRun ? NodeType.TEST_RUN : NodeType.TEST_RUNS_FOLDER;
     }
 
-    private static @NotNull String workingContent(final @NotNull Path root, final @NotNull Path relativePath, final @NotNull StatusEntry entry) {
+    private static @NotNull String workingContent(final @NotNull Path root, final @NotNull Path relativePath, final @NotNull GitStatusEntry entry) {
         if (!entry.type().hasAfter()) return "";
 
         final @NotNull Path file = root.resolve(relativePath);

@@ -29,7 +29,7 @@ import org.testin.model.node.TestRunsFolderNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
 import org.testin.model.status.PackageStatus;
-import org.testin.model.status.ProjectStatus;
+import org.testin.model.status.TestProjectStatus;
 import org.testin.model.status.TestRunStatus;
 import org.testin.model.status.TestSetStatus;
 import org.testin.notifications.Refused;
@@ -50,9 +50,9 @@ public class TreeNodeKindsTest {
                 new TestSetPackageNode(), new TestRunPackageNode(), new TestSetNode(), new TestRunNode());
     }
 
-    private static @NotNull TestRunNode testRunIn(final @NotNull TestRunStatus status) {
+    private static @NotNull TestRunNode testRunIn(final @NotNull TestRunStatus testRunStatus) {
         final @NotNull TestRunNode testRun = new TestRunNode();
-        testRun.getMarker().changeStatus(status);
+        testRun.getMarker().changeStatus(testRunStatus);
         return testRun;
     }
 
@@ -142,14 +142,14 @@ public class TreeNodeKindsTest {
     // Rule-TREE-PANEL-094
     @Test
     public void aSignedOffTestRunIsRemovedButNotRenamedNumberedOrDragged() {
-        for (final TestRunStatus status : TestRunStatus.values()) {
-            final @NotNull TestRunNode testRun = testRunIn(status);
-            final boolean signedOff = status.isTerminal();
+        for (final TestRunStatus testRunStatus : TestRunStatus.values()) {
+            final @NotNull TestRunNode testRun = testRunIn(testRunStatus);
+            final boolean signedOff = testRunStatus.isTerminal();
 
-            assertTrue(testRun.isRemovable(), "a " + status + " test run cannot be removed");
-            assertEquals(testRun.isRenamable(), !signedOff, "a " + status + " test run");
-            assertEquals(testRun.isOrderable(), !signedOff, "a " + status + " test run");
-            assertEquals(testRun.isTransferable(), !signedOff, "a " + status + " test run");
+            assertTrue(testRun.isRemovable(), "a " + testRunStatus + " test run cannot be removed");
+            assertEquals(testRun.isRenamable(), !signedOff, "a " + testRunStatus + " test run");
+            assertEquals(testRun.isOrderable(), !signedOff, "a " + testRunStatus + " test run");
+            assertEquals(testRun.isTransferable(), !signedOff, "a " + testRunStatus + " test run");
         }
     }
 
@@ -158,8 +158,8 @@ public class TreeNodeKindsTest {
     public void aNodeSaysItsStatusOnlyWhenItIsNotActive() {
         final @NotNull TestProjectNode testProject = new TestProjectNode();
         assertEquals(testProject.statusShownInTree(), "", "an active test project says Active");
-        testProject.getMarker().setStatus(ProjectStatus.INACTIVE);
-        assertEquals(testProject.statusShownInTree(), ProjectStatus.INACTIVE.getLabel());
+        testProject.getMarker().setStatus(TestProjectStatus.INACTIVE);
+        assertEquals(testProject.statusShownInTree(), TestProjectStatus.INACTIVE.getLabel());
 
         final @NotNull TestSetNode testSet = new TestSetNode();
         assertEquals(testSet.statusShownInTree(), "", "an active test set says Active");
@@ -173,8 +173,8 @@ public class TreeNodeKindsTest {
 
         assertEquals(new TestCasesFolderNode().statusShownInTree(), "", "a container has no status to say");
 
-        for (final TestRunStatus status : TestRunStatus.values()) {
-            assertEquals(testRunIn(status).statusShownInTree(), status.getLabel(), "a test run does not always say its status");
+        for (final TestRunStatus testRunStatus : TestRunStatus.values()) {
+            assertEquals(testRunIn(testRunStatus).statusShownInTree(), testRunStatus.getLabel(), "a test run does not always say its status");
         }
     }
 

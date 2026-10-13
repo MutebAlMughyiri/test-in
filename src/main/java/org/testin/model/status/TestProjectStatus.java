@@ -23,18 +23,18 @@ import org.testin.util.Bundle;
 
 @Getter
 @AllArgsConstructor
-public enum ProjectStatus implements NodeStatus {
+public enum TestProjectStatus implements NodeStatus {
     ACTIVE(
-            Bundle.message("status.project.active"),
-            Bundle.message("status.project.active.action"),
-            Bundle.message("status.project.active.description"),
+            Bundle.message("status.test.project.active"),
+            Bundle.message("status.test.project.active.action"),
+            Bundle.message("status.test.project.active.description"),
             true
     ),
 
     INACTIVE(
-            Bundle.message("status.project.inactive"),
-            Bundle.message("status.project.inactive.action"),
-            Bundle.message("status.project.inactive.description"),
+            Bundle.message("status.test.project.inactive"),
+            Bundle.message("status.test.project.inactive.action"),
+            Bundle.message("status.test.project.inactive.description"),
             false
     );
 

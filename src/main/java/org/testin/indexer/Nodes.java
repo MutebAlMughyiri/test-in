@@ -64,8 +64,8 @@ public final class Nodes {
         }
     }
 
-    private @NotNull ProjectIndexer indexer() {
-        return Services.getInstance(project, ProjectIndexer.class);
+    private @NotNull TestProjectIndexer indexer() {
+        return Services.getInstance(project, TestProjectIndexer.class);
     }
 
     private @NotNull IndexerDataStore store() {
@@ -119,7 +119,7 @@ public final class Nodes {
     }
 
     private void removeFile(final @NotNull Path path, final @NotNull BiConsumer<IndexerDataStore, Path> cacheUpdate, final @NotNull Consumer<@NotNull Boolean> onRemoved) {
-        final @NotNull ProjectIndexer indexer = indexer();
+        final @NotNull TestProjectIndexer indexer = indexer();
         indexer.getNodeFiles().remove(path, () -> cacheUpdate.accept(indexer.getStore(), path), removed -> {
             onRemoved.accept(removed);
             if (removed) indexer.announce(path);
@@ -127,7 +127,7 @@ public final class Nodes {
     }
 
     public void moveNode(final @NotNull Path oldPath, final @NotNull Path newPath, final @NotNull Consumer<@NotNull Boolean> onFinished) {
-        final @NotNull ProjectIndexer indexer = indexer();
+        final @NotNull TestProjectIndexer indexer = indexer();
         indexer.getNodeFiles().move(oldPath, newPath, moved -> {
             onFinished.accept(moved);
             if (!moved) return;
@@ -138,7 +138,7 @@ public final class Nodes {
     }
 
     public void copyNodes(final @NotNull List<Path> sourcePaths, final @NotNull Path targetPath, final @NotNull IntConsumer onComplete) {
-        final @NotNull ProjectIndexer indexer = indexer();
+        final @NotNull TestProjectIndexer indexer = indexer();
         indexer.getNodeFiles().copy(sourcePaths, targetPath, copied -> {
             onComplete.accept(copied);
             if (copied > 0) indexer.announceChildrenOf(targetPath);
@@ -159,7 +159,7 @@ public final class Nodes {
             else lost.add(one.getValue());
         }
 
-        final @NotNull ProjectIndexer indexer = indexer();
+        final @NotNull TestProjectIndexer indexer = indexer();
         back.forEach(this::refreshDirectory);
         back.stream().flatMap(original -> indexer.testProjectHolding(original).stream()).distinct().forEach(indexer.getScanCoordinator()::rescanExclusively);
         back.forEach(indexer::announce);
@@ -209,13 +209,13 @@ public final class Nodes {
     }
 
     // UC-TREE-PANEL-018, Rule-TREE-PANEL-062, Rule-INTERNAL-117
-    public boolean mark(final @NotNull AbstractNode node, final @NotNull NodeStatus status, final @NotNull String tester) {
+    public boolean mark(final @NotNull AbstractNode node, final @NotNull NodeStatus nodeStatus, final @NotNull String tester) {
         final @NotNull Marker marker = node.getMarker();
         final @NotNull NodeStatus before = marker.status();
         final @NotNull String updatedByBefore = marker.getUpdatedBy();
         final @NotNull ZonedDateTime updatedAtBefore = marker.getUpdatedAt();
 
-        marker.applyStatus(status);
+        marker.applyStatus(nodeStatus);
         marker.touch(tester);
 
         if (persistMarker(node)) return true;
@@ -244,7 +244,7 @@ public final class Nodes {
 
     // UC-TREE-PANEL-011, Rule-TREE-PANEL-133
     public void renameNode(final @NotNull Path oldPath, final @NotNull Path newPath, final @NotNull Runnable onFinished, final @NotNull Runnable onFailed) {
-        final @NotNull ProjectIndexer indexer = indexer();
+        final @NotNull TestProjectIndexer indexer = indexer();
         indexer.getNodeFiles().rename(oldPath, newPath, () -> {
             onFinished.run();
             indexer.announce(newPath);

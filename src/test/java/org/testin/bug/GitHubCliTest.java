@@ -180,7 +180,7 @@ public class GitHubCliTest {
 
     // Rule-VIEW-PANEL-094
     @Test
-    public void theBoardIsAskedForByItsStatusField() {
+    public void theBoardIsAskedForByItsGitHubStatusField() {
         final List<String> arguments = GitHubCli.stateArguments(new BugRepository("github.com", "mtb550", "test-03"), List.of(14), true);
 
         assertTrue(arguments.get(5).contains("projectItems") && arguments.get(5).contains("$field: String!"));

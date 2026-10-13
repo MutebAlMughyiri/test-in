@@ -31,8 +31,8 @@ import static org.testng.Assert.assertTrue;
 
 public class TestRunSummaryTest {
 
-    private static @NotNull RunItem runItem(final RunItemStatus status) {
-        return RunItem.builder().id(UUID.randomUUID()).executions(List.of(RunItemExecution.builder().status(status).build())).build();
+    private static @NotNull RunItem runItem(final RunItemStatus runItemStatus) {
+        return RunItem.builder().id(UUID.randomUUID()).executions(List.of(RunItemExecution.builder().status(runItemStatus).build())).build();
     }
 
     private static @NotNull RunItem executedBy(final String tester) {
@@ -93,7 +93,7 @@ public class TestRunSummaryTest {
     }
 
     @Test
-    public void eachStatusIsCountedUnderItsOwnName() {
+    public void eachRunItemStatusIsCountedUnderItsOwnName() {
         final TestRunSummary summary = TestRunSummary.of(List.of(
                 runItem(RunItemStatus.PASSED),
                 runItem(RunItemStatus.PASSED),

@@ -27,10 +27,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class WatchedProjectsIdeTest extends AbstractTempRootIdeTest {
+public class WatchedTestProjectsIdeTest extends AbstractTempRootIdeTest {
 
-    private @NotNull ProjectIndexer indexer() {
-        return Services.getInstance(getProject(), ProjectIndexer.class);
+    private @NotNull TestProjectIndexer indexer() {
+        return Services.getInstance(getProject(), TestProjectIndexer.class);
     }
 
     private @NotNull Nodes nodes() {
@@ -47,27 +47,27 @@ public class WatchedProjectsIdeTest extends AbstractTempRootIdeTest {
             throw new AssertionError("could not make the folder", ex);
         }
 
-        indexer().rescanChangedProject(notes, new EmptyProgressIndicator());
+        indexer().rescanChangedTestProject(notes, new EmptyProgressIndicator());
 
         assertFalse("a folder with no .testproject marker became a test project", nodes().nodeExists(notes));
     }
 
     // Rule-INTERNAL-016
     public void testATestProjectIsReadAgainAndForgottenOnceItsMarkerIsGone() {
-        final Path project = root.resolve("NAFATH");
+        final Path testProjectPath = root.resolve("NAFATH");
         WriteAction.runAndWait(() -> nodes().addTestProject(
-                Services.getInstance(getProject(), NodeMapper.class).setTestProjectNode(project)));
+                Services.getInstance(getProject(), NodeMapper.class).setTestProjectNode(testProjectPath)));
 
-        indexer().rescanChangedProject(project, new EmptyProgressIndicator());
-        assertTrue("a test project with its marker was not read again", nodes().nodeExists(project));
+        indexer().rescanChangedTestProject(testProjectPath, new EmptyProgressIndicator());
+        assertTrue("a test project with its marker was not read again", nodes().nodeExists(testProjectPath));
 
         try {
-            Files.delete(project.resolve(NodeType.TEST_PROJECT.getMarker()));
+            Files.delete(testProjectPath.resolve(NodeType.TEST_PROJECT.getMarker()));
         } catch (final IOException ex) {
             throw new AssertionError("could not remove the marker", ex);
         }
 
-        indexer().rescanChangedProject(project, new EmptyProgressIndicator());
-        assertFalse("a folder that is no longer a test project stayed in the index", nodes().nodeExists(project));
+        indexer().rescanChangedTestProject(testProjectPath, new EmptyProgressIndicator());
+        assertFalse("a folder that is no longer a test project stayed in the index", nodes().nodeExists(testProjectPath));
     }
 }

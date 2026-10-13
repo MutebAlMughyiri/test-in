@@ -78,8 +78,8 @@ public final class Badges {
     }
 
     // Rule-EDITOR-PANEL-294
-    public static @NotNull Badge createTestCaseStatusBadge(final @NotNull TestCaseStatus status) {
-        return new Pill(status.getLabel(), FixedColors.ORANGE);
+    public static @NotNull Badge createTestCaseStatusBadge(final @NotNull TestCaseStatus testCaseStatus) {
+        return new Pill(testCaseStatus.getLabel(), FixedColors.ORANGE);
     }
 
     public static @NotNull Badge createExecutionStatusBadge(final @NotNull ExecutionStatusBadge executionStatus) {

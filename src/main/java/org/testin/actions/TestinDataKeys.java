@@ -39,7 +39,7 @@ public final class TestinDataKeys {
 
     public static final @NotNull DataKey<TestinEditor> EDITOR = DataKey.create("testin.editor");
 
-    public static final @NotNull DataKey<List<TestCase>> SELECTED_TEST_CASES = DataKey.create("testin.selectedCases");
+    public static final @NotNull DataKey<List<TestCase>> SELECTED_TEST_CASES = DataKey.create("testin.selectedTestCases");
 
     public static void from(final @NotNull DataSink sink, final @NotNull TestinEditor editor, final @NotNull List<TestCase> selected) {
         sink.set(EDITOR, editor);

@@ -69,8 +69,8 @@ public class StopTest {
 
         final Stop stop = registry.stopping(List.of(TWO));
 
-        assertEquals(registry.statusOf(ONE), ExecutionStatus.PASSED, "a stop took back a run item status that had already landed");
-        assertFalse(stop.testCases().contains(ONE), "a finished test case was swept up as a casemate");
+        assertEquals(registry.executionStatusOf(ONE), ExecutionStatus.PASSED, "a stop took back a run item status that had already landed");
+        assertFalse(stop.testCases().contains(ONE), "a finished test case was swept up with the other test case in its configuration");
         assertFalse(registry.isStopped(ONE), "a finished test case was recorded as stopped");
     }
 
@@ -89,7 +89,7 @@ public class StopTest {
 
         assertEquals(Set.copyOf(registry.ended("cycle 1")), Set.of(ONE, TWO));
         assertFalse(registry.isRunning(ONE), "a test case was still running after its process ended");
-        assertEquals(registry.statusOf(ONE), ExecutionStatus.IDLE, "a test case left behind by a dead process still showed a status");
+        assertEquals(registry.executionStatusOf(ONE), ExecutionStatus.IDLE, "a test case left behind by a dead process still showed a status");
     }
 
     @Test

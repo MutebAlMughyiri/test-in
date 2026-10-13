@@ -62,7 +62,7 @@ record PasteNodeWork(@NotNull Project project, @NotNull TreeTransferHandler tran
             final @NotNull String verb = move ? Bundle.message("transfer.move") : Bundle.message("transfer.copy");
             final @NotNull String what = nodes.size() == 1
                     ? "'" + nodes.getFirst().getName() + "'"
-                    : Bundle.message("transfer.items", String.valueOf(nodes.size()));
+                    : Bundle.message("transfer.nodes", String.valueOf(nodes.size()));
             final @NotNull Path fromPath = nodes.getFirst().getPath().getParent();
 
             new ConfirmDialog(project, Bundle.message("paste.title"),

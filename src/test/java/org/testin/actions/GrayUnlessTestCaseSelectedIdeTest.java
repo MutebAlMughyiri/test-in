@@ -65,7 +65,7 @@ public class GrayUnlessTestCaseSelectedIdeTest extends AbstractTempRootIdeTest {
             final @NotNull String name = action.getClass().getSimpleName();
             final @NotNull AnActionEvent nothing = updated(action, editor, List.of());
             assertFalse(name + " works with no test case selected", nothing.getPresentation().isEnabled());
-            assertEquals(name + " does not say why it is gray", Bundle.message("action.select.case.description"), nothing.getPresentation().getDescription());
+            assertEquals(name + " does not say why it is gray", Bundle.message("action.select.test.case.description"), nothing.getPresentation().getDescription());
 
             assertTrue(name + " stays gray with a test case selected", updated(action, editor, List.of(testCase)).getPresentation().isEnabled());
         }
@@ -81,6 +81,6 @@ public class GrayUnlessTestCaseSelectedIdeTest extends AbstractTempRootIdeTest {
         ActionUtil.updateAction(update, e);
 
         assertFalse("Update works with no editor to update the test case in", e.getPresentation().isEnabled());
-        assertEquals("Update does not say why it is gray", Bundle.message("action.select.case.description"), e.getPresentation().getDescription());
+        assertEquals("Update does not say why it is gray", Bundle.message("action.select.test.case.description"), e.getPresentation().getDescription());
     }
 }

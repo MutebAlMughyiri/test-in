@@ -39,7 +39,7 @@ import org.testin.testcase.update.bulk.ModuleBulkSectionDialog;
 import org.testin.testcase.update.bulk.PreConditionsBulkSectionDialog;
 import org.testin.testcase.update.bulk.PriorityBulkSectionDialog;
 import org.testin.testcase.update.bulk.ReferenceBulkSectionDialog;
-import org.testin.testcase.update.bulk.StatusBulkSectionDialog;
+import org.testin.testcase.update.bulk.TestCaseStatusBulkSectionDialog;
 import org.testin.testcase.update.bulk.StepsBulkSectionDialog;
 import org.testin.testcase.update.bulk.TestDataBulkSectionDialog;
 import org.testin.util.Bundle;
@@ -179,8 +179,8 @@ public enum UpdateTestCaseFields implements MenuItem {
             CopyChoice.STATUS.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_STATUS,
             Done.UPDATED,
-            (project, selectedTestCases, updatedTestCases) -> new StatusBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
-            AbstractTestCaseDialog::getStatusSection,
+            (project, selectedTestCases, updatedTestCases) -> new TestCaseStatusBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
+            AbstractTestCaseDialog::getTestCaseStatusSection,
             ImmutableList.of()
     );
 

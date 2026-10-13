@@ -60,7 +60,7 @@ public final class BugHistory {
     // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-100, Rule-VIEW-PANEL-106, Rule-VIEW-PANEL-107
     public static @NotNull History addTo(final @NotNull History history, final @NotNull Project project, final @NotNull TestCaseFile file, final @NotNull UUID testCaseId, final @NotNull Map<Path, String> runItemsNow) {
         final @NotNull Path testProjectPath = file.testProject();
-        final @NotNull Map<String, String> now = inProject(testProjectPath, FileKind.RUN_ITEM.fileName(testCaseId), runItemsNow);
+        final @NotNull Map<String, String> now = inTestProject(testProjectPath, FileKind.RUN_ITEM.fileName(testCaseId), runItemsNow);
         final @NotNull JsonCodec mapper = Services.getInstance(project, JsonCodec.class);
         final @NotNull GitRepositoryService git = new GitRepositoryService(project);
         if (git.isNotRepository(testProjectPath))
@@ -86,7 +86,7 @@ public final class BugHistory {
         return ":(glob)" + folder.getFolderName() + "/**/" + kind.fileName(testCaseId);
     }
 
-    private static @NotNull Map<String, String> inProject(final @NotNull Path testProjectPath, final @NotNull String runItem, final @NotNull Map<Path, String> runItemsNow) {
+    private static @NotNull Map<String, String> inTestProject(final @NotNull Path testProjectPath, final @NotNull String runItem, final @NotNull Map<Path, String> runItemsNow) {
         return runItemsNow.entrySet().stream()
                 .filter(testRun -> testRun.getKey().startsWith(testProjectPath))
                 .collect(Collectors.toMap(testRun -> testProjectPath.relativize(testRun.getKey().resolve(runItem)).toString().replace('\\', '/'), Map.Entry::getValue));

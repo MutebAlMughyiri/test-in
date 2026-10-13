@@ -81,9 +81,9 @@ public class TreeContextMenu extends DefaultActionGroup {
         add(Declared.forMenu("Testin.ShowNodeDetails"));
     }
 
-    private static @NotNull DefaultActionGroup actionsSubMenu(final @NotNull List<? extends AnAction> statusGroups, final @NotNull List<? extends AnAction> rest) {
+    private static @NotNull DefaultActionGroup actionsSubMenu(final @NotNull List<? extends AnAction> nodeStatusGroups, final @NotNull List<? extends AnAction> rest) {
         final @NotNull DefaultActionGroup group = ActionsMenu.group();
-        statusGroups.forEach(group::add);
+        nodeStatusGroups.forEach(group::add);
         rest.forEach(group::add);
         return group;
     }

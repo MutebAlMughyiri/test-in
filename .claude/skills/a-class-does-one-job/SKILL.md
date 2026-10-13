@@ -11,7 +11,7 @@ method at a time, until its name stopped describing it.
 
 Nothing breaks when this happens. That is why it survives review.
 
-## The case it is made of
+## What it is made of
 
 `Notifier` delivers a message. It knows about balloons and notifications,
 colors, titles, fade times, actions, and the status bar it anchors to. One job:

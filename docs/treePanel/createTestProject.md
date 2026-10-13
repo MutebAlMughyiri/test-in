@@ -66,11 +66,11 @@ A test project is the folder that holds all the test work for one product.
 - **Rule-TREE-PANEL-104** — A menu entry that cannot work on the selected row is
   gray, and says why when the pointer rests on it.
 
-## The Create Project dialog
+## The Create Test Project dialog
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│  Create Project                                              │
+│  Create Test Project                                         │
 ├──────────────────────────────────────────────────────────────┤
 │                                                              │
 │  [tp]  set name or paste url...                         (1)  │

@@ -29,7 +29,7 @@ import org.testin.editor.open.LastOpenEditors;
 import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
 import org.testin.model.FileKind;
-import org.testin.model.status.ProjectStatus;
+import org.testin.model.status.TestProjectStatus;
 import org.testin.services.BackgroundWork;
 import org.testin.services.Services;
 import org.testin.setting.TestinRoot;
@@ -56,13 +56,13 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 @Service(Service.Level.PROJECT)
-public final class ProjectIndexer {
+public final class TestProjectIndexer {
     private final @NotNull Project project;
     @Getter(AccessLevel.PACKAGE)
     private final @NotNull IndexerDataStore store;
     private final @NotNull ReadProblems problems;
     @Getter(AccessLevel.PACKAGE)
-    private final @NotNull ProjectScanCoordinator scanCoordinator;
+    private final @NotNull TestProjectScanCoordinator scanCoordinator;
     private final @NotNull AtomicBoolean indexed = new AtomicBoolean(false);
     private final @NotNull AtomicBoolean indexing = new AtomicBoolean(false);
     private final @NotNull AtomicBoolean restoreEditorsOnComplete = new AtomicBoolean(true);
@@ -77,7 +77,7 @@ public final class ProjectIndexer {
     private final @NotNull LastOpenEditors lastOpenEditors;
     private volatile @NotNull CountDownLatch indexingLatch = new CountDownLatch(1);
 
-    public ProjectIndexer(final @NotNull Project project) {
+    public TestProjectIndexer(final @NotNull Project project) {
         this.project = project;
         this.testinRoot = Services.getInstance(project, TestinRoot.class);
         this.rescan = Services.getInstance(Rescan.class);
@@ -86,7 +86,7 @@ public final class ProjectIndexer {
         this.lastOpenEditors = Services.getInstance(project, LastOpenEditors.class);
         this.store = new IndexerDataStore(project);
         this.problems = new ReadProblems(project, store);
-        this.scanCoordinator = new ProjectScanCoordinator(new IndexingScanner(project, store));
+        this.scanCoordinator = new TestProjectScanCoordinator(new IndexingScanner(project, store));
         this.runItemWriter = new RunItemWriter(project, store);
         this.nodeFiles = new NodeFiles(project, this, store);
     }
@@ -109,20 +109,20 @@ public final class ProjectIndexer {
                 return;
             }
 
-            final @NotNull List<Path> validProjects = boundOnly(collectValidProjects(absoluteRoot));
-            if (validProjects.isEmpty()) {
+            final @NotNull List<Path> validTestProjects = boundOnly(collectValidTestProjects(absoluteRoot));
+            if (validTestProjects.isEmpty()) {
                 finishWithNothingToIndex();
-                TestinLogger.warn("No valid projects found at '" + absoluteRoot.toAbsolutePath() + "'");
+                TestinLogger.warn("No valid test projects found at '" + absoluteRoot.toAbsolutePath() + "'");
                 return;
             }
 
-            final @NotNull AtomicInteger projectsLeft = new AtomicInteger(validProjects.size());
+            final @NotNull AtomicInteger testProjectsLeft = new AtomicInteger(validTestProjects.size());
             final @NotNull AtomicBoolean allRead = new AtomicBoolean(true);
             final @NotNull CountDownLatch passLatch = indexingLatch;
-            TestinLogger.info("Indexing " + validProjects.size() + " projects..");
+            TestinLogger.info("Indexing " + validTestProjects.size() + " test projects..");
 
-            for (final Path projectPath : validProjects)
-                indexInBackground(projectPath, projectsLeft, allRead, passLatch);
+            for (final Path testProjectPath : validTestProjects)
+                indexInBackground(testProjectPath, testProjectsLeft, allRead, passLatch);
         } catch (final Exception ex) {
             TestinLogger.error("indexWithProgress: " + FailureText.of(ex));
             indexing.set(false);
@@ -138,43 +138,43 @@ public final class ProjectIndexer {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-013, Rule-INTERNAL-124
-    private void indexInBackground(final @NotNull Path projectPath, final @NotNull AtomicInteger projectsLeft, final @NotNull AtomicBoolean allRead, final @NotNull CountDownLatch passLatch) {
-        final @NotNull String projectName = projectPath.getFileName().toString();
+    private void indexInBackground(final @NotNull Path testProjectPath, final @NotNull AtomicInteger testProjectsLeft, final @NotNull AtomicBoolean allRead, final @NotNull CountDownLatch passLatch) {
+        final @NotNull String testProjectName = testProjectPath.getFileName().toString();
 
-        BackgroundWork.start(new Task.Backgroundable(project, Bundle.message("indexer.task.title", projectName), true) {
+        BackgroundWork.start(new Task.Backgroundable(project, Bundle.message("indexer.task.title", testProjectName), true) {
             @Override
             public void run(final @NotNull ProgressIndicator indicator) {
                 indicator.setIndeterminate(false);
                 indicator.setFraction(0.0);
-                indicator.setText(Bundle.message("indexer.progress.indexing", projectName));
+                indicator.setText(Bundle.message("indexer.progress.indexing", testProjectName));
 
                 final long started = System.nanoTime();
-                final @NotNull Optional<String> failure = scanCoordinator.scan(projectPath, indicator);
-                TestinLogger.info("Reading '" + projectName + "' took " + TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - started) + " ms");
+                final @NotNull Optional<String> failure = scanCoordinator.scan(testProjectPath, indicator);
+                TestinLogger.info("Reading '" + testProjectName + "' took " + TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - started) + " ms");
                 failure.ifPresent(why -> {
                     allRead.set(false);
-                    problems.projectNotRead(projectName, why);
+                    problems.testProjectNotRead(testProjectName, why);
                 });
 
                 indicator.setFraction(1.0);
-                indicator.setText(Bundle.message("indexer.progress.done", projectName));
+                indicator.setText(Bundle.message("indexer.progress.done", testProjectName));
             }
 
             @Override
             public void onCancel() {
-                TestinLogger.info("Reading '" + projectName + "' was canceled, so it is read again on the next request.");
+                TestinLogger.info("Reading '" + testProjectName + "' was canceled, so it is read again on the next request.");
                 allRead.set(false);
             }
 
             @Override
             public void onThrowable(final @NotNull Throwable error) {
-                TestinLogger.error("Error indexing '" + projectName + "': " + FailureText.of(error));
+                TestinLogger.error("Error indexing '" + testProjectName + "': " + FailureText.of(error));
                 allRead.set(false);
             }
 
             @Override
             public void onFinished() {
-                if (!oneProjectFinished(projectsLeft, passLatch)) return;
+                if (!oneTestProjectFinished(testProjectsLeft, passLatch)) return;
 
                 if (allRead.get()) finishSuccessfully();
                 else finishWithFailure();
@@ -182,8 +182,8 @@ public final class ProjectIndexer {
         });
     }
 
-    private boolean oneProjectFinished(final @NotNull AtomicInteger projectsLeft, final @NotNull CountDownLatch passLatch) {
-        if (projectsLeft.decrementAndGet() != 0) return false;
+    private boolean oneTestProjectFinished(final @NotNull AtomicInteger testProjectsLeft, final @NotNull CountDownLatch passLatch) {
+        if (testProjectsLeft.decrementAndGet() != 0) return false;
 
         passLatch.countDown();
         return passLatch.equals(indexingLatch);
@@ -286,11 +286,11 @@ public final class ProjectIndexer {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-006
-    private @NotNull List<Path> boundOnly(final @NotNull List<Path> projects) {
+    private @NotNull List<Path> boundOnly(final @NotNull List<Path> testProjectPaths) {
         final @NotNull String bound = boundTestProject.name();
-        if (bound.isEmpty()) return projects;
+        if (bound.isEmpty()) return testProjectPaths;
 
-        final @NotNull List<Path> scoped = projects.stream()
+        final @NotNull List<Path> scoped = testProjectPaths.stream()
                 .filter(this::isBound)
                 .toList();
 
@@ -303,17 +303,17 @@ public final class ProjectIndexer {
         return scoped;
     }
 
-    private boolean isBound(final @NotNull Path projectPath) {
+    private boolean isBound(final @NotNull Path testProjectPath) {
         final @NotNull String bound = boundTestProject.name();
-        return bound.isEmpty() || bound.equals(projectPath.getFileName().toString());
+        return bound.isEmpty() || bound.equals(testProjectPath.getFileName().toString());
     }
 
-    public @NotNull Map<String, ProjectStatus> testProjects() {
-        final @NotNull Map<String, ProjectStatus> byName = new LinkedHashMap<>();
+    public @NotNull Map<String, TestProjectStatus> testProjects() {
+        final @NotNull Map<String, TestProjectStatus> byName = new LinkedHashMap<>();
         final @NotNull Path root = absoluteRoot();
         if (root.toString().isEmpty()) return byName;
 
-        for (final Path path : collectValidProjects(root)) {
+        for (final Path path : collectValidTestProjects(root)) {
             byName.put(path.getFileName().toString(), directoryMapper.getTestProjectNode(path).getMarker().getStatus());
         }
 
@@ -321,18 +321,18 @@ public final class ProjectIndexer {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-003, Rule-INTERNAL-004
-    private @NotNull List<Path> collectValidProjects(final @NotNull Path rootPath) {
+    private @NotNull List<Path> collectValidTestProjects(final @NotNull Path rootPath) {
         if (!Files.exists(rootPath) || !Files.isDirectory(rootPath)) return List.of();
 
-        final Path[] projectPaths;
+        final Path[] testProjectPaths;
         try (Stream<Path> directories = Files.list(rootPath)) {
-            projectPaths = directories.filter(Files::isDirectory).toArray(Path[]::new);
+            testProjectPaths = directories.filter(Files::isDirectory).toArray(Path[]::new);
         } catch (final IOException | UncheckedIOException ex) {
             TestinLogger.error("Failed to list root directory: " + FailureText.of(ex));
             return List.of();
         }
 
-        return Arrays.stream(projectPaths).filter(this::isListedTestProject).toList();
+        return Arrays.stream(testProjectPaths).filter(this::isListedTestProject).toList();
     }
 
     private boolean isListedTestProject(final @NotNull Path folder) {
@@ -350,14 +350,14 @@ public final class ProjectIndexer {
         TestinLogger.info("Indexing complete: " +
                 store.getTestCasesById().size() + " test cases, " +
                 store.getRunItemsByPath().size() + " test runs, " +
-                store.getTestProjectsByPath().size() + " projects, " +
+                store.getTestProjectsByPath().size() + " test projects, " +
                 store.getTestSetNodesByPath().size() + " test sets, " +
                 store.getTestRunNodesByPath().size() + " test run dirs, " +
                 store.getTestSetPackagesByPath().size() + " test set packages, " +
                 store.getTestRunPackagesByPath().size() + " test run packages");
     }
 
-    void refreshIndexedProject(final @NotNull Path changedPath) {
+    void refreshIndexedTestProject(final @NotNull Path changedPath) {
         testProjectHolding(changedPath).ifPresent(scanCoordinator::rescanExclusively);
     }
 
@@ -369,33 +369,33 @@ public final class ProjectIndexer {
     }
 
     // UC-INTERNAL-003, Rule-INTERNAL-016
-    public void rescanChangedProject(final @NotNull Path projectPath, final @NotNull ProgressIndicator indicator) {
-        if (isTestProjectFolder(projectPath) && isBound(projectPath)) {
-            scanSingleProject(projectPath, indicator);
+    public void rescanChangedTestProject(final @NotNull Path testProjectPath, final @NotNull ProgressIndicator indicator) {
+        if (isTestProjectFolder(testProjectPath) && isBound(testProjectPath)) {
+            scanSingleTestProject(testProjectPath, indicator);
             return;
         }
 
-        TestinLogger.info("Not a test project Testin reads, so not scanned: " + projectPath);
-        store.removeTestProject(projectPath);
+        TestinLogger.info("Not a test project Testin reads, so not scanned: " + testProjectPath);
+        store.removeTestProject(testProjectPath);
         store.invalidateChildrenIndex();
         announceReadAgain();
     }
 
-    public void scanSingleProject(final @NotNull Path projectPath) {
-        scanSingleProject(projectPath, new EmptyProgressIndicator());
+    public void scanSingleTestProject(final @NotNull Path testProjectPath) {
+        scanSingleTestProject(testProjectPath, new EmptyProgressIndicator());
     }
 
     // UC-INTERNAL-003, Rule-INTERNAL-021
-    public void scanSingleProject(final @NotNull Path projectPath, final @NotNull ProgressIndicator indicator) {
-        TestinLogger.info("Scanning single project: " + projectPath.getFileName());
-        rescan.coveredByAScan(projectPath);
-        scanCoordinator.scan(projectPath, indicator).ifPresent(why -> problems.projectNotRead(projectPath.getFileName().toString(), why));
+    public void scanSingleTestProject(final @NotNull Path testProjectPath, final @NotNull ProgressIndicator indicator) {
+        TestinLogger.info("Scanning single project: " + testProjectPath.getFileName());
+        rescan.coveredByAScan(testProjectPath);
+        scanCoordinator.scan(testProjectPath, indicator).ifPresent(why -> problems.testProjectNotRead(testProjectPath.getFileName().toString(), why));
 
         announceReadAgain();
     }
 
     // Rule-INTERNAL-091
-    public @NotNull Optional<String> whyNotRead(final @NotNull Path projectPath) {
-        return store.whyNotRead(projectPath);
+    public @NotNull Optional<String> whyNotRead(final @NotNull Path testProjectPath) {
+        return store.whyNotRead(testProjectPath);
     }
 }

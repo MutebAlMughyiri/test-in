@@ -47,7 +47,7 @@ public final class SaveTestinYml {
     public static @NotNull Optional<String> whyNot(final @NotNull Project project) {
         if (TestinYml.isUnreadable(project)) return Optional.of(Bundle.message("yml.save.disabled.unreadable"));
         if (Services.getInstance(project, BoundTestProject.class).get().isEmpty())
-            return Optional.of(Bundle.message("yml.save.disabled.no.project"));
+            return Optional.of(Bundle.message("yml.save.disabled.no.test.project"));
 
         return Optional.empty();
     }
@@ -82,14 +82,14 @@ public final class SaveTestinYml {
     }
 
     // UC-TREE-PANEL-029, Rule-TREE-PANEL-113, Rule-TREE-PANEL-114
-    private static @NotNull String preview(final @NotNull Project project, final @NotNull String projectName, final @NotNull Map<String, String> lines) {
+    private static @NotNull String preview(final @NotNull Project project, final @NotNull String testProjectName, final @NotNull Map<String, String> lines) {
         final @NotNull Map<String, String> written = TestinYml.writtenValues(project, lines.keySet());
         final @NotNull StringBuilder message = new StringBuilder();
 
         TestinYml.savePath(project).ifPresent(path -> message.append(path).append("\n\n"));
         lines.forEach((key, value) -> message.append(key).append(": ").append(value).append("   ").append(change(Optional.ofNullable(written.get(key)), value)).append('\n'));
         message.append('\n').append(Bundle.message("yml.save.rest"))
-                .append('\n').append(Bundle.message("yml.save.shared", projectName));
+                .append('\n').append(Bundle.message("yml.save.shared", testProjectName));
 
         return message.toString();
     }

@@ -96,9 +96,9 @@ public class ReadTestProjectIdeTest extends AbstractReadTheRootIdeTest {
 
     // UC-INTERNAL-002, Rule-INTERNAL-007
     public void testOnlyTheTestCasesAndTestRunsFoldersAreRead() {
-        final @NotNull Path project = aTestProjectAt(root.resolve("Checkout"));
-        final @NotNull Path read = marked(theTestCasesOf(project).resolve("Login"), NodeType.TEST_SET);
-        final @NotNull Path beside = marked(project.resolve("Drafts"), NodeType.TEST_SET);
+        final @NotNull Path testProjectPath = aTestProjectAt(root.resolve("Checkout"));
+        final @NotNull Path read = marked(theTestCasesOf(testProjectPath).resolve("Login"), NodeType.TEST_SET);
+        final @NotNull Path beside = marked(testProjectPath.resolve("Drafts"), NodeType.TEST_SET);
         final @NotNull UUID inRead = aTestCaseIn(read);
         final @NotNull UUID inBeside = aTestCaseIn(beside);
 
@@ -112,10 +112,10 @@ public class ReadTestProjectIdeTest extends AbstractReadTheRootIdeTest {
 
     // UC-INTERNAL-002, Rule-INTERNAL-008
     public void testAFolderUnderTestCasesIsReadOnlyByItsMarker() {
-        final @NotNull Path project = aTestProjectAt(root.resolve("Checkout"));
-        final @NotNull Path testSet = marked(theTestCasesOf(project).resolve("Login"), NodeType.TEST_SET);
-        final @NotNull Path testSetPackage = marked(theTestCasesOf(project).resolve("Auth"), NodeType.TEST_SET_PACKAGE);
-        final @NotNull Path unmarked = theTestCasesOf(project).resolve("Notes");
+        final @NotNull Path testProjectPath = aTestProjectAt(root.resolve("Checkout"));
+        final @NotNull Path testSet = marked(theTestCasesOf(testProjectPath).resolve("Login"), NodeType.TEST_SET);
+        final @NotNull Path testSetPackage = marked(theTestCasesOf(testProjectPath).resolve("Auth"), NodeType.TEST_SET_PACKAGE);
+        final @NotNull Path unmarked = theTestCasesOf(testProjectPath).resolve("Notes");
         final @NotNull UUID inUnmarked = aTestCaseIn(unmarked);
 
         readEverything();
@@ -128,8 +128,8 @@ public class ReadTestProjectIdeTest extends AbstractReadTheRootIdeTest {
 
     // UC-INTERNAL-002, Rule-INTERNAL-009
     public void testAFolderHoldingBothMarkersIsATestSet() {
-        final @NotNull Path project = aTestProjectAt(root.resolve("Checkout"));
-        final @NotNull Path both = marked(marked(theTestCasesOf(project).resolve("Login"), NodeType.TEST_SET_PACKAGE), NodeType.TEST_SET);
+        final @NotNull Path testProjectPath = aTestProjectAt(root.resolve("Checkout"));
+        final @NotNull Path both = marked(marked(theTestCasesOf(testProjectPath).resolve("Login"), NodeType.TEST_SET_PACKAGE), NodeType.TEST_SET);
         final @NotNull UUID testCase = aTestCaseIn(both);
 
         readEverything();
@@ -140,10 +140,10 @@ public class ReadTestProjectIdeTest extends AbstractReadTheRootIdeTest {
 
     // UC-INTERNAL-002, Rule-INTERNAL-010
     public void testAFolderUnderTestRunsIsReadOnlyByItsMarker() {
-        final @NotNull Path project = aTestProjectAt(root.resolve("Checkout"));
-        final @NotNull Path testRun = marked(theTestRunsOf(project).resolve("Cycle 1"), NodeType.TEST_RUN);
-        final @NotNull Path testRunPackage = marked(theTestRunsOf(project).resolve("Release 2"), NodeType.TEST_RUN_PACKAGE);
-        final @NotNull Path unmarked = theTestRunsOf(project).resolve("Old");
+        final @NotNull Path testProjectPath = aTestProjectAt(root.resolve("Checkout"));
+        final @NotNull Path testRun = marked(theTestRunsOf(testProjectPath).resolve("Cycle 1"), NodeType.TEST_RUN);
+        final @NotNull Path testRunPackage = marked(theTestRunsOf(testProjectPath).resolve("Release 2"), NodeType.TEST_RUN_PACKAGE);
+        final @NotNull Path unmarked = theTestRunsOf(testProjectPath).resolve("Old");
         resultIn(unmarked, FileKind.RUN_ITEM.fileName(UUID.randomUUID()), UUID.randomUUID());
 
         readEverything();
@@ -155,8 +155,8 @@ public class ReadTestProjectIdeTest extends AbstractReadTheRootIdeTest {
 
     // UC-INTERNAL-002, Rule-INTERNAL-012
     public void testATestCaseIsKnownByItsFileNameNotByWhatTheFileSays() {
-        final @NotNull Path project = aTestProjectAt(root.resolve("Checkout"));
-        final @NotNull Path testSet = marked(theTestCasesOf(project).resolve("Login"), NodeType.TEST_SET);
+        final @NotNull Path testProjectPath = aTestProjectAt(root.resolve("Checkout"));
+        final @NotNull Path testSet = marked(theTestCasesOf(testProjectPath).resolve("Login"), NodeType.TEST_SET);
         final @NotNull UUID byName = UUID.randomUUID();
         final @NotNull UUID inside = UUID.randomUUID();
         SyntheticTree.write(testSet.resolve(FileKind.TEST_CASE.fileName(byName)), SyntheticTree.testCase(inside, "m"));

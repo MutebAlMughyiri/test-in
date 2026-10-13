@@ -42,8 +42,8 @@ public final class ReportFileName {
     }
 
     // UC-REPORT-001, Rule-REPORT-007, Rule-REPORT-008
-    static @NotNull String of(final @NotNull String projectName, final @NotNull String testRunName, final @NotNull ZonedDateTime at) {
-        return Stream.of("TestRun", safe(projectName), safe(testRunName), STAMP.format(at))
+    static @NotNull String of(final @NotNull String testProjectName, final @NotNull String testRunName, final @NotNull ZonedDateTime at) {
+        return Stream.of("TestRun", safe(testProjectName), safe(testRunName), STAMP.format(at))
                 .filter(part -> !part.isBlank())
                 .collect(Collectors.joining("_"));
     }

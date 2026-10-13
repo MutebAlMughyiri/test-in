@@ -36,8 +36,8 @@ import static org.testng.Assert.assertTrue;
 
 public class RunItemTest {
 
-    private static @NotNull RunItemExecution execution(final @NotNull RunItemStatus status, final @NotNull String actual) {
-        return RunItemExecution.builder().status(status).actualResult(actual).build();
+    private static @NotNull RunItemExecution execution(final @NotNull RunItemStatus runItemStatus, final @NotNull String actual) {
+        return RunItemExecution.builder().status(runItemStatus).actualResult(actual).build();
     }
 
     private static @NotNull RunItem withExecutions(final @NotNull RunItemExecution... executions) {
@@ -208,7 +208,7 @@ public class RunItemTest {
     }
 
     @Test
-    public void anUnwiredItemShowsAsARemovedTestCaseRatherThanThrowing() {
+    public void anUnwiredRunItemShowsAsARemovedTestCaseRatherThanThrowing() {
         final UUID testCaseId = UUID.randomUUID();
         final RunItem runItem = RunItem.builder().id(testCaseId).build();
 
@@ -217,7 +217,7 @@ public class RunItemTest {
     }
 
     @Test
-    public void anUnrunItemIsPending() {
+    public void aRunItemNeverExecutedIsPending() {
         final RunItem runItem = RunItem.builder().id(UUID.randomUUID()).build();
 
         assertEquals(runItem.getStatus(), RunItemStatus.PENDING, "an unrun item defaults to PENDING");

@@ -46,14 +46,14 @@ import java.util.stream.Collectors;
 @Service(Service.Level.PROJECT)
 public final class TestRuns {
     private final @NotNull Project project;
-    private final @NotNull ProjectIndexer indexer;
+    private final @NotNull TestProjectIndexer indexer;
     private final @NotNull Map<String, Map<UUID, Optional<TestCase>>> recorded = new ConcurrentHashMap<>();
     private final @NotNull Map<UUID, TestCase> lastInGit = new ConcurrentHashMap<>();
     private final @NotNull Map<Path, String> recordedAt = new ConcurrentHashMap<>();
 
     public TestRuns(final @NotNull Project project) {
         this.project = project;
-        this.indexer = Services.getInstance(project, ProjectIndexer.class);
+        this.indexer = Services.getInstance(project, TestProjectIndexer.class);
     }
 
     private @NotNull IndexerDataStore store() {

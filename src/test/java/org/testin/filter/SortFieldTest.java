@@ -77,7 +77,7 @@ public class SortFieldTest {
 
     // Rule-EDITOR-PANEL-274
     @Test
-    public void descriptionSortsWithoutCase() {
+    public void descriptionSortsIgnoringCapitals() {
         final @NotNull List<TestCase> inTheSet = List.of(aTestCase("banana", Priority.LOW, ""), aTestCase("Apple", Priority.LOW, ""), aTestCase("cherry", Priority.LOW, ""));
 
         assertEquals(sorted(SortField.DESCRIPTION, SortDirection.ASCENDING, inTheSet), List.of("Apple", "banana", "cherry"));
@@ -85,7 +85,7 @@ public class SortFieldTest {
 
     // Rule-EDITOR-PANEL-274, Rule-EDITOR-PANEL-276
     @Test
-    public void theRunFieldsReadTheRunItemAndLeaveTheUnexecutedLast() {
+    public void theRunItemFieldsReadTheRunItemAndLeaveTheUnexecutedLast() {
         final @NotNull TestCase slow = aTestCase("slow", Priority.LOW, "");
         final @NotNull TestCase quick = aTestCase("quick", Priority.LOW, "");
         final @NotNull TestCase waiting = aTestCase("waiting", Priority.LOW, "");
@@ -93,16 +93,16 @@ public class SortFieldTest {
                 slow.getId(), RunItem.builder().id(slow.getId()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).duration(Duration.ofMinutes(5)).build())).build(),
                 quick.getId(), RunItem.builder().id(quick.getId()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).duration(Duration.ofSeconds(20)).build())).build(),
                 waiting.getId(), RunItem.builder().id(waiting.getId()).build());
-        final @NotNull Function<UUID, Optional<RunItem>> inTheRun = testCaseId -> Optional.ofNullable(runItems.get(testCaseId));
+        final @NotNull Function<UUID, Optional<RunItem>> inTheTestRun = testCaseId -> Optional.ofNullable(runItems.get(testCaseId));
 
-        assertEquals(descriptionsOf(SortField.DURATION.sorted(List.of(waiting, slow, quick), SortDirection.DESCENDING, inTheRun)), List.of("slow", "quick", "waiting"));
-        assertEquals(descriptionsOf(SortField.RUN_ITEM_STATUS.sorted(List.of(waiting, slow, quick), SortDirection.ASCENDING, inTheRun)), List.of("quick", "slow", "waiting"),
+        assertEquals(descriptionsOf(SortField.DURATION.sorted(List.of(waiting, slow, quick), SortDirection.DESCENDING, inTheTestRun)), List.of("slow", "quick", "waiting"));
+        assertEquals(descriptionsOf(SortField.RUN_ITEM_STATUS.sorted(List.of(waiting, slow, quick), SortDirection.ASCENDING, inTheTestRun)), List.of("quick", "slow", "waiting"),
                 "Run Item Status follows the order the Run Item Status filter lists them in: Passed, Failed, Blocked, Pending");
     }
 
     // Rule-EDITOR-PANEL-276
     @Test
-    public void aRunFieldWithNoRunItemSortsNothingAndLosesNothing() {
+    public void aRunItemFieldWithNoRunItemSortsNothingAndLosesNothing() {
         final @NotNull List<TestCase> inTheSet = List.of(aTestCase("a", Priority.LOW, ""), aTestCase("b", Priority.LOW, ""));
 
         assertEquals(sorted(SortField.EXECUTED_AT, SortDirection.DESCENDING, inTheSet), List.of("a", "b"));

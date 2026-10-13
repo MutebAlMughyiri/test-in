@@ -47,17 +47,17 @@ public final class TestCaseLink {
         final @NotNull String remoteUrl = git.remoteUrl(file.testProject());
         if (remoteUrl.isEmpty()) return Optional.empty();
 
-        return of(remoteUrl, git.getCurrentBranch(file.testProject()), file.inProject());
+        return of(remoteUrl, git.getCurrentBranch(file.testProject()), file.inTestProject());
     }
 
-    static @NotNull Optional<String> of(final @NotNull String remoteUrl, final @NotNull String branch, final @NotNull Path inProject) {
+    static @NotNull Optional<String> of(final @NotNull String remoteUrl, final @NotNull String branch, final @NotNull Path inTestProject) {
         if (branch.isBlank()) return Optional.empty();
 
-        return BugRepository.of(remoteUrl).flatMap(repository -> web(repository, branch, inProject));
+        return BugRepository.of(remoteUrl).flatMap(repository -> web(repository, branch, inTestProject));
     }
 
-    private static @NotNull Optional<String> web(final @NotNull BugRepository repository, final @NotNull String branch, final @NotNull Path inProject) {
-        final @NotNull String file = StreamSupport.stream(inProject.spliterator(), false)
+    private static @NotNull Optional<String> web(final @NotNull BugRepository repository, final @NotNull String branch, final @NotNull Path inTestProject) {
+        final @NotNull String file = StreamSupport.stream(inTestProject.spliterator(), false)
                 .map(Path::toString)
                 .collect(Collectors.joining("/"));
         final @NotNull String path = "/" + repository.owner() + "/" + repository.name() + "/blob/" + branch + "/" + file;

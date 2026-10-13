@@ -41,8 +41,8 @@ import java.util.concurrent.ConcurrentHashMap;
 // UC-INTERNAL-002, Rule-INTERNAL-021
 @Getter
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-final class ScannedProject {
-    private final @NotNull Map<String, TestProjectNode> projects = new ConcurrentHashMap<>();
+final class ScannedTestProject {
+    private final @NotNull Map<String, TestProjectNode> testProjects = new ConcurrentHashMap<>();
     private final @NotNull Map<String, TestCasesFolderNode> testCasesFolders = new ConcurrentHashMap<>();
     private final @NotNull Map<String, TestRunsFolderNode> testRunsFolders = new ConcurrentHashMap<>();
     private final @NotNull Map<String, TestSetPackageNode> testSetPackages = new ConcurrentHashMap<>();

@@ -34,8 +34,8 @@ public class RescanKeepsTheIndexIdeTest extends AbstractTempRootIdeTest {
 
     private static final int SCAN_TIMEOUT_SECONDS = 120;
 
-    private @NotNull ProjectIndexer indexer() {
-        return Services.getInstance(getProject(), ProjectIndexer.class);
+    private @NotNull TestProjectIndexer indexer() {
+        return Services.getInstance(getProject(), TestProjectIndexer.class);
     }
 
     private @NotNull TestCases indexedTestCases() {
@@ -47,11 +47,11 @@ public class RescanKeepsTheIndexIdeTest extends AbstractTempRootIdeTest {
     }
 
     // Rule-INTERNAL-081
-    public void testNothingDisappearsWhileTheProjectIsReadAgain() {
-        final Path project = SyntheticTree.write(root, SETS, TEST_CASES_PER_SET);
-        indexer().scanSingleProject(project);
+    public void testNothingDisappearsWhileTheTestProjectIsReadAgain() {
+        final Path testProjectPath = SyntheticTree.write(root, SETS, TEST_CASES_PER_SET);
+        indexer().scanSingleTestProject(testProjectPath);
 
-        final Path set = project.resolve("Test Cases").resolve("set-0");
+        final Path set = testProjectPath.resolve("Test Cases").resolve("set-0");
         final UUID testCase = indexedTestCases().getTestCasesForTestSet(set).getFirst().getId();
 
         assertTrue("the first pass did not index the project, so there is nothing to watch",
@@ -62,7 +62,7 @@ public class RescanKeepsTheIndexIdeTest extends AbstractTempRootIdeTest {
 
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             try {
-                indexer().scanSingleProject(project);
+                indexer().scanSingleTestProject(testProjectPath);
             } finally {
                 scanned.countDown();
             }
@@ -84,17 +84,17 @@ public class RescanKeepsTheIndexIdeTest extends AbstractTempRootIdeTest {
     }
 
     public void testASetDeletedOnDiskIsGoneAfterTheRescan() {
-        final Path project = SyntheticTree.write(root, 3, TEST_CASES_PER_SET);
-        indexer().scanSingleProject(project);
+        final Path testProjectPath = SyntheticTree.write(root, 3, TEST_CASES_PER_SET);
+        indexer().scanSingleTestProject(testProjectPath);
 
-        final Path deleted = project.resolve("Test Cases").resolve("set-1");
-        final Path kept = project.resolve("Test Cases").resolve("set-2");
+        final Path deleted = testProjectPath.resolve("Test Cases").resolve("set-1");
+        final Path kept = testProjectPath.resolve("Test Cases").resolve("set-2");
 
         final UUID testCaseInDeleted = indexedTestCases().getTestCasesForTestSet(deleted).getFirst().getId();
         final UUID testCaseInKept = indexedTestCases().getTestCasesForTestSet(kept).getFirst().getId();
 
         assertTrue("could not delete " + deleted, TempTree.delete(deleted));
-        indexer().scanSingleProject(project);
+        indexer().scanSingleTestProject(testProjectPath);
 
         assertFalse("a test set deleted on disk is still in the index after a rescan",
                 nodes().nodeExists(deleted));

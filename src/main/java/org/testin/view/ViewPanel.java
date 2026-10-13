@@ -219,8 +219,8 @@ public class ViewPanel implements Disposable {
     }
 
     // Rule-VIEW-PANEL-005, Rule-CODEGEN-111
-    private void executionReported(final @NotNull TestCase testCase, final @NotNull ExecutionStatus status) {
-        if (status.stillGoing()) reloadDetailsIfShowing(testCase.getId());
+    private void executionReported(final @NotNull TestCase testCase, final @NotNull ExecutionStatus executionStatus) {
+        if (executionStatus.stillGoing()) reloadDetailsIfShowing(testCase.getId());
         else if (shows(testCase.getId())) refreshCurrentView();
     }
 
@@ -246,7 +246,7 @@ public class ViewPanel implements Disposable {
     }
 
     public @NotNull Optional<TestCase> getCurrentTestCase() {
-        return page.getCurrentItem();
+        return page.getCurrentTestCase();
     }
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-083

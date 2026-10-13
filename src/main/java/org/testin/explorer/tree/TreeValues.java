@@ -72,7 +72,7 @@ public final class TreeValues {
                 .flatMap(path -> valueOf(path.getLastPathComponent(), type));
     }
 
-    public static @NotNull Optional<Path> projectPath(final @NotNull SimpleTree tree) {
+    public static @NotNull Optional<Path> testProjectPath(final @NotNull SimpleTree tree) {
         return valueOf(tree.getModel().getRoot(), TestProjectNode.class).map(AbstractNode::getPath);
     }
 

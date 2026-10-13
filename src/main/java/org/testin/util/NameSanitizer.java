@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 public final class NameSanitizer {
     private static final @NotNull Pattern INVALID_NAME = Pattern.compile("[^a-zA-Z0-9 _]");
 
-    private static final @NotNull Pattern SPACE_RUN = Pattern.compile("\\s{2,}");
+    private static final @NotNull Pattern SPACES = Pattern.compile("\\s{2,}");
 
     private static final @NotNull Pattern NOT_A_LETTER_OR_DIGIT = Pattern.compile("[^A-Za-z0-9]+");
 
@@ -110,7 +110,7 @@ public final class NameSanitizer {
     }
 
     public static @NotNull String description(final @NotNull String rawDescription) {
-        return SPACE_RUN.matcher(INVALID_NAME.matcher(rawDescription).replaceAll("")).replaceAll(" ").trim();
+        return SPACES.matcher(INVALID_NAME.matcher(rawDescription).replaceAll("")).replaceAll(" ").trim();
     }
 
     public static @NotNull String methodName(final @NotNull String description) {

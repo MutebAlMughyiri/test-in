@@ -49,18 +49,18 @@ public class ExecutionStatusToRunItemStatusTest {
     }
 
     @Test
-    public void everyStatusAnswersWithoutANull() {
-        for (final ExecutionStatus status : ExecutionStatus.values()) {
-            assertNotNull(status.getRunItemStatus(), status + " must answer with a value of its own type");
+    public void everyExecutionStatusAnswersWithoutANull() {
+        for (final ExecutionStatus executionStatus : ExecutionStatus.values()) {
+            assertNotNull(executionStatus.getRunItemStatus(), executionStatus + " must answer with a value of its own type");
         }
     }
 
     @Test
     public void aRunItemStatusIsAlwaysOneATesterCouldHaveGivenByHand() {
-        for (final ExecutionStatus status : ExecutionStatus.values()) {
-            status.getRunItemStatus().ifPresent(runItemStatus -> assertTrue(
+        for (final ExecutionStatus executionStatus : ExecutionStatus.values()) {
+            executionStatus.getRunItemStatus().ifPresent(runItemStatus -> assertTrue(
                     runItemStatus == RunItemStatus.PASSED || runItemStatus == RunItemStatus.FAILED || runItemStatus == RunItemStatus.BLOCKED,
-                    status + " maps to " + runItemStatus + ", which is not a run item status a tester chooses"));
+                    executionStatus + " maps to " + runItemStatus + ", which is not a run item status a tester chooses"));
         }
     }
 }

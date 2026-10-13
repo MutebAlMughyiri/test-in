@@ -77,7 +77,7 @@ public class GhIssueStatesAnswerTest {
 
     // Rule-VIEW-PANEL-091
     @Test
-    public void aBoardColumnWinsOverTheIssueStateAndNamesItsProject() {
+    public void aBoardColumnWinsOverTheIssueStateAndNamesItsGitHubProject() {
         final @NotNull BugIssueState state = answered("""
                 {"data":{"repository":{"i14":{"state":"OPEN","stateReason":null,"projectItems":{"nodes":[{"project":{"title":"Sprint board"},"fieldValueByName":null},{"project":{"title":"QA board"},"fieldValueByName":{"name":"In progress","color":"BLUE"}}]}}}}}""", 0, 14).stateOf(14);
 

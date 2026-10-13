@@ -90,7 +90,7 @@ public class SortMenuIdeTest extends AbstractTempRootIdeTest {
     }
 
     // Rule-EDITOR-PANEL-276
-    public void testTheRunFieldsAreGrayInATestSetEditorAndWorkInATestRun() {
+    public void testTheRunItemFieldsAreGrayInATestSetEditorAndWorkInATestRun() {
         final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
         final @NotNull List<TestCase> made = lowHighMedium(testProject);
         final @NotNull TestSetEditor testSetEditor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
@@ -99,7 +99,7 @@ public class SortMenuIdeTest extends AbstractTempRootIdeTest {
             for (final SortField field : List.of(SortField.RUN_ITEM_STATUS, SortField.EXECUTED_AT, SortField.DURATION)) {
                 final @NotNull Presentation inATestSet = Gestures.updated(getProject(), Sorting.entry(sortOf(testSetEditor), field.getLabel()), testSetEditor.getList());
                 assertFalse(field.getLabel() + " sorts a test set editor", inATestSet.isEnabled());
-                assertEquals(field.getLabel() + " does not say why it is gray", Bundle.message("filter.run.only"), inATestSet.getDescription());
+                assertEquals(field.getLabel() + " does not say why it is gray", Bundle.message("filter.test.run.only"), inATestSet.getDescription());
                 assertTrue(field.getLabel() + " does not sort a test run", Gestures.updated(getProject(), Sorting.entry(sortOf(testRunEditor), field.getLabel()), testRunEditor.getList()).isEnabled());
             }
         } finally {

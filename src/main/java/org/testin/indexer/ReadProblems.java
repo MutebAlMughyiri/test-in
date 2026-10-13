@@ -44,15 +44,15 @@ final class ReadProblems {
     }
 
     // Rule-INTERNAL-124
-    void projectNotRead(final @NotNull String projectName, final @NotNull String why) {
-        notifier.warn(project, Bundle.message("indexer.failed.title", projectName), Bundle.message("indexer.failed.message", projectName, why));
+    void testProjectNotRead(final @NotNull String testProjectName, final @NotNull String why) {
+        notifier.warn(project, Bundle.message("indexer.failed.title", testProjectName), Bundle.message("indexer.failed.message", testProjectName, why));
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-015
-    void unreadFolders(final @NotNull String projectName, final @NotNull List<Path> unread) {
+    void unreadFolders(final @NotNull String testProjectName, final @NotNull List<Path> unread) {
         final @NotNull List<String> nodePaths = unread.stream().map(this::unmarkedPath).sorted().toList();
 
-        say(Bundle.message("indexer.unread.title", projectName), nodePaths,
+        say(Bundle.message("indexer.unread.title", testProjectName), nodePaths,
                 nodePath -> Bundle.message("indexer.unread.one", nodePath),
                 (named, rest) -> Bundle.message("indexer.unread.many", String.valueOf(nodePaths.size()), named, rest));
     }
@@ -65,28 +65,28 @@ final class ReadProblems {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-011
-    void unreadableRunItems(final @NotNull String projectName, final @NotNull Set<String> unreadable) {
+    void unreadableRunItems(final @NotNull String testProjectName, final @NotNull Set<String> unreadable) {
         final @NotNull List<String> names = unreadable.stream().sorted().toList();
 
-        say(Bundle.message("indexer.run.items.unread.title", projectName), names,
+        say(Bundle.message("indexer.run.items.unread.title", testProjectName), names,
                 name -> Bundle.message("indexer.run.items.unread.one", name),
                 (named, rest) -> Bundle.message("indexer.run.items.unread.many", String.valueOf(names.size()), named, rest));
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-094
-    void handNamedRunItems(final @NotNull String projectName, final @NotNull Set<String> handNamed) {
+    void handNamedRunItems(final @NotNull String testProjectName, final @NotNull Set<String> handNamed) {
         final @NotNull List<String> names = handNamed.stream().sorted().toList();
 
-        say(Bundle.message("indexer.run.items.unnamed.title", projectName), names,
+        say(Bundle.message("indexer.run.items.unnamed.title", testProjectName), names,
                 name -> Bundle.message("indexer.run.items.unnamed.one", name),
                 (named, rest) -> Bundle.message("indexer.run.items.unnamed.many", String.valueOf(names.size()), named, rest));
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-014
-    void damagedMarkers(final @NotNull String projectName, final @NotNull List<Path> damaged) {
+    void damagedMarkers(final @NotNull String testProjectName, final @NotNull List<Path> damaged) {
         final @NotNull List<String> nodePaths = damaged.stream().map(this::nodePath).sorted().toList();
 
-        say(Bundle.message("indexer.damaged.title", projectName), nodePaths,
+        say(Bundle.message("indexer.damaged.title", testProjectName), nodePaths,
                 nodePath -> Bundle.message("indexer.damaged.one", nodePath),
                 (named, rest) -> Bundle.message("indexer.damaged.many", String.valueOf(nodePaths.size()), named, rest));
     }
@@ -114,10 +114,10 @@ final class ReadProblems {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-082
-    void clashingTestCases(final @NotNull String projectName, final @NotNull List<String> clashing) {
+    void clashingTestCases(final @NotNull String testProjectName, final @NotNull List<String> clashing) {
         final @NotNull List<String> names = clashing.stream().sorted().toList();
 
-        say(Bundle.message("indexer.clash.title", projectName), names,
+        say(Bundle.message("indexer.clash.title", testProjectName), names,
                 name -> Bundle.message("indexer.clash.message", Bundle.message("indexer.clash.one"), name, ""),
                 (named, rest) -> Bundle.message("indexer.clash.message", Bundle.message("indexer.clash.many", String.valueOf(names.size())), named, rest));
     }

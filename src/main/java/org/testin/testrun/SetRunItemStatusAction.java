@@ -37,13 +37,13 @@ import java.util.Optional;
 
 public class SetRunItemStatusAction extends AbstractAnyProjectAction {
     @Getter
-    private final @NotNull RunItemStatus status;
+    private final @NotNull RunItemStatus runItemStatus;
 
-    public SetRunItemStatusAction(final @NotNull RunItemStatus status) {
-        super(status.getLabel());
-        this.status = status;
+    public SetRunItemStatusAction(final @NotNull RunItemStatus runItemStatus) {
+        super(runItemStatus.getLabel());
+        this.runItemStatus = runItemStatus;
 
-        getTemplatePresentation().setDescription(Bundle.message("run.item.status.description", status.getLabel()));
+        getTemplatePresentation().setDescription(Bundle.message("run.item.status.description", runItemStatus.getLabel()));
     }
 
     // UC-EDITOR-PANEL-032, UC-EDITOR-PANEL-033, UC-EDITOR-PANEL-034, UC-EDITOR-PANEL-037, Rule-EDITOR-PANEL-156
@@ -59,7 +59,7 @@ public class SetRunItemStatusAction extends AbstractAnyProjectAction {
     private void record(final @NotNull Project project, final @NotNull TestRunEditor editor, final @NotNull List<TestCase> selectedTestCases) {
         final @NotNull Optional<RunItem> runItem = askingForFailureDetails(editor, selectedTestCases);
         if (runItem.isEmpty()) {
-            Services.getInstance(project, RunItemRecorder.class).applyStatus(editor, selectedTestCases, status);
+            Services.getInstance(project, RunItemRecorder.class).applyRunItemStatus(editor, selectedTestCases, runItemStatus);
             return;
         }
 
@@ -69,7 +69,7 @@ public class SetRunItemStatusAction extends AbstractAnyProjectAction {
 
     // UC-EDITOR-PANEL-034
     private @NotNull Optional<RunItem> askingForFailureDetails(final @NotNull TestRunEditor editor, final @NotNull List<TestCase> selectedTestCases) {
-        if (!status.isCollectsFailureDetails() || selectedTestCases.size() != 1) return Optional.empty();
+        if (!runItemStatus.isCollectsFailureDetails() || selectedTestCases.size() != 1) return Optional.empty();
 
         return editor.runItem(selectedTestCases.getFirst().getId()).filter(runItem -> !runItem.isRemoved());
     }

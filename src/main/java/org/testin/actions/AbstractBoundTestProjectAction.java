@@ -14,38 +14,19 @@
  * limitations under the License.
  */
 
-package org.testin.git.change;
+package org.testin.actions;
 
-import lombok.AllArgsConstructor;
+import com.intellij.openapi.project.DumbAwareAction;
+import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Function;
+import javax.swing.Icon;
 
-@AllArgsConstructor
-public enum StatusKind {
-    ADDED(
-            ChangeSubject::getCreated
-    ),
+public abstract class AbstractBoundTestProjectAction extends DumbAwareAction {
+    protected final @NotNull Project project;
 
-    MODIFIED(
-            ChangeSubject::getChanged
-    ),
-
-    DELETED(
-            ChangeSubject::getRemoved
-    );
-
-    private final @NotNull Function<ChangeSubject, ChangeType> change;
-
-    public @NotNull ChangeType changeOf(final @NotNull ChangeSubject subject) {
-        return change.apply(subject);
-    }
-
-    public boolean hasBefore() {
-        return this != ADDED;
-    }
-
-    public boolean hasAfter() {
-        return this != DELETED;
+    protected AbstractBoundTestProjectAction(final @NotNull Project project, final @NotNull String title, final @NotNull String description, final @NotNull Icon icon) {
+        super(title, description, icon);
+        this.project = project;
     }
 }

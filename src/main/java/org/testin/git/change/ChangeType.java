@@ -59,8 +59,8 @@ public enum ChangeType {
             (draft, old) -> draft.groups(new ArrayList<>(old.getGroups()))
     ),
 
-    CHANGE_STATUS(
-            Bundle.message("change.change.status"),
+    CHANGE_TEST_CASE_STATUS(
+            Bundle.message("change.change.test.case.status"),
             (draft, old) -> draft.status(old.getStatus())
     ),
 

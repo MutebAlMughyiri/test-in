@@ -38,8 +38,8 @@ public enum PanelState {
             TreePanel::offerClone
     ),
 
-    NO_PROJECTS(
-            TreePanel::offerFirstProject
+    NO_TEST_PROJECTS(
+            TreePanel::offerFirstTestProject
     ),
 
     CHOOSE(
@@ -53,16 +53,16 @@ public enum PanelState {
     private final @NotNull BiConsumer<TreePanel, StatusText> welcome;
 
     // UC-TREE-PANEL-001
-    public static @NotNull PanelState of(final boolean rootConfigured, final boolean indexed, final boolean projectResolved, final boolean boundProjectMissing, final boolean cloneUrlKnown, final boolean anyProjectsUnderRoot) {
+    public static @NotNull PanelState of(final boolean rootConfigured, final boolean indexed, final boolean testProjectResolved, final boolean boundTestProjectMissing, final boolean cloneUrlKnown, final boolean anyTestProjectsUnderRoot) {
         if (!rootConfigured) return NO_ROOT;
 
-        if (projectResolved) return TREE;
+        if (testProjectResolved) return TREE;
 
         // Rule-TREE-PANEL-118
         if (!indexed) return READING;
 
-        if (boundProjectMissing && cloneUrlKnown) return CLONE_BOUND;
-        if (!anyProjectsUnderRoot) return NO_PROJECTS;
+        if (boundTestProjectMissing && cloneUrlKnown) return CLONE_BOUND;
+        if (!anyTestProjectsUnderRoot) return NO_TEST_PROJECTS;
 
         return CHOOSE;
     }

@@ -123,7 +123,7 @@ public class ExecutionModeIdeTest extends AbstractCodegenIdeTest {
                 PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
             });
 
-            assertEquals("Run Tests started during the walk", List.of(), runner.runs());
+            assertEquals("Run Tests started during the walk", List.of(), runner.executions());
             assertTrue("Run Tests during the walk did not say why: " + said, said.contains(Bundle.message("execution.mode.walk")));
         } finally {
             Disposer.dispose(editor);

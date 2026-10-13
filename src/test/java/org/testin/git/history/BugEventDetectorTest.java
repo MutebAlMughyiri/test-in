@@ -35,8 +35,8 @@ public class BugEventDetectorTest {
 
     private static final @NotNull Path CYCLE_3 = Path.of("Test Runs", "Cycle 3");
 
-    private static @NotNull Optional<RunItem> runItem(final @NotNull RunItemStatus status, final @NotNull BugSeverity severity, final @NotNull String executedBy) {
-        return Optional.of(RunItem.builder().bugSeverity(severity).executions(List.of(RunItemExecution.builder().status(status).executedBy(executedBy).actualResult("The basket was emptied").build())).build());
+    private static @NotNull Optional<RunItem> runItem(final @NotNull RunItemStatus runItemStatus, final @NotNull BugSeverity severity, final @NotNull String executedBy) {
+        return Optional.of(RunItem.builder().bugSeverity(severity).executions(List.of(RunItemExecution.builder().status(runItemStatus).executedBy(executedBy).actualResult("The basket was emptied").build())).build());
     }
 
     private static @NotNull BugEvent between(final @NotNull Optional<RunItem> before, final @NotNull Optional<RunItem> after) {

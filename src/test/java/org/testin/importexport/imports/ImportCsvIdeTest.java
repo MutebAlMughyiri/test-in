@@ -59,7 +59,7 @@ public class ImportCsvIdeTest extends AbstractTempRootIdeTest {
     }
 
     // UC-SHARE-005, Rule-SHARE-110
-    public void testAHeadingIsMatchedWhateverItsCaseAndUnderscores() {
+    public void testAHeadingIsMatchedWhateverItsCapitalsAndUnderscores() {
         final @NotNull List<TestCase> testCases = imported("""
                 description,EXPECTED_RESULT,pre conditions,Test_Data
                 log in with a valid user,the dashboard opens,a user exists,user = muteb

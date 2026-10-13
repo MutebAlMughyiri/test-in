@@ -40,7 +40,7 @@ import org.testin.indexer.AbstractReadTheRootIdeTest;
 import org.testin.model.NodeType;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
-import org.testin.model.status.ProjectStatus;
+import org.testin.model.status.TestProjectStatus;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
 import org.testin.testproject.SelectTestProjectAction;
@@ -65,7 +65,7 @@ public class TreePanelIdeTest extends AbstractReadTheRootIdeTest {
     }
 
     private static @NotNull List<Object> settledRowsOf(final @NotNull TreePanel panel) {
-        final @NotNull SimpleTree tree = panel.getProjectTree().getMainTree();
+        final @NotNull SimpleTree tree = panel.getTestProjectTree().getMainTree();
         Await.until("the tree never showed Checkout", () -> !rowsOf(tree).isEmpty() && rowsOf(tree).getFirst() instanceof final AbstractNode top && top.getName().equals("Checkout"));
         return rowsOf(tree);
     }
@@ -150,7 +150,7 @@ public class TreePanelIdeTest extends AbstractReadTheRootIdeTest {
         readEverything();
         final @NotNull TestProjectNode testProject = (TestProjectNode) nodes().find(checkout).orElseThrow();
         WriteAction.runAndWait(() -> {
-            testProject.getMarker().setStatus(ProjectStatus.INACTIVE);
+            testProject.getMarker().setStatus(TestProjectStatus.INACTIVE);
             nodes().persistMarker(testProject);
         });
         readEverything();
@@ -172,7 +172,7 @@ public class TreePanelIdeTest extends AbstractReadTheRootIdeTest {
 
         panel.showIn(content);
 
-        assertSame("opening the panel does not give the keyboard to the tree", panel.getProjectTree().getMainTree(), content.getPreferredFocusableComponent());
+        assertSame("opening the panel does not give the keyboard to the tree", panel.getTestProjectTree().getMainTree(), content.getPreferredFocusableComponent());
     }
 
     // Rule-TREE-PANEL-101
@@ -221,7 +221,7 @@ public class TreePanelIdeTest extends AbstractReadTheRootIdeTest {
         assertGrayWithReason(new SelectTestProjectAction(getProject(), panel));
         assertGrayWithReason(new CreateTestProjectAction(getProject(), panel));
         assertGrayWithReason(new SaveTestinYmlAction(getProject()));
-        assertEquals(Bundle.message("yml.save.disabled.no.project"), updated(new SaveTestinYmlAction(getProject())).getDescription());
+        assertEquals(Bundle.message("yml.save.disabled.no.test.project"), updated(new SaveTestinYmlAction(getProject())).getDescription());
 
         for (final AnAction button : titleBarOf(panel)) {
             if (button instanceof SelectTestProjectAction || button instanceof CreateTestProjectAction || button instanceof SaveTestinYmlAction

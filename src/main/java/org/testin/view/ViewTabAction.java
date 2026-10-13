@@ -21,13 +21,13 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.content.ContentManager;
 import org.jetbrains.annotations.NotNull;
-import org.testin.actions.AbstractBoundProjectAction;
+import org.testin.actions.AbstractBoundTestProjectAction;
 
 import javax.swing.JComponent;
 import java.util.Optional;
 
 // UC-VIEW-PANEL-017, Rule-VIEW-PANEL-079, Rule-VIEW-PANEL-080
-public final class ViewTabAction extends AbstractBoundProjectAction {
+public final class ViewTabAction extends AbstractBoundTestProjectAction {
     private final @NotNull Direction direction;
 
     ViewTabAction(final @NotNull Project project, final @NotNull JComponent tab, final @NotNull Direction direction) {

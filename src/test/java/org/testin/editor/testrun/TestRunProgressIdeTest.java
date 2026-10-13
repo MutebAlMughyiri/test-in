@@ -86,8 +86,8 @@ public class TestRunProgressIdeTest extends AbstractTempRootIdeTest {
             typedInto(grid, 1, "Not tried yet");
 
             assertEquals("Slow but it passed", fixture.runItemOf(testCases.getFirst()).getActualResult());
-            assertEquals("typing changed a recorded run item status", RunItemStatus.PASSED, fixture.statusOf(testCases.getFirst()));
-            assertEquals("typing recorded a run item status", RunItemStatus.PENDING, fixture.statusOf(testCases.get(1)));
+            assertEquals("typing changed a recorded run item status", RunItemStatus.PASSED, fixture.runItemStatusOf(testCases.getFirst()));
+            assertEquals("typing recorded a run item status", RunItemStatus.PENDING, fixture.runItemStatusOf(testCases.get(1)));
         } finally {
             Disposer.dispose(editor);
         }

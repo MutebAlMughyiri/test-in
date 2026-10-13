@@ -83,15 +83,15 @@ public class RunItemLineIdeTest extends AbstractTempRootIdeTest {
     // Rule-VIEW-PANEL-086
     public void testRunItemStatusDurationAndBugChipAreOneLine() {
         final @NotNull JBPanel<?> tab = drawn(failed(""), shownTestRunTreePath());
-        final @NotNull Component status = Drawn.reading(tab, RunItemStatus.FAILED.getLabel());
+        final @NotNull Component runItemStatusLabel = Drawn.reading(tab, RunItemStatus.FAILED.getLabel());
         final @NotNull Component duration = Drawn.reading(tab, "02:14");
         final @NotNull Component bugChip = Drawn.components(tab).stream()
                 .filter(component -> Drawn.text(component).startsWith(BugSeverity.MAJOR.getLabel()))
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("the bug chip was not drawn: " + Drawn.words(tab)));
 
-        assertSame("the duration is not on the run item status's line", rowOf(status), rowOf(duration));
-        assertSame("the bug chip is not on the run item status's line", rowOf(status), rowOf(bugChip));
+        assertSame("the duration is not on the run item status's line", rowOf(runItemStatusLabel), rowOf(duration));
+        assertSame("the bug chip is not on the run item status's line", rowOf(runItemStatusLabel), rowOf(bugChip));
         assertTrue("the bug chip does not carry the bug priority: " + Drawn.text(bugChip), Drawn.text(bugChip).contains(BugPriority.HIGH.getLabel()));
     }
 

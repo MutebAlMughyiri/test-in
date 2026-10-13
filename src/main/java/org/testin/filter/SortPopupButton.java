@@ -70,7 +70,7 @@ public class SortPopupButton extends AbstractIconButton implements ToolbarItem {
 
         for (final SortField field : SortField.values()) {
             menu.add(new ToggleFilterAction<>(field.getLabel(), null, field, selectedSort, FilterMembership.single(), onChanged,
-                    () -> !field.isRunOnly() || source.hasRunItemStatuses(), Bundle.message("filter.run.only")));
+                    () -> !field.isTestRunOnly() || source.hasRunItemStatuses(), Bundle.message("filter.test.run.only")));
         }
         menu.add(Separator.getInstance());
         for (final SortDirection direction : SortDirection.values()) {

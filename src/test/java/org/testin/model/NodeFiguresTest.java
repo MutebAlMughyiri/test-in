@@ -32,8 +32,8 @@ import static org.testng.Assert.assertSame;
 
 public class NodeFiguresTest {
 
-    private static @NotNull RunItem runItem(final RunItemStatus status) {
-        return RunItem.builder().id(UUID.randomUUID()).executions(List.of(RunItemExecution.builder().status(status).build())).build();
+    private static @NotNull RunItem runItem(final RunItemStatus runItemStatus) {
+        return RunItem.builder().id(UUID.randomUUID()).executions(List.of(RunItemExecution.builder().status(runItemStatus).build())).build();
     }
 
     // Rule-INTERNAL-049

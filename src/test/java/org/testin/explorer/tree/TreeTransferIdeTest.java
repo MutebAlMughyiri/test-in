@@ -165,7 +165,7 @@ public class TreeTransferIdeTest extends AbstractTempRootIdeTest {
     }
 
     // Rule-TREE-PANEL-053
-    public void testACopyCarriesTheOrderNumberAndTheStatus() {
+    public void testACopyCarriesTheOrderNumberAndTheTestCaseStatus() {
         assertTrue(nodes().reorder(login, 3));
         assertTrue(nodes().mark(login, TestSetStatus.DEPRECATED, "Mohammed AlZamil"));
 

@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.TempTree;
 import org.testin.git.change.ChangeSubject;
 import org.testin.git.change.ChangeType;
-import org.testin.git.change.StatusKind;
+import org.testin.git.change.GitStatusKind;
 import org.testin.git.change.PendingChangeReader;
 import org.testin.git.change.PendingChange;
 import org.testin.git.conflict.MergeOutcome;
@@ -132,7 +132,7 @@ public class GitWorkflowTest {
             Files.write(pathspec, GitCommandRunner.pathspecBytes(paths));
 
             mustGit(work, "add", "--pathspec-from-file=" + pathspec, "--pathspec-file-nul");
-            mustGit(work, "commit", "--only", "-m", "imported 1200 cases",
+            mustGit(work, "commit", "--only", "-m", "imported 1200 test cases",
                     "--pathspec-from-file=" + pathspec, "--pathspec-file-nul");
 
             final long committed = mustGit(work, "show", "--name-only", "--pretty=format:", "HEAD")
@@ -196,9 +196,9 @@ public class GitWorkflowTest {
     }
 
     private @NotNull List<PendingChange> review() {
-        final List<String> status = GitStatusLines.records(mustGit(work, "status", "--porcelain", "-z", "-uall"));
+        final List<String> gitStatus = GitStatusLines.records(mustGit(work, "status", "--porcelain", "-z", "-uall"));
 
-        return PendingChangeReader.toDiffs(status, work, RealJsonCodec.build(), paths -> contents(work, "HEAD", paths), _ -> Optional.empty());
+        return PendingChangeReader.toDiffs(gitStatus, work, RealJsonCodec.build(), paths -> contents(work, "HEAD", paths), _ -> Optional.empty());
     }
 
     private @NotNull Set<String> stagedFor(final List<PendingChange> review) {
@@ -238,7 +238,7 @@ public class GitWorkflowTest {
                 "both new test cases are in the review");
         assertTrue(pending.stream().anyMatch(change -> change.subject() == ChangeSubject.MARKER),
                 "and so are the markers that make their directories nodes");
-        assertTrue(pending.stream().allMatch(diff -> diff.type() == StatusKind.ADDED));
+        assertTrue(pending.stream().allMatch(diff -> diff.type() == GitStatusKind.ADDED));
 
         commit(stagedFor(pending), "the first commit");
         assertTrue(git(work, "push", "-u", "origin", "main").isPresent(), "the push to an empty remote succeeded");
@@ -293,7 +293,7 @@ public class GitWorkflowTest {
         final List<PendingChange> pending = review();
 
         assertEquals(pending.size(), 1);
-        assertEquals(pending.getFirst().type(), StatusKind.MODIFIED);
+        assertEquals(pending.getFirst().type(), GitStatusKind.MODIFIED);
         assertEquals(pending.getFirst().fieldChanges().size(), 1, "one field moved, so one row");
         assertEquals(pending.getFirst().fieldChanges().getFirst().changeType(), ChangeType.CHANGE_MODULE);
         assertEquals(pending.getFirst().fieldChanges().getFirst().oldValue(), "authentication");
@@ -311,7 +311,7 @@ public class GitWorkflowTest {
         final List<PendingChange> pending = review();
 
         assertEquals(pending.size(), 1);
-        assertEquals(pending.getFirst().type(), StatusKind.ADDED);
+        assertEquals(pending.getFirst().type(), GitStatusKind.ADDED);
         assertEquals(pending.getFirst().name(), "a locked account cannot sign in");
     }
 
@@ -326,7 +326,7 @@ public class GitWorkflowTest {
             final List<PendingChange> pending = review();
 
             assertEquals(pending.size(), 1);
-            assertEquals(pending.getFirst().type(), StatusKind.DELETED);
+            assertEquals(pending.getFirst().type(), GitStatusKind.DELETED);
             assertEquals(pending.getFirst().name(), "a registered user signs in");
         } catch (final IOException ex) {
             throw new AssertionError(ex);
@@ -342,8 +342,8 @@ public class GitWorkflowTest {
         mustGit(work, "mv", "Test Cases/login flow/" + file, "Test Cases/" + file);
 
         final List<PendingChange> pending = review();
-        assertEquals(pending.stream().filter(change -> change.type() == StatusKind.DELETED).count(), 1);
-        assertEquals(pending.stream().filter(change -> change.type() == StatusKind.ADDED).count(), 1);
+        assertEquals(pending.stream().filter(change -> change.type() == GitStatusKind.DELETED).count(), 1);
+        assertEquals(pending.stream().filter(change -> change.type() == GitStatusKind.ADDED).count(), 1);
 
         commit(stagedFor(pending), "the case moved out of the test set");
 
@@ -429,12 +429,12 @@ public class GitWorkflowTest {
             write(colleague, "Test Cases/login flow/" + theirNewTestCase.getId() + ".testcase", theirNewTestCase);
 
             mustGit(colleague, "add", "-A");
-            mustGit(colleague, "commit", "-m", "added the locked account case");
+            mustGit(colleague, "commit", "-m", "added the locked account test case");
             mustGit(colleague, "push", "origin", "main");
 
             final TestCase myNewTestCase = testCase("a signed-in user signs out").setOrder("s");
             write(work, "Test Cases/login flow/" + myNewTestCase.getId() + ".testcase", myNewTestCase);
-            commit(stagedFor(review()), "added the sign out case");
+            commit(stagedFor(review()), "added the sign out test case");
 
             assertTrue(git(work, "pull", "--rebase", "--autostash", "origin", "main").isPresent(),
                     "two appended test cases touch two files and merge on their own");
@@ -527,11 +527,11 @@ public class GitWorkflowTest {
     public void gitReportsNewTestCasesAsUntrackedWithTheirPathsAsWritten() {
         writeTestProject();
 
-        final List<String> status = GitStatusLines.records(mustGit(work, "status", "--porcelain", "-z", "-uall"));
+        final List<String> gitStatus = GitStatusLines.records(mustGit(work, "status", "--porcelain", "-z", "-uall"));
 
-        assertTrue(status.stream().anyMatch(record -> record.startsWith("?? Test Cases/login flow/")),
-                "a path with a space comes back unquoted: " + status);
-        assertEquals(GitStatusLines.parseStatus(status).stream()
+        assertTrue(gitStatus.stream().anyMatch(record -> record.startsWith("?? Test Cases/login flow/")),
+                "a path with a space comes back unquoted: " + gitStatus);
+        assertEquals(GitStatusLines.parseGitStatus(gitStatus).stream()
                 .filter(entry -> entry.path().endsWith(".testcase")).count(), 2);
     }
 }

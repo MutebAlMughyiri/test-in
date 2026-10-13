@@ -40,7 +40,7 @@ import org.testin.view.ViewToolWindowFactory;
 import javax.swing.JPanel;
 import java.awt.datatransfer.StringSelection;
 
-public class TestinEscapeAction extends AbstractBoundProjectAction {
+public class TestinEscapeAction extends AbstractBoundTestProjectAction {
     private static final @NotNull String TITLE = Bundle.message("escape.title");
 
     private final @NotNull CutState cutState = Services.getInstance(project, CutState.class);

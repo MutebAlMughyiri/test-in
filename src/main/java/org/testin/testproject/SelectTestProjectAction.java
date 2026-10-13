@@ -22,11 +22,11 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.actions.AbstractBoundProjectAction;
+import org.testin.actions.AbstractBoundTestProjectAction;
 import org.testin.actions.GrayWithReason;
 import org.testin.explorer.TreePanel;
-import org.testin.indexer.ProjectIndexer;
-import org.testin.model.status.ProjectStatus;
+import org.testin.indexer.TestProjectIndexer;
+import org.testin.model.status.TestProjectStatus;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.setting.TestinRoot;
@@ -34,14 +34,14 @@ import org.testin.util.Bundle;
 
 import java.util.Map;
 
-public final class SelectTestProjectAction extends AbstractBoundProjectAction {
+public final class SelectTestProjectAction extends AbstractBoundTestProjectAction {
     private final @NotNull TreePanel treePanel;
-    private final @NotNull ProjectIndexer indexer = Services.getInstance(project, ProjectIndexer.class);
+    private final @NotNull TestProjectIndexer indexer = Services.getInstance(project, TestProjectIndexer.class);
     private final @NotNull Notifier notifier = Services.getInstance(project, Notifier.class);
     private final @NotNull TestinRoot testinRoot = Services.getInstance(project, TestinRoot.class);
 
     public SelectTestProjectAction(final @NotNull Project project, final @NotNull TreePanel treePanel) {
-        super(project, Bundle.message("project.select.text"), Bundle.message("project.select.description"), AllIcons.Actions.ModuleDirectory);
+        super(project, Bundle.message("test.project.select.text"), Bundle.message("test.project.select.description"), AllIcons.Actions.ModuleDirectory);
         this.treePanel = treePanel;
     }
 
@@ -49,14 +49,14 @@ public final class SelectTestProjectAction extends AbstractBoundProjectAction {
     @Override
     public void actionPerformed(final @NotNull AnActionEvent e) {
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
-            final @NotNull Map<String, ProjectStatus> underRoot = indexer.testProjects();
+            final @NotNull Map<String, TestProjectStatus> underRoot = indexer.testProjects();
 
             ApplicationManager.getApplication().invokeLater(() -> {
                 if (project.isDisposed()) return;
 
                 if (underRoot.isEmpty()) {
-                    notifier.softRefuse(project, Bundle.message("project.none.title"),
-                            Bundle.message("project.none.message"));
+                    notifier.softRefuse(project, Bundle.message("test.project.none.title"),
+                            Bundle.message("test.project.none.message"));
                     return;
                 }
 

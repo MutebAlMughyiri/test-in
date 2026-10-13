@@ -144,7 +144,7 @@ public class OutsideChangesIdeTest extends AbstractReadTheRootIdeTest {
     // UC-INTERNAL-003, Rule-INTERNAL-022
     public void testAChangeArrivingWhileAReadRunsBooksTheNextReadAndNeverAReadAtTheSameTime() {
         final @NotNull Path checkout = aTestProjectAt(root.resolve("Checkout"));
-        indexer().scanSingleProject(checkout);
+        indexer().scanSingleTestProject(checkout);
         final @NotNull CountDownLatch holding = new CountDownLatch(1);
         final @NotNull CountDownLatch release = new CountDownLatch(1);
         final @NotNull AtomicBoolean read = new AtomicBoolean();
@@ -157,7 +157,7 @@ public class OutsideChangesIdeTest extends AbstractReadTheRootIdeTest {
         awaitQuietly(holding);
 
         final @NotNull Thread reading = new Thread(() -> {
-            indexer().scanSingleProject(checkout, new EmptyProgressIndicator());
+            indexer().scanSingleTestProject(checkout, new EmptyProgressIndicator());
             read.set(true);
         });
         reading.start();
@@ -192,23 +192,23 @@ public class OutsideChangesIdeTest extends AbstractReadTheRootIdeTest {
     public void testTestinYmlIsNotWatchedAndIsReadAgainOnlyWhenAskedTo() {
         final @NotNull Path yml = theCodeProjectsTestinYml();
         TestinYml.reload(getProject());
-        assertEquals("the code project already names a test project", "", TestinYml.projectName(getProject()));
+        assertEquals("the code project already names a test project", "", TestinYml.testProjectName(getProject()));
 
         try {
             written(yml, namingNafath());
             final @NotNull VirtualFile changed = onDisk(yml);
 
             assertNull("a change to testin.yml started a read of the test data", new TestinFileWatcher().prepareChange(eventsOfWritingAgain(changed)));
-            assertEquals("testin.yml was read again on its own when it changed", "", TestinYml.projectName(getProject()));
+            assertEquals("testin.yml was read again on its own when it changed", "", TestinYml.testProjectName(getProject()));
 
             TestinYml.reload(getProject());
-            assertEquals("reading testin.yml again did not see what it says now", "NAFATH", TestinYml.projectName(getProject()));
+            assertEquals("reading testin.yml again did not see what it says now", "NAFATH", TestinYml.testProjectName(getProject()));
         } finally {
             removed(yml);
             TestinYml.reload(getProject());
         }
 
-        final @NotNull Path testCase = theTestCasesOf(aTestProjectAt(root.resolve("Checkout"))).resolve("Login").resolve("case.testcase");
+        final @NotNull Path testCase = theTestCasesOf(aTestProjectAt(root.resolve("Checkout"))).resolve("Login").resolve("testCase.testcase");
         written(testCase, "{}");
         assertNotNull("a change to a test case under the Testin folder was not taken up, so this test proves nothing about testin.yml", new TestinFileWatcher().prepareChange(eventsOfWritingAgain(onDisk(testCase))));
     }
@@ -240,7 +240,7 @@ public class OutsideChangesIdeTest extends AbstractReadTheRootIdeTest {
     public void testAFileTestinWritesIsClaimedBeforeTheWriteStarts() {
         final @NotNull Path notAFolder = root.resolve("Checkout").resolve("Login");
         written(notAFolder, "a file where a folder should be");
-        final @NotNull Path unwritable = notAFolder.resolve("case.json");
+        final @NotNull Path unwritable = notAFolder.resolve("testCase.json");
 
         Services.getInstance(getProject(), TestDataFiles.class).write(unwritable, Map.of("description", "Log in"));
 

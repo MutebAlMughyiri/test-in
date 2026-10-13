@@ -64,7 +64,7 @@ import java.util.Objects;
 public class LightModeButtonsIdeTest extends AbstractCodegenIdeTest {
 
     private static final @NotNull String TO_THE_METHOD = Bundle.message("action.Testin.NavigateToTestMethod.text");
-    private static final @NotNull String RUN = Bundle.message("action.Testin.RunTestMethod.text");
+    private static final @NotNull String RUN_TEST_METHOD_TEXT = Bundle.message("action.Testin.RunTestMethod.text");
     private static final @NotNull String TO_THE_TEST_CASE = Bundle.message("action.Testin.NavigateToTestCase.text");
 
     private final @NotNull List<LightModeScreen> opened = new ArrayList<>();
@@ -72,7 +72,7 @@ public class LightModeButtonsIdeTest extends AbstractCodegenIdeTest {
     private @NotNull CapturedRunner runner = new CapturedRunner();
 
     private static @NotNull List<JComponent> buttons(final @NotNull JFrame frame) {
-        final @NotNull List<String> names = List.of(TO_THE_METHOD, RUN, Bundle.message("card.stop.test.method"), TO_THE_TEST_CASE);
+        final @NotNull List<String> names = List.of(TO_THE_METHOD, RUN_TEST_METHOD_TEXT, Bundle.message("card.stop.test.method"), TO_THE_TEST_CASE);
         return Drawn.components(frame.getRootPane()).stream().filter(JBLabel.class::isInstance)
                 .map(JComponent.class::cast)
                 .filter(label -> names.contains(Objects.requireNonNullElse(label.getAccessibleContext().getAccessibleName(), "")) && Drawn.text(label).isEmpty())
@@ -157,7 +157,7 @@ public class LightModeButtonsIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestRunEditor editor = walkingThrough(testCases);
         final @NotNull JFrame frame = lightModeOn(editor);
         try {
-            assertEquals("light mode does not offer the test run card's buttons", List.of(TO_THE_METHOD, RUN, TO_THE_TEST_CASE),
+            assertEquals("light mode does not offer the test run card's buttons", List.of(TO_THE_METHOD, RUN_TEST_METHOD_TEXT, TO_THE_TEST_CASE),
                     buttons(frame).stream().map(button -> button.getAccessibleContext().getAccessibleName()).toList());
             final @NotNull Component name = Drawn.reading(frame.getRootPane(), "Checkout");
             final @NotNull JComponent setLine = (JComponent) name.getParent();
@@ -170,9 +170,9 @@ public class LightModeButtonsIdeTest extends AbstractCodegenIdeTest {
             final @NotNull Point end = SwingUtilities.convertPoint(last, last.getWidth(), 0, setLine);
             assertTrue("the buttons are not at the right end of the test set line: " + end.x + " of " + setLine.getWidth(), setLine.getWidth() - setLine.getInsets().right - end.x <= 2);
 
-            click(button(frame, RUN));
+            click(button(frame, RUN_TEST_METHOD_TEXT));
 
-            assertEquals("Run did not run the test case on screen", List.of(List.of(testCases.getFirst())), runner.runs());
+            assertEquals("Run did not run the test case on screen", List.of(List.of(testCases.getFirst())), runner.executions());
             CapturedRunner.reports(getProject(), testCases.getFirst(), ExecutionStatus.PASSED, Duration.ofMillis(84));
             Await.until("Run did not claim the test case for this test run first", () -> editor.runItem(testCases.getFirst().getId()).filter(item -> item.getStatus() == RunItemStatus.PASSED).isPresent());
         } finally {
@@ -188,17 +188,17 @@ public class LightModeButtonsIdeTest extends AbstractCodegenIdeTest {
         try {
             assertTrue("Run Test Method is not on F5", keysOf("Testin.RunTestMethod").contains(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0)));
             assertTrue("Navigate to Test Method is not on Shift+F5", keysOf("Testin.NavigateToTestMethod").contains(KeyStroke.getKeyStroke(KeyEvent.VK_F5, InputEvent.SHIFT_DOWN_MASK)));
-            assertEquals("the Run tooltip does not name its key", Declared.shortcutText("Testin.RunTestMethod"), shortcutOn(button(frame, RUN)));
+            assertEquals("the Run tooltip does not name its key", Declared.shortcutText("Testin.RunTestMethod"), shortcutOn(button(frame, RUN_TEST_METHOD_TEXT)));
             assertEquals("the Navigate to Test Method tooltip does not name its key", Declared.shortcutText("Testin.NavigateToTestMethod"), shortcutOn(button(frame, TO_THE_METHOD)));
 
             final @NotNull List<String> bar = Drawn.words(frame.getRootPane());
-            final int lastRunItemStatus = Arrays.stream(RunItemStatus.values()).filter(RunItemStatus::isRunItemStatus).mapToInt(status -> bar.lastIndexOf(status.getLabel())).max().orElse(-1);
-            assertTrue("the status bar does not list Run Test Method after the run item status keys: " + bar, bar.lastIndexOf(RUN) > lastRunItemStatus);
+            final int lastRunItemStatus = Arrays.stream(RunItemStatus.values()).filter(RunItemStatus::isRunItemStatus).mapToInt(runItemStatus -> bar.lastIndexOf(runItemStatus.getLabel())).max().orElse(-1);
+            assertTrue("the status bar does not list Run Test Method after the run item status keys: " + bar, bar.lastIndexOf(RUN_TEST_METHOD_TEXT) > lastRunItemStatus);
             assertTrue("the status bar does not list Navigate to Test Method after the run item status keys: " + bar, bar.lastIndexOf(TO_THE_METHOD) > lastRunItemStatus);
 
             final @NotNull AnAction runKey = runTestMethodKey(frame);
             Gestures.press(getProject(), runKey, frame.getRootPane());
-            assertEquals("F5 did not run the test case on screen", List.of(List.of(testCases.getFirst())), runner.runs());
+            assertEquals("F5 did not run the test case on screen", List.of(List.of(testCases.getFirst())), runner.executions());
             assertTrue(Services.getInstance(getProject(), TestNGExecution.class).isRunning(testCases.getFirst().getId()));
             Gestures.press(getProject(), runKey, frame.getRootPane());
             assertFalse("F5 did not stop the test case while its automation ran", Services.getInstance(getProject(), TestNGExecution.class).isRunning(testCases.getFirst().getId()));

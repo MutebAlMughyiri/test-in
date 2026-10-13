@@ -34,12 +34,12 @@ import static org.testng.Assert.assertTrue;
 
 public class AttemptsTest {
 
-    private static @NotNull Attempt attempt(final @NotNull ExecutionStatus status, final @NotNull String parameters) {
-        return new Attempt(status, Duration.ZERO, new Failure(status == ExecutionStatus.PASSED ? "" : "attempt failed", "", List.of()), parameters, DateFormats.NOT_EXECUTED);
+    private static @NotNull Attempt attempt(final @NotNull ExecutionStatus executionStatus, final @NotNull String parameters) {
+        return new Attempt(executionStatus, Duration.ZERO, new Failure(executionStatus == ExecutionStatus.PASSED ? "" : "attempt failed", "", List.of()), parameters, DateFormats.NOT_EXECUTED);
     }
 
-    private static @NotNull Attempts held(final @NotNull ExecutionStatus... statuses) {
-        return new Attempts(Arrays.stream(statuses).map(status -> attempt(status, "")).toList(), 0);
+    private static @NotNull Attempts held(final @NotNull ExecutionStatus... executionStatuses) {
+        return new Attempts(Arrays.stream(executionStatuses).map(executionStatus -> attempt(executionStatus, "")).toList(), 0);
     }
 
     private static @NotNull List<String> labels(final @NotNull Attempts attempts) {
@@ -55,7 +55,7 @@ public class AttemptsTest {
 
         assertEquals(labels(attempts), List.of("FAILED i0 r0 retried", "FAILED i0 r1 retried", "PASSED i0 r2"),
                 "a retried attempt is kept as the failure it was, and nothing says Invocation for a method run once");
-        assertEquals(attempts.status(), ExecutionStatus.PASSED);
+        assertEquals(attempts.executionStatus(), ExecutionStatus.PASSED);
         assertEquals(attempts.deciding(), 2);
     }
 
@@ -65,7 +65,7 @@ public class AttemptsTest {
         final @NotNull Attempts attempts = held(ExecutionStatus.PASSED, ExecutionStatus.FAILED, ExecutionStatus.PASSED, ExecutionStatus.PASSED);
 
         assertEquals(labels(attempts), List.of("PASSED i1 r0", "FAILED i2 r0", "PASSED i3 r0", "PASSED i4 r0"));
-        assertEquals(attempts.status(), ExecutionStatus.FAILED, "one failed invocation fails the test case");
+        assertEquals(attempts.executionStatus(), ExecutionStatus.FAILED, "one failed invocation fails the test case");
         assertEquals(attempts.deciding(), 1);
     }
 
@@ -75,7 +75,7 @@ public class AttemptsTest {
         final @NotNull Attempts attempts = held(ExecutionStatus.PASSED, ExecutionStatus.SKIPPED, ExecutionStatus.PASSED, ExecutionStatus.PASSED);
 
         assertEquals(labels(attempts), List.of("PASSED i1 r0", "FAILED i2 r0 retried", "PASSED i2 r1", "PASSED i3 r0"));
-        assertEquals(attempts.status(), ExecutionStatus.PASSED, "the retried failure never decides");
+        assertEquals(attempts.executionStatus(), ExecutionStatus.PASSED, "the retried failure never decides");
         assertEquals(attempts.deciding(), 3);
     }
 
@@ -85,7 +85,7 @@ public class AttemptsTest {
         final @NotNull Attempts attempts = held(ExecutionStatus.SKIPPED);
 
         assertEquals(labels(attempts), List.of("FAILED i0 r0"));
-        assertEquals(attempts.status(), ExecutionStatus.FAILED);
+        assertEquals(attempts.executionStatus(), ExecutionStatus.FAILED);
     }
 
     // Rule-CODEGEN-112

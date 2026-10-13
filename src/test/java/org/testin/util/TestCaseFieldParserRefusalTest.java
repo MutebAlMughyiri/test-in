@@ -42,7 +42,7 @@ public class TestCaseFieldParserRefusalTest {
     }
 
     @Test
-    public void aPriorityIsReadByItsWordInAnyCase() {
+    public void aPriorityIsReadByItsWordInAnyCapitals() {
         assertEquals(TestCaseFieldParser.priority(Priority.HIGH.getLabel(), Priority.LOW).orElseThrow(), Priority.HIGH,
                 "the word is what the column shows, so it is what a tester retypes");
         assertEquals(TestCaseFieldParser.priority("high", Priority.LOW).orElseThrow(), Priority.HIGH,

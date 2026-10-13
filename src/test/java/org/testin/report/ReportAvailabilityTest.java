@@ -26,8 +26,8 @@ public class ReportAvailabilityTest {
     // Rule-REPORT-016
     @Test
     public void onlyATestRunInProgressCannotBeReported() {
-        for (final TestRunStatus status : TestRunStatus.values()) {
-            assertEquals(status.isReportable(), status != TestRunStatus.IN_PROGRESS, status + " is reportable the wrong way round");
+        for (final TestRunStatus testRunStatus : TestRunStatus.values()) {
+            assertEquals(testRunStatus.isReportable(), testRunStatus != TestRunStatus.IN_PROGRESS, testRunStatus + " is reportable the wrong way round");
         }
     }
 }

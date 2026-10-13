@@ -323,7 +323,7 @@ public class EditorViewsIdeTest extends AbstractTempRootIdeTest {
     }
 
     // Rule-EDITOR-PANEL-108, Rule-EDITOR-PANEL-109
-    public void testSeveralSeparateRunsCanBeSelectedAndAClickOutsideEveryCardClearsThem() {
+    public void testSeveralSeparateBlocksCanBeSelectedAndAClickOutsideEveryCardClearsThem() {
         final @NotNull TestSetEditor editor = openedTestSet(6);
         final @NotNull JBList<TestCase> list = editor.getList();
         list.setSize(900, 4000);

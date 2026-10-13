@@ -43,19 +43,19 @@ import java.util.Optional;
 public final class CodeOn {
     // Rule-CODEGEN-082
     public static boolean isOn(final @NotNull Project project) {
-        return OptionalPlugin.JAVA.isAvailable() && TestinYml.names(project, openProject(project));
+        return OptionalPlugin.JAVA.isAvailable() && TestinYml.names(project, openTestProject(project));
     }
 
     // Rule-CODEGEN-082
     public static @NotNull Optional<String> whyOff(final @NotNull Project project) {
-        final @NotNull String open = openProject(project);
+        final @NotNull String open = openTestProject(project);
         if (TestinYml.names(project, open)) return Optional.empty();
 
-        final @NotNull String named = TestinYml.projectName(project);
+        final @NotNull String named = TestinYml.testProjectName(project);
         return Optional.of(named.isEmpty() ? Bundle.message("code.off.not.named") : Bundle.message("code.off.names.other", named, open));
     }
 
-    private static @NotNull String openProject(final @NotNull Project project) {
+    private static @NotNull String openTestProject(final @NotNull Project project) {
         return Services.getInstance(project, BoundTestProject.class).name();
     }
 

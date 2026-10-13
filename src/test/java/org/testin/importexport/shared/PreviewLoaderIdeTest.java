@@ -40,7 +40,7 @@ public class PreviewLoaderIdeTest extends AbstractTempRootIdeTest {
     private static final long LONGER_THAN_THE_PAUSE = 900;
 
     private final @NotNull AtomicReference<String> typed = new AtomicReference<>("");
-    private final @NotNull List<String> statuses = new CopyOnWriteArrayList<>();
+    private final @NotNull List<String> messages = new CopyOnWriteArrayList<>();
     private final @NotNull List<String> read = new CopyOnWriteArrayList<>();
     private final @NotNull List<String> loaded = new CopyOnWriteArrayList<>();
 
@@ -64,7 +64,7 @@ public class PreviewLoaderIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull PreviewLoader loader(final boolean failing) {
-        return new PreviewLoader(box, getProject(), statuses::add, (_, data) -> loaded.addAll(data.keySet()), (file, _) -> readFile(file, failing));
+        return new PreviewLoader(box, getProject(), messages::add, (_, data) -> loaded.addAll(data.keySet()), (file, _) -> readFile(file, failing));
     }
 
     private @NotNull Map<String, List<TestCase>> readFile(final @NotNull File file, final boolean failing) {
@@ -117,7 +117,7 @@ public class PreviewLoaderIdeTest extends AbstractTempRootIdeTest {
         waitLongerThanThePause();
 
         assertEquals("only the path the typing stopped on is read", List.of("second.csv"), read);
-        assertEquals(List.of(Bundle.message("import.reading", "second.csv"), ""), statuses);
+        assertEquals(List.of(Bundle.message("import.reading", "second.csv"), ""), messages);
     }
 
     // UC-SHARE-005, Rule-SHARE-107
@@ -125,9 +125,9 @@ public class PreviewLoaderIdeTest extends AbstractTempRootIdeTest {
         final @NotNull PreviewLoader loader = loader(true);
 
         type(loader, file("broken.csv"));
-        Await.until("the reading line did not go after the reading failed", () -> statuses.size() == 2);
+        Await.until("the reading line did not go after the reading failed", () -> messages.size() == 2);
 
-        assertEquals(List.of(Bundle.message("import.reading", "broken.csv"), ""), statuses);
+        assertEquals(List.of(Bundle.message("import.reading", "broken.csv"), ""), messages);
         assertEquals(List.of(), loaded);
     }
 }

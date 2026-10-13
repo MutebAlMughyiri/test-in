@@ -34,7 +34,7 @@ import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
 import org.testin.NodesOnDisk;
 import org.testin.actions.TestinDataKeys;
-import org.testin.indexer.ProjectIndexer;
+import org.testin.indexer.TestProjectIndexer;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
@@ -79,7 +79,7 @@ public class WithoutGitIdeTest extends AbstractTempRootIdeTest {
         try {
             XmlSerializerUtil.copyBean(wasStored, settings());
             bound().choose(wasBound);
-            Services.getInstance(getProject(), ProjectIndexer.class).resetForReindex();
+            Services.getInstance(getProject(), TestProjectIndexer.class).resetForReindex();
         } finally {
             super.tearDown();
         }
@@ -110,7 +110,7 @@ public class WithoutGitIdeTest extends AbstractTempRootIdeTest {
                 .collect(Collectors.joining("\n"));
         assertTrue("cloning is offered without Git: " + lines, lines.contains(NEEDS_GIT));
 
-        final @NotNull ProjectIndexer indexer = Services.getInstance(getProject(), ProjectIndexer.class);
+        final @NotNull TestProjectIndexer indexer = Services.getInstance(getProject(), TestProjectIndexer.class);
         indexer.resetForReindex();
         ApplicationManager.getApplication().executeOnPooledThread(indexer::awaitIndexing);
         Await.until("without Git the test cases on disk are not read", () -> Services.getInstance(getProject(), TestCases.class).findTestCase(testCase.getId()).isPresent());

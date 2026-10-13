@@ -34,7 +34,7 @@ public class ReportFileNameTest {
 
     // Rule-REPORT-006
     @Test
-    public void itSaysTheProjectTheTestRunAndWhen() {
+    public void itSaysTheTestProjectTheTestRunAndWhen() {
         assertEquals(ReportFileName.of("Nafath", "Sprint 7 Cycle 3", AT),
                 "TestRun_Nafath_Sprint7Cycle3_25-08-2026_09-40-15PM");
     }
@@ -59,7 +59,7 @@ public class ReportFileNameTest {
 
     // Rule-REPORT-008
     @Test
-    public void anUnnamedProjectLeavesNoGap() {
+    public void anUnnamedTestProjectLeavesNoGap() {
         assertEquals(ReportFileName.of("", "Sprint 7", AT), "TestRun_Sprint7_25-08-2026_09-40-15PM");
     }
 

@@ -34,7 +34,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 public abstract class AbstractJsonArraySplitBulkSectionDialog extends AbstractFrameworkDialog {
-    private static final @NotNull ItemRecorder RECORDS_NOTHING = (_, _, _, _) -> {
+    private static final @NotNull EntryRecorder RECORDS_NOTHING = (_, _, _, _) -> {
     };
     private final @NotNull List<TestCase> selectedTestCases;
     private final @NotNull Consumer<List<TestCase>> updatedTestCases;
@@ -66,8 +66,8 @@ public abstract class AbstractJsonArraySplitBulkSectionDialog extends AbstractFr
 
         shortcuts = List.of(
                 StatusBarShortcut.save(this::submit),
-                StatusBarShortcut.build(Shortcuts.AddItem, Bundle.message("shortcut.add"), this::addItemAtCarets),
-                StatusBarShortcut.build(Shortcuts.RemoveArrayItem, Bundle.message("bulk.shortcut.remove"), this::removeItemAtCarets),
+                StatusBarShortcut.build(Shortcuts.AddItem, Bundle.message("shortcut.add"), this::addEntryAtCarets),
+                StatusBarShortcut.build(Shortcuts.RemoveArrayItem, Bundle.message("bulk.shortcut.remove"), this::removeEntryAtCarets),
                 StatusBarShortcut.build(Shortcuts.TabNext, Bundle.message("bulk.shortcut.next"), () -> editors.navigate(1, true)),
                 StatusBarShortcut.build(Shortcuts.TabPrevious, Bundle.message("bulk.shortcut.previous"), () -> editors.navigate(-1, true)),
                 StatusBarShortcut.build(Shortcuts.ArrowDown, Bundle.message("bulk.shortcut.next"), () -> editors.navigate(1, true)),
@@ -126,7 +126,7 @@ public abstract class AbstractJsonArraySplitBulkSectionDialog extends AbstractFr
     }
 
     // UC-EDITOR-PANEL-007
-    private void addItemAtCarets() {
+    private void addEntryAtCarets() {
         readEditorIntoValues();
 
         final @NotNull List<Integer> spans = editors.indicesUnderCarets();
@@ -139,34 +139,34 @@ public abstract class AbstractJsonArraySplitBulkSectionDialog extends AbstractFr
 
         final int[] focus = spanOwners.get(spans.getLast());
         render();
-        focusItem(focus[0], focus[1] + 1);
+        focusEntry(focus[0], focus[1] + 1);
     }
 
     // UC-EDITOR-PANEL-007
-    private void removeItemAtCarets() {
+    private void removeEntryAtCarets() {
         readEditorIntoValues();
 
         final @NotNull List<Integer> spans = editors.indicesUnderCarets();
         if (spans.isEmpty()) return;
 
         final int focusedTestCase = spanOwners.get(spans.getLast())[0];
-        int focusItem = 0;
+        int focusEntry = 0;
 
         for (final int span : spans) {
             final int[] owner = spanOwners.get(span);
-            final @NotNull List<String> items = activeValues.get(owner[0]);
+            final @NotNull List<String> entries = activeValues.get(owner[0]);
 
-            if (items.size() > 1) {
-                items.remove(owner[1]);
-                focusItem = Math.min(owner[1], items.size() - 1);
+            if (entries.size() > 1) {
+                entries.remove(owner[1]);
+                focusEntry = Math.min(owner[1], entries.size() - 1);
             } else {
-                items.set(0, "");
-                focusItem = 0;
+                entries.set(0, "");
+                focusEntry = 0;
             }
         }
 
         render();
-        focusItem(focusedTestCase, focusItem);
+        focusEntry(focusedTestCase, focusEntry);
     }
 
     private void caretOnEveryValue() {
@@ -197,10 +197,10 @@ public abstract class AbstractJsonArraySplitBulkSectionDialog extends AbstractFr
             left.append(prefix);
             right.append(prefix);
 
-            appendItems(left, originalValues.get(i), RECORDS_NOTHING, i);
-            appendItems(right, activeValues.get(i), (start, end, testCase, item) -> {
+            appendEntries(left, originalValues.get(i), RECORDS_NOTHING, i);
+            appendEntries(right, activeValues.get(i), (start, end, testCase, entry) -> {
                 editableRanges.add(new int[]{start, end});
-                spanOwners.add(new int[]{testCase, item});
+                spanOwners.add(new int[]{testCase, entry});
             }, i);
 
             final @NotNull String suffix = "    ]\n  }";
@@ -215,23 +215,23 @@ public abstract class AbstractJsonArraySplitBulkSectionDialog extends AbstractFr
         editors.setContent(left.toString(), right.toString(), editableRanges);
     }
 
-    private void appendItems(final @NotNull StringBuilder out, final @NotNull List<String> items, final @NotNull ItemRecorder recorder, final int testCaseIndex) {
-        for (int j = 0; j < items.size(); j++) {
+    private void appendEntries(final @NotNull StringBuilder out, final @NotNull List<String> entries, final @NotNull EntryRecorder recorder, final int testCaseIndex) {
+        for (int j = 0; j < entries.size(); j++) {
             out.append("      \"");
 
             final int start = out.length();
-            out.append(BulkValueText.escape(items.get(j)));
+            out.append(BulkValueText.escape(entries.get(j)));
 
             recorder.record(start, out.length(), testCaseIndex, j);
 
-            out.append("\"").append(j < items.size() - 1 ? "," : "").append("\n");
+            out.append("\"").append(j < entries.size() - 1 ? "," : "").append("\n");
         }
     }
 
-    private void focusItem(final int testCaseIndex, final int itemIndex) {
+    private void focusEntry(final int testCaseIndex, final int entryIndex) {
         for (int span = 0; span < spanOwners.size(); span++) {
             final int[] owner = spanOwners.get(span);
-            if (owner[0] == testCaseIndex && owner[1] == itemIndex) {
+            if (owner[0] == testCaseIndex && owner[1] == entryIndex) {
                 editors.focusValue(span);
                 return;
             }
@@ -248,7 +248,7 @@ public abstract class AbstractJsonArraySplitBulkSectionDialog extends AbstractFr
     }
 
     @FunctionalInterface
-    private interface ItemRecorder {
-        void record(int start, int end, int testCaseIndex, int itemIndex);
+    private interface EntryRecorder {
+        void record(int start, int end, int testCaseIndex, int entryIndex);
     }
 }

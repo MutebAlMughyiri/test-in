@@ -221,7 +221,7 @@ public class ApiModelActionIdeTest extends AbstractCodegenIdeTest {
             assertFalse("the entry works while testin.yml names another test project", shown.isEnabled());
             assertTrue("the entry does not say it needs testin.yml: " + shown.getText(), Objects.toString(shown.getText(), "").contains(TestinYml.fileName()));
         } finally {
-            bound.choose(TestinYml.projectName(getProject()));
+            bound.choose(TestinYml.testProjectName(getProject()));
         }
     }
 

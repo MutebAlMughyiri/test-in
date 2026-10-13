@@ -87,11 +87,11 @@ public final class TestRunWordGenerator {
     public byte @NotNull [] generate(final @NotNull Project project, final @NotNull TestRunNode testRunNode, final @NotNull RunItems runItems) {
         try (ByteArrayOutputStream bytes = new ByteArrayOutputStream()) {
             try (XWPFDocument document = new XWPFDocument()) {
-                final @NotNull String projectName = Services.getInstance(project, BoundTestProject.class).name();
+                final @NotNull String testProjectName = Services.getInstance(project, BoundTestProject.class).name();
 
                 addText(document, Bundle.message("report.title"), ReportFont.TITLE.roundedPoints(), true, DARK_NAVY, NO_BORDER, 2);
 
-                addText(document, ReportText.joined("  |  ", projectName, ReportText.joined(", ", TestRunConfiguration.PLATFORM.valueIn(testRunNode.getMarker()), TestRunConfiguration.COMPONENT.valueIn(testRunNode.getMarker()))),
+                addText(document, ReportText.joined("  |  ", testProjectName, ReportText.joined(", ", TestRunConfiguration.PLATFORM.valueIn(testRunNode.getMarker()), TestRunConfiguration.COMPONENT.valueIn(testRunNode.getMarker()))),
                         ReportFont.SUBTITLE.roundedPoints(), false, MEDIUM_BLUE, NO_BORDER, 0);
                 addText(document, testRunNode.getName(), ReportFont.LEAD.roundedPoints(), false, MEDIUM_BLUE, DARK_NAVY, 1);
 
@@ -108,7 +108,7 @@ public final class TestRunWordGenerator {
                 setTableWidths(overviewTable, 30, 70);
 
                 int overviewRow = 0;
-                for (final DetailRow row : ReportOverview.rowsFor(projectName, testRunNode, summary)) {
+                for (final DetailRow row : ReportOverview.rowsFor(testProjectName, testRunNode, summary)) {
                     addOverviewRow(overviewTable, overviewRow++, row.caption(), row.value());
                 }
 
@@ -296,7 +296,7 @@ public final class TestRunWordGenerator {
             setCellText(testCaseCell, shownTestCaseName, ReportFont.BODY.roundedPoints(), false, BLACK);
 
             // Rule-REPORT-027
-            ReportText.otherExecutions(runItem).ifPresent(others -> styledRun(testCaseCell.addParagraph().createRun(), others, ReportFont.SMALL, DARK_GRAY));
+            ReportText.otherExecutions(runItem).ifPresent(others -> styledTextRun(testCaseCell.addParagraph().createRun(), others, ReportFont.SMALL, DARK_GRAY));
 
             if (section.isWithFailureDetail()) addFailureDetail(row, runItem, rowBackground);
 
@@ -310,14 +310,14 @@ public final class TestRunWordGenerator {
     private void addFailureDetail(final @NotNull XWPFTableRow row, final @NotNull RunItem runItem, final @NotNull String rowBackground) {
         final @NotNull String actualResult = runItem.getActualResult();
         final @NotNull XWPFParagraph actualResultParagraph = row.getCell(1).addParagraph();
-        styledRun(actualResultParagraph.createRun(), Bundle.message("report.actual.result", actualResult.isEmpty() ? "—" : actualResult), ReportFont.SMALL, DARK_GRAY);
+        styledTextRun(actualResultParagraph.createRun(), Bundle.message("report.actual.result", actualResult.isEmpty() ? "—" : actualResult), ReportFont.SMALL, DARK_GRAY);
 
         runItem.bugIssue().ifPresent(url -> {
-            styledRun(actualResultParagraph.createRun(), " (", ReportFont.SMALL, DARK_GRAY);
+            styledTextRun(actualResultParagraph.createRun(), " (", ReportFont.SMALL, DARK_GRAY);
             final @NotNull XWPFHyperlinkRun issue = actualResultParagraph.createHyperlinkRun(url);
-            styledRun(issue, BugIssueUrl.shortReference(url), ReportFont.SMALL, LINK_BLUE);
+            styledTextRun(issue, BugIssueUrl.shortReference(url), ReportFont.SMALL, LINK_BLUE);
             issue.setUnderline(UnderlinePatterns.SINGLE);
-            styledRun(actualResultParagraph.createRun(), ")", ReportFont.SMALL, DARK_GRAY);
+            styledTextRun(actualResultParagraph.createRun(), ")", ReportFont.SMALL, DARK_GRAY);
         });
 
         final @NotNull XWPFTableCell priorityCell = row.getCell(2);
@@ -463,16 +463,16 @@ public final class TestRunWordGenerator {
         final @NotNull XWPFFooter footer = document.createFooter(HeaderFooterType.DEFAULT);
         final @NotNull XWPFParagraph paragraph = footer.createParagraph();
         paragraph.setAlignment(ParagraphAlignment.CENTER);
-        styledRun(paragraph.createRun(), ReportText.footerLead(), ReportFont.CAPTION, DARK_GRAY);
+        styledTextRun(paragraph.createRun(), ReportText.footerLead(), ReportFont.CAPTION, DARK_GRAY);
 
         final @NotNull XWPFHyperlinkRun link = paragraph.createHyperlinkRun(ReportText.PLUGIN_URL);
-        styledRun(link, ReportText.PLUGIN_NAME, ReportFont.CAPTION, LINK_BLUE);
+        styledTextRun(link, ReportText.PLUGIN_NAME, ReportFont.CAPTION, LINK_BLUE);
         link.setUnderline(UnderlinePatterns.SINGLE);
 
-        styledRun(paragraph.createRun(), Bundle.message("report.footer.suffix"), ReportFont.CAPTION, DARK_GRAY);
+        styledTextRun(paragraph.createRun(), Bundle.message("report.footer.suffix"), ReportFont.CAPTION, DARK_GRAY);
     }
 
-    private void styledRun(final @NotNull XWPFRun textRun, final @NotNull String text, final @NotNull ReportFont font, final @NotNull String color) {
+    private void styledTextRun(final @NotNull XWPFRun textRun, final @NotNull String text, final @NotNull ReportFont font, final @NotNull String color) {
         textRun.setText(text);
         textRun.setFontSize(font.roundedPoints());
         textRun.setFontFamily(ReportFont.FAMILY);

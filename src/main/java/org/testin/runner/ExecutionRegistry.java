@@ -95,16 +95,16 @@ final class ExecutionRegistry {
         return executingNow.contains(testCaseId);
     }
 
-    @NotNull ExecutionStatus statusOf(final @NotNull UUID testCaseId) {
+    @NotNull ExecutionStatus executionStatusOf(final @NotNull UUID testCaseId) {
         return isRunning(testCaseId) ? ExecutionStatus.RUNNING : runItemStatus.getOrDefault(testCaseId, ExecutionStatus.IDLE);
     }
 
     // Rule-CODEGEN-110
     @NotNull Map<UUID, Attempts> attempted(final @NotNull UUID testCaseId, final @NotNull Attempt attempt) {
-        if (attempt.status() == ExecutionStatus.IDLE && held.containsKey(testCaseId))
+        if (attempt.executionStatus() == ExecutionStatus.IDLE && held.containsKey(testCaseId))
             return decide(List.of(testCaseId));
         if (!configOf.containsKey(testCaseId)) return Map.of(testCaseId, Attempts.of(attempt));
-        if (attempt.status() == ExecutionStatus.RUNNING) {
+        if (attempt.executionStatus() == ExecutionStatus.RUNNING) {
             executingNow.add(testCaseId);
             return decidedBefore(testCaseId, attempt);
         }
@@ -139,16 +139,16 @@ final class ExecutionRegistry {
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-038
-    void reported(final @NotNull UUID testCaseId, final @NotNull ExecutionStatus status) {
-        if (status == ExecutionStatus.RUNNING) return;
+    void reported(final @NotNull UUID testCaseId, final @NotNull ExecutionStatus executionStatus) {
+        if (executionStatus == ExecutionStatus.RUNNING) return;
 
         pending.remove(testCaseId);
         configOf.remove(testCaseId);
         executingNow.remove(testCaseId);
 
-        if (status == ExecutionStatus.IDLE && !stopped.contains(testCaseId)) return;
+        if (executionStatus == ExecutionStatus.IDLE && !stopped.contains(testCaseId)) return;
 
-        runItemStatus.put(testCaseId, status);
+        runItemStatus.put(testCaseId, executionStatus);
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-037

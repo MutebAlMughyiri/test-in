@@ -83,7 +83,7 @@ final class EditorGrid<A extends Enum<A> & ShowableField> {
     void rebuild() {
         final boolean keepKeyboard = view.map(GridView::handOver).orElse(false);
 
-        final @NotNull List<TestCase> pageTestCases = showOnGrid(editor.getCurrentPageItems());
+        final @NotNull List<TestCase> pageTestCases = showOnGrid(editor.getCurrentPageTestCases());
         final @NotNull Set<A> fields = editor.getSelectedDetails();
         TestinLogger.debug("[grid] rebuildGrid start, pageItems=" + pageTestCases.size() + ", details=" + fields);
         final @NotNull Disposable fontSync = Disposer.newDisposable(editor.projectDisposable, "testin." + editor.getClass().getSimpleName() + ".gridFontSync");
@@ -123,7 +123,7 @@ final class EditorGrid<A extends Enum<A> & ShowableField> {
         final boolean keepKeyboard = shown.handOver();
         final int column = shown.table().getSelectedColumn();
 
-        final @NotNull List<TestCase> pageTestCases = showOnGrid(editor.getCurrentPageItems());
+        final @NotNull List<TestCase> pageTestCases = showOnGrid(editor.getCurrentPageTestCases());
         GridTables.replaceRows(shown.table(), editor.gridRows(pageTestCases));
         GridTables.restoreSelection(shown.table(), editor.list, pageTestCases, column);
 

@@ -50,12 +50,12 @@ public final class TestRunExcelGenerator {
     }
 
     // Rule-REPORT-020
-    private static void writeOverview(final @NotNull Worksheet worksheet, final @NotNull String projectName, final @NotNull TestRunNode testRunNode, final @NotNull TestRunSummary summary) {
+    private static void writeOverview(final @NotNull Worksheet worksheet, final @NotNull String testProjectName, final @NotNull TestRunNode testRunNode, final @NotNull TestRunSummary summary) {
         worksheet.value(0, 0, Bundle.message("report.title"));
         worksheet.style(0, 0).bold().fontSize(14).set();
 
         int row = heading(worksheet, 2, Bundle.message("report.heading.overview"));
-        for (final DetailRow overview : ReportOverview.rowsFor(projectName, testRunNode, summary)) {
+        for (final DetailRow overview : ReportOverview.rowsFor(testProjectName, testRunNode, summary)) {
             worksheet.value(row, 0, overview.caption());
             worksheet.style(row, 0).bold().set();
             worksheet.value(row++, 1, overview.value());

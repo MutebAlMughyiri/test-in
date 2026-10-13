@@ -39,7 +39,7 @@ public class TestProjectFormatIdeTest extends BasePlatformTestCase {
     }
 
     // Rule-INTERNAL-091
-    public void testAProjectInAnOlderFormatIsRefusedAndToldToBeCreatedAgain() {
+    public void testATestProjectInAnOlderFormatIsRefusedAndToldToBeCreatedAgain() {
         final @NotNull Optional<String> refused = refusalFor(TestProjectMarker.FORMAT - 1);
 
         assertEquals("an older project is not read, converted or repaired: the tester is told to create it again",
@@ -47,7 +47,7 @@ public class TestProjectFormatIdeTest extends BasePlatformTestCase {
     }
 
     // Rule-INTERNAL-091
-    public void testAProjectFromANewerTestinIsRefused() {
+    public void testATestProjectFromANewerTestinIsRefused() {
         assertTrue("a format this build does not know is refused rather than guessed at",
                 refusalFor(TestProjectMarker.FORMAT + 1).isPresent());
     }

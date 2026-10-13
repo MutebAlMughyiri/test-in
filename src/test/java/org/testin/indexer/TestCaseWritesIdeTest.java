@@ -92,8 +92,8 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
         }
     }
 
-    private @NotNull ProjectIndexer indexer() {
-        return Services.getInstance(getProject(), ProjectIndexer.class);
+    private @NotNull TestProjectIndexer indexer() {
+        return Services.getInstance(getProject(), TestProjectIndexer.class);
     }
 
     private @NotNull TestCases indexedTestCases() {
@@ -133,8 +133,8 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull Path setWithAHandNamedTestCase() {
-        final Path project = SyntheticTree.write(root, 1, 1);
-        final Path set = project.resolve("Test Cases").resolve("set-0");
+        final Path testProjectPath = SyntheticTree.write(root, 1, 1);
+        final Path set = testProjectPath.resolve("Test Cases").resolve("set-0");
 
         try (var files = Files.list(set)) {
             final Path testCaseFile = files.filter(file -> file.getFileName().toString().endsWith(".testcase")).findFirst().orElseThrow();
@@ -143,7 +143,7 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
             throw new AssertionError("could not name the test case file by hand", ex);
         }
 
-        indexer().scanSingleProject(project);
+        indexer().scanSingleTestProject(testProjectPath);
         return set;
     }
 

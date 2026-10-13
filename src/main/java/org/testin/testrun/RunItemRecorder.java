@@ -58,8 +58,8 @@ public final class RunItemRecorder {
     private final @NotNull Project project;
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-130, Rule-EDITOR-PANEL-137
-    public void executeNext(final @NotNull TestRunEditor editor, final @NotNull RunItemStatus status) {
-        executeNext(editor, status, recording(status));
+    public void executeNext(final @NotNull TestRunEditor editor, final @NotNull RunItemStatus runItemStatus) {
+        executeNext(editor, runItemStatus, recording(runItemStatus));
     }
 
     // UC-EDITOR-PANEL-034, UC-EDITOR-PANEL-046, Rule-EDITOR-PANEL-285
@@ -68,7 +68,7 @@ public final class RunItemRecorder {
     }
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-130, Rule-EDITOR-PANEL-137
-    private boolean executeNext(final @NotNull TestRunEditor editor, final @NotNull RunItemStatus status, final @NotNull Consumer<RunItem> recording) {
+    private boolean executeNext(final @NotNull TestRunEditor editor, final @NotNull RunItemStatus runItemStatus, final @NotNull Consumer<RunItem> recording) {
         final int executingIndex = editor.getWalk().getCurrentlyExecutingIndex();
         if (executingIndex == -1) {
             // Rule-EDITOR-PANEL-227
@@ -83,12 +83,12 @@ public final class RunItemRecorder {
             return false;
         }
 
-        if (!recordOn(editor, currentTestCase.getId(), status, runItem -> {
+        if (!recordOn(editor, currentTestCase.getId(), runItemStatus, runItem -> {
             editor.getWalk().stopTheClock();
             recording.accept(runItem);
         })) return false;
 
-        confirmRunItemStatus(status, 1);
+        confirmRunItemStatus(runItemStatus, 1);
 
         // Rule-EDITOR-PANEL-130
         ApplicationManager.getApplication().invokeLater(() -> editor.getWalk().startTimerForIndex(executingIndex));
@@ -96,9 +96,9 @@ public final class RunItemRecorder {
     }
 
     // UC-EDITOR-PANEL-032, Rule-EDITOR-PANEL-136, Rule-EDITOR-PANEL-284
-    private @NotNull Consumer<RunItem> recording(final @NotNull RunItemStatus status) {
+    private @NotNull Consumer<RunItem> recording(final @NotNull RunItemStatus runItemStatus) {
         final @NotNull String tester = tester();
-        return runItem -> runItem.recordRunItemStatus(status, tester, runItem.getClock(), Failure.NONE);
+        return runItem -> runItem.recordRunItemStatus(runItemStatus, tester, runItem.getClock(), Failure.NONE);
     }
 
     // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-219, Rule-EDITOR-PANEL-285
@@ -129,7 +129,7 @@ public final class RunItemRecorder {
     }
 
     // UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-183, Rule-EDITOR-PANEL-241, Rule-EDITOR-PANEL-242
-    public void recordReported(final @NotNull TestRunEditor editor, final @NotNull TestCase testCase, final @NotNull RunItemStatus status, final @NotNull List<RunItemExecution> executions, final int written) {
+    public void recordReported(final @NotNull TestRunEditor editor, final @NotNull TestCase testCase, final @NotNull RunItemStatus runItemStatus, final @NotNull List<RunItemExecution> executions, final int written) {
         if (editor.getWalk().clockIsOn(testCase.getId())) editor.getWalk().stopTheClock();
 
         if (editor.getWalk().isExecuting(testCase.getId())) {
@@ -137,7 +137,7 @@ public final class RunItemRecorder {
         }
 
         final @NotNull String tester = tester();
-        recordOn(editor, testCase.getId(), status, runItem -> runItem.recordExecutions(executions, written, tester));
+        recordOn(editor, testCase.getId(), runItemStatus, runItem -> runItem.recordExecutions(executions, written, tester));
     }
 
     // UC-EDITOR-PANEL-043, Rule-CODEGEN-111
@@ -151,18 +151,18 @@ public final class RunItemRecorder {
 
     // Rule-EDITOR-PANEL-225, Rule-TREE-PANEL-009
     private boolean refused(final @NotNull Path testRunPath, final @NotNull UUID testCaseId) {
-        return heldTestRun(testRunPath).flatMap(held -> liveItem(held, testRunPath, testCaseId)).isEmpty();
+        return heldTestRun(testRunPath).flatMap(held -> liveRunItem(held, testRunPath, testCaseId)).isEmpty();
     }
 
     // Rule-EDITOR-PANEL-225
-    private boolean recordOn(final @NotNull TestRunEditor editor, final @NotNull UUID testCaseId, final @NotNull RunItemStatus status, final @NotNull Consumer<RunItem> runItemStatus) {
+    private boolean recordOn(final @NotNull TestRunEditor editor, final @NotNull UUID testCaseId, final @NotNull RunItemStatus runItemStatus, final @NotNull Consumer<RunItem> recording) {
         final @NotNull Path testRunPath = editor.getParent().getPath();
         if (refused(testRunPath, testCaseId)) return false;
 
-        Services.getInstance(project, TestRuns.class).changeRunItem(testRunPath, testCaseId, runItemStatus);
-        offerBugReports(status);
+        Services.getInstance(project, TestRuns.class).changeRunItem(testRunPath, testCaseId, recording);
+        offerBugReports(runItemStatus);
 
-        TestinLogger.trace("[RunItemRecorder]: Status updated -> " + testCaseId + " = " + status);
+        TestinLogger.trace("[RunItemRecorder]: Status updated -> " + testCaseId + " = " + runItemStatus);
 
         showRecorded(editor, List.of(testCaseId));
         return true;
@@ -227,7 +227,7 @@ public final class RunItemRecorder {
         return runItems;
     }
 
-    private @NotNull Optional<RunItem> liveItem(final @NotNull RunItems runItems, final @NotNull Path testRunPath, final @NotNull UUID testCaseId) {
+    private @NotNull Optional<RunItem> liveRunItem(final @NotNull RunItems runItems, final @NotNull Path testRunPath, final @NotNull UUID testCaseId) {
         final @NotNull Optional<RunItem> found = runItems.runItemOf(testCaseId);
 
         if (found.isEmpty()) {
@@ -247,8 +247,9 @@ public final class RunItemRecorder {
     }
 
     // UC-INTERNAL-009, Rule-INTERNAL-129
-    private void offerBugReports(final @NotNull RunItemStatus status) {
-        if (status == RunItemStatus.FAILED) Services.getInstance(project, Guides.class).add(Guide.RAISE_BUG_REPORTS);
+    private void offerBugReports(final @NotNull RunItemStatus runItemStatus) {
+        if (runItemStatus == RunItemStatus.FAILED)
+            Services.getInstance(project, Guides.class).add(Guide.RAISE_BUG_REPORTS);
     }
 
     public void refuseRemoved() {
@@ -256,11 +257,12 @@ public final class RunItemRecorder {
     }
 
     // UC-EDITOR-PANEL-032, UC-EDITOR-PANEL-038, UC-EDITOR-PANEL-039, Rule-EDITOR-PANEL-284
-    public void applyStatus(final @NotNull TestRunEditor editor, final @NotNull List<TestCase> selectedTestCases, final @NotNull RunItemStatus status) {
+    public void applyRunItemStatus(final @NotNull TestRunEditor editor, final @NotNull List<TestCase> selectedTestCases, final @NotNull RunItemStatus runItemStatus) {
         if (selectedTestCases.isEmpty()) return;
 
-        if (selectedTestCases.size() == 1) recordOne(status, editor, selectedTestCases.getFirst(), recording(status));
-        else recordMany(status, editor, selectedTestCases);
+        if (selectedTestCases.size() == 1)
+            recordOne(runItemStatus, editor, selectedTestCases.getFirst(), recording(runItemStatus));
+        else recordMany(runItemStatus, editor, selectedTestCases);
     }
 
     // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-285
@@ -269,14 +271,14 @@ public final class RunItemRecorder {
     }
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-264
-    private void recordOne(final @NotNull RunItemStatus status, final @NotNull TestRunEditor editor, final @NotNull TestCase testCase, final @NotNull Consumer<RunItem> recording) {
-        if (editor.getWalk().isExecuting(testCase.getId())) executeNext(editor, status, recording);
-        else if (recordOn(editor, testCase.getId(), status, recording)) confirmRunItemStatus(status, 1);
+    private void recordOne(final @NotNull RunItemStatus runItemStatus, final @NotNull TestRunEditor editor, final @NotNull TestCase testCase, final @NotNull Consumer<RunItem> recording) {
+        if (editor.getWalk().isExecuting(testCase.getId())) executeNext(editor, runItemStatus, recording);
+        else if (recordOn(editor, testCase.getId(), runItemStatus, recording)) confirmRunItemStatus(runItemStatus, 1);
 
         editor.getWalk().finishIfEverythingIsJudged();
     }
 
-    private void recordMany(final @NotNull RunItemStatus status, final @NotNull TestRunEditor editor, final @NotNull List<TestCase> selectedTestCases) {
+    private void recordMany(final @NotNull RunItemStatus runItemStatus, final @NotNull TestRunEditor editor, final @NotNull List<TestCase> selectedTestCases) {
         final @NotNull Optional<RunItems> held = heldTestRun(editor.getParent().getPath());
         if (held.isEmpty()) return;
 
@@ -294,17 +296,17 @@ public final class RunItemRecorder {
         final @NotNull String tester = tester();
         final @NotNull TestRuns testRuns = Services.getInstance(project, TestRuns.class);
         // Rule-EDITOR-PANEL-164
-        judged.forEach(testCaseId -> testRuns.changeRunItem(editor.getParent().getPath(), testCaseId, runItem -> runItem.recordRunItemStatus(status, tester, Duration.ZERO, Failure.NONE)));
-        if (!judged.isEmpty()) offerBugReports(status);
+        judged.forEach(testCaseId -> testRuns.changeRunItem(editor.getParent().getPath(), testCaseId, runItem -> runItem.recordRunItemStatus(runItemStatus, tester, Duration.ZERO, Failure.NONE)));
+        if (!judged.isEmpty()) offerBugReports(runItemStatus);
         showRecorded(editor, judged);
 
-        confirmRunItemStatus(status, judged.size());
+        confirmRunItemStatus(runItemStatus, judged.size());
 
         editor.getWalk().finishIfEverythingIsJudged();
     }
 
-    private void confirmRunItemStatus(final @NotNull RunItemStatus status, final int count) {
-        Services.getInstance(project, Notifier.class).softShowCounted(project, status.getLabel(), count);
+    private void confirmRunItemStatus(final @NotNull RunItemStatus runItemStatus, final int count) {
+        Services.getInstance(project, Notifier.class).softShowCounted(project, runItemStatus.getLabel(), count);
     }
 
     // Rule-VIEW-PANEL-005

@@ -39,7 +39,7 @@ public class SetTestRunStatusIdeTest extends AbstractTempRootIdeTest {
         return Services.getInstance(getProject(), TestRuns.class);
     }
 
-    private void finish(final @NotNull TestRunStatus finalStatus) {
+    private void finish(final @NotNull TestRunStatus finalTestRunStatus) {
         final @NotNull NodesOnDisk made = new NodesOnDisk(getProject());
         final @NotNull TestProjectNode testProject = made.testProject(root.resolve("NAFATH"));
         final @NotNull TestSetNode login = made.testSet(testProject.getTestCasesFolder(), "Login");
@@ -53,17 +53,17 @@ public class SetTestRunStatusIdeTest extends AbstractTempRootIdeTest {
                 new RunItem().setId(stillPending),
                 new RunItem().setId(alsoPending))));
 
-        new TestRunStatusChange(getProject()).apply(testRun, finalStatus);
+        new TestRunStatusChange(getProject()).apply(testRun, finalTestRunStatus);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
-        assertTrue("a " + finalStatus + " test run refuses run item statuses, though only a Committed one may", testRun.whySignedOff().isEmpty());
-        assertFalse("a " + finalStatus + " test run can still be edited", testRun.isOpen());
-        assertEquals("a run item status recorded before the test run was " + finalStatus + " changed", RunItemStatus.PASSED, statusOf(testRun, passed));
-        assertEquals("a pending test case is still pending once the test run is " + finalStatus, RunItemStatus.UNTESTED, statusOf(testRun, stillPending));
-        assertEquals("a pending test case is still pending once the test run is " + finalStatus, RunItemStatus.UNTESTED, statusOf(testRun, alsoPending));
+        assertTrue("a " + finalTestRunStatus + " test run refuses run item statuses, though only a Committed one may", testRun.whySignedOff().isEmpty());
+        assertFalse("a " + finalTestRunStatus + " test run can still be edited", testRun.isOpen());
+        assertEquals("a run item status recorded before the test run was " + finalTestRunStatus + " changed", RunItemStatus.PASSED, runItemStatusOf(testRun, passed));
+        assertEquals("a pending test case is still pending once the test run is " + finalTestRunStatus, RunItemStatus.UNTESTED, runItemStatusOf(testRun, stillPending));
+        assertEquals("a pending test case is still pending once the test run is " + finalTestRunStatus, RunItemStatus.UNTESTED, runItemStatusOf(testRun, alsoPending));
     }
 
-    private @NotNull RunItemStatus statusOf(final @NotNull TestRunNode testRun, final @NotNull UUID testCaseId) {
+    private @NotNull RunItemStatus runItemStatusOf(final @NotNull TestRunNode testRun, final @NotNull UUID testCaseId) {
         return indexedTestRuns().getRunItems(testRun.getPath()).runItemOf(testCaseId).map(RunItem::getStatus).orElse(RunItemStatus.REMOVED);
     }
 

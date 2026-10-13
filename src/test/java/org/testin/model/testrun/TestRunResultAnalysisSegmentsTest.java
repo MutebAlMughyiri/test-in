@@ -36,7 +36,7 @@ import static org.testng.Assert.assertTrue;
 
 public class TestRunResultAnalysisSegmentsTest {
 
-    private static @NotNull TestRunSummary run(final long passed, final long failed, final long blocked, final long untested, final long removed) {
+    private static @NotNull TestRunSummary testRunSummary(final long passed, final long failed, final long blocked, final long untested, final long removed) {
         return new TestRunSummary(passed + failed + blocked + untested + removed, passed, failed, blocked, untested, removed, "");
     }
 
@@ -59,34 +59,34 @@ public class TestRunResultAnalysisSegmentsTest {
     // Rule-EDITOR-PANEL-175
     @Test
     public void aRunItemStatusNoTestCaseCarriesIsLeftOut() {
-        assertEquals(words(run(12, 0, 0, 108, 0)), "Passed 12 · Pending 108");
+        assertEquals(words(testRunSummary(12, 0, 0, 108, 0)), "Passed 12 · Pending 108");
     }
 
     @Test
     public void theRunItemStatusesReadInTheOrderTheEnumDeclaresThem() {
-        assertEquals(words(run(1, 2, 3, 4, 0)), "Passed 1 · Failed 2 · Blocked 3 · Pending 4");
+        assertEquals(words(testRunSummary(1, 2, 3, 4, 0)), "Passed 1 · Failed 2 · Blocked 3 · Pending 4");
     }
 
     @Test
     public void testCasesDeletedUnderTheTestRunAreCountedToo() {
-        assertEquals(words(run(5, 0, 0, 0, 2)), "Passed 5 · Removed 2");
+        assertEquals(words(testRunSummary(5, 0, 0, 0, 2)), "Passed 5 · Removed 2");
     }
 
     @Test
-    public void theNamesAreTheStatusesOwn() {
-        assertEquals(words(run(1, 0, 0, 0, 0)), RunItemStatus.PASSED.getLabel() + " 1");
+    public void theNamesAreTheRunItemStatusesOwn() {
+        assertEquals(words(testRunSummary(1, 0, 0, 0, 0)), RunItemStatus.PASSED.getLabel() + " 1");
     }
 
     @Test
     public void aRunItemStatusIsPaintedInItsOwnColor() {
-        final @NotNull Color painted = of(run(0, 3, 0, 0, 0), TestRunStatus.IN_PROGRESS).getFirst().color();
+        final @NotNull Color painted = of(testRunSummary(0, 3, 0, 0, 0), TestRunStatus.IN_PROGRESS).getFirst().color();
 
         assertEquals(painted, RunItemStatus.FAILED.getRowColor(), "failed should be painted in the Failed run item status's own color");
     }
 
     @Test
     public void everyRunItemStatusesColorFollowsTheThemeRatherThanBeingPickedOnce() {
-        for (final Segment segment : of(run(1, 1, 1, 1, 0), TestRunStatus.IN_PROGRESS)) {
+        for (final Segment segment : of(testRunSummary(1, 1, 1, 1, 0), TestRunStatus.IN_PROGRESS)) {
             assertTrue(segment.color() instanceof JBColor,
                     segment.text() + " is drawn in a color that was resolved once and cannot follow a theme change");
         }
@@ -94,7 +94,7 @@ public class TestRunResultAnalysisSegmentsTest {
 
     @Test
     public void aRemovedTestCaseIsCountedWithoutBeingPaintedAsARunItemStatus() {
-        final @NotNull List<Segment> segments = of(run(0, 0, 0, 0, 2), TestRunStatus.CLOSED);
+        final @NotNull List<Segment> segments = of(testRunSummary(0, 0, 0, 0, 2), TestRunStatus.CLOSED);
 
         assertEquals(segments.size(), 1);
         assertEquals(segments.getFirst().text(), RunItemStatus.REMOVED.getLabel() + " 2");
@@ -105,33 +105,33 @@ public class TestRunResultAnalysisSegmentsTest {
     // Rule-EDITOR-PANEL-176
     @Test
     public void untouchedTestCasesArePendingUntilTheTestRunGivesUpOnThem() {
-        assertEquals(words(run(0, 0, 0, 7, 0)), RunItemStatus.PENDING.getLabel() + " 7");
+        assertEquals(words(testRunSummary(0, 0, 0, 7, 0)), RunItemStatus.PENDING.getLabel() + " 7");
 
         for (final TestRunStatus over : new TestRunStatus[]{TestRunStatus.COMPLETED, TestRunStatus.CLOSED}) {
-            assertEquals(of(run(0, 0, 0, 7, 0), over).getFirst().text(), RunItemStatus.UNTESTED.getLabel() + " 7",
+            assertEquals(of(testRunSummary(0, 0, 0, 7, 0), over).getFirst().text(), RunItemStatus.UNTESTED.getLabel() + " 7",
                     "a test run that is " + over.getLabel() + " has stopped waiting for them");
         }
     }
 
     @Test
     public void theThreeRunItemStatusesKeepTheirNameWhicheverStateTheTestRunIsIn() {
-        final @NotNull String closed = of(run(1, 1, 1, 0, 0), TestRunStatus.CLOSED).stream()
+        final @NotNull String closed = of(testRunSummary(1, 1, 1, 0, 0), TestRunStatus.CLOSED).stream()
                 .map(Segment::text)
                 .collect(Collectors.joining(" · "));
 
-        assertEquals(words(run(1, 1, 1, 0, 0)), closed);
+        assertEquals(words(testRunSummary(1, 1, 1, 0, 0)), closed);
     }
 
     @Test
     public void thePlainLabelIsTheFinishedName() {
         assertEquals(TestRunResultAnalysis.UNTESTED.getLabel(), RunItemStatus.UNTESTED.getLabel());
-        assertEquals(TestRunResultAnalysis.UNTESTED.heading(run(0, 0, 0, 7, 0)), RunItemStatus.UNTESTED.getLabel() + " (7)");
+        assertEquals(TestRunResultAnalysis.UNTESTED.heading(testRunSummary(0, 0, 0, 7, 0)), RunItemStatus.UNTESTED.getLabel() + " (7)");
     }
 
     // Rule-EDITOR-PANEL-190
     @Test
     public void theAnalysisHasOneSectionForEachRunItemStatusEachCountingItsOwn() {
-        final @NotNull TestRunSummary summary = run(1, 2, 3, 4, 0);
+        final @NotNull TestRunSummary summary = testRunSummary(1, 2, 3, 4, 0);
 
         assertEquals(Stream.of(TestRunResultAnalysis.values()).map(TestRunResultAnalysis::getLabel).toList(),
                 List.of(RunItemStatus.PASSED.getLabel(), RunItemStatus.FAILED.getLabel(), RunItemStatus.BLOCKED.getLabel(), RunItemStatus.UNTESTED.getLabel()));

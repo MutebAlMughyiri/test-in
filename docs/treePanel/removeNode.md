@@ -118,7 +118,7 @@ The node goes to the recycle bin, so nothing is lost for good.
    not **OK** (Rule-INTERNAL-105).
 5. The key that confirms is named for the same thing the button is.
 
-For several nodes, the question is *Remove these N items?*. It shows no counts
+For several nodes, the question is *Remove these N nodes?*. It shows no counts
 and no place.
 
 ## Main flow
@@ -127,7 +127,7 @@ and no place.
 2. The tester presses `Delete`, or chooses **Actions → Remove**.
 3. The **Confirm Removing** dialog opens. For one node it asks *Remove
    '\<name\>'?*. It then says how many test sets, test cases and test runs the
-   node holds, and shows the folder it sits in under *FROM*. For several nodes it asks *Remove these N items?*, where N
+   node holds, and shows the folder it sits in under *FROM*. For several nodes it asks *Remove these N nodes?*, where N
    is how
    many.
 4. The tester presses `Enter`, or the **Remove** button.

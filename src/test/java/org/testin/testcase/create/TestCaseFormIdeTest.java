@@ -151,19 +151,19 @@ public class TestCaseFormIdeTest extends AbstractTempRootIdeTest {
     }
 
     // Rule-EDITOR-PANEL-258
-    public void testStatusIsFourRadioButtonsStartingPendingOrOnTheTestCasesOwn() {
+    public void testTestCaseStatusIsFourRadioButtonsStartingPendingOrOnTheTestCasesOwn() {
         final @NotNull List<String> four = Arrays.stream(TestCaseStatus.values()).map(TestCaseStatus::getLabel).toList();
         assertEquals(List.of("Reviewed", "Pending", "Disabled", "To Be Updated"), four);
 
         final @NotNull CreateTestCaseDialog create = new CreateTestCaseDialog(getProject(), aTestSet(), _ -> {
         });
-        final @NotNull List<JRadioButton> creating = radiosIn(create.statusSection.getWrapper());
+        final @NotNull List<JRadioButton> creating = radiosIn(create.testCaseStatusSection.getWrapper());
         assertEquals("status does not offer all four as radio buttons", four, creating.stream().map(JRadioButton::getText).toList());
         assertEquals("a new test case does not start Pending", Optional.of(TestCaseStatus.PENDING.getLabel()), chosen(creating));
 
         final @NotNull TestCase reviewed = TestCase.builder().id(UUID.randomUUID()).description("Log in").status(TestCaseStatus.REVIEWED).parent(aTestSet()).build();
         final @NotNull UpdateTestCaseDialog update = new UpdateTestCaseDialog(getProject(), reviewed, UpdateTestCaseFields.STATUS, _ -> {
         });
-        assertEquals("an update does not start on the test case's own status", Optional.of(TestCaseStatus.REVIEWED.getLabel()), chosen(radiosIn(update.statusSection.getWrapper())));
+        assertEquals("an update does not start on the test case's own status", Optional.of(TestCaseStatus.REVIEWED.getLabel()), chosen(radiosIn(update.testCaseStatusSection.getWrapper())));
     }
 }

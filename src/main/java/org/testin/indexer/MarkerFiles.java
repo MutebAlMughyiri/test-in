@@ -130,8 +130,8 @@ final class MarkerFiles {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-014
-    @NotNull List<Path> takeDamaged(final @NotNull Path projectPath) {
-        final @NotNull List<Path> taken = damaged.stream().filter(directory -> directory.startsWith(projectPath)).toList();
+    @NotNull List<Path> takeDamaged(final @NotNull Path testProjectPath) {
+        final @NotNull List<Path> taken = damaged.stream().filter(directory -> directory.startsWith(testProjectPath)).toList();
         taken.forEach(damaged::remove);
 
         return taken;

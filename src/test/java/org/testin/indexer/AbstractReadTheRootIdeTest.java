@@ -99,8 +99,8 @@ public abstract class AbstractReadTheRootIdeTest extends AbstractTempRootIdeTest
         Services.getInstance(getProject(), BoundTestProject.class).choose("");
     }
 
-    protected @NotNull ProjectIndexer indexer() {
-        return Services.getInstance(getProject(), ProjectIndexer.class);
+    protected @NotNull TestProjectIndexer indexer() {
+        return Services.getInstance(getProject(), TestProjectIndexer.class);
     }
 
     protected @NotNull Nodes nodes() {

@@ -90,7 +90,7 @@ One progress bar, whatever changed and however many test projects it touched.
 1. Something changes a file on disk. A pull, a branch switch, an editor outside
    the IDE, or another program.
 2. Testin checks the path. It keeps the test project the file belongs to.
-3. Testin waits four tenths of a second, in case more changes are coming.
+3. Testin waits four tenths of a second, for more changes that may be coming.
 4. The progress bar opens with *Reading test data that changed on disk*.
 5. Each changed test project is read again, exactly as UC-INTERNAL-002 reads it.
 6. The tree redraws. Every open editor reloads.

@@ -57,20 +57,20 @@ public final class TestRunStatusChange {
     }
 
     // UC-TREE-PANEL-020, Rule-EDITOR-PANEL-008, Rule-TREE-PANEL-091
-    public void apply(final @NotNull TestRunNode testRun, final @NotNull TestRunStatus newStatus) {
+    public void apply(final @NotNull TestRunNode testRun, final @NotNull TestRunStatus newTestRunStatus) {
         final @NotNull Optional<TestRunEditor> open = editors.testRunEditorFor(testRun);
 
-        TestinLogger.trace("Test run status changed: " + testRun.getName() + " = " + newStatus.getLabel());
+        TestinLogger.trace("Test run status changed: " + testRun.getName() + " = " + newTestRunStatus.getLabel());
 
-        if (newStatus.stopsExecution()) open.ifPresent(editor -> editor.getWalk().stopExecution());
+        if (newTestRunStatus.stopsExecution()) open.ifPresent(editor -> editor.getWalk().stopExecution());
 
-        testRun.getMarker().changeStatus(newStatus);
+        testRun.getMarker().changeStatus(newTestRunStatus);
 
         persist(testRun, open);
         redraw(open);
 
-        if (newStatus == TestRunStatus.COMPLETED) offerTheCommit(testRun);
-        else notifier.softShow(project, newStatus.getLabel());
+        if (newTestRunStatus == TestRunStatus.COMPLETED) offerTheCommit(testRun);
+        else notifier.softShow(project, newTestRunStatus.getLabel());
     }
 
     // UC-TREE-PANEL-020, Rule-TREE-PANEL-136
@@ -84,13 +84,13 @@ public final class TestRunStatusChange {
     }
 
     private void persist(final @NotNull TestRunNode testRun, final @NotNull Optional<TestRunEditor> open) {
-        final @NotNull TestRunStatus status = testRun.getMarker().getStatus();
+        final @NotNull TestRunStatus testRunStatus = testRun.getMarker().getStatus();
         final @NotNull String tester = settings.testerName;
 
-        if (status.isTerminal()) finish(testRun.getPath());
+        if (testRunStatus.isTerminal()) finish(testRun.getPath());
 
         testRuns.changeTestRunMarker(testRun.getPath(), marker -> {
-            marker.changeStatus(status);
+            marker.changeStatus(testRunStatus);
             marker.touch(tester);
         });
 

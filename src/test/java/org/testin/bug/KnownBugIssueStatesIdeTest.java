@@ -54,7 +54,7 @@ public class KnownBugIssueStatesIdeTest extends AbstractTempRootIdeTest {
     private static final @NotNull String OPEN = "https://github.com/mtb550/test-03/issues/14";
     private static final @NotNull String ANSWER = """
             {"data":{"repository":{"i9":{"state":"CLOSED","stateReason":"COMPLETED"},"i14":{"state":"OPEN","stateReason":null}}}}""";
-    private static final @NotNull String NO_PROJECT_SCOPE = """
+    private static final @NotNull String NO_GITHUB_PROJECT_SCOPE = """
             {"errors":[{"type":"INSUFFICIENT_SCOPES","message":"The 'title' field requires one of the following scopes: ['read:project']"}]}""";
 
     private final @NotNull List<List<String>> asked = new ArrayList<>();
@@ -134,7 +134,7 @@ public class KnownBugIssueStatesIdeTest extends AbstractTempRootIdeTest {
     public void testABoardTheTokenCannotReadFallsBackToTheIssueStateAndWaitsAsOneHintUntilRead() {
         nothingWaits();
         twoBugsFiled();
-        ghAnswers(NO_PROJECT_SCOPE);
+        ghAnswers(NO_GITHUB_PROJECT_SCOPE);
         final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
 
         readAndWait();

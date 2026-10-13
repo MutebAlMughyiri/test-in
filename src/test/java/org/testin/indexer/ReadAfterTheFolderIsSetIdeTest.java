@@ -45,8 +45,8 @@ public class ReadAfterTheFolderIsSetIdeTest extends AbstractTempRootIdeTest {
         super.tearDown();
     }
 
-    private @NotNull ProjectIndexer indexer() {
-        return Services.getInstance(getProject(), ProjectIndexer.class);
+    private @NotNull TestProjectIndexer indexer() {
+        return Services.getInstance(getProject(), TestProjectIndexer.class);
     }
 
     private @NotNull Nodes nodes() {
@@ -58,13 +58,13 @@ public class ReadAfterTheFolderIsSetIdeTest extends AbstractTempRootIdeTest {
 
         assertTrue("with no folder set there is nothing to read", indexer().testProjects().isEmpty());
 
-        final Path project = SyntheticTree.write(root, 1, 1);
+        final Path testProjectPath = SyntheticTree.write(root, 1, 1);
         settings().rootTestinPath = root.toString();
 
         TestinStartup.execute(getProject());
 
         assertTrue("the folder was set after the startup pass, and opening the tree read nothing: it asked"
                         + " for the one-time wiring and was turned away with it",
-                nodes().nodeExists(project));
+                nodes().nodeExists(testProjectPath));
     }
 }

@@ -26,14 +26,14 @@ import java.util.Optional;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-final class ProjectScanCoordinator {
+final class TestProjectScanCoordinator {
     private final @NotNull IndexingScanner scanner;
     private final @NotNull ReentrantReadWriteLock scanLock = new ReentrantReadWriteLock();
 
-    @NotNull Optional<String> scan(final @NotNull Path projectPath, final @NotNull ProgressIndicator indicator) {
+    @NotNull Optional<String> scan(final @NotNull Path testProjectPath, final @NotNull ProgressIndicator indicator) {
         scanLock.readLock().lock();
         try {
-            return scanner.scanProject(projectPath, indicator);
+            return scanner.scanTestProject(testProjectPath, indicator);
         } finally {
             scanLock.readLock().unlock();
         }
@@ -50,10 +50,10 @@ final class ProjectScanCoordinator {
     }
 
     // UC-INTERNAL-003, Rule-INTERNAL-022
-    void rescanExclusively(final @NotNull Path projectPath) {
+    void rescanExclusively(final @NotNull Path testProjectPath) {
         scanLock.writeLock().lock();
         try {
-            scanner.scanProject(projectPath);
+            scanner.scanTestProject(testProjectPath);
         } finally {
             scanLock.writeLock().unlock();
         }

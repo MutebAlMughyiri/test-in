@@ -145,8 +145,8 @@ is the order to read them in; the number is only how to find one.
 use case page carries every rule that page answers to: the ones that hold for
 the whole part first, in number order, then the ones that are its own. Nothing
 sends the reader somewhere else for half of them, and no page says a rule holds
-"everywhere" - it either governs this use case, in which case it is written
-here, or it does not.
+"everywhere" - it either governs this use case, and then it is written here,
+or it does not.
 
 **Which means a rule that holds for a whole part is written on every page in
 it.** That is the cost, and it is deliberate: a page is read on its own, by a
@@ -347,7 +347,7 @@ Four tests, in the ordinary test run. Each of them has caught something real.
 | `RuleNumbersTest`       | No number names two rules; every part's `Numbering` row is honest; every rule a marker in the Java cites is one a document writes; every copy of a rule says the same thing    |
 | `DifferenceNumbersTest` | No page describes a difference its part has retired; no page points at a number no part lists; no number is live and retired at once; no difference names a rule nobody wrote  |
 | `DocumentClaimsTest`    | Every internal link goes somewhere; the README's per-part counts are the counts; its total is the sum of its own rows; every refusal Testin has words for is written on a page |
-| `SampleProjectTest`     | The committed sample project still parses                                                                                                                                      |
+| `SampleTestProjectTest` | The committed sample project still parses                                                                                                                                      |
 
 What none of them can settle is whether a sentence is **true** — whether a
 difference names the right rule, whether a refusal's page describes the situation

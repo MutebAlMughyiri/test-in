@@ -49,10 +49,10 @@ public class JsonCodecFailureTest {
 
     @Test
     public void whatIsWrittenIsNeverEmpty() {
-        final byte[] testCase = RealJsonCodec.build().writeValueAsBytes(TestCase.builder().description("a case").build());
+        final byte[] testCase = RealJsonCodec.build().writeValueAsBytes(TestCase.builder().description("a test case").build());
 
         assertTrue(testCase.length > 0);
-        assertTrue(new String(testCase, StandardCharsets.UTF_8).contains("a case"));
+        assertTrue(new String(testCase, StandardCharsets.UTF_8).contains("a test case"));
     }
 
     @Test

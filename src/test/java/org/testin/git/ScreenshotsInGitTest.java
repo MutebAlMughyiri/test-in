@@ -36,7 +36,7 @@ public class ScreenshotsInGitTest {
     private static final String RESULT = "runs/cycle38/4fd2a19b-59c7-44df-8cc4-ec5d293b18e9.runitem";
     private static final String ADDED = "runs/cycle38/k3f9a.png";
     private static final String REMOVED = "runs/cycle38/q81zd.png";
-    private static final String OTHER_RUN = "runs/cycle39/m4x0c.png";
+    private static final String OTHER_TEST_RUN = "runs/cycle39/m4x0c.png";
 
     private static void markATestRun(final Path root) {
         try {
@@ -66,8 +66,8 @@ public class ScreenshotsInGitTest {
     public void aPictureOutsideATestRunIsAFileLikeAnyOther() {
         try {
             final Path root = Files.createTempDirectory("testin-git-screenshots");
-            final String beside = "cases/ts2/k3f9a.png";
-            Files.createDirectories(root.resolve("cases/ts2"));
+            final String beside = "testCases/ts2/k3f9a.png";
+            Files.createDirectories(root.resolve("testCases/ts2"));
             Files.writeString(root.resolve(beside), "not really a picture");
 
             assertEquals(PendingChangeReader.toDiffs(List.of("?? " + beside), root, RealJsonCodec.build(), _ -> Map.of(), _ -> Optional.empty()).size(), 1,
@@ -80,14 +80,14 @@ public class ScreenshotsInGitTest {
     // Rule-SHARE-112
     @Test
     public void committingATestRunCarriesTheScreenshotsItsFolderGainedOrLost() {
-        final List<String> status = List.of(" M " + RESULT, "?? " + ADDED, " D " + REMOVED, "?? " + OTHER_RUN);
+        final List<String> gitStatus = List.of(" M " + RESULT, "?? " + ADDED, " D " + REMOVED, "?? " + OTHER_TEST_RUN);
 
-        assertEquals(GitCommitAndPush.screenshotsAlongside(status, Set.of(RESULT)), Set.of(ADDED, REMOVED),
+        assertEquals(GitCommitAndPush.screenshotsAlongside(gitStatus, Set.of(RESULT)), Set.of(ADDED, REMOVED),
                 "the screenshots a committed result named, or stopped naming, go with it");
     }
 
     @Test
     public void committingNoTestRunCarriesNoScreenshot() {
-        assertTrue(GitCommitAndPush.screenshotsAlongside(List.of("?? " + ADDED), Set.of("cases/ts2/4fd2a19b.testcase")).isEmpty());
+        assertTrue(GitCommitAndPush.screenshotsAlongside(List.of("?? " + ADDED), Set.of("testCases/ts2/4fd2a19b.testcase")).isEmpty());
     }
 }

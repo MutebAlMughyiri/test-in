@@ -79,21 +79,21 @@ public class TestRunResultAnalysisIdeTest extends AbstractTempRootIdeTest {
         super.tearDown();
     }
 
-    private @NotNull TestRunFixture aJudgedTestRunIn(final @NotNull TestRunStatus status) {
+    private @NotNull TestRunFixture aJudgedTestRunIn(final @NotNull TestRunStatus testRunStatus) {
         final @NotNull List<TestCase> testCases = TestRunFixture.testCasesIn(getProject(), root, 2);
         final @NotNull TestRunFixture fixture = TestRunFixture.of(getProject(), root, testCases.stream().map(testCase -> EditorFixtures.pending(testCase).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()))).toList(), testCases);
-        fixture.testRun().getMarker().changeStatus(status);
+        fixture.testRun().getMarker().changeStatus(testRunStatus);
         return fixture;
     }
 
     // Rule-EDITOR-PANEL-189
     public void testTheAnalysisCanBeWrittenOnlyOnceTheTestRunIsCompleted() {
-        for (final TestRunStatus status : List.of(TestRunStatus.CREATED, TestRunStatus.IN_PROGRESS, TestRunStatus.COMPLETED)) {
-            final @NotNull TestRunFixture fixture = aJudgedTestRunIn(status);
+        for (final TestRunStatus testRunStatus : List.of(TestRunStatus.CREATED, TestRunStatus.IN_PROGRESS, TestRunStatus.COMPLETED)) {
+            final @NotNull TestRunFixture fixture = aJudgedTestRunIn(testRunStatus);
             final @NotNull TestRunEditor editor = fixture.opened(getTestRootDisposable());
             try {
                 final @NotNull TestRunResultAnalysisButton analysis = editor.getToolBar().getToolbarItem(TestRunResultAnalysisButton.class);
-                assertEquals("Result Analysis on a " + status.getLabel() + " test run", status == TestRunStatus.COMPLETED, analysis.isEnabled());
+                assertEquals("Result Analysis on a " + testRunStatus.getLabel() + " test run", testRunStatus == TestRunStatus.COMPLETED, analysis.isEnabled());
             } finally {
                 Disposer.dispose(editor);
             }

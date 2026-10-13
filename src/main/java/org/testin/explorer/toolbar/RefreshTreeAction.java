@@ -22,11 +22,11 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.actions.AbstractBoundProjectAction;
+import org.testin.actions.AbstractBoundTestProjectAction;
 import org.testin.bug.KnownBugIssueStates;
 import org.testin.editor.open.TestinEditors;
 import org.testin.explorer.TreePanel;
-import org.testin.indexer.ProjectIndexer;
+import org.testin.indexer.TestProjectIndexer;
 import org.testin.logger.TestinLogger;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
@@ -40,14 +40,14 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class RefreshTreeAction extends AbstractBoundProjectAction {
+public class RefreshTreeAction extends AbstractBoundTestProjectAction {
     private static final @NotNull String REFRESHED = Done.REFRESHED.getOutcome();
 
     private final @NotNull TreePanel treePanel;
 
     private final @NotNull BoundTestProject boundTestProject;
 
-    private final @NotNull ProjectIndexer indexer;
+    private final @NotNull TestProjectIndexer indexer;
 
     private final @NotNull TestinEditors testinEditors;
 
@@ -62,7 +62,7 @@ public class RefreshTreeAction extends AbstractBoundProjectAction {
         super(project, Bundle.message("toolbar.refresh"), Bundle.message("toolbar.refresh.description"), AllIcons.Actions.Refresh);
         this.treePanel = treePanel;
         this.boundTestProject = Services.getInstance(project, BoundTestProject.class);
-        this.indexer = Services.getInstance(project, ProjectIndexer.class);
+        this.indexer = Services.getInstance(project, TestProjectIndexer.class);
         this.testinEditors = Services.getInstance(project, TestinEditors.class);
         this.notifier = Services.getInstance(project, Notifier.class);
     }

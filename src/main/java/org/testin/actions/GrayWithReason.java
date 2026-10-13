@@ -47,6 +47,6 @@ public final class GrayWithReason {
 
     // Rule-EDITOR-PANEL-230
     public static void unlessTestCaseSelected(final @NotNull AnAction action, final @NotNull AnActionEvent e, final boolean otherwiseWorks) {
-        unless(action, e, otherwiseWorks && !TestinDataKeys.selectedTestCases(e).isEmpty(), Bundle.message("action.select.case.description"));
+        unless(action, e, otherwiseWorks && !TestinDataKeys.selectedTestCases(e).isEmpty(), Bundle.message("action.select.test.case.description"));
     }
 }

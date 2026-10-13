@@ -96,12 +96,12 @@ public final class Rescan {
                     public void run(final @NotNull ProgressIndicator indicator) {
                         indicator.setIndeterminate(false);
 
-                        final @NotNull ProjectIndexer indexer = Services.getInstance(project, ProjectIndexer.class);
+                        final @NotNull TestProjectIndexer indexer = Services.getInstance(project, TestProjectIndexer.class);
 
                         for (final Path testProjectPath : testProjects) {
                             if (indicator.isCanceled()) break;
 
-                            indexer.rescanChangedProject(testProjectPath, indicator);
+                            indexer.rescanChangedTestProject(testProjectPath, indicator);
                         }
                     }
                 });
