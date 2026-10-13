@@ -24,7 +24,7 @@ import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.GrayWithReason;
 import org.testin.actions.TestinDataKeys;
 import org.testin.editor.TestinEditor;
-import org.testin.testcase.create.UpdateTestCaseMenu;
+import org.testin.testcase.update.UpdateTestCaseMenu;
 import org.testin.util.Bundle;
 
 // UC-EDITOR-PANEL-006

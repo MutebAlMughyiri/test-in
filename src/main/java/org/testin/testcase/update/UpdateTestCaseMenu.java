@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.testin.testcase.create;
+package org.testin.testcase.update;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
@@ -23,7 +23,6 @@ import org.testin.codegen.GenType;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.UpdateTestCaseFields;
-import org.testin.testcase.update.UpdateTestCaseDialog;
 import org.testin.ui.framework.ShortcutMenuPopup;
 import org.testin.util.Bundle;
 import org.testin.view.ViewToolWindowFactory;

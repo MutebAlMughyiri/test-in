@@ -34,7 +34,7 @@ import org.testin.services.Services;
 import org.testin.setting.TestinRoot;
 import org.testin.testcase.TestCaseSnapshot;
 import org.testin.testcase.UpdateTestCaseFields;
-import org.testin.testcase.create.UpdateTestCaseMenu;
+import org.testin.testcase.update.UpdateTestCaseMenu;
 import org.testin.util.Bundle;
 import org.testin.view.ViewToolWindowFactory;
 

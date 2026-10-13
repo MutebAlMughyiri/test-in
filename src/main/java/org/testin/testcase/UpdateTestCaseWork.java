@@ -25,7 +25,7 @@ import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
-import org.testin.testcase.create.UpdateTestCaseMenu;
+import org.testin.testcase.update.UpdateTestCaseMenu;
 import org.testin.util.Bundle;
 
 import java.nio.file.Path;
