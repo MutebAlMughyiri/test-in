@@ -18,7 +18,7 @@ package org.testin.creator.dialogs;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.git.GitRefs;
+import org.testin.git.GitRemotes;
 import org.testin.model.NodeType;
 import org.testin.notifications.Refused;
 import org.testin.ui.framework.AbstractFrameworkDialog;
@@ -56,7 +56,7 @@ public final class CreateTestProjectDialog extends AbstractFrameworkDialog {
 
     // UC-TREE-PANEL-002, UC-TREE-PANEL-003, Rule-TREE-PANEL-095, Rule-TREE-PANEL-107
     private static boolean isNameOrUrl(final @NotNull String typed) {
-        return GitRefs.isRepositoryUrl(typed) || NodeType.TP.canTakeName(typed);
+        return GitRemotes.isRepositoryUrl(typed) || NodeType.TP.canTakeName(typed);
     }
 
     // UC-TREE-PANEL-002, Rule-TREE-PANEL-005, Rule-TREE-PANEL-095

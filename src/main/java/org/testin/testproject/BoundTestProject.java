@@ -24,7 +24,7 @@ import com.intellij.openapi.project.Project;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.config.TestinYml;
-import org.testin.git.GitRefs;
+import org.testin.git.GitRemotes;
 import org.testin.help.Hints;
 import org.testin.help.SetupStep;
 import org.testin.indexer.Nodes;
@@ -117,7 +117,7 @@ public final class BoundTestProject {
 
     // UC-TREE-PANEL-001, UC-TREE-PANEL-003
     public @NotNull Optional<String> cloneAddress() {
-        return TestinYml.cloneAddress(p, name()).filter(GitRefs::isRepositoryUrl);
+        return TestinYml.cloneAddress(p, name()).filter(GitRemotes::isRepositoryUrl);
     }
 
     // UC-TREE-PANEL-011, Rule-TREE-PANEL-110

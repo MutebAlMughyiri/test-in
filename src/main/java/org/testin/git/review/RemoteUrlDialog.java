@@ -18,7 +18,7 @@ package org.testin.git.review;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.git.GitRefs;
+import org.testin.git.GitRemotes;
 import org.testin.notifications.Refused;
 import org.testin.ui.framework.AbstractFrameworkDialog;
 import org.testin.ui.framework.DialogPart;
@@ -57,7 +57,7 @@ final class RemoteUrlDialog extends AbstractFrameworkDialog {
     // UC-SHARE-013, Rule-SHARE-060, Rule-INTERNAL-067
     @Override
     protected void submit() {
-        final @NotNull String typed = accepted(urlField, GitRefs::isRepositoryUrl, Refused.NOT_A_REPOSITORY_URL);
+        final @NotNull String typed = accepted(urlField, GitRemotes::isRepositoryUrl, Refused.NOT_A_REPOSITORY_URL);
         if (typed.isEmpty()) return;
 
         onUrl.accept(typed);

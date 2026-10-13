@@ -20,7 +20,7 @@ import com.intellij.openapi.project.Project;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.git.GitRefs;
+import org.testin.git.GitStatusLines;
 import org.testin.git.GitRepositoryService;
 import org.testin.git.StatusEntry;
 import org.testin.indexer.TestCases;
@@ -63,7 +63,7 @@ public final class PendingChangeReader {
         final @NotNull Path root = repositoryRoot.toAbsolutePath().normalize();
         final @NotNull List<PendingChange> result = new ArrayList<>();
 
-        final @NotNull List<StatusEntry> listed = GitRefs.parseStatus(statusLines).stream()
+        final @NotNull List<StatusEntry> listed = GitStatusLines.parseStatus(statusLines).stream()
                 .filter(entry -> isListed(root, entry))
                 .toList();
         final @NotNull Map<String, String> committed = committedContents.apply(listed.stream()

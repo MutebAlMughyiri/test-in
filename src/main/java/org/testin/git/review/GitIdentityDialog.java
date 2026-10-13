@@ -18,7 +18,6 @@ package org.testin.git.review;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.git.GitRefs;
 import org.testin.notifications.Refused;
 import org.testin.ui.framework.AbstractFrameworkDialog;
 import org.testin.ui.framework.DialogPart;
@@ -75,10 +74,23 @@ final class GitIdentityDialog extends AbstractFrameworkDialog {
         final @NotNull String name = accepted(nameField);
         if (name.isEmpty()) return;
 
-        final @NotNull String email = accepted(emailField, GitRefs::isEmailAddress, Refused.NOT_AN_EMAIL_ADDRESS);
+        final @NotNull String email = accepted(emailField, GitIdentityDialog::isEmailAddress, Refused.NOT_AN_EMAIL_ADDRESS);
         if (email.isEmpty()) return;
 
         onSet.accept(new Identity(name, email, scope.getSelected()));
         closeOk();
+    }
+
+    // UC-SHARE-008, Rule-SHARE-108
+    static boolean isEmailAddress(final @NotNull String text) {
+        final @NotNull String value = text.trim();
+
+        final int at = value.indexOf('@');
+        if (at <= 0 || at != value.lastIndexOf('@')) return false;
+        if (value.chars().anyMatch(Character::isWhitespace)) return false;
+
+        final @NotNull String domain = value.substring(at + 1);
+
+        return domain.length() >= 3 && domain.indexOf('.') > 0 && !domain.endsWith(".");
     }
 }

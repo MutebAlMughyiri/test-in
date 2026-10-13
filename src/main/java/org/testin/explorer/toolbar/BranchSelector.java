@@ -24,7 +24,7 @@ import com.intellij.openapi.ui.ComboBox;
 import org.jetbrains.annotations.NotNull;
 import org.testin.explorer.TreePanel;
 import org.testin.git.GitFailureNotice;
-import org.testin.git.GitRefs;
+import org.testin.git.GitStatusLines;
 import org.testin.git.GitRepositoryService;
 import org.testin.git.review.ViewPendingCommitsAction;
 import org.testin.indexer.Nodes;
@@ -151,7 +151,7 @@ public class BranchSelector {
             public void run(final @NotNull ProgressIndicator indicator) {
                 indicator.setIndeterminate(true);
 
-                final int pending = GitRefs.changeCount(git.status(repositoryPath));
+                final int pending = GitStatusLines.changeCount(git.status(repositoryPath));
 
                 ApplicationManager.getApplication().invokeLater(() -> {
                     if (pending == 0) {

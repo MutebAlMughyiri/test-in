@@ -48,7 +48,7 @@ public final class GitCommitAndPush {
     static @NotNull Set<String> markersAlongside(final @NotNull Path repositoryPath, final @NotNull Set<String> testCasePaths) {
         final @NotNull Set<String> markers = new LinkedHashSet<>();
 
-        for (final String directory : GitRefs.ancestorDirectories(testCasePaths)) {
+        for (final String directory : ancestorDirectories(testCasePaths)) {
             for (final NodeType type : NodeType.values()) {
                 final @NotNull String marker = type.getMarker();
                 if (marker.isBlank()) continue;
@@ -60,6 +60,25 @@ public final class GitCommitAndPush {
         return markers;
     }
 
+    static @NotNull Set<String> ancestorDirectories(final @NotNull Collection<String> relativePaths) {
+        final @NotNull Set<String> directories = new LinkedHashSet<>();
+        directories.add("");
+
+        for (final String path : relativePaths) {
+            for (int slash = path.indexOf('/'); slash >= 0; slash = path.indexOf('/', slash + 1)) {
+                directories.add(path.substring(0, slash));
+            }
+        }
+        return directories;
+    }
+
+    static @NotNull Set<String> repoRelativePaths(final @NotNull Collection<PendingChange> changes) {
+        return changes.stream()
+                .map(PendingChange::relativeFilePath)
+                .map(path -> path.toString().replace('\\', '/'))
+                        .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
     // UC-SHARE-012, Rule-SHARE-112
     static @NotNull Set<String> screenshotsAlongside(final @NotNull List<String> statusLines, final @NotNull Set<String> paths) {
         final @NotNull Set<String> testRunFolders = paths.stream()
@@ -67,7 +86,7 @@ public final class GitCommitAndPush {
                 .map(GitCommitAndPush::folderOf)
                 .collect(Collectors.toSet());
 
-        return GitRefs.parseStatus(statusLines).stream()
+        return GitStatusLines.parseStatus(statusLines).stream()
                 .map(StatusEntry::path)
                 .filter(path -> FileKind.of(Path.of(path), NodeType.TR) == FileKind.SCREENSHOT)
                 .filter(path -> testRunFolders.contains(folderOf(path)))
@@ -87,7 +106,7 @@ public final class GitCommitAndPush {
 
     // UC-SHARE-012, Rule-SHARE-054
     public void stageAndCommit(final @NotNull Path repositoryPath, final @NotNull String message, final @NotNull Collection<PendingChange> selectedChanges) {
-        final @NotNull Set<String> paths = GitRefs.repoRelativePaths(selectedChanges);
+        final @NotNull Set<String> paths = repoRelativePaths(selectedChanges);
         if (paths.isEmpty()) throw new IllegalArgumentException("No Git changes were selected");
 
         paths.addAll(screenshotsAlongside(repositories.status(repositoryPath), paths));

@@ -88,7 +88,7 @@ public final class GitRepositoryService {
 
     // Rule-EDITOR-PANEL-239
     public @NotNull List<String> files(final @NotNull Path path, final @NotNull String revision, final @NotNull String folder) {
-        return GitRefs.records(GitCommandRunner.execute(p, path, GitCommand.LS_TREE, "-r", "-z", "--name-only", revision, "--", folder));
+        return GitStatusLines.records(GitCommandRunner.execute(p, path, GitCommand.LS_TREE, "-r", "-z", "--name-only", revision, "--", folder));
     }
 
     // Rule-TREE-PANEL-104
@@ -147,7 +147,7 @@ public final class GitRepositoryService {
     }
 
     public @NotNull String getRemoteName(final @NotNull Path path) {
-        return GitRefs.chooseRemote(run(path, GitCommand.REMOTE).orElse("").lines().toList());
+        return GitRemotes.chooseRemote(run(path, GitCommand.REMOTE).orElse("").lines().toList());
     }
 
     public @NotNull String remoteUrl(final @NotNull Path path) {
@@ -157,8 +157,8 @@ public final class GitRepositoryService {
 
     public @NotNull String checkout(final @NotNull Path path, final @NotNull String branch) {
         final @NotNull List<String> localBranches = getLocalBranches(path);
-        final boolean remoteBranch = GitRefs.isRemoteBranch(branch, localBranches, run(path, GitCommand.REMOTE).orElse("").lines().toList());
-        final @NotNull String target = remoteBranch ? GitRefs.localNameOf(branch) : branch;
+        final boolean remoteBranch = GitRemotes.isRemoteBranch(branch, localBranches, run(path, GitCommand.REMOTE).orElse("").lines().toList());
+        final @NotNull String target = remoteBranch ? GitRemotes.localNameOf(branch) : branch;
 
         if (remoteBranch && !localBranches.contains(target)) {
             return run(path, GitCommand.CHECKOUT, "-b", target, "--track", branch).isPresent() ? target : "";
@@ -179,7 +179,7 @@ public final class GitRepositoryService {
 
     // UC-SHARE-010, Rule-SHARE-044
     public @NotNull List<String> status(final @NotNull Path path) {
-        return GitRefs.records(run(path, GitCommand.STATUS, "--porcelain", "-z", "-uall").orElse(""));
+        return GitStatusLines.records(run(path, GitCommand.STATUS, "--porcelain", "-z", "-uall").orElse(""));
     }
 
     public @NotNull Map<String, String> contents(final @NotNull Path path, final @NotNull String revision, final @NotNull List<String> relativePaths) {
@@ -204,7 +204,7 @@ public final class GitRepositoryService {
     }
 
     public @NotNull List<String> conflictingPaths(final @NotNull Path path) {
-        return GitRefs.records(run(path, GitCommand.DIFF, "--name-only", "--diff-filter=U", "-z").orElse(""));
+        return GitStatusLines.records(run(path, GitCommand.DIFF, "--name-only", "--diff-filter=U", "-z").orElse(""));
     }
 
     // UC-SHARE-015, Rule-SHARE-066

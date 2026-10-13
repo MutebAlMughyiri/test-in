@@ -196,13 +196,13 @@ public class GitWorkflowTest {
     }
 
     private @NotNull List<PendingChange> review() {
-        final List<String> status = GitRefs.records(mustGit(work, "status", "--porcelain", "-z", "-uall"));
+        final List<String> status = GitStatusLines.records(mustGit(work, "status", "--porcelain", "-z", "-uall"));
 
         return PendingChangeReader.toDiffs(status, work, RealJsonCodec.build(), paths -> contents(work, "HEAD", paths), _ -> Optional.empty());
     }
 
     private @NotNull Set<String> stagedFor(final List<PendingChange> review) {
-        final Set<String> paths = new LinkedHashSet<>(GitRefs.repoRelativePaths(review));
+        final Set<String> paths = new LinkedHashSet<>(GitCommitAndPush.repoRelativePaths(review));
         paths.addAll(GitCommitAndPush.markersAlongside(work, paths));
         return paths;
     }
@@ -386,7 +386,7 @@ public class GitWorkflowTest {
             assertTrue(git(work, "pull", "--rebase", "--autostash", "origin", "main").isEmpty(),
                     "the pull is expected to stop on the conflict");
 
-            final List<String> conflicting = GitRefs.records(mustGit(work, "diff", "--name-only", "--diff-filter=U", "-z"));
+            final List<String> conflicting = GitStatusLines.records(mustGit(work, "diff", "--name-only", "--diff-filter=U", "-z"));
             assertEquals(conflicting, List.of(relativePath));
 
             final Path gitDir = Path.of(mustGit(work, "rev-parse", "--absolute-git-dir").trim());
@@ -527,11 +527,11 @@ public class GitWorkflowTest {
     public void gitReportsNewTestCasesAsUntrackedWithTheirPathsAsWritten() {
         writeTestProject();
 
-        final List<String> status = GitRefs.records(mustGit(work, "status", "--porcelain", "-z", "-uall"));
+        final List<String> status = GitStatusLines.records(mustGit(work, "status", "--porcelain", "-z", "-uall"));
 
         assertTrue(status.stream().anyMatch(record -> record.startsWith("?? Test Cases/login flow/")),
                 "a path with a space comes back unquoted: " + status);
-        assertEquals(GitRefs.parseStatus(status).stream()
+        assertEquals(GitStatusLines.parseStatus(status).stream()
                 .filter(entry -> entry.path().endsWith(".tc")).count(), 2);
     }
 }

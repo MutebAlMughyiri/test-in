@@ -25,7 +25,7 @@ import org.testin.actions.AbstractBoundProjectAction;
 import org.testin.actions.GrayWithReason;
 import org.testin.creator.dialogs.CreateTestProjectDialog;
 import org.testin.explorer.TreePanel;
-import org.testin.git.GitRefs;
+import org.testin.git.GitRemotes;
 import org.testin.services.OptionalPlugin;
 import org.testin.services.Services;
 import org.testin.setting.TestinRoot;
@@ -53,7 +53,7 @@ public class CreateTestProjectAction extends AbstractBoundProjectAction {
     // UC-TREE-PANEL-002, UC-TREE-PANEL-003, Rule-TREE-PANEL-107
     public void execute() {
         new CreateTestProjectDialog(p, name -> {
-            if (!GitRefs.isRepositoryUrl(name)) {
+            if (!GitRemotes.isRepositoryUrl(name)) {
                 new CreateTestProject(p, tp, name).execute();
                 return;
             }

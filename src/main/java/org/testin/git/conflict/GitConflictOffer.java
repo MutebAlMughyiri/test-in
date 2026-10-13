@@ -21,7 +21,6 @@ import com.intellij.openapi.project.Project;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.git.GitRefs;
 import org.testin.git.GitRepositoryService;
 import org.testin.help.Guide;
 import org.testin.help.Guides;
@@ -53,9 +52,24 @@ public final class GitConflictOffer {
         notifier.warnWithActions(
                 p,
                 Bundle.message("git.conflicts.title"),
-                GitRefs.conflictMessage(conflicting),
+                conflictMessage(conflicting),
                 notifier.action(Bundle.message("git.conflicts.resolve"), onResolve),
                 notifier.action(Bundle.message("git.conflicts.continue.rebase"), onContinue),
                 notifier.action(Bundle.message("git.conflicts.abort.rebase"), onAbort));
+    }
+
+    // UC-SHARE-017
+    static @NotNull String conflictMessage(final @NotNull List<String> unmergedPaths) {
+        if (unmergedPaths.isEmpty()) {
+            return Bundle.message("git.conflict.unnamed");
+        }
+
+        final int shown = Math.min(unmergedPaths.size(), 3);
+        final @NotNull String names = String.join(", ", unmergedPaths.subList(0, shown));
+        final int rest = unmergedPaths.size() - shown;
+
+        return rest == 0
+                ? Bundle.message("git.conflict.named", names)
+                : Bundle.message("git.conflict.named.more", names, String.valueOf(rest));
     }
 }
