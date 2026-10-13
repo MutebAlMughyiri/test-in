@@ -53,7 +53,11 @@ jobs:
     # machines the plugin is developed on. The repository is public, so the
     # minutes cost nothing.
     runs-on: windows-latest
-    timeout-minutes: 60
+    # 90, as Inspect has. A run that finds no cache resolves the six IDEs
+    # verifyPlugin reads before the first task (21 minutes on 1f318abeb) and
+    # saves the Gradle cache after the last (over 18), so a run whose gates
+    # had all passed by minute 40 was cancelled at 60 while saving.
+    timeout-minutes: 90
 
     steps:
       - name: Check out the commit
