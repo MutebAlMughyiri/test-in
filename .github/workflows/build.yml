@@ -55,8 +55,8 @@ jobs:
     runs-on: windows-latest
     # 90, as Inspect has. A run that finds no cache resolves the six IDEs
     # verifyPlugin reads before the first task (21 minutes on 1f318abeb) and
-    # saves the Gradle cache after the last (over 18), so a run whose gates
-    # had all passed by minute 40 was cancelled at 60 while saving.
+    # saves the Gradle cache after the last (over 18). That run passed every
+    # gate by minute 40 and was canceled at 60 while saving.
     timeout-minutes: 90
 
     steps:
