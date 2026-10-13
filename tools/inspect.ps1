@@ -1225,7 +1225,7 @@ function Read-AbbreviatedNames([string[]] $scopes)
 {
     <#
         A name that abbreviates a word (#426). Muteb, 13 October 2026: "no
-        abbriviations in our pligin at all. except java and all known like
+        abbreviations in our plugin at all. except java and all known like
         exception -> ex". CLAUDE.md's Abbreviations table is the one list of
         what may stay; this rule holds back the ones the sweep removed, so a
         tp, a dto or a btn does not come back one paste at a time.
@@ -1235,7 +1235,7 @@ function Read-AbbreviatedNames([string[]] $scopes)
         to rename, so only a bare name counts: a declaration, a parameter, a
         lambda parameter or a use of one.
     #>
-    $whole = '^(p|tc|tcs|tp|ts|tr|tsp|trp|dto|dir|dirs|pm|pc|vf|uvf|cm|gbc|fm|btn|lbl|idx|str|bg|fg|col|cols|attr|gt|baos|fos|os|wb|ws|tw|env|sp|doc|para|msg|src|desc|pos|fmt|sel|seq|pref|obj|evt|num|pri|sev|pkg|[a-dfhk-wz])$'
+    $whole = '^(p|tc|tcs|tp|ts|tr|tsp|trp|dto|dir|dirs|pm|pc|vf|uvf|cm|gbc|fm|btn|lbl|idx|str|bg|fg|col|cols|attr|gt|baos|fos|os|wb|ws|tw|env|sp|doc|para|msg|src|desc|pos|fmt|sel|seq|pref|obj|evt|num|pri|sev|pkg|[a-d]|f|h|[k-w]|z)$'
     $part = '(?<=[a-z0-9])(Tc|Tp|Dir|Btn|Txt|Lbl|Col|Idx|Str|Bg|Fg|Pt|Attr|Pkg|Vf|Dto)(?=[A-Z0-9]|$)'
     foreach ($scope in $scopes)
     {

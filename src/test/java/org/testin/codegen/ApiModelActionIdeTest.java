@@ -85,7 +85,7 @@ import java.util.stream.IntStream;
 public class ApiModelActionIdeTest extends AbstractCodegenIdeTest {
     private static final @NotNull String ACTION = "Testin.ApiModel";
     private static final @NotNull String REMEMBERED_LAYOUT = "testin.apiModel.sideBySide";
-    private static final @NotNull String REQUEST_BODY = "{\"user\":\"ada\",\"password\":\"s3cret\"}";
+    private static final @NotNull String REQUEST_BODY = "{\"user\":\"ada\",\"password\":\"secret\"}";
     private static final @NotNull String RESPONSE_BODY = "{\"token\":\"t-1\",\"expiresIn\":3600}";
 
     @Override
@@ -101,10 +101,10 @@ public class ApiModelActionIdeTest extends AbstractCodegenIdeTest {
         return Drawn.components(dialog).stream().filter(EditorTextField.class::isInstance).map(EditorTextField.class::cast).toList();
     }
 
-    private static void filledIn(final @NotNull JComponent dialog, final @NotNull String name, final @NotNull String request, final @NotNull String response) {
+    private static void filledIn(final @NotNull JComponent dialog, final @NotNull String name, final @NotNull String request) {
         Drawn.first(dialog, JTextComponent.class, JTextComponent::isEditable).setText(name);
         boxes(dialog).getFirst().setText(request);
-        boxes(dialog).getLast().setText(response);
+        boxes(dialog).getLast().setText(RESPONSE_BODY);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
 
@@ -230,7 +230,7 @@ public class ApiModelActionIdeTest extends AbstractCodegenIdeTest {
         final @NotNull PsiDirectory api = aPackage();
         final @NotNull List<String> balloons = Said.listening(getProject(), getTestRootDisposable()).shown();
         final @NotNull JComponent dialog = opened(api).getContent();
-        filledIn(dialog, "Login", REQUEST_BODY, RESPONSE_BODY);
+        filledIn(dialog, "Login", REQUEST_BODY);
 
         created(dialog);
 
@@ -250,7 +250,7 @@ public class ApiModelActionIdeTest extends AbstractCodegenIdeTest {
         final @NotNull String kept = "package api;\n\npublic class LoginRequest {\n}\n";
         WriteCommandAction.writeCommandAction(getProject()).run(() -> api.add(PsiFileFactory.getInstance(getProject()).createFileFromText("LoginRequest.java", JavaFileType.INSTANCE, kept)));
         final @NotNull JComponent dialog = opened(api).getContent();
-        filledIn(dialog, "Login", REQUEST_BODY, RESPONSE_BODY);
+        filledIn(dialog, "Login", REQUEST_BODY);
 
         created(dialog);
 
@@ -277,7 +277,7 @@ public class ApiModelActionIdeTest extends AbstractCodegenIdeTest {
     public void testBothSectionsOpenEachTimeAClosedOneIsStillWrittenAndEachNamesItsFile() {
         final @NotNull PsiDirectory api = aPackage();
         final @NotNull JComponent dialog = opened(api).getContent();
-        filledIn(dialog, "login", REQUEST_BODY, RESPONSE_BODY);
+        filledIn(dialog, "login", REQUEST_BODY);
         assertTrue("a section's line does not name its file: " + Drawn.words(dialog), Drawn.holds(Drawn.words(dialog), "LoginRequest.java") && Drawn.holds(Drawn.words(dialog), "LoginResponse.java"));
 
         clickTheLineOf(dialog, Bundle.message("dialog.api.model.response.caption"));
@@ -316,7 +316,7 @@ public class ApiModelActionIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestinLog atDebug = TestinLog.fromNow(getTestRootDisposable());
         TestinLogger.setLogLevel(LogLevel.DEBUG);
         final @NotNull JComponent first = opened(api).getContent();
-        filledIn(first, "Login", REQUEST_BODY, RESPONSE_BODY);
+        filledIn(first, "Login", REQUEST_BODY);
         created(first);
 
         final @NotNull String debug = atDebug.written();
@@ -327,7 +327,7 @@ public class ApiModelActionIdeTest extends AbstractCodegenIdeTest {
 
         final @NotNull TestinLog atInfo = TestinLog.fromNow(getTestRootDisposable());
         final @NotNull JComponent second = opened(api).getContent();
-        filledIn(second, "Logout", REQUEST_BODY, RESPONSE_BODY);
+        filledIn(second, "Logout", REQUEST_BODY);
         created(second);
         final @NotNull String info = atInfo.written();
         assertTrue("Info did not name the files written: " + info, info.contains("LogoutRequest.java") && info.contains("LogoutResponse.java"));
@@ -336,7 +336,7 @@ public class ApiModelActionIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestinLog aboveInfo = TestinLog.fromNow(getTestRootDisposable());
         TestinLogger.setLogLevel(LogLevel.WARN);
         final @NotNull JComponent third = opened(api).getContent();
-        filledIn(third, "Signup", REQUEST_BODY, RESPONSE_BODY);
+        filledIn(third, "Signup", REQUEST_BODY);
         created(third);
         TestinLogger.setLogLevel(LogLevel.INFO);
         assertFalse("above Info something was recorded", aboveInfo.written().contains("Signup"));
@@ -347,7 +347,7 @@ public class ApiModelActionIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestinLog atDebug = TestinLog.fromNow(getTestRootDisposable());
         TestinLogger.setLogLevel(LogLevel.DEBUG);
         final @NotNull JComponent dialog = opened(aPackage()).getContent();
-        filledIn(dialog, "Login", "not a body at all", RESPONSE_BODY);
+        filledIn(dialog, "Login", "not a body at all");
 
         created(dialog);
 
@@ -364,7 +364,7 @@ public class ApiModelActionIdeTest extends AbstractCodegenIdeTest {
         final @NotNull EditorTextField request = boxes(dialog).getFirst();
         OnScreen.shown(dialog, getTestRootDisposable());
         request.setText(REQUEST_BODY);
-        assertEquals("the body is not drawn in JSON's colors", Json.language(), ((EditorEx) drawn(request)).getHighlighter().createIterator(1).getTokenType().getLanguage());
+        assertEquals("the body is not drawn in JSON's colors", Json.language(), drawn(request).getHighlighter().createIterator(1).getTokenType().getLanguage());
         final @NotNull JButton format = Drawn.first(dialog, JButton.class, button -> Bundle.message("dialog.box.format", Json.fileType().getDisplayName()).equals(button.getAccessibleContext().getAccessibleName()));
 
         CodeStyle.runWithLocalSettings(getProject(), CodeStyle.getSettings(getProject()), settings -> {

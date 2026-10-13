@@ -98,7 +98,7 @@ class to build, the response as a record to read.
 - **Rule-CODEGEN-108** — At the Debug or Trace log level, `testin.log` records each
   Create: each pasted body exactly as it was pasted, as Testin reads it, then
   every file exactly as it was written - or, when a body cannot be read, its
-  refusal and the reason, and a body after it is not read. At Info it records
+  refusal and the reason, and a body after it is not read. At Info, it records
   only which files were written, and above Info nothing. Like the agent's
   transcript (Rule-CODEGEN-090), the bodies are recorded as pasted, secrets
   included, so Debug is for tracing a problem, not for every day.

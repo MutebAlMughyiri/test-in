@@ -100,8 +100,8 @@ constant is renamed.
 ## No short names
 
 The `Project` is `project` and one `TestCase` is `testCase`. Muteb retired
-the last two short names, `p` and `tc`, on 13 October 2026 (#426): *"i dont
-want to have abbriviations for my business"*, then *"dont use `p`"*. What may
+the last two short names, `p` and `tc`, on 13 October 2026 (#426): *"[I] don't
+want to have abbreviations for my business"*, then *"don't use `p`"*. What may
 still be shortened is Java's own idioms and the known acronyms, and the
 **Abbreviations** table in CLAUDE.md is the one list of them.
 

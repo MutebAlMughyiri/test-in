@@ -174,11 +174,6 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
     }
 
     @Override
-    public @NotNull Project getProject() {
-        return project;
-    }
-
-    @Override
     public @NotNull AbstractNode getEditedNode() {
         return parent;
     }

@@ -23,6 +23,7 @@
       <w>bstatic</w>
       <w>calibri</w>
       <w>cmatch</w>
+      <w>cnotmatch</w>
       <w>dtos</w>
       <w>endedbystop</w>
       <w>endlocal</w>
@@ -64,6 +65,7 @@
       <w>refname</w>
       <w>robo</w>
       <w>robohorse</w>
+      <w>runitem</w>
       <w>sara</w>
       <w>setlocal</w>
       <w>shchenev</w>
@@ -79,6 +81,7 @@
       <w>testrun</w>
       <w>testrunpackage</w>
       <w>testrunsfolder</w>
+      <w>testset</w>
       <w>testsetpackage</w>
       <w>ulimit</w>
       <w>unescaping</w>

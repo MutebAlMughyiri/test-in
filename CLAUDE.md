@@ -274,8 +274,8 @@ silently has no effect costs more than the setting it was meant to hold.
 ### Abbreviations
 
 No name in the plugin abbreviates a word, in production code or tests (#426).
-Muteb, 13 October 2026: *"no abbriviations in our pligin at all. except java
-and all known like exception -> ex"*, and *"dont use `p`"*. The `Project` is
+Muteb, 13 October 2026: *"no abbreviations in our plugin at all. except java
+and all known like exception → ex"*, and *"don't use `p`"*. The `Project` is
 `project`. A business word is never shortened: `testCase`, `testSet`,
 `testRun`, `runItem`, `testProject`, `node`, `testCaseId`, `field`. Nor is
 any other word: `button`, `label`, `column`, `index`, `text`, `background`,

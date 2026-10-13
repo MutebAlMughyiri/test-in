@@ -37,6 +37,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.junit.Assert.assertArrayEquals;
+
 public class HelpIdeTest extends BasePlatformTestCase {
 
     private @NotNull Hints nothingWaits() {
@@ -69,7 +71,7 @@ public class HelpIdeTest extends BasePlatformTestCase {
         try {
             final @NotNull Icon drawn = ((JBLabel) ((CustomStatusBarWidget) mark).getComponent()).getIcon();
             final @NotNull Icon questionMark = IconUtil.resizeSquared(AllIcons.General.QuestionDialog, drawn.getIconWidth());
-            assertTrue("the mark is not the IDE's question mark", Arrays.equals(pixelsOf(questionMark), pixelsOf(drawn)));
+            assertArrayEquals("the mark is not the IDE's question mark", pixelsOf(questionMark), pixelsOf(drawn));
         } finally {
             Disposer.dispose(mark);
         }
