@@ -149,9 +149,9 @@ public enum CopyChoice implements MenuItem {
 
     private static @NotNull String allDetailsOf(final @NotNull TestCaseDto testCase) {
         return Arrays.stream(TestSetEditorAttributes.values())
-                .filter(attr -> attr.can(Can.COPY))
-                .filter(attr -> !attr.gridValue(testCase).isBlank())
-                .map(attr -> attr.getName() + ": " + attr.gridValue(testCase))
+                .filter(attribute -> attribute.can(Can.COPY))
+                .filter(attribute -> !attribute.gridValue(testCase).isBlank())
+                .map(attribute -> attribute.getName() + ": " + attribute.gridValue(testCase))
                 .collect(Collectors.joining("\n"));
     }
 

@@ -178,7 +178,7 @@ public class TestProjectTree implements Disposable {
         final @NotNull Optional<TestProjectNode> boundProject = bound();
         treeStructure.setSelectedProject(boundProject);
 
-        final @NotNull String projectPath = boundProject.map(dir -> dir.getPath().toString()).orElse("");
+        final @NotNull String projectPath = boundProject.map(node -> node.getPath().toString()).orElse("");
         final boolean projectChanged = !projectPath.isEmpty() && !projectPath.equals(expandedProjectPath);
         expandedProjectPath = projectPath;
 

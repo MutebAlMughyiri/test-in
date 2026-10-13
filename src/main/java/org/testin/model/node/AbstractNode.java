@@ -76,7 +76,7 @@ public abstract class AbstractNode {
     // Rule-INTERNAL-116
     @Override
     public final boolean equals(final @Nullable Object other) {
-        return other instanceof AbstractNode dir && dir.getClass() == getClass() && dir.path.equals(path);
+        return other instanceof AbstractNode node && node.getClass() == getClass() && node.path.equals(path);
     }
 
     @Override

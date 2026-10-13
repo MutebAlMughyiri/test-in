@@ -31,8 +31,8 @@ import org.testin.util.Bundle;
 import java.util.Optional;
 
 public class EditTestRunAction extends AbstractAnyProjectAction {
-    static @NotNull Optional<TestRunNode> selectedTestRun(final @NotNull Optional<AbstractNode> dir) {
-        return dir.filter(TestRunNode.class::isInstance)
+    static @NotNull Optional<TestRunNode> selectedTestRun(final @NotNull Optional<AbstractNode> node) {
+        return node.filter(TestRunNode.class::isInstance)
                 .map(TestRunNode.class::cast)
                 .filter(TestRunNode::isOpen);
     }

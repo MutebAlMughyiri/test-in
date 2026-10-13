@@ -43,23 +43,23 @@ final class RenameDialog extends AbstractFrameworkDialog {
     private final @NotNull NodeType type;
 
     // UC-TREE-PANEL-011, Rule-INTERNAL-099, Rule-INTERNAL-105, Rule-INTERNAL-108, Rule-TREE-PANEL-123
-    RenameDialog(final @NotNull Project project, final @NotNull AbstractNode dir, final @NotNull Consumer<@NotNull String> onSubmit) {
+    RenameDialog(final @NotNull Project project, final @NotNull AbstractNode node, final @NotNull Consumer<@NotNull String> onSubmit) {
         super(project);
         this.onSubmit = onSubmit;
-        this.type = dir.getType();
+        this.type = node.getType();
 
         title = Bundle.message("dialog.rename.title");
 
         final @NotNull DialogPart<TextInput> built = DialogPart.textInput()
                 .icon(AllIcons.Actions.Edit)
                 .placeholder(Bundle.message("dialog.rename.placeholder"))
-                .value(dir.getName())
+                .value(node.getName())
                 .build();
         nameInput = built.getComponent();
 
-        final @NotNull List<String> place = Services.getInstance(project, TestinRoot.class).place(Objects.toString(dir.getPath().getParent(), ""));
+        final @NotNull List<String> place = Services.getInstance(project, TestinRoot.class).place(Objects.toString(node.getPath().getParent(), ""));
         components = List.of(
-                DialogPart.of(new RenameCard(dir, place, nameInput)),
+                DialogPart.of(new RenameCard(node, place, nameInput)),
                 DialogPart.button(Bundle.message("dialog.rename.confirm")));
 
         shortcuts = List.of(

@@ -53,7 +53,7 @@ public class UnifiedFileEditor extends UserDataHolderBase implements FileEditor 
     // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-011
     @Override
     public @NotNull String getName() {
-        return vf.getDir().getName();
+        return vf.getNode().getName();
     }
 
     @Override
@@ -99,7 +99,7 @@ public class UnifiedFileEditor extends UserDataHolderBase implements FileEditor 
                 return;
             }
 
-            viewer.showIfOpen(selected, vf.getDir().getPath2());
+            viewer.showIfOpen(selected, vf.getNode().getPath2());
         });
     }
 }

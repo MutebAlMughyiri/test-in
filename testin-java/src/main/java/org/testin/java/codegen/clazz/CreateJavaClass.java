@@ -29,8 +29,8 @@ import java.util.List;
 public class CreateJavaClass implements CodeChange<AbstractNode> {
     // UC-CODEGEN-001
     @Override
-    public void execute(final @NotNull Project project, final @NotNull AbstractNode dir) {
-        final @NotNull List<String> fqcn = Fqcn.ofClass(dir);
+    public void execute(final @NotNull Project project, final @NotNull AbstractNode node) {
+        final @NotNull List<String> fqcn = Fqcn.ofClass(node);
         if (fqcn.isEmpty()) return;
 
         final @NotNull List<String> packageSegments = fqcn.subList(0, fqcn.size() - 1);

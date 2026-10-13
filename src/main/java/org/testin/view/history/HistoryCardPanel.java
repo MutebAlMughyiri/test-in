@@ -156,8 +156,8 @@ final class HistoryCardPanel {
     // Rule-VIEW-PANEL-109
     private static @NotNull JComponent testRun(final @NotNull Project project, final @NotNull BugEvent event, final @NotNull TestCaseDto testCase) {
         return Services.getInstance(project, TestRuns.class).findTestRunNode(event.testRun())
-                .map(dir -> {
-                    final @NotNull JComponent link = AbstractDetails.link(event.testRunName(), _ -> Services.getInstance(project, TestinEditors.class).openAndSelect(dir, testCase));
+                .map(node -> {
+                    final @NotNull JComponent link = AbstractDetails.link(event.testRunName(), _ -> Services.getInstance(project, TestinEditors.class).openAndSelect(node, testCase));
                     link.setFont(Fonts.strong());
                     return link;
                 })

@@ -101,9 +101,9 @@ public class ImportExcel {
         final @NotNull Map<String, Integer> headerIndexMap = new HashMap<>();
         for (final Cell cell : headerRow) {
             final @NotNull String headerName = dataFormatter.formatCellValue(cell).trim();
-            for (final TestSetEditorAttributes reqCol : TestSetEditorAttributes.all(Can.IMPORT)) {
-                if (reqCol.isColumn(headerName)) {
-                    headerIndexMap.put(reqCol.getName().toLowerCase(Locale.ROOT), cell.getColumnIndex());
+            for (final TestSetEditorAttributes importedAttribute : TestSetEditorAttributes.all(Can.IMPORT)) {
+                if (importedAttribute.isColumn(headerName)) {
+                    headerIndexMap.put(importedAttribute.getName().toLowerCase(Locale.ROOT), cell.getColumnIndex());
                 }
             }
         }
@@ -115,7 +115,7 @@ public class ImportExcel {
         for (final Row row : sheet) {
             if (row.getRowNum() == headerRow.getRowNum() || isEmpty(row, dataFormatter)) continue;
 
-            final @NotNull ImportedRow imported = TestSetEditorAttributes.importRow(project, attr -> Optional.ofNullable(headerIndexMap.get(attr.getName().toLowerCase(Locale.ROOT)))
+            final @NotNull ImportedRow imported = TestSetEditorAttributes.importRow(project, attribute -> Optional.ofNullable(headerIndexMap.get(attribute.getName().toLowerCase(Locale.ROOT)))
                     .map(colIndex -> dataFormatter.formatCellValue(row.getCell(colIndex)).trim())
                     .orElse(""));
 

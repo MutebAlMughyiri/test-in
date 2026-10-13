@@ -44,22 +44,22 @@ record CreateTreeNodeWork(@NotNull Project project, @NotNull Nodes nodes, @NotNu
     void createUnder(final @NotNull AbstractNode parentNode) {
         final @NotNull BiConsumer<String, NodeType> onCreate = (s, dt) -> {
             if (s.isEmpty()) return;
-            final @NotNull Path newDirPath = parentNode.getPath().resolve(s);
+            final @NotNull Path newDirectoryPath = parentNode.getPath().resolve(s);
 
-            if (nodes.nodeExists(newDirPath)) {
+            if (nodes.nodeExists(newDirectoryPath)) {
                 notifier.softRefuse(project, Refused.ALREADY_EXISTS, s);
                 return;
             }
 
-            final @NotNull Optional<AbstractNode> created = NodeCreators.of(project, dt).execute(s, parentNode, newDirPath);
+            final @NotNull Optional<AbstractNode> created = NodeCreators.of(project, dt).execute(s, parentNode, newDirectoryPath);
 
-            created.ifPresent(dir -> {
+            created.ifPresent(node -> {
                 notifier.softShow(project, Done.CREATED);
 
-                if (dir.isOpenableInEditor())
-                    editors.open(dir);
+                if (node.isOpenableInEditor())
+                    editors.open(node);
 
-                NodeCode.of(dt).getCreated().execute(project, dir);
+                NodeCode.of(dt).getCreated().execute(project, node);
             });
 
         };

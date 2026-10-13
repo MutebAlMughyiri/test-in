@@ -81,7 +81,7 @@ public abstract class AbstractFieldsPopupBtn<E extends Enum<E> & ShowableAttribu
         };
         DialogStyle.styleContent(detailsList);
 
-        options.forEach(attr -> detailsList.addItem(attr, attr.getName(), selectedDetails.contains(attr)));
+        options.forEach(attribute -> detailsList.addItem(attribute, attribute.getName(), selectedDetails.contains(attribute)));
 
         detailsList.setCheckBoxListListener((index, state) -> {
             Optional.ofNullable(detailsList.getItemAt(index)).ifPresent(field -> {

@@ -62,7 +62,7 @@ public class TestCaseCard extends AbstractCard {
 
         Arrays.stream(TestSetEditorAttributes.values())
                 .filter(activeDetails::contains)
-                .forEach(attr -> attr.applyToUI(testCase, badges, details));
+                .forEach(attribute -> attribute.applyToUI(testCase, badges, details));
 
         if (testCase.getStatus().isBadged()) badges.add(Badges.createTestCaseStatusBadge(testCase.getStatus()));
 

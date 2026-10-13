@@ -52,13 +52,13 @@ public class RenameJavaPackage implements CodeChange<RenamedNode> {
             return;
         }
 
-        final @NotNull VirtualFile pkgDir = found.orElseThrow();
+        final @NotNull VirtualFile packageDirectory = found.orElseThrow();
 
         WriteCommandAction.runWriteCommandAction(project, Bundle.message("codegen.rename.package"), null, () -> {
             try {
-                pkgDir.rename(this, newTop);
+                packageDirectory.rename(this, newTop);
 
-                PackageDeclarations.retarget(project, testSourceRoot, pkgDir);
+                PackageDeclarations.retarget(project, testSourceRoot, packageDirectory);
                 TestinLogger.info("Package renamed to: " + newTop);
             } catch (final IOException ex) {
                 TestinLogger.info("Error renaming package: " + FailureText.of(ex));

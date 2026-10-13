@@ -87,17 +87,17 @@ public final class CardPanelBuilder {
         return new CardView(model, list, scrollPane);
     }
 
-    public static void wireCommonListeners(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull CardView view, final @NotNull AbstractNode dir, final @NotNull AbstractEditorContextMenu contextMenu, final @NotNull Supplier<Optional<JBTable>> gridTableSupplier, final @NotNull ToIntFunction<TestCaseDto> rowOnGrid, final @NotNull BooleanSupplier gridActiveSupplier) {
+    public static void wireCommonListeners(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull CardView view, final @NotNull AbstractNode node, final @NotNull AbstractEditorContextMenu contextMenu, final @NotNull Supplier<Optional<JBTable>> gridTableSupplier, final @NotNull ToIntFunction<TestCaseDto> rowOnGrid, final @NotNull BooleanSupplier gridActiveSupplier) {
         final @NotNull JBList<TestCaseDto> list = view.list();
 
-        final @NotNull CardMouseListener mouseListener = new CardMouseListener(project, editor, list, view.model(), dir, contextMenu);
+        final @NotNull CardMouseListener mouseListener = new CardMouseListener(project, editor, list, view.model(), node, contextMenu);
         list.addMouseListener(mouseListener);
         list.addMouseWheelListener(mouseListener);
         list.addMouseMotionListener(mouseListener);
 
         contextMenu.registerShortcuts(list);
 
-        list.addListSelectionListener(new CardSelectionListener(project, list, editor, dir.getPath2()));
+        list.addListSelectionListener(new CardSelectionListener(project, list, editor, node.getPath2()));
         list.addListSelectionListener(new CardGridSelectionSynchronizer(list, gridTableSupplier, gridActiveSupplier, rowOnGrid));
     }
 }

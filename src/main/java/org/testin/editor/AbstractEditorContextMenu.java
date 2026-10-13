@@ -65,7 +65,7 @@ public abstract class AbstractEditorContextMenu extends DefaultActionGroup {
     public abstract void registerShortcuts(final @NotNull JBList<TestCaseDto> list);
 
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-213
-    protected @NotNull DefaultActionGroup actions(final @NotNull Project project, final @NotNull AbstractNode dir, final @NotNull JBList<TestCaseDto> list) {
+    protected @NotNull DefaultActionGroup actions(final @NotNull Project project, final @NotNull AbstractNode node, final @NotNull JBList<TestCaseDto> list) {
         final @NotNull DefaultActionGroup actions = ActionsMenu.group();
 
         actions.add(Declared.forMenu("Testin.CopyTestCase"));
@@ -76,8 +76,8 @@ public abstract class AbstractEditorContextMenu extends DefaultActionGroup {
 
         actions.addSeparator();
 
-        actions.add(new TestinUndoAction(project, list, UndoScope.of(dir.getPath()), UndoDirection.UNDO));
-        actions.add(new TestinUndoAction(project, list, UndoScope.of(dir.getPath()), UndoDirection.REDO));
+        actions.add(new TestinUndoAction(project, list, UndoScope.of(node.getPath()), UndoDirection.UNDO));
+        actions.add(new TestinUndoAction(project, list, UndoScope.of(node.getPath()), UndoDirection.REDO));
 
         return actions;
     }

@@ -25,5 +25,5 @@ import java.util.Optional;
 @FunctionalInterface
 public interface NodeCreator {
     @NotNull
-    Optional<AbstractNode> execute(final @NotNull String name, final @NotNull AbstractNode parentNode, final @NotNull Path newDirPath);
+    Optional<AbstractNode> execute(final @NotNull String name, final @NotNull AbstractNode parentNode, final @NotNull Path newDirectoryPath);
 }

@@ -71,7 +71,7 @@ public class CreateTestRun implements NodeCreator {
 
     // UC-TREE-PANEL-009
     @Override
-    public @NotNull Optional<AbstractNode> execute(final @NotNull String name, final @NotNull AbstractNode parentNode, final @NotNull Path newDirPath) {
+    public @NotNull Optional<AbstractNode> execute(final @NotNull String name, final @NotNull AbstractNode parentNode, final @NotNull Path newDirectoryPath) {
         boundTestProject.get().ifPresentOrElse(
                 testProject -> configureTestRun(testProject.getTestCasesFolder(), name, parentNode, Set.of(), Map.of()),
                 () -> TestinLogger.warn("Create test run: no test project is bound to " + project.getName()));

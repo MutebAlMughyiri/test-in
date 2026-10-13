@@ -325,8 +325,8 @@ public final class ProjectIndexer {
         if (!Files.exists(rootPath) || !Files.isDirectory(rootPath)) return List.of();
 
         final Path[] projectPaths;
-        try (Stream<Path> dirs = Files.list(rootPath)) {
-            projectPaths = dirs.filter(Files::isDirectory).toArray(Path[]::new);
+        try (Stream<Path> directories = Files.list(rootPath)) {
+            projectPaths = directories.filter(Files::isDirectory).toArray(Path[]::new);
         } catch (final IOException | UncheckedIOException ex) {
             TestinLogger.error("Failed to list root directory: " + FailureText.of(ex));
             return List.of();

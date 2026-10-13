@@ -97,20 +97,20 @@ public final class TestRunFormOpener {
     }
 
     // UC-TREE-PANEL-022, Rule-TREE-PANEL-093, Rule-TREE-PANEL-076
-    private boolean checkOnly(final @NotNull CheckedTreeNode node, final @NotNull Set<UUID> wanted) {
-        if (node.getUserObject() instanceof TestCaseDto testCase) {
+    private boolean checkOnly(final @NotNull CheckedTreeNode treeNode, final @NotNull Set<UUID> wanted) {
+        if (treeNode.getUserObject() instanceof TestCaseDto testCase) {
             final boolean covered = wanted.contains(testCase.getId());
-            node.setChecked(covered);
+            treeNode.setChecked(covered);
 
             return covered;
         }
 
-        boolean allCovered = node.getChildCount() > 0;
-        for (int i = 0; i < node.getChildCount(); i++) {
-            allCovered &= checkOnly((CheckedTreeNode) node.getChildAt(i), wanted);
+        boolean allCovered = treeNode.getChildCount() > 0;
+        for (int i = 0; i < treeNode.getChildCount(); i++) {
+            allCovered &= checkOnly((CheckedTreeNode) treeNode.getChildAt(i), wanted);
         }
 
-        node.setChecked(allCovered);
+        treeNode.setChecked(allCovered);
 
         return allCovered;
     }

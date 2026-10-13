@@ -55,10 +55,10 @@ public final class TestCases {
     }
 
     // Rule-TREE-PANEL-008
-    public @NotNull List<TestCaseDto> getTestCasesUnder(final @NotNull AbstractNode dir) {
-        final @NotNull List<TestCaseDto> testCases = new ArrayList<>(getTestCasesForTestSet(dir.getPath()));
+    public @NotNull List<TestCaseDto> getTestCasesUnder(final @NotNull AbstractNode node) {
+        final @NotNull List<TestCaseDto> testCases = new ArrayList<>(getTestCasesForTestSet(node.getPath()));
 
-        for (final AbstractNode child : store().getChildren(dir.getPath())) {
+        for (final AbstractNode child : store().getChildren(node.getPath())) {
             if (child.isRetired()) continue;
 
             testCases.addAll(getTestCasesUnder(child));

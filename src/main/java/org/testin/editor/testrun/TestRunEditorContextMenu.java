@@ -33,7 +33,7 @@ public class TestRunEditorContextMenu extends AbstractEditorContextMenu {
     private final @NotNull Project project;
     private final @NotNull TestinEditor ui;
 
-    public TestRunEditorContextMenu(final @NotNull Project project, final @NotNull TestinEditor ui, final @NotNull AbstractNode dir, final @NotNull JBList<TestCaseDto> list) {
+    public TestRunEditorContextMenu(final @NotNull Project project, final @NotNull TestinEditor ui, final @NotNull AbstractNode node, final @NotNull JBList<TestCaseDto> list) {
         super();
         this.project = project;
         this.ui = ui;
@@ -46,7 +46,7 @@ public class TestRunEditorContextMenu extends AbstractEditorContextMenu {
         add(Declared.forMenu("Testin.NavigateToTestCase"));
         addSeparator();
 
-        add(actions(project, dir, list));
+        add(actions(project, node, list));
 
         addSeparator();
         add(Declared.forMenu("Testin.RunTestMethod"));

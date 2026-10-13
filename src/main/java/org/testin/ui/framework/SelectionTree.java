@@ -64,7 +64,7 @@ public final class SelectionTree implements DialogComponent {
 
         tree.addCheckboxTreeListener(new CheckboxTreeListener() {
             @Override
-            public void nodeStateChanged(final @NotNull CheckedTreeNode node) {
+            public void nodeStateChanged(final @NotNull CheckedTreeNode treeNode) {
                 keepTicks();
                 tree.repaint();
                 showTickAll();
@@ -85,9 +85,9 @@ public final class SelectionTree implements DialogComponent {
         panel = DialogStyle.section(Caption.header(title, Optional.of(buttons)), ScrollPaneFactory.createScrollPane(tree, true));
     }
 
-    private static boolean allChecked(final @NotNull CheckedTreeNode node) {
-        for (int i = 0; i < node.getChildCount(); i++) {
-            if (!((CheckedTreeNode) node.getChildAt(i)).isChecked()) return false;
+    private static boolean allChecked(final @NotNull CheckedTreeNode treeNode) {
+        for (int i = 0; i < treeNode.getChildCount(); i++) {
+            if (!((CheckedTreeNode) treeNode.getChildAt(i)).isChecked()) return false;
         }
 
         return true;
@@ -161,17 +161,17 @@ public final class SelectionTree implements DialogComponent {
         }
     }
 
-    private @NotNull CheckedTreeNode copyShown(final @NotNull CheckedTreeNode node, final @NotNull Predicate<Object> leafShown) {
-        final @NotNull CheckedTreeNode copy = new CheckedTreeNode(node.getUserObject());
-        copy.setEnabled(node.isEnabled());
+    private @NotNull CheckedTreeNode copyShown(final @NotNull CheckedTreeNode treeNode, final @NotNull Predicate<Object> leafShown) {
+        final @NotNull CheckedTreeNode copy = new CheckedTreeNode(treeNode.getUserObject());
+        copy.setEnabled(treeNode.isEnabled());
 
-        if (isLeaf(node)) {
-            copy.setChecked(chosen.contains(node.getUserObject()));
+        if (isLeaf(treeNode)) {
+            copy.setChecked(chosen.contains(treeNode.getUserObject()));
             return copy;
         }
 
-        for (int i = 0; i < node.getChildCount(); i++) {
-            final @NotNull CheckedTreeNode child = (CheckedTreeNode) node.getChildAt(i);
+        for (int i = 0; i < treeNode.getChildCount(); i++) {
+            final @NotNull CheckedTreeNode child = (CheckedTreeNode) treeNode.getChildAt(i);
             if (holdsShown(child, leafShown)) copy.add(copyShown(child, leafShown));
         }
 
@@ -179,70 +179,70 @@ public final class SelectionTree implements DialogComponent {
         return copy;
     }
 
-    private boolean holdsShown(final @NotNull CheckedTreeNode node, final @NotNull Predicate<Object> leafShown) {
-        if (isLeaf(node)) return leafShown.test(node.getUserObject());
+    private boolean holdsShown(final @NotNull CheckedTreeNode treeNode, final @NotNull Predicate<Object> leafShown) {
+        if (isLeaf(treeNode)) return leafShown.test(treeNode.getUserObject());
 
-        for (int i = 0; i < node.getChildCount(); i++) {
-            if (holdsShown((CheckedTreeNode) node.getChildAt(i), leafShown)) return true;
+        for (int i = 0; i < treeNode.getChildCount(); i++) {
+            if (holdsShown((CheckedTreeNode) treeNode.getChildAt(i), leafShown)) return true;
         }
 
         return false;
     }
 
-    private boolean isLeaf(final @NotNull CheckedTreeNode node) {
-        return leaves.contains(node.getUserObject());
+    private boolean isLeaf(final @NotNull CheckedTreeNode treeNode) {
+        return leaves.contains(treeNode.getUserObject());
     }
 
-    private int countBranches(final @NotNull CheckedTreeNode node) {
-        if (isLeaf(node)) return 0;
+    private int countBranches(final @NotNull CheckedTreeNode treeNode) {
+        if (isLeaf(treeNode)) return 0;
 
-        int branches = hasChosenLeaf(node) && holdsALeaf(node) ? 1 : 0;
-        for (int i = 0; i < node.getChildCount(); i++) {
-            branches += countBranches((CheckedTreeNode) node.getChildAt(i));
+        int branches = hasChosenLeaf(treeNode) && holdsALeaf(treeNode) ? 1 : 0;
+        for (int i = 0; i < treeNode.getChildCount(); i++) {
+            branches += countBranches((CheckedTreeNode) treeNode.getChildAt(i));
         }
 
         return branches;
     }
 
-    private boolean holdsALeaf(final @NotNull CheckedTreeNode node) {
-        for (int i = 0; i < node.getChildCount(); i++) {
-            if (isLeaf((CheckedTreeNode) node.getChildAt(i))) return true;
+    private boolean holdsALeaf(final @NotNull CheckedTreeNode treeNode) {
+        for (int i = 0; i < treeNode.getChildCount(); i++) {
+            if (isLeaf((CheckedTreeNode) treeNode.getChildAt(i))) return true;
         }
 
         return false;
     }
 
-    private boolean hasChosenLeaf(final @NotNull CheckedTreeNode node) {
-        if (isLeaf(node)) return chosen.contains(node.getUserObject());
+    private boolean hasChosenLeaf(final @NotNull CheckedTreeNode treeNode) {
+        if (isLeaf(treeNode)) return chosen.contains(treeNode.getUserObject());
 
-        for (int i = 0; i < node.getChildCount(); i++) {
-            if (hasChosenLeaf((CheckedTreeNode) node.getChildAt(i))) return true;
+        for (int i = 0; i < treeNode.getChildCount(); i++) {
+            if (hasChosenLeaf((CheckedTreeNode) treeNode.getChildAt(i))) return true;
         }
 
         return false;
     }
 
-    private void collectLeaves(final @NotNull CheckedTreeNode node) {
-        if (node.isLeaf()) {
-            leaves.add(node.getUserObject());
-            if (node.isChecked()) chosen.add(node.getUserObject());
+    private void collectLeaves(final @NotNull CheckedTreeNode treeNode) {
+        if (treeNode.isLeaf()) {
+            leaves.add(treeNode.getUserObject());
+            if (treeNode.isChecked()) chosen.add(treeNode.getUserObject());
         }
 
-        for (int i = 0; i < node.getChildCount(); i++) {
-            collectLeaves((CheckedTreeNode) node.getChildAt(i));
+        for (int i = 0; i < treeNode.getChildCount(); i++) {
+            collectLeaves((CheckedTreeNode) treeNode.getChildAt(i));
         }
     }
 
-    private @NotNull List<Object> leavesOf(final @NotNull CheckedTreeNode node) {
-        return leafNodesOf(node).stream().map(CheckedTreeNode::getUserObject).toList();
+    private @NotNull List<Object> leavesOf(final @NotNull CheckedTreeNode treeNode) {
+        return leafNodesOf(treeNode).stream().map(CheckedTreeNode::getUserObject).toList();
     }
 
-    private @NotNull List<CheckedTreeNode> leafNodesOf(final @NotNull CheckedTreeNode node) {
+    private @NotNull List<CheckedTreeNode> leafNodesOf(final @NotNull CheckedTreeNode treeNode) {
         final @NotNull List<CheckedTreeNode> found = new ArrayList<>();
-        if (isLeaf(node)) found.add(node);
+        if (isLeaf(treeNode)) found.add(treeNode);
 
-        for (int i = 0; i < node.getChildCount(); i++) {
-            found.addAll(leafNodesOf((CheckedTreeNode) node.getChildAt(i)));
+        for (int i = 0; i < treeNode.getChildCount(); i++) {
+            found.addAll(leafNodesOf((CheckedTreeNode) treeNode.getChildAt(i)));
         }
 
         return found;

@@ -172,7 +172,7 @@ final class NodeFiles {
             final @NotNull List<Path> all = files.filter(Files::isRegularFile).toList();
 
             testCaseFiles = all.stream()
-                    .filter(file -> ProjectIndexer.isTestCaseFile(file, dir -> store.hasMarker(dir, NodeType.TS)))
+                    .filter(file -> ProjectIndexer.isTestCaseFile(file, node -> store.hasMarker(node, NodeType.TS)))
                     .toList();
 
             markerFiles = all.stream()

@@ -48,8 +48,8 @@ public class ExportCsv {
             for (final Map.Entry<String, List<TestCaseDto>> entry : sheetsData.entrySet()) {
                 for (final TestCaseDto testCase : entry.getValue()) {
                     final @NotNull List<String> rowValues = new ArrayList<>();
-                    for (final TestSetEditorAttributes attr : TestSetEditorAttributes.all(Can.EXPORT)) {
-                        rowValues.add(SeparatedValues.field(attr.gridValue(testCase), ','));
+                    for (final TestSetEditorAttributes attribute : TestSetEditorAttributes.all(Can.EXPORT)) {
+                        rowValues.add(SeparatedValues.field(attribute.gridValue(testCase), ','));
                     }
                     writer.write(String.join(",", rowValues));
                     writer.newLine();

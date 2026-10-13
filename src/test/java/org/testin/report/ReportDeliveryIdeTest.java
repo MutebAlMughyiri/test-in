@@ -216,9 +216,9 @@ public class ReportDeliveryIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull TestRunNode aTestRun(final @NotNull String named, final @NotNull List<RunItem> runItems) {
         final @NotNull TestRunNode testRun = WriteAction.computeAndWait(() -> {
-            final @NotNull TestRunNode dir = Services.getInstance(getProject(), NodeMapper.class).setTestRunNode(testProject.getTestRunsFolder().getPath().resolve(named), testProject.getTestRunsFolder());
-            Services.getInstance(getProject(), Nodes.class).addTestRunNode(dir);
-            return dir;
+            final @NotNull TestRunNode created = Services.getInstance(getProject(), NodeMapper.class).setTestRunNode(testProject.getTestRunsFolder().getPath().resolve(named), testProject.getTestRunsFolder());
+            Services.getInstance(getProject(), Nodes.class).addTestRunNode(created);
+            return created;
         });
         Services.getInstance(getProject(), TestRuns.class).putRunItems(testRun.getPath(), new RunItems().setAll(new ArrayList<>(runItems)));
         return testRun;

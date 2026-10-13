@@ -56,11 +56,11 @@ public final class ReportBug {
         reports.begin(runItemPath);
         redraw.run();
 
-        final @NotNull RunItem failedItem = failed.orElseThrow();
+        final @NotNull RunItem failedRunItem = failed.orElseThrow();
         final @NotNull Optional<TestCaseFile> file = testCases.testCaseFile(testCase);
 
         BackgroundWork.run(project, Bundle.message("bug.preparing"), Bundle.message("bug.send.failed.title"), true,
-                indicator -> prepare(project, BugFacts.of(failedItem, testCase, testRunNode.getMarker(), testRunNode.getName(), testRuns.screenshots(runItemPath.testRunPath(), failedItem)), file, indicator),
+                indicator -> prepare(project, BugFacts.of(failedRunItem, testCase, testRunNode.getMarker(), testRunNode.getName(), testRuns.screenshots(runItemPath.testRunPath(), failedRunItem)), file, indicator),
                 bug -> open(project, runItemPath, bug, redraw),
                 () -> {
                     reports.end(runItemPath, Stage.PREPARING);

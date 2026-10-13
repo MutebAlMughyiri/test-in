@@ -98,12 +98,12 @@ public class NodeCountsIdeTest extends AbstractTempRootIdeTest {
     // UC-INTERNAL-006, Rule-INTERNAL-047
     public void testAContainerIsTheSumOfEverythingBeneathItAtAnyDepth() {
         final @NotNull TestProjectNode testProject = aTestProject();
-        final @NotNull TestSetPackageNode auth = aTestSetPackage(testProject.getTestCasesFolder(), "Auth");
-        final @NotNull TestSetPackageNode admin = aTestSetPackage(auth, "Admin");
-        aTestSet(auth, "Login", 2, TestSetStatus.ACTIVE);
+        final @NotNull TestSetPackageNode authentication = aTestSetPackage(testProject.getTestCasesFolder(), "Auth");
+        final @NotNull TestSetPackageNode admin = aTestSetPackage(authentication, "Admin");
+        aTestSet(authentication, "Login", 2, TestSetStatus.ACTIVE);
         aTestSet(admin, "Roles", 3, TestSetStatus.ACTIVE);
 
-        final @NotNull NodeFigures figures = counted(auth);
+        final @NotNull NodeFigures figures = counted(authentication);
 
         assertEquals("a package did not count the test cases two levels beneath it", 5, figures.testCases());
         assertEquals("a package did not count the test sets two levels beneath it", 2, figures.testSets());

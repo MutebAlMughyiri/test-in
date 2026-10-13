@@ -43,18 +43,18 @@ final class RenameCard implements DialogComponent {
     private final @NotNull JComponent panel;
 
     // UC-TREE-PANEL-011, Rule-INTERNAL-087, Rule-INTERNAL-099, Rule-INTERNAL-108, Rule-TREE-PANEL-123
-    RenameCard(final @NotNull AbstractNode dir, final @NotNull List<String> place, final @NotNull TextInput field) {
+    RenameCard(final @NotNull AbstractNode node, final @NotNull List<String> place, final @NotNull TextInput field) {
         this.field = field;
 
         panel = DialogStyle.asSection(new FormRows()
-                .pair(Caption.above(Bundle.message("caption.renaming"), renamed(dir)), Caption.above(Bundle.message("caption.in"), DialogPlace.of(place)))
+                .pair(Caption.above(Bundle.message("caption.renaming"), renamed(node)), Caption.above(Bundle.message("caption.in"), DialogPlace.of(place)))
                 .wideRow(Caption.header(Caption.of(Bundle.message("caption.new.name"), Fonts.caption()), Optional.empty()))
                 .wideRow(field.getPanel()));
     }
 
     // Rule-INTERNAL-077, Rule-INTERNAL-095, Rule-INTERNAL-096
-    private static @NotNull JBLabel renamed(final @NotNull AbstractNode dir) {
-        final @NotNull JBLabel named = new JBLabel(dir.getName(), Icons.gray(dir.iconShownInTree()), SwingConstants.LEADING);
+    private static @NotNull JBLabel renamed(final @NotNull AbstractNode node) {
+        final @NotNull JBLabel named = new JBLabel(node.getName(), Icons.gray(node.iconShownInTree()), SwingConstants.LEADING);
         named.setFont(Fonts.value());
         named.setIconTextGap(JBUI.scale(ICON_GAP));
 

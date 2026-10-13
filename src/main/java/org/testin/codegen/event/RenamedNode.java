@@ -30,16 +30,16 @@ import org.testin.util.NameSanitizer;
 import java.util.ArrayList;
 import java.util.List;
 
-public record RenamedNode(@NotNull AbstractNode dir, @NotNull List<String> from, @NotNull String newName) {
-    public RenamedNode(final @NotNull AbstractNode dir, final @NotNull String newName) {
-        this(dir, dir.getPath2(), newName);
+public record RenamedNode(@NotNull AbstractNode node, @NotNull List<String> from, @NotNull String newName) {
+    public RenamedNode(final @NotNull AbstractNode node, final @NotNull String newName) {
+        this(node, node.getPath2(), newName);
     }
 
     // UC-TREE-PANEL-011, Rule-TREE-PANEL-133
     public @NotNull RenamedNode back() {
         final @NotNull List<String> to = new ArrayList<>(from);
         to.set(to.size() - 1, newName);
-        return new RenamedNode(dir, List.copyOf(to), from.getLast());
+        return new RenamedNode(node, List.copyOf(to), from.getLast());
     }
 
     public @NotNull String newPackage() {
@@ -48,7 +48,7 @@ public record RenamedNode(@NotNull AbstractNode dir, @NotNull List<String> from,
 
     // UC-TREE-PANEL-011, Rule-CODEGEN-082
     public boolean toTheFilesName(final @NotNull Project project) {
-        return dir.getType() == NodeType.TP && TestinYml.names(project, newName);
+        return node.getType() == NodeType.TP && TestinYml.names(project, newName);
     }
 
     // Rule-CODEGEN-082
@@ -58,9 +58,9 @@ public record RenamedNode(@NotNull AbstractNode dir, @NotNull List<String> from,
 
     // UC-CODEGEN-017, Rule-CODEGEN-080
     public boolean packageInTheWay(final @NotNull Project project) {
-        if (!NodeType.BECOME_JAVA_PACKAGES.contains(dir.getType()) || !movesCode(project)) return false;
+        if (!NodeType.BECOME_JAVA_PACKAGES.contains(node.getType()) || !movesCode(project)) return false;
 
-        final @NotNull List<String> from = Fqcn.ofPackage(dir);
+        final @NotNull List<String> from = Fqcn.ofPackage(node);
         final @NotNull List<String> to = new ArrayList<>(from);
         to.set(to.size() - 1, newPackage());
         if (to.equals(from)) return false;

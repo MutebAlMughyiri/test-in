@@ -49,13 +49,13 @@ public class CellEditListener implements TableModelListener {
                 try {
                     final @NotNull DefaultTableModel model = (DefaultTableModel) e.getSource();
                     final @NotNull String updatedValue = String.valueOf(model.getValueAt(row, col));
-                    final @NotNull TestSetEditorAttributes currentAttr = importAttributes.get(col - 2);
-                    final @NotNull Optional<TestCaseDto> took = currentAttr.getImportSetter().execute(project, testCases.get(row), updatedValue);
+                    final @NotNull TestSetEditorAttributes currentAttribute = importAttributes.get(col - 2);
+                    final @NotNull Optional<TestCaseDto> took = currentAttribute.getImportSetter().execute(project, testCases.get(row), updatedValue);
 
                     // Rule-SHARE-106
                     took.ifPresentOrElse(testCase -> testCases.set(row, testCase), () -> TestSetEditorAttributes.sayWhatWasRefused(project, 1));
 
-                    final @NotNull String formattedValue = currentAttr.gridValue(testCases.get(row));
+                    final @NotNull String formattedValue = currentAttribute.gridValue(testCases.get(row));
                     model.setValueAt(formattedValue, row, col);
                 } finally {
                     isUpdating = false;

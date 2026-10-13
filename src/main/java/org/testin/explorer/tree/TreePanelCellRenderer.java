@@ -55,14 +55,14 @@ public class TreePanelCellRenderer extends ColoredTreeCellRenderer {
                 return;
             }
 
-            final @NotNull AbstractNode dir = shown.get();
-            final @NotNull NodeType type = dir.getType();
+            final @NotNull AbstractNode node = shown.get();
+            final @NotNull NodeType type = node.getType();
 
-            setIcon(dir.iconShownInTree());
-            final boolean grayed = selectedNodes.contains(dir.getPath()) || dir.isRetired();
-            append(dir.getName(), grayed ? SimpleTextAttributes.GRAYED_ATTRIBUTES : type.getAttributes());
+            setIcon(node.iconShownInTree());
+            final boolean grayed = selectedNodes.contains(node.getPath()) || node.isRetired();
+            append(node.getName(), grayed ? SimpleTextAttributes.GRAYED_ATTRIBUTES : type.getAttributes());
 
-            final @NotNull String status = dir.statusShownInTree();
+            final @NotNull String status = node.statusShownInTree();
             if (!status.isEmpty()) append(" " + status, SimpleTextAttributes.GRAY_ATTRIBUTES);
 
         } catch (final Exception ex) {

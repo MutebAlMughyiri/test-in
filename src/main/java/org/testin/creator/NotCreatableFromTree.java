@@ -30,7 +30,7 @@ public final class NotCreatableFromTree implements NodeCreator {
 
     // Rule-TREE-PANEL-002
     @Override
-    public @NotNull Optional<AbstractNode> execute(final @NotNull String name, final @NotNull AbstractNode parentNode, final @NotNull Path newDirPath) {
+    public @NotNull Optional<AbstractNode> execute(final @NotNull String name, final @NotNull AbstractNode parentNode, final @NotNull Path newDirectoryPath) {
         TestinLogger.info(nodeType + " is not created from the tree");
         return Optional.empty();
     }

@@ -41,9 +41,9 @@ import java.util.Optional;
 // UC-TREE-PANEL-011
 public class RenameAction extends AbstractAnyProjectAction {
     // UC-TREE-PANEL-011, Rule-TREE-PANEL-104, Rule-TREE-PANEL-111
-    private static @NotNull Optional<String> whyNot(final @NotNull Project project, final @NotNull AbstractNode dir) {
-        if (!dir.isRenamable()) return Optional.of(Bundle.message("rename.disabled.description"));
-        if (Services.getInstance(project, TestinEditors.class).busyUnder(dir))
+    private static @NotNull Optional<String> whyNot(final @NotNull Project project, final @NotNull AbstractNode node) {
+        if (!node.isRenamable()) return Optional.of(Bundle.message("rename.disabled.description"));
+        if (Services.getInstance(project, TestinEditors.class).busyUnder(node))
             return Optional.of(Bundle.message("rename.disabled.busy"));
 
         return Optional.empty();
@@ -53,26 +53,26 @@ public class RenameAction extends AbstractAnyProjectAction {
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
         TestinDataKeys.singleSelectedNode(e)
-                .filter(dir -> whyNot(project, dir).isEmpty())
-                .ifPresent(dir -> new RenameDialog(project, dir, newName -> renameNode(project, dir, newName)).show());
+                .filter(node -> whyNot(project, node).isEmpty())
+                .ifPresent(node -> new RenameDialog(project, node, newName -> renameNode(project, node, newName)).show());
     }
 
     // UC-TREE-PANEL-011, Rule-TREE-PANEL-004
-    private void renameNode(final @NotNull Project project, final @NotNull AbstractNode dir, final @NotNull String newName) {
-        if (newName.isBlank() || newName.equals(dir.getName())) return;
+    private void renameNode(final @NotNull Project project, final @NotNull AbstractNode node, final @NotNull String newName) {
+        if (newName.isBlank() || newName.equals(node.getName())) return;
 
-        if (Optional.ofNullable(dir.getPath().getParent()).isEmpty()) {
-            TestinLogger.warn("Rename refused, no parent directory: " + dir.getPath());
+        if (Optional.ofNullable(node.getPath().getParent()).isEmpty()) {
+            TestinLogger.warn("Rename refused, no parent directory: " + node.getPath());
             return;
         }
 
-        if (NodeRename.refused(project, dir, newName)) return;
+        if (NodeRename.refused(project, node, newName)) return;
 
-        final @NotNull String oldName = dir.getName();
-        final @NotNull Path oldPath = dir.getPath();
+        final @NotNull String oldName = node.getName();
+        final @NotNull Path oldPath = node.getPath();
         final @NotNull Path newPath = oldPath.resolveSibling(newName);
 
-        NodeRename.apply(project, dir, newName, () -> {
+        NodeRename.apply(project, node, newName, () -> {
             Services.getInstance(project, Notifier.class).softShow(project, Done.RENAMED);
 
             Services.getInstance(project, UndoHistories.class).push(UndoScope.TREE, new Operation(
@@ -92,10 +92,10 @@ public class RenameAction extends AbstractAnyProjectAction {
             return false;
         }
 
-        final @NotNull AbstractNode dir = node.orElseThrow();
-        if (NodeRename.refused(project, dir, newName)) return false;
+        final @NotNull AbstractNode renamedNode = node.orElseThrow();
+        if (NodeRename.refused(project, renamedNode, newName)) return false;
 
-        NodeRename.apply(project, dir, newName, () -> {
+        NodeRename.apply(project, renamedNode, newName, () -> {
         });
         return true;
     }
@@ -103,7 +103,7 @@ public class RenameAction extends AbstractAnyProjectAction {
     // UC-TREE-PANEL-011, Rule-TREE-PANEL-104
     @Override
     protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
-        final @NotNull Optional<String> why = TestinDataKeys.singleSelectedNode(e).map(dir -> whyNot(project, dir))
+        final @NotNull Optional<String> why = TestinDataKeys.singleSelectedNode(e).map(node -> whyNot(project, node))
                 .orElse(Optional.of(Bundle.message("rename.disabled.description")));
 
         GrayWithReason.unless(this, e, why);

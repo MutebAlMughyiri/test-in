@@ -150,18 +150,18 @@ public class SearchTest {
 
     @Test
     public void aPackageIsNot() {
-        final TestSetPackageNode pkg = TestSetPackageNode.builder().build();
-        pkg.setName("Auth");
+        final TestSetPackageNode testSetPackage = TestSetPackageNode.builder().build();
+        testSetPackage.setName("Auth");
 
-        assertFalse(pkg.isOpenableInEditor(), "there is no editor to open, so Enter on it would do nothing");
+        assertFalse(testSetPackage.isOpenableInEditor(), "there is no editor to open, so Enter on it would do nothing");
     }
 
     @Test
     public void theEmptyQueryListReadsAsTheTreeDoes() {
-        final TestSetNode underAuth = testSet("Login", "test-01", "Test Cases", "Auth", "Login");
+        final TestSetNode underAuthentication = testSet("Login", "test-01", "Test Cases", "Auth", "Login");
         final TestSetNode underBilling = testSet("Invoices", "test-01", "Test Cases", "Billing", "Invoices");
 
-        assertTrue(GlobalSearch.inTreeOrder(underAuth, underBilling) < 0,
+        assertTrue(GlobalSearch.inTreeOrder(underAuthentication, underBilling) < 0,
                 "Auth before Billing, so a project's sets stay together instead of interleaving alphabetically");
     }
 

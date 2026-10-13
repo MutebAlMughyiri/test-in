@@ -89,24 +89,24 @@ public final class NodeMapper {
     }
 
     public @NotNull TestCasesFolderNode testCasesFolderOf(final @NotNull Path path, final @NotNull TestProjectNode testProject) {
-        final @NotNull Path dir = path.resolve(NodeType.TCF.getFolderName());
+        final @NotNull Path directory = path.resolve(NodeType.TCF.getFolderName());
         return TestCasesFolderNode.builder()
-                .path(dir)
+                .path(directory)
                 .name(NodeType.TCF.getFolderName())
                 .parent(testProject)
                 .path2(AbstractNode.pathOf(testProject.getPath2(), NodeType.TCF.getFolderName()))
-                .marker(Services.getInstance(project, Nodes.class).readMarker(dir, NodeType.TCF, TestCasesFolderMarker.class))
+                .marker(Services.getInstance(project, Nodes.class).readMarker(directory, NodeType.TCF, TestCasesFolderMarker.class))
                 .build();
     }
 
     public @NotNull TestRunsFolderNode testRunsFolderOf(final @NotNull Path path, final @NotNull TestProjectNode testProject) {
-        final @NotNull Path dir = path.resolve(NodeType.TRF.getFolderName());
+        final @NotNull Path directory = path.resolve(NodeType.TRF.getFolderName());
         return TestRunsFolderNode.builder()
-                .path(dir)
+                .path(directory)
                 .name(NodeType.TRF.getFolderName())
                 .parent(testProject)
                 .path2(AbstractNode.pathOf(testProject.getPath2(), NodeType.TRF.getFolderName()))
-                .marker(Services.getInstance(project, Nodes.class).readMarker(dir, NodeType.TRF, TestRunsFolderMarker.class))
+                .marker(Services.getInstance(project, Nodes.class).readMarker(directory, NodeType.TRF, TestRunsFolderMarker.class))
                 .build();
     }
 

@@ -97,7 +97,7 @@ public final class TestRuns {
 
     // Rule-EDITOR-PANEL-239
     public @NotNull String commitOf(final @NotNull Path testRunPath) {
-        return store().findTestRunNode(testRunPath).map(dir -> dir.getMarker().getCommit()).orElse("");
+        return store().findTestRunNode(testRunPath).map(node -> node.getMarker().getCommit()).orElse("");
     }
 
     // Rule-EDITOR-PANEL-239, Rule-SHARE-130
@@ -164,8 +164,8 @@ public final class TestRuns {
     }
 
     public void changeTestRunMarker(final @NotNull Path testRunPath, final @NotNull Consumer<TestRunMarker> change) {
-        store().findTestRunNode(testRunPath).ifPresentOrElse(dir -> {
-            final @NotNull TestRunMarker marker = dir.getMarker();
+        store().findTestRunNode(testRunPath).ifPresentOrElse(node -> {
+            final @NotNull TestRunMarker marker = node.getMarker();
             change.accept(marker);
             runItemWriter().persistMarker(testRunPath, () -> notSaved(testRunPath));
             indexer.announce(testRunPath);

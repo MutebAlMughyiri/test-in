@@ -60,11 +60,11 @@ public class CardMouseListener extends MouseAdapter {
     private final @NotNull Notifier notifier;
     private @NotNull String shownTip = "";
 
-    public CardMouseListener(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull JBList<TestCaseDto> list, final @NotNull CollectionListModel<TestCaseDto> model, final @NotNull AbstractNode dir, final @NotNull AbstractEditorContextMenu cm) {
+    public CardMouseListener(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull JBList<TestCaseDto> list, final @NotNull CollectionListModel<TestCaseDto> model, final @NotNull AbstractNode node, final @NotNull AbstractEditorContextMenu cm) {
         this.project = project;
         this.editor = editor;
         this.list = list;
-        this.path = dir.getPath2();
+        this.path = node.getPath2();
         this.model = model;
         this.cm = cm;
         this.notifier = Services.getInstance(project, Notifier.class);

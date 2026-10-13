@@ -35,9 +35,9 @@ public class OpenAction extends AbstractAnyProjectAction {
     public static void execute(final @NotNull Project project, final @NotNull List<AbstractNode> selected) {
         selected.stream()
                 .filter(AbstractNode::isOpenableInEditor)
-                .forEach(dir -> {
-                    TestinLogger.info("open: " + dir.getPath());
-                    Services.getInstance(project, TestinEditors.class).open(dir);
+                .forEach(node -> {
+                    TestinLogger.info("open: " + node.getPath());
+                    Services.getInstance(project, TestinEditors.class).open(node);
                 });
     }
 

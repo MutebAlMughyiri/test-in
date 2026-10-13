@@ -42,23 +42,23 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NodeRename {
     // UC-TREE-PANEL-011, Rule-TREE-PANEL-036, Rule-TREE-PANEL-111
-    public static void apply(final @NotNull Project project, final @NotNull AbstractNode dir, final @NotNull String newName, final @NotNull Runnable onDone) {
-        Services.getInstance(project, TestinEditors.class).close(dir);
+    public static void apply(final @NotNull Project project, final @NotNull AbstractNode node, final @NotNull String newName, final @NotNull Runnable onDone) {
+        Services.getInstance(project, TestinEditors.class).close(node);
 
-        final @NotNull RenamedNode renamed = new RenamedNode(dir, newName);
-        final @NotNull String oldName = dir.getName();
+        final @NotNull RenamedNode renamed = new RenamedNode(node, newName);
+        final @NotNull String oldName = node.getName();
 
-        final @NotNull Path oldPath = dir.getPath();
+        final @NotNull Path oldPath = node.getPath();
         final @NotNull Path newPath = oldPath.resolveSibling(newName);
 
         // Rule-CODEGEN-082
         final boolean followed = renamed.toTheFilesName(project);
         if (followed) Services.getInstance(project, BoundTestProject.class).follow(oldName, newName);
         // Rule-CODEGEN-004, Rule-CODEGEN-051
-        NodeCode.of(dir.getType()).getRenamed().execute(project, renamed);
+        NodeCode.of(node.getType()).getRenamed().execute(project, renamed);
 
         Services.getInstance(project, Nodes.class).renameNode(oldPath, newPath, () -> {
-            if (dir instanceof TestProjectNode) projectFollows(project, oldName, newName);
+            if (node instanceof TestProjectNode) projectFollows(project, oldName, newName);
 
             TestinLogger.info("Success! Renamed to: " + newName);
 
@@ -69,28 +69,28 @@ public final class NodeRename {
     // UC-TREE-PANEL-011, Rule-TREE-PANEL-133
     private static void putBack(final @NotNull Project project, final @NotNull RenamedNode renamed, final boolean followed) {
         final @NotNull RenamedNode back = renamed.back();
-        NodeCode.of(renamed.dir().getType()).getRenamed().execute(project, back);
+        NodeCode.of(renamed.node().getType()).getRenamed().execute(project, back);
         if (followed) Services.getInstance(project, BoundTestProject.class).follow(renamed.newName(), back.newName());
 
         TestinLogger.warn("The folder of '" + back.newName() + "' could not be renamed to '" + renamed.newName() + "', so its code and name were put back");
     }
 
     // UC-TREE-PANEL-011, Rule-TREE-PANEL-004, Rule-CODEGEN-080, Rule-CODEGEN-081
-    public static boolean refused(final @NotNull Project project, final @NotNull AbstractNode dir, final @NotNull String newName) {
+    public static boolean refused(final @NotNull Project project, final @NotNull AbstractNode node, final @NotNull String newName) {
         final @NotNull Notifier notifier = Services.getInstance(project, Notifier.class);
 
-        if (Services.getInstance(project, Nodes.class).isTaken(dir.getPath().resolveSibling(newName), Optional.of(dir.getPath()))) {
+        if (Services.getInstance(project, Nodes.class).isTaken(node.getPath().resolveSibling(newName), Optional.of(node.getPath()))) {
             notifier.softRefuse(project, Refused.ALREADY_EXISTS, newName);
             return true;
         }
 
-        final @NotNull RenamedNode renamed = new RenamedNode(dir, newName);
+        final @NotNull RenamedNode renamed = new RenamedNode(node, newName);
         if (renamed.packageInTheWay(project)) {
             notifier.softRefuse(project, Refused.PACKAGE_TAKEN, renamed.newPackage());
             return true;
         }
 
-        if (DumbService.isDumb(project) && renamed.movesCode(project) && NodeCode.of(dir.getType()).getRenamed().generates()) {
+        if (DumbService.isDumb(project) && renamed.movesCode(project) && NodeCode.of(node.getType()).getRenamed().generates()) {
             notifier.softRefuse(project, Refused.WHILE_INDEXING, Bundle.message("dialog.rename.title"));
             return true;
         }

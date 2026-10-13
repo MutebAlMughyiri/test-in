@@ -32,16 +32,16 @@ import java.nio.file.Path;
 public final class CreateTestProject {
     private final @NotNull Project project;
     private final @NotNull TreePanel treePanel;
-    private final @NotNull String tpName;
+    private final @NotNull String testProjectName;
     private final @NotNull NodeMapper directoryMapper;
     private final @NotNull Nodes nodes;
     private final @NotNull BoundTestProject boundTestProject;
     private final @NotNull Notifier notifier;
 
-    public CreateTestProject(final @NotNull Project project, final @NotNull TreePanel treePanel, final @NotNull String tpName) {
+    public CreateTestProject(final @NotNull Project project, final @NotNull TreePanel treePanel, final @NotNull String testProjectName) {
         this.project = project;
         this.treePanel = treePanel;
-        this.tpName = tpName;
+        this.testProjectName = testProjectName;
         this.directoryMapper = Services.getInstance(project, NodeMapper.class);
         this.nodes = Services.getInstance(project, Nodes.class);
         this.boundTestProject = Services.getInstance(project, BoundTestProject.class);
@@ -50,7 +50,7 @@ public final class CreateTestProject {
 
     // UC-TREE-PANEL-002, Rule-TREE-PANEL-017
     public void execute() {
-        TestProjectFolder.free(project, tpName).ifPresent(this::create);
+        TestProjectFolder.free(project, testProjectName).ifPresent(this::create);
     }
 
     // UC-TREE-PANEL-002, Rule-TREE-PANEL-017

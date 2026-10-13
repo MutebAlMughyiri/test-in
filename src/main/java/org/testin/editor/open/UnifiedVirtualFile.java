@@ -28,13 +28,13 @@ import org.testin.model.node.TestSetNode;
 public class UnifiedVirtualFile extends LightVirtualFile {
     private static final @NotNull String PROTOCOL = "testin";
 
-    private final @NotNull AbstractNode dir;
+    private final @NotNull AbstractNode node;
     private final @NotNull EditorKind kind;
 
-    public UnifiedVirtualFile(final @NotNull AbstractNode dir) {
-        super(dir.getName());
-        this.dir = dir;
-        this.kind = EditorKind.of(dir);
+    public UnifiedVirtualFile(final @NotNull AbstractNode node) {
+        super(node.getName());
+        this.node = node;
+        this.kind = EditorKind.of(node);
         this.setFileType(kind.getFileType());
         putUserData(FileEditorProvider.KEY, new UnifiedEditorProvider());
     }
@@ -46,19 +46,19 @@ public class UnifiedVirtualFile extends LightVirtualFile {
 
     @Override
     public @NotNull String getUrl() {
-        return PROTOCOL + ":///" + dir.getPath().toAbsolutePath().toString().replace("\\", "/");
+        return PROTOCOL + ":///" + node.getPath().toAbsolutePath().toString().replace("\\", "/");
     }
 
     @Override
     public @NotNull String getPath() {
-        return dir.getPath().toAbsolutePath().toString();
+        return node.getPath().toAbsolutePath().toString();
     }
 
     public @NotNull TestSetNode getTestSet() {
-        return (TestSetNode) dir;
+        return (TestSetNode) node;
     }
 
     public @NotNull TestRunNode getTestRun() {
-        return (TestRunNode) dir;
+        return (TestRunNode) node;
     }
 }

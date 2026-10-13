@@ -140,9 +140,9 @@ public class ReportFormatsIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull TestRunNode aTestRun(final @NotNull String named, final @NotNull List<RunItem> runItems) {
         final @NotNull TestRunNode testRun = WriteAction.computeAndWait(() -> {
-            final @NotNull TestRunNode dir = mapper().setTestRunNode(testProject.getTestRunsFolder().getPath().resolve(named), testProject.getTestRunsFolder());
-            nodes().addTestRunNode(dir);
-            return dir;
+            final @NotNull TestRunNode created = mapper().setTestRunNode(testProject.getTestRunsFolder().getPath().resolve(named), testProject.getTestRunsFolder());
+            nodes().addTestRunNode(created);
+            return created;
         });
 
         Services.getInstance(getProject(), TestRuns.class).putRunItems(testRun.getPath(), new RunItems().setAll(new ArrayList<>(runItems)));

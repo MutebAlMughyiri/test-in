@@ -28,7 +28,7 @@ public class ShowNodeDetailsAction extends AbstractAnyProjectAction {
     // UC-TREE-PANEL-027, Rule-TREE-PANEL-087
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
-        TestinDataKeys.singleSelectedNode(e).ifPresent(dir -> new NodeDetailsDialog(project, dir).show());
+        TestinDataKeys.singleSelectedNode(e).ifPresent(node -> new NodeDetailsDialog(project, node).show());
     }
 
     // UC-TREE-PANEL-027, Rule-TREE-PANEL-087

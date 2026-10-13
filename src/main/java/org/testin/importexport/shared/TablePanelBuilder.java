@@ -43,8 +43,8 @@ public class TablePanelBuilder {
         final @NotNull List<String> columnNames = new ArrayList<>();
         columnNames.add("");
         columnNames.add("#");
-        for (final TestSetEditorAttributes attr : attributes) {
-            columnNames.add(attr.getName());
+        for (final TestSetEditorAttributes attribute : attributes) {
+            columnNames.add(attribute.getName());
         }
         return columnNames.toArray(new String[0]);
     }

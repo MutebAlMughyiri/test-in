@@ -50,8 +50,8 @@ public enum EditorKind {
     private final @NotNull EditorFileType fileType;
 
     // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-001
-    public static @NotNull EditorKind of(final @NotNull AbstractNode dir) {
-        return OPENS.getOrDefault(dir.getType(), TEST_SET);
+    public static @NotNull EditorKind of(final @NotNull AbstractNode node) {
+        return OPENS.getOrDefault(node.getType(), TEST_SET);
     }
 
     // UC-EDITOR-PANEL-003, Rule-EDITOR-PANEL-022

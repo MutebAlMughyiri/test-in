@@ -59,8 +59,8 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
         this.testCases = Services.getInstance(project, TestCases.class);
     }
 
-    private static @NotNull String quoted(final @NotNull String typed, final @NotNull TestSetEditorAttributes attr) {
-        return Bundle.message("grid.refused.as", typed.trim(), attr.getName());
+    private static @NotNull String quoted(final @NotNull String typed, final @NotNull TestSetEditorAttributes attribute) {
+        return Bundle.message("grid.refused.as", typed.trim(), attribute.getName());
     }
 
     @Override
@@ -71,9 +71,9 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
     // UC-EDITOR-PANEL-008, Rule-EDITOR-PANEL-050
     @Override
     protected @NotNull GridEdit apply(final @NotNull DefaultTableModel model, final @NotNull TestCaseDto testCase, final int row, final int col) {
-        final @NotNull TestSetEditorAttributes attr = TestSetEditorAttributes.atColumn(col);
+        final @NotNull TestSetEditorAttributes attribute = TestSetEditorAttributes.atColumn(col);
 
-        if (!attr.can(Can.EDIT)) return GridEdit.UNCHANGED;
+        if (!attribute.can(Can.EDIT)) return GridEdit.UNCHANGED;
 
         final @NotNull Optional<Changed> pending = Optional.ofNullable(changedThisGesture.get(testCase.getId()));
         final @NotNull TestCaseSnapshot undoFrom = pending.map(Changed::before)
@@ -82,27 +82,27 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
 
         final @NotNull String typed = String.valueOf(model.getValueAt(row, col));
 
-        final @NotNull Object before = attr.gridValue(current);
-        final @NotNull Optional<TestCaseDto> took = attr.getImportSetter().execute(project, current, typed);
-        final @NotNull Object after = attr.gridValue(took.orElse(current));
+        final @NotNull Object before = attribute.gridValue(current);
+        final @NotNull Optional<TestCaseDto> took = attribute.getImportSetter().execute(project, current, typed);
+        final @NotNull Object after = attribute.gridValue(took.orElse(current));
 
         model.setValueAt(after, row, col);
 
         // Rule-EDITOR-PANEL-206
         if (took.isEmpty()) {
-            notifier.softRefuse(project, Refused.UNREADABLE, quoted(typed, attr));
+            notifier.softRefuse(project, Refused.UNREADABLE, quoted(typed, attribute));
             return GridEdit.REFUSED;
         }
 
         if (Objects.equals(before, after)) return GridEdit.UNCHANGED;
 
-        persistAndGenerate(took.orElseThrow(), attr, undoFrom);
+        persistAndGenerate(took.orElseThrow(), attribute, undoFrom);
 
         return GridEdit.WROTE;
     }
 
     // UC-EDITOR-PANEL-008, Rule-EDITOR-PANEL-053
-    private void persistAndGenerate(final @NotNull TestCaseDto edited, final @NotNull TestSetEditorAttributes attr, final @NotNull TestCaseSnapshot undoFrom) {
+    private void persistAndGenerate(final @NotNull TestCaseDto edited, final @NotNull TestSetEditorAttributes attribute, final @NotNull TestCaseSnapshot undoFrom) {
         if (testSetPath.toString().isEmpty()) {
             TestinLogger.warn("[grid] edit not persisted - the editor has no test set path");
             return;
@@ -112,7 +112,7 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
         final @NotNull Set<GenType<TestCaseDto>> generators = Optional.ofNullable(changedThisGesture.get(edited.getId()))
                 .map(Changed::generators)
                 .orElseGet(LinkedHashSet::new);
-        generators.add(attr.getGenType());
+        generators.add(attribute.getGenType());
         changedThisGesture.put(edited.getId(), new Changed(edited, undoFrom, generators));
 
         if (first) ApplicationManager.getApplication().invokeLater(this::saveTheGesture);

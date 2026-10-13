@@ -38,8 +38,8 @@ public class CreateTestSet implements NodeCreator {
 
     // UC-TREE-PANEL-007
     @Override
-    public @NotNull Optional<AbstractNode> execute(final @NotNull String name, final @NotNull AbstractNode parentNode, final @NotNull Path newDirPath) {
-        final @NotNull TestSetNode testSet = directoryMapper.getTestSetNode(newDirPath, parentNode);
+    public @NotNull Optional<AbstractNode> execute(final @NotNull String name, final @NotNull AbstractNode parentNode, final @NotNull Path newDirectoryPath) {
+        final @NotNull TestSetNode testSet = directoryMapper.getTestSetNode(newDirectoryPath, parentNode);
 
         return nodes.addTestSet(testSet) ? Optional.of(testSet) : Optional.empty();
     }

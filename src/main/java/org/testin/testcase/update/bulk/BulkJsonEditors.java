@@ -80,7 +80,7 @@ final class BulkJsonEditors implements DialogComponent {
     private final @NotNull List<RangeMarker> markers = new ArrayList<>();
     private final @NotNull List<RangeMarker> guardBlocks = new ArrayList<>();
     private final @NotNull List<RangeHighlighter> leftLineHighlighters = new ArrayList<>();
-    private final @NotNull TextAttributes leftLineAttr = new TextAttributes();
+    private final @NotNull TextAttributes leftLineAttributes = new TextAttributes();
     private final @NotNull Disposable docListenerDisposable = Disposer.newDisposable();
 
     private @NotNull IntFunction<String> originalTextAt = _ -> "";
@@ -110,7 +110,7 @@ final class BulkJsonEditors implements DialogComponent {
         final @NotNull Color caretRowColor = Optional
                 .ofNullable(rightEditor.getColorsScheme().getColor(EditorColors.CARET_ROW_COLOR))
                 .orElseGet(rightEditor.getColorsScheme()::getDefaultBackground);
-        leftLineAttr.setBackgroundColor(caretRowColor);
+        leftLineAttributes.setBackgroundColor(caretRowColor);
 
         splitter = new JBSplitter(false, 0.5f);
         splitter.setFirstComponent(leftEditor.getComponent());
@@ -334,7 +334,7 @@ final class BulkJsonEditors implements DialogComponent {
         for (final Caret caret : rightEditor.getCaretModel().getAllCarets()) {
             final int line = rightDoc.getLineNumber(caret.getOffset());
             if (line < leftDoc.getLineCount()) {
-                leftLineHighlighters.add(leftMarkup.addLineHighlighter(line, HighlighterLayer.CARET_ROW, leftLineAttr));
+                leftLineHighlighters.add(leftMarkup.addLineHighlighter(line, HighlighterLayer.CARET_ROW, leftLineAttributes));
             }
         }
     }

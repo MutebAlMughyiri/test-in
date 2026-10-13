@@ -50,9 +50,9 @@ public class TestRunFormFilterIdeTest extends AbstractTempRootIdeTest {
     private TestRunFormFilter filter;
 
     private static @NotNull CheckedTreeNode holding(final @NotNull TestSetNode testSet, final @NotNull TestCaseDto... testCases) {
-        final @NotNull CheckedTreeNode node = new CheckedTreeNode(testSet);
-        for (final TestCaseDto testCase : testCases) node.add(new CheckedTreeNode(testCase));
-        return node;
+        final @NotNull CheckedTreeNode treeNode = new CheckedTreeNode(testSet);
+        for (final TestCaseDto testCase : testCases) treeNode.add(new CheckedTreeNode(testCase));
+        return treeNode;
     }
 
     private static @NotNull String nameOf(final @NotNull AnAction entry) {

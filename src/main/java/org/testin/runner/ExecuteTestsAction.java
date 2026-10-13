@@ -66,7 +66,7 @@ public class ExecuteTestsAction extends AbstractAnyProjectAction {
 
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
-        selectedTestRun(e).ifPresentOrElse(testRun -> openAndRun(project, testRun), () -> runnable(e).ifPresent(dir -> run(project, dir)));
+        selectedTestRun(e).ifPresentOrElse(testRun -> openAndRun(project, testRun), () -> runnable(e).ifPresent(node -> run(project, node)));
     }
 
     private @NotNull Optional<AbstractNode> runnable(final @NotNull AnActionEvent e) {
@@ -83,15 +83,15 @@ public class ExecuteTestsAction extends AbstractAnyProjectAction {
     }
 
     // UC-CODEGEN-008, Rule-CODEGEN-031
-    private void run(final @NotNull Project project, final @NotNull AbstractNode dir) {
-        final @NotNull List<TestCaseDto> testCases = Services.getInstance(project, TestCases.class).getTestCasesUnder(dir);
+    private void run(final @NotNull Project project, final @NotNull AbstractNode node) {
+        final @NotNull List<TestCaseDto> testCases = Services.getInstance(project, TestCases.class).getTestCasesUnder(node);
 
         if (testCases.isEmpty()) {
-            Services.getInstance(project, Notifier.class).softRefuse(project, Refused.NOTHING_TO_RUN, dir.getName());
+            Services.getInstance(project, Notifier.class).softRefuse(project, Refused.NOTHING_TO_RUN, node.getName());
             return;
         }
 
-        TestinLogger.info("Running " + dir.getName() + " with " + testCases.size() + " test case(s)");
+        TestinLogger.info("Running " + node.getName() + " with " + testCases.size() + " test case(s)");
 
         ExecuteTestCases.run(project, testCases);
     }

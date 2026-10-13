@@ -28,8 +28,8 @@ import java.util.List;
 public class RemoveJavaClass implements CodeChange<AbstractNode> {
     // UC-CODEGEN-018, Rule-CODEGEN-059
     @Override
-    public void execute(final @NotNull Project project, final @NotNull AbstractNode dir) {
-        final @NotNull List<String> fqcn = Fqcn.ofClass(dir);
+    public void execute(final @NotNull Project project, final @NotNull AbstractNode node) {
+        final @NotNull List<String> fqcn = Fqcn.ofClass(node);
         if (fqcn.isEmpty()) return;
 
         final @NotNull String packagePath = String.join("/", fqcn.subList(0, fqcn.size() - 1));

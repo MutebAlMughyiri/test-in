@@ -58,7 +58,7 @@ public class RunItemCard extends AbstractCard {
 
         Arrays.stream(TestRunEditorAttributes.values())
                 .filter(activeDetails::contains)
-                .forEach(attr -> attr.applyToUI(runItem, badges, details));
+                .forEach(attribute -> attribute.applyToUI(runItem, badges, details));
 
         updateUI(index, title, badges, details);
 

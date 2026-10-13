@@ -31,15 +31,15 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
-public record MovedNode(@NotNull AbstractNode dir, @NotNull List<String> from, @NotNull Path newParent) {
-    public MovedNode(final @NotNull AbstractNode dir, final @NotNull Path newParent) {
-        this(dir, dir.getPath2(), newParent);
+public record MovedNode(@NotNull AbstractNode node, @NotNull List<String> from, @NotNull Path newParent) {
+    public MovedNode(final @NotNull AbstractNode node, final @NotNull Path newParent) {
+        this(node, node.getPath2(), newParent);
     }
 
     // UC-TREE-PANEL-016, Rule-TREE-PANEL-098
     public @NotNull Optional<MovedNode> back(final @NotNull Project project) {
-        return Optional.ofNullable(dir.getPath().getParent()).flatMap(oldParent -> Services.getInstance(project, Nodes.class).find(newParent)
-                .map(target -> new MovedNode(dir, AbstractNode.pathOf(target.getPath2(), dir.getName()), oldParent)));
+        return Optional.ofNullable(node.getPath().getParent()).flatMap(oldParent -> Services.getInstance(project, Nodes.class).find(newParent)
+                .map(target -> new MovedNode(node, AbstractNode.pathOf(target.getPath2(), node.getName()), oldParent)));
     }
 
     // UC-CODEGEN-016, Rule-CODEGEN-055
@@ -54,7 +54,7 @@ public record MovedNode(@NotNull AbstractNode dir, @NotNull List<String> from, @
         TestinLogger.warn("Destination is not indexed, so " + fullName + " is left where it is");
 
         Services.getInstance(project, Notifier.class).warn(project,
-                Bundle.message("codegen.moved.title", dir.getName()),
+                Bundle.message("codegen.moved.title", node.getName()),
                 Bundle.message("codegen.moved.message", fullName));
     }
 }

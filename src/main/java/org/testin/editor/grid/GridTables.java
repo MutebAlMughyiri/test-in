@@ -351,9 +351,9 @@ public class GridTables {
 
         final E @NotNull [] allValues = attributes.getEnumConstants();
         for (int i = 0; i < allValues.length; i++) {
-            final @NotNull E attr = allValues[i];
-            if (selected.contains(attr)) {
-                cm.addColumn(columnFor(i, attr.getName()));
+            final @NotNull E attribute = allValues[i];
+            if (selected.contains(attribute)) {
+                cm.addColumn(columnFor(i, attribute.getName()));
             }
         }
 

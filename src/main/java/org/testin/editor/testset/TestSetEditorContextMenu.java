@@ -34,7 +34,7 @@ public class TestSetEditorContextMenu extends AbstractEditorContextMenu {
 
     private final @NotNull TestinEditor ui;
 
-    public TestSetEditorContextMenu(final @NotNull Project project, final @NotNull TestinEditor ui, final @NotNull TestSetNode dir, final @NotNull JBList<TestCaseDto> list) {
+    public TestSetEditorContextMenu(final @NotNull Project project, final @NotNull TestinEditor ui, final @NotNull TestSetNode testSet, final @NotNull JBList<TestCaseDto> list) {
         super();
         this.project = project;
         this.ui = ui;
@@ -46,7 +46,7 @@ public class TestSetEditorContextMenu extends AbstractEditorContextMenu {
 
         add(Declared.forMenu("Testin.UpdateTestCase"));
 
-        add(actions(project, dir, list));
+        add(actions(project, testSet, list));
 
         addSeparator();
 

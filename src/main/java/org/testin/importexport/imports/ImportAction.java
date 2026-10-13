@@ -33,7 +33,7 @@ public class ImportAction extends AbstractAnyProjectAction {
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
         TestinDataKeys.firstSelected(e, AbstractNode.class)
                 .filter(AbstractNode::isTestCaseContainer)
-                .ifPresent(dir -> new ImportWork(project).openImportDialog(dir));
+                .ifPresent(node -> new ImportWork(project).openImportDialog(node));
     }
 
     // UC-SHARE-005

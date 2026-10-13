@@ -37,9 +37,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-record RemoveTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor, @NotNull AbstractNode dir, @NotNull List<TestCaseDto> selected, @NotNull CutState cutState, @NotNull TestCases testCases, @NotNull TestinEditors editors, @NotNull Notifier notifier) {
-    RemoveTestCaseWork(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull AbstractNode dir, final @NotNull List<TestCaseDto> selected) {
-        this(project, editor, dir, selected, Services.getInstance(project, CutState.class), Services.getInstance(project, TestCases.class), Services.getInstance(project, TestinEditors.class), Services.getInstance(project, Notifier.class));
+record RemoveTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor, @NotNull AbstractNode node, @NotNull List<TestCaseDto> selected, @NotNull CutState cutState, @NotNull TestCases testCases, @NotNull TestinEditors editors, @NotNull Notifier notifier) {
+    RemoveTestCaseWork(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull AbstractNode node, final @NotNull List<TestCaseDto> selected) {
+        this(project, editor, node, selected, Services.getInstance(project, CutState.class), Services.getInstance(project, TestCases.class), Services.getInstance(project, TestinEditors.class), Services.getInstance(project, Notifier.class));
     }
 
     // UC-EDITOR-PANEL-011, Rule-EDITOR-PANEL-062
@@ -57,7 +57,7 @@ record RemoveTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor
                 ? Bundle.message("remove.test.case.confirm.one", selectedTestCases.getFirst().getDescription())
                 : Bundle.message("remove.test.case.confirm.many", String.valueOf(selectedTestCases.size()));
 
-        new ConfirmDialog(project, Bundle.message("remove.confirm.title"), msg, dir.getPath().toString(), "", Bundle.message("remove.confirm.button"), delete).show();
+        new ConfirmDialog(project, Bundle.message("remove.confirm.title"), msg, node.getPath().toString(), "", Bundle.message("remove.confirm.button"), delete).show();
     }
 
     // UC-EDITOR-PANEL-011, Rule-EDITOR-PANEL-064
@@ -72,20 +72,20 @@ record RemoveTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor
     // UC-EDITOR-PANEL-011, Rule-EDITOR-PANEL-064
     private void removeFromDisk(final @NotNull List<TestCaseDto> selectedTestCases) {
         final @NotNull List<UUID> testCaseIds = TestCaseSnapshot.idsOf(selectedTestCases);
-        final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(project, dir.getPath(), testCaseIds);
+        final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(project, node.getPath(), testCaseIds);
 
         final @NotNull List<TestCaseDto> removed = new ArrayList<>();
         for (final TestCaseDto testCase : selectedTestCases) {
-            if (testCases.removeTestCase(dir.getPath(), testCase.getId())) removed.add(testCase);
+            if (testCases.removeTestCase(node.getPath(), testCase.getId())) removed.add(testCase);
         }
 
-        TestCaseSnapshot.record(project, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.remove"), removed), before, TestCaseSnapshot.of(project, dir.getPath(), testCaseIds));
+        TestCaseSnapshot.record(project, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.remove"), removed), before, TestCaseSnapshot.of(project, node.getPath(), testCaseIds));
 
         ApplicationManager.getApplication().invokeLater(() -> {
             if (!removed.isEmpty()) GenType.REMOVE_TEST_CASE.executeAll(project, removed);
 
             if (removed.size() == selectedTestCases.size()) editor.refreshView();
-            else editors.reloadOpen(dir.getPath());
+            else editors.reloadOpen(node.getPath());
 
             if (!removed.isEmpty())
                 notifier.softShowCounted(project, Done.REMOVED, removed.size());

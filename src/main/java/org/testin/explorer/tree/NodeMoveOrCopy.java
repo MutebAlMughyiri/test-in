@@ -153,10 +153,10 @@ final class NodeMoveOrCopy {
     }
 
     private @NotNull Optional<MovedNode> moved(final @NotNull Path from, final @NotNull Path to) {
-        return Optional.ofNullable(to.getParent()).flatMap(target -> nodes.find(from).map(dir -> new MovedNode(dir, target)));
+        return Optional.ofNullable(to.getParent()).flatMap(target -> nodes.find(from).map(node -> new MovedNode(node, target)));
     }
 
     private void moveCode(final @NotNull MovedNode moved) {
-        NodeCode.of(moved.dir().getType()).getMoved().execute(project, moved);
+        NodeCode.of(moved.node().getType()).getMoved().execute(project, moved);
     }
 }

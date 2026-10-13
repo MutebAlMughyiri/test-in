@@ -65,9 +65,9 @@ public class PackagesWithoutTestsTest {
 
     @Test
     public void everyReasonSaysSomething() {
-        WITHOUT_TESTS.forEach((pkg, reason) -> {
+        WITHOUT_TESTS.forEach((packageName, reason) -> {
             if (reason.length() < 40)
-                fail(pkg + " is recorded as untested with a reason too short to be one: " + reason);
+                fail(packageName + " is recorded as untested with a reason too short to be one: " + reason);
         });
     }
 }

@@ -326,11 +326,11 @@ public final class TestRunPdfGenerator {
                 .add(text(")")));
         testCaseCell.add(actual);
 
-        final @NotNull BugPriority pri = runItem.getBugPriority();
-        table.addCell(runItemStatusCell(pri.getLabel(), rgb(pri.getEmphasis().getHexColor()), rowBg, boldFont));
+        final @NotNull BugPriority priority = runItem.getBugPriority();
+        table.addCell(runItemStatusCell(priority.getLabel(), rgb(priority.getEmphasis().getHexColor()), rowBg, boldFont));
 
-        final @NotNull BugSeverity sev = runItem.getBugSeverity();
-        table.addCell(runItemStatusCell(sev.getLabel(), rgb(sev.getEmphasis().getHexColor()), rowBg, boldFont));
+        final @NotNull BugSeverity severity = runItem.getBugSeverity();
+        table.addCell(runItemStatusCell(severity.getLabel(), rgb(severity.getEmphasis().getHexColor()), rowBg, boldFont));
     }
 
     private @NotNull Cell runItemStatusCell(final @NotNull String text, final @NotNull DeviceRgb color, final @NotNull DeviceRgb rowBg, final @NotNull PdfFont boldFont) {

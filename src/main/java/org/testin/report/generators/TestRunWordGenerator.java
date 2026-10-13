@@ -282,11 +282,11 @@ public final class TestRunWordGenerator {
             alt = !alt;
 
             XWPFTableRow row = table.createRow();
-            XWPFTableCell numCell = row.getCell(0);
-            shadeCell(numCell, rowBg);
-            setCellPadding(numCell, 4, 6, 4, 6);
-            setCellText(numCell, String.valueOf(idx), ReportFont.BODY.ptRounded(), false, DARK_GRAY);
-            numCell.getParagraphs().getFirst().setAlignment(ParagraphAlignment.CENTER);
+            XWPFTableCell numberCell = row.getCell(0);
+            shadeCell(numberCell, rowBg);
+            setCellPadding(numberCell, 4, 6, 4, 6);
+            setCellText(numberCell, String.valueOf(idx), ReportFont.BODY.ptRounded(), false, DARK_GRAY);
+            numberCell.getParagraphs().getFirst().setAlignment(ParagraphAlignment.CENTER);
 
             XWPFTableCell testCaseCell = row.getCell(1);
             shadeCell(testCaseCell, rowBg);
@@ -320,17 +320,17 @@ public final class TestRunWordGenerator {
             styledRun(ap.createRun(), ")", ReportFont.SMALL, DARK_GRAY);
         });
 
-        final @NotNull XWPFTableCell priCell = row.getCell(2);
-        shadeCell(priCell, rowBg);
-        setCellPadding(priCell, 4, 6, 4, 6);
-        final @NotNull BugPriority pri = runItem.getBugPriority();
-        setCellText(priCell, pri.getLabel(), ReportFont.BODY.ptRounded(), true, pri.getEmphasis().getHexColor());
+        final @NotNull XWPFTableCell priorityCell = row.getCell(2);
+        shadeCell(priorityCell, rowBg);
+        setCellPadding(priorityCell, 4, 6, 4, 6);
+        final @NotNull BugPriority priority = runItem.getBugPriority();
+        setCellText(priorityCell, priority.getLabel(), ReportFont.BODY.ptRounded(), true, priority.getEmphasis().getHexColor());
 
-        final @NotNull XWPFTableCell sevCell = row.getCell(3);
-        shadeCell(sevCell, rowBg);
-        setCellPadding(sevCell, 4, 6, 4, 6);
-        final @NotNull BugSeverity sev = runItem.getBugSeverity();
-        setCellText(sevCell, sev.getLabel(), ReportFont.BODY.ptRounded(), true, sev.getEmphasis().getHexColor());
+        final @NotNull XWPFTableCell severityCell = row.getCell(3);
+        shadeCell(severityCell, rowBg);
+        setCellPadding(severityCell, 4, 6, 4, 6);
+        final @NotNull BugSeverity severity = runItem.getBugSeverity();
+        setCellText(severityCell, severity.getLabel(), ReportFont.BODY.ptRounded(), true, severity.getEmphasis().getHexColor());
     }
 
     private void autoFitToContent(final @NotNull XWPFTable table) {

@@ -107,11 +107,11 @@ public final class TestRunFormFilter implements FilterSource {
     }
 
     // Rule-TREE-PANEL-129
-    private void collect(final @NotNull CheckedTreeNode node, final @NotNull Path testCasesRoot) {
-        for (int i = 0; i < node.getChildCount(); i++) {
-            final @NotNull CheckedTreeNode child = (CheckedTreeNode) node.getChildAt(i);
+    private void collect(final @NotNull CheckedTreeNode treeNode, final @NotNull Path testCasesRoot) {
+        for (int i = 0; i < treeNode.getChildCount(); i++) {
+            final @NotNull CheckedTreeNode child = (CheckedTreeNode) treeNode.getChildAt(i);
 
-            if (child.getUserObject() instanceof TestCaseDto testCase && node.getUserObject() instanceof AbstractNode testSet) {
+            if (child.getUserObject() instanceof TestCaseDto testCase && treeNode.getUserObject() instanceof AbstractNode testSet) {
                 offered.add(testCase);
                 testSets.putIfAbsent(testSet.getPath(), testSet.nameUnder(testCasesRoot));
             } else {

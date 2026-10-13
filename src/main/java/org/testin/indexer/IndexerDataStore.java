@@ -407,7 +407,7 @@ final class IndexerDataStore {
 
     // Rule-INTERNAL-123
     void rereadTestRunMarker(final @NotNull Path testRunPath) {
-        findTestRunNode(testRunPath).ifPresent(dir -> dir.setMarker(markers.read(testRunPath, NodeType.TR, TestRunMarker.class)));
+        findTestRunNode(testRunPath).ifPresent(node -> node.setMarker(markers.read(testRunPath, NodeType.TR, TestRunMarker.class)));
     }
 
     void renameNode(final @NotNull Path oldPath, final @NotNull Path newPath) {

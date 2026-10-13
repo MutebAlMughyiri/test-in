@@ -59,7 +59,7 @@ public abstract class AbstractOpenEditorsIdeTest extends FileEditorManagerTestCa
 
     protected @NotNull List<VirtualFile> openOn(final @NotNull AbstractNode node) {
         return Arrays.stream(FileEditorManager.getInstance(getProject()).getOpenFiles())
-                .filter(open -> open instanceof UnifiedVirtualFile testin && testin.getDir().getPath().equals(node.getPath()))
+                .filter(open -> open instanceof UnifiedVirtualFile testin && testin.getNode().getPath().equals(node.getPath()))
                 .toList();
     }
 

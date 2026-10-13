@@ -56,9 +56,9 @@ public final class PackageDeclarations {
         TestinLogger.info("Package of " + file.getName() + " is now: " + (declared.isEmpty() ? "<default>" : declared));
     }
 
-    public static @NotNull String packageOf(final @NotNull VirtualFile sourceRoot, final @NotNull VirtualFile dir) {
+    public static @NotNull String packageOf(final @NotNull VirtualFile sourceRoot, final @NotNull VirtualFile directory) {
         final @NotNull String relative = Objects.requireNonNullElse(
-                VfsUtil.getRelativePath(dir, sourceRoot, '/'), "");
+                VfsUtil.getRelativePath(directory, sourceRoot, '/'), "");
 
         return relative.replace('/', '.');
     }

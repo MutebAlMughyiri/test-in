@@ -182,9 +182,9 @@ final class IndexingScanner {
     // UC-INTERNAL-002, Rule-INTERNAL-008, Rule-INTERNAL-015
     private void scanTestSets(final @NotNull Path testCaseDirectory, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedProject scanned) {
         try (Stream<Path> paths = Files.list(testCaseDirectory)) {
-            final @NotNull List<Path> dirs = paths.filter(Files::isDirectory).toList();
+            final @NotNull List<Path> directories = paths.filter(Files::isDirectory).toList();
 
-            for (final Path dirPath : dirs) {
+            for (final Path dirPath : directories) {
                 if (indicator.isCanceled()) return;
 
                 scanTestSetOrPackage(dirPath, parent, indicator, unread, scanned);
@@ -274,19 +274,19 @@ final class IndexingScanner {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-010, Rule-INTERNAL-015
-    private void scanTestRunNodes(final @NotNull Path trDir, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedProject scanned) {
-        try (Stream<Path> paths = Files.list(trDir)) {
-            final @NotNull List<Path> dirs = paths.filter(Files::isDirectory).toList();
+    private void scanTestRunNodes(final @NotNull Path testRunDirectory, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedProject scanned) {
+        try (Stream<Path> paths = Files.list(testRunDirectory)) {
+            final @NotNull List<Path> directories = paths.filter(Files::isDirectory).toList();
 
-            for (final Path dirPath : dirs) {
+            for (final Path dirPath : directories) {
                 if (indicator.isCanceled()) return;
 
                 scanTestRunOrPackage(dirPath, parent, indicator, unread, scanned);
             }
         } catch (final NoSuchFileException absent) {
-            TestinLogger.info("No test runs to read: " + trDir);
+            TestinLogger.info("No test runs to read: " + testRunDirectory);
         } catch (final IOException ex) {
-            throw new UncheckedIOException("the folder " + trDir.getFileName() + " could not be listed: " + FailureText.of(ex), ex);
+            throw new UncheckedIOException("the folder " + testRunDirectory.getFileName() + " could not be listed: " + FailureText.of(ex), ex);
         }
     }
 

@@ -95,9 +95,9 @@ public final class LastOpenEditors {
 
         for (final String entry : entries) {
             nodes.find(Path.of(entry)).ifPresentOrElse(
-                    dir -> {
+                    node -> {
                         TestinLogger.debug("restoring editor for '" + entry + "' -> found");
-                        found.add(dir);
+                        found.add(node);
                     },
                     () -> TestinLogger.debug("restoring editor for '" + entry + "' -> not indexed"));
         }

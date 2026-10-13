@@ -35,18 +35,18 @@ public final class TestCaseSelectionRenderer {
         return new CheckboxTree.CheckboxTreeCellRenderer() {
             @Override
             public void customizeRenderer(final @NotNull JTree tree, final @NotNull Object value, final boolean selected, final boolean expanded, final boolean leaf, final int row, final boolean hasFocus) {
-                if (!(value instanceof CheckedTreeNode node))
+                if (!(value instanceof CheckedTreeNode treeNode))
                     return;
-                if (node.getUserObject() instanceof AbstractNode dir) {
-                    getTextRenderer().setIcon(dir.iconShownInTree());
-                    getTextRenderer().append(dir.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
-                } else if (node.getUserObject() instanceof TestCaseDto testCase) {
+                if (treeNode.getUserObject() instanceof AbstractNode node) {
+                    getTextRenderer().setIcon(node.iconShownInTree());
+                    getTextRenderer().append(node.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
+                } else if (treeNode.getUserObject() instanceof TestCaseDto testCase) {
                     getTextRenderer().setIcon(Icons.TEST_CASE_LETTER);
-                    getTextRenderer().append(testCase.getDescription(), node.isEnabled() ? SimpleTextAttributes.REGULAR_ATTRIBUTES : SimpleTextAttributes.GRAYED_ATTRIBUTES);
+                    getTextRenderer().append(testCase.getDescription(), treeNode.isEnabled() ? SimpleTextAttributes.REGULAR_ATTRIBUTES : SimpleTextAttributes.GRAYED_ATTRIBUTES);
                     // Rule-TREE-PANEL-138
-                    if (!node.isEnabled())
+                    if (!treeNode.isEnabled())
                         getTextRenderer().append("  " + testCase.getStatus().getLabel(), SimpleTextAttributes.GRAYED_ITALIC_ATTRIBUTES);
-                } else if (node.getUserObject() instanceof String folder) {
+                } else if (treeNode.getUserObject() instanceof String folder) {
                     // Rule-TREE-PANEL-134
                     getTextRenderer().setIcon(AllIcons.Nodes.Folder);
                     getTextRenderer().append(folder, SimpleTextAttributes.GRAYED_ATTRIBUTES);

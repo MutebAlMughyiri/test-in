@@ -30,31 +30,31 @@ public final class RemoveHandlers {
     public static @NotNull RemoveHandler of(final @NotNull NodeType type) {
         return switch (type) {
             case TP ->
-                    (project, dir, onRemoved) -> Services.getInstance(project, Nodes.class).removeTestProject(dir.getPath(), removed -> {
-                        if (removed) NodeCode.of(type).getRemoved().execute(project, dir);
+                    (project, node, onRemoved) -> Services.getInstance(project, Nodes.class).removeTestProject(node.getPath(), removed -> {
+                        if (removed) NodeCode.of(type).getRemoved().execute(project, node);
                         onRemoved.accept(removed);
                     });
 
             case TCF, TRF ->
-                    (project, dir, onRemoved) -> Services.getInstance(project, Nodes.class).refuseRemove(dir.getPath(), onRemoved);
+                    (project, node, onRemoved) -> Services.getInstance(project, Nodes.class).refuseRemove(node.getPath(), onRemoved);
 
             case TSP ->
-                    (project, dir, onRemoved) -> Services.getInstance(project, Nodes.class).removeTestSetPackage(dir.getPath(), removed -> {
-                        if (removed) NodeCode.of(type).getRemoved().execute(project, dir);
+                    (project, node, onRemoved) -> Services.getInstance(project, Nodes.class).removeTestSetPackage(node.getPath(), removed -> {
+                        if (removed) NodeCode.of(type).getRemoved().execute(project, node);
                         onRemoved.accept(removed);
                     });
 
             case TRP ->
-                    (project, dir, onRemoved) -> Services.getInstance(project, Nodes.class).removeTestRunPackage(dir.getPath(), onRemoved);
+                    (project, node, onRemoved) -> Services.getInstance(project, Nodes.class).removeTestRunPackage(node.getPath(), onRemoved);
 
             case TS ->
-                    (project, dir, onRemoved) -> Services.getInstance(project, Nodes.class).removeTestSet(dir.getPath(), removed -> {
-                        if (removed) NodeCode.of(type).getRemoved().execute(project, dir);
+                    (project, node, onRemoved) -> Services.getInstance(project, Nodes.class).removeTestSet(node.getPath(), removed -> {
+                        if (removed) NodeCode.of(type).getRemoved().execute(project, node);
                         onRemoved.accept(removed);
                     });
 
             case TR ->
-                    (project, dir, onRemoved) -> Services.getInstance(project, Nodes.class).removeTestRun(dir.getPath(), onRemoved);
+                    (project, node, onRemoved) -> Services.getInstance(project, Nodes.class).removeTestRun(node.getPath(), onRemoved);
         };
     }
 }

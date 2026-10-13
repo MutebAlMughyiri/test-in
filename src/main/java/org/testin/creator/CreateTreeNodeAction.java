@@ -35,7 +35,7 @@ public class CreateTreeNodeAction extends AbstractAnyProjectAction {
     // UC-TREE-PANEL-007, Rule-TREE-PANEL-096
     private static @NotNull String shortWhyNot(final @NotNull Optional<AbstractNode> selected) {
         return selected
-                .map(dir -> Bundle.message("create.node.nothing.under", dir.getType().getMarkerKind()))
+                .map(node -> Bundle.message("create.node.nothing.under", node.getType().getMarkerKind()))
                 .orElseGet(() -> Bundle.message("create.node.select.one"));
     }
 
@@ -46,16 +46,16 @@ public class CreateTreeNodeAction extends AbstractAnyProjectAction {
                     NodeType.TSP.getMarkerKind(), NodeType.TRP.getMarkerKind());
         }
 
-        final @NotNull AbstractNode dir = selected.orElseThrow();
-        if (dir.canCreateChildren()) return CREATES;
+        final @NotNull AbstractNode node = selected.orElseThrow();
+        if (node.canCreateChildren()) return CREATES;
 
-        return Bundle.message("create.node.why.holds", dir.getType().getMarkerKind(), NodeType.TSP.getDescription(), NodeType.TRP.getDescription());
+        return Bundle.message("create.node.why.holds", node.getType().getMarkerKind(), NodeType.TSP.getDescription(), NodeType.TRP.getDescription());
     }
 
     // UC-TREE-PANEL-007, UC-TREE-PANEL-009
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
-        TestinDataKeys.singleSelectedNode(e).ifPresent(dir -> new CreateTreeNodeWork(project).createUnder(dir));
+        TestinDataKeys.singleSelectedNode(e).ifPresent(node -> new CreateTreeNodeWork(project).createUnder(node));
     }
 
     // UC-TREE-PANEL-007, Rule-TREE-PANEL-025

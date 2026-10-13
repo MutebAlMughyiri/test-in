@@ -284,10 +284,10 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
         TestCaseDto testCase = TestCaseDto.builder().build();
         int refused = 0;
 
-        for (final TestSetEditorAttributes attr : values()) {
-            if (!attr.can(Can.IMPORT)) continue;
+        for (final TestSetEditorAttributes attribute : values()) {
+            if (!attribute.can(Can.IMPORT)) continue;
 
-            final @NotNull Optional<TestCaseDto> took = attr.importSetter.execute(project, testCase, cell.apply(attr));
+            final @NotNull Optional<TestCaseDto> took = attribute.importSetter.execute(project, testCase, cell.apply(attribute));
             if (took.isPresent()) testCase = took.orElseThrow();
             else refused++;
         }

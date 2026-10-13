@@ -77,8 +77,8 @@ public final class Fqcn {
 
     // UC-CODEGEN-001, Rule-CODEGEN-007
     @FromContentModule
-    public static @NotNull List<String> ofClass(final @NotNull AbstractNode dir) {
-        return ofClass(dir.getPath2());
+    public static @NotNull List<String> ofClass(final @NotNull AbstractNode node) {
+        return ofClass(node.getPath2());
     }
 
     // UC-CODEGEN-001, Rule-CODEGEN-007
@@ -96,8 +96,8 @@ public final class Fqcn {
     }
 
     // UC-CODEGEN-001, Rule-CODEGEN-008
-    public static @NotNull List<String> ofPackage(final @NotNull AbstractNode dir) {
-        return ofPackage(dir.getPath2());
+    public static @NotNull List<String> ofPackage(final @NotNull AbstractNode node) {
+        return ofPackage(node.getPath2());
     }
 
     // UC-CODEGEN-001, Rule-CODEGEN-008

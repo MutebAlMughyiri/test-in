@@ -105,16 +105,16 @@ public class ExportHtml {
                 writer.newLine();
 
                 writer.write("<tr>");
-                for (final TestSetEditorAttributes attr : TestSetEditorAttributes.all(Can.EXPORT)) {
-                    writer.write("<th>" + StringUtil.escapeXmlEntities(attr.getName()) + "</th>");
+                for (final TestSetEditorAttributes attribute : TestSetEditorAttributes.all(Can.EXPORT)) {
+                    writer.write("<th>" + StringUtil.escapeXmlEntities(attribute.getName()) + "</th>");
                 }
                 writer.write("</tr>");
                 writer.newLine();
 
                 for (final TestCaseDto testCase : testCases) {
                     writer.write("<tr>");
-                    for (final TestSetEditorAttributes attr : TestSetEditorAttributes.all(Can.EXPORT)) {
-                        writer.write("<td>" + StringUtil.escapeXmlEntities(attr.gridValue(testCase)) + "</td>");
+                    for (final TestSetEditorAttributes attribute : TestSetEditorAttributes.all(Can.EXPORT)) {
+                        writer.write("<td>" + StringUtil.escapeXmlEntities(attribute.gridValue(testCase)) + "</td>");
                     }
                     writer.write("</tr>");
                     writer.newLine();

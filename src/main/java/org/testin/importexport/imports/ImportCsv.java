@@ -58,8 +58,8 @@ public class ImportCsv {
 
         for (int i = 0; i < headers.size(); i++) {
             final @NotNull String headerName = headers.get(i).trim();
-            for (final TestSetEditorAttributes reqCol : TestSetEditorAttributes.all(Can.IMPORT)) {
-                if (reqCol.isColumn(headerName)) byName.put(reqCol.getName().toLowerCase(Locale.ROOT), i);
+            for (final TestSetEditorAttributes attribute : TestSetEditorAttributes.all(Can.IMPORT)) {
+                if (attribute.isColumn(headerName)) byName.put(attribute.getName().toLowerCase(Locale.ROOT), i);
             }
         }
 
@@ -81,7 +81,7 @@ public class ImportCsv {
 
             if (values.stream().allMatch(String::isBlank)) continue;
 
-            final @NotNull ImportedRow imported = TestSetEditorAttributes.importRow(project, attr -> Optional.ofNullable(headerIndexMap.get(attr.getName().toLowerCase(Locale.ROOT)))
+            final @NotNull ImportedRow imported = TestSetEditorAttributes.importRow(project, attribute -> Optional.ofNullable(headerIndexMap.get(attribute.getName().toLowerCase(Locale.ROOT)))
                     .filter(colIndex -> colIndex < values.size())
                     .map(colIndex -> values.get(colIndex).trim())
                     .orElse(""));
