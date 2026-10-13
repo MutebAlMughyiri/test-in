@@ -268,12 +268,8 @@ public final class RunItemRecorder {
         recordOne(RunItemStatus.FAILED, editor, testCase, failing(editor.getParent().getPath(), fields));
     }
 
+    // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-264
     private void recordOne(final @NotNull RunItemStatus status, final @NotNull TestRunEditor editor, final @NotNull TestCase testCase, final @NotNull Consumer<RunItem> recording) {
-        if (editor.runItem(testCase.getId()).filter(RunItem::isRemoved).isPresent()) {
-            refuseRemoved();
-            return;
-        }
-
         if (editor.getWalk().isExecuting(testCase.getId())) executeNext(editor, status, recording);
         else if (recordOn(editor, testCase.getId(), status, recording)) confirmRunItemStatus(status, 1);
 

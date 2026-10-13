@@ -45,6 +45,7 @@ import javax.swing.JComponent;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.Assert.assertNotEquals;
 
@@ -159,6 +160,24 @@ public class RecordRunItemStatusIdeTest extends AbstractTempRootIdeTest {
             assertEquals("Blocked is not counted as executed", 1, summary.executed());
             assertTrue("the report does not say a blocked test case was attempted and could not complete",
                     Bundle.message("report.section.blocked.description", "1").contains("attempted but could not complete"));
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
+    // Rule-EDITOR-PANEL-264
+    public void testAKeyOnATestCaseDeletedUnderTheWalkRecordsNothingSaysSoAndMovesOn() {
+        final @NotNull TestRunFixture fixture = TestRunFixture.pending(getProject(), root, 3);
+        final @NotNull TestRunEditor editor = walking(fixture);
+        final @NotNull List<String> balloons = Said.listening(getProject(), getTestRootDisposable()).shown();
+        try {
+            fixture.runItemOf(fixture.testCases().getFirst()).showing(Optional.empty(), Optional.empty(), Optional.empty(), false);
+
+            fixture.press(editor, RunItemStatus.PASSED);
+
+            assertEquals("a deleted test case was given the run item status", RunItemStatus.PENDING, fixture.statusOf(fixture.testCases().getFirst()));
+            assertEquals(List.of(Bundle.message("run.item.status.walk.passed.deleted")), balloons);
+            awaitWalkOn(editor, 1);
         } finally {
             Disposer.dispose(editor);
         }
