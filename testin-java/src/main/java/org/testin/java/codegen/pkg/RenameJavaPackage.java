@@ -36,15 +36,15 @@ import java.util.Optional;
 public class RenameJavaPackage implements CodeChange<RenamedNode> {
     // UC-CODEGEN-017, Rule-CODEGEN-056
     @Override
-    public void execute(final @NotNull Project p, final @NotNull RenamedNode renamed) {
+    public void execute(final @NotNull Project project, final @NotNull RenamedNode renamed) {
         final @NotNull List<String> fqcn = Fqcn.ofPackage(renamed.from());
 
-        JavaSourceRoot.find(p).ifPresentOrElse(
-                testSourceRoot -> renameUnder(p, testSourceRoot, fqcn, renamed.newPackage()),
+        JavaSourceRoot.find(project).ifPresentOrElse(
+                testSourceRoot -> renameUnder(project, testSourceRoot, fqcn, renamed.newPackage()),
                 () -> TestinLogger.info("Could not find Test Source Root in the project modules."));
     }
 
-    private void renameUnder(final @NotNull Project p, final @NotNull VirtualFile testSourceRoot, final @NotNull List<String> fqcn, final @NotNull String newTop) {
+    private void renameUnder(final @NotNull Project project, final @NotNull VirtualFile testSourceRoot, final @NotNull List<String> fqcn, final @NotNull String newTop) {
         final @NotNull Optional<VirtualFile> found = JavaSourceRoot.under(testSourceRoot, String.join("/", fqcn))
                 .filter(VirtualFile::isDirectory);
         if (found.isEmpty()) {
@@ -54,11 +54,11 @@ public class RenameJavaPackage implements CodeChange<RenamedNode> {
 
         final @NotNull VirtualFile pkgDir = found.orElseThrow();
 
-        WriteCommandAction.runWriteCommandAction(p, Bundle.message("codegen.rename.package"), null, () -> {
+        WriteCommandAction.runWriteCommandAction(project, Bundle.message("codegen.rename.package"), null, () -> {
             try {
                 pkgDir.rename(this, newTop);
 
-                PackageDeclarations.retarget(p, testSourceRoot, pkgDir);
+                PackageDeclarations.retarget(project, testSourceRoot, pkgDir);
                 TestinLogger.info("Package renamed to: " + newTop);
             } catch (final IOException ex) {
                 TestinLogger.info("Error renaming package: " + FailureText.of(ex));

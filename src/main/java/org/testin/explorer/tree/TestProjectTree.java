@@ -57,7 +57,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class TestProjectTree implements Disposable {
     private static final long QUIET_MILLIS = 100;
 
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull BoundTestProject boundTestProject;
     private final @NotNull JBScrollPane scrollPane;
     private final @NotNull TreePanelStructure treeStructure;
@@ -74,11 +74,11 @@ public class TestProjectTree implements Disposable {
 
     private @NotNull Optional<Path> revealAfterRebuild = Optional.empty();
 
-    public TestProjectTree(final @NotNull Project p) {
-        this.p = p;
-        this.boundTestProject = Services.getInstance(p, BoundTestProject.class);
+    public TestProjectTree(final @NotNull Project project) {
+        this.project = project;
+        this.boundTestProject = Services.getInstance(project, BoundTestProject.class);
 
-        this.treeStructure = new TreePanelStructure(p, bound());
+        this.treeStructure = new TreePanelStructure(project, bound());
         this.structureModel = new StructureTreeModel<>(treeStructure, this);
         this.treeModel = new AsyncTreeModel(structureModel, this);
         // UC-INTERNAL-001, Rule-INTERNAL-002
@@ -95,12 +95,12 @@ public class TestProjectTree implements Disposable {
         final @NotNull Set<Path> sharedCutNodes = new HashSet<>();
         mainTree.setCellRenderer(new TreePanelCellRenderer(sharedCutNodes));
 
-        final @NotNull TreeTransferHandler transferHandler = new TreeTransferHandler(p, mainTree, sharedCutNodes, this::revealAfterRefresh);
+        final @NotNull TreeTransferHandler transferHandler = new TreeTransferHandler(project, mainTree, sharedCutNodes, this::revealAfterRefresh);
         mainTree.setTransferHandler(transferHandler);
         mainTree.setDragEnabled(true);
 
-        final @NotNull TreeContextMenu treeContextMenu = new TreeContextMenu(p, mainTree);
-        mainTree.addMouseListener(new TreeMouseListener(p, mainTree, treeContextMenu));
+        final @NotNull TreeContextMenu treeContextMenu = new TreeContextMenu(project, mainTree);
+        mainTree.addMouseListener(new TreeMouseListener(project, mainTree, treeContextMenu));
         treeContextMenu.registerShortcuts(mainTree, transferHandler);
 
         Declared.bindTo("Testin.Open", mainTree);
@@ -224,7 +224,7 @@ public class TestProjectTree implements Disposable {
         final long started = System.nanoTime();
         final @NotNull CompletableFuture<?>[] redrawn = folders.stream()
                 .filter(folder -> folder.startsWith(root.get()))
-                .map(folder -> structureModel.invalidateAsync(TreePanelNode.standingFor(p, root.get(), folder), true))
+                .map(folder -> structureModel.invalidateAsync(TreePanelNode.standingFor(project, root.get(), folder), true))
                 .toArray(CompletableFuture[]::new);
 
         BackgroundWork.logged(CompletableFuture.allOf(redrawn).thenRun(() -> ApplicationManager.getApplication().invokeLater(() -> {

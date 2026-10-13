@@ -46,25 +46,25 @@ public final class TestinStartup implements ProjectActivity {
     private static final @NotNull Key<Boolean> READ = Key.create("testin.read");
 
     // UC-SETTING-002
-    public static void execute(final @NotNull Project p) {
-        if (Once.claim(p, STARTED)) wire(p);
+    public static void execute(final @NotNull Project project) {
+        if (Once.claim(project, STARTED)) wire(project);
 
-        readTheFolder(p);
+        readTheFolder(project);
     }
 
-    private static void wire(final @NotNull Project p) {
+    private static void wire(final @NotNull Project project) {
         TestinLogger.info("TestinStartup.execute()");
 
         Services.getInstance(DeletedNodes.class).sweep();
 
-        CutState.initClipboardWatch(p);
+        CutState.initClipboardWatch(project);
 
-        ExecutionRecorder.initRecording(p);
+        ExecutionRecorder.initRecording(project);
     }
 
     // UC-SETTING-002, Rule-SETTING-014, Rule-SETTING-046
-    private static void readTheFolder(final @NotNull Project p) {
-        final @NotNull String stored = Services.getInstance(p, AppSettingsState.class).rootTestinPath;
+    private static void readTheFolder(final @NotNull Project project) {
+        final @NotNull String stored = Services.getInstance(project, AppSettingsState.class).rootTestinPath;
         final @NotNull Path testinPath = TestinRoot.stored(stored);
 
         if (!TestinRoot.isConfigured(testinPath)) {
@@ -73,44 +73,44 @@ public final class TestinStartup implements ProjectActivity {
             return;
         }
 
-        if (!Once.claim(p, READ)) return;
+        if (!Once.claim(project, READ)) return;
 
         TestinLogger.info("testin Path: " + testinPath);
-        Services.getInstance(p, ProjectIndexer.class).indexWithProgress();
+        Services.getInstance(project, ProjectIndexer.class).indexWithProgress();
     }
 
     // UC-SETTING-002, Rule-SETTING-014, Rule-INTERNAL-127, Rule-INTERNAL-129
-    static void hintTestinFolder(final @NotNull Project p) {
-        final @NotNull Hints hints = Services.getInstance(p, Hints.class);
-        if (TestinRoot.isConfigured(TestinRoot.stored(Services.getInstance(p, AppSettingsState.class).rootTestinPath))) {
+    static void hintTestinFolder(final @NotNull Project project) {
+        final @NotNull Hints hints = Services.getInstance(project, Hints.class);
+        if (TestinRoot.isConfigured(TestinRoot.stored(Services.getInstance(project, AppSettingsState.class).rootTestinPath))) {
             hints.clear(SetupStep.TESTIN_FOLDER);
             return;
         }
 
-        Services.getInstance(p, Guides.class).add(Guide.GETTING_STARTED);
+        Services.getInstance(project, Guides.class).add(Guide.GETTING_STARTED);
         hints.fire(SetupHint.of(SetupStep.TESTIN_FOLDER, Bundle.message("startup.setup.message"), Bundle.message("startup.setup.action"),
-                () -> ShowSettingsUtil.getInstance().showSettingsDialog(p, SettingsConfigurable.class)));
+                () -> ShowSettingsUtil.getInstance().showSettingsDialog(project, SettingsConfigurable.class)));
     }
 
     @TestOnly
-    static void forgetTheRead(final @NotNull Project p) {
-        p.putUserData(READ, null);
+    static void forgetTheRead(final @NotNull Project project) {
+        project.putUserData(READ, null);
     }
 
     // UC-SETTING-002, Rule-INTERNAL-115
     @Override
-    public @NotNull Object execute(final @NotNull Project p, final @NotNull Continuation<? super Unit> continuation) {
-        if (Once.claim(p, STARTED)) wire(p);
+    public @NotNull Object execute(final @NotNull Project project, final @NotNull Continuation<? super Unit> continuation) {
+        if (Once.claim(project, STARTED)) wire(project);
 
-        final @NotNull BoundTestProject bound = Services.getInstance(p, BoundTestProject.class);
+        final @NotNull BoundTestProject bound = Services.getInstance(project, BoundTestProject.class);
         if (bound.isNamed()) {
             TestinLogger.info("Test project for this repository: '" + bound.name() + "'");
-            readTheFolder(p);
+            readTheFolder(project);
         } else {
-            TestinLogger.info("No test project chosen for " + p.getName() + ", so nothing is read until something needs it");
+            TestinLogger.info("No test project chosen for " + project.getName() + ", so nothing is read until something needs it");
         }
 
-        hintTestinFolder(p);
+        hintTestinFolder(project);
         return Unit.INSTANCE;
     }
 }

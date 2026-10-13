@@ -29,9 +29,9 @@ import org.jetbrains.annotations.NotNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Notified {
-    public static void press(final @NotNull Project p, final @NotNull Notification notification, final @NotNull AnAction action) {
+    public static void press(final @NotNull Project project, final @NotNull Notification notification, final @NotNull AnAction action) {
         ActionUtil.performAction(action, TestActionEvent.createTestEvent(action, SimpleDataContext.builder()
-                .add(CommonDataKeys.PROJECT, p)
+                .add(CommonDataKeys.PROJECT, project)
                 .add(Notification.KEY, notification)
                 .build()));
     }

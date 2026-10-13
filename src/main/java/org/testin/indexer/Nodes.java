@@ -47,11 +47,11 @@ import java.util.function.IntConsumer;
 
 @Service(Service.Level.PROJECT)
 public final class Nodes {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull DeletedNodes deletedNodes;
 
-    public Nodes(final @NotNull Project p) {
-        this.p = p;
+    public Nodes(final @NotNull Project project) {
+        this.project = project;
         this.deletedNodes = Services.getInstance(DeletedNodes.class);
     }
 
@@ -65,7 +65,7 @@ public final class Nodes {
     }
 
     private @NotNull ProjectIndexer indexer() {
-        return Services.getInstance(p, ProjectIndexer.class);
+        return Services.getInstance(project, ProjectIndexer.class);
     }
 
     private @NotNull IndexerDataStore store() {
@@ -155,7 +155,7 @@ public final class Nodes {
         final @NotNull List<Path> back = new ArrayList<>();
         final @NotNull List<Path> lost = new ArrayList<>();
         for (final Map.Entry<Path, Path> one : originalByKept.entrySet()) {
-            if (deletedNodes.putBack(p, one.getKey(), one.getValue())) back.add(one.getValue());
+            if (deletedNodes.putBack(project, one.getKey(), one.getValue())) back.add(one.getValue());
             else lost.add(one.getValue());
         }
 

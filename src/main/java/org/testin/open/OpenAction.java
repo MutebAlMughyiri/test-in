@@ -32,24 +32,24 @@ import java.util.List;
 // UC-TREE-PANEL-005, UC-TREE-PANEL-006
 public class OpenAction extends AbstractAnyProjectAction {
     // UC-TREE-PANEL-005, UC-TREE-PANEL-006, Rule-TREE-PANEL-022
-    public static void execute(final @NotNull Project p, final @NotNull List<AbstractNode> selected) {
+    public static void execute(final @NotNull Project project, final @NotNull List<AbstractNode> selected) {
         selected.stream()
                 .filter(AbstractNode::isOpenableInEditor)
                 .forEach(dir -> {
                     TestinLogger.info("open: " + dir.getPath());
-                    Services.getInstance(p, TestinEditors.class).open(dir);
+                    Services.getInstance(project, TestinEditors.class).open(dir);
                 });
     }
 
     // UC-TREE-PANEL-005, UC-TREE-PANEL-006
     @Override
-    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        execute(p, TestinDataKeys.selectedNodes(e));
+    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
+        execute(project, TestinDataKeys.selectedNodes(e));
     }
 
     // UC-TREE-PANEL-005, Rule-TREE-PANEL-022
     @Override
-    protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
         e.getPresentation().setEnabled(TestinDataKeys.selectedNodes(e).stream()
                 .anyMatch(AbstractNode::isOpenableInEditor));
     }

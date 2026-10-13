@@ -42,14 +42,14 @@ public final class ImportDialog extends AbstractFrameworkDialog {
 
     private final @NotNull SheetPreview preview;
 
-    public ImportDialog(final @NotNull Project p, final @NotNull List<TestSetEditorAttributes> importAttributes, final @NotNull BiFunction<File, FileFormat, Map<String, List<TestCaseDto>>> importLoader, final @NotNull Consumer<@NotNull Map<String, List<TestCaseDto>>> onImport) {
-        super(p);
+    public ImportDialog(final @NotNull Project project, final @NotNull List<TestSetEditorAttributes> importAttributes, final @NotNull BiFunction<File, FileFormat, Map<String, List<TestCaseDto>>> importLoader, final @NotNull Consumer<@NotNull Map<String, List<TestCaseDto>>> onImport) {
+        super(project);
         this.onImport = onImport;
 
         title = Bundle.message("dialog.import.title");
 
-        preview = new SheetPreview(p, importAttributes);
-        form = new SourceSection(p, importAttributes, importLoader, preview::show);
+        preview = new SheetPreview(project, importAttributes);
+        form = new SourceSection(project, importAttributes, importLoader, preview::show);
 
         components = List.of(
                 DialogPart.of(form),
@@ -71,13 +71,13 @@ public final class ImportDialog extends AbstractFrameworkDialog {
         if (form.resolve().isEmpty()) return;
 
         if (preview.isEmpty()) {
-            notifier.softRefuse(p, Bundle.message("notification.import.empty.title"), Bundle.message("notification.import.empty.nothing.loaded"));
+            notifier.softRefuse(project, Bundle.message("notification.import.empty.title"), Bundle.message("notification.import.empty.nothing.loaded"));
             return;
         }
 
         final @NotNull Map<String, List<TestCaseDto>> selected = preview.selected();
         if (selected.isEmpty()) {
-            notifier.softRefuse(p, Bundle.message("notification.import.empty.title"), Bundle.message("notification.import.empty.none.selected"));
+            notifier.softRefuse(project, Bundle.message("notification.import.empty.title"), Bundle.message("notification.import.empty.none.selected"));
             return;
         }
 

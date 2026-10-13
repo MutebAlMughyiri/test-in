@@ -163,9 +163,9 @@ public class FilterPopupBtn extends AbstractIconButton implements ToolbarItem {
         filterResetBtn.addSeparator();
 
         final @NotNull DefaultActionGroup filterPriorityMenu = new DefaultActionGroup(TestSetEditorAttributes.PRIORITY.getName(), true);
-        Arrays.stream(Priority.values()).forEach(p ->
-                filterPriorityMenu.add(new ToggleFilterAction<>(p.getLabel(), Icons.dot(p.getColor()),
-                        p, selectedPriority, FilterMembership.plain(), onChanged)));
+        Arrays.stream(Priority.values()).forEach(priority ->
+                filterPriorityMenu.add(new ToggleFilterAction<>(priority.getLabel(), Icons.dot(priority.getColor()),
+                        priority, selectedPriority, FilterMembership.plain(), onChanged)));
         filterResetBtn.add(filterPriorityMenu);
 
         final @NotNull DefaultActionGroup filterAutomationMenu = new DefaultActionGroup(Bundle.message("filter.automation"), true);

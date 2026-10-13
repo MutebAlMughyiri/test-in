@@ -298,11 +298,11 @@ public class ReportDeliveryIdeTest extends AbstractTempRootIdeTest {
     public void testTheDialogClosesBeforeTheWorkStarts() {
         settings().defaultDownloadFolder = folder("reports").toString();
         final @NotNull List<Boolean> openWhenTheWorkStarted = new ArrayList<>();
-        final @NotNull Project p = getProject();
-        final @NotNull GenerateReportDialog dialog = new GenerateReportDialog(p, "Cycle-1", (_, _) -> openWhenTheWorkStarted.add(ShownDialog.isOpen(p, GenerateReportDialog.class)));
+        final @NotNull Project project = getProject();
+        final @NotNull GenerateReportDialog dialog = new GenerateReportDialog(project, "Cycle-1", (_, _) -> openWhenTheWorkStarted.add(ShownDialog.isOpen(project, GenerateReportDialog.class)));
 
         dialog.show();
-        assertTrue("the dialog never opened", ShownDialog.isOpen(p, GenerateReportDialog.class));
+        assertTrue("the dialog never opened", ShownDialog.isOpen(project, GenerateReportDialog.class));
         dialog.submit();
 
         assertEquals("the work started while the dialog was still open", List.of(false), openWhenTheWorkStarted);
@@ -349,7 +349,7 @@ public class ReportDeliveryIdeTest extends AbstractTempRootIdeTest {
             }
 
             @Override
-            public void browse(final @NotNull String url, final @Nullable WebBrowser browser, final @Nullable Project p) {
+            public void browse(final @NotNull String url, final @Nullable WebBrowser browser, final @Nullable Project project) {
                 handedOver.add(url);
             }
         }, getTestRootDisposable());

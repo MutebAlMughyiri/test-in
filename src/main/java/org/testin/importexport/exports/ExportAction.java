@@ -30,13 +30,13 @@ public class ExportAction extends AbstractAnyProjectAction {
 
     // UC-SHARE-001, UC-SHARE-002
     @Override
-    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        TestinDataKeys.firstSelected(e, AbstractNode.class).ifPresent(dir -> new ExportWork(p).exportFrom(dir));
+    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
+        TestinDataKeys.firstSelected(e, AbstractNode.class).ifPresent(dir -> new ExportWork(project).exportFrom(dir));
     }
 
     // UC-SHARE-001
     @Override
-    protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
         e.getPresentation().setEnabled(TestinDataKeys.singleSelectedNode(e)
                 .filter(AbstractNode::isTestCaseContainer)
                 .isPresent());

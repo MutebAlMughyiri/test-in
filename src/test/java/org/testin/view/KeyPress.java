@@ -61,16 +61,16 @@ public final class KeyPress {
                 .anyMatch(shortcut -> shortcut instanceof final KeyboardShortcut keyboard && keyboard.getFirstKeyStroke().equals(key) && keyboard.getSecondKeyStroke() == null);
     }
 
-    public static @NotNull AnActionEvent eventIn(final @NotNull Project p, final @NotNull AnAction action, final @NotNull JComponent pressedIn) {
+    public static @NotNull AnActionEvent eventIn(final @NotNull Project project, final @NotNull AnAction action, final @NotNull JComponent pressedIn) {
         return TestActionEvent.createTestEvent(action, SimpleDataContext.builder()
-                .add(CommonDataKeys.PROJECT, p)
+                .add(CommonDataKeys.PROJECT, project)
                 .add(PlatformCoreDataKeys.CONTEXT_COMPONENT, pressedIn)
                 .build());
     }
 
-    public static boolean press(final @NotNull Project p, final @NotNull JComponent pressedIn, final @NotNull KeyStroke key) {
+    public static boolean press(final @NotNull Project project, final @NotNull JComponent pressedIn, final @NotNull KeyStroke key) {
         final @NotNull AnAction action = boundTo(pressedIn, key).orElseThrow(() -> new AssertionError("nothing answers " + key + " in " + pressedIn.getClass().getSimpleName()));
-        final @NotNull AnActionEvent e = eventIn(p, action, pressedIn);
+        final @NotNull AnActionEvent e = eventIn(project, action, pressedIn);
 
         ActionUtil.updateAction(action, e);
         if (!e.getPresentation().isEnabled()) return false;

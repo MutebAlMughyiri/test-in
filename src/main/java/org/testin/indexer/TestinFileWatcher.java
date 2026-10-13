@@ -37,17 +37,17 @@ public final class TestinFileWatcher implements AsyncFileListener {
     // UC-INTERNAL-003, Rule-INTERNAL-016, Rule-INTERNAL-019
     private static @NotNull Set<Path> changedTestProjects(final @NotNull List<? extends VFileEvent> events) {
         final @NotNull List<Project> watching = Arrays.stream(ProjectManager.getInstance().getOpenProjects())
-                .filter(p -> !p.isDisposed())
-                .filter(p -> TestinRoot.isConfigured(Services.getInstance(p, TestinRoot.class).absolutePath()))
+                .filter(project -> !project.isDisposed())
+                .filter(project -> TestinRoot.isConfigured(Services.getInstance(project, TestinRoot.class).absolutePath()))
                 .toList();
         final @NotNull OwnWrites ours = Services.getInstance(OwnWrites.class);
         final @NotNull Set<Path> testProjects = new HashSet<>();
 
         for (final VFileEvent event : events) {
             changedFile(event).ifPresent(file -> {
-                for (final Project p : watching) {
-                    final @NotNull Optional<Path> testProject = WatchedPath.testProjectOf(file, Services.getInstance(p, TestinRoot.class).absolutePath());
-                    if (testProject.isEmpty() || ours.areOurs(file, p)) continue;
+                for (final Project project : watching) {
+                    final @NotNull Optional<Path> testProject = WatchedPath.testProjectOf(file, Services.getInstance(project, TestinRoot.class).absolutePath());
+                    if (testProject.isEmpty() || ours.areOurs(file, project)) continue;
 
                     testProjects.add(testProject.orElseThrow());
                 }

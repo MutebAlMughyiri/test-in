@@ -58,7 +58,7 @@ public final class TestRunHtmlGenerator {
     }
 
     // UC-REPORT-001, Rule-REPORT-002, Rule-REPORT-005
-    public @NotNull String generate(final @NotNull Project p, final @NotNull TestRunNode testRunNode, final @NotNull RunItems runItems) {
+    public @NotNull String generate(final @NotNull Project project, final @NotNull TestRunNode testRunNode, final @NotNull RunItems runItems) {
         final @NotNull List<RunItem> all = runItems.getAll();
         final int total = all.size();
         final @NotNull TestRunSummary summary = TestRunSummary.of(all);
@@ -66,7 +66,7 @@ public final class TestRunHtmlGenerator {
 
         final @NotNull String testRunName = testRunNode.getName();
 
-        final @NotNull String projectName = Services.getInstance(p, BoundTestProject.class).name();
+        final @NotNull String projectName = Services.getInstance(project, BoundTestProject.class).name();
 
         StringBuilder html = new StringBuilder();
 

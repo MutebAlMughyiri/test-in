@@ -41,12 +41,12 @@ public class CreateTestCaseDialog extends AbstractTestCaseDialog {
     // Rule-INTERNAL-054
     private static final @NotNull StatusBarItem ADD_FIELD = StatusBarShortcut.hint(addFieldKeys(), Bundle.message("dialog.key.add.field"));
     private final @NotNull TestSetNode dir;
-    private final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
-    private final @NotNull Nodes nodes = Services.getInstance(p, Nodes.class);
+    private final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
+    private final @NotNull Nodes nodes = Services.getInstance(project, Nodes.class);
 
     // UC-EDITOR-PANEL-005, Rule-CODEGEN-001
-    public CreateTestCaseDialog(final @NotNull Project p, final @NotNull TestSetNode dir, final @NotNull Consumer<@NotNull TestCaseDto> onSave) {
-        super(p, TestCaseDto.builder().parent(dir).build(), onSave, ADD_FIELD, TestCaseDialogKey.SAVE, TestCaseDialogKey.CANCEL);
+    public CreateTestCaseDialog(final @NotNull Project project, final @NotNull TestSetNode dir, final @NotNull Consumer<@NotNull TestCaseDto> onSave) {
+        super(project, TestCaseDto.builder().parent(dir).build(), onSave, ADD_FIELD, TestCaseDialogKey.SAVE, TestCaseDialogKey.CANCEL);
         this.dir = dir;
 
         descriptionSection.compareAgainst(() -> testCases.getTestCasesForTestSet(dir.getPath()));
@@ -85,7 +85,7 @@ public class CreateTestCaseDialog extends AbstractTestCaseDialog {
     @Override
     protected void submit() {
         if (!nodes.nodeExists(dir.getPath())) {
-            notifier.softRefuse(p, Bundle.message("create.test.case.set.gone", dir.getName()));
+            notifier.softRefuse(project, Bundle.message("create.test.case.set.gone", dir.getName()));
             return;
         }
 

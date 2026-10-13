@@ -40,25 +40,25 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service(Service.Level.PROJECT)
 public final class ExecutionRecorder implements Disposable {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
 
     private final @NotNull List<Reported> surfaces = new CopyOnWriteArrayList<>();
 
-    ExecutionRecorder(final @NotNull Project p) {
-        this.p = p;
+    ExecutionRecorder(final @NotNull Project project) {
+        this.project = project;
 
-        p.getMessageBus().connect(this).subscribe(ExecutionReported.TOPIC,
+        project.getMessageBus().connect(this).subscribe(ExecutionReported.TOPIC,
                 (ExecutionReported) (testName, status, duration, failure) ->
                         ApplicationManager.getApplication().invokeLater(
                                 () -> record(testName, status, duration, failure)));
     }
 
-    public static void initRecording(final @NotNull Project p) {
-        Services.getInstance(p, ExecutionRecorder.class);
+    public static void initRecording(final @NotNull Project project) {
+        Services.getInstance(project, ExecutionRecorder.class);
     }
 
-    public static void onReported(final @NotNull Project p, final @NotNull Disposable parentDisposable, final @NotNull Reported onUpdated) {
-        final @NotNull ExecutionRecorder recorder = Services.getInstance(p, ExecutionRecorder.class);
+    public static void onReported(final @NotNull Project project, final @NotNull Disposable parentDisposable, final @NotNull Reported onUpdated) {
+        final @NotNull ExecutionRecorder recorder = Services.getInstance(project, ExecutionRecorder.class);
 
         recorder.surfaces.add(onUpdated);
         Disposer.register(parentDisposable, () -> recorder.surfaces.remove(onUpdated));
@@ -67,13 +67,13 @@ public final class ExecutionRecorder implements Disposable {
     private void record(final @NotNull String testName, final @NotNull ExecutionStatus status, final @NotNull Duration duration, final @NotNull Failure failure) {
         TestinLogger.debug("Execution report: testName='" + testName + "', status='" + status + "'");
 
-        final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
+        final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
 
         final @NotNull Attempt attempt = new Attempt(status, duration, failure, TestName.parameters(testName), ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS));
 
         TestName.testCaseId(testName).flatMap(testCases::findTestCase).ifPresentOrElse(
                 testCase -> {
-                    final @NotNull TestNGExecution execution = Services.getInstance(p, TestNGExecution.class);
+                    final @NotNull TestNGExecution execution = Services.getInstance(project, TestNGExecution.class);
                     execution.attempted(testCase.getId(), attempt).forEach((testCaseId, decided) -> testCases.findTestCase(testCaseId).ifPresent(decidedTestCase -> report(decidedTestCase, decided)));
                     execution.takeUnwritten(testCase.getId()).ifPresent(live -> show(testCase, live));
                 },
@@ -94,7 +94,7 @@ public final class ExecutionRecorder implements Disposable {
 
         TestinLogger.debug("  reporting on '" + testCase.getDescription() + "': " + reportedStatus + " from " + decided.all().size() + " attempt(s)");
 
-        Services.getInstance(p, TestNGExecution.class).reported(testCase.getId(), reportedStatus);
+        Services.getInstance(project, TestNGExecution.class).reported(testCase.getId(), reportedStatus);
 
         surfaces.forEach(surface -> surface.accept(testCase, reportedStatus, executions, decided.written()));
     }
@@ -107,7 +107,7 @@ public final class ExecutionRecorder implements Disposable {
     // UC-CODEGEN-009, Rule-CODEGEN-038
     private @NotNull ExecutionStatus runItemStatusFor(final @NotNull TestCaseDto testCase, final @NotNull ExecutionStatus status) {
         final boolean stopped = status == ExecutionStatus.FAILED
-                && Services.getInstance(p, TestNGExecution.class).isStopped(testCase);
+                && Services.getInstance(project, TestNGExecution.class).isStopped(testCase);
 
         return stopped ? ExecutionStatus.IDLE : status;
     }

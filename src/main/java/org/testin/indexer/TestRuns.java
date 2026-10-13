@@ -45,15 +45,15 @@ import java.util.stream.Collectors;
 
 @Service(Service.Level.PROJECT)
 public final class TestRuns {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull ProjectIndexer indexer;
     private final @NotNull Map<String, Map<UUID, Optional<TestCaseDto>>> recorded = new ConcurrentHashMap<>();
     private final @NotNull Map<UUID, TestCaseDto> lastInGit = new ConcurrentHashMap<>();
     private final @NotNull Map<Path, String> recordedAt = new ConcurrentHashMap<>();
 
-    public TestRuns(final @NotNull Project p) {
-        this.p = p;
-        this.indexer = Services.getInstance(p, ProjectIndexer.class);
+    public TestRuns(final @NotNull Project project) {
+        this.project = project;
+        this.indexer = Services.getInstance(project, ProjectIndexer.class);
     }
 
     private @NotNull IndexerDataStore store() {
@@ -72,7 +72,7 @@ public final class TestRuns {
     // Rule-EDITOR-PANEL-127
     private @NotNull List<UUID> testCaseIdsInTreeOrder(final @NotNull Path testRunPath) {
         return testCasesFolderOf(testRunPath)
-                .map(Services.getInstance(p, TestCases.class)::getTestCasesUnder)
+                .map(Services.getInstance(project, TestCases.class)::getTestCasesUnder)
                 .orElse(List.of())
                 .stream()
                 .map(TestCaseDto::getId)
@@ -177,7 +177,7 @@ public final class TestRuns {
         store().rereadTestRunMarker(testRunPath);
         ApplicationManager.getApplication().invokeLater(() -> {
             indexer.announce(testRunPath);
-            Services.getInstance(p, Notifier.class).softRefuse(p, Bundle.message("test.run.marker.not.saved", testRunPath.getFileName()));
+            Services.getInstance(project, Notifier.class).softRefuse(project, Bundle.message("test.run.marker.not.saved", testRunPath.getFileName()));
         });
     }
 

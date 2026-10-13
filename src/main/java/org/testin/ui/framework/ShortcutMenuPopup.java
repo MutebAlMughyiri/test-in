@@ -43,7 +43,7 @@ import java.util.function.Function;
 // UC-INTERNAL-007, Rule-INTERNAL-054, Rule-INTERNAL-067
 @RequiredArgsConstructor
 public final class ShortcutMenuPopup<T extends MenuItem> {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull String title;
     private final T @NotNull [] items;
     private final @NotNull Consumer<T> onSelection;
@@ -80,7 +80,7 @@ public final class ShortcutMenuPopup<T extends MenuItem> {
         content.add(declaredKeys(list, popup), BorderLayout.SOUTH);
         bindRows(list, popup);
 
-        popup.showCenteredInCurrentWindow(p);
+        popup.showCenteredInCurrentWindow(project);
     }
 
     // UC-INTERNAL-007, Rule-INTERNAL-054, Rule-INTERNAL-067

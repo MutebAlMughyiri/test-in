@@ -46,24 +46,24 @@ public class NavigateToTestCaseAction extends AbstractAnyProjectAction {
     }
 
     // UC-EDITOR-PANEL-048, UC-VIEW-PANEL-009, Rule-EDITOR-PANEL-233, Rule-EDITOR-PANEL-236, Rule-VIEW-PANEL-063
-    public static void execute(final @NotNull Project p, final @NotNull TestCaseDto testCase) {
+    public static void execute(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
         final @NotNull Optional<String> whyNot = whyNot(testCase);
         if (whyNot.isPresent()) {
-            Services.getInstance(p, Notifier.class).softRefuse(p, whyNot.orElseThrow());
+            Services.getInstance(project, Notifier.class).softRefuse(project, whyNot.orElseThrow());
             return;
         }
 
-        Services.getInstance(p, TestinEditors.class).openAndSelect(testCase.getParent(), testCase);
+        Services.getInstance(project, TestinEditors.class).openAndSelect(testCase.getParent(), testCase);
     }
 
     @Override
-    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        TestinDataKeys.selectedTestCases(e).stream().findFirst().ifPresent(testCase -> execute(p, testCase));
+    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
+        TestinDataKeys.selectedTestCases(e).stream().findFirst().ifPresent(testCase -> execute(project, testCase));
     }
 
     // UC-EDITOR-PANEL-048, Rule-EDITOR-PANEL-236, Rule-EDITOR-PANEL-230
     @Override
-    protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
         TestinDataKeys.selectedTestCases(e).stream().findFirst().flatMap(NavigateToTestCaseAction::whyNot)
                 .ifPresentOrElse(why -> GrayWithReason.unless(this, e, false, why), () -> GrayWithReason.unlessTestCaseSelected(this, e));
     }

@@ -35,11 +35,11 @@ import org.testin.undo.UndoScope;
 import java.util.List;
 
 public class TreeContextMenu extends DefaultActionGroup {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
 
-    public TreeContextMenu(final @NotNull Project p, final @NotNull SimpleTree tree) {
+    public TreeContextMenu(final @NotNull Project project, final @NotNull SimpleTree tree) {
         super("", true);
-        this.p = p;
+        this.project = project;
 
         add(Declared.forMenu("Testin.Open"));
         add(Declared.forMenu("Testin.CreateNode"));
@@ -48,8 +48,8 @@ public class TreeContextMenu extends DefaultActionGroup {
 
         add(actionsSubMenu(List.of(
                 Declared.forMenu("Testin.UpdateStatus")), List.of(
-                new TestinUndoAction(p, tree, UndoScope.TREE, UndoDirection.UNDO),
-                new TestinUndoAction(p, tree, UndoScope.TREE, UndoDirection.REDO),
+                new TestinUndoAction(project, tree, UndoScope.TREE, UndoDirection.UNDO),
+                new TestinUndoAction(project, tree, UndoScope.TREE, UndoDirection.REDO),
                 Declared.forMenu("Testin.ReCreateTestRun"),
                 Declared.forMenu("Testin.RemoveNode"),
                 Declared.forMenu("Testin.Rename"),
@@ -73,10 +73,10 @@ public class TreeContextMenu extends DefaultActionGroup {
 
         addSeparator();
         add(Declared.forMenu("Testin.EditTestRun"));
-        add(new SetTestRunStatusAction(p, tree));
+        add(new SetTestRunStatusAction(project, tree));
         addSeparator();
 
-        add(new GenerateReportAction(p, tree));
+        add(new GenerateReportAction(project, tree));
 
         add(Declared.forMenu("Testin.ShowNodeDetails"));
     }
@@ -89,7 +89,7 @@ public class TreeContextMenu extends DefaultActionGroup {
     }
 
     public void registerShortcuts(final @NotNull SimpleTree tree, final @NotNull TreeTransferHandler transferHandler) {
-        new TestinEscapeAction(p, tree, transferHandler);
+        new TestinEscapeAction(project, tree, transferHandler);
         new OpenContextMenuAction(tree, this);
     }
 

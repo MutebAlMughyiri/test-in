@@ -27,15 +27,15 @@ import org.testin.editor.TestinEditor;
 
 public class UnifiedEditorProvider implements FileEditorProvider, DumbAware {
     @Override
-    public boolean accept(final @NotNull Project p, final @NotNull VirtualFile file) {
+    public boolean accept(final @NotNull Project project, final @NotNull VirtualFile file) {
         return file instanceof UnifiedVirtualFile vf && vf.isValid();
     }
 
     @Override
-    public @NotNull FileEditor createEditor(final @NotNull Project p, final @NotNull VirtualFile file) {
+    public @NotNull FileEditor createEditor(final @NotNull Project project, final @NotNull VirtualFile file) {
         if (file instanceof UnifiedVirtualFile unifiedFile) {
-            final @NotNull TestinEditor editor = unifiedFile.getKind().getFileType().getFactory().apply(p, unifiedFile);
-            return new UnifiedFileEditor(p, unifiedFile, editor);
+            final @NotNull TestinEditor editor = unifiedFile.getKind().getFileType().getFactory().apply(project, unifiedFile);
+            return new UnifiedFileEditor(project, unifiedFile, editor);
         }
 
         throw new IllegalArgumentException("Unsupported virtual file type: " + file.getClass().getName());

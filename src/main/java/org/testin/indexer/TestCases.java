@@ -36,9 +36,9 @@ public final class TestCases {
     private final @NotNull ProjectIndexer indexer;
     private final @NotNull TestCaseCompletions testCaseValues;
 
-    public TestCases(final @NotNull Project p) {
-        this.indexer = Services.getInstance(p, ProjectIndexer.class);
-        this.testCaseValues = Services.getInstance(p, TestCaseCompletions.class);
+    public TestCases(final @NotNull Project project) {
+        this.indexer = Services.getInstance(project, ProjectIndexer.class);
+        this.testCaseValues = Services.getInstance(project, TestCaseCompletions.class);
     }
 
     private @NotNull IndexerDataStore store() {

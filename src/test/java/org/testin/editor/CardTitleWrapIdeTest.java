@@ -102,8 +102,8 @@ public class CardTitleWrapIdeTest extends BasePlatformTestCase {
     }
 
     private static final class Card extends AbstractCard {
-        Card(final @NotNull Project p) {
-            super(p);
+        Card(final @NotNull Project project) {
+            super(project);
         }
 
         void feed(final @NotNull String title) {

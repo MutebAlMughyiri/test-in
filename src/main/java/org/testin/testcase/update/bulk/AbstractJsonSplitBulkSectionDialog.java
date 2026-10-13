@@ -42,14 +42,14 @@ public abstract class AbstractJsonSplitBulkSectionDialog extends AbstractFramewo
 
     private final @NotNull List<String> originalEscaped = new ArrayList<>();
 
-    protected AbstractJsonSplitBulkSectionDialog(final @NotNull Project p, final @NotNull List<TestCaseDto> selectedTestCases, final @NotNull Consumer<List<TestCaseDto>> updatedTestCases) {
-        super(p);
+    protected AbstractJsonSplitBulkSectionDialog(final @NotNull Project project, final @NotNull List<TestCaseDto> selectedTestCases, final @NotNull Consumer<List<TestCaseDto>> updatedTestCases) {
+        super(project);
         this.selectedTestCases = selectedTestCases;
         this.updatedTestCases = updatedTestCases;
 
         title = getPopupTitle();
 
-        editors = new BulkJsonEditors(p);
+        editors = new BulkJsonEditors(project);
         buildContent();
 
         components = List.of(DialogPart.of(editors));
@@ -82,7 +82,7 @@ public abstract class AbstractJsonSplitBulkSectionDialog extends AbstractFramewo
     }
 
     protected @NotNull Optional<TestCaseDto> withValue(final @NotNull TestCaseDto testCase, final @NotNull String value) {
-        return attribute().getImportSetter().execute(p, testCase, value);
+        return attribute().getImportSetter().execute(project, testCase, value);
     }
 
     protected boolean acceptsBlank() {
@@ -122,7 +122,7 @@ public abstract class AbstractJsonSplitBulkSectionDialog extends AbstractFramewo
             written.add(took.orElseThrow());
         }
 
-        TestSetEditorAttributes.sayWhatWasRefused(p, refused);
+        TestSetEditorAttributes.sayWhatWasRefused(project, refused);
 
         return written;
     }

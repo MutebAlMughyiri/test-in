@@ -68,8 +68,8 @@ final class ApiModelDialog extends AbstractFrameworkDialog {
     private final @NotNull FieldPair pair;
 
     // UC-CODEGEN-022, Rule-CODEGEN-099, Rule-CODEGEN-106, Rule-CODEGEN-107, Rule-CODEGEN-109
-    ApiModelDialog(final @NotNull Project p, final @NotNull PsiDirectory directory) {
-        super(p);
+    ApiModelDialog(final @NotNull Project project, final @NotNull PsiDirectory directory) {
+        super(project);
         this.directory = directory;
         this.packageName = Optional.ofNullable(JavaDirectoryService.getInstance().getPackage(directory)).map(PsiPackage::getQualifiedName).orElse("");
 
@@ -82,9 +82,9 @@ final class ApiModelDialog extends AbstractFrameworkDialog {
                 .accepting("[A-Za-z][A-Za-z0-9]*")
                 .build()
                 .getComponent();
-        request = DialogPart.multiLineField(p, "", Bundle.message("dialog.api.model.request.placeholder"), EMPTY_LINES, MultiLineField.NO_LIMIT, Json.language(), false).getComponent();
-        response = DialogPart.multiLineField(p, "", Bundle.message("dialog.api.model.response.placeholder"), EMPTY_LINES, MultiLineField.NO_LIMIT, Json.language(), false).getComponent();
-        pair = DialogPart.fieldPair(p, REMEMBERED_LAYOUT, requestTitle, request, responseTitle, response).getComponent();
+        request = DialogPart.multiLineField(project, "", Bundle.message("dialog.api.model.request.placeholder"), EMPTY_LINES, MultiLineField.NO_LIMIT, Json.language(), false).getComponent();
+        response = DialogPart.multiLineField(project, "", Bundle.message("dialog.api.model.response.placeholder"), EMPTY_LINES, MultiLineField.NO_LIMIT, Json.language(), false).getComponent();
+        pair = DialogPart.fieldPair(project, REMEMBERED_LAYOUT, requestTitle, request, responseTitle, response).getComponent();
 
         components = List.of(
                 DialogPart.details().row(Bundle.message("dialog.api.model.path"), packageName.isEmpty() ? Bundle.message("dialog.api.model.path.root") : packageName).build(),
@@ -133,7 +133,7 @@ final class ApiModelDialog extends AbstractFrameworkDialog {
         final @NotNull String requestBody = request.getText();
         final @NotNull String responseBody = response.getText();
         if (requestBody.isBlank() && responseBody.isBlank()) {
-            notifier.softRefuse(p, Refused.NOTHING_PASTED, "");
+            notifier.softRefuse(project, Refused.NOTHING_PASTED, "");
             return;
         }
 
@@ -152,7 +152,7 @@ final class ApiModelDialog extends AbstractFrameworkDialog {
             file.navigate(true);
         });
         TestinLogger.info("API model written: " + String.join(", ", files.keySet()));
-        notifier.softShow(p, Done.CREATED);
+        notifier.softShow(project, Done.CREATED);
     }
 
     // Rule-CODEGEN-099, Rule-CODEGEN-105, Rule-CODEGEN-108
@@ -180,17 +180,17 @@ final class ApiModelDialog extends AbstractFrameworkDialog {
     // Rule-CODEGEN-099, Rule-CODEGEN-108
     private void refuse(final @NotNull Refused refusal, final @NotNull String about) {
         TestinLogger.debug("API model refused: " + refusal.about(about));
-        notifier.softRefuse(p, refusal, about);
+        notifier.softRefuse(project, refusal, about);
     }
 
     // Rule-CODEGEN-006, Rule-CODEGEN-105
     private @NotNull List<PsiFile> write(final @NotNull Map<String, String> files) {
         final @NotNull List<PsiFile> written = new ArrayList<>();
         try {
-            WriteCommandAction.writeCommandAction(p).withName(title).run(() -> files.forEach((fileName, text) -> {
-                final @NotNull PsiFile created = PsiFileFactory.getInstance(p).createFileFromText(fileName, JavaFileType.INSTANCE, text);
+            WriteCommandAction.writeCommandAction(project).withName(title).run(() -> files.forEach((fileName, text) -> {
+                final @NotNull PsiFile created = PsiFileFactory.getInstance(project).createFileFromText(fileName, JavaFileType.INSTANCE, text);
                 if (directory.add(created) instanceof PsiFile added) {
-                    written.add((PsiFile) CodeStyleManager.getInstance(p).reformat(added));
+                    written.add((PsiFile) CodeStyleManager.getInstance(project).reformat(added));
                 }
             }));
         } catch (final IncorrectOperationException ex) {

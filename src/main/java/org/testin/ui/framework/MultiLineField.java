@@ -55,7 +55,7 @@ public final class MultiLineField implements DialogComponent {
 
     private static final int VISIBLE_LINES = 6;
 
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull EditorTextField field;
     private final @NotNull String caption;
     private final int minimumLines;
@@ -70,13 +70,13 @@ public final class MultiLineField implements DialogComponent {
     private int packedHeight;
 
     // Rule-INTERNAL-058, Rule-INTERNAL-095, Rule-INTERNAL-096
-    public MultiLineField(final @NotNull Project p, final @NotNull EditorTextField field, final @NotNull String caption, final @NotNull String placeholder) {
-        this(p, field, caption, placeholder, 0, VISIBLE_LINES);
+    public MultiLineField(final @NotNull Project project, final @NotNull EditorTextField field, final @NotNull String caption, final @NotNull String placeholder) {
+        this(project, field, caption, placeholder, 0, VISIBLE_LINES);
     }
 
     // Rule-INTERNAL-058, Rule-INTERNAL-095, Rule-INTERNAL-096, Rule-INTERNAL-136
-    public MultiLineField(final @NotNull Project p, final @NotNull EditorTextField field, final @NotNull String caption, final @NotNull String placeholder, final int minimumLines, final int maximumLines) {
-        this.p = p;
+    public MultiLineField(final @NotNull Project project, final @NotNull EditorTextField field, final @NotNull String caption, final @NotNull String placeholder, final int minimumLines, final int maximumLines) {
+        this.project = project;
         this.field = field;
         this.caption = caption;
         this.minimumLines = minimumLines;
@@ -133,10 +133,10 @@ public final class MultiLineField implements DialogComponent {
 
     // Rule-INTERNAL-139
     void reformat() {
-        final @NotNull PsiDocumentManager documents = PsiDocumentManager.getInstance(p);
-        WriteCommandAction.runWriteCommandAction(p, () -> {
+        final @NotNull PsiDocumentManager documents = PsiDocumentManager.getInstance(project);
+        WriteCommandAction.runWriteCommandAction(project, () -> {
             documents.commitDocument(field.getDocument());
-            Optional.ofNullable(documents.getPsiFile(field.getDocument())).ifPresent(file -> CodeStyleManager.getInstance(p).reformat(file));
+            Optional.ofNullable(documents.getPsiFile(field.getDocument())).ifPresent(file -> CodeStyleManager.getInstance(project).reformat(file));
         });
     }
 
@@ -203,7 +203,7 @@ public final class MultiLineField implements DialogComponent {
     // Rule-EDITOR-PANEL-246
     private void insertNewLine(final @NotNull Editor editor) {
         final int caret = editor.getCaretModel().getOffset();
-        WriteCommandAction.runWriteCommandAction(p, () -> {
+        WriteCommandAction.runWriteCommandAction(project, () -> {
             editor.getDocument().insertString(caret, "\n");
             editor.getCaretModel().moveToOffset(caret + 1);
         });

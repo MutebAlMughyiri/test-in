@@ -43,8 +43,8 @@ public final class ResolveConflictDialog extends AbstractFrameworkDialog {
     private final @NotNull Consumer<Set<String>> onResolved;
     private final @NotNull Runnable onSkipped;
 
-    public ResolveConflictDialog(final @NotNull Project p, final @NotNull String testCase, final @NotNull List<Question> questions, final @NotNull List<String> settled, final @NotNull Consumer<Set<String>> onResolved, final @NotNull Runnable onSkipped) {
-        super(p);
+    public ResolveConflictDialog(final @NotNull Project project, final @NotNull String testCase, final @NotNull List<Question> questions, final @NotNull List<String> settled, final @NotNull Consumer<Set<String>> onResolved, final @NotNull Runnable onSkipped) {
+        super(project);
         this.questions = questions;
         this.onResolved = onResolved;
         this.onSkipped = onSkipped;

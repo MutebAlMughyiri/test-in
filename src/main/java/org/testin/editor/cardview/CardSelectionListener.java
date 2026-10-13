@@ -30,7 +30,7 @@ import java.util.List;
 
 @AllArgsConstructor
 public class CardSelectionListener implements ListSelectionListener {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull JBList<TestCaseDto> list;
     private final @NotNull TestinEditor editor;
     private final @NotNull List<String> path;
@@ -44,7 +44,7 @@ public class CardSelectionListener implements ListSelectionListener {
             if (!selected.isEmpty()) {
                 list.ensureIndexIsVisible(list.getSelectedIndex());
 
-                ViewToolWindowFactory.panel(p).ifPresent(viewer -> viewer.showIfOpen(selected, path));
+                ViewToolWindowFactory.panel(project).ifPresent(viewer -> viewer.showIfOpen(selected, path));
             }
 
             editor.refreshSelectionStatus(list.getSelectedIndices());

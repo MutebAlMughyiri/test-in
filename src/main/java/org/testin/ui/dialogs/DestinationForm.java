@@ -38,12 +38,12 @@ public final class DestinationForm implements DialogComponent {
     private final @NotNull FormatSection format;
     private final @NotNull JComponent panel;
 
-    private DestinationForm(final @NotNull Project p, final FileFormat @NotNull [] formats, final @NotNull FileFormat defaultFormat, final @NotNull String suggestedName, final @NotNull String chooserTitle, final @NotNull String chooserDescription, final @NotNull String section) {
+    private DestinationForm(final @NotNull Project project, final FileFormat @NotNull [] formats, final @NotNull FileFormat defaultFormat, final @NotNull String suggestedName, final @NotNull String chooserTitle, final @NotNull String chooserDescription, final @NotNull String section) {
         folder = DialogPart.textInput()
                 .caption(Bundle.message("destination.caption.folder"))
                 .placeholder(Bundle.message("destination.choose.folder"))
-                .value(DownloadFolder.of(p))
-                .browse(p, FileChooserDescriptorFactory.singleDir().withTitle(chooserTitle).withDescription(chooserDescription))
+                .value(DownloadFolder.of(project))
+                .browse(project, FileChooserDescriptorFactory.singleDir().withTitle(chooserTitle).withDescription(chooserDescription))
                 .build().getComponent();
 
         fileName = DialogPart.textInput()
@@ -63,13 +63,13 @@ public final class DestinationForm implements DialogComponent {
     }
 
     // UC-REPORT-001, Rule-INTERNAL-099
-    public static @NotNull DestinationForm stacked(final @NotNull Project p, final FileFormat @NotNull [] formats, final @NotNull FileFormat defaultFormat, final @NotNull String suggestedName, final @NotNull String chooserTitle, final @NotNull String chooserDescription) {
-        return new DestinationForm(p, formats, defaultFormat, suggestedName, chooserTitle, chooserDescription, "");
+    public static @NotNull DestinationForm stacked(final @NotNull Project project, final FileFormat @NotNull [] formats, final @NotNull FileFormat defaultFormat, final @NotNull String suggestedName, final @NotNull String chooserTitle, final @NotNull String chooserDescription) {
+        return new DestinationForm(project, formats, defaultFormat, suggestedName, chooserTitle, chooserDescription, "");
     }
 
     // UC-SHARE-001, Rule-INTERNAL-099
-    public static @NotNull DestinationForm inSection(final @NotNull Project p, final FileFormat @NotNull [] formats, final @NotNull FileFormat defaultFormat, final @NotNull String suggestedName, final @NotNull String chooserTitle, final @NotNull String chooserDescription, final @NotNull String section) {
-        return new DestinationForm(p, formats, defaultFormat, suggestedName, chooserTitle, chooserDescription, section);
+    public static @NotNull DestinationForm inSection(final @NotNull Project project, final FileFormat @NotNull [] formats, final @NotNull FileFormat defaultFormat, final @NotNull String suggestedName, final @NotNull String chooserTitle, final @NotNull String chooserDescription, final @NotNull String section) {
+        return new DestinationForm(project, formats, defaultFormat, suggestedName, chooserTitle, chooserDescription, section);
     }
 
     static @NotNull String withExtension(final @NotNull String fileName, final @NotNull String extension) {

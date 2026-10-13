@@ -51,10 +51,10 @@ import java.util.Set;
 import java.util.UUID;
 
 public final class TestNGRunner implements AutomationExecutor {
-    private static @NotNull Optional<Module> moduleOf(final @NotNull Project p, final @NotNull List<String> fqcn) {
+    private static @NotNull Optional<Module> moduleOf(final @NotNull Project project, final @NotNull List<String> fqcn) {
         final @NotNull String classFqcn = String.join(".", fqcn.subList(0, fqcn.size() - 1));
 
-        return Optional.ofNullable(JavaPsiFacade.getInstance(p).findClass(classFqcn, GlobalSearchScope.projectScope(p)))
+        return Optional.ofNullable(JavaPsiFacade.getInstance(project).findClass(classFqcn, GlobalSearchScope.projectScope(project)))
                 .map(ModuleUtilCore::findModuleForPsiElement);
     }
 
@@ -68,31 +68,31 @@ public final class TestNGRunner implements AutomationExecutor {
     }
 
     @Override
-    public void run(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases) {
+    public void run(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases) {
         if (testCases.isEmpty()) return;
 
-        final @NotNull TestNGExecution execution = Services.getInstance(p, TestNGExecution.class);
+        final @NotNull TestNGExecution execution = Services.getInstance(project, TestNGExecution.class);
 
-        if (DumbService.isDumb(p)) {
+        if (DumbService.isDumb(project)) {
             testCases.forEach(execution::notStarting);
 
-            DumbService.getInstance(p).showDumbModeNotification(Bundle.message("testng.indexing.wait"));
+            DumbService.getInstance(project).showDumbModeNotification(Bundle.message("testng.indexing.wait"));
             return;
         }
 
         testCases.forEach(execution::starting);
 
-        BackgroundWork.logged(ReadAction.nonBlocking(() -> prepare(p, testCases))
+        BackgroundWork.logged(ReadAction.nonBlocking(() -> prepare(project, testCases))
                 .expireWith(execution)
                 .finishOnUiThread(ModalityState.nonModal(), prepared -> prepared.ifPresentOrElse(
-                        ready -> start(p, ready),
-                        () -> interrupted(p, testCases)))
+                        ready -> start(project, ready),
+                        () -> interrupted(project, testCases)))
                 .submit(AppExecutorUtil.getAppExecutorService()), "Preparing the TestNG run");
     }
 
-    private @NotNull Optional<Prepared> prepare(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases) {
+    private @NotNull Optional<Prepared> prepare(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases) {
         try {
-            final @NotNull Map<UUID, List<String>> methods = TestMethodCode.available().methodFqcnsOf(p, testCases);
+            final @NotNull Map<UUID, List<String>> methods = TestMethodCode.available().methodFqcnsOf(project, testCases);
 
             final @NotNull List<Generated> found = new ArrayList<>();
             final @NotNull List<TestCaseDto> withoutCode = new ArrayList<>();
@@ -104,7 +104,7 @@ public final class TestNGRunner implements AutomationExecutor {
             }
 
             final @NotNull List<Module> modules = found.stream()
-                    .map(one -> moduleOf(p, one.fqcn()))
+                    .map(one -> moduleOf(project, one.fqcn()))
                     .flatMap(Optional::stream)
                     .toList();
 
@@ -114,14 +114,14 @@ public final class TestNGRunner implements AutomationExecutor {
         }
     }
 
-    private void interrupted(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases) {
-        testCases.forEach(Services.getInstance(p, TestNGExecution.class)::notStarting);
+    private void interrupted(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases) {
+        testCases.forEach(Services.getInstance(project, TestNGExecution.class)::notStarting);
 
-        DumbService.getInstance(p).showDumbModeNotification(Bundle.message("testng.indexing.interrupted"));
+        DumbService.getInstance(project).showDumbModeNotification(Bundle.message("testng.indexing.interrupted"));
     }
 
-    private void start(final @NotNull Project p, final @NotNull Prepared prepared) {
-        final @NotNull TestNGExecution execution = Services.getInstance(p, TestNGExecution.class);
+    private void start(final @NotNull Project project, final @NotNull Prepared prepared) {
+        final @NotNull TestNGExecution execution = Services.getInstance(project, TestNGExecution.class);
 
         prepared.withoutCode().forEach(execution::noGeneratedCode);
         execution.started(List.of(), prepared.withoutCode());
@@ -134,11 +134,11 @@ public final class TestNGRunner implements AutomationExecutor {
             return;
         }
 
-        launch(p, prepared.found(), prepared.modules().stream().findFirst());
+        launch(project, prepared.found(), prepared.modules().stream().findFirst());
     }
 
-    private void launch(final @NotNull Project p, final @NotNull List<Generated> found, final @NotNull Optional<Module> module) {
-        final @NotNull TestNGExecution execution = Services.getInstance(p, TestNGExecution.class);
+    private void launch(final @NotNull Project project, final @NotNull List<Generated> found, final @NotNull Optional<Module> module) {
+        final @NotNull TestNGExecution execution = Services.getInstance(project, TestNGExecution.class);
 
         final @NotNull Set<TestCaseDto> stillWanted = new HashSet<>(execution.stillWanted(found.stream().map(Generated::testCase).toList()));
         if (stillWanted.isEmpty()) {
@@ -152,7 +152,7 @@ public final class TestNGRunner implements AutomationExecutor {
         final @NotNull LinkedHashSet<String> patterns = new LinkedHashSet<>(generated.stream().map(Generated::pattern).toList());
         final @NotNull String name = execution.freeRunName(configNameFor(generated));
 
-        final @NotNull RunManager runManager = RunManager.getInstance(p);
+        final @NotNull RunManager runManager = RunManager.getInstance(project);
         final @NotNull TestNGConfigurationType configType = TestNGConfigurationType.getInstance();
 
         final @NotNull RunnerAndConfigurationSettings settings = Optional.ofNullable(runManager.findConfigurationByName(name))

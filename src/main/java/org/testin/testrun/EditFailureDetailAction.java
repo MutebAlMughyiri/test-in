@@ -41,45 +41,45 @@ import java.util.Optional;
 public class EditFailureDetailAction extends AbstractAnyProjectAction {
     // UC-EDITOR-PANEL-040, Rule-EDITOR-PANEL-167
     @Override
-    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
         final @NotNull Optional<TestCaseDto> selected = TestinDataKeys.singleSelectedTestCase(e);
         final @NotNull Optional<TestRunEditor> testRunEditor = TestinDataKeys.testRunEditor(e);
         if (selected.isEmpty() || testRunEditor.isEmpty()) return;
 
-        edit(p, testRunEditor.orElseThrow(), selected.orElseThrow());
+        edit(project, testRunEditor.orElseThrow(), selected.orElseThrow());
     }
 
     // UC-EDITOR-PANEL-040, Rule-EDITOR-PANEL-167
-    private void edit(final @NotNull Project p, final @NotNull TestRunEditor testRunEditor, final @NotNull TestCaseDto testCase) {
+    private void edit(final @NotNull Project project, final @NotNull TestRunEditor testRunEditor, final @NotNull TestCaseDto testCase) {
         final @NotNull Optional<RunItem> found = testRunEditor.runItem(testCase.getId());
         if (found.isEmpty()) return;
 
         final @NotNull RunItem runItem = found.orElseThrow();
 
         if (runItem.isRemoved()) {
-            Services.getInstance(p, RunItemRecorder.class).refuseRemoved();
+            Services.getInstance(project, RunItemRecorder.class).refuseRemoved();
             return;
         }
 
         TestinLogger.trace("update test run item for: " + testCase.getDescription());
 
-        new FailureDetailDialog(p, testRunEditor.getParent().getPath(), runItem, fields -> {
-            if (!Services.getInstance(p, RunItemRecorder.class).reviseFailure(testRunEditor.getParent().getPath(), testCase.getId(), fields))
+        new FailureDetailDialog(project, testRunEditor.getParent().getPath(), runItem, fields -> {
+            if (!Services.getInstance(project, RunItemRecorder.class).reviseFailure(testRunEditor.getParent().getPath(), testCase.getId(), fields))
                 return;
 
             ApplicationManager.getApplication().invokeLater(() -> {
                 testRunEditor.refreshView();
 
-                ViewToolWindowFactory.refreshIfShowing(p, List.of(testCase));
+                ViewToolWindowFactory.refreshIfShowing(project, List.of(testCase));
             });
 
-            Services.getInstance(p, Notifier.class).softShow(p, Bundle.message("run.item.updated"));
+            Services.getInstance(project, Notifier.class).softShow(project, Bundle.message("run.item.updated"));
         }).show();
     }
 
     // UC-EDITOR-PANEL-040, Rule-EDITOR-PANEL-168, Rule-TREE-PANEL-009
     @Override
-    protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
         final @NotNull Optional<String> signedOff = TestinDataKeys.testRunEditor(e).flatMap(testRunEditor -> testRunEditor.getParent().whySignedOff());
 
         GrayWithReason.unless(this, e, signedOff.isEmpty() && TestinDataKeys.testRunEditor(e)

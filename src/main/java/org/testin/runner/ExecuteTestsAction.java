@@ -42,12 +42,12 @@ import java.util.Optional;
 public class ExecuteTestsAction extends AbstractAnyProjectAction {
     // Rule-TREE-PANEL-079, Rule-TREE-PANEL-141
     @Override
-    protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        if (CodeOn.grayedWithReason(this, e, p)) return;
+    protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
+        if (CodeOn.grayedWithReason(this, e, project)) return;
         if (OptionalPlugin.TESTNG.grayedWithReason(this, e.getPresentation())) return;
 
         final @NotNull Optional<TestRunNode> testRun = selectedTestRun(e);
-        final @NotNull ExecutionMode mode = testRun.map(selected -> modeOf(p, selected)).orElse(ExecutionMode.IDLE);
+        final @NotNull ExecutionMode mode = testRun.map(selected -> modeOf(project, selected)).orElse(ExecutionMode.IDLE);
         if (mode != ExecutionMode.IDLE) {
             e.getPresentation().setEnabled(false);
             e.getPresentation().setDescription(mode.getRefusal());
@@ -58,15 +58,15 @@ public class ExecuteTestsAction extends AbstractAnyProjectAction {
     }
 
     // UC-TREE-PANEL-023, Rule-TREE-PANEL-141
-    private @NotNull ExecutionMode modeOf(final @NotNull Project p, final @NotNull TestRunNode testRun) {
-        return Services.getInstance(p, TestinEditors.class).testRunEditorFor(testRun)
+    private @NotNull ExecutionMode modeOf(final @NotNull Project project, final @NotNull TestRunNode testRun) {
+        return Services.getInstance(project, TestinEditors.class).testRunEditorFor(testRun)
                 .map(editor -> editor.getWalk().mode())
                 .orElse(ExecutionMode.IDLE);
     }
 
     @Override
-    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        selectedTestRun(e).ifPresentOrElse(testRun -> openAndRun(p, testRun), () -> runnable(e).ifPresent(dir -> run(p, dir)));
+    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
+        selectedTestRun(e).ifPresentOrElse(testRun -> openAndRun(project, testRun), () -> runnable(e).ifPresent(dir -> run(project, dir)));
     }
 
     private @NotNull Optional<AbstractNode> runnable(final @NotNull AnActionEvent e) {
@@ -78,22 +78,22 @@ public class ExecuteTestsAction extends AbstractAnyProjectAction {
                 .filter(TestRunNode::isOpen);
     }
 
-    private void openAndRun(final @NotNull Project p, final @NotNull TestRunNode testRun) {
-        Services.getInstance(p, TestinEditors.class).openThen(testRun, TestinEditor::runWhenLoaded);
+    private void openAndRun(final @NotNull Project project, final @NotNull TestRunNode testRun) {
+        Services.getInstance(project, TestinEditors.class).openThen(testRun, TestinEditor::runWhenLoaded);
     }
 
     // UC-CODEGEN-008, Rule-CODEGEN-031
-    private void run(final @NotNull Project p, final @NotNull AbstractNode dir) {
-        final @NotNull List<TestCaseDto> testCases = Services.getInstance(p, TestCases.class).getTestCasesUnder(dir);
+    private void run(final @NotNull Project project, final @NotNull AbstractNode dir) {
+        final @NotNull List<TestCaseDto> testCases = Services.getInstance(project, TestCases.class).getTestCasesUnder(dir);
 
         if (testCases.isEmpty()) {
-            Services.getInstance(p, Notifier.class).softRefuse(p, Refused.NOTHING_TO_RUN, dir.getName());
+            Services.getInstance(project, Notifier.class).softRefuse(project, Refused.NOTHING_TO_RUN, dir.getName());
             return;
         }
 
         TestinLogger.info("Running " + dir.getName() + " with " + testCases.size() + " test case(s)");
 
-        ExecuteTestCases.run(p, testCases);
+        ExecuteTestCases.run(project, testCases);
     }
 
     @Override

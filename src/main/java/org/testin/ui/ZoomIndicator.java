@@ -46,18 +46,18 @@ import java.util.Optional;
 
 @Service(Service.Level.PROJECT)
 public final class ZoomIndicator implements Disposable {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull Timer hideTimer = new Timer(5000, _ -> hide());
     private @NotNull Optional<JBPopup> currentPopup = Optional.empty();
 
-    ZoomIndicator(final @NotNull Project p) {
-        this.p = p;
+    ZoomIndicator(final @NotNull Project project) {
+        this.project = project;
         hideTimer.setRepeats(false);
     }
 
     // UC-SETTING-011
-    public static void show(final @NotNull Project p, final @NotNull JComponent parent, final float currentSize) {
-        Services.getInstance(p, ZoomIndicator.class).showIn(parent, currentSize);
+    public static void show(final @NotNull Project project, final @NotNull JComponent parent, final float currentSize) {
+        Services.getInstance(project, ZoomIndicator.class).showIn(parent, currentSize);
     }
 
     private void hide() {
@@ -84,8 +84,8 @@ public final class ZoomIndicator implements Disposable {
             @Override
             public void mouseClicked(final @NotNull MouseEvent e) {
                 hide();
-                if (!p.isDisposed()) {
-                    ShowSettingsUtilImpl.showSettingsDialog(p, "preferences.editor", Bundle.message("zoom.change.font.size"));
+                if (!project.isDisposed()) {
+                    ShowSettingsUtilImpl.showSettingsDialog(project, "preferences.editor", Bundle.message("zoom.change.font.size"));
                 }
             }
         });

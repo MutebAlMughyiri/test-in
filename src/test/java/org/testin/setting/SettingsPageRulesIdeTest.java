@@ -142,7 +142,7 @@ public class SettingsPageRulesIdeTest extends AbstractTempRootIdeTest {
         final @NotNull List<Class<?>> opened = new ArrayList<>();
         ServiceContainerUtil.replaceService(ApplicationManager.getApplication(), ShowSettingsUtil.class, new ShowSettingsUtilImpl() {
             @Override
-            public <T extends Configurable> void showSettingsDialog(final @Nullable Project p, final @NotNull Class<T> configurableClass) {
+            public <T extends Configurable> void showSettingsDialog(final @Nullable Project project, final @NotNull Class<T> configurableClass) {
                 opened.add(configurableClass);
             }
         }, getTestRootDisposable());

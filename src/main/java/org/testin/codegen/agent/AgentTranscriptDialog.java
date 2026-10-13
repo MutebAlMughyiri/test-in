@@ -32,8 +32,8 @@ public final class AgentTranscriptDialog extends AbstractFrameworkDialog {
     private static final int VISIBLE_ROWS = 24;
 
     // UC-CODEGEN-021, Rule-CODEGEN-090
-    public AgentTranscriptDialog(final @NotNull Project p, final @NotNull String transcript) {
-        super(p);
+    public AgentTranscriptDialog(final @NotNull Project project, final @NotNull String transcript) {
+        super(project);
 
         title = Bundle.message("agent.said.title");
 

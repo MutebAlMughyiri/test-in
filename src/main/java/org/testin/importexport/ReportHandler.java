@@ -29,5 +29,5 @@ public interface ReportHandler {
         throw new IllegalStateException("This format has no report generator");
     };
 
-    byte @NotNull [] execute(final @NotNull Project p, final @NotNull TestRunNode testRunNode, final @NotNull RunItems runItems);
+    byte @NotNull [] execute(final @NotNull Project project, final @NotNull TestRunNode testRunNode, final @NotNull RunItems runItems);
 }

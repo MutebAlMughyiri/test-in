@@ -42,18 +42,18 @@ import java.util.Optional;
 
 @Service(Service.Level.PROJECT)
 public final class TestRunStatusChange {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull TestinEditors editors;
     private final @NotNull Notifier notifier;
     private final @NotNull TestRuns testRuns;
     private final @NotNull AppSettingsState settings;
 
-    public TestRunStatusChange(final @NotNull Project p) {
-        this.p = p;
-        this.editors = Services.getInstance(p, TestinEditors.class);
-        this.notifier = Services.getInstance(p, Notifier.class);
-        this.testRuns = Services.getInstance(p, TestRuns.class);
-        this.settings = Services.getInstance(p, AppSettingsState.class);
+    public TestRunStatusChange(final @NotNull Project project) {
+        this.project = project;
+        this.editors = Services.getInstance(project, TestinEditors.class);
+        this.notifier = Services.getInstance(project, Notifier.class);
+        this.testRuns = Services.getInstance(project, TestRuns.class);
+        this.settings = Services.getInstance(project, AppSettingsState.class);
     }
 
     // UC-TREE-PANEL-020, Rule-EDITOR-PANEL-008, Rule-TREE-PANEL-091
@@ -70,17 +70,17 @@ public final class TestRunStatusChange {
         redraw(open);
 
         if (newStatus == TestRunStatus.COMPLETED) offerTheCommit(testRun);
-        else notifier.softShow(p, newStatus.getLabel());
+        else notifier.softShow(project, newStatus.getLabel());
     }
 
     // UC-TREE-PANEL-020, Rule-TREE-PANEL-136
     private void offerTheCommit(final @NotNull TestRunNode testRun) {
-        WatchedPath.testProjectOf(testRun.getPath(), Services.getInstance(p, TestinRoot.class).absolutePath())
-                .filter(testProject -> !new GitRepositoryService(p).isNotRepository(testProject))
+        WatchedPath.testProjectOf(testRun.getPath(), Services.getInstance(project, TestinRoot.class).absolutePath())
+                .filter(testProject -> !new GitRepositoryService(project).isNotRepository(testProject))
                 .ifPresentOrElse(testProject ->
-                                notifier.infoWithActions(p, TestRunStatus.COMPLETED.getLabel(), Bundle.message("test.run.completed.commit", testRun.getName()),
-                                        notifier.action(Bundle.message("action.Testin.ViewPendingCommits.text"), () -> new ViewPendingCommitsWork(p).openFor(testProject))),
-                        () -> notifier.softShow(p, TestRunStatus.COMPLETED.getLabel()));
+                                notifier.infoWithActions(project, TestRunStatus.COMPLETED.getLabel(), Bundle.message("test.run.completed.commit", testRun.getName()),
+                                        notifier.action(Bundle.message("action.Testin.ViewPendingCommits.text"), () -> new ViewPendingCommitsWork(project).openFor(testProject))),
+                        () -> notifier.softShow(project, TestRunStatus.COMPLETED.getLabel()));
     }
 
     private void persist(final @NotNull TestRunNode testRun, final @NotNull Optional<TestRunEditor> open) {

@@ -38,14 +38,14 @@ import java.util.Objects;
 public final class LastOpenEditors {
     private static final @NotNull String OPEN_EDITORS_KEY = "testin.openEditors";
 
-    private final @NotNull Project p;
+    private final @NotNull Project project;
 
     // Rule-EDITOR-PANEL-015
     public void remember() {
         try {
             final @NotNull List<String> entries = pathsOfOpen();
 
-            PropertiesComponent.getInstance(p).setValue(OPEN_EDITORS_KEY,
+            PropertiesComponent.getInstance(project).setValue(OPEN_EDITORS_KEY,
                     entries.isEmpty() ? null : String.join(";", entries));
 
         } catch (final Exception ex) {
@@ -56,7 +56,7 @@ public final class LastOpenEditors {
     private @NotNull List<String> pathsOfOpen() {
         final @NotNull List<String> entries = new ArrayList<>();
 
-        for (final Path path : Services.getInstance(p, TestinEditors.class).openNodePaths()) {
+        for (final Path path : Services.getInstance(project, TestinEditors.class).openNodePaths()) {
             entries.add(path.toString());
         }
 
@@ -67,7 +67,7 @@ public final class LastOpenEditors {
     public void reopen() {
         try {
             final @NotNull String saved = Objects.requireNonNullElse(
-                    PropertiesComponent.getInstance(p).getValue(OPEN_EDITORS_KEY), "");
+                    PropertiesComponent.getInstance(project).getValue(OPEN_EDITORS_KEY), "");
 
             if (saved.isEmpty()) {
                 TestinLogger.debug("No saved editors to restore");
@@ -81,7 +81,7 @@ public final class LastOpenEditors {
 
             openAll(stillIndexed(entries));
 
-            PropertiesComponent.getInstance(p).setValue(OPEN_EDITORS_KEY, null);
+            PropertiesComponent.getInstance(project).setValue(OPEN_EDITORS_KEY, null);
             TestinLogger.info("cleared saved editor state");
 
         } catch (final Exception ex) {
@@ -90,7 +90,7 @@ public final class LastOpenEditors {
     }
 
     private @NotNull List<AbstractNode> stillIndexed(final String @NotNull [] entries) {
-        final @NotNull Nodes nodes = Services.getInstance(p, Nodes.class);
+        final @NotNull Nodes nodes = Services.getInstance(project, Nodes.class);
         final @NotNull List<AbstractNode> found = new ArrayList<>();
 
         for (final String entry : entries) {
@@ -106,7 +106,7 @@ public final class LastOpenEditors {
     }
 
     private void openAll(final @NotNull List<AbstractNode> found) {
-        final @NotNull TestinEditors editors = Services.getInstance(p, TestinEditors.class);
+        final @NotNull TestinEditors editors = Services.getInstance(project, TestinEditors.class);
 
         for (int i = 0; i < found.size(); i++) editors.open(found.get(i), i == found.size() - 1);
     }

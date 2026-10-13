@@ -80,23 +80,23 @@ public final class Rescan {
                 + (testProjects.size() == 1 ? " test project" : " test projects") + ", reading them again");
 
         ApplicationManager.getApplication().invokeLater(() -> {
-            for (final Project p : ProjectManager.getInstance().getOpenProjects()) {
-                refresh(p, testProjects);
+            for (final Project project : ProjectManager.getInstance().getOpenProjects()) {
+                refresh(project, testProjects);
             }
         });
     }
 
     // UC-INTERNAL-003, Rule-INTERNAL-021, Rule-INTERNAL-023
-    private void refresh(final @NotNull Project p, final @NotNull List<Path> testProjects) {
-        if (p.isDisposed() || Services.isNotCreated(p, TreePanel.class)) return;
+    private void refresh(final @NotNull Project project, final @NotNull List<Path> testProjects) {
+        if (project.isDisposed() || Services.isNotCreated(project, TreePanel.class)) return;
 
         BackgroundWork.start(
-                new Task.Backgroundable(p, Bundle.message("indexer.task.rescan"), true) {
+                new Task.Backgroundable(project, Bundle.message("indexer.task.rescan"), true) {
                     @Override
                     public void run(final @NotNull ProgressIndicator indicator) {
                         indicator.setIndeterminate(false);
 
-                        final @NotNull ProjectIndexer indexer = Services.getInstance(p, ProjectIndexer.class);
+                        final @NotNull ProjectIndexer indexer = Services.getInstance(project, ProjectIndexer.class);
 
                         for (final Path testProjectPath : testProjects) {
                             if (indicator.isCanceled()) break;

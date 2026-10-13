@@ -45,13 +45,13 @@ import java.util.Optional;
 public final class JavaSourceRoot {
 
     // UC-CODEGEN-020, Rule-CODEGEN-064, Rule-CODEGEN-066
-    public static @NotNull Optional<VirtualFile> find(final @NotNull Project p) {
-        final @NotNull RememberedTestSourceRoot remembered = Services.getInstance(p, RememberedTestSourceRoot.class);
+    public static @NotNull Optional<VirtualFile> find(final @NotNull Project project) {
+        final @NotNull RememberedTestSourceRoot remembered = Services.getInstance(project, RememberedTestSourceRoot.class);
 
         final @NotNull Optional<VirtualFile> cached = remembered.get();
         if (cached.isPresent()) return cached;
 
-        for (final Module module : ModuleManager.getInstance(p).getModules()) {
+        for (final Module module : ModuleManager.getInstance(project).getModules()) {
             final @NotNull List<VirtualFile> sourceRoots = ModuleRootManager.getInstance(module)
                     .getSourceRoots(JavaSourceRootType.TEST_SOURCE);
 
@@ -67,9 +67,9 @@ public final class JavaSourceRoot {
     }
 
     // UC-CODEGEN-020, Rule-CODEGEN-065, Rule-CODEGEN-072, Rule-INTERNAL-127
-    public static @NotNull Optional<VirtualFile> findOrWarn(final @NotNull Project p, final @NotNull String className) {
-        final @NotNull Optional<VirtualFile> root = find(p);
-        final @NotNull Hints hints = Services.getInstance(p, Hints.class);
+    public static @NotNull Optional<VirtualFile> findOrWarn(final @NotNull Project project, final @NotNull String className) {
+        final @NotNull Optional<VirtualFile> root = find(project);
+        final @NotNull Hints hints = Services.getInstance(project, Hints.class);
 
         root.ifPresentOrElse(_ -> hints.clear(SetupStep.TEST_SOURCE_FOLDER),
                 () -> hints.fire(SetupHint.of(SetupStep.TEST_SOURCE_FOLDER, Bundle.message("codegen.no.source.root.message", className))));
@@ -161,25 +161,25 @@ public final class JavaSourceRoot {
 
     // UC-CODEGEN-020, Rule-CODEGEN-064
     @FromContentModule
-    public static @NotNull Optional<VirtualFile> fileInRootOrWarn(final @NotNull Project p, final @NotNull String className, final @NotNull RootFile work) {
-        return findOrWarn(p, className).flatMap(work::from);
+    public static @NotNull Optional<VirtualFile> fileInRootOrWarn(final @NotNull Project project, final @NotNull String className, final @NotNull RootFile work) {
+        return findOrWarn(project, className).flatMap(work::from);
     }
 
     // UC-CODEGEN-020, Rule-CODEGEN-065
     @FromContentModule
-    public static void writeInRoot(final @NotNull Project p, final @NotNull RootWork work) {
-        WriteAction.run(() -> find(p).ifPresent(work::run));
+    public static void writeInRoot(final @NotNull Project project, final @NotNull RootWork work) {
+        WriteAction.run(() -> find(project).ifPresent(work::run));
     }
 
     @FromContentModule
-    public static void commandInRoot(final @NotNull Project p, final @NotNull String title, final @NotNull RootWork work) {
-        WriteCommandAction.runWriteCommandAction(p, title, null, () -> find(p).ifPresent(work::run));
+    public static void commandInRoot(final @NotNull Project project, final @NotNull String title, final @NotNull RootWork work) {
+        WriteCommandAction.runWriteCommandAction(project, title, null, () -> find(project).ifPresent(work::run));
     }
 
     // UC-CODEGEN-020, Rule-CODEGEN-065
     @FromContentModule
-    public static void writeInRootOrWarn(final @NotNull Project p, final @NotNull String className, final @NotNull RootWork work) {
-        WriteAction.run(() -> findOrWarn(p, className).ifPresent(work::run));
+    public static void writeInRootOrWarn(final @NotNull Project project, final @NotNull String className, final @NotNull RootWork work) {
+        WriteAction.run(() -> findOrWarn(project, className).ifPresent(work::run));
     }
 
     @FunctionalInterface

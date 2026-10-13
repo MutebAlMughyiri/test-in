@@ -68,44 +68,44 @@ public class DetailsTab {
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-087, Rule-VIEW-PANEL-103
     private static @NotNull List<AbstractDetails> testCaseFields() {
         return List.of(
-                new AttributeRow(TestSetEditorAttributes.EXPECTED_RESULT.getName(), (_, node) -> TestSetEditorAttributes.EXPECTED_RESULT.displayValue(node)),
+                new AttributeRow(TestSetEditorAttributes.EXPECTED_RESULT.getName(), (_, testCase) -> TestSetEditorAttributes.EXPECTED_RESULT.displayValue(testCase)),
                 new Steps(),
-                new AttributeRow(TestSetEditorAttributes.PRE_CONDITIONS.getName(), (_, node) -> TestSetEditorAttributes.PRE_CONDITIONS.displayValue(node)),
-                new AttributeRow(TestSetEditorAttributes.TEST_DATA.getName(), (_, node) -> TestSetEditorAttributes.TEST_DATA.displayValue(node)),
-                new AttributeRow(TestSetEditorAttributes.REFERENCE.getName(), (_, node) -> TestSetEditorAttributes.REFERENCE.displayValue(node)),
-                new AttributeRow(TestSetEditorAttributes.MODULE.getName(), (_, node) -> TestSetEditorAttributes.MODULE.displayValue(node)),
-                new AttributeRow(TestSetEditorAttributes.ORDER.getName(), (p, node) -> TestCaseOrder.placeText(ExecutionPosition.placesOf(p, List.of(node)).getOrDefault(node.getId(), 0))),
-                new AttributeRow(Bundle.message("details.created"), (_, node) -> Display.whoAndWhen(node.getCreatedBy(), node.getCreatedAt())),
-                new AttributeRow(Bundle.message("details.updated"), (_, node) -> Display.whoAndWhen(node.getUpdatedBy(), node.getUpdatedAt())));
+                new AttributeRow(TestSetEditorAttributes.PRE_CONDITIONS.getName(), (_, testCase) -> TestSetEditorAttributes.PRE_CONDITIONS.displayValue(testCase)),
+                new AttributeRow(TestSetEditorAttributes.TEST_DATA.getName(), (_, testCase) -> TestSetEditorAttributes.TEST_DATA.displayValue(testCase)),
+                new AttributeRow(TestSetEditorAttributes.REFERENCE.getName(), (_, testCase) -> TestSetEditorAttributes.REFERENCE.displayValue(testCase)),
+                new AttributeRow(TestSetEditorAttributes.MODULE.getName(), (_, testCase) -> TestSetEditorAttributes.MODULE.displayValue(testCase)),
+                new AttributeRow(TestSetEditorAttributes.ORDER.getName(), (project, testCase) -> TestCaseOrder.placeText(ExecutionPosition.placesOf(project, List.of(testCase)).getOrDefault(testCase.getId(), 0))),
+                new AttributeRow(Bundle.message("details.created"), (_, testCase) -> Display.whoAndWhen(testCase.getCreatedBy(), testCase.getCreatedAt())),
+                new AttributeRow(Bundle.message("details.updated"), (_, testCase) -> Display.whoAndWhen(testCase.getUpdatedBy(), testCase.getUpdatedAt())));
     }
 
     // UC-VIEW-PANEL-004
-    public void load(final @NotNull Project p, final @NotNull JBPanel<?> detailsTab, final @NotNull Optional<TestCaseDto> shownTestCase, final @NotNull Optional<RunItem> runItem, final @NotNull List<String> currentPath, final @NotNull OptionalInt shownLine, final @NotNull Consumer<OptionalInt> showExecution) {
+    public void load(final @NotNull Project project, final @NotNull JBPanel<?> detailsTab, final @NotNull Optional<TestCaseDto> shownTestCase, final @NotNull Optional<RunItem> runItem, final @NotNull List<String> currentPath, final @NotNull OptionalInt shownLine, final @NotNull Consumer<OptionalInt> showExecution) {
         detailsTab.removeAll();
         detailsTab.setLayout(new BorderLayout());
         detailsTab.setBorder(BorderFactory.createEmptyBorder());
 
         shownTestCase.ifPresentOrElse(
-                testCase -> renderTestCase(p, detailsTab, testCase, detailRows(runItem, currentPath, shownLine, showExecution)),
+                testCase -> renderTestCase(project, detailsTab, testCase, detailRows(runItem, currentPath, shownLine, showExecution)),
                 () -> renderPlaceholder(detailsTab));
 
         detailsTab.revalidate();
         detailsTab.repaint();
     }
 
-    private void renderTestCase(final @NotNull Project p, final @NotNull JBPanel<?> detailsTab, final @NotNull TestCaseDto testCase, final @NotNull List<AbstractDetails> rows) {
+    private void renderTestCase(final @NotNull Project project, final @NotNull JBPanel<?> detailsTab, final @NotNull TestCaseDto testCase, final @NotNull List<AbstractDetails> rows) {
         final @NotNull JBPanel<?> contentPanel = new JBPanel<>(new GridBagLayout());
         contentPanel.setOpaque(false);
 
-        renderRows(p, contentPanel, testCase, rows);
+        renderRows(project, contentPanel, testCase, rows);
 
-        FontSync.attachWheelZoom(p, contentPanel);
+        FontSync.attachWheelZoom(project, contentPanel);
 
         contentPanel.addMouseWheelListener(WheelForwarding::forwardWheelToScrollPane);
 
         detailsTab.add(contentPanel, BorderLayout.CENTER);
 
-        EditShownTestCase.bindTo(p, detailsTab);
+        EditShownTestCase.bindTo(project, detailsTab);
     }
 
     private void renderPlaceholder(final @NotNull JBPanel<?> panel) {
@@ -117,14 +117,14 @@ public class DetailsTab {
         panel.add(placeholder, BorderLayout.NORTH);
     }
 
-    private void renderRows(final @NotNull Project p, final @NotNull JBPanel<?> panel, final @NotNull TestCaseDto testCase, final @NotNull List<AbstractDetails> rows) {
+    private void renderRows(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull TestCaseDto testCase, final @NotNull List<AbstractDetails> rows) {
         final @NotNull GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = JBUI.insets(INSETS_DEFAULT);
         gbc.anchor = GridBagConstraints.NORTHWEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = WEIGHT_X;
 
-        final int row = setupFixedRows(p, panel, gbc, testCase, rows);
+        final int row = setupFixedRows(project, panel, gbc, testCase, rows);
         addVerticalSpacer(panel, row);
     }
 
@@ -140,10 +140,10 @@ public class DetailsTab {
         return List.copyOf(rows);
     }
 
-    private int setupFixedRows(final @NotNull Project p, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto testCase, final @NotNull List<AbstractDetails> rows) {
+    private int setupFixedRows(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto testCase, final @NotNull List<AbstractDetails> rows) {
         int row = 0;
         for (final AbstractDetails component : rows) {
-            row = component.render(p, panel, (GridBagConstraints) gbc.clone(), testCase, row);
+            row = component.render(project, panel, (GridBagConstraints) gbc.clone(), testCase, row);
         }
         return row;
     }

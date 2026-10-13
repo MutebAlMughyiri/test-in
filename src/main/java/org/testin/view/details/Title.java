@@ -40,11 +40,11 @@ public class Title extends AbstractDetails {
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-025, Rule-VIEW-PANEL-125
     @Override
-    public int render(final @NotNull Project p, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto testCase, final int currentRow) {
+    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto testCase, final int currentRow) {
         final @NotNull String titleText = TestSetEditorAttributes.DESCRIPTION.displayValue(testCase);
         final @NotNull String finalValue = titleText.trim().isEmpty() ? "-" : titleText;
 
-        final boolean executing = ExecutingNow.is(p, testCase.getId());
+        final boolean executing = ExecutingNow.is(project, testCase.getId());
         final @NotNull JTextArea mainTitleArea = Prose.of(finalValue, executing ? Icons.EXECUTING : EmptyIcon.ICON_0);
         if (executing)
             mainTitleArea.getAccessibleContext().setAccessibleDescription(Bundle.message("execution.executing"));

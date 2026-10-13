@@ -77,25 +77,25 @@ public abstract class AbstractTestCaseDialog extends AbstractFrameworkDialog {
     private @NotNull PropertyChangeListener focusListener = NOTHING_ON_FOCUS;
     private @NotNull Optional<TestCaseSection> editableSection = Optional.empty();
 
-    public AbstractTestCaseDialog(final @NotNull Project p, final @NotNull TestCaseDto testCase, final @NotNull Consumer<@NotNull TestCaseDto> onSave, final StatusBarItem @NotNull ... dialogKeys) {
-        super(p);
+    public AbstractTestCaseDialog(final @NotNull Project project, final @NotNull TestCaseDto testCase, final @NotNull Consumer<@NotNull TestCaseDto> onSave, final StatusBarItem @NotNull ... dialogKeys) {
+        super(project);
         this.testCase = testCase;
         this.onSave = onSave;
         this.dialogKeys = dialogKeys.clone();
         this.dialogDisposable = Disposer.newDisposable("testin.testCaseDialog");
-        Disposer.register(ProjectLifetime.of(p), dialogDisposable);
+        Disposer.register(ProjectLifetime.of(project), dialogDisposable);
 
-        this.descriptionSection = new DescriptionSection(p);
-        this.expectedResultSection = new ExpectedResultSection(p);
-        this.moduleSection = new ModuleSection(p);
-        this.testDataSection = new TestDataSection(p);
-        this.preConditionsSection = new PreConditionsSection(p);
-        this.stepsSection = new StepsSection(p);
+        this.descriptionSection = new DescriptionSection(project);
+        this.expectedResultSection = new ExpectedResultSection(project);
+        this.moduleSection = new ModuleSection(project);
+        this.testDataSection = new TestDataSection(project);
+        this.preConditionsSection = new PreConditionsSection(project);
+        this.stepsSection = new StepsSection(project);
         this.prioritySection = new PrioritySection();
-        this.groupSection = new GroupSection(p);
-        this.orderSection = new OrderSection(p);
+        this.groupSection = new GroupSection(project);
+        this.orderSection = new OrderSection(project);
         this.statusSection = new StatusSection();
-        this.referenceSection = new ReferenceSection(p);
+        this.referenceSection = new ReferenceSection(project);
 
         this.cachedSections = Stream.concat(
                         Arrays.stream(CreateTestCaseFields.values()).map(CreateTestCaseFields::getSectionExtractor),
@@ -196,7 +196,7 @@ public abstract class AbstractTestCaseDialog extends AbstractFrameworkDialog {
     }
 
     private boolean completionIsOpen() {
-        return LookupManager.getInstance(p).getActiveLookup() != null;
+        return LookupManager.getInstance(project).getActiveLookup() != null;
     }
 
     private boolean aPopupIsOpen() {

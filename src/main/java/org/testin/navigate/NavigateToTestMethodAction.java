@@ -32,21 +32,21 @@ import org.testin.services.Services;
 // UC-CODEGEN-006
 public class NavigateToTestMethodAction extends AbstractAnyProjectAction {
     // UC-CODEGEN-006, Rule-INTERNAL-129
-    public static void execute(final @NotNull Project p, final @NotNull TestCaseDto testCase) {
-        Services.getInstance(p, Guides.class).add(Guide.AUTOMATION_CODE);
-        if (CodeOn.isOffAndWarned(p)) return;
+    public static void execute(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
+        Services.getInstance(project, Guides.class).add(Guide.AUTOMATION_CODE);
+        if (CodeOn.isOffAndWarned(project)) return;
 
-        TestMethodCode.available().toCode(p, testCase);
+        TestMethodCode.available().toCode(project, testCase);
     }
 
     @Override
-    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        TestinDataKeys.selectedTestCases(e).stream().findFirst().ifPresent(testCase -> execute(p, testCase));
+    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
+        TestinDataKeys.selectedTestCases(e).stream().findFirst().ifPresent(testCase -> execute(project, testCase));
     }
 
     @Override
-    protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        if (!TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD.enableOrExplain(p, e.getPresentation())) return;
+    protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
+        if (!TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD.enableOrExplain(project, e.getPresentation())) return;
 
         e.getPresentation().setEnabled(!TestinDataKeys.selectedTestCases(e).isEmpty());
     }

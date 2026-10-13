@@ -54,13 +54,13 @@ public class CreateTreeNodeAction extends AbstractAnyProjectAction {
 
     // UC-TREE-PANEL-007, UC-TREE-PANEL-009
     @Override
-    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        TestinDataKeys.singleSelectedNode(e).ifPresent(dir -> new CreateTreeNodeWork(p).createUnder(dir));
+    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
+        TestinDataKeys.singleSelectedNode(e).ifPresent(dir -> new CreateTreeNodeWork(project).createUnder(dir));
     }
 
     // UC-TREE-PANEL-007, Rule-TREE-PANEL-025
     @Override
-    protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
         final @NotNull Optional<AbstractNode> selected = TestinDataKeys.singleSelectedNode(e);
         final boolean enabled = selected.filter(AbstractNode::canCreateChildren).isPresent();
 

@@ -420,12 +420,12 @@ final class LightModeScreen {
         buttons.removeAll();
 
         testCaseForButtons().ifPresent(testCase -> {
-            final @NotNull Project p = editor.getProject();
+            final @NotNull Project project = editor.getProject();
             final @NotNull Automated automation = automationState.of(testCase.getId());
 
-            TestCaseQuickAction.onCard(p, editor.getParent(), testCase).stream()
+            TestCaseQuickAction.onCard(project, editor.getParent(), testCase).stream()
                     .filter(offered -> viewMenu.getSelectedDetails().stream().anyMatch(part -> part.governs(offered.action())))
-                    .forEach(offered -> buttons.add(HoverButton.of(p, offered, offered.action().iconOn(automation), offered.action().getTooltip(), () -> offered.action().executeFor(editor, testCase))));
+                    .forEach(offered -> buttons.add(HoverButton.of(project, offered, offered.action().iconOn(automation), offered.action().getTooltip(), () -> offered.action().executeFor(editor, testCase))));
         });
 
         buttons.setVisible(buttons.getComponentCount() > 0);

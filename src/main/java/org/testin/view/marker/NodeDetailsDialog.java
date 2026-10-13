@@ -34,12 +34,12 @@ import org.testin.util.Shortcuts;
 import java.util.List;
 
 public final class NodeDetailsDialog extends AbstractFrameworkDialog {
-    public NodeDetailsDialog(final @NotNull Project p, final @NotNull AbstractNode node) {
-        super(p);
+    public NodeDetailsDialog(final @NotNull Project project, final @NotNull AbstractNode node) {
+        super(project);
 
         final @NotNull Marker marker = node.getMarker();
         final @NotNull NodeType type = node.getType();
-        final @NotNull NodeFigures figures = NodeCounter.figures(p, node);
+        final @NotNull NodeFigures figures = NodeCounter.figures(project, node);
 
         title = Bundle.message("dialog.details.title");
 

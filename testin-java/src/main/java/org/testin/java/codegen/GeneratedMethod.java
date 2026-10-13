@@ -84,11 +84,11 @@ public final class GeneratedMethod {
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-001
-    public static void adopt(final @NotNull Project p, final @NotNull PsiMethod pm, final @NotNull TestCaseDto testCase) {
+    public static void adopt(final @NotNull Project project, final @NotNull PsiMethod pm, final @NotNull TestCaseDto testCase) {
         if (testCaseIdOf(pm).isPresent()) return;
 
         testAnnotationOf(pm).ifPresent(annotation -> {
-            final @NotNull PsiAnnotation written = JavaPsiFacade.getElementFactory(p)
+            final @NotNull PsiAnnotation written = JavaPsiFacade.getElementFactory(project)
                     .createAnnotationFromText("@Test(" + TEST_NAME + " = " + JavaLiteral.of(testCase.getId().toString()) + ")", pm);
 
             Optional.ofNullable(written.findDeclaredAttributeValue(TEST_NAME))
@@ -115,12 +115,12 @@ public final class GeneratedMethod {
     }
 
     // UC-CODEGEN-002
-    public static void importTest(final @NotNull Project p, final @NotNull PsiFile file) {
+    public static void importTest(final @NotNull Project project, final @NotNull PsiFile file) {
         if (!(file instanceof PsiJavaFile javaFile)) return;
 
         Optional.ofNullable(javaFile.getImportList())
                 .filter(imports -> imports.findSingleClassImportStatement(TESTNG_TEST) == null)
-                .ifPresent(imports -> Optional.ofNullable(JavaPsiFacade.getInstance(p).findClass(TESTNG_TEST, GlobalSearchScope.allScope(p)))
-                        .ifPresent(testClass -> imports.add(JavaPsiFacade.getElementFactory(p).createImportStatement(testClass))));
+                .ifPresent(imports -> Optional.ofNullable(JavaPsiFacade.getInstance(project).findClass(TESTNG_TEST, GlobalSearchScope.allScope(project)))
+                        .ifPresent(testClass -> imports.add(JavaPsiFacade.getElementFactory(project).createImportStatement(testClass))));
     }
 }

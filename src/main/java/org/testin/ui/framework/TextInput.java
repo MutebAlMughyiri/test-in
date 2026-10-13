@@ -102,8 +102,8 @@ public final class TextInput implements DialogComponent, TextValue {
     }
 
     // Rule-INTERNAL-118, Rule-SETTING-021
-    void browseWith(final @NotNull Project p, final @NotNull FileChooserDescriptor descriptor) {
-        final @NotNull Runnable choose = () -> FileChooser.chooseFile(descriptor, p, textField,
+    void browseWith(final @NotNull Project project, final @NotNull FileChooserDescriptor descriptor) {
+        final @NotNull Runnable choose = () -> FileChooser.chooseFile(descriptor, project, textField,
                 LocalFileSystem.getInstance().findFileByPath(getText().trim()), chosen -> textField.setText(chosen.getPresentableUrl()));
 
         chooser = Optional.of(choose);

@@ -60,13 +60,13 @@ public final class Band extends AbstractDetails {
 
     // UC-VIEW-PANEL-004, UC-VIEW-PANEL-005, Rule-VIEW-PANEL-085, Rule-VIEW-PANEL-087
     @Override
-    public int render(final @NotNull Project p, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto testCase, final int currentRow) {
-        int row = addFullWidthRow(panel, (GridBagConstraints) gbc.clone(), heading(p), JBUI.insets(INSETS_TOP, INSETS_SIDE, 0, INSETS_SIDE), currentRow);
+    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto testCase, final int currentRow) {
+        int row = addFullWidthRow(panel, (GridBagConstraints) gbc.clone(), heading(project), JBUI.insets(INSETS_TOP, INSETS_SIDE, 0, INSETS_SIDE), currentRow);
 
         if (!isOpen()) return row;
 
         for (final AbstractDetails field : rows) {
-            row = field.render(p, panel, (GridBagConstraints) gbc.clone(), testCase, row);
+            row = field.render(project, panel, (GridBagConstraints) gbc.clone(), testCase, row);
         }
 
         return row;
@@ -82,7 +82,7 @@ public final class Band extends AbstractDetails {
     }
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-085, Rule-VIEW-PANEL-087, Rule-INTERNAL-133
-    private @NotNull JComponent heading(final @NotNull Project p) {
+    private @NotNull JComponent heading(final @NotNull Project project) {
         final @NotNull JBLabel caption = Caption.of(name, Fonts.panelCaption());
         if (alwaysOpen()) return Caption.header(caption, Optional.empty());
 
@@ -94,7 +94,7 @@ public final class Band extends AbstractDetails {
             @Override
             public void mouseClicked(final MouseEvent e) {
                 PropertiesComponent.getInstance().setValue(rememberedAs, !isOpen(), false);
-                ViewToolWindowFactory.panel(p).ifPresent(ViewPanel::refreshCurrentView);
+                ViewToolWindowFactory.panel(project).ifPresent(ViewPanel::refreshCurrentView);
             }
         });
 

@@ -67,15 +67,15 @@ public final class CodegenRecorder implements CodeChangeRegistry {
 
         return new CodeChange<>() {
             @Override
-            public void execute(final @NotNull Project p, final @NotNull T payload) {
+            public void execute(final @NotNull Project project, final @NotNull T payload) {
                 asked.add(step(type, nameOf(payload)));
-                action.execute(p, payload);
+                action.execute(project, payload);
             }
 
             @Override
-            public void executeAll(final @NotNull Project p, final @NotNull List<? extends T> payloads) {
+            public void executeAll(final @NotNull Project project, final @NotNull List<? extends T> payloads) {
                 payloads.forEach(item -> asked.add(step(type, nameOf(item))));
-                action.executeAll(p, payloads);
+                action.executeAll(project, payloads);
             }
 
             @Override

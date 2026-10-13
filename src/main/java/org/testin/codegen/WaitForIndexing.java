@@ -28,10 +28,10 @@ import org.testin.services.Services;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WaitForIndexing {
     // Rule-CODEGEN-096
-    public static boolean refuses(final @NotNull Project p, final @NotNull String what) {
-        if (!DumbService.isDumb(p) || !CodeOn.isOn(p)) return false;
+    public static boolean refuses(final @NotNull Project project, final @NotNull String what) {
+        if (!DumbService.isDumb(project) || !CodeOn.isOn(project)) return false;
 
-        Services.getInstance(p, Notifier.class).softRefuse(p, Refused.WHILE_INDEXING, what);
+        Services.getInstance(project, Notifier.class).softRefuse(project, Refused.WHILE_INDEXING, what);
         return true;
     }
 }

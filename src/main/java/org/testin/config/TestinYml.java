@@ -95,38 +95,38 @@ public final class TestinYml {
         return TestinProjectConfig.BUG_REPO_URL_KEY;
     }
 
-    public static void reload(final @NotNull Project p) {
-        p.putUserData(READ, load(p));
+    public static void reload(final @NotNull Project project) {
+        project.putUserData(READ, load(project));
     }
 
     // UC-TREE-PANEL-001
-    public static boolean isUnreadable(final @NotNull Project p) {
-        return !parsedFor(p).readable();
+    public static boolean isUnreadable(final @NotNull Project project) {
+        return !parsedFor(project).readable();
     }
 
-    public static @NotNull String projectName(final @NotNull Project p) {
-        return config(p).projectName();
+    public static @NotNull String projectName(final @NotNull Project project) {
+        return config(project).projectName();
     }
 
     // Rule-CODEGEN-082
-    public static boolean names(final @NotNull Project p, final @NotNull String projectName) {
-        return !projectName.isEmpty() && projectName.equals(projectName(p));
+    public static boolean names(final @NotNull Project project, final @NotNull String projectName) {
+        return !projectName.isEmpty() && projectName.equals(projectName(project));
     }
 
     // UC-TREE-PANEL-001, UC-TREE-PANEL-003, Rule-SHARE-060
-    public static @NotNull Optional<String> cloneAddress(final @NotNull Project p, final @NotNull String projectName) {
-        final @NotNull TestinProjectConfig config = config(p);
-        return names(p, projectName) && config.hasRepoUrl() ? Optional.of(config.repoUrl()) : Optional.empty();
+    public static @NotNull Optional<String> cloneAddress(final @NotNull Project project, final @NotNull String projectName) {
+        final @NotNull TestinProjectConfig config = config(project);
+        return names(project, projectName) && config.hasRepoUrl() ? Optional.of(config.repoUrl()) : Optional.empty();
     }
 
     // UC-TREE-PANEL-003
-    public static boolean isRepoUrl(final @NotNull Project p, final @NotNull String address) {
-        final @NotNull TestinProjectConfig config = config(p);
+    public static boolean isRepoUrl(final @NotNull Project project, final @NotNull String address) {
+        final @NotNull TestinProjectConfig config = config(project);
         return config.hasRepoUrl() && config.repoUrl().equals(TestinProjectConfig.withoutCredentials(address));
     }
 
-    public static @NotNull String bugRepoUrl(final @NotNull Project p) {
-        return config(p).bugRepoUrl();
+    public static @NotNull String bugRepoUrl(final @NotNull Project project) {
+        return config(project).bugRepoUrl();
     }
 
     // UC-TREE-PANEL-003, Rule-SHARE-062
@@ -135,8 +135,8 @@ public final class TestinYml {
     }
 
     // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-071
-    public static @NotNull String bugRepoUrlOnDisk(final @NotNull Project p) {
-        return load(p).config().bugRepoUrl();
+    public static @NotNull String bugRepoUrlOnDisk(final @NotNull Project project) {
+        return load(project).config().bugRepoUrl();
     }
 
     // UC-TREE-PANEL-029, Rule-TREE-PANEL-113
@@ -159,18 +159,18 @@ public final class TestinYml {
     }
 
     // UC-TREE-PANEL-029
-    public static @NotNull Optional<Path> savePath(final @NotNull Project p) {
-        return file(p).or(() -> Optional.ofNullable(p.getBasePath()).map(base -> Path.of(base).resolve(FILE_NAMES[0])));
+    public static @NotNull Optional<Path> savePath(final @NotNull Project project) {
+        return file(project).or(() -> Optional.ofNullable(project.getBasePath()).map(base -> Path.of(base).resolve(FILE_NAMES[0])));
     }
 
     // UC-TREE-PANEL-029, Rule-TREE-PANEL-113
-    public static @NotNull Map<String, String> writtenValues(final @NotNull Project p, final @NotNull Set<String> keys) {
-        return valuesIn(currentText(p), keys);
+    public static @NotNull Map<String, String> writtenValues(final @NotNull Project project, final @NotNull Set<String> keys) {
+        return valuesIn(currentText(project), keys);
     }
 
     // UC-TREE-PANEL-029, Rule-TREE-PANEL-114
-    private static @NotNull String currentText(final @NotNull Project p) {
-        final @NotNull Optional<Path> path = file(p);
+    private static @NotNull String currentText(final @NotNull Project project) {
+        final @NotNull Optional<Path> path = file(project);
         if (path.isEmpty()) return "";
 
         return openDocument(path.orElseThrow()).map(Document::getText).orElseGet(() -> textOf(path.orElseThrow()));
@@ -182,24 +182,24 @@ public final class TestinYml {
     }
 
     // UC-TREE-PANEL-029, Rule-TREE-PANEL-112, Rule-TREE-PANEL-114
-    public static boolean save(final @NotNull Project p, final @NotNull Map<String, String> owned) {
-        final @NotNull Optional<Path> path = savePath(p);
+    public static boolean save(final @NotNull Project project, final @NotNull Map<String, String> owned) {
+        final @NotNull Optional<Path> path = savePath(project);
         final @NotNull Optional<VirtualFile> folder = path.map(Path::getParent).map(LocalFileSystem.getInstance()::refreshAndFindFileByNioFile);
         if (folder.isEmpty()) {
-            TestinLogger.warn("No folder to save testin.yml in for " + p.getName());
+            TestinLogger.warn("No folder to save testin.yml in for " + project.getName());
             return false;
         }
 
         final @NotNull String name = String.valueOf(path.orElseThrow().getFileName());
-        final boolean saved = WriteCommandAction.writeCommandAction(p).withName(Bundle.message("yml.save.command", fileName()))
+        final boolean saved = WriteCommandAction.writeCommandAction(project).withName(Bundle.message("yml.save.command", fileName()))
                 .compute(() -> write(folder.orElseThrow(), name, owned));
-        reload(p);
+        reload(project);
         return saved;
     }
 
     // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-104
-    public static boolean saveBugRepoUrl(final @NotNull Project p, final @NotNull String address) {
-        return save(p, Map.of(TestinProjectConfig.BUG_REPO_URL_KEY, address));
+    public static boolean saveBugRepoUrl(final @NotNull Project project, final @NotNull String address) {
+        return save(project, Map.of(TestinProjectConfig.BUG_REPO_URL_KEY, address));
     }
 
     private static boolean write(final @NotNull VirtualFile folder, final @NotNull String name, final @NotNull Map<String, String> owned) {
@@ -293,43 +293,43 @@ public final class TestinYml {
     }
 
     // UC-TREE-PANEL-011, Rule-TREE-PANEL-110
-    public static void openInEditor(final @NotNull Project p) {
-        file(p).flatMap(path -> Optional.ofNullable(LocalFileSystem.getInstance().findFileByNioFile(path)))
-                .ifPresentOrElse(found -> FileEditorManager.getInstance(p).openFile(found, true),
-                        () -> TestinLogger.warn("No testin.yml to open in " + p.getName()));
+    public static void openInEditor(final @NotNull Project project) {
+        file(project).flatMap(path -> Optional.ofNullable(LocalFileSystem.getInstance().findFileByNioFile(path)))
+                .ifPresentOrElse(found -> FileEditorManager.getInstance(project).openFile(found, true),
+                        () -> TestinLogger.warn("No testin.yml to open in " + project.getName()));
     }
 
-    private static @NotNull TestinProjectConfig config(final @NotNull Project p) {
-        return parsedFor(p).config();
+    private static @NotNull TestinProjectConfig config(final @NotNull Project project) {
+        return parsedFor(project).config();
     }
 
-    private static @NotNull ParsedTestinYml parsedFor(final @NotNull Project p) {
-        return Optional.ofNullable(p.getUserData(READ)).orElseGet(() -> {
-            final @NotNull ParsedTestinYml read = load(p);
-            p.putUserData(READ, read);
+    private static @NotNull ParsedTestinYml parsedFor(final @NotNull Project project) {
+        return Optional.ofNullable(project.getUserData(READ)).orElseGet(() -> {
+            final @NotNull ParsedTestinYml read = load(project);
+            project.putUserData(READ, read);
             return read;
         });
     }
 
-    private static @NotNull ParsedTestinYml load(final @NotNull Project p) {
-        final @NotNull ParsedTestinYml parsed = file(p)
+    private static @NotNull ParsedTestinYml load(final @NotNull Project project) {
+        final @NotNull ParsedTestinYml parsed = file(project)
                 .map(TestinYml::read)
                 .orElseGet(() -> {
-                    TestinLogger.info("No testin.yml in " + p.getName() + "; Testin goes on without it");
+                    TestinLogger.info("No testin.yml in " + project.getName() + "; Testin goes on without it");
                     return NOTHING_SAID;
                 });
 
-        if (!parsed.readable()) sayItCouldNotBeRead(p);
+        if (!parsed.readable()) sayItCouldNotBeRead(project);
 
         return parsed;
     }
 
     // UC-TREE-PANEL-001, Rule-TREE-PANEL-119
-    private static void sayItCouldNotBeRead(final @NotNull Project p) {
+    private static void sayItCouldNotBeRead(final @NotNull Project project) {
         ApplicationManager.getApplication().invokeLater(() -> {
-            if (p.isDisposed()) return;
+            if (project.isDisposed()) return;
 
-            Services.getInstance(p, Notifier.class).warn(p,
+            Services.getInstance(project, Notifier.class).warn(project,
                     Bundle.message("config.broken", fileName()),
                     Bundle.message("config.broken.detail"));
         });
@@ -366,8 +366,8 @@ public final class TestinYml {
         }
     }
 
-    private static @NotNull Optional<Path> file(final @NotNull Project p) {
-        final @NotNull Optional<String> basePath = Optional.ofNullable(p.getBasePath());
+    private static @NotNull Optional<Path> file(final @NotNull Project project) {
+        final @NotNull Optional<String> basePath = Optional.ofNullable(project.getBasePath());
         if (basePath.isEmpty()) return Optional.empty();
 
         final @NotNull Path root = Path.of(basePath.orElseThrow());

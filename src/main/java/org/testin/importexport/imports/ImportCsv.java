@@ -39,9 +39,9 @@ import java.util.Optional;
 
 public class ImportCsv {
     // UC-SHARE-006
-    public @NotNull Map<String, List<TestCaseDto>> processImport(final @NotNull Project p, final @NotNull File file) {
+    public @NotNull Map<String, List<TestCaseDto>> processImport(final @NotNull Project project, final @NotNull File file) {
         final @NotNull Map<String, List<TestCaseDto>> result = new LinkedHashMap<>();
-        final @NotNull List<TestCaseDto> testCases = parseFile(p, file);
+        final @NotNull List<TestCaseDto> testCases = parseFile(project, file);
         if (!testCases.isEmpty()) {
             final @NotNull String name = file.getName().replaceAll("\\.csv$", "").replaceAll("[\\\\/*?\\[\\]]", "_");
             result.put(name, testCases);
@@ -49,8 +49,8 @@ public class ImportCsv {
         return result;
     }
 
-    public @NotNull List<TestCaseDto> parseFile(final @NotNull Project p, final @NotNull File file) {
-        return parseCsvFile(file, p);
+    public @NotNull List<TestCaseDto> parseFile(final @NotNull Project project, final @NotNull File file) {
+        return parseCsvFile(file, project);
     }
 
     private @NotNull Map<String, Integer> headerIndexes(final @NotNull List<String> headers) {
@@ -66,7 +66,7 @@ public class ImportCsv {
         return byName;
     }
 
-    private @NotNull List<TestCaseDto> parseCsvFile(final @NotNull File file, final @NotNull Project p) {
+    private @NotNull List<TestCaseDto> parseCsvFile(final @NotNull File file, final @NotNull Project project) {
         final @NotNull List<TestCaseDto> result = new ArrayList<>();
         final @NotNull List<List<String>> records = parseCsvRecords(file);
 
@@ -81,7 +81,7 @@ public class ImportCsv {
 
             if (values.stream().allMatch(String::isBlank)) continue;
 
-            final @NotNull ImportedRow imported = TestSetEditorAttributes.importRow(p, attr -> Optional.ofNullable(headerIndexMap.get(attr.getName().toLowerCase(Locale.ROOT)))
+            final @NotNull ImportedRow imported = TestSetEditorAttributes.importRow(project, attr -> Optional.ofNullable(headerIndexMap.get(attr.getName().toLowerCase(Locale.ROOT)))
                     .filter(colIndex -> colIndex < values.size())
                     .map(colIndex -> values.get(colIndex).trim())
                     .orElse(""));
@@ -90,7 +90,7 @@ public class ImportCsv {
             result.add(imported.testCase());
         }
 
-        TestSetEditorAttributes.sayWhatWasRefused(p, refused);
+        TestSetEditorAttributes.sayWhatWasRefused(project, refused);
 
         return result;
     }

@@ -31,7 +31,7 @@ import java.util.Optional;
 
 public record SourceFileField(@NotNull TextInput field) {
     // Rule-INTERNAL-095, Rule-INTERNAL-096, Rule-INTERNAL-118, Rule-SETTING-021
-    public static @NotNull SourceFileField of(final @NotNull Project p) {
+    public static @NotNull SourceFileField of(final @NotNull Project project) {
         final @NotNull FileChooserDescriptor descriptor = new FileChooserDescriptor(true, false, false, false, false, false)
                 .withExtensionFilter("", FileFormat.importableExtensionsForChooser())
                 .withTitle(Bundle.message("import.file.title"))
@@ -40,8 +40,8 @@ public record SourceFileField(@NotNull TextInput field) {
         return new SourceFileField(DialogPart.textInput()
                 .caption(Bundle.message("import.caption.source"))
                 .placeholder(Bundle.message("import.choose.file"))
-                .value(DownloadFolder.of(p))
-                .browse(p, descriptor)
+                .value(DownloadFolder.of(project))
+                .browse(project, descriptor)
                 .build().getComponent());
     }
 

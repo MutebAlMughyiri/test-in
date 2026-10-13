@@ -33,14 +33,14 @@ import org.testin.services.Services;
 import java.nio.file.Path;
 import java.util.UUID;
 
-public record NodesOnDisk(@NotNull Project p) {
+public record NodesOnDisk(@NotNull Project project) {
 
     private @NotNull NodeMapper mapper() {
-        return Services.getInstance(p, NodeMapper.class);
+        return Services.getInstance(project, NodeMapper.class);
     }
 
     private @NotNull Nodes nodes() {
-        return Services.getInstance(p, Nodes.class);
+        return Services.getInstance(project, Nodes.class);
     }
 
     public @NotNull TestProjectNode testProject(final @NotNull Path path) {
@@ -82,7 +82,7 @@ public record NodesOnDisk(@NotNull Project p) {
                 .order("m")
                 .build();
 
-        if (!Services.getInstance(p, TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase))
+        if (!Services.getInstance(project, TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase))
             throw new AssertionError("the test case was not written into " + testSet.getName());
         return testCase;
     }

@@ -31,24 +31,24 @@ import java.util.Optional;
 
 // UC-TREE-PANEL-029
 public class SaveTestinYmlAction extends DumbAwareAction {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
 
-    public SaveTestinYmlAction(final @NotNull Project p) {
+    public SaveTestinYmlAction(final @NotNull Project project) {
         super(Bundle.message("yml.save.name", TestinYml.fileName()), Bundle.message("yml.save.description"), AllIcons.FileTypes.Yaml);
-        this.p = p;
+        this.project = project;
     }
 
     // UC-TREE-PANEL-029, Rule-TREE-PANEL-104, Rule-TREE-PANEL-115
     @Override
     public void update(final @NotNull AnActionEvent e) {
-        final @NotNull Optional<String> why = SaveTestinYml.whyNot(p);
+        final @NotNull Optional<String> why = SaveTestinYml.whyNot(project);
         GrayWithReason.unless(this, e, why);
     }
 
     // UC-TREE-PANEL-029, Rule-TREE-PANEL-113
     @Override
     public void actionPerformed(final @NotNull AnActionEvent e) {
-        SaveTestinYml.start(p);
+        SaveTestinYml.start(project);
     }
 
     @Override

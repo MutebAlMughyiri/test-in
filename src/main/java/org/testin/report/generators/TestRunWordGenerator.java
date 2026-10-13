@@ -84,10 +84,10 @@ public final class TestRunWordGenerator {
     final String BLACK = ReportColor.INK.hex();
 
     // UC-REPORT-001, Rule-REPORT-002, Rule-REPORT-005
-    public byte @NotNull [] generate(final @NotNull Project p, final @NotNull TestRunNode testRunNode, final @NotNull RunItems runItems) {
+    public byte @NotNull [] generate(final @NotNull Project project, final @NotNull TestRunNode testRunNode, final @NotNull RunItems runItems) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             try (XWPFDocument doc = new XWPFDocument()) {
-                final @NotNull String projectName = Services.getInstance(p, BoundTestProject.class).name();
+                final @NotNull String projectName = Services.getInstance(project, BoundTestProject.class).name();
 
                 addText(doc, Bundle.message("report.title"), ReportFont.TITLE.ptRounded(), true, DARK_NAVY, NO_BORDER, 2);
 
@@ -171,40 +171,40 @@ public final class TestRunWordGenerator {
     }
 
     private @NotNull XWPFParagraph addText(final @NotNull XWPFDocument doc, final @NotNull String text, final int size, final boolean bold, final @NotNull String color, final @NotNull String bottomBorder, final int spacingAfterPt) {
-        final @NotNull XWPFParagraph p = doc.createParagraph();
-        p.setSpacingAfter(spacingAfterPt * 20);
-        final @NotNull XWPFRun run = p.createRun();
+        final @NotNull XWPFParagraph paragraph = doc.createParagraph();
+        paragraph.setSpacingAfter(spacingAfterPt * 20);
+        final @NotNull XWPFRun run = paragraph.createRun();
         writeLines(run, text, false);
         run.setFontSize(size);
         run.setFontFamily(ReportFont.FAMILY);
         run.setBold(bold);
         run.setColor(color);
         if (!bottomBorder.isEmpty()) {
-            final @NotNull CTBorder bottom = p.getCTPPr().addNewPBdr().addNewBottom();
+            final @NotNull CTBorder bottom = paragraph.getCTPPr().addNewPBdr().addNewBottom();
             bottom.setVal(STBorder.Enum.forString("single"));
             bottom.setSz(BigInteger.valueOf(16));
             bottom.setColor(bottomBorder);
         }
-        return p;
+        return paragraph;
     }
 
-    private void setItalic(final @NotNull XWPFParagraph p) {
-        for (final XWPFRun run : p.getRuns()) {
+    private void setItalic(final @NotNull XWPFParagraph paragraph) {
+        for (final XWPFRun run : paragraph.getRuns()) {
             run.setItalic(true);
         }
     }
 
     private void addHeading(final @NotNull XWPFDocument doc, final @NotNull String text, final int beforePt, final int afterPt) {
-        final @NotNull XWPFParagraph p = doc.createParagraph();
-        p.setSpacingBefore(beforePt * 20);
-        p.setSpacingAfter(afterPt * 20);
-        final @NotNull XWPFRun run = p.createRun();
+        final @NotNull XWPFParagraph paragraph = doc.createParagraph();
+        paragraph.setSpacingBefore(beforePt * 20);
+        paragraph.setSpacingAfter(afterPt * 20);
+        final @NotNull XWPFRun run = paragraph.createRun();
         run.setText(text);
         run.setFontSize(ReportFont.SECTION.ptRounded());
         run.setFontFamily(ReportFont.FAMILY);
         run.setBold(true);
         run.setColor(DARK_NAVY);
-        final @NotNull CTBorder headingBottom = p.getCTPPr().addNewPBdr().addNewBottom();
+        final @NotNull CTBorder headingBottom = paragraph.getCTPPr().addNewPBdr().addNewBottom();
         headingBottom.setVal(STBorder.Enum.forString("single"));
         headingBottom.setSz(BigInteger.valueOf(8));
         headingBottom.setColor(DARK_NAVY);
@@ -374,9 +374,9 @@ public final class TestRunWordGenerator {
     }
 
     private void setCellText(final @NotNull XWPFTableCell cell, final @NotNull String text, final int size, final boolean bold, final @NotNull String color) {
-        final @NotNull XWPFParagraph p = cell.getParagraphs().getFirst();
-        if (p.getRuns().isEmpty()) {
-            final @NotNull XWPFRun run = p.createRun();
+        final @NotNull XWPFParagraph paragraph = cell.getParagraphs().getFirst();
+        if (paragraph.getRuns().isEmpty()) {
+            final @NotNull XWPFRun run = paragraph.createRun();
             writeLines(run, text, false);
             run.setFontSize(size);
             run.setFontFamily(ReportFont.FAMILY);
@@ -384,7 +384,7 @@ public final class TestRunWordGenerator {
             run.setColor(color);
 
         } else {
-            final @NotNull XWPFRun run = p.getRuns().getFirst();
+            final @NotNull XWPFRun run = paragraph.getRuns().getFirst();
             writeLines(run, text, true);
             run.setFontSize(size);
             run.setFontFamily(ReportFont.FAMILY);
@@ -461,15 +461,15 @@ public final class TestRunWordGenerator {
 
     private void addFooter(final @NotNull XWPFDocument doc) {
         final @NotNull XWPFFooter footer = doc.createFooter(HeaderFooterType.DEFAULT);
-        final @NotNull XWPFParagraph p = footer.createParagraph();
-        p.setAlignment(ParagraphAlignment.CENTER);
-        styledRun(p.createRun(), ReportText.footerLead(), ReportFont.CAPTION, DARK_GRAY);
+        final @NotNull XWPFParagraph paragraph = footer.createParagraph();
+        paragraph.setAlignment(ParagraphAlignment.CENTER);
+        styledRun(paragraph.createRun(), ReportText.footerLead(), ReportFont.CAPTION, DARK_GRAY);
 
-        final @NotNull XWPFHyperlinkRun link = p.createHyperlinkRun(ReportText.PLUGIN_URL);
+        final @NotNull XWPFHyperlinkRun link = paragraph.createHyperlinkRun(ReportText.PLUGIN_URL);
         styledRun(link, ReportText.PLUGIN_NAME, ReportFont.CAPTION, LINK_BLUE);
         link.setUnderline(UnderlinePatterns.SINGLE);
 
-        styledRun(p.createRun(), Bundle.message("report.footer.suffix"), ReportFont.CAPTION, DARK_GRAY);
+        styledRun(paragraph.createRun(), Bundle.message("report.footer.suffix"), ReportFont.CAPTION, DARK_GRAY);
     }
 
     private void styledRun(final @NotNull XWPFRun run, final @NotNull String text, final @NotNull ReportFont font, final @NotNull String color) {

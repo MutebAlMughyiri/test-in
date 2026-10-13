@@ -40,12 +40,12 @@ final class Trash {
     private static final @NotNull Key<Boolean> NO_BIN_SAID = Key.create("testin.trash.noBinSaid");
 
     // UC-INTERNAL-005, Rule-INTERNAL-036
-    static boolean accepted(final @NotNull Project p, final @NotNull Path path) {
+    static boolean accepted(final @NotNull Project project, final @NotNull Path path) {
         if (!Files.exists(path) || ApplicationManager.getApplication().isUnitTestMode()) return false;
 
         if (movedToTheBin(path)) return true;
 
-        sayThereIsNoBin(p);
+        sayThereIsNoBin(project);
         return false;
     }
 
@@ -74,9 +74,9 @@ final class Trash {
     }
 
     // UC-INTERNAL-005, Rule-INTERNAL-036
-    private static void sayThereIsNoBin(final @NotNull Project p) {
-        if (!Once.claim(p, NO_BIN_SAID)) return;
+    private static void sayThereIsNoBin(final @NotNull Project project) {
+        if (!Once.claim(project, NO_BIN_SAID)) return;
 
-        Services.getInstance(p, Notifier.class).info(p, Bundle.message("trash.none.title"), Bundle.message("trash.none.message"));
+        Services.getInstance(project, Notifier.class).info(project, Bundle.message("trash.none.title"), Bundle.message("trash.none.message"));
     }
 }

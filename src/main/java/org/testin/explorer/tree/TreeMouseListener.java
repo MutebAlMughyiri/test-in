@@ -34,7 +34,7 @@ import java.util.Optional;
 
 @AllArgsConstructor
 public class TreeMouseListener extends PopupHandler {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull SimpleTree tree;
     private final @NotNull TreeContextMenu treeContextMenu;
 
@@ -56,7 +56,7 @@ public class TreeMouseListener extends PopupHandler {
         if (nodeAt(e.getX(), e.getY()).isEmpty()) return;
 
         if (e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e)) {
-            OpenAction.execute(p, TreeValues.selectedNodes(tree.getSelectionPaths()));
+            OpenAction.execute(project, TreeValues.selectedNodes(tree.getSelectionPaths()));
             e.consume();
         }
     }

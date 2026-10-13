@@ -48,7 +48,7 @@ import java.util.function.ToIntFunction;
 public final class CardPanelBuilder {
     private static final int RESIZE_SETTLES_MILLIS = 100;
 
-    public static @NotNull CardView build(final @NotNull Project p, final @NotNull Disposable fontSyncDisposable, final @NotNull TestinEditor editor) {
+    public static @NotNull CardView build(final @NotNull Project project, final @NotNull Disposable fontSyncDisposable, final @NotNull TestinEditor editor) {
         final @NotNull CollectionListModel<TestCaseDto> model = new CollectionListModel<>(new ArrayList<>());
 
         // UC-EDITOR-PANEL-001, UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-003
@@ -62,7 +62,7 @@ public final class CardPanelBuilder {
         list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         list.setExpandableItemsEnabled(false);
 
-        FontSync.syncWithNativeEditor(p, list, fontSyncDisposable, _ -> list.updateUI());
+        FontSync.syncWithNativeEditor(project, list, fontSyncDisposable, _ -> list.updateUI());
 
         final @NotNull Timer remeasure = new Timer(RESIZE_SETTLES_MILLIS, _ -> model.allContentsChanged());
         remeasure.setRepeats(false);
@@ -87,17 +87,17 @@ public final class CardPanelBuilder {
         return new CardView(model, list, scrollPane);
     }
 
-    public static void wireCommonListeners(final @NotNull Project p, final @NotNull TestinEditor editor, final @NotNull CardView view, final @NotNull AbstractNode dir, final @NotNull AbstractEditorContextMenu contextMenu, final @NotNull Supplier<Optional<JBTable>> gridTableSupplier, final @NotNull ToIntFunction<TestCaseDto> rowOnGrid, final @NotNull BooleanSupplier gridActiveSupplier) {
+    public static void wireCommonListeners(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull CardView view, final @NotNull AbstractNode dir, final @NotNull AbstractEditorContextMenu contextMenu, final @NotNull Supplier<Optional<JBTable>> gridTableSupplier, final @NotNull ToIntFunction<TestCaseDto> rowOnGrid, final @NotNull BooleanSupplier gridActiveSupplier) {
         final @NotNull JBList<TestCaseDto> list = view.list();
 
-        final @NotNull CardMouseListener mouseListener = new CardMouseListener(p, editor, list, view.model(), dir, contextMenu);
+        final @NotNull CardMouseListener mouseListener = new CardMouseListener(project, editor, list, view.model(), dir, contextMenu);
         list.addMouseListener(mouseListener);
         list.addMouseWheelListener(mouseListener);
         list.addMouseMotionListener(mouseListener);
 
         contextMenu.registerShortcuts(list);
 
-        list.addListSelectionListener(new CardSelectionListener(p, list, editor, dir.getPath2()));
+        list.addListSelectionListener(new CardSelectionListener(project, list, editor, dir.getPath2()));
         list.addListSelectionListener(new CardGridSelectionSynchronizer(list, gridTableSupplier, gridActiveSupplier, rowOnGrid));
     }
 }

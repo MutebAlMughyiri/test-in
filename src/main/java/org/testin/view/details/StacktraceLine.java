@@ -61,7 +61,7 @@ public final class StacktraceLine extends AbstractDetails {
 
     // UC-VIEW-PANEL-006, Rule-VIEW-PANEL-034, Rule-VIEW-PANEL-081
     @Override
-    public int render(final @NotNull Project p, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto testCase, final int currentRow) {
+    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto testCase, final int currentRow) {
         final @NotNull String stacktrace = shown.getStacktrace();
         final @NotNull List<String> screenshots = shown.getScreenshots();
         final boolean link = !stacktrace.isBlank();
@@ -69,23 +69,23 @@ public final class StacktraceLine extends AbstractDetails {
 
         final @NotNull List<JComponent> parts = new ArrayList<>();
 
-        final @NotNull Path testRunPath = Services.getInstance(p, TestinRoot.class).resolve(currentPath);
+        final @NotNull Path testRunPath = Services.getInstance(project, TestinRoot.class).resolve(currentPath);
 
-        if (link) parts.add(stacktraceLink(p, testCase, stacktrace));
-        screenshots.forEach(name -> parts.add(thumbnail(p, testRunPath, name)));
+        if (link) parts.add(stacktraceLink(project, testCase, stacktrace));
+        screenshots.forEach(name -> parts.add(thumbnail(project, testRunPath, name)));
 
         return addFullWidthRow(panel, gbc, line(parts), JBUI.insets(INSETS_TOP, INSETS_SIDE, 0, INSETS_SIDE), currentRow);
     }
 
     // UC-VIEW-PANEL-006, Rule-VIEW-PANEL-034
-    private @NotNull ActionLink stacktraceLink(final @NotNull Project p, final @NotNull TestCaseDto testCase, final @NotNull String stacktrace) {
+    private @NotNull ActionLink stacktraceLink(final @NotNull Project project, final @NotNull TestCaseDto testCase, final @NotNull String stacktrace) {
         return link(Bundle.message("view.stacktrace.link"),
-                _ -> new StacktraceDialog(p, testCase, shown.getActualResult(), stacktrace).show());
+                _ -> new StacktraceDialog(project, testCase, shown.getActualResult(), stacktrace).show());
     }
 
     // UC-VIEW-PANEL-006, Rule-VIEW-PANEL-081
-    private @NotNull JComponent thumbnail(final @NotNull Project p, final @NotNull Path testRunPath, final @NotNull String name) {
-        final @NotNull TestRuns testRuns = Services.getInstance(p, TestRuns.class);
+    private @NotNull JComponent thumbnail(final @NotNull Project project, final @NotNull Path testRunPath, final @NotNull String name) {
+        final @NotNull TestRuns testRuns = Services.getInstance(project, TestRuns.class);
 
         final @NotNull JBLabel square = new JBLabel(ScreenshotImages.noThumbnail());
         Tooltip.set(square, name);
@@ -93,7 +93,7 @@ public final class StacktraceLine extends AbstractDetails {
         square.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(final MouseEvent e) {
-                new ScreenshotDialog(p, name, testRuns.screenshot(testRunPath, name)).show();
+                new ScreenshotDialog(project, name, testRuns.screenshot(testRunPath, name)).show();
             }
         });
 

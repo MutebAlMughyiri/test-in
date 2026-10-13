@@ -28,9 +28,9 @@ import javax.swing.JList;
 public class RunItemCardRenderer extends AbstractCardRenderer<TestRunEditor> {
     private final @NotNull RunItemCard card;
 
-    public RunItemCardRenderer(final @NotNull Project p, final @NotNull TestRunEditor editor) {
+    public RunItemCardRenderer(final @NotNull Project project, final @NotNull TestRunEditor editor) {
         super(editor);
-        this.card = new RunItemCard(p);
+        this.card = new RunItemCard(project);
     }
 
     // UC-EDITOR-PANEL-030

@@ -38,18 +38,18 @@ import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CopiedTestCases {
-    public static @NotNull List<TestCaseDto> onTheClipboard(final @NotNull Project p) {
+    public static @NotNull List<TestCaseDto> onTheClipboard(final @NotNull Project project) {
         return ClipboardContents.withFlavor(DataFlavor.stringFlavor)
-                .map(contents -> in(p, contents))
+                .map(contents -> in(project, contents))
                 .orElseGet(List::of);
     }
 
-    static @NotNull List<TestCaseDto> in(final @NotNull Project p, final @NotNull Transferable contents) {
+    static @NotNull List<TestCaseDto> in(final @NotNull Project project, final @NotNull Transferable contents) {
         try {
             final @NotNull String json = (String) contents.getTransferData(DataFlavor.stringFlavor);
             if (!json.trim().startsWith("[")) return List.of();
 
-            final @NotNull List<TestCaseDto> parsed = Services.getInstance(p, JsonCodec.class).readValue(json, new TypeReference<>() {
+            final @NotNull List<TestCaseDto> parsed = Services.getInstance(project, JsonCodec.class).readValue(json, new TypeReference<>() {
             });
 
             return parsed.stream().filter(Objects::nonNull).toList();

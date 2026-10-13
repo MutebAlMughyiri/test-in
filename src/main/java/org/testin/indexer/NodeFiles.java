@@ -43,7 +43,7 @@ import java.util.function.IntConsumer;
 import java.util.stream.Stream;
 
 final class NodeFiles {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull ProjectIndexer indexer;
     private final @NotNull IndexerDataStore store;
     private final @NotNull VfsExecutor vfs;
@@ -51,13 +51,13 @@ final class NodeFiles {
     private final @NotNull TestDataFiles testDataFiles;
     private final @NotNull OwnWrites ownWrites;
 
-    NodeFiles(final @NotNull Project p, final @NotNull ProjectIndexer indexer, final @NotNull IndexerDataStore store) {
-        this.p = p;
+    NodeFiles(final @NotNull Project project, final @NotNull ProjectIndexer indexer, final @NotNull IndexerDataStore store) {
+        this.project = project;
         this.indexer = indexer;
         this.store = store;
-        this.vfs = Services.getInstance(p, VfsExecutor.class);
-        this.mapper = Services.getInstance(p, JsonCodec.class);
-        this.testDataFiles = Services.getInstance(p, TestDataFiles.class);
+        this.vfs = Services.getInstance(project, VfsExecutor.class);
+        this.mapper = Services.getInstance(project, JsonCodec.class);
+        this.testDataFiles = Services.getInstance(project, TestDataFiles.class);
         this.ownWrites = Services.getInstance(OwnWrites.class);
     }
 
@@ -138,7 +138,7 @@ final class NodeFiles {
                 operationSucceeded.run();
             };
 
-            ownWrites.record(p, copiedRoot);
+            ownWrites.record(project, copiedRoot);
             vfs.executeVfsAction(sourcePath, targetPath, Bundle.message("vfs.copy.failed.title"), (sourceVf, targetVf) -> {
                 try {
                     sourceVf.copy(indexer, targetVf, sourceVf.getName());
@@ -202,7 +202,7 @@ final class NodeFiles {
             if (!testDataFiles.write(testCaseFile.resolveSibling(FileKind.TEST_CASE.fileName(fresh)), testCase))
                 return false;
 
-            ownWrites.record(p, testCaseFile);
+            ownWrites.record(project, testCaseFile);
             Files.delete(testCaseFile);
             return true;
 

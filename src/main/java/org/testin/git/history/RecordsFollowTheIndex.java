@@ -22,10 +22,10 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.IndexChanged;
 
 public final class RecordsFollowTheIndex implements IndexChanged {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
 
-    public RecordsFollowTheIndex(final @NotNull Project p) {
-        this.p = p;
+    public RecordsFollowTheIndex(final @NotNull Project project) {
+        this.project = project;
     }
 
     // UC-INTERNAL-002, Rule-EDITOR-PANEL-126, Rule-EDITOR-PANEL-239
@@ -42,7 +42,7 @@ public final class RecordsFollowTheIndex implements IndexChanged {
 
     private void readInTheBackground() {
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
-            if (!p.isDisposed()) TestRunFromGit.readAll(p);
+            if (!project.isDisposed()) TestRunFromGit.readAll(project);
         });
     }
 }

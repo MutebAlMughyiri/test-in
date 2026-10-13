@@ -27,8 +27,8 @@ import java.util.Set;
 
 // UC-EDITOR-PANEL-005
 public class GroupSection extends AbstractMultiValueSection {
-    public GroupSection(final @NotNull Project p) {
-        super(p);
+    public GroupSection(final @NotNull Project project) {
+        super(project);
     }
 
     @Override

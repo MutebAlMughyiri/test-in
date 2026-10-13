@@ -33,13 +33,13 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GitFailureNotice {
     // UC-SHARE-016, Rule-SHARE-127, Rule-INTERNAL-129
-    public static void show(final @NotNull Project p, final @NotNull String title, final @NotNull String whatGitSaid) {
-        Services.getInstance(p, Guides.class).add(Guide.SHARE_OVER_GIT);
-        final @NotNull Notifier notifier = Services.getInstance(p, Notifier.class);
-        notifier.errorWithActions(p, title, whatGitSaid, notifier.action(Bundle.message("git.show.log"), () -> openGitWindow(p)));
+    public static void show(final @NotNull Project project, final @NotNull String title, final @NotNull String whatGitSaid) {
+        Services.getInstance(project, Guides.class).add(Guide.SHARE_OVER_GIT);
+        final @NotNull Notifier notifier = Services.getInstance(project, Notifier.class);
+        notifier.errorWithActions(project, title, whatGitSaid, notifier.action(Bundle.message("git.show.log"), () -> openGitWindow(project)));
     }
 
-    private static void openGitWindow(final @NotNull Project p) {
-        Optional.ofNullable(ToolWindowManager.getInstance(p).getToolWindow(ToolWindowId.VCS)).ifPresent(window -> window.activate(null));
+    private static void openGitWindow(final @NotNull Project project) {
+        Optional.ofNullable(ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.VCS)).ifPresent(window -> window.activate(null));
     }
 }

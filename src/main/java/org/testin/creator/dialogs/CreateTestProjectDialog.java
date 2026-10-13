@@ -36,8 +36,8 @@ public final class CreateTestProjectDialog extends AbstractFrameworkDialog {
     private final @NotNull Consumer<@NotNull String> onCreate;
 
     // UC-TREE-PANEL-002, UC-TREE-PANEL-003
-    public CreateTestProjectDialog(final @NotNull Project p, final @NotNull Consumer<@NotNull String> onCreate) {
-        super(p);
+    public CreateTestProjectDialog(final @NotNull Project project, final @NotNull Consumer<@NotNull String> onCreate) {
+        super(project);
         this.onCreate = onCreate;
 
         title = Bundle.message("dialog.create.project.title");

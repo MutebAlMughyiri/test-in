@@ -70,14 +70,14 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes,
 
     private volatile boolean loading;
 
-    public TestSetEditor(final @NotNull Project p, final @NotNull UnifiedVirtualFile vf) {
-        super(p, vf.getTestSet());
-        Services.getInstance(p, Guides.class).add(Guide.TEST_CASE_EDITOR_SHORTCUTS);
+    public TestSetEditor(final @NotNull Project project, final @NotNull UnifiedVirtualFile vf) {
+        super(project, vf.getTestSet());
+        Services.getInstance(project, Guides.class).add(Guide.TEST_CASE_EDITOR_SHORTCUTS);
 
         list.setDragEnabled(true);
         list.setDropMode(DropMode.INSERT);
-        list.setTransferHandler(new TestCaseTransferHandler(p, this));
-        list.setCellRenderer(new TestCaseCardRenderer(p, this));
+        list.setTransferHandler(new TestCaseTransferHandler(project, this));
+        list.setCellRenderer(new TestCaseCardRenderer(project, this));
 
         this.toolBar = new TestSetToolbar(this);
         mainPanel.add(SideScroll.of(toolBar), BorderLayout.NORTH);
@@ -92,7 +92,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes,
         mainPanel.add(SideScroll.of(statusBar), BorderLayout.SOUTH);
         EditorStatusBarPaging.attach(this);
 
-        ExecutionRecorder.onReported(p, projectDisposable, (_, _, _, _) -> list.repaint());
+        ExecutionRecorder.onReported(project, projectDisposable, (_, _, _, _) -> list.repaint());
 
         onToolBarSwitchedToCardView();
 
@@ -188,7 +188,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes,
                     return;
                 }
 
-                if (!snapshot.isEmpty()) GenType.UPDATE_TEST_CASE_ORDER.executeAll(p, snapshot);
+                if (!snapshot.isEmpty()) GenType.UPDATE_TEST_CASE_ORDER.executeAll(project, snapshot);
 
                 onPersisted.run();
 
@@ -203,14 +203,14 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes,
 
     // UC-EDITOR-PANEL-010
     private void refuseSequence() {
-        notifier.softRefuse(p, Bundle.message("save.failed"));
+        notifier.softRefuse(project, Bundle.message("save.failed"));
         loadDataAsync();
     }
 
     // UC-EDITOR-PANEL-025, Rule-EDITOR-PANEL-009
     @Override
     protected void notOnAnyPage(final @NotNull TestCaseDto testCase) {
-        notifier.softRefuse(p, Refused.HIDDEN_BY_THE_FILTER, testCase.getDescription());
+        notifier.softRefuse(project, Refused.HIDDEN_BY_THE_FILTER, testCase.getDescription());
     }
 
     // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-030
@@ -240,11 +240,11 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes,
     @Override
     public void onToolBarCreateTestCaseClicked() {
         if (loading) {
-            notifier.softRefuse(p, Bundle.message("create.test.case.still.loading"));
+            notifier.softRefuse(project, Bundle.message("create.test.case.still.loading"));
             return;
         }
 
-        CreateTestCaseAction.openCreateDialog(p, this, parent);
+        CreateTestCaseAction.openCreateDialog(project, this, parent);
     }
 
     // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-014
@@ -259,7 +259,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes,
 
     @Override
     protected @NotNull TestSetEditorContextMenu buildContextMenu() {
-        return new TestSetEditorContextMenu(p, this, parent, list);
+        return new TestSetEditorContextMenu(project, this, parent, list);
     }
 
     @Override
@@ -288,7 +288,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes,
     @Override
     protected void drawStatus(final @NotNull PageWindow page) {
         final @NotNull List<TestCaseDto> all = snapshotOfAll();
-        automationState.read(p, all, this::refreshView);
+        automationState.read(project, all, this::refreshView);
 
         statusBar.showAutomated(automationState.writtenIn(all), automationState.knownIn(all));
 
@@ -369,7 +369,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes,
 
     @Override
     protected void installEditListener(final @NotNull JBTable table, final @NotNull List<TestCaseDto> pageTestCases) {
-        table.getModel().addTableModelListener(new TestSetGridEditListener(p, pageTestCases, model::allContentsChanged, parent.getPath()));
+        table.getModel().addTableModelListener(new TestSetGridEditListener(project, pageTestCases, model::allContentsChanged, parent.getPath()));
     }
 
     @Override

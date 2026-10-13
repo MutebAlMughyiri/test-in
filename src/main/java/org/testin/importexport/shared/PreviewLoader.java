@@ -43,7 +43,7 @@ public class PreviewLoader {
     private static final long QUIET_MILLIS = 300;
 
     private final @NotNull TextValue fileField;
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull Notifier notifier;
 
     private final @NotNull Consumer<String> onStatus;
@@ -53,10 +53,10 @@ public class PreviewLoader {
 
     private final @NotNull AtomicReference<String> awaiting = new AtomicReference<>("");
 
-    public PreviewLoader(final @NotNull TextValue fileField, final @NotNull Project p, final @NotNull Consumer<String> onStatus, final @NotNull BiConsumer<FileFormat, Map<String, List<TestCaseDto>>> onDataLoaded, final @NotNull BiFunction<File, FileFormat, Map<String, List<TestCaseDto>>> importLoader) {
+    public PreviewLoader(final @NotNull TextValue fileField, final @NotNull Project project, final @NotNull Consumer<String> onStatus, final @NotNull BiConsumer<FileFormat, Map<String, List<TestCaseDto>>> onDataLoaded, final @NotNull BiFunction<File, FileFormat, Map<String, List<TestCaseDto>>> importLoader) {
         this.fileField = fileField;
-        this.p = p;
-        this.notifier = Services.getInstance(p, Notifier.class);
+        this.project = project;
+        this.notifier = Services.getInstance(project, Notifier.class);
         this.onStatus = onStatus;
         this.onDataLoaded = onDataLoaded;
         this.importLoader = importLoader;
@@ -92,7 +92,7 @@ public class PreviewLoader {
     private void loadFile(final @NotNull File importFile, final @NotNull String typed) {
         FileFormat.importerFor(importFile.getName().toLowerCase(Locale.ROOT))
                 .ifPresentOrElse(format -> loadFile(importFile, format, typed),
-                        () -> notifier.softRefuse(p, Bundle.message("import.cannot.title"),
+                        () -> notifier.softRefuse(project, Bundle.message("import.cannot.title"),
                                 Bundle.message("import.cannot.message", importFile.getName(), FileFormat.importableExtensions())));
     }
 
@@ -110,7 +110,7 @@ public class PreviewLoader {
                     if (!isStillWanted(typed)) return;
 
                     if (parsedData.isEmpty()) {
-                        notifier.softRefuse(p, Bundle.message("import.no.data.title"), Bundle.message("import.no.data.message"));
+                        notifier.softRefuse(project, Bundle.message("import.no.data.title"), Bundle.message("import.no.data.message"));
                         return;
                     }
                     onDataLoaded.accept(format, parsedData);
@@ -122,7 +122,7 @@ public class PreviewLoader {
                     onStatus.accept("");
 
                     if (isStillWanted(typed)) {
-                        notifier.error(p, Bundle.message("import.parse.error.format", format.getLabel()), FailureText.of(ex));
+                        notifier.error(project, Bundle.message("import.parse.error.format", format.getLabel()), FailureText.of(ex));
                     }
                 });
             }

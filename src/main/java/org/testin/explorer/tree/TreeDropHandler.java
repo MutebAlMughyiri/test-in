@@ -34,7 +34,7 @@ import java.awt.datatransfer.Transferable;
 public class TreeDropHandler implements FileDropHandler {
     @Override
     public @Nullable Object handleDrop(final @NotNull FileDropEvent event, final @NotNull Continuation<? super Boolean> continuation) {
-        final @NotNull Project p = event.getProject();
+        final @NotNull Project project = event.getProject();
         final @NotNull Transferable transferable = event.getTransferable();
 
         if (!transferable.isDataFlavorSupported(TreeTransferHandler.NODE_FLAVOR)) {
@@ -49,7 +49,7 @@ public class TreeDropHandler implements FileDropHandler {
                     if (!node.isOpenableInEditor()) continue;
 
                     TestinLogger.info("dragged " + node.getType().getMarkerKind() + ": " + node.getName());
-                    Services.getInstance(p, TestinEditors.class).open(node);
+                    Services.getInstance(project, TestinEditors.class).open(node);
                 }
             });
             return true;

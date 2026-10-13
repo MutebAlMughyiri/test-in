@@ -31,22 +31,22 @@ import org.testin.util.Bundle;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SubtreeCode {
     // UC-CODEGEN-004, Rule-CODEGEN-022, Rule-CODEGEN-024
-    public static void generate(final @NotNull Project p, final @NotNull AbstractNode dir) {
-        WriteCommandAction.runWriteCommandAction(p, Bundle.message("codegen.generate.command"), null, () -> walk(p, dir));
+    public static void generate(final @NotNull Project project, final @NotNull AbstractNode dir) {
+        WriteCommandAction.runWriteCommandAction(project, Bundle.message("codegen.generate.command"), null, () -> walk(project, dir));
     }
 
     // UC-CODEGEN-004, Rule-CODEGEN-023
-    private static void walk(final @NotNull Project p, final @NotNull AbstractNode dir) {
-        final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
-        final @NotNull Nodes nodes = Services.getInstance(p, Nodes.class);
+    private static void walk(final @NotNull Project project, final @NotNull AbstractNode dir) {
+        final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
+        final @NotNull Nodes nodes = Services.getInstance(project, Nodes.class);
 
         TestinLogger.info("Generating code for " + dir.getName());
-        NodeCode.of(dir.getType()).getCreated().execute(p, dir);
+        NodeCode.of(dir.getType()).getCreated().execute(project, dir);
 
-        GenType.CREATE_TEST_CASE.executeAllNow(p, testCases.getTestCasesForTestSet(dir.getPath()));
+        GenType.CREATE_TEST_CASE.executeAllNow(project, testCases.getTestCasesForTestSet(dir.getPath()));
 
         for (final AbstractNode child : nodes.getChildren(dir.getPath())) {
-            walk(p, child);
+            walk(project, child);
         }
     }
 }

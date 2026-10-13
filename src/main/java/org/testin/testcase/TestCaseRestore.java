@@ -36,9 +36,9 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class TestCaseRestore {
     // UC-INTERNAL-005, Rule-INTERNAL-063
-    static boolean restore(final @NotNull Project p, final @NotNull List<TestCaseSnapshot> target, final @NotNull List<TestCaseSnapshot> expected) {
-        if (!expected.stream().allMatch(snapshot -> stillStands(p, snapshot))) {
-            Services.getInstance(p, Notifier.class).softRefuse(p,
+    static boolean restore(final @NotNull Project project, final @NotNull List<TestCaseSnapshot> target, final @NotNull List<TestCaseSnapshot> expected) {
+        if (!expected.stream().allMatch(snapshot -> stillStands(project, snapshot))) {
+            Services.getInstance(project, Notifier.class).softRefuse(project,
                     Bundle.message("snapshot.changed.title"),
                     Bundle.message("snapshot.changed.message"));
             return false;
@@ -46,35 +46,35 @@ final class TestCaseRestore {
 
         // UC-EDITOR-PANEL-017, Rule-EDITOR-PANEL-215
         final @NotNull RestoredTestCases written = new RestoredTestCases();
-        final boolean allBack = BackgroundWork.synchronously(p, Bundle.message("remove.undo.progress"), false, () -> {
+        final boolean allBack = BackgroundWork.synchronously(project, Bundle.message("remove.undo.progress"), false, () -> {
             boolean all = true;
-            for (final TestCaseSnapshot snapshot : target) all &= removeAbsent(p, snapshot, written);
-            for (final TestCaseSnapshot snapshot : target) all &= restorePresent(p, snapshot, written);
+            for (final TestCaseSnapshot snapshot : target) all &= removeAbsent(project, snapshot, written);
+            for (final TestCaseSnapshot snapshot : target) all &= restorePresent(project, snapshot, written);
             return all;
         }, false);
 
-        written.generate(p);
-        tellTheSurfaces(p, target);
+        written.generate(project);
+        tellTheSurfaces(project, target);
         return allBack;
     }
 
-    private static void tellTheSurfaces(final @NotNull Project p, final @NotNull List<TestCaseSnapshot> written) {
-        final @NotNull TestinEditors editors = Services.getInstance(p, TestinEditors.class);
+    private static void tellTheSurfaces(final @NotNull Project project, final @NotNull List<TestCaseSnapshot> written) {
+        final @NotNull TestinEditors editors = Services.getInstance(project, TestinEditors.class);
 
         written.forEach(snapshot -> editors.reloadOpen(snapshot.testSetPath()));
 
-        written.forEach(snapshot -> ViewToolWindowFactory.refreshIfShowing(p, snapshot.present()));
+        written.forEach(snapshot -> ViewToolWindowFactory.refreshIfShowing(project, snapshot.present()));
     }
 
     // UC-EDITOR-PANEL-017, Rule-EDITOR-PANEL-255
-    private static boolean stillStands(final @NotNull Project p, final @NotNull TestCaseSnapshot snapshot) {
-        return Services.getInstance(p, Nodes.class).nodeExists(snapshot.testSetPath())
-                && snapshot.sameAs(TestCaseSnapshot.of(p, snapshot.testSetPath(), snapshot.ids()), Services.getInstance(p, JsonCodec.class));
+    private static boolean stillStands(final @NotNull Project project, final @NotNull TestCaseSnapshot snapshot) {
+        return Services.getInstance(project, Nodes.class).nodeExists(snapshot.testSetPath())
+                && snapshot.sameAs(TestCaseSnapshot.of(project, snapshot.testSetPath(), snapshot.ids()), Services.getInstance(project, JsonCodec.class));
     }
 
     // UC-EDITOR-PANEL-017, Rule-EDITOR-PANEL-215
-    private static boolean removeAbsent(final @NotNull Project p, final @NotNull TestCaseSnapshot snapshot, final @NotNull RestoredTestCases written) {
-        final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
+    private static boolean removeAbsent(final @NotNull Project project, final @NotNull TestCaseSnapshot snapshot, final @NotNull RestoredTestCases written) {
+        final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
 
         final @NotNull List<TestCaseDto> stillThere = snapshot.absent().stream().flatMap(testCaseId -> testCases.findTestCase(testCaseId).stream()).toList();
 
@@ -88,8 +88,8 @@ final class TestCaseRestore {
     }
 
     // UC-EDITOR-PANEL-017
-    private static boolean restorePresent(final @NotNull Project p, final @NotNull TestCaseSnapshot snapshot, final @NotNull RestoredTestCases written) {
-        final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
+    private static boolean restorePresent(final @NotNull Project project, final @NotNull TestCaseSnapshot snapshot, final @NotNull RestoredTestCases written) {
+        final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
 
         boolean allBack = true;
         for (final TestCaseDto testCase : snapshot.present()) {

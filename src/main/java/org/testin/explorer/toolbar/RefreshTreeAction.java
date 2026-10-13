@@ -58,13 +58,13 @@ public class RefreshTreeAction extends AbstractBoundProjectAction {
     // UC-TREE-PANEL-025, UC-TREE-PANEL-026, Rule-TREE-PANEL-081
     private final @NotNull AtomicReference<Optional<String>> queued = new AtomicReference<>(Optional.empty());
 
-    public RefreshTreeAction(final @NotNull Project p, final @NotNull TreePanel treePanel) {
-        super(p, Bundle.message("toolbar.refresh"), Bundle.message("toolbar.refresh.description"), AllIcons.Actions.Refresh);
+    public RefreshTreeAction(final @NotNull Project project, final @NotNull TreePanel treePanel) {
+        super(project, Bundle.message("toolbar.refresh"), Bundle.message("toolbar.refresh.description"), AllIcons.Actions.Refresh);
         this.treePanel = treePanel;
-        this.boundTestProject = Services.getInstance(p, BoundTestProject.class);
-        this.indexer = Services.getInstance(p, ProjectIndexer.class);
-        this.testinEditors = Services.getInstance(p, TestinEditors.class);
-        this.notifier = Services.getInstance(p, Notifier.class);
+        this.boundTestProject = Services.getInstance(project, BoundTestProject.class);
+        this.indexer = Services.getInstance(project, ProjectIndexer.class);
+        this.testinEditors = Services.getInstance(project, TestinEditors.class);
+        this.notifier = Services.getInstance(project, Notifier.class);
     }
 
     // UC-TREE-PANEL-025
@@ -97,7 +97,7 @@ public class RefreshTreeAction extends AbstractBoundProjectAction {
             } catch (final Exception ex) {
                 TestinLogger.error("Refresh: re-indexing failed - " + FailureText.of(ex));
                 releaseAndRunWhatWaited();
-                notifier.error(p, Bundle.message("toolbar.refresh.failed.title"), FailureText.of(ex));
+                notifier.error(project, Bundle.message("toolbar.refresh.failed.title"), FailureText.of(ex));
             }
         });
     }
@@ -105,17 +105,17 @@ public class RefreshTreeAction extends AbstractBoundProjectAction {
     // UC-TREE-PANEL-025, Rule-TREE-PANEL-081, Rule-VIEW-PANEL-092
     private void rebuildTree(final @NotNull String outcome) {
         try {
-            if (p.isDisposed()) return;
+            if (project.isDisposed()) return;
 
             testinEditors.refreshOpen();
 
             treePanel.refresh();
-            Services.getInstance(p, KnownBugIssueStates.class).readAll(() -> ViewToolWindowFactory.refreshShown(p));
+            Services.getInstance(project, KnownBugIssueStates.class).readAll(() -> ViewToolWindowFactory.refreshShown(project));
             TestinLogger.info("Refresh: tree rebuilt");
 
             treePanel.fetchBranches();
 
-            notifier.softShow(p, outcome);
+            notifier.softShow(project, outcome);
 
         } finally {
             releaseAndRunWhatWaited();

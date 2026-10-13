@@ -280,14 +280,14 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
     }
 
     // UC-SHARE-006, Rule-SHARE-106, Rule-EDITOR-PANEL-206
-    public static @NotNull ImportedRow importRow(final @NotNull Project p, final @NotNull Function<TestSetEditorAttributes, String> cell) {
+    public static @NotNull ImportedRow importRow(final @NotNull Project project, final @NotNull Function<TestSetEditorAttributes, String> cell) {
         TestCaseDto testCase = TestCaseDto.builder().build();
         int refused = 0;
 
         for (final TestSetEditorAttributes attr : values()) {
             if (!attr.can(Can.IMPORT)) continue;
 
-            final @NotNull Optional<TestCaseDto> took = attr.importSetter.execute(p, testCase, cell.apply(attr));
+            final @NotNull Optional<TestCaseDto> took = attr.importSetter.execute(project, testCase, cell.apply(attr));
             if (took.isPresent()) testCase = took.orElseThrow();
             else refused++;
         }
@@ -296,10 +296,10 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
     }
 
     // UC-SHARE-006, Rule-SHARE-106, Rule-EDITOR-PANEL-206
-    public static void sayWhatWasRefused(final @NotNull Project p, final int refused) {
+    public static void sayWhatWasRefused(final @NotNull Project project, final int refused) {
         if (refused == 0) return;
 
-        Services.getInstance(p, Notifier.class).softRefuse(p, Refused.UNREADABLE, refused == 1
+        Services.getInstance(project, Notifier.class).softRefuse(project, Refused.UNREADABLE, refused == 1
                 ? Bundle.message("attribute.value.one")
                 : Bundle.message("attribute.value.many", String.valueOf(refused)));
     }

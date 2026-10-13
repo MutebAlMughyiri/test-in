@@ -51,18 +51,18 @@ public final class BugHistory {
     private static final @NotNull String HEAD = "HEAD";
 
     // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-107
-    public static @NotNull Map<Path, String> runItemsNow(final @NotNull Project p, final @NotNull UUID testCaseId) {
-        final @NotNull JsonCodec mapper = Services.getInstance(p, JsonCodec.class);
-        return Services.getInstance(p, TestRuns.class).runItemsOf(testCaseId).entrySet().stream()
+    public static @NotNull Map<Path, String> runItemsNow(final @NotNull Project project, final @NotNull UUID testCaseId) {
+        final @NotNull JsonCodec mapper = Services.getInstance(project, JsonCodec.class);
+        return Services.getInstance(project, TestRuns.class).runItemsOf(testCaseId).entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, runItem -> mapper.writeValueAsString(runItem.getValue())));
     }
 
     // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-100, Rule-VIEW-PANEL-106, Rule-VIEW-PANEL-107
-    public static @NotNull History addTo(final @NotNull History history, final @NotNull Project p, final @NotNull TestCaseFile file, final @NotNull UUID testCaseId, final @NotNull Map<Path, String> runItemsNow) {
+    public static @NotNull History addTo(final @NotNull History history, final @NotNull Project project, final @NotNull TestCaseFile file, final @NotNull UUID testCaseId, final @NotNull Map<Path, String> runItemsNow) {
         final @NotNull Path testProjectPath = file.testProject();
         final @NotNull Map<String, String> now = inProject(testProjectPath, FileKind.RUN_ITEM.fileName(testCaseId), runItemsNow);
-        final @NotNull JsonCodec mapper = Services.getInstance(p, JsonCodec.class);
-        final @NotNull GitRepositoryService git = new GitRepositoryService(p);
+        final @NotNull JsonCodec mapper = Services.getInstance(project, JsonCodec.class);
+        final @NotNull GitRepositoryService git = new GitRepositoryService(project);
         if (git.isNotRepository(testProjectPath))
             return history.with(notCommitted(testProjectPath, List.of(), now, Map.of(), mapper), List.of());
 

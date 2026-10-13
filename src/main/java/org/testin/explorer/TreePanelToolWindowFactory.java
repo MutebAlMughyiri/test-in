@@ -31,19 +31,19 @@ import org.testin.setting.TestinStartup;
 public class TreePanelToolWindowFactory implements ToolWindowFactory, DumbAware {
     // UC-TREE-PANEL-001, Rule-TREE-PANEL-097
     @Override
-    public void createToolWindowContent(final @NotNull Project p, final @NotNull ToolWindow tw) {
+    public void createToolWindowContent(final @NotNull Project project, final @NotNull ToolWindow tw) {
         TestinLogger.info("ToolWindowFactory.createToolWindowContent()");
 
-        final @NotNull TreePanel treePanel = Services.getInstance(p, TreePanel.class);
+        final @NotNull TreePanel treePanel = Services.getInstance(project, TreePanel.class);
         final @NotNull Content content = ContentFactory.getInstance().createContent(treePanel.getPanel(), null, false);
 
         treePanel.showIn(content);
 
-        tw.setTitleActions(new TreePanelToolbar().create(p, treePanel));
+        tw.setTitleActions(new TreePanelToolbar().create(project, treePanel));
         tw.getContentManager().addContent(content);
 
         ApplicationManager.getApplication().invokeLater(() -> {
-            if (!p.isDisposed()) TestinStartup.execute(p);
+            if (!project.isDisposed()) TestinStartup.execute(project);
         });
     }
 }

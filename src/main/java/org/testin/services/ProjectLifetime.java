@@ -23,8 +23,8 @@ import org.jetbrains.annotations.NotNull;
 
 @Service(Service.Level.PROJECT)
 public final class ProjectLifetime implements Disposable {
-    public static @NotNull Disposable of(final @NotNull Project p) {
-        return Services.getInstance(p, ProjectLifetime.class);
+    public static @NotNull Disposable of(final @NotNull Project project) {
+        return Services.getInstance(project, ProjectLifetime.class);
     }
 
     @Override

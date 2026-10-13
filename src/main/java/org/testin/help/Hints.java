@@ -30,25 +30,25 @@ import java.util.Optional;
 
 @Service(Service.Level.PROJECT)
 public final class Hints {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
 
     private final @NotNull Map<SetupStep, SetupHint> waiting = new EnumMap<>(SetupStep.class);
 
-    public Hints(final @NotNull Project p) {
-        this.p = p;
+    public Hints(final @NotNull Project project) {
+        this.project = project;
     }
 
     // UC-INTERNAL-009, Rule-INTERNAL-127, Rule-INTERNAL-129
     public synchronized void fire(final @NotNull SetupHint hint) {
         waiting.put(hint.step(), hint);
-        Services.getInstance(p, Guides.class).add(hint.step().getGuide());
-        HelpMark.redraw(p);
+        Services.getInstance(project, Guides.class).add(hint.step().getGuide());
+        HelpMark.redraw(project);
     }
 
     // UC-INTERNAL-009, Rule-INTERNAL-127
     public synchronized void clear(final @NotNull SetupStep step) {
         waiting.remove(step);
-        HelpMark.redraw(p);
+        HelpMark.redraw(project);
     }
 
     // UC-INTERNAL-009, Rule-INTERNAL-127

@@ -53,22 +53,22 @@ import java.util.function.Supplier;
 
 public class GenerateReportAction extends AbstractBoundProjectAction {
     private final @NotNull Supplier<Optional<TestRunNode>> selectedTestRun;
-    private final @NotNull TestRuns testRuns = Services.getInstance(p, TestRuns.class);
-    private final @NotNull Notifier notifier = Services.getInstance(p, Notifier.class);
+    private final @NotNull TestRuns testRuns = Services.getInstance(project, TestRuns.class);
+    private final @NotNull Notifier notifier = Services.getInstance(project, Notifier.class);
 
-    public GenerateReportAction(final @NotNull Project p, final @NotNull SimpleTree tree) {
-        super(p, Bundle.message("report.action.text"), Bundle.message("report.action.description"), AllIcons.ToolbarDecorator.Export);
+    public GenerateReportAction(final @NotNull Project project, final @NotNull SimpleTree tree) {
+        super(project, Bundle.message("report.action.text"), Bundle.message("report.action.description"), AllIcons.ToolbarDecorator.Export);
         this.selectedTestRun = () -> TreeValues.valueOf(tree.getLastSelectedPathComponent(), TestRunNode.class);
         registerCustomShortcutSet(Shortcuts.GenerateReport.getCustomShortcut(), tree);
     }
 
-    public GenerateReportAction(final @NotNull Project p, final @NotNull TestinEditor editor) {
-        super(p, Bundle.message("report.action.text"), Bundle.message("report.action.description"), AllIcons.Actions.Report);
+    public GenerateReportAction(final @NotNull Project project, final @NotNull TestinEditor editor) {
+        super(project, Bundle.message("report.action.text"), Bundle.message("report.action.description"), AllIcons.Actions.Report);
         this.selectedTestRun = editor::shownTestRun;
     }
 
-    public GenerateReportAction(final @NotNull Project p, final @NotNull TestinEditor editor, final @NotNull JBList<TestCaseDto> list) {
-        this(p, editor);
+    public GenerateReportAction(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull JBList<TestCaseDto> list) {
+        this(project, editor);
         registerCustomShortcutSet(Shortcuts.GenerateReport.getCustomShortcut(), list);
     }
 
@@ -101,8 +101,8 @@ public class GenerateReportAction extends AbstractBoundProjectAction {
 
     // UC-REPORT-001
     public void execute() {
-        selectedTestRun.get().ifPresent(testRun -> new GenerateReportDialog(p,
-                ReportFileName.suggestedFor(p, testRun, ZonedDateTime.now(ZoneId.systemDefault())),
+        selectedTestRun.get().ifPresent(testRun -> new GenerateReportDialog(project,
+                ReportFileName.suggestedFor(project, testRun, ZonedDateTime.now(ZoneId.systemDefault())),
                 (format, file) -> processAndSave(testRun, format, file)).show());
     }
 
@@ -113,7 +113,7 @@ public class GenerateReportAction extends AbstractBoundProjectAction {
 
     // UC-REPORT-001, Rule-REPORT-003
     private void processAndSave(final @NotNull TestRunNode testRun, final @NotNull FileFormat format, final @NotNull File outputFile) {
-        BackgroundWork.run(p, Bundle.message("report.task.generating", format.getLabel(), testRun.getName()), Bundle.message("report.failed.title", format.getLabel()), indicator -> writeReport(testRun, format, outputFile, indicator));
+        BackgroundWork.run(project, Bundle.message("report.task.generating", format.getLabel(), testRun.getName()), Bundle.message("report.failed.title", format.getLabel()), indicator -> writeReport(testRun, format, outputFile, indicator));
     }
 
     // UC-REPORT-001, Rule-REPORT-003
@@ -121,21 +121,21 @@ public class GenerateReportAction extends AbstractBoundProjectAction {
         final @NotNull Path dirPath = testRun.getPath();
 
         // Rule-EDITOR-PANEL-239
-        TestRunFromGit.read(p, dirPath);
+        TestRunFromGit.read(project, dirPath);
         final @NotNull RunItems runItems = testRuns.getRunItems(dirPath);
 
-        final byte[] fileBytes = format.generateReport(p, testRun, runItems);
+        final byte[] fileBytes = format.generateReport(project, testRun, runItems);
 
         // Rule-REPORT-003
         indicator.checkCanceled();
 
         write(outputFile, fileBytes);
 
-        notifier.infoWithActions(p,
+        notifier.infoWithActions(project,
                 Bundle.message("report.generated.title", format.getLabel()),
                 Bundle.message("report.generated.message", outputFile.getName()),
-                notifier.action(Bundle.message("report.open"), () -> ExportNotice.open(p, outputFile)),
-                ExportNotice.copyPath(p, outputFile)
+                notifier.action(Bundle.message("report.open"), () -> ExportNotice.open(project, outputFile)),
+                ExportNotice.copyPath(project, outputFile)
         );
     }
 }

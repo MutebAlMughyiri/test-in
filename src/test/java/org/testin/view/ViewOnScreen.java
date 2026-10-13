@@ -67,11 +67,11 @@ public final class ViewOnScreen {
         this.detailsFocused = detailsFocused;
     }
 
-    public static @NotNull ViewOnScreen closed(final @NotNull Project p, final @NotNull Disposable test) {
-        final @NotNull Windows windows = Windows.installed(p, test);
+    public static @NotNull ViewOnScreen closed(final @NotNull Project project, final @NotNull Disposable test) {
+        final @NotNull Windows windows = Windows.installed(project, test);
 
         final @NotNull AtomicInteger detailsFocused = new AtomicInteger();
-        final @NotNull ViewPanel panel = new ViewPanel(p) {
+        final @NotNull ViewPanel panel = new ViewPanel(project) {
             @Override
             public void focusDetailsTab() {
                 detailsFocused.incrementAndGet();
@@ -79,7 +79,7 @@ public final class ViewOnScreen {
             }
         };
         Disposer.register(test, () -> Disposer.dispose(panel));
-        Services.getInstance(p, ViewPanelHolder.class).hold(panel);
+        Services.getInstance(project, ViewPanelHolder.class).hold(panel);
 
         final @NotNull ShownToolWindow view = windows.view();
         for (final ViewTab tab : ViewTab.values()) {
@@ -91,11 +91,11 @@ public final class ViewOnScreen {
         return new ViewOnScreen(windows, panel, new ViewPanelActions().create(panel, view.component), detailsFocused);
     }
 
-    public static @NotNull ViewOnScreen built(final @NotNull Project p, final @NotNull Disposable test) {
-        final @NotNull Windows windows = Windows.installed(p, test);
+    public static @NotNull ViewOnScreen built(final @NotNull Project project, final @NotNull Disposable test) {
+        final @NotNull Windows windows = Windows.installed(project, test);
 
-        new ViewToolWindowFactory().createToolWindowContent(p, windows.view().window);
-        final @NotNull ViewPanel panel = ViewToolWindowFactory.panel(p).orElseThrow(() -> new AssertionError("the factory built no panel"));
+        new ViewToolWindowFactory().createToolWindowContent(project, windows.view().window);
+        final @NotNull ViewPanel panel = ViewToolWindowFactory.panel(project).orElseThrow(() -> new AssertionError("the factory built no panel"));
         Disposer.register(test, () -> Disposer.dispose(panel));
 
         return new ViewOnScreen(windows, panel, windows.view().titleActions, new AtomicInteger());
@@ -166,9 +166,9 @@ public final class ViewOnScreen {
             this.shown = shown;
         }
 
-        private static @NotNull Windows installed(final @NotNull Project p, final @NotNull Disposable test) {
-            final @NotNull Windows windows = new Windows(ToolWindowManager.getInstance(p), Map.of(VIEW, new ShownToolWindow(p, test), TREE, new ShownToolWindow(p, test)));
-            ServiceContainerUtil.replaceService(p, ToolWindowManager.class, windows, test);
+        private static @NotNull Windows installed(final @NotNull Project project, final @NotNull Disposable test) {
+            final @NotNull Windows windows = new Windows(ToolWindowManager.getInstance(project), Map.of(VIEW, new ShownToolWindow(project, test), TREE, new ShownToolWindow(project, test)));
+            ServiceContainerUtil.replaceService(project, ToolWindowManager.class, windows, test);
             return windows;
         }
 
@@ -270,8 +270,8 @@ public final class ViewOnScreen {
         private @NotNull List<AnAction> titleActions = List.of();
         private boolean visible;
 
-        private ShownToolWindow(final @NotNull Project p, final @NotNull Disposable test) {
-            contents = ContentFactory.getInstance().createContentManager(true, p);
+        private ShownToolWindow(final @NotNull Project project, final @NotNull Disposable test) {
+            contents = ContentFactory.getInstance().createContentManager(true, project);
             Disposer.register(test, contents);
             component.add(contents.getComponent(), BorderLayout.CENTER);
             window = (ToolWindow) Proxy.newProxyInstance(ToolWindow.class.getClassLoader(), new Class<?>[]{ToolWindow.class}, this);

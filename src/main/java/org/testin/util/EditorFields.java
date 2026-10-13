@@ -42,26 +42,26 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EditorFields {
     // Rule-INTERNAL-134
-    public static @NotNull EditorTextField createField(final @NotNull Project p) {
-        return createField(p, FileTypes.PLAIN_TEXT.getLanguage(), true);
+    public static @NotNull EditorTextField createField(final @NotNull Project project) {
+        return createField(project, FileTypes.PLAIN_TEXT.getLanguage(), true);
     }
 
     // Rule-INTERNAL-134, Rule-INTERNAL-136, Rule-INTERNAL-139
-    public static @NotNull EditorTextField createField(final @NotNull Project p, final @NotNull Language language, final boolean spellChecked) {
+    public static @NotNull EditorTextField createField(final @NotNull Project project, final @NotNull Language language, final boolean spellChecked) {
         final @NotNull List<EditorCustomization> customizations = new ArrayList<>();
         final @NotNull SpellCheckingEditorCustomizationProvider spelling = SpellCheckingEditorCustomizationProvider.getInstance();
         ContainerUtil.addIfNotNull(customizations, spellChecked ? spelling.getEnabledCustomization() : spelling.getDisabledCustomization());
         customizations.add(editor -> editor.putUserData(IncrementalFindAction.SEARCH_DISABLED, Boolean.TRUE));
 
         return EditorTextFieldProvider.getInstance()
-                .getEditorField(language, p, customizations);
+                .getEditorField(language, project, customizations);
     }
 
-    public static @NotNull EditorTextField createCompletionField(final @NotNull Project p, final @NotNull TextCompletionProvider provider, final @NotNull String text) {
-        final @NotNull EditorTextField field = createField(p);
+    public static @NotNull EditorTextField createCompletionField(final @NotNull Project project, final @NotNull TextCompletionProvider provider, final @NotNull String text) {
+        final @NotNull EditorTextField field = createField(project);
 
         final Optional<PsiFile> psiFile = Optional.ofNullable(ReadAction.computeBlocking(
-                () -> PsiDocumentManager.getInstance(p).getPsiFile(field.getDocument())));
+                () -> PsiDocumentManager.getInstance(project).getPsiFile(field.getDocument())));
 
         psiFile.ifPresentOrElse(
                 file -> TextCompletionUtil.installProvider(file, provider, true),

@@ -26,8 +26,8 @@ import org.testin.util.Bundle;
 
 public record StacktraceSection(@NotNull DialogPart<MultiLineField> component) implements FailureSection {
     // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-148
-    public static @NotNull StacktraceSection of(final @NotNull Project p, final @NotNull RunItem runItem) {
-        return new StacktraceSection(DialogPart.multiLineField(p, TestRunEditorAttributes.STACKTRACE.getName(), Bundle.message("dialog.failure.placeholder.error"), runItem.getStacktrace()));
+    public static @NotNull StacktraceSection of(final @NotNull Project project, final @NotNull RunItem runItem) {
+        return new StacktraceSection(DialogPart.multiLineField(project, TestRunEditorAttributes.STACKTRACE.getName(), Bundle.message("dialog.failure.placeholder.error"), runItem.getStacktrace()));
     }
 
     // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-145

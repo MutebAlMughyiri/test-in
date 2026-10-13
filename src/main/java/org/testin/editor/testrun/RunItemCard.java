@@ -42,8 +42,8 @@ public class RunItemCard extends AbstractCard {
     private final @NotNull Map<String, String> details = new LinkedHashMap<>();
     private final @NotNull JBLabel changedSince = createDetailLabel();
 
-    public RunItemCard(final @NotNull Project p) {
-        super(p);
+    public RunItemCard(final @NotNull Project project) {
+        super(project);
         changedSince.setText(Bundle.message("test.run.changed.since.commit"));
         content.add(changedSince, 2);
     }

@@ -27,10 +27,10 @@ import java.time.Duration;
 public interface ExecutionReported {
     Topic<ExecutionReported> TOPIC = Topic.create("RunTestCaseNotification", ExecutionReported.class);
 
-    static void broadcast(final @NotNull Project p, final @NotNull String testName, final @NotNull ExecutionStatus status, final @NotNull Duration duration, final @NotNull Failure failure) {
-        if (p.isDisposed()) return;
+    static void broadcast(final @NotNull Project project, final @NotNull String testName, final @NotNull ExecutionStatus status, final @NotNull Duration duration, final @NotNull Failure failure) {
+        if (project.isDisposed()) return;
 
-        p.getMessageBus().syncPublisher(TOPIC).onStatusChanged(testName, status, duration, failure);
+        project.getMessageBus().syncPublisher(TOPIC).onStatusChanged(testName, status, duration, failure);
     }
 
     void onStatusChanged(final @NotNull String testName, final @NotNull ExecutionStatus status, final @NotNull Duration duration, final @NotNull Failure failure);

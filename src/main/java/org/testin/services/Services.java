@@ -32,10 +32,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class Services {
     private static final @NotNull Map<Class<?>, Boolean> APPLICATION_LEVEL = new ConcurrentHashMap<>();
 
-    public static <T> @NotNull T getInstance(final @NotNull Project p, final @NotNull Class<T> clazz) {
+    public static <T> @NotNull T getInstance(final @NotNull Project project, final @NotNull Class<T> clazz) {
         if (isApplicationLevel(clazz)) return getInstance(clazz);
 
-        return p.getService(clazz);
+        return project.getService(clazz);
     }
 
     public static <T> @NotNull T getInstance(final @NotNull Class<T> clazz) {
@@ -52,7 +52,7 @@ public final class Services {
         return service != null && Arrays.asList(service.value()).contains(Service.Level.APP);
     }
 
-    public static boolean isNotCreated(final @NotNull Project p, final @NotNull Class<?> clazz) {
-        return p.getServiceIfCreated(clazz) == null;
+    public static boolean isNotCreated(final @NotNull Project project, final @NotNull Class<?> clazz) {
+        return project.getServiceIfCreated(clazz) == null;
     }
 }

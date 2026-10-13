@@ -51,9 +51,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShareGestures {
-    public static @NotNull JComponent theReviewOf(final @NotNull Project p, final @NotNull Path repository) {
-        ApplicationManager.getApplication().executeOnPooledThread(() -> new ViewPendingCommitsWork(p).openFor(repository));
-        return ShownDialog.waitedFor(p, PendingChangesDialog.class);
+    public static @NotNull JComponent theReviewOf(final @NotNull Project project, final @NotNull Path repository) {
+        ApplicationManager.getApplication().executeOnPooledThread(() -> new ViewPendingCommitsWork(project).openFor(repository));
+        return ShownDialog.waitedFor(project, PendingChangesDialog.class);
     }
 
     public static @NotNull JBTable table(final @NotNull JComponent dialog) {

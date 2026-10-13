@@ -49,21 +49,21 @@ public final class ConflictResolution {
     private static final @NotNull String MINE = ":3";
 
     // UC-SHARE-017
-    public static void resolveRebase(final @NotNull Project p, final @NotNull Path repositoryPath, final @NotNull Runnable onFinished, final @NotNull Consumer<List<String>> onStuck) {
-        final @NotNull GitRepositoryService git = new GitRepositoryService(p);
+    public static void resolveRebase(final @NotNull Project project, final @NotNull Path repositoryPath, final @NotNull Runnable onFinished, final @NotNull Consumer<List<String>> onStuck) {
+        final @NotNull GitRepositoryService git = new GitRepositoryService(project);
 
-        round(p, git, repositoryPath, git.rebaseStep(repositoryPath), onFinished, onStuck);
+        round(project, git, repositoryPath, git.rebaseStep(repositoryPath), onFinished, onStuck);
     }
 
-    private static void round(final @NotNull Project p, final @NotNull GitRepositoryService git, final @NotNull Path repositoryPath, final int stepBefore, final @NotNull Runnable onFinished, final @NotNull Consumer<List<String>> onStuck) {
-        resolve(p, repositoryPath, git.conflictingPaths(repositoryPath),
+    private static void round(final @NotNull Project project, final @NotNull GitRepositoryService git, final @NotNull Path repositoryPath, final int stepBefore, final @NotNull Runnable onFinished, final @NotNull Consumer<List<String>> onStuck) {
+        resolve(project, repositoryPath, git.conflictingPaths(repositoryPath),
                 () -> ApplicationManager.getApplication().executeOnPooledThread(
-                        () -> continueOn(p, git, repositoryPath, stepBefore, onFinished, onStuck)),
+                        () -> continueOn(project, git, repositoryPath, stepBefore, onFinished, onStuck)),
                 onStuck);
     }
 
     // UC-SHARE-017, Rule-SHARE-079
-    private static void continueOn(final @NotNull Project p, final @NotNull GitRepositoryService git, final @NotNull Path repositoryPath, final int stepBefore, final @NotNull Runnable onFinished, final @NotNull Consumer<List<String>> onStuck) {
+    private static void continueOn(final @NotNull Project project, final @NotNull GitRepositoryService git, final @NotNull Path repositoryPath, final int stepBefore, final @NotNull Runnable onFinished, final @NotNull Consumer<List<String>> onStuck) {
         if (!git.couldNotContinueRebase(repositoryPath)) {
             ApplicationManager.getApplication().invokeLater(onFinished);
             return;
@@ -73,7 +73,7 @@ public final class ConflictResolution {
         if (stillConflicting.isEmpty()) {
             TestinLogger.warn("The rebase could not continue, and nothing is left conflicting");
             ApplicationManager.getApplication().invokeLater(() ->
-                    Services.getInstance(p, Notifier.class).error(p, Bundle.message("git.conflict.operation.failed.title"),
+                    Services.getInstance(project, Notifier.class).error(project, Bundle.message("git.conflict.operation.failed.title"),
                             Bundle.message("git.error.continue.rebase")));
             return;
         }
@@ -85,7 +85,7 @@ public final class ConflictResolution {
             return;
         }
 
-        round(p, git, repositoryPath, stepNow, onFinished, onStuck);
+        round(project, git, repositoryPath, stepNow, onFinished, onStuck);
     }
 
     // UC-SHARE-018, Rule-SHARE-080
@@ -103,9 +103,9 @@ public final class ConflictResolution {
     }
 
     // UC-SHARE-017, Rule-SHARE-078
-    public static void resolve(final @NotNull Project p, final @NotNull Path repositoryPath, final @NotNull List<String> conflicting, final @NotNull Runnable onResolved, final @NotNull Consumer<List<String>> onLeftOver) {
-        final @NotNull GitRepositoryService git = new GitRepositoryService(p);
-        final @NotNull JsonCodec mapper = Services.getInstance(p, JsonCodec.class);
+    public static void resolve(final @NotNull Project project, final @NotNull Path repositoryPath, final @NotNull List<String> conflicting, final @NotNull Runnable onResolved, final @NotNull Consumer<List<String>> onLeftOver) {
+        final @NotNull GitRepositoryService git = new GitRepositoryService(project);
+        final @NotNull JsonCodec mapper = Services.getInstance(project, JsonCodec.class);
 
         final @NotNull List<String> leftOver = new ArrayList<>();
         final @NotNull List<UnansweredConflict> pending = new ArrayList<>();
@@ -140,23 +140,24 @@ public final class ConflictResolution {
                 continue;
             }
 
-            if (keep(p, git, repositoryPath, relativePath, merge.merged())) settledQuietly.addAll(merge.settled());
+            if (keep(project, git, repositoryPath, relativePath, merge.merged()))
+                settledQuietly.addAll(merge.settled());
             else leftOver.add(relativePath);
         }
 
         ApplicationManager.getApplication().invokeLater(() -> {
             // UC-SHARE-017, Rule-SHARE-109
             if (!settledQuietly.isEmpty()) {
-                Services.getInstance(p, Notifier.class).info(p, Bundle.message("git.merge.settled.title"),
+                Services.getInstance(project, Notifier.class).info(project, Bundle.message("git.merge.settled.title"),
                         MergeOutcome.settledSentence(settledQuietly, System.lineSeparator()));
             }
 
-            ask(p, git, mapper, repositoryPath, pending, leftOver, onResolved, onLeftOver);
+            ask(project, git, mapper, repositoryPath, pending, leftOver, onResolved, onLeftOver);
         });
     }
 
     // UC-SHARE-018, Rule-SHARE-081
-    private static void ask(final @NotNull Project p, final @NotNull GitRepositoryService git, final @NotNull JsonCodec mapper, final @NotNull Path repositoryPath, final @NotNull List<UnansweredConflict> pending, final @NotNull List<String> leftOver, final @NotNull Runnable onResolved, final @NotNull Consumer<List<String>> onLeftOver) {
+    private static void ask(final @NotNull Project project, final @NotNull GitRepositoryService git, final @NotNull JsonCodec mapper, final @NotNull Path repositoryPath, final @NotNull List<UnansweredConflict> pending, final @NotNull List<String> leftOver, final @NotNull Runnable onResolved, final @NotNull Consumer<List<String>> onLeftOver) {
         if (pending.isEmpty()) {
             if (leftOver.isEmpty()) onResolved.run();
             else onLeftOver.accept(List.copyOf(leftOver));
@@ -170,34 +171,34 @@ public final class ConflictResolution {
             final @NotNull List<String> stillLeft = new ArrayList<>(leftOver);
             stillLeft.add(next.relativePath());
 
-            ask(p, git, mapper, repositoryPath, new ArrayList<>(rest), stillLeft, onResolved, onLeftOver);
+            ask(project, git, mapper, repositoryPath, new ArrayList<>(rest), stillLeft, onResolved, onLeftOver);
         };
 
-        new ResolveConflictDialog(p, next.name(), next.questions(), next.settled(), takeTheirs -> {
+        new ResolveConflictDialog(project, next.name(), next.questions(), next.settled(), takeTheirs -> {
             final @NotNull MergeOutcome answered = new MergeOutcome(next.merged(), next.questions(), next.settled());
             for (final Question question : next.questions()) {
                 answered.answer(mapper, question, takeTheirs.contains(question.field()), next.theirs());
             }
 
             ApplicationManager.getApplication().executeOnPooledThread(() -> {
-                final boolean written = keep(p, git, repositoryPath, next.relativePath(), next.merged());
+                final boolean written = keep(project, git, repositoryPath, next.relativePath(), next.merged());
                 final @NotNull List<String> stillLeft = new ArrayList<>(leftOver);
                 if (!written) stillLeft.add(next.relativePath());
 
                 ApplicationManager.getApplication().invokeLater(() ->
-                        ask(p, git, mapper, repositoryPath, new ArrayList<>(rest), stillLeft, onResolved, onLeftOver));
+                        ask(project, git, mapper, repositoryPath, new ArrayList<>(rest), stillLeft, onResolved, onLeftOver));
             });
         }, skipped).show();
     }
 
     // UC-SHARE-017, Rule-SHARE-074
-    private static boolean keep(final @NotNull Project p, final @NotNull GitRepositoryService git, final @NotNull Path repositoryPath, final @NotNull String relativePath, final @NotNull ObjectNode merged) {
+    private static boolean keep(final @NotNull Project project, final @NotNull GitRepositoryService git, final @NotNull Path repositoryPath, final @NotNull String relativePath, final @NotNull ObjectNode merged) {
         try {
             Files.writeString(repositoryPath.resolve(relativePath), merged.toPrettyString(), StandardCharsets.UTF_8);
 
         } catch (final IOException ex) {
             TestinLogger.error("Could not write the merged test case " + relativePath + ": " + FailureText.of(ex));
-            Services.getInstance(p, Notifier.class).error(p, Bundle.message("git.merge.failed.title"),
+            Services.getInstance(project, Notifier.class).error(project, Bundle.message("git.merge.failed.title"),
                     Bundle.message("git.merge.failed.message", relativePath, FailureText.of(ex)));
             return false;
         }
@@ -205,7 +206,7 @@ public final class ConflictResolution {
         if (git.stageResolved(repositoryPath, relativePath)) return true;
 
         TestinLogger.error("Merged but could not stage " + relativePath);
-        Services.getInstance(p, Notifier.class).error(p, Bundle.message("git.merge.not.accepted.title"),
+        Services.getInstance(project, Notifier.class).error(project, Bundle.message("git.merge.not.accepted.title"),
                 Bundle.message("git.merge.not.accepted.message", relativePath));
         return false;
     }

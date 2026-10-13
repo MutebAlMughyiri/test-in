@@ -70,7 +70,7 @@ import java.util.UUID;
 
 public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableAttribute, N extends AbstractNode> implements Disposable, ToolbarCallbacks, TestinEditor {
     @Getter
-    protected final @NotNull Project p;
+    protected final @NotNull Project project;
     @Getter
     protected final @NotNull List<TestCaseDto> allTestCases;
     @Getter
@@ -108,19 +108,19 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableAttribute
     protected int hoveredIndex = -1;
     private boolean disposed;
 
-    protected AbstractTestinEditor(final @NotNull Project p, final @NotNull N parent) {
-        this.p = p;
+    protected AbstractTestinEditor(final @NotNull Project project, final @NotNull N parent) {
+        this.project = project;
         this.parent = parent;
-        this.indexer = Services.getInstance(p, ProjectIndexer.class);
-        this.nodes = Services.getInstance(p, Nodes.class);
-        this.testCases = Services.getInstance(p, TestCases.class);
-        this.testCaseValues = Services.getInstance(p, TestCaseCompletions.class);
-        this.automationState = Services.getInstance(p, AutomationState.class);
-        this.notifier = Services.getInstance(p, Notifier.class);
-        this.undoHistories = Services.getInstance(p, UndoHistories.class);
+        this.indexer = Services.getInstance(project, ProjectIndexer.class);
+        this.nodes = Services.getInstance(project, Nodes.class);
+        this.testCases = Services.getInstance(project, TestCases.class);
+        this.testCaseValues = Services.getInstance(project, TestCaseCompletions.class);
+        this.automationState = Services.getInstance(project, AutomationState.class);
+        this.notifier = Services.getInstance(project, Notifier.class);
+        this.undoHistories = Services.getInstance(project, UndoHistories.class);
 
         final @NotNull Disposable projectDisposable = Disposer.newDisposable();
-        Disposer.register(ProjectLifetime.of(p), projectDisposable);
+        Disposer.register(ProjectLifetime.of(project), projectDisposable);
         this.projectDisposable = projectDisposable;
 
         this.allTestCases = Collections.synchronizedList(new ArrayList<>());
@@ -131,7 +131,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableAttribute
         this.mainPanel.setBackground(UIUtil.getPanelBackground());
         this.mainPanel.setOpaque(true);
 
-        this.cardView = CardPanelBuilder.build(p, projectDisposable, this);
+        this.cardView = CardPanelBuilder.build(project, projectDisposable, this);
         this.model = cardView.model();
         this.list = cardView.list();
         this.scrollPane = cardView.scrollPane();
@@ -175,7 +175,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableAttribute
 
     @Override
     public @NotNull Project getProject() {
-        return p;
+        return project;
     }
 
     @Override
@@ -379,7 +379,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableAttribute
 
         final @NotNull Done message = refreshed();
 
-        reloadData(() -> notifier.softShow(p, message));
+        reloadData(() -> notifier.softShow(project, message));
 
         testCaseValues.reload(testCases::getAllTestCases);
     }
@@ -451,7 +451,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableAttribute
         Declared.bindTo("Testin.CopyTestCase", list);
         Declared.bindTo("Testin.RemoveTestCase", list);
 
-        CardPanelBuilder.wireCommonListeners(p, this, cardView, parent, contextMenu,
+        CardPanelBuilder.wireCommonListeners(project, this, cardView, parent, contextMenu,
                 grid::table,
                 grid::rowOf,
                 () -> getToolBar().getCurrentView() == ViewMode.GRID_VIEW);

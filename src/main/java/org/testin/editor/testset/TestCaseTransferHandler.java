@@ -46,14 +46,14 @@ import java.util.stream.Collectors;
 
 public class TestCaseTransferHandler extends TransferHandler {
     private static final @NotNull DataFlavor FLAVOR = new DataFlavor(List.class, "List of TestCase");
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull TestinEditor editor;
     private final @NotNull Notifier notifier;
 
-    public TestCaseTransferHandler(final @NotNull Project p, final @NotNull TestinEditor editor) {
-        this.p = p;
+    public TestCaseTransferHandler(final @NotNull Project project, final @NotNull TestinEditor editor) {
+        this.project = project;
         this.editor = editor;
-        this.notifier = Services.getInstance(p, Notifier.class);
+        this.notifier = Services.getInstance(project, Notifier.class);
     }
 
     private static int landingIndex(final @NotNull List<TestCaseDto> allTestCases, final @NotNull Optional<TestCaseDto> above, final @NotNull Optional<TestCaseDto> below) {
@@ -147,11 +147,11 @@ public class TestCaseTransferHandler extends TransferHandler {
             if (testCaseIds.equals(TestCaseSnapshot.idsOf(orderBefore))) return false;
 
             final @NotNull Path setPath = editor.getParent().getPath();
-            final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(p, setPath, testCaseIds);
+            final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(project, setPath, testCaseIds);
 
             editor.updateSequenceAndSaveAll(() -> {
-                TestCaseSnapshot.record(p, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.reorder"), testCasesToMove), before, TestCaseSnapshot.of(p, setPath, testCaseIds));
-                notifier.softShowCounted(p, Done.RE_SORTED, testCasesToMove.size());
+                TestCaseSnapshot.record(project, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.reorder"), testCasesToMove), before, TestCaseSnapshot.of(project, setPath, testCaseIds));
+                notifier.softShowCounted(project, Done.RE_SORTED, testCasesToMove.size());
             });
 
             testCasesToMove.stream().findFirst().ifPresentOrElse(
@@ -164,7 +164,7 @@ public class TestCaseTransferHandler extends TransferHandler {
             putBack(orderBefore);
 
             TestinLogger.error("Reordering the test cases failed: " + FailureText.of(ex));
-            notifier.softRefuse(p, Bundle.message("save.failed"));
+            notifier.softRefuse(project, Bundle.message("save.failed"));
             return false;
         }
     }

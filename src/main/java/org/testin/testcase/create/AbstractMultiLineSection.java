@@ -33,8 +33,8 @@ public abstract class AbstractMultiLineSection implements TestCaseSection {
     private final @NotNull JBPanel<?> wrapper;
     private final @NotNull Shortcuts shortcut;
 
-    protected AbstractMultiLineSection(final @NotNull Project p, final @NotNull EditorTextField field, final @NotNull CreateTestCaseFields describes) {
-        this.field = new MultiLineField(p, field, "", describes.getPlaceholder());
+    protected AbstractMultiLineSection(final @NotNull Project project, final @NotNull EditorTextField field, final @NotNull CreateTestCaseFields describes) {
+        this.field = new MultiLineField(project, field, "", describes.getPlaceholder());
         this.shortcut = describes.getShortcut();
 
         this.wrapper = createWrapper(describes.getIcon(), this.field.getFocusComponent());

@@ -28,18 +28,18 @@ import java.util.List;
 public final class ConfirmDialog extends AbstractFrameworkDialog {
     private final @NotNull Runnable onConfirm;
 
-    public ConfirmDialog(final @NotNull Project p, final @NotNull String dialogTitle, final @NotNull String message, final @NotNull String from, final @NotNull String to, final @NotNull String confirmName, final @NotNull Runnable onConfirm) {
-        this(p, dialogTitle, message, from, to, confirmName, onConfirm, List.of());
+    public ConfirmDialog(final @NotNull Project project, final @NotNull String dialogTitle, final @NotNull String message, final @NotNull String from, final @NotNull String to, final @NotNull String confirmName, final @NotNull Runnable onConfirm) {
+        this(project, dialogTitle, message, from, to, confirmName, onConfirm, List.of());
     }
 
     // UC-INTERNAL-007, Rule-INTERNAL-099, Rule-INTERNAL-105, Rule-INTERNAL-108, Rule-INTERNAL-140
-    public ConfirmDialog(final @NotNull Project p, final @NotNull String dialogTitle, final @NotNull String message, final @NotNull String from, final @NotNull String to, final @NotNull String confirmName, final @NotNull Runnable onConfirm, final @NotNull List<Alternative> alternatives) {
-        super(p);
+    public ConfirmDialog(final @NotNull Project project, final @NotNull String dialogTitle, final @NotNull String message, final @NotNull String from, final @NotNull String to, final @NotNull String confirmName, final @NotNull Runnable onConfirm, final @NotNull List<Alternative> alternatives) {
+        super(project);
         this.onConfirm = onConfirm;
 
         title = dialogTitle;
 
-        final @NotNull TestinRoot root = Services.getInstance(p, TestinRoot.class);
+        final @NotNull TestinRoot root = Services.getInstance(project, TestinRoot.class);
         final @NotNull List<Alternative> closing = alternatives.stream().map(alternative -> new Alternative(alternative.key(), alternative.name(), () -> {
             closeCancel();
             alternative.action().run();

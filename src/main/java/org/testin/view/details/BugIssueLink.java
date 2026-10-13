@@ -36,14 +36,14 @@ public final class BugIssueLink {
     private static final int GAP = 6;
 
     // UC-VIEW-PANEL-005, UC-VIEW-PANEL-007, Rule-VIEW-PANEL-075, Rule-VIEW-PANEL-080, Rule-VIEW-PANEL-091
-    public static @NotNull JComponent of(final @NotNull Project p, final @NotNull String url) {
+    public static @NotNull JComponent of(final @NotNull Project project, final @NotNull String url) {
         final @NotNull JBPanel<?> line = AbstractDetails.row(GAP);
 
         final @NotNull ActionLink link = AbstractDetails.link(BugIssueUrl.shortReference(url), _ -> BugIssueUrl.open(url));
         Tooltip.set(link, url);
         line.add(link);
 
-        final @NotNull BugIssueState state = Services.getInstance(p, KnownBugIssueStates.class).of(url);
+        final @NotNull BugIssueState state = Services.getInstance(project, KnownBugIssueStates.class).of(url);
         final @NotNull JBPanel<?> pill = AbstractDetails.row(0);
         Badges.showBadges(pill, state.pills());
         Tooltip.set(pill, state.tooltip());

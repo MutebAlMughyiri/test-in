@@ -35,8 +35,8 @@ public final class CreateTestRunDialog extends AbstractFrameworkDialog {
     private final @NotNull BiConsumer<@NotNull String, @NotNull NodeType> onCreate;
 
     // UC-TREE-PANEL-009, UC-TREE-PANEL-010, Rule-TREE-PANEL-032
-    public CreateTestRunDialog(final @NotNull Project p, final @NotNull BiConsumer<@NotNull String, @NotNull NodeType> onCreate) {
-        super(p);
+    public CreateTestRunDialog(final @NotNull Project project, final @NotNull BiConsumer<@NotNull String, @NotNull NodeType> onCreate) {
+        super(project);
         this.onCreate = onCreate;
 
         title = Bundle.message("dialog.create.test.run.title");

@@ -41,7 +41,7 @@ import java.util.Set;
 
 // UC-EDITOR-PANEL-005
 public abstract class AbstractMultiValueSection implements TestCaseSection {
-    protected final @NotNull Project p;
+    protected final @NotNull Project project;
     private final @NotNull TestCaseCompletions testCaseValues;
 
     @Getter
@@ -50,9 +50,9 @@ public abstract class AbstractMultiValueSection implements TestCaseSection {
     private final @NotNull JBPanel<?> container;
     private final @NotNull JBPanel<?> wrapper;
 
-    protected AbstractMultiValueSection(final @NotNull Project p) {
-        this.p = p;
-        this.testCaseValues = Services.getInstance(p, TestCaseCompletions.class);
+    protected AbstractMultiValueSection(final @NotNull Project project) {
+        this.project = project;
+        this.testCaseValues = Services.getInstance(project, TestCaseCompletions.class);
 
         this.container = new JBPanel<>();
         this.container.setLayout(new BoxLayout(this.container, BoxLayout.Y_AXIS));
@@ -107,7 +107,7 @@ public abstract class AbstractMultiValueSection implements TestCaseSection {
     }
 
     public void addField(final @NotNull String text) {
-        final @NotNull EditorTextField box = EditorFields.createCompletionField(p,
+        final @NotNull EditorTextField box = EditorFields.createCompletionField(project,
                 new TextFieldWithAutoCompletion.StringsCompletionProvider(completions(testCaseValues), field().getIcon()), text);
 
         box.setOneLineMode(true);

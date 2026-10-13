@@ -36,5 +36,5 @@ public interface AutomationExecutor {
     }
 
     // UC-CODEGEN-008, Rule-CODEGEN-031
-    void run(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases);
+    void run(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases);
 }

@@ -29,11 +29,11 @@ import java.util.Optional;
 public final class TreePanelStructure extends AbstractTreeStructure {
     private static final @NotNull String NO_PROJECT = Bundle.message("tree.root.project");
 
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private volatile @NotNull TreePanelNode root;
 
-    public TreePanelStructure(final @NotNull Project p, final @NotNull Optional<TestProjectNode> selectedProject) {
-        this.p = p;
+    public TreePanelStructure(final @NotNull Project project, final @NotNull Optional<TestProjectNode> selectedProject) {
+        this.project = project;
         this.root = createRoot(selectedProject);
     }
 
@@ -42,7 +42,7 @@ public final class TreePanelStructure extends AbstractTreeStructure {
     }
 
     private @NotNull TreePanelNode createRoot(final @NotNull Optional<TestProjectNode> selectedProject) {
-        return new TreePanelNode(p, selectedProject.map(Object.class::cast).orElse(NO_PROJECT));
+        return new TreePanelNode(project, selectedProject.map(Object.class::cast).orElse(NO_PROJECT));
     }
 
     @Override

@@ -34,34 +34,34 @@ import java.util.Optional;
 // UC-CODEGEN-002, Rule-CODEGEN-078
 public class CopyTestMethod extends BaseTestMethodChange implements CodeChange<CopiedTestCase> {
     @Override
-    public void execute(final @NotNull Project p, final @NotNull CopiedTestCase copied) {
-        executeAll(p, List.of(copied));
+    public void execute(final @NotNull Project project, final @NotNull CopiedTestCase copied) {
+        executeAll(project, List.of(copied));
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-078
     @Override
-    public void executeAll(final @NotNull Project p, final @NotNull List<? extends CopiedTestCase> copies) {
+    public void executeAll(final @NotNull Project project, final @NotNull List<? extends CopiedTestCase> copies) {
         if (copies.isEmpty()) return;
 
-        new CreateTestMethod().executeAll(p, copies.stream().map(CopiedTestCase::copy).toList());
+        new CreateTestMethod().executeAll(project, copies.stream().map(CopiedTestCase::copy).toList());
 
-        final @NotNull Optional<PsiClass> into = classOf(p, copies.getFirst().copy());
+        final @NotNull Optional<PsiClass> into = classOf(project, copies.getFirst().copy());
         if (into.isEmpty()) return;
 
         final @NotNull PsiClass target = into.orElseThrow();
 
         int carried = 0;
         for (final CopiedTestCase copied : copies) {
-            if (carryBody(p, target, copied)) carried++;
+            if (carryBody(project, target, copied)) carried++;
         }
 
         if (carried > 0) {
-            reformat(p, target);
+            reformat(project, target);
             TestinLogger.info("Carried " + carried + " test method body(s) into " + target.getQualifiedName());
         }
     }
 
-    private boolean carryBody(final @NotNull Project p, final @NotNull PsiClass target, final @NotNull CopiedTestCase copied) {
+    private boolean carryBody(final @NotNull Project project, final @NotNull PsiClass target, final @NotNull CopiedTestCase copied) {
         final @NotNull TestCaseDto original = copied.original();
 
         if (original.getParent().getPath().toString().isEmpty()) {
@@ -69,7 +69,7 @@ public class CopyTestMethod extends BaseTestMethodChange implements CodeChange<C
             return false;
         }
 
-        final @NotNull Optional<PsiClass> from = classOf(p, original);
+        final @NotNull Optional<PsiClass> from = classOf(project, original);
         if (from.isEmpty()) {
             TestinLogger.debug("Nothing to carry into the copy of '" + original.getDescription() + "': its test set has no class");
             return false;

@@ -126,7 +126,7 @@ public class ExportNoticeIdeTest extends AbstractTempRootIdeTest {
         }
 
         @Override
-        public void browse(final @NotNull String url, final @Nullable WebBrowser browser, final @Nullable Project p) {
+        public void browse(final @NotNull String url, final @Nullable WebBrowser browser, final @Nullable Project project) {
             browsed.add(url);
         }
     }

@@ -35,22 +35,22 @@ import java.util.function.Consumer;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GitConflictOffer {
     // UC-SHARE-017
-    public static void showIfConflicting(final @NotNull Project p, final @NotNull GitRepositoryService git, final @NotNull Path repoPath, final @NotNull Consumer<List<String>> offer, final @NotNull Runnable otherwise) {
+    public static void showIfConflicting(final @NotNull Project project, final @NotNull GitRepositoryService git, final @NotNull Path repoPath, final @NotNull Consumer<List<String>> offer, final @NotNull Runnable otherwise) {
         final @NotNull List<String> conflicting = git.conflictingPaths(repoPath);
 
         ApplicationManager.getApplication().invokeLater(() -> {
             if (conflicting.isEmpty()) otherwise.run();
             else offer.accept(conflicting);
-        }, p.getDisposed());
+        }, project.getDisposed());
     }
 
     // UC-SHARE-017, Rule-INTERNAL-129
-    public static void show(final @NotNull Project p, final @NotNull List<String> conflicting, final @NotNull Runnable onResolve, final @NotNull Runnable onContinue, final @NotNull Runnable onAbort) {
-        Services.getInstance(p, Guides.class).add(Guide.RESOLVE_GIT_CONFLICTS);
-        final @NotNull Notifier notifier = Services.getInstance(p, Notifier.class);
+    public static void show(final @NotNull Project project, final @NotNull List<String> conflicting, final @NotNull Runnable onResolve, final @NotNull Runnable onContinue, final @NotNull Runnable onAbort) {
+        Services.getInstance(project, Guides.class).add(Guide.RESOLVE_GIT_CONFLICTS);
+        final @NotNull Notifier notifier = Services.getInstance(project, Notifier.class);
 
         notifier.warnWithActions(
-                p,
+                project,
                 Bundle.message("git.conflicts.title"),
                 conflictMessage(conflicting),
                 notifier.action(Bundle.message("git.conflicts.resolve"), onResolve),

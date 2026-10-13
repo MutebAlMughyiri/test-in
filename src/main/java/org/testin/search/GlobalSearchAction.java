@@ -35,8 +35,8 @@ public final class GlobalSearchAction extends AbstractAnyProjectAction {
 
     // UC-INTERNAL-001
     @Override
-    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        new GlobalSearchDialog(p).show();
+    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
+        new GlobalSearchDialog(project).show();
     }
 
     @Override

@@ -46,29 +46,29 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public record TestRunFixture(@NotNull Project p, @NotNull List<TestCaseDto> testCases, @NotNull TestRunNode testRun) {
+public record TestRunFixture(@NotNull Project project, @NotNull List<TestCaseDto> testCases, @NotNull TestRunNode testRun) {
 
-    public static @NotNull TestRunFixture of(final @NotNull Project p, final @NotNull Path root, final @NotNull List<RunItem> runItems, final @NotNull List<TestCaseDto> testCases) {
-        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(p, root);
-        return new TestRunFixture(p, testCases, EditorFixtures.testRun(p, testProject, runItems));
+    public static @NotNull TestRunFixture of(final @NotNull Project project, final @NotNull Path root, final @NotNull List<RunItem> runItems, final @NotNull List<TestCaseDto> testCases) {
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(project, root);
+        return new TestRunFixture(project, testCases, EditorFixtures.testRun(project, testProject, runItems));
     }
 
-    public static @NotNull List<TestCaseDto> testCasesIn(final @NotNull Project p, final @NotNull Path root, final int count) {
-        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(p, root);
-        final @NotNull TestSetNode testSet = EditorFixtures.testSet(p, testProject, "Checkout");
+    public static @NotNull List<TestCaseDto> testCasesIn(final @NotNull Project project, final @NotNull Path root, final int count) {
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(project, root);
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(project, testProject, "Checkout");
         final @NotNull List<TestCaseDto> made = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             final @NotNull TestCaseDto testCase = TestCaseDto.builder().id(UUID.randomUUID()).description("Test case number " + (i + 1)).expectedResult("It works " + (i + 1)).order(String.format("m%04d", i)).build();
             testCase.setParent(testSet);
-            Services.getInstance(p, TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase);
+            Services.getInstance(project, TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase);
             made.add(testCase);
         }
         return made;
     }
 
-    public static @NotNull TestRunFixture pending(final @NotNull Project p, final @NotNull Path root, final int count) {
-        final @NotNull List<TestCaseDto> testCases = testCasesIn(p, root, count);
-        return of(p, root, testCases.stream().map(EditorFixtures::pending).toList(), testCases);
+    public static @NotNull TestRunFixture pending(final @NotNull Project project, final @NotNull Path root, final int count) {
+        final @NotNull List<TestCaseDto> testCases = testCasesIn(project, root, count);
+        return of(project, root, testCases.stream().map(EditorFixtures::pending).toList(), testCases);
     }
 
     public static @NotNull AnAction keyFor(final @NotNull TestRunEditor editor, final @NotNull RunItemStatus status) {
@@ -83,11 +83,11 @@ public record TestRunFixture(@NotNull Project p, @NotNull List<TestCaseDto> test
     }
 
     public @NotNull TestRunEditor opened(final @NotNull Disposable owner) {
-        return EditorFixtures.openTestRunEditor(p, testRun, owner);
+        return EditorFixtures.openTestRunEditor(project, testRun, owner);
     }
 
     public @NotNull RunItem runItemOf(final @NotNull TestCaseDto testCase) {
-        return Services.getInstance(p, TestRuns.class).getRunItems(testRun.getPath()).runItemOf(testCase.getId()).orElseThrow();
+        return Services.getInstance(project, TestRuns.class).getRunItems(testRun.getPath()).runItemOf(testCase.getId()).orElseThrow();
     }
 
     public @NotNull RunItemStatus statusOf(final @NotNull TestCaseDto testCase) {
@@ -95,11 +95,11 @@ public record TestRunFixture(@NotNull Project p, @NotNull List<TestCaseDto> test
     }
 
     public void press(final @NotNull TestRunEditor editor, final @NotNull RunItemStatus status) {
-        Gestures.press(p, keyFor(editor, status), editor.getList());
+        Gestures.press(project, keyFor(editor, status), editor.getList());
     }
 
     public @NotNull Optional<JComponent> failureDialog() {
-        return Optional.of(FailureDetailDialog.class).filter(kind -> ShownDialog.isOpen(p, kind)).map(kind -> ShownDialog.content(p, kind));
+        return Optional.of(FailureDetailDialog.class).filter(kind -> ShownDialog.isOpen(project, kind)).map(kind -> ShownDialog.content(project, kind));
     }
 
     public @NotNull JComponent openFailureDialog() {

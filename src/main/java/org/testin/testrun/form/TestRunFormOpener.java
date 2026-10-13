@@ -39,16 +39,16 @@ import java.util.Set;
 import java.util.UUID;
 
 public final class TestRunFormOpener {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull ProjectIndexer indexer;
     private final @NotNull TestCases testCases;
     private final @NotNull Nodes nodes;
 
-    public TestRunFormOpener(final @NotNull Project p) {
-        this.p = p;
-        this.indexer = Services.getInstance(p, ProjectIndexer.class);
-        this.testCases = Services.getInstance(p, TestCases.class);
-        this.nodes = Services.getInstance(p, Nodes.class);
+    public TestRunFormOpener(final @NotNull Project project) {
+        this.project = project;
+        this.indexer = Services.getInstance(project, ProjectIndexer.class);
+        this.testCases = Services.getInstance(project, TestCases.class);
+        this.nodes = Services.getInstance(project, Nodes.class);
     }
 
     public static @NotNull Set<UUID> checkedTestCases(final @NotNull SelectionTree selection) {
@@ -89,9 +89,9 @@ public final class TestRunFormOpener {
             if (!checked.isEmpty()) checkOnly(root, checked);
 
             ApplicationManager.getApplication().invokeLater(() -> {
-                final @NotNull TestRunConfigurationForm form = new TestRunConfigurationForm(p, name, configuration);
+                final @NotNull TestRunConfigurationForm form = new TestRunConfigurationForm(project, name, configuration);
 
-                new TestRunConfigurationDialog(p, form, new TestRunFormFilter(p, testCasesRoot.getPath(), root), action).show();
+                new TestRunConfigurationDialog(project, form, new TestRunFormFilter(project, testCasesRoot.getPath(), root), action).show();
             });
         });
     }

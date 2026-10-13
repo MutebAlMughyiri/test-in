@@ -30,8 +30,8 @@ import java.util.List;
 public final class ScreenshotDialog extends AbstractFrameworkDialog {
 
     // UC-VIEW-PANEL-006, Rule-VIEW-PANEL-081
-    public ScreenshotDialog(final @NotNull Project p, final @NotNull String name, final byte @NotNull [] png) {
-        super(p);
+    public ScreenshotDialog(final @NotNull Project project, final @NotNull String name, final byte @NotNull [] png) {
+        super(project);
 
         title = name;
 

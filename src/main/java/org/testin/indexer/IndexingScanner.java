@@ -58,12 +58,12 @@ final class IndexingScanner {
     private final @NotNull ReadProblems problems;
     private final @NotNull TestDataFiles testDataFiles;
 
-    IndexingScanner(final @NotNull Project p, final @NotNull IndexerDataStore store) {
+    IndexingScanner(final @NotNull Project project, final @NotNull IndexerDataStore store) {
         this.store = store;
-        this.directoryMapper = Services.getInstance(p, NodeMapper.class);
-        this.mapper = Services.getInstance(p, JsonCodec.class);
-        this.problems = new ReadProblems(p, store);
-        this.testDataFiles = Services.getInstance(p, TestDataFiles.class);
+        this.directoryMapper = Services.getInstance(project, NodeMapper.class);
+        this.mapper = Services.getInstance(project, JsonCodec.class);
+        this.problems = new ReadProblems(project, store);
+        this.testDataFiles = Services.getInstance(project, TestDataFiles.class);
     }
 
     private static boolean looksLikeATestCaseFile(final @NotNull Path file) {

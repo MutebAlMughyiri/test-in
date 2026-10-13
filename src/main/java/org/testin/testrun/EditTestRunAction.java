@@ -39,15 +39,15 @@ public class EditTestRunAction extends AbstractAnyProjectAction {
 
     // UC-TREE-PANEL-022
     @Override
-    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
         TestinDataKeys.tree(e)
                 .map(SimpleTree::getSelectionPath)
-                .ifPresent(path -> new EditTestRunWork(p).editAt(path));
+                .ifPresent(path -> new EditTestRunWork(project).editAt(path));
     }
 
     // UC-TREE-PANEL-022, Rule-TREE-PANEL-073
     @Override
-    protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
         GrayWithReason.unless(this, e, selectedTestRun(TestinDataKeys.singleSelectedNode(e)).isPresent(), Bundle.message("test.run.not.open.description"));
     }
 

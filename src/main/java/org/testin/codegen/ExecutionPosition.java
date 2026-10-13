@@ -37,24 +37,24 @@ import java.util.function.ToIntFunction;
 public final class ExecutionPosition {
     // UC-CODEGEN-002, Rule-CODEGEN-014
     @FromContentModule
-    public static int of(final @NotNull Project p, final @NotNull TestCaseDto testCase) {
-        return ofEach(p).applyAsInt(testCase);
+    public static int of(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
+        return ofEach(project).applyAsInt(testCase);
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-014
-    public static @NotNull ToIntFunction<TestCaseDto> ofEach(final @NotNull Project p) {
+    public static @NotNull ToIntFunction<TestCaseDto> ofEach(final @NotNull Project project) {
         final @NotNull Map<Path, List<TestCaseDto>> sets = new HashMap<>();
 
-        return testCase -> TestCaseOrder.positionOf(sets.computeIfAbsent(testCase.getParent().getPath(), _ -> setOf(p, testCase)), testCase);
+        return testCase -> TestCaseOrder.positionOf(sets.computeIfAbsent(testCase.getParent().getPath(), _ -> setOf(project, testCase)), testCase);
     }
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-014
-    public static @NotNull Map<UUID, Integer> placesOf(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases) {
+    public static @NotNull Map<UUID, Integer> placesOf(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases) {
         final @NotNull Map<Path, List<TestCaseDto>> sets = new HashMap<>();
         final @NotNull Map<UUID, Integer> places = new HashMap<>();
 
         for (final TestCaseDto testCase : testCases) {
-            final @NotNull List<TestCaseDto> set = sets.computeIfAbsent(testCase.getParent().getPath(), _ -> setOf(p, testCase));
+            final @NotNull List<TestCaseDto> set = sets.computeIfAbsent(testCase.getParent().getPath(), _ -> setOf(project, testCase));
             final int place = TestCaseOrder.positionOf(set, testCase);
             if (place <= set.size()) places.put(testCase.getId(), place);
         }
@@ -63,7 +63,7 @@ public final class ExecutionPosition {
     }
 
     // UC-CODEGEN-011, Rule-CODEGEN-042
-    public static @NotNull List<TestCaseDto> setOf(final @NotNull Project p, final @NotNull TestCaseDto testCase) {
-        return TestCaseOrder.ordered(Services.getInstance(p, TestCases.class).getTestCasesForTestSet(testCase.getParent().getPath()));
+    public static @NotNull List<TestCaseDto> setOf(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
+        return TestCaseOrder.ordered(Services.getInstance(project, TestCases.class).getTestCasesForTestSet(testCase.getParent().getPath()));
     }
 }

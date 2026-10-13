@@ -47,25 +47,25 @@ public record RenamedNode(@NotNull AbstractNode dir, @NotNull List<String> from,
     }
 
     // UC-TREE-PANEL-011, Rule-CODEGEN-082
-    public boolean toTheFilesName(final @NotNull Project p) {
-        return dir.getType() == NodeType.TP && TestinYml.names(p, newName);
+    public boolean toTheFilesName(final @NotNull Project project) {
+        return dir.getType() == NodeType.TP && TestinYml.names(project, newName);
     }
 
     // Rule-CODEGEN-082
-    public boolean movesCode(final @NotNull Project p) {
-        return CodeOn.isOn(p) || (OptionalPlugin.JAVA.isAvailable() && toTheFilesName(p));
+    public boolean movesCode(final @NotNull Project project) {
+        return CodeOn.isOn(project) || (OptionalPlugin.JAVA.isAvailable() && toTheFilesName(project));
     }
 
     // UC-CODEGEN-017, Rule-CODEGEN-080
-    public boolean packageInTheWay(final @NotNull Project p) {
-        if (!NodeType.BECOME_JAVA_PACKAGES.contains(dir.getType()) || !movesCode(p)) return false;
+    public boolean packageInTheWay(final @NotNull Project project) {
+        if (!NodeType.BECOME_JAVA_PACKAGES.contains(dir.getType()) || !movesCode(project)) return false;
 
         final @NotNull List<String> from = Fqcn.ofPackage(dir);
         final @NotNull List<String> to = new ArrayList<>(from);
         to.set(to.size() - 1, newPackage());
         if (to.equals(from)) return false;
 
-        return JavaSourceRoot.find(p)
+        return JavaSourceRoot.find(project)
                 .filter(root -> JavaSourceRoot.under(root, String.join("/", from)).isPresent())
                 .flatMap(root -> JavaSourceRoot.under(root, String.join("/", to)))
                 .isPresent();

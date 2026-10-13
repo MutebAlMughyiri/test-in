@@ -26,7 +26,7 @@ import org.testin.setting.AppSettingsState;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DownloadFolder {
     // Rule-SETTING-021, Rule-SETTING-023
-    public static @NotNull String of(final @NotNull Project p) {
-        return Services.getInstance(p, AppSettingsState.class).defaultDownloadFolder;
+    public static @NotNull String of(final @NotNull Project project) {
+        return Services.getInstance(project, AppSettingsState.class).defaultDownloadFolder;
     }
 }

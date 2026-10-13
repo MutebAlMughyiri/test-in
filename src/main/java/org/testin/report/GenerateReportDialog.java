@@ -37,13 +37,13 @@ public final class GenerateReportDialog extends AbstractFrameworkDialog {
     private final @NotNull BiConsumer<@NotNull FileFormat, @NotNull File> onGenerate;
 
     // UC-REPORT-001
-    public GenerateReportDialog(final @NotNull Project p, final @NotNull String suggestedFileName, final @NotNull BiConsumer<@NotNull FileFormat, @NotNull File> onGenerate) {
-        super(p);
+    public GenerateReportDialog(final @NotNull Project project, final @NotNull String suggestedFileName, final @NotNull BiConsumer<@NotNull FileFormat, @NotNull File> onGenerate) {
+        super(project);
         this.onGenerate = onGenerate;
 
         title = Bundle.message("dialog.report.title");
 
-        form = DestinationForm.stacked(p,
+        form = DestinationForm.stacked(project,
                 Arrays.stream(FileFormat.values()).filter(FileFormat::isReportable).toArray(FileFormat[]::new),
                 FileFormat.PDF,
                 suggestedFileName,

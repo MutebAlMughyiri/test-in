@@ -28,7 +28,7 @@ import java.util.List;
 public class RemoveJavaClass implements CodeChange<AbstractNode> {
     // UC-CODEGEN-018, Rule-CODEGEN-059
     @Override
-    public void execute(final @NotNull Project p, final @NotNull AbstractNode dir) {
+    public void execute(final @NotNull Project project, final @NotNull AbstractNode dir) {
         final @NotNull List<String> fqcn = Fqcn.ofClass(dir);
         if (fqcn.isEmpty()) return;
 
@@ -36,7 +36,7 @@ public class RemoveJavaClass implements CodeChange<AbstractNode> {
         final @NotNull String className = fqcn.getLast();
         final @NotNull String fileName = className + ".java";
 
-        JavaSourceRoot.writeInRoot(p, testSourceRoot ->
+        JavaSourceRoot.writeInRoot(project, testSourceRoot ->
                 JavaSourceRoot.deleteUnder(testSourceRoot, packagePath + "/" + fileName, this));
     }
 }

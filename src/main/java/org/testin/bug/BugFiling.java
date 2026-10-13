@@ -44,15 +44,15 @@ public final class BugFiling {
     static @NotNull Function<ProgressIndicator, GitHubCli> ghOnThisMachine = GitHubCli::onPath;
 
     // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-073, Rule-VIEW-PANEL-077
-    public static void send(final @NotNull Project p, final @NotNull RunItemPath runItemPath, final @NotNull BugRepository repository, final @NotNull BugReportEdits edits, final @NotNull List<byte[]> screenshots, final @NotNull Runnable redraw) {
-        final @NotNull OpenBugReports reports = Services.getInstance(p, OpenBugReports.class);
+    public static void send(final @NotNull Project project, final @NotNull RunItemPath runItemPath, final @NotNull BugRepository repository, final @NotNull BugReportEdits edits, final @NotNull List<byte[]> screenshots, final @NotNull Runnable redraw) {
+        final @NotNull OpenBugReports reports = Services.getInstance(project, OpenBugReports.class);
         reports.keep(runItemPath, edits);
         reports.moveTo(runItemPath, Stage.SENDING);
         redraw.run();
 
-        BackgroundWork.run(p, Bundle.message("bug.sending"), Bundle.message("bug.send.failed.title"), false,
+        BackgroundWork.run(project, Bundle.message("bug.sending"), Bundle.message("bug.send.failed.title"), false,
                 indicator -> ghOnThisMachine.apply(indicator).create(repository, edits.title(), edits.body(), screenshots),
-                answer -> record(p, runItemPath, answer),
+                answer -> record(project, runItemPath, answer),
                 () -> {
                     reports.end(runItemPath, Stage.SENDING);
                     redraw.run();
@@ -60,25 +60,25 @@ public final class BugFiling {
     }
 
     // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-089
-    static void record(final @NotNull Project p, final @NotNull RunItemPath runItemPath, final @NotNull IssueCreation answer) {
-        final @NotNull Notifier notifier = Services.getInstance(p, Notifier.class);
+    static void record(final @NotNull Project project, final @NotNull RunItemPath runItemPath, final @NotNull IssueCreation answer) {
+        final @NotNull Notifier notifier = Services.getInstance(project, Notifier.class);
 
         answer.url().ifPresentOrElse(url -> {
-            Services.getInstance(p, OpenBugReports.class).discard(runItemPath);
+            Services.getInstance(project, OpenBugReports.class).discard(runItemPath);
 
             final @NotNull List<String> said = new ArrayList<>(List.of(BugIssueUrl.reference(url)));
-            store(p, runItemPath, url).ifPresent(said::add);
+            store(project, runItemPath, url).ifPresent(said::add);
             if (answer.notUploaded() > 0) said.add(Bundle.message("bug.not.uploaded", answer.notUploaded()));
             else if (!answer.problem().isEmpty()) said.add(answer.problem());
 
-            notifier.infoWithActions(p, Done.REPORTED.getOutcome(), String.join("\n", said),
+            notifier.infoWithActions(project, Done.REPORTED.getOutcome(), String.join("\n", said),
                     notifier.lastingAction(Bundle.message("bug.open.issue"), () -> BugIssueUrl.open(url)));
-        }, () -> notifier.error(p, Bundle.message("bug.send.failed.title"), answer.problem()));
+        }, () -> notifier.error(project, Bundle.message("bug.send.failed.title"), answer.problem()));
     }
 
     // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-074
-    static @NotNull Optional<String> store(final @NotNull Project p, final @NotNull RunItemPath runItemPath, final @NotNull String url) {
-        final @NotNull TestRuns testRuns = Services.getInstance(p, TestRuns.class);
+    static @NotNull Optional<String> store(final @NotNull Project project, final @NotNull RunItemPath runItemPath, final @NotNull String url) {
+        final @NotNull TestRuns testRuns = Services.getInstance(project, TestRuns.class);
         final @NotNull Optional<RunItem> found = testRuns.findRunItems(runItemPath.testRunPath()).flatMap(runItemPath::in);
         if (found.isEmpty()) return Optional.of(Bundle.message("bug.not.stored.moved"));
         if (found.orElseThrow().getStatus() != RunItemStatus.FAILED)

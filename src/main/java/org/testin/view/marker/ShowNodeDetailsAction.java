@@ -27,13 +27,13 @@ import org.testin.actions.TestinDataKeys;
 public class ShowNodeDetailsAction extends AbstractAnyProjectAction {
     // UC-TREE-PANEL-027, Rule-TREE-PANEL-087
     @Override
-    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        TestinDataKeys.singleSelectedNode(e).ifPresent(dir -> new NodeDetailsDialog(p, dir).show());
+    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
+        TestinDataKeys.singleSelectedNode(e).ifPresent(dir -> new NodeDetailsDialog(project, dir).show());
     }
 
     // UC-TREE-PANEL-027, Rule-TREE-PANEL-087
     @Override
-    protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
         e.getPresentation().setEnabled(TestinDataKeys.singleSelectedNode(e).isPresent());
     }
 

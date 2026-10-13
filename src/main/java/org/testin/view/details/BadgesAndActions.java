@@ -39,11 +39,11 @@ public final class BadgesAndActions extends AbstractDetails {
 
     // UC-VIEW-PANEL-004, UC-VIEW-PANEL-012, Rule-VIEW-PANEL-085
     @Override
-    public int render(final @NotNull Project p, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto testCase, final int currentRow) {
+    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto testCase, final int currentRow) {
         final @NotNull JBPanel<?> line = line(GAP);
 
-        TestCaseBadges.of(p, testCase).forEach(line::add);
-        TestCaseHoverButtons.of(p, testCase, Services.getInstance(p, Nodes.class).find(Services.getInstance(p, TestinRoot.class).resolve(currentPath))).forEach(line::add);
+        TestCaseBadges.of(project, testCase).forEach(line::add);
+        TestCaseHoverButtons.of(project, testCase, Services.getInstance(project, Nodes.class).find(Services.getInstance(project, TestinRoot.class).resolve(currentPath))).forEach(line::add);
 
         return addFullWidthRow(panel, gbc, line, JBUI.insets(INSETS_TOP, INSETS_SIDE, 0, INSETS_SIDE), currentRow);
     }

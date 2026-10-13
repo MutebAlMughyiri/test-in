@@ -40,10 +40,10 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class DescriptionBulkSectionDialog extends AbstractJsonSplitBulkSectionDialog {
-    private final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
+    private final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
 
-    public DescriptionBulkSectionDialog(final @NotNull Project p, final @NotNull List<TestCaseDto> selectedTestCases, final @NotNull Consumer<List<TestCaseDto>> updatedTestCases) {
-        super(p, selectedTestCases, updatedTestCases);
+    public DescriptionBulkSectionDialog(final @NotNull Project project, final @NotNull List<TestCaseDto> selectedTestCases, final @NotNull Consumer<List<TestCaseDto>> updatedTestCases) {
+        super(project, selectedTestCases, updatedTestCases);
     }
 
     private static @NotNull Optional<String> keyOf(final @NotNull String description) {
@@ -113,10 +113,10 @@ public class DescriptionBulkSectionDialog extends AbstractJsonSplitBulkSectionDi
         }
 
         if (!notANameYet.isEmpty()) {
-            notifier.softRefuse(p, Bundle.message("description.not.a.method.title"), Bundle.message("description.not.a.method.message", notANameYet.getFirst()));
+            notifier.softRefuse(project, Bundle.message("description.not.a.method.title"), Bundle.message("description.not.a.method.message", notANameYet.getFirst()));
         }
         if (!takenYet.isEmpty()) {
-            notifier.softRefuse(p, Bundle.message("description.taken.title"), Bundle.message("description.taken.message", takenYet.getFirst()));
+            notifier.softRefuse(project, Bundle.message("description.taken.title"), Bundle.message("description.taken.message", takenYet.getFirst()));
         }
 
         return clashing;

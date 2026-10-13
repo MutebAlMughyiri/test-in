@@ -192,13 +192,13 @@ public class ScreenReaderNamesIdeTest extends BasePlatformTestCase {
     }
 
     private static final class EveryField extends AbstractFrameworkDialog {
-        private EveryField(final @NotNull Project p) {
-            super(p);
+        private EveryField(final @NotNull Project project) {
+            super(project);
             title = "Every field";
             components = List.of(
                     DialogPart.textInput().caption("Name").placeholder("set name..").build(),
                     DialogPart.textInput().placeholder("set path..").build(),
-                    DialogPart.multiLineField(p, "Steps", "write the steps..", ""),
+                    DialogPart.multiLineField(project, "Steps", "write the steps..", ""),
                     DialogPart.choice("Branch", List.of("main", "release"), "main"),
                     DialogPart.<String>radios("Format").option("PDF", "pdf").option("HTML", "html").select("pdf").build(),
                     DialogPart.<Integer>textFieldWithSelections().placeholder("set kind..").selection(DialogStyle.NO_ICON, "Test Set", "Holds test cases", 1).build(),

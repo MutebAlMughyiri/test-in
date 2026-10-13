@@ -45,7 +45,7 @@ import java.util.Optional;
 
 // UC-TREE-PANEL-003
 public final class CloneTestProject {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull String gitUrl;
     private final @NotNull String projectName;
     private final @NotNull TreePanel treePanel;
@@ -54,24 +54,24 @@ public final class CloneTestProject {
     private final @NotNull ProjectIndexer indexer;
     private final @NotNull BoundTestProject boundTestProject;
 
-    public CloneTestProject(final @NotNull Project p, final @NotNull String gitUrl, final @NotNull String projectName, final @NotNull TreePanel treePanel) {
-        this.p = p;
+    public CloneTestProject(final @NotNull Project project, final @NotNull String gitUrl, final @NotNull String projectName, final @NotNull TreePanel treePanel) {
+        this.project = project;
         this.gitUrl = gitUrl;
         this.projectName = projectName;
         this.treePanel = treePanel;
-        this.notifier = Services.getInstance(p, Notifier.class);
-        this.testinRoot = Services.getInstance(p, TestinRoot.class);
-        this.indexer = Services.getInstance(p, ProjectIndexer.class);
-        this.boundTestProject = Services.getInstance(p, BoundTestProject.class);
+        this.notifier = Services.getInstance(project, Notifier.class);
+        this.testinRoot = Services.getInstance(project, TestinRoot.class);
+        this.indexer = Services.getInstance(project, ProjectIndexer.class);
+        this.boundTestProject = Services.getInstance(project, BoundTestProject.class);
     }
 
-    public static @NotNull String nameFor(final @NotNull Project p, final @NotNull String url) {
-        final @NotNull String named = TestinYml.projectName(p);
-        if (!named.isEmpty() && TestinYml.isRepoUrl(p, url)) return named;
+    public static @NotNull String nameFor(final @NotNull Project project, final @NotNull String url) {
+        final @NotNull String named = TestinYml.projectName(project);
+        if (!named.isEmpty() && TestinYml.isRepoUrl(project, url)) return named;
 
         final @NotNull String base = repositoryName(url);
-        final @NotNull Path root = Services.getInstance(p, TestinRoot.class).absolutePath();
-        final @NotNull Nodes nodes = Services.getInstance(p, Nodes.class);
+        final @NotNull Path root = Services.getInstance(project, TestinRoot.class).absolutePath();
+        final @NotNull Nodes nodes = Services.getInstance(project, Nodes.class);
 
         @NotNull String name = base;
         for (int n = 2; nodes.isTaken(root.resolve(name), Optional.empty()); n++) {
@@ -102,18 +102,18 @@ public final class CloneTestProject {
         final @NotNull String address = TestinYml.addressWithoutCredentials(gitUrl);
         if (address.equals(gitUrl.strip())) return;
 
-        final @NotNull GitRepositoryService git = new GitRepositoryService(p);
+        final @NotNull GitRepositoryService git = new GitRepositoryService(project);
         git.changeRemoteUrl(projectPath, git.getRemoteName(projectPath), address);
     }
 
     // UC-TREE-PANEL-003, Rule-TREE-PANEL-107
     public void execute() {
         if (gitUrl.trim().isEmpty() || projectName.trim().isEmpty()) {
-            notifier.error(p, Bundle.message("clone.error.title"), Bundle.message("clone.error.missing"));
+            notifier.error(project, Bundle.message("clone.error.title"), Bundle.message("clone.error.missing"));
             return;
         }
 
-        BackgroundWork.start(new Task.Backgroundable(p, Bundle.message("clone.task"), false) {
+        BackgroundWork.start(new Task.Backgroundable(project, Bundle.message("clone.task"), false) {
             @Override
             public void run(final @NotNull ProgressIndicator indicator) {
                 indicator.setIndeterminate(true);
@@ -123,7 +123,7 @@ public final class CloneTestProject {
                     final @NotNull Path parentPath = testinRoot.absolutePath();
 
                     // UC-TREE-PANEL-003
-                    final @NotNull GitCommandResult result = Git.getInstance().clone(p, parentPath, gitUrl, projectName);
+                    final @NotNull GitCommandResult result = Git.getInstance().clone(project, parentPath, gitUrl, projectName);
                     result.throwOnError();
 
                     final @NotNull Path projectPath = testinRoot.absolutePath().resolve(projectName);
@@ -135,14 +135,14 @@ public final class CloneTestProject {
                         boundTestProject.choose(projectName);
 
                         treePanel.refresh();
-                        notifier.softShow(p, Done.CLONED);
+                        notifier.softShow(project, Done.CLONED);
                     });
 
                 } catch (final Exception ex) {
                     // UC-TREE-PANEL-003, Rule-SHARE-062
                     final @NotNull String said = GitSafeText.withoutCredentials(FailureText.of(ex));
 
-                    notifier.error(p, Bundle.message("clone.failed.title"), Bundle.message("clone.failed.message", said));
+                    notifier.error(project, Bundle.message("clone.failed.title"), Bundle.message("clone.failed.message", said));
                 }
             }
         });

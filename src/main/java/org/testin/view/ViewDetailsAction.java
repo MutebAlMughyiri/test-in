@@ -31,17 +31,17 @@ import java.util.List;
 public class ViewDetailsAction extends AbstractAnyProjectAction {
     // UC-VIEW-PANEL-001, Rule-VIEW-PANEL-011, Rule-VIEW-PANEL-013
     @Override
-    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
         final @NotNull List<TestCaseDto> selected = TestinDataKeys.selectedTestCases(e);
         if (selected.isEmpty()) return;
 
         TestinDataKeys.editor(e).ifPresent(editor ->
-                ViewToolWindowFactory.showPanel(p, selected, editor.getParent().getPath2(), ViewPanel::focusDetailsTab));
+                ViewToolWindowFactory.showPanel(project, selected, editor.getParent().getPath2(), ViewPanel::focusDetailsTab));
     }
 
     // UC-VIEW-PANEL-001, Rule-EDITOR-PANEL-230
     @Override
-    protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
         GrayWithReason.unlessTestCaseSelected(this, e);
     }
 

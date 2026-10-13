@@ -57,7 +57,7 @@ import java.util.stream.Stream;
 
 @Service(Service.Level.PROJECT)
 public final class ProjectIndexer {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     @Getter(AccessLevel.PACKAGE)
     private final @NotNull IndexerDataStore store;
     private final @NotNull ReadProblems problems;
@@ -77,18 +77,18 @@ public final class ProjectIndexer {
     private final @NotNull LastOpenEditors lastOpenEditors;
     private volatile @NotNull CountDownLatch indexingLatch = new CountDownLatch(1);
 
-    public ProjectIndexer(final @NotNull Project p) {
-        this.p = p;
-        this.testinRoot = Services.getInstance(p, TestinRoot.class);
+    public ProjectIndexer(final @NotNull Project project) {
+        this.project = project;
+        this.testinRoot = Services.getInstance(project, TestinRoot.class);
         this.rescan = Services.getInstance(Rescan.class);
-        this.boundTestProject = Services.getInstance(p, BoundTestProject.class);
-        this.directoryMapper = Services.getInstance(p, NodeMapper.class);
-        this.lastOpenEditors = Services.getInstance(p, LastOpenEditors.class);
-        this.store = new IndexerDataStore(p);
-        this.problems = new ReadProblems(p, store);
-        this.scanCoordinator = new ProjectScanCoordinator(new IndexingScanner(p, store));
-        this.runItemWriter = new RunItemWriter(p, store);
-        this.nodeFiles = new NodeFiles(p, this, store);
+        this.boundTestProject = Services.getInstance(project, BoundTestProject.class);
+        this.directoryMapper = Services.getInstance(project, NodeMapper.class);
+        this.lastOpenEditors = Services.getInstance(project, LastOpenEditors.class);
+        this.store = new IndexerDataStore(project);
+        this.problems = new ReadProblems(project, store);
+        this.scanCoordinator = new ProjectScanCoordinator(new IndexingScanner(project, store));
+        this.runItemWriter = new RunItemWriter(project, store);
+        this.nodeFiles = new NodeFiles(project, this, store);
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-011
@@ -141,7 +141,7 @@ public final class ProjectIndexer {
     private void indexInBackground(final @NotNull Path projectPath, final @NotNull AtomicInteger projectsLeft, final @NotNull AtomicBoolean allRead, final @NotNull CountDownLatch passLatch) {
         final @NotNull String projectName = projectPath.getFileName().toString();
 
-        BackgroundWork.start(new Task.Backgroundable(p, Bundle.message("indexer.task.title", projectName), true) {
+        BackgroundWork.start(new Task.Backgroundable(project, Bundle.message("indexer.task.title", projectName), true) {
             @Override
             public void run(final @NotNull ProgressIndicator indicator) {
                 indicator.setIndeterminate(false);
@@ -200,7 +200,7 @@ public final class ProjectIndexer {
 
     // UC-INTERNAL-002, Rule-EDITOR-PANEL-239
     private void announceIndexed() {
-        if (!p.isDisposed()) p.getMessageBus().syncPublisher(IndexChanged.TOPIC).indexed();
+        if (!project.isDisposed()) project.getMessageBus().syncPublisher(IndexChanged.TOPIC).indexed();
     }
 
     // UC-INTERNAL-002
@@ -261,9 +261,9 @@ public final class ProjectIndexer {
 
     // UC-INTERNAL-002, Rule-INTERNAL-114
     void announce(final @NotNull Path changed) {
-        if (p.isDisposed()) return;
+        if (project.isDisposed()) return;
 
-        final @NotNull IndexChanged listeners = p.getMessageBus().syncPublisher(IndexChanged.TOPIC);
+        final @NotNull IndexChanged listeners = project.getMessageBus().syncPublisher(IndexChanged.TOPIC);
         if (absoluteRoot().equals(changed.getParent())) listeners.testProjectsChanged();
         else listeners.nodesChanged(Set.of(changed.getParent()));
     }
@@ -276,12 +276,13 @@ public final class ProjectIndexer {
 
     // UC-INTERNAL-002, Rule-INTERNAL-114
     void announceChildrenOf(final @NotNull Path folder) {
-        if (!p.isDisposed()) p.getMessageBus().syncPublisher(IndexChanged.TOPIC).nodesChanged(Set.of(folder));
+        if (!project.isDisposed())
+            project.getMessageBus().syncPublisher(IndexChanged.TOPIC).nodesChanged(Set.of(folder));
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-114
     private void announceReadAgain() {
-        if (!p.isDisposed()) p.getMessageBus().syncPublisher(IndexChanged.TOPIC).readAgain();
+        if (!project.isDisposed()) project.getMessageBus().syncPublisher(IndexChanged.TOPIC).readAgain();
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-006

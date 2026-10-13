@@ -30,11 +30,11 @@ public class GenerateReportBtn extends AbstractIconButton implements ToolbarItem
     private final @NotNull TestRunEditor editor;
 
     // UC-REPORT-001
-    public GenerateReportBtn(final @NotNull Project p, final @NotNull TestRunEditor editor) {
+    public GenerateReportBtn(final @NotNull Project project, final @NotNull TestRunEditor editor) {
         super(Bundle.message("toolbar.report"), AllIcons.ToolbarDecorator.Export, Shortcuts.GenerateReport);
         this.editor = editor;
 
-        addActionListener(_ -> new GenerateReportAction(p, editor).execute());
+        addActionListener(_ -> new GenerateReportAction(project, editor).execute());
 
         updateEnabledState();
     }

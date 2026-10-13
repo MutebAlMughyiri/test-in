@@ -43,10 +43,10 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReportBug {
     // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-067
-    public static void start(final @NotNull Project p, final @NotNull TestRunNode testRunNode, final @NotNull UUID runItemId, final @NotNull TestCaseDto testCase, final @NotNull Runnable redraw) {
-        final @NotNull TestRuns testRuns = Services.getInstance(p, TestRuns.class);
-        final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
-        final @NotNull OpenBugReports reports = Services.getInstance(p, OpenBugReports.class);
+    public static void start(final @NotNull Project project, final @NotNull TestRunNode testRunNode, final @NotNull UUID runItemId, final @NotNull TestCaseDto testCase, final @NotNull Runnable redraw) {
+        final @NotNull TestRuns testRuns = Services.getInstance(project, TestRuns.class);
+        final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
+        final @NotNull OpenBugReports reports = Services.getInstance(project, OpenBugReports.class);
         final @NotNull RunItemPath runItemPath = new RunItemPath(testRunNode.getPath(), runItemId);
 
         final @NotNull Optional<RunItems> runItems = testRuns.findRunItems(runItemPath.testRunPath());
@@ -59,38 +59,38 @@ public final class ReportBug {
         final @NotNull RunItem failedItem = failed.orElseThrow();
         final @NotNull Optional<TestCaseFile> file = testCases.testCaseFile(testCase);
 
-        BackgroundWork.run(p, Bundle.message("bug.preparing"), Bundle.message("bug.send.failed.title"), true,
-                indicator -> prepare(p, BugFacts.of(failedItem, testCase, testRunNode.getMarker(), testRunNode.getName(), testRuns.screenshots(runItemPath.testRunPath(), failedItem)), file, indicator),
-                bug -> open(p, runItemPath, bug, redraw),
+        BackgroundWork.run(project, Bundle.message("bug.preparing"), Bundle.message("bug.send.failed.title"), true,
+                indicator -> prepare(project, BugFacts.of(failedItem, testCase, testRunNode.getMarker(), testRunNode.getName(), testRuns.screenshots(runItemPath.testRunPath(), failedItem)), file, indicator),
+                bug -> open(project, runItemPath, bug, redraw),
                 () -> {
                     reports.end(runItemPath, Stage.PREPARING);
                     redraw.run();
                 });
     }
 
-    private static @NotNull PreparedBug prepare(final @NotNull Project p, final @NotNull BugFacts facts, final @NotNull Optional<TestCaseFile> file, final @NotNull ProgressIndicator indicator) {
-        final @NotNull Optional<String> link = file.flatMap(where -> TestCaseLink.read(p, where));
+    private static @NotNull PreparedBug prepare(final @NotNull Project project, final @NotNull BugFacts facts, final @NotNull Optional<TestCaseFile> file, final @NotNull ProgressIndicator indicator) {
+        final @NotNull Optional<String> link = file.flatMap(where -> TestCaseLink.read(project, where));
         indicator.checkCanceled();
 
-        final @NotNull String bugRepoUrl = TestinYml.bugRepoUrlOnDisk(p);
+        final @NotNull String bugRepoUrl = TestinYml.bugRepoUrlOnDisk(project);
         final @NotNull Optional<String> whyNotReady = GitHubCli.onPath(indicator).whyItCannotSend(bugRepoUrl);
         indicator.checkCanceled();
-        final @NotNull Hints hints = Services.getInstance(p, Hints.class);
+        final @NotNull Hints hints = Services.getInstance(project, Hints.class);
         whyNotReady.ifPresentOrElse(reason -> hints.fire(BugRepository.of(bugRepoUrl).isEmpty()
-                ? SetupHint.of(SetupStep.BUG_FILING, reason, () -> BugRepoUrlForm.of(p))
+                ? SetupHint.of(SetupStep.BUG_FILING, reason, () -> BugRepoUrlForm.of(project))
                 : SetupHint.of(SetupStep.BUG_FILING, reason)), () -> hints.clear(SetupStep.BUG_FILING));
 
         return new PreparedBug(facts, BugTemplate.body(facts, link), BugRepository.of(bugRepoUrl), whyNotReady);
     }
 
-    private static void open(final @NotNull Project p, final @NotNull RunItemPath runItemPath, final @NotNull PreparedBug bug, final @NotNull Runnable redraw) {
-        final @NotNull OpenBugReports reports = Services.getInstance(p, OpenBugReports.class);
+    private static void open(final @NotNull Project project, final @NotNull RunItemPath runItemPath, final @NotNull PreparedBug bug, final @NotNull Runnable redraw) {
+        final @NotNull OpenBugReports reports = Services.getInstance(project, OpenBugReports.class);
         if (reports.anotherIsOpen(runItemPath)) {
-            Services.getInstance(p, Notifier.class).softRefuse(p, Bundle.message("bug.finish.open.report"));
+            Services.getInstance(project, Notifier.class).softRefuse(project, Bundle.message("bug.finish.open.report"));
             return;
         }
 
         reports.moveTo(runItemPath, Stage.OPEN);
-        new ReportBugDialog(p, runItemPath, bug, redraw).open();
+        new ReportBugDialog(project, runItemPath, bug, redraw).open();
     }
 }

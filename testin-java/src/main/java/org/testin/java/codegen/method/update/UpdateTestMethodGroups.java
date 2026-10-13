@@ -27,15 +27,15 @@ import java.util.List;
 public class UpdateTestMethodGroups extends BaseTestMethodChange implements CodeChange<TestCaseDto> {
     // UC-CODEGEN-012, Rule-CODEGEN-045
     @Override
-    public void execute(final @NotNull Project p, final @NotNull TestCaseDto testCase) {
-        applyUpdate(p, testCase, GenType.UPDATE_TEST_CASE_GROUP.description(), pm -> {
-            writeGroups(p, pm, testCase);
-            reformat(p, pm);
+    public void execute(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
+        applyUpdate(project, testCase, GenType.UPDATE_TEST_CASE_GROUP.description(), pm -> {
+            writeGroups(project, pm, testCase);
+            reformat(project, pm);
         });
     }
 
     @Override
-    public void executeAll(final @NotNull Project p, final @NotNull List<? extends TestCaseDto> testCases) {
-        applyToEach(p, testCases, GenType.UPDATE_TEST_CASE_GROUP.description(), (pm, testCase) -> writeGroups(p, pm, testCase));
+    public void executeAll(final @NotNull Project project, final @NotNull List<? extends TestCaseDto> testCases) {
+        applyToEach(project, testCases, GenType.UPDATE_TEST_CASE_GROUP.description(), (pm, testCase) -> writeGroups(project, pm, testCase));
     }
 }

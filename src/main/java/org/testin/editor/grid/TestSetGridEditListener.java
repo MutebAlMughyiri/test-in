@@ -52,11 +52,11 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
 
     private final @NotNull Map<UUID, Changed> changedThisGesture = new LinkedHashMap<>();
 
-    public TestSetGridEditListener(final @NotNull Project p, final @NotNull List<TestCaseDto> pageTestCases, final @NotNull Runnable onEdited, final @NotNull Path testSetPath) {
-        super(p, pageTestCases);
+    public TestSetGridEditListener(final @NotNull Project project, final @NotNull List<TestCaseDto> pageTestCases, final @NotNull Runnable onEdited, final @NotNull Path testSetPath) {
+        super(project, pageTestCases);
         this.onEdited = onEdited;
         this.testSetPath = testSetPath;
-        this.testCases = Services.getInstance(p, TestCases.class);
+        this.testCases = Services.getInstance(project, TestCases.class);
     }
 
     private static @NotNull String quoted(final @NotNull String typed, final @NotNull TestSetEditorAttributes attr) {
@@ -77,20 +77,20 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
 
         final @NotNull Optional<Changed> pending = Optional.ofNullable(changedThisGesture.get(testCase.getId()));
         final @NotNull TestCaseSnapshot undoFrom = pending.map(Changed::before)
-                .orElseGet(() -> TestCaseSnapshot.of(p, testSetPath, List.of(testCase.getId())));
+                .orElseGet(() -> TestCaseSnapshot.of(project, testSetPath, List.of(testCase.getId())));
         final @NotNull TestCaseDto current = pending.map(Changed::testCase).orElse(testCase);
 
         final @NotNull String typed = String.valueOf(model.getValueAt(row, col));
 
         final @NotNull Object before = attr.gridValue(current);
-        final @NotNull Optional<TestCaseDto> took = attr.getImportSetter().execute(p, current, typed);
+        final @NotNull Optional<TestCaseDto> took = attr.getImportSetter().execute(project, current, typed);
         final @NotNull Object after = attr.gridValue(took.orElse(current));
 
         model.setValueAt(after, row, col);
 
         // Rule-EDITOR-PANEL-206
         if (took.isEmpty()) {
-            notifier.softRefuse(p, Refused.UNREADABLE, quoted(typed, attr));
+            notifier.softRefuse(project, Refused.UNREADABLE, quoted(typed, attr));
             return GridEdit.REFUSED;
         }
 
@@ -130,7 +130,7 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
             for (final Changed changed : gesture) {
                 if (!testCases.putTestCase(testSetPath, changed.testCase())) continue;
 
-                changed.generators().forEach(generator -> generator.execute(p, changed.testCase()));
+                changed.generators().forEach(generator -> generator.execute(project, changed.testCase()));
                 written.add(changed.testCase());
                 before.add(changed.before());
             }
@@ -139,8 +139,8 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
 
             if (written.isEmpty()) return;
 
-            TestCaseSnapshot.record(p, UndoScope.of(testSetPath), TestCaseSnapshot.describe(Bundle.message("snapshot.verb.edit"), written),
-                    before, List.of(TestCaseSnapshot.of(p, testSetPath, TestCaseSnapshot.idsOf(written))));
+            TestCaseSnapshot.record(project, UndoScope.of(testSetPath), TestCaseSnapshot.describe(Bundle.message("snapshot.verb.edit"), written),
+                    before, List.of(TestCaseSnapshot.of(project, testSetPath, TestCaseSnapshot.idsOf(written))));
         });
     }
 }

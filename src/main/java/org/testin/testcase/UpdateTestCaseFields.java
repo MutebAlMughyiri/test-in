@@ -67,7 +67,7 @@ public enum UpdateTestCaseFields implements MenuItem {
             CreateTestCaseFields.DESCRIPTION.getIcon(),
             GenType.UPDATE_TEST_CASE_DESCRIPTION,
             Done.UPDATED,
-            (p, selectedTestCases, updatedTestCases) -> new DescriptionBulkSectionDialog(p, selectedTestCases, updatedTestCases).open(),
+            (project, selectedTestCases, updatedTestCases) -> new DescriptionBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getDescriptionSection,
             ImmutableList.of(CORRECTIONS)
     ),
@@ -78,7 +78,7 @@ public enum UpdateTestCaseFields implements MenuItem {
             CreateTestCaseFields.EXPECTED_RESULT.getIcon(),
             GenType.UPDATE_TEST_CASE_EXPECTED_RESULT,
             Done.UPDATED,
-            (p, selectedTestCases, updatedTestCases) -> new ExpectedResultBulkSectionDialog(p, selectedTestCases, updatedTestCases).open(),
+            (project, selectedTestCases, updatedTestCases) -> new ExpectedResultBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getExpectedResultSection,
             ImmutableList.of(CORRECTIONS)
     ),
@@ -89,7 +89,7 @@ public enum UpdateTestCaseFields implements MenuItem {
             CreateTestCaseFields.MODULE.getIcon(),
             GenType.UPDATE_TEST_CASE_MODULE,
             Done.UPDATED,
-            (p, selectedTestCases, updatedTestCases) -> new ModuleBulkSectionDialog(p, selectedTestCases, updatedTestCases).open(),
+            (project, selectedTestCases, updatedTestCases) -> new ModuleBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getModuleSection,
             ImmutableList.of(CORRECTIONS)
     ),
@@ -100,7 +100,7 @@ public enum UpdateTestCaseFields implements MenuItem {
             CreateTestCaseFields.TEST_DATA.getIcon(),
             GenType.UPDATE_TEST_CASE_TEST_DATA,
             Done.UPDATED,
-            (p, selectedTestCases, updatedTestCases) -> new TestDataBulkSectionDialog(p, selectedTestCases, updatedTestCases).open(),
+            (project, selectedTestCases, updatedTestCases) -> new TestDataBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getTestDataSection,
             ImmutableList.of()
     ),
@@ -111,7 +111,7 @@ public enum UpdateTestCaseFields implements MenuItem {
             CreateTestCaseFields.PRE_CONDITIONS.getIcon(),
             GenType.UPDATE_TEST_CASE_PRE_CONDITIONS,
             Done.UPDATED,
-            (p, selectedTestCases, updatedTestCases) -> new PreConditionsBulkSectionDialog(p, selectedTestCases, updatedTestCases).open(),
+            (project, selectedTestCases, updatedTestCases) -> new PreConditionsBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getPreConditionsSection,
             ImmutableList.of(CORRECTIONS)
     ),
@@ -122,7 +122,7 @@ public enum UpdateTestCaseFields implements MenuItem {
             CreateTestCaseFields.STEPS.getIcon(),
             GenType.UPDATE_TEST_CASE_STEPS,
             Done.UPDATED,
-            (p, selectedTestCases, updatedTestCases) -> new StepsBulkSectionDialog(p, selectedTestCases, updatedTestCases).open(),
+            (project, selectedTestCases, updatedTestCases) -> new StepsBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getStepsSection,
             ImmutableList.of(CORRECTIONS, ADD, NAVIGATE_TAB, AUTO_COMPLETE)
     ),
@@ -133,7 +133,7 @@ public enum UpdateTestCaseFields implements MenuItem {
             CreateTestCaseFields.PRIORITY.getIcon(),
             GenType.UPDATE_TEST_CASE_PRIORITY,
             Done.UPDATED,
-            (p, selectedTestCases, updatedTestCases) -> new PriorityBulkSectionDialog(p, selectedTestCases, updatedTestCases).open(),
+            (project, selectedTestCases, updatedTestCases) -> new PriorityBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getPrioritySection,
             ImmutableList.of(NAVIGATE_ARROWS)
     ),
@@ -144,7 +144,7 @@ public enum UpdateTestCaseFields implements MenuItem {
             CreateTestCaseFields.GROUP.getIcon(),
             GenType.UPDATE_TEST_CASE_GROUP,
             Done.UPDATED,
-            (p, selectedTestCases, updatedTestCases) -> new GroupBulkSectionDialog(p, selectedTestCases, updatedTestCases).open(),
+            (project, selectedTestCases, updatedTestCases) -> new GroupBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getGroupSection,
             ImmutableList.of(ADD, AUTO_COMPLETE, NAVIGATE_TAB)
     ),
@@ -155,7 +155,7 @@ public enum UpdateTestCaseFields implements MenuItem {
             Icons.fieldLetter("O", Icons.GRAY),
             GenType.UPDATE_TEST_CASE_ORDER,
             Done.RE_SORTED,
-            (p, _, _) -> Services.getInstance(p, Notifier.class).softRefuse(p, Bundle.message("update.order.one.at.a.time")),
+            (project, _, _) -> Services.getInstance(project, Notifier.class).softRefuse(project, Bundle.message("update.order.one.at.a.time")),
             AbstractTestCaseDialog::getOrderSection,
             ImmutableList.of()
     ),
@@ -167,7 +167,7 @@ public enum UpdateTestCaseFields implements MenuItem {
             CreateTestCaseFields.REFERENCE.getIcon(),
             GenType.NO_CODE_CHANGE,
             Done.UPDATED,
-            (p, selectedTestCases, updatedTestCases) -> new ReferenceBulkSectionDialog(p, selectedTestCases, updatedTestCases).open(),
+            (project, selectedTestCases, updatedTestCases) -> new ReferenceBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getReferenceSection,
             ImmutableList.of(CORRECTIONS)
     ),
@@ -179,7 +179,7 @@ public enum UpdateTestCaseFields implements MenuItem {
             CopyChoice.STATUS.getIcon(),
             GenType.UPDATE_TEST_CASE_STATUS,
             Done.UPDATED,
-            (p, selectedTestCases, updatedTestCases) -> new StatusBulkSectionDialog(p, selectedTestCases, updatedTestCases).open(),
+            (project, selectedTestCases, updatedTestCases) -> new StatusBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getStatusSection,
             ImmutableList.of()
     );

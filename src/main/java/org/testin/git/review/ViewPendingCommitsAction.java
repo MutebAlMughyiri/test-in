@@ -33,20 +33,20 @@ import java.nio.file.Path;
 
 public class ViewPendingCommitsAction extends AbstractAnyProjectAction {
     // UC-SHARE-009, Rule-SHARE-042
-    public static void reviewFor(final @NotNull Project p, final @NotNull Path path) {
-        new ViewPendingCommitsWork(p).openFor(path);
+    public static void reviewFor(final @NotNull Project project, final @NotNull Path path) {
+        new ViewPendingCommitsWork(project).openFor(path);
     }
 
     // UC-SHARE-010, Rule-INTERNAL-129
     @Override
-    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        Services.getInstance(p, Guides.class).add(Guide.SHARE_OVER_GIT);
-        TestinDataKeys.tree(e).flatMap(TreeValues::projectPath).ifPresent(path -> reviewFor(p, path));
+    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
+        Services.getInstance(project, Guides.class).add(Guide.SHARE_OVER_GIT);
+        TestinDataKeys.tree(e).flatMap(TreeValues::projectPath).ifPresent(path -> reviewFor(project, path));
     }
 
     // UC-SHARE-010
     @Override
-    protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
         // Rule-SHARE-105
         if (OptionalPlugin.GIT.grayedWithReason(this, e.getPresentation())) return;
 

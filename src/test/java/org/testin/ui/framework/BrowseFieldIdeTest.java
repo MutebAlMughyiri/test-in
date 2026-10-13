@@ -89,7 +89,7 @@ public class BrowseFieldIdeTest extends AbstractTempRootIdeTest {
         }
 
         @Override
-        public @NotNull FileChooserDialog createFileChooser(final @NotNull FileChooserDescriptor descriptor, final @Nullable Project p, final @Nullable Component parent) {
+        public @NotNull FileChooserDialog createFileChooser(final @NotNull FileChooserDescriptor descriptor, final @Nullable Project project, final @Nullable Component parent) {
             return (_, toSelect) -> {
                 openedAt.addAll(List.of(toSelect));
                 return new VirtualFile[]{answer};
@@ -97,7 +97,7 @@ public class BrowseFieldIdeTest extends AbstractTempRootIdeTest {
         }
 
         @Override
-        public @NotNull PathChooserDialog createPathChooser(final @NotNull FileChooserDescriptor descriptor, final @Nullable Project p, final @Nullable Component parent) {
+        public @NotNull PathChooserDialog createPathChooser(final @NotNull FileChooserDescriptor descriptor, final @Nullable Project project, final @Nullable Component parent) {
             return (toSelect, callback) -> {
                 if (toSelect != null) openedAt.add(toSelect);
                 callback.consume(List.of(answer));
@@ -105,7 +105,7 @@ public class BrowseFieldIdeTest extends AbstractTempRootIdeTest {
         }
 
         @Override
-        public @NotNull FileSaverDialog createSaveFileDialog(final @NotNull FileSaverDescriptor descriptor, final @Nullable Project p) {
+        public @NotNull FileSaverDialog createSaveFileDialog(final @NotNull FileSaverDescriptor descriptor, final @Nullable Project project) {
             throw new UnsupportedOperationException("a folder field never saves");
         }
 

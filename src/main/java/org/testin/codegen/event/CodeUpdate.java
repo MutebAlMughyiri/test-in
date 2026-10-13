@@ -25,7 +25,7 @@ import java.util.List;
 
 @Immutable
 public interface CodeUpdate {
-    <T> void execute(final @NotNull GenType<T> type, final @NotNull Project p, final @NotNull T payload);
+    <T> void execute(final @NotNull GenType<T> type, final @NotNull Project project, final @NotNull T payload);
 
-    <T> void executeAll(final @NotNull GenType<T> type, final @NotNull Project p, final @NotNull List<? extends T> payloads, final @NotNull String undoGroup);
+    <T> void executeAll(final @NotNull GenType<T> type, final @NotNull Project project, final @NotNull List<? extends T> payloads, final @NotNull String undoGroup);
 }

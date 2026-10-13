@@ -27,8 +27,8 @@ import java.util.Map;
 
 public record ChangeLogSection(@NotNull DialogPart<MultiLineField> component) implements TestRunSection {
     // UC-TREE-PANEL-021, Rule-INTERNAL-096
-    public static @NotNull ChangeLogSection of(final @NotNull Project p, final @NotNull String value) {
-        return new ChangeLogSection(DialogPart.multiLineField(p, TestRunConfiguration.CHANGE_LOG.getDisplayName(), Bundle.message("test.run.form.change.log.hint"), value));
+    public static @NotNull ChangeLogSection of(final @NotNull Project project, final @NotNull String value) {
+        return new ChangeLogSection(DialogPart.multiLineField(project, TestRunConfiguration.CHANGE_LOG.getDisplayName(), Bundle.message("test.run.form.change.log.hint"), value));
     }
 
     // Rule-TREE-PANEL-122

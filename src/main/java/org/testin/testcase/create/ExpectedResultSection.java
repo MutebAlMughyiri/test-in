@@ -26,8 +26,8 @@ import org.testin.testcase.CreateTestCaseFields;
 import org.testin.util.EditorFields;
 
 public class ExpectedResultSection extends AbstractMultiLineSection {
-    public ExpectedResultSection(final @NotNull Project p) {
-        super(p, EditorFields.createCompletionField(p, new TextFieldWithAutoCompletion.StringsCompletionProvider(Services.getInstance(p, TestCaseCompletions.class).getExpectedResults(), CreateTestCaseFields.EXPECTED_RESULT.getIcon()), ""), CreateTestCaseFields.EXPECTED_RESULT);
+    public ExpectedResultSection(final @NotNull Project project) {
+        super(project, EditorFields.createCompletionField(project, new TextFieldWithAutoCompletion.StringsCompletionProvider(Services.getInstance(project, TestCaseCompletions.class).getExpectedResults(), CreateTestCaseFields.EXPECTED_RESULT.getIcon()), ""), CreateTestCaseFields.EXPECTED_RESULT);
     }
 
     // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-032

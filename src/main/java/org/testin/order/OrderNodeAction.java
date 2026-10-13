@@ -38,31 +38,31 @@ import java.util.Optional;
 public class OrderNodeAction extends AbstractAnyProjectAction {
     // UC-TREE-PANEL-015
     @Override
-    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        orderable(e).ifPresent(node -> new OrderDialog(p, node.getOrder(), order -> apply(p, node, order)).show());
+    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
+        orderable(e).ifPresent(node -> new OrderDialog(project, node.getOrder(), order -> apply(project, node, order)).show());
     }
 
     // UC-TREE-PANEL-015, Rule-TREE-PANEL-055
-    private void apply(final @NotNull Project p, final @NotNull AbstractNode node, final int order) {
+    private void apply(final @NotNull Project project, final @NotNull AbstractNode node, final int order) {
         if (node.getOrder() == order) return;
 
         final int before = node.getOrder();
-        if (!place(p, node, order)) return;
+        if (!place(project, node, order)) return;
 
-        Services.getInstance(p, Notifier.class).softShow(p, Done.ORDERED);
+        Services.getInstance(project, Notifier.class).softShow(project, Done.ORDERED);
 
         // Rule-TREE-PANEL-103
-        Services.getInstance(p, UndoHistories.class).push(UndoScope.TREE, new Operation(
+        Services.getInstance(project, UndoHistories.class).push(UndoScope.TREE, new Operation(
                 Bundle.message("order.undo", node.getName()),
-                () -> place(p, node, before),
-                () -> place(p, node, order),
+                () -> place(project, node, before),
+                () -> place(project, node, order),
                 () -> {
                 }));
     }
 
     // UC-TREE-PANEL-015, Rule-TREE-PANEL-055
-    private boolean place(final @NotNull Project p, final @NotNull AbstractNode node, final int order) {
-        return Services.getInstance(p, Nodes.class).reorder(node, order);
+    private boolean place(final @NotNull Project project, final @NotNull AbstractNode node, final int order) {
+        return Services.getInstance(project, Nodes.class).reorder(node, order);
     }
 
     private @NotNull Optional<AbstractNode> orderable(final @NotNull AnActionEvent e) {
@@ -71,7 +71,7 @@ public class OrderNodeAction extends AbstractAnyProjectAction {
 
     // UC-TREE-PANEL-015, Rule-TREE-PANEL-058
     @Override
-    protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
         GrayWithReason.unless(this, e, orderable(e).isPresent(), Bundle.message("order.disabled.description"));
     }
 

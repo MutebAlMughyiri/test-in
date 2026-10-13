@@ -32,5 +32,5 @@ public interface ImportHandler {
         throw new IllegalStateException("This format cannot be imported from");
     };
 
-    @NotNull Map<String, List<TestCaseDto>> execute(final @NotNull Project p, final @NotNull File importFile);
+    @NotNull Map<String, List<TestCaseDto>> execute(final @NotNull Project project, final @NotNull File importFile);
 }

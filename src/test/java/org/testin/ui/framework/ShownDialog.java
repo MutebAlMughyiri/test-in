@@ -50,44 +50,44 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShownDialog {
 
-    public static boolean isOpen(final @NotNull Project p, final @NotNull Class<?> kind) {
-        return Services.getInstance(p, DialogsOnScreen.class).shown(kind).isPresent();
+    public static boolean isOpen(final @NotNull Project project, final @NotNull Class<?> kind) {
+        return Services.getInstance(project, DialogsOnScreen.class).shown(kind).isPresent();
     }
 
-    public static @NotNull JBPopup popup(final @NotNull Project p, final @NotNull Class<?> kind) {
-        return Services.getInstance(p, DialogsOnScreen.class).shown(kind).orElseThrow(() -> new AssertionError("no " + kind.getSimpleName() + " is open"));
+    public static @NotNull JBPopup popup(final @NotNull Project project, final @NotNull Class<?> kind) {
+        return Services.getInstance(project, DialogsOnScreen.class).shown(kind).orElseThrow(() -> new AssertionError("no " + kind.getSimpleName() + " is open"));
     }
 
-    public static @NotNull JComponent content(final @NotNull Project p, final @NotNull Class<?> kind) {
-        return popup(p, kind).getContent();
+    public static @NotNull JComponent content(final @NotNull Project project, final @NotNull Class<?> kind) {
+        return popup(project, kind).getContent();
     }
 
-    public static @NotNull JComponent waitedFor(final @NotNull Project p, final @NotNull Class<?> kind) {
-        Await.until(kind.getSimpleName() + " never opened", () -> isOpen(p, kind));
-        return content(p, kind);
+    public static @NotNull JComponent waitedFor(final @NotNull Project project, final @NotNull Class<?> kind) {
+        Await.until(kind.getSimpleName() + " never opened", () -> isOpen(project, kind));
+        return content(project, kind);
     }
 
-    public static void open(final @NotNull Project p, final @NotNull Class<?> kind, final @NotNull Runnable opening) {
+    public static void open(final @NotNull Project project, final @NotNull Class<?> kind, final @NotNull Runnable opening) {
         opening.run();
-        sized(p, kind);
+        sized(project, kind);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
 
-    public static void sized(final @NotNull Project p, final @NotNull Class<?> kind) {
-        popup(p, kind).setSize(new Dimension(800, 600));
+    public static void sized(final @NotNull Project project, final @NotNull Class<?> kind) {
+        popup(project, kind).setSize(new Dimension(800, 600));
     }
 
-    public static void typed(final @NotNull Project p, final @NotNull Class<?> kind, final @NotNull String text) {
-        Drawn.first(content(p, kind), JTextComponent.class, JTextComponent::isEditable).setText(text);
+    public static void typed(final @NotNull Project project, final @NotNull Class<?> kind, final @NotNull String text) {
+        Drawn.first(content(project, kind), JTextComponent.class, JTextComponent::isEditable).setText(text);
     }
 
-    public static void press(final @NotNull Project p, final @NotNull Class<?> kind, final @NotNull Shortcuts key) {
-        press(p, kind, key.getKey());
+    public static void press(final @NotNull Project project, final @NotNull Class<?> kind, final @NotNull Shortcuts key) {
+        press(project, kind, key.getKey());
     }
 
-    public static void press(final @NotNull Project p, final @NotNull Class<?> kind, final @NotNull KeyStroke stroke) {
+    public static void press(final @NotNull Project project, final @NotNull Class<?> kind, final @NotNull KeyStroke stroke) {
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
-        final @NotNull JBPopup popup = popup(p, kind);
+        final @NotNull JBPopup popup = popup(project, kind);
         if (stroke.getModifiers() == 0 && popup.dispatchKeyEvent(new KeyEvent(popup.getContent(), KeyEvent.KEY_PRESSED, 0, 0, stroke.getKeyCode(), KeyEvent.CHAR_UNDEFINED))) {
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
             return;
@@ -114,8 +114,8 @@ public final class ShownDialog {
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
 
-    public static void close(final @NotNull Project p, final @NotNull Class<?> kind) {
-        Services.getInstance(p, DialogsOnScreen.class).shown(kind).ifPresent(JBPopup::cancel);
+    public static void close(final @NotNull Project project, final @NotNull Class<?> kind) {
+        Services.getInstance(project, DialogsOnScreen.class).shown(kind).ifPresent(JBPopup::cancel);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
 

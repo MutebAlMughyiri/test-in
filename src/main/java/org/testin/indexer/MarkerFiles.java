@@ -48,10 +48,10 @@ final class MarkerFiles {
 
     private final @NotNull Set<Path> damaged = ConcurrentHashMap.newKeySet();
 
-    MarkerFiles(final @NotNull Project p) {
-        this.mapper = Services.getInstance(p, JsonCodec.class);
-        this.testDataFiles = Services.getInstance(p, TestDataFiles.class);
-        this.settings = Services.getInstance(p, AppSettingsState.class);
+    MarkerFiles(final @NotNull Project project) {
+        this.mapper = Services.getInstance(project, JsonCodec.class);
+        this.testDataFiles = Services.getInstance(project, TestDataFiles.class);
+        this.settings = Services.getInstance(project, AppSettingsState.class);
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-014

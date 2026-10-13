@@ -30,15 +30,15 @@ import org.testin.util.Bundle;
 public class ReCreateTestRunAction extends AbstractAnyProjectAction {
     // UC-TREE-PANEL-021
     @Override
-    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
         TestinDataKeys.tree(e)
                 .map(SimpleTree::getSelectionPath)
-                .ifPresent(path -> new ReCreateTestRunWork(p).reCreateAt(path));
+                .ifPresent(path -> new ReCreateTestRunWork(project).reCreateAt(path));
     }
 
     // UC-TREE-PANEL-021, Rule-TREE-PANEL-069
     @Override
-    protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
         GrayWithReason.unless(this, e, TestinDataKeys.singleSelected(e, TestRunNode.class).isPresent(),
                 Bundle.message("recreate.test.run.disabled.description"));
     }

@@ -23,10 +23,10 @@ import java.util.List;
 
 @FunctionalInterface
 public interface CodeChange<T> {
-    void execute(final @NotNull Project p, final @NotNull T payload);
+    void execute(final @NotNull Project project, final @NotNull T payload);
 
-    default void executeAll(final @NotNull Project p, final @NotNull List<? extends T> payloads) {
-        for (final T item : payloads) execute(p, item);
+    default void executeAll(final @NotNull Project project, final @NotNull List<? extends T> payloads) {
+        for (final T item : payloads) execute(project, item);
     }
 
     // Rule-CODEGEN-081

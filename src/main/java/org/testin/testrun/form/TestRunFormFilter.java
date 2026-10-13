@@ -44,22 +44,22 @@ import java.util.stream.Collectors;
 
 // UC-TREE-PANEL-009, Rule-TREE-PANEL-129
 public final class TestRunFormFilter implements FilterSource {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull AutomationState automation;
     private final @NotNull List<TestCaseDto> offered = new ArrayList<>();
     private final @NotNull Map<Path, String> testSets = new LinkedHashMap<>();
     private final @NotNull FilterPopupBtn button;
     private final @NotNull SelectionTree selection;
 
-    public TestRunFormFilter(final @NotNull Project p, final @NotNull Path testCasesRoot, final @NotNull CheckedTreeNode root) {
-        this.p = p;
-        this.automation = Services.getInstance(p, AutomationState.class);
+    public TestRunFormFilter(final @NotNull Project project, final @NotNull Path testCasesRoot, final @NotNull CheckedTreeNode root) {
+        this.project = project;
+        this.automation = Services.getInstance(project, AutomationState.class);
         collect(root, testCasesRoot);
 
         this.button = new FilterPopupBtn(this);
         this.selection = new SelectionTree(Bundle.message("test.run.form.test.cases.caption"), root, TestCaseSelectionRenderer.create(), Optional.of(button));
 
-        automation.read(p, offered, () -> {
+        automation.read(project, offered, () -> {
             if (!button.getSelectedAutomation().isEmpty()) onToolBarFilterSelectionChanged();
         });
     }
@@ -87,7 +87,7 @@ public final class TestRunFormFilter implements FilterSource {
 
     @Override
     public @NotNull Set<String> getAvailableGroups() {
-        return Services.getInstance(p, TestCaseCompletions.class).getGroups();
+        return Services.getInstance(project, TestCaseCompletions.class).getGroups();
     }
 
     // Rule-TREE-PANEL-129, Rule-TREE-PANEL-130

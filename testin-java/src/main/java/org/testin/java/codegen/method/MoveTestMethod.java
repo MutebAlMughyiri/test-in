@@ -45,32 +45,32 @@ public class MoveTestMethod extends BaseTestMethodChange implements CodeChange<M
 
     // UC-CODEGEN-002, Rule-CODEGEN-077
     @Override
-    public void execute(final @NotNull Project p, final @NotNull MovedTestCase moved) {
-        executeAll(p, List.of(moved));
+    public void execute(final @NotNull Project project, final @NotNull MovedTestCase moved) {
+        executeAll(project, List.of(moved));
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-077, Rule-CODEGEN-014
     @Override
-    public void executeAll(final @NotNull Project p, final @NotNull List<? extends MovedTestCase> moves) {
+    public void executeAll(final @NotNull Project project, final @NotNull List<? extends MovedTestCase> moves) {
         if (moves.isEmpty()) return;
 
         final @NotNull Runnable inCommand = () ->
-                WriteCommandAction.runWriteCommandAction(p, GenType.MOVE_TEST_CASE.description(), null, () -> {
+                WriteCommandAction.runWriteCommandAction(project, GenType.MOVE_TEST_CASE.description(), null, () -> {
                     final @NotNull Set<PsiClass> left = new LinkedHashSet<>();
-                    moves.forEach(moved -> move(p, moved).ifPresent(left::add));
-                    left.forEach(pc -> reformat(p, pc));
+                    moves.forEach(moved -> move(project, moved).ifPresent(left::add));
+                    left.forEach(pc -> reformat(project, pc));
 
-                    new UpdateTestMethodOrder().executeAll(p, moves.stream().map(MovedTestCase::testCase).toList());
+                    new UpdateTestMethodOrder().executeAll(project, moves.stream().map(MovedTestCase::testCase).toList());
                 });
 
         if (CommandProcessor.getInstance().getCurrentCommand() != null) inCommand.run();
         else ApplicationManager.getApplication().invokeLater(inCommand);
     }
 
-    private @NotNull Optional<PsiClass> move(final @NotNull Project p, final @NotNull MovedTestCase moved) {
+    private @NotNull Optional<PsiClass> move(final @NotNull Project project, final @NotNull MovedTestCase moved) {
         final @NotNull TestCaseDto testCase = moved.testCase();
 
-        final @NotNull Optional<PsiClass> from = GeneratedClass.find(p, Fqcn.ofClass(moved.from()));
+        final @NotNull Optional<PsiClass> from = GeneratedClass.find(project, Fqcn.ofClass(moved.from()));
         if (from.isEmpty()) {
             TestinLogger.debug("Nothing to move for '" + testCase.getDescription() + "': the test set it came from has no class");
             return Optional.empty();
@@ -86,7 +86,7 @@ public class MoveTestMethod extends BaseTestMethodChange implements CodeChange<M
 
         final @NotNull Optional<PsiClass> into = destination.isEmpty()
                 ? Optional.empty()
-                : GeneratedClass.findOrWrite(p, destination.subList(0, destination.size() - 1), destination.getLast());
+                : GeneratedClass.findOrWrite(project, destination.subList(0, destination.size() - 1), destination.getLast());
 
         if (into.isEmpty()) {
             TestinLogger.warn("Left the method for '" + testCase.getDescription() + "' where it was: "
@@ -107,9 +107,9 @@ public class MoveTestMethod extends BaseTestMethodChange implements CodeChange<M
             return Optional.empty();
         }
 
-        GeneratedMethod.importTest(p, target.getContainingFile());
+        GeneratedMethod.importTest(project, target.getContainingFile());
 
-        final @NotNull PsiMethod carried = JavaPsiFacade.getElementFactory(p)
+        final @NotNull PsiMethod carried = JavaPsiFacade.getElementFactory(project)
                 .createMethodFromText(method.orElseThrow().getText(), target);
 
         target.add(carried);

@@ -31,10 +31,10 @@ import org.testin.util.Bundle;
 
 public class SetTestRunStatusAction extends AbstractBoundProjectAction {
     final @NotNull SimpleTree tree;
-    private final @NotNull TestRunStatusChange statusChange = Services.getInstance(p, TestRunStatusChange.class);
+    private final @NotNull TestRunStatusChange statusChange = Services.getInstance(project, TestRunStatusChange.class);
 
-    public SetTestRunStatusAction(final @NotNull Project p, final @NotNull SimpleTree tree) {
-        super(p, Bundle.message("test.run.set.status.text"), Bundle.message("test.run.set.status.description"), AllIcons.Nodes.Test);
+    public SetTestRunStatusAction(final @NotNull Project project, final @NotNull SimpleTree tree) {
+        super(project, Bundle.message("test.run.set.status.text"), Bundle.message("test.run.set.status.description"), AllIcons.Nodes.Test);
         this.tree = tree;
     }
 
@@ -45,7 +45,7 @@ public class SetTestRunStatusAction extends AbstractBoundProjectAction {
     }
 
     private void askForStatus(final @NotNull TestRunNode testRunNode) {
-        new TestRunStatusMenu(p, testRunNode.getMarker().getStatus(), selectedStatus ->
+        new TestRunStatusMenu(project, testRunNode.getMarker().getStatus(), selectedStatus ->
                 statusChange.apply(testRunNode, selectedStatus)).show();
     }
 

@@ -50,9 +50,9 @@ public class TestRunConfigurationForm implements DialogComponent {
     };
 
     // UC-TREE-PANEL-021, UC-TREE-PANEL-022
-    public TestRunConfigurationForm(final @NotNull Project p, final @NotNull String name, final @NotNull Map<TestRunConfiguration, String> answers) {
+    public TestRunConfigurationForm(final @NotNull Project project, final @NotNull String name, final @NotNull Map<TestRunConfiguration, String> answers) {
         testRunName = TestRunNameSection.of(name);
-        changeLog = ChangeLogSection.of(p, answers.getOrDefault(TestRunConfiguration.CHANGE_LOG, ""));
+        changeLog = ChangeLogSection.of(project, answers.getOrDefault(TestRunConfiguration.CHANGE_LOG, ""));
 
         final @NotNull CommitSection commit = CommitSection.of(answers.getOrDefault(TestRunConfiguration.COMMIT, ""));
 

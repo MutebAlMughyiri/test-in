@@ -33,14 +33,14 @@ import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NodeCounter {
-    public static @NotNull NodeFigures figures(final @NotNull Project p, final @NotNull AbstractNode node) {
-        return FiguresByStatistics.valueOf(node.getType().getStatistics().name()).getGather().of(p, node);
+    public static @NotNull NodeFigures figures(final @NotNull Project project, final @NotNull AbstractNode node) {
+        return FiguresByStatistics.valueOf(node.getType().getStatistics().name()).getGather().of(project, node);
     }
 
     // UC-INTERNAL-006, Rule-INTERNAL-046, Rule-INTERNAL-047, Rule-INTERNAL-050
-    public static @NotNull NodeFigures childCounts(final @NotNull Project p, final @NotNull AbstractNode parent) {
-        final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
-        final @NotNull Nodes nodes = Services.getInstance(p, Nodes.class);
+    public static @NotNull NodeFigures childCounts(final @NotNull Project project, final @NotNull AbstractNode parent) {
+        final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
+        final @NotNull Nodes nodes = Services.getInstance(project, Nodes.class);
         final @NotNull List<AbstractNode> beneath = beneath(nodes, parent);
 
         final @NotNull Map<NodeType, Long> byType = beneath.stream()
@@ -56,8 +56,8 @@ public final class NodeCounter {
     }
 
     // UC-INTERNAL-006, Rule-INTERNAL-048, Rule-INTERNAL-049, Rule-INTERNAL-051
-    public static @NotNull NodeFigures testRunFigures(final @NotNull Project p, final @NotNull AbstractNode node) {
-        return Services.getInstance(p, TestRuns.class).findRunItems(node.getPath())
+    public static @NotNull NodeFigures testRunFigures(final @NotNull Project project, final @NotNull AbstractNode node) {
+        return Services.getInstance(project, TestRuns.class).findRunItems(node.getPath())
                 .map(testRun -> NodeFigures.ofTestRun(TestRunSummary.of(testRun.getAll())))
                 .orElse(NodeFigures.NONE);
     }

@@ -51,17 +51,17 @@ public final class TestRunFromGit {
     private static final @NotNull String DELETED = "D";
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-126, Rule-EDITOR-PANEL-239
-    public static void read(final @NotNull Project p, final @NotNull Path testRunPath) {
-        final @NotNull GitRepositoryService git = new GitRepositoryService(p);
-        WatchedPath.testProjectOf(testRunPath, Services.getInstance(p, TestinRoot.class).absolutePath())
+    public static void read(final @NotNull Project project, final @NotNull Path testRunPath) {
+        final @NotNull GitRepositoryService git = new GitRepositoryService(project);
+        WatchedPath.testProjectOf(testRunPath, Services.getInstance(project, TestinRoot.class).absolutePath())
                 .filter(testProject -> !git.isNotRepository(testProject))
                 .ifPresent(testProject -> {
-                    final @NotNull TestRuns testRuns = Services.getInstance(p, TestRuns.class);
+                    final @NotNull TestRuns testRuns = Services.getInstance(project, TestRuns.class);
                     testRuns.findRunItems(testRunPath).ifPresent(testRun -> {
                         final @NotNull String revision = recordedRevision(git, testProject, testRunPath, testRuns.commitOf(testRunPath));
                         testRuns.rememberRecordedAt(testRunPath, revision);
-                        readTheCommit(p, git, testProject, revision, testRun.coveredIds());
-                        readTheDeleted(p, git, testProject, testRun.getAll().stream().filter(RunItem::isRemoved).map(RunItem::getId).toList());
+                        readTheCommit(project, git, testProject, revision, testRun.coveredIds());
+                        readTheDeleted(project, git, testProject, testRun.getAll().stream().filter(RunItem::isRemoved).map(RunItem::getId).toList());
                     });
                 });
     }
@@ -89,13 +89,13 @@ public final class TestRunFromGit {
     }
 
     // Rule-EDITOR-PANEL-126, Rule-EDITOR-PANEL-239
-    public static void readAll(final @NotNull Project p) {
-        Services.getInstance(p, TestRuns.class).getAllRunItems().keySet().forEach(testRunPath -> read(p, testRunPath));
+    public static void readAll(final @NotNull Project project) {
+        Services.getInstance(project, TestRuns.class).getAllRunItems().keySet().forEach(testRunPath -> read(project, testRunPath));
     }
 
     // Rule-EDITOR-PANEL-239
-    private static void readTheCommit(final @NotNull Project p, final @NotNull GitRepositoryService git, final @NotNull Path testProjectPath, final @NotNull String commit, final @NotNull Set<UUID> testCaseIds) {
-        final @NotNull TestRuns testRuns = Services.getInstance(p, TestRuns.class);
+    private static void readTheCommit(final @NotNull Project project, final @NotNull GitRepositoryService git, final @NotNull Path testProjectPath, final @NotNull String commit, final @NotNull Set<UUID> testCaseIds) {
+        final @NotNull TestRuns testRuns = Services.getInstance(project, TestRuns.class);
         if (commit.isEmpty()) return;
 
         final @NotNull Set<UUID> unread = testRuns.notReadFrom(commit, testCaseIds);
@@ -111,7 +111,7 @@ public final class TestRunFromGit {
             final @NotNull Map<UUID, Optional<TestCaseDto>> testCases = new HashMap<>();
             wanted.values().forEach(testCaseId -> testCases.put(testCaseId, Optional.empty()));
             listed.forEach(path -> testCases.remove(wanted.get(fileName(path))));
-            files.forEach((path, json) -> testCases.put(wanted.get(fileName(path)), parsed(p, json)));
+            files.forEach((path, json) -> testCases.put(wanted.get(fileName(path)), parsed(project, json)));
             testRuns.rememberRecorded(commit, testCases);
         } catch (final GitFailed ex) {
             TestinLogger.info("The test cases of commit " + commit + " could not be read, so the test cases are shown as they are now: " + FailureText.of(ex));
@@ -119,7 +119,7 @@ public final class TestRunFromGit {
     }
 
     // Rule-EDITOR-PANEL-126
-    private static void readTheDeleted(final @NotNull Project p, final @NotNull GitRepositoryService git, final @NotNull Path testProjectPath, final @NotNull List<UUID> deleted) {
+    private static void readTheDeleted(final @NotNull Project project, final @NotNull GitRepositoryService git, final @NotNull Path testProjectPath, final @NotNull List<UUID> deleted) {
         if (deleted.isEmpty()) return;
 
         final @NotNull Map<String, UUID> wanted = deleted.stream().collect(Collectors.toMap(FileKind.TEST_CASE::fileName, Function.identity()));
@@ -130,8 +130,8 @@ public final class TestRunFromGit {
 
             final @NotNull Map<UUID, TestCaseDto> testCases = new HashMap<>();
             git.objects(testProjectPath, List.copyOf(lastVersions.keySet())).forEach((objectName, json) ->
-                    parsed(p, json).ifPresent(testCase -> testCases.put(lastVersions.get(objectName), testCase)));
-            Services.getInstance(p, TestRuns.class).rememberLastInGit(testCases);
+                    parsed(project, json).ifPresent(testCase -> testCases.put(lastVersions.get(objectName), testCase)));
+            Services.getInstance(project, TestRuns.class).rememberLastInGit(testCases);
         } catch (final GitFailed ex) {
             TestinLogger.info("The deleted test cases could not be read from Git, so they show as deleted: " + FailureText.of(ex));
         }
@@ -154,8 +154,8 @@ public final class TestRunFromGit {
         return found;
     }
 
-    private static @NotNull Optional<TestCaseDto> parsed(final @NotNull Project p, final @NotNull String json) {
-        return TestCaseHistory.parsed(Services.getInstance(p, JsonCodec.class), json);
+    private static @NotNull Optional<TestCaseDto> parsed(final @NotNull Project project, final @NotNull String json) {
+        return TestCaseHistory.parsed(Services.getInstance(project, JsonCodec.class), json);
     }
 
     private static @NotNull String fileName(final @NotNull String path) {

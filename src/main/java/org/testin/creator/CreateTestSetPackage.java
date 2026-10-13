@@ -31,9 +31,9 @@ public class CreateTestSetPackage implements NodeCreator {
     private final @NotNull NodeMapper directoryMapper;
     private final @NotNull Nodes nodes;
 
-    public CreateTestSetPackage(final @NotNull Project p) {
-        this.directoryMapper = Services.getInstance(p, NodeMapper.class);
-        this.nodes = Services.getInstance(p, Nodes.class);
+    public CreateTestSetPackage(final @NotNull Project project) {
+        this.directoryMapper = Services.getInstance(project, NodeMapper.class);
+        this.nodes = Services.getInstance(project, Nodes.class);
     }
 
     // UC-TREE-PANEL-008, Rule-TREE-PANEL-027

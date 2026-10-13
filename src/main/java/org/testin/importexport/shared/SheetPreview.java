@@ -37,7 +37,7 @@ import java.util.Map;
 public final class SheetPreview implements DialogComponent {
     private static final @NotNull DefaultTableModel NO_MODEL = new DefaultTableModel();
 
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull List<TestSetEditorAttributes> attributes;
 
     private final @NotNull JBTabbedPane tabs = new JBTabbedPane();
@@ -60,10 +60,10 @@ public final class SheetPreview implements DialogComponent {
             final @NotNull List<TestCaseDto> testCases = entry.getValue();
 
             final @NotNull DefaultTableModel model = new TablePanelBuilder().createModel(attributes, testCases);
-            model.addTableModelListener(new CellEditListener(attributes, p, testCases));
+            model.addTableModelListener(new CellEditListener(attributes, project, testCases));
 
             models.put(entry.getKey(), model);
-            tabs.addTab(entry.getKey(), new JBScrollPane(new TablePanelBuilder().buildTable(model, p)));
+            tabs.addTab(entry.getKey(), new JBScrollPane(new TablePanelBuilder().buildTable(model, project)));
         }
     }
 

@@ -52,18 +52,18 @@ import java.util.stream.Collectors;
 
 @Service(Service.Level.PROJECT)
 public final class TestNGExecution implements Disposable {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull Notifier notifier;
 
     private final @NotNull ExecutionRegistry registry = new ExecutionRegistry();
 
     private final @NotNull Map<ProcessHandler, String> live = new ConcurrentHashMap<>();
 
-    public TestNGExecution(final @NotNull Project p) {
-        this.p = p;
-        this.notifier = Services.getInstance(p, Notifier.class);
+    public TestNGExecution(final @NotNull Project project) {
+        this.project = project;
+        this.notifier = Services.getInstance(project, Notifier.class);
 
-        p.getMessageBus().connect(this).subscribe(ExecutionManager.EXECUTION_TOPIC, new ExecutionListener() {
+        project.getMessageBus().connect(this).subscribe(ExecutionManager.EXECUTION_TOPIC, new ExecutionListener() {
             @Override
             public void processStarted(final @NotNull String executorId, final @NotNull ExecutionEnvironment env, final @NotNull ProcessHandler handler) {
                 final @NotNull String testRunName = env.getRunProfile().getName();
@@ -96,7 +96,7 @@ public final class TestNGExecution implements Disposable {
     public void starting(final @NotNull TestCaseDto testCase) {
         registry.starting(testCase.getId());
 
-        ExecutionReported.broadcast(p, key(testCase.getId()), ExecutionStatus.RUNNING, Duration.ZERO, Failure.NONE);
+        ExecutionReported.broadcast(project, key(testCase.getId()), ExecutionStatus.RUNNING, Duration.ZERO, Failure.NONE);
     }
 
     @FromContentModule
@@ -128,13 +128,13 @@ public final class TestNGExecution implements Disposable {
     public void acrossModules(final @NotNull List<TestCaseDto> testCases, final @NotNull List<String> modules) {
         TestinLogger.warn("Not running " + testCases.size() + " test case(s): their methods live in the modules " + modules);
         testCases.forEach(this::notStarting);
-        notifier.softRefuse(p, Refused.ACROSS_MODULES, String.join(", ", modules));
+        notifier.softRefuse(project, Refused.ACROSS_MODULES, String.join(", ", modules));
     }
 
     public void notStarting(final @NotNull TestCaseDto testCase) {
         registry.notStarting(testCase.getId());
 
-        ExecutionReported.broadcast(p, key(testCase.getId()), ExecutionStatus.IDLE, Duration.ZERO, Failure.NONE);
+        ExecutionReported.broadcast(project, key(testCase.getId()), ExecutionStatus.IDLE, Duration.ZERO, Failure.NONE);
     }
 
     // UC-CODEGEN-008
@@ -147,11 +147,11 @@ public final class TestNGExecution implements Disposable {
     // UC-CODEGEN-008, Rule-CODEGEN-033, Rule-CODEGEN-074, Rule-CODEGEN-034
     @FromContentModule
     public void started(final @NotNull List<TestCaseDto> running, final @NotNull List<TestCaseDto> withoutCode) {
-        notifier.softShowCounted(p, Bundle.message("execution.status.running"), running.size());
+        notifier.softShowCounted(project, Bundle.message("execution.status.running"), running.size());
         if (withoutCode.isEmpty()) return;
 
         final boolean one = withoutCode.size() == 1;
-        notifier.softRefuse(p, one ? Refused.NO_GENERATED_CODE : Refused.NO_GENERATED_CODE_COUNTED,
+        notifier.softRefuse(project, one ? Refused.NO_GENERATED_CODE : Refused.NO_GENERATED_CODE_COUNTED,
                 one ? withoutCode.getFirst().getDescription() : String.valueOf(withoutCode.size()));
     }
 
@@ -204,7 +204,7 @@ public final class TestNGExecution implements Disposable {
                 + " execution(s): " + theirs.size() + " had reached a process");
 
         theirs.forEach(this::kill);
-        stop.testCases().forEach(testCaseId -> ExecutionReported.broadcast(p, key(testCaseId), ExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
+        stop.testCases().forEach(testCaseId -> ExecutionReported.broadcast(project, key(testCaseId), ExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
 
         return stop.testCases().size();
     }
@@ -217,7 +217,7 @@ public final class TestNGExecution implements Disposable {
             if (open.isEmpty()) return;
 
             TestinLogger.info("'" + testRunName + "' ended with " + open.size() + " test case(s) still open");
-            open.forEach(testCaseId -> ExecutionReported.broadcast(p, key(testCaseId), ExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
+            open.forEach(testCaseId -> ExecutionReported.broadcast(project, key(testCaseId), ExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
         });
     }
 

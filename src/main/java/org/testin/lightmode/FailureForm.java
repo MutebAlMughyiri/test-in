@@ -50,8 +50,8 @@ class FailureForm extends JBPanel<FailureForm> implements DialogHost {
     private final @NotNull Runnable onEnter;
 
     // UC-EDITOR-PANEL-046, Rule-EDITOR-PANEL-202
-    FailureForm(final @NotNull Project p, final @NotNull Path testRunPath, final @NotNull RunItem runItem, final float zoom, final @NotNull Runnable resized, final @NotNull Runnable onEnter) {
-        this.fields = new FailureFields(p, testRunPath, runItem);
+    FailureForm(final @NotNull Project project, final @NotNull Path testRunPath, final @NotNull RunItem runItem, final float zoom, final @NotNull Runnable resized, final @NotNull Runnable onEnter) {
+        this.fields = new FailureFields(project, testRunPath, runItem);
         this.resized = resized;
         this.onEnter = onEnter;
 

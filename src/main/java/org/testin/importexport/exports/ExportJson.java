@@ -33,11 +33,11 @@ import java.util.Map;
 
 public class ExportJson {
     // UC-SHARE-001, Rule-SHARE-010
-    public void exportToFile(final @NotNull Project p, final @NotNull File destFile, final @NotNull Map<String, List<TestCaseDto>> sheetsData) {
+    public void exportToFile(final @NotNull Project project, final @NotNull File destFile, final @NotNull Map<String, List<TestCaseDto>> sheetsData) {
         try {
             FileUtil.createParentDirs(destFile);
 
-            Files.write(destFile.toPath(), Services.getInstance(p, JsonCodec.class).writeValueAsBytes(sheetsData));
+            Files.write(destFile.toPath(), Services.getInstance(project, JsonCodec.class).writeValueAsBytes(sheetsData));
         } catch (final IOException ex) {
             TestinLogger.error("export failed: " + destFile + " - " + FailureText.of(ex));
             throw new RuntimeException(ex);

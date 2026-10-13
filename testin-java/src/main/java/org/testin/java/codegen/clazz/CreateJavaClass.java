@@ -29,7 +29,7 @@ import java.util.List;
 public class CreateJavaClass implements CodeChange<AbstractNode> {
     // UC-CODEGEN-001
     @Override
-    public void execute(final @NotNull Project p, final @NotNull AbstractNode dir) {
+    public void execute(final @NotNull Project project, final @NotNull AbstractNode dir) {
         final @NotNull List<String> fqcn = Fqcn.ofClass(dir);
         if (fqcn.isEmpty()) return;
 
@@ -38,7 +38,7 @@ public class CreateJavaClass implements CodeChange<AbstractNode> {
 
         TestinLogger.info("Ready to generate Test Class: " + className + " in package: " + fqcn);
 
-        JavaSourceRoot.writeInRootOrWarn(p, className,
+        JavaSourceRoot.writeInRootOrWarn(project, className,
                 root -> JavaSourceRoot.classFile(root, packageSegments, className));
     }
 }

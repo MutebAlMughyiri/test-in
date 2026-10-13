@@ -54,9 +54,9 @@ public final class TestCaseHistory {
     private static final @NotNull String FORMAT = "--format=%x1e%H%x1f%an%x1f%aI%x1f%s";
 
     // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-113
-    public static @NotNull Optional<TestCaseFile> deletedFile(final @NotNull Project p, final @NotNull UUID testCaseId) {
-        final @NotNull GitRepositoryService git = new GitRepositoryService(p);
-        return Services.getInstance(p, BoundTestProject.class).get()
+    public static @NotNull Optional<TestCaseFile> deletedFile(final @NotNull Project project, final @NotNull UUID testCaseId) {
+        final @NotNull GitRepositoryService git = new GitRepositoryService(project);
+        return Services.getInstance(project, BoundTestProject.class).get()
                 .map(AbstractNode::getPath)
                 .filter(testProject -> !git.isNotRepository(testProject))
                 .flatMap(testProject -> {
@@ -72,8 +72,8 @@ public final class TestCaseHistory {
     }
 
     // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-096, Rule-VIEW-PANEL-099, Rule-VIEW-PANEL-100, Rule-VIEW-PANEL-101, Rule-VIEW-PANEL-113
-    public static @NotNull History read(final @NotNull Project p, final @NotNull TestCaseFile file, final @NotNull Optional<TestCaseDto> now) {
-        final @NotNull GitRepositoryService git = new GitRepositoryService(p);
+    public static @NotNull History read(final @NotNull Project project, final @NotNull TestCaseFile file, final @NotNull Optional<TestCaseDto> now) {
+        final @NotNull GitRepositoryService git = new GitRepositoryService(project);
         if (git.isNotRepository(file.testProject())) return History.NOT_UNDER_GIT;
 
         final @NotNull String path = file.inProject().toString().replace('\\', '/');
@@ -83,7 +83,7 @@ public final class TestCaseHistory {
                     ? Map.of()
                     : git.objects(file.testProject(), commits.stream().map(HistoryCommit::objectName).toList());
 
-            return History.read(entries(Services.getInstance(p, JsonCodec.class), commits, versions, now));
+            return History.read(entries(Services.getInstance(project, JsonCodec.class), commits, versions, now));
         } catch (final GitFailed ex) {
             return History.failed(FailureText.of(ex));
         }

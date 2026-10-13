@@ -68,10 +68,10 @@ public class TreeNodeKindsTest {
             assertFalse(node.childKinds().contains(NodeType.TRF), name(node) + " offers to create Test Runs");
         }
 
-        final @NotNull Project p = StandIn.of(Project.class);
+        final @NotNull Project project = StandIn.of(Project.class);
         final @NotNull AbstractNode parent = new TestProjectNode();
         for (final NodeType container : List.of(NodeType.TCF, NodeType.TRF)) {
-            assertTrue(NodeCreators.of(p, container).execute("Extra", parent, Path.of("root", "Extra")).isEmpty(),
+            assertTrue(NodeCreators.of(project, container).execute("Extra", parent, Path.of("root", "Extra")).isEmpty(),
                     container.getDescription() + " was created from the tree");
         }
 

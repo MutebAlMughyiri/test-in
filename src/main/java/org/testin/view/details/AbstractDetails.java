@@ -72,17 +72,17 @@ public abstract class AbstractDetails {
     }
 
     // UC-VIEW-PANEL-005
-    static @NotNull Optional<TestRunNode> testRunOf(final @NotNull Project p, final @NotNull List<String> currentPath) {
-        return Services.getInstance(p, TestRuns.class).findTestRunNode(Services.getInstance(p, TestinRoot.class).resolve(currentPath));
+    static @NotNull Optional<TestRunNode> testRunOf(final @NotNull Project project, final @NotNull List<String> currentPath) {
+        return Services.getInstance(project, TestRuns.class).findTestRunNode(Services.getInstance(project, TestinRoot.class).resolve(currentPath));
     }
 
     // UC-VIEW-PANEL-016, UC-VIEW-PANEL-004
-    static void redraw(final @NotNull Project p, final @NotNull TestCaseDto testCase, final @NotNull TestRunNode testRunNode) {
-        ViewToolWindowFactory.refreshIfShowing(p, List.of(testCase));
-        Services.getInstance(p, TestinEditors.class).testRunEditorFor(testRunNode).ifPresent(TestRunEditor::refreshView);
+    static void redraw(final @NotNull Project project, final @NotNull TestCaseDto testCase, final @NotNull TestRunNode testRunNode) {
+        ViewToolWindowFactory.refreshIfShowing(project, List.of(testCase));
+        Services.getInstance(project, TestinEditors.class).testRunEditorFor(testRunNode).ifPresent(TestRunEditor::refreshView);
     }
 
-    public abstract int render(final @NotNull Project p, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto testCase, final int currentRow);
+    public abstract int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto testCase, final int currentRow);
 
     protected int addRow(final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull String caption, final @NotNull String value, final int row) {
         return CaptionValueRow.add(panel, gbc, caption, value, row);

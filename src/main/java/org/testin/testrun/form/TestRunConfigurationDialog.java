@@ -34,8 +34,8 @@ public final class TestRunConfigurationDialog extends AbstractFrameworkDialog {
     private final @NotNull TestRunConfigurationForm form;
     private final @NotNull SelectionTree selection;
 
-    public TestRunConfigurationDialog(final @NotNull Project p, final @NotNull TestRunConfigurationForm form, final @NotNull TestRunFormFilter filter, final @NotNull TestRunFormPurpose action) {
-        super(p);
+    public TestRunConfigurationDialog(final @NotNull Project project, final @NotNull TestRunConfigurationForm form, final @NotNull TestRunFormFilter filter, final @NotNull TestRunFormPurpose action) {
+        super(project);
         this.action = action;
         this.form = form;
         this.selection = filter.getSelection();

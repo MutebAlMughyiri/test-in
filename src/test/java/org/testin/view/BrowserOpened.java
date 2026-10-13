@@ -60,7 +60,7 @@ public final class BrowserOpened extends BrowserLauncher {
     }
 
     @Override
-    public void browse(final @NotNull String url, final WebBrowser browser, final Project p) {
+    public void browse(final @NotNull String url, final WebBrowser browser, final Project project) {
         opened.add(url);
     }
 }

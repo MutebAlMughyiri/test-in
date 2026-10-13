@@ -25,13 +25,13 @@ import org.testin.model.NodeType;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NodeCreators {
     // UC-TREE-PANEL-002, Rule-TREE-PANEL-011
-    public static @NotNull NodeCreator of(final @NotNull Project p, final @NotNull NodeType type) {
+    public static @NotNull NodeCreator of(final @NotNull Project project, final @NotNull NodeType type) {
         return switch (type) {
             case TP, TCF, TRF -> new NotCreatableFromTree(type.getDescription());
-            case TSP -> new CreateTestSetPackage(p);
-            case TRP -> new CreateTestRunPackage(p);
-            case TS -> new CreateTestSet(p);
-            case TR -> new CreateTestRun(p);
+            case TSP -> new CreateTestSetPackage(project);
+            case TRP -> new CreateTestRunPackage(project);
+            case TS -> new CreateTestSet(project);
+            case TR -> new CreateTestRun(project);
         };
     }
 }

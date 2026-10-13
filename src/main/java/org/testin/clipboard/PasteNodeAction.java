@@ -29,15 +29,15 @@ import org.testin.util.ClipboardContents;
 public class PasteNodeAction extends AbstractAnyProjectAction {
     // UC-TREE-PANEL-013, UC-TREE-PANEL-014
     @Override
-    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
         TreeTransferHandler.of(e).ifPresent(handler ->
                 ClipboardContents.withFlavor(TreeTransferHandler.NODE_FLAVOR).ifPresent(contents ->
-                        TestinDataKeys.singleSelectedNode(e).ifPresent(target -> new PasteNodeWork(p, handler).paste(contents, target))));
+                        TestinDataKeys.singleSelectedNode(e).ifPresent(target -> new PasteNodeWork(project, handler).paste(contents, target))));
     }
 
     // UC-TREE-PANEL-013
     @Override
-    protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
         e.getPresentation().setEnabled(TreeTransferHandler.of(e)
                 .filter(TreeTransferHandler::canPasteFromClipboard)
                 .isPresent());

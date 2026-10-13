@@ -119,24 +119,24 @@ public final class RunItemSummary extends AbstractDetails {
 
     // UC-VIEW-PANEL-005, Rule-VIEW-PANEL-086, Rule-VIEW-PANEL-123
     @Override
-    public int render(final @NotNull Project p, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto testCase, final int currentRow) {
+    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto testCase, final int currentRow) {
         int row = currentRow;
         if (runItem.executedAtMostOnce()) {
             final @NotNull JBPanel<?> line = line(GAP);
             pills(runItem.shownStatus(), TestRunEditorAttributes.DURATION.gridValue(runItem)).forEach(line::add);
-            BugLine.of(p, runItem, currentPath, testCase).ifPresent(line::add);
+            BugLine.of(project, runItem, currentPath, testCase).ifPresent(line::add);
             row = addFullWidthRow(panel, gbc, line, JBUI.insets(INSETS_TOP, INSETS_SIDE, 0, INSETS_SIDE), row);
         } else {
             final int defaultAt = runItem.defaultIndex();
-            final @NotNull Optional<TestRunNode> testRun = testRunOf(p, currentPath);
-            final @NotNull Optional<String> whyNot = testRun.flatMap(shownIn -> Services.getInstance(p, RunItemRecorder.class).whyExecutionsAreFixed(shownIn.getPath(), runItem.getId()));
+            final @NotNull Optional<TestRunNode> testRun = testRunOf(project, currentPath);
+            final @NotNull Optional<String> whyNot = testRun.flatMap(shownIn -> Services.getInstance(project, RunItemRecorder.class).whyExecutionsAreFixed(shownIn.getPath(), runItem.getId()));
             final @NotNull List<Runnable> hideEveryLine = new ArrayList<>();
 
             for (int at = 0; at < runItem.getExecutions().size(); at++) {
                 final int index = at;
                 final boolean isDefault = index == defaultAt;
-                final @NotNull JBPanel<?> line = executionLine(p, testCase, index, isDefault);
-                final @NotNull JBPanel<?> actions = testRun.<JBPanel<?>>map(shownIn -> actions(p, testCase, shownIn, index, isDefault, whyNot)).orElseGet(() -> row(0));
+                final @NotNull JBPanel<?> line = executionLine(project, testCase, index, isDefault);
+                final @NotNull JBPanel<?> actions = testRun.<JBPanel<?>>map(shownIn -> actions(project, testCase, shownIn, index, isDefault, whyNot)).orElseGet(() -> row(0));
                 showOnHover(line, actions, hideEveryLine);
                 showOnClick(line, actions, index);
 
@@ -149,7 +149,7 @@ public final class RunItemSummary extends AbstractDetails {
     }
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-086, Rule-VIEW-PANEL-119
-    private @NotNull JBPanel<?> executionLine(final @NotNull Project p, final @NotNull TestCaseDto testCase, final int at, final boolean isDefault) {
+    private @NotNull JBPanel<?> executionLine(final @NotNull Project project, final @NotNull TestCaseDto testCase, final int at, final boolean isDefault) {
         final @NotNull RunItemExecution execution = runItem.getExecutions().get(at);
 
         final @NotNull JBPanel<?> line = line(GAP);
@@ -165,27 +165,28 @@ public final class RunItemSummary extends AbstractDetails {
             final @NotNull JBLabel star = new JBLabel(AllIcons.Nodes.Favorite);
             Tooltip.set(star, Bundle.message("execution.default"), "");
             line.add(star);
-            BugLine.of(p, runItem, currentPath, testCase).ifPresent(line::add);
+            BugLine.of(project, runItem, currentPath, testCase).ifPresent(line::add);
         }
 
         return line;
     }
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-120, Rule-VIEW-PANEL-121
-    private @NotNull JBPanel<?> actions(final @NotNull Project p, final @NotNull TestCaseDto testCase, final @NotNull TestRunNode testRun, final int at, final boolean isDefault, final @NotNull Optional<String> whyNot) {
-        final @NotNull RunItemRecorder statuses = Services.getInstance(p, RunItemRecorder.class);
+    private @NotNull JBPanel<?> actions(final @NotNull Project project, final @NotNull TestCaseDto testCase, final @NotNull TestRunNode testRun, final int at, final boolean isDefault, final @NotNull Optional<String> whyNot) {
+        final @NotNull RunItemRecorder statuses = Services.getInstance(project, RunItemRecorder.class);
         final @NotNull JBPanel<?> actions = row(0);
 
         if (!isDefault) {
-            actions.add(HoverButton.of(p, whyNot, AllIcons.Nodes.NotFavoriteOnHover, Bundle.message("execution.set.default"), "", () -> {
-                if (statuses.chooseExecution(testRun.getPath(), runItem.getId(), at)) redraw(p, testCase, testRun);
+            actions.add(HoverButton.of(project, whyNot, AllIcons.Nodes.NotFavoriteOnHover, Bundle.message("execution.set.default"), "", () -> {
+                if (statuses.chooseExecution(testRun.getPath(), runItem.getId(), at))
+                    redraw(project, testCase, testRun);
             }));
         }
-        actions.add(HoverButton.of(p, whyNot, AllIcons.Actions.Close, Bundle.message("execution.remove"), "", () -> {
+        actions.add(HoverButton.of(project, whyNot, AllIcons.Actions.Close, Bundle.message("execution.remove"), "", () -> {
             if (!statuses.removeExecution(testRun.getPath(), runItem.getId(), at)) return;
 
             showExecution.accept(OptionalInt.empty());
-            redraw(p, testCase, testRun);
+            redraw(project, testCase, testRun);
         }));
 
         return actions;

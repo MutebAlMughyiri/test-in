@@ -54,7 +54,7 @@ public class HistoryTab {
     }
 
     // Rule-VIEW-PANEL-100
-    private static void show(final @NotNull Project p, final @NotNull JPanel historyTab, final @NotNull History history, final @NotNull TestCaseDto testCase, final @NotNull Object request) {
+    private static void show(final @NotNull Project project, final @NotNull JPanel historyTab, final @NotNull History history, final @NotNull TestCaseDto testCase, final @NotNull Object request) {
         final @NotNull List<HistoryCard> cards = history.cards();
         if (cards.isEmpty()) {
             line(historyTab, history.problem());
@@ -69,19 +69,19 @@ public class HistoryTab {
         historyTab.removeAll();
         historyTab.add(entriesPanel, BorderLayout.NORTH);
         if (!history.problem().isBlank()) historyTab.add(lineLabel(history.problem()), BorderLayout.CENTER);
-        draw(p, historyTab, entriesPanel, cards, testCase, 0, request);
+        draw(project, historyTab, entriesPanel, cards, testCase, 0, request);
     }
 
     // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-099, Rule-VIEW-PANEL-101
-    private static void draw(final @NotNull Project p, final @NotNull JPanel historyTab, final @NotNull JBPanel<?> entriesPanel, final @NotNull List<HistoryCard> cards, final @NotNull TestCaseDto testCase, final int from, final @NotNull Object request) {
+    private static void draw(final @NotNull Project project, final @NotNull JPanel historyTab, final @NotNull JBPanel<?> entriesPanel, final @NotNull List<HistoryCard> cards, final @NotNull TestCaseDto testCase, final int from, final @NotNull Object request) {
         if (!isCurrent(historyTab, request)) return;
 
-        IntStream.range(from, Math.min(cards.size(), from + GROUP)).forEach(at -> entriesPanel.add(HistoryCardPanel.of(p, cards.get(at), testCase, at)));
+        IntStream.range(from, Math.min(cards.size(), from + GROUP)).forEach(at -> entriesPanel.add(HistoryCardPanel.of(project, cards.get(at), testCase, at)));
         historyTab.revalidate();
         historyTab.repaint();
 
         if (from + GROUP < cards.size()) {
-            ApplicationManager.getApplication().invokeLater(() -> draw(p, historyTab, entriesPanel, cards, testCase, from + GROUP, request), p.getDisposed());
+            ApplicationManager.getApplication().invokeLater(() -> draw(project, historyTab, entriesPanel, cards, testCase, from + GROUP, request), project.getDisposed());
         }
     }
 
@@ -101,7 +101,7 @@ public class HistoryTab {
     }
 
     // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-099
-    public void load(final @NotNull Project p, final @NotNull JPanel historyTab, final @NotNull Optional<TestCaseDto> shown) {
+    public void load(final @NotNull Project project, final @NotNull JPanel historyTab, final @NotNull Optional<TestCaseDto> shown) {
         final @NotNull Object request = new Object();
         historyTab.putClientProperty(REQUEST, request);
         historyTab.removeAll();
@@ -118,18 +118,18 @@ public class HistoryTab {
         reading.setRepeats(false);
         reading.start();
 
-        final @NotNull Map<Path, String> runItemsNow = BugHistory.runItemsNow(p, testCase.getId());
+        final @NotNull Map<Path, String> runItemsNow = BugHistory.runItemsNow(project, testCase.getId());
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
-            final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
+            final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
             final @NotNull History history = testCases.testCaseFile(testCase)
-                    .or(() -> TestCaseHistory.deletedFile(p, testCase.getId()))
-                    .map(file -> BugHistory.addTo(TestCaseHistory.read(p, file, testCases.findTestCase(testCase.getId())), p, file, testCase.getId(), runItemsNow))
+                    .or(() -> TestCaseHistory.deletedFile(project, testCase.getId()))
+                    .map(file -> BugHistory.addTo(TestCaseHistory.read(project, file, testCases.findTestCase(testCase.getId())), project, file, testCase.getId(), runItemsNow))
                     .orElseGet(() -> History.failed(Bundle.message("view.history.no.file")));
 
             ApplicationManager.getApplication().invokeLater(() -> {
                 reading.stop();
-                if (isCurrent(historyTab, request)) show(p, historyTab, history, testCase, request);
-            }, p.getDisposed());
+                if (isCurrent(historyTab, request)) show(project, historyTab, history, testCase, request);
+            }, project.getDisposed());
         });
     }
 }

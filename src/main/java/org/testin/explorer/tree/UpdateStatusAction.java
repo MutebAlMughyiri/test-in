@@ -48,21 +48,21 @@ public class UpdateStatusAction extends AbstractAnyProjectAction {
 
     // UC-TREE-PANEL-018, UC-TREE-PANEL-019
     @Override
-    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        selected(e).ifPresent(dir -> mark(p, dir));
+    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
+        selected(e).ifPresent(dir -> mark(project, dir));
     }
 
     // UC-TREE-PANEL-018, Rule-TREE-PANEL-062
-    private void mark(final @NotNull Project p, final @NotNull AbstractNode dir) {
+    private void mark(final @NotNull Project project, final @NotNull AbstractNode dir) {
         try {
-            if (!Services.getInstance(p, Nodes.class).mark(dir, status, Services.getInstance(p, AppSettingsState.class).testerName))
+            if (!Services.getInstance(project, Nodes.class).mark(dir, status, Services.getInstance(project, AppSettingsState.class).testerName))
                 return;
 
-            Services.getInstance(p, Notifier.class).softShow(p, status.getLabel());
+            Services.getInstance(project, Notifier.class).softShow(project, status.getLabel());
 
         } catch (final Exception ex) {
             TestinLogger.error("Unable to mark '" + dir.getName() + "' " + status.getLabel() + ": " + FailureText.of(ex));
-            Services.getInstance(p, Notifier.class).error(p, Bundle.message("status.failed", status.getLabel()));
+            Services.getInstance(project, Notifier.class).error(project, Bundle.message("status.failed", status.getLabel()));
         }
     }
 
@@ -72,7 +72,7 @@ public class UpdateStatusAction extends AbstractAnyProjectAction {
 
     // UC-TREE-PANEL-018, Rule-TREE-PANEL-065
     @Override
-    protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
         final @NotNull Optional<AbstractNode> dir = selected(e);
 
         e.getPresentation().setVisible(dir.isPresent());

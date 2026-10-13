@@ -49,8 +49,8 @@ public final class BugRepoUrlForm {
     private static final int GAP = 8;
 
     // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-104
-    public static @NotNull JComponent of(final @NotNull Project p) {
-        final @NotNull JBTextField address = new JBTextField(TestinYml.bugRepoUrlOnDisk(p), COLUMNS);
+    public static @NotNull JComponent of(final @NotNull Project project) {
+        final @NotNull JBTextField address = new JBTextField(TestinYml.bugRepoUrlOnDisk(project), COLUMNS);
         final @NotNull JButton apply = new JButton(Bundle.message("bug.repo.url.apply"));
         apply.putClientProperty(DarculaButtonUI.DEFAULT_STYLE_KEY, true);
         apply.setEnabled(isAddress(address));
@@ -69,7 +69,7 @@ public final class BugRepoUrlForm {
 
         apply.addActionListener(_ -> {
             Optional.ofNullable(PopupUtil.getPopupContainerFor(row)).ifPresent(JBPopup::cancel);
-            save(p, address.getText().strip());
+            save(project, address.getText().strip());
         });
         return row;
     }
@@ -79,19 +79,19 @@ public final class BugRepoUrlForm {
     }
 
     // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-104
-    private static void save(final @NotNull Project p, final @NotNull String address) {
-        final @NotNull Notifier notifier = Services.getInstance(p, Notifier.class);
-        if (TestinYml.isUnreadable(p)) {
-            notifier.softRefuse(p, Bundle.message("yml.save.disabled.unreadable"));
+    private static void save(final @NotNull Project project, final @NotNull String address) {
+        final @NotNull Notifier notifier = Services.getInstance(project, Notifier.class);
+        if (TestinYml.isUnreadable(project)) {
+            notifier.softRefuse(project, Bundle.message("yml.save.disabled.unreadable"));
             return;
         }
-        if (!TestinYml.saveBugRepoUrl(p, address)) {
-            notifier.softRefuse(p, Bundle.message("yml.save.failed"));
+        if (!TestinYml.saveBugRepoUrl(project, address)) {
+            notifier.softRefuse(project, Bundle.message("yml.save.failed"));
             return;
         }
 
-        Services.getInstance(p, Hints.class).clear(SetupStep.BUG_FILING);
-        notifier.softShow(p, Done.SAVED);
-        TestinYml.openInEditor(p);
+        Services.getInstance(project, Hints.class).clear(SetupStep.BUG_FILING);
+        notifier.softShow(project, Done.SAVED);
+        TestinYml.openInEditor(project);
     }
 }

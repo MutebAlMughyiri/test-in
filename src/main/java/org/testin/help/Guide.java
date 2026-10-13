@@ -81,7 +81,7 @@ public enum Guide {
     private final @NotNull String page;
 
     // UC-INTERNAL-009, Rule-INTERNAL-130
-    public void open(final @NotNull Project p) {
-        new GuideDialog(p, this).show();
+    public void open(final @NotNull Project project) {
+        new GuideDialog(project, this).show();
     }
 }

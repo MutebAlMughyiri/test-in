@@ -153,12 +153,12 @@ public final class TestRunExcelGenerator {
     }
 
     // UC-REPORT-001, Rule-REPORT-002, Rule-REPORT-020
-    public byte @NotNull [] generate(final @NotNull Project p, final @NotNull TestRunNode testRunNode, final @NotNull RunItems runItems) {
+    public byte @NotNull [] generate(final @NotNull Project project, final @NotNull TestRunNode testRunNode, final @NotNull RunItems runItems) {
         try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             final @NotNull Workbook wb = new Workbook(os, Bundle.getPluginName(), "1.0");
             final @NotNull TestRunSummary summary = TestRunSummary.of(runItems.getAll());
 
-            writeOverview(wb.newWorksheet(Bundle.message("report.excel.sheet.overview")), Services.getInstance(p, BoundTestProject.class).name(), testRunNode, summary);
+            writeOverview(wb.newWorksheet(Bundle.message("report.excel.sheet.overview")), Services.getInstance(project, BoundTestProject.class).name(), testRunNode, summary);
             writeTestCases(wb.newWorksheet(Bundle.message("report.excel.sheet.test.cases")), runItems);
 
             wb.finish();

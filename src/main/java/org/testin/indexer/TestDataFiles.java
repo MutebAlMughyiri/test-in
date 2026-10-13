@@ -49,7 +49,7 @@ final class TestDataFiles {
     private static final int MOVE_ATTEMPTS = 6;
     private static final long MOVE_PAUSE_MILLIS = 25;
 
-    private final @NotNull Project p;
+    private final @NotNull Project project;
 
     private final @NotNull OwnWrites ownWrites = Services.getInstance(OwnWrites.class);
 
@@ -69,7 +69,7 @@ final class TestDataFiles {
     // UC-INTERNAL-004, Rule-INTERNAL-033
     <T> boolean alreadyHolds(final @NotNull Path path, final @NotNull T content) {
         try {
-            return Arrays.equals(Files.readAllBytes(path), Services.getInstance(p, JsonCodec.class).writeValueAsBytes(content));
+            return Arrays.equals(Files.readAllBytes(path), Services.getInstance(project, JsonCodec.class).writeValueAsBytes(content));
         } catch (final IOException absentOrUnreadable) {
             return false;
         }
@@ -84,7 +84,7 @@ final class TestDataFiles {
     }
 
     <T> boolean write(final @NotNull Path path, final @NotNull T content) {
-        return writeBytes(path, Services.getInstance(p, JsonCodec.class).writeValueAsBytes(content));
+        return writeBytes(path, Services.getInstance(project, JsonCodec.class).writeValueAsBytes(content));
     }
 
     void write(final @NotNull Path path, final byte @NotNull [] jsonBytes) {
@@ -123,14 +123,14 @@ final class TestDataFiles {
     private boolean writeBytes(final @NotNull Path path, final byte @NotNull [] jsonBytes) {
         if (jsonBytes.length == 0) {
             TestinLogger.error("Refusing to write an empty file, which would erase it: " + path);
-            Services.getInstance(p, Notifier.class).error(p, Bundle.message("files.nothing.written", path.getFileName()));
+            Services.getInstance(project, Notifier.class).error(project, Bundle.message("files.nothing.written", path.getFileName()));
             return false;
         }
 
         final @NotNull Path beside = besideItself(path);
         try {
-            ownWrites.record(p, path);
-            ownWrites.record(p, beside);
+            ownWrites.record(project, path);
+            ownWrites.record(project, beside);
 
             FileUtil.createParentDirs(path.toFile());
             Files.write(beside, jsonBytes);
@@ -145,7 +145,7 @@ final class TestDataFiles {
             return false;
         }
 
-        ownWrites.wrote(p, path, jsonBytes);
+        ownWrites.wrote(project, path, jsonBytes);
         return true;
     }
 
@@ -189,9 +189,9 @@ final class TestDataFiles {
     // UC-INTERNAL-005, Rule-INTERNAL-036, Rule-INTERNAL-113
     boolean delete(final @NotNull Path path) {
         try {
-            ownWrites.record(p, path);
+            ownWrites.record(project, path);
 
-            if (!Trash.accepted(p, path)) Files.deleteIfExists(path);
+            if (!Trash.accepted(project, path)) Files.deleteIfExists(path);
         } catch (final IOException ex) {
             reportRemoveFailure(path, ex);
             return false;
@@ -203,7 +203,7 @@ final class TestDataFiles {
     // Rule-INTERNAL-113
     boolean discard(final @NotNull Path path) {
         try {
-            ownWrites.record(p, path);
+            ownWrites.record(project, path);
 
             Files.deleteIfExists(path);
         } catch (final IOException ex) {
@@ -215,12 +215,12 @@ final class TestDataFiles {
     }
 
     private void reportRemoveFailure(final @NotNull Path path, final @NotNull IOException ex) {
-        Services.getInstance(p, Notifier.class).error(p, Bundle.message("files.unable.to.remove", FailureText.of(ex)));
+        Services.getInstance(project, Notifier.class).error(project, Bundle.message("files.unable.to.remove", FailureText.of(ex)));
         TestinLogger.error("unable to remove " + path + ": " + FailureText.of(ex));
     }
 
     private void reportWriteFailure(final @NotNull Path path, final @NotNull IOException ex) {
-        Services.getInstance(p, Notifier.class).error(p, Bundle.message("files.unable.to.write", FailureText.of(ex)));
+        Services.getInstance(project, Notifier.class).error(project, Bundle.message("files.unable.to.write", FailureText.of(ex)));
         TestinLogger.error("unable to write content: " + FailureText.of(ex));
         TestinLogger.error("path" + path);
     }

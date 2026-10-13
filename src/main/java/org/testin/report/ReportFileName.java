@@ -37,8 +37,8 @@ public final class ReportFileName {
             DateTimeFormatter.ofPattern("dd-MM-yyyy_hh-mm-ssa", Locale.US);
 
     // UC-REPORT-001, Rule-REPORT-006
-    public static @NotNull String suggestedFor(final @NotNull Project p, final @NotNull TestRunNode testRun, final @NotNull ZonedDateTime at) {
-        return of(Services.getInstance(p, BoundTestProject.class).name(), testRun.getName(), at);
+    public static @NotNull String suggestedFor(final @NotNull Project project, final @NotNull TestRunNode testRun, final @NotNull ZonedDateTime at) {
+        return of(Services.getInstance(project, BoundTestProject.class).name(), testRun.getName(), at);
     }
 
     // UC-REPORT-001, Rule-REPORT-007, Rule-REPORT-008

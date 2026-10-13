@@ -60,8 +60,8 @@ public final class OwnWrites {
     }
 
     // UC-INTERNAL-003, Rule-INTERNAL-019
-    public void record(final @NotNull Project p, final @NotNull Path path) {
-        record(p.getLocationHash(), path);
+    public void record(final @NotNull Project project, final @NotNull Path path) {
+        record(project.getLocationHash(), path);
     }
 
     void record(final @NotNull String window, final @NotNull Path path) {
@@ -70,8 +70,8 @@ public final class OwnWrites {
     }
 
     // UC-INTERNAL-003, Rule-INTERNAL-019, Rule-INTERNAL-064
-    public void wrote(final @NotNull Project p, final @NotNull Path path, final byte @NotNull [] content) {
-        wrote(p.getLocationHash(), path, content);
+    public void wrote(final @NotNull Project project, final @NotNull Path path, final byte @NotNull [] content) {
+        wrote(project.getLocationHash(), path, content);
     }
 
     void wrote(final @NotNull String window, final @NotNull Path path, final byte @NotNull [] content) {
@@ -80,8 +80,8 @@ public final class OwnWrites {
     }
 
     // UC-INTERNAL-003, Rule-INTERNAL-019, Rule-INTERNAL-064
-    public boolean areOurs(final @NotNull Path path, final @NotNull Project p) {
-        return areOurs(path, p.getLocationHash());
+    public boolean areOurs(final @NotNull Path path, final @NotNull Project project) {
+        return areOurs(path, project.getLocationHash());
     }
 
     // UC-INTERNAL-003, Rule-INTERNAL-019

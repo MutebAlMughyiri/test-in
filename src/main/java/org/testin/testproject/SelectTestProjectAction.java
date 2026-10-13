@@ -36,12 +36,12 @@ import java.util.Map;
 
 public final class SelectTestProjectAction extends AbstractBoundProjectAction {
     private final @NotNull TreePanel treePanel;
-    private final @NotNull ProjectIndexer indexer = Services.getInstance(p, ProjectIndexer.class);
-    private final @NotNull Notifier notifier = Services.getInstance(p, Notifier.class);
-    private final @NotNull TestinRoot testinRoot = Services.getInstance(p, TestinRoot.class);
+    private final @NotNull ProjectIndexer indexer = Services.getInstance(project, ProjectIndexer.class);
+    private final @NotNull Notifier notifier = Services.getInstance(project, Notifier.class);
+    private final @NotNull TestinRoot testinRoot = Services.getInstance(project, TestinRoot.class);
 
-    public SelectTestProjectAction(final @NotNull Project p, final @NotNull TreePanel treePanel) {
-        super(p, Bundle.message("project.select.text"), Bundle.message("project.select.description"), AllIcons.Actions.ModuleDirectory);
+    public SelectTestProjectAction(final @NotNull Project project, final @NotNull TreePanel treePanel) {
+        super(project, Bundle.message("project.select.text"), Bundle.message("project.select.description"), AllIcons.Actions.ModuleDirectory);
         this.treePanel = treePanel;
     }
 
@@ -52,15 +52,15 @@ public final class SelectTestProjectAction extends AbstractBoundProjectAction {
             final @NotNull Map<String, ProjectStatus> underRoot = indexer.testProjects();
 
             ApplicationManager.getApplication().invokeLater(() -> {
-                if (p.isDisposed()) return;
+                if (project.isDisposed()) return;
 
                 if (underRoot.isEmpty()) {
-                    notifier.softRefuse(p, Bundle.message("project.none.title"),
+                    notifier.softRefuse(project, Bundle.message("project.none.title"),
                             Bundle.message("project.none.message"));
                     return;
                 }
 
-                new BindTestProjectDialog(p, underRoot, treePanel::reindex).show();
+                new BindTestProjectDialog(project, underRoot, treePanel::reindex).show();
             });
         });
     }

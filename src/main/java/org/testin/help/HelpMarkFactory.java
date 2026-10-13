@@ -38,7 +38,7 @@ public final class HelpMarkFactory implements StatusBarWidgetFactory {
 
     // UC-INTERNAL-009, Rule-INTERNAL-126
     @Override
-    public @NotNull StatusBarWidget createWidget(final @NotNull Project p) {
-        return new HelpMark(p);
+    public @NotNull StatusBarWidget createWidget(final @NotNull Project project) {
+        return new HelpMark(project);
     }
 }

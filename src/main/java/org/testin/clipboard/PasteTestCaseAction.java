@@ -32,18 +32,18 @@ import java.util.Optional;
 public class PasteTestCaseAction extends AbstractAnyProjectAction {
     private @NotNull Optional<Answered> answered = Optional.empty();
 
-    private static @NotNull Optional<PasteTestCaseWork> work(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        return TestinDataKeys.editor(e).map(editor -> new PasteTestCaseWork(p, editor));
+    private static @NotNull Optional<PasteTestCaseWork> work(final @NotNull AnActionEvent e, final @NotNull Project project) {
+        return TestinDataKeys.editor(e).map(editor -> new PasteTestCaseWork(project, editor));
     }
 
     // UC-EDITOR-PANEL-017
     @Override
-    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        work(e, p).ifPresent(PasteTestCaseWork::paste);
+    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
+        work(e, project).ifPresent(PasteTestCaseWork::paste);
     }
 
     @Override
-    protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
         // Rule-EDITOR-PANEL-214
         if (TestinDataKeys.editor(e).filter(editor -> !editor.getParent().isTestCaseContainer()).isPresent()) {
             e.getPresentation().setEnabled(false);
@@ -51,7 +51,7 @@ public class PasteTestCaseAction extends AbstractAnyProjectAction {
             return;
         }
 
-        GrayWithReason.unless(this, e, work(e, p).map(this::clipboardHoldsTestCases).orElse(false), Bundle.message("paste.test.case.nothing.description"));
+        GrayWithReason.unless(this, e, work(e, project).map(this::clipboardHoldsTestCases).orElse(false), Bundle.message("paste.test.case.nothing.description"));
     }
 
     private boolean clipboardHoldsTestCases(final @NotNull PasteTestCaseWork work) {

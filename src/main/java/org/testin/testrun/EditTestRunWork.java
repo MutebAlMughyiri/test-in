@@ -52,9 +52,9 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-record EditTestRunWork(@NotNull Project p, @NotNull TestRuns testRuns, @NotNull BoundTestProject boundTestProject, @NotNull Notifier notifier, @NotNull Nodes nodes, @NotNull TestinEditors editors) {
-    EditTestRunWork(final @NotNull Project p) {
-        this(p, Services.getInstance(p, TestRuns.class), Services.getInstance(p, BoundTestProject.class), Services.getInstance(p, Notifier.class), Services.getInstance(p, Nodes.class), Services.getInstance(p, TestinEditors.class));
+record EditTestRunWork(@NotNull Project project, @NotNull TestRuns testRuns, @NotNull BoundTestProject boundTestProject, @NotNull Notifier notifier, @NotNull Nodes nodes, @NotNull TestinEditors editors) {
+    EditTestRunWork(final @NotNull Project project) {
+        this(project, Services.getInstance(project, TestRuns.class), Services.getInstance(project, BoundTestProject.class), Services.getInstance(project, Notifier.class), Services.getInstance(project, Nodes.class), Services.getInstance(project, TestinEditors.class));
     }
 
     void editAt(final @NotNull TreePath path) {
@@ -66,8 +66,8 @@ record EditTestRunWork(@NotNull Project p, @NotNull TestRuns testRuns, @NotNull 
         final @NotNull List<TestCaseDto> deleted = held.getAll().stream().filter(RunItem::isRemoved).map(RunItem::shownTestCase).toList();
 
         boundTestProject.get().ifPresentOrElse(
-                testProject -> new TestRunFormOpener(p).open(testProject.getTestCasesFolder(), testRun.getName(), held.coveredIds(), deleted, testRun.getMarker().getConfiguration(), saves(testRun)),
-                () -> TestinLogger.warn("Edit test run: no test project is bound to " + p.getName()));
+                testProject -> new TestRunFormOpener(project).open(testProject.getTestCasesFolder(), testRun.getName(), held.coveredIds(), deleted, testRun.getMarker().getConfiguration(), saves(testRun)),
+                () -> TestinLogger.warn("Edit test run: no test project is bound to " + project.getName()));
     }
 
     private @NotNull TestRunFormPurpose saves(final @NotNull TestRunNode testRun) {
@@ -81,26 +81,26 @@ record EditTestRunWork(@NotNull Project p, @NotNull TestRuns testRuns, @NotNull 
     // UC-TREE-PANEL-022, Rule-TREE-PANEL-060, Rule-TREE-PANEL-074, Rule-TREE-PANEL-076, Rule-TREE-PANEL-128
     boolean saveEdit(final @NotNull TestRunNode testRun, final @NotNull String name, final @NotNull Set<UUID> checked, final @NotNull Set<UUID> offered, final @NotNull Map<TestRunConfiguration, String> configuration) {
         if (name.isEmpty()) {
-            notifier.softRefuse(p, Bundle.message("test.run.needs.a.name"));
+            notifier.softRefuse(project, Bundle.message("test.run.needs.a.name"));
             return false;
         }
 
         if (!nodes.nodeExists(testRun.getPath())) {
-            notifier.softRefuse(p, Bundle.message("test.run.gone", testRun.getName()));
+            notifier.softRefuse(project, Bundle.message("test.run.gone", testRun.getName()));
             return false;
         }
 
         if (!testRun.isOpen()) {
-            notifier.softRefuse(p, Bundle.message("test.run.status.changed", testRun.getName(), testRun.getMarker().getStatusLabel()));
+            notifier.softRefuse(project, Bundle.message("test.run.status.changed", testRun.getName(), testRun.getMarker().getStatusLabel()));
             return false;
         }
 
-        if (!name.equals(testRun.getName()) && NodeRename.refused(p, testRun, name)) return false;
+        if (!name.equals(testRun.getName()) && NodeRename.refused(project, testRun, name)) return false;
 
         applyEdit(testRun, name, testRunPath -> {
             testRuns.changeRunItems(testRunPath, held -> held.cover(wanted(held, checked, offered::contains)));
             testRuns.changeTestRunMarker(testRunPath, marker -> marker.configure(configuration));
-        }, () -> notifier.softShow(p, Done.UPDATED));
+        }, () -> notifier.softShow(project, Done.UPDATED));
 
         return true;
     }
@@ -122,13 +122,13 @@ record EditTestRunWork(@NotNull Project p, @NotNull TestRuns testRuns, @NotNull 
             return;
         }
 
-        NodeRename.apply(p, testRun, toName, () -> write(from.resolveSibling(toName), writeTo, onDone));
+        NodeRename.apply(project, testRun, toName, () -> write(from.resolveSibling(toName), writeTo, onDone));
     }
 
     private void write(final @NotNull Path testRunPath, final @NotNull Consumer<Path> writeTo, final @NotNull Runnable onDone) {
         writeTo.accept(testRunPath);
 
-        BackgroundWork.run(p, Bundle.message("test.run.task.updating", testRunPath.getFileName()), Bundle.message("test.run.update.failed.title"), _ -> {
+        BackgroundWork.run(project, Bundle.message("test.run.task.updating", testRunPath.getFileName()), Bundle.message("test.run.update.failed.title"), _ -> {
             nodes.refreshDirectory(testRunPath);
 
             ApplicationManager.getApplication().invokeLater(() -> {

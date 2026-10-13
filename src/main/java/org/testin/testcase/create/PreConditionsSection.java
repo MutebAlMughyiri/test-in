@@ -24,8 +24,8 @@ import org.testin.util.EditorFields;
 
 // Rule-EDITOR-PANEL-032, Rule-INTERNAL-097
 public class PreConditionsSection extends AbstractMultiLineSection {
-    public PreConditionsSection(final @NotNull Project p) {
-        super(p, EditorFields.createField(p), CreateTestCaseFields.PRE_CONDITIONS);
+    public PreConditionsSection(final @NotNull Project project) {
+        super(project, EditorFields.createField(project), CreateTestCaseFields.PRE_CONDITIONS);
     }
 
     // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-032

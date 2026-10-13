@@ -47,7 +47,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class OrderSection implements TestCaseSection {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull Notifier notifier;
     private final @NotNull TestCases testCases;
 
@@ -56,10 +56,10 @@ public class OrderSection implements TestCaseSection {
     private final @NotNull JBLabel outOf;
     private final @NotNull JBPanel<?> wrapper;
 
-    public OrderSection(final @NotNull Project p) {
-        this.p = p;
-        this.notifier = Services.getInstance(p, Notifier.class);
-        this.testCases = Services.getInstance(p, TestCases.class);
+    public OrderSection(final @NotNull Project project) {
+        this.project = project;
+        this.notifier = Services.getInstance(project, Notifier.class);
+        this.testCases = Services.getInstance(project, TestCases.class);
 
         this.position = new IntegerField(Bundle.message("order.section.position"), 1, 1);
         DialogStyle.asField(this.position);
@@ -84,7 +84,7 @@ public class OrderSection implements TestCaseSection {
 
     @Override
     public void fillData(final @NotNull TestCaseDto testCase) {
-        final @NotNull List<TestCaseDto> inSet = ExecutionPosition.setOf(p, testCase);
+        final @NotNull List<TestCaseDto> inSet = ExecutionPosition.setOf(project, testCase);
         final int size = Math.max(1, inSet.size());
         final int current = Math.min(TestCaseOrder.positionOf(inSet, testCase), size);
 
@@ -104,7 +104,7 @@ public class OrderSection implements TestCaseSection {
             return true;
 
         } catch (final ConfigurationException invalid) {
-            notifier.softRefuse(p, invalid.getMessageHtml().toString());
+            notifier.softRefuse(project, invalid.getMessageHtml().toString());
             return false;
         }
     }
@@ -112,7 +112,7 @@ public class OrderSection implements TestCaseSection {
     // UC-EDITOR-PANEL-009, Rule-EDITOR-PANEL-055, Rule-EDITOR-PANEL-282
     @Override
     public @NotNull TestCaseDto applyTo(final @NotNull TestCaseDto ordered) {
-        final @NotNull List<TestCaseDto> inSet = ExecutionPosition.setOf(p, ordered);
+        final @NotNull List<TestCaseDto> inSet = ExecutionPosition.setOf(project, ordered);
         final int target = position.getValue();
 
         if (target == TestCaseOrder.positionOf(inSet, ordered)) return ordered;

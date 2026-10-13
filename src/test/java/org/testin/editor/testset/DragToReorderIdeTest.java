@@ -164,8 +164,8 @@ public class DragToReorderIdeTest extends AbstractTempRootIdeTest {
     private static final class DroppedAt extends TestCaseTransferHandler {
         private final int index;
 
-        DroppedAt(final @NotNull Project p, final @NotNull TestinEditor editor, final int index) {
-            super(p, editor);
+        DroppedAt(final @NotNull Project project, final @NotNull TestinEditor editor, final int index) {
+            super(project, editor);
             this.index = index;
         }
 

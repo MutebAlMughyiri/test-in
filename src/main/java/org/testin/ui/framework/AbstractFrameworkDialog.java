@@ -58,7 +58,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 public abstract class AbstractFrameworkDialog implements DialogHost {
-    protected final @NotNull Project p;
+    protected final @NotNull Project project;
 
     protected final @NotNull Notifier notifier;
 
@@ -79,10 +79,10 @@ public abstract class AbstractFrameworkDialog implements DialogHost {
     private @NotNull Optional<ShortcutStrip> strip = Optional.empty();
     private @NotNull Optional<StatusBarItem[]> keysShown = Optional.empty();
 
-    protected AbstractFrameworkDialog(final @NotNull Project p) {
-        this.p = p;
-        this.notifier = Services.getInstance(p, Notifier.class);
-        this.openDialogs = Services.getInstance(p, DialogsOnScreen.class);
+    protected AbstractFrameworkDialog(final @NotNull Project project) {
+        this.project = project;
+        this.notifier = Services.getInstance(project, Notifier.class);
+        this.openDialogs = Services.getInstance(project, DialogsOnScreen.class);
     }
 
     private static @NotNull JBPanel<?> verticalStack(final @NotNull List<DialogComponent> dialogComponents) {
@@ -139,7 +139,7 @@ public abstract class AbstractFrameworkDialog implements DialogHost {
         final @NotNull Optional<Refused> refusal = refusing.apply(value);
         if (refusal.isEmpty()) return value;
 
-        notifier.softRefuse(p, refusal.orElseThrow(), value);
+        notifier.softRefuse(project, refusal.orElseThrow(), value);
         return "";
     }
 
@@ -162,7 +162,7 @@ public abstract class AbstractFrameworkDialog implements DialogHost {
         }
 
         openDialogs.remember(getClass(), getPopup());
-        getPopup().showCenteredInCurrentWindow(p);
+        getPopup().showCenteredInCurrentWindow(project);
 
         // Rule-INTERNAL-061, Rule-INTERNAL-100
         if (sizeIsTheTesters() && !size.namesAHeight()) {
@@ -174,7 +174,7 @@ public abstract class AbstractFrameworkDialog implements DialogHost {
 
     // Rule-INTERNAL-061, Rule-INTERNAL-100
     private void widenInPlace(final @NotNull Dimension shown) {
-        final int width = DialogSize.widthOn(p, shown.width);
+        final int width = DialogSize.widthOn(project, shown.width);
         final @NotNull Point at = getPopup().getLocationOnScreen();
         getPopup().setSize(new Dimension(width, shown.height));
         getPopup().setLocation(new Point(at.x - (width - shown.width) / 2, at.y));
@@ -193,11 +193,11 @@ public abstract class AbstractFrameworkDialog implements DialogHost {
         bindSubmitGesture();
 
         final @NotNull ComponentPopupBuilder builder = DialogStyle.createPopupBuilder(contentPanel, focusComponent(), dto().title(), dismissOnClickOutside);
-        size.applyTo(p, contentPanel);
+        size.applyTo(project, contentPanel);
 
         // Rule-INTERNAL-101, Rule-INTERNAL-138
         if (sizeIsTheTesters())
-            builder.setResizable(true).setMovable(true).setCommandButton(TitleButtons.beside(titleButtons(), Maximized.button(() -> maximized.toggle(getPopup(), DialogSize.frameOn(p)))));
+            builder.setResizable(true).setMovable(true).setCommandButton(TitleButtons.beside(titleButtons(), Maximized.button(() -> maximized.toggle(getPopup(), DialogSize.frameOn(project)))));
 
         // Rule-INTERNAL-059
         builder.setCancelKeyEnabled(dto().shortcuts().stream().noneMatch(one -> one.shortcut() == Shortcuts.Escape));
@@ -267,7 +267,7 @@ public abstract class AbstractFrameworkDialog implements DialogHost {
         if (maximized.isOn()) return;
 
         shownSize().ifPresent(shown -> {
-            getPopup().setSize(new Dimension(shown.width, DialogSize.withinFrame(p, naturalHeightOf(getPopup().getContent()))));
+            getPopup().setSize(new Dimension(shown.width, DialogSize.withinFrame(project, naturalHeightOf(getPopup().getContent()))));
 
             ApplicationManager.getApplication().invokeLater(() -> {
                 final @NotNull Component focusOwner = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();

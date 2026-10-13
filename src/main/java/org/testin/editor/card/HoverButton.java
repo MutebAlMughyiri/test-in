@@ -43,12 +43,12 @@ public final class HoverButton {
     private static final float HOVER_SCALE = 1.8f;
 
     // UC-VIEW-PANEL-012, UC-VIEW-PANEL-014, UC-EDITOR-PANEL-046, Rule-VIEW-PANEL-056, Rule-EDITOR-PANEL-243
-    public static @NotNull JComponent of(final @NotNull Project p, final @NotNull Offered offered, final @NotNull Icon drawn, final @NotNull String name, final @NotNull Runnable press) {
-        return of(p, offered.whyNot(), drawn, name, offered.works() ? Declared.shortcutText(offered.action().getActionId()) : "", press);
+    public static @NotNull JComponent of(final @NotNull Project project, final @NotNull Offered offered, final @NotNull Icon drawn, final @NotNull String name, final @NotNull Runnable press) {
+        return of(project, offered.whyNot(), drawn, name, offered.works() ? Declared.shortcutText(offered.action().getActionId()) : "", press);
     }
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-120, Rule-VIEW-PANEL-121
-    public static @NotNull JComponent of(final @NotNull Project p, final @NotNull Optional<String> whyNot, final @NotNull Icon drawn, final @NotNull String name, final @NotNull String shortcut, final @NotNull Runnable press) {
+    public static @NotNull JComponent of(final @NotNull Project project, final @NotNull Optional<String> whyNot, final @NotNull Icon drawn, final @NotNull String name, final @NotNull String shortcut, final @NotNull Runnable press) {
         final boolean works = whyNot.isEmpty();
         final @NotNull JBLabel label = new JBLabel();
         final @NotNull Icon shown = works ? drawn : IconLoader.getDisabledIcon(drawn);
@@ -82,7 +82,7 @@ public final class HoverButton {
             // UC-VIEW-PANEL-012, UC-VIEW-PANEL-014
             @Override
             public void mouseClicked(final MouseEvent e) {
-                whyNot.ifPresentOrElse(reason -> Services.getInstance(p, Notifier.class).softRefuse(p, reason), press);
+                whyNot.ifPresentOrElse(reason -> Services.getInstance(project, Notifier.class).softRefuse(project, reason), press);
             }
         });
 

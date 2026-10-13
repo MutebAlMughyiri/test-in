@@ -34,7 +34,7 @@ import java.util.List;
 
 @AllArgsConstructor
 public class UnifiedFileEditor extends UserDataHolderBase implements FileEditor {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull UnifiedVirtualFile vf;
 
     @Getter
@@ -93,7 +93,7 @@ public class UnifiedFileEditor extends UserDataHolderBase implements FileEditor 
     public void selectNotify() {
         final @NotNull List<TestCaseDto> selected = editor.getSelectedTestCases();
 
-        ViewToolWindowFactory.panel(p).ifPresent(viewer -> {
+        ViewToolWindowFactory.panel(project).ifPresent(viewer -> {
             if (selected.isEmpty()) {
                 viewer.reset();
                 return;

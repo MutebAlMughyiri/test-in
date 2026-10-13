@@ -38,5 +38,5 @@ public interface ApiModelMaker {
 
     // UC-CODEGEN-022
     @FromContentModule
-    void open(@NotNull Project p, @NotNull PsiDirectory directory);
+    void open(@NotNull Project project, @NotNull PsiDirectory directory);
 }

@@ -39,13 +39,13 @@ import java.util.Optional;
 // Rule-CODEGEN-044
 public class ReconcileTestMethod extends BaseTestMethodChange implements CodeChange<TestCaseDto> {
     @Override
-    public void execute(final @NotNull Project p, final @NotNull TestCaseDto testCase) {
-        executeAll(p, List.of(testCase));
+    public void execute(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
+        executeAll(project, List.of(testCase));
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-068
     @Override
-    public void executeAll(final @NotNull Project p, final @NotNull List<? extends TestCaseDto> testCases) {
+    public void executeAll(final @NotNull Project project, final @NotNull List<? extends TestCaseDto> testCases) {
         if (testCases.isEmpty()) return;
 
         final @NotNull Map<Path, List<TestCaseDto>> byClass = new LinkedHashMap<>();
@@ -54,17 +54,17 @@ public class ReconcileTestMethod extends BaseTestMethodChange implements CodeCha
         }
 
         final @NotNull Runnable inCommand = () ->
-                WriteCommandAction.runWriteCommandAction(p, GenType.RECONCILE_TEST_CASE.description(), null, () -> {
-                    byClass.values().forEach(inClass -> rewrite(p, inClass));
-                    new UpdateTestMethodOrder().executeAll(p, testCases);
+                WriteCommandAction.runWriteCommandAction(project, GenType.RECONCILE_TEST_CASE.description(), null, () -> {
+                    byClass.values().forEach(inClass -> rewrite(project, inClass));
+                    new UpdateTestMethodOrder().executeAll(project, testCases);
                 });
 
         if (CommandProcessor.getInstance().getCurrentCommand() != null) inCommand.run();
         else ApplicationManager.getApplication().invokeLater(inCommand);
     }
 
-    private void rewrite(final @NotNull Project p, final @NotNull List<TestCaseDto> inClass) {
-        final @NotNull Optional<PsiClass> target = classOf(p, inClass.getFirst());
+    private void rewrite(final @NotNull Project project, final @NotNull List<TestCaseDto> inClass) {
+        final @NotNull Optional<PsiClass> target = classOf(project, inClass.getFirst());
         if (target.isEmpty()) return;
 
         final @NotNull PsiClass pc = target.orElseThrow();
@@ -75,12 +75,12 @@ public class ReconcileTestMethod extends BaseTestMethodChange implements CodeCha
             final @Nullable PsiMethod pm = methods.get(testCase.getId().toString());
             if (pm == null) continue;
 
-            writeDescription(p, pm, testCase);
-            writeGroups(p, pm, testCase);
-            writeEnabled(p, pm, testCase);
+            writeDescription(project, pm, testCase);
+            writeGroups(project, pm, testCase);
+            writeEnabled(project, pm, testCase);
             written++;
         }
 
-        if (written > 0) reformat(p, pc);
+        if (written > 0) reformat(project, pc);
     }
 }

@@ -43,26 +43,26 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExportNotice {
     // UC-SHARE-004, Rule-SHARE-022
-    static void show(final @NotNull Project p, final @NotNull File file, final int testCases) {
+    static void show(final @NotNull Project project, final @NotNull File file, final int testCases) {
         ApplicationManager.getApplication().invokeLater(() -> {
-            final @NotNull Notifier notifier = Services.getInstance(p, Notifier.class);
-            notifier.infoWithActions(p, Done.counted(Done.EXPORTED.getOutcome(), testCases), file.getName(),
-                    notifier.action(Bundle.message("export.open.file"), () -> open(p, file)), copyPath(p, file));
+            final @NotNull Notifier notifier = Services.getInstance(project, Notifier.class);
+            notifier.infoWithActions(project, Done.counted(Done.EXPORTED.getOutcome(), testCases), file.getName(),
+                    notifier.action(Bundle.message("export.open.file"), () -> open(project, file)), copyPath(project, file));
         });
     }
 
     // UC-SHARE-004
     // UC-REPORT-002, Rule-REPORT-012
-    public static void open(final @NotNull Project p, final @NotNull File file) {
+    public static void open(final @NotNull Project project, final @NotNull File file) {
         Optional.ofNullable(LocalFileSystem.getInstance().findFileByPath(file.getAbsolutePath()))
                 .filter(VirtualFile::exists)
-                .ifPresentOrElse(found -> openWithAssociatedProgram(p, found),
-                        () -> Services.getInstance(p, Notifier.class)
-                                .error(p, Bundle.message("export.open.error.title"), Bundle.message("export.open.missing")));
+                .ifPresentOrElse(found -> openWithAssociatedProgram(project, found),
+                        () -> Services.getInstance(project, Notifier.class)
+                                .error(project, Bundle.message("export.open.error.title"), Bundle.message("export.open.missing")));
     }
 
-    private static void openWithAssociatedProgram(final @NotNull Project p, final @NotNull VirtualFile virtualFile) {
-        final @NotNull Notifier notifier = Services.getInstance(p, Notifier.class);
+    private static void openWithAssociatedProgram(final @NotNull Project project, final @NotNull VirtualFile virtualFile) {
+        final @NotNull Notifier notifier = Services.getInstance(project, Notifier.class);
 
         if (virtualFile.getName().toLowerCase(Locale.ROOT).endsWith(".html")) {
             BrowserUtil.browse(new File(virtualFile.getPath()).toURI().toString());
@@ -70,7 +70,7 @@ public final class ExportNotice {
         }
 
         if (!Desktop.isDesktopSupported() || !Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
-            notifier.error(p, Bundle.message("export.system.error.title"), Bundle.message("export.system.unsupported"));
+            notifier.error(project, Bundle.message("export.system.error.title"), Bundle.message("export.system.unsupported"));
             return;
         }
 
@@ -80,14 +80,14 @@ public final class ExportNotice {
                 Desktop.getDesktop().open(toOpen);
             } catch (final IOException ex) {
                 ApplicationManager.getApplication().invokeLater(() ->
-                        notifier.error(p, Bundle.message("export.execution.error.title"), Bundle.message("export.execution.failed", FailureText.of(ex))));
+                        notifier.error(project, Bundle.message("export.execution.error.title"), Bundle.message("export.execution.failed", FailureText.of(ex))));
             }
         });
     }
 
     // UC-REPORT-003, Rule-REPORT-015
-    public static @NotNull NotificationAction copyPath(final @NotNull Project p, final @NotNull File file) {
-        final @NotNull NotificationAction copy = Services.getInstance(p, Notifier.class).action(Bundle.message("notification.copy.path"),
+    public static @NotNull NotificationAction copyPath(final @NotNull Project project, final @NotNull File file) {
+        final @NotNull NotificationAction copy = Services.getInstance(project, Notifier.class).action(Bundle.message("notification.copy.path"),
                 () -> CopyPasteManager.getInstance().setContents(new StringSelection(file.getAbsolutePath())));
 
         copy.getTemplatePresentation().setIcon(AllIcons.Actions.Copy);

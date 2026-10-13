@@ -28,9 +28,9 @@ import javax.swing.JList;
 public class TestCaseCardRenderer extends AbstractCardRenderer<TestinEditor> {
     private final @NotNull TestCaseCard card;
 
-    public TestCaseCardRenderer(final @NotNull Project p, final @NotNull TestSetEditor editor) {
+    public TestCaseCardRenderer(final @NotNull Project project, final @NotNull TestSetEditor editor) {
         super(editor);
-        this.card = new TestCaseCard(p);
+        this.card = new TestCaseCard(project);
     }
 
     // UC-EDITOR-PANEL-001

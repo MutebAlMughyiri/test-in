@@ -75,14 +75,14 @@ public final class DeletedNodes {
     }
 
     // UC-INTERNAL-005, Rule-INTERNAL-042, Rule-INTERNAL-113
-    public boolean putBack(final @NotNull Project p, final @NotNull Path kept, final @NotNull Path original) {
+    public boolean putBack(final @NotNull Project project, final @NotNull Path kept, final @NotNull Path original) {
         if (Files.exists(original)) {
             TestinLogger.warn("Not restoring " + original + ": something is there already.");
             return false;
         }
 
         try {
-            ownWrites.record(p, original);
+            ownWrites.record(project, original);
             Files.createDirectories(original.getParent());
 
             if (Files.isDirectory(kept)) FileUtil.copyDir(kept.toFile(), original.toFile());

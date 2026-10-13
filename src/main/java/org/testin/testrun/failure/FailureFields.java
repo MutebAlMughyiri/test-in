@@ -37,12 +37,12 @@ public final class FailureFields {
     private final @NotNull List<FailureSection> sections;
 
     // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-148
-    public FailureFields(final @NotNull Project p, final @NotNull Path testRunPath, final @NotNull RunItem runItem) {
-        actualResult = new ActualResultSection(p, runItem);
+    public FailureFields(final @NotNull Project project, final @NotNull Path testRunPath, final @NotNull RunItem runItem) {
+        actualResult = new ActualResultSection(project, runItem);
         bugSeverity = BugSeveritySection.of(runItem);
         bugPriority = BugPrioritySection.of(runItem);
-        stacktrace = StacktraceSection.of(p, runItem);
-        screenshots = new ScreenshotsSection(p, testRunPath, runItem);
+        stacktrace = StacktraceSection.of(project, runItem);
+        screenshots = new ScreenshotsSection(project, testRunPath, runItem);
 
         sections = List.of(actualResult, bugSeverity, bugPriority, stacktrace, screenshots);
     }

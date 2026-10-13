@@ -36,14 +36,14 @@ public enum ViewTab {
             Bundle.message("view.tab.details"),
             ViewPanel::getDetailsScrollPane,
             ViewPanel::getDetailsTab,
-            panel -> new DetailsTab().load(panel.getP(), panel.getDetailsTab(), panel.shownTestCase(), panel.shownRunItem(), panel.getPage().getCurrentPath(), panel.shownLine(), panel::showExecution)
+            panel -> new DetailsTab().load(panel.getProject(), panel.getDetailsTab(), panel.shownTestCase(), panel.shownRunItem(), panel.getPage().getCurrentPath(), panel.shownLine(), panel::showExecution)
     ),
 
     HISTORY(
             Bundle.message("view.tab.history"),
             ViewPanel::getHistoryScrollPane,
             ViewPanel::getHistoryTab,
-            panel -> new HistoryTab().load(panel.getP(), panel.getHistoryTab(), panel.liveTestCase())
+            panel -> new HistoryTab().load(panel.getProject(), panel.getHistoryTab(), panel.liveTestCase())
     );
 
     private final @NotNull String displayName;

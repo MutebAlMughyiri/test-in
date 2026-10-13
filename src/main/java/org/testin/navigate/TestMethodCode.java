@@ -38,20 +38,20 @@ public interface TestMethodCode {
     }
 
     @FromContentModule
-    void toCode(final @NotNull Project p, final @NotNull TestCaseDto testCase);
+    void toCode(final @NotNull Project project, final @NotNull TestCaseDto testCase);
 
     @FromContentModule
-    @NotNull Map<UUID, List<String>> methodFqcnsOf(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases);
+    @NotNull Map<UUID, List<String>> methodFqcnsOf(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases);
 
     @FromContentModule
-    @NotNull Map<UUID, Boolean> methodsFor(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases);
+    @NotNull Map<UUID, Boolean> methodsFor(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases);
 
     @FromContentModule
-    @NotNull Set<UUID> withAWrittenBody(@NotNull Project p, @NotNull List<TestCaseDto> testCases);
+    @NotNull Set<UUID> withAWrittenBody(@NotNull Project project, @NotNull List<TestCaseDto> testCases);
 
     @FromContentModule
-    @NotNull Optional<String> fillBody(@NotNull Project p, @NotNull TestCaseDto testCase, @NotNull String statements);
+    @NotNull Optional<String> fillBody(@NotNull Project project, @NotNull TestCaseDto testCase, @NotNull String statements);
 
     @FromContentModule
-    @NotNull Optional<String> replaceBody(@NotNull Project p, @NotNull TestCaseDto testCase, @NotNull String statements);
+    @NotNull Optional<String> replaceBody(@NotNull Project project, @NotNull TestCaseDto testCase, @NotNull String statements);
 }

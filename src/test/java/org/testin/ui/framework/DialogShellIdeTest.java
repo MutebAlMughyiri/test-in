@@ -398,12 +398,12 @@ public class DialogShellIdeTest extends BasePlatformTestCase {
         private final @NotNull AtomicInteger submitted = new AtomicInteger();
         private final @NotNull AtomicInteger searched = new AtomicInteger();
 
-        private Form(final @NotNull Project p, final @NotNull List<? extends DialogPart<?>> fields) {
-            this(p, fields, false, DialogSize.CONTENT);
+        private Form(final @NotNull Project project, final @NotNull List<? extends DialogPart<?>> fields) {
+            this(project, fields, false, DialogSize.CONTENT);
         }
 
-        private Form(final @NotNull Project p, final @NotNull List<? extends DialogPart<?>> fields, final boolean canResize, final @NotNull DialogSize named) {
-            super(p);
+        private Form(final @NotNull Project project, final @NotNull List<? extends DialogPart<?>> fields, final boolean canResize, final @NotNull DialogSize named) {
+            super(project);
             title = "Every field";
             components = fields;
             resizable = canResize;

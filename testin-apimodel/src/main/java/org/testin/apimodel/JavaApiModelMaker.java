@@ -31,7 +31,7 @@ public final class JavaApiModelMaker implements ApiModelMaker {
 
     // UC-CODEGEN-022
     @Override
-    public void open(final @NotNull Project p, final @NotNull PsiDirectory directory) {
-        new ApiModelDialog(p, directory).show();
+    public void open(final @NotNull Project project, final @NotNull PsiDirectory directory) {
+        new ApiModelDialog(project, directory).show();
     }
 }

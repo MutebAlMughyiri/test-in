@@ -52,13 +52,13 @@ import java.util.stream.Stream;
 
 @Service(Service.Level.PROJECT)
 public final class KnownBugIssueStates {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull Map<BugIssue, BugIssueState> answers = new ConcurrentHashMap<>();
     private final @NotNull AtomicBoolean reading = new AtomicBoolean();
     private volatile @NotNull Optional<Function<ProgressIndicator, GitHubCli>> gh;
 
-    public KnownBugIssueStates(final @NotNull Project p) {
-        this.p = p;
+    public KnownBugIssueStates(final @NotNull Project project) {
+        this.project = project;
         this.gh = ApplicationManager.getApplication().isUnitTestMode() ? Optional.empty() : Optional.of(GitHubCli::onPath);
     }
 
@@ -80,8 +80,8 @@ public final class KnownBugIssueStates {
 
     // UC-VIEW-PANEL-005, UC-VIEW-PANEL-007, Rule-VIEW-PANEL-092
     public void readAll(final @NotNull Runnable redraw) {
-        final @NotNull Map<BugRepository, Set<Integer>> filed = filedIn(Services.getInstance(p, TestRuns.class).getAllRunItems().values());
-        final @NotNull Hints hints = Services.getInstance(p, Hints.class);
+        final @NotNull Map<BugRepository, Set<Integer>> filed = filedIn(Services.getInstance(project, TestRuns.class).getAllRunItems().values());
+        final @NotNull Hints hints = Services.getInstance(project, Hints.class);
         if (filed.isEmpty()) {
             hints.clear(SetupStep.BUG_STATES);
             hints.clear(SetupStep.BOARD_COLUMNS);
@@ -91,7 +91,7 @@ public final class KnownBugIssueStates {
 
         final @NotNull Function<ProgressIndicator, GitHubCli> cli = gh.orElseThrow();
         final @NotNull AtomicBoolean changed = new AtomicBoolean();
-        BackgroundWork.start(new Task.Backgroundable(p, Bundle.message("bug.states.reading"), true) {
+        BackgroundWork.start(new Task.Backgroundable(project, Bundle.message("bug.states.reading"), true) {
             @Override
             public void run(final @NotNull ProgressIndicator indicator) {
                 final @NotNull Set<SetupStep> raised = EnumSet.noneOf(SetupStep.class);
@@ -114,14 +114,14 @@ public final class KnownBugIssueStates {
 
     // Rule-VIEW-PANEL-093, Rule-VIEW-PANEL-094, Rule-INTERNAL-127
     private boolean read(final @NotNull GitHubCli cli, final @NotNull BugRepository repository, final @NotNull Set<Integer> numbers, final @NotNull Set<SetupStep> raised) {
-        final @NotNull JsonCodec mapper = Services.getInstance(p, JsonCodec.class);
+        final @NotNull JsonCodec mapper = Services.getInstance(project, JsonCodec.class);
         final @NotNull GhIssueStatesAnswer asked = cli.states(mapper, repository, numbers, true);
         if (asked.boardRefused()) raised.add(SetupStep.BOARD_COLUMNS);
         final @NotNull GhIssueStatesAnswer said = asked.boardRefused() ? withoutBoards(cli, mapper, repository, numbers) : asked;
 
         if (!said.problem().isEmpty()) {
             raised.add(SetupStep.BUG_STATES);
-            Services.getInstance(p, Hints.class).fire(SetupHint.of(SetupStep.BUG_STATES, said.problem()));
+            Services.getInstance(project, Hints.class).fire(SetupHint.of(SetupStep.BUG_STATES, said.problem()));
             return false;
         }
 
@@ -137,7 +137,7 @@ public final class KnownBugIssueStates {
 
     // Rule-VIEW-PANEL-094, Rule-INTERNAL-127
     private @NotNull GhIssueStatesAnswer withoutBoards(final @NotNull GitHubCli cli, final @NotNull JsonCodec mapper, final @NotNull BugRepository repository, final @NotNull Set<Integer> numbers) {
-        Services.getInstance(p, Hints.class).fire(SetupHint.of(SetupStep.BOARD_COLUMNS, Bundle.message("bug.states.board.message", repository.host())));
+        Services.getInstance(project, Hints.class).fire(SetupHint.of(SetupStep.BOARD_COLUMNS, Bundle.message("bug.states.board.message", repository.host())));
         return cli.states(mapper, repository, numbers, false);
     }
 

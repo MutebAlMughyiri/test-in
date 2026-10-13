@@ -31,11 +31,11 @@ import javax.swing.JComponent;
 public class TestinUndoAction extends AbstractBoundProjectAction {
     private final @NotNull UndoDirection direction;
     private final @NotNull UndoScope scope;
-    private final @NotNull UndoHistories undoHistories = Services.getInstance(p, UndoHistories.class);
-    private final @NotNull Notifier notifier = Services.getInstance(p, Notifier.class);
+    private final @NotNull UndoHistories undoHistories = Services.getInstance(project, UndoHistories.class);
+    private final @NotNull Notifier notifier = Services.getInstance(project, Notifier.class);
 
-    public TestinUndoAction(final @NotNull Project p, final @NotNull JComponent on, final @NotNull UndoScope scope, final @NotNull UndoDirection direction) {
-        super(p, direction.getTitle(), Bundle.message("undo.action.description", direction.getTitle()), direction.getIcon());
+    public TestinUndoAction(final @NotNull Project project, final @NotNull JComponent on, final @NotNull UndoScope scope, final @NotNull UndoDirection direction) {
+        super(project, direction.getTitle(), Bundle.message("undo.action.description", direction.getTitle()), direction.getIcon());
         this.direction = direction;
         this.scope = scope;
         this.registerCustomShortcutSet(Shortcuts.customShortcut(direction.getShortcut()), on);
@@ -46,7 +46,7 @@ public class TestinUndoAction extends AbstractBoundProjectAction {
     public void actionPerformed(final @NotNull AnActionEvent e) {
         if (!direction.can(undoHistories, scope)) return;
 
-        if (direction.apply(undoHistories, scope)) notifier.softShow(p, direction.getDone());
+        if (direction.apply(undoHistories, scope)) notifier.softShow(project, direction.getDone());
     }
 
     // UC-EDITOR-PANEL-012, UC-EDITOR-PANEL-013, Rule-EDITOR-PANEL-067, Rule-EDITOR-PANEL-071

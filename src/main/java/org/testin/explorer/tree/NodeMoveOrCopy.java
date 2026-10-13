@@ -42,18 +42,18 @@ import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
 final class NodeMoveOrCopy {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull Consumer<Path> revealAfterRefresh;
     private final @NotNull Nodes nodes;
     private final @NotNull Notifier notifier;
     private final @NotNull UndoHistories undoHistories;
 
-    NodeMoveOrCopy(final @NotNull Project p, final @NotNull Consumer<Path> revealAfterRefresh) {
-        this.p = p;
+    NodeMoveOrCopy(final @NotNull Project project, final @NotNull Consumer<Path> revealAfterRefresh) {
+        this.project = project;
         this.revealAfterRefresh = revealAfterRefresh;
-        this.nodes = Services.getInstance(p, Nodes.class);
-        this.notifier = Services.getInstance(p, Notifier.class);
-        this.undoHistories = Services.getInstance(p, UndoHistories.class);
+        this.nodes = Services.getInstance(project, Nodes.class);
+        this.notifier = Services.getInstance(project, Notifier.class);
+        this.undoHistories = Services.getInstance(project, UndoHistories.class);
     }
 
     static @NotNull String describe(final @NotNull List<AbstractNode> sources) {
@@ -81,7 +81,7 @@ final class NodeMoveOrCopy {
     private void confirmLanded(final @NotNull Done outcome, final int landed) {
         if (landed == 0) return;
 
-        notifier.softShowCounted(p, outcome, landed);
+        notifier.softShowCounted(project, outcome, landed);
     }
 
     // UC-TREE-PANEL-013, Rule-TREE-PANEL-047
@@ -118,7 +118,7 @@ final class NodeMoveOrCopy {
             final @NotNull Path destination = to.get(i);
 
             nodes.moveNode(source, destination, wasMoved -> {
-                if (p.isDisposed()) return;
+                if (project.isDisposed()) return;
 
                 if (wasMoved) moved.incrementAndGet();
                 else putCodeBack(source, destination);
@@ -133,13 +133,13 @@ final class NodeMoveOrCopy {
     // Rule-CODEGEN-082
     private void generateForCopies(final @NotNull List<AbstractNode> sources, final @NotNull AbstractNode target) {
         for (final AbstractNode source : sources) {
-            nodes.find(target.getPath().resolve(source.getName())).ifPresent(copy -> SubtreeCode.generate(p, copy));
+            nodes.find(target.getPath().resolve(source.getName())).ifPresent(copy -> SubtreeCode.generate(project, copy));
         }
     }
 
     // UC-TREE-PANEL-013, Rule-TREE-PANEL-048, Rule-CODEGEN-082
     private void syncCode(final @NotNull List<Path> from, final @NotNull List<Path> to) {
-        WriteCommandAction.runWriteCommandAction(p, Bundle.message("transfer.move.code.command"), null, () -> {
+        WriteCommandAction.runWriteCommandAction(project, Bundle.message("transfer.move.code.command"), null, () -> {
             for (int i = 0; i < from.size(); i++) moved(from.get(i), to.get(i)).ifPresent(this::moveCode);
         });
     }
@@ -148,8 +148,8 @@ final class NodeMoveOrCopy {
     private void putCodeBack(final @NotNull Path source, final @NotNull Path destination) {
         TestinLogger.warn("Move refused for " + source.getFileName() + "; putting its generated code back.");
 
-        WriteCommandAction.runWriteCommandAction(p, Bundle.message("transfer.move.code.command"), null, () ->
-                moved(source, destination).flatMap(moved -> moved.back(p)).ifPresent(this::moveCode));
+        WriteCommandAction.runWriteCommandAction(project, Bundle.message("transfer.move.code.command"), null, () ->
+                moved(source, destination).flatMap(moved -> moved.back(project)).ifPresent(this::moveCode));
     }
 
     private @NotNull Optional<MovedNode> moved(final @NotNull Path from, final @NotNull Path to) {
@@ -157,6 +157,6 @@ final class NodeMoveOrCopy {
     }
 
     private void moveCode(final @NotNull MovedNode moved) {
-        NodeCode.of(moved.dir().getType()).getMoved().execute(p, moved);
+        NodeCode.of(moved.dir().getType()).getMoved().execute(project, moved);
     }
 }

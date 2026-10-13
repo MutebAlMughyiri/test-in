@@ -30,8 +30,8 @@ import java.util.Optional;
 public final class ViewTabAction extends AbstractBoundProjectAction {
     private final @NotNull Direction direction;
 
-    ViewTabAction(final @NotNull Project p, final @NotNull JComponent tab, final @NotNull Direction direction) {
-        super(p, direction.getText(), direction.getDescription(), direction.getIcon());
+    ViewTabAction(final @NotNull Project project, final @NotNull JComponent tab, final @NotNull Direction direction) {
+        super(project, direction.getText(), direction.getDescription(), direction.getIcon());
         this.direction = direction;
         registerCustomShortcutSet(direction.getKey().getCustomShortcut(), tab);
     }
@@ -39,7 +39,7 @@ public final class ViewTabAction extends AbstractBoundProjectAction {
     // UC-VIEW-PANEL-017, Rule-VIEW-PANEL-079, Rule-VIEW-PANEL-080
     @Override
     public void actionPerformed(final @NotNull AnActionEvent e) {
-        ViewToolWindowFactory.toolWindow(p).ifPresent(tw -> {
+        ViewToolWindowFactory.toolWindow(project).ifPresent(tw -> {
             final @NotNull ContentManager contents = tw.getContentManager();
             direction.getSelect().apply(contents).doWhenDone(() -> Optional.ofNullable(contents.getSelectedContent())
                     .ifPresent(front -> contents.setSelectedContent(front, true)));

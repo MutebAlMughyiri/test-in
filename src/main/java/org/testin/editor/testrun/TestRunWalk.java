@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 
 public final class TestRunWalk {
     private final @NotNull TestRunEditor editor;
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull TestRuns testRuns;
     private final @NotNull TestRunStatusChange testRunStatusChange;
     private final @NotNull RunItemRecorder runItemStatusService;
@@ -62,14 +62,14 @@ public final class TestRunWalk {
 
     private @NotNull Optional<UUID> executingTestCase = Optional.empty();
 
-    TestRunWalk(final @NotNull TestRunEditor editor, final @NotNull Project p) {
+    TestRunWalk(final @NotNull TestRunEditor editor, final @NotNull Project project) {
         this.editor = editor;
-        this.p = p;
-        this.testRuns = Services.getInstance(p, TestRuns.class);
-        this.testRunStatusChange = Services.getInstance(p, TestRunStatusChange.class);
-        this.runItemStatusService = Services.getInstance(p, RunItemRecorder.class);
-        this.testNGExecution = Services.getInstance(p, TestNGExecution.class);
-        this.notifier = Services.getInstance(p, Notifier.class);
+        this.project = project;
+        this.testRuns = Services.getInstance(project, TestRuns.class);
+        this.testRunStatusChange = Services.getInstance(project, TestRunStatusChange.class);
+        this.runItemStatusService = Services.getInstance(project, RunItemRecorder.class);
+        this.testNGExecution = Services.getInstance(project, TestNGExecution.class);
+        this.notifier = Services.getInstance(project, Notifier.class);
     }
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-227
@@ -94,8 +94,8 @@ public final class TestRunWalk {
         final @NotNull Optional<UUID> left = executingTestCase;
         executingTestCase = testCaseId;
 
-        left.ifPresent(leftTestCaseId -> ExecutingNow.changed(p, leftTestCaseId));
-        testCaseId.ifPresent(reachedTestCaseId -> ExecutingNow.changed(p, reachedTestCaseId));
+        left.ifPresent(leftTestCaseId -> ExecutingNow.changed(project, leftTestCaseId));
+        testCaseId.ifPresent(reachedTestCaseId -> ExecutingNow.changed(project, reachedTestCaseId));
     }
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-227
@@ -188,7 +188,7 @@ public final class TestRunWalk {
                 .toList();
 
         if (automated.isEmpty()) {
-            notifier.softRefuse(p, Refused.NOTHING_TO_RUN, editor.getParent().getName());
+            notifier.softRefuse(project, Refused.NOTHING_TO_RUN, editor.getParent().getName());
             return;
         }
 
@@ -199,7 +199,7 @@ public final class TestRunWalk {
             launching(testCase.getId());
         });
 
-        ExecuteTestCases.run(p, automated);
+        ExecuteTestCases.run(project, automated);
     }
 
     // UC-EDITOR-PANEL-043, UC-EDITOR-PANEL-044, Rule-EDITOR-PANEL-182, Rule-EDITOR-PANEL-289
@@ -241,7 +241,7 @@ public final class TestRunWalk {
                 .segments(TestRunSummary.of(editor.runItems()), editor.getParent().getMarker().getStatus())
                 .stream().map(Segment::text).collect(Collectors.joining(", "));
 
-        if (!recorded.isEmpty()) notifier.softShow(p, recorded);
+        if (!recorded.isEmpty()) notifier.softShow(project, recorded);
     }
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-134
@@ -268,7 +268,7 @@ public final class TestRunWalk {
     private boolean refusedByTheMode() {
         if (mode() == ExecutionMode.IDLE) return false;
 
-        notifier.softRefuse(p, mode().getRefusal());
+        notifier.softRefuse(project, mode().getRefusal());
         return true;
     }
 
@@ -345,7 +345,7 @@ public final class TestRunWalk {
         if (refusedByTheMode()) return;
 
         if (!hasSomethingToWalk()) {
-            notifier.softRefuse(p, Refused.NOTHING_SHOWING, editor.getParent().getName());
+            notifier.softRefuse(project, Refused.NOTHING_SHOWING, editor.getParent().getName());
             return;
         }
 
@@ -357,7 +357,7 @@ public final class TestRunWalk {
     void stop() {
         stopAndWriteTheTestRunDown();
 
-        notifier.softShow(p, Done.STOPPED);
+        notifier.softShow(project, Done.STOPPED);
     }
 
     void dispose() {

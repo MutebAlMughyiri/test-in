@@ -48,15 +48,15 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-record RemoveWork(@NotNull Project p, @NotNull Nodes nodes, @NotNull TestinEditors editors, @NotNull Notifier notifier, @NotNull UndoHistories undoHistories) {
-    RemoveWork(final @NotNull Project p) {
-        this(p, Services.getInstance(p, Nodes.class), Services.getInstance(p, TestinEditors.class), Services.getInstance(p, Notifier.class), Services.getInstance(p, UndoHistories.class));
+record RemoveWork(@NotNull Project project, @NotNull Nodes nodes, @NotNull TestinEditors editors, @NotNull Notifier notifier, @NotNull UndoHistories undoHistories) {
+    RemoveWork(final @NotNull Project project) {
+        this(project, Services.getInstance(project, Nodes.class), Services.getInstance(project, TestinEditors.class), Services.getInstance(project, Notifier.class), Services.getInstance(project, UndoHistories.class));
     }
 
     // UC-TREE-PANEL-012, Rule-TREE-PANEL-038
     void confirm(final @NotNull List<AbstractNode> nodesToRemove) {
         final @NotNull String holds = nodesToRemove.size() == 1
-                ? NodeCounter.childCounts(p, nodesToRemove.getFirst()).describe()
+                ? NodeCounter.childCounts(project, nodesToRemove.getFirst()).describe()
                 : "";
 
         final @NotNull String msg = (nodesToRemove.size() == 1
@@ -65,7 +65,7 @@ record RemoveWork(@NotNull Project p, @NotNull Nodes nodes, @NotNull TestinEdito
                 + (holds.isEmpty() ? "" : System.lineSeparator() + holds);
 
         final @NotNull String from = nodesToRemove.size() == 1 ? Objects.toString(nodesToRemove.getFirst().getPath().getParent(), "") : "";
-        new ConfirmDialog(p, Bundle.message("remove.confirm.title"), msg, from, "", Bundle.message("remove.confirm.button"), () -> removeNodes(nodesToRemove)).show();
+        new ConfirmDialog(project, Bundle.message("remove.confirm.title"), msg, from, "", Bundle.message("remove.confirm.button"), () -> removeNodes(nodesToRemove)).show();
     }
 
     // UC-TREE-PANEL-012, Rule-TREE-PANEL-041
@@ -73,13 +73,13 @@ record RemoveWork(@NotNull Project p, @NotNull Nodes nodes, @NotNull TestinEdito
         if (nodesToRemove.isEmpty()) return;
 
         // Rule-CODEGEN-096
-        if (nodesToRemove.stream().anyMatch(node -> NodeCode.of(node.getType()).getRemoved().generates()) && WaitForIndexing.refuses(p, Bundle.message("remove.confirm.button")))
+        if (nodesToRemove.stream().anyMatch(node -> NodeCode.of(node.getType()).getRemoved().generates()) && WaitForIndexing.refuses(project, Bundle.message("remove.confirm.button")))
             return;
 
         final @NotNull List<Kept> kept = new ArrayList<>(nodesToRemove.size());
 
         // Rule-TREE-PANEL-102
-        final boolean copied = BackgroundWork.synchronously(p, Bundle.message("remove.progress"), true, () -> {
+        final boolean copied = BackgroundWork.synchronously(project, Bundle.message("remove.progress"), true, () -> {
             for (final AbstractNode node : nodesToRemove) {
                 ProgressManager.checkCanceled();
                 nodes.keepAside(node.getPath()).ifPresent(copy -> kept.add(new Kept(node, node.getPath(), copy)));
@@ -105,11 +105,11 @@ record RemoveWork(@NotNull Project p, @NotNull Nodes nodes, @NotNull TestinEdito
             if (went.isEmpty()) return;
 
             recordRemoval(went, undoable);
-            notifier.softShowCounted(p, Done.REMOVED, went.size());
+            notifier.softShowCounted(project, Done.REMOVED, went.size());
 
             final int lost = went.size() - undoable.size();
             if (lost > 0) {
-                notifier.softRefuse(p, Bundle.message("remove.not.undoable.title"),
+                notifier.softRefuse(project, Bundle.message("remove.not.undoable.title"),
                         lost == 1
                                 ? Bundle.message("remove.not.undoable.one", Declared.shortcutText(IdeActions.ACTION_UNDO))
                                 : Bundle.message("remove.not.undoable.many", String.valueOf(lost), Declared.shortcutText(IdeActions.ACTION_UNDO)));
@@ -123,7 +123,7 @@ record RemoveWork(@NotNull Project p, @NotNull Nodes nodes, @NotNull TestinEdito
         final @NotNull List<AbstractNode> went = new CopyOnWriteArrayList<>();
 
         for (final AbstractNode node : nodes) {
-            RemoveHandlers.of(node.getType()).remove(p, node, wasRemoved -> {
+            RemoveHandlers.of(node.getType()).remove(project, node, wasRemoved -> {
                 if (wasRemoved) went.add(node);
                 if (pending.decrementAndGet() != 0) return;
 
@@ -151,7 +151,7 @@ record RemoveWork(@NotNull Project p, @NotNull Nodes nodes, @NotNull TestinEdito
     // UC-TREE-PANEL-016, Rule-TREE-PANEL-040, Rule-INTERNAL-063
     private boolean restoreAll(final @NotNull List<Kept> kept) {
         if (kept.isEmpty()) {
-            notifier.softRefuse(p, Bundle.message("remove.not.undoable.title"),
+            notifier.softRefuse(project, Bundle.message("remove.not.undoable.title"),
                     Bundle.message("remove.nothing.kept"));
             return false;
         }
@@ -161,11 +161,11 @@ record RemoveWork(@NotNull Project p, @NotNull Nodes nodes, @NotNull TestinEdito
         kept.forEach(one -> originalByKept.put(one.copy(), one.original()));
 
         final @NotNull List<Path> lost = new ArrayList<>();
-        BackgroundWork.synchronously(p, Bundle.message("remove.undo.progress"), false, () -> lost.addAll(nodes.restoreNodes(originalByKept)));
+        BackgroundWork.synchronously(project, Bundle.message("remove.undo.progress"), false, () -> lost.addAll(nodes.restoreNodes(originalByKept)));
 
         if (lost.isEmpty()) return true;
 
-        notifier.softRefuse(p, Bundle.message("remove.undo.incomplete.title"), Bundle.message("remove.undo.incomplete.message", String.valueOf(lost.size()), String.valueOf(kept.size())));
+        notifier.softRefuse(project, Bundle.message("remove.undo.incomplete.title"), Bundle.message("remove.undo.incomplete.message", String.valueOf(lost.size()), String.valueOf(kept.size())));
         return false;
     }
 

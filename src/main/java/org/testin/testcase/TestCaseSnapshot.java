@@ -35,8 +35,8 @@ import java.util.UUID;
 
 public record TestCaseSnapshot(@NotNull Path testSetPath, @NotNull List<TestCaseDto> present, @NotNull List<UUID> absent) {
     // UC-EDITOR-PANEL-012, Rule-EDITOR-PANEL-228
-    public static @NotNull TestCaseSnapshot of(final @NotNull Project p, final @NotNull Path testSetPath, final @NotNull List<UUID> testCaseIds) {
-        final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
+    public static @NotNull TestCaseSnapshot of(final @NotNull Project project, final @NotNull Path testSetPath, final @NotNull List<UUID> testCaseIds) {
+        final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
         final @NotNull List<TestCaseDto> present = new ArrayList<>(testCaseIds.size());
         final @NotNull List<UUID> absent = new ArrayList<>();
 
@@ -60,18 +60,18 @@ public record TestCaseSnapshot(@NotNull Path testSetPath, @NotNull List<TestCase
     }
 
     // UC-EDITOR-PANEL-012, Rule-EDITOR-PANEL-038
-    public static void record(final @NotNull Project p, final @NotNull String description, final @NotNull TestCaseSnapshot before, final @NotNull TestCaseSnapshot after) {
-        record(p, UndoScope.of(before.testSetPath()), description, List.of(before), List.of(after));
+    public static void record(final @NotNull Project project, final @NotNull String description, final @NotNull TestCaseSnapshot before, final @NotNull TestCaseSnapshot after) {
+        record(project, UndoScope.of(before.testSetPath()), description, List.of(before), List.of(after));
     }
 
     // UC-EDITOR-PANEL-012, Rule-EDITOR-PANEL-070
-    public static void record(final @NotNull Project p, final @NotNull UndoScope scope, final @NotNull String description, final @NotNull List<TestCaseSnapshot> before, final @NotNull List<TestCaseSnapshot> after) {
-        if (same(before, after, Services.getInstance(p, JsonCodec.class))) return;
+    public static void record(final @NotNull Project project, final @NotNull UndoScope scope, final @NotNull String description, final @NotNull List<TestCaseSnapshot> before, final @NotNull List<TestCaseSnapshot> after) {
+        if (same(before, after, Services.getInstance(project, JsonCodec.class))) return;
 
-        ApplicationManager.getApplication().invokeLater(() -> Services.getInstance(p, UndoHistories.class).push(scope, new Operation(
+        ApplicationManager.getApplication().invokeLater(() -> Services.getInstance(project, UndoHistories.class).push(scope, new Operation(
                 description,
-                () -> TestCaseRestore.restore(p, before, after),
-                () -> TestCaseRestore.restore(p, after, before),
+                () -> TestCaseRestore.restore(project, before, after),
+                () -> TestCaseRestore.restore(project, after, before),
                 () -> {
                 })));
     }

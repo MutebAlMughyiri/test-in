@@ -31,15 +31,15 @@ import java.util.List;
 public class RemoveTestCaseAction extends AbstractAnyProjectAction {
     // UC-EDITOR-PANEL-011
     @Override
-    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
         final @NotNull List<TestCaseDto> selected = TestinDataKeys.selectedTestCases(e);
         if (selected.isEmpty()) return;
 
-        TestinDataKeys.editor(e).ifPresent(editor -> new RemoveTestCaseWork(p, editor, editor.getParent(), selected).remove());
+        TestinDataKeys.editor(e).ifPresent(editor -> new RemoveTestCaseWork(project, editor, editor.getParent(), selected).remove());
     }
 
     @Override
-    protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
         // Rule-EDITOR-PANEL-214
         if (TestinDataKeys.editor(e).filter(editor -> !editor.getParent().isTestCaseContainer()).isPresent()) {
             e.getPresentation().setEnabled(false);

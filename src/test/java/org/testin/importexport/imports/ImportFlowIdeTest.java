@@ -307,12 +307,12 @@ public class ImportFlowIdeTest extends AbstractTempRootIdeTest {
         private final @NotNull AtomicInteger opened = new AtomicInteger();
 
         @Override
-        public boolean accept(final @NotNull Project p, final @NotNull VirtualFile file) {
+        public boolean accept(final @NotNull Project project, final @NotNull VirtualFile file) {
             return true;
         }
 
         @Override
-        public @NotNull FileEditor createEditor(final @NotNull Project p, final @NotNull VirtualFile file) {
+        public @NotNull FileEditor createEditor(final @NotNull Project project, final @NotNull VirtualFile file) {
             opened.incrementAndGet();
             return new StandInEditor(file);
         }

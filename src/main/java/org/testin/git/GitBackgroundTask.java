@@ -29,15 +29,15 @@ public final class GitBackgroundTask extends Task.Backgroundable {
     private final @NotNull GitTaskWork work;
     private final @NotNull Consumer<Exception> onError;
 
-    public GitBackgroundTask(final @NotNull Project p, final @NotNull String title, final boolean cancellable, final @NotNull GitTaskWork work, final @NotNull Consumer<Exception> onError) {
-        super(p, title, cancellable);
+    public GitBackgroundTask(final @NotNull Project project, final @NotNull String title, final boolean cancellable, final @NotNull GitTaskWork work, final @NotNull Consumer<Exception> onError) {
+        super(project, title, cancellable);
         this.work = work;
         this.onError = onError;
     }
 
     // Rule-SHARE-005
-    public static void run(final @NotNull Project p, final @NotNull String title, final boolean cancellable, final @NotNull GitTaskWork work, final @NotNull Consumer<Exception> onError) {
-        BackgroundWork.start(new GitBackgroundTask(p, title, cancellable, work, onError));
+    public static void run(final @NotNull Project project, final @NotNull String title, final boolean cancellable, final @NotNull GitTaskWork work, final @NotNull Consumer<Exception> onError) {
+        BackgroundWork.start(new GitBackgroundTask(project, title, cancellable, work, onError));
     }
 
     @Override

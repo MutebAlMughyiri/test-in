@@ -82,22 +82,22 @@ public enum OptionalPlugin {
     }
 
     // Rule-CODEGEN-062, Rule-INTERNAL-127
-    public boolean isMissingAndWarned(final @NotNull Project p) {
+    public boolean isMissingAndWarned(final @NotNull Project project) {
         if (isAvailable()) return false;
-        Services.getInstance(p, Notifier.class).softRefuse(p, Bundle.message("plugin.not.available.title", label), requirement);
-        hint(p);
+        Services.getInstance(project, Notifier.class).softRefuse(project, Bundle.message("plugin.not.available.title", label), requirement);
+        hint(project);
         return true;
     }
 
     // Rule-CODEGEN-005, Rule-INTERNAL-127
-    public boolean isAvailableOrHinted(final @NotNull Project p) {
+    public boolean isAvailableOrHinted(final @NotNull Project project) {
         if (isAvailable()) return true;
-        hint(p);
+        hint(project);
         return false;
     }
 
-    private void hint(final @NotNull Project p) {
-        Services.getInstance(p, Hints.class).fire(SetupHint.of(step, requirement));
+    private void hint(final @NotNull Project project) {
+        Services.getInstance(project, Hints.class).fire(SetupHint.of(step, requirement));
     }
 
     // UC-SHARE-010, Rule-SHARE-105

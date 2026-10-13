@@ -79,7 +79,7 @@ public final class GridEnterAction extends AbstractBoundProjectAction {
         }
 
         if (GridTables.isOrderColumn(table, column) && editor.getParent().isTestCaseContainer()) {
-            UpdateTestCaseAction.openField(p, editor, UpdateTestCaseFields.ORDER);
+            UpdateTestCaseAction.openField(project, editor, UpdateTestCaseFields.ORDER);
             return true;
         }
 
@@ -103,7 +103,7 @@ public final class GridEnterAction extends AbstractBoundProjectAction {
     private void showDetails(final int row) {
         if (row < 0 || row >= pageTestCases.size()) return;
 
-        ViewToolWindowFactory.showPanel(p, List.of(pageTestCases.get(row)), path, ViewPanel::focusDetailsTab);
+        ViewToolWindowFactory.showPanel(project, List.of(pageTestCases.get(row)), path, ViewPanel::focusDetailsTab);
     }
 
     // UC-EDITOR-PANEL-025

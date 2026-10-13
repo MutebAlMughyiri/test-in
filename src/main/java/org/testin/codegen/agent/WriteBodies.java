@@ -46,53 +46,53 @@ import java.util.stream.Stream;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WriteBodies {
     // UC-CODEGEN-021, Rule-CODEGEN-084, Rule-CODEGEN-091
-    public static void forAll(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases, final @NotNull Optional<TestinEditor> editor) {
+    public static void forAll(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases, final @NotNull Optional<TestinEditor> editor) {
         final @NotNull AgentConnection connection = AgentConnection.stored();
         if (!connection.isConnected() || testCases.isEmpty()) return;
 
-        BackgroundWork.logged(ReadAction.nonBlocking(() -> TestMethodCode.available().withAWrittenBody(p, testCases))
-                .expireWith(ProjectLifetime.of(p))
-                .finishOnUiThread(ModalityState.defaultModalityState(), written -> askOrConfirm(p, connection, testCases, written, editor))
+        BackgroundWork.logged(ReadAction.nonBlocking(() -> TestMethodCode.available().withAWrittenBody(project, testCases))
+                .expireWith(ProjectLifetime.of(project))
+                .finishOnUiThread(ModalityState.defaultModalityState(), written -> askOrConfirm(project, connection, testCases, written, editor))
                 .submit(AppExecutorUtil.getAppExecutorService()), "Reading which test methods have a written body");
     }
 
     // UC-CODEGEN-021, Rule-CODEGEN-084, Rule-CODEGEN-091
-    private static void askOrConfirm(final @NotNull Project p, final @NotNull AgentConnection connection, final @NotNull List<TestCaseDto> testCases, final @NotNull Set<UUID> written, final @NotNull Optional<TestinEditor> editor) {
+    private static void askOrConfirm(final @NotNull Project project, final @NotNull AgentConnection connection, final @NotNull List<TestCaseDto> testCases, final @NotNull Set<UUID> written, final @NotNull Optional<TestinEditor> editor) {
         final @NotNull List<TestCaseDto> theirs = testCases.stream().filter(testCase -> written.contains(testCase.getId())).toList();
         final @NotNull List<TestCaseDto> empty = testCases.stream().filter(testCase -> !written.contains(testCase.getId())).toList();
 
         if (theirs.isEmpty()) {
-            ask(p, connection, empty, List.of(), editor);
+            ask(project, connection, empty, List.of(), editor);
             return;
         }
 
-        writeOverOrLeave(p, theirs.size(), () -> ask(p, connection, empty, theirs, editor), () -> ask(p, connection, empty, List.of(), editor)).show();
+        writeOverOrLeave(project, theirs.size(), () -> ask(project, connection, empty, theirs, editor), () -> ask(project, connection, empty, List.of(), editor)).show();
     }
 
     // UC-CODEGEN-021, Rule-CODEGEN-091
-    static @NotNull ConfirmDialog writeOverOrLeave(final @NotNull Project p, final int written, final @NotNull Runnable writeOver, final @NotNull Runnable leave) {
-        return new ConfirmDialog(p, Bundle.message("agent.over.title"), Bundle.message("agent.over.message", String.valueOf(written)), "", "",
+    static @NotNull ConfirmDialog writeOverOrLeave(final @NotNull Project project, final int written, final @NotNull Runnable writeOver, final @NotNull Runnable leave) {
+        return new ConfirmDialog(project, Bundle.message("agent.over.title"), Bundle.message("agent.over.message", String.valueOf(written)), "", "",
                 Bundle.message("agent.over.confirm"), writeOver,
                 List.of(new Alternative(Shortcuts.Escape, Bundle.message("agent.over.skip"), leave)));
     }
 
     // UC-CODEGEN-021, Rule-CODEGEN-084, Rule-CODEGEN-089
-    private static void ask(final @NotNull Project p, final @NotNull AgentConnection connection, final @NotNull List<TestCaseDto> empty, final @NotNull List<TestCaseDto> theirs, final @NotNull Optional<TestinEditor> editor) {
+    private static void ask(final @NotNull Project project, final @NotNull AgentConnection connection, final @NotNull List<TestCaseDto> empty, final @NotNull List<TestCaseDto> theirs, final @NotNull Optional<TestinEditor> editor) {
         if (empty.isEmpty() && theirs.isEmpty()) return;
 
         final @NotNull AgentTranscript transcript = new AgentTranscript();
         final int asked = empty.size() + theirs.size();
 
-        BackgroundWork.run(p, Bundle.message("agent.task.title"), Bundle.message("agent.task.failed"), true,
-                indicator -> write(p, connection, empty, theirs, transcript, indicator),
+        BackgroundWork.run(project, Bundle.message("agent.task.title"), Bundle.message("agent.task.failed"), true,
+                indicator -> write(project, connection, empty, theirs, transcript, indicator),
                 () -> {
-                    sayWhatTheAgentDid(p, asked, transcript);
+                    sayWhatTheAgentDid(project, asked, transcript);
                     editor.ifPresent(TestinEditor::refreshView);
                 });
     }
 
     // UC-CODEGEN-021, Rule-CODEGEN-084, Rule-CODEGEN-088
-    private static void write(final @NotNull Project p, final @NotNull AgentConnection connection, final @NotNull List<TestCaseDto> empty, final @NotNull List<TestCaseDto> theirs, final @NotNull AgentTranscript transcript, final @NotNull ProgressIndicator indicator) {
+    private static void write(final @NotNull Project project, final @NotNull AgentConnection connection, final @NotNull List<TestCaseDto> empty, final @NotNull List<TestCaseDto> theirs, final @NotNull AgentTranscript transcript, final @NotNull ProgressIndicator indicator) {
         final @NotNull AgentCli agent = AgentCli.onPath(indicator);
         final @NotNull List<TestCaseDto> asked = Stream.concat(empty.stream(), theirs.stream()).toList();
 
@@ -104,19 +104,19 @@ public final class WriteBodies {
             indicator.setText2(testCase.getDescription());
             indicator.setFraction((double) next / asked.size());
 
-            askFor(p, agent, connection, testCase, transcript, theirs.contains(testCase));
+            askFor(project, agent, connection, testCase, transcript, theirs.contains(testCase));
         }
     }
 
     // UC-CODEGEN-003, Rule-CODEGEN-090, Rule-CODEGEN-091
-    private static void askFor(final @NotNull Project p, final @NotNull AgentCli agent, final @NotNull AgentConnection connection, final @NotNull TestCaseDto testCase, final @NotNull AgentTranscript transcript, final boolean overWhatIsThere) {
+    private static void askFor(final @NotNull Project project, final @NotNull AgentCli agent, final @NotNull AgentConnection connection, final @NotNull TestCaseDto testCase, final @NotNull AgentTranscript transcript, final boolean overWhatIsThere) {
         final @NotNull String prompt = BodyPrompt.of(connection.promptTemplate(), testCase, Fqcn.methodNameOf(testCase));
         final @NotNull Optional<String> said = agent.ask(connection, prompt);
         final @NotNull Optional<String> statements = said.flatMap(AgentAnswer::statementsIn);
 
         final boolean landed = statements.flatMap(written -> overWhatIsThere
-                ? TestMethodCode.available().replaceBody(p, testCase, written)
-                : TestMethodCode.available().fillBody(p, testCase, written)).isPresent();
+                ? TestMethodCode.available().replaceBody(project, testCase, written)
+                : TestMethodCode.available().fillBody(project, testCase, written)).isPresent();
 
         transcript.record(testCase, prompt, said.orElse(Bundle.message("agent.said.nothing")), landed, outcomeOf(landed, said, statements));
     }
@@ -131,13 +131,13 @@ public final class WriteBodies {
     }
 
     // UC-CODEGEN-021, Rule-CODEGEN-089, Rule-CODEGEN-090
-    private static void sayWhatTheAgentDid(final @NotNull Project p, final int asked, final @NotNull AgentTranscript transcript) {
+    private static void sayWhatTheAgentDid(final @NotNull Project project, final int asked, final @NotNull AgentTranscript transcript) {
         if (transcript.isEmpty()) return;
 
-        final @NotNull Notifier notifier = Services.getInstance(p, Notifier.class);
+        final @NotNull Notifier notifier = Services.getInstance(project, Notifier.class);
 
-        notifier.infoWithActions(p, Bundle.message("agent.done.written"),
+        notifier.infoWithActions(project, Bundle.message("agent.done.written"),
                 Bundle.message("agent.done.detail", String.valueOf(transcript.landed()), String.valueOf(asked)),
-                notifier.lastingAction(Bundle.message("agent.said.show"), () -> new AgentTranscriptDialog(p, transcript.read()).show()));
+                notifier.lastingAction(Bundle.message("agent.said.show"), () -> new AgentTranscriptDialog(project, transcript.read()).show()));
     }
 }

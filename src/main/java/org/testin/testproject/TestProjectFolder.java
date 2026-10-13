@@ -32,11 +32,11 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestProjectFolder {
     // UC-TREE-PANEL-002, UC-TREE-PANEL-003, Rule-TREE-PANEL-017, Rule-TREE-PANEL-107
-    public static @NotNull Optional<Path> free(final @NotNull Project p, final @NotNull String name) {
-        final @NotNull Path folder = Services.getInstance(p, TestinRoot.class).absolutePath().resolve(name);
+    public static @NotNull Optional<Path> free(final @NotNull Project project, final @NotNull String name) {
+        final @NotNull Path folder = Services.getInstance(project, TestinRoot.class).absolutePath().resolve(name);
 
-        if (Services.getInstance(p, Nodes.class).isTaken(folder, Optional.empty())) {
-            Services.getInstance(p, Notifier.class).softRefuse(p, Refused.ALREADY_EXISTS, name);
+        if (Services.getInstance(project, Nodes.class).isTaken(folder, Optional.empty())) {
+            Services.getInstance(project, Notifier.class).softRefuse(project, Refused.ALREADY_EXISTS, name);
             return Optional.empty();
         }
 

@@ -47,16 +47,16 @@ import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class GitCommandRunner {
-    static @NotNull String execute(final @NotNull Project p, final @NotNull Path workingDirectory, final @NotNull GitCommand command, final @NotNull String... parameters) {
-        return run(p, workingDirectory, "", command, parameters);
+    static @NotNull String execute(final @NotNull Project project, final @NotNull Path workingDirectory, final @NotNull GitCommand command, final @NotNull String... parameters) {
+        return run(project, workingDirectory, "", command, parameters);
     }
 
-    static @NotNull String executeRemote(final @NotNull Project p, final @NotNull Path workingDirectory, final @NotNull String remoteUrl, final @NotNull GitCommand command, final @NotNull String... parameters) {
-        return run(p, workingDirectory, remoteUrl, command, parameters);
+    static @NotNull String executeRemote(final @NotNull Project project, final @NotNull Path workingDirectory, final @NotNull String remoteUrl, final @NotNull GitCommand command, final @NotNull String... parameters) {
+        return run(project, workingDirectory, remoteUrl, command, parameters);
     }
 
     // UC-SHARE-012, Rule-SHARE-058
-    static void executeOverPaths(final @NotNull Project p, final @NotNull Path workingDirectory, final @NotNull Collection<String> paths, final @NotNull GitCommand command, final @NotNull String... parameters) {
+    static void executeOverPaths(final @NotNull Project project, final @NotNull Path workingDirectory, final @NotNull Collection<String> paths, final @NotNull GitCommand command, final @NotNull String... parameters) {
         if (paths.isEmpty()) throw new IllegalArgumentException("Expected paths to run over");
 
         final @NotNull Path pathspec = writePathspec(paths);
@@ -65,7 +65,7 @@ final class GitCommandRunner {
             full[parameters.length] = "--pathspec-from-file=" + pathspec;
             full[parameters.length + 1] = "--pathspec-file-nul";
 
-            run(p, workingDirectory, "", command, full);
+            run(project, workingDirectory, "", command, full);
         } finally {
             try {
                 Files.deleteIfExists(pathspec);
@@ -91,19 +91,19 @@ final class GitCommandRunner {
     }
 
     // UC-SHARE-010, UC-SHARE-017
-    static @NotNull Map<String, String> readObjects(final @NotNull Project p, final @NotNull Path workingDirectory, final @NotNull String revision, final @NotNull List<String> relativePaths) {
-        return objectsIn(relativePaths, batch(p, workingDirectory, batchRequest(revision, relativePaths)));
+    static @NotNull Map<String, String> readObjects(final @NotNull Project project, final @NotNull Path workingDirectory, final @NotNull String revision, final @NotNull List<String> relativePaths) {
+        return objectsIn(relativePaths, batch(project, workingDirectory, batchRequest(revision, relativePaths)));
     }
 
     // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-096
-    static @NotNull Map<String, String> readObjects(final @NotNull Project p, final @NotNull Path workingDirectory, final @NotNull List<String> objectNames) {
-        return objectsIn(objectNames, batch(p, workingDirectory, batchRequest(objectNames)));
+    static @NotNull Map<String, String> readObjects(final @NotNull Project project, final @NotNull Path workingDirectory, final @NotNull List<String> objectNames) {
+        return objectsIn(objectNames, batch(project, workingDirectory, batchRequest(objectNames)));
     }
 
-    private static byte @NotNull [] batch(final @NotNull Project p, final @NotNull Path workingDirectory, final byte @NotNull [] request) {
+    private static byte @NotNull [] batch(final @NotNull Project project, final @NotNull Path workingDirectory, final byte @NotNull [] request) {
         final @NotNull VirtualFile root = Optional.ofNullable(LocalFileSystem.getInstance().refreshAndFindFileByNioFile(workingDirectory))
                 .orElseThrow(() -> new GitFailed(Bundle.message("git.command.failed", String.valueOf(workingDirectory))));
-        final @NotNull GitBinaryHandler handler = new GitBinaryHandler(p, root, GitCommand.CAT_FILE);
+        final @NotNull GitBinaryHandler handler = new GitBinaryHandler(project, root, GitCommand.CAT_FILE);
         handler.addParameters("--batch");
         handler.setInputProcessor(stdin -> {
             try (stdin) {
@@ -166,8 +166,8 @@ final class GitCommandRunner {
     }
 
     // UC-SHARE-012, Rule-SHARE-056
-    private static @NotNull String run(final @NotNull Project p, final @NotNull Path workingDirectory, final @NotNull String remoteUrl, final @NotNull GitCommand command, final @NotNull String... parameters) {
-        final @NotNull GitLineHandler handler = new GitLineHandler(p, workingDirectory, command);
+    private static @NotNull String run(final @NotNull Project project, final @NotNull Path workingDirectory, final @NotNull String remoteUrl, final @NotNull GitCommand command, final @NotNull String... parameters) {
+        final @NotNull GitLineHandler handler = new GitLineHandler(project, workingDirectory, command);
 
         handler.addCustomEnvironmentVariable(GitCommand.GIT_EDITOR_ENV, "true");
 

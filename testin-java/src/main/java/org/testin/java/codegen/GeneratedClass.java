@@ -34,34 +34,34 @@ import java.util.Optional;
 // UC-CODEGEN-001, Rule-CODEGEN-009, Rule-CODEGEN-010
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GeneratedClass {
-    public static @NotNull Optional<PsiClass> find(final @NotNull Project p, final @NotNull List<String> classFqcn) {
+    public static @NotNull Optional<PsiClass> find(final @NotNull Project project, final @NotNull List<String> classFqcn) {
         if (classFqcn.isEmpty()) return Optional.empty();
 
-        return byName(p, String.join(".", classFqcn));
+        return byName(project, String.join(".", classFqcn));
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-010
-    public static @NotNull Optional<PsiClass> findOrWrite(final @NotNull Project p, final @NotNull List<String> packageList, final @NotNull String className) {
+    public static @NotNull Optional<PsiClass> findOrWrite(final @NotNull Project project, final @NotNull List<String> packageList, final @NotNull String className) {
         final @NotNull String path = packageList.isEmpty() ? className : String.join(".", packageList) + "." + className;
 
-        final @NotNull Optional<PsiClass> existing = byName(p, path);
+        final @NotNull Optional<PsiClass> existing = byName(project, path);
         if (existing.isPresent()) return existing;
 
-        JavaSourceRoot.fileInRootOrWarn(p, className, root -> JavaSourceRoot.classFile(root, packageList, className))
-                .ifPresent(written -> commit(p, written));
+        JavaSourceRoot.fileInRootOrWarn(project, className, root -> JavaSourceRoot.classFile(root, packageList, className))
+                .ifPresent(written -> commit(project, written));
 
-        return byName(p, path);
+        return byName(project, path);
     }
 
-    public static @NotNull Optional<PsiClass> byName(final @NotNull Project p, final @NotNull String path) {
-        return Optional.ofNullable(JavaPsiFacade.getInstance(p).findClass(path, GlobalSearchScope.projectScope(p)));
+    public static @NotNull Optional<PsiClass> byName(final @NotNull Project project, final @NotNull String path) {
+        return Optional.ofNullable(JavaPsiFacade.getInstance(project).findClass(path, GlobalSearchScope.projectScope(project)));
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-011
-    private static void commit(final @NotNull Project p, final @NotNull VirtualFile written) {
-        final @NotNull PsiDocumentManager documents = PsiDocumentManager.getInstance(p);
+    private static void commit(final @NotNull Project project, final @NotNull VirtualFile written) {
+        final @NotNull PsiDocumentManager documents = PsiDocumentManager.getInstance(project);
 
-        Optional.ofNullable(PsiManager.getInstance(p).findFile(written))
+        Optional.ofNullable(PsiManager.getInstance(project).findFile(written))
                 .map(documents::getDocument)
                 .ifPresent(documents::commitDocument);
     }

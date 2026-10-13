@@ -37,48 +37,48 @@ import java.util.function.Consumer;
 
 public class ViewToolWindowFactory implements ToolWindowFactory, DumbAware {
 
-    static void onPanelDisposed(final @NotNull Project p, final @NotNull ViewPanel panel) {
-        Services.getInstance(p, ViewPanelHolder.class).release(panel);
+    static void onPanelDisposed(final @NotNull Project project, final @NotNull ViewPanel panel) {
+        Services.getInstance(project, ViewPanelHolder.class).release(panel);
     }
 
-    public static @NotNull Optional<ViewPanel> panel(final @NotNull Project p) {
-        return Services.getInstance(p, ViewPanelHolder.class).get();
+    public static @NotNull Optional<ViewPanel> panel(final @NotNull Project project) {
+        return Services.getInstance(project, ViewPanelHolder.class).get();
     }
 
-    public static @NotNull Optional<ToolWindow> toolWindow(final @NotNull Project p) {
-        return Optional.ofNullable(ToolWindowManager.getInstance(p).getToolWindow("testin.view"));
+    public static @NotNull Optional<ToolWindow> toolWindow(final @NotNull Project project) {
+        return Optional.ofNullable(ToolWindowManager.getInstance(project).getToolWindow("testin.view"));
     }
 
     // UC-VIEW-PANEL-005, UC-VIEW-PANEL-007, Rule-VIEW-PANEL-092
-    public static void refreshShown(final @NotNull Project p) {
-        panel(p).ifPresent(ViewPanel::refreshCurrentView);
+    public static void refreshShown(final @NotNull Project project) {
+        panel(project).ifPresent(ViewPanel::refreshCurrentView);
     }
 
     // Rule-VIEW-PANEL-005
-    public static void refreshIfShowing(final @NotNull Project p, final @NotNull Collection<TestCaseDto> written) {
-        panel(p).ifPresent(view -> view.refreshIfShowing(written));
+    public static void refreshIfShowing(final @NotNull Project project, final @NotNull Collection<TestCaseDto> written) {
+        panel(project).ifPresent(view -> view.refreshIfShowing(written));
     }
 
     // UC-VIEW-PANEL-001, Rule-VIEW-PANEL-010
-    public static void showPanel(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases, final @NotNull List<String> path, final @NotNull Consumer<ViewPanel> onReadyAction) {
-        toolWindow(p).ifPresent(tw -> tw.show(() -> panel(p).ifPresent(viewer -> {
+    public static void showPanel(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases, final @NotNull List<String> path, final @NotNull Consumer<ViewPanel> onReadyAction) {
+        toolWindow(project).ifPresent(tw -> tw.show(() -> panel(project).ifPresent(viewer -> {
             viewer.show(testCases, path);
             onReadyAction.accept(viewer);
         })));
     }
 
-    public static void showPanel(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases, final @NotNull List<String> path) {
-        showPanel(p, testCases, path, _ -> {
+    public static void showPanel(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases, final @NotNull List<String> path) {
+        showPanel(project, testCases, path, _ -> {
         });
     }
 
     // Rule-VIEW-PANEL-008
     @Override
-    public void createToolWindowContent(final @NotNull Project p, final @NotNull ToolWindow toolWindow) {
+    public void createToolWindowContent(final @NotNull Project project, final @NotNull ToolWindow toolWindow) {
         TestinLogger.info("ViewToolWindowFactory.createToolWindowContent()");
 
-        final @NotNull ViewPanel panel = new ViewPanel(p);
-        Services.getInstance(p, ViewPanelHolder.class).hold(panel);
+        final @NotNull ViewPanel panel = new ViewPanel(project);
+        Services.getInstance(project, ViewPanelHolder.class).hold(panel);
 
         final @NotNull ContentFactory contentFactory = ContentFactory.getInstance();
 
@@ -93,7 +93,7 @@ public class ViewToolWindowFactory implements ToolWindowFactory, DumbAware {
         toolWindow.setTitleActions(new ViewPanelActions().create(panel, toolWindow.getComponent()));
 
         ApplicationManager.getApplication().invokeLater(() -> {
-            if (!p.isDisposed()) TestinStartup.execute(p);
+            if (!project.isDisposed()) TestinStartup.execute(project);
         });
     }
 }

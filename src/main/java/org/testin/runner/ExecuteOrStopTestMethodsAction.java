@@ -32,22 +32,22 @@ import java.util.Optional;
 public class ExecuteOrStopTestMethodsAction extends AbstractAnyProjectAction {
     // UC-EDITOR-PANEL-035, Rule-EDITOR-PANEL-150
     @Override
-    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
         final @NotNull List<TestCaseDto> selected = TestinDataKeys.selectedTestCases(e);
 
-        TestCaseQuickAction.executionSlot(p, selected).executeFor(p, TestinDataKeys.editor(e), selected);
+        TestCaseQuickAction.executionSlot(project, selected).executeFor(project, TestinDataKeys.editor(e), selected);
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-036
     @Override
-    protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
         final @NotNull List<TestCaseDto> selected = TestinDataKeys.selectedTestCases(e);
-        final @NotNull TestCaseQuickAction offered = TestCaseQuickAction.executionSlot(p, selected);
+        final @NotNull TestCaseQuickAction offered = TestCaseQuickAction.executionSlot(project, selected);
 
         e.getPresentation().setText(offered.getTooltip());
         e.getPresentation().setIcon(offered.getIcon());
 
-        if (!offered.enableOrExplain(p, e.getPresentation())) return;
+        if (!offered.enableOrExplain(project, e.getPresentation())) return;
 
         // Rule-EDITOR-PANEL-266
         final @NotNull Optional<String> refused = selected.isEmpty() ? Optional.empty() : offered.whyNotHere(TestinDataKeys.editor(e).map(TestinEditor::getParent), selected.getFirst());

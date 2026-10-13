@@ -41,36 +41,36 @@ import java.util.UUID;
 // UC-EDITOR-PANEL-005
 public class CreateTestCaseAction extends AbstractAnyProjectAction {
     // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-008, Rule-EDITOR-PANEL-030
-    public static void openCreateDialog(final @NotNull Project p, final @NotNull TestinEditor editor, final @NotNull TestSetNode dir) {
-        new CreateTestCaseDialog(p, dir, testCase -> {
+    public static void openCreateDialog(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull TestSetNode dir) {
+        new CreateTestCaseDialog(project, dir, testCase -> {
             final @NotNull List<TestCaseDto> affectedNodes = List.of(testCase);
 
             final @NotNull List<UUID> testCaseIds = TestCaseSnapshot.idsOf(affectedNodes);
-            final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(p, dir.getPath(), testCaseIds);
+            final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(project, dir.getPath(), testCaseIds);
 
             editor.appendNewTestCase(testCase, () -> {
-                TestCaseSnapshot.record(p, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.create"), affectedNodes), before, TestCaseSnapshot.of(p, dir.getPath(), testCaseIds));
+                TestCaseSnapshot.record(project, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.create"), affectedNodes), before, TestCaseSnapshot.of(project, dir.getPath(), testCaseIds));
 
                 ApplicationManager.getApplication().invokeLater(() -> {
-                    Services.getInstance(p, Notifier.class).softShow(p, Done.CREATED);
-                    GenType.CREATE_TEST_CASE.execute(p, testCase);
+                    Services.getInstance(project, Notifier.class).softShow(project, Done.CREATED);
+                    GenType.CREATE_TEST_CASE.execute(project, testCase);
                 });
             });
-            Services.getInstance(p, TestCaseCompletions.class).addNewItems(affectedNodes);
+            Services.getInstance(project, TestCaseCompletions.class).addNewItems(affectedNodes);
         }).show();
     }
 
     // UC-EDITOR-PANEL-005
     @Override
-    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
         TestinDataKeys.editor(e)
                 .filter(editor -> editor.getParent().isTestCaseContainer())
-                .ifPresent(editor -> openCreateDialog(p, editor, (TestSetNode) editor.getParent()));
+                .ifPresent(editor -> openCreateDialog(project, editor, (TestSetNode) editor.getParent()));
     }
 
     // UC-EDITOR-PANEL-005, UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-214
     @Override
-    protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
         final @NotNull Optional<TestinEditor> editor = TestinDataKeys.editor(e);
         final boolean holdsTestCases = editor.filter(open -> open.getParent().isTestCaseContainer()).isPresent();
 

@@ -123,9 +123,12 @@ public enum NodeType {
     );
 
     public static final @NotNull List<NodeType> UNDER_TEST_CASES = List.of(TS, TSP);
+
     public static final @NotNull List<NodeType> UNDER_TEST_RUNS = List.of(TR, TRP);
+
     // UC-TREE-PANEL-008, Rule-TREE-PANEL-095, Rule-CODEGEN-008
     public static final @NotNull List<NodeType> BECOME_JAVA_PACKAGES = List.of(TP, TSP);
+
     // UC-TREE-PANEL-013, UC-TREE-PANEL-014, Rule-TREE-PANEL-043, Rule-TREE-PANEL-044
     private static final @NotNull Map<NodeType, Set<NodeType>> ACCEPTS = Map.of(
             TP, Set.of(),
@@ -135,15 +138,23 @@ public enum NodeType {
             TRP, Set.of(TR, TRP),
             TS, Set.of(),
             TR, Set.of());
+
     private final @NotNull String description;
+
     // UC-CODEGEN-001, Rule-CODEGEN-008
     private final @NotNull String folderName;
+
     private final @NotNull Icon icon;
+
     private final @NotNull String marker;
+
     // Rule-INTERNAL-014
     private final @NotNull Class<? extends AbstractMarker> markerClass;
+
     private final @NotNull SimpleTextAttributes attributes;
+
     private final @NotNull DonutSlices statistics;
+
     private final @NotNull ImmutableList<NodeFigureRow> counts;
 
     public static boolean isOneFolderName(final @NotNull String name) {

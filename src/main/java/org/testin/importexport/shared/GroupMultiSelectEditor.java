@@ -46,8 +46,8 @@ public class GroupMultiSelectEditor extends AbstractCellEditor implements TableC
 
     private @NotNull String currentValue = "";
 
-    public GroupMultiSelectEditor(final @NotNull Project p) {
-        this.testCaseValues = Services.getInstance(p, TestCaseCompletions.class);
+    public GroupMultiSelectEditor(final @NotNull Project project) {
+        this.testCaseValues = Services.getInstance(project, TestCaseCompletions.class);
 
         button.setBorderPainted(false);
         button.setHorizontalAlignment(SwingConstants.LEFT);

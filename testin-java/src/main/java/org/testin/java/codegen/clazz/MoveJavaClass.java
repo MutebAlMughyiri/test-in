@@ -33,20 +33,20 @@ import java.util.Optional;
 public class MoveJavaClass implements CodeChange<MovedNode> {
     // UC-CODEGEN-016, Rule-CODEGEN-053, Rule-CODEGEN-054
     @Override
-    public void execute(final @NotNull Project p, final @NotNull MovedNode moved) {
+    public void execute(final @NotNull Project project, final @NotNull MovedNode moved) {
         final @NotNull List<String> fqcn = Fqcn.ofClass(moved.from());
         if (fqcn.isEmpty()) return;
 
-        final @NotNull Optional<List<String>> found = moved.destinationPackage(p);
+        final @NotNull Optional<List<String>> found = moved.destinationPackage(project);
         if (found.isEmpty()) {
-            moved.reportCodeLeftBehind(p, String.join(".", fqcn));
+            moved.reportCodeLeftBehind(project, String.join(".", fqcn));
             return;
         }
 
         final @NotNull List<String> destination = found.get();
         final @NotNull String fileName = fqcn.getLast() + ".java";
 
-        JavaSourceRoot.commandInRoot(p, GenType.MOVE_TEST_SET.description(), sourceRoot -> {
+        JavaSourceRoot.commandInRoot(project, GenType.MOVE_TEST_SET.description(), sourceRoot -> {
             final @NotNull Optional<VirtualFile> file =
                     Optional.ofNullable(sourceRoot.findFileByRelativePath(String.join("/", fqcn) + ".java"));
 
@@ -61,7 +61,7 @@ public class MoveJavaClass implements CodeChange<MovedNode> {
 
             if (!JavaSourceRoot.move(file.get(), target.get(), this)) return;
 
-            PackageDeclarations.retarget(p, sourceRoot, file.get(), target.get());
+            PackageDeclarations.retarget(project, sourceRoot, file.get(), target.get());
 
             TestinLogger.info("Moved " + fileName + " to package: " + String.join(".", destination));
         });

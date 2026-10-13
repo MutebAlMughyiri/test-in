@@ -30,13 +30,13 @@ import org.testin.testcase.UpdateTestCaseAction;
 import org.testin.testcase.UpdateTestCaseFields;
 
 public class TestSetEditorContextMenu extends AbstractEditorContextMenu {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
 
     private final @NotNull TestinEditor ui;
 
-    public TestSetEditorContextMenu(final @NotNull Project p, final @NotNull TestinEditor ui, final @NotNull TestSetNode dir, final @NotNull JBList<TestCaseDto> list) {
+    public TestSetEditorContextMenu(final @NotNull Project project, final @NotNull TestinEditor ui, final @NotNull TestSetNode dir, final @NotNull JBList<TestCaseDto> list) {
         super();
-        this.p = p;
+        this.project = project;
         this.ui = ui;
 
         add(Declared.forMenu("Testin.CreateTestCase"));
@@ -46,7 +46,7 @@ public class TestSetEditorContextMenu extends AbstractEditorContextMenu {
 
         add(Declared.forMenu("Testin.UpdateTestCase"));
 
-        add(actions(p, dir, list));
+        add(actions(project, dir, list));
 
         addSeparator();
 
@@ -58,11 +58,11 @@ public class TestSetEditorContextMenu extends AbstractEditorContextMenu {
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-194
     @Override
     public void registerShortcuts(final @NotNull JBList<TestCaseDto> list) {
-        new TestinEscapeAction(p, list);
+        new TestinEscapeAction(project, list);
         new OpenContextMenuAction(list, this);
 
         for (final UpdateTestCaseFields field : UpdateTestCaseFields.values()) {
-            field.bindShortcut(list, () -> UpdateTestCaseAction.openField(p, ui, field));
+            field.bindShortcut(list, () -> UpdateTestCaseAction.openField(project, ui, field));
         }
     }
 }

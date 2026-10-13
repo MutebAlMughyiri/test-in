@@ -69,7 +69,7 @@ public class TreeTransferHandler extends TransferHandler {
     public static final @NotNull DataFlavor NODE_FLAVOR =
             new DataFlavor(TreeTransferPayload.class, "Testin tree nodes");
 
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull SimpleTree tree;
 
     private final @NotNull Nodes nodes;
@@ -79,13 +79,13 @@ public class TreeTransferHandler extends TransferHandler {
     private final @NotNull Set<Path> selectedNodes;
     private int clipboardAction = COPY;
 
-    public TreeTransferHandler(final @NotNull Project p, final @NotNull SimpleTree tree, final @NotNull Set<Path> selectedNodes, final @NotNull Consumer<Path> revealAfterRefresh) {
-        this.p = p;
+    public TreeTransferHandler(final @NotNull Project project, final @NotNull SimpleTree tree, final @NotNull Set<Path> selectedNodes, final @NotNull Consumer<Path> revealAfterRefresh) {
+        this.project = project;
         this.tree = tree;
         this.selectedNodes = selectedNodes;
-        this.nodes = Services.getInstance(p, Nodes.class);
-        this.notifier = Services.getInstance(p, Notifier.class);
-        this.transfer = new NodeMoveOrCopy(p, revealAfterRefresh);
+        this.nodes = Services.getInstance(project, Nodes.class);
+        this.notifier = Services.getInstance(project, Notifier.class);
+        this.transfer = new NodeMoveOrCopy(project, revealAfterRefresh);
     }
 
     // UC-TREE-PANEL-013, UC-TREE-PANEL-014
@@ -246,7 +246,7 @@ public class TreeTransferHandler extends TransferHandler {
             if (support.isDrop()) {
                 final @NotNull String verb = action == COPY ? Bundle.message("transfer.copy") : Bundle.message("transfer.move");
                 final @NotNull Path fromPath = sources.getFirst().getPath().getParent();
-                new ConfirmDialog(p, verb,
+                new ConfirmDialog(project, verb,
                         Bundle.message("transfer.confirm", verb, NodeMoveOrCopy.describe(sources), target.getName()),
                         Objects.toString(fromPath, ""),
                         target.getPath().toString(),
@@ -292,7 +292,7 @@ public class TreeTransferHandler extends TransferHandler {
         final @NotNull String said = collided.size() == 1
                 ? Bundle.message("transfer.exists.one", NodeMoveOrCopy.describe(collided), target.getName())
                 : Bundle.message("transfer.exists.many", NodeMoveOrCopy.describe(collided), target.getName());
-        notifier.softRefuse(p, said);
+        notifier.softRefuse(project, said);
 
         return true;
     }
@@ -349,7 +349,7 @@ public class TreeTransferHandler extends TransferHandler {
                 List.copyOf(directories), action)));
         updateClipboardState(action, directories);
 
-        notifier.softShowCounted(p, cut ? Done.CUT : Done.COPIED, directories.size());
+        notifier.softShowCounted(project, cut ? Done.CUT : Done.COPIED, directories.size());
     }
 
     // UC-TREE-PANEL-013, Rule-TREE-PANEL-050, Rule-TREE-PANEL-006

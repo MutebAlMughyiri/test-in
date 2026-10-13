@@ -44,13 +44,13 @@ public final class ExportDialog extends AbstractFrameworkDialog {
     private final @NotNull BiConsumer<@NotNull Destination,
             @NotNull Map<String, List<TestCaseDto>>> onExport;
 
-    public ExportDialog(final @NotNull Project p, final @NotNull List<TestSetEditorAttributes> exportAttributes, final @NotNull Map<String, List<TestCaseDto>> sheetsData, final @NotNull VirtualFile exportTarget, final @NotNull BiConsumer<@NotNull Destination, @NotNull Map<String, List<TestCaseDto>>> onExport) {
-        super(p);
+    public ExportDialog(final @NotNull Project project, final @NotNull List<TestSetEditorAttributes> exportAttributes, final @NotNull Map<String, List<TestCaseDto>> sheetsData, final @NotNull VirtualFile exportTarget, final @NotNull BiConsumer<@NotNull Destination, @NotNull Map<String, List<TestCaseDto>>> onExport) {
+        super(project);
         this.onExport = onExport;
 
         title = Bundle.message("dialog.export.title");
 
-        form = DestinationForm.inSection(p,
+        form = DestinationForm.inSection(project,
                 Arrays.stream(FileFormat.values()).filter(FileFormat::isExportable).toArray(FileFormat[]::new),
                 FileFormat.XLSX,
                 exportTarget.getName(),
@@ -58,7 +58,7 @@ public final class ExportDialog extends AbstractFrameworkDialog {
                 Bundle.message("dialog.export.folder.message"),
                 Bundle.message("destination.section"));
 
-        preview = new SheetPreview(p, exportAttributes);
+        preview = new SheetPreview(project, exportAttributes);
         preview.show(sheetsData);
 
         components = List.of(
@@ -79,7 +79,7 @@ public final class ExportDialog extends AbstractFrameworkDialog {
         form.resolve().ifPresent(destination -> {
             final @NotNull Map<String, List<TestCaseDto>> selected = preview.selected();
             if (selected.isEmpty()) {
-                notifier.softRefuse(p, Bundle.message("notification.export.empty.title"), Bundle.message("notification.export.empty.message"));
+                notifier.softRefuse(project, Bundle.message("notification.export.empty.title"), Bundle.message("notification.export.empty.message"));
                 return;
             }
 

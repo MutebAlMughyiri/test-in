@@ -188,22 +188,22 @@ public record GenType<T>(@NotNull Class<T> payload, @NotNull String description,
     );
 
     // UC-CODEGEN-019, Rule-CODEGEN-005
-    public void execute(final @NotNull Project p, final @NotNull T payload) {
-        update.execute(this, p, payload);
+    public void execute(final @NotNull Project project, final @NotNull T payload) {
+        update.execute(this, project, payload);
     }
 
     // UC-CODEGEN-019, Rule-CODEGEN-005, Rule-EDITOR-PANEL-046
-    public void executeAll(final @NotNull Project p, final @NotNull List<? extends T> payloads) {
-        ApplicationManager.getApplication().invokeLater(() -> executeAllNow(p, payloads), p.getDisposed());
+    public void executeAll(final @NotNull Project project, final @NotNull List<? extends T> payloads) {
+        ApplicationManager.getApplication().invokeLater(() -> executeAllNow(project, payloads), project.getDisposed());
     }
 
-    public void executeAllNow(final @NotNull Project p, final @NotNull List<? extends T> payloads) {
-        executeAllNow(p, payloads, UUID.randomUUID().toString());
+    public void executeAllNow(final @NotNull Project project, final @NotNull List<? extends T> payloads) {
+        executeAllNow(project, payloads, UUID.randomUUID().toString());
     }
 
     // UC-CODEGEN-019, Rule-CODEGEN-005, Rule-CODEGEN-018
-    public void executeAllNow(final @NotNull Project p, final @NotNull List<? extends T> payloads, final @NotNull String undoGroup) {
-        update.executeAll(this, p, payloads, undoGroup);
+    public void executeAllNow(final @NotNull Project project, final @NotNull List<? extends T> payloads, final @NotNull String undoGroup) {
+        update.executeAll(this, project, payloads, undoGroup);
     }
 
     @Override

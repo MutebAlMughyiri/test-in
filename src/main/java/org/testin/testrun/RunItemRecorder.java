@@ -55,7 +55,7 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Service(Service.Level.PROJECT)
 public final class RunItemRecorder {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-130, Rule-EDITOR-PANEL-137
     public void executeNext(final @NotNull TestRunEditor editor, final @NotNull RunItemStatus status) {
@@ -73,7 +73,7 @@ public final class RunItemRecorder {
         if (executingIndex == -1) {
             // Rule-EDITOR-PANEL-227
             if (editor.getWalk().executingTestCaseIsHidden())
-                Services.getInstance(p, Notifier.class).softRefuse(p, Bundle.message("run.item.status.executing.hidden"));
+                Services.getInstance(project, Notifier.class).softRefuse(project, Bundle.message("run.item.status.executing.hidden"));
             return false;
         }
 
@@ -109,7 +109,7 @@ public final class RunItemRecorder {
 
     // UC-EDITOR-PANEL-034, UC-EDITOR-PANEL-040, Rule-EDITOR-PANEL-219, Rule-EDITOR-PANEL-285, Rule-EDITOR-PANEL-286
     private @NotNull Consumer<RunItem> applying(final @NotNull Path testRunPath, final @NotNull FailureFields fields, final @NotNull BiConsumer<RunItem, Failure> step) {
-        fields.storePasted(pasted -> Services.getInstance(p, TestRuns.class).storeScreenshots(testRunPath, pasted));
+        fields.storePasted(pasted -> Services.getInstance(project, TestRuns.class).storeScreenshots(testRunPath, pasted));
 
         return runItem -> {
             fields.applyBugTo(runItem);
@@ -118,13 +118,13 @@ public final class RunItemRecorder {
     }
 
     private @NotNull String tester() {
-        return Services.getInstance(p, AppSettingsState.class).testerName;
+        return Services.getInstance(project, AppSettingsState.class).testerName;
     }
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-264
     private void passDeleted(final @NotNull TestRunEditor editor, final int executingIndex) {
         editor.getWalk().stopTheClock();
-        Services.getInstance(p, Notifier.class).softRefuse(p, Bundle.message("run.item.status.walk.passed.deleted"));
+        Services.getInstance(project, Notifier.class).softRefuse(project, Bundle.message("run.item.status.walk.passed.deleted"));
         ApplicationManager.getApplication().invokeLater(() -> editor.getWalk().startTimerForIndex(executingIndex + 1));
     }
 
@@ -146,7 +146,7 @@ public final class RunItemRecorder {
         if (refused(testRunPath, testCase.getId())) return;
 
         final @NotNull String tester = tester();
-        Services.getInstance(p, TestRuns.class).changeRunItem(testRunPath, testCase.getId(), runItem -> runItem.showExecutions(executions, written, tester));
+        Services.getInstance(project, TestRuns.class).changeRunItem(testRunPath, testCase.getId(), runItem -> runItem.showExecutions(executions, written, tester));
     }
 
     // Rule-EDITOR-PANEL-225, Rule-TREE-PANEL-009
@@ -159,7 +159,7 @@ public final class RunItemRecorder {
         final @NotNull Path testRunPath = editor.getParent().getPath();
         if (refused(testRunPath, testCaseId)) return false;
 
-        Services.getInstance(p, TestRuns.class).changeRunItem(testRunPath, testCaseId, runItemStatus);
+        Services.getInstance(project, TestRuns.class).changeRunItem(testRunPath, testCaseId, runItemStatus);
         offerBugReports(status);
 
         TestinLogger.trace("[RunItemRecorder]: Status updated -> " + testCaseId + " = " + status);
@@ -180,21 +180,21 @@ public final class RunItemRecorder {
 
     // Rule-VIEW-PANEL-121, Rule-TREE-PANEL-009, Rule-CODEGEN-111
     public @NotNull Optional<String> whyExecutionsAreFixed(final @NotNull Path testRunPath, final @NotNull UUID testCaseId) {
-        return Services.getInstance(p, TestRuns.class).findTestRunNode(testRunPath).flatMap(TestRunNode::whySignedOff)
-                .or(() -> Services.getInstance(p, TestNGExecution.class).isRunning(testCaseId) ? Optional.of(Bundle.message("execution.still.running")) : Optional.empty());
+        return Services.getInstance(project, TestRuns.class).findTestRunNode(testRunPath).flatMap(TestRunNode::whySignedOff)
+                .or(() -> Services.getInstance(project, TestNGExecution.class).isRunning(testCaseId) ? Optional.of(Bundle.message("execution.still.running")) : Optional.empty());
     }
 
     // Rule-VIEW-PANEL-121, Rule-TREE-PANEL-009
     private boolean changeExecutions(final @NotNull Path testRunPath, final @NotNull UUID testCaseId, final @NotNull Consumer<RunItem> change, final @NotNull Done done) {
         final @NotNull Optional<String> fixed = whyExecutionsAreFixed(testRunPath, testCaseId);
         if (fixed.isPresent()) {
-            Services.getInstance(p, Notifier.class).softRefuse(p, fixed.orElseThrow());
+            Services.getInstance(project, Notifier.class).softRefuse(project, fixed.orElseThrow());
             return false;
         }
         if (refused(testRunPath, testCaseId)) return false;
 
-        Services.getInstance(p, TestRuns.class).changeRunItem(testRunPath, testCaseId, change);
-        Services.getInstance(p, Notifier.class).softShow(p, done);
+        Services.getInstance(project, TestRuns.class).changeRunItem(testRunPath, testCaseId, change);
+        Services.getInstance(project, Notifier.class).softShow(project, done);
         return true;
     }
 
@@ -202,25 +202,25 @@ public final class RunItemRecorder {
     public boolean reviseFailure(final @NotNull Path testRunPath, final @NotNull UUID testCaseId, final @NotNull FailureFields fields) {
         if (refused(testRunPath, testCaseId)) return false;
 
-        Services.getInstance(p, TestRuns.class).changeRunItem(testRunPath, testCaseId, applying(testRunPath, fields, RunItem::reviseFailure));
+        Services.getInstance(project, TestRuns.class).changeRunItem(testRunPath, testCaseId, applying(testRunPath, fields, RunItem::reviseFailure));
         return true;
     }
 
     // UC-EDITOR-PANEL-040, Rule-EDITOR-PANEL-225, Rule-TREE-PANEL-009, Rule-PRODUCT-011
     public @NotNull Optional<RunItems> heldTestRun(final @NotNull Path testRunPath) {
-        final @NotNull TestRuns testRuns = Services.getInstance(p, TestRuns.class);
+        final @NotNull TestRuns testRuns = Services.getInstance(project, TestRuns.class);
         final @NotNull Optional<RunItems> runItems = testRuns.findRunItems(testRunPath);
 
         if (runItems.isEmpty()) {
             TestinLogger.warn("[RunItemRecorder]: '" + testRunPath.getFileName() + "' is no longer indexed - nothing recorded");
-            Services.getInstance(p, Notifier.class).softRefuse(p, Bundle.message("run.item.status.test.run.gone"));
+            Services.getInstance(project, Notifier.class).softRefuse(project, Bundle.message("run.item.status.test.run.gone"));
             return runItems;
         }
 
         final @NotNull Optional<String> signedOff = testRuns.findTestRunNode(testRunPath).flatMap(TestRunNode::whySignedOff);
         if (signedOff.isPresent()) {
             TestinLogger.info("[RunItemRecorder]: '" + testRunPath.getFileName() + "' is signed off - nothing recorded");
-            Services.getInstance(p, Notifier.class).softRefuse(p, signedOff.orElseThrow());
+            Services.getInstance(project, Notifier.class).softRefuse(project, signedOff.orElseThrow());
             return Optional.empty();
         }
 
@@ -234,7 +234,7 @@ public final class RunItemRecorder {
             TestinLogger.warn("[RunItemRecorder]: '" + testRunPath.getFileName() + "' does not cover " + testCaseId + " - nothing recorded");
 
             // Rule-EDITOR-PANEL-225
-            Services.getInstance(p, Notifier.class).softRefuse(p, Bundle.message("run.item.status.test.case.not.covered"));
+            Services.getInstance(project, Notifier.class).softRefuse(project, Bundle.message("run.item.status.test.case.not.covered"));
             return Optional.empty();
         }
 
@@ -248,11 +248,11 @@ public final class RunItemRecorder {
 
     // UC-INTERNAL-009, Rule-INTERNAL-129
     private void offerBugReports(final @NotNull RunItemStatus status) {
-        if (status == RunItemStatus.FAILED) Services.getInstance(p, Guides.class).add(Guide.RAISE_BUG_REPORTS);
+        if (status == RunItemStatus.FAILED) Services.getInstance(project, Guides.class).add(Guide.RAISE_BUG_REPORTS);
     }
 
     public void refuseRemoved() {
-        Services.getInstance(p, Notifier.class).softRefuse(p, Bundle.message("run.item.status.test.case.removed"));
+        Services.getInstance(project, Notifier.class).softRefuse(project, Bundle.message("run.item.status.test.case.removed"));
     }
 
     // UC-EDITOR-PANEL-032, UC-EDITOR-PANEL-038, UC-EDITOR-PANEL-039, Rule-EDITOR-PANEL-284
@@ -296,7 +296,7 @@ public final class RunItemRecorder {
         }
 
         final @NotNull String tester = tester();
-        final @NotNull TestRuns testRuns = Services.getInstance(p, TestRuns.class);
+        final @NotNull TestRuns testRuns = Services.getInstance(project, TestRuns.class);
         // Rule-EDITOR-PANEL-164
         judged.forEach(testCaseId -> testRuns.changeRunItem(editor.getParent().getPath(), testCaseId, runItem -> runItem.recordRunItemStatus(status, tester, Duration.ZERO, Failure.NONE)));
         if (!judged.isEmpty()) offerBugReports(status);
@@ -308,14 +308,14 @@ public final class RunItemRecorder {
     }
 
     private void confirmRunItemStatus(final @NotNull RunItemStatus status, final int count) {
-        Services.getInstance(p, Notifier.class).softShowCounted(p, status.getLabel(), count);
+        Services.getInstance(project, Notifier.class).softShowCounted(project, status.getLabel(), count);
     }
 
     // Rule-VIEW-PANEL-005
     private void showRecorded(final @NotNull TestRunEditor editor, final @NotNull List<UUID> recorded) {
         ApplicationManager.getApplication().invokeLater(() -> {
             editor.refreshView();
-            ViewToolWindowFactory.panel(p).ifPresent(view -> recorded.forEach(view::reloadDetailsIfShowing));
+            ViewToolWindowFactory.panel(project).ifPresent(view -> recorded.forEach(view::reloadDetailsIfShowing));
         });
     }
 }

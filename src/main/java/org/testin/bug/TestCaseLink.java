@@ -37,11 +37,11 @@ import java.util.stream.StreamSupport;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestCaseLink {
     // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-068
-    public static @NotNull Optional<String> read(final @NotNull Project p, final @NotNull TestCaseFile file) {
+    public static @NotNull Optional<String> read(final @NotNull Project project, final @NotNull TestCaseFile file) {
         ThreadingAssertions.assertBackgroundThread();
         if (!OptionalPlugin.GIT.isAvailable()) return Optional.empty();
 
-        final @NotNull GitRepositoryService git = new GitRepositoryService(p);
+        final @NotNull GitRepositoryService git = new GitRepositoryService(project);
         if (git.isNotRepository(file.testProject())) return Optional.empty();
 
         final @NotNull String remoteUrl = git.remoteUrl(file.testProject());

@@ -46,7 +46,7 @@ import java.util.List;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Service(Service.Level.PROJECT)
 public final class NodeMapper {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
 
     public @NotNull TestProjectNode setTestProjectNode(final @NotNull Path path) {
         final @NotNull String fileName = path.getFileName().toString();
@@ -69,7 +69,7 @@ public final class NodeMapper {
     // UC-INTERNAL-002, Rule-INTERNAL-014
     public @NotNull TestProjectNode getTestProjectNode(final @NotNull Path path) {
         final @NotNull String fileName = path.getFileName().toString();
-        final @NotNull TestProjectMarker marker = Services.getInstance(p, Nodes.class).readMarker(path, NodeType.TP, TestProjectMarker.class);
+        final @NotNull TestProjectMarker marker = Services.getInstance(project, Nodes.class).readMarker(path, NodeType.TP, TestProjectMarker.class);
 
         final @NotNull TestProjectNode testProject = TestProjectNode.builder()
                 .name(fileName)
@@ -95,7 +95,7 @@ public final class NodeMapper {
                 .name(NodeType.TCF.getFolderName())
                 .parent(testProject)
                 .path2(AbstractNode.pathOf(testProject.getPath2(), NodeType.TCF.getFolderName()))
-                .marker(Services.getInstance(p, Nodes.class).readMarker(dir, NodeType.TCF, TestCasesFolderMarker.class))
+                .marker(Services.getInstance(project, Nodes.class).readMarker(dir, NodeType.TCF, TestCasesFolderMarker.class))
                 .build();
     }
 
@@ -106,7 +106,7 @@ public final class NodeMapper {
                 .name(NodeType.TRF.getFolderName())
                 .parent(testProject)
                 .path2(AbstractNode.pathOf(testProject.getPath2(), NodeType.TRF.getFolderName()))
-                .marker(Services.getInstance(p, Nodes.class).readMarker(dir, NodeType.TRF, TestRunsFolderMarker.class))
+                .marker(Services.getInstance(project, Nodes.class).readMarker(dir, NodeType.TRF, TestRunsFolderMarker.class))
                 .build();
     }
 
@@ -119,7 +119,7 @@ public final class NodeMapper {
                 .path(path)
                 .parent(parent)
                 .path2(AbstractNode.pathOf(parent.getPath2(), fileName))
-                .marker(Services.getInstance(p, Nodes.class).readMarker(path, NodeType.TSP, TestSetPackageMarker.class))
+                .marker(Services.getInstance(project, Nodes.class).readMarker(path, NodeType.TSP, TestSetPackageMarker.class))
                 .build();
 
         TestinLogger.info("retrieve the test set package directory: " + testSetPackageNode);
@@ -135,7 +135,7 @@ public final class NodeMapper {
                 .path(path)
                 .parent(parent)
                 .path2(AbstractNode.pathOf(parent.getPath2(), fileName))
-                .marker(Services.getInstance(p, Nodes.class).readMarker(path, NodeType.TRP, TestRunPackageMarker.class))
+                .marker(Services.getInstance(project, Nodes.class).readMarker(path, NodeType.TRP, TestRunPackageMarker.class))
                 .build();
 
         TestinLogger.info("retrieve the test run package directory: " + testRunPackageNode);
@@ -151,7 +151,7 @@ public final class NodeMapper {
                 .path(path)
                 .parent(parent)
                 .path2(AbstractNode.pathOf(parent.getPath2(), fileName))
-                .marker(Services.getInstance(p, Nodes.class).readMarker(path, NodeType.TS, TestSetMarker.class))
+                .marker(Services.getInstance(project, Nodes.class).readMarker(path, NodeType.TS, TestSetMarker.class))
                 .build();
 
         TestinLogger.info("retrieve the test set directory: " + testSetNode);
@@ -163,7 +163,7 @@ public final class NodeMapper {
     }
 
     public @NotNull TestRunNode getTestRunNode(final @NotNull Path path, final @NotNull AbstractNode parent) {
-        final @NotNull TestRunMarker marker = Services.getInstance(p, Nodes.class).readMarker(path, NodeType.TR, TestRunMarker.class);
+        final @NotNull TestRunMarker marker = Services.getInstance(project, Nodes.class).readMarker(path, NodeType.TR, TestRunMarker.class);
         return buildTestRunNode(path, parent, marker);
     }
 

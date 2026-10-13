@@ -54,9 +54,9 @@ final class TestCaseStore {
     // UC-SHARE-002, Rule-SHARE-001
     private final @NotNull Map<String, Set<String>> unreadable = new ConcurrentHashMap<>();
 
-    TestCaseStore(final @NotNull Project p) {
-        this.testDataFiles = Services.getInstance(p, TestDataFiles.class);
-        this.settings = Services.getInstance(p, AppSettingsState.class);
+    TestCaseStore(final @NotNull Project project) {
+        this.testDataFiles = Services.getInstance(project, TestDataFiles.class);
+        this.settings = Services.getInstance(project, AppSettingsState.class);
     }
 
     static @NotNull List<UUID> testCaseIds(final @NotNull Collection<UUID> initial) {

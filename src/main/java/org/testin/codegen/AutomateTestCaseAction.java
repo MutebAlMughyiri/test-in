@@ -44,11 +44,11 @@ import java.util.Optional;
 
 // UC-CODEGEN-005
 public class AutomateTestCaseAction extends AbstractAnyProjectAction {
-    private static int writtenFor(final @NotNull Project p, final @NotNull List<TestCaseDto> asked) {
-        if (DumbService.isDumb(p)) return 0;
+    private static int writtenFor(final @NotNull Project project, final @NotNull List<TestCaseDto> asked) {
+        if (DumbService.isDumb(project)) return 0;
 
         try {
-            return ApplicationManager.getApplication().runReadAction((Computable<Integer>) () -> TestMethodCode.available().methodsFor(p, asked).size());
+            return ApplicationManager.getApplication().runReadAction((Computable<Integer>) () -> TestMethodCode.available().methodsFor(project, asked).size());
         } catch (final Exception ex) {
             TestinLogger.warn("Could not count the methods Automate Test Case wrote: " + FailureText.of(ex));
             return 0;
@@ -56,8 +56,8 @@ public class AutomateTestCaseAction extends AbstractAnyProjectAction {
     }
 
     // UC-CODEGEN-005, Rule-CODEGEN-025
-    private static @NotNull List<TestCaseDto> withoutAMethod(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases) {
-        final @NotNull AutomationState state = Services.getInstance(p, AutomationState.class);
+    private static @NotNull List<TestCaseDto> withoutAMethod(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases) {
+        final @NotNull AutomationState state = Services.getInstance(project, AutomationState.class);
 
         return testCases.stream().filter(testCase -> !state.hasMethod(testCase.getId())).toList();
     }
@@ -74,23 +74,24 @@ public class AutomateTestCaseAction extends AbstractAnyProjectAction {
 
     // UC-CODEGEN-005, Rule-CODEGEN-025, Rule-INTERNAL-129
     @Override
-    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        Services.getInstance(p, Guides.class).add(Guide.AUTOMATION_CODE);
-        final @NotNull List<TestCaseDto> toWrite = withoutAMethod(p, nameable(e));
+    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
+        Services.getInstance(project, Guides.class).add(Guide.AUTOMATION_CODE);
+        final @NotNull List<TestCaseDto> toWrite = withoutAMethod(project, nameable(e));
         if (toWrite.isEmpty() && !AgentConnection.stored().isConnected()) return;
 
         final @NotNull Optional<TestinEditor> editor = TestinDataKeys.editor(e);
 
-        GenType.CREATE_TEST_CASE.executeAll(p, toWrite);
+        GenType.CREATE_TEST_CASE.executeAll(project, toWrite);
 
-        WriteBodies.forAll(p, nameable(e), editor);
+        WriteBodies.forAll(project, nameable(e), editor);
 
         ApplicationManager.getApplication().invokeLater(() -> ApplicationManager.getApplication().executeOnPooledThread(() -> {
-            final int written = writtenFor(p, toWrite);
+            final int written = writtenFor(project, toWrite);
 
             ApplicationManager.getApplication().invokeLater(() -> {
                 // Rule-CODEGEN-025
-                if (written > 0) Services.getInstance(p, Notifier.class).softShowCounted(p, Done.AUTOMATED, written);
+                if (written > 0)
+                    Services.getInstance(project, Notifier.class).softShowCounted(project, Done.AUTOMATED, written);
 
                 editor.ifPresent(TestinEditor::refreshView);
             });
@@ -99,8 +100,8 @@ public class AutomateTestCaseAction extends AbstractAnyProjectAction {
 
     // UC-CODEGEN-005, Rule-CODEGEN-071
     @Override
-    protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        if (CodeOn.grayedWithReason(this, e, p)) return;
+    protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
+        if (CodeOn.grayedWithReason(this, e, project)) return;
 
         final @NotNull List<TestCaseDto> selected = TestinDataKeys.selectedTestCases(e);
         if (selected.isEmpty()) {
@@ -117,7 +118,7 @@ public class AutomateTestCaseAction extends AbstractAnyProjectAction {
         }
 
         // Rule-CODEGEN-003
-        if (withoutAMethod(p, nameable).isEmpty() && !AgentConnection.stored().isConnected()) {
+        if (withoutAMethod(project, nameable).isEmpty() && !AgentConnection.stored().isConnected()) {
             e.getPresentation().setEnabled(false);
             e.getPresentation().setDescription(Bundle.message("automate.already.written.description"));
             return;

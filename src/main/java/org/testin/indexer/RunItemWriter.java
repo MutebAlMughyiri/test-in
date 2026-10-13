@@ -54,10 +54,10 @@ final class RunItemWriter {
 
     private final @NotNull Map<Path, byte[]> unwritten = new ConcurrentHashMap<>();
 
-    RunItemWriter(final @NotNull Project p, final @NotNull IndexerDataStore store) {
+    RunItemWriter(final @NotNull Project project, final @NotNull IndexerDataStore store) {
         this.store = store;
-        this.files = Services.getInstance(p, TestDataFiles.class);
-        this.mapper = Services.getInstance(p, JsonCodec.class);
+        this.files = Services.getInstance(project, TestDataFiles.class);
+        this.mapper = Services.getInstance(project, JsonCodec.class);
     }
 
     private static @NotNull Set<String> namedScreenshots(final @NotNull RunItems runItems) {

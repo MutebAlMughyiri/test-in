@@ -47,8 +47,8 @@ final class FieldChange {
         return ((KeyboardShortcut) Declared.shortcutSet("Testin.UpdateTestCase").getShortcuts()[0]).getFirstKeyStroke();
     }
 
-    static boolean pressF2(final @NotNull Project p, final @NotNull ViewOnScreen view) {
-        return KeyPress.press(p, view.keyboardTarget(ViewTab.DETAILS), f2());
+    static boolean pressF2(final @NotNull Project project, final @NotNull ViewOnScreen view) {
+        return KeyPress.press(project, view.keyboardTarget(ViewTab.DETAILS), f2());
     }
 
     static @NotNull JBList<?> menuOf(final @NotNull PopupsBuilt.Built menu) {
@@ -69,8 +69,8 @@ final class FieldChange {
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
 
-    static void typeAndSave(final @NotNull Project p, final @NotNull String now) {
-        final @NotNull EditorTextField field = Drawn.components(ShownDialog.content(p, UpdateTestCaseDialog.class)).stream()
+    static void typeAndSave(final @NotNull Project project, final @NotNull String now) {
+        final @NotNull EditorTextField field = Drawn.components(ShownDialog.content(project, UpdateTestCaseDialog.class)).stream()
                 .filter(EditorTextField.class::isInstance)
                 .map(EditorTextField.class::cast)
                 .filter(shown -> shown.getText().equals("Log in with a valid user"))
@@ -78,7 +78,7 @@ final class FieldChange {
                 .orElseThrow(() -> new AssertionError("the field's dialog does not hold \"" + "Log in with a valid user" + "\""));
         field.setText(now);
 
-        if (!KeyPress.press(p, field, Shortcuts.Enter.getKey()))
+        if (!KeyPress.press(project, field, Shortcuts.Enter.getKey()))
             throw new AssertionError("Enter did not save the field's dialog");
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }

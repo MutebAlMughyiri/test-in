@@ -32,12 +32,12 @@ import java.util.Optional;
 @Service(Service.Level.PROJECT)
 public final class TestinRoot {
     public static final @NotNull Path NONE = Path.of("");
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull AppSettingsState settings;
 
-    public TestinRoot(final @NotNull Project p) {
-        this.p = p;
-        this.settings = Services.getInstance(p, AppSettingsState.class);
+    public TestinRoot(final @NotNull Project project) {
+        this.project = project;
+        this.settings = Services.getInstance(project, AppSettingsState.class);
     }
 
     // UC-SETTING-002, Rule-SETTING-011
@@ -123,7 +123,7 @@ public final class TestinRoot {
     }
 
     private @NotNull Path basePath() {
-        return Path.of(Objects.toString(p.getBasePath(), ""));
+        return Path.of(Objects.toString(project.getBasePath(), ""));
     }
 
     // UC-SETTING-002, Rule-SETTING-010

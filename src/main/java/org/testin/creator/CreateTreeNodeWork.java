@@ -35,9 +35,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
-record CreateTreeNodeWork(@NotNull Project p, @NotNull Nodes nodes, @NotNull Notifier notifier, @NotNull TestinEditors editors) {
-    CreateTreeNodeWork(final @NotNull Project p) {
-        this(p, Services.getInstance(p, Nodes.class), Services.getInstance(p, Notifier.class), Services.getInstance(p, TestinEditors.class));
+record CreateTreeNodeWork(@NotNull Project project, @NotNull Nodes nodes, @NotNull Notifier notifier, @NotNull TestinEditors editors) {
+    CreateTreeNodeWork(final @NotNull Project project) {
+        this(project, Services.getInstance(project, Nodes.class), Services.getInstance(project, Notifier.class), Services.getInstance(project, TestinEditors.class));
     }
 
     // UC-TREE-PANEL-007, UC-TREE-PANEL-008, UC-TREE-PANEL-009, UC-TREE-PANEL-010, Rule-TREE-PANEL-004
@@ -47,25 +47,25 @@ record CreateTreeNodeWork(@NotNull Project p, @NotNull Nodes nodes, @NotNull Not
             final @NotNull Path newDirPath = parentNode.getPath().resolve(s);
 
             if (nodes.nodeExists(newDirPath)) {
-                notifier.softRefuse(p, Refused.ALREADY_EXISTS, s);
+                notifier.softRefuse(project, Refused.ALREADY_EXISTS, s);
                 return;
             }
 
-            final @NotNull Optional<AbstractNode> created = NodeCreators.of(p, dt).execute(s, parentNode, newDirPath);
+            final @NotNull Optional<AbstractNode> created = NodeCreators.of(project, dt).execute(s, parentNode, newDirPath);
 
             created.ifPresent(dir -> {
-                notifier.softShow(p, Done.CREATED);
+                notifier.softShow(project, Done.CREATED);
 
                 if (dir.isOpenableInEditor())
                     editors.open(dir);
 
-                NodeCode.of(dt).getCreated().execute(p, dir);
+                NodeCode.of(dt).getCreated().execute(project, dir);
             });
 
         };
 
         final @NotNull List<NodeType> kinds = parentNode.childKinds();
-        if (kinds.equals(NodeType.UNDER_TEST_CASES)) new CreateTestSetDialog(p, onCreate).show();
-        else if (kinds.equals(NodeType.UNDER_TEST_RUNS)) new CreateTestRunDialog(p, onCreate).show();
+        if (kinds.equals(NodeType.UNDER_TEST_CASES)) new CreateTestSetDialog(project, onCreate).show();
+        else if (kinds.equals(NodeType.UNDER_TEST_RUNS)) new CreateTestRunDialog(project, onCreate).show();
     }
 }

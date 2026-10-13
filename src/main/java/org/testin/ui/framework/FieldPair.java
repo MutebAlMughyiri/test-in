@@ -38,7 +38,7 @@ import java.util.List;
 public final class FieldPair implements DialogComponent {
     private static final double BOXES_SHARE = 0.60;
 
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull String rememberedAs;
     private final @NotNull MultiLineField first;
     private final @NotNull MultiLineField second;
@@ -53,8 +53,8 @@ public final class FieldPair implements DialogComponent {
     private boolean sideBySide;
 
     // Rule-INTERNAL-133, Rule-INTERNAL-137
-    FieldPair(final @NotNull Project p, final @NotNull String rememberedAs, final @NotNull JBLabel firstTitle, final @NotNull MultiLineField first, final @NotNull JBLabel secondTitle, final @NotNull MultiLineField second) {
-        this.p = p;
+    FieldPair(final @NotNull Project project, final @NotNull String rememberedAs, final @NotNull JBLabel firstTitle, final @NotNull MultiLineField first, final @NotNull JBLabel secondTitle, final @NotNull MultiLineField second) {
+        this.project = project;
         this.rememberedAs = rememberedAs;
         this.first = first;
         this.second = second;
@@ -108,7 +108,7 @@ public final class FieldPair implements DialogComponent {
 
     // Rule-INTERNAL-136, Rule-INTERNAL-137
     private int boxCap() {
-        final int frame = DialogSize.frameOn(p).height;
+        final int frame = DialogSize.frameOn(project).height;
         return frame <= 0 ? Integer.MAX_VALUE : (int) (frame * BOXES_SHARE / (sideBySide ? 1 : sections.size()));
     }
 

@@ -30,19 +30,19 @@ import org.testin.util.Bundle;
 // UC-EDITOR-PANEL-006
 public class UpdateTestCaseAction extends AbstractAnyProjectAction {
     // UC-EDITOR-PANEL-006
-    public static void openField(final @NotNull Project p, final @NotNull TestinEditor editor, final @NotNull UpdateTestCaseFields field) {
-        new UpdateTestCaseWork(p, editor).overSelection(menu -> menu.open(field));
+    public static void openField(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull UpdateTestCaseFields field) {
+        new UpdateTestCaseWork(project, editor).overSelection(menu -> menu.open(field));
     }
 
     // UC-EDITOR-PANEL-006
     @Override
-    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        TestinDataKeys.editor(e).ifPresent(editor -> new UpdateTestCaseWork(p, editor).overSelection(UpdateTestCaseMenu::show));
+    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
+        TestinDataKeys.editor(e).ifPresent(editor -> new UpdateTestCaseWork(project, editor).overSelection(UpdateTestCaseMenu::show));
     }
 
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-194
     @Override
-    protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
         if (TestinDataKeys.editor(e).filter(editor -> !editor.getParent().isTestCaseContainer()).isPresent()) {
             GrayWithReason.unless(this, e, false, Bundle.message("update.test.case.disabled.description"));
             return;

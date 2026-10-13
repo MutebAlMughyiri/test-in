@@ -35,7 +35,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public abstract class AbstractGridEditListener implements TableModelListener {
-    protected final @NotNull Project p;
+    protected final @NotNull Project project;
 
     protected final @NotNull Notifier notifier;
 
@@ -45,9 +45,9 @@ public abstract class AbstractGridEditListener implements TableModelListener {
 
     private boolean updating = false;
 
-    protected AbstractGridEditListener(final @NotNull Project p, final @NotNull List<TestCaseDto> pageTestCases) {
-        this.p = p;
-        this.notifier = Services.getInstance(p, Notifier.class);
+    protected AbstractGridEditListener(final @NotNull Project project, final @NotNull List<TestCaseDto> pageTestCases) {
+        this.project = project;
+        this.notifier = Services.getInstance(project, Notifier.class);
         this.pageTestCases = pageTestCases;
     }
 
@@ -86,7 +86,7 @@ public abstract class AbstractGridEditListener implements TableModelListener {
 
             confirmEdit(edited);
 
-            ViewToolWindowFactory.refreshIfShowing(p, List.of(edited));
+            ViewToolWindowFactory.refreshIfShowing(project, List.of(edited));
         } finally {
             updating = false;
         }
@@ -106,7 +106,7 @@ public abstract class AbstractGridEditListener implements TableModelListener {
             final int written = writtenThisGesture.size();
             writtenThisGesture.clear();
 
-            notifier.softShowCounted(p, Done.UPDATED, written);
+            notifier.softShowCounted(project, Done.UPDATED, written);
         });
     }
 
@@ -114,7 +114,7 @@ public abstract class AbstractGridEditListener implements TableModelListener {
     private void sayIfRewritten(final @NotNull String typed, final @NotNull String stored) {
         if (typed.equals(stored)) return;
 
-        notifier.softShow(p, Bundle.message("grid.adjusted.title"),
+        notifier.softShow(project, Bundle.message("grid.adjusted.title"),
                 Bundle.message("grid.adjusted.message", shortened(stored), shortened(typed)));
     }
 }

@@ -35,15 +35,15 @@ public final class GlobalSearchDialog extends AbstractFrameworkDialog {
     private final @NotNull TextFieldWithSelections<Hit> search;
 
     // UC-INTERNAL-001
-    public GlobalSearchDialog(final @NotNull Project p) {
-        super(p);
+    public GlobalSearchDialog(final @NotNull Project project) {
+        super(project);
 
         title = Bundle.message("dialog.search.title");
 
         final @NotNull DialogPart<TextFieldWithSelections<Hit>> built = DialogPart.<Hit>textFieldWithSelections()
                 .icon(AllIcons.Actions.Search)
                 .placeholder(Bundle.message("dialog.search.placeholder"))
-                .rows(query -> rowsFor(p, query))
+                .rows(query -> rowsFor(project, query))
                 .build();
         search = built.getComponent();
         components = List.of(built);
@@ -61,8 +61,8 @@ public final class GlobalSearchDialog extends AbstractFrameworkDialog {
     }
 
     // UC-INTERNAL-001, Rule-INTERNAL-072, Rule-INTERNAL-073
-    static @NotNull Answer<Hit> rowsFor(final @NotNull Project p, final @NotNull String query) {
-        final @NotNull Found found = GlobalSearch.forQuery(p, query);
+    static @NotNull Answer<Hit> rowsFor(final @NotNull Project project, final @NotNull String query) {
+        final @NotNull Found found = GlobalSearch.forQuery(project, query);
 
         final @NotNull List<Selection<Hit>> rows = found.hits().stream()
                 .map(hit -> Selection.of(hit.icon(), hit.name(), hit.where(), hit))
@@ -78,7 +78,7 @@ public final class GlobalSearchDialog extends AbstractFrameworkDialog {
     protected void submit() {
         search.selection().ifPresent(hit -> {
             closeOk();
-            GoTo.the(p, hit);
+            GoTo.the(project, hit);
         });
     }
 }

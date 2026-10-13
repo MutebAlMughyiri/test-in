@@ -59,11 +59,11 @@ import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-record ImportWork(@NotNull Project p, @NotNull Notifier notifier, @NotNull TestinEditors editors, @NotNull Nodes nodes, @NotNull TestCases indexedTestCases) {
+record ImportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull TestinEditors editors, @NotNull Nodes nodes, @NotNull TestCases indexedTestCases) {
     private static final int METHODS_PER_COMMAND = 200;
 
-    ImportWork(final @NotNull Project p) {
-        this(p, Services.getInstance(p, Notifier.class), Services.getInstance(p, TestinEditors.class), Services.getInstance(p, Nodes.class), Services.getInstance(p, TestCases.class));
+    ImportWork(final @NotNull Project project) {
+        this(project, Services.getInstance(project, Notifier.class), Services.getInstance(project, TestinEditors.class), Services.getInstance(project, Nodes.class), Services.getInstance(project, TestCases.class));
     }
 
     private static void report(final int testCases, final long startedAt, final long readyAt) {
@@ -91,19 +91,19 @@ record ImportWork(@NotNull Project p, @NotNull Notifier notifier, @NotNull Testi
     }
 
     void openImportDialog(final @NotNull AbstractNode node) {
-        new ImportDialog(p, TestSetEditorAttributes.all(Can.IMPORT),
-                (file, format) -> format.importToFile(p, file),
+        new ImportDialog(project, TestSetEditorAttributes.all(Can.IMPORT),
+                (file, format) -> format.importToFile(project, file),
                 selectedTestCasesBySheet -> executeImportWriteAction(node, selectedTestCasesBySheet))
                 .show();
     }
 
     // UC-SHARE-005, UC-SHARE-006
     private void executeImportWriteAction(final @NotNull AbstractNode selectedNode, final @NotNull Map<String, List<TestCaseDto>> selectedTestCasesBySheet) {
-        final boolean generateCode = CodeOn.isOnOrHinted(p);
+        final boolean generateCode = CodeOn.isOnOrHinted(project);
 
         final int total = selectedTestCasesBySheet.values().stream().mapToInt(List::size).sum();
 
-        BackgroundWork.run(p, Bundle.message("import.task.importing", String.valueOf(total), selectedNode.getName()),
+        BackgroundWork.run(project, Bundle.message("import.task.importing", String.valueOf(total), selectedNode.getName()),
                 Bundle.message("import.failed.title"), indicator -> importInBackground(selectedNode, selectedTestCasesBySheet, generateCode, total, indicator));
     }
 
@@ -116,7 +116,7 @@ record ImportWork(@NotNull Project p, @NotNull Notifier notifier, @NotNull Testi
 
         if (generateCode) {
             indicator.setText2(Bundle.message("import.progress.indexing"));
-            DumbService.getInstance(p).waitForSmartMode();
+            DumbService.getInstance(project).waitForSmartMode();
         }
         final long readyAt = System.currentTimeMillis();
 
@@ -148,7 +148,7 @@ record ImportWork(@NotNull Project p, @NotNull Notifier notifier, @NotNull Testi
             // UC-SHARE-007, Rule-SHARE-037
             TestinLogger.error("Import failed after at least " + imported + " of " + total + ": " + FailureText.of(ex));
 
-            notifier.error(p, Bundle.message("import.failed.title"),
+            notifier.error(project, Bundle.message("import.failed.title"),
                     Bundle.message("import.failed.partial", String.valueOf(imported), String.valueOf(total), FailureText.of(ex)));
 
             refreshTarget(targetPath);
@@ -159,7 +159,7 @@ record ImportWork(@NotNull Project p, @NotNull Notifier notifier, @NotNull Testi
             onEdt(() -> editors.closeThenOpen(selectedNode));
         }
 
-        notifier.softShowCounted(p, Done.IMPORTED, imported);
+        notifier.softShowCounted(project, Done.IMPORTED, imported);
 
         reportEmptySets(List.copyOf(stillEmpty));
 
@@ -184,7 +184,7 @@ record ImportWork(@NotNull Project p, @NotNull Notifier notifier, @NotNull Testi
                 ? Bundle.message("import.empty.one")
                 : Bundle.message("import.empty.many", String.valueOf(empty.size()));
 
-        notifier.warn(p, Bundle.message("import.empty.title"),
+        notifier.warn(project, Bundle.message("import.empty.title"),
                 Bundle.message("import.empty.message", count, named, rest));
     }
 
@@ -203,12 +203,12 @@ record ImportWork(@NotNull Project p, @NotNull Notifier notifier, @NotNull Testi
             final @NotNull Path path = targetPath.resolve(name);
 
             sets.put(onEdtCompute(() -> {
-                final @NotNull TestSetNode made = (TestSetNode) new CreateTestSet(p)
+                final @NotNull TestSetNode made = (TestSetNode) new CreateTestSet(project)
                         .execute(name, selectedNode, path)
                         .orElseThrow(() -> new IllegalStateException(Bundle.message("import.set.not.made", name)));
 
                 try {
-                    NodeCode.of(NodeType.TS).getCreated().execute(p, made);
+                    NodeCode.of(NodeType.TS).getCreated().execute(project, made);
                 } catch (final Exception ex) {
                     TestinLogger.error("Failed to create Java class: " + FailureText.of(ex));
                 }
@@ -232,7 +232,7 @@ record ImportWork(@NotNull Project p, @NotNull Notifier notifier, @NotNull Testi
             final int written = from + batch.size();
 
             indicator.setText2(Bundle.message("import.progress.generating", String.valueOf(written), String.valueOf(testCases.size())));
-            onEdt(() -> GenType.CREATE_TEST_CASE.executeAllNow(p, batch, oneUndo));
+            onEdt(() -> GenType.CREATE_TEST_CASE.executeAllNow(project, batch, oneUndo));
         }
 
         TestinLogger.info("Import: generated " + testCases.size() + " test methods in "

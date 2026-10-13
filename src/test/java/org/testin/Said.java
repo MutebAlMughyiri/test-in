@@ -39,13 +39,13 @@ public final class Said {
     private final @NotNull List<String> balloons = new CopyOnWriteArrayList<>();
     private final @NotNull List<Notification> notifications = new CopyOnWriteArrayList<>();
 
-    public static @NotNull Said listening(final @NotNull Project p, final @NotNull Disposable owner) {
+    public static @NotNull Said listening(final @NotNull Project project, final @NotNull Disposable owner) {
         final @NotNull Said said = new Said();
-        Services.getInstance(p, Notifier.class).watchBalloons(owner, html -> {
+        Services.getInstance(project, Notifier.class).watchBalloons(owner, html -> {
             said.asDrawn.add(html);
             said.balloons.add(plain(html));
         });
-        p.getMessageBus().connect(owner).subscribe(Notifications.TOPIC, new Notifications() {
+        project.getMessageBus().connect(owner).subscribe(Notifications.TOPIC, new Notifications() {
             @Override
             public void notify(final @NotNull Notification notification) {
                 said.notifications.add(notification);
@@ -54,10 +54,10 @@ public final class Said {
         return said;
     }
 
-    public static @NotNull List<String> during(final @NotNull Project p, final @NotNull Runnable gesture) {
+    public static @NotNull List<String> during(final @NotNull Project project, final @NotNull Runnable gesture) {
         final @NotNull Disposable listening = Disposer.newDisposable();
         try {
-            final @NotNull Said said = listening(p, listening);
+            final @NotNull Said said = listening(project, listening);
             gesture.run();
             return Stream.concat(said.asDrawn.stream(), said.notifications().stream().map(notification -> notification.getTitle() + " " + notification.getContent()))
                     .map(Said::oneLine)

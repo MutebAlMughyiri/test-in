@@ -41,19 +41,19 @@ import java.util.stream.Collectors;
 public class DescriptionSection extends AbstractOneLineSection {
     private static final @NotNull Icon REFUSED = Icons.fieldLetter(CreateTestCaseFields.DESCRIPTION.getIcon().letter(), Icons.RED);
 
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull Notifier notifier;
 
     private final @NotNull TextAttributes hint = new TextAttributes();
 
     private @NotNull Supplier<List<TestCaseDto>> siblings = List::of;
 
-    public DescriptionSection(final @NotNull Project p) {
-        super(EditorFields.createCompletionField(p, new TextFieldWithAutoCompletion.StringsCompletionProvider(Services.getInstance(p, TestCaseCompletions.class).getDescription(), CreateTestCaseFields.DESCRIPTION.getIcon()), ""),
+    public DescriptionSection(final @NotNull Project project) {
+        super(EditorFields.createCompletionField(project, new TextFieldWithAutoCompletion.StringsCompletionProvider(Services.getInstance(project, TestCaseCompletions.class).getDescription(), CreateTestCaseFields.DESCRIPTION.getIcon()), ""),
                 CreateTestCaseFields.DESCRIPTION, Shortcuts.CreateTestCaseDescription);
 
-        this.p = p;
-        this.notifier = Services.getInstance(p, Notifier.class);
+        this.project = project;
+        this.notifier = Services.getInstance(project, Notifier.class);
         field.addSettingsProvider(editor -> editor.setPlaceholderAttributes(hint));
     }
 
@@ -93,7 +93,7 @@ public class DescriptionSection extends AbstractOneLineSection {
 
         if (NameSanitizer.cannotMakeMethodName(description)) {
             setError(true);
-            notifier.softRefuse(p,
+            notifier.softRefuse(project,
                     Bundle.message("description.not.a.method.title"),
                     Bundle.message("description.not.a.method.message", methodName));
 
@@ -102,7 +102,7 @@ public class DescriptionSection extends AbstractOneLineSection {
 
         if (takenMethodKeys().contains(NameSanitizer.methodKey(methodName))) {
             setError(true);
-            notifier.softRefuse(p,
+            notifier.softRefuse(project,
                     Bundle.message("description.taken.title"),
                     Bundle.message("description.taken.message", methodName));
 

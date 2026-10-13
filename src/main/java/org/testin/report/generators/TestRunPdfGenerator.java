@@ -83,7 +83,7 @@ public final class TestRunPdfGenerator {
     private @NotNull Optional<PdfFont> printsWith = Optional.empty();
 
     // UC-REPORT-001, Rule-REPORT-002, Rule-REPORT-005
-    public byte @NotNull [] generate(final @NotNull Project p, final @NotNull TestRunNode testRunNode, final @NotNull RunItems runItems) {
+    public byte @NotNull [] generate(final @NotNull Project project, final @NotNull TestRunNode testRunNode, final @NotNull RunItems runItems) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
              PdfDocument pdf = new PdfDocument(new PdfWriter(baos));
              Document document = new Document(pdf, pdf.getDefaultPageSize(), false)) {
@@ -94,7 +94,7 @@ public final class TestRunPdfGenerator {
             printsWith = Optional.of(regularFont);
             PdfFont italicFont = PdfFontFactory.createFont(ReportFont.PDF_ITALIC);
 
-            final @NotNull String projectName = Services.getInstance(p, BoundTestProject.class).name();
+            final @NotNull String projectName = Services.getInstance(project, BoundTestProject.class).name();
 
             document.add(para(Bundle.message("report.title"))
                     .setFont(boldFont).setFontSize(ReportFont.TITLE.pt()).setFontColor(DARK_NAVY)
@@ -205,7 +205,7 @@ public final class TestRunPdfGenerator {
             }
 
             document.close();
-            sayWhatWasLeftOut(p);
+            sayWhatWasLeftOut(project);
             return baos.toByteArray();
 
         } catch (final IOException ex) {
@@ -411,7 +411,7 @@ public final class TestRunPdfGenerator {
     }
 
     // UC-REPORT-001, Rule-REPORT-018
-    private void sayWhatWasLeftOut(final @NotNull Project p) {
+    private void sayWhatWasLeftOut(final @NotNull Project project) {
         if (leftOut.isEmpty()) return;
 
         final @NotNull String howMuch = leftOut.size() == 1
@@ -420,7 +420,7 @@ public final class TestRunPdfGenerator {
         final @NotNull String example = StringUtil.shortenTextWithEllipsis(leftOut.iterator().next().strip(), 60, 0);
 
         TestinLogger.warn("The PDF left characters out of " + leftOut.size() + " text(s) its font cannot print");
-        Services.getInstance(p, Notifier.class).warn(p, Bundle.message("report.pdf.left.out.title"),
+        Services.getInstance(project, Notifier.class).warn(project, Bundle.message("report.pdf.left.out.title"),
                 Bundle.message("report.pdf.left.out.message", howMuch, example));
     }
 }

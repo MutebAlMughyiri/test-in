@@ -31,9 +31,9 @@ public class CreateTestSet implements NodeCreator {
     private final @NotNull NodeMapper directoryMapper;
     private final @NotNull Nodes nodes;
 
-    public CreateTestSet(final @NotNull Project p) {
-        this.directoryMapper = Services.getInstance(p, NodeMapper.class);
-        this.nodes = Services.getInstance(p, Nodes.class);
+    public CreateTestSet(final @NotNull Project project) {
+        this.directoryMapper = Services.getInstance(project, NodeMapper.class);
+        this.nodes = Services.getInstance(project, Nodes.class);
     }
 
     // UC-TREE-PANEL-007

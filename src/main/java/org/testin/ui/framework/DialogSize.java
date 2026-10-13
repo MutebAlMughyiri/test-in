@@ -40,8 +40,8 @@ public record DialogSize(double heightPart) {
     private static final int MARGIN = 32;
 
     // Rule-INTERNAL-100
-    static @NotNull Rectangle frameOn(final @NotNull Project p) {
-        return Optional.ofNullable(WindowManager.getInstance().getIdeFrame(p))
+    static @NotNull Rectangle frameOn(final @NotNull Project project) {
+        return Optional.ofNullable(WindowManager.getInstance().getIdeFrame(project))
                 .map(IdeFrame::getComponent)
                 .filter(Component::isShowing)
                 .map(frame -> new Rectangle(frame.getLocationOnScreen(), frame.getSize()))
@@ -50,8 +50,8 @@ public record DialogSize(double heightPart) {
     }
 
     // Rule-INTERNAL-100
-    static int widthOn(final @NotNull Project p, final int natural) {
-        return within(natural, frameOn(p).width, WIDTH);
+    static int widthOn(final @NotNull Project project, final int natural) {
+        return within(natural, frameOn(project).width, WIDTH);
     }
 
     // Rule-INTERNAL-100
@@ -61,8 +61,8 @@ public record DialogSize(double heightPart) {
     }
 
     // Rule-INTERNAL-102
-    static int withinFrame(final @NotNull Project p, final int wanted) {
-        return Math.min(wanted, frameOn(p).height - JBUI.scale(MARGIN));
+    static int withinFrame(final @NotNull Project project, final int wanted) {
+        return Math.min(wanted, frameOn(project).height - JBUI.scale(MARGIN));
     }
 
     // Rule-INTERNAL-100
@@ -71,10 +71,10 @@ public record DialogSize(double heightPart) {
     }
 
     // UC-INTERNAL-007, Rule-INTERNAL-100
-    void applyTo(final @NotNull Project p, final @NotNull JComponent content) {
+    void applyTo(final @NotNull Project project, final @NotNull JComponent content) {
         if (!namesAHeight()) return;
 
-        final @NotNull Rectangle frame = frameOn(p);
+        final @NotNull Rectangle frame = frameOn(project);
         final @NotNull Dimension natural = content.getPreferredSize();
 
         content.setPreferredSize(new Dimension(

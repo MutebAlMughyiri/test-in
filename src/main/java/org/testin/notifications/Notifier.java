@@ -62,46 +62,46 @@ public final class Notifier {
         Disposer.register(owner, () -> balloonWatchers.remove(watcher));
     }
 
-    public void softShow(final @NotNull Project p, final @NotNull String title, final @NotNull String message) {
-        showBalloon(p, String.format("<html><b>%s</b><br>%s</html>", Html.ofText(title), Html.ofText(message)), MessageType.INFO);
+    public void softShow(final @NotNull Project project, final @NotNull String title, final @NotNull String message) {
+        showBalloon(project, String.format("<html><b>%s</b><br>%s</html>", Html.ofText(title), Html.ofText(message)), MessageType.INFO);
     }
 
-    public void softShow(final @NotNull Project p, final @NotNull String message) {
-        showBalloon(p, String.format("<html>%s</html>", Html.ofText(message)), MessageType.INFO);
+    public void softShow(final @NotNull Project project, final @NotNull String message) {
+        showBalloon(project, String.format("<html>%s</html>", Html.ofText(message)), MessageType.INFO);
     }
 
-    public void softRefuse(final @NotNull Project p, final @NotNull String message) {
-        showBalloon(p, String.format("<html>%s</html>", Html.ofText(message)), MessageType.ERROR);
+    public void softRefuse(final @NotNull Project project, final @NotNull String message) {
+        showBalloon(project, String.format("<html>%s</html>", Html.ofText(message)), MessageType.ERROR);
     }
 
-    public void softRefuse(final @NotNull Project p, final @NotNull String title, final @NotNull String message) {
-        showBalloon(p, String.format("<html><b>%s</b><br>%s</html>", Html.ofText(title), Html.ofText(message)), MessageType.ERROR);
+    public void softRefuse(final @NotNull Project project, final @NotNull String title, final @NotNull String message) {
+        showBalloon(project, String.format("<html><b>%s</b><br>%s</html>", Html.ofText(title), Html.ofText(message)), MessageType.ERROR);
     }
 
-    public void softRefuse(final @NotNull Project p, final @NotNull Refused refusal, final @NotNull String name) {
-        softRefuse(p, refusal.about(name));
+    public void softRefuse(final @NotNull Project project, final @NotNull Refused refusal, final @NotNull String name) {
+        softRefuse(project, refusal.about(name));
     }
 
     // Rule-TREE-PANEL-007, Rule-EDITOR-PANEL-008
-    public void softShowCounted(final @NotNull Project p, final @NotNull String outcome, final int count) {
+    public void softShowCounted(final @NotNull Project project, final @NotNull String outcome, final int count) {
         if (count <= 0) return;
 
-        softShow(p, Done.counted(outcome, count));
+        softShow(project, Done.counted(outcome, count));
     }
 
     // Rule-TREE-PANEL-007, Rule-EDITOR-PANEL-008
-    public void softShow(final @NotNull Project p, final @NotNull Done done) {
-        softShow(p, done.getOutcome());
+    public void softShow(final @NotNull Project project, final @NotNull Done done) {
+        softShow(project, done.getOutcome());
     }
 
-    public void softShowCounted(final @NotNull Project p, final @NotNull Done done, final int count) {
-        softShowCounted(p, done.getOutcome(), count);
+    public void softShowCounted(final @NotNull Project project, final @NotNull Done done, final int count) {
+        softShowCounted(project, done.getOutcome(), count);
     }
 
-    private void showBalloon(final @NotNull Project p, final @NotNull String htmlContent, final @NotNull MessageType type) {
+    private void showBalloon(final @NotNull Project project, final @NotNull String htmlContent, final @NotNull MessageType type) {
         balloonWatchers.forEach(watcher -> watcher.accept(htmlContent));
 
-        ApplicationManager.getApplication().invokeLater(() -> Optional.ofNullable(WindowManager.getInstance().getIdeFrame(p))
+        ApplicationManager.getApplication().invokeLater(() -> Optional.ofNullable(WindowManager.getInstance().getIdeFrame(project))
                 .map(IdeFrame::getStatusBar)
                 .map(StatusBar::getComponent)
                 .ifPresentOrElse(statusBarComponent -> {
@@ -118,20 +118,20 @@ public final class Notifier {
                         () -> TestinLogger.info("Nowhere to show this, so it is only here: " + htmlContent)));
     }
 
-    public void error(final @NotNull Project p, final @NotNull String message) {
-        notify(p, NO_TITLE, message, NotificationType.ERROR);
+    public void error(final @NotNull Project project, final @NotNull String message) {
+        notify(project, NO_TITLE, message, NotificationType.ERROR);
     }
 
-    public void info(final @NotNull Project p, final @NotNull String title, final @NotNull String message) {
-        notify(p, title, message, NotificationType.INFORMATION);
+    public void info(final @NotNull Project project, final @NotNull String title, final @NotNull String message) {
+        notify(project, title, message, NotificationType.INFORMATION);
     }
 
-    public void warn(final @NotNull Project p, final @NotNull String title, final @NotNull String message) {
-        notify(p, title, message, NotificationType.WARNING);
+    public void warn(final @NotNull Project project, final @NotNull String title, final @NotNull String message) {
+        notify(project, title, message, NotificationType.WARNING);
     }
 
-    public void error(final @NotNull Project p, final @NotNull String title, final @NotNull String message) {
-        notify(p, title, message, NotificationType.ERROR);
+    public void error(final @NotNull Project project, final @NotNull String title, final @NotNull String message) {
+        notify(project, title, message, NotificationType.ERROR);
     }
 
     public @NotNull NotificationAction action(final @NotNull String name, final @NotNull Runnable action) {
@@ -142,25 +142,25 @@ public final class Notifier {
         return NotificationAction.createSimple(name, action);
     }
 
-    public void warnWithAction(final @NotNull Project p, final @NotNull String title, final @NotNull String message, final @NotNull String actionName, final @NotNull Runnable action) {
-        warnWithActions(p, title, message, action(actionName, action));
+    public void warnWithAction(final @NotNull Project project, final @NotNull String title, final @NotNull String message, final @NotNull String actionName, final @NotNull Runnable action) {
+        warnWithActions(project, title, message, action(actionName, action));
     }
 
-    public void warnWithActions(final @NotNull Project p, final @NotNull String title, final @NotNull String message, final @NotNull NotificationAction... actions) {
-        notify(p, title, message, NotificationType.WARNING, actions);
+    public void warnWithActions(final @NotNull Project project, final @NotNull String title, final @NotNull String message, final @NotNull NotificationAction... actions) {
+        notify(project, title, message, NotificationType.WARNING, actions);
     }
 
-    public void infoWithActions(final @NotNull Project p, final @NotNull String title, final @NotNull String message, final @NotNull NotificationAction... actions) {
-        notify(p, title, message, NotificationType.INFORMATION, actions);
+    public void infoWithActions(final @NotNull Project project, final @NotNull String title, final @NotNull String message, final @NotNull NotificationAction... actions) {
+        notify(project, title, message, NotificationType.INFORMATION, actions);
     }
 
-    public void errorWithActions(final @NotNull Project p, final @NotNull String title, final @NotNull String message, final @NotNull NotificationAction... actions) {
-        notify(p, title, message, NotificationType.ERROR, actions);
+    public void errorWithActions(final @NotNull Project project, final @NotNull String title, final @NotNull String message, final @NotNull NotificationAction... actions) {
+        notify(project, title, message, NotificationType.ERROR, actions);
     }
 
     // Rule-EDITOR-PANEL-206, Rule-INTERNAL-129
-    private void notify(final @NotNull Project p, final @NotNull String title, final @NotNull String message, final @NotNull NotificationType type, final @NotNull NotificationAction... actions) {
-        if (type == NotificationType.ERROR) Services.getInstance(p, Guides.class).add(Guide.COLLECT_LOGS);
+    private void notify(final @NotNull Project project, final @NotNull String title, final @NotNull String message, final @NotNull NotificationType type, final @NotNull NotificationAction... actions) {
+        if (type == NotificationType.ERROR) Services.getInstance(project, Guides.class).add(Guide.COLLECT_LOGS);
 
         final @NotNull String titleText = Html.ofText(title);
         final @NotNull String messageText = Html.ofText(message);
@@ -170,6 +170,6 @@ public final class Notifier {
                 : NotificationGroupManager.getInstance().getNotificationGroup(GROUP_ID).createNotification(titleText, messageText, type);
 
         for (final NotificationAction action : actions) notification.addAction(action);
-        notification.notify(p);
+        notification.notify(project);
     }
 }

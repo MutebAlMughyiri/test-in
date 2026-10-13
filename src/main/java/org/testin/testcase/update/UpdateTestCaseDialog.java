@@ -35,11 +35,11 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class UpdateTestCaseDialog extends AbstractTestCaseDialog {
-    private final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
+    private final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
 
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-036
-    public UpdateTestCaseDialog(final @NotNull Project p, final @NotNull TestCaseDto existingTestCase, final @NotNull UpdateTestCaseFields selectedItem, final @NotNull Consumer<@NotNull TestCaseDto> onSave) {
-        super(p, existingTestCase, onSave, TestCaseDialogKey.SAVE, TestCaseDialogKey.CANCEL);
+    public UpdateTestCaseDialog(final @NotNull Project project, final @NotNull TestCaseDto existingTestCase, final @NotNull UpdateTestCaseFields selectedItem, final @NotNull Consumer<@NotNull TestCaseDto> onSave) {
+        super(project, existingTestCase, onSave, TestCaseDialogKey.SAVE, TestCaseDialogKey.CANCEL);
 
         // Rule-CODEGEN-001
         descriptionSection.compareAgainst(() -> testCases

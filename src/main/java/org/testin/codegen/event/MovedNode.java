@@ -37,23 +37,23 @@ public record MovedNode(@NotNull AbstractNode dir, @NotNull List<String> from, @
     }
 
     // UC-TREE-PANEL-016, Rule-TREE-PANEL-098
-    public @NotNull Optional<MovedNode> back(final @NotNull Project p) {
-        return Optional.ofNullable(dir.getPath().getParent()).flatMap(oldParent -> Services.getInstance(p, Nodes.class).find(newParent)
+    public @NotNull Optional<MovedNode> back(final @NotNull Project project) {
+        return Optional.ofNullable(dir.getPath().getParent()).flatMap(oldParent -> Services.getInstance(project, Nodes.class).find(newParent)
                 .map(target -> new MovedNode(dir, AbstractNode.pathOf(target.getPath2(), dir.getName()), oldParent)));
     }
 
     // UC-CODEGEN-016, Rule-CODEGEN-055
     @FromContentModule
-    public @NotNull Optional<List<String>> destinationPackage(final @NotNull Project p) {
-        return Services.getInstance(p, Nodes.class).find(newParent).map(Fqcn::ofPackage);
+    public @NotNull Optional<List<String>> destinationPackage(final @NotNull Project project) {
+        return Services.getInstance(project, Nodes.class).find(newParent).map(Fqcn::ofPackage);
     }
 
     // UC-CODEGEN-016, Rule-CODEGEN-055
     @FromContentModule
-    public void reportCodeLeftBehind(final @NotNull Project p, final @NotNull String fullName) {
+    public void reportCodeLeftBehind(final @NotNull Project project, final @NotNull String fullName) {
         TestinLogger.warn("Destination is not indexed, so " + fullName + " is left where it is");
 
-        Services.getInstance(p, Notifier.class).warn(p,
+        Services.getInstance(project, Notifier.class).warn(project,
                 Bundle.message("codegen.moved.title", dir.getName()),
                 Bundle.message("codegen.moved.message", fullName));
     }

@@ -39,26 +39,26 @@ import java.util.List;
 public class CopyTestCaseAction extends AbstractAnyProjectAction {
     // UC-EDITOR-PANEL-015
     @Override
-    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
         final @NotNull List<TestCaseDto> testCases = TestinDataKeys.selectedTestCases(e);
 
         if (!testCases.isEmpty()) {
             try {
-                final @NotNull String json = Services.getInstance(p, JsonCodec.class).writeValueAsString(testCases);
+                final @NotNull String json = Services.getInstance(project, JsonCodec.class).writeValueAsString(testCases);
                 CopyPasteManager.getInstance().setContents(new StringSelection(json));
 
-                Services.getInstance(p, Notifier.class).softShowCounted(p, Done.COPIED, testCases.size());
+                Services.getInstance(project, Notifier.class).softShowCounted(project, Done.COPIED, testCases.size());
 
             } catch (final Exception ex) {
                 TestinLogger.error("Copy Node failed: " + FailureText.of(ex));
-                Services.getInstance(p, Notifier.class).softRefuse(p, Bundle.message("clipboard.copy.failed.title"), FailureText.of(ex));
+                Services.getInstance(project, Notifier.class).softRefuse(project, Bundle.message("clipboard.copy.failed.title"), FailureText.of(ex));
             }
         }
     }
 
     // Rule-EDITOR-PANEL-230
     @Override
-    protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
         // Rule-EDITOR-PANEL-214
         if (TestinDataKeys.editor(e).filter(editor -> !editor.getParent().isTestCaseContainer()).isPresent()) {
             e.getPresentation().setEnabled(false);

@@ -35,8 +35,8 @@ final class GitIdentityDialog extends AbstractFrameworkDialog {
     private final @NotNull RadioSelection<Boolean> scope;
     private final @NotNull Consumer<@NotNull Identity> onSet;
 
-    GitIdentityDialog(final @NotNull Project p, final @NotNull Consumer<@NotNull Identity> onSet) {
-        super(p);
+    GitIdentityDialog(final @NotNull Project project, final @NotNull Consumer<@NotNull Identity> onSet) {
+        super(project);
         this.onSet = onSet;
 
         title = Bundle.message("dialog.git.identity.title");

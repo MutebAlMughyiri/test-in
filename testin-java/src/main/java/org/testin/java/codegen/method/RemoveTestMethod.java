@@ -26,8 +26,8 @@ import org.testin.model.TestCaseDto;
 public class RemoveTestMethod extends BaseTestMethodChange implements CodeChange<TestCaseDto> {
     // UC-CODEGEN-014, Rule-CODEGEN-049, Rule-CODEGEN-050
     @Override
-    public void execute(final @NotNull Project p, final @NotNull TestCaseDto testCase) {
-        applyToMethod(p, testCase, "Remove Test Method", pm -> {
+    public void execute(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
+        applyToMethod(project, testCase, "Remove Test Method", pm -> {
             final @NotNull String name = pm.getName();
             pm.delete();
             TestinLogger.info("Removed test method: " + name);

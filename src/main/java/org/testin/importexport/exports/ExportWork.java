@@ -41,9 +41,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-record ExportWork(@NotNull Project p, @NotNull Notifier notifier, @NotNull TestCases testCases, @NotNull Nodes nodes) {
-    ExportWork(final @NotNull Project p) {
-        this(p, Services.getInstance(p, Notifier.class), Services.getInstance(p, TestCases.class), Services.getInstance(p, Nodes.class));
+record ExportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull TestCases testCases, @NotNull Nodes nodes) {
+    ExportWork(final @NotNull Project project) {
+        this(project, Services.getInstance(project, Notifier.class), Services.getInstance(project, TestCases.class), Services.getInstance(project, Nodes.class));
     }
 
     // UC-SHARE-002, Rule-SHARE-001
@@ -79,12 +79,12 @@ record ExportWork(@NotNull Project p, @NotNull Notifier notifier, @NotNull TestC
         if (resolved.isEmpty()) return;
         final @NotNull VirtualFile targetDir = resolved.orElseThrow();
 
-        BackgroundWork.run(p, Bundle.message("export.task.reading", node.getName()), Bundle.message("export.failed.title"), _ -> {
+        BackgroundWork.run(project, Bundle.message("export.task.reading", node.getName()), Bundle.message("export.failed.title"), _ -> {
             final @NotNull GatheredSheets gathered = gather(node);
             final @NotNull Map<String, List<TestCaseDto>> sheets = gathered.sheets();
             if (sheets.isEmpty()) {
                 ApplicationManager.getApplication().invokeLater(() ->
-                        notifier.softRefuse(p, Bundle.message("notification.export.empty.title"), Bundle.message("export.none.found")));
+                        notifier.softRefuse(project, Bundle.message("notification.export.empty.title"), Bundle.message("export.none.found")));
                 return;
             }
 
@@ -94,25 +94,25 @@ record ExportWork(@NotNull Project p, @NotNull Notifier notifier, @NotNull TestC
                     return;
                 }
 
-                new ConfirmDialog(p, Bundle.message("export.unreadable.title"), unreadableWarning(gathered.unreadable()),
+                new ConfirmDialog(project, Bundle.message("export.unreadable.title"), unreadableWarning(gathered.unreadable()),
                         "", "", Bundle.message("export.anyway"), () -> chooseWhatToExport(sheets, targetDir)).show();
             });
         });
     }
 
     private void chooseWhatToExport(final @NotNull Map<String, List<TestCaseDto>> sheets, final @NotNull VirtualFile targetDir) {
-        new ExportDialog(p, TestSetEditorAttributes.all(Can.EXPORT), sheets, targetDir, this::writeExport).show();
+        new ExportDialog(project, TestSetEditorAttributes.all(Can.EXPORT), sheets, targetDir, this::writeExport).show();
     }
 
     // UC-SHARE-001, Rule-SHARE-005
     private void writeExport(final @NotNull Destination destination, final @NotNull Map<String, List<TestCaseDto>> selected) {
         final int testCases = selected.values().stream().mapToInt(List::size).sum();
 
-        BackgroundWork.run(p, Bundle.message("export.task.writing", String.valueOf(testCases), destination.file().getName()),
+        BackgroundWork.run(project, Bundle.message("export.task.writing", String.valueOf(testCases), destination.file().getName()),
                 Bundle.message("export.failed.title"), _ -> {
-                    destination.format().exportToFile(p, destination.file(), selected);
+                    destination.format().exportToFile(project, destination.file(), selected);
 
-                    ExportNotice.show(p, destination.file(), testCases);
+                    ExportNotice.show(project, destination.file(), testCases);
                 });
     }
 

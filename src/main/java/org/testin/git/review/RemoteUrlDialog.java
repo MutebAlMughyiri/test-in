@@ -33,8 +33,8 @@ final class RemoteUrlDialog extends AbstractFrameworkDialog {
     private final @NotNull TextInput urlField;
     private final @NotNull Consumer<@NotNull String> onUrl;
 
-    RemoteUrlDialog(final @NotNull Project p, final @NotNull String remoteName, final @NotNull Consumer<@NotNull String> onUrl) {
-        super(p);
+    RemoteUrlDialog(final @NotNull Project project, final @NotNull String remoteName, final @NotNull Consumer<@NotNull String> onUrl) {
+        super(project);
         this.onUrl = onUrl;
 
         title = Bundle.message("dialog.remote.title");

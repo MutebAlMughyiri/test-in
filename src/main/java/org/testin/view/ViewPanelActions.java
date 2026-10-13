@@ -28,10 +28,10 @@ import java.util.List;
 public class ViewPanelActions {
     // UC-VIEW-PANEL-003, UC-VIEW-PANEL-012, UC-VIEW-PANEL-014
     public @NotNull List<AnAction> create(final @NotNull ViewPanel panel, final @NotNull JComponent component) {
-        final @NotNull Project p = panel.getP();
+        final @NotNull Project project = panel.getProject();
 
-        ShownTestCaseAction.bind(p, TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD, panel::getCurrentTestCase, (action, testCase) -> action.execute(p, testCase), component);
-        ShownTestCaseAction.bind(p, TestCaseQuickAction.RUN_TEST_METHOD, panel::getCurrentTestCase, (action, testCase) -> action.execute(p, testCase), component);
+        ShownTestCaseAction.bind(project, TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD, panel::getCurrentTestCase, (action, testCase) -> action.execute(project, testCase), component);
+        ShownTestCaseAction.bind(project, TestCaseQuickAction.RUN_TEST_METHOD, panel::getCurrentTestCase, (action, testCase) -> action.execute(project, testCase), component);
 
         return List.of(
                 new PreviousTestCaseAction(panel.getPage(), component),

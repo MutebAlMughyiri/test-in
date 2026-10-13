@@ -29,14 +29,14 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExecutingNow {
     // Rule-EDITOR-PANEL-291, Rule-VIEW-PANEL-125
-    public static boolean is(final @NotNull Project p, final @NotNull UUID testCaseId) {
-        return Services.getInstance(p, TestNGExecution.class).isExecutingNow(testCaseId)
-                || Services.getInstance(p, TestinEditors.class).walking(testCaseId);
+    public static boolean is(final @NotNull Project project, final @NotNull UUID testCaseId) {
+        return Services.getInstance(project, TestNGExecution.class).isExecutingNow(testCaseId)
+                || Services.getInstance(project, TestinEditors.class).walking(testCaseId);
     }
 
     // Rule-EDITOR-PANEL-291, Rule-VIEW-PANEL-125
-    public static void changed(final @NotNull Project p, final @NotNull UUID testCaseId) {
-        Services.getInstance(p, TestinEditors.class).repaint(testCaseId);
-        ViewToolWindowFactory.panel(p).ifPresent(view -> view.reloadDetailsIfShowing(testCaseId));
+    public static void changed(final @NotNull Project project, final @NotNull UUID testCaseId) {
+        Services.getInstance(project, TestinEditors.class).repaint(testCaseId);
+        ViewToolWindowFactory.panel(project).ifPresent(view -> view.reloadDetailsIfShowing(testCaseId));
     }
 }

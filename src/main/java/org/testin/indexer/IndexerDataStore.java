@@ -90,9 +90,9 @@ final class IndexerDataStore {
     // Rule-INTERNAL-091
     private final @NotNull Map<String, String> refusedProjects = new ConcurrentHashMap<>();
 
-    IndexerDataStore(final @NotNull Project p) {
-        this.testCaseStore = new TestCaseStore(p);
-        this.markers = new MarkerFiles(p);
+    IndexerDataStore(final @NotNull Project project) {
+        this.testCaseStore = new TestCaseStore(project);
+        this.markers = new MarkerFiles(project);
     }
 
     private static @NotNull RunItems indexed(final @Nullable RunItems node, final @NotNull Path path) {

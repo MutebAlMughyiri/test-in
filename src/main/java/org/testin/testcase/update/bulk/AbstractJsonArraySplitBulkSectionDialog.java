@@ -43,8 +43,8 @@ public abstract class AbstractJsonArraySplitBulkSectionDialog extends AbstractFr
     private final @NotNull List<List<String>> activeValues = new ArrayList<>();
     private final @NotNull List<int[]> spanOwners = new ArrayList<>();
 
-    protected AbstractJsonArraySplitBulkSectionDialog(final @NotNull Project p, final @NotNull List<TestCaseDto> selectedTestCases, final @NotNull Consumer<List<TestCaseDto>> updatedTestCases) {
-        super(p);
+    protected AbstractJsonArraySplitBulkSectionDialog(final @NotNull Project project, final @NotNull List<TestCaseDto> selectedTestCases, final @NotNull Consumer<List<TestCaseDto>> updatedTestCases) {
+        super(project);
         this.selectedTestCases = selectedTestCases;
         this.updatedTestCases = updatedTestCases;
 
@@ -58,7 +58,7 @@ public abstract class AbstractJsonArraySplitBulkSectionDialog extends AbstractFr
             activeValues.add(new ArrayList<>(current));
         }
 
-        editors = new BulkJsonEditors(p);
+        editors = new BulkJsonEditors(project);
         editors.setOriginalTextSource(this::originalEscapedAt);
         render();
 

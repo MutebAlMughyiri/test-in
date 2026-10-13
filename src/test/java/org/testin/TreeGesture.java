@@ -36,21 +36,21 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TreeGesture {
 
-    private static @NotNull AnActionEvent on(final @NotNull Project p, final @NotNull AnAction action, final @NotNull List<AbstractNode> selected) {
+    private static @NotNull AnActionEvent on(final @NotNull Project project, final @NotNull AnAction action, final @NotNull List<AbstractNode> selected) {
         return TestActionEvent.createTestEvent(action, SimpleDataContext.builder()
-                .add(CommonDataKeys.PROJECT, p)
+                .add(CommonDataKeys.PROJECT, project)
                 .add(TestinDataKeys.SELECTED_NODES, selected)
                 .build());
     }
 
-    public static @NotNull Presentation updated(final @NotNull Project p, final @NotNull AnAction action, final @NotNull List<AbstractNode> selected) {
-        final @NotNull AnActionEvent e = on(p, action, selected);
+    public static @NotNull Presentation updated(final @NotNull Project project, final @NotNull AnAction action, final @NotNull List<AbstractNode> selected) {
+        final @NotNull AnActionEvent e = on(project, action, selected);
         ActionUtil.updateAction(action, e);
         return e.getPresentation();
     }
 
-    public static void pressed(final @NotNull Project p, final @NotNull AnAction action, final @NotNull List<AbstractNode> selected) {
-        final @NotNull AnActionEvent e = on(p, action, selected);
+    public static void pressed(final @NotNull Project project, final @NotNull AnAction action, final @NotNull List<AbstractNode> selected) {
+        final @NotNull AnActionEvent e = on(project, action, selected);
         ActionUtil.updateAction(action, e);
         if (!e.getPresentation().isEnabled())
             throw new AssertionError(action.getClass().getSimpleName() + " is gray on " + selected + ": " + Objects.requireNonNullElse(e.getPresentation().getDescription(), ""));

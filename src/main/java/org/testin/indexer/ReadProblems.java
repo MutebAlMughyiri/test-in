@@ -33,19 +33,19 @@ import java.util.stream.Collectors;
 final class ReadProblems {
     private static final int SHOWN = 5;
 
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull IndexerDataStore store;
     private final @NotNull Notifier notifier;
 
-    ReadProblems(final @NotNull Project p, final @NotNull IndexerDataStore store) {
-        this.p = p;
+    ReadProblems(final @NotNull Project project, final @NotNull IndexerDataStore store) {
+        this.project = project;
         this.store = store;
-        this.notifier = Services.getInstance(p, Notifier.class);
+        this.notifier = Services.getInstance(project, Notifier.class);
     }
 
     // Rule-INTERNAL-124
     void projectNotRead(final @NotNull String projectName, final @NotNull String why) {
-        notifier.warn(p, Bundle.message("indexer.failed.title", projectName), Bundle.message("indexer.failed.message", projectName, why));
+        notifier.warn(project, Bundle.message("indexer.failed.title", projectName), Bundle.message("indexer.failed.message", projectName, why));
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-015
@@ -101,7 +101,7 @@ final class ReadProblems {
         if (names.isEmpty()) return;
 
         if (names.size() == 1) {
-            notifier.warn(p, title, one.apply(names.getFirst()));
+            notifier.warn(project, title, one.apply(names.getFirst()));
             return;
         }
 
@@ -110,7 +110,7 @@ final class ReadProblems {
                 ? Bundle.message("indexer.more", String.valueOf(names.size() - SHOWN))
                 : "";
 
-        notifier.warn(p, title, many.apply(named, rest));
+        notifier.warn(project, title, many.apply(named, rest));
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-082

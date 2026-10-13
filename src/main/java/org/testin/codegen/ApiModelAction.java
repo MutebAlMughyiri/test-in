@@ -42,16 +42,16 @@ public final class ApiModelAction extends AbstractAnyProjectAction {
 
     // UC-CODEGEN-022, Rule-CODEGEN-082, Rule-CODEGEN-098
     @Override
-    protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        if (CodeOn.grayedWithReason(this, e, p)) return;
+    protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
+        if (CodeOn.grayedWithReason(this, e, project)) return;
 
         GrayWithReason.unless(this, e, ApiModelMaker.available().flatMap(maker -> packageOf(e, maker)).isPresent(), Bundle.message("api.model.not.a.package"));
     }
 
     // UC-CODEGEN-022
     @Override
-    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        ApiModelMaker.available().ifPresent(maker -> packageOf(e, maker).ifPresent(directory -> maker.open(p, directory)));
+    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
+        ApiModelMaker.available().ifPresent(maker -> packageOf(e, maker).ifPresent(directory -> maker.open(project, directory)));
     }
 
     @Override

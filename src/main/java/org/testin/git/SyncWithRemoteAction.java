@@ -59,16 +59,16 @@ public class SyncWithRemoteAction extends AbstractAnyProjectAction {
 
     // UC-SHARE-016, Rule-INTERNAL-129
     @Override
-    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
-        Services.getInstance(p, Guides.class).add(Guide.SHARE_OVER_GIT);
-        activeProjectPath(e).ifPresentOrElse(path -> new SyncWork(p).syncRepository(path), () ->
-                Services.getInstance(p, Notifier.class).softRefuse(p, Bundle.message("git.sync.error.title"),
+    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
+        Services.getInstance(project, Guides.class).add(Guide.SHARE_OVER_GIT);
+        activeProjectPath(e).ifPresentOrElse(path -> new SyncWork(project).syncRepository(path), () ->
+                Services.getInstance(project, Notifier.class).softRefuse(project, Bundle.message("git.sync.error.title"),
                         Bundle.message("git.sync.no.project")));
     }
 
     // UC-SHARE-016
     @Override
-    protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
         // Rule-SHARE-105
         if (OptionalPlugin.GIT.grayedWithReason(this, e.getPresentation())) return;
 

@@ -63,10 +63,10 @@ public final class PendingChangesDialog extends AbstractFrameworkDialog {
     private final @NotNull TextInput message;
     private final @NotNull DialogSplitButton commit;
     private final @NotNull Consumer<Request> onCommit;
-    private final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
+    private final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
 
-    public PendingChangesDialog(final @NotNull Project p, final @NotNull List<PendingChange> differences, final @NotNull Path repoRoot, final @NotNull List<String> branches, final @NotNull String currentBranch, final @NotNull Consumer<Request> onCommit) {
-        super(p);
+    public PendingChangesDialog(final @NotNull Project project, final @NotNull List<PendingChange> differences, final @NotNull Path repoRoot, final @NotNull List<String> branches, final @NotNull String currentBranch, final @NotNull Consumer<Request> onCommit) {
+        super(project);
         this.repoRoot = repoRoot;
         this.onCommit = onCommit;
 
@@ -148,7 +148,7 @@ public final class PendingChangesDialog extends AbstractFrameworkDialog {
         final @NotNull ChangeType changeType = rowDifferences.get(row).change().changeType();
 
         if (!diff.isRevertible()) {
-            notifier.softRefuse(p, Bundle.message("dialog.pending.revert.only.test.case"));
+            notifier.softRefuse(project, Bundle.message("dialog.pending.revert.only.test.case"));
             return;
         }
 
@@ -158,7 +158,7 @@ public final class PendingChangesDialog extends AbstractFrameworkDialog {
 
             final @NotNull Path testSetPath = found.orElseThrow();
             final @NotNull UUID testCaseId = UUID.fromString(diff.testCaseId());
-            final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(p, testSetPath, List.of(testCaseId));
+            final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(project, testSetPath, List.of(testCaseId));
 
             final boolean reverted = switch (diff.type()) {
                 case ADDED -> removeNewTestCase(testSetPath, testCaseId, before);
@@ -169,15 +169,15 @@ public final class PendingChangesDialog extends AbstractFrameworkDialog {
 
             if (!reverted) return;
 
-            final @NotNull TestCaseSnapshot after = TestCaseSnapshot.of(p, testSetPath, List.of(testCaseId));
+            final @NotNull TestCaseSnapshot after = TestCaseSnapshot.of(project, testSetPath, List.of(testCaseId));
             final @NotNull List<TestCaseDto> named = before.present().isEmpty() ? after.present() : before.present();
-            TestCaseSnapshot.record(p, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.revert"), named), before, after);
+            TestCaseSnapshot.record(project, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.revert"), named), before, after);
 
             removeRow(row);
-            notifier.softShow(p, Done.REVERTED);
+            notifier.softShow(project, Done.REVERTED);
 
         } catch (final Exception ex) {
-            notifier.error(p, Bundle.message("dialog.pending.revert.failed.title"), Bundle.message("dialog.pending.revert.failed.message", FailureText.of(ex)));
+            notifier.error(project, Bundle.message("dialog.pending.revert.failed.title"), Bundle.message("dialog.pending.revert.failed.message", FailureText.of(ex)));
         }
     }
 
@@ -185,20 +185,20 @@ public final class PendingChangesDialog extends AbstractFrameworkDialog {
     private boolean removeNewTestCase(final @NotNull Path testSetPath, final @NotNull UUID testCaseId, final @NotNull TestCaseSnapshot before) {
         if (!testCases.removeTestCase(testSetPath, testCaseId)) return false;
 
-        GenType.REMOVE_TEST_CASE.executeAll(p, before.present());
+        GenType.REMOVE_TEST_CASE.executeAll(project, before.present());
         return true;
     }
 
     // UC-SHARE-011, Rule-SHARE-052
     private boolean revertField(final @NotNull Path testSetPath, final @NotNull ChangeType changeType, final @NotNull PendingChange diff) {
         if (!changeType.isRevertible()) {
-            notifier.softRefuse(p, Bundle.message("dialog.pending.revert.not.supported", changeType.getLabel()));
+            notifier.softRefuse(project, Bundle.message("dialog.pending.revert.not.supported", changeType.getLabel()));
             return false;
         }
 
         final @NotNull Optional<TestCaseDto> current = testCases.findTestCase(UUID.fromString(diff.testCaseId()));
         if (current.isEmpty()) {
-            notifier.softRefuse(p, Bundle.message("dialog.pending.revert.gone"));
+            notifier.softRefuse(project, Bundle.message("dialog.pending.revert.gone"));
             return false;
         }
 

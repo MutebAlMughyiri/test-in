@@ -42,57 +42,57 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CodeOn {
     // Rule-CODEGEN-082
-    public static boolean isOn(final @NotNull Project p) {
-        return OptionalPlugin.JAVA.isAvailable() && TestinYml.names(p, openProject(p));
+    public static boolean isOn(final @NotNull Project project) {
+        return OptionalPlugin.JAVA.isAvailable() && TestinYml.names(project, openProject(project));
     }
 
     // Rule-CODEGEN-082
-    public static @NotNull Optional<String> whyOff(final @NotNull Project p) {
-        final @NotNull String open = openProject(p);
-        if (TestinYml.names(p, open)) return Optional.empty();
+    public static @NotNull Optional<String> whyOff(final @NotNull Project project) {
+        final @NotNull String open = openProject(project);
+        if (TestinYml.names(project, open)) return Optional.empty();
 
-        final @NotNull String named = TestinYml.projectName(p);
+        final @NotNull String named = TestinYml.projectName(project);
         return Optional.of(named.isEmpty() ? Bundle.message("code.off.not.named") : Bundle.message("code.off.names.other", named, open));
     }
 
-    private static @NotNull String openProject(final @NotNull Project p) {
-        return Services.getInstance(p, BoundTestProject.class).name();
+    private static @NotNull String openProject(final @NotNull Project project) {
+        return Services.getInstance(project, BoundTestProject.class).name();
     }
 
     // Rule-CODEGEN-082, Rule-INTERNAL-127
-    public static boolean isOffAndWarned(final @NotNull Project p) {
-        if (OptionalPlugin.JAVA.isMissingAndWarned(p)) return true;
+    public static boolean isOffAndWarned(final @NotNull Project project) {
+        if (OptionalPlugin.JAVA.isMissingAndWarned(project)) return true;
 
-        final @NotNull Optional<String> why = hinted(p);
-        why.ifPresent(reason -> Services.getInstance(p, Notifier.class).softRefuse(p, reason));
+        final @NotNull Optional<String> why = hinted(project);
+        why.ifPresent(reason -> Services.getInstance(project, Notifier.class).softRefuse(project, reason));
         return why.isPresent();
     }
 
     // Rule-CODEGEN-082, Rule-CODEGEN-005, Rule-INTERNAL-127
-    public static boolean isOnOrHinted(final @NotNull Project p) {
-        if (!OptionalPlugin.JAVA.isAvailableOrHinted(p)) return false;
+    public static boolean isOnOrHinted(final @NotNull Project project) {
+        if (!OptionalPlugin.JAVA.isAvailableOrHinted(project)) return false;
 
-        final @NotNull Optional<String> why = hinted(p);
+        final @NotNull Optional<String> why = hinted(project);
         why.ifPresent(reason -> TestinLogger.debug("Automation code left as it is: " + reason));
         return why.isEmpty();
     }
 
     // Rule-CODEGEN-082, Rule-INTERNAL-127
-    private static @NotNull Optional<String> hinted(final @NotNull Project p) {
-        final @NotNull Optional<String> why = whyOff(p);
-        final @NotNull Hints hints = Services.getInstance(p, Hints.class);
-        why.ifPresentOrElse(reason -> hints.fire(SetupHint.of(SetupStep.TEST_PROJECT_LINK, reason, Bundle.message("yml.save.name", TestinYml.fileName()), () -> SaveTestinYml.start(p))),
+    private static @NotNull Optional<String> hinted(final @NotNull Project project) {
+        final @NotNull Optional<String> why = whyOff(project);
+        final @NotNull Hints hints = Services.getInstance(project, Hints.class);
+        why.ifPresentOrElse(reason -> hints.fire(SetupHint.of(SetupStep.TEST_PROJECT_LINK, reason, Bundle.message("yml.save.name", TestinYml.fileName()), () -> SaveTestinYml.start(project))),
                 () -> hints.clear(SetupStep.TEST_PROJECT_LINK));
         return why;
     }
 
     // Rule-CODEGEN-082, Rule-TREE-PANEL-104
-    public static boolean grayedWithReason(final @NotNull AnAction action, final @NotNull AnActionEvent e, final @NotNull Project p) {
+    public static boolean grayedWithReason(final @NotNull AnAction action, final @NotNull AnActionEvent e, final @NotNull Project project) {
         final @NotNull Presentation presentation = e.getPresentation();
         if (OptionalPlugin.JAVA.grayedWithReason(action, presentation)) return true;
 
         final @NotNull Presentation own = action.getTemplatePresentation();
-        final @NotNull Optional<String> why = whyOff(p);
+        final @NotNull Optional<String> why = whyOff(project);
         if (why.isEmpty()) {
             presentation.setText(own.getText());
             presentation.setDescription(own.getDescription());

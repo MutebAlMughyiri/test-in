@@ -32,25 +32,25 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 
 public class UpdateTestCaseMenu {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull List<TestCaseDto> testCases;
     private final @NotNull BiConsumer<@NotNull List<TestCaseDto>, @NotNull UpdateTestCaseFields> updatedTestCases;
 
-    public UpdateTestCaseMenu(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases, final @NotNull BiConsumer<@NotNull List<TestCaseDto>, @NotNull UpdateTestCaseFields> updatedTestCases) {
-        this.p = p;
+    public UpdateTestCaseMenu(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases, final @NotNull BiConsumer<@NotNull List<TestCaseDto>, @NotNull UpdateTestCaseFields> updatedTestCases) {
+        this.project = project;
         this.testCases = testCases;
         this.updatedTestCases = updatedTestCases;
     }
 
-    public static void applyAftermath(final @NotNull Project p, final @NotNull List<TestCaseDto> updated, final @NotNull GenType<TestCaseDto> gt) {
-        ViewToolWindowFactory.refreshIfShowing(p, updated);
+    public static void applyAftermath(final @NotNull Project project, final @NotNull List<TestCaseDto> updated, final @NotNull GenType<TestCaseDto> gt) {
+        ViewToolWindowFactory.refreshIfShowing(project, updated);
 
         TestinLogger.trace("Generating automation code for " + updated.size() + ": " + gt);
 
         // UC-CODEGEN-003, Rule-CODEGEN-019
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
-            if (updated.size() == 1) gt.execute(p, updated.getFirst());
-            else gt.executeAll(p, updated);
+            if (updated.size() == 1) gt.execute(project, updated.getFirst());
+            else gt.executeAll(project, updated);
         });
     }
 
@@ -60,7 +60,7 @@ public class UpdateTestCaseMenu {
                 ? Bundle.message("update.dialog.title.one")
                 : Bundle.message("update.dialog.title.many", String.valueOf(testCases.size()));
 
-        new ShortcutMenuPopup<>(p, title, UpdateTestCaseFields.values(), this::open)
+        new ShortcutMenuPopup<>(project, title, UpdateTestCaseFields.values(), this::open)
                 .refusing(field -> field == UpdateTestCaseFields.ORDER && testCases.size() > 1
                         ? Optional.of(Bundle.message("update.order.one.at.a.time"))
                         : Optional.empty())
@@ -73,7 +73,7 @@ public class UpdateTestCaseMenu {
         TestinLogger.trace("Update field -> " + field.getName() + " | changeType = " + gt);
 
         if (testCases.size() == 1) {
-            new UpdateTestCaseDialog(p, testCases.getFirst(), field, edited -> {
+            new UpdateTestCaseDialog(project, testCases.getFirst(), field, edited -> {
                 TestinLogger.trace("Single Edit Save -> changeType = " + gt);
                 updatedTestCases.accept(List.of(edited), field);
             }).show();
@@ -81,7 +81,7 @@ public class UpdateTestCaseMenu {
             return;
         }
 
-        field.getBulkAction().execute(p, testCases, list -> {
+        field.getBulkAction().execute(project, testCases, list -> {
             TestinLogger.trace("Bulk Edit Save -> changeType = " + gt);
             updatedTestCases.accept(list, field);
         });

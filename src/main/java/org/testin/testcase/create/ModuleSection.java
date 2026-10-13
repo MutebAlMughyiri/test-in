@@ -27,8 +27,8 @@ import org.testin.util.Shortcuts;
 import org.testin.util.EditorFields;
 
 public class ModuleSection extends AbstractOneLineSection {
-    public ModuleSection(final @NotNull Project p) {
-        super(EditorFields.createCompletionField(p, new TextFieldWithAutoCompletion.StringsCompletionProvider(Services.getInstance(p, TestCaseCompletions.class).getModules(), CreateTestCaseFields.MODULE.getIcon()), ""),
+    public ModuleSection(final @NotNull Project project) {
+        super(EditorFields.createCompletionField(project, new TextFieldWithAutoCompletion.StringsCompletionProvider(Services.getInstance(project, TestCaseCompletions.class).getModules(), CreateTestCaseFields.MODULE.getIcon()), ""),
                 CreateTestCaseFields.MODULE, Shortcuts.CreateTestCaseModule);
     }
 

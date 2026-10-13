@@ -32,15 +32,15 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExecuteTestCases {
     // UC-CODEGEN-008, Rule-CODEGEN-031, Rule-CODEGEN-033, Rule-CODEGEN-035
-    public static void run(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases) {
+    public static void run(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases) {
         if (testCases.isEmpty()) return;
-        Services.getInstance(p, Guides.class).add(Guide.AUTOMATION_CODE);
+        Services.getInstance(project, Guides.class).add(Guide.AUTOMATION_CODE);
 
         // Rule-CODEGEN-082
-        if (CodeOn.isOffAndWarned(p)) return;
-        if (OptionalPlugin.TESTNG.isMissingAndWarned(p)) return;
+        if (CodeOn.isOffAndWarned(project)) return;
+        if (OptionalPlugin.TESTNG.isMissingAndWarned(project)) return;
 
-        final @NotNull TestNGExecution execution = Services.getInstance(p, TestNGExecution.class);
+        final @NotNull TestNGExecution execution = Services.getInstance(project, TestNGExecution.class);
 
         final @NotNull List<TestCaseDto> starting = testCases.stream()
                 .filter(testCase -> !execution.isRunning(testCase.getId()))
@@ -48,6 +48,6 @@ public final class ExecuteTestCases {
 
         if (starting.isEmpty()) return;
 
-        AutomationExecutor.available().run(p, starting);
+        AutomationExecutor.available().run(project, starting);
     }
 }

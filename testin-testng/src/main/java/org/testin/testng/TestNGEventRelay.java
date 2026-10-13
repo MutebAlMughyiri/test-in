@@ -34,19 +34,19 @@ import java.util.Objects;
 // UC-CODEGEN-008, Rule-CODEGEN-075, Rule-CODEGEN-110
 @RequiredArgsConstructor
 public final class TestNGEventRelay extends SMTRunnerEventsAdapter {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
 
     // UC-CODEGEN-008
     @Override
     public void onTestStarted(final @NotNull SMTestProxy test) {
-        ExecutionReported.broadcast(p, test.getPresentableName(), ExecutionStatus.RUNNING, Duration.ZERO, Failure.NONE);
+        ExecutionReported.broadcast(project, test.getPresentableName(), ExecutionStatus.RUNNING, Duration.ZERO, Failure.NONE);
     }
 
     // UC-CODEGEN-008, Rule-CODEGEN-075, Rule-CODEGEN-110
     @Override
     public void onTestFinished(final @NotNull SMTestProxy test) {
         final @NotNull FinishedAttempt finished = finished(test);
-        ExecutionReported.broadcast(p, test.getPresentableName(), finished.status(), durationOf(test), finished.failure());
+        ExecutionReported.broadcast(project, test.getPresentableName(), finished.status(), durationOf(test), finished.failure());
     }
 
     // Rule-CODEGEN-075, Rule-CODEGEN-110

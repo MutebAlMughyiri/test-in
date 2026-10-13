@@ -55,7 +55,7 @@ public enum TestCaseQuickAction {
             "Testin.NavigateToTestMethod",
             ImmutableList.of(OptionalPlugin.JAVA),
             Icons.TEST_CASE,
-            (p, testCases) -> NavigateToTestMethodAction.execute(p, testCases.getFirst()),
+            (project, testCases) -> NavigateToTestMethodAction.execute(project, testCases.getFirst()),
             (_, _) -> Optional.empty()
     ),
 
@@ -82,7 +82,7 @@ public enum TestCaseQuickAction {
             "Testin.NavigateToTestCase",
             ImmutableList.of(),
             Icons.TEST_CASE_LETTER,
-            (p, testCases) -> NavigateToTestCaseAction.execute(p, testCases.getFirst()),
+            (project, testCases) -> NavigateToTestCaseAction.execute(project, testCases.getFirst()),
             (_, testCase) -> NavigateToTestCaseAction.whyNot(testCase)
     );
 
@@ -100,30 +100,30 @@ public enum TestCaseQuickAction {
     private final @NotNull BiFunction<Optional<AbstractNode>, TestCaseDto, Optional<String>> whyNotHere;
 
     // UC-EDITOR-PANEL-048, Rule-EDITOR-PANEL-234, Rule-EDITOR-PANEL-235
-    public static @NotNull List<Offered> onCard(final @NotNull Project p, final @NotNull AbstractNode openOn, final @NotNull TestCaseDto testCase) {
+    public static @NotNull List<Offered> onCard(final @NotNull Project project, final @NotNull AbstractNode openOn, final @NotNull TestCaseDto testCase) {
         final @NotNull List<TestCaseQuickAction> buttons = openOn.isTestCaseContainer()
                 ? List.of(NAVIGATE_TO_TEST_METHOD, RUN_TEST_METHOD)
                 : List.of(NAVIGATE_TO_TEST_METHOD, RUN_TEST_METHOD, NAVIGATE_TO_TEST_CASE);
 
         return buttons.stream()
-                .map(button -> button.offer(p, Optional.of(openOn), testCase))
+                .map(button -> button.offer(project, Optional.of(openOn), testCase))
                 .toList();
     }
 
     // UC-EDITOR-PANEL-043
-    private static void stopExecution(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases) {
-        final int stopped = Services.getInstance(p, TestNGExecution.class).stop(testCases);
+    private static void stopExecution(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases) {
+        final int stopped = Services.getInstance(project, TestNGExecution.class).stop(testCases);
 
-        if (stopped > 0) Services.getInstance(p, Notifier.class).softShowCounted(p, Done.STOPPED, stopped);
+        if (stopped > 0) Services.getInstance(project, Notifier.class).softShowCounted(project, Done.STOPPED, stopped);
     }
 
-    public static @NotNull TestCaseQuickAction executionSlot(final @NotNull Project p, final @NotNull TestCaseDto testCase) {
-        return executionSlot(p, List.of(testCase));
+    public static @NotNull TestCaseQuickAction executionSlot(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
+        return executionSlot(project, List.of(testCase));
     }
 
     // UC-EDITOR-PANEL-043
-    public static @NotNull TestCaseQuickAction executionSlot(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases) {
-        final @NotNull TestNGExecution execution = Services.getInstance(p, TestNGExecution.class);
+    public static @NotNull TestCaseQuickAction executionSlot(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases) {
+        final @NotNull TestNGExecution execution = Services.getInstance(project, TestNGExecution.class);
 
         return testCases.stream().anyMatch(testCase -> execution.isRunning(testCase.getId()))
                 ? STOP_TEST_METHOD
@@ -131,10 +131,10 @@ public enum TestCaseQuickAction {
     }
 
     // UC-EDITOR-PANEL-048, Rule-EDITOR-PANEL-234, Rule-EDITOR-PANEL-266
-    public @NotNull Offered offer(final @NotNull Project p, final @NotNull Optional<AbstractNode> shownIn, final @NotNull TestCaseDto testCase) {
-        final @NotNull TestCaseQuickAction now = gestureOn(p, testCase);
+    public @NotNull Offered offer(final @NotNull Project project, final @NotNull Optional<AbstractNode> shownIn, final @NotNull TestCaseDto testCase) {
+        final @NotNull TestCaseQuickAction now = gestureOn(project, testCase);
 
-        return new Offered(now, now.whyNotOffered(p).or(() -> now.whyNotHere(shownIn, testCase)));
+        return new Offered(now, now.whyNotOffered(project).or(() -> now.whyNotHere(shownIn, testCase)));
     }
 
     // Rule-EDITOR-PANEL-266
@@ -143,8 +143,8 @@ public enum TestCaseQuickAction {
     }
 
     // UC-EDITOR-PANEL-043
-    public @NotNull TestCaseQuickAction gestureOn(final @NotNull Project p, final @NotNull TestCaseDto testCase) {
-        return this == RUN_TEST_METHOD ? executionSlot(p, testCase) : this;
+    public @NotNull TestCaseQuickAction gestureOn(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
+        return this == RUN_TEST_METHOD ? executionSlot(project, testCase) : this;
     }
 
     // UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-180
@@ -153,18 +153,18 @@ public enum TestCaseQuickAction {
     }
 
     // UC-EDITOR-PANEL-035, UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-180
-    public void executeFor(final @NotNull Project p, final @NotNull Optional<TestinEditor> editor, final @NotNull List<TestCaseDto> testCases) {
+    public void executeFor(final @NotNull Project project, final @NotNull Optional<TestinEditor> editor, final @NotNull List<TestCaseDto> testCases) {
         if (this == RUN_TEST_METHOD)
             editor.ifPresent(ui -> testCases.forEach(testCase -> ui.launching(testCase.getId())));
 
-        execute(p, testCases);
+        execute(project, testCases);
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-005, Rule-CODEGEN-082
-    public boolean enableOrExplain(final @NotNull Project p, final @NotNull Presentation presentation) {
+    public boolean enableOrExplain(final @NotNull Project project, final @NotNull Presentation presentation) {
         if (!requires.stream().allMatch(plugin -> plugin.enableOrExplain(presentation, tooltip))) return false;
 
-        return whyNotOffered(p).map(reason -> {
+        return whyNotOffered(project).map(reason -> {
             presentation.setEnabled(false);
             presentation.setDescription(reason);
 
@@ -177,14 +177,14 @@ public enum TestCaseQuickAction {
         return this == NAVIGATE_TO_TEST_METHOD ? automation.getIcon() : icon;
     }
 
-    public void execute(final @NotNull Project p, final @NotNull TestCaseDto testCase) {
-        execute(p, List.of(testCase));
+    public void execute(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
+        execute(project, List.of(testCase));
     }
 
-    public void execute(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases) {
+    public void execute(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases) {
         if (testCases.isEmpty()) return;
 
-        onClick.accept(p, testCases);
+        onClick.accept(project, testCases);
     }
 
     @NotNull String hint() {
@@ -192,7 +192,7 @@ public enum TestCaseQuickAction {
     }
 
     // UC-EDITOR-PANEL-047, Rule-CODEGEN-082
-    public @NotNull Optional<String> whyNotOffered(final @NotNull Project p) {
+    public @NotNull Optional<String> whyNotOffered(final @NotNull Project project) {
         final @NotNull Optional<String> missing = requires.stream()
                 .filter(plugin -> !plugin.isAvailable())
                 .findFirst()
@@ -200,6 +200,6 @@ public enum TestCaseQuickAction {
 
         // Rule-CODEGEN-082
         if (missing.isPresent() || !requires.contains(OptionalPlugin.JAVA)) return missing;
-        return CodeOn.whyOff(p);
+        return CodeOn.whyOff(project);
     }
 }

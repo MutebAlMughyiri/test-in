@@ -36,8 +36,8 @@ final class OrderDialog extends AbstractFrameworkDialog {
     private final @NotNull IntConsumer onSubmit;
 
     // UC-TREE-PANEL-015, Rule-TREE-PANEL-055
-    OrderDialog(final @NotNull Project p, final int current, final @NotNull IntConsumer onSubmit) {
-        super(p);
+    OrderDialog(final @NotNull Project project, final int current, final @NotNull IntConsumer onSubmit) {
+        super(project);
         this.onSubmit = onSubmit;
 
         title = Bundle.message("dialog.order.title");
@@ -79,7 +79,7 @@ final class OrderDialog extends AbstractFrameworkDialog {
         final @NotNull OptionalInt number = typed(text);
 
         if (number.isEmpty()) {
-            notifier.softRefuse(p, Bundle.message("dialog.order.refused.title"),
+            notifier.softRefuse(project, Bundle.message("dialog.order.refused.title"),
                     Bundle.message("dialog.order.refused.message", Marker.NOT_ORDERED));
             return;
         }

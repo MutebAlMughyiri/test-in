@@ -32,5 +32,5 @@ public interface ImportSetter {
         return (_, testCase, value) -> Optional.of(write.apply(testCase.edit(), value).build());
     }
 
-    @NotNull Optional<TestCaseDto> execute(final @NotNull Project p, final @NotNull TestCaseDto testCase, final @NotNull String value);
+    @NotNull Optional<TestCaseDto> execute(final @NotNull Project project, final @NotNull TestCaseDto testCase, final @NotNull String value);
 }

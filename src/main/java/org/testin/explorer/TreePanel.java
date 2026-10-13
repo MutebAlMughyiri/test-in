@@ -65,7 +65,7 @@ public final class TreePanel implements Disposable {
 
     private static final @NotNull
     @NlsSafe String AUTHOR = "Muteb AlMughyiri";
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull TestinRoot testinRoot;
     private final @NotNull ProjectIndexer indexer;
     private final @NotNull BoundTestProject boundTestProject;
@@ -84,16 +84,16 @@ public final class TreePanel implements Disposable {
     private @NotNull Optional<Content> content = Optional.empty();
     private @NotNull Map<String, ProjectStatus> underRoot = Map.of();
 
-    public TreePanel(final @NotNull Project p) {
-        this.p = p;
-        this.testinRoot = Services.getInstance(p, TestinRoot.class);
-        this.indexer = Services.getInstance(p, ProjectIndexer.class);
-        this.boundTestProject = Services.getInstance(p, BoundTestProject.class);
+    public TreePanel(final @NotNull Project project) {
+        this.project = project;
+        this.testinRoot = Services.getInstance(project, TestinRoot.class);
+        this.indexer = Services.getInstance(project, ProjectIndexer.class);
+        this.boundTestProject = Services.getInstance(project, BoundTestProject.class);
         TestinLogger.info("TreePanel.TreePanel()");
 
-        refreshAction = new RefreshTreeAction(p, this);
-        branchSelector = new BranchSelector(p, this, bound());
-        projectTree = new TestProjectTree(p);
+        refreshAction = new RefreshTreeAction(project, this);
+        branchSelector = new BranchSelector(project, this, bound());
+        projectTree = new TestProjectTree(project);
         Disposer.register(this, projectTree);
 
         final @NotNull JBPanel<?> topBar = new JBPanel<>(new BorderLayout());
@@ -111,7 +111,7 @@ public final class TreePanel implements Disposable {
 
     // UC-INTERNAL-002, Rule-INTERNAL-114
     private void followTheIndex() {
-        p.getMessageBus().connect(this).subscribe(IndexChanged.TOPIC, new IndexChanged() {
+        project.getMessageBus().connect(this).subscribe(IndexChanged.TOPIC, new IndexChanged() {
             @Override
             public void nodesChanged(final @NotNull Set<Path> folders) {
                 projectTree.refresh(folders);
@@ -136,7 +136,7 @@ public final class TreePanel implements Disposable {
             indexer.awaitIndexing();
 
             ApplicationManager.getApplication().invokeLater(() -> {
-                if (!p.isDisposed()) refresh();
+                if (!project.isDisposed()) refresh();
             });
         });
     }
@@ -148,7 +148,7 @@ public final class TreePanel implements Disposable {
 
             if (bindTheOnlyProject(listing)) {
                 ApplicationManager.getApplication().invokeLater(() -> {
-                    if (!p.isDisposed()) reindex();
+                    if (!project.isDisposed()) reindex();
                 });
                 return;
             }
@@ -157,7 +157,7 @@ public final class TreePanel implements Disposable {
             final @NotNull PanelState state = state(listing, boundProject);
 
             ApplicationManager.getApplication().invokeLater(() -> {
-                if (p.isDisposed()) return;
+                if (project.isDisposed()) return;
                 draw(state, boundProject);
             });
         });
@@ -259,7 +259,7 @@ public final class TreePanel implements Disposable {
                 AllIcons.General.Settings,
                 Bundle.message("settings.action.description"),
                 SimpleTextAttributes.LINK_ATTRIBUTES,
-                _ -> ShowSettingsUtil.getInstance().showSettingsDialog(p, SettingsConfigurable.class));
+                _ -> ShowSettingsUtil.getInstance().showSettingsDialog(project, SettingsConfigurable.class));
     }
 
     // UC-TREE-PANEL-001, UC-TREE-PANEL-003
@@ -276,7 +276,7 @@ public final class TreePanel implements Disposable {
             emptyText.appendLine(AllIcons.Vcs.Clone, OptionalPlugin.GIT.needs(clone), SimpleTextAttributes.GRAYED_ATTRIBUTES, null);
         } else {
             emptyText.appendLine(AllIcons.Vcs.Clone, clone, SimpleTextAttributes.LINK_ATTRIBUTES,
-                    _ -> new CloneTestProject(p, url, boundTestProject.name(), this).execute());
+                    _ -> new CloneTestProject(project, url, boundTestProject.name(), this).execute());
         }
 
         emptyText.appendLine("");
@@ -290,18 +290,18 @@ public final class TreePanel implements Disposable {
                 AllIcons.Actions.ModuleDirectory,
                 Bundle.message("welcome.another.project"),
                 SimpleTextAttributes.LINK_ATTRIBUTES,
-                _ -> new BindTestProjectDialog(p, underRoot, this::reindex).show());
+                _ -> new BindTestProjectDialog(project, underRoot, this::reindex).show());
     }
 
     // UC-TREE-PANEL-001, UC-TREE-PANEL-002, Rule-INTERNAL-129
     void offerFirstProject(final @NotNull StatusText emptyText) {
-        Services.getInstance(p, Guides.class).add(Guide.GETTING_STARTED);
-        Services.getInstance(p, Guides.class).add(Guide.SET_UP_THIS_MACHINE);
+        Services.getInstance(project, Guides.class).add(Guide.GETTING_STARTED);
+        Services.getInstance(project, Guides.class).add(Guide.SET_UP_THIS_MACHINE);
         emptyText.appendLine(
                 AllIcons.General.Add,
                 Bundle.message("welcome.first.project"),
                 SimpleTextAttributes.LINK_ATTRIBUTES,
-                _ -> new CreateTestProjectAction(p, this).execute());
+                _ -> new CreateTestProjectAction(project, this).execute());
     }
 
     // UC-TREE-PANEL-001, UC-TREE-PANEL-004
@@ -325,7 +325,7 @@ public final class TreePanel implements Disposable {
                 AllIcons.Actions.ModuleDirectory,
                 Bundle.message("welcome.select.project"),
                 SimpleTextAttributes.LINK_ATTRIBUTES,
-                _ -> new BindTestProjectDialog(p, underRoot, this::reindex).show());
+                _ -> new BindTestProjectDialog(project, underRoot, this::reindex).show());
     }
 
     public void reindex() {

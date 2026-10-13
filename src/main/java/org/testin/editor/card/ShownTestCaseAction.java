@@ -34,23 +34,23 @@ import java.util.function.Supplier;
 // UC-VIEW-PANEL-012, UC-VIEW-PANEL-013, UC-VIEW-PANEL-014, Rule-VIEW-PANEL-003, Rule-VIEW-PANEL-084, UC-EDITOR-PANEL-046, Rule-EDITOR-PANEL-245
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShownTestCaseAction extends DumbAwareAction {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull TestCaseQuickAction button;
     private final @NotNull Supplier<Optional<TestCaseDto>> shown;
     private final @NotNull BiConsumer<TestCaseQuickAction, TestCaseDto> press;
 
-    public static void bind(final @NotNull Project p, final @NotNull TestCaseQuickAction button, final @NotNull Supplier<Optional<TestCaseDto>> shown, final @NotNull BiConsumer<TestCaseQuickAction, TestCaseDto> press, final @NotNull JComponent component) {
-        new ShownTestCaseAction(p, button, shown, press).registerCustomShortcutSet(Declared.shortcutSet(button.getActionId()), component);
+    public static void bind(final @NotNull Project project, final @NotNull TestCaseQuickAction button, final @NotNull Supplier<Optional<TestCaseDto>> shown, final @NotNull BiConsumer<TestCaseQuickAction, TestCaseDto> press, final @NotNull JComponent component) {
+        new ShownTestCaseAction(project, button, shown, press).registerCustomShortcutSet(Declared.shortcutSet(button.getActionId()), component);
     }
 
     @Override
     public void actionPerformed(final @NotNull AnActionEvent e) {
-        shown.get().ifPresent(testCase -> press.accept(button.gestureOn(p, testCase), testCase));
+        shown.get().ifPresent(testCase -> press.accept(button.gestureOn(project, testCase), testCase));
     }
 
     @Override
     public void update(final @NotNull AnActionEvent e) {
-        e.getPresentation().setEnabled(shown.get().isPresent() && button.enableOrExplain(p, e.getPresentation()));
+        e.getPresentation().setEnabled(shown.get().isPresent() && button.enableOrExplain(project, e.getPresentation()));
     }
 
     @Override

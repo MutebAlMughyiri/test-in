@@ -69,7 +69,7 @@ import java.util.function.IntFunction;
 final class BulkJsonEditors implements DialogComponent {
     private static final int TYPING_SETTLES_MILLIS = 150;
 
-    private final @NotNull Project p;
+    private final @NotNull Project project;
 
     private final @NotNull Document leftDoc;
     private final @NotNull Document rightDoc;
@@ -86,11 +86,11 @@ final class BulkJsonEditors implements DialogComponent {
     private @NotNull IntFunction<String> originalTextAt = _ -> "";
 
     // Rule-EDITOR-PANEL-292
-    BulkJsonEditors(final @NotNull Project p) {
-        this.p = p;
+    BulkJsonEditors(final @NotNull Project project) {
+        this.project = project;
 
         leftDoc = EditorFactory.getInstance().createDocument("");
-        leftEditor = EditorFactory.getInstance().createEditor(leftDoc, p, Json.fileType(), true);
+        leftEditor = EditorFactory.getInstance().createEditor(leftDoc, project, Json.fileType(), true);
         setupEditorAppearance(leftEditor);
         leftEditor.getContentComponent().setFocusable(false);
         leftEditor.getSettings().setCaretRowShown(false);
@@ -104,7 +104,7 @@ final class BulkJsonEditors implements DialogComponent {
         rightDoc = EditorFactory.getInstance().createDocument("");
         EditorActionManager.getInstance().setReadonlyFragmentModificationHandler(rightDoc, _ -> {
         });
-        rightEditor = EditorFactory.getInstance().createEditor(rightDoc, p, Json.fileType(), false);
+        rightEditor = EditorFactory.getInstance().createEditor(rightDoc, project, Json.fileType(), false);
         setupEditorAppearance(rightEditor);
 
         final @NotNull Color caretRowColor = Optional
@@ -138,7 +138,7 @@ final class BulkJsonEditors implements DialogComponent {
 
     // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-040
     void setContent(final @NotNull String leftText, final @NotNull String rightText, final @NotNull List<int[]> editableRanges) {
-        WriteCommandAction.runWriteCommandAction(p, () -> {
+        WriteCommandAction.runWriteCommandAction(project, () -> {
             for (final RangeMarker guard : guardBlocks) rightDoc.removeGuardedBlock(guard);
             guardBlocks.clear();
             markers.clear();

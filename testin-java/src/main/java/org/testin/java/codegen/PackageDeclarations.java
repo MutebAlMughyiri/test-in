@@ -33,12 +33,12 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PackageDeclarations {
     // UC-CODEGEN-017, Rule-CODEGEN-056, Rule-CODEGEN-057
-    public static void retarget(final @NotNull Project p, final @NotNull VirtualFile sourceRoot, final @NotNull VirtualFile moved) {
+    public static void retarget(final @NotNull Project project, final @NotNull VirtualFile sourceRoot, final @NotNull VirtualFile moved) {
         VfsUtilCore.visitChildrenRecursively(moved, new VirtualFileVisitor<Void>() {
             @Override
             public boolean visitFile(final @NotNull VirtualFile file) {
                 if (!file.isDirectory() && "java".equals(file.getExtension()))
-                    retarget(p, sourceRoot, file, file.getParent());
+                    retarget(project, sourceRoot, file, file.getParent());
 
                 return true;
             }
@@ -46,8 +46,8 @@ public final class PackageDeclarations {
     }
 
     // UC-CODEGEN-016, Rule-CODEGEN-053
-    public static void retarget(final @NotNull Project p, final @NotNull VirtualFile sourceRoot, final @NotNull VirtualFile file, final @NotNull VirtualFile holder) {
-        if (!(PsiManager.getInstance(p).findFile(file) instanceof PsiJavaFile javaFile)) return;
+    public static void retarget(final @NotNull Project project, final @NotNull VirtualFile sourceRoot, final @NotNull VirtualFile file, final @NotNull VirtualFile holder) {
+        if (!(PsiManager.getInstance(project).findFile(file) instanceof PsiJavaFile javaFile)) return;
 
         final @NotNull String declared = packageOf(sourceRoot, holder);
         if (declared.equals(javaFile.getPackageName())) return;

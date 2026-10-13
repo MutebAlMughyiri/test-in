@@ -57,7 +57,7 @@ public class Breadcrumb extends AbstractDetails {
 
     // UC-VIEW-PANEL-010, Rule-VIEW-PANEL-041
     @Override
-    public int render(final @NotNull Project p, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto testCase, final int currentRow) {
+    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto testCase, final int currentRow) {
         final @NotNull JBPanel<?> pathPanel = line(0);
 
         {
@@ -88,9 +88,9 @@ public class Breadcrumb extends AbstractDetails {
                     // UC-VIEW-PANEL-010, Rule-VIEW-PANEL-042, Rule-VIEW-PANEL-043
                     @Override
                     public void mouseClicked(final MouseEvent e) {
-                        final @NotNull Path stepPath = Services.getInstance(p, TestinRoot.class).resolve(currentPath.subList(0, index + 1));
+                        final @NotNull Path stepPath = Services.getInstance(project, TestinRoot.class).resolve(currentPath.subList(0, index + 1));
 
-                        Services.getInstance(p, Nodes.class).find(stepPath).map(Hit::of).ifPresent(hit -> GoTo.the(p, hit));
+                        Services.getInstance(project, Nodes.class).find(stepPath).map(Hit::of).ifPresent(hit -> GoTo.the(project, hit));
                     }
                 });
 

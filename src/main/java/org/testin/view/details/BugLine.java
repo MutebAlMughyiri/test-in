@@ -45,32 +45,32 @@ public final class BugLine {
     private static final int LINK_GAP = 10;
 
     // UC-VIEW-PANEL-005, UC-VIEW-PANEL-016, Rule-VIEW-PANEL-031, Rule-VIEW-PANEL-086
-    public static @NotNull Optional<JComponent> of(final @NotNull Project p, final @NotNull RunItem runItem, final @NotNull List<String> currentPath, final @NotNull TestCaseDto testCase) {
+    public static @NotNull Optional<JComponent> of(final @NotNull Project project, final @NotNull RunItem runItem, final @NotNull List<String> currentPath, final @NotNull TestCaseDto testCase) {
         final @NotNull Optional<String> bugIssue = runItem.bugIssue();
         if (!runItem.recordsABug()) return Optional.empty();
 
-        return AbstractDetails.testRunOf(p, currentPath).map(testRunNode -> drawn(p, runItem, testCase, bugIssue, testRunNode));
+        return AbstractDetails.testRunOf(project, currentPath).map(testRunNode -> drawn(project, runItem, testCase, bugIssue, testRunNode));
     }
 
     // UC-VIEW-PANEL-005, UC-VIEW-PANEL-016, Rule-VIEW-PANEL-066, Rule-VIEW-PANEL-075, Rule-VIEW-PANEL-086
-    private static @NotNull JComponent drawn(final @NotNull Project p, final @NotNull RunItem runItem, final @NotNull TestCaseDto testCase, final @NotNull Optional<String> bugIssue, final @NotNull TestRunNode testRunNode) {
+    private static @NotNull JComponent drawn(final @NotNull Project project, final @NotNull RunItem runItem, final @NotNull TestCaseDto testCase, final @NotNull Optional<String> bugIssue, final @NotNull TestRunNode testRunNode) {
         final @NotNull JBPanel<?> line = AbstractDetails.row(LINK_GAP);
 
         chip(runItem).ifPresent(line::add);
         bugIssue.ifPresentOrElse(
-                url -> line.add(BugIssueLink.of(p, url)),
-                () -> line.add(report(p, runItem, testCase, testRunNode)));
+                url -> line.add(BugIssueLink.of(project, url)),
+                () -> line.add(report(project, runItem, testCase, testRunNode)));
 
         return line;
     }
 
     // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-066, Rule-VIEW-PANEL-075
-    private static @NotNull ActionLink report(final @NotNull Project p, final @NotNull RunItem runItem, final @NotNull TestCaseDto testCase, final @NotNull TestRunNode testRunNode) {
-        final @NotNull Optional<String> off = Services.getInstance(p, OpenBugReports.class)
+    private static @NotNull ActionLink report(final @NotNull Project project, final @NotNull RunItem runItem, final @NotNull TestCaseDto testCase, final @NotNull TestRunNode testRunNode) {
+        final @NotNull Optional<String> off = Services.getInstance(project, OpenBugReports.class)
                 .whyReportBugIsOff(new RunItemPath(testRunNode.getPath(), runItem.getId()), runItem);
 
         final @NotNull ActionLink report = AbstractDetails.link(Bundle.message("bug.dialog.title"),
-                _ -> ReportBug.start(p, testRunNode, runItem.getId(), testCase, () -> AbstractDetails.redraw(p, testCase, testRunNode)));
+                _ -> ReportBug.start(project, testRunNode, runItem.getId(), testCase, () -> AbstractDetails.redraw(project, testCase, testRunNode)));
 
         report.setEnabled(off.isEmpty());
         Tooltip.set(report, off.orElse(""));

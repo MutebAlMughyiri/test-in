@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 
 @AllArgsConstructor
 public class TestRunStatusMenu {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
 
     private final @NotNull TestRunStatus current;
 
@@ -40,6 +40,6 @@ public class TestRunStatusMenu {
                 .filter(status -> status.canBeSetFrom(current))
                 .toArray(TestRunStatus[]::new);
 
-        new ShortcutMenuPopup<>(p, Bundle.message("test.run.set.status.menu"), offered, onStatusSelected).show();
+        new ShortcutMenuPopup<>(project, Bundle.message("test.run.set.status.menu"), offered, onStatusSelected).show();
     }
 }

@@ -31,7 +31,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CellEditListener implements TableModelListener {
     private final @NotNull List<TestSetEditorAttributes> importAttributes;
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull List<TestCaseDto> testCases;
     private boolean isUpdating = false;
 
@@ -50,10 +50,10 @@ public class CellEditListener implements TableModelListener {
                     final @NotNull DefaultTableModel model = (DefaultTableModel) e.getSource();
                     final @NotNull String updatedValue = String.valueOf(model.getValueAt(row, col));
                     final @NotNull TestSetEditorAttributes currentAttr = importAttributes.get(col - 2);
-                    final @NotNull Optional<TestCaseDto> took = currentAttr.getImportSetter().execute(p, testCases.get(row), updatedValue);
+                    final @NotNull Optional<TestCaseDto> took = currentAttr.getImportSetter().execute(project, testCases.get(row), updatedValue);
 
                     // Rule-SHARE-106
-                    took.ifPresentOrElse(testCase -> testCases.set(row, testCase), () -> TestSetEditorAttributes.sayWhatWasRefused(p, 1));
+                    took.ifPresentOrElse(testCase -> testCases.set(row, testCase), () -> TestSetEditorAttributes.sayWhatWasRefused(project, 1));
 
                     final @NotNull String formattedValue = currentAttr.gridValue(testCases.get(row));
                     model.setValueAt(formattedValue, row, col);

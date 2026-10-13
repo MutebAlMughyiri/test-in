@@ -35,8 +35,8 @@ public final class GuideDialog extends AbstractFrameworkDialog {
     private @NotNull BundledPage shown;
 
     // UC-INTERNAL-009, Rule-INTERNAL-130
-    GuideDialog(final @NotNull Project p, final @NotNull Guide guide) {
-        super(p);
+    GuideDialog(final @NotNull Project project, final @NotNull Guide guide) {
+        super(project);
 
         shown = new BundledPage(guide.getPage());
         page = new HtmlPage(shown.html(), this::follow);

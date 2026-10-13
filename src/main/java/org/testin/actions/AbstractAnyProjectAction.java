@@ -35,16 +35,16 @@ public abstract class AbstractAnyProjectAction extends DumbAwareAction {
 
     @Override
     public final void actionPerformed(final @NotNull AnActionEvent e) {
-        Optional.ofNullable(e.getProject()).ifPresent(p -> perform(e, p));
+        Optional.ofNullable(e.getProject()).ifPresent(project -> perform(e, project));
     }
 
-    protected abstract void perform(final @NotNull AnActionEvent e, final @NotNull Project p);
+    protected abstract void perform(final @NotNull AnActionEvent e, final @NotNull Project project);
 
     @Override
     public final void update(final @NotNull AnActionEvent e) {
-        Optional.ofNullable(e.getProject()).ifPresentOrElse(p -> update(e, p), () -> e.getPresentation().setEnabled(false));
+        Optional.ofNullable(e.getProject()).ifPresentOrElse(project -> update(e, project), () -> e.getPresentation().setEnabled(false));
     }
 
-    protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
     }
 }

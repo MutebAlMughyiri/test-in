@@ -29,11 +29,11 @@ record RestoredTestCases(@NotNull List<TestCaseDto> removed, @NotNull List<TestC
         this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
     }
 
-    void generate(final @NotNull Project p) {
-        if (!removed.isEmpty()) GenType.REMOVE_TEST_CASE.executeAll(p, removed);
-        if (!comingBack.isEmpty()) GenType.CREATE_TEST_CASE.executeAll(p, comingBack);
+    void generate(final @NotNull Project project) {
+        if (!removed.isEmpty()) GenType.REMOVE_TEST_CASE.executeAll(project, removed);
+        if (!comingBack.isEmpty()) GenType.CREATE_TEST_CASE.executeAll(project, comingBack);
 
         // UC-CODEGEN-002, Rule-CODEGEN-068
-        if (!landed.isEmpty()) GenType.RECONCILE_TEST_CASE.executeAll(p, landed);
+        if (!landed.isEmpty()) GenType.RECONCILE_TEST_CASE.executeAll(project, landed);
     }
 }

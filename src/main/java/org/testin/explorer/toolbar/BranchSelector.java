@@ -46,7 +46,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class BranchSelector {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull TreePanel treePanel;
     private final @NotNull GitRepositoryService git;
     private final @NotNull Nodes nodes;
@@ -64,12 +64,12 @@ public class BranchSelector {
 
     private boolean showingPlaceholder = false;
 
-    public BranchSelector(final @NotNull Project p, final @NotNull TreePanel treePanel, final @NotNull Optional<TestProjectNode> testProjectNode) {
-        this.p = p;
+    public BranchSelector(final @NotNull Project project, final @NotNull TreePanel treePanel, final @NotNull Optional<TestProjectNode> testProjectNode) {
+        this.project = project;
         this.treePanel = treePanel;
-        this.git = new GitRepositoryService(p);
-        this.nodes = Services.getInstance(p, Nodes.class);
-        this.notifier = Services.getInstance(p, Notifier.class);
+        this.git = new GitRepositoryService(project);
+        this.nodes = Services.getInstance(project, Nodes.class);
+        this.notifier = Services.getInstance(project, Notifier.class);
         this.model = new DefaultComboBoxModel<>();
         this.comboBox = new ComboBox<>(model);
 
@@ -146,7 +146,7 @@ public class BranchSelector {
         final @NotNull Path repositoryPath = projectPath;
         if (repositoryPath.toString().isEmpty()) return;
 
-        BackgroundWork.start(new Task.Backgroundable(p, Bundle.message("branch.task.checking", targetBranch), false) {
+        BackgroundWork.start(new Task.Backgroundable(project, Bundle.message("branch.task.checking", targetBranch), false) {
             @Override
             public void run(final @NotNull ProgressIndicator indicator) {
                 indicator.setIndeterminate(true);
@@ -172,18 +172,18 @@ public class BranchSelector {
                 ? Bundle.message("branch.uncommitted.one")
                 : Bundle.message("branch.uncommitted.many", String.valueOf(pending));
 
-        new ConfirmDialog(p, Bundle.message("branch.uncommitted.title"),
+        new ConfirmDialog(project, Bundle.message("branch.uncommitted.title"),
                 Bundle.message("branch.uncommitted.message", changes, targetBranch),
                 currentBranch, targetBranch,
                 Bundle.message("branch.switch.anyway"), () -> checkout(repositoryPath, targetBranch),
                 List.of(new Alternative(Bundle.message("branch.review.changes"),
-                        () -> ViewPendingCommitsAction.reviewFor(p, repositoryPath))))
+                        () -> ViewPendingCommitsAction.reviewFor(project, repositoryPath))))
                 .show();
     }
 
     // UC-TREE-PANEL-026, Rule-TREE-PANEL-086
     private void checkout(final @NotNull Path repositoryPath, final @NotNull String targetBranch) {
-        BackgroundWork.start(new Task.Backgroundable(p, Bundle.message("branch.task.checkout", targetBranch), false) {
+        BackgroundWork.start(new Task.Backgroundable(project, Bundle.message("branch.task.checkout", targetBranch), false) {
             @Override
             public void run(final @NotNull ProgressIndicator indicator) {
                 indicator.setIndeterminate(true);
@@ -207,10 +207,10 @@ public class BranchSelector {
     private void refuseSwitch(final @NotNull Path repositoryPath, final @NotNull String targetBranch) {
         restoreSelectedBranch();
 
-        notifier.warnWithAction(p, Bundle.message("git.branch.not.switched.title"),
+        notifier.warnWithAction(project, Bundle.message("git.branch.not.switched.title"),
                 Bundle.message("branch.not.switched.message", targetBranch),
                 Bundle.message("branch.review.changes"),
-                () -> ViewPendingCommitsAction.reviewFor(p, repositoryPath));
+                () -> ViewPendingCommitsAction.reviewFor(project, repositoryPath));
     }
 
     private void restoreSelectedBranch() {
@@ -226,7 +226,7 @@ public class BranchSelector {
 
     // UC-TREE-PANEL-026
     private void loadGitBranches(final @NotNull Path repositoryPath, final boolean fromRemote) {
-        BackgroundWork.start(new Task.Backgroundable(p, Bundle.message("branch.task.loading"), true) {
+        BackgroundWork.start(new Task.Backgroundable(project, Bundle.message("branch.task.loading"), true) {
             @Override
             public void run(final @NotNull ProgressIndicator indicator) {
                 indicator.setIndeterminate(true);
@@ -257,7 +257,7 @@ public class BranchSelector {
             TestinLogger.error("Could not read branches: " + FailureText.of(ex));
             ApplicationManager.getApplication().invokeLater(() -> {
                 showPlaceholder(Bundle.message("branch.load.failed"));
-                GitFailureNotice.show(p, Bundle.message("git.error.title"), Bundle.message("branch.load.failed.message", FailureText.of(ex)));
+                GitFailureNotice.show(project, Bundle.message("git.error.title"), Bundle.message("branch.load.failed.message", FailureText.of(ex)));
             });
         }
     }
@@ -269,7 +269,7 @@ public class BranchSelector {
         } catch (final Exception fetchError) {
             TestinLogger.error("Could not refresh remote branches: " + FailureText.of(fetchError));
             ApplicationManager.getApplication().invokeLater(() ->
-                    notifier.warn(p, Bundle.message("branch.fetch.warning.title"),
+                    notifier.warn(project, Bundle.message("branch.fetch.warning.title"),
                             Bundle.message("branch.fetch.warning.message", FailureText.of(fetchError))));
         }
     }

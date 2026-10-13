@@ -50,21 +50,21 @@ public final class DialogPart<C extends DialogComponent> {
     }
 
     // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-221, Rule-INTERNAL-097
-    public static @NotNull DialogPart<MultiLineField> multiLineField(final @NotNull Project p, final @NotNull String caption, final @NotNull String placeholder, final @NotNull String value) {
-        final @NotNull MultiLineField field = new MultiLineField(p, EditorFields.createField(p), caption, placeholder);
+    public static @NotNull DialogPart<MultiLineField> multiLineField(final @NotNull Project project, final @NotNull String caption, final @NotNull String placeholder, final @NotNull String value) {
+        final @NotNull MultiLineField field = new MultiLineField(project, EditorFields.createField(project), caption, placeholder);
         field.setText(value);
 
         return new DialogPart<>(field);
     }
 
     // Rule-INTERNAL-136, Rule-INTERNAL-139
-    public static @NotNull DialogPart<MultiLineField> multiLineField(final @NotNull Project p, final @NotNull String caption, final @NotNull String placeholder, final int minimumLines, final int maximumLines, final @NotNull Language language, final boolean spellChecked) {
-        return new DialogPart<>(new MultiLineField(p, EditorFields.createField(p, language, spellChecked), caption, placeholder, minimumLines, maximumLines));
+    public static @NotNull DialogPart<MultiLineField> multiLineField(final @NotNull Project project, final @NotNull String caption, final @NotNull String placeholder, final int minimumLines, final int maximumLines, final @NotNull Language language, final boolean spellChecked) {
+        return new DialogPart<>(new MultiLineField(project, EditorFields.createField(project, language, spellChecked), caption, placeholder, minimumLines, maximumLines));
     }
 
     // Rule-INTERNAL-137
-    public static @NotNull DialogPart<FieldPair> fieldPair(final @NotNull Project p, final @NotNull String rememberedAs, final @NotNull JBLabel firstTitle, final @NotNull MultiLineField first, final @NotNull JBLabel secondTitle, final @NotNull MultiLineField second) {
-        return new DialogPart<>(new FieldPair(p, rememberedAs, firstTitle, first, secondTitle, second));
+    public static @NotNull DialogPart<FieldPair> fieldPair(final @NotNull Project project, final @NotNull String rememberedAs, final @NotNull JBLabel firstTitle, final @NotNull MultiLineField first, final @NotNull JBLabel secondTitle, final @NotNull MultiLineField second) {
+        return new DialogPart<>(new FieldPair(project, rememberedAs, firstTitle, first, secondTitle, second));
     }
 
     public static @NotNull DialogPart<DialogMessage> message(final @NotNull String text) {
@@ -260,8 +260,8 @@ public final class DialogPart<C extends DialogComponent> {
         }
 
         // Rule-INTERNAL-118
-        public @NotNull TextInputBuilder browse(final @NotNull Project p, final @NotNull FileChooserDescriptor descriptor) {
-            this.browsing = Optional.of(input -> input.browseWith(p, descriptor));
+        public @NotNull TextInputBuilder browse(final @NotNull Project project, final @NotNull FileChooserDescriptor descriptor) {
+            this.browsing = Optional.of(input -> input.browseWith(project, descriptor));
             return this;
         }
 

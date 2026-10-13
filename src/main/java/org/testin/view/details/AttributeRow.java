@@ -33,7 +33,7 @@ public final class AttributeRow extends AbstractDetails {
 
     // UC-VIEW-PANEL-004
     @Override
-    public int render(final @NotNull Project p, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto testCase, final int currentRow) {
-        return addRow(panel, gbc, caption, extractor.apply(p, testCase), currentRow);
+    public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints gbc, final @NotNull TestCaseDto testCase, final int currentRow) {
+        return addRow(panel, gbc, caption, extractor.apply(project, testCase), currentRow);
     }
 }

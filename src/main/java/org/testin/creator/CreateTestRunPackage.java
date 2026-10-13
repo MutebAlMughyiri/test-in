@@ -31,9 +31,9 @@ public class CreateTestRunPackage implements NodeCreator {
     private final @NotNull NodeMapper directoryMapper;
     private final @NotNull Nodes nodes;
 
-    public CreateTestRunPackage(final @NotNull Project p) {
-        this.directoryMapper = Services.getInstance(p, NodeMapper.class);
-        this.nodes = Services.getInstance(p, Nodes.class);
+    public CreateTestRunPackage(final @NotNull Project project) {
+        this.directoryMapper = Services.getInstance(project, NodeMapper.class);
+        this.nodes = Services.getInstance(project, Nodes.class);
     }
 
     // UC-TREE-PANEL-010, Rule-TREE-PANEL-033

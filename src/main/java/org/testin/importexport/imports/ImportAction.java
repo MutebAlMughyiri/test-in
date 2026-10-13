@@ -30,15 +30,15 @@ public class ImportAction extends AbstractAnyProjectAction {
 
     // UC-SHARE-005
     @Override
-    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
         TestinDataKeys.firstSelected(e, AbstractNode.class)
                 .filter(AbstractNode::isTestCaseContainer)
-                .ifPresent(dir -> new ImportWork(p).openImportDialog(dir));
+                .ifPresent(dir -> new ImportWork(project).openImportDialog(dir));
     }
 
     // UC-SHARE-005
     @Override
-    protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
         e.getPresentation().setEnabled(TestinDataKeys.singleSelectedNode(e)
                 .filter(AbstractNode::isTestCaseContainer)
                 .isPresent());

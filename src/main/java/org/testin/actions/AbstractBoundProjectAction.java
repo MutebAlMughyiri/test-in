@@ -23,10 +23,10 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.Icon;
 
 public abstract class AbstractBoundProjectAction extends DumbAwareAction {
-    protected final @NotNull Project p;
+    protected final @NotNull Project project;
 
-    protected AbstractBoundProjectAction(final @NotNull Project p, final @NotNull String title, final @NotNull String description, final @NotNull Icon icon) {
+    protected AbstractBoundProjectAction(final @NotNull Project project, final @NotNull String title, final @NotNull String description, final @NotNull Icon icon) {
         super(title, description, icon);
-        this.p = p;
+        this.project = project;
     }
 }

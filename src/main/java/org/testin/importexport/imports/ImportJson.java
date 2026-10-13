@@ -57,13 +57,13 @@ public class ImportJson {
     }
 
     // UC-SHARE-006
-    public @NotNull Map<String, List<TestCaseDto>> processImport(final @NotNull Project p, final @NotNull File file) {
-        return parseFile(p, file);
+    public @NotNull Map<String, List<TestCaseDto>> processImport(final @NotNull Project project, final @NotNull File file) {
+        return parseFile(project, file);
     }
 
     // UC-SHARE-005, Rule-SHARE-024
-    public @NotNull Map<String, List<TestCaseDto>> parseFile(final @NotNull Project p, final @NotNull File file) {
-        final @NotNull Map<String, List<TestCaseDto>> data = Services.getInstance(p, JsonCodec.class).readValue(bytesOf(file), new TypeReference<>() {
+    public @NotNull Map<String, List<TestCaseDto>> parseFile(final @NotNull Project project, final @NotNull File file) {
+        final @NotNull Map<String, List<TestCaseDto>> data = Services.getInstance(project, JsonCodec.class).readValue(bytesOf(file), new TypeReference<>() {
         });
         final @NotNull Map<String, List<TestCaseDto>> result = new LinkedHashMap<>();
         for (final Map.Entry<String, List<TestCaseDto>> entry : data.entrySet()) {

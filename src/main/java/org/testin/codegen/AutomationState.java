@@ -61,13 +61,13 @@ public final class AutomationState implements Disposable {
         return Fqcn.methodNameOf(testCase).isEmpty() ? Automated.NONE : Automated.MISSING;
     }
 
-    private static @NotNull AutomationReading answer(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases) {
-        final long codeVersion = PsiModificationTracker.getInstance(p).getModificationCount();
+    private static @NotNull AutomationReading answer(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases) {
+        final long codeVersion = PsiModificationTracker.getInstance(project).getModificationCount();
         final @NotNull Map<UUID, Automated> answers = new LinkedHashMap<>();
         final @NotNull Set<UUID> found = new LinkedHashSet<>();
 
         try {
-            final @NotNull Map<UUID, Boolean> methods = TestMethodCode.available().methodsFor(p, testCases);
+            final @NotNull Map<UUID, Boolean> methods = TestMethodCode.available().methodsFor(project, testCases);
 
             for (final TestCaseDto testCase : testCases) {
                 answers.put(testCase.getId(), stateOf(testCase, methods));
@@ -93,11 +93,11 @@ public final class AutomationState implements Disposable {
     }
 
     // UC-EDITOR-PANEL-047, Rule-EDITOR-PANEL-196
-    public void read(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases, final @NotNull Runnable onAnswered) {
+    public void read(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases, final @NotNull Runnable onAnswered) {
         if (testCases.isEmpty()) return;
 
         // Rule-CODEGEN-082
-        if (!CodeOn.isOn(p)) {
+        if (!CodeOn.isOn(project)) {
             readAtCodeVersion = NEVER_READ;
             if (known.isEmpty() && withAMethod.isEmpty()) return;
 
@@ -107,29 +107,29 @@ public final class AutomationState implements Disposable {
             return;
         }
 
-        if (alreadyAnswered(p, testCases)) return;
+        if (alreadyAnswered(project, testCases)) return;
 
         final @NotNull List<TestCaseDto> reading = List.copyOf(testCases);
         final @NotNull Map<UUID, Automated> asking = reading.stream()
                 .collect(Collectors.toMap(TestCaseDto::getId, testCase -> of(testCase.getId()), (first, _) -> first));
 
-        BackgroundWork.logged(ReadAction.nonBlocking(() -> answer(p, reading))
-                .inSmartMode(p)
+        BackgroundWork.logged(ReadAction.nonBlocking(() -> answer(project, reading))
+                .inSmartMode(project)
                 .coalesceBy(this, asking.keySet())
                 .expireWith(this)
-                .finishOnUiThread(ModalityState.defaultModalityState(), answer -> keep(p, answer, reading, asking, onAnswered))
+                .finishOnUiThread(ModalityState.defaultModalityState(), answer -> keep(project, answer, reading, asking, onAnswered))
                 .submit(AppExecutorUtil.getAppExecutorService()), "Reading which test cases are automated");
     }
 
     // UC-EDITOR-PANEL-047, Rule-EDITOR-PANEL-197
-    private boolean alreadyAnswered(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases) {
-        return readAtCodeVersion == PsiModificationTracker.getInstance(p).getModificationCount()
+    private boolean alreadyAnswered(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases) {
+        return readAtCodeVersion == PsiModificationTracker.getInstance(project).getModificationCount()
                 && testCases.stream().allMatch(testCase -> known.containsKey(testCase.getId()));
     }
 
     // Rule-CODEGEN-082, Rule-EDITOR-PANEL-211
-    private void keep(final @NotNull Project p, final @NotNull AutomationReading answer, final @NotNull List<TestCaseDto> testCases, final @NotNull Map<UUID, Automated> asking, final @NotNull Runnable onAnswered) {
-        if (answer.states().isEmpty() || !CodeOn.isOn(p)) return;
+    private void keep(final @NotNull Project project, final @NotNull AutomationReading answer, final @NotNull List<TestCaseDto> testCases, final @NotNull Map<UUID, Automated> asking, final @NotNull Runnable onAnswered) {
+        if (answer.states().isEmpty() || !CodeOn.isOn(project)) return;
 
         known.putAll(answer.states());
         readAtCodeVersion = answer.codeVersion();

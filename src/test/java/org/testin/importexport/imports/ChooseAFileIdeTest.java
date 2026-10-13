@@ -98,17 +98,17 @@ public class ChooseAFileIdeTest extends AbstractTempRootIdeTest {
         }
 
         @Override
-        public @NotNull FileChooserDialog createFileChooser(final @NotNull FileChooserDescriptor descriptor, final @Nullable Project p, final @Nullable Component parent) {
+        public @NotNull FileChooserDialog createFileChooser(final @NotNull FileChooserDescriptor descriptor, final @Nullable Project project, final @Nullable Component parent) {
             throw new UnsupportedOperationException("the import asks through a path chooser");
         }
 
         @Override
-        public @NotNull PathChooserDialog createPathChooser(final @NotNull FileChooserDescriptor descriptor, final @Nullable Project p, final @Nullable Component parent) {
+        public @NotNull PathChooserDialog createPathChooser(final @NotNull FileChooserDescriptor descriptor, final @Nullable Project project, final @Nullable Component parent) {
             return (_, callback) -> asked.add(callback);
         }
 
         @Override
-        public @NotNull FileSaverDialog createSaveFileDialog(final @NotNull FileSaverDescriptor descriptor, final @Nullable Project p) {
+        public @NotNull FileSaverDialog createSaveFileDialog(final @NotNull FileSaverDescriptor descriptor, final @Nullable Project project) {
             throw new UnsupportedOperationException("nothing is saved here");
         }
 

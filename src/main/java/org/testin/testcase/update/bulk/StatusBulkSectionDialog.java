@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class StatusBulkSectionDialog extends AbstractJsonSplitBulkSectionDialog {
-    public StatusBulkSectionDialog(final @NotNull Project p, final @NotNull List<TestCaseDto> selectedTestCases, final @NotNull Consumer<List<TestCaseDto>> updatedTestCases) {
-        super(p, selectedTestCases, updatedTestCases);
+    public StatusBulkSectionDialog(final @NotNull Project project, final @NotNull List<TestCaseDto> selectedTestCases, final @NotNull Consumer<List<TestCaseDto>> updatedTestCases) {
+        super(project, selectedTestCases, updatedTestCases);
     }
 
     @Override

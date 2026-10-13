@@ -24,8 +24,8 @@ import org.testin.util.EditorFields;
 
 // Rule-EDITOR-PANEL-032
 public class TestDataSection extends AbstractMultiLineSection {
-    public TestDataSection(final @NotNull Project p) {
-        super(p, EditorFields.createField(p), CreateTestCaseFields.TEST_DATA);
+    public TestDataSection(final @NotNull Project project) {
+        super(project, EditorFields.createField(project), CreateTestCaseFields.TEST_DATA);
     }
 
     // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-032

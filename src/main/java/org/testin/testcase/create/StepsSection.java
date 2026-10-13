@@ -27,8 +27,8 @@ import java.util.Set;
 
 // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-033
 public class StepsSection extends AbstractMultiValueSection {
-    public StepsSection(final @NotNull Project p) {
-        super(p);
+    public StepsSection(final @NotNull Project project) {
+        super(project);
     }
 
     @Override

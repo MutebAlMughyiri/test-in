@@ -25,13 +25,13 @@ import org.testin.filter.SortPopupBtn;
 import java.util.List;
 
 public class TestRunToolbar extends AbstractToolbarPanel {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
 
     private final @NotNull TestRunEditor editor;
 
-    public TestRunToolbar(final @NotNull Project p, final @NotNull TestRunEditor editor) {
+    public TestRunToolbar(final @NotNull Project project, final @NotNull TestRunEditor editor) {
         super(editor);
-        this.p = p;
+        this.project = project;
         this.editor = editor;
         layoutComponents();
     }
@@ -43,7 +43,7 @@ public class TestRunToolbar extends AbstractToolbarPanel {
                 new StartExecutionBtn(editor, getCallbacks()::onStartExecutionClicked),
                 new StopExecutionBtn(getCallbacks()::onStopExecutionClicked),
                 new LightModeBtn(editor),
-                new GenerateReportBtn(p, editor),
+                new GenerateReportBtn(project, editor),
                 new RefreshBtn(getCallbacks()::onToolBarRefreshButtonClicked),
                 new TestRunFieldsPopupBtn(getCallbacks()::onToolBarDetailsSelectionChanged),
                 new FilterPopupBtn(getCallbacks()),

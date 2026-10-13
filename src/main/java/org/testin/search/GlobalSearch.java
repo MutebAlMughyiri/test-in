@@ -43,13 +43,13 @@ public final class GlobalSearch {
     private static final int SHOWN = 50;
 
     // UC-INTERNAL-001, Rule-INTERNAL-001
-    public static @NotNull Found forQuery(final @NotNull Project p, final @NotNull String query) {
+    public static @NotNull Found forQuery(final @NotNull Project project, final @NotNull String query) {
         final @NotNull String wanted = query.trim().toLowerCase(Locale.ROOT);
 
-        final @NotNull List<AbstractNode> nodes = wanted.isEmpty() ? everywhereToGo(p) : nodesNamed(p, wanted);
-        final @NotNull List<TestCaseDto> testCases = testCasesMatching(p, wanted);
+        final @NotNull List<AbstractNode> nodes = wanted.isEmpty() ? everywhereToGo(project) : nodesNamed(project, wanted);
+        final @NotNull List<TestCaseDto> testCases = testCasesMatching(project, wanted);
 
-        final @NotNull List<Hit> inTestRuns = inTestRuns(p, testCases);
+        final @NotNull List<Hit> inTestRuns = inTestRuns(project, testCases);
 
         final @NotNull List<Hit> found = new ArrayList<>(nodes.stream().limit(SHOWN).map(Hit::of).toList());
         found.addAll(topTestCases(testCases, wanted, SHOWN - found.size()));
@@ -58,36 +58,36 @@ public final class GlobalSearch {
         return new Found(List.copyOf(found), nodes.size() + testCases.size() + inTestRuns.size());
     }
 
-    private static @NotNull List<AbstractNode> everywhereToGo(final @NotNull Project p) {
-        return Services.getInstance(p, Nodes.class).getAllNodes().stream()
+    private static @NotNull List<AbstractNode> everywhereToGo(final @NotNull Project project) {
+        return Services.getInstance(project, Nodes.class).getAllNodes().stream()
                 .filter(AbstractNode::isOpenableInEditor)
                 .sorted(GlobalSearch::inTreeOrder)
                 .toList();
     }
 
-    private static @NotNull List<AbstractNode> nodesNamed(final @NotNull Project p, final @NotNull String wanted) {
-        return Services.getInstance(p, Nodes.class).getAllNodes().stream()
+    private static @NotNull List<AbstractNode> nodesNamed(final @NotNull Project project, final @NotNull String wanted) {
+        return Services.getInstance(project, Nodes.class).getAllNodes().stream()
                 .filter(node -> contains(node.getName(), wanted))
                 .sorted(GlobalSearch::byClosestName)
                 .toList();
     }
 
-    private static @NotNull List<TestCaseDto> testCasesMatching(final @NotNull Project p, final @NotNull String wanted) {
+    private static @NotNull List<TestCaseDto> testCasesMatching(final @NotNull Project project, final @NotNull String wanted) {
         if (tooShort(wanted)) return List.of();
 
-        return Services.getInstance(p, TestCases.class).getAllTestCases().stream()
+        return Services.getInstance(project, TestCases.class).getAllTestCases().stream()
                 .filter(testCase -> TestSetEditorAttributes.anyContains(testCase, wanted))
                 .toList();
     }
 
     // UC-INTERNAL-001, Rule-INTERNAL-098
-    private static @NotNull List<Hit> inTestRuns(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases) {
+    private static @NotNull List<Hit> inTestRuns(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases) {
         if (testCases.isEmpty()) return List.of();
 
-        final @NotNull TestRuns testRuns = Services.getInstance(p, TestRuns.class);
+        final @NotNull TestRuns testRuns = Services.getInstance(project, TestRuns.class);
         final @NotNull List<Hit> rows = new ArrayList<>();
 
-        for (final AbstractNode node : Services.getInstance(p, Nodes.class).getAllNodes()) {
+        for (final AbstractNode node : Services.getInstance(project, Nodes.class).getAllNodes()) {
             if (!(node instanceof TestRunNode)) continue;
 
             final @NotNull Optional<RunItems> recorded = testRuns.findRunItems(node.getPath());

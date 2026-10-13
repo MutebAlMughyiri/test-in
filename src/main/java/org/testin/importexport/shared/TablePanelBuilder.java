@@ -79,7 +79,7 @@ public class TablePanelBuilder {
     }
 
     // UC-SHARE-003
-    public @NotNull JBTable buildTable(final @NotNull DefaultTableModel model, final @NotNull Project p) {
+    public @NotNull JBTable buildTable(final @NotNull DefaultTableModel model, final @NotNull Project project) {
         final @NotNull JBTable table = new JBTable(model);
         // Rule-INTERNAL-095
         DialogStyle.asRow(table);
@@ -109,7 +109,7 @@ public class TablePanelBuilder {
             priorityCol.setCellEditor(new DefaultCellEditor(priorityBox));
 
             final @NotNull TableColumn groupCol = table.getColumn(TestSetEditorAttributes.GROUP.getName());
-            groupCol.setCellEditor(new GroupMultiSelectEditor(p));
+            groupCol.setCellEditor(new GroupMultiSelectEditor(project));
         } catch (final IllegalArgumentException ex) {
             TestinLogger.error(FailureText.of(ex));
         }

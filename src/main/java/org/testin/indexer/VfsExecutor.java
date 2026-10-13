@@ -40,7 +40,7 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Service(Service.Level.PROJECT)
 final class VfsExecutor {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
 
     private static @NotNull Optional<VirtualFile> find(final @NotNull Path path) {
         ThreadingAssertions.assertBackgroundThread();
@@ -49,7 +49,7 @@ final class VfsExecutor {
 
     // UC-INTERNAL-003, Rule-INTERNAL-019, Rule-INTERNAL-113
     private void claim(final @NotNull Path path) {
-        Services.getInstance(OwnWrites.class).record(p, path);
+        Services.getInstance(OwnWrites.class).record(project, path);
     }
 
     void executeVfsAction(final @NotNull Path path, final @NotNull VfsOperation operation, final @NotNull Runnable onFailure) {
@@ -64,12 +64,12 @@ final class VfsExecutor {
                         try {
                             operation.execute(file);
                         } catch (final Exception ex) {
-                            Services.getInstance(p, Notifier.class).error(p, errorTitle, Bundle.message("vfs.operation.failed", FailureText.of(ex)));
+                            Services.getInstance(project, Notifier.class).error(project, errorTitle, Bundle.message("vfs.operation.failed", FailureText.of(ex)));
                             onFailure.run();
                         }
                     }),
                     () -> {
-                        Services.getInstance(p, Notifier.class).error(p, errorTitle, Bundle.message("vfs.path.not.found", path));
+                        Services.getInstance(project, Notifier.class).error(project, errorTitle, Bundle.message("vfs.path.not.found", path));
                         onFailure.run();
                     }));
         });
@@ -85,7 +85,7 @@ final class VfsExecutor {
 
             ApplicationManager.getApplication().invokeLater(() -> {
                 if (sourceVf.isEmpty() || targetVf.isEmpty()) {
-                    Services.getInstance(p, Notifier.class).error(p, errorTitle, Bundle.message("vfs.source.or.target.not.found"));
+                    Services.getInstance(project, Notifier.class).error(project, errorTitle, Bundle.message("vfs.source.or.target.not.found"));
                     onFailure.run();
                     return;
                 }
@@ -95,7 +95,7 @@ final class VfsExecutor {
                         operation.execute(sourceVf.get(), targetVf.get());
                         onSuccess.run();
                     } catch (final Exception ex) {
-                        Services.getInstance(p, Notifier.class).error(p, errorTitle, Bundle.message("vfs.operation.failed", FailureText.of(ex)));
+                        Services.getInstance(project, Notifier.class).error(project, errorTitle, Bundle.message("vfs.operation.failed", FailureText.of(ex)));
                         onFailure.run();
                     }
                 });
@@ -107,7 +107,7 @@ final class VfsExecutor {
     void removeVf(final @NotNull Object requester, final @NotNull Path path, final @NotNull Consumer<@NotNull Boolean> onDeleted) {
         claim(path);
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
-            if (Trash.accepted(p, path)) {
+            if (Trash.accepted(project, path)) {
                 ApplicationManager.getApplication().invokeLater(() -> onDeleted.accept(true));
                 return;
             }
@@ -122,7 +122,7 @@ final class VfsExecutor {
                         if (vf.isPresent()) vf.get().delete(requester);
                     } catch (final IOException ex) {
                         deleted.set(false);
-                        Services.getInstance(p, Notifier.class).error(p, Bundle.message("vfs.delete.failed.title"), Bundle.message("vfs.delete.failed", FailureText.of(ex)));
+                        Services.getInstance(project, Notifier.class).error(project, Bundle.message("vfs.delete.failed.title"), Bundle.message("vfs.delete.failed", FailureText.of(ex)));
                     }
                 });
 

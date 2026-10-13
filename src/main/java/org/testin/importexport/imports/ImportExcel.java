@@ -50,18 +50,18 @@ public class ImportExcel {
     }
 
     // UC-SHARE-006
-    public @NotNull Map<String, List<TestCaseDto>> processImport(final @NotNull Project p, final @NotNull File file) {
-        final @NotNull Map<String, List<TestCaseDto>> result = new LinkedHashMap<>(parseFile(p, file));
+    public @NotNull Map<String, List<TestCaseDto>> processImport(final @NotNull Project project, final @NotNull File file) {
+        final @NotNull Map<String, List<TestCaseDto>> result = new LinkedHashMap<>(parseFile(project, file));
 
         TestinLogger.info("Import: parsed " + result.values().stream().mapToInt(List::size).sum()
                 + " test cases from " + result.size() + " sheet(s) of " + file.getName());
         return result;
     }
 
-    public @NotNull Map<String, List<TestCaseDto>> parseFile(final @NotNull Project p, final @NotNull File file) {
+    public @NotNull Map<String, List<TestCaseDto>> parseFile(final @NotNull Project project, final @NotNull File file) {
         final @NotNull Map<String, List<TestCaseDto>> result = new LinkedHashMap<>();
         try (Workbook workbook = WorkbookFactory.create(file, null, true)) {
-            parseWorkbook(workbook, p, result);
+            parseWorkbook(workbook, project, result);
 
         } catch (final IOException ex) {
             TestinLogger.error(FailureText.of(ex));
@@ -71,7 +71,7 @@ public class ImportExcel {
     }
 
     // UC-SHARE-005, Rule-SHARE-106
-    private void parseWorkbook(final @NotNull Workbook workbook, final @NotNull Project p, final @NotNull Map<String, List<TestCaseDto>> result) {
+    private void parseWorkbook(final @NotNull Workbook workbook, final @NotNull Project project, final @NotNull Map<String, List<TestCaseDto>> result) {
         final @NotNull DataFormatter dataFormatter = new DataFormatter();
         int refused = 0;
 
@@ -79,7 +79,7 @@ public class ImportExcel {
             if (workbook.isSheetHidden(i) || workbook.isSheetVeryHidden(i)) continue;
 
             final @NotNull Sheet sheet = workbook.getSheetAt(i);
-            final @NotNull ParsedTestCases parsed = parseSheet(p, sheet, dataFormatter);
+            final @NotNull ParsedTestCases parsed = parseSheet(project, sheet, dataFormatter);
             refused += parsed.refused();
 
             if (!parsed.testCases().isEmpty()) {
@@ -88,16 +88,16 @@ public class ImportExcel {
         }
 
         // Rule-SHARE-106
-        TestSetEditorAttributes.sayWhatWasRefused(p, refused);
+        TestSetEditorAttributes.sayWhatWasRefused(project, refused);
     }
 
-    private @NotNull ParsedTestCases parseSheet(final @NotNull Project p, final @NotNull Sheet sheet, final @NotNull DataFormatter dataFormatter) {
+    private @NotNull ParsedTestCases parseSheet(final @NotNull Project project, final @NotNull Sheet sheet, final @NotNull DataFormatter dataFormatter) {
         return Optional.ofNullable(sheet.getRow(0))
-                .map(headerRow -> readRows(p, sheet, headerRow, dataFormatter))
+                .map(headerRow -> readRows(project, sheet, headerRow, dataFormatter))
                 .orElse(ParsedTestCases.NOTHING);
     }
 
-    private @NotNull ParsedTestCases readRows(final @NotNull Project p, final @NotNull Sheet sheet, final @NotNull Row headerRow, final @NotNull DataFormatter dataFormatter) {
+    private @NotNull ParsedTestCases readRows(final @NotNull Project project, final @NotNull Sheet sheet, final @NotNull Row headerRow, final @NotNull DataFormatter dataFormatter) {
         final @NotNull Map<String, Integer> headerIndexMap = new HashMap<>();
         for (final Cell cell : headerRow) {
             final @NotNull String headerName = dataFormatter.formatCellValue(cell).trim();
@@ -115,7 +115,7 @@ public class ImportExcel {
         for (final Row row : sheet) {
             if (row.getRowNum() == headerRow.getRowNum() || isEmpty(row, dataFormatter)) continue;
 
-            final @NotNull ImportedRow imported = TestSetEditorAttributes.importRow(p, attr -> Optional.ofNullable(headerIndexMap.get(attr.getName().toLowerCase(Locale.ROOT)))
+            final @NotNull ImportedRow imported = TestSetEditorAttributes.importRow(project, attr -> Optional.ofNullable(headerIndexMap.get(attr.getName().toLowerCase(Locale.ROOT)))
                     .map(colIndex -> dataFormatter.formatCellValue(row.getCell(colIndex)).trim())
                     .orElse(""));
 

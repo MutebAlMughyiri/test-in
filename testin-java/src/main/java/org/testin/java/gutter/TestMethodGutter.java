@@ -82,17 +82,17 @@ public class TestMethodGutter extends RelatedItemLineMarkerProvider implements D
     }
 
     // UC-CODEGEN-007, Rule-CODEGEN-069
-    private static void refuseMissingTestCase(final @NotNull Project p, final @NotNull UUID uuid, final @NotNull String methodName) {
+    private static void refuseMissingTestCase(final @NotNull Project project, final @NotNull UUID uuid, final @NotNull String methodName) {
         TestinLogger.info("No test case behind " + methodName + ": " + uuid);
 
         ApplicationManager.getApplication().invokeLater(() ->
-                Services.getInstance(p, Notifier.class).softRefuse(p, Refused.NO_TEST_CASE_BEHIND_IT, methodName));
+                Services.getInstance(project, Notifier.class).softRefuse(project, Refused.NO_TEST_CASE_BEHIND_IT, methodName));
     }
 
     // UC-CODEGEN-007, Rule-CODEGEN-028, Rule-CODEGEN-029, Rule-CODEGEN-082
     @Override
     protected void collectNavigationMarkers(final @NotNull PsiElement element, final @NotNull Collection<? super RelatedItemLineMarkerInfo<?>> result) {
-        final @NotNull Project p = element.getProject();
+        final @NotNull Project project = element.getProject();
 
         if (!(element instanceof PsiJavaToken token) || !token.getTokenType().equals(JavaTokenType.STRING_LITERAL)) {
             return;
@@ -102,26 +102,26 @@ public class TestMethodGutter extends RelatedItemLineMarkerProvider implements D
                 .filter(TestMethodGutter::namesATestCase)
                 .map(literal -> StringUtil.unquoteString(literal.getText()).trim())
                 .flatMap(TestName::testCaseId)
-                .filter(_ -> CodeOn.isOn(p))
+                .filter(_ -> CodeOn.isOn(project))
                 .ifPresent(testCaseId -> result.add(new RelatedItemLineMarkerInfo<>(
                         element,
                         element.getTextRange(),
                         AllIcons.Nodes.Related,
                         _ -> Bundle.message("gutter.view.details"),
-                        (_, psiElement) -> openViewPanel(p, testCaseId, methodName(psiElement)),
+                        (_, psiElement) -> openViewPanel(project, testCaseId, methodName(psiElement)),
                         GutterIconRenderer.Alignment.RIGHT,
                         Collections::emptyList
                 )));
     }
 
     // UC-CODEGEN-007, Rule-CODEGEN-030, Rule-CODEGEN-069
-    private void openViewPanel(final @NotNull Project p, final @NotNull UUID uuid, final @NotNull String methodName) {
+    private void openViewPanel(final @NotNull Project project, final @NotNull UUID uuid, final @NotNull String methodName) {
         TestinLogger.info("Searching for UUID: " + uuid);
 
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             try {
-                final @NotNull ProjectIndexer indexer = Services.getInstance(p, ProjectIndexer.class);
-                final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
+                final @NotNull ProjectIndexer indexer = Services.getInstance(project, ProjectIndexer.class);
+                final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
                 indexer.awaitIndexing();
 
                 testCases.findTestCase(uuid).ifPresentOrElse(
@@ -129,14 +129,14 @@ public class TestMethodGutter extends RelatedItemLineMarkerProvider implements D
                             TestinLogger.info("Found in indexer: " + node.getDescription());
 
                             ApplicationManager.getApplication().invokeLater(() ->
-                                    ViewToolWindowFactory.showPanel(p, List.of(node), node.getParent().getPath2(), ViewPanel::focusDetailsTab));
+                                    ViewToolWindowFactory.showPanel(project, List.of(node), node.getParent().getPath2(), ViewPanel::focusDetailsTab));
                         },
-                        () -> refuseMissingTestCase(p, uuid, methodName));
+                        () -> refuseMissingTestCase(project, uuid, methodName));
 
             } catch (final Exception ex) {
                 TestinLogger.error("Could not open the test case behind this mark: " + FailureText.of(ex));
                 ApplicationManager.getApplication().invokeLater(() ->
-                        Services.getInstance(p, Notifier.class).error(p, Bundle.message("gutter.not.opened.title"), Bundle.message("gutter.not.opened.message", FailureText.of(ex)))
+                        Services.getInstance(project, Notifier.class).error(project, Bundle.message("gutter.not.opened.title"), Bundle.message("gutter.not.opened.message", FailureText.of(ex)))
                 );
             }
         });

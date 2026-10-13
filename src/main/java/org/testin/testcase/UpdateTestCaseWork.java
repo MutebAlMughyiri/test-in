@@ -34,9 +34,9 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-record UpdateTestCaseWork(@NotNull Project p, @NotNull TestinEditor editor, @NotNull TestCases testCases, @NotNull Notifier notifier) {
-    UpdateTestCaseWork(final @NotNull Project p, final @NotNull TestinEditor editor) {
-        this(p, editor, Services.getInstance(p, TestCases.class), Services.getInstance(p, Notifier.class));
+record UpdateTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor, @NotNull TestCases testCases, @NotNull Notifier notifier) {
+    UpdateTestCaseWork(final @NotNull Project project, final @NotNull TestinEditor editor) {
+        this(project, editor, Services.getInstance(project, TestCases.class), Services.getInstance(project, Notifier.class));
     }
 
     void overSelection(final @NotNull Consumer<UpdateTestCaseMenu> open) {
@@ -48,9 +48,9 @@ record UpdateTestCaseWork(@NotNull Project p, @NotNull TestinEditor editor, @Not
         TestinLogger.trace("update test cases: " + selectedTestCases.stream().map(TestCaseDto::getDescription).collect(Collectors.joining(", ")));
 
         final @NotNull List<UUID> testCaseIds = TestCaseSnapshot.idsOf(selectedTestCases);
-        final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(p, path, testCaseIds);
+        final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(project, path, testCaseIds);
 
-        open.accept(new UpdateTestCaseMenu(p, selectedTestCases, (updatedTestCases, field) -> ApplicationManager.getApplication().executeOnPooledThread(() ->
+        open.accept(new UpdateTestCaseMenu(project, selectedTestCases, (updatedTestCases, field) -> ApplicationManager.getApplication().executeOnPooledThread(() ->
                 save(path, testCaseIds, before, updatedTestCases, field))));
     }
 
@@ -62,16 +62,16 @@ record UpdateTestCaseWork(@NotNull Project p, @NotNull TestinEditor editor, @Not
 
         if (written == 0) return;
 
-        TestCaseSnapshot.record(p, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.update"), updatedTestCases), before, TestCaseSnapshot.of(p, path, testCaseIds));
+        TestCaseSnapshot.record(project, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.update"), updatedTestCases), before, TestCaseSnapshot.of(project, path, testCaseIds));
 
         ApplicationManager.getApplication().invokeLater(() -> {
             // Rule-EDITOR-PANEL-008
-            notifier.softShowCounted(p, field.getDone(), written);
+            notifier.softShowCounted(project, field.getDone(), written);
 
             editor.onToolBarFilterSelectionChanged();
 
             editor.refreshOrdered();
-            UpdateTestCaseMenu.applyAftermath(p, updatedTestCases, field.getGt());
+            UpdateTestCaseMenu.applyAftermath(project, updatedTestCases, field.getGt());
         });
     }
 }

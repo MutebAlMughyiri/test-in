@@ -51,7 +51,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class CardMouseListener extends MouseAdapter {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull JBList<TestCaseDto> list;
     private final @NotNull CollectionListModel<TestCaseDto> model;
     private final @NotNull AbstractEditorContextMenu cm;
@@ -60,14 +60,14 @@ public class CardMouseListener extends MouseAdapter {
     private final @NotNull Notifier notifier;
     private @NotNull String shownTip = "";
 
-    public CardMouseListener(final @NotNull Project p, final @NotNull TestinEditor editor, final @NotNull JBList<TestCaseDto> list, final @NotNull CollectionListModel<TestCaseDto> model, final @NotNull AbstractNode dir, final @NotNull AbstractEditorContextMenu cm) {
-        this.p = p;
+    public CardMouseListener(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull JBList<TestCaseDto> list, final @NotNull CollectionListModel<TestCaseDto> model, final @NotNull AbstractNode dir, final @NotNull AbstractEditorContextMenu cm) {
+        this.project = project;
         this.editor = editor;
         this.list = list;
         this.path = dir.getPath2();
         this.model = model;
         this.cm = cm;
-        this.notifier = Services.getInstance(p, Notifier.class);
+        this.notifier = Services.getInstance(project, Notifier.class);
     }
 
     // UC-EDITOR-PANEL-024, UC-EDITOR-PANEL-025
@@ -78,7 +78,7 @@ public class CardMouseListener extends MouseAdapter {
 
         if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
             if (isClickOnItem)
-                Optional.ofNullable(model.getElementAt(index)).ifPresent(selected -> ViewToolWindowFactory.showPanel(p, List.of(selected), path, ViewPanel::focusDetailsTab));
+                Optional.ofNullable(model.getElementAt(index)).ifPresent(selected -> ViewToolWindowFactory.showPanel(project, List.of(selected), path, ViewPanel::focusDetailsTab));
 
             return;
         }
@@ -114,7 +114,7 @@ public class CardMouseListener extends MouseAdapter {
             TestinLogger.trace(button.action().getTooltip() + ", tc: " + testCase.getDescription());
 
             if (!button.works()) {
-                notifier.softRefuse(p, button.hintText());
+                notifier.softRefuse(project, button.hintText());
                 e.consume();
                 return;
             }
@@ -193,8 +193,8 @@ public class CardMouseListener extends MouseAdapter {
         if (index == -1) return Optional.empty();
 
         final @NotNull TestCaseDto testCase = list.getModel().getElementAt(index);
-        final @NotNull List<Offered> buttons = TestCaseQuickAction.onCard(p, editor.getParent(), testCase);
-        final boolean executing = ExecutingNow.is(p, testCase.getId());
+        final @NotNull List<Offered> buttons = TestCaseQuickAction.onCard(project, editor.getParent(), testCase);
+        final boolean executing = ExecutingNow.is(project, testCase.getId());
         final int titleWidth = CardTitle.titleWidth(list, editor.cardTitle(testCase), CardTitle.slotCount(buttons, executing));
 
         return CardTitle.descriptionActionIcons(titleWidth, buttons, executing).at(xInCell, yInCell);

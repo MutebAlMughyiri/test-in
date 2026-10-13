@@ -73,7 +73,7 @@ public abstract class AbstractCard extends JBPanel<AbstractCard> {
     protected final @NotNull JBPanel<?> content = new JBPanel<>(new VerticalLayout(JBUI.scale(4)));
     protected final @NotNull BorderLayoutPanel wrapper = new BorderLayoutPanel();
     // Rule-CODEGEN-082
-    protected final @NotNull Project p;
+    protected final @NotNull Project project;
     protected final @NotNull AutomationState automationState;
     protected boolean isRowHovered;
     protected @NotNull String hoveredAction = "";
@@ -89,9 +89,9 @@ public abstract class AbstractCard extends JBPanel<AbstractCard> {
     private int titleColumnWidth = Integer.MAX_VALUE;
     private int titleWidth;
 
-    public AbstractCard(final @NotNull Project p) {
-        this.p = p;
-        this.automationState = Services.getInstance(p, AutomationState.class);
+    public AbstractCard(final @NotNull Project project) {
+        this.project = project;
+        this.automationState = Services.getInstance(project, AutomationState.class);
         setLayout(new BorderLayout());
         setOpaque(true);
 
@@ -136,8 +136,8 @@ public abstract class AbstractCard extends JBPanel<AbstractCard> {
 
     // UC-EDITOR-PANEL-047, Rule-EDITOR-PANEL-235, Rule-EDITOR-PANEL-291
     public void showTitleIcons(final @NotNull AbstractNode parent, final @NotNull TestCaseDto testCase) {
-        hoverButtons = TestCaseQuickAction.onCard(p, parent, testCase);
-        executing = ExecutingNow.is(p, testCase.getId());
+        hoverButtons = TestCaseQuickAction.onCard(project, parent, testCase);
+        executing = ExecutingNow.is(project, testCase.getId());
     }
 
     // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-003

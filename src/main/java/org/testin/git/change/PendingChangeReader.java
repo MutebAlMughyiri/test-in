@@ -46,14 +46,14 @@ import java.util.function.Function;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PendingChangeReader {
     // UC-SHARE-010
-    public static @NotNull List<PendingChange> getPendingChanges(final @NotNull Project p, final @NotNull Path repositoryRoot) {
+    public static @NotNull List<PendingChange> getPendingChanges(final @NotNull Project project, final @NotNull Path repositoryRoot) {
         final @NotNull Path root = repositoryRoot.toAbsolutePath().normalize();
-        final @NotNull GitRepositoryService repositories = new GitRepositoryService(p);
+        final @NotNull GitRepositoryService repositories = new GitRepositoryService(project);
 
-        final @NotNull TestCases testCases = Services.getInstance(p, TestCases.class);
+        final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
 
         return toDiffs(repositories.status(root), root,
-                Services.getInstance(p, JsonCodec.class),
+                Services.getInstance(project, JsonCodec.class),
                 paths -> repositories.contents(root, "HEAD", paths),
                 testCases::findTestCase);
     }

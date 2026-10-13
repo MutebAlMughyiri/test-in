@@ -33,9 +33,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-record ReCreateTestRunWork(@NotNull Project p, @NotNull TestRuns testRuns, @NotNull Nodes nodes, @NotNull BoundTestProject boundTestProject) {
-    ReCreateTestRunWork(final @NotNull Project p) {
-        this(p, Services.getInstance(p, TestRuns.class), Services.getInstance(p, Nodes.class), Services.getInstance(p, BoundTestProject.class));
+record ReCreateTestRunWork(@NotNull Project project, @NotNull TestRuns testRuns, @NotNull Nodes nodes, @NotNull BoundTestProject boundTestProject) {
+    ReCreateTestRunWork(final @NotNull Project project) {
+        this(project, Services.getInstance(project, TestRuns.class), Services.getInstance(project, Nodes.class), Services.getInstance(project, BoundTestProject.class));
     }
 
     void reCreateAt(final @NotNull TreePath path) {
@@ -54,7 +54,7 @@ record ReCreateTestRunWork(@NotNull Project p, @NotNull TestRuns testRuns, @NotN
                 .collect(Collectors.toSet());
 
         boundTestProject.get().ifPresentOrElse(
-                testProject -> new CreateTestRun(p).configureTestRun(testProject.getTestCasesFolder(), NextTestRunName.after(source.getName(), taken), parent, testCases, source.getMarker().getConfiguration()),
-                () -> TestinLogger.warn("Re-create test run: no test project is bound to " + p.getName()));
+                testProject -> new CreateTestRun(project).configureTestRun(testProject.getTestCasesFolder(), NextTestRunName.after(source.getName(), taken), parent, testCases, source.getMarker().getConfiguration()),
+                () -> TestinLogger.warn("Re-create test run: no test project is bound to " + project.getName()));
     }
 }

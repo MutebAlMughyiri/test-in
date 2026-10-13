@@ -78,35 +78,35 @@ public class UpdateTestMethodOrder extends BaseTestMethodChange implements CodeC
     }
 
     @Override
-    public void execute(final @NotNull Project p, final @NotNull TestCaseDto testCase) {
-        executeAll(p, List.of(testCase));
+    public void execute(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
+        executeAll(project, List.of(testCase));
     }
 
     // UC-CODEGEN-011, Rule-CODEGEN-042, Rule-CODEGEN-067
     @Override
-    public void executeAll(final @NotNull Project p, final @NotNull List<? extends TestCaseDto> testCases) {
+    public void executeAll(final @NotNull Project project, final @NotNull List<? extends TestCaseDto> testCases) {
         final @NotNull Map<Path, List<TestCaseDto>> sets = new LinkedHashMap<>();
 
         for (final TestCaseDto testCase : testCases) {
-            sets.computeIfAbsent(testCase.getParent().getPath(), _ -> ExecutionPosition.setOf(p, testCase));
+            sets.computeIfAbsent(testCase.getParent().getPath(), _ -> ExecutionPosition.setOf(project, testCase));
         }
         if (sets.isEmpty()) return;
 
         final @NotNull List<List<TestCaseDto>> ordered = new ArrayList<>(sets.values());
 
         final @NotNull Runnable inCommand = () ->
-                WriteCommandAction.runWriteCommandAction(p, GenType.UPDATE_TEST_CASE_ORDER.description(), null,
-                        () -> ordered.forEach(inSet -> arrange(p, inSet)));
+                WriteCommandAction.runWriteCommandAction(project, GenType.UPDATE_TEST_CASE_ORDER.description(), null,
+                        () -> ordered.forEach(inSet -> arrange(project, inSet)));
 
         if (CommandProcessor.getInstance().getCurrentCommand() != null) inCommand.run();
         else ApplicationManager.getApplication().invokeLater(inCommand);
     }
 
     // UC-CODEGEN-011, Rule-CODEGEN-043, Rule-CODEGEN-067, Rule-CODEGEN-044
-    private void arrange(final @NotNull Project p, final @NotNull List<TestCaseDto> inSet) {
+    private void arrange(final @NotNull Project project, final @NotNull List<TestCaseDto> inSet) {
         if (inSet.isEmpty()) return;
 
-        final @NotNull Optional<PsiClass> target = classOf(p, inSet.getFirst());
+        final @NotNull Optional<PsiClass> target = classOf(project, inSet.getFirst());
         if (target.isEmpty()) return;
 
         final @NotNull PsiClass pc = target.get();
@@ -123,11 +123,11 @@ public class UpdateTestMethodOrder extends BaseTestMethodChange implements CodeC
             final @Nullable PsiMethod pm = methods.get(testCase.getId().toString());
             if (pm == null) continue;
 
-            updateTestAnnotationAttribute(p, pm, "priority", String.valueOf(position));
+            updateTestAnnotationAttribute(project, pm, "priority", String.valueOf(position));
             after = Optional.of(place(pc, pm, after));
             written++;
         }
 
-        if (written > 0) reformat(p, pc);
+        if (written > 0) reformat(project, pc);
     }
 }

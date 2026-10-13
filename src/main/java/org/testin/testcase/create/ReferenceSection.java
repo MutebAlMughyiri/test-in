@@ -26,8 +26,8 @@ import org.testin.util.EditorFields;
 // Rule-EDITOR-PANEL-194
 public class ReferenceSection extends AbstractOneLineSection {
     // Rule-EDITOR-PANEL-271
-    public ReferenceSection(final @NotNull Project p) {
-        super(EditorFields.createField(p), CreateTestCaseFields.REFERENCE, Shortcuts.CreateTestCaseReference);
+    public ReferenceSection(final @NotNull Project project) {
+        super(EditorFields.createField(project), CreateTestCaseFields.REFERENCE, Shortcuts.CreateTestCaseReference);
     }
 
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-032

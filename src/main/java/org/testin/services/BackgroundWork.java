@@ -71,28 +71,28 @@ public final class BackgroundWork {
         ProgressManager.getInstance().run(task);
     }
 
-    public static boolean synchronously(final @NotNull Project p, final @NotNull String title, final boolean cancellable, final @NotNull Runnable work) {
-        if (stoppedBefore(p, title, cancellable)) return false;
+    public static boolean synchronously(final @NotNull Project project, final @NotNull String title, final boolean cancellable, final @NotNull Runnable work) {
+        if (stoppedBefore(project, title, cancellable)) return false;
 
-        return ProgressManager.getInstance().runProcessWithProgressSynchronously(work, title, cancellable, p);
+        return ProgressManager.getInstance().runProcessWithProgressSynchronously(work, title, cancellable, project);
     }
 
-    public static <T> @NotNull T synchronously(final @NotNull Project p, final @NotNull String title, final boolean cancellable, final @NotNull Supplier<T> work, final @NotNull T whenStopped) {
-        return computed(p, title, cancellable, work, whenStopped);
+    public static <T> @NotNull T synchronously(final @NotNull Project project, final @NotNull String title, final boolean cancellable, final @NotNull Supplier<T> work, final @NotNull T whenStopped) {
+        return computed(project, title, cancellable, work, whenStopped);
     }
 
     public static <T> @NotNull T synchronously(final @NotNull String title, final boolean cancellable, final @NotNull Supplier<T> work, final @NotNull T whenStopped) {
         return computed(null, title, cancellable, work, whenStopped);
     }
 
-    private static <T> @NotNull T computed(final @Nullable Project p, final @NotNull String title, final boolean cancellable, final @NotNull Supplier<T> work, final @NotNull T whenStopped) {
-        if (stoppedBefore(p, title, cancellable)) return whenStopped;
+    private static <T> @NotNull T computed(final @Nullable Project project, final @NotNull String title, final boolean cancellable, final @NotNull Supplier<T> work, final @NotNull T whenStopped) {
+        if (stoppedBefore(project, title, cancellable)) return whenStopped;
 
-        return ProgressManager.getInstance().runProcessWithProgressSynchronously(work::get, title, cancellable, p);
+        return ProgressManager.getInstance().runProcessWithProgressSynchronously(work::get, title, cancellable, project);
     }
 
-    private static boolean stoppedBefore(final @Nullable Project p, final @NotNull String title, final boolean cancellable) {
-        return stopped(new Task.Modal(p, title, cancellable) {
+    private static boolean stoppedBefore(final @Nullable Project project, final @NotNull String title, final boolean cancellable) {
+        return stopped(new Task.Modal(project, title, cancellable) {
             @Override
             public void run(final @NotNull ProgressIndicator indicator) {
             }
@@ -110,22 +110,22 @@ public final class BackgroundWork {
         Disposer.register(owner, () -> WATCHERS.remove(watcher));
     }
 
-    public static void run(final @NotNull Project p, final @NotNull String title, final @NotNull String whatFailed, final @NotNull Consumer<@NotNull ProgressIndicator> work) {
+    public static void run(final @NotNull Project project, final @NotNull String title, final @NotNull String whatFailed, final @NotNull Consumer<@NotNull ProgressIndicator> work) {
         // Rule-SHARE-037
-        run(p, title, whatFailed, true, work, EmptyRunnable.getInstance(), EmptyRunnable.getInstance());
+        run(project, title, whatFailed, true, work, EmptyRunnable.getInstance(), EmptyRunnable.getInstance());
     }
 
-    public static void run(final @NotNull Project p, final @NotNull String title, final @NotNull String whatFailed, final boolean cancellable, final @NotNull Consumer<@NotNull ProgressIndicator> work, final @NotNull Runnable onFinished) {
-        run(p, title, whatFailed, cancellable, work, EmptyRunnable.getInstance(), onFinished);
+    public static void run(final @NotNull Project project, final @NotNull String title, final @NotNull String whatFailed, final boolean cancellable, final @NotNull Consumer<@NotNull ProgressIndicator> work, final @NotNull Runnable onFinished) {
+        run(project, title, whatFailed, cancellable, work, EmptyRunnable.getInstance(), onFinished);
     }
 
-    public static <T> void run(final @NotNull Project p, final @NotNull String title, final @NotNull String whatFailed, final boolean cancellable, final @NotNull Function<@NotNull ProgressIndicator, @NotNull T> work, final @NotNull Consumer<@NotNull T> onSuccess, final @NotNull Runnable onFinished) {
+    public static <T> void run(final @NotNull Project project, final @NotNull String title, final @NotNull String whatFailed, final boolean cancellable, final @NotNull Function<@NotNull ProgressIndicator, @NotNull T> work, final @NotNull Consumer<@NotNull T> onSuccess, final @NotNull Runnable onFinished) {
         final @NotNull AtomicReference<Optional<T>> answer = new AtomicReference<>(Optional.empty());
-        run(p, title, whatFailed, cancellable, indicator -> answer.set(Optional.of(work.apply(indicator))), () -> Objects.requireNonNull(answer.get()).ifPresent(onSuccess), onFinished);
+        run(project, title, whatFailed, cancellable, indicator -> answer.set(Optional.of(work.apply(indicator))), () -> Objects.requireNonNull(answer.get()).ifPresent(onSuccess), onFinished);
     }
 
-    private static void run(final @NotNull Project p, final @NotNull String title, final @NotNull String whatFailed, final boolean cancellable, final @NotNull Consumer<@NotNull ProgressIndicator> work, final @NotNull Runnable onSuccess, final @NotNull Runnable onFinished) {
-        start(new Task.Backgroundable(p, title, cancellable) {
+    private static void run(final @NotNull Project project, final @NotNull String title, final @NotNull String whatFailed, final boolean cancellable, final @NotNull Consumer<@NotNull ProgressIndicator> work, final @NotNull Runnable onSuccess, final @NotNull Runnable onFinished) {
+        start(new Task.Backgroundable(project, title, cancellable) {
             private volatile boolean failed;
 
             @Override
@@ -140,7 +140,7 @@ public final class BackgroundWork {
 
                     final @NotNull String reason = FailureText.of(ex);
                     TestinLogger.error(whatFailed + ": " + reason);
-                    Services.getInstance(p, Notifier.class).error(p, whatFailed, reason);
+                    Services.getInstance(project, Notifier.class).error(project, whatFailed, reason);
                 }
             }
 

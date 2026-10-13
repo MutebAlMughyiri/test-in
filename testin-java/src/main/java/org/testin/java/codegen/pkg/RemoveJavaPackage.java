@@ -26,10 +26,10 @@ import org.testin.model.node.AbstractNode;
 public class RemoveJavaPackage implements CodeChange<AbstractNode> {
     // UC-CODEGEN-018, Rule-CODEGEN-059
     @Override
-    public void execute(final @NotNull Project p, final @NotNull AbstractNode dir) {
+    public void execute(final @NotNull Project project, final @NotNull AbstractNode dir) {
         final @NotNull String packagePath = String.join("/", Fqcn.ofPackage(dir));
 
-        JavaSourceRoot.writeInRoot(p, testSourceRoot ->
+        JavaSourceRoot.writeInRoot(project, testSourceRoot ->
                 JavaSourceRoot.deleteUnder(testSourceRoot, packagePath, this));
     }
 }

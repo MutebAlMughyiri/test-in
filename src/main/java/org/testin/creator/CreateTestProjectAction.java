@@ -37,10 +37,10 @@ import org.testin.util.Bundle;
 
 public class CreateTestProjectAction extends AbstractBoundProjectAction {
     private final @NotNull TreePanel treePanel;
-    private final @NotNull TestinRoot testinRoot = Services.getInstance(p, TestinRoot.class);
+    private final @NotNull TestinRoot testinRoot = Services.getInstance(project, TestinRoot.class);
 
-    public CreateTestProjectAction(final @NotNull Project p, final @NotNull TreePanel treePanel) {
-        super(p, Bundle.message("project.new.text"), Bundle.message("project.new.description"), AllIcons.General.Add);
+    public CreateTestProjectAction(final @NotNull Project project, final @NotNull TreePanel treePanel) {
+        super(project, Bundle.message("project.new.text"), Bundle.message("project.new.description"), AllIcons.General.Add);
         this.treePanel = treePanel;
     }
 
@@ -52,19 +52,19 @@ public class CreateTestProjectAction extends AbstractBoundProjectAction {
 
     // UC-TREE-PANEL-002, UC-TREE-PANEL-003, Rule-TREE-PANEL-107
     public void execute() {
-        new CreateTestProjectDialog(p, name -> {
+        new CreateTestProjectDialog(project, name -> {
             if (!GitRemotes.isRepositoryUrl(name)) {
-                new CreateTestProject(p, treePanel, name).execute();
+                new CreateTestProject(project, treePanel, name).execute();
                 return;
             }
 
-            if (OptionalPlugin.GIT.isMissingAndWarned(p)) return;
+            if (OptionalPlugin.GIT.isMissingAndWarned(project)) return;
 
             // Rule-TREE-PANEL-107
-            final @NotNull String projectName = CloneTestProject.nameFor(p, name);
-            if (TestProjectFolder.free(p, projectName).isEmpty()) return;
+            final @NotNull String projectName = CloneTestProject.nameFor(project, name);
+            if (TestProjectFolder.free(project, projectName).isEmpty()) return;
 
-            new CloneTestProject(p, name, projectName, treePanel).execute();
+            new CloneTestProject(project, name, projectName, treePanel).execute();
 
         }).show();
     }

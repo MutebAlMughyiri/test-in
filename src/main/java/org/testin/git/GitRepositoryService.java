@@ -39,7 +39,7 @@ public final class GitRepositoryService {
 
     static final @NotNull String REMOTE_HEAD_BRANCH = "--format=%(symref:lstrip=3)";
 
-    private final @NotNull Project p;
+    private final @NotNull Project project;
 
     private static @NotNull List<String> branchNames(final @NotNull String refNames) {
         return refNames.lines().filter(name -> !name.isBlank()).distinct().sorted().toList();
@@ -47,24 +47,24 @@ public final class GitRepositoryService {
 
     // UC-SHARE-009
     public void initialize(final @NotNull Path repositoryPath) {
-        GitCommandRunner.execute(p, repositoryPath, GitCommand.INIT);
+        GitCommandRunner.execute(project, repositoryPath, GitCommand.INIT);
     }
 
     // UC-SHARE-013
     public void configureRemote(final @NotNull Path repositoryPath, final @NotNull String remoteName, final @NotNull String remoteUrl) {
-        GitCommandRunner.execute(p, repositoryPath, GitCommand.REMOTE, "add", remoteName, remoteUrl);
+        GitCommandRunner.execute(project, repositoryPath, GitCommand.REMOTE, "add", remoteName, remoteUrl);
     }
 
     // UC-TREE-PANEL-003, Rule-SHARE-062
     public void changeRemoteUrl(final @NotNull Path repositoryPath, final @NotNull String remoteName, final @NotNull String remoteUrl) {
-        GitCommandRunner.execute(p, repositoryPath, GitCommand.REMOTE, "set-url", remoteName, remoteUrl);
+        GitCommandRunner.execute(project, repositoryPath, GitCommand.REMOTE, "set-url", remoteName, remoteUrl);
     }
 
     // UC-SHARE-008, Rule-SHARE-041
     public void configureIdentity(final @NotNull Path repositoryPath, final @NotNull String name, final @NotNull String email, final boolean global) {
         final @NotNull String scope = global ? "--global" : "--local";
-        GitCommandRunner.execute(p, repositoryPath, GitCommand.CONFIG, scope, "user.name", name);
-        GitCommandRunner.execute(p, repositoryPath, GitCommand.CONFIG, scope, "user.email", email);
+        GitCommandRunner.execute(project, repositoryPath, GitCommand.CONFIG, scope, "user.name", name);
+        GitCommandRunner.execute(project, repositoryPath, GitCommand.CONFIG, scope, "user.email", email);
     }
 
     // UC-SHARE-008, Rule-SHARE-039
@@ -78,17 +78,17 @@ public final class GitRepositoryService {
 
     // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-096
     public @NotNull String log(final @NotNull Path path, final @NotNull String... arguments) {
-        return GitCommandRunner.execute(p, path, GitCommand.LOG, arguments);
+        return GitCommandRunner.execute(project, path, GitCommand.LOG, arguments);
     }
 
     // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-096
     public @NotNull Map<String, String> objects(final @NotNull Path path, final @NotNull List<String> objectNames) {
-        return GitCommandRunner.readObjects(p, path, objectNames);
+        return GitCommandRunner.readObjects(project, path, objectNames);
     }
 
     // Rule-EDITOR-PANEL-239
     public @NotNull List<String> files(final @NotNull Path path, final @NotNull String revision, final @NotNull String folder) {
-        return GitStatusLines.records(GitCommandRunner.execute(p, path, GitCommand.LS_TREE, "-r", "-z", "--name-only", revision, "--", folder));
+        return GitStatusLines.records(GitCommandRunner.execute(project, path, GitCommand.LS_TREE, "-r", "-z", "--name-only", revision, "--", folder));
     }
 
     // Rule-TREE-PANEL-104
@@ -134,12 +134,12 @@ public final class GitRepositoryService {
         final @NotNull String remoteName = getRemoteName(path);
         if (remoteName.isEmpty()) return;
 
-        GitCommandRunner.executeRemote(p, path, getRemoteUrl(path, remoteName), GitCommand.FETCH, "--all", "--prune");
+        GitCommandRunner.executeRemote(project, path, getRemoteUrl(path, remoteName), GitCommand.FETCH, "--all", "--prune");
     }
 
     // UC-TREE-PANEL-026
     public @NotNull List<String> getAvailableBranches(final @NotNull Path path) {
-        return branchNames(GitCommandRunner.execute(p, path, GitCommand.FOR_EACH_REF, BRANCH_NAMES, "refs/heads", "refs/remotes"));
+        return branchNames(GitCommandRunner.execute(project, path, GitCommand.FOR_EACH_REF, BRANCH_NAMES, "refs/heads", "refs/remotes"));
     }
 
     public @NotNull String getRemoteUrl(final @NotNull Path path, final @NotNull String remoteName) {
@@ -186,7 +186,7 @@ public final class GitRepositoryService {
         if (relativePaths.isEmpty()) return Map.of();
 
         try {
-            return GitCommandRunner.readObjects(p, path, revision, relativePaths);
+            return GitCommandRunner.readObjects(project, path, revision, relativePaths);
         } catch (final GitFailed ex) {
             TestinLogger.warn("Could not read " + relativePaths.size() + " files at " + revision + " in " + path + ": " + FailureText.of(ex));
             return Map.of();
@@ -240,7 +240,7 @@ public final class GitRepositoryService {
 
     private @NotNull Optional<String> run(final @NotNull Path path, final @NotNull GitCommand command, final @NotNull String... parameters) {
         try {
-            return Optional.of(GitCommandRunner.execute(p, path, command, parameters));
+            return Optional.of(GitCommandRunner.execute(project, path, command, parameters));
         } catch (final GitFailed ex) {
             TestinLogger.debug("git " + command.name() + " " + GitSafeText.withoutCredentials(String.join(" ", parameters))
                     + " failed in " + path + ": " + FailureText.of(ex));

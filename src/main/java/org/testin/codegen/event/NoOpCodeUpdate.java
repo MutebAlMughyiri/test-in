@@ -26,12 +26,12 @@ import java.util.List;
 public record NoOpCodeUpdate(@NotNull String fieldName) implements CodeUpdate {
     // Rule-CODEGEN-003
     @Override
-    public <T> void execute(final @NotNull GenType<T> type, final @NotNull Project p, final @NotNull T payload) {
+    public <T> void execute(final @NotNull GenType<T> type, final @NotNull Project project, final @NotNull T payload) {
         TestinLogger.info("Update " + fieldName + ": data-only field, no Java code change");
     }
 
     @Override
-    public <T> void executeAll(final @NotNull GenType<T> type, final @NotNull Project p, final @NotNull List<? extends T> payloads, final @NotNull String undoGroup) {
+    public <T> void executeAll(final @NotNull GenType<T> type, final @NotNull Project project, final @NotNull List<? extends T> payloads, final @NotNull String undoGroup) {
         TestinLogger.info("Update " + fieldName + " on " + payloads.size() + ": data-only field, no Java code change");
     }
 }

@@ -24,8 +24,8 @@ import org.testin.services.Services;
 public final class SaveOnProjectClose implements ProjectCloseListener {
     // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-015
     @Override
-    public void projectClosingBeforeSave(final @NotNull Project p) {
-        Services.getInstance(p, LastOpenEditors.class).remember();
-        Services.getInstance(p, TestinEditors.class).closeAll();
+    public void projectClosingBeforeSave(final @NotNull Project project) {
+        Services.getInstance(project, LastOpenEditors.class).remember();
+        Services.getInstance(project, TestinEditors.class).closeAll();
     }
 }

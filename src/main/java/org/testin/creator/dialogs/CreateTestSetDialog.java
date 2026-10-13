@@ -35,8 +35,8 @@ public final class CreateTestSetDialog extends AbstractFrameworkDialog {
     private final @NotNull BiConsumer<@NotNull String, @NotNull NodeType> onCreate;
 
     // UC-TREE-PANEL-007, UC-TREE-PANEL-008, Rule-TREE-PANEL-024
-    public CreateTestSetDialog(final @NotNull Project p, final @NotNull BiConsumer<@NotNull String, @NotNull NodeType> onCreate) {
-        super(p);
+    public CreateTestSetDialog(final @NotNull Project project, final @NotNull BiConsumer<@NotNull String, @NotNull NodeType> onCreate) {
+        super(project);
         this.onCreate = onCreate;
 
         title = Bundle.message("dialog.create.test.title");

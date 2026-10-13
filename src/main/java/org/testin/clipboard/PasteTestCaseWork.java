@@ -51,13 +51,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-record PasteTestCaseWork(@NotNull Project p, @NotNull TestinEditor editor, @NotNull CutState cutState, @NotNull TestCases testCases, @NotNull Notifier notifier, @NotNull AppSettingsState settings) {
-    PasteTestCaseWork(final @NotNull Project p, final @NotNull TestinEditor editor) {
-        this(p, editor, Services.getInstance(p, CutState.class), Services.getInstance(p, TestCases.class), Services.getInstance(p, Notifier.class), Services.getInstance(p, AppSettingsState.class));
+record PasteTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor, @NotNull CutState cutState, @NotNull TestCases testCases, @NotNull Notifier notifier, @NotNull AppSettingsState settings) {
+    PasteTestCaseWork(final @NotNull Project project, final @NotNull TestinEditor editor) {
+        this(project, editor, Services.getInstance(project, CutState.class), Services.getInstance(project, TestCases.class), Services.getInstance(project, Notifier.class), Services.getInstance(project, AppSettingsState.class));
     }
 
     void paste() {
-        final @NotNull List<TestCaseDto> pastedTestCases = CopiedTestCases.onTheClipboard(p);
+        final @NotNull List<TestCaseDto> pastedTestCases = CopiedTestCases.onTheClipboard(project);
         if (pastedTestCases.isEmpty()) return;
 
         ApplicationManager.getApplication().invokeLater(() -> {
@@ -77,7 +77,7 @@ record PasteTestCaseWork(@NotNull Project p, @NotNull TestinEditor editor, @NotN
                 .map(sourceUI -> sourceUI.getAllTestCases().stream().filter(testCase -> cutState.isPending(testCase.getId())).toList())
                 .orElseGet(List::of);
         final @NotNull Optional<TestCaseSnapshot> cutFrom = cutState.source()
-                .map(sourceUI -> TestCaseSnapshot.of(p, sourceUI.getParent().getPath(), TestCaseSnapshot.idsOf(cutTestCases)));
+                .map(sourceUI -> TestCaseSnapshot.of(project, sourceUI.getParent().getPath(), TestCaseSnapshot.idsOf(cutTestCases)));
 
         // Rule-EDITOR-PANEL-083
         final @NotNull List<String> ranks = ranksUnderTheSelection(destUI, isCut ? Set.copyOf(TestCaseSnapshot.idsOf(pastedTestCases)) : Set.of(), pastedTestCases.size());
@@ -91,7 +91,7 @@ record PasteTestCaseWork(@NotNull Project p, @NotNull TestinEditor editor, @NotN
         final @NotNull List<UUID> pastedIds = TestCaseSnapshot.idsOf(pastedHere);
         final @NotNull List<TestCaseSnapshot> before = new ArrayList<>();
         cutFrom.ifPresent(before::add);
-        before.add(TestCaseSnapshot.of(p, destPath, pastedIds));
+        before.add(TestCaseSnapshot.of(project, destPath, pastedIds));
 
         // Rule-EDITOR-PANEL-082, Rule-INTERNAL-035
         cutState.source().ifPresent(sourceUI -> moveCut(sourceUI, destUI, cutTestCases, pastedHere));
@@ -102,18 +102,18 @@ record PasteTestCaseWork(@NotNull Project p, @NotNull TestinEditor editor, @NotN
 
         destUI.reorderAndPersist(() -> {
             final @NotNull List<TestCaseSnapshot> after = new ArrayList<>();
-            cutFrom.ifPresent(taken -> after.add(TestCaseSnapshot.of(p, taken.testSetPath(), taken.ids())));
-            after.add(TestCaseSnapshot.of(p, destPath, pastedIds));
+            cutFrom.ifPresent(taken -> after.add(TestCaseSnapshot.of(project, taken.testSetPath(), taken.ids())));
+            after.add(TestCaseSnapshot.of(project, destPath, pastedIds));
 
-            TestCaseSnapshot.record(p, UndoScope.of(destPath), TestCaseSnapshot.describe(isCut ? Bundle.message("snapshot.verb.move") : Bundle.message("snapshot.verb.paste"), pastedHere), before, after);
+            TestCaseSnapshot.record(project, UndoScope.of(destPath), TestCaseSnapshot.describe(isCut ? Bundle.message("snapshot.verb.move") : Bundle.message("snapshot.verb.paste"), pastedHere), before, after);
 
             // UC-EDITOR-PANEL-017, UC-CODEGEN-002, Rule-CODEGEN-078
-            if (!isCut) GenType.COPY_TEST_CASE.executeAll(p, copied);
+            if (!isCut) GenType.COPY_TEST_CASE.executeAll(project, copied);
 
-            else cutFromSet.ifPresent(source -> GenType.MOVE_TEST_CASE.executeAll(p,
+            else cutFromSet.ifPresent(source -> GenType.MOVE_TEST_CASE.executeAll(project,
                     pastedHere.stream().map(moved -> new MovedTestCase(moved, source)).toList()));
 
-            notifier.softShowCounted(p, Done.PASTED, pasted);
+            notifier.softShowCounted(project, Done.PASTED, pasted);
         });
 
         if (isCut) cutState.clear();
@@ -161,7 +161,7 @@ record PasteTestCaseWork(@NotNull Project p, @NotNull TestinEditor editor, @NotN
     }
 
     boolean holdsTestCases(final @NotNull Transferable contents) {
-        return !CopiedTestCases.in(p, contents).isEmpty();
+        return !CopiedTestCases.in(project, contents).isEmpty();
     }
 
     // UC-EDITOR-PANEL-017, Rule-EDITOR-PANEL-083

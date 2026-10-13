@@ -36,13 +36,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public final class GitCommitAndPush {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
 
     private final @NotNull GitRepositoryService repositories;
 
-    public GitCommitAndPush(final @NotNull Project p) {
-        this.p = p;
-        this.repositories = new GitRepositoryService(p);
+    public GitCommitAndPush(final @NotNull Project project) {
+        this.project = project;
+        this.repositories = new GitRepositoryService(project);
     }
 
     static @NotNull Set<String> markersAlongside(final @NotNull Path repositoryPath, final @NotNull Set<String> testCasePaths) {
@@ -76,7 +76,7 @@ public final class GitCommitAndPush {
         return changes.stream()
                 .map(PendingChange::relativeFilePath)
                 .map(path -> path.toString().replace('\\', '/'))
-                        .collect(Collectors.toCollection(LinkedHashSet::new));
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     // UC-SHARE-012, Rule-SHARE-112
@@ -119,20 +119,20 @@ public final class GitCommitAndPush {
     public void commit(final @NotNull Path repositoryPath, final @NotNull String message, final @NotNull Set<String> paths) {
         final @NotNull Set<String> stageable = stageable(repositoryPath, paths);
         if (!stageable.isEmpty()) {
-            GitCommandRunner.executeOverPaths(p, repositoryPath, stageable, GitCommand.ADD);
+            GitCommandRunner.executeOverPaths(project, repositoryPath, stageable, GitCommand.ADD);
         }
 
-        GitCommandRunner.executeOverPaths(p, repositoryPath, paths, GitCommand.COMMIT, "--only", "-m", message);
+        GitCommandRunner.executeOverPaths(project, repositoryPath, paths, GitCommand.COMMIT, "--only", "-m", message);
     }
 
     // Rule-SHARE-130
     public @NotNull String headHash(final @NotNull Path repositoryPath) {
-        return GitCommandRunner.execute(p, repositoryPath, GitCommand.REV_PARSE, "HEAD").trim();
+        return GitCommandRunner.execute(project, repositoryPath, GitCommand.REV_PARSE, "HEAD").trim();
     }
 
     public @NotNull String shortHeadHash(final @NotNull Path repositoryPath) {
         try {
-            return GitCommandRunner.execute(p, repositoryPath, GitCommand.REV_PARSE, "--short", "HEAD").trim();
+            return GitCommandRunner.execute(project, repositoryPath, GitCommand.REV_PARSE, "--short", "HEAD").trim();
         } catch (final GitFailed ex) {
             TestinLogger.warn("Could not read the commit: " + FailureText.of(ex));
             return "";
@@ -157,14 +157,14 @@ public final class GitCommitAndPush {
 
     // UC-SHARE-016, Rule-SHARE-071
     private void pull(final @NotNull Path repositoryPath, final @NotNull String remoteUrl, final @NotNull String remote, final @NotNull String branch) {
-        GitCommandRunner.executeRemote(p, repositoryPath, remoteUrl,
+        GitCommandRunner.executeRemote(project, repositoryPath, remoteUrl,
                 GitCommand.PULL, "--rebase", "--autostash", remote, branch);
     }
 
     // UC-SHARE-016, Rule-SHARE-125
     private boolean remoteHasBranch(final @NotNull Path repositoryPath, final @NotNull String remote, final @NotNull String remoteUrl, final @NotNull String branch) {
         try {
-            return !GitCommandRunner.executeRemote(p, repositoryPath, remoteUrl, GitCommand.LS_REMOTE, "--heads", remote, branch).isBlank();
+            return !GitCommandRunner.executeRemote(project, repositoryPath, remoteUrl, GitCommand.LS_REMOTE, "--heads", remote, branch).isBlank();
         } catch (final GitFailed ex) {
             throw new GitFailed(Bundle.message("git.error.remote.unreachable", remote, branch, FailureText.of(ex)), ex);
         }
@@ -179,7 +179,7 @@ public final class GitCommitAndPush {
     public void push(final @NotNull Path repositoryPath, final @NotNull String remote, final @NotNull String remoteUrl, final @NotNull String branch) {
         if (remote.isBlank()) throw new IllegalStateException(Bundle.message("git.error.no.remote"));
 
-        GitCommandRunner.executeRemote(p, repositoryPath, remoteUrl, GitCommand.PUSH, "-u", remote, branch);
+        GitCommandRunner.executeRemote(project, repositoryPath, remoteUrl, GitCommand.PUSH, "-u", remote, branch);
         TestinLogger.info("Git push completed for " + repositoryPath);
     }
 }

@@ -31,10 +31,10 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RepositoryRefresh {
     // UC-SHARE-016, Rule-SHARE-073
-    public static void after(final @NotNull Project p, final @NotNull Path repoPath) {
+    public static void after(final @NotNull Project project, final @NotNull Path repoPath) {
         Optional.ofNullable(LocalFileSystem.getInstance().refreshAndFindFileByIoFile(repoPath.toFile()))
                 .ifPresent(GitUtil::refreshVfsInRoot);
 
-        Services.getInstance(p, ProjectIndexer.class).scanSingleProject(repoPath);
+        Services.getInstance(project, ProjectIndexer.class).scanSingleProject(repoPath);
     }
 }

@@ -30,12 +30,12 @@ import org.testin.report.GenerateReportAction;
 import org.testin.testrun.SetRunItemStatusGroup;
 
 public class TestRunEditorContextMenu extends AbstractEditorContextMenu {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull TestinEditor ui;
 
-    public TestRunEditorContextMenu(final @NotNull Project p, final @NotNull TestinEditor ui, final @NotNull AbstractNode dir, final @NotNull JBList<TestCaseDto> list) {
+    public TestRunEditorContextMenu(final @NotNull Project project, final @NotNull TestinEditor ui, final @NotNull AbstractNode dir, final @NotNull JBList<TestCaseDto> list) {
         super();
-        this.p = p;
+        this.project = project;
         this.ui = ui;
 
         add(Declared.forMenu("Testin.SetTestCaseStatus"));
@@ -46,7 +46,7 @@ public class TestRunEditorContextMenu extends AbstractEditorContextMenu {
         add(Declared.forMenu("Testin.NavigateToTestCase"));
         addSeparator();
 
-        add(actions(p, dir, list));
+        add(actions(project, dir, list));
 
         addSeparator();
         add(Declared.forMenu("Testin.RunTestMethod"));
@@ -56,9 +56,9 @@ public class TestRunEditorContextMenu extends AbstractEditorContextMenu {
     // UC-EDITOR-PANEL-026, UC-EDITOR-PANEL-029
     @Override
     public void registerShortcuts(final @NotNull JBList<TestCaseDto> list) {
-        new TestinEscapeAction(p, list);
+        new TestinEscapeAction(project, list);
         new OpenContextMenuAction(list, this);
-        new GenerateReportAction(p, ui, list);
+        new GenerateReportAction(project, ui, list);
 
         SetRunItemStatusGroup.bindLettersTo(list);
     }

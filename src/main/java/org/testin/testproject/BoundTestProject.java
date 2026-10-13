@@ -47,7 +47,7 @@ import java.util.Optional;
 public final class BoundTestProject {
     private static final @NotNull String CHOICE = "testin.chosenTestProject";
 
-    private final @NotNull Project p;
+    private final @NotNull Project project;
 
     // Rule-TREE-PANEL-106, Rule-TREE-PANEL-119
     static @NotNull String resolve(final @NotNull String inFile, final @NotNull List<String> choice) {
@@ -58,7 +58,7 @@ public final class BoundTestProject {
 
     // UC-TREE-PANEL-004, Rule-TREE-PANEL-106
     public @NotNull String name() {
-        return resolve(TestinYml.projectName(p), choice());
+        return resolve(TestinYml.projectName(project), choice());
     }
 
     public boolean isNamed() {
@@ -70,8 +70,8 @@ public final class BoundTestProject {
         final @NotNull String name = name();
         if (name.isEmpty()) return Optional.empty();
 
-        final @NotNull Path root = Services.getInstance(p, TestinRoot.class).absolutePath();
-        return Services.getInstance(p, Nodes.class).getTestProjectsByPath().values().stream()
+        final @NotNull Path root = Services.getInstance(project, TestinRoot.class).absolutePath();
+        return Services.getInstance(project, Nodes.class).getTestProjectsByPath().values().stream()
                 .filter(testProject -> name.equals(testProject.getName()))
                 .min(Comparator.comparing(testProject -> !testProject.getPath().startsWith(root)));
     }
@@ -86,7 +86,7 @@ public final class BoundTestProject {
 
         final @NotNull String name = name();
         final boolean missing = !underRoot.containsKey(name);
-        final boolean fromTheFile = TestinYml.names(p, name);
+        final boolean fromTheFile = TestinYml.names(project, name);
 
         if (fromTheFile)
             return missing ? Bundle.message("bound.not.under.root", name) : Bundle.message("bound.unreadable", name);
@@ -96,28 +96,29 @@ public final class BoundTestProject {
 
     // UC-TREE-PANEL-004, Rule-TREE-PANEL-106
     public void choose(final @NotNull String projectName) {
-        TestinLogger.info("Chose test project '" + projectName + "' for " + p.getName() + " on this machine");
+        TestinLogger.info("Chose test project '" + projectName + "' for " + project.getName() + " on this machine");
 
-        PropertiesComponent.getInstance(p).setList(CHOICE, List.of(projectName, TestinYml.projectName(p)));
+        PropertiesComponent.getInstance(project).setList(CHOICE, List.of(projectName, TestinYml.projectName(project)));
         refreshGutter();
     }
 
     // Rule-CODEGEN-082
     public void reread() {
-        TestinYml.reload(p);
+        TestinYml.reload(project);
         refreshGutter();
     }
 
     // Rule-CODEGEN-082, Rule-INTERNAL-127
     public void refreshGutter() {
-        if (TestinYml.names(p, name())) Services.getInstance(p, Hints.class).clear(SetupStep.TEST_PROJECT_LINK);
+        if (TestinYml.names(project, name()))
+            Services.getInstance(project, Hints.class).clear(SetupStep.TEST_PROJECT_LINK);
         ApplicationManager.getApplication().invokeLater(() ->
-                DaemonCodeAnalyzer.getInstance(p).restart("Whether Testin's code is on may have changed"), p.getDisposed());
+                DaemonCodeAnalyzer.getInstance(project).restart("Whether Testin's code is on may have changed"), project.getDisposed());
     }
 
     // UC-TREE-PANEL-001, UC-TREE-PANEL-003
     public @NotNull Optional<String> cloneAddress() {
-        return TestinYml.cloneAddress(p, name()).filter(GitRemotes::isRepositoryUrl);
+        return TestinYml.cloneAddress(project, name()).filter(GitRemotes::isRepositoryUrl);
     }
 
     // UC-TREE-PANEL-011, Rule-TREE-PANEL-110
@@ -126,6 +127,6 @@ public final class BoundTestProject {
     }
 
     private @NotNull List<String> choice() {
-        return Optional.ofNullable(PropertiesComponent.getInstance(p).getList(CHOICE)).orElse(List.of());
+        return Optional.ofNullable(PropertiesComponent.getInstance(project).getList(CHOICE)).orElse(List.of());
     }
 }

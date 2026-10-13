@@ -27,13 +27,13 @@ record GenBinding<X>(@NotNull GenType<X> type, @NotNull CodeChange<X> action) {
     <T> @NotNull CodeChange<T> typed() {
         return new CodeChange<>() {
             @Override
-            public void execute(final @NotNull Project p, final @NotNull T payload) {
-                action.execute(p, type.payload().cast(payload));
+            public void execute(final @NotNull Project project, final @NotNull T payload) {
+                action.execute(project, type.payload().cast(payload));
             }
 
             @Override
-            public void executeAll(final @NotNull Project p, final @NotNull List<? extends T> payloads) {
-                action.executeAll(p, payloads.stream().map(type.payload()::cast).toList());
+            public void executeAll(final @NotNull Project project, final @NotNull List<? extends T> payloads) {
+                action.executeAll(project, payloads.stream().map(type.payload()::cast).toList());
             }
 
             @Override

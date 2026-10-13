@@ -34,9 +34,9 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 
-record PasteNodeWork(@NotNull Project p, @NotNull TreeTransferHandler transferHandler, @NotNull Notifier notifier) {
-    PasteNodeWork(final @NotNull Project p, final @NotNull TreeTransferHandler transferHandler) {
-        this(p, transferHandler, Services.getInstance(p, Notifier.class));
+record PasteNodeWork(@NotNull Project project, @NotNull TreeTransferHandler transferHandler, @NotNull Notifier notifier) {
+    PasteNodeWork(final @NotNull Project project, final @NotNull TreeTransferHandler transferHandler) {
+        this(project, transferHandler, Services.getInstance(project, Notifier.class));
     }
 
     // UC-TREE-PANEL-013, Rule-TREE-PANEL-006
@@ -52,7 +52,7 @@ record PasteNodeWork(@NotNull Project p, @NotNull TreeTransferHandler transferHa
 
             if (nodes.isEmpty()) {
                 if (!collisionsReported) {
-                    notifier.softRefuse(p, Bundle.message("paste.select.folder"));
+                    notifier.softRefuse(project, Bundle.message("paste.select.folder"));
                 }
 
                 return;
@@ -65,7 +65,7 @@ record PasteNodeWork(@NotNull Project p, @NotNull TreeTransferHandler transferHa
                     : Bundle.message("transfer.items", String.valueOf(nodes.size()));
             final @NotNull Path fromPath = nodes.getFirst().getPath().getParent();
 
-            new ConfirmDialog(p, Bundle.message("paste.title"),
+            new ConfirmDialog(project, Bundle.message("paste.title"),
                     Bundle.message("transfer.confirm", verb, what, target.getName()),
                     Objects.toString(fromPath, ""),
                     target.getPath().toString(),
@@ -75,7 +75,7 @@ record PasteNodeWork(@NotNull Project p, @NotNull TreeTransferHandler transferHa
 
         } catch (final Exception ex) {
             TestinLogger.error("Paste Node failed: " + FailureText.of(ex));
-            notifier.softRefuse(p, Bundle.message("clipboard.paste.failed.title"), FailureText.of(ex));
+            notifier.softRefuse(project, Bundle.message("clipboard.paste.failed.title"), FailureText.of(ex));
         }
     }
 }

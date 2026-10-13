@@ -38,12 +38,12 @@ import java.util.Map;
 public final class BindTestProjectDialog extends AbstractFrameworkDialog {
     private final @NotNull SelectionTable projects;
     private final @NotNull Runnable onBound;
-    private final @NotNull BoundTestProject boundTestProject = Services.getInstance(p, BoundTestProject.class);
+    private final @NotNull BoundTestProject boundTestProject = Services.getInstance(project, BoundTestProject.class);
 
-    public BindTestProjectDialog(final @NotNull Project p, final @NotNull Map<String, ProjectStatus> underRoot, final @NotNull Runnable onBound) {
-        super(p);
+    public BindTestProjectDialog(final @NotNull Project project, final @NotNull Map<String, ProjectStatus> underRoot, final @NotNull Runnable onBound) {
+        super(project);
         this.onBound = onBound;
-        Services.getInstance(p, Guides.class).add(Guide.LINK_THIS_REPOSITORY);
+        Services.getInstance(project, Guides.class).add(Guide.LINK_THIS_REPOSITORY);
 
         title = Bundle.message("dialog.bind.title");
 
@@ -87,7 +87,7 @@ public final class BindTestProjectDialog extends AbstractFrameworkDialog {
         boundTestProject.choose(projects.getValueAt(selected.getFirst(), 0));
         closeOk();
 
-        notifier.softShow(p, Done.BOUND);
+        notifier.softShow(project, Done.BOUND);
         onBound.run();
     }
 }

@@ -63,12 +63,12 @@ public final class HelpMark implements CustomStatusBarWidget {
     private static final double SCREEN_PART = 0.25;
     private static final int GAP = 8;
 
-    private final @NotNull Project p;
+    private final @NotNull Project project;
 
     private final @NotNull JBLabel entry = new JBLabel(QUIET);
 
-    HelpMark(final @NotNull Project p) {
-        this.p = p;
+    HelpMark(final @NotNull Project project) {
+        this.project = project;
 
         Tooltip.set(entry, Bundle.message("help.title"));
         entry.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -81,12 +81,12 @@ public final class HelpMark implements CustomStatusBarWidget {
     }
 
     // UC-INTERNAL-009, Rule-INTERNAL-127
-    static void redraw(final @NotNull Project p) {
-        ApplicationManager.getApplication().invokeLater(() -> Optional.ofNullable(WindowManager.getInstance().getStatusBar(p))
+    static void redraw(final @NotNull Project project) {
+        ApplicationManager.getApplication().invokeLater(() -> Optional.ofNullable(WindowManager.getInstance().getStatusBar(project))
                 .map(statusBar -> statusBar.getWidget(HelpMarkFactory.ID))
                 .filter(HelpMark.class::isInstance)
                 .map(HelpMark.class::cast)
-                .ifPresent(HelpMark::redraw), p.getDisposed());
+                .ifPresent(HelpMark::redraw), project.getDisposed());
     }
 
     private static @NotNull JBPanel<?> page() {
@@ -134,17 +134,17 @@ public final class HelpMark implements CustomStatusBarWidget {
 
     // UC-INTERNAL-009, Rule-INTERNAL-127
     private void redraw() {
-        final @NotNull List<SetupHint> hints = Services.getInstance(p, Hints.class).waiting();
+        final @NotNull List<SetupHint> hints = Services.getInstance(project, Hints.class).waiting();
         entry.setIcon(hints.isEmpty() ? QUIET : WAITING);
         Tooltip.set(entry, hints.isEmpty() ? Bundle.message("help.title") : hints.getFirst().text());
     }
 
     // UC-INTERNAL-009, Rule-INTERNAL-128
     private void showPopup() {
-        final @NotNull List<SetupHint> hints = Services.getInstance(p, Hints.class).waiting();
-        final @NotNull List<Guide> guides = Services.getInstance(p, Guides.class).offered();
+        final @NotNull List<SetupHint> hints = Services.getInstance(project, Hints.class).waiting();
+        final @NotNull List<Guide> guides = Services.getInstance(project, Guides.class).offered();
         if (hints.isEmpty() && guides.isEmpty()) {
-            Services.getInstance(p, Notifier.class).softShow(p, Bundle.message("help.nothing"));
+            Services.getInstance(project, Notifier.class).softShow(project, Bundle.message("help.nothing"));
             return;
         }
 
@@ -170,7 +170,7 @@ public final class HelpMark implements CustomStatusBarWidget {
 
     // UC-INTERNAL-009, Rule-INTERNAL-128
     private @NotNull JComponent guideLink(final @NotNull Guide guide) {
-        return PopupLink.of(guide.getTitle(), () -> guide.open(p));
+        return PopupLink.of(guide.getTitle(), () -> guide.open(project));
     }
 
     // UC-INTERNAL-009, Rule-INTERNAL-127, Rule-INTERNAL-128

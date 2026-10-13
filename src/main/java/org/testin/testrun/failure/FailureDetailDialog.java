@@ -36,13 +36,13 @@ public class FailureDetailDialog extends AbstractFrameworkDialog {
     private final @NotNull FailureFields fields;
 
     // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-143
-    public FailureDetailDialog(final @NotNull Project p, final @NotNull Path testRunPath, final @NotNull RunItem runItem, final @NotNull Consumer<FailureFields> onSave) {
-        super(p);
+    public FailureDetailDialog(final @NotNull Project project, final @NotNull Path testRunPath, final @NotNull RunItem runItem, final @NotNull Consumer<FailureFields> onSave) {
+        super(project);
         this.onSave = onSave;
 
         final @NotNull TestCaseDto testCase = runItem.shownTestCase();
 
-        fields = new FailureFields(p, testRunPath, runItem);
+        fields = new FailureFields(project, testRunPath, runItem);
         fields.onResized(this::refit);
 
         title = Bundle.message("dialog.failure.detail.title");

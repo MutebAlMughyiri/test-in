@@ -38,16 +38,16 @@ public class RemoveAction extends AbstractAnyProjectAction {
 
     // UC-TREE-PANEL-012, Rule-TREE-PANEL-038
     @Override
-    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
         final @NotNull List<AbstractNode> nodesToRemove = removableNodes(e);
         if (nodesToRemove.isEmpty()) return;
 
-        new RemoveWork(p).confirm(nodesToRemove);
+        new RemoveWork(project).confirm(nodesToRemove);
     }
 
     // UC-TREE-PANEL-012, Rule-TREE-PANEL-042
     @Override
-    protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
         GrayWithReason.unless(this, e, !removableNodes(e).isEmpty(), Bundle.message("remove.node.disabled.description"));
     }
 

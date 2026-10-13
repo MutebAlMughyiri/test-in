@@ -39,25 +39,25 @@ import java.util.List;
 import java.util.Optional;
 
 public final class TreePanelNode extends AbstractTreeNode<Object> {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull ProjectIndexer indexer;
     private final @NotNull Nodes nodes;
 
-    public TreePanelNode(final @NotNull Project p, final @NotNull Object value) {
-        super(p, value);
-        this.p = p;
-        this.indexer = Services.getInstance(p, ProjectIndexer.class);
-        this.nodes = Services.getInstance(p, Nodes.class);
+    public TreePanelNode(final @NotNull Project project, final @NotNull Object value) {
+        super(project, value);
+        this.project = project;
+        this.indexer = Services.getInstance(project, ProjectIndexer.class);
+        this.nodes = Services.getInstance(project, Nodes.class);
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-114
-    static @NotNull TreePanelNode standingFor(final @NotNull Project p, final @NotNull Path root, final @NotNull Path folder) {
-        @NotNull TreePanelNode node = new TreePanelNode(p, root);
+    static @NotNull TreePanelNode standingFor(final @NotNull Project project, final @NotNull Path root, final @NotNull Path folder) {
+        @NotNull TreePanelNode node = new TreePanelNode(project, root);
         @NotNull Path at = root;
 
         for (final Path part : root.relativize(folder)) {
             at = at.resolve(part);
-            final @NotNull TreePanelNode child = new TreePanelNode(p, at);
+            final @NotNull TreePanelNode child = new TreePanelNode(project, at);
             child.setParent(node);
             node = child;
         }
@@ -98,7 +98,7 @@ public final class TreePanelNode extends AbstractTreeNode<Object> {
     }
 
     private @NotNull TreePanelNode child(final @NotNull Object value) {
-        final @NotNull TreePanelNode child = new TreePanelNode(p, value);
+        final @NotNull TreePanelNode child = new TreePanelNode(project, value);
         child.setParent(this);
         return child;
     }

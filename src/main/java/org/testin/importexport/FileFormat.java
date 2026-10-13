@@ -53,7 +53,7 @@ public enum FileFormat {
             ".xls",
             _ -> "",
             ExportHandler.UNSUPPORTED,
-            (p, importFile) -> new ImportExcel().processImport(p, importFile),
+            (project, importFile) -> new ImportExcel().processImport(project, importFile),
             ReportHandler.UNSUPPORTED
     ),
 
@@ -62,16 +62,16 @@ public enum FileFormat {
             ".xlsx",
             columns -> Bundle.message("import.hint.xlsx", columns),
             (_, destFile, sheets) -> new ExportExcel().exportToFile(destFile, sheets),
-            (p, importFile) -> new ImportExcel().processImport(p, importFile),
-            (p, testRunNode, runItems) -> new TestRunExcelGenerator().generate(p, testRunNode, runItems)
+            (project, importFile) -> new ImportExcel().processImport(project, importFile),
+            (project, testRunNode, runItems) -> new TestRunExcelGenerator().generate(project, testRunNode, runItems)
     ),
 
     JSON(
             "JSON",
             ".json",
             _ -> "",
-            (p, destFile, sheets) -> new ExportJson().exportToFile(p, destFile, sheets),
-            (p, importFile) -> new ImportJson().processImport(p, importFile),
+            (project, destFile, sheets) -> new ExportJson().exportToFile(project, destFile, sheets),
+            (project, importFile) -> new ImportJson().processImport(project, importFile),
             ReportHandler.UNSUPPORTED
     ),
 
@@ -80,7 +80,7 @@ public enum FileFormat {
             ".csv",
             columns -> Bundle.message("import.hint.csv", columns),
             (_, destFile, sheets) -> new ExportCsv().exportToFile(destFile, sheets),
-            (p, importFile) -> new ImportCsv().processImport(p, importFile),
+            (project, importFile) -> new ImportCsv().processImport(project, importFile),
             ReportHandler.UNSUPPORTED
     ),
 
@@ -90,7 +90,7 @@ public enum FileFormat {
             _ -> "",
             (_, destFile, sheets) -> new ExportHtml().exportToFile(destFile, sheets),
             ImportHandler.UNSUPPORTED,
-            (p, testRunNode, runItems) -> new TestRunHtmlGenerator().generate(p, testRunNode, runItems).getBytes(StandardCharsets.UTF_8)
+            (project, testRunNode, runItems) -> new TestRunHtmlGenerator().generate(project, testRunNode, runItems).getBytes(StandardCharsets.UTF_8)
     ),
 
     PDF(
@@ -99,7 +99,7 @@ public enum FileFormat {
             _ -> "",
             ExportHandler.UNSUPPORTED,
             ImportHandler.UNSUPPORTED,
-            (p, testRunNode, runItems) -> new TestRunPdfGenerator().generate(p, testRunNode, runItems)
+            (project, testRunNode, runItems) -> new TestRunPdfGenerator().generate(project, testRunNode, runItems)
     ),
 
     WORD(
@@ -108,7 +108,7 @@ public enum FileFormat {
             _ -> "",
             ExportHandler.UNSUPPORTED,
             ImportHandler.UNSUPPORTED,
-            (p, testRunNode, runItems) -> new TestRunWordGenerator().generate(p, testRunNode, runItems)
+            (project, testRunNode, runItems) -> new TestRunWordGenerator().generate(project, testRunNode, runItems)
     );
 
     private final @NotNull String label;
@@ -155,18 +155,18 @@ public enum FileFormat {
         return !reportHandler.equals(ReportHandler.UNSUPPORTED);
     }
 
-    public void exportToFile(final @NotNull Project p, final @NotNull File destFile, final @NotNull Map<String, List<TestCaseDto>> sheetsData) {
+    public void exportToFile(final @NotNull Project project, final @NotNull File destFile, final @NotNull Map<String, List<TestCaseDto>> sheetsData) {
         if (!isExportable()) throw new IllegalStateException(label + " cannot be exported to");
-        exportHandler.execute(p, destFile, sheetsData);
+        exportHandler.execute(project, destFile, sheetsData);
     }
 
-    public @NotNull Map<String, List<TestCaseDto>> importToFile(final @NotNull Project p, final @NotNull File importFile) {
+    public @NotNull Map<String, List<TestCaseDto>> importToFile(final @NotNull Project project, final @NotNull File importFile) {
         if (!isImportable()) throw new IllegalStateException(label + " cannot be imported from");
-        return importHandler.execute(p, importFile);
+        return importHandler.execute(project, importFile);
     }
 
-    public byte @NotNull [] generateReport(final @NotNull Project p, final @NotNull TestRunNode testRunNode, final @NotNull RunItems runItems) {
+    public byte @NotNull [] generateReport(final @NotNull Project project, final @NotNull TestRunNode testRunNode, final @NotNull RunItems runItems) {
         if (!isReportable()) throw new IllegalStateException(label + " has no report generator");
-        return reportHandler.execute(p, testRunNode, runItems);
+        return reportHandler.execute(project, testRunNode, runItems);
     }
 }

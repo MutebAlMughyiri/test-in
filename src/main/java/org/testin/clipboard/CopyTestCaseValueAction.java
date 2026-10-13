@@ -34,23 +34,23 @@ import java.awt.datatransfer.StringSelection;
 import java.util.List;
 
 public class CopyTestCaseValueAction extends AbstractAnyProjectAction {
-    private static void copy(final @NotNull Project p, final @NotNull CopyChoice choice, final @NotNull List<TestCaseDto> selected) {
+    private static void copy(final @NotNull Project project, final @NotNull CopyChoice choice, final @NotNull List<TestCaseDto> selected) {
         CopyPasteManager.getInstance().setContents(new StringSelection(choice.from(selected)));
 
-        Services.getInstance(p, Notifier.class).softShow(p, choice.copiedMessage(selected.size()));
+        Services.getInstance(project, Notifier.class).softShow(project, choice.copiedMessage(selected.size()));
     }
 
     // UC-EDITOR-PANEL-014, Rule-EDITOR-PANEL-207
     @Override
-    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
         final @NotNull List<TestCaseDto> selected = TestinDataKeys.selectedTestCases(e);
         if (selected.isEmpty()) return;
 
-        new ShortcutMenuPopup<>(p, Bundle.message("copy.menu.title"), CopyChoice.values(), choice -> copy(p, choice, selected)).show();
+        new ShortcutMenuPopup<>(project, Bundle.message("copy.menu.title"), CopyChoice.values(), choice -> copy(project, choice, selected)).show();
     }
 
     @Override
-    protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
         GrayWithReason.unlessTestCaseSelected(this, e);
     }
 

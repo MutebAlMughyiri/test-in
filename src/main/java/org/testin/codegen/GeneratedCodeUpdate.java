@@ -36,14 +36,14 @@ public enum GeneratedCodeUpdate implements CodeUpdate {
     private static final @NotNull Key<Boolean> INDEXING_SAID = Key.create("testin.codegen.indexingSaid");
 
     // UC-CODEGEN-019, Rule-CODEGEN-005, Rule-CODEGEN-006, Rule-CODEGEN-082
-    private static boolean cannotGenerate(final @NotNull Project p, final @NotNull String description) {
-        if (!CodeOn.isOnOrHinted(p)) return true;
-        if (!DumbService.isDumb(p)) return false;
+    private static boolean cannotGenerate(final @NotNull Project project, final @NotNull String description) {
+        if (!CodeOn.isOnOrHinted(project)) return true;
+        if (!DumbService.isDumb(project)) return false;
 
-        if (Once.claim(p, INDEXING_SAID)) {
-            Services.getInstance(p, Notifier.class).softRefuse(p, Refused.WHILE_INDEXING, description);
+        if (Once.claim(project, INDEXING_SAID)) {
+            Services.getInstance(project, Notifier.class).softRefuse(project, Refused.WHILE_INDEXING, description);
 
-            DumbService.getInstance(p).runWhenSmart(() -> p.putUserData(INDEXING_SAID, null));
+            DumbService.getInstance(project).runWhenSmart(() -> project.putUserData(INDEXING_SAID, null));
         }
 
         TestinLogger.info("Skipped " + description + ": the IDE is indexing");
@@ -52,18 +52,18 @@ public enum GeneratedCodeUpdate implements CodeUpdate {
 
     // UC-CODEGEN-019, Rule-CODEGEN-005
     @Override
-    public <T> void execute(final @NotNull GenType<T> type, final @NotNull Project p, final @NotNull T payload) {
-        if (cannotGenerate(p, type.description())) return;
+    public <T> void execute(final @NotNull GenType<T> type, final @NotNull Project project, final @NotNull T payload) {
+        if (cannotGenerate(project, type.description())) return;
 
-        CodeChangeRegistry.find(type).execute(p, payload);
+        CodeChangeRegistry.find(type).execute(project, payload);
     }
 
     // UC-CODEGEN-019, Rule-CODEGEN-005, Rule-EDITOR-PANEL-046
     @Override
-    public <T> void executeAll(final @NotNull GenType<T> type, final @NotNull Project p, final @NotNull List<? extends T> payloads, final @NotNull String undoGroup) {
-        if (cannotGenerate(p, type.description()) || payloads.isEmpty()) return;
+    public <T> void executeAll(final @NotNull GenType<T> type, final @NotNull Project project, final @NotNull List<? extends T> payloads, final @NotNull String undoGroup) {
+        if (cannotGenerate(project, type.description()) || payloads.isEmpty()) return;
 
-        WriteCommandAction.runWriteCommandAction(p, type.description(), undoGroup,
-                () -> CodeChangeRegistry.find(type).executeAll(p, payloads));
+        WriteCommandAction.runWriteCommandAction(project, type.description(), undoGroup,
+                () -> CodeChangeRegistry.find(type).executeAll(project, payloads));
     }
 }

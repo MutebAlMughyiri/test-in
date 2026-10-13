@@ -72,23 +72,23 @@ public class ViewPanel implements Disposable {
     private final @NotNull ShownTestCaseCursor page;
 
     @Getter
-    private final @NotNull Project p;
+    private final @NotNull Project project;
 
     private final @NotNull TestCases testCases;
     private final @NotNull TestRuns testRuns;
     private final @NotNull TestinRoot testinRoot;
 
-    public ViewPanel(final @NotNull Project p) {
-        this.p = p;
-        this.testCases = Services.getInstance(p, TestCases.class);
-        this.testRuns = Services.getInstance(p, TestRuns.class);
-        this.testinRoot = Services.getInstance(p, TestinRoot.class);
-        Disposer.register(ProjectLifetime.of(p), this);
+    public ViewPanel(final @NotNull Project project) {
+        this.project = project;
+        this.testCases = Services.getInstance(project, TestCases.class);
+        this.testRuns = Services.getInstance(project, TestRuns.class);
+        this.testinRoot = Services.getInstance(project, TestinRoot.class);
+        Disposer.register(ProjectLifetime.of(project), this);
         detailsTab = new JBPanel<>(new BorderLayout());
         historyTab = new JBPanel<>(new BorderLayout());
 
-        FontSync.syncWithNativeEditor(p, detailsTab, this);
-        FontSync.syncWithNativeEditor(p, historyTab, this);
+        FontSync.syncWithNativeEditor(project, detailsTab, this);
+        FontSync.syncWithNativeEditor(project, historyTab, this);
 
         // Rule-SETTING-039
         tabs().forEach(tab -> tab.addMouseWheelListener(WheelForwarding::forwardWheelToScrollPane));
@@ -97,8 +97,8 @@ public class ViewPanel implements Disposable {
         historyScrollPane = createScrollPane(historyTab);
 
         // Rule-VIEW-PANEL-058
-        new TestinEscapeAction(p, detailsTab);
-        new TestinEscapeAction(p, historyTab);
+        new TestinEscapeAction(project, detailsTab);
+        new TestinEscapeAction(project, historyTab);
 
         for (final ViewTab tab : ViewTab.values()) takesTheKeyboard(tab);
         IdeEventQueue.getInstance().addPostprocessor(event -> {
@@ -110,7 +110,7 @@ public class ViewPanel implements Disposable {
 
         refreshCurrentView();
 
-        ExecutionRecorder.onReported(p, this, (testCase, status, _, _) -> executionReported(testCase, status));
+        ExecutionRecorder.onReported(project, this, (testCase, status, _, _) -> executionReported(testCase, status));
     }
 
     private @NotNull Stream<JPanel> tabs() {
@@ -124,8 +124,8 @@ public class ViewPanel implements Disposable {
         tab.setFocusTraversalKeysEnabled(false);
         tab.getAccessibleContext().setAccessibleName(shown.getDisplayName());
 
-        new ViewTabAction(p, tab, Direction.NEXT);
-        new ViewTabAction(p, tab, Direction.PREVIOUS);
+        new ViewTabAction(project, tab, Direction.NEXT);
+        new ViewTabAction(project, tab, Direction.PREVIOUS);
     }
 
     // UC-VIEW-PANEL-017, Rule-VIEW-PANEL-080
@@ -134,7 +134,7 @@ public class ViewPanel implements Disposable {
 
         Optional.ofNullable(SwingUtilities.getDeepestComponentAt(press.getComponent(), press.getX(), press.getY()))
                 .flatMap(pressed -> tabs().filter(tab -> SwingUtilities.isDescendingFrom(pressed, tab)).findFirst())
-                .ifPresent(tab -> IdeFocusManager.getInstance(p).requestFocus(tab, true));
+                .ifPresent(tab -> IdeFocusManager.getInstance(project).requestFocus(tab, true));
     }
 
     // Rule-VIEW-PANEL-124
@@ -151,7 +151,7 @@ public class ViewPanel implements Disposable {
     public void show(final @NotNull List<TestCaseDto> testCases, final @NotNull List<String> path) {
         if (testCases.isEmpty()) return;
 
-        ViewToolWindowFactory.toolWindow(p).ifPresent(tw -> tw.show(() -> {
+        ViewToolWindowFactory.toolWindow(project).ifPresent(tw -> tw.show(() -> {
             selectDetailsTab();
             this.updateList(testCases, path);
         }));
@@ -165,14 +165,14 @@ public class ViewPanel implements Disposable {
     }
 
     private boolean isClosed() {
-        return ViewToolWindowFactory.toolWindow(p).filter(ToolWindow::isVisible).isEmpty();
+        return ViewToolWindowFactory.toolWindow(project).filter(ToolWindow::isVisible).isEmpty();
     }
 
     // UC-VIEW-PANEL-015
     public boolean hide() {
         if (isClosed()) return false;
 
-        ViewToolWindowFactory.toolWindow(p).ifPresent(ToolWindow::hide);
+        ViewToolWindowFactory.toolWindow(project).ifPresent(ToolWindow::hide);
         return true;
     }
 
@@ -182,7 +182,7 @@ public class ViewPanel implements Disposable {
     }
 
     private void selectDetailsTab() {
-        ViewToolWindowFactory.toolWindow(p).ifPresent(tw -> {
+        ViewToolWindowFactory.toolWindow(project).ifPresent(tw -> {
             for (final Content content : tw.getContentManager().getContents()) {
                 if (ViewTab.DETAILS.getDisplayName().equals(content.getDisplayName())) {
                     tw.getContentManager().setSelectedContent(content);
@@ -283,6 +283,6 @@ public class ViewPanel implements Disposable {
         detailsTab.removeAll();
         historyTab.removeAll();
 
-        ViewToolWindowFactory.onPanelDisposed(p, this);
+        ViewToolWindowFactory.onPanelDisposed(project, this);
     }
 }

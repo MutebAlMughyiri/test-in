@@ -89,11 +89,11 @@ final class EditorGrid<A extends Enum<A> & ShowableAttribute> {
         final @NotNull Disposable fontSync = Disposer.newDisposable(editor.projectDisposable, "testin." + editor.getClass().getSimpleName() + ".gridFontSync");
         try {
             final @NotNull JBTable table = editor.buildTable(editor.gridRows(pageTestCases), attributes);
-            FontSync.syncWithNativeEditor(editor.p, table, fontSync, _ -> GridTables.resizeToFont(table));
+            FontSync.syncWithNativeEditor(editor.project, table, fontSync, _ -> GridTables.resizeToFont(table));
 
             table.getSelectionModel().addListSelectionListener(new GridSelectionListener(editor, table, editor.list, pageTestCases));
             editor.installEditListener(table, pageTestCases);
-            new TestinEscapeAction(editor.p, table);
+            new TestinEscapeAction(editor.project, table);
             new GridEnterAction(editor, table, pageTestCases, editor.parent.getPath2());
             table.addMouseListener(new GridContextMenuListener(table, editor.list, editor.contextMenu, pageTestCases));
             editor.contextMenu.bindShortcutsTo(table);
@@ -114,7 +114,7 @@ final class EditorGrid<A extends Enum<A> & ShowableAttribute> {
             view.ifPresent(old -> Disposer.dispose(old.fontSync()));
             view = Optional.empty();
             editor.center.set(editor.scrollPane);
-            editor.notifier.softRefuse(editor.p, Bundle.message("editor.grid.not.drawn", FailureText.of(ex)));
+            editor.notifier.softRefuse(editor.project, Bundle.message("editor.grid.not.drawn", FailureText.of(ex)));
         }
     }
 

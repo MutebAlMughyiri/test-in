@@ -82,9 +82,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes, TestRunNode> implements ToolbarCallbacks {
-    private final @NotNull TestRuns testRuns = Services.getInstance(p, TestRuns.class);
+    private final @NotNull TestRuns testRuns = Services.getInstance(project, TestRuns.class);
 
-    private final @NotNull LightMode lightMode = Services.getInstance(p, LightMode.class);
+    private final @NotNull LightMode lightMode = Services.getInstance(project, LightMode.class);
 
     private final @NotNull Map<UUID, RunItem> runItemsById = new ConcurrentHashMap<>();
 
@@ -92,7 +92,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
     private final @NotNull TestRunToolbar toolBar;
 
     @Getter
-    private final @NotNull TestRunWalk walk = new TestRunWalk(this, p);
+    private final @NotNull TestRunWalk walk = new TestRunWalk(this, project);
 
     private final @NotNull AtomicInteger loadGeneration = new AtomicInteger();
 
@@ -104,13 +104,13 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
 
     private boolean startWhenLoaded;
 
-    public TestRunEditor(final @NotNull Project p, final @NotNull UnifiedVirtualFile vf) {
-        super(p, vf.getTestRun());
-        Services.getInstance(p, Guides.class).add(Guide.TEST_RUN_EDITOR_SHORTCUTS);
+    public TestRunEditor(final @NotNull Project project, final @NotNull UnifiedVirtualFile vf) {
+        super(project, vf.getTestRun());
+        Services.getInstance(project, Guides.class).add(Guide.TEST_RUN_EDITOR_SHORTCUTS);
 
-        ExecutionRecorder.onReported(p, projectDisposable, walk::executionReported);
+        ExecutionRecorder.onReported(project, projectDisposable, walk::executionReported);
 
-        this.toolBar = new TestRunToolbar(p, this);
+        this.toolBar = new TestRunToolbar(project, this);
         buildOpeningPanel();
         loadDataAsync();
     }
@@ -126,7 +126,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             try {
                 indexer.awaitIndexing();
-                TestRunFromGit.read(p, parent.getPath());
+                TestRunFromGit.read(project, parent.getPath());
                 final @NotNull RunItems fromDisk = loadedRunItems.orElseGet(() -> testRuns.getRunItems(parent.getPath()));
 
                 final @NotNull Map<UUID, RunItem> runItemsOnDisk = fromDisk.getAll().stream()
@@ -134,7 +134,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
                                 (existingItem, _) -> existingItem));
 
                 final @NotNull List<TestCaseDto> ordered = fromDisk.getAll().stream().map(RunItem::liveTestCase).toList();
-                final @NotNull Map<UUID, Integer> places = ExecutionPosition.placesOf(p, ordered);
+                final @NotNull Map<UUID, Integer> places = ExecutionPosition.placesOf(project, ordered);
                 testCaseValues.load(ordered);
 
                 ApplicationManager.getApplication().invokeLater(() -> {
@@ -157,7 +157,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
 
                     startIfAsked();
                     onLoaded.run();
-                    Services.getInstance(p, KnownBugIssueStates.class).readAll(() -> ViewToolWindowFactory.refreshShown(p));
+                    Services.getInstance(project, KnownBugIssueStates.class).readAll(() -> ViewToolWindowFactory.refreshShown(project));
                 });
             } catch (final Exception ex) {
                 TestinLogger.error("Failed to load Test Run data from disk: " + FailureText.of(ex));
@@ -225,7 +225,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
     private void buildOpeningPanel() {
         EditorStatusBarPaging.attach(this);
 
-        list.setCellRenderer(new RunItemCardRenderer(p, this));
+        list.setCellRenderer(new RunItemCardRenderer(project, this));
 
         wireList();
 
@@ -241,19 +241,19 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
     // UC-EDITOR-PANEL-045, Rule-EDITOR-PANEL-191, Rule-TREE-PANEL-135
     @Override
     public void onToolBarTestRunResultAnalysisClicked() {
-        loadedRunItems().ifPresent(runItems -> new TestRunResultAnalysisDialog(p,
+        loadedRunItems().ifPresent(runItems -> new TestRunResultAnalysisDialog(project,
                 TestRunSummary.of(runItems.getAll()),
                 parent.getMarker().getResultAnalysis(),
                 parent.getMarker().getStatus().isRecord(),
                 analysis -> {
                     if (testRuns.findTestRunNode(parent.getPath()).map(testRun -> testRun.getMarker().getStatus().isRecord()).orElse(false)) {
-                        notifier.softRefuse(p, Bundle.message("run.item.status.test.run.signed.off", TestRunStatus.COMMITTED.getLabel()));
+                        notifier.softRefuse(project, Bundle.message("run.item.status.test.run.signed.off", TestRunStatus.COMMITTED.getLabel()));
                         return;
                     }
 
                     testRuns.changeTestRunMarker(parent.getPath(),
                             marker -> marker.recordAnalysis(TestRunResultAnalysis.written(analysis)));
-                    notifier.softShow(p, Done.SAVED);
+                    notifier.softShow(project, Done.SAVED);
                 }).show());
     }
 
@@ -270,7 +270,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
 
     @Override
     protected @NotNull TestRunEditorContextMenu buildContextMenu() {
-        return new TestRunEditorContextMenu(p, this, parent, list);
+        return new TestRunEditorContextMenu(project, this, parent, list);
     }
 
     @Override
@@ -304,7 +304,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
     protected void drawStatus(final @NotNull PageWindow page) {
         statusBar.updatePaginationState(page.page(), page.totalPages());
 
-        automationState.read(p, snapshotOfAll(), this::refreshView);
+        automationState.read(project, snapshotOfAll(), this::refreshView);
     }
 
     @Override
@@ -368,7 +368,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
 
     @Override
     protected void installEditListener(final @NotNull JBTable table, final @NotNull List<TestCaseDto> pageTestCases) {
-        table.getModel().addTableModelListener(new TestRunGridEditListener(p, this, pageTestCases, model::allContentsChanged));
+        table.getModel().addTableModelListener(new TestRunGridEditListener(project, this, pageTestCases, model::allContentsChanged));
     }
 
     @Override

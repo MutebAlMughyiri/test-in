@@ -34,14 +34,14 @@ import java.util.Optional;
 public class RenameJavaClass implements CodeChange<RenamedNode> {
     // UC-CODEGEN-015, Rule-CODEGEN-052
     @Override
-    public void execute(final @NotNull Project p, final @NotNull RenamedNode renamed) {
+    public void execute(final @NotNull Project project, final @NotNull RenamedNode renamed) {
         final @NotNull String newName = renamed.newName();
         final @NotNull List<String> fqcn = Fqcn.ofClass(renamed.from());
         if (fqcn.isEmpty()) return;
         final @NotNull String path = String.join(".", fqcn);
 
-        WriteCommandAction.runWriteCommandAction(p, GenType.RENAME_TEST_SET.description(), null, () -> {
-            final @NotNull Optional<PsiClass> found = GeneratedClass.byName(p, path);
+        WriteCommandAction.runWriteCommandAction(project, GenType.RENAME_TEST_SET.description(), null, () -> {
+            final @NotNull Optional<PsiClass> found = GeneratedClass.byName(project, path);
             if (found.isEmpty()) {
                 TestinLogger.warn("RenameJavaClass: class not found: " + path);
                 return;

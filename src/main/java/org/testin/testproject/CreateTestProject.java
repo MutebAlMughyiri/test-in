@@ -30,7 +30,7 @@ import java.nio.file.Path;
 
 // UC-TREE-PANEL-002
 public final class CreateTestProject {
-    private final @NotNull Project p;
+    private final @NotNull Project project;
     private final @NotNull TreePanel treePanel;
     private final @NotNull String tpName;
     private final @NotNull NodeMapper directoryMapper;
@@ -38,19 +38,19 @@ public final class CreateTestProject {
     private final @NotNull BoundTestProject boundTestProject;
     private final @NotNull Notifier notifier;
 
-    public CreateTestProject(final @NotNull Project p, final @NotNull TreePanel treePanel, final @NotNull String tpName) {
-        this.p = p;
+    public CreateTestProject(final @NotNull Project project, final @NotNull TreePanel treePanel, final @NotNull String tpName) {
+        this.project = project;
         this.treePanel = treePanel;
         this.tpName = tpName;
-        this.directoryMapper = Services.getInstance(p, NodeMapper.class);
-        this.nodes = Services.getInstance(p, Nodes.class);
-        this.boundTestProject = Services.getInstance(p, BoundTestProject.class);
-        this.notifier = Services.getInstance(p, Notifier.class);
+        this.directoryMapper = Services.getInstance(project, NodeMapper.class);
+        this.nodes = Services.getInstance(project, Nodes.class);
+        this.boundTestProject = Services.getInstance(project, BoundTestProject.class);
+        this.notifier = Services.getInstance(project, Notifier.class);
     }
 
     // UC-TREE-PANEL-002, Rule-TREE-PANEL-017
     public void execute() {
-        TestProjectFolder.free(p, tpName).ifPresent(this::create);
+        TestProjectFolder.free(project, tpName).ifPresent(this::create);
     }
 
     // UC-TREE-PANEL-002, Rule-TREE-PANEL-017
@@ -63,6 +63,6 @@ public final class CreateTestProject {
         boundTestProject.choose(created.getName());
 
         treePanel.refresh();
-        notifier.softShow(p, Done.CREATED);
+        notifier.softShow(project, Done.CREATED);
     }
 }

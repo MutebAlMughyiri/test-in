@@ -38,29 +38,29 @@ import java.util.Optional;
 public final class FontSync {
     private static final @NotNull String LAST_BASE_SIZE = "testin.fontSync.lastBaseSize";
 
-    public static void syncWithNativeEditor(final @NotNull Project p, final @NotNull JComponent component, final @NotNull Disposable parentDisposable) {
-        syncWithNativeEditor(p, component, parentDisposable, delta -> applyDeltaRecursively(component, delta));
+    public static void syncWithNativeEditor(final @NotNull Project project, final @NotNull JComponent component, final @NotNull Disposable parentDisposable) {
+        syncWithNativeEditor(project, component, parentDisposable, delta -> applyDeltaRecursively(component, delta));
     }
 
-    public static void syncWithNativeEditor(final @NotNull Project p, final @NotNull JComponent component, final @NotNull Disposable parentDisposable, final @NotNull Refit refit) {
+    public static void syncWithNativeEditor(final @NotNull Project project, final @NotNull JComponent component, final @NotNull Disposable parentDisposable, final @NotNull Refit refit) {
         updateComponentFontSize(component, refit);
 
         ApplicationManager.getApplication().getMessageBus().connect(parentDisposable).subscribe(EditorColorsManager.TOPIC, (EditorColorsListener) _ -> updateComponentFontSize(component, refit));
 
         NativeEditorZoom.ensureWatching();
 
-        attachWheelZoom(p, component, refit);
+        attachWheelZoom(project, component, refit);
     }
 
     // UC-SETTING-011, Rule-SETTING-039
-    public static void attachWheelZoom(final @NotNull Project p, final @NotNull JComponent component) {
-        attachWheelZoom(p, component, delta -> applyDeltaRecursively(component, delta));
+    public static void attachWheelZoom(final @NotNull Project project, final @NotNull JComponent component) {
+        attachWheelZoom(project, component, delta -> applyDeltaRecursively(component, delta));
     }
 
-    private static void attachWheelZoom(final @NotNull Project p, final @NotNull JComponent component, final @NotNull Refit refit) {
+    private static void attachWheelZoom(final @NotNull Project project, final @NotNull JComponent component, final @NotNull Refit refit) {
         component.addMouseWheelListener(e -> {
             if (e.isControlDown() || e.isMetaDown()) {
-                zoomGlobalIdeEditors(p, component, refit, e.getWheelRotation() < 0);
+                zoomGlobalIdeEditors(project, component, refit, e.getWheelRotation() < 0);
                 e.consume();
             }
         });
@@ -81,14 +81,14 @@ public final class FontSync {
     }
 
     // UC-SETTING-011, Rule-SETTING-038
-    private static void zoomGlobalIdeEditors(final @NotNull Project p, final @NotNull JComponent component, final @NotNull Refit refit, final boolean zoomIn) {
+    private static void zoomGlobalIdeEditors(final @NotNull Project project, final @NotNull JComponent component, final @NotNull Refit refit, final boolean zoomIn) {
         ApplicationManager.getApplication().invokeLater(() -> {
             final float newSize = Math.clamp(Fonts.panelSize() + (zoomIn ? 1.0f : -1.0f), Fonts.FLOOR, 72.0f);
 
             applyGlobally(newSize);
 
             updateComponentFontSize(component, refit);
-            ZoomIndicator.show(p, component, newSize);
+            ZoomIndicator.show(project, component, newSize);
         });
     }
 

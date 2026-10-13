@@ -43,11 +43,11 @@ public final class SourceSection implements DialogComponent {
     private final @NotNull JComponent panel;
 
     // UC-SHARE-005, Rule-INTERNAL-099
-    public SourceSection(final @NotNull Project p, final @NotNull List<TestSetEditorAttributes> importAttributes, final @NotNull BiFunction<File, FileFormat, Map<String, List<TestCaseDto>>> importLoader, final @NotNull Consumer<@NotNull Map<String, List<TestCaseDto>>> onDataLoaded) {
-        source = SourceFileField.of(p);
+    public SourceSection(final @NotNull Project project, final @NotNull List<TestSetEditorAttributes> importAttributes, final @NotNull BiFunction<File, FileFormat, Map<String, List<TestCaseDto>>> importLoader, final @NotNull Consumer<@NotNull Map<String, List<TestCaseDto>>> onDataLoaded) {
+        source = SourceFileField.of(project);
         hint = FileTypeHint.of(importAttributes);
 
-        final @NotNull PreviewLoader preview = new PreviewLoader(source.field(), p, hint::showStatus, (format, parsedData) -> {
+        final @NotNull PreviewLoader preview = new PreviewLoader(source.field(), project, hint::showStatus, (format, parsedData) -> {
             hint.showFor(format);
             onDataLoaded.accept(parsedData);
         }, importLoader);

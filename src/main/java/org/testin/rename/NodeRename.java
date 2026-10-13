@@ -42,8 +42,8 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NodeRename {
     // UC-TREE-PANEL-011, Rule-TREE-PANEL-036, Rule-TREE-PANEL-111
-    public static void apply(final @NotNull Project p, final @NotNull AbstractNode dir, final @NotNull String newName, final @NotNull Runnable onDone) {
-        Services.getInstance(p, TestinEditors.class).close(dir);
+    public static void apply(final @NotNull Project project, final @NotNull AbstractNode dir, final @NotNull String newName, final @NotNull Runnable onDone) {
+        Services.getInstance(project, TestinEditors.class).close(dir);
 
         final @NotNull RenamedNode renamed = new RenamedNode(dir, newName);
         final @NotNull String oldName = dir.getName();
@@ -52,46 +52,46 @@ public final class NodeRename {
         final @NotNull Path newPath = oldPath.resolveSibling(newName);
 
         // Rule-CODEGEN-082
-        final boolean followed = renamed.toTheFilesName(p);
-        if (followed) Services.getInstance(p, BoundTestProject.class).follow(oldName, newName);
+        final boolean followed = renamed.toTheFilesName(project);
+        if (followed) Services.getInstance(project, BoundTestProject.class).follow(oldName, newName);
         // Rule-CODEGEN-004, Rule-CODEGEN-051
-        NodeCode.of(dir.getType()).getRenamed().execute(p, renamed);
+        NodeCode.of(dir.getType()).getRenamed().execute(project, renamed);
 
-        Services.getInstance(p, Nodes.class).renameNode(oldPath, newPath, () -> {
-            if (dir instanceof TestProjectNode) projectFollows(p, oldName, newName);
+        Services.getInstance(project, Nodes.class).renameNode(oldPath, newPath, () -> {
+            if (dir instanceof TestProjectNode) projectFollows(project, oldName, newName);
 
             TestinLogger.info("Success! Renamed to: " + newName);
 
             onDone.run();
-        }, () -> putBack(p, renamed, followed));
+        }, () -> putBack(project, renamed, followed));
     }
 
     // UC-TREE-PANEL-011, Rule-TREE-PANEL-133
-    private static void putBack(final @NotNull Project p, final @NotNull RenamedNode renamed, final boolean followed) {
+    private static void putBack(final @NotNull Project project, final @NotNull RenamedNode renamed, final boolean followed) {
         final @NotNull RenamedNode back = renamed.back();
-        NodeCode.of(renamed.dir().getType()).getRenamed().execute(p, back);
-        if (followed) Services.getInstance(p, BoundTestProject.class).follow(renamed.newName(), back.newName());
+        NodeCode.of(renamed.dir().getType()).getRenamed().execute(project, back);
+        if (followed) Services.getInstance(project, BoundTestProject.class).follow(renamed.newName(), back.newName());
 
         TestinLogger.warn("The folder of '" + back.newName() + "' could not be renamed to '" + renamed.newName() + "', so its code and name were put back");
     }
 
     // UC-TREE-PANEL-011, Rule-TREE-PANEL-004, Rule-CODEGEN-080, Rule-CODEGEN-081
-    public static boolean refused(final @NotNull Project p, final @NotNull AbstractNode dir, final @NotNull String newName) {
-        final @NotNull Notifier notifier = Services.getInstance(p, Notifier.class);
+    public static boolean refused(final @NotNull Project project, final @NotNull AbstractNode dir, final @NotNull String newName) {
+        final @NotNull Notifier notifier = Services.getInstance(project, Notifier.class);
 
-        if (Services.getInstance(p, Nodes.class).isTaken(dir.getPath().resolveSibling(newName), Optional.of(dir.getPath()))) {
-            notifier.softRefuse(p, Refused.ALREADY_EXISTS, newName);
+        if (Services.getInstance(project, Nodes.class).isTaken(dir.getPath().resolveSibling(newName), Optional.of(dir.getPath()))) {
+            notifier.softRefuse(project, Refused.ALREADY_EXISTS, newName);
             return true;
         }
 
         final @NotNull RenamedNode renamed = new RenamedNode(dir, newName);
-        if (renamed.packageInTheWay(p)) {
-            notifier.softRefuse(p, Refused.PACKAGE_TAKEN, renamed.newPackage());
+        if (renamed.packageInTheWay(project)) {
+            notifier.softRefuse(project, Refused.PACKAGE_TAKEN, renamed.newPackage());
             return true;
         }
 
-        if (DumbService.isDumb(p) && renamed.movesCode(p) && NodeCode.of(dir.getType()).getRenamed().generates()) {
-            notifier.softRefuse(p, Refused.WHILE_INDEXING, Bundle.message("dialog.rename.title"));
+        if (DumbService.isDumb(project) && renamed.movesCode(project) && NodeCode.of(dir.getType()).getRenamed().generates()) {
+            notifier.softRefuse(project, Refused.WHILE_INDEXING, Bundle.message("dialog.rename.title"));
             return true;
         }
 
@@ -99,14 +99,14 @@ public final class NodeRename {
     }
 
     // UC-TREE-PANEL-011, Rule-TREE-PANEL-110, Rule-TREE-PANEL-112
-    private static void projectFollows(final @NotNull Project p, final @NotNull String oldName, final @NotNull String newName) {
-        Services.getInstance(p, BoundTestProject.class).follow(oldName, newName);
-        if (!TestinYml.names(p, oldName)) return;
+    private static void projectFollows(final @NotNull Project project, final @NotNull String oldName, final @NotNull String newName) {
+        Services.getInstance(project, BoundTestProject.class).follow(oldName, newName);
+        if (!TestinYml.names(project, oldName)) return;
 
-        final @NotNull Notifier notifier = Services.getInstance(p, Notifier.class);
-        notifier.infoWithActions(p, Bundle.message("rename.config.names.old.title", oldName),
+        final @NotNull Notifier notifier = Services.getInstance(project, Notifier.class);
+        notifier.infoWithActions(project, Bundle.message("rename.config.names.old.title", oldName),
                 Bundle.message("rename.config.names.old.message", newName),
-                notifier.action(Bundle.message("yml.save.name", TestinYml.fileName()), () -> SaveTestinYml.start(p)),
-                notifier.action(Bundle.message("rename.config.open"), () -> TestinYml.openInEditor(p)));
+                notifier.action(Bundle.message("yml.save.name", TestinYml.fileName()), () -> SaveTestinYml.start(project)),
+                notifier.action(Bundle.message("rename.config.open"), () -> TestinYml.openInEditor(project)));
     }
 }

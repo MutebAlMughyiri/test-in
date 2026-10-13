@@ -41,33 +41,33 @@ public final class GoTo {
     private static final boolean WITHOUT_FOCUS = false;
 
     // UC-INTERNAL-001, Rule-INTERNAL-002
-    public static void the(final @NotNull Project p, final @NotNull Hit hit) {
+    public static void the(final @NotNull Project project, final @NotNull Hit hit) {
         TestinLogger.info("Going to " + hit.name() + " in " + hit.where());
 
-        hit.testCase().ifPresentOrElse(testCase -> toTestCase(p, hit, testCase), () -> toNode(p, hit));
+        hit.testCase().ifPresentOrElse(testCase -> toTestCase(project, hit, testCase), () -> toNode(project, hit));
     }
 
-    private static void toTestCase(final @NotNull Project p, final @NotNull Hit hit, final @NotNull TestCaseDto testCase) {
-        showTree(p, WITHOUT_FOCUS, tree -> tree.reveal(hit.node().getPath()));
+    private static void toTestCase(final @NotNull Project project, final @NotNull Hit hit, final @NotNull TestCaseDto testCase) {
+        showTree(project, WITHOUT_FOCUS, tree -> tree.reveal(hit.node().getPath()));
 
         // Rule-VIEW-PANEL-010
-        Services.getInstance(p, TestinEditors.class).openThen(hit.node(), editor -> {
+        Services.getInstance(project, TestinEditors.class).openThen(hit.node(), editor -> {
             editor.selectWhenLoaded(testCase.getId());
-            ViewToolWindowFactory.showPanel(p, List.of(testCase), hit.node().getPath2());
+            ViewToolWindowFactory.showPanel(project, List.of(testCase), hit.node().getPath2());
         });
     }
 
-    private static void toNode(final @NotNull Project p, final @NotNull Hit hit) {
-        showTree(p, WITH_FOCUS, tree -> tree.reveal(hit.node().getPath(), tree::focus));
+    private static void toNode(final @NotNull Project project, final @NotNull Hit hit) {
+        showTree(project, WITH_FOCUS, tree -> tree.reveal(hit.node().getPath(), tree::focus));
 
-        Services.getInstance(p, TestinEditors.class).open(hit.node());
+        Services.getInstance(project, TestinEditors.class).open(hit.node());
     }
 
-    private static void showTree(final @NotNull Project p, final boolean withFocus, final @NotNull Consumer<TestProjectTree> onShown) {
-        Optional.ofNullable(ToolWindowManager.getInstance(p).getToolWindow(TREE))
+    private static void showTree(final @NotNull Project project, final boolean withFocus, final @NotNull Consumer<TestProjectTree> onShown) {
+        Optional.ofNullable(ToolWindowManager.getInstance(project).getToolWindow(TREE))
                 .ifPresentOrElse(
                         tw -> tw.activate(() -> onShown.accept(
-                                Services.getInstance(p, TreePanel.class).getProjectTree()), withFocus),
+                                Services.getInstance(project, TreePanel.class).getProjectTree()), withFocus),
                         () -> TestinLogger.warn("The Testin tool window is not registered, so there is no tree to reveal in"));
     }
 }

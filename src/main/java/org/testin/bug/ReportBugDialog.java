@@ -37,8 +37,8 @@ final class ReportBugDialog extends AbstractFrameworkDialog {
     private final @NotNull RunItemPath runItemPath;
     private final @NotNull PreparedBug bug;
     private final @NotNull Runnable redraw;
-    private final @NotNull OpenBugReports reports = Services.getInstance(p, OpenBugReports.class);
-    private final @NotNull TestRuns testRuns = Services.getInstance(p, TestRuns.class);
+    private final @NotNull OpenBugReports reports = Services.getInstance(project, OpenBugReports.class);
+    private final @NotNull TestRuns testRuns = Services.getInstance(project, TestRuns.class);
 
     private final @NotNull DialogPart<TextInput> titleField;
     private final @NotNull DialogPart<PlainTextArea> bodyArea;
@@ -46,8 +46,8 @@ final class ReportBugDialog extends AbstractFrameworkDialog {
 
     private boolean sent;
 
-    ReportBugDialog(final @NotNull Project p, final @NotNull RunItemPath runItemPath, final @NotNull PreparedBug bug, final @NotNull Runnable redraw) {
-        super(p);
+    ReportBugDialog(final @NotNull Project project, final @NotNull RunItemPath runItemPath, final @NotNull PreparedBug bug, final @NotNull Runnable redraw) {
+        super(project);
         this.runItemPath = runItemPath;
         this.bug = bug;
         this.redraw = redraw;
@@ -126,7 +126,7 @@ final class ReportBugDialog extends AbstractFrameworkDialog {
 
         sent = true;
         final @NotNull BugReportEdits edits = new BugReportEdits(titleField.getComponent().getText().strip(), bodyArea.getComponent().getText());
-        BugFiling.send(p, runItemPath, bug.repository().orElseThrow(), edits, bug.facts().screenshots(), redraw);
+        BugFiling.send(project, runItemPath, bug.repository().orElseThrow(), edits, bug.facts().screenshots(), redraw);
         closeOk();
     }
 }

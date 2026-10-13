@@ -57,11 +57,11 @@ public final class JavaTestMethodCode implements TestMethodCode {
     }
 
     // UC-CODEGEN-006, Rule-CODEGEN-001
-    private @NotNull Optional<PsiMethod> resolve(final @NotNull Project p, final @NotNull TestCaseDto testCase) {
+    private @NotNull Optional<PsiMethod> resolve(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
         final @NotNull String classFqcn = Fqcn.classOfMethod(testCase);
         if (classFqcn.isEmpty()) return Optional.empty();
 
-        final @NotNull Optional<PsiClass> owner = GeneratedClass.byName(p, classFqcn);
+        final @NotNull Optional<PsiClass> owner = GeneratedClass.byName(project, classFqcn);
 
         if (owner.isEmpty()) {
             TestinLogger.warn("No generated class " + classFqcn + " for '" + testCase.getDescription() + "'");
@@ -77,19 +77,19 @@ public final class JavaTestMethodCode implements TestMethodCode {
 
     // UC-CODEGEN-006, Rule-CODEGEN-001
     @Override
-    public @NotNull Map<UUID, Boolean> methodsFor(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases) {
+    public @NotNull Map<UUID, Boolean> methodsFor(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases) {
         final @NotNull Map<UUID, Boolean> found = new LinkedHashMap<>();
-        generatedMethodsOf(p, testCases).forEach((testCaseId, pm) -> found.put(testCaseId, doesSomething(pm)));
+        generatedMethodsOf(project, testCases).forEach((testCaseId, pm) -> found.put(testCaseId, doesSomething(pm)));
 
         return found;
     }
 
     // UC-CODEGEN-006, Rule-CODEGEN-001
-    private @NotNull Map<UUID, PsiMethod> generatedMethodsOf(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases) {
+    private @NotNull Map<UUID, PsiMethod> generatedMethodsOf(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases) {
         final @NotNull Map<UUID, PsiMethod> found = new LinkedHashMap<>();
 
         for (final Map.Entry<String, List<TestCaseDto>> group : Fqcn.byClassOfMethod(testCases).entrySet()) {
-            final @NotNull Optional<PsiClass> owner = GeneratedClass.byName(p, group.getKey());
+            final @NotNull Optional<PsiClass> owner = GeneratedClass.byName(project, group.getKey());
 
             if (owner.isEmpty()) continue;
 
@@ -106,11 +106,11 @@ public final class JavaTestMethodCode implements TestMethodCode {
 
     // UC-CODEGEN-021, Rule-CODEGEN-003
     @Override
-    public @NotNull Set<UUID> withAWrittenBody(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases) {
-        if (DumbService.isDumb(p)) return Set.of();
+    public @NotNull Set<UUID> withAWrittenBody(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases) {
+        if (DumbService.isDumb(project)) return Set.of();
 
         final @NotNull Set<UUID> written = new HashSet<>();
-        generatedMethodsOf(p, testCases).forEach((testCaseId, pm) -> {
+        generatedMethodsOf(project, testCases).forEach((testCaseId, pm) -> {
             if (GeneratedMethod.holdsAWrittenBody(pm)) written.add(testCaseId);
         });
 
@@ -119,32 +119,32 @@ public final class JavaTestMethodCode implements TestMethodCode {
 
     // UC-CODEGEN-021, Rule-CODEGEN-003, Rule-CODEGEN-089
     @Override
-    public @NotNull Optional<String> fillBody(final @NotNull Project p, final @NotNull TestCaseDto testCase, final @NotNull String statements) {
-        return write(p, testCase, statements, true);
+    public @NotNull Optional<String> fillBody(final @NotNull Project project, final @NotNull TestCaseDto testCase, final @NotNull String statements) {
+        return write(project, testCase, statements, true);
     }
 
     // UC-CODEGEN-021, Rule-CODEGEN-003, Rule-CODEGEN-091
     @Override
-    public @NotNull Optional<String> replaceBody(final @NotNull Project p, final @NotNull TestCaseDto testCase, final @NotNull String statements) {
-        return write(p, testCase, statements, false);
+    public @NotNull Optional<String> replaceBody(final @NotNull Project project, final @NotNull TestCaseDto testCase, final @NotNull String statements) {
+        return write(project, testCase, statements, false);
     }
 
-    private @NotNull Optional<String> write(final @NotNull Project p, final @NotNull TestCaseDto testCase, final @NotNull String statements, final boolean onlyTheTodo) {
-        if (DumbService.isDumb(p)) return Optional.empty();
+    private @NotNull Optional<String> write(final @NotNull Project project, final @NotNull TestCaseDto testCase, final @NotNull String statements, final boolean onlyTheTodo) {
+        if (DumbService.isDumb(project)) return Optional.empty();
 
-        return WriteCommandAction.writeCommandAction(p)
+        return WriteCommandAction.writeCommandAction(project)
                 .withName(Bundle.message("agent.body.command"))
-                .compute(() -> written(p, testCase, statements, onlyTheTodo));
+                .compute(() -> written(project, testCase, statements, onlyTheTodo));
     }
 
     // Rule-CODEGEN-003, Rule-CODEGEN-089
-    private @NotNull Optional<String> written(final @NotNull Project p, final @NotNull TestCaseDto testCase, final @NotNull String statements, final boolean onlyTheTodo) {
-        final @NotNull Optional<PsiMethod> method = resolve(p, testCase);
+    private @NotNull Optional<String> written(final @NotNull Project project, final @NotNull TestCaseDto testCase, final @NotNull String statements, final boolean onlyTheTodo) {
+        final @NotNull Optional<PsiMethod> method = resolve(project, testCase);
         if (method.isEmpty()) return Optional.empty();
         if (onlyTheTodo && GeneratedMethod.holdsAWrittenBody(method.orElseThrow())) return Optional.empty();
 
         try {
-            final @NotNull PsiCodeBlock written = JavaPsiFacade.getElementFactory(p)
+            final @NotNull PsiCodeBlock written = JavaPsiFacade.getElementFactory(project)
                     .createCodeBlockFromText("{\n" + statements + "\n}", method.orElseThrow());
 
             Optional.ofNullable(method.orElseThrow().getBody()).ifPresent(body -> body.replace(written));
@@ -157,8 +157,8 @@ public final class JavaTestMethodCode implements TestMethodCode {
 
     // UC-CODEGEN-008, Rule-CODEGEN-001
     @Override
-    public @NotNull Map<UUID, List<String>> methodFqcnsOf(final @NotNull Project p, final @NotNull List<TestCaseDto> testCases) {
-        final @NotNull Map<UUID, PsiMethod> methods = generatedMethodsOf(p, testCases);
+    public @NotNull Map<UUID, List<String>> methodFqcnsOf(final @NotNull Project project, final @NotNull List<TestCaseDto> testCases) {
+        final @NotNull Map<UUID, PsiMethod> methods = generatedMethodsOf(project, testCases);
         final @NotNull Map<UUID, List<String>> named = new LinkedHashMap<>();
 
         for (final TestCaseDto testCase : testCases) {
@@ -175,23 +175,23 @@ public final class JavaTestMethodCode implements TestMethodCode {
 
     // UC-CODEGEN-006, Rule-CODEGEN-001
     @Override
-    public void toCode(final @NotNull Project p, final @NotNull TestCaseDto testCase) {
+    public void toCode(final @NotNull Project project, final @NotNull TestCaseDto testCase) {
         TestinLogger.trace("navigate to the method of '" + testCase.getDescription() + "'");
 
-        if (DumbService.isDumb(p)) {
+        if (DumbService.isDumb(project)) {
             TestinLogger.trace("dumb mode detected, deferring navigation");
-            DumbService.getInstance(p).runWhenSmart(() -> toCode(p, testCase));
+            DumbService.getInstance(project).runWhenSmart(() -> toCode(project, testCase));
             return;
         }
 
         ApplicationManager.getApplication().executeOnPooledThread(() ->
                 ApplicationManager.getApplication().runReadAction(() -> {
                     try {
-                        final @NotNull Optional<PsiMethod> found = resolve(p, testCase);
+                        final @NotNull Optional<PsiMethod> found = resolve(project, testCase);
 
                         if (found.isEmpty()) {
-                            ApplicationManager.getApplication().invokeLater(() -> Services.getInstance(p, Notifier.class)
-                                    .softRefuse(p, Refused.NO_GENERATED_CODE, testCase.getDescription()));
+                            ApplicationManager.getApplication().invokeLater(() -> Services.getInstance(project, Notifier.class)
+                                    .softRefuse(project, Refused.NO_GENERATED_CODE, testCase.getDescription()));
                             return;
                         }
 
@@ -203,8 +203,8 @@ public final class JavaTestMethodCode implements TestMethodCode {
                     } catch (final IndexNotReadyException ex) {
                         TestinLogger.trace("index not ready, deferring navigation");
                         ApplicationManager.getApplication().invokeLater(() ->
-                                Services.getInstance(p, Notifier.class).softShow(p, Bundle.message("navigate.waiting.for.indexing")));
-                        DumbService.getInstance(p).runWhenSmart(() -> toCode(p, testCase));
+                                Services.getInstance(project, Notifier.class).softShow(project, Bundle.message("navigate.waiting.for.indexing")));
+                        DumbService.getInstance(project).runWhenSmart(() -> toCode(project, testCase));
                     }
                 })
         );

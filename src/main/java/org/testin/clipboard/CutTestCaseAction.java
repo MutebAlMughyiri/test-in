@@ -41,7 +41,7 @@ import java.util.Optional;
 public class CutTestCaseAction extends AbstractAnyProjectAction {
     // UC-EDITOR-PANEL-016
     @Override
-    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
         final @NotNull Optional<TestinEditor> found = TestinDataKeys.editor(e);
         if (found.isEmpty()) return;
 
@@ -50,25 +50,25 @@ public class CutTestCaseAction extends AbstractAnyProjectAction {
 
         if (!selectedTestCases.isEmpty()) {
             try {
-                final @NotNull String json = Services.getInstance(p, JsonCodec.class).writeValueAsString(selectedTestCases);
+                final @NotNull String json = Services.getInstance(project, JsonCodec.class).writeValueAsString(selectedTestCases);
                 CopyPasteManager.getInstance().setContents(new StringSelection(json));
 
-                Services.getInstance(p, CutState.class).cut(editor, selectedTestCases);
+                Services.getInstance(project, CutState.class).cut(editor, selectedTestCases);
 
                 editor.refreshView();
 
-                Services.getInstance(p, Notifier.class).softShowCounted(p, Done.CUT, selectedTestCases.size());
+                Services.getInstance(project, Notifier.class).softShowCounted(project, Done.CUT, selectedTestCases.size());
 
             } catch (final Exception ex) {
                 TestinLogger.error("Cut Node failed: " + FailureText.of(ex));
-                Services.getInstance(p, Notifier.class).softRefuse(p, Bundle.message("clipboard.cut.failed.title"), FailureText.of(ex));
+                Services.getInstance(project, Notifier.class).softRefuse(project, Bundle.message("clipboard.cut.failed.title"), FailureText.of(ex));
             }
         }
     }
 
     // Rule-EDITOR-PANEL-230
     @Override
-    protected void update(final @NotNull AnActionEvent e, final @NotNull Project p) {
+    protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
         // Rule-EDITOR-PANEL-214
         if (TestinDataKeys.editor(e).filter(editor -> !editor.getParent().isTestCaseContainer()).isPresent()) {
             e.getPresentation().setEnabled(false);

@@ -47,29 +47,29 @@ public final class Gestures {
                 .orElseThrow(() -> new AssertionError("no " + kind.getSimpleName() + " is bound to the " + on.getClass().getSimpleName() + ": " + bound));
     }
 
-    public static @NotNull DataContext dataOf(final @NotNull Project p, final @NotNull JComponent on) {
-        final @NotNull DataContext project = SimpleDataContext.getProjectContext(p);
+    public static @NotNull DataContext dataOf(final @NotNull Project project, final @NotNull JComponent on) {
+        final @NotNull DataContext dataContext = SimpleDataContext.getProjectContext(project);
         for (Component at = on; at != null; at = at.getParent()) {
             if (at instanceof final UiDataProvider provider)
-                return CustomizedDataContext.withSnapshot(project, sink -> sink.uiDataSnapshot(provider));
+                return CustomizedDataContext.withSnapshot(dataContext, sink -> sink.uiDataSnapshot(provider));
         }
-        return project;
+        return dataContext;
     }
 
-    public static @NotNull Presentation updated(final @NotNull Project p, final @NotNull AnAction action, final @NotNull JComponent on) {
-        final @NotNull AnActionEvent e = TestActionEvent.createTestEvent(action, dataOf(p, on));
+    public static @NotNull Presentation updated(final @NotNull Project project, final @NotNull AnAction action, final @NotNull JComponent on) {
+        final @NotNull AnActionEvent e = TestActionEvent.createTestEvent(action, dataOf(project, on));
         ActionUtil.updateAction(action, e);
         return e.getPresentation();
     }
 
-    public static void press(final @NotNull Project p, final @NotNull AnAction action, final @NotNull JComponent on) {
-        final @NotNull AnActionEvent e = TestActionEvent.createTestEvent(action, dataOf(p, on));
+    public static void press(final @NotNull Project project, final @NotNull AnAction action, final @NotNull JComponent on) {
+        final @NotNull AnActionEvent e = TestActionEvent.createTestEvent(action, dataOf(project, on));
         ActionUtil.updateAction(action, e);
         if (e.getPresentation().isEnabled()) ActionUtil.performAction(action, e);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
 
-    public static void press(final @NotNull Project p, final @NotNull JComponent on, final @NotNull Class<? extends AnAction> kind) {
-        press(p, boundTo(on, kind), on);
+    public static void press(final @NotNull Project project, final @NotNull JComponent on, final @NotNull Class<? extends AnAction> kind) {
+        press(project, boundTo(on, kind), on);
     }
 }

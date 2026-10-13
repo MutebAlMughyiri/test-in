@@ -44,49 +44,49 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SaveTestinYml {
     // UC-TREE-PANEL-029, Rule-TREE-PANEL-115
-    public static @NotNull Optional<String> whyNot(final @NotNull Project p) {
-        if (TestinYml.isUnreadable(p)) return Optional.of(Bundle.message("yml.save.disabled.unreadable"));
-        if (Services.getInstance(p, BoundTestProject.class).get().isEmpty())
+    public static @NotNull Optional<String> whyNot(final @NotNull Project project) {
+        if (TestinYml.isUnreadable(project)) return Optional.of(Bundle.message("yml.save.disabled.unreadable"));
+        if (Services.getInstance(project, BoundTestProject.class).get().isEmpty())
             return Optional.of(Bundle.message("yml.save.disabled.no.project"));
 
         return Optional.empty();
     }
 
     // UC-TREE-PANEL-029, Rule-TREE-PANEL-113, Rule-INTERNAL-129
-    public static void start(final @NotNull Project p) {
-        Services.getInstance(p, Guides.class).add(Guide.LINK_THIS_REPOSITORY);
-        final @NotNull Optional<String> why = whyNot(p);
+    public static void start(final @NotNull Project project) {
+        Services.getInstance(project, Guides.class).add(Guide.LINK_THIS_REPOSITORY);
+        final @NotNull Optional<String> why = whyNot(project);
         if (why.isPresent()) {
-            Services.getInstance(p, Notifier.class).softRefuse(p, why.orElseThrow());
+            Services.getInstance(project, Notifier.class).softRefuse(project, why.orElseThrow());
             return;
         }
 
-        final @NotNull TestProjectNode open = Services.getInstance(p, BoundTestProject.class).get().orElseThrow();
+        final @NotNull TestProjectNode open = Services.getInstance(project, BoundTestProject.class).get().orElseThrow();
 
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
-            final @NotNull Map<String, String> lines = linesFor(p, open);
-            final @NotNull String preview = preview(p, open.getName(), lines);
+            final @NotNull Map<String, String> lines = linesFor(project, open);
+            final @NotNull String preview = preview(project, open.getName(), lines);
 
             ApplicationManager.getApplication().invokeLater(() ->
-                    new ConfirmDialog(p, Bundle.message("yml.save.name", TestinYml.fileName()), preview, "", "", Bundle.message("yml.save.confirm"), () -> save(p, lines)).show(), p.getDisposed());
+                    new ConfirmDialog(project, Bundle.message("yml.save.name", TestinYml.fileName()), preview, "", "", Bundle.message("yml.save.confirm"), () -> save(project, lines)).show(), project.getDisposed());
         });
     }
 
     // Rule-TREE-PANEL-113
-    private static @NotNull Map<String, String> linesFor(final @NotNull Project p, final @NotNull TestProjectNode open) {
+    private static @NotNull Map<String, String> linesFor(final @NotNull Project project, final @NotNull TestProjectNode open) {
         if (!OptionalPlugin.GIT.isAvailable()) return TestinYml.lines(open.getName());
 
         final @NotNull Path folder = open.getPath();
-        final @NotNull GitRepositoryService git = new GitRepositoryService(p);
+        final @NotNull GitRepositoryService git = new GitRepositoryService(project);
         return TestinYml.lines(open.getName(), git.isNotRepository(folder) ? "" : git.remoteUrl(folder));
     }
 
     // UC-TREE-PANEL-029, Rule-TREE-PANEL-113, Rule-TREE-PANEL-114
-    private static @NotNull String preview(final @NotNull Project p, final @NotNull String projectName, final @NotNull Map<String, String> lines) {
-        final @NotNull Map<String, String> written = TestinYml.writtenValues(p, lines.keySet());
+    private static @NotNull String preview(final @NotNull Project project, final @NotNull String projectName, final @NotNull Map<String, String> lines) {
+        final @NotNull Map<String, String> written = TestinYml.writtenValues(project, lines.keySet());
         final @NotNull StringBuilder message = new StringBuilder();
 
-        TestinYml.savePath(p).ifPresent(path -> message.append(path).append("\n\n"));
+        TestinYml.savePath(project).ifPresent(path -> message.append(path).append("\n\n"));
         lines.forEach((key, value) -> message.append(key).append(": ").append(value).append("   ").append(change(Optional.ofNullable(written.get(key)), value)).append('\n'));
         message.append('\n').append(Bundle.message("yml.save.rest"))
                 .append('\n').append(Bundle.message("yml.save.shared", projectName));
@@ -100,16 +100,16 @@ public final class SaveTestinYml {
     }
 
     // UC-TREE-PANEL-029, Rule-CODEGEN-082, Rule-INTERNAL-127
-    private static void save(final @NotNull Project p, final @NotNull Map<String, String> lines) {
-        final @NotNull Notifier notifier = Services.getInstance(p, Notifier.class);
-        if (!TestinYml.save(p, lines)) {
-            notifier.softRefuse(p, Bundle.message("yml.save.failed"));
+    private static void save(final @NotNull Project project, final @NotNull Map<String, String> lines) {
+        final @NotNull Notifier notifier = Services.getInstance(project, Notifier.class);
+        if (!TestinYml.save(project, lines)) {
+            notifier.softRefuse(project, Bundle.message("yml.save.failed"));
             return;
         }
 
-        Services.getInstance(p, Hints.class).clear(SetupStep.TEST_PROJECT_LINK);
-        Services.getInstance(p, BoundTestProject.class).refreshGutter();
-        Services.getInstance(p, TestinEditors.class).refreshOpen();
-        notifier.softShow(p, Done.SAVED);
+        Services.getInstance(project, Hints.class).clear(SetupStep.TEST_PROJECT_LINK);
+        Services.getInstance(project, BoundTestProject.class).refreshGutter();
+        Services.getInstance(project, TestinEditors.class).refreshOpen();
+        notifier.softShow(project, Done.SAVED);
     }
 }

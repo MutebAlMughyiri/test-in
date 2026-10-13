@@ -31,16 +31,16 @@ import java.util.List;
 
 public class TreePanelToolbar {
     // UC-TREE-PANEL-028
-    public @NotNull List<AnAction> create(final @NotNull Project p, final @NotNull TreePanel treePanel) {
+    public @NotNull List<AnAction> create(final @NotNull Project project, final @NotNull TreePanel treePanel) {
         return List.of(
                 GlobalSearchAction.registered(),
-                new OpenTestinSettingsAction(p),
+                new OpenTestinSettingsAction(project),
                 new ExpandTreeAction(treePanel),
                 new CollapseTreeAction(treePanel),
                 treePanel.getRefreshAction(),
-                new SelectTestProjectAction(p, treePanel),
-                new CreateTestProjectAction(p, treePanel),
-                new SaveTestinYmlAction(p)
+                new SelectTestProjectAction(project, treePanel),
+                new CreateTestProjectAction(project, treePanel),
+                new SaveTestinYmlAction(project)
         );
     }
 }
