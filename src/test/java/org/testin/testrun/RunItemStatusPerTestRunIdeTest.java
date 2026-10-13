@@ -56,7 +56,7 @@ public class RunItemStatusPerTestRunIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull RunItemStatus runItemStatusIn(final @NotNull Path testRunPath) {
-        return indexedTestRuns().getRunItems(testRunPath).runItemOf(testCaseId).orElseThrow().getStatus();
+        return indexedTestRuns().getRunItems(testRunPath).runItemOf(testCaseId).flatMap(RunItem::defaultExecution).orElseThrow().getStatus();
     }
 
     // Rule-PRODUCT-009

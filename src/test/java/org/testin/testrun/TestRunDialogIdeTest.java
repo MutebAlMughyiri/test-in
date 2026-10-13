@@ -285,7 +285,7 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
         final @NotNull RunItems saved = indexedTestRuns().getRunItems(testRun.getPath());
         assertEquals("saving removed what the test run recorded for a test case the dialog did not show", Set.of(first.getId(), inOld.getId(), deleted), saved.coveredIds());
         assertEquals(RunItemStatus.FAILED, saved.runItemOf(inOld.getId()).map(RunItem::getStatus).orElseThrow());
-        assertEquals(RunItemStatus.PASSED, saved.runItemOf(deleted).map(RunItem::getStatus).orElseThrow());
+        assertEquals(RunItemStatus.PASSED, saved.runItemOf(deleted).flatMap(RunItem::defaultExecution).map(RunItemExecution::getStatus).orElseThrow());
     }
 
     // Rule-TREE-PANEL-134
