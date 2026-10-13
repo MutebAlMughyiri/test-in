@@ -27,5 +27,5 @@ public interface FieldRevert {
     FieldRevert NONE = (_, _) -> {
     };
 
-    void apply(final @NotNull TestCaseDtoBuilder draft, final @NotNull TestCaseDto oldDto);
+    void apply(final @NotNull TestCaseDtoBuilder draft, final @NotNull TestCaseDto oldTestCase);
 }

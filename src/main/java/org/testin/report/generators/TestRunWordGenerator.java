@@ -341,16 +341,16 @@ public final class TestRunWordGenerator {
 
         for (final XWPFTableRow row : table.getRows()) {
             for (final XWPFTableCell cell : row.getTableCells()) {
-                final @NotNull CTTcPr cellProperties = getTcPr(cell);
+                final @NotNull CTTcPr cellProperties = propertiesOf(cell);
                 (cellProperties.isSetTcW() ? cellProperties.getTcW() : cellProperties.addNewTcW())
                         .setType(STTblWidth.AUTO);
             }
         }
     }
 
-    private void addTestCaseHeader(final @NotNull XWPFTableRow headerRow, final int column, final @NotNull String text, final @NotNull String bgColor, final @NotNull String textColor) {
+    private void addTestCaseHeader(final @NotNull XWPFTableRow headerRow, final int column, final @NotNull String text, final @NotNull String backgroundColor, final @NotNull String textColor) {
         final @NotNull XWPFTableCell cell = headerRow.getCell(column);
-        shadeCell(cell, bgColor);
+        shadeCell(cell, backgroundColor);
         setCellPadding(cell, 5, 6, 5, 6);
         setCellText(cell, text, ReportFont.HEADING.roundedPoints(), true, textColor);
     }
@@ -394,26 +394,26 @@ public final class TestRunWordGenerator {
     }
 
     private void shadeCell(final @NotNull XWPFTableCell cell, final @NotNull String hex) {
-        getTcPr(cell).addNewShd().setFill(hex);
+        propertiesOf(cell).addNewShd().setFill(hex);
     }
 
-    private void setCellPadding(final @NotNull XWPFTableCell cell, final int topPt, final int leftPt, final int bottomPt, final int rightPt) {
-        final @NotNull CTTcMar margins = getTcPr(cell).addNewTcMar();
+    private void setCellPadding(final @NotNull XWPFTableCell cell, final int topPoints, final int leftPoints, final int bottomPoints, final int rightPoints) {
+        final @NotNull CTTcMar margins = propertiesOf(cell).addNewTcMar();
         final @NotNull CTTblWidth top = margins.addNewTop();
-        top.setW(topPt * 20);
+        top.setW(topPoints * 20);
         top.setType(STTblWidth.Enum.forString("dxa"));
         final @NotNull CTTblWidth left = margins.addNewLeft();
-        left.setW(leftPt * 20);
+        left.setW(leftPoints * 20);
         left.setType(STTblWidth.Enum.forString("dxa"));
         final @NotNull CTTblWidth bottom = margins.addNewBottom();
-        bottom.setW(bottomPt * 20);
+        bottom.setW(bottomPoints * 20);
         bottom.setType(STTblWidth.Enum.forString("dxa"));
         final @NotNull CTTblWidth right = margins.addNewRight();
-        right.setW(rightPt * 20);
+        right.setW(rightPoints * 20);
         right.setType(STTblWidth.Enum.forString("dxa"));
     }
 
-    private @NotNull CTTcPr getTcPr(final @NotNull XWPFTableCell cell) {
+    private @NotNull CTTcPr propertiesOf(final @NotNull XWPFTableCell cell) {
         final @NotNull CTTc rawCell = cell.getCTTc();
         return rawCell.isSetTcPr() ? rawCell.getTcPr() : rawCell.addNewTcPr();
     }
@@ -421,7 +421,7 @@ public final class TestRunWordGenerator {
     private void setTableBorders(final @NotNull XWPFTable table) {
         for (final XWPFTableRow row : table.getRows()) {
             for (final XWPFTableCell cell : row.getTableCells()) {
-                final @NotNull CTTcBorders borders = getTcPr(cell).addNewTcBorders();
+                final @NotNull CTTcBorders borders = propertiesOf(cell).addNewTcBorders();
                 final @NotNull CTBorder top = borders.addNewTop();
                 top.setColor(BORDER_GRAY);
                 top.setSz(BigInteger.valueOf(4));
@@ -454,8 +454,8 @@ public final class TestRunWordGenerator {
     private void setTableWidths(final @NotNull XWPFTable table, final int... percents) {
         final @NotNull XWPFTableRow row = table.getRow(0);
         for (int i = 0; i < row.getTableCells().size() && i < percents.length; i++) {
-            getTcPr(row.getCell(i)).addNewTcW().setW(percents[i] * 100);
-            getTcPr(row.getCell(i)).getTcW().setType(STTblWidth.Enum.forString("pct"));
+            propertiesOf(row.getCell(i)).addNewTcW().setW(percents[i] * 100);
+            propertiesOf(row.getCell(i)).getTcW().setType(STTblWidth.Enum.forString("pct"));
         }
     }
 

@@ -118,11 +118,11 @@ public class GenerateReportAction extends AbstractBoundProjectAction {
 
     // UC-REPORT-001, Rule-REPORT-003
     void writeReport(final @NotNull TestRunNode testRun, final @NotNull FileFormat format, final @NotNull File outputFile, final @NotNull ProgressIndicator indicator) {
-        final @NotNull Path dirPath = testRun.getPath();
+        final @NotNull Path directory = testRun.getPath();
 
         // Rule-EDITOR-PANEL-239
-        TestRunFromGit.read(project, dirPath);
-        final @NotNull RunItems runItems = testRuns.getRunItems(dirPath);
+        TestRunFromGit.read(project, directory);
+        final @NotNull RunItems runItems = testRuns.getRunItems(directory);
 
         final byte[] fileBytes = format.generateReport(project, testRun, runItems);
 

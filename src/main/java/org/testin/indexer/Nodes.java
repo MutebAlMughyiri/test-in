@@ -226,8 +226,8 @@ public final class Nodes {
         return false;
     }
 
-    <M extends AbstractMarker> @NotNull M readMarker(final @NotNull Path dirPath, final @NotNull NodeType kind, final @NotNull Class<M> markerClass) {
-        return store().readMarker(dirPath, kind, markerClass);
+    <M extends AbstractMarker> @NotNull M readMarker(final @NotNull Path directory, final @NotNull NodeType kind, final @NotNull Class<M> markerClass) {
+        return store().readMarker(directory, kind, markerClass);
     }
 
     public @NotNull Optional<AbstractNode> find(final @NotNull Path path) {
@@ -239,7 +239,7 @@ public final class Nodes {
     }
 
     public void refreshDirectory(final @NotNull Path path) {
-        store().refreshDir(path);
+        store().refreshDirectory(path);
     }
 
     // UC-TREE-PANEL-011, Rule-TREE-PANEL-133

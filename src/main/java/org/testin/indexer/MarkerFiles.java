@@ -55,8 +55,8 @@ final class MarkerFiles {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-014
-    <M extends AbstractMarker> @NotNull M read(final @NotNull Path dirPath, final @NotNull NodeType kind, final @NotNull Class<M> markerClass) {
-        final @NotNull Path markerFile = dirPath.resolve(kind.getMarker());
+    <M extends AbstractMarker> @NotNull M read(final @NotNull Path directory, final @NotNull NodeType kind, final @NotNull Class<M> markerClass) {
+        final @NotNull Path markerFile = directory.resolve(kind.getMarker());
 
         if (!Files.exists(markerFile)) return defaultFor(markerClass, kind);
 
@@ -66,13 +66,13 @@ final class MarkerFiles {
         } catch (final IOException | UncheckedIOException ex) {
             TestinLogger.warn("Unreadable " + kind.getMarkerKind() + " marker " + markerFile + ", using defaults: " + FailureText.of(ex));
 
-            damaged.add(dirPath);
+            damaged.add(directory);
             return defaultFor(markerClass, kind);
         }
     }
 
-    boolean write(final @NotNull Path dirPath, final @NotNull String markerFileName, final @NotNull Marker marker) {
-        final @NotNull Path file = dirPath.resolve(markerFileName);
+    boolean write(final @NotNull Path directory, final @NotNull String markerFileName, final @NotNull Marker marker) {
+        final @NotNull Path file = directory.resolve(markerFileName);
 
         // UC-INTERNAL-002, Rule-INTERNAL-083
         if (marker.getCreatedBy().isEmpty()) {
@@ -116,13 +116,13 @@ final class MarkerFiles {
         }
     }
 
-    void touched(final @NotNull Path dirPath, final @NotNull String markerFileName, final @NotNull Marker marker) {
+    void touched(final @NotNull Path directory, final @NotNull String markerFileName, final @NotNull Marker marker) {
         final @NotNull String updatedByBefore = marker.getUpdatedBy();
         final @NotNull ZonedDateTime updatedAtBefore = marker.getUpdatedAt();
 
         marker.touch(tester());
-        if (testDataFiles.alreadyHolds(dirPath.resolve(markerFileName), marker)) return;
-        if (write(dirPath, markerFileName, marker)) return;
+        if (testDataFiles.alreadyHolds(directory.resolve(markerFileName), marker)) return;
+        if (write(directory, markerFileName, marker)) return;
 
         // Rule-INTERNAL-123
         marker.setUpdatedBy(updatedByBefore);
@@ -131,19 +131,19 @@ final class MarkerFiles {
 
     // UC-INTERNAL-002, Rule-INTERNAL-014
     @NotNull List<Path> takeDamaged(final @NotNull Path projectPath) {
-        final @NotNull List<Path> taken = damaged.stream().filter(dirPath -> dirPath.startsWith(projectPath)).toList();
+        final @NotNull List<Path> taken = damaged.stream().filter(directory -> directory.startsWith(projectPath)).toList();
         taken.forEach(damaged::remove);
 
         return taken;
     }
 
-    boolean has(final @NotNull Path dirPath, final @NotNull NodeType kind) {
-        return Files.exists(dirPath.resolve(kind.getMarker()));
+    boolean has(final @NotNull Path directory, final @NotNull NodeType kind) {
+        return Files.exists(directory.resolve(kind.getMarker()));
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-009
-    @NotNull Optional<NodeType> markedAs(final @NotNull Path dirPath, final @NotNull List<NodeType> family) {
-        return family.stream().filter(kind -> has(dirPath, kind)).findFirst();
+    @NotNull Optional<NodeType> markedAs(final @NotNull Path directory, final @NotNull List<NodeType> family) {
+        return family.stream().filter(kind -> has(directory, kind)).findFirst();
     }
 
     private @NotNull String tester() {

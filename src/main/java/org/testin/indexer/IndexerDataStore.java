@@ -216,13 +216,13 @@ final class IndexerDataStore {
 
         map.put(node.getPath().toString(), node);
         childrenIndex.invalidate();
-        refreshDir(node.getPath());
+        refreshDirectory(node.getPath());
         return true;
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-014
-    <M extends AbstractMarker> @NotNull M readMarker(final @NotNull Path dirPath, final @NotNull NodeType kind, final @NotNull Class<M> markerClass) {
-        return markers.read(dirPath, kind, markerClass);
+    <M extends AbstractMarker> @NotNull M readMarker(final @NotNull Path directory, final @NotNull NodeType kind, final @NotNull Class<M> markerClass) {
+        return markers.read(directory, kind, markerClass);
     }
 
     @NotNull List<Path> takeDamagedMarkers(final @NotNull Path projectPath) {
@@ -246,16 +246,16 @@ final class IndexerDataStore {
         return markers.giveFreshId(markerFile);
     }
 
-    boolean hasMarker(final @NotNull Path dirPath, final @NotNull NodeType kind) {
-        return markers.has(dirPath, kind);
+    boolean hasMarker(final @NotNull Path directory, final @NotNull NodeType kind) {
+        return markers.has(directory, kind);
     }
 
-    @NotNull Optional<NodeType> markedAs(final @NotNull Path dirPath, final @NotNull List<NodeType> family) {
-        return markers.markedAs(dirPath, family);
+    @NotNull Optional<NodeType> markedAs(final @NotNull Path directory, final @NotNull List<NodeType> family) {
+        return markers.markedAs(directory, family);
     }
 
-    void refreshDir(final @NotNull Path dirPath) {
-        refresh(dirPath, true);
+    void refreshDirectory(final @NotNull Path directory) {
+        refresh(directory, true);
     }
 
     private void refresh(final @NotNull Path path, final boolean recursive) {
@@ -387,9 +387,9 @@ final class IndexerDataStore {
         testRunsFoldersByPath.put(testProject.getTestRunsFolder().getPath().toString(), testProject.getTestRunsFolder());
         childrenIndex.invalidate();
 
-        refreshDir(testProject.getPath());
-        refreshDir(testProject.getTestCasesFolder().getPath());
-        refreshDir(testProject.getTestRunsFolder().getPath());
+        refreshDirectory(testProject.getPath());
+        refreshDirectory(testProject.getTestCasesFolder().getPath());
+        refreshDirectory(testProject.getTestRunsFolder().getPath());
         return true;
     }
 

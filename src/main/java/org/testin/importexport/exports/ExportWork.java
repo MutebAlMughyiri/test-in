@@ -68,16 +68,16 @@ record ExportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
         return String.join(" - ", treePath) + " (" + (taken.size() + 1) + ")";
     }
 
-    private static @NotNull Optional<VirtualFile> resolveTargetDir(final @NotNull AbstractNode node) {
+    private static @NotNull Optional<VirtualFile> resolveTargetDirectory(final @NotNull AbstractNode node) {
         return Optional.ofNullable(LocalFileSystem.getInstance().findFileByPath(node.getPath().toString()))
                 .map(target -> target.isDirectory() ? target : target.getParent());
     }
 
     // UC-SHARE-001, Rule-SHARE-015
     void exportFrom(final @NotNull AbstractNode node) {
-        final @NotNull Optional<VirtualFile> resolved = resolveTargetDir(node);
+        final @NotNull Optional<VirtualFile> resolved = resolveTargetDirectory(node);
         if (resolved.isEmpty()) return;
-        final @NotNull VirtualFile targetDir = resolved.orElseThrow();
+        final @NotNull VirtualFile targetDirectory = resolved.orElseThrow();
 
         BackgroundWork.run(project, Bundle.message("export.task.reading", node.getName()), Bundle.message("export.failed.title"), _ -> {
             final @NotNull GatheredSheets gathered = gather(node);
@@ -90,18 +90,18 @@ record ExportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
 
             ApplicationManager.getApplication().invokeLater(() -> {
                 if (gathered.unreadable().isEmpty()) {
-                    chooseWhatToExport(sheets, targetDir);
+                    chooseWhatToExport(sheets, targetDirectory);
                     return;
                 }
 
                 new ConfirmDialog(project, Bundle.message("export.unreadable.title"), unreadableWarning(gathered.unreadable()),
-                        "", "", Bundle.message("export.anyway"), () -> chooseWhatToExport(sheets, targetDir)).show();
+                        "", "", Bundle.message("export.anyway"), () -> chooseWhatToExport(sheets, targetDirectory)).show();
             });
         });
     }
 
-    private void chooseWhatToExport(final @NotNull Map<String, List<TestCaseDto>> sheets, final @NotNull VirtualFile targetDir) {
-        new ExportDialog(project, TestSetEditorFields.all(Can.EXPORT), sheets, targetDir, this::writeExport).show();
+    private void chooseWhatToExport(final @NotNull Map<String, List<TestCaseDto>> sheets, final @NotNull VirtualFile targetDirectory) {
+        new ExportDialog(project, TestSetEditorFields.all(Can.EXPORT), sheets, targetDirectory, this::writeExport).show();
     }
 
     // UC-SHARE-001, Rule-SHARE-005

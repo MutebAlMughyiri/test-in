@@ -36,9 +36,9 @@ final class SequenceColumnRowSelector extends MouseAdapter {
         if (!SwingUtilities.isLeftMouseButton(e) || e.isPopupTrigger()) return;
 
         final int viewRow = table.rowAtPoint(e.getPoint());
-        final int viewCol = table.columnAtPoint(e.getPoint());
-        if (viewRow < 0 || viewCol < 0) return;
-        if (!GridTables.isSequenceColumn(table, viewCol)) return;
+        final int viewColumn = table.columnAtPoint(e.getPoint());
+        if (viewRow < 0 || viewColumn < 0) return;
+        if (!GridTables.isSequenceColumn(table, viewColumn)) return;
 
         final @NotNull ListSelectionModel rows = table.getSelectionModel();
 
@@ -57,7 +57,7 @@ final class SequenceColumnRowSelector extends MouseAdapter {
 
         table.setColumnSelectionInterval(0, table.getColumnCount() - 1);
 
-        table.getColumnModel().getSelectionModel().setAnchorSelectionIndex(viewCol);
+        table.getColumnModel().getSelectionModel().setAnchorSelectionIndex(viewColumn);
 
         table.requestFocusInWindow();
 

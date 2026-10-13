@@ -184,10 +184,10 @@ final class IndexingScanner {
         try (Stream<Path> paths = Files.list(testCaseDirectory)) {
             final @NotNull List<Path> directories = paths.filter(Files::isDirectory).toList();
 
-            for (final Path dirPath : directories) {
+            for (final Path directory : directories) {
                 if (indicator.isCanceled()) return;
 
-                scanTestSetOrPackage(dirPath, parent, indicator, unread, scanned);
+                scanTestSetOrPackage(directory, parent, indicator, unread, scanned);
             }
         } catch (final NoSuchFileException absent) {
             TestinLogger.info("No test sets to read: " + testCaseDirectory);
@@ -197,13 +197,13 @@ final class IndexingScanner {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-008, Rule-INTERNAL-015
-    private void scanTestSetOrPackage(final @NotNull Path dirPath, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedProject scanned) {
-        store.markedAs(dirPath, NodeType.UNDER_TEST_CASES).ifPresentOrElse(
+    private void scanTestSetOrPackage(final @NotNull Path directory, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedProject scanned) {
+        store.markedAs(directory, NodeType.UNDER_TEST_CASES).ifPresentOrElse(
                 marked -> {
-                    if (marked == NodeType.TEST_SET) scanTestSet(dirPath, parent, indicator, scanned);
-                    else scanTestSetPackage(dirPath, parent, indicator, unread, scanned);
+                    if (marked == NodeType.TEST_SET) scanTestSet(directory, parent, indicator, scanned);
+                    else scanTestSetPackage(directory, parent, indicator, unread, scanned);
                 },
-                () -> skipped(dirPath, NodeType.UNDER_TEST_CASES, unread));
+                () -> skipped(directory, NodeType.UNDER_TEST_CASES, unread));
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-008, Rule-INTERNAL-015
@@ -278,10 +278,10 @@ final class IndexingScanner {
         try (Stream<Path> paths = Files.list(testRunDirectory)) {
             final @NotNull List<Path> directories = paths.filter(Files::isDirectory).toList();
 
-            for (final Path dirPath : directories) {
+            for (final Path directory : directories) {
                 if (indicator.isCanceled()) return;
 
-                scanTestRunOrPackage(dirPath, parent, indicator, unread, scanned);
+                scanTestRunOrPackage(directory, parent, indicator, unread, scanned);
             }
         } catch (final NoSuchFileException absent) {
             TestinLogger.info("No test runs to read: " + testRunDirectory);
@@ -291,13 +291,13 @@ final class IndexingScanner {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-010, Rule-INTERNAL-015
-    private void scanTestRunOrPackage(final @NotNull Path dirPath, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedProject scanned) {
-        store.markedAs(dirPath, NodeType.UNDER_TEST_RUNS).ifPresentOrElse(
+    private void scanTestRunOrPackage(final @NotNull Path directory, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull List<Path> unread, final @NotNull ScannedProject scanned) {
+        store.markedAs(directory, NodeType.UNDER_TEST_RUNS).ifPresentOrElse(
                 marked -> {
-                    if (marked == NodeType.TEST_RUN) scanTestRun(dirPath, parent, indicator, scanned);
-                    else scanTestRunPackageNode(dirPath, parent, indicator, unread, scanned);
+                    if (marked == NodeType.TEST_RUN) scanTestRun(directory, parent, indicator, scanned);
+                    else scanTestRunPackageNode(directory, parent, indicator, unread, scanned);
                 },
-                () -> skipped(dirPath, NodeType.UNDER_TEST_RUNS, unread));
+                () -> skipped(directory, NodeType.UNDER_TEST_RUNS, unread));
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-010, Rule-INTERNAL-015
@@ -318,14 +318,14 @@ final class IndexingScanner {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-015
-    private void skipped(final @NotNull Path dirPath, final @NotNull List<NodeType> family, final @NotNull List<Path> unread) {
-        TestinLogger.warn("Skipping unmarked directory (missing " + NodeType.markerNames(family) + "): " + dirPath);
+    private void skipped(final @NotNull Path directory, final @NotNull List<NodeType> family, final @NotNull List<Path> unread) {
+        TestinLogger.warn("Skipping unmarked directory (missing " + NodeType.markerNames(family) + "): " + directory);
 
-        if (holdsTestCases(dirPath)) unread.add(dirPath);
+        if (holdsTestCases(directory)) unread.add(directory);
     }
 
-    private boolean holdsTestCases(final @NotNull Path dirPath) {
-        try (Stream<Path> files = Files.list(dirPath)) {
+    private boolean holdsTestCases(final @NotNull Path directory) {
+        try (Stream<Path> files = Files.list(directory)) {
             return files.filter(Files::isRegularFile).anyMatch(IndexingScanner::looksLikeATestCaseFile);
         } catch (final IOException | UncheckedIOException unreadable) {
             return false;

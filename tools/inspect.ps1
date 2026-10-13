@@ -1221,6 +1221,56 @@ function Read-UnusedLambdaParameters([string[]] $scopes)
     }
 }
 
+function Read-AbbreviatedNames([string[]] $scopes)
+{
+    <#
+        A name that abbreviates a word (#426). Muteb, 13 October 2026: "no
+        abbriviations in our pligin at all. except java and all known like
+        exception -> ex". CLAUDE.md's Abbreviations table is the one list of
+        what may stay; this rule holds back the ones the sweep removed, so a
+        tp, a dto or a btn does not come back one paste at a time.
+
+        Read off the masked source. A name after a dot is a member of
+        someone's API - FileUtil.copyDir, cell.getTcPr - and is not Testin's
+        to rename, so only a bare name counts: a declaration, a parameter, a
+        lambda parameter or a use of one.
+    #>
+    $whole = '^(p|tc|tcs|tp|ts|tr|tsp|trp|dto|dir|dirs|pm|pc|vf|uvf|cm|gbc|fm|btn|lbl|idx|str|bg|fg|col|cols|attr|gt|baos|fos|os|wb|ws|tw|env|sp|doc|para|msg|src|desc|pos|fmt|sel|seq|pref|obj|evt|num|pri|sev|pkg|[a-dfhk-wz])$'
+    $part = '(?<=[a-z0-9])(Tc|Tp|Dir|Btn|Txt|Lbl|Col|Idx|Str|Bg|Fg|Pt|Attr|Pkg|Vf|Dto)(?=[A-Z0-9]|$)'
+    foreach ($scope in $scopes)
+    {
+        foreach ($file in Get-ChildItem -Path $scope -Filter *.java -Recurse -File)
+        {
+            $masked = Hide-StringsAndComments ([System.IO.File]::ReadAllText($file.FullName))
+            $path = $file.FullName.Substring($repo.Length + 1) -replace '\\', '/'
+            $seen = @{ }
+
+            foreach ($match in [regex]::Matches($masked, '(?<![\w$.@])([a-z][\w$]*)(?![\w$])'))
+            {
+                $name = $match.Groups[1].Value
+                if ($seen.ContainsKey($name) -or $name -cnotmatch $whole -and $name -cnotmatch $part)
+                {
+                    continue
+                }
+                $before = $masked.Substring(0, $match.Index).TrimEnd()
+                if ($before.EndsWith('::') -or $before -match '\b(package|import)\s+[\w.]*$')
+                {
+                    continue
+                }
+                $seen[$name] = $true
+
+                [pscustomobject]@{
+                    Path = $path
+                    Line = ($masked.Substring(0, $match.Index) -split "`n").Count
+                    Inspection = 'AbbreviatedName'
+                    Severity = 'ERROR'
+                    Message = "'$name' abbreviates a word. Spell it out; CLAUDE.md's Abbreviations table lists the Java idioms that stay"
+                }
+            }
+        }
+    }
+}
+
 function Read-WrappedDeclarations([string] $scope)
 {
     <#
@@ -2199,6 +2249,7 @@ $problems += @(Read-MissingCopyright $everyTree)
 $problems += @(Read-NonMarkerComments $everyTree)
 $problems += @(Read-UnusedLambdaParameters $everyTree)
 $problems += @(Read-QualifiedClassNames $everyTree)
+$problems += @(Read-AbbreviatedNames $everyTree)
 $problems += @(Read-UnicodeEscapes $everyTree)
 $problems += @(Read-UnusedImports $everyTree)
 if ($Quick)

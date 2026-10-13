@@ -204,12 +204,12 @@ public class TreeTransferRestrictionsTest {
     public void transfersNeverCrossTestProjects() {
         final AbstractNode projectA = project("projectA");
         final AbstractNode packageInA = childPackage(projectA, "pkg");
-        final AbstractNode testCasesDirInA = childPackage(projectA, "Test Cases");
+        final AbstractNode testCasesFolderInA = childPackage(projectA, "Test Cases");
 
         final AbstractNode projectB = project("projectB");
         final AbstractNode packageInB = childPackage(projectB, "pkg2");
 
-        assertTrue(TreeTransferHandler.sameTestProject(packageInA, testCasesDirInA),
+        assertTrue(TreeTransferHandler.sameTestProject(packageInA, testCasesFolderInA),
                 "within one project must stay allowed");
         assertFalse(TreeTransferHandler.sameTestProject(packageInA, packageInB),
                 "across projects must be rejected, whatever the node types");

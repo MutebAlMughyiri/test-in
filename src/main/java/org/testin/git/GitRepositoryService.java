@@ -117,7 +117,7 @@ public final class GitRepositoryService {
 
     public int rebaseStep(final @NotNull Path path) {
         return gitDirectory(path)
-                .map(gitDir -> readStep(gitDir.resolve("rebase-merge").resolve("msgnum")) + readStep(gitDir.resolve("rebase-apply").resolve("next")))
+                .map(gitDirectory -> readStep(gitDirectory.resolve("rebase-merge").resolve("msgnum")) + readStep(gitDirectory.resolve("rebase-apply").resolve("next")))
                 .orElse(0);
     }
 
@@ -222,12 +222,12 @@ public final class GitRepositoryService {
 
     private boolean isRebaseInProgress(final @NotNull Path path) {
         return gitDirectory(path)
-                .filter(gitDir -> Files.isDirectory(gitDir.resolve("rebase-merge")) || Files.isDirectory(gitDir.resolve("rebase-apply")))
+                .filter(gitDirectory -> Files.isDirectory(gitDirectory.resolve("rebase-merge")) || Files.isDirectory(gitDirectory.resolve("rebase-apply")))
                 .isPresent();
     }
 
     private @NotNull Optional<Path> gitDirectory(final @NotNull Path path) {
-        return run(path, GitCommand.REV_PARSE, "--absolute-git-dir").map(String::trim).filter(gitDir -> !gitDir.isEmpty()).map(Path::of);
+        return run(path, GitCommand.REV_PARSE, "--absolute-git-dir").map(String::trim).filter(gitDirectory -> !gitDirectory.isEmpty()).map(Path::of);
     }
 
     public boolean couldNotAbortRebase(final @NotNull Path path) {

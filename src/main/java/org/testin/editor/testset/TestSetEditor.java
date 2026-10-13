@@ -176,14 +176,14 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorFields, Tes
             snapshot = new ArrayList<>(this.allTestCases);
         }
 
-        final @NotNull Path dirPath = parent.getPath();
+        final @NotNull Path directory = parent.getPath();
 
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             try {
                 final @NotNull List<TestCaseDto> moved = TestCaseOrder.place(snapshot);
 
-                if (!testCases.updateSequence(dirPath, snapshot, moved)) {
-                    TestinLogger.warn("Not every test case of the new order was written: " + dirPath);
+                if (!testCases.updateSequence(directory, snapshot, moved)) {
+                    TestinLogger.warn("Not every test case of the new order was written: " + directory);
                     ApplicationManager.getApplication().invokeLater(this::refuseSequence);
                     return;
                 }
