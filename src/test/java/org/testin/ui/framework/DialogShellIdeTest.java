@@ -116,7 +116,7 @@ public class DialogShellIdeTest extends BasePlatformTestCase {
     }
 
     private static @NotNull DialogPart<TextInput> aField(final @NotNull String caption) {
-        return DialogPart.textField().caption(caption).placeholder("set " + caption.toLowerCase(Locale.ROOT) + "..").build();
+        return DialogPart.textInput().caption(caption).placeholder("set " + caption.toLowerCase(Locale.ROOT) + "..").build();
     }
 
     @Override

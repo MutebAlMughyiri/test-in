@@ -167,7 +167,7 @@ public class DialogLooksIdeTest extends BasePlatformTestCase {
     private static @NotNull JComponent everyField() {
         final @NotNull JPanel stack = new JPanel();
         Stream.of(
-                        DialogPart.textField().caption("Name").placeholder("set name..").build(),
+                        DialogPart.textInput().caption("Name").placeholder("set name..").build(),
                         DialogPart.textArea().placeholder("paste the failure..").build(),
                         DialogPart.choice("Branch", List.of("main", "release"), "main"),
                         DialogPart.<String>radios("Format").option("PDF", "pdf").option("HTML", "html").select("pdf").build(),
@@ -210,7 +210,7 @@ public class DialogLooksIdeTest extends BasePlatformTestCase {
     public void testEveryIconAFrameworkSurfaceDrawsIsGrayEvenWhenTheIconItIsHandedIsColored() {
         assertFalse("the icon this test hands the framework is not colored, so it proves nothing", isGray(GREEN));
 
-        final @NotNull Component field = DialogPart.textField().icon(GREEN).placeholder("set name..").build().getComponent().getFocusComponent();
+        final @NotNull Component field = DialogPart.textInput().icon(GREEN).placeholder("set name..").build().getComponent().getFocusComponent();
         assertFalse("the field drew no icon", extensionIconsOf(field).isEmpty());
         assertTrue("a field drew its icon in color", extensionIconsOf(field).stream().allMatch(DialogLooksIdeTest::isGray));
 
@@ -243,7 +243,7 @@ public class DialogLooksIdeTest extends BasePlatformTestCase {
 
     // UC-INTERNAL-007, Rule-INTERNAL-087
     public void testACaptionSitsAboveItsFieldInCapitalsInTheMutedGrayStartingWhereTheFieldsFrameStarts() {
-        final @NotNull TextInput name = DialogPart.textField().caption("Name").placeholder("set name..").build().getComponent();
+        final @NotNull TextInput name = DialogPart.textInput().caption("Name").placeholder("set name..").build().getComponent();
         final @NotNull JComponent panel = realized(name.getPanel());
         final @NotNull Component field = name.getFocusComponent();
         final @NotNull JLabel caption = captionOf(panel, field);
@@ -293,7 +293,7 @@ public class DialogLooksIdeTest extends BasePlatformTestCase {
 
     // UC-INTERNAL-007, Rule-INTERNAL-096
     public void testEveryTypingSurfaceIsInTheFrameAndSizeOfATextField() {
-        final @NotNull Component field = DialogPart.textField().placeholder("set name..").build().getComponent().getFocusComponent();
+        final @NotNull Component field = DialogPart.textInput().placeholder("set name..").build().getComponent().getFocusComponent();
         final @NotNull PlainTextArea area = DialogPart.textArea().placeholder("paste the failure..").build().getComponent();
         final @NotNull JScrollPane well = drawn(area.getPanel(), JScrollPane.class).getFirst();
         final @NotNull JComponent value = drawn(DialogPart.details().row("Description", "Log in with a valid user").build().getComponent().getPanel(), JLabel.class).stream()

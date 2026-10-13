@@ -26,7 +26,7 @@ import java.util.Map;
 public record CommitSection(@NotNull DialogPart<TextInput> component) implements TestRunSection {
     // UC-TREE-PANEL-021
     public static @NotNull CommitSection of(final @NotNull String value) {
-        return new CommitSection(DialogPart.textField()
+        return new CommitSection(DialogPart.textInput()
                 .caption(TestRunConfiguration.COMMIT.getDisplayName())
                 .placeholder(Bundle.message("test.run.form.commit.hint"))
                 .value(value)

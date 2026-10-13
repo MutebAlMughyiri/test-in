@@ -23,7 +23,7 @@ import org.testin.util.Bundle;
 public record TestRunNameSection(@NotNull DialogPart<TextInput> component) {
     // UC-TREE-PANEL-021
     public static @NotNull TestRunNameSection of(final @NotNull String name) {
-        return new TestRunNameSection(DialogPart.textField()
+        return new TestRunNameSection(DialogPart.textInput()
                 .caption(Bundle.message("test.run.form.name.caption"))
                 .placeholder(Bundle.message("test.run.form.name.hint"))
                 .value(name)

@@ -39,14 +39,14 @@ public final class DestinationForm implements DialogComponent {
     private final @NotNull JComponent panel;
 
     private DestinationForm(final @NotNull Project p, final FileFormat @NotNull [] formats, final @NotNull FileFormat defaultFormat, final @NotNull String suggestedName, final @NotNull String chooserTitle, final @NotNull String chooserDescription, final @NotNull String section) {
-        folder = DialogPart.textField()
+        folder = DialogPart.textInput()
                 .caption(Bundle.message("destination.caption.folder"))
                 .placeholder(Bundle.message("destination.choose.folder"))
                 .value(DownloadFolder.of(p))
                 .browse(p, FileChooserDescriptorFactory.singleDir().withTitle(chooserTitle).withDescription(chooserDescription))
                 .build().getComponent();
 
-        fileName = DialogPart.textField()
+        fileName = DialogPart.textInput()
                 .caption(Bundle.message("destination.caption.file"))
                 .placeholder(Bundle.message("destination.name.the.file"))
                 .value(suggestedName)

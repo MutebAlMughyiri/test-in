@@ -30,7 +30,7 @@ public class ShapedFieldTest {
     private static final @NotNull String A_POSITION = "[1-9][0-9]*";
 
     private static @NotNull JTextField position() {
-        return (JTextField) DialogPart.textField().accepting(A_POSITION).build().getComponent().getFocusComponent();
+        return (JTextField) DialogPart.textInput().accepting(A_POSITION).build().getComponent().getFocusComponent();
     }
 
     private static void type(final @NotNull JTextField field, final @NotNull String keys) {

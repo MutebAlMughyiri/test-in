@@ -39,7 +39,7 @@ final class RemoteUrlDialog extends AbstractFrameworkDialog {
 
         title = Bundle.message("dialog.remote.title");
 
-        final @NotNull DialogPart<TextInput> url = DialogPart.textField()
+        final @NotNull DialogPart<TextInput> url = DialogPart.textInput()
                 .placeholder("https://github.com/user/repo.git")
                 .build();
 

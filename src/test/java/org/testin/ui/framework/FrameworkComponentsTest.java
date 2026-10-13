@@ -113,7 +113,7 @@ public class FrameworkComponentsTest {
 
     @Test
     public void textInputOpensWithValueAndPlaceholder() {
-        final TextInput input = DialogPart.textField()
+        final TextInput input = DialogPart.textInput()
                 .placeholder("set new name..")
                 .value("current name")
                 .build()
@@ -125,7 +125,7 @@ public class FrameworkComponentsTest {
 
     @Test
     public void emptyWarningKeepsThePlaceholderText() {
-        final TextInput input = DialogPart.textField().placeholder("set new name..").build().getComponent();
+        final TextInput input = DialogPart.textInput().placeholder("set new name..").build().getComponent();
 
         input.showEmptyWarning();
 
@@ -154,7 +154,7 @@ public class FrameworkComponentsTest {
 
     @Test
     public void selectionRowKeepsAllDeclaredParts() {
-        final Selection<String> row = Selection.add(DialogStyle.NO_ICON, "Test Set", "Holds test cases", "TS");
+        final Selection<String> row = Selection.of(DialogStyle.NO_ICON, "Test Set", "Holds test cases", "TS");
 
         assertEquals(row.name(), "Test Set");
         assertEquals(row.hint(), "Holds test cases");
@@ -261,7 +261,7 @@ public class FrameworkComponentsTest {
 
     @Test
     public void everythingElseCanTakeTheSpaceWhenNothingClaimsIt() {
-        final TextInput input = DialogPart.textField().value("name").build().getComponent();
+        final TextInput input = DialogPart.textInput().value("name").build().getComponent();
         final PlainTextArea area = DialogPart.textArea().value("x").build().getComponent();
 
         assertTrue(input.canFillSpace(), "a field is a reasonable fallback filler");

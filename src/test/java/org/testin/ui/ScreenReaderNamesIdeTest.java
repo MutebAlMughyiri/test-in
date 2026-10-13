@@ -196,8 +196,8 @@ public class ScreenReaderNamesIdeTest extends BasePlatformTestCase {
             super(p);
             title = "Every field";
             components = List.of(
-                    DialogPart.textField().caption("Name").placeholder("set name..").build(),
-                    DialogPart.textField().placeholder("set path..").build(),
+                    DialogPart.textInput().caption("Name").placeholder("set name..").build(),
+                    DialogPart.textInput().placeholder("set path..").build(),
                     DialogPart.multiLineField(p, "Steps", "write the steps..", ""),
                     DialogPart.choice("Branch", List.of("main", "release"), "main"),
                     DialogPart.<String>radios("Format").option("PDF", "pdf").option("HTML", "html").select("pdf").build(),

@@ -37,7 +37,7 @@ public record SourceFileField(@NotNull TextInput field) {
                 .withTitle(Bundle.message("import.file.title"))
                 .withDescription(Bundle.message("import.file.description"));
 
-        return new SourceFileField(DialogPart.textField()
+        return new SourceFileField(DialogPart.textInput()
                 .caption(Bundle.message("import.caption.source"))
                 .placeholder(Bundle.message("import.choose.file"))
                 .value(DownloadFolder.of(p))

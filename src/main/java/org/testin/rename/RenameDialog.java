@@ -50,7 +50,7 @@ final class RenameDialog extends AbstractFrameworkDialog {
 
         title = Bundle.message("dialog.rename.title");
 
-        final @NotNull DialogPart<TextInput> built = DialogPart.textField()
+        final @NotNull DialogPart<TextInput> built = DialogPart.textInput()
                 .icon(AllIcons.Actions.Edit)
                 .placeholder(Bundle.message("dialog.rename.placeholder"))
                 .value(dir.getName())

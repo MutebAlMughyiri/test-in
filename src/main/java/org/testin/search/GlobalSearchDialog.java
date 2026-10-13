@@ -65,7 +65,7 @@ public final class GlobalSearchDialog extends AbstractFrameworkDialog {
         final @NotNull Found found = GlobalSearch.forQuery(p, query);
 
         final @NotNull List<Selection<Hit>> rows = found.hits().stream()
-                .map(hit -> Selection.add(hit.icon(), hit.name(), hit.where(), hit))
+                .map(hit -> Selection.of(hit.icon(), hit.name(), hit.where(), hit))
                 .toList();
 
         if (query.isBlank() || found.matched() == 0) return Answer.of(rows);

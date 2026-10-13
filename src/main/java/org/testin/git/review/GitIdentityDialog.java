@@ -41,10 +41,10 @@ final class GitIdentityDialog extends AbstractFrameworkDialog {
 
         title = Bundle.message("dialog.git.identity.title");
 
-        final @NotNull DialogPart<TextInput> name = DialogPart.textField()
+        final @NotNull DialogPart<TextInput> name = DialogPart.textInput()
                 .placeholder(Bundle.message("dialog.git.identity.placeholder.name"))
                 .build();
-        final @NotNull DialogPart<TextInput> email = DialogPart.textField()
+        final @NotNull DialogPart<TextInput> email = DialogPart.textInput()
                 .placeholder(Bundle.message("dialog.git.identity.placeholder.email"))
                 .build();
         final @NotNull DialogPart<RadioSelection<Boolean>> where = DialogPart.<Boolean>radios(Bundle.message("dialog.git.identity.caption.apply"))

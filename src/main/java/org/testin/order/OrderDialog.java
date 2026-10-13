@@ -42,7 +42,7 @@ final class OrderDialog extends AbstractFrameworkDialog {
 
         title = Bundle.message("dialog.order.title");
 
-        final @NotNull DialogPart<TextInput> built = DialogPart.textField()
+        final @NotNull DialogPart<TextInput> built = DialogPart.textInput()
                 .icon(AllIcons.Actions.Edit)
                 .placeholder(Bundle.message("dialog.order.placeholder"))
                 .value(shown(current))

@@ -76,7 +76,7 @@ final class ApiModelDialog extends AbstractFrameworkDialog {
         title = Bundle.message("dialog.api.model.title");
         resizable = true;
 
-        nameInput = DialogPart.textField()
+        nameInput = DialogPart.textInput()
                 .caption(Bundle.message("dialog.api.model.name.caption"))
                 .placeholder(Bundle.message("dialog.api.model.name.placeholder"))
                 .accepting("[A-Za-z][A-Za-z0-9]*")

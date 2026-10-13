@@ -82,7 +82,7 @@ public final class PendingChangesDialog extends AbstractFrameworkDialog {
         final @NotNull DialogPart<ChoiceInput> branchRow =
                 DialogPart.choice(Bundle.message("dialog.pending.caption.branch"), offered(branches, currentBranch), currentBranch);
 
-        final @NotNull DialogPart<TextInput> messageField = DialogPart.textField()
+        final @NotNull DialogPart<TextInput> messageField = DialogPart.textInput()
                 .placeholder(Bundle.message("dialog.pending.placeholder"))
                 .build();
         final @NotNull DialogPart<DialogSplitButton> commitButton =

@@ -23,7 +23,7 @@ import javax.swing.Icon;
 
 public record Selection<T>(@NotNull Icon icon, @NotNull String name, @NotNull String hint, @NotNull T value) {
     // UC-INTERNAL-007, Rule-INTERNAL-077
-    public static <T> @NotNull Selection<T> add(final @NotNull Icon icon, final @NotNull String name, final @NotNull String hint, final @NotNull T value) {
+    public static <T> @NotNull Selection<T> of(final @NotNull Icon icon, final @NotNull String name, final @NotNull String hint, final @NotNull T value) {
         return new Selection<>(Icons.gray(icon), name, hint, value);
     }
 }

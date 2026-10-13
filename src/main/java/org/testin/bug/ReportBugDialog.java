@@ -55,7 +55,7 @@ final class ReportBugDialog extends AbstractFrameworkDialog {
         final @NotNull BugReportEdits opening = reports.unsent(runItemPath)
                 .orElse(new BugReportEdits(bug.facts().title(), bug.body()));
 
-        titleField = DialogPart.textField()
+        titleField = DialogPart.textInput()
                 .placeholder(Bundle.message("bug.dialog.title.placeholder"))
                 .value(opening.title())
                 .build();

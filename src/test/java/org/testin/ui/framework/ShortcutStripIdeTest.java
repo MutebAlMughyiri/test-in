@@ -124,7 +124,7 @@ public class ShortcutStripIdeTest extends BasePlatformTestCase {
         private Form(final @NotNull Project p) {
             super(p);
             title = "Every field";
-            components = List.of(DialogPart.textField().caption("Name").placeholder("set name..").build());
+            components = List.of(DialogPart.textInput().caption("Name").placeholder("set name..").build());
             shortcuts = List.of(StatusBarShortcut.build(Shortcuts.Enter, "Save", this::submit), StatusBarShortcut.cancel(this::closeCancel));
         }
 

@@ -45,7 +45,7 @@ public final class DialogPart<C extends DialogComponent> {
         return new TextFieldBuilder<>();
     }
 
-    public static @NotNull TextInputBuilder textField() {
+    public static @NotNull TextInputBuilder textInput() {
         return new TextInputBuilder();
     }
 
@@ -292,7 +292,7 @@ public final class DialogPart<C extends DialogComponent> {
         }
 
         public @NotNull TextFieldBuilder<T> selection(final @NotNull Icon icon, final @NotNull String name, final @NotNull String hint, final @NotNull T value) {
-            selections.add(Selection.add(icon, name, hint, value));
+            selections.add(Selection.of(icon, name, hint, value));
             return this;
         }
 
