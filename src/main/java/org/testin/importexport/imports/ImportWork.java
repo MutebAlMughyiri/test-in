@@ -190,11 +190,11 @@ record ImportWork(@NotNull Project p, @NotNull Notifier notifier, @NotNull Testi
 
     // UC-SHARE-006, Rule-SHARE-031
     private @NotNull Map<TestSetNode, List<TestCaseDto>> targetSets(final @NotNull AbstractNode selectedNode, final @NotNull Path targetPath, final @NotNull Map<String, List<TestCaseDto>> testCasesBySheet) {
-        if (selectedNode instanceof TestSetNode ts) {
+        if (selectedNode instanceof TestSetNode testSet) {
             final @NotNull List<TestCaseDto> everything = new ArrayList<>();
             testCasesBySheet.values().forEach(everything::addAll);
 
-            return Map.of(ts, everything);
+            return Map.of(testSet, everything);
         }
 
         final @NotNull Map<TestSetNode, List<TestCaseDto>> sets = new LinkedHashMap<>();

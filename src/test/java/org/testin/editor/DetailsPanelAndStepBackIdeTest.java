@@ -59,10 +59,10 @@ public class DetailsPanelAndStepBackIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull TestSetEditor openedTestSet() {
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        final @NotNull TestSetNode ts = EditorFixtures.testSet(getProject(), tp, "Checkout");
-        createdTestCases = EditorFixtures.testCases(getProject(), ts, 3);
-        return EditorFixtures.openTestSetEditor(getProject(), ts, getTestRootDisposable());
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), testProject, "Checkout");
+        createdTestCases = EditorFixtures.testCases(getProject(), testSet, 3);
+        return EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
     }
 
     private @NotNull CutState cutState() {

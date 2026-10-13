@@ -33,9 +33,9 @@ public class OpenOnceIdeTest extends AbstractOpenEditorsIdeTest {
     // Rule-TREE-PANEL-023
     public void testOpeningAnOpenTestSetBringsItsTabForward() {
         final @NotNull NodesOnDisk made = new NodesOnDisk(getProject());
-        final @NotNull TestProjectNode tp = made.testProject(root.resolve("NAFATH"));
-        final @NotNull TestSetNode login = made.testSet(tp.getTestCasesFolder(), "Login");
-        final @NotNull TestSetNode checkout = made.testSet(tp.getTestCasesFolder(), "Checkout");
+        final @NotNull TestProjectNode testProject = made.testProject(root.resolve("NAFATH"));
+        final @NotNull TestSetNode login = made.testSet(testProject.getTestCasesFolder(), "Login");
+        final @NotNull TestSetNode checkout = made.testSet(testProject.getTestCasesFolder(), "Checkout");
 
         TreeGesture.pressed(getProject(), new OpenAction(), List.of(login));
         Await.until("Open did not open the test set", () -> openOn(login).size() == 1);

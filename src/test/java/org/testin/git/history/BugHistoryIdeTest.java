@@ -55,14 +55,14 @@ public class BugHistoryIdeTest extends AbstractGitRemoteIdeTest {
         write(work, "Test Runs/" + testRun + "/" + RUN_ITEM, Services.getInstance(getProject(), JsonCodec.class).writeValueAsString(runItem));
     }
 
-    private void holdsNow(final @NotNull Path testProject, final @NotNull String testRun, final @NotNull RunItem runItem) {
-        Services.getInstance(getProject(), TestRuns.class).putRunItems(testProject.resolve("Test Runs").resolve(testRun), RunItems.builder().all(new ArrayList<>(List.of(runItem))).build());
+    private void holdsNow(final @NotNull Path testProjectPath, final @NotNull String testRun, final @NotNull RunItem runItem) {
+        Services.getInstance(getProject(), TestRuns.class).putRunItems(testProjectPath.resolve("Test Runs").resolve(testRun), RunItems.builder().all(new ArrayList<>(List.of(runItem))).build());
     }
 
-    private @NotNull List<BugCard> bugsOf(final @NotNull Path testProject) {
+    private @NotNull List<BugCard> bugsOf(final @NotNull Path testProjectPath) {
         final @NotNull Map<Path, String> now = BugHistory.runItemsNow(getProject(), ID);
         try {
-            return ApplicationManager.getApplication().executeOnPooledThread(() -> BugHistory.addTo(History.read(List.of()), getProject(), new TestCaseFile(testProject, Path.of("Test Cases", "Login", ID + ".tc")), ID, now).bugs()).get();
+            return ApplicationManager.getApplication().executeOnPooledThread(() -> BugHistory.addTo(History.read(List.of()), getProject(), new TestCaseFile(testProjectPath, Path.of("Test Cases", "Login", ID + ".tc")), ID, now).bugs()).get();
         } catch (final InterruptedException | ExecutionException ex) {
             throw new AssertionError("the bugs were never read", ex);
         }

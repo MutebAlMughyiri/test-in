@@ -30,17 +30,17 @@ public class SaveOnProjectCloseIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-015
     public void testClosingTheCodeProjectRemembersEveryOpenEditorAndClosesItsTab() {
-        final @NotNull TestSetNode ts = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
-        EditorFixtures.testCases(getProject(), ts, 1);
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
+        EditorFixtures.testCases(getProject(), testSet, 1);
         final @NotNull TestinEditors editors = Services.getInstance(getProject(), TestinEditors.class);
         try {
-            editors.open(ts, false);
+            editors.open(testSet, false);
             Await.until("the test set never opened in an editor", () -> !editors.openNodePaths().isEmpty());
 
             new SaveOnProjectClose().projectClosingBeforeSave(getProject());
 
             assertTrue("the editor's tab was left open after the code project closed", editors.openNodePaths().isEmpty());
-            assertTrue("the open editor was not remembered for next time", Objects.toString(PropertiesComponent.getInstance(getProject()).getValue("testin.openEditors"), "").contains(ts.getPath().toAbsolutePath().toString()));
+            assertTrue("the open editor was not remembered for next time", Objects.toString(PropertiesComponent.getInstance(getProject()).getValue("testin.openEditors"), "").contains(testSet.getPath().toAbsolutePath().toString()));
         } finally {
             editors.closeAll();
             PropertiesComponent.getInstance(getProject()).unsetValue("testin.openEditors");

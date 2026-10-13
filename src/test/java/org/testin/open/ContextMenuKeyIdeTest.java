@@ -84,17 +84,17 @@ public class ContextMenuKeyIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull TestSetNode aTestSet() {
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        final @NotNull TestSetNode ts = EditorFixtures.testSet(getProject(), tp, "Checkout");
-        testCases = EditorFixtures.testCases(getProject(), ts, 3);
-        return ts;
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), testProject, "Checkout");
+        testCases = EditorFixtures.testCases(getProject(), testSet, 3);
+        return testSet;
     }
 
     private @NotNull TestRunEditor aTestRunEditor() {
         aTestSet();
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        final @NotNull TestRunNode tr = EditorFixtures.testRun(getProject(), tp, testCases.stream().map(EditorFixtures::pending).toList());
-        return EditorFixtures.openTestRunEditor(getProject(), tr, getTestRootDisposable());
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        final @NotNull TestRunNode testRun = EditorFixtures.testRun(getProject(), testProject, testCases.stream().map(EditorFixtures::pending).toList());
+        return EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());
     }
 
     // Rule-EDITOR-PANEL-123

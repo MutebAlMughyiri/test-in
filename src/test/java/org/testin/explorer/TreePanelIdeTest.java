@@ -148,10 +148,10 @@ public class TreePanelIdeTest extends AbstractReadTheRootIdeTest {
         final @NotNull Path checkout = aTestProjectAt(root.resolve("Checkout"));
         aTestCaseIn(marked(theTestCasesOf(checkout).resolve("Login"), NodeType.TS));
         readEverything();
-        final @NotNull TestProjectNode tp = (TestProjectNode) nodes().find(checkout).orElseThrow();
+        final @NotNull TestProjectNode testProject = (TestProjectNode) nodes().find(checkout).orElseThrow();
         WriteAction.runAndWait(() -> {
-            tp.getMarker().setStatus(ProjectStatus.INACTIVE);
-            nodes().persistMarker(tp);
+            testProject.getMarker().setStatus(ProjectStatus.INACTIVE);
+            nodes().persistMarker(testProject);
         });
         readEverything();
         bound().choose("Checkout");

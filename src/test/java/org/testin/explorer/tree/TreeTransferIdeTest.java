@@ -57,10 +57,10 @@ public class TreeTransferIdeTest extends AbstractTempRootIdeTest {
     protected void setUp() {
         super.setUp();
         final @NotNull NodesOnDisk made = new NodesOnDisk(getProject());
-        final @NotNull TestProjectNode tp = made.testProject(root.resolve("NAFATH"));
+        final @NotNull TestProjectNode testProject = made.testProject(root.resolve("NAFATH"));
 
-        final @NotNull TestSetPackageNode checkout = made.testSetPackage(tp.getTestCasesFolder(), "Checkout");
-        payments = made.testSetPackage(tp.getTestCasesFolder(), "Payments");
+        final @NotNull TestSetPackageNode checkout = made.testSetPackage(testProject.getTestCasesFolder(), "Checkout");
+        payments = made.testSetPackage(testProject.getTestCasesFolder(), "Payments");
         login = made.testSet(checkout, "Login");
         loginTestCase = made.testCase(login);
         handler = new TreeTransferHandler(getProject(), new SimpleTree(), new HashSet<>(), revealed::add);

@@ -88,13 +88,13 @@ public class WithoutGitIdeTest extends AbstractTempRootIdeTest {
     // Rule-PRODUCT-021
     public void testWithoutGitThereIsNoSyncAndNoCloneAndTheDataIsStillUsable() {
         final @NotNull NodesOnDisk onDisk = new NodesOnDisk(getProject());
-        final @NotNull TestProjectNode tp = onDisk.testProject(root.resolve("NAFATH"));
-        final @NotNull TestCaseDto tc = onDisk.testCase(onDisk.testSet(tp.getTestCasesFolder(), "Login"));
+        final @NotNull TestProjectNode testProject = onDisk.testProject(root.resolve("NAFATH"));
+        final @NotNull TestCaseDto tc = onDisk.testCase(onDisk.testSet(testProject.getTestCasesFolder(), "Login"));
 
         final @NotNull AnAction sync = Optional.ofNullable(ActionManager.getInstance().getAction("Testin.SyncWithRemote")).orElseThrow(() -> new AssertionError("Sync is not registered"));
         final @NotNull AnActionEvent e = TestActionEvent.createTestEvent(sync, SimpleDataContext.builder()
                 .add(CommonDataKeys.PROJECT, getProject())
-                .add(TestinDataKeys.SELECTED_NODES, List.of(tp))
+                .add(TestinDataKeys.SELECTED_NODES, List.of(testProject))
                 .build());
         ActionUtil.updateAction(sync, e);
         assertFalse("Sync is offered without Git", e.getPresentation().isEnabled());

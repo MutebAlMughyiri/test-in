@@ -104,9 +104,9 @@ public class TestinFolderIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull TestProjectNode aTestProjectIn(final @NotNull Path folder, final @NotNull String name) {
         return WriteAction.computeAndWait(() -> {
-            final @NotNull TestProjectNode tp = Services.getInstance(getProject(), NodeMapper.class).setTestProjectNode(folder.resolve(name));
-            Services.getInstance(getProject(), Nodes.class).addTestProject(tp);
-            return tp;
+            final @NotNull TestProjectNode testProject = Services.getInstance(getProject(), NodeMapper.class).setTestProjectNode(folder.resolve(name));
+            Services.getInstance(getProject(), Nodes.class).addTestProject(testProject);
+            return testProject;
         });
     }
 

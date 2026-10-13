@@ -57,9 +57,9 @@ public class GrayUnlessTestCaseSelectedIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-230
     public void testEveryTestCaseActionIsGrayAndSaysSoUntilATestCaseIsSelected() {
-        final @NotNull TestSetNode ts = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Login");
-        final @NotNull TestCaseDto tc = EditorFixtures.testCase(getProject(), ts, "Log in with a valid user", "a");
-        final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), ts, getTestRootDisposable());
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Login");
+        final @NotNull TestCaseDto tc = EditorFixtures.testCase(getProject(), testSet, "Log in with a valid user", "a");
+        final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
 
         for (final AnAction action : theSevenActions()) {
             final @NotNull String name = action.getClass().getSimpleName();

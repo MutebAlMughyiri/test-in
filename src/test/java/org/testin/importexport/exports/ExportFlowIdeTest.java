@@ -162,9 +162,9 @@ public class ExportFlowIdeTest extends AbstractTempRootIdeTest {
         return Services.getInstance(getProject(), TestCases.class);
     }
 
-    private @NotNull TestCaseDto aTestCase(final @NotNull TestSetNode ts, final @NotNull String description) {
+    private @NotNull TestCaseDto aTestCase(final @NotNull TestSetNode testSet, final @NotNull String description) {
         final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description(description).order("m" + description.length()).build();
-        assertTrue("the test case was not written", indexedTestCases().putTestCaseVerbatim(ts.getPath(), tc));
+        assertTrue("the test case was not written", indexedTestCases().putTestCaseVerbatim(testSet.getPath(), tc));
         return tc;
     }
 

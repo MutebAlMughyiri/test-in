@@ -65,26 +65,26 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull TestSetNode aTestSet() {
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        return EditorFixtures.testSet(getProject(), tp, "Checkout");
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        return EditorFixtures.testSet(getProject(), testProject, "Checkout");
     }
 
-    private @NotNull TestCaseDto aTestCase(final @NotNull TestSetNode ts, final @NotNull String description, final @NotNull String order, final @NotNull Priority priority, final @NotNull String group) {
+    private @NotNull TestCaseDto aTestCase(final @NotNull TestSetNode testSet, final @NotNull String description, final @NotNull String order, final @NotNull Priority priority, final @NotNull String group) {
         final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description(description).order(order).priority(priority).groups(new ArrayList<>(List.of(group))).build();
-        tc.setParent(ts);
-        Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(ts.getPath(), tc);
+        tc.setParent(testSet);
+        Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), tc);
         return tc;
     }
 
     // Rule-EDITOR-PANEL-117
     public void testRefreshClearsTheFiltersAndTheSortKeepsTheSearchAndReadsTheDataAgain() {
-        final @NotNull TestSetNode ts = aTestSet();
+        final @NotNull TestSetNode testSet = aTestSet();
         final @NotNull String oldGroup = "Old-" + UUID.randomUUID();
         final @NotNull String newGroup = "New-" + UUID.randomUUID();
-        final @NotNull TestCaseDto renamed = aTestCase(ts, "Log in with a valid user", "m0001", Priority.HIGH, oldGroup);
-        final @NotNull TestCaseDto wrongPassword = aTestCase(ts, "Log in with a wrong password", "m0002", Priority.LOW, oldGroup);
-        final @NotNull TestCaseDto card = aTestCase(ts, "Pay by card", "m0003", Priority.HIGH, oldGroup);
-        final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), ts, getTestRootDisposable());
+        final @NotNull TestCaseDto renamed = aTestCase(testSet, "Log in with a valid user", "m0001", Priority.HIGH, oldGroup);
+        final @NotNull TestCaseDto wrongPassword = aTestCase(testSet, "Log in with a wrong password", "m0002", Priority.LOW, oldGroup);
+        final @NotNull TestCaseDto card = aTestCase(testSet, "Pay by card", "m0003", Priority.HIGH, oldGroup);
+        final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         final @NotNull List<String> balloons = Said.listening(getProject(), getTestRootDisposable()).shown();
         final @NotNull TestCaseCompletions values = Services.getInstance(getProject(), TestCaseCompletions.class);
         try {
@@ -99,9 +99,9 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
             final @NotNull Set<TestSetEditorAttributes> fields = editor.getToolBar().getToolbarItem(TestSetFieldsPopupBtn.class).getSelectedDetails();
             Await.until("the group was never offered", () -> values.getGroups().contains(oldGroup));
 
-            aTestCase(ts, "Log in with a new user", "m0004", Priority.HIGH, newGroup);
+            aTestCase(testSet, "Log in with a new user", "m0004", Priority.HIGH, newGroup);
             for (final TestCaseDto regrouped : List.of(renamed, wrongPassword, card)) {
-                Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(ts.getPath(), regrouped.edit().groups(new ArrayList<>(List.of(newGroup))).build());
+                Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), regrouped.edit().groups(new ArrayList<>(List.of(newGroup))).build());
             }
 
             pressRefresh(editor);
@@ -122,17 +122,17 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-118
     public void testRefreshLandsOnThePageHoldingTheSelectedTestCase() {
-        final @NotNull TestSetNode ts = aTestSet();
-        final @NotNull List<TestCaseDto> testCases = EditorFixtures.testCases(getProject(), ts, 5);
-        final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), ts, getTestRootDisposable());
+        final @NotNull TestSetNode testSet = aTestSet();
+        final @NotNull List<TestCaseDto> testCases = EditorFixtures.testCases(getProject(), testSet, 5);
+        final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         try {
             editor.choosePageSize(2);
             editor.selectTestCase(testCases.get(4));
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
             assertEquals(3, editor.getCurrentPage());
 
-            EditorFixtures.testCase(getProject(), ts, "Placed first", "a0001");
-            EditorFixtures.testCase(getProject(), ts, "Placed second", "a0002");
+            EditorFixtures.testCase(getProject(), testSet, "Placed first", "a0001");
+            EditorFixtures.testCase(getProject(), testSet, "Placed second", "a0002");
 
             pressRefresh(editor);
 
@@ -148,17 +148,17 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-118
     public void testRefreshInATestRunEditorLandsOnThePageHoldingTheSelectedTestCase() {
-        final @NotNull TestSetNode ts = aTestSet();
-        final @NotNull List<TestCaseDto> testCases = EditorFixtures.testCases(getProject(), ts, 5);
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        final @NotNull TestRunNode tr = EditorFixtures.testRun(getProject(), tp, testCases.stream().map(EditorFixtures::pending).toList());
-        final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), tr, getTestRootDisposable());
+        final @NotNull TestSetNode testSet = aTestSet();
+        final @NotNull List<TestCaseDto> testCases = EditorFixtures.testCases(getProject(), testSet, 5);
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        final @NotNull TestRunNode testRun = EditorFixtures.testRun(getProject(), testProject, testCases.stream().map(EditorFixtures::pending).toList());
+        final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());
         try {
             editor.choosePageSize(2);
             editor.selectTestCase(testCases.get(4));
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
             assertEquals(3, editor.getCurrentPage());
-            Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(ts.getPath(), testCases.get(4).setOrder("a0000"));
+            Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCases.get(4).setOrder("a0000"));
 
             pressRefresh(editor);
 
@@ -174,16 +174,16 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-119
     public void testTheTestersRefreshReloadsEvenWithAGridCellOpen() {
-        final @NotNull TestSetNode ts = aTestSet();
-        EditorFixtures.testCases(getProject(), ts, 2);
-        final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), ts, getTestRootDisposable());
+        final @NotNull TestSetNode testSet = aTestSet();
+        EditorFixtures.testCases(getProject(), testSet, 2);
+        final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         try {
             editor.getToolBar().getToolbarItem(GridViewBtn.class).doClick();
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
             final @NotNull JBTable table = (JBTable) editor.getPreferredFocusedComponent();
             assertTrue("the cell did not open", table.editCellAt(0, table.getColumnCount() - 1) || table.editCellAt(0, 1));
             assertTrue("a grid with an open cell is not busy", editor.isBusy());
-            EditorFixtures.testCase(getProject(), ts, "Written while the cell was open", "m0009");
+            EditorFixtures.testCase(getProject(), testSet, "Written while the cell was open", "m0009");
 
             pressRefresh(editor);
 
@@ -195,19 +195,19 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-119
     public void testARefreshTestinStartsLeavesABusyEditorAlone() {
-        final @NotNull TestSetNode ts = aTestSet();
-        EditorFixtures.testCases(getProject(), ts, 2);
+        final @NotNull TestSetNode testSet = aTestSet();
+        EditorFixtures.testCases(getProject(), testSet, 2);
         final @NotNull TestinEditors editors = Services.getInstance(getProject(), TestinEditors.class);
-        editors.open(ts, true);
-        Await.until("the test set never opened in an editor", () -> editors.editorFor(ts).isPresent());
-        final @NotNull TestSetEditor editor = (TestSetEditor) editors.editorFor(ts).orElseThrow();
+        editors.open(testSet, true);
+        Await.until("the test set never opened in an editor", () -> editors.editorFor(testSet).isPresent());
+        final @NotNull TestSetEditor editor = (TestSetEditor) editors.editorFor(testSet).orElseThrow();
         Await.until("the test set editor never loaded", () -> !editor.isLoading());
         try {
             editor.getToolBar().getToolbarItem(GridViewBtn.class).doClick();
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
             final @NotNull JBTable table = (JBTable) editor.getPreferredFocusedComponent();
             assertTrue("the cell did not open", table.editCellAt(0, table.getColumnCount() - 1) || table.editCellAt(0, 1));
-            EditorFixtures.testCase(getProject(), ts, "Written by a sync", "m0009");
+            EditorFixtures.testCase(getProject(), testSet, "Written by a sync", "m0009");
 
             editors.refreshOpen();
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
@@ -226,18 +226,18 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-120
     public void testRefreshInATestRunEditorStopsTheExecutionAndReadsTheTestRunAgain() {
-        final @NotNull TestSetNode ts = aTestSet();
-        final @NotNull List<TestCaseDto> testCases = EditorFixtures.testCases(getProject(), ts, 2);
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        final @NotNull TestRunNode tr = EditorFixtures.testRun(getProject(), tp, testCases.stream().map(EditorFixtures::pending).toList());
-        final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), tr, getTestRootDisposable());
+        final @NotNull TestSetNode testSet = aTestSet();
+        final @NotNull List<TestCaseDto> testCases = EditorFixtures.testCases(getProject(), testSet, 2);
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        final @NotNull TestRunNode testRun = EditorFixtures.testRun(getProject(), testProject, testCases.stream().map(EditorFixtures::pending).toList());
+        final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());
         final @NotNull List<String> balloons = Said.listening(getProject(), getTestRootDisposable()).shown();
         try {
             editor.onStartExecutionClicked();
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
             assertTrue(editor.getWalk().isExecuting());
 
-            Services.getInstance(getProject(), TestRuns.class).putRunItems(tr.getPath(), new RunItems().setAll(new ArrayList<>(List.of(
+            Services.getInstance(getProject(), TestRuns.class).putRunItems(testRun.getPath(), new RunItems().setAll(new ArrayList<>(List.of(
                     EditorFixtures.pending(testCases.getFirst()),
                     EditorFixtures.pending(testCases.get(1)).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()))))));
 

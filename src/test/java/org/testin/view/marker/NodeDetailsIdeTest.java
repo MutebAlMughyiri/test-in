@@ -46,8 +46,8 @@ public class NodeDetailsIdeTest extends AbstractTempRootIdeTest {
     protected void setUp() {
         super.setUp();
         final @NotNull NodesOnDisk made = new NodesOnDisk(getProject());
-        final @NotNull TestProjectNode tp = made.testProject(root.resolve("NAFATH"));
-        login = made.testSet(tp.getTestCasesFolder(), "Login");
+        final @NotNull TestProjectNode testProject = made.testProject(root.resolve("NAFATH"));
+        login = made.testSet(testProject.getTestCasesFolder(), "Login");
         made.testCase(login);
         made.testCase(login);
     }

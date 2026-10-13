@@ -51,11 +51,11 @@ public class KeepRemovedNodeIdeTest extends AbstractReadTheRootIdeTest {
 
     private @NotNull TestProjectNode nafath = new TestProjectNode();
 
-    private static @NotNull Path theFileOf(final @NotNull TestSetNode ts) {
-        try (Stream<Path> inside = Files.list(ts.getPath())) {
-            return inside.filter(file -> FileKind.of(file) == FileKind.TEST_CASE).findFirst().orElseThrow(() -> new AssertionError(ts.getName() + " holds no test case"));
+    private static @NotNull Path theFileOf(final @NotNull TestSetNode testSet) {
+        try (Stream<Path> inside = Files.list(testSet.getPath())) {
+            return inside.filter(file -> FileKind.of(file) == FileKind.TEST_CASE).findFirst().orElseThrow(() -> new AssertionError(testSet.getName() + " holds no test case"));
         } catch (final IOException ex) {
-            throw new AssertionError("could not list " + ts.getPath(), ex);
+            throw new AssertionError("could not list " + testSet.getPath(), ex);
         }
     }
 
@@ -94,9 +94,9 @@ public class KeepRemovedNodeIdeTest extends AbstractReadTheRootIdeTest {
     }
 
     private @NotNull TestSetNode aTestSetHolding(final @NotNull String name) {
-        final @NotNull TestSetNode ts = new NodesOnDisk(getProject()).testSet(nafath.getTestCasesFolder(), name);
-        new NodesOnDisk(getProject()).testCase(ts);
-        return ts;
+        final @NotNull TestSetNode testSet = new NodesOnDisk(getProject()).testSet(nafath.getTestCasesFolder(), name);
+        new NodesOnDisk(getProject()).testCase(testSet);
+        return testSet;
     }
 
     private void removedByTheTester(final @NotNull List<? extends AbstractNode> removed) {

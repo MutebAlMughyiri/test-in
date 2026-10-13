@@ -72,8 +72,8 @@ public final class BoundTestProject {
 
         final @NotNull Path root = Services.getInstance(p, TestinRoot.class).absolutePath();
         return Services.getInstance(p, Nodes.class).getTestProjectsByPath().values().stream()
-                .filter(tp -> name.equals(tp.getName()))
-                .min(Comparator.comparing(tp -> !tp.getPath().startsWith(root)));
+                .filter(testProject -> name.equals(testProject.getName()))
+                .min(Comparator.comparing(testProject -> !testProject.getPath().startsWith(root)));
     }
 
     public boolean isMissing(final @NotNull Map<String, ProjectStatus> underRoot) {

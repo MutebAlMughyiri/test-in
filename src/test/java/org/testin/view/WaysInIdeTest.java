@@ -40,18 +40,18 @@ import static org.testin.view.Drawn.holds;
 
 public class WaysInIdeTest extends AbstractViewPanelIdeTest {
 
-    private TestSetNode ts;
+    private TestSetNode testSet;
     private List<TestCaseDto> testCases;
 
     @Override
     protected void setUp() {
         super.setUp();
-        ts = aTestSet("Login");
-        testCases = List.of(aTestCase(ts, "Log in with a valid user", "a"), aTestCase(ts, "Log in with a locked user", "b"), aTestCase(ts, "Log in with no password", "c"));
+        testSet = aTestSet("Login");
+        testCases = List.of(aTestCase(testSet, "Log in with a valid user", "a"), aTestCase(testSet, "Log in with a locked user", "b"), aTestCase(testSet, "Log in with no password", "c"));
     }
 
     private @NotNull TestSetEditor anEditor() {
-        return EditorFixtures.openTestSetEditor(getProject(), ts, getTestRootDisposable());
+        return EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
     }
 
     private void assertTheShownTestCasesAre(final int handed) {
@@ -86,7 +86,7 @@ public class WaysInIdeTest extends AbstractViewPanelIdeTest {
     public void testFollowingASelectionOfSeveralHandsThemAll() {
         final @NotNull TestSetEditor editor = anEditor();
         editor.onToolBarSwitchedToCardView();
-        view.getPanel().show(List.of(testCases.getFirst()), ts.getPath2());
+        view.getPanel().show(List.of(testCases.getFirst()), testSet.getPath2());
 
         final @NotNull JBList<?> list = (JBList<?>) editor.getPreferredFocusedComponent();
         list.setSelectionInterval(0, 2);

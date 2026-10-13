@@ -48,18 +48,18 @@ public class NodeDetailsIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-121
     public void testTheDialogIsAboutTheNodeTheEditorShowsNotTheSelectedTestCase() {
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        final @NotNull TestSetNode ts = EditorFixtures.testSet(getProject(), tp, "Checkout");
-        final @NotNull List<TestCaseDto> testCases = EditorFixtures.testCases(getProject(), ts, 2);
-        final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), ts, getTestRootDisposable());
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), testProject, "Checkout");
+        final @NotNull List<TestCaseDto> testCases = EditorFixtures.testCases(getProject(), testSet, 2);
+        final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         try {
             editor.getList().setSelectedIndex(1);
 
             final @NotNull List<String> words = wordsOfTheDialogOpenedBy(editor);
 
-            assertSame("the Details button is not about the node the editor shows", ts, editor.getEditedNode());
+            assertSame("the Details button is not about the node the editor shows", testSet, editor.getEditedNode());
             assertTrue("the dialog does not name the test set: " + words, words.contains("Checkout"));
-            assertTrue("the dialog does not give the test set's path: " + words, words.contains(ts.getPath().toString()));
+            assertTrue("the dialog does not give the test set's path: " + words, words.contains(testSet.getPath().toString()));
             assertFalse("the dialog is about the selected test case: " + words, Drawn.holds(words, testCases.get(1).getDescription()));
         } finally {
             Disposer.dispose(editor);
@@ -68,16 +68,16 @@ public class NodeDetailsIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-122
     public void testTheCountsAreWorkedOutAsTheDialogOpensAndStoredNowhere() {
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        final @NotNull TestSetNode ts = EditorFixtures.testSet(getProject(), tp, "Checkout");
-        EditorFixtures.testCases(getProject(), ts, 2);
-        final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), ts, getTestRootDisposable());
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), testProject, "Checkout");
+        EditorFixtures.testCases(getProject(), testSet, 2);
+        final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         try {
             final @NotNull Map<String, String> before = FilesUnder.snapshot(root);
             assertEquals("2", countedTestCases(wordsOfTheDialogOpenedBy(editor)));
             assertEquals("opening the dialog wrote something", before, FilesUnder.snapshot(root));
 
-            EditorFixtures.testCase(getProject(), ts, "Added after the first look", "m0009");
+            EditorFixtures.testCase(getProject(), testSet, "Added after the first look", "m0009");
 
             assertEquals("the dialog showed a count kept from before", "3", countedTestCases(wordsOfTheDialogOpenedBy(editor)));
         } finally {

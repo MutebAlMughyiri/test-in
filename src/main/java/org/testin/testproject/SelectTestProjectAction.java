@@ -35,14 +35,14 @@ import org.testin.util.Bundle;
 import java.util.Map;
 
 public final class SelectTestProjectAction extends AbstractBoundProjectAction {
-    private final @NotNull TreePanel tp;
+    private final @NotNull TreePanel treePanel;
     private final @NotNull ProjectIndexer indexer = Services.getInstance(p, ProjectIndexer.class);
     private final @NotNull Notifier notifier = Services.getInstance(p, Notifier.class);
     private final @NotNull TestinRoot testinRoot = Services.getInstance(p, TestinRoot.class);
 
-    public SelectTestProjectAction(final @NotNull Project p, final @NotNull TreePanel tp) {
+    public SelectTestProjectAction(final @NotNull Project p, final @NotNull TreePanel treePanel) {
         super(p, Bundle.message("project.select.text"), Bundle.message("project.select.description"), AllIcons.Actions.ModuleDirectory);
-        this.tp = tp;
+        this.treePanel = treePanel;
     }
 
     // UC-TREE-PANEL-004
@@ -60,7 +60,7 @@ public final class SelectTestProjectAction extends AbstractBoundProjectAction {
                     return;
                 }
 
-                new BindTestProjectDialog(p, underRoot, tp::reindex).show();
+                new BindTestProjectDialog(p, underRoot, treePanel::reindex).show();
             });
         });
     }

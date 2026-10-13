@@ -103,9 +103,9 @@ public abstract class AbstractCodegenIdeTest extends AbstractTempRootIdeTest {
         assertTrue("could not write " + TestinYml.fileName(), TestinYml.save(getProject(), TestinYml.lines(TEST_PROJECT)));
 
         testProject = WriteAction.computeAndWait(() -> {
-            final @NotNull TestProjectNode tp = Services.getInstance(getProject(), NodeMapper.class).setTestProjectNode(root.resolve(TEST_PROJECT));
-            nodes().addTestProject(tp);
-            return tp;
+            final @NotNull TestProjectNode testProject = Services.getInstance(getProject(), NodeMapper.class).setTestProjectNode(root.resolve(TEST_PROJECT));
+            nodes().addTestProject(testProject);
+            return testProject;
         });
     }
 
@@ -142,21 +142,21 @@ public abstract class AbstractCodegenIdeTest extends AbstractTempRootIdeTest {
     }
 
     protected @NotNull TestSetNode createdTestSet(final @NotNull String name, final @NotNull AbstractNode parent) {
-        final @NotNull TestSetNode ts = indexedTestSet(name, parent);
+        final @NotNull TestSetNode testSet = indexedTestSet(name, parent);
 
-        NodeCode.of(NodeType.TS).getCreated().execute(getProject(), ts);
-        return ts;
+        NodeCode.of(NodeType.TS).getCreated().execute(getProject(), testSet);
+        return testSet;
     }
 
-    protected @NotNull TestCaseDto indexedTestCase(final @NotNull TestSetNode ts, final @NotNull String description, final @NotNull String order) {
+    protected @NotNull TestCaseDto indexedTestCase(final @NotNull TestSetNode testSet, final @NotNull String description, final @NotNull String order) {
         final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description(description).order(order).build();
-        tc.setParent(ts);
-        Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(ts.getPath(), tc);
+        tc.setParent(testSet);
+        Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), tc);
         return tc;
     }
 
-    protected @NotNull TestCaseDto createdTestCase(final @NotNull TestSetNode ts, final @NotNull String description, final @NotNull String order) {
-        final @NotNull TestCaseDto tc = indexedTestCase(ts, description, order);
+    protected @NotNull TestCaseDto createdTestCase(final @NotNull TestSetNode testSet, final @NotNull String description, final @NotNull String order) {
+        final @NotNull TestCaseDto tc = indexedTestCase(testSet, description, order);
         GenType.CREATE_TEST_CASE.execute(getProject(), tc);
         return tc;
     }

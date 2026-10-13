@@ -42,13 +42,13 @@ public class CreateTestSetOpensIdeTest extends AbstractOpenEditorsIdeTest {
 
     // Rule-TREE-PANEL-026
     public void testANewTestSetOpensInItsEditorAtOnce() {
-        final @NotNull TestProjectNode tp = new NodesOnDisk(getProject()).testProject(root.resolve("NAFATH"));
+        final @NotNull TestProjectNode testProject = new NodesOnDisk(getProject()).testProject(root.resolve("NAFATH"));
 
-        TreeGesture.pressed(getProject(), new CreateTreeNodeAction(), List.of(tp.getTestCasesFolder()));
+        TreeGesture.pressed(getProject(), new CreateTreeNodeAction(), List.of(testProject.getTestCasesFolder()));
         ShownDialog.typed(getProject(), CreateTestSetDialog.class, "Login");
         ShownDialog.press(getProject(), CreateTestSetDialog.class, Shortcuts.Enter);
 
-        final @NotNull Optional<AbstractNode> created = Services.getInstance(getProject(), Nodes.class).find(tp.getTestCasesFolder().getPath().resolve("Login"));
+        final @NotNull Optional<AbstractNode> created = Services.getInstance(getProject(), Nodes.class).find(testProject.getTestCasesFolder().getPath().resolve("Login"));
         assertTrue("the test set was not created", created.isPresent());
         Await.until("the new test set did not open in its editor", () -> openOn(created.orElseThrow()).size() == 1);
     }

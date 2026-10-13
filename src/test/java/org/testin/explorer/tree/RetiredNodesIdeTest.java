@@ -69,8 +69,8 @@ public class RetiredNodesIdeTest extends AbstractTempRootIdeTest {
     // Rule-PRODUCT-022
     public void testADeprecatedTestSetIsKeptAndDrawnAsDeprecated() {
         final @NotNull NodesOnDisk onDisk = new NodesOnDisk(getProject());
-        final @NotNull TestProjectNode tp = onDisk.testProject(root.resolve("NAFATH"));
-        final @NotNull TestSetNode login = onDisk.testSet(tp.getTestCasesFolder(), "Login");
+        final @NotNull TestProjectNode testProject = onDisk.testProject(root.resolve("NAFATH"));
+        final @NotNull TestSetNode login = onDisk.testSet(testProject.getTestCasesFolder(), "Login");
         final @NotNull TestCaseDto tc = onDisk.testCase(login);
 
         marked(login, TestSetStatus.DEPRECATED);
@@ -83,10 +83,10 @@ public class RetiredNodesIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-PRODUCT-023
     public void testActiveAndArchivedMeanTheSameForBothKindsOfPackage() {
-        final @NotNull TestProjectNode tp = new NodesOnDisk(getProject()).testProject(root.resolve("NAFATH"));
-        final @NotNull TestSetPackageNode accounts = new NodesOnDisk(getProject()).testSetPackage(tp.getTestCasesFolder(), "Accounts");
+        final @NotNull TestProjectNode testProject = new NodesOnDisk(getProject()).testProject(root.resolve("NAFATH"));
+        final @NotNull TestSetPackageNode accounts = new NodesOnDisk(getProject()).testSetPackage(testProject.getTestCasesFolder(), "Accounts");
         final @NotNull TestRunPackageNode release = WriteAction.computeAndWait(() -> {
-            final @NotNull TestRunPackageNode made = Services.getInstance(getProject(), NodeMapper.class).getTestRunPackageNode(tp.getTestRunsFolder().getPath().resolve("Release"), tp.getTestRunsFolder());
+            final @NotNull TestRunPackageNode made = Services.getInstance(getProject(), NodeMapper.class).getTestRunPackageNode(testProject.getTestRunsFolder().getPath().resolve("Release"), testProject.getTestRunsFolder());
             nodes().addTestRunPackage(made);
             return made;
         });

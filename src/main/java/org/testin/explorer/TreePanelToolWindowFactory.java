@@ -34,12 +34,12 @@ public class TreePanelToolWindowFactory implements ToolWindowFactory, DumbAware 
     public void createToolWindowContent(final @NotNull Project p, final @NotNull ToolWindow tw) {
         TestinLogger.info("ToolWindowFactory.createToolWindowContent()");
 
-        final @NotNull TreePanel tp = Services.getInstance(p, TreePanel.class);
-        final @NotNull Content content = ContentFactory.getInstance().createContent(tp.getPanel(), null, false);
+        final @NotNull TreePanel treePanel = Services.getInstance(p, TreePanel.class);
+        final @NotNull Content content = ContentFactory.getInstance().createContent(treePanel.getPanel(), null, false);
 
-        tp.showIn(content);
+        treePanel.showIn(content);
 
-        tw.setTitleActions(new TreePanelToolbar().create(p, tp));
+        tw.setTitleActions(new TreePanelToolbar().create(p, treePanel));
         tw.getContentManager().addContent(content);
 
         ApplicationManager.getApplication().invokeLater(() -> {

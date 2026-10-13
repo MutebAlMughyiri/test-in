@@ -41,8 +41,8 @@ public class MarkerWritesIdeTest extends AbstractReadTheRootIdeTest {
         }
     }
 
-    private @NotNull TestProjectMarker markerOf(final @NotNull Path testProject) {
-        return nodes().readMarker(testProject, NodeType.TP, TestProjectMarker.class);
+    private @NotNull TestProjectMarker markerOf(final @NotNull Path testProjectPath) {
+        return nodes().readMarker(testProjectPath, NodeType.TP, TestProjectMarker.class);
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-083
@@ -65,7 +65,7 @@ public class MarkerWritesIdeTest extends AbstractReadTheRootIdeTest {
 
         try {
             settings().testerName = "";
-            final @NotNull TestProjectNode tp = WriteAction.computeAndWait(() -> {
+            final @NotNull TestProjectNode testProject = WriteAction.computeAndWait(() -> {
                 final @NotNull TestProjectNode created = Services.getInstance(getProject(), NodeMapper.class).setTestProjectNode(path);
                 nodes().addTestProject(created);
                 return created;
@@ -73,8 +73,8 @@ public class MarkerWritesIdeTest extends AbstractReadTheRootIdeTest {
 
             settings().testerName = "Mohammed AlZamil";
             WriteAction.runAndWait(() -> {
-                tp.getMarker().setStatus(ProjectStatus.INACTIVE);
-                nodes().persistMarker(tp);
+                testProject.getMarker().setStatus(ProjectStatus.INACTIVE);
+                nodes().persistMarker(testProject);
             });
         } finally {
             settings().testerName = was;

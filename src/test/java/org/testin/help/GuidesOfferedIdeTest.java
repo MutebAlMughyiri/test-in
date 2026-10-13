@@ -68,11 +68,11 @@ public class GuidesOfferedIdeTest extends AbstractTempRootIdeTest {
     // Rule-INTERNAL-129
     public void testATestRunOffersItsShortcutsAndAFailedRunItemOffersBugReports() {
         guides().forgetAll();
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        final @NotNull List<TestCaseDto> testCases = EditorFixtures.testCases(getProject(), EditorFixtures.testSet(getProject(), tp, "Login"), 2);
-        final @NotNull TestRunNode tr = EditorFixtures.testRun(getProject(), tp, testCases.stream().map(EditorFixtures::pending).toList());
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        final @NotNull List<TestCaseDto> testCases = EditorFixtures.testCases(getProject(), EditorFixtures.testSet(getProject(), testProject, "Login"), 2);
+        final @NotNull TestRunNode testRun = EditorFixtures.testRun(getProject(), testProject, testCases.stream().map(EditorFixtures::pending).toList());
 
-        final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), tr, getTestRootDisposable());
+        final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());
         try {
             assertEquals("opening a test run did not offer its shortcuts", List.of(Guide.TEST_RUN_EDITOR_SHORTCUTS), guides().offered());
 

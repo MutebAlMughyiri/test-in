@@ -45,9 +45,9 @@ public class TestCaseHistoryIdeTest extends AbstractGitRemoteIdeTest {
         write(work, relativePath, Services.getInstance(getProject(), JsonCodec.class).writeValueAsString(tc));
     }
 
-    private @NotNull History historyOf(final @NotNull Path testProject, final @NotNull String relativePath, final @NotNull TestCaseDto now) {
+    private @NotNull History historyOf(final @NotNull Path testProjectPath, final @NotNull String relativePath, final @NotNull TestCaseDto now) {
         try {
-            return ApplicationManager.getApplication().executeOnPooledThread(() -> TestCaseHistory.read(getProject(), new TestCaseFile(testProject, Path.of(relativePath)), Optional.of(now))).get();
+            return ApplicationManager.getApplication().executeOnPooledThread(() -> TestCaseHistory.read(getProject(), new TestCaseFile(testProjectPath, Path.of(relativePath)), Optional.of(now))).get();
         } catch (final InterruptedException | ExecutionException ex) {
             throw new AssertionError("the history was never read", ex);
         }

@@ -132,15 +132,15 @@ public class ExecutionModeIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-TREE-PANEL-141
     public void testRunTestsInTheTreeIsGrayWithItsReasonWhileTheWalkIsOn() {
-        final @NotNull TestRunNode tr = EditorFixtures.testRunOver(getProject(), root, loginTestCases());
-        final @NotNull TestRunEditor editor = EditorFixtures.openTestRunInTheIde(getProject(), tr);
+        final @NotNull TestRunNode testRun = EditorFixtures.testRunOver(getProject(), root, loginTestCases());
+        final @NotNull TestRunEditor editor = EditorFixtures.openTestRunInTheIde(getProject(), testRun);
         try {
-            assertTrue("Run Tests is gray on an idle test run", TreeGesture.updated(getProject(), runTests(), List.of(tr)).isEnabled());
+            assertTrue("Run Tests is gray on an idle test run", TreeGesture.updated(getProject(), runTests(), List.of(testRun)).isEnabled());
 
             editor.onStartExecutionClicked();
             Await.until("the walk never started", () -> editor.getWalk().mode() == ExecutionMode.WALK);
 
-            final @NotNull Presentation shown = TreeGesture.updated(getProject(), runTests(), List.of(tr));
+            final @NotNull Presentation shown = TreeGesture.updated(getProject(), runTests(), List.of(testRun));
             assertFalse("Run Tests is not gray while the walk is on", shown.isEnabled());
             assertEquals(Bundle.message("execution.mode.walk"), shown.getDescription());
         } finally {

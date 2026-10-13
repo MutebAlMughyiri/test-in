@@ -38,14 +38,14 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
 
     private static final String HAND_NAMED = "Log in by hand.tc";
 
-    private static @NotNull TestCaseDto pastedInto(final TestSetNode ts, final TestCaseDto cut) {
+    private static @NotNull TestCaseDto pastedInto(final TestSetNode testSet, final TestCaseDto cut) {
         final TestCaseDto pasted = TestCaseDto.builder()
                 .id(cut.getId())
                 .description(cut.getDescription())
                 .order(cut.getOrder())
                 .build()
                 .setCreatedBy(cut.getCreatedBy());
-        pasted.setParent(ts);
+        pasted.setParent(testSet);
         return pasted;
     }
 
@@ -59,18 +59,18 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
         }
     }
 
-    private static @NotNull TestCaseDto aTestCaseIn(final TestSetNode ts, final String rank) {
+    private static @NotNull TestCaseDto aTestCaseIn(final TestSetNode testSet, final String rank) {
         final TestCaseDto tc = TestCaseDto.builder()
                 .id(UUID.randomUUID())
                 .description("Log in with a valid user")
                 .order(rank)
                 .build();
-        tc.setParent(ts);
+        tc.setParent(testSet);
         return tc;
     }
 
-    private static @NotNull Path fileOf(final TestSetNode ts, final TestCaseDto tc) {
-        return ts.getPath().resolve(tc.getId() + ".tc");
+    private static @NotNull Path fileOf(final TestSetNode testSet, final TestCaseDto tc) {
+        return testSet.getPath().resolve(tc.getId() + ".tc");
     }
 
     private static byte @NotNull [] bytesOf(final @NotNull Path file) {
@@ -108,12 +108,12 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
         return WriteAction.computeAndWait(() -> {
             final NodeMapper mapper = Services.getInstance(getProject(), NodeMapper.class);
 
-            final TestProjectNode tp = mapper.setTestProjectNode(root.resolve("NAFATH"));
-            nodes().addTestProject(tp);
+            final TestProjectNode testProject = mapper.setTestProjectNode(root.resolve("NAFATH"));
+            nodes().addTestProject(testProject);
 
-            final TestSetNode ts = mapper.getTestSetNode(tp.getTestCasesFolder().getPath().resolve("Login"), tp.getTestCasesFolder());
-            nodes().addTestSet(ts);
-            return ts;
+            final TestSetNode testSet = mapper.getTestSetNode(testProject.getTestCasesFolder().getPath().resolve("Login"), testProject.getTestCasesFolder());
+            nodes().addTestSet(testSet);
+            return testSet;
         });
     }
 
@@ -121,11 +121,11 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
         return WriteAction.computeAndWait(() -> {
             final NodeMapper mapper = Services.getInstance(getProject(), NodeMapper.class);
 
-            final TestProjectNode tp = mapper.setTestProjectNode(root.resolve("NAFATH"));
-            nodes().addTestProject(tp);
+            final TestProjectNode testProject = mapper.setTestProjectNode(root.resolve("NAFATH"));
+            nodes().addTestProject(testProject);
 
-            final TestSetNode login = mapper.getTestSetNode(tp.getTestCasesFolder().getPath().resolve("Login"), tp.getTestCasesFolder());
-            final TestSetNode signUp = mapper.getTestSetNode(tp.getTestCasesFolder().getPath().resolve("Sign up"), tp.getTestCasesFolder());
+            final TestSetNode login = mapper.getTestSetNode(testProject.getTestCasesFolder().getPath().resolve("Login"), testProject.getTestCasesFolder());
+            final TestSetNode signUp = mapper.getTestSetNode(testProject.getTestCasesFolder().getPath().resolve("Sign up"), testProject.getTestCasesFolder());
             nodes().addTestSet(login);
             nodes().addTestSet(signUp);
             return List.of(login, signUp);
@@ -149,35 +149,35 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-INTERNAL-031
     public void testATestCaseTheSetHasNeverHeldIsWrittenEvenWhenItsRankStays() {
-        final TestSetNode ts = oneTestSet();
-        final TestCaseDto pasted = aTestCaseIn(ts, "m");
+        final TestSetNode testSet = oneTestSet();
+        final TestCaseDto pasted = aTestCaseIn(testSet, "m");
 
-        indexedTestCases().updateSequence(ts.getPath(), List.of(pasted), List.of());
+        indexedTestCases().updateSequence(testSet.getPath(), List.of(pasted), List.of());
 
         assertTrue("a pasted test case whose rank did not move never reached disk",
-                Files.isRegularFile(fileOf(ts, pasted)));
+                Files.isRegularFile(fileOf(testSet, pasted)));
     }
 
     public void testATestCaseWhoseFileCouldNotBeWrittenIsNotIndexed() {
-        final TestSetNode ts = oneTestSet();
-        final TestCaseDto pasted = aTestCaseIn(ts, "m");
-        undeletable(fileOf(ts, pasted));
+        final TestSetNode testSet = oneTestSet();
+        final TestCaseDto pasted = aTestCaseIn(testSet, "m");
+        undeletable(fileOf(testSet, pasted));
 
-        assertFalse("the order write said every test case landed", indexedTestCases().updateSequence(ts.getPath(), List.of(pasted), List.of()));
+        assertFalse("the order write said every test case landed", indexedTestCases().updateSequence(testSet.getPath(), List.of(pasted), List.of()));
 
         assertTrue("the index holds a test case whose file was never written",
                 indexedTestCases().findTestCase(pasted.getId()).isEmpty());
-        assertEquals("the test set counts a test case that is not on disk", 0, indexedTestCases().testCaseCountOf(ts.getPath()));
+        assertEquals("the test set counts a test case that is not on disk", 0, indexedTestCases().testCaseCountOf(testSet.getPath()));
     }
 
     // Rule-INTERNAL-035
     public void testATestCaseSavedAsItIsBeforeTheOrderKeepsItsCreator() {
-        final TestSetNode ts = oneTestSet();
-        final TestCaseDto moved = aTestCaseIn(ts, "m").setCreatedBy("Mohammed AlZamil");
+        final TestSetNode testSet = oneTestSet();
+        final TestCaseDto moved = aTestCaseIn(testSet, "m").setCreatedBy("Mohammed AlZamil");
         final var createdAt = moved.getCreatedAt();
 
-        indexedTestCases().putTestCaseVerbatim(ts.getPath(), moved);
-        indexedTestCases().updateSequence(ts.getPath(), List.of(moved), List.of());
+        indexedTestCases().putTestCaseVerbatim(testSet.getPath(), moved);
+        indexedTestCases().updateSequence(testSet.getPath(), List.of(moved), List.of());
 
         final TestCaseDto indexed = indexedTestCases().findTestCase(moved.getId()).orElseThrow();
         assertEquals("a moved test case took the paster's name as its creator", "Mohammed AlZamil", indexed.getCreatedBy());
@@ -186,12 +186,12 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-INTERNAL-117
     public void testAnEditedCopyIsWrittenIntoTheTestCaseTheIndexHolds() {
-        final TestSetNode ts = oneTestSet();
-        final TestCaseDto held = aTestCaseIn(ts, "m");
-        indexedTestCases().putTestCaseVerbatim(ts.getPath(), held);
+        final TestSetNode testSet = oneTestSet();
+        final TestCaseDto held = aTestCaseIn(testSet, "m");
+        indexedTestCases().putTestCaseVerbatim(testSet.getPath(), held);
 
         final TestCaseDto edited = held.edit().description("Log in with a locked user").build();
-        assertTrue("the edit said it failed", indexedTestCases().putTestCase(ts.getPath(), edited));
+        assertTrue("the edit said it failed", indexedTestCases().putTestCase(testSet.getPath(), edited));
 
         assertSame("the index swapped its test case for the copy, so an open editor lost it", held, indexedTestCases().findTestCase(held.getId()).orElseThrow());
         assertEquals("the test case the index holds did not take the edit", "Log in with a locked user", held.getDescription());
@@ -199,11 +199,11 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-INTERNAL-029
     public void testACreatedTestCaseIsWrittenByTheOrderWriteWithItsRankAndItsCreator() {
-        final TestSetNode ts = oneTestSet();
-        final TestCaseDto created = aTestCaseIn(ts, "");
+        final TestSetNode testSet = oneTestSet();
+        final TestCaseDto created = aTestCaseIn(testSet, "");
         final List<TestCaseDto> arranged = List.of(created);
 
-        indexedTestCases().updateSequence(ts.getPath(), arranged, TestCaseOrder.place(arranged));
+        indexedTestCases().updateSequence(testSet.getPath(), arranged, TestCaseOrder.place(arranged));
 
         final TestCaseDto indexed = indexedTestCases().findTestCase(created.getId()).orElseThrow();
         assertFalse("the order write gave the new test case no rank", indexed.getOrder().isEmpty());
@@ -212,7 +212,7 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
 
         try {
             assertTrue("the test case's file does not carry the rank it was given",
-                    Files.readString(fileOf(ts, created)).contains(indexed.getOrder()));
+                    Files.readString(fileOf(testSet, created)).contains(indexed.getOrder()));
         } catch (final IOException ex) {
             throw new AssertionError("the new test case was not written", ex);
         }
@@ -261,17 +261,17 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-INTERNAL-112
     public void testARemovalWhoseDeleteIsRefusedKeepsTheTestCase() {
-        final TestSetNode ts = oneTestSet();
-        final TestCaseDto tc = aTestCaseIn(ts, "m");
-        indexedTestCases().putTestCaseVerbatim(ts.getPath(), tc);
+        final TestSetNode testSet = oneTestSet();
+        final TestCaseDto tc = aTestCaseIn(testSet, "m");
+        indexedTestCases().putTestCaseVerbatim(testSet.getPath(), tc);
 
-        undeletable(fileOf(ts, tc));
+        undeletable(fileOf(testSet, tc));
 
-        assertFalse("a refused delete was reported as a removal", indexedTestCases().removeTestCase(ts.getPath(), tc.getId()));
+        assertFalse("a refused delete was reported as a removal", indexedTestCases().removeTestCase(testSet.getPath(), tc.getId()));
 
         assertTrue("a refused delete took the test case out of the index", indexedTestCases().findTestCase(tc.getId()).isPresent());
         assertTrue("a refused delete took the test case out of its set",
-                indexedTestCases().getTestCasesForTestSet(ts.getPath()).stream().anyMatch(each -> each.getId().equals(tc.getId())));
+                indexedTestCases().getTestCasesForTestSet(testSet.getPath()).stream().anyMatch(each -> each.getId().equals(tc.getId())));
     }
 
     public void testAMoveWhoseOldFileWillNotGoLeavesTheTestCaseWhereItWas() {
@@ -316,58 +316,58 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
 
     // UC-INTERNAL-004, Rule-INTERNAL-125
     public void testASaveThatCannotFinishLeavesTheFileAsItWas() {
-        final @NotNull TestSetNode ts = oneTestSet();
-        final @NotNull TestCaseDto held = aTestCaseIn(ts, "m");
-        indexedTestCases().putTestCaseVerbatim(ts.getPath(), held);
-        final byte @NotNull [] before = bytesOf(fileOf(ts, held));
-        undeletable(TestDataFiles.besideItself(fileOf(ts, held)));
+        final @NotNull TestSetNode testSet = oneTestSet();
+        final @NotNull TestCaseDto held = aTestCaseIn(testSet, "m");
+        indexedTestCases().putTestCaseVerbatim(testSet.getPath(), held);
+        final byte @NotNull [] before = bytesOf(fileOf(testSet, held));
+        undeletable(TestDataFiles.besideItself(fileOf(testSet, held)));
 
         asTester(() -> assertFalse("a save that could not finish was reported as written",
-                indexedTestCases().putTestCase(ts.getPath(), held.edit().description("Sign in with a valid user").build())));
+                indexedTestCases().putTestCase(testSet.getPath(), held.edit().description("Sign in with a valid user").build())));
 
-        assertArrayEquals("a save that could not finish changed the file", before, bytesOf(fileOf(ts, held)));
+        assertArrayEquals("a save that could not finish changed the file", before, bytesOf(fileOf(testSet, held)));
     }
 
     // UC-INTERNAL-004, Rule-INTERNAL-113, Rule-INTERNAL-125
     public void testASaveLeavesNothingBesideTheFileAndBothBelongToTestin() {
-        final @NotNull TestSetNode ts = oneTestSet();
-        final @NotNull TestCaseDto held = aTestCaseIn(ts, "m");
-        indexedTestCases().putTestCaseVerbatim(ts.getPath(), held);
-        final @NotNull Path beside = TestDataFiles.besideItself(fileOf(ts, held));
+        final @NotNull TestSetNode testSet = oneTestSet();
+        final @NotNull TestCaseDto held = aTestCaseIn(testSet, "m");
+        indexedTestCases().putTestCaseVerbatim(testSet.getPath(), held);
+        final @NotNull Path beside = TestDataFiles.besideItself(fileOf(testSet, held));
 
         asTester(() -> assertTrue("the save was not written",
-                indexedTestCases().putTestCase(ts.getPath(), held.edit().description("Sign in with a valid user").build())));
+                indexedTestCases().putTestCase(testSet.getPath(), held.edit().description("Sign in with a valid user").build())));
 
         assertFalse("the file written beside the test case was left behind", Files.exists(beside));
         final @NotNull OwnWrites ours = Services.getInstance(OwnWrites.class);
-        assertTrue("the saved test case would read as an outside change", ours.areOurs(fileOf(ts, held), getProject()));
+        assertTrue("the saved test case would read as an outside change", ours.areOurs(fileOf(testSet, held), getProject()));
         assertTrue("the file written beside it would read as an outside change", ours.areOurs(beside, getProject()));
     }
 
     // UC-INTERNAL-004, Rule-INTERNAL-033
     public void testASaveThatWouldLeaveTheFileAsItIsWritesNothing() {
-        final @NotNull TestSetNode ts = oneTestSet();
-        final @NotNull TestCaseDto held = aTestCaseIn(ts, "m").setCreatedBy("Mohammed AlZamil");
-        indexedTestCases().putTestCaseVerbatim(ts.getPath(), held);
-        final byte @NotNull [] before = bytesOf(fileOf(ts, held));
+        final @NotNull TestSetNode testSet = oneTestSet();
+        final @NotNull TestCaseDto held = aTestCaseIn(testSet, "m").setCreatedBy("Mohammed AlZamil");
+        indexedTestCases().putTestCaseVerbatim(testSet.getPath(), held);
+        final byte @NotNull [] before = bytesOf(fileOf(testSet, held));
 
         asTester(() -> assertFalse("a save that changed nothing was reported as written",
-                indexedTestCases().putTestCase(ts.getPath(), held.edit().build())));
+                indexedTestCases().putTestCase(testSet.getPath(), held.edit().build())));
 
-        assertArrayEquals("a save that changed nothing rewrote the file", before, bytesOf(fileOf(ts, held)));
+        assertArrayEquals("a save that changed nothing rewrote the file", before, bytesOf(fileOf(testSet, held)));
         assertEquals("a save that changed nothing recorded the tester as having edited it", "", held.getUpdatedBy());
     }
 
     // UC-INTERNAL-004, Rule-INTERNAL-034
     public void testASaveIsAChangeWhenTheIndexKnowsTheNameAndANewTestCaseWhenItDoesNot() {
-        final @NotNull TestSetNode ts = oneTestSet();
-        final @NotNull TestCaseDto known = aTestCaseIn(ts, "m").setCreatedBy("Mohammed AlZamil");
-        indexedTestCases().putTestCaseVerbatim(ts.getPath(), known);
-        final @NotNull TestCaseDto fresh = aTestCaseIn(ts, "s");
+        final @NotNull TestSetNode testSet = oneTestSet();
+        final @NotNull TestCaseDto known = aTestCaseIn(testSet, "m").setCreatedBy("Mohammed AlZamil");
+        indexedTestCases().putTestCaseVerbatim(testSet.getPath(), known);
+        final @NotNull TestCaseDto fresh = aTestCaseIn(testSet, "s");
 
         asTester(() -> {
-            assertTrue("the edit said it failed", indexedTestCases().putTestCase(ts.getPath(), known.edit().description("Log in with a locked user").build()));
-            assertTrue("the new test case said it failed", indexedTestCases().putTestCase(ts.getPath(), fresh));
+            assertTrue("the edit said it failed", indexedTestCases().putTestCase(testSet.getPath(), known.edit().description("Log in with a locked user").build()));
+            assertTrue("the new test case said it failed", indexedTestCases().putTestCase(testSet.getPath(), fresh));
         });
 
         final @NotNull TestCaseDto edited = indexedTestCases().findTestCase(known.getId()).orElseThrow();

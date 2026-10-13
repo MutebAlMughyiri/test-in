@@ -90,18 +90,18 @@ public class EditorSurfacesIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull TestSetEditor aTestSetEditor() {
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        final @NotNull TestSetNode ts = EditorFixtures.testSet(getProject(), tp, "Checkout");
-        EditorFixtures.testCases(getProject(), ts, 3);
-        return EditorFixtures.openTestSetEditor(getProject(), ts, getTestRootDisposable());
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), testProject, "Checkout");
+        EditorFixtures.testCases(getProject(), testSet, 3);
+        return EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
     }
 
     private @NotNull TestRunEditor aTestRunEditor() {
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        final @NotNull TestSetNode ts = EditorFixtures.testSet(getProject(), tp, "Payments");
-        final @NotNull List<TestCaseDto> covered = EditorFixtures.testCases(getProject(), ts, 2);
-        final @NotNull TestRunNode tr = EditorFixtures.testRun(getProject(), tp, covered.stream().map(EditorFixtures::pending).toList());
-        return EditorFixtures.openTestRunEditor(getProject(), tr, getTestRootDisposable());
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), testProject, "Payments");
+        final @NotNull List<TestCaseDto> covered = EditorFixtures.testCases(getProject(), testSet, 2);
+        final @NotNull TestRunNode testRun = EditorFixtures.testRun(getProject(), testProject, covered.stream().map(EditorFixtures::pending).toList());
+        return EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());
     }
 
     // Rule-EDITOR-PANEL-212

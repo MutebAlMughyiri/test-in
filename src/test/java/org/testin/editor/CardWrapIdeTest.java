@@ -63,11 +63,11 @@ public class CardWrapIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-003
     public void testANarrowerEditorGivesAWrappedTitleItsExtraLineEvenWhenTheCardAboveSaysTheSame() {
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
         final @NotNull List<TestCaseDto> testCases = List.of(
-                EditorFixtures.testCase(getProject(), EditorFixtures.testSet(getProject(), tp, "Login"), LONG, "1"),
-                EditorFixtures.testCase(getProject(), EditorFixtures.testSet(getProject(), tp, "Logout"), LONG, "1"));
-        final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), EditorFixtures.testRun(getProject(), tp, testCases.stream().map(CardWrapIdeTest::passed).toList()), getTestRootDisposable());
+                EditorFixtures.testCase(getProject(), EditorFixtures.testSet(getProject(), testProject, "Login"), LONG, "1"),
+                EditorFixtures.testCase(getProject(), EditorFixtures.testSet(getProject(), testProject, "Logout"), LONG, "1"));
+        final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), EditorFixtures.testRun(getProject(), testProject, testCases.stream().map(CardWrapIdeTest::passed).toList()), getTestRootDisposable());
         final @NotNull JBList<TestCaseDto> list = editor.getList();
 
         final int wide = heightAt(list, 1400);

@@ -41,13 +41,13 @@ public class SetTestRunStatusIdeTest extends AbstractTempRootIdeTest {
 
     private void finish(final @NotNull TestRunStatus finalStatus) {
         final @NotNull NodesOnDisk made = new NodesOnDisk(getProject());
-        final @NotNull TestProjectNode tp = made.testProject(root.resolve("NAFATH"));
-        final @NotNull TestSetNode login = made.testSet(tp.getTestCasesFolder(), "Login");
+        final @NotNull TestProjectNode testProject = made.testProject(root.resolve("NAFATH"));
+        final @NotNull TestSetNode login = made.testSet(testProject.getTestCasesFolder(), "Login");
         final @NotNull UUID passed = made.testCase(login).getId();
         final @NotNull UUID stillPending = made.testCase(login).getId();
         final @NotNull UUID alsoPending = made.testCase(login).getId();
 
-        final @NotNull TestRunNode testRun = made.testRun(tp.getTestRunsFolder(), "Cycle-1");
+        final @NotNull TestRunNode testRun = made.testRun(testProject.getTestRunsFolder(), "Cycle-1");
         indexedTestRuns().putRunItems(testRun.getPath(), new RunItems().setAll(List.of(
                 new RunItem().setId(passed).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())),
                 new RunItem().setId(stillPending),

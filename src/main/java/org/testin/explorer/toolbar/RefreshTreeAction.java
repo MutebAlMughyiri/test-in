@@ -43,7 +43,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class RefreshTreeAction extends AbstractBoundProjectAction {
     private static final @NotNull String REFRESHED = Done.REFRESHED.getOutcome();
 
-    private final @NotNull TreePanel tp;
+    private final @NotNull TreePanel treePanel;
 
     private final @NotNull BoundTestProject boundTestProject;
 
@@ -58,9 +58,9 @@ public class RefreshTreeAction extends AbstractBoundProjectAction {
     // UC-TREE-PANEL-025, UC-TREE-PANEL-026, Rule-TREE-PANEL-081
     private final @NotNull AtomicReference<Optional<String>> queued = new AtomicReference<>(Optional.empty());
 
-    public RefreshTreeAction(final @NotNull Project p, final @NotNull TreePanel tp) {
+    public RefreshTreeAction(final @NotNull Project p, final @NotNull TreePanel treePanel) {
         super(p, Bundle.message("toolbar.refresh"), Bundle.message("toolbar.refresh.description"), AllIcons.Actions.Refresh);
-        this.tp = tp;
+        this.treePanel = treePanel;
         this.boundTestProject = Services.getInstance(p, BoundTestProject.class);
         this.indexer = Services.getInstance(p, ProjectIndexer.class);
         this.testinEditors = Services.getInstance(p, TestinEditors.class);
@@ -109,11 +109,11 @@ public class RefreshTreeAction extends AbstractBoundProjectAction {
 
             testinEditors.refreshOpen();
 
-            tp.refresh();
+            treePanel.refresh();
             Services.getInstance(p, KnownBugIssueStates.class).readAll(() -> ViewToolWindowFactory.refreshShown(p));
             TestinLogger.info("Refresh: tree rebuilt");
 
-            tp.fetchBranches();
+            treePanel.fetchBranches();
 
             notifier.softShow(p, outcome);
 

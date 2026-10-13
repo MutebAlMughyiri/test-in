@@ -36,8 +36,8 @@ public class MarkerNotSavedIdeTest extends AbstractTempRootIdeTest {
     // Rule-INTERNAL-123
     public void testATestRunMarkerThatCannotBeWrittenIsReadAgainFromDisk() {
         final @NotNull NodesOnDisk made = new NodesOnDisk(getProject());
-        final @NotNull TestProjectNode tp = made.testProject(root.resolve("NAFATH"));
-        final @NotNull TestRunNode testRun = made.testRun(tp.getTestRunsFolder(), "Cycle-1");
+        final @NotNull TestProjectNode testProject = made.testProject(root.resolve("NAFATH"));
+        final @NotNull TestRunNode testRun = made.testRun(testProject.getTestRunsFolder(), "Cycle-1");
         Services.getInstance(getProject(), TestRuns.class).putRunItems(testRun.getPath(), new RunItems());
 
         final @NotNull Path marker = testRun.getPath().resolve(NodeType.TR.getMarker());

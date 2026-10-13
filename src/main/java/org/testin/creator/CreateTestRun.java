@@ -73,7 +73,7 @@ public class CreateTestRun implements NodeCreator {
     @Override
     public @NotNull Optional<AbstractNode> execute(final @NotNull String name, final @NotNull AbstractNode parentNode, final @NotNull Path newDirPath) {
         boundTestProject.get().ifPresentOrElse(
-                tp -> configureTestRun(tp.getTestCasesFolder(), name, parentNode, Set.of(), Map.of()),
+                testProject -> configureTestRun(testProject.getTestCasesFolder(), name, parentNode, Set.of(), Map.of()),
                 () -> TestinLogger.warn("Create test run: no test project is bound to " + p.getName()));
 
         return Optional.empty();

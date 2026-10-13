@@ -56,9 +56,9 @@ public class RightClickIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull TestSetEditor fourTestCases() {
-        final @NotNull TestSetNode ts = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
-        EditorFixtures.testCases(getProject(), ts, 4);
-        return EditorFixtures.openTestSetEditor(getProject(), ts, getTestRootDisposable());
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
+        EditorFixtures.testCases(getProject(), testSet, 4);
+        return EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
     }
 
     // Rule-EDITOR-PANEL-110

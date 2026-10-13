@@ -31,8 +31,8 @@ import static org.testin.view.Drawn.holds;
 
 public class FollowSelectionIdeTest extends AbstractViewPanelIdeTest {
 
-    private @NotNull TestSetEditor anEditorOn(final @NotNull TestSetNode ts) {
-        return EditorFixtures.openTestSetEditor(getProject(), ts, getTestRootDisposable());
+    private @NotNull TestSetEditor anEditorOn(final @NotNull TestSetNode testSet) {
+        return EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
     }
 
     private void selectIn(final @NotNull TestSetEditor editor, final @NotNull TestCaseDto tc) {
@@ -42,13 +42,13 @@ public class FollowSelectionIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-015
     public void testMovingTheSelectionFillsThePanelOnlyWhileItIsOnScreen() {
-        final @NotNull TestSetNode ts = aTestSet("Login");
-        final @NotNull TestCaseDto first = aTestCase(ts, "Log in with a valid user", "a");
-        final @NotNull TestCaseDto second = aTestCase(ts, "Log in with a locked user", "b");
-        final @NotNull TestCaseDto third = aTestCase(ts, "Log in with no password", "c");
-        final @NotNull TestSetEditor editor = anEditorOn(ts);
+        final @NotNull TestSetNode testSet = aTestSet("Login");
+        final @NotNull TestCaseDto first = aTestCase(testSet, "Log in with a valid user", "a");
+        final @NotNull TestCaseDto second = aTestCase(testSet, "Log in with a locked user", "b");
+        final @NotNull TestCaseDto third = aTestCase(testSet, "Log in with no password", "c");
+        final @NotNull TestSetEditor editor = anEditorOn(testSet);
 
-        view.getPanel().show(List.of(first), ts.getPath2());
+        view.getPanel().show(List.of(first), testSet.getPath2());
         selectIn(editor, second);
         assertTrue("moving the selection did not fill the panel on screen: " + details(), holds(details(), "Log in with a locked user"));
 
@@ -59,12 +59,12 @@ public class FollowSelectionIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-102
     public void testMovingTheSelectionKeepsTheTabInFront() {
-        final @NotNull TestSetNode ts = aTestSet("Login");
-        final @NotNull TestCaseDto first = aTestCase(ts, "Log in with a valid user", "a");
-        final @NotNull TestCaseDto second = aTestCase(ts, "Log in with a locked user", "b");
-        final @NotNull TestSetEditor editor = anEditorOn(ts);
+        final @NotNull TestSetNode testSet = aTestSet("Login");
+        final @NotNull TestCaseDto first = aTestCase(testSet, "Log in with a valid user", "a");
+        final @NotNull TestCaseDto second = aTestCase(testSet, "Log in with a locked user", "b");
+        final @NotNull TestSetEditor editor = anEditorOn(testSet);
 
-        view.getPanel().show(List.of(first), ts.getPath2());
+        view.getPanel().show(List.of(first), testSet.getPath2());
         view.bringToFront(ViewTab.HISTORY);
         selectIn(editor, second);
 
@@ -74,12 +74,12 @@ public class FollowSelectionIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-016, Rule-VIEW-PANEL-059
     public void testFollowingNeverOpensAPanelTheTesterClosed() {
-        final @NotNull TestSetNode ts = aTestSet("Login");
-        final @NotNull TestCaseDto first = aTestCase(ts, "Log in with a valid user", "a");
-        final @NotNull TestCaseDto second = aTestCase(ts, "Log in with a locked user", "b");
-        final @NotNull TestSetEditor editor = anEditorOn(ts);
+        final @NotNull TestSetNode testSet = aTestSet("Login");
+        final @NotNull TestCaseDto first = aTestCase(testSet, "Log in with a valid user", "a");
+        final @NotNull TestCaseDto second = aTestCase(testSet, "Log in with a locked user", "b");
+        final @NotNull TestSetEditor editor = anEditorOn(testSet);
 
-        view.getPanel().show(List.of(first), ts.getPath2());
+        view.getPanel().show(List.of(first), testSet.getPath2());
         view.closedByTheTester();
         selectIn(editor, second);
         selectIn(editor, first);
@@ -89,13 +89,13 @@ public class FollowSelectionIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-017
     public void testMovingToATestinEditorWithNothingSelectedEmptiesThePanel() {
-        final @NotNull TestSetNode ts = aTestSet("Login");
-        final @NotNull TestCaseDto tc = aTestCase(ts, "Log in with a valid user", "a");
+        final @NotNull TestSetNode testSet = aTestSet("Login");
+        final @NotNull TestCaseDto tc = aTestCase(testSet, "Log in with a valid user", "a");
         final @NotNull TestSetNode other = aTestSet("Logout");
         aTestCase(other, "Log out from the menu", "a");
         final @NotNull TestSetEditor nothingSelected = anEditorOn(other);
 
-        view.getPanel().show(List.of(tc), ts.getPath2());
+        view.getPanel().show(List.of(tc), testSet.getPath2());
         new UnifiedFileEditor(getProject(), new UnifiedVirtualFile(other), nothingSelected).selectNotify();
 
         assertEquals("moving to an editor with nothing selected left a test case in the panel", List.of(Bundle.message("details.placeholder")), details());
@@ -103,14 +103,14 @@ public class FollowSelectionIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-009, Rule-VIEW-PANEL-060
     public void testClosingTheEditorTheTestCaseCameFromEmptiesAndClosesThePanel() {
-        final @NotNull TestSetNode ts = aTestSet("Login");
-        final @NotNull TestCaseDto tc = aTestCase(ts, "Log in with a valid user", "a");
+        final @NotNull TestSetNode testSet = aTestSet("Login");
+        final @NotNull TestCaseDto tc = aTestCase(testSet, "Log in with a valid user", "a");
         final @NotNull TestSetNode other = aTestSet("Logout");
         aTestCase(other, "Log out from the menu", "a");
-        final @NotNull TestSetEditor itsEditor = anEditorOn(ts);
+        final @NotNull TestSetEditor itsEditor = anEditorOn(testSet);
         final @NotNull TestSetEditor anotherEditor = anEditorOn(other);
 
-        view.getPanel().show(List.of(tc), ts.getPath2());
+        view.getPanel().show(List.of(tc), testSet.getPath2());
 
         Disposer.dispose(anotherEditor);
         assertTrue("closing another editor closed the panel", view.isOpen());

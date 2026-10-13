@@ -142,16 +142,16 @@ public class SettingsPageIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-SETTING-045
     public void testATestProjectsOwnFolderIsRefusedAsTheTestinFolder() {
-        final @NotNull Path testProject = root.resolve("test-02");
+        final @NotNull Path testProjectPath = root.resolve("test-02");
         try {
-            Files.createDirectories(testProject);
-            Files.writeString(testProject.resolve(NodeType.TP.getMarker()), "{}");
+            Files.createDirectories(testProjectPath);
+            Files.writeString(testProjectPath.resolve(NodeType.TP.getMarker()), "{}");
         } catch (final IOException ex) {
-            throw new AssertionError("Could not make the test project " + testProject + ": " + ex.getMessage(), ex);
+            throw new AssertionError("Could not make the test project " + testProjectPath + ": " + ex.getMessage(), ex);
         }
-        typedOver(values("", "Sara"), values(testProject.toString(), "Omar"));
+        typedOver(values("", "Sara"), values(testProjectPath.toString(), "Omar"));
 
-        assertEquals(HtmlChunk.text(Bundle.message("settings.test.project", testProject, root)).toString(), refused().getMessageHtml().toString());
+        assertEquals(HtmlChunk.text(Bundle.message("settings.test.project", testProjectPath, root)).toString(), refused().getMessageHtml().toString());
         assertEquals("a test project's own folder was refused, and the page stored it anyway", "", settings().rootTestinPath);
     }
 

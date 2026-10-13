@@ -31,15 +31,15 @@ import java.util.List;
 
 public class TreePanelToolbar {
     // UC-TREE-PANEL-028
-    public @NotNull List<AnAction> create(final @NotNull Project p, final @NotNull TreePanel tp) {
+    public @NotNull List<AnAction> create(final @NotNull Project p, final @NotNull TreePanel treePanel) {
         return List.of(
                 GlobalSearchAction.registered(),
                 new OpenTestinSettingsAction(p),
-                new ExpandTreeAction(tp),
-                new CollapseTreeAction(tp),
-                tp.getRefreshAction(),
-                new SelectTestProjectAction(p, tp),
-                new CreateTestProjectAction(p, tp),
+                new ExpandTreeAction(treePanel),
+                new CollapseTreeAction(treePanel),
+                treePanel.getRefreshAction(),
+                new SelectTestProjectAction(p, treePanel),
+                new CreateTestProjectAction(p, treePanel),
                 new SaveTestinYmlAction(p)
         );
     }

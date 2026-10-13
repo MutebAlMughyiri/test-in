@@ -46,7 +46,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class RemoveWithEditorsOpenIdeTest extends AbstractOpenEditorsIdeTest {
 
     private final @NotNull Map<String, Boolean> cancelableByTitle = new ConcurrentHashMap<>();
-    private TestProjectNode tp;
+    private TestProjectNode testProject;
     private @NotNull String cancelTheOneTitled = "";
 
     private boolean isCancelable(final @NotNull String title) {
@@ -56,7 +56,7 @@ public class RemoveWithEditorsOpenIdeTest extends AbstractOpenEditorsIdeTest {
     @Override
     public void setUp() {
         super.setUp();
-        tp = new NodesOnDisk(getProject()).testProject(root.resolve("NAFATH"));
+        testProject = new NodesOnDisk(getProject()).testProject(root.resolve("NAFATH"));
         undoHistories().forget(UndoScope.TREE);
         BackgroundWork.watch(getTestRootDisposable(), task -> {
             cancelableByTitle.put(task.getTitle(), task.isCancellable());
@@ -90,9 +90,9 @@ public class RemoveWithEditorsOpenIdeTest extends AbstractOpenEditorsIdeTest {
 
     // Rule-TREE-PANEL-116
     public void testARemovalClosesEveryEditorOnTheNodeAndUnderIt() {
-        final @NotNull TestSetPackageNode payments = new NodesOnDisk(getProject()).testSetPackage(tp.getTestCasesFolder(), "Payments");
+        final @NotNull TestSetPackageNode payments = new NodesOnDisk(getProject()).testSetPackage(testProject.getTestCasesFolder(), "Payments");
         final @NotNull TestSetNode card = aTestSet(payments, "Card");
-        final @NotNull TestSetNode login = aTestSet(tp.getTestCasesFolder(), "Login");
+        final @NotNull TestSetNode login = aTestSet(testProject.getTestCasesFolder(), "Login");
         opened(card);
         opened(login);
 
@@ -105,7 +105,7 @@ public class RemoveWithEditorsOpenIdeTest extends AbstractOpenEditorsIdeTest {
 
     // Rule-TREE-PANEL-102
     public void testCancelingTheCopyRemovesNothingAndClosesNoEditor() {
-        final @NotNull TestSetNode login = aTestSet(tp.getTestCasesFolder(), "Login");
+        final @NotNull TestSetNode login = aTestSet(testProject.getTestCasesFolder(), "Login");
         opened(login);
         cancelTheOneTitled = Bundle.message("remove.progress");
 
@@ -120,7 +120,7 @@ public class RemoveWithEditorsOpenIdeTest extends AbstractOpenEditorsIdeTest {
 
     // Rule-TREE-PANEL-102
     public void testKeepingTheCopyCanBeCanceledAndPuttingItBackCannot() {
-        final @NotNull TestSetNode login = aTestSet(tp.getTestCasesFolder(), "Login");
+        final @NotNull TestSetNode login = aTestSet(testProject.getTestCasesFolder(), "Login");
 
         removedAndConfirmed(login);
         Await.until("the test set was not removed", () -> undoHistories().canUndo(UndoScope.TREE));
@@ -133,8 +133,8 @@ public class RemoveWithEditorsOpenIdeTest extends AbstractOpenEditorsIdeTest {
 
     // Rule-TREE-PANEL-041
     public void testANodeThatCouldNotBeKeptIsRemovedAndSaysItCannotBeUndone() {
-        final @NotNull TestSetNode login = aTestSet(tp.getTestCasesFolder(), "Login");
-        final @NotNull TestSetNode checkout = aTestSet(tp.getTestCasesFolder(), "Checkout");
+        final @NotNull TestSetNode login = aTestSet(testProject.getTestCasesFolder(), "Login");
+        final @NotNull TestSetNode checkout = aTestSet(testProject.getTestCasesFolder(), "Checkout");
         removedAndConfirmed(login);
         Await.until("the first test set was not removed", () -> !nodes().nodeExists(login.getPath()) && undoHistories().canUndo(UndoScope.TREE));
         TempTree.delete(checkout.getPath());

@@ -126,8 +126,8 @@ public class TreeNodesIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-TREE-PANEL-077
     public void testRunningFromAParentSkipsRetiredBranchesButARetiredTestSetStillRuns() {
-        final @NotNull TestProjectNode tp = aTestProject();
-        final @NotNull AbstractNode testCasesRoot = tp.getTestCasesFolder();
+        final @NotNull TestProjectNode testProject = aTestProject();
+        final @NotNull AbstractNode testCasesRoot = testProject.getTestCasesFolder();
 
         final @NotNull TestCaseDto live = made().testCase(made().testSet(testCasesRoot, "Login"));
 
@@ -164,9 +164,9 @@ public class TreeNodesIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-TREE-PANEL-042
     public void testTheTwoContainersAreNeverRemoved() {
-        final @NotNull TestProjectNode tp = aTestProject();
+        final @NotNull TestProjectNode testProject = aTestProject();
 
-        for (final AbstractNode container : List.of(tp.getTestCasesFolder(), tp.getTestRunsFolder())) {
+        for (final AbstractNode container : List.of(testProject.getTestCasesFolder(), testProject.getTestRunsFolder())) {
             final @NotNull AtomicBoolean removed = new AtomicBoolean(true);
             RemoveHandlers.of(container.getType()).remove(getProject(), container, removed::set);
 

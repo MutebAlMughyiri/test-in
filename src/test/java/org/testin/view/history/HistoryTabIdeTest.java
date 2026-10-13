@@ -71,11 +71,11 @@ public class HistoryTabIdeTest extends AbstractTempRootIdeTest {
 
     // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-100, Rule-VIEW-PANEL-105, Rule-VIEW-PANEL-109
     public void testABugIsACardOfItsOwnWithItsAttributesAndItsTestRunOpensTheRunItem() {
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        final @NotNull TestSetNode ts = EditorFixtures.testSet(getProject(), tp, "Login");
-        final @NotNull TestCaseDto tc = EditorFixtures.testCase(getProject(), ts, "Log in with a valid user", "a");
-        final @NotNull TestRunNode tr = EditorFixtures.testRun(getProject(), tp, List.of(failed(tc)));
-        Services.getInstance(getProject(), TestRuns.class).putRunItems(tp.getTestRunsFolder().getPath().resolve("Cycle-0"), RunItems.builder().all(new ArrayList<>(List.of(failed(tc)))).build());
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), testProject, "Login");
+        final @NotNull TestCaseDto tc = EditorFixtures.testCase(getProject(), testSet, "Log in with a valid user", "a");
+        final @NotNull TestRunNode testRun = EditorFixtures.testRun(getProject(), testProject, List.of(failed(tc)));
+        Services.getInstance(getProject(), TestRuns.class).putRunItems(testProject.getTestRunsFolder().getPath().resolve("Cycle-0"), RunItems.builder().all(new ArrayList<>(List.of(failed(tc)))).build());
 
         new HistoryTab().load(getProject(), tab, Optional.of(tc));
         Await.until("the bug cards were never drawn: " + Drawn.words(tab), () -> Drawn.holds(Drawn.words(tab), Bundle.message("view.history.not.under.git")));
@@ -92,9 +92,9 @@ public class HistoryTabIdeTest extends AbstractTempRootIdeTest {
 
         final @NotNull TestinEditors editors = Services.getInstance(getProject(), TestinEditors.class);
         try {
-            ((ActionLink) Drawn.reading(tab, tr.getName())).doClick();
-            Await.until("the test run did not open", () -> editors.editorFor(tr).filter(TestRunEditor.class::isInstance).isPresent());
-            final @NotNull TestRunEditor opened = (TestRunEditor) editors.editorFor(tr).orElseThrow();
+            ((ActionLink) Drawn.reading(tab, testRun.getName())).doClick();
+            Await.until("the test run did not open", () -> editors.editorFor(testRun).filter(TestRunEditor.class::isInstance).isPresent());
+            final @NotNull TestRunEditor opened = (TestRunEditor) editors.editorFor(testRun).orElseThrow();
             Await.until("the run item was not selected in its test run", () -> Optional.ofNullable(opened.getList().getSelectedValue()).map(TestCaseDto::getId).filter(tc.getId()::equals).isPresent());
         } finally {
             editors.closeAll();

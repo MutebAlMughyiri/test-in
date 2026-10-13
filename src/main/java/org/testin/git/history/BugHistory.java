@@ -59,22 +59,22 @@ public final class BugHistory {
 
     // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-100, Rule-VIEW-PANEL-106, Rule-VIEW-PANEL-107
     public static @NotNull History addTo(final @NotNull History history, final @NotNull Project p, final @NotNull TestCaseFile file, final @NotNull UUID testCaseId, final @NotNull Map<Path, String> runItemsNow) {
-        final @NotNull Path testProject = file.testProject();
-        final @NotNull Map<String, String> now = inProject(testProject, FileKind.RUN_ITEM.fileName(testCaseId), runItemsNow);
+        final @NotNull Path testProjectPath = file.testProject();
+        final @NotNull Map<String, String> now = inProject(testProjectPath, FileKind.RUN_ITEM.fileName(testCaseId), runItemsNow);
         final @NotNull JsonCodec mapper = Services.getInstance(p, JsonCodec.class);
         final @NotNull GitRepositoryService git = new GitRepositoryService(p);
-        if (git.isNotRepository(testProject))
-            return history.with(notCommitted(testProject, List.of(), now, Map.of(), mapper), List.of());
+        if (git.isNotRepository(testProjectPath))
+            return history.with(notCommitted(testProjectPath, List.of(), now, Map.of(), mapper), List.of());
 
         try {
-            final @NotNull List<BugCommit> commits = commits(git.log(testProject, FORMAT, "--name-status", "--", pathspec(NodeType.TRF, FileKind.RUN_ITEM, testCaseId), pathspec(NodeType.TCF, FileKind.TEST_CASE, testCaseId)));
+            final @NotNull List<BugCommit> commits = commits(git.log(testProjectPath, FORMAT, "--name-status", "--", pathspec(NodeType.TRF, FileKind.RUN_ITEM, testCaseId), pathspec(NodeType.TCF, FileKind.TEST_CASE, testCaseId)));
             final @NotNull List<String> paths = commits.stream().flatMap(BugCommit::paths).distinct().toList();
             final @NotNull Map<String, String> versions = commits.isEmpty()
                     ? Map.of()
-                    : git.objects(testProject, Stream.concat(commits.stream().flatMap(BugCommit::objectNames), paths.stream().map(path -> HEAD + ":" + path)).distinct().toList());
+                    : git.objects(testProjectPath, Stream.concat(commits.stream().flatMap(BugCommit::objectNames), paths.stream().map(path -> HEAD + ":" + path)).distinct().toList());
 
-            final @NotNull List<BugCard> cards = new ArrayList<>(notCommitted(testProject, paths, now, versions, mapper));
-            commits.forEach(commit -> commit.files().forEach(changed -> card(testProject, commit, changed, versions, mapper).ifPresent(cards::add)));
+            final @NotNull List<BugCard> cards = new ArrayList<>(notCommitted(testProjectPath, paths, now, versions, mapper));
+            commits.forEach(commit -> commit.files().forEach(changed -> card(testProjectPath, commit, changed, versions, mapper).ifPresent(cards::add)));
             return history.with(cards, commits.stream().map(BugCommit::hash).toList());
         } catch (final GitFailed ex) {
             TestinLogger.warn("Could not read the bugs of " + testCaseId + " from Git: " + FailureText.of(ex));
@@ -86,10 +86,10 @@ public final class BugHistory {
         return ":(glob)" + folder.getFolderName() + "/**/" + kind.fileName(testCaseId);
     }
 
-    private static @NotNull Map<String, String> inProject(final @NotNull Path testProject, final @NotNull String runItem, final @NotNull Map<Path, String> runItemsNow) {
+    private static @NotNull Map<String, String> inProject(final @NotNull Path testProjectPath, final @NotNull String runItem, final @NotNull Map<Path, String> runItemsNow) {
         return runItemsNow.entrySet().stream()
-                .filter(testRun -> testRun.getKey().startsWith(testProject))
-                .collect(Collectors.toMap(testRun -> testProject.relativize(testRun.getKey().resolve(runItem)).toString().replace('\\', '/'), Map.Entry::getValue));
+                .filter(testRun -> testRun.getKey().startsWith(testProjectPath))
+                .collect(Collectors.toMap(testRun -> testProjectPath.relativize(testRun.getKey().resolve(runItem)).toString().replace('\\', '/'), Map.Entry::getValue));
     }
 
     static @NotNull List<BugCommit> commits(final @NotNull String log) {
@@ -107,22 +107,22 @@ public final class BugHistory {
     }
 
     // Rule-VIEW-PANEL-100, Rule-VIEW-PANEL-107
-    private static @NotNull List<BugCard> notCommitted(final @NotNull Path testProject, final @NotNull Collection<String> committed, final @NotNull Map<String, String> now, final @NotNull Map<String, String> versions, final @NotNull JsonCodec mapper) {
+    private static @NotNull List<BugCard> notCommitted(final @NotNull Path testProjectPath, final @NotNull Collection<String> committed, final @NotNull Map<String, String> now, final @NotNull Map<String, String> versions, final @NotNull JsonCodec mapper) {
         return Stream.concat(committed.stream(), now.keySet().stream())
                 .collect(Collectors.toCollection(TreeSet::new)).stream()
-                .flatMap(path -> BugEventDetector.between(testRun(testProject, path), version(mapper, versions, HEAD, path), parsed(mapper, now.getOrDefault(path, ""))).stream())
+                .flatMap(path -> BugEventDetector.between(testRun(testProjectPath, path), version(mapper, versions, HEAD, path), parsed(mapper, now.getOrDefault(path, ""))).stream())
                 .map(BugCard::notCommitted)
                 .toList();
     }
 
     // Rule-VIEW-PANEL-105, Rule-VIEW-PANEL-106
-    private static @NotNull Optional<BugCard> card(final @NotNull Path testProject, final @NotNull BugCommit commit, final @NotNull ChangedFile changed, final @NotNull Map<String, String> versions, final @NotNull JsonCodec mapper) {
+    private static @NotNull Optional<BugCard> card(final @NotNull Path testProjectPath, final @NotNull BugCommit commit, final @NotNull ChangedFile changed, final @NotNull Map<String, String> versions, final @NotNull JsonCodec mapper) {
         final @NotNull Optional<RunItem> before = version(mapper, versions, commit.hash() + "^", changed.before());
         final @NotNull Optional<RunItem> after = version(mapper, versions, commit.hash(), changed.after());
         if (before.isEmpty() != changed.before().isEmpty() || after.isEmpty() != changed.after().isEmpty())
             return Optional.empty();
 
-        return BugEventDetector.between(testRun(testProject, changed.after().isEmpty() ? changed.before() : changed.after()), before, after)
+        return BugEventDetector.between(testRun(testProjectPath, changed.after().isEmpty() ? changed.before() : changed.after()), before, after)
                 .map(event -> new BugCard(commit.hash(), commit.who(), commit.when(), event));
     }
 
@@ -130,9 +130,9 @@ public final class BugHistory {
         return path.isEmpty() ? Optional.empty() : parsed(mapper, versions.getOrDefault(revision + ":" + path, ""));
     }
 
-    private static @NotNull Path testRun(final @NotNull Path testProject, final @NotNull String runItem) {
-        final @NotNull Path file = testProject.resolve(runItem);
-        return Optional.ofNullable(file.getParent()).orElse(testProject);
+    private static @NotNull Path testRun(final @NotNull Path testProjectPath, final @NotNull String runItem) {
+        final @NotNull Path file = testProjectPath.resolve(runItem);
+        return Optional.ofNullable(file.getParent()).orElse(testProjectPath);
     }
 
     private static @NotNull Optional<RunItem> parsed(final @NotNull JsonCodec mapper, final @NotNull String json) {

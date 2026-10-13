@@ -36,12 +36,12 @@ import org.testin.util.Bundle;
 
 
 public class CreateTestProjectAction extends AbstractBoundProjectAction {
-    private final @NotNull TreePanel tp;
+    private final @NotNull TreePanel treePanel;
     private final @NotNull TestinRoot testinRoot = Services.getInstance(p, TestinRoot.class);
 
-    public CreateTestProjectAction(final @NotNull Project p, final @NotNull TreePanel tp) {
+    public CreateTestProjectAction(final @NotNull Project p, final @NotNull TreePanel treePanel) {
         super(p, Bundle.message("project.new.text"), Bundle.message("project.new.description"), AllIcons.General.Add);
-        this.tp = tp;
+        this.treePanel = treePanel;
     }
 
     // UC-TREE-PANEL-002
@@ -54,7 +54,7 @@ public class CreateTestProjectAction extends AbstractBoundProjectAction {
     public void execute() {
         new CreateTestProjectDialog(p, name -> {
             if (!GitRemotes.isRepositoryUrl(name)) {
-                new CreateTestProject(p, tp, name).execute();
+                new CreateTestProject(p, treePanel, name).execute();
                 return;
             }
 
@@ -64,7 +64,7 @@ public class CreateTestProjectAction extends AbstractBoundProjectAction {
             final @NotNull String projectName = CloneTestProject.nameFor(p, name);
             if (TestProjectFolder.free(p, projectName).isEmpty()) return;
 
-            new CloneTestProject(p, name, projectName, tp).execute();
+            new CloneTestProject(p, name, projectName, treePanel).execute();
 
         }).show();
     }

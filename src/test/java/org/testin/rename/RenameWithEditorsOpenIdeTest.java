@@ -51,11 +51,11 @@ public class RenameWithEditorsOpenIdeTest extends AbstractOpenEditorsIdeTest {
     public void setUp() {
         super.setUp();
         final @NotNull NodesOnDisk made = new NodesOnDisk(getProject());
-        final @NotNull TestProjectNode tp = made.testProject(root.resolve("NAFATH"));
-        payments = made.testSetPackage(tp.getTestCasesFolder(), "Payments");
+        final @NotNull TestProjectNode testProject = made.testProject(root.resolve("NAFATH"));
+        payments = made.testSetPackage(testProject.getTestCasesFolder(), "Payments");
         card = made.testSet(payments, "Card");
         made.testCase(card);
-        login = made.testSet(tp.getTestCasesFolder(), "Login");
+        login = made.testSet(testProject.getTestCasesFolder(), "Login");
     }
 
     @Override

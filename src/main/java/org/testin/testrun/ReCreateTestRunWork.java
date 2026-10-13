@@ -54,7 +54,7 @@ record ReCreateTestRunWork(@NotNull Project p, @NotNull TestRuns testRuns, @NotN
                 .collect(Collectors.toSet());
 
         boundTestProject.get().ifPresentOrElse(
-                tp -> new CreateTestRun(p).configureTestRun(tp.getTestCasesFolder(), NextTestRunName.after(source.getName(), taken), parent, testCases, source.getMarker().getConfiguration()),
+                testProject -> new CreateTestRun(p).configureTestRun(testProject.getTestCasesFolder(), NextTestRunName.after(source.getName(), taken), parent, testCases, source.getMarker().getConfiguration()),
                 () -> TestinLogger.warn("Re-create test run: no test project is bound to " + p.getName()));
     }
 }

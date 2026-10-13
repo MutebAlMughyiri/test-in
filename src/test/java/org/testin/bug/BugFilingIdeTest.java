@@ -82,19 +82,19 @@ public class BugFilingIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull UUID indexedTestCase() {
-        final TestSetNode ts = WriteAction.computeAndWait(() -> {
+        final TestSetNode testSet = WriteAction.computeAndWait(() -> {
             final NodeMapper mapper = Services.getInstance(getProject(), NodeMapper.class);
-            final TestProjectNode tp = mapper.setTestProjectNode(root.resolve("NAFATH"));
-            nodes().addTestProject(tp);
+            final TestProjectNode testProject = mapper.setTestProjectNode(root.resolve("NAFATH"));
+            nodes().addTestProject(testProject);
 
-            final TestSetNode set = mapper.getTestSetNode(tp.getTestCasesFolder().getPath().resolve("Login"), tp.getTestCasesFolder());
+            final TestSetNode set = mapper.getTestSetNode(testProject.getTestCasesFolder().getPath().resolve("Login"), testProject.getTestCasesFolder());
             nodes().addTestSet(set);
             return set;
         });
 
         final TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
-        tc.setParent(ts);
-        indexedTestCases().putTestCase(ts.getPath(), tc);
+        tc.setParent(testSet);
+        indexedTestCases().putTestCase(testSet.getPath(), tc);
         return tc.getId();
     }
 

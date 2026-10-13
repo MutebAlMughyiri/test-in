@@ -115,13 +115,13 @@ public class ClipboardGesturesIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull TestSetEditor aTestSetOf(final @NotNull String name, final @NotNull String... descriptions) {
-        final @NotNull TestSetNode ts = EditorFixtures.testSet(getProject(), testProject, name);
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), testProject, name);
         for (int i = 0; i < descriptions.length; i++) {
             final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description(descriptions[i]).order(String.format("m%04d", i)).createdBy("Ann").build();
-            tc.setParent(ts);
-            theTestCases().putTestCaseVerbatim(ts.getPath(), tc);
+            tc.setParent(testSet);
+            theTestCases().putTestCaseVerbatim(testSet.getPath(), tc);
         }
-        return EditorFixtures.openTestSetEditor(getProject(), ts, getTestRootDisposable());
+        return EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
     }
 
     private @NotNull AnActionEvent eventOn(final @NotNull AnAction action, final @NotNull JComponent component) {

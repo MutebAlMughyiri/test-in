@@ -29,9 +29,9 @@ import java.util.UUID;
 
 public class TestCaseFileIdeTest extends AbstractTempRootIdeTest {
 
-    private static @NotNull TestCaseDto aTestCaseIn(final TestSetNode ts) {
+    private static @NotNull TestCaseDto aTestCaseIn(final TestSetNode testSet) {
         final TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
-        tc.setParent(ts);
+        tc.setParent(testSet);
         return tc;
     }
 
@@ -45,31 +45,31 @@ public class TestCaseFileIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull TestProjectNode aTestProject(final String name) {
         return WriteAction.computeAndWait(() -> {
-            final TestProjectNode tp = Services.getInstance(getProject(), NodeMapper.class).setTestProjectNode(root.resolve(name));
-            nodes().addTestProject(tp);
-            return tp;
+            final TestProjectNode testProject = Services.getInstance(getProject(), NodeMapper.class).setTestProjectNode(root.resolve(name));
+            nodes().addTestProject(testProject);
+            return testProject;
         });
     }
 
-    private @NotNull TestSetNode aTestSetIn(final TestProjectNode tp) {
+    private @NotNull TestSetNode aTestSetIn(final TestProjectNode testProject) {
         return WriteAction.computeAndWait(() -> {
-            final TestSetNode ts = Services.getInstance(getProject(), NodeMapper.class)
-                    .getTestSetNode(tp.getTestCasesFolder().getPath().resolve("Login"), tp.getTestCasesFolder());
-            nodes().addTestSet(ts);
-            return ts;
+            final TestSetNode testSet = Services.getInstance(getProject(), NodeMapper.class)
+                    .getTestSetNode(testProject.getTestCasesFolder().getPath().resolve("Login"), testProject.getTestCasesFolder());
+            nodes().addTestSet(testSet);
+            return testSet;
         });
     }
 
     public void testATestCaseIsFoundInsideTheTestProjectThatHoldsIt() {
-        final TestProjectNode tp = aTestProject("NAFATH");
+        final TestProjectNode testProject = aTestProject("NAFATH");
         aTestProject("NAFATH2");
-        final TestCaseDto tc = aTestCaseIn(aTestSetIn(tp));
+        final TestCaseDto tc = aTestCaseIn(aTestSetIn(testProject));
 
         final TestCaseFile file = indexedTestCases().testCaseFile(tc).orElseThrow();
 
-        assertEquals("the test case was placed in the wrong test project", tp.getPath(), file.testProject());
+        assertEquals("the test case was placed in the wrong test project", testProject.getPath(), file.testProject());
         assertEquals("the test case's file is not where the store writes it",
-                Path.of(tp.getTestCasesFolder().getPath().getFileName().toString(), "Login", tc.getId() + ".tc"), file.inProject());
+                Path.of(testProject.getTestCasesFolder().getPath().getFileName().toString(), "Login", tc.getId() + ".tc"), file.inProject());
     }
 
     public void testATestCaseNoIndexedTestProjectHoldsHasNoFile() {

@@ -61,13 +61,13 @@ public final class Rescan {
     }
 
     // UC-INTERNAL-003, Rule-INTERNAL-022
-    void coveredByAScan(final @NotNull Path testProject) {
-        waiting.remove(testProject);
+    void coveredByAScan(final @NotNull Path testProjectPath) {
+        waiting.remove(testProjectPath);
     }
 
     @TestOnly
-    boolean isBooked(final @NotNull Path testProject) {
-        return waiting.contains(testProject);
+    boolean isBooked(final @NotNull Path testProjectPath) {
+        return waiting.contains(testProjectPath);
     }
 
     // UC-INTERNAL-003, Rule-INTERNAL-022
@@ -98,10 +98,10 @@ public final class Rescan {
 
                         final @NotNull ProjectIndexer indexer = Services.getInstance(p, ProjectIndexer.class);
 
-                        for (final Path testProject : testProjects) {
+                        for (final Path testProjectPath : testProjects) {
                             if (indicator.isCanceled()) break;
 
-                            indexer.rescanChangedProject(testProject, indicator);
+                            indexer.rescanChangedProject(testProjectPath, indicator);
                         }
                     }
                 });

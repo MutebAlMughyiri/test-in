@@ -48,17 +48,17 @@ public final class CloneTestProject {
     private final @NotNull Project p;
     private final @NotNull String gitUrl;
     private final @NotNull String projectName;
-    private final @NotNull TreePanel tp;
+    private final @NotNull TreePanel treePanel;
     private final @NotNull Notifier notifier;
     private final @NotNull TestinRoot testinRoot;
     private final @NotNull ProjectIndexer indexer;
     private final @NotNull BoundTestProject boundTestProject;
 
-    public CloneTestProject(final @NotNull Project p, final @NotNull String gitUrl, final @NotNull String projectName, final @NotNull TreePanel tp) {
+    public CloneTestProject(final @NotNull Project p, final @NotNull String gitUrl, final @NotNull String projectName, final @NotNull TreePanel treePanel) {
         this.p = p;
         this.gitUrl = gitUrl;
         this.projectName = projectName;
-        this.tp = tp;
+        this.treePanel = treePanel;
         this.notifier = Services.getInstance(p, Notifier.class);
         this.testinRoot = Services.getInstance(p, TestinRoot.class);
         this.indexer = Services.getInstance(p, ProjectIndexer.class);
@@ -134,7 +134,7 @@ public final class CloneTestProject {
                         // Rule-TREE-PANEL-106
                         boundTestProject.choose(projectName);
 
-                        tp.refresh();
+                        treePanel.refresh();
                         notifier.softShow(p, Done.CLONED);
                     });
 

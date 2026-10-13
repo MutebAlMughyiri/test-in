@@ -103,13 +103,13 @@ public class PagingIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull TestSetNode aLongTestSet() {
-        final @NotNull TestSetNode ts = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
-        EditorFixtures.testCases(getProject(), ts, LONG_TEST_SET);
-        return ts;
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
+        EditorFixtures.testCases(getProject(), testSet, LONG_TEST_SET);
+        return testSet;
     }
 
-    private @NotNull TestSetEditor opened(final @NotNull TestSetNode ts) {
-        return EditorFixtures.openTestSetEditor(getProject(), ts, getTestRootDisposable());
+    private @NotNull TestSetEditor opened(final @NotNull TestSetNode testSet) {
+        return EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
     }
 
     // Rule-EDITOR-PANEL-101
@@ -146,9 +146,9 @@ public class PagingIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-103, Rule-EDITOR-PANEL-009
     public void testPagingAndSearchingSayNothingAndChangeNothing() {
-        final @NotNull TestSetNode ts = aLongTestSet();
-        final @NotNull TestSetEditor editor = opened(ts);
-        final @NotNull List<String> before = everyFileIn(ts.getPath());
+        final @NotNull TestSetNode testSet = aLongTestSet();
+        final @NotNull TestSetEditor editor = opened(testSet);
+        final @NotNull List<String> before = everyFileIn(testSet.getPath());
         final @NotNull Said balloons = Said.listening(getProject(), getTestRootDisposable());
 
         editor.getStatusBar().button(PageStep.NEXT).doClick();
@@ -158,7 +158,7 @@ public class PagingIdeTest extends AbstractTempRootIdeTest {
         searchForNumber1(editor);
 
         assertEquals("paging or searching said something", List.of(), balloons.shown());
-        assertEquals("paging or searching changed a file", before, everyFileIn(ts.getPath()));
+        assertEquals("paging or searching changed a file", before, everyFileIn(testSet.getPath()));
     }
 
     // Rule-EDITOR-PANEL-092
@@ -179,10 +179,10 @@ public class PagingIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-104
     public void testReloadingATestRunLandsOnThePageThatHoldsTheSelectedTestCase() {
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        final @NotNull TestSetNode ts = EditorFixtures.testSet(getProject(), tp, "Checkout");
-        final @NotNull TestRunNode tr = EditorFixtures.testRun(getProject(), tp, EditorFixtures.testCases(getProject(), ts, LONG_TEST_SET).stream().map(EditorFixtures::pending).toList());
-        final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), tr, getTestRootDisposable());
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), testProject, "Checkout");
+        final @NotNull TestRunNode testRun = EditorFixtures.testRun(getProject(), testProject, EditorFixtures.testCases(getProject(), testSet, LONG_TEST_SET).stream().map(EditorFixtures::pending).toList());
+        final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());
 
         reloadsOntoTheSelectedPage(editor, () -> editor.loadedRunItems().isPresent() && editor.getList().getModel().getSize() > 0);
     }

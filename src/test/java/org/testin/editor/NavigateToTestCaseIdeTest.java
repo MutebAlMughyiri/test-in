@@ -79,9 +79,9 @@ public class NavigateToTestCaseIdeTest extends AbstractCodegenIdeTest {
     }
 
     private @NotNull TestRunEditor aTestRunEditorOver(final @NotNull List<RunItem> runItems) {
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        final @NotNull TestRunNode tr = EditorFixtures.testRun(getProject(), tp, runItems);
-        return EditorFixtures.openTestRunEditor(getProject(), tr, getTestRootDisposable());
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        final @NotNull TestRunNode testRun = EditorFixtures.testRun(getProject(), testProject, runItems);
+        return EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());
     }
 
     // Rule-EDITOR-PANEL-233

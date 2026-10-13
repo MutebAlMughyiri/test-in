@@ -126,18 +126,18 @@ public class KeyboardMenuIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull TestSetEditor aTestSetEditor() {
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        final @NotNull TestSetNode ts = EditorFixtures.testSet(getProject(), tp, "Checkout");
-        EditorFixtures.testCases(getProject(), ts, 2);
-        return EditorFixtures.openTestSetEditor(getProject(), ts, getTestRootDisposable());
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), testProject, "Checkout");
+        EditorFixtures.testCases(getProject(), testSet, 2);
+        return EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
     }
 
     private @NotNull TestRunEditor aTestRunEditor() {
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        final @NotNull TestSetNode ts = EditorFixtures.testSet(getProject(), tp, "Payments");
-        final @NotNull List<TestCaseDto> inTheTestRun = EditorFixtures.testCases(getProject(), ts, 2);
-        final @NotNull TestRunNode tr = EditorFixtures.testRun(getProject(), tp, inTheTestRun.stream().map(EditorFixtures::pending).toList());
-        return EditorFixtures.openTestRunEditor(getProject(), tr, getTestRootDisposable());
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), testProject, "Payments");
+        final @NotNull List<TestCaseDto> inTheTestRun = EditorFixtures.testCases(getProject(), testSet, 2);
+        final @NotNull TestRunNode testRun = EditorFixtures.testRun(getProject(), testProject, inTheTestRun.stream().map(EditorFixtures::pending).toList());
+        return EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());
     }
 
     private @NotNull Presentation updated(final @NotNull AbstractTestinEditor<?, ?> editor, final @NotNull AnAction entry) {

@@ -96,9 +96,9 @@ public class FilterMenuEntriesIdeTest extends AbstractCodegenIdeTest {
     }
 
     private @NotNull TestRunEditor aTestRunEditorOver(final @NotNull List<TestCaseDto> covered) {
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        final @NotNull TestRunNode tr = EditorFixtures.testRun(getProject(), tp, covered.stream().map(EditorFixtures::pending).toList());
-        return EditorFixtures.openTestRunEditor(getProject(), tr, getTestRootDisposable());
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        final @NotNull TestRunNode testRun = EditorFixtures.testRun(getProject(), testProject, covered.stream().map(EditorFixtures::pending).toList());
+        return EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());
     }
 
     private void choose(final @NotNull AbstractTestinEditor<?, ?> editor, final @NotNull String menu, final @NotNull String option) {

@@ -188,27 +188,27 @@ final class IndexerDataStore {
     // UC-TREE-PANEL-027, Rule-TREE-PANEL-125
     private void markTestSetModified(final @NotNull Path testSetPath) {
         Optional.ofNullable(testSetNodesByPath.get(testSetPath.toString()))
-                .ifPresent(ts -> markers.touched(testSetPath, NodeType.TS.getMarker(), ts.getMarker()));
+                .ifPresent(testSet -> markers.touched(testSetPath, NodeType.TS.getMarker(), testSet.getMarker()));
     }
 
     void registerRunItems(final @NotNull Path testRunPath, final @NotNull RunItems runItems) {
         runItemsByPath.put(testRunPath.toString(), runItems);
     }
 
-    boolean addTestSet(final @NotNull TestSetNode ts) {
-        return addNode(testSetNodesByPath, ts, NodeType.TS.getMarker(), ts.getMarker());
+    boolean addTestSet(final @NotNull TestSetNode testSet) {
+        return addNode(testSetNodesByPath, testSet, NodeType.TS.getMarker(), testSet.getMarker());
     }
 
-    boolean addTestSetPackage(final @NotNull TestSetPackageNode tsp) {
-        return addNode(testSetPackagesByPath, tsp, NodeType.TSP.getMarker(), tsp.getMarker());
+    boolean addTestSetPackage(final @NotNull TestSetPackageNode testSetPackage) {
+        return addNode(testSetPackagesByPath, testSetPackage, NodeType.TSP.getMarker(), testSetPackage.getMarker());
     }
 
     boolean addTestRunNode(final @NotNull TestRunNode testRunNode) {
         return addNode(testRunNodesByPath, testRunNode, NodeType.TR.getMarker(), testRunNode.getMarker());
     }
 
-    boolean addTestRunPackage(final @NotNull TestRunPackageNode trp) {
-        return addNode(testRunPackagesByPath, trp, NodeType.TRP.getMarker(), trp.getMarker());
+    boolean addTestRunPackage(final @NotNull TestRunPackageNode testRunPackage) {
+        return addNode(testRunPackagesByPath, testRunPackage, NodeType.TRP.getMarker(), testRunPackage.getMarker());
     }
 
     private <V extends AbstractNode> boolean addNode(final @NotNull Map<String, V> map, final @NotNull V dto, final @NotNull String markerFileName, final @NotNull Marker marker) {
@@ -376,20 +376,20 @@ final class IndexerDataStore {
         TestinLogger.info("Removed test run package at: " + pathStr);
     }
 
-    boolean addTestProject(final @NotNull TestProjectNode tp) {
-        final boolean written = markers.write(tp.getPath(), tp.getMarkerFileName(), tp.getMarker())
-                && markers.write(tp.getTestCasesFolder().getPath(), NodeType.TCF.getMarker(), tp.getTestCasesFolder().getMarker())
-                && markers.write(tp.getTestRunsFolder().getPath(), NodeType.TRF.getMarker(), tp.getTestRunsFolder().getMarker());
+    boolean addTestProject(final @NotNull TestProjectNode testProject) {
+        final boolean written = markers.write(testProject.getPath(), testProject.getMarkerFileName(), testProject.getMarker())
+                && markers.write(testProject.getTestCasesFolder().getPath(), NodeType.TCF.getMarker(), testProject.getTestCasesFolder().getMarker())
+                && markers.write(testProject.getTestRunsFolder().getPath(), NodeType.TRF.getMarker(), testProject.getTestRunsFolder().getMarker());
         if (!written) return false;
 
-        testProjectsByPath.put(tp.getPath().toString(), tp);
-        testCasesFoldersByPath.put(tp.getTestCasesFolder().getPath().toString(), tp.getTestCasesFolder());
-        testRunsFoldersByPath.put(tp.getTestRunsFolder().getPath().toString(), tp.getTestRunsFolder());
+        testProjectsByPath.put(testProject.getPath().toString(), testProject);
+        testCasesFoldersByPath.put(testProject.getTestCasesFolder().getPath().toString(), testProject.getTestCasesFolder());
+        testRunsFoldersByPath.put(testProject.getTestRunsFolder().getPath().toString(), testProject.getTestRunsFolder());
         childrenIndex.invalidate();
 
-        refreshDir(tp.getPath());
-        refreshDir(tp.getTestCasesFolder().getPath());
-        refreshDir(tp.getTestRunsFolder().getPath());
+        refreshDir(testProject.getPath());
+        refreshDir(testProject.getTestCasesFolder().getPath());
+        refreshDir(testProject.getTestRunsFolder().getPath());
         return true;
     }
 

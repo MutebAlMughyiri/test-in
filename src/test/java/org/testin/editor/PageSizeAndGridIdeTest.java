@@ -62,15 +62,15 @@ public class PageSizeAndGridIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull List<TestCaseDto> aTestSetOfThree() {
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        testSet = EditorFixtures.testSet(getProject(), tp, "Checkout");
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        testSet = EditorFixtures.testSet(getProject(), testProject, "Checkout");
         return EditorFixtures.testCases(getProject(), testSet, 3);
     }
 
     private @NotNull TestRunEditor aTestRunEditorOver(final @NotNull List<TestCaseDto> covered) {
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        final @NotNull TestRunNode tr = EditorFixtures.testRun(getProject(), tp, covered.stream().map(EditorFixtures::pending).toList());
-        return EditorFixtures.openTestRunEditor(getProject(), tr, getTestRootDisposable());
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        final @NotNull TestRunNode testRun = EditorFixtures.testRun(getProject(), testProject, covered.stream().map(EditorFixtures::pending).toList());
+        return EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());
     }
 
     private @NotNull TestCaseDto stored(final @NotNull TestCaseDto tc) {

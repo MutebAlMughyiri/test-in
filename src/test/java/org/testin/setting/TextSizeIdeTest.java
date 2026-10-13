@@ -111,8 +111,8 @@ public class TextSizeIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-SETTING-039
     public void testTheGestureWorksOverTheEditorAndTheViewPanel() {
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        final @NotNull TestSetNode login = EditorFixtures.testSet(getProject(), tp, "Login");
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        final @NotNull TestSetNode login = EditorFixtures.testSet(getProject(), testProject, "Login");
         EditorFixtures.testCases(getProject(), login, 2);
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), login, getTestRootDisposable());
         final @NotNull ViewPanel view = new ViewPanel(getProject());

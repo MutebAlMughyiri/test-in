@@ -116,9 +116,9 @@ public class OrderCellIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-273
     public void testAnOrderCellInATestRunOpensNothing() {
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        final @NotNull List<TestCaseDto> testCases = EditorFixtures.testCases(getProject(), EditorFixtures.testSet(getProject(), tp, "Checkout"), 2);
-        final @NotNull JBTable grid = gridOf(EditorFixtures.openTestRunEditor(getProject(), EditorFixtures.testRun(getProject(), tp, testCases.stream().map(EditorFixtures::pending).toList()), getTestRootDisposable()));
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        final @NotNull List<TestCaseDto> testCases = EditorFixtures.testCases(getProject(), EditorFixtures.testSet(getProject(), testProject, "Checkout"), 2);
+        final @NotNull JBTable grid = gridOf(EditorFixtures.openTestRunEditor(getProject(), EditorFixtures.testRun(getProject(), testProject, testCases.stream().map(EditorFixtures::pending).toList()), getTestRootDisposable()));
         onTheOrderCellOfRow(grid, 0);
 
         KeyPress.press(getProject(), grid, GridKeys.enter());

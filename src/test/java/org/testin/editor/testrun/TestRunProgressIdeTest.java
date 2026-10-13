@@ -161,10 +161,10 @@ public class TestRunProgressIdeTest extends AbstractTempRootIdeTest {
         for (final JComponent label : theThreeTestRunLabels(new EditorStatusBar()))
             assertFalse("a test run label shows on a fresh status bar", label.isVisible());
 
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        final @NotNull TestSetNode ts = EditorFixtures.testSet(getProject(), tp, "Payments");
-        EditorFixtures.testCases(getProject(), ts, 2);
-        final @NotNull TestSetEditor testSetEditor = EditorFixtures.openTestSetEditor(getProject(), ts, getTestRootDisposable());
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), testProject, "Payments");
+        EditorFixtures.testCases(getProject(), testSet, 2);
+        final @NotNull TestSetEditor testSetEditor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         final @NotNull TestRunFixture fixture = TestRunFixture.pending(getProject(), root, 2);
         final @NotNull TestRunEditor testRunEditor = fixture.opened(getTestRootDisposable());
         try {

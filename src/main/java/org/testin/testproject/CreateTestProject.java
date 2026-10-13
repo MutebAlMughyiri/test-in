@@ -31,16 +31,16 @@ import java.nio.file.Path;
 // UC-TREE-PANEL-002
 public final class CreateTestProject {
     private final @NotNull Project p;
-    private final @NotNull TreePanel tp;
+    private final @NotNull TreePanel treePanel;
     private final @NotNull String tpName;
     private final @NotNull NodeMapper directoryMapper;
     private final @NotNull Nodes nodes;
     private final @NotNull BoundTestProject boundTestProject;
     private final @NotNull Notifier notifier;
 
-    public CreateTestProject(final @NotNull Project p, final @NotNull TreePanel tp, final @NotNull String tpName) {
+    public CreateTestProject(final @NotNull Project p, final @NotNull TreePanel treePanel, final @NotNull String tpName) {
         this.p = p;
-        this.tp = tp;
+        this.treePanel = treePanel;
         this.tpName = tpName;
         this.directoryMapper = Services.getInstance(p, NodeMapper.class);
         this.nodes = Services.getInstance(p, Nodes.class);
@@ -62,7 +62,7 @@ public final class CreateTestProject {
         // Rule-TREE-PANEL-106
         boundTestProject.choose(created.getName());
 
-        tp.refresh();
+        treePanel.refresh();
         notifier.softShow(p, Done.CREATED);
     }
 }

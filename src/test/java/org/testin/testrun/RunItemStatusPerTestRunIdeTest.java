@@ -44,9 +44,9 @@ public class RunItemStatusPerTestRunIdeTest extends AbstractTempRootIdeTest {
         return Services.getInstance(getProject(), TestRuns.class);
     }
 
-    private @NotNull Path aTestRunOver(final @NotNull TestProjectNode tp, final @NotNull String named) {
+    private @NotNull Path aTestRunOver(final @NotNull TestProjectNode testProject, final @NotNull String named) {
         final @NotNull Path testRunPath = WriteAction.computeAndWait(() -> {
-            final @NotNull TestRunNode testRun = Services.getInstance(getProject(), NodeMapper.class).setTestRunNode(tp.getTestRunsFolder().getPath().resolve(named), tp.getTestRunsFolder());
+            final @NotNull TestRunNode testRun = Services.getInstance(getProject(), NodeMapper.class).setTestRunNode(testProject.getTestRunsFolder().getPath().resolve(named), testProject.getTestRunsFolder());
             Services.getInstance(getProject(), Nodes.class).addTestRunNode(testRun);
             return testRun.getPath();
         });
@@ -61,13 +61,13 @@ public class RunItemStatusPerTestRunIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-PRODUCT-009
     public void testATestCaseCarriesItsOwnRunItemStatusInEachTestRun() {
-        final @NotNull TestProjectNode tp = WriteAction.computeAndWait(() -> {
+        final @NotNull TestProjectNode testProject = WriteAction.computeAndWait(() -> {
             final @NotNull TestProjectNode project = Services.getInstance(getProject(), NodeMapper.class).setTestProjectNode(root.resolve("NAFATH"));
             Services.getInstance(getProject(), Nodes.class).addTestProject(project);
             return project;
         });
-        final @NotNull Path cycle1 = aTestRunOver(tp, "Cycle-1");
-        final @NotNull Path cycle2 = aTestRunOver(tp, "Cycle-2");
+        final @NotNull Path cycle1 = aTestRunOver(testProject, "Cycle-1");
+        final @NotNull Path cycle2 = aTestRunOver(testProject, "Cycle-2");
 
         indexedTestRuns().changeRunItem(cycle1, testCaseId, result -> result.recordRunItemStatus(RunItemStatus.FAILED, "Sara", Duration.ZERO, Failure.NONE));
         indexedTestRuns().changeRunItem(cycle2, testCaseId, result -> result.recordRunItemStatus(RunItemStatus.PASSED, "Omar", Duration.ZERO, Failure.NONE));

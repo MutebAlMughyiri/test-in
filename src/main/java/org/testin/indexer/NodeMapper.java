@@ -51,19 +51,19 @@ public final class NodeMapper {
     public @NotNull TestProjectNode setTestProjectNode(final @NotNull Path path) {
         final @NotNull String fileName = path.getFileName().toString();
 
-        final @NotNull TestProjectNode tp = TestProjectNode.builder()
+        final @NotNull TestProjectNode testProject = TestProjectNode.builder()
                 .name(fileName)
                 .path(path)
                 .path2(AbstractNode.pathOf(List.of(), fileName))
                 .build();
 
         // Rule-INTERNAL-091
-        tp.getMarker().setFormat(TestProjectMarker.FORMAT);
+        testProject.getMarker().setFormat(TestProjectMarker.FORMAT);
 
-        tp.setTestCasesFolder(testCasesFolderOf(path, tp));
-        tp.setTestRunsFolder(testRunsFolderOf(path, tp));
+        testProject.setTestCasesFolder(testCasesFolderOf(path, testProject));
+        testProject.setTestRunsFolder(testRunsFolderOf(path, testProject));
 
-        return tp;
+        return testProject;
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-014
@@ -71,41 +71,41 @@ public final class NodeMapper {
         final @NotNull String fileName = path.getFileName().toString();
         final @NotNull TestProjectMarker marker = Services.getInstance(p, Nodes.class).readMarker(path, NodeType.TP, TestProjectMarker.class);
 
-        final @NotNull TestProjectNode tp = TestProjectNode.builder()
+        final @NotNull TestProjectNode testProject = TestProjectNode.builder()
                 .name(fileName)
                 .path(path)
                 .path2(AbstractNode.pathOf(List.of(), fileName))
                 .marker(marker)
                 .build();
 
-        final @NotNull TestCasesFolderNode testCasesFolder = testCasesFolderOf(tp.getPath(), tp);
-        final @NotNull TestRunsFolderNode testRunsFolder = testRunsFolderOf(path, tp);
+        final @NotNull TestCasesFolderNode testCasesFolder = testCasesFolderOf(testProject.getPath(), testProject);
+        final @NotNull TestRunsFolderNode testRunsFolder = testRunsFolderOf(path, testProject);
 
-        tp.setTestCasesFolder(testCasesFolder);
-        tp.setTestRunsFolder(testRunsFolder);
+        testProject.setTestCasesFolder(testCasesFolder);
+        testProject.setTestRunsFolder(testRunsFolder);
 
-        TestinLogger.info("retrieve the project directory: " + tp);
-        return tp;
+        TestinLogger.info("retrieve the project directory: " + testProject);
+        return testProject;
     }
 
-    public @NotNull TestCasesFolderNode testCasesFolderOf(final @NotNull Path path, final @NotNull TestProjectNode tp) {
+    public @NotNull TestCasesFolderNode testCasesFolderOf(final @NotNull Path path, final @NotNull TestProjectNode testProject) {
         final @NotNull Path dir = path.resolve(NodeType.TCF.getFolderName());
         return TestCasesFolderNode.builder()
                 .path(dir)
                 .name(NodeType.TCF.getFolderName())
-                .parent(tp)
-                .path2(AbstractNode.pathOf(tp.getPath2(), NodeType.TCF.getFolderName()))
+                .parent(testProject)
+                .path2(AbstractNode.pathOf(testProject.getPath2(), NodeType.TCF.getFolderName()))
                 .marker(Services.getInstance(p, Nodes.class).readMarker(dir, NodeType.TCF, TestCasesFolderMarker.class))
                 .build();
     }
 
-    public @NotNull TestRunsFolderNode testRunsFolderOf(final @NotNull Path path, final @NotNull TestProjectNode tp) {
+    public @NotNull TestRunsFolderNode testRunsFolderOf(final @NotNull Path path, final @NotNull TestProjectNode testProject) {
         final @NotNull Path dir = path.resolve(NodeType.TRF.getFolderName());
         return TestRunsFolderNode.builder()
                 .path(dir)
                 .name(NodeType.TRF.getFolderName())
-                .parent(tp)
-                .path2(AbstractNode.pathOf(tp.getPath2(), NodeType.TRF.getFolderName()))
+                .parent(testProject)
+                .path2(AbstractNode.pathOf(testProject.getPath2(), NodeType.TRF.getFolderName()))
                 .marker(Services.getInstance(p, Nodes.class).readMarker(dir, NodeType.TRF, TestRunsFolderMarker.class))
                 .build();
     }

@@ -225,11 +225,11 @@ public final class TreePanel implements Disposable {
     }
 
     // UC-TREE-PANEL-001
-    private void showTree(final @NotNull TestProjectNode tp) {
-        TestinLogger.info("TreePanel.refresh(): showing '" + tp.getName() + "'");
+    private void showTree(final @NotNull TestProjectNode testProject) {
+        TestinLogger.info("TreePanel.refresh(): showing '" + testProject.getName() + "'");
 
         projectTree.refresh();
-        branchSelector.updateProject(Optional.of(tp));
+        branchSelector.updateProject(Optional.of(testProject));
     }
 
     // UC-TREE-PANEL-001, Rule-TREE-PANEL-106

@@ -74,8 +74,8 @@ public class MoveUndoIdeTest extends AbstractTempRootIdeTest {
         return Services.getInstance(getProject(), UndoHistories.class);
     }
 
-    private @NotNull List<UUID> idsIn(final @NotNull TestSetNode ts) {
-        return theTestCases().getTestCasesForTestSet(ts.getPath()).stream().map(TestCaseDto::getId).toList();
+    private @NotNull List<UUID> idsIn(final @NotNull TestSetNode testSet) {
+        return theTestCases().getTestCasesForTestSet(testSet.getPath()).stream().map(TestCaseDto::getId).toList();
     }
 
     private @NotNull TestCaseDto movedFromTheFirstSetToTheSecond(final @NotNull TestSetEditor source, final @NotNull TestSetEditor target, final @NotNull List<String> balloons) {
@@ -91,9 +91,9 @@ public class MoveUndoIdeTest extends AbstractTempRootIdeTest {
     }
 
     private void twoTestSets() {
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        from = EditorFixtures.testSet(getProject(), tp, "Login");
-        to = EditorFixtures.testSet(getProject(), tp, "Payments");
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        from = EditorFixtures.testSet(getProject(), testProject, "Login");
+        to = EditorFixtures.testSet(getProject(), testProject, "Payments");
         EditorFixtures.testCase(getProject(), from, "Log in with a valid user", "m0001");
         EditorFixtures.testCase(getProject(), from, "Log in with a wrong password", "m0002");
         EditorFixtures.testCase(getProject(), to, "Pay by card", "m0001");

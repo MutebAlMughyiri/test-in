@@ -25,9 +25,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class RenameTestSetClassIdeTest extends AbstractCodegenIdeTest {
 
-    private void renamedToSignIn(final @NotNull TestSetNode ts) {
+    private void renamedToSignIn(final @NotNull TestSetNode testSet) {
         final @NotNull AtomicBoolean done = new AtomicBoolean();
-        NodeRename.apply(getProject(), ts, "Sign in", () -> done.set(true));
+        NodeRename.apply(getProject(), testSet, "Sign in", () -> done.set(true));
 
         Await.until("the rename of the test set never finished", done::get);
     }

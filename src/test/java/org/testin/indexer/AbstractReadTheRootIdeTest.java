@@ -49,12 +49,12 @@ public abstract class AbstractReadTheRootIdeTest extends AbstractTempRootIdeTest
         return folder;
     }
 
-    protected static @NotNull Path theTestCasesOf(final @NotNull Path testProject) {
-        return testProject.resolve(NodeType.TCF.getFolderName());
+    protected static @NotNull Path theTestCasesOf(final @NotNull Path testProjectPath) {
+        return testProjectPath.resolve(NodeType.TCF.getFolderName());
     }
 
-    protected static @NotNull Path theTestRunsOf(final @NotNull Path testProject) {
-        return testProject.resolve(NodeType.TRF.getFolderName());
+    protected static @NotNull Path theTestRunsOf(final @NotNull Path testProjectPath) {
+        return testProjectPath.resolve(NodeType.TRF.getFolderName());
     }
 
     protected static @NotNull Path marked(final @NotNull Path folder, final @NotNull NodeType kind) {

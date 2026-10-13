@@ -82,7 +82,7 @@ public class ReportBugFromThePanelIdeTest extends AbstractTempRootIdeTest {
     private final @NotNull List<ProcessOutput> answers = new CopyOnWriteArrayList<>();
 
     private TestCaseDto tc;
-    private TestRunNode tr;
+    private TestRunNode testRun;
     private RunItem failed;
     private RunItemPath runItemPath;
     private Optional<String> ymlBefore = Optional.empty();
@@ -139,11 +139,11 @@ public class ReportBugFromThePanelIdeTest extends AbstractTempRootIdeTest {
         ghBefore = BugFiling.ghOnThisMachine;
         BugFiling.ghOnThisMachine = _ -> new GitHubCli(this::answer);
 
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        tc = EditorFixtures.testCase(getProject(), EditorFixtures.testSet(getProject(), tp, "Login"), "Log in with a valid user", "a");
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        tc = EditorFixtures.testCase(getProject(), EditorFixtures.testSet(getProject(), testProject, "Login"), "Log in with a valid user", "a");
         failed = RunItem.builder().id(tc.getId()).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The session was dropped").build())).build();
-        tr = EditorFixtures.testRun(getProject(), tp, List.of(failed));
-        runItemPath = new RunItemPath(tr.getPath(), tc.getId());
+        testRun = EditorFixtures.testRun(getProject(), testProject, List.of(failed));
+        runItemPath = new RunItemPath(testRun.getPath(), tc.getId());
     }
 
     @Override
@@ -181,7 +181,7 @@ public class ReportBugFromThePanelIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull PreparedBug aPreparedBug(final @NotNull Optional<String> whyNotReady) {
-        return new PreparedBug(BugFacts.of(failed, tc, tr.getMarker(), tr.getName(), List.of()), "The template body", BugRepository.of(REPOSITORY), whyNotReady);
+        return new PreparedBug(BugFacts.of(failed, tc, testRun.getMarker(), testRun.getName(), List.of()), "The template body", BugRepository.of(REPOSITORY), whyNotReady);
     }
 
     private @NotNull JComponent opened(final @NotNull PreparedBug bug) {
@@ -230,7 +230,7 @@ public class ReportBugFromThePanelIdeTest extends AbstractTempRootIdeTest {
             return false;
         });
 
-        ReportBug.start(getProject(), tr, tc.getId(), tc, () -> {
+        ReportBug.start(getProject(), testRun, tc.getId(), tc, () -> {
         });
 
         Await.until("Report Bug never opened the bug", () -> ShownDialog.isOpen(getProject(), ReportBugDialog.class));
@@ -243,7 +243,7 @@ public class ReportBugFromThePanelIdeTest extends AbstractTempRootIdeTest {
     public void testStoppingTheProgressBarOpensNothing() {
         BackgroundWork.watch(getTestRootDisposable(), task -> Bundle.message("bug.preparing").equals(task.getTitle()));
 
-        ReportBug.start(getProject(), tr, tc.getId(), tc, () -> {
+        ReportBug.start(getProject(), testRun, tc.getId(), tc, () -> {
         });
 
         Await.until("the stopped preparation never finished", () -> Services.getInstance(getProject(), OpenBugReports.class).whyReportBugIsOff(runItemPath, failed).isEmpty());

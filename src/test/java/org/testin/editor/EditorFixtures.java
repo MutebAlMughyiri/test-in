@@ -50,70 +50,70 @@ public final class EditorFixtures {
 
     public static @NotNull TestProjectNode testProject(final @NotNull Project p, final @NotNull Path root) {
         return WriteAction.computeAndWait(() -> {
-            final @NotNull TestProjectNode tp = Services.getInstance(p, NodeMapper.class).setTestProjectNode(root.resolve("NAFATH"));
-            Services.getInstance(p, Nodes.class).addTestProject(tp);
-            return tp;
+            final @NotNull TestProjectNode testProject = Services.getInstance(p, NodeMapper.class).setTestProjectNode(root.resolve("NAFATH"));
+            Services.getInstance(p, Nodes.class).addTestProject(testProject);
+            return testProject;
         });
     }
 
-    public static @NotNull TestSetNode testSet(final @NotNull Project p, final @NotNull TestProjectNode tp, final @NotNull String name) {
+    public static @NotNull TestSetNode testSet(final @NotNull Project p, final @NotNull TestProjectNode testProject, final @NotNull String name) {
         return WriteAction.computeAndWait(() -> {
-            final @NotNull TestSetNode ts = Services.getInstance(p, NodeMapper.class).getTestSetNode(tp.getTestCasesFolder().getPath().resolve(name), tp.getTestCasesFolder());
-            Services.getInstance(p, Nodes.class).addTestSet(ts);
-            return ts;
+            final @NotNull TestSetNode testSet = Services.getInstance(p, NodeMapper.class).getTestSetNode(testProject.getTestCasesFolder().getPath().resolve(name), testProject.getTestCasesFolder());
+            Services.getInstance(p, Nodes.class).addTestSet(testSet);
+            return testSet;
         });
     }
 
-    public static @NotNull TestCaseDto testCase(final @NotNull Project p, final @NotNull TestSetNode ts, final @NotNull String description, final @NotNull String order) {
+    public static @NotNull TestCaseDto testCase(final @NotNull Project p, final @NotNull TestSetNode testSet, final @NotNull String description, final @NotNull String order) {
         final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description(description).order(order).build();
-        tc.setParent(ts);
-        Services.getInstance(p, TestCases.class).putTestCaseVerbatim(ts.getPath(), tc);
+        tc.setParent(testSet);
+        Services.getInstance(p, TestCases.class).putTestCaseVerbatim(testSet.getPath(), tc);
         return tc;
     }
 
-    public static @NotNull List<TestCaseDto> testCases(final @NotNull Project p, final @NotNull TestSetNode ts, final int count) {
+    public static @NotNull List<TestCaseDto> testCases(final @NotNull Project p, final @NotNull TestSetNode testSet, final int count) {
         final @NotNull List<TestCaseDto> made = new ArrayList<>();
         for (int i = 0; i < count; i++)
-            made.add(testCase(p, ts, "Test case number " + (i + 1), String.format("m%04d", i)));
+            made.add(testCase(p, testSet, "Test case number " + (i + 1), String.format("m%04d", i)));
         return made;
     }
 
-    public static @NotNull TestRunNode testRun(final @NotNull Project p, final @NotNull TestProjectNode tp, final @NotNull List<RunItem> runItems) {
-        final @NotNull TestRunNode tr = WriteAction.computeAndWait(() -> {
-            final @NotNull TestRunNode made = Services.getInstance(p, NodeMapper.class).setTestRunNode(tp.getTestRunsFolder().getPath().resolve("Cycle-1"), tp.getTestRunsFolder());
+    public static @NotNull TestRunNode testRun(final @NotNull Project p, final @NotNull TestProjectNode testProject, final @NotNull List<RunItem> runItems) {
+        final @NotNull TestRunNode testRun = WriteAction.computeAndWait(() -> {
+            final @NotNull TestRunNode made = Services.getInstance(p, NodeMapper.class).setTestRunNode(testProject.getTestRunsFolder().getPath().resolve("Cycle-1"), testProject.getTestRunsFolder());
             Services.getInstance(p, Nodes.class).addTestRunNode(made);
             return made;
         });
 
-        Services.getInstance(p, TestRuns.class).putRunItems(tr.getPath(), new RunItems().setAll(new ArrayList<>(runItems)));
-        return tr;
+        Services.getInstance(p, TestRuns.class).putRunItems(testRun.getPath(), new RunItems().setAll(new ArrayList<>(runItems)));
+        return testRun;
     }
 
     public static @NotNull TestRunNode testRunOver(final @NotNull Project p, final @NotNull Path root, final @NotNull List<TestCaseDto> testCases) {
         return testRun(p, testProject(p, root), testCases.stream().map(EditorFixtures::pending).toList());
     }
 
-    public static @NotNull TestRunEditor openTestRunInTheIde(final @NotNull Project p, final @NotNull TestRunNode tr) {
+    public static @NotNull TestRunEditor openTestRunInTheIde(final @NotNull Project p, final @NotNull TestRunNode testRun) {
         final @NotNull TestinEditors editors = Services.getInstance(p, TestinEditors.class);
-        editors.open(tr);
-        Await.until("the test run never opened in its editor", () -> editors.testRunEditorFor(tr).filter(editor -> editor.loadedRunItems().isPresent()).isPresent());
-        return editors.testRunEditorFor(tr).orElseThrow();
+        editors.open(testRun);
+        Await.until("the test run never opened in its editor", () -> editors.testRunEditorFor(testRun).filter(editor -> editor.loadedRunItems().isPresent()).isPresent());
+        return editors.testRunEditorFor(testRun).orElseThrow();
     }
 
     public static @NotNull RunItem pending(final @NotNull TestCaseDto tc) {
         return new RunItem().setId(tc.getId());
     }
 
-    public static @NotNull TestSetEditor openTestSetEditor(final @NotNull Project p, final @NotNull TestSetNode ts, final @NotNull Disposable owner) {
-        final @NotNull TestSetEditor editor = new TestSetEditor(p, new UnifiedVirtualFile(ts));
+    public static @NotNull TestSetEditor openTestSetEditor(final @NotNull Project p, final @NotNull TestSetNode testSet, final @NotNull Disposable owner) {
+        final @NotNull TestSetEditor editor = new TestSetEditor(p, new UnifiedVirtualFile(testSet));
         Disposer.register(owner, editor);
 
         Await.until("the test set editor never loaded", () -> !editor.isLoading());
         return editor;
     }
 
-    public static @NotNull TestRunEditor openTestRunEditor(final @NotNull Project p, final @NotNull TestRunNode tr, final @NotNull Disposable owner) {
-        final @NotNull TestRunEditor editor = new TestRunEditor(p, new UnifiedVirtualFile(tr));
+    public static @NotNull TestRunEditor openTestRunEditor(final @NotNull Project p, final @NotNull TestRunNode testRun, final @NotNull Disposable owner) {
+        final @NotNull TestRunEditor editor = new TestRunEditor(p, new UnifiedVirtualFile(testRun));
         Disposer.register(owner, editor);
 
         Await.until("the test run editor never loaded", () -> editor.loadedRunItems().isPresent());

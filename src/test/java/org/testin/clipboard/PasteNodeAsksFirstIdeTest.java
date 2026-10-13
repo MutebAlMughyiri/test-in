@@ -54,11 +54,11 @@ public class PasteNodeAsksFirstIdeTest extends AbstractTempRootIdeTest {
     protected void setUp() {
         super.setUp();
         final @NotNull NodesOnDisk made = new NodesOnDisk(getProject());
-        final @NotNull TestProjectNode tp = made.testProject(root.resolve("NAFATH"));
-        login = made.testSet(tp.getTestCasesFolder(), "Login");
-        payments = made.testSetPackage(tp.getTestCasesFolder(), "Payments");
+        final @NotNull TestProjectNode testProject = made.testProject(root.resolve("NAFATH"));
+        login = made.testSet(testProject.getTestCasesFolder(), "Login");
+        payments = made.testSetPackage(testProject.getTestCasesFolder(), "Payments");
         final @NotNull DefaultMutableTreeNode selected = new DefaultMutableTreeNode(login);
-        final @NotNull DefaultMutableTreeNode top = new DefaultMutableTreeNode(tp);
+        final @NotNull DefaultMutableTreeNode top = new DefaultMutableTreeNode(testProject);
         top.add(selected);
         final @NotNull SimpleTree tree = new SimpleTree(new DefaultTreeModel(top));
         tree.setSelectionPath(new TreePath(selected.getPath()));

@@ -43,10 +43,10 @@ public class IndexAnnouncesIdeTest extends AbstractTempRootIdeTest {
     private @NotNull TestSetNode aTestSetNotYetAdded() {
         return WriteAction.computeAndWait(() -> {
             final @NotNull NodeMapper mapper = Services.getInstance(getProject(), NodeMapper.class);
-            final @NotNull TestProjectNode tp = mapper.setTestProjectNode(root.resolve("Checkout"));
-            nodes().addTestProject(tp);
+            final @NotNull TestProjectNode testProject = mapper.setTestProjectNode(root.resolve("Checkout"));
+            nodes().addTestProject(testProject);
 
-            return mapper.getTestSetNode(tp.getTestCasesFolder().getPath().resolve("Login"), tp.getTestCasesFolder());
+            return mapper.getTestSetNode(testProject.getTestCasesFolder().getPath().resolve("Login"), testProject.getTestCasesFolder());
         });
     }
 
@@ -62,27 +62,27 @@ public class IndexAnnouncesIdeTest extends AbstractTempRootIdeTest {
 
     // UC-INTERNAL-002, Rule-INTERNAL-114
     public void testARecordedChangeIsAnnouncedOnceAfterItIsRecorded() {
-        final @NotNull TestSetNode ts = aTestSetNotYetAdded();
-        listenFor(ts.getPath());
+        final @NotNull TestSetNode testSet = aTestSetNotYetAdded();
+        listenFor(testSet.getPath());
 
-        assertTrue("the test set was not added", WriteAction.computeAndWait(() -> nodes().addTestSet(ts)));
+        assertTrue("the test set was not added", WriteAction.computeAndWait(() -> nodes().addTestSet(testSet)));
 
         assertEquals("adding one test set was not announced exactly once, naming the folder that holds it",
-                List.of(Set.of(ts.getPath().getParent())), heard);
+                List.of(Set.of(testSet.getPath().getParent())), heard);
         assertEquals("the change was announced before the index held it", List.of(true), recordedWhenHeard);
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-114
     public void testAChangeThatWasNotRecordedIsNotAnnounced() {
-        final @NotNull TestSetNode ts = aTestSetNotYetAdded();
+        final @NotNull TestSetNode testSet = aTestSetNotYetAdded();
         try {
-            Files.writeString(ts.getPath(), "a file where the test set's folder would go");
+            Files.writeString(testSet.getPath(), "a file where the test set's folder would go");
         } catch (final IOException ex) {
             throw new AssertionError("could not put a file in the test set's way", ex);
         }
-        listenFor(ts.getPath());
+        listenFor(testSet.getPath());
 
-        assertFalse("a test set whose marker could not be written was added", WriteAction.computeAndWait(() -> nodes().addTestSet(ts)));
+        assertFalse("a test set whose marker could not be written was added", WriteAction.computeAndWait(() -> nodes().addTestSet(testSet)));
 
         assertEquals("a change the index refused was announced anyway", List.of(), heard);
     }

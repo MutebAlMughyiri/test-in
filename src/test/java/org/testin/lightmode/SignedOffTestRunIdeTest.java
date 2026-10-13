@@ -48,9 +48,9 @@ public class SignedOffTestRunIdeTest extends AbstractTempRootIdeTest {
     protected void setUp() {
         super.setUp();
         final @NotNull NodesOnDisk made = new NodesOnDisk(getProject());
-        final @NotNull TestProjectNode tp = made.testProject(root.resolve("NAFATH"));
-        failed = made.testCase(made.testSet(tp.getTestCasesFolder(), "Payments")).getId();
-        cycle = made.testRun(tp.getTestRunsFolder(), "Cycle-1").getPath();
+        final @NotNull TestProjectNode testProject = made.testProject(root.resolve("NAFATH"));
+        failed = made.testCase(made.testSet(testProject.getTestCasesFolder(), "Payments")).getId();
+        cycle = made.testRun(testProject.getTestRunsFolder(), "Cycle-1").getPath();
     }
 
     private @NotNull Path aTestRunWithOneFailure() {

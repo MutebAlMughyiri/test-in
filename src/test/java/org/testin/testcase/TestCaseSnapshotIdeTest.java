@@ -49,12 +49,12 @@ public class TestCaseSnapshotIdeTest extends AbstractTempRootIdeTest {
         return WriteAction.computeAndWait(() -> {
             final NodeMapper mapper = Services.getInstance(getProject(), NodeMapper.class);
 
-            final TestProjectNode tp = mapper.setTestProjectNode(root.resolve("NAFATH"));
-            nodes().addTestProject(tp);
+            final TestProjectNode testProject = mapper.setTestProjectNode(root.resolve("NAFATH"));
+            nodes().addTestProject(testProject);
 
-            final TestSetNode ts = mapper.getTestSetNode(tp.getTestCasesFolder().getPath().resolve("Checkout"), tp.getTestCasesFolder());
-            nodes().addTestSet(ts);
-            return ts;
+            final TestSetNode testSet = mapper.getTestSetNode(testProject.getTestCasesFolder().getPath().resolve("Checkout"), testProject.getTestCasesFolder());
+            nodes().addTestSet(testSet);
+            return testSet;
         });
     }
 
@@ -90,25 +90,25 @@ public class TestCaseSnapshotIdeTest extends AbstractTempRootIdeTest {
     }
 
     public void testUndoingARemovalPutsTheTestCaseBack() {
-        final TestSetNode ts = checkoutSet();
+        final TestSetNode testSet = checkoutSet();
         final TestCaseDto removed = TestCaseDto.builder()
                 .id(UUID.randomUUID())
                 .description("Pay with a saved card")
                 .order("m")
                 .build();
-        removed.setParent(ts);
-        indexedTestCases().putTestCaseVerbatim(ts.getPath(), removed);
+        removed.setParent(testSet);
+        indexedTestCases().putTestCaseVerbatim(testSet.getPath(), removed);
         final List<UUID> ids = List.of(removed.getId());
 
-        final TestCaseSnapshot before = TestCaseSnapshot.of(getProject(), ts.getPath(), ids);
-        assertTrue("the removal being undone did not happen", indexedTestCases().removeTestCase(ts.getPath(), removed.getId()));
+        final TestCaseSnapshot before = TestCaseSnapshot.of(getProject(), testSet.getPath(), ids);
+        assertTrue("the removal being undone did not happen", indexedTestCases().removeTestCase(testSet.getPath(), removed.getId()));
 
-        final UndoScope scope = UndoScope.of(ts.getPath());
-        TestCaseSnapshot.record(getProject(), scope, "Remove", List.of(before), List.of(TestCaseSnapshot.of(getProject(), ts.getPath(), ids)));
+        final UndoScope scope = UndoScope.of(testSet.getPath());
+        TestCaseSnapshot.record(getProject(), scope, "Remove", List.of(before), List.of(TestCaseSnapshot.of(getProject(), testSet.getPath(), ids)));
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
         assertTrue("the undo said it could not put the test case back", Services.getInstance(getProject(), UndoHistories.class).undo(scope));
         assertTrue("the test case is not back in the index", indexedTestCases().findTestCase(removed.getId()).isPresent());
-        assertTrue("the test case's file is not back on disk", Files.isRegularFile(ts.getPath().resolve(removed.getId() + ".tc")));
+        assertTrue("the test case's file is not back on disk", Files.isRegularFile(testSet.getPath().resolve(removed.getId() + ".tc")));
     }
 }

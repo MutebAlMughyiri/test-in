@@ -49,18 +49,18 @@ public class RenameProjectIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull TestProjectNode aTestProject(final String name) {
         return WriteAction.computeAndWait(() -> {
-            final TestProjectNode tp = Services.getInstance(getProject(), NodeMapper.class).setTestProjectNode(root.resolve(name));
-            nodes().addTestProject(tp);
-            return tp;
+            final TestProjectNode testProject = Services.getInstance(getProject(), NodeMapper.class).setTestProjectNode(root.resolve(name));
+            nodes().addTestProject(testProject);
+            return testProject;
         });
     }
 
-    private @NotNull TestSetNode aTestSetIn(final TestProjectNode tp) {
+    private @NotNull TestSetNode aTestSetIn(final TestProjectNode testProject) {
         return WriteAction.computeAndWait(() -> {
-            final TestSetNode ts = Services.getInstance(getProject(), NodeMapper.class)
-                    .getTestSetNode(tp.getTestCasesFolder().getPath().resolve("Login"), tp.getTestCasesFolder());
-            nodes().addTestSet(ts);
-            return ts;
+            final TestSetNode testSet = Services.getInstance(getProject(), NodeMapper.class)
+                    .getTestSetNode(testProject.getTestCasesFolder().getPath().resolve("Login"), testProject.getTestCasesFolder());
+            nodes().addTestSet(testSet);
+            return testSet;
         });
     }
 
@@ -85,15 +85,15 @@ public class RenameProjectIdeTest extends AbstractTempRootIdeTest {
     }
 
     public void testAnInactiveProjectsContainersFollowIt() {
-        final TestProjectNode tp = aTestProject("Checkout");
+        final TestProjectNode testProject = aTestProject("Checkout");
         WriteAction.runAndWait(() -> {
-            tp.getMarker().setStatus(ProjectStatus.INACTIVE);
-            nodes().persistMarker(tp);
+            testProject.getMarker().setStatus(ProjectStatus.INACTIVE);
+            nodes().persistMarker(testProject);
         });
-        indexer().scanSingleProject(tp.getPath());
+        indexer().scanSingleProject(testProject.getPath());
 
         final Path to = root.resolve("Checkout_App");
-        rename(tp.getPath(), to);
+        rename(testProject.getPath(), to);
 
         final TestProjectNode renamed = Optional.ofNullable(nodes().getTestProjectsByPath().get(to.toString()))
                 .orElseThrow(() -> new AssertionError("the inactive project is not held under its new name"));
@@ -102,20 +102,20 @@ public class RenameProjectIdeTest extends AbstractTempRootIdeTest {
     }
 
     public void testAHandNamedTestCaseKeepsItsFile() {
-        final TestProjectNode tp = aTestProject("NAFATH");
-        final TestSetNode ts = aTestSetIn(tp);
+        final TestProjectNode testProject = aTestProject("NAFATH");
+        final TestSetNode testSet = aTestSetIn(testProject);
         final UUID id = UUID.randomUUID();
 
         try {
-            Files.writeString(ts.getPath().resolve("login.tc"), Services.getInstance(getProject(), JsonCodec.class)
+            Files.writeString(testSet.getPath().resolve("login.tc"), Services.getInstance(getProject(), JsonCodec.class)
                     .writeValueAsString(TestCaseDto.builder().id(id).description("Log in with a valid user").build()));
         } catch (final Exception ex) {
             throw new AssertionError("Could not write the hand-named test case: " + ex.getMessage(), ex);
         }
-        indexer().scanSingleProject(tp.getPath());
+        indexer().scanSingleProject(testProject.getPath());
 
         final Path to = root.resolve("Nafath_App");
-        rename(tp.getPath(), to);
+        rename(testProject.getPath(), to);
 
         final TestCaseDto tc = indexedTestCases().findTestCase(id).orElseThrow();
         final TestCaseFile file = indexedTestCases().testCaseFile(tc).orElseThrow();

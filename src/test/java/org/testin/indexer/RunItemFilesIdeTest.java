@@ -90,12 +90,12 @@ public class RunItemFilesIdeTest extends AbstractTempRootIdeTest {
         final Path testRunPath = WriteAction.computeAndWait(() -> {
             final NodeMapper mapper = Services.getInstance(getProject(), NodeMapper.class);
 
-            final TestProjectNode tp = mapper.setTestProjectNode(root.resolve("NAFATH"));
-            nodes().addTestProject(tp);
+            final TestProjectNode testProject = mapper.setTestProjectNode(root.resolve("NAFATH"));
+            nodes().addTestProject(testProject);
 
-            final Path path = tp.getTestRunsFolder().getPath().resolve("Cycle-1");
-            final TestRunNode tr = mapper.setTestRunNode(path, tp.getTestRunsFolder());
-            nodes().addTestRunNode(tr);
+            final Path path = testProject.getTestRunsFolder().getPath().resolve("Cycle-1");
+            final TestRunNode testRun = mapper.setTestRunNode(path, testProject.getTestRunsFolder());
+            nodes().addTestRunNode(testRun);
             return path;
         });
 
@@ -122,7 +122,7 @@ public class RunItemFilesIdeTest extends AbstractTempRootIdeTest {
 
         writePulledRunItem(runItemOf(testRun, PULLED_TEST_CASE));
 
-        indexedTestRuns().changeRunItems(testRun, tr -> tr.setAll(new ArrayList<>(tr.getAll().stream()
+        indexedTestRuns().changeRunItems(testRun, runItems -> runItems.setAll(new ArrayList<>(runItems.getAll().stream()
                 .filter(runItem -> runItem.getId().equals(JUDGED_TEST_CASE))
                 .toList())));
 

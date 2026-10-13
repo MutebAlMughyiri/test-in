@@ -128,16 +128,16 @@ public class LightModeButtonsIdeTest extends AbstractCodegenIdeTest {
     }
 
     private @NotNull List<TestCaseDto> automatedTestCases() {
-        final @NotNull TestSetNode ts = createdTestSet("Checkout");
-        final @NotNull List<TestCaseDto> made = List.of(createdTestCase(ts, "Log in with a valid user", "m0001"), createdTestCase(ts, "Log in with a wrong password", "m0002"));
+        final @NotNull TestSetNode testSet = createdTestSet("Checkout");
+        final @NotNull List<TestCaseDto> made = List.of(createdTestCase(testSet, "Log in with a valid user", "m0001"), createdTestCase(testSet, "Log in with a wrong password", "m0002"));
         settled();
         return made;
     }
 
     private @NotNull TestRunEditor walkingThrough(final @NotNull List<TestCaseDto> testCases) {
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        final @NotNull TestRunNode tr = EditorFixtures.testRun(getProject(), tp, testCases.stream().map(EditorFixtures::pending).toList());
-        final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), tr, getTestRootDisposable());
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        final @NotNull TestRunNode testRun = EditorFixtures.testRun(getProject(), testProject, testCases.stream().map(EditorFixtures::pending).toList());
+        final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());
         editor.onStartExecutionClicked();
         Await.until("the walk never started", () -> editor.getWalk().getCurrentlyExecutingIndex() == 0);
         return editor;

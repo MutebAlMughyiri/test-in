@@ -81,10 +81,10 @@ public class RemoveTestCasesIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull TestSetEditor aTestSetOf(final @NotNull String... descriptions) {
-        final @NotNull TestSetNode ts = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
         for (int i = 0; i < descriptions.length; i++)
-            EditorFixtures.testCase(getProject(), ts, descriptions[i], String.format("m%04d", i));
-        return EditorFixtures.openTestSetEditor(getProject(), ts, getTestRootDisposable());
+            EditorFixtures.testCase(getProject(), testSet, descriptions[i], String.format("m%04d", i));
+        return EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
     }
 
     private @NotNull AnActionEvent eventOn(final @NotNull AnAction action, final @NotNull TestSetEditor editor) {

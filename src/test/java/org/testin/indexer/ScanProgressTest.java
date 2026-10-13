@@ -57,7 +57,7 @@ public class ScanProgressTest {
 
     @Test
     public void theRescanHandsItsIndicatorToTheScan() {
-        assertTrue(read("Rescan.java").contains("rescanChangedProject(testProject, indicator)"),
+        assertTrue(read("Rescan.java").contains("rescanChangedProject(testProjectPath, indicator)"),
                 "Rescan builds a progress bar and must hand it to the rescan; calling it without the bar "
                         + "leaves the tester watching a bar that names nothing and cannot be stopped");
 

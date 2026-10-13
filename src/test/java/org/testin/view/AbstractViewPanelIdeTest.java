@@ -57,8 +57,8 @@ public abstract class AbstractViewPanelIdeTest extends AbstractTempRootIdeTest {
         return EditorFixtures.testSet(getProject(), testProject, name);
     }
 
-    protected @NotNull TestCaseDto aTestCase(final @NotNull TestSetNode ts, final @NotNull String description, final @NotNull String order) {
-        return EditorFixtures.testCase(getProject(), ts, description, order);
+    protected @NotNull TestCaseDto aTestCase(final @NotNull TestSetNode testSet, final @NotNull String description, final @NotNull String order) {
+        return EditorFixtures.testCase(getProject(), testSet, description, order);
     }
 
     protected @NotNull TestRunNode aTestRun(final @NotNull List<RunItem> runItems) {

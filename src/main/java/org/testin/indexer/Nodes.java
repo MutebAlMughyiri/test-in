@@ -172,24 +172,24 @@ public final class Nodes {
     }
 
     // UC-TREE-PANEL-002
-    public boolean addTestProject(final @NotNull TestProjectNode tp) {
-        return indexer().announcedIf(store().addTestProject(tp), tp.getPath());
+    public boolean addTestProject(final @NotNull TestProjectNode testProject) {
+        return indexer().announcedIf(store().addTestProject(testProject), testProject.getPath());
     }
 
-    public boolean addTestSet(final @NotNull TestSetNode ts) {
-        return indexer().announcedIf(store().addTestSet(ts), ts.getPath());
+    public boolean addTestSet(final @NotNull TestSetNode testSet) {
+        return indexer().announcedIf(store().addTestSet(testSet), testSet.getPath());
     }
 
-    public boolean addTestSetPackage(final @NotNull TestSetPackageNode tsp) {
-        return indexer().announcedIf(store().addTestSetPackage(tsp), tsp.getPath());
+    public boolean addTestSetPackage(final @NotNull TestSetPackageNode testSetPackage) {
+        return indexer().announcedIf(store().addTestSetPackage(testSetPackage), testSetPackage.getPath());
     }
 
     public boolean addTestRunNode(final @NotNull TestRunNode testRunNode) {
         return indexer().announcedIf(store().addTestRunNode(testRunNode), testRunNode.getPath());
     }
 
-    public boolean addTestRunPackage(final @NotNull TestRunPackageNode trp) {
-        return indexer().announcedIf(store().addTestRunPackage(trp), trp.getPath());
+    public boolean addTestRunPackage(final @NotNull TestRunPackageNode testRunPackage) {
+        return indexer().announcedIf(store().addTestRunPackage(testRunPackage), testRunPackage.getPath());
     }
 
     public boolean persistMarker(final @NotNull AbstractNode dto) {

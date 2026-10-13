@@ -45,7 +45,7 @@ import java.util.Optional;
 public class BranchSwitchIdeTest extends AbstractOpenEditorsIdeTest {
 
     private @NotNull String rootWas = "";
-    private TestProjectNode tp;
+    private TestProjectNode testProject;
     private TestSetNode login;
     private TestSetNode checkout;
     private TreePanel panel;
@@ -98,21 +98,21 @@ public class BranchSwitchIdeTest extends AbstractOpenEditorsIdeTest {
         settings().rootTestinPath = root.toString();
 
         final @NotNull NodesOnDisk made = new NodesOnDisk(getProject());
-        tp = made.testProject(root.resolve("NAFATH"));
-        login = made.testSet(tp.getTestCasesFolder(), "Login");
-        checkout = made.testSet(tp.getTestCasesFolder(), "Checkout");
+        testProject = made.testProject(root.resolve("NAFATH"));
+        login = made.testSet(testProject.getTestCasesFolder(), "Login");
+        checkout = made.testSet(testProject.getTestCasesFolder(), "Checkout");
         made.testCase(checkout);
         bound().choose("NAFATH");
 
-        git(tp.getPath(), "init", "--initial-branch=main");
-        git(tp.getPath(), "config", "user.name", "Testin Test");
-        git(tp.getPath(), "config", "user.email", "testin@example.invalid");
-        git(tp.getPath(), "add", "-A");
-        git(tp.getPath(), "commit", "-m", "first");
-        git(tp.getPath(), "checkout", "-b", "feature");
-        git(tp.getPath(), "rm", "-r", "-q", tp.getPath().relativize(login.getPath()).toString());
-        git(tp.getPath(), "commit", "-m", "no login");
-        git(tp.getPath(), "checkout", "-q", "main");
+        git(testProject.getPath(), "init", "--initial-branch=main");
+        git(testProject.getPath(), "config", "user.name", "Testin Test");
+        git(testProject.getPath(), "config", "user.email", "testin@example.invalid");
+        git(testProject.getPath(), "add", "-A");
+        git(testProject.getPath(), "commit", "-m", "first");
+        git(testProject.getPath(), "checkout", "-b", "feature");
+        git(testProject.getPath(), "rm", "-r", "-q", testProject.getPath().relativize(login.getPath()).toString());
+        git(testProject.getPath(), "commit", "-m", "no login");
+        git(testProject.getPath(), "checkout", "-q", "main");
 
         panel = new TreePanel(getProject());
         Disposer.register(getTestRootDisposable(), panel);
@@ -131,11 +131,11 @@ public class BranchSwitchIdeTest extends AbstractOpenEditorsIdeTest {
     }
 
     private @NotNull String branchOnDisk() {
-        return git(tp.getPath(), "rev-parse", "--abbrev-ref", "HEAD");
+        return git(testProject.getPath(), "rev-parse", "--abbrev-ref", "HEAD");
     }
 
     private @NotNull JComboBox<?> branchBox() {
-        final @NotNull BranchSelector selector = new BranchSelector(getProject(), panel, Optional.of(tp));
+        final @NotNull BranchSelector selector = new BranchSelector(getProject(), panel, Optional.of(testProject));
         final @NotNull JComboBox<?> box = (JComboBox<?>) selector.getComponent();
         Await.until("the branch box never listed the branches", () -> box.isEnabled() && box.getItemCount() == 2);
         return box;
@@ -164,7 +164,7 @@ public class BranchSwitchIdeTest extends AbstractOpenEditorsIdeTest {
 
     // Rule-TREE-PANEL-085
     public void testSwitchingWithUncommittedChangesAsksFirstAndKeepsThem() {
-        final @NotNull Path notes = tp.getPath().resolve("notes.txt");
+        final @NotNull Path notes = testProject.getPath().resolve("notes.txt");
         writeUncommitted(notes);
 
         branchBox().setSelectedItem("feature");

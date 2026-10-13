@@ -43,9 +43,9 @@ public class NodeMoveOrCopyIdeTest extends AbstractTempRootIdeTest {
     protected void setUp() {
         super.setUp();
         final @NotNull NodesOnDisk made = new NodesOnDisk(getProject());
-        final @NotNull TestProjectNode tp = made.testProject(root.resolve("NAFATH"));
-        payments = made.testSetPackage(tp.getTestCasesFolder(), "Payments");
-        login = made.testSet(made.testSetPackage(tp.getTestCasesFolder(), "Checkout"), "Login");
+        final @NotNull TestProjectNode testProject = made.testProject(root.resolve("NAFATH"));
+        payments = made.testSetPackage(testProject.getTestCasesFolder(), "Payments");
+        login = made.testSet(made.testSetPackage(testProject.getTestCasesFolder(), "Checkout"), "Login");
         made.testCase(login);
         undoHistories().forget(UndoScope.TREE);
     }

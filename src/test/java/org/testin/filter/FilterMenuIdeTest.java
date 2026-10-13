@@ -111,11 +111,11 @@ public class FilterMenuIdeTest extends AbstractTempRootIdeTest {
         return EditorFixtures.testProject(getProject(), root);
     }
 
-    private @NotNull TestSetNode aTestSet(final @NotNull TestProjectNode tp) {
-        return EditorFixtures.testSet(getProject(), tp, "Checkout");
+    private @NotNull TestSetNode aTestSet(final @NotNull TestProjectNode testProject) {
+        return EditorFixtures.testSet(getProject(), testProject, "Checkout");
     }
 
-    private @NotNull List<TestCaseDto> createdTestCases(final @NotNull TestSetNode ts, final int count) {
+    private @NotNull List<TestCaseDto> createdTestCases(final @NotNull TestSetNode testSet, final int count) {
         final @NotNull List<TestCaseDto> made = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             final @NotNull TestCaseDto tc = TestCaseDto.builder()
@@ -126,24 +126,24 @@ public class FilterMenuIdeTest extends AbstractTempRootIdeTest {
                     .groups(new ArrayList<>(i % 2 == 0 ? List.of("Smoke") : List.of()))
                     .module(i % 3 == 0 ? "Payments" : "")
                     .build();
-            tc.setParent(ts);
-            Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(ts.getPath(), tc);
+            tc.setParent(testSet);
+            Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), tc);
             made.add(tc);
         }
         return made;
     }
 
     private @NotNull TestSetEditor openedTestSet(final int count) {
-        final @NotNull TestSetNode ts = aTestSet(aTestProject());
-        createdTestCases(ts, count);
-        return EditorFixtures.openTestSetEditor(getProject(), ts, getTestRootDisposable());
+        final @NotNull TestSetNode testSet = aTestSet(aTestProject());
+        createdTestCases(testSet, count);
+        return EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
     }
 
     private @NotNull TestRunEditor openedTestRun(final int count) {
-        final @NotNull TestProjectNode tp = aTestProject();
-        final @NotNull List<TestCaseDto> testCases = createdTestCases(aTestSet(tp), count);
-        final @NotNull TestRunNode tr = EditorFixtures.testRun(getProject(), tp, testCases.stream().map(EditorFixtures::pending).toList());
-        return EditorFixtures.openTestRunEditor(getProject(), tr, getTestRootDisposable());
+        final @NotNull TestProjectNode testProject = aTestProject();
+        final @NotNull List<TestCaseDto> testCases = createdTestCases(aTestSet(testProject), count);
+        final @NotNull TestRunNode testRun = EditorFixtures.testRun(getProject(), testProject, testCases.stream().map(EditorFixtures::pending).toList());
+        return EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());
     }
 
     // Rule-EDITOR-PANEL-094
@@ -252,12 +252,12 @@ public class FilterMenuIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-260
     public void testTheTestSetFilterNarrowsATestRunToTheChosenTestSet() {
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        final @NotNull List<TestCaseDto> login = EditorFixtures.testCases(getProject(), EditorFixtures.testSet(getProject(), tp, "Login"), 2);
-        final @NotNull List<TestCaseDto> checkout = EditorFixtures.testCases(getProject(), EditorFixtures.testSet(getProject(), tp, "Checkout"), 1);
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        final @NotNull List<TestCaseDto> login = EditorFixtures.testCases(getProject(), EditorFixtures.testSet(getProject(), testProject, "Login"), 2);
+        final @NotNull List<TestCaseDto> checkout = EditorFixtures.testCases(getProject(), EditorFixtures.testSet(getProject(), testProject, "Checkout"), 1);
         final @NotNull List<TestCaseDto> both = new ArrayList<>(login);
         both.addAll(checkout);
-        final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), EditorFixtures.testRun(getProject(), tp, both.stream().map(EditorFixtures::pending).toList()), getTestRootDisposable());
+        final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), EditorFixtures.testRun(getProject(), testProject, both.stream().map(EditorFixtures::pending).toList()), getTestRootDisposable());
         try {
             tick(filterOf(editor), Bundle.message("filter.test.set"), "Checkout");
 
@@ -269,11 +269,11 @@ public class FilterMenuIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-260
     public void testATestCaseThatWasDeletedAddsNoTestSetToTheFilter() {
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        final @NotNull List<TestCaseDto> login = EditorFixtures.testCases(getProject(), EditorFixtures.testSet(getProject(), tp, "Login"), 2);
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        final @NotNull List<TestCaseDto> login = EditorFixtures.testCases(getProject(), EditorFixtures.testSet(getProject(), testProject, "Login"), 2);
         final @NotNull List<TestCaseDto> withADeletedOne = new ArrayList<>(login);
         withADeletedOne.add(TestCaseDto.builder().id(UUID.randomUUID()).description("Deleted since").build());
-        final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), EditorFixtures.testRun(getProject(), tp, withADeletedOne.stream().map(EditorFixtures::pending).toList()), getTestRootDisposable());
+        final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), EditorFixtures.testRun(getProject(), testProject, withADeletedOne.stream().map(EditorFixtures::pending).toList()), getTestRootDisposable());
         try {
             assertEquals("a deleted test case brought a test set of its own into the filter", List.of("Login"),
                     childrenOf((ActionGroup) entry(filterOf(editor).menu(), Bundle.message("filter.test.set"))).stream().map(FilterMenuIdeTest::textOf).toList());

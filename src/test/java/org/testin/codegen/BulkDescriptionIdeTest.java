@@ -26,8 +26,8 @@ import java.util.List;
 
 public class BulkDescriptionIdeTest extends AbstractCodegenIdeTest {
 
-    private static @NotNull TestCaseDto described(final @NotNull TestSetNode ts, final @NotNull String description) {
-        return TestCaseDto.builder().parent(ts).description(description).build();
+    private static @NotNull TestCaseDto described(final @NotNull TestSetNode testSet, final @NotNull String description) {
+        return TestCaseDto.builder().parent(testSet).description(description).build();
     }
 
     // Rule-CODEGEN-019

@@ -92,11 +92,11 @@ public class UndoMenuIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-067, Rule-EDITOR-PANEL-071, Rule-EDITOR-PANEL-068
     public void testTheEntriesSayWhatTheNextPressWouldTakeOrPutBackAndUndoIsExact() {
-        final @NotNull TestSetNode ts = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
-        final @NotNull TestCaseDto tc = EditorFixtures.testCase(getProject(), ts, "Log in", "m");
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
+        final @NotNull TestCaseDto tc = EditorFixtures.testCase(getProject(), testSet, "Log in", "m");
         final @NotNull JsonCodec mapper = Services.getInstance(getProject(), JsonCodec.class);
         final @NotNull String original = mapper.writeValueAsString(theTestCases().findTestCase(tc.getId()).orElseThrow());
-        final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), ts, getTestRootDisposable());
+        final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         final @NotNull AnAction undo = entry(editor, UndoDirection.UNDO);
         final @NotNull AnAction redo = entry(editor, UndoDirection.REDO);
         final @NotNull String named = Bundle.message("snapshot.undo.one", Bundle.message("snapshot.verb.edit"), "Sign in");

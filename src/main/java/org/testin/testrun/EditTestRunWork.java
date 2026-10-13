@@ -66,7 +66,7 @@ record EditTestRunWork(@NotNull Project p, @NotNull TestRuns testRuns, @NotNull 
         final @NotNull List<TestCaseDto> deleted = held.getAll().stream().filter(RunItem::isRemoved).map(RunItem::shownTestCase).toList();
 
         boundTestProject.get().ifPresentOrElse(
-                tp -> new TestRunFormOpener(p).open(tp.getTestCasesFolder(), testRun.getName(), held.coveredIds(), deleted, testRun.getMarker().getConfiguration(), saves(testRun)),
+                testProject -> new TestRunFormOpener(p).open(testProject.getTestCasesFolder(), testRun.getName(), held.coveredIds(), deleted, testRun.getMarker().getConfiguration(), saves(testRun)),
                 () -> TestinLogger.warn("Edit test run: no test project is bound to " + p.getName()));
     }
 

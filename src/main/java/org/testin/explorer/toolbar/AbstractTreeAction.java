@@ -28,25 +28,25 @@ import javax.swing.Icon;
 import java.util.function.Consumer;
 
 abstract class AbstractTreeAction extends DumbAwareAction {
-    private final @NotNull TreePanel tp;
+    private final @NotNull TreePanel treePanel;
     private final @NotNull Consumer<SimpleTree> operation;
 
-    protected AbstractTreeAction(final @NotNull TreePanel tp, final @NotNull String title, final @NotNull String description, final @NotNull Icon icon, final @NotNull Consumer<SimpleTree> operation) {
+    protected AbstractTreeAction(final @NotNull TreePanel treePanel, final @NotNull String title, final @NotNull String description, final @NotNull Icon icon, final @NotNull Consumer<SimpleTree> operation) {
         super(title, description, icon);
-        this.tp = tp;
+        this.treePanel = treePanel;
         this.operation = operation;
     }
 
     // UC-TREE-PANEL-028
     @Override
     public void actionPerformed(final @NotNull AnActionEvent e) {
-        operation.accept(tp.getProjectTree().getMainTree());
+        operation.accept(treePanel.getProjectTree().getMainTree());
     }
 
     // UC-TREE-PANEL-028, Rule-TREE-PANEL-101
     @Override
     public void update(final @NotNull AnActionEvent e) {
-        final boolean treeShowing = tp.showsTree();
+        final boolean treeShowing = treePanel.showsTree();
 
         e.getPresentation().setEnabled(treeShowing);
         e.getPresentation().setDescription(treeShowing

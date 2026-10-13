@@ -23,7 +23,7 @@ import org.testin.explorer.TreePanel;
 import org.testin.util.Bundle;
 
 public class ExpandTreeAction extends AbstractTreeAction {
-    public ExpandTreeAction(final @NotNull TreePanel tp) {
-        super(tp, Bundle.message("toolbar.expand.all"), Bundle.message("toolbar.expand.all.description"), AllIcons.Actions.Expandall, TreeUtil::expandAll);
+    public ExpandTreeAction(final @NotNull TreePanel treePanel) {
+        super(treePanel, Bundle.message("toolbar.expand.all"), Bundle.message("toolbar.expand.all.description"), AllIcons.Actions.Expandall, TreeUtil::expandAll);
     }
 }

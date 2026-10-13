@@ -41,80 +41,80 @@ public class TreeOperationsIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull TestProjectNode create(final Path path) {
         return WriteAction.computeAndWait(() -> {
-            final TestProjectNode tp =
+            final TestProjectNode testProject =
                     Services.getInstance(getProject(), NodeMapper.class).setTestProjectNode(path);
 
-            nodes().addTestProject(tp);
-            return tp;
+            nodes().addTestProject(testProject);
+            return testProject;
         });
     }
 
     // Rule-TREE-PANEL-100, Rule-INTERNAL-005
     public void testAnInactiveProjectIsANodeWithNothingInIt() {
-        final Path testProject = root.resolve("NAFATH");
+        final Path testProjectPath = root.resolve("NAFATH");
 
-        final TestProjectNode tp = create(testProject);
+        final TestProjectNode testProject = create(testProjectPath);
 
         WriteAction.runAndWait(() -> {
-            tp.getMarker().setStatus(ProjectStatus.INACTIVE);
-            nodes().persistMarker(tp);
+            testProject.getMarker().setStatus(ProjectStatus.INACTIVE);
+            nodes().persistMarker(testProject);
         });
 
-        indexer().scanSingleProject(testProject);
+        indexer().scanSingleProject(testProjectPath);
 
         assertTrue("an inactive project is still a node, so the tree can say what it is",
-                nodes().nodeExists(testProject));
+                nodes().nodeExists(testProjectPath));
 
         assertTrue("nothing under an inactive project is read - it is not being worked on",
-                nodes().getChildren(testProject).isEmpty());
+                nodes().getChildren(testProjectPath).isEmpty());
 
         assertEquals("and it says which status it is",
                 ProjectStatus.INACTIVE,
-                nodes().find(testProject).orElseThrow().getMarker().status());
+                nodes().find(testProjectPath).orElseThrow().getMarker().status());
     }
 
     // Rule-INTERNAL-090
     public void testAFoldersIdIsWrittenOnceAndKept() {
-        final Path testProject = root.resolve("NAFATH");
+        final Path testProjectPath = root.resolve("NAFATH");
 
-        final TestProjectNode tp = create(testProject);
-        final String stamped = tp.getMarker().getId();
+        final TestProjectNode testProject = create(testProjectPath);
+        final String stamped = testProject.getMarker().getId();
 
         assertFalse("a folder Testin wrote carries an id", stamped.isEmpty());
         assertFalse("and so do the two containers under it",
-                nodes().readMarker(testProject.resolve(NodeType.TCF.getFolderName()), NodeType.TCF, TestCasesFolderMarker.class).getId().isEmpty());
+                nodes().readMarker(testProjectPath.resolve(NodeType.TCF.getFolderName()), NodeType.TCF, TestCasesFolderMarker.class).getId().isEmpty());
 
         WriteAction.runAndWait(() -> {
-            tp.getMarker().setStatus(ProjectStatus.INACTIVE);
-            nodes().persistMarker(tp);
+            testProject.getMarker().setStatus(ProjectStatus.INACTIVE);
+            nodes().persistMarker(testProject);
         });
 
         assertEquals("the id a folder has is the id it keeps",
                 stamped,
-                nodes().readMarker(testProject, NodeType.TP, TestProjectMarker.class).getId());
+                nodes().readMarker(testProjectPath, NodeType.TP, TestProjectMarker.class).getId());
     }
 
     public void testACreatedNodeIsOnDiskAndInTheCache() {
-        final Path testProject = root.resolve("NAFATH");
+        final Path testProjectPath = root.resolve("NAFATH");
 
-        create(testProject);
+        create(testProjectPath);
 
         assertTrue("the test project is in the cache and not on disk - the phantom rule 2 forbids",
-                Files.isDirectory(testProject));
+                Files.isDirectory(testProjectPath));
         assertTrue("the cache has not heard of a node that was just created",
-                nodes().nodeExists(testProject));
+                nodes().nodeExists(testProjectPath));
     }
 
     // Rule-TREE-PANEL-002
     public void testATestProjectArrivesWithItsTwoContainers() {
-        final Path testProject = root.resolve("NAFATH");
+        final Path testProjectPath = root.resolve("NAFATH");
 
-        create(testProject);
+        create(testProjectPath);
 
         assertTrue("the test cases directory is missing",
-                Files.isDirectory(testProject.resolve(NodeType.TCF.getFolderName())));
+                Files.isDirectory(testProjectPath.resolve(NodeType.TCF.getFolderName())));
         assertTrue("the test runs directory is missing",
-                Files.isDirectory(testProject.resolve(NodeType.TRF.getFolderName())));
+                Files.isDirectory(testProjectPath.resolve(NodeType.TRF.getFolderName())));
     }
 
     public void testAnAbsentNodeIsNotInTheCache() {

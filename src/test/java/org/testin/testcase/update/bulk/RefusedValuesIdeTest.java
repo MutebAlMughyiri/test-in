@@ -71,8 +71,8 @@ public class RefusedValuesIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull List<TestCaseDto> aTestSetHolding(final @NotNull String... descriptions) {
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        testSet = EditorFixtures.testSet(getProject(), tp, "Checkout");
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        testSet = EditorFixtures.testSet(getProject(), testProject, "Checkout");
         final @NotNull List<TestCaseDto> made = new ArrayList<>();
         for (int i = 0; i < descriptions.length; i++) {
             final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description(descriptions[i]).order(String.format("m%04d", i))

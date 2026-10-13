@@ -40,7 +40,7 @@ public class BugOnTheSummaryLineIdeTest extends AbstractViewPanelIdeTest {
     private static final @NotNull String ISSUE = "https://github.com/mtb550/test-in/issues/412";
 
     private TestCaseDto tc;
-    private TestRunNode tr;
+    private TestRunNode testRun;
 
     private static @NotNull RunItem recorded(final @NotNull TestCaseDto tc, final @NotNull RunItemStatus status, final @NotNull String bugIssueUrl) {
         return RunItem.builder().id(tc.getId()).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl(bugIssueUrl).executions(List.of(RunItemExecution.builder().status(status).build())).build();
@@ -56,11 +56,11 @@ public class BugOnTheSummaryLineIdeTest extends AbstractViewPanelIdeTest {
     protected void setUp() {
         super.setUp();
         tc = aTestCase(aTestSet("Login"), "Log in with a valid user", "a");
-        tr = aTestRun(List.of(RunItem.builder().id(tc.getId()).build()));
+        testRun = aTestRun(List.of(RunItem.builder().id(tc.getId()).build()));
     }
 
     private @NotNull JBPanel<?> drawn(final @NotNull RunItem runItem) {
-        return Drawn.detailsTab(getProject(), tc, Optional.of(runItem), tr.getPath2());
+        return Drawn.detailsTab(getProject(), tc, Optional.of(runItem), testRun.getPath2());
     }
 
     // Rule-VIEW-PANEL-066

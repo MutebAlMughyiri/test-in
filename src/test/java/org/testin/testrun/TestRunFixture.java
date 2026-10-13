@@ -49,18 +49,18 @@ import java.util.UUID;
 public record TestRunFixture(@NotNull Project p, @NotNull List<TestCaseDto> testCases, @NotNull TestRunNode testRun) {
 
     public static @NotNull TestRunFixture of(final @NotNull Project p, final @NotNull Path root, final @NotNull List<RunItem> runItems, final @NotNull List<TestCaseDto> testCases) {
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(p, root);
-        return new TestRunFixture(p, testCases, EditorFixtures.testRun(p, tp, runItems));
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(p, root);
+        return new TestRunFixture(p, testCases, EditorFixtures.testRun(p, testProject, runItems));
     }
 
     public static @NotNull List<TestCaseDto> testCasesIn(final @NotNull Project p, final @NotNull Path root, final int count) {
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(p, root);
-        final @NotNull TestSetNode ts = EditorFixtures.testSet(p, tp, "Checkout");
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(p, root);
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(p, testProject, "Checkout");
         final @NotNull List<TestCaseDto> made = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description("Test case number " + (i + 1)).expectedResult("It works " + (i + 1)).order(String.format("m%04d", i)).build();
-            tc.setParent(ts);
-            Services.getInstance(p, TestCases.class).putTestCaseVerbatim(ts.getPath(), tc);
+            tc.setParent(testSet);
+            Services.getInstance(p, TestCases.class).putTestCaseVerbatim(testSet.getPath(), tc);
             made.add(tc);
         }
         return made;

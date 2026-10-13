@@ -132,10 +132,10 @@ public class EditorViewsIdeTest extends AbstractTempRootIdeTest {
         return EditorFixtures.testProject(getProject(), root);
     }
 
-    private @NotNull TestSetNode aTestSetHolding(final @NotNull TestProjectNode tp, final int count) {
-        final @NotNull TestSetNode ts = EditorFixtures.testSet(getProject(), tp, "Checkout");
-        EditorFixtures.testCases(getProject(), ts, count);
-        return ts;
+    private @NotNull TestSetNode aTestSetHolding(final @NotNull TestProjectNode testProject, final int count) {
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), testProject, "Checkout");
+        EditorFixtures.testCases(getProject(), testSet, count);
+        return testSet;
     }
 
     private @NotNull TestSetEditor openedTestSet(final int count) {
@@ -143,21 +143,21 @@ public class EditorViewsIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull TestRunEditor openedTestRun() {
-        final @NotNull TestProjectNode tp = aTestProject();
-        final @NotNull TestSetNode ts = EditorFixtures.testSet(getProject(), tp, "Checkout");
-        final @NotNull TestRunNode tr = EditorFixtures.testRun(getProject(), tp, EditorFixtures.testCases(getProject(), ts, 3).stream().map(EditorFixtures::pending).toList());
-        return EditorFixtures.openTestRunEditor(getProject(), tr, getTestRootDisposable());
+        final @NotNull TestProjectNode testProject = aTestProject();
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), testProject, "Checkout");
+        final @NotNull TestRunNode testRun = EditorFixtures.testRun(getProject(), testProject, EditorFixtures.testCases(getProject(), testSet, 3).stream().map(EditorFixtures::pending).toList());
+        return EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());
     }
 
     // Rule-EDITOR-PANEL-001, Rule-EDITOR-PANEL-011
     public void testATestSetAndATestRunOpenInTwoEditorsOfOneShape() {
-        final @NotNull TestProjectNode tp = aTestProject();
-        final @NotNull TestSetNode ts = aTestSetHolding(tp, 2);
-        final @NotNull TestRunNode tr = EditorFixtures.testRun(getProject(), tp, List.of());
+        final @NotNull TestProjectNode testProject = aTestProject();
+        final @NotNull TestSetNode testSet = aTestSetHolding(testProject, 2);
+        final @NotNull TestRunNode testRun = EditorFixtures.testRun(getProject(), testProject, List.of());
 
         final @NotNull UnifiedEditorProvider provider = new UnifiedEditorProvider();
-        final @NotNull FileEditor testSetTab = provider.createEditor(getProject(), new UnifiedVirtualFile(ts));
-        final @NotNull FileEditor testRunTab = provider.createEditor(getProject(), new UnifiedVirtualFile(tr));
+        final @NotNull FileEditor testSetTab = provider.createEditor(getProject(), new UnifiedVirtualFile(testSet));
+        final @NotNull FileEditor testRunTab = provider.createEditor(getProject(), new UnifiedVirtualFile(testRun));
         try {
             final @NotNull TestinEditor testSetEditor = ((UnifiedFileEditor) testSetTab).getEditor();
             final @NotNull TestinEditor testRunEditor = ((UnifiedFileEditor) testRunTab).getEditor();

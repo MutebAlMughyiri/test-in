@@ -48,10 +48,10 @@ public class ExecutionByKeyboardIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-PRODUCT-024
     public void testEveryStepOfExecutingATestRunHasAKey() {
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        final @NotNull TestSetNode login = EditorFixtures.testSet(getProject(), tp, "Login");
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        final @NotNull TestSetNode login = EditorFixtures.testSet(getProject(), testProject, "Login");
         final @NotNull List<TestCaseDto> testCases = EditorFixtures.testCases(getProject(), login, 2);
-        final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), EditorFixtures.testRun(getProject(), tp, testCases.stream().map(EditorFixtures::pending).toList()), getTestRootDisposable());
+        final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), EditorFixtures.testRun(getProject(), testProject, testCases.stream().map(EditorFixtures::pending).toList()), getTestRootDisposable());
         final @NotNull JBList<?> list = Drawn.components(editor.getComponent()).stream()
                 .filter(JBList.class::isInstance)
                 .map(component -> (JBList<?>) component)

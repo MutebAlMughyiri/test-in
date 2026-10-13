@@ -48,16 +48,16 @@ public class SearchFindsTestRunsIdeTest extends AbstractTempRootIdeTest {
     protected void setUp() {
         super.setUp();
 
-        final TestProjectNode tp = WriteAction.computeAndWait(() -> {
+        final TestProjectNode testProject = WriteAction.computeAndWait(() -> {
             final TestProjectNode project = mapper().setTestProjectNode(root.resolve("NAFATH"));
             nodes().addTestProject(project);
 
             return project;
         });
 
-        testCase = aTestCaseIn(tp);
-        ranIt = aTestRunOver(tp, "Cycle-1", testCase.getId());
-        ranSomethingElse = aTestRunOver(tp, "Cycle-2", UUID.randomUUID());
+        testCase = aTestCaseIn(testProject);
+        ranIt = aTestRunOver(testProject, "Cycle-1", testCase.getId());
+        ranSomethingElse = aTestRunOver(testProject, "Cycle-2", UUID.randomUUID());
     }
 
     private @NotNull NodeMapper mapper() {
@@ -76,9 +76,9 @@ public class SearchFindsTestRunsIdeTest extends AbstractTempRootIdeTest {
         return Services.getInstance(getProject(), Nodes.class);
     }
 
-    private @NotNull TestCaseDto aTestCaseIn(final TestProjectNode tp) {
+    private @NotNull TestCaseDto aTestCaseIn(final TestProjectNode testProject) {
         final TestSetNode login = WriteAction.computeAndWait(() -> {
-            final TestSetNode set = mapper().getTestSetNode(tp.getTestCasesFolder().getPath().resolve("Login"), tp.getTestCasesFolder());
+            final TestSetNode set = mapper().getTestSetNode(testProject.getTestCasesFolder().getPath().resolve("Login"), testProject.getTestCasesFolder());
             nodes().addTestSet(set);
 
             return set;
@@ -95,11 +95,11 @@ public class SearchFindsTestRunsIdeTest extends AbstractTempRootIdeTest {
         return tc;
     }
 
-    private @NotNull Path aTestRunOver(final TestProjectNode tp, final String named, final UUID testCaseId) {
+    private @NotNull Path aTestRunOver(final TestProjectNode testProject, final String named, final UUID testCaseId) {
         final Path testRunPath = WriteAction.computeAndWait(() -> {
-            final Path path = tp.getTestRunsFolder().getPath().resolve(named);
-            final TestRunNode tr = mapper().setTestRunNode(path, tp.getTestRunsFolder());
-            nodes().addTestRunNode(tr);
+            final Path path = testProject.getTestRunsFolder().getPath().resolve(named);
+            final TestRunNode testRun = mapper().setTestRunNode(path, testProject.getTestRunsFolder());
+            nodes().addTestRunNode(testRun);
 
             return path;
         });

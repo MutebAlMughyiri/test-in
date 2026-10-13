@@ -23,7 +23,7 @@ import org.testin.explorer.TreePanel;
 import org.testin.util.Bundle;
 
 public class CollapseTreeAction extends AbstractTreeAction {
-    public CollapseTreeAction(final @NotNull TreePanel tp) {
-        super(tp, Bundle.message("toolbar.collapse.all"), Bundle.message("toolbar.collapse.all.description"), AllIcons.Actions.Collapseall, tree -> TreeUtil.collapseAll(tree, 0));
+    public CollapseTreeAction(final @NotNull TreePanel treePanel) {
+        super(treePanel, Bundle.message("toolbar.collapse.all"), Bundle.message("toolbar.collapse.all.description"), AllIcons.Actions.Collapseall, tree -> TreeUtil.collapseAll(tree, 0));
     }
 }

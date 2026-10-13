@@ -82,10 +82,10 @@ public class RefreshEditorsIdeTest extends AbstractOpenEditorsIdeTest {
         settings().rootTestinPath = root.toString();
 
         final @NotNull NodesOnDisk made = new NodesOnDisk(getProject());
-        final @NotNull TestProjectNode tp = made.testProject(root.resolve("NAFATH"));
-        login = made.testSet(tp.getTestCasesFolder(), "Login");
-        checkout = made.testSet(tp.getTestCasesFolder(), "Checkout");
-        card = made.testSet(tp.getTestCasesFolder(), "Card");
+        final @NotNull TestProjectNode testProject = made.testProject(root.resolve("NAFATH"));
+        login = made.testSet(testProject.getTestCasesFolder(), "Login");
+        checkout = made.testSet(testProject.getTestCasesFolder(), "Checkout");
+        card = made.testSet(testProject.getTestCasesFolder(), "Card");
         inCheckout = made.testCase(checkout);
         inCard = made.testCase(card);
         Services.getInstance(getProject(), BoundTestProject.class).choose("NAFATH");

@@ -67,12 +67,12 @@ public final class TestRunFromGit {
     }
 
     // Rule-EDITOR-PANEL-239, Rule-SHARE-130
-    static @NotNull String recordedRevision(final @NotNull GitRepositoryService git, final @NotNull Path testProject, final @NotNull Path testRunPath, final @NotNull String commit) {
-        if (commit.isEmpty() || isInTheBranch(git, testProject, commit)) return commit;
+    static @NotNull String recordedRevision(final @NotNull GitRepositoryService git, final @NotNull Path testProjectPath, final @NotNull Path testRunPath, final @NotNull String commit) {
+        if (commit.isEmpty() || isInTheBranch(git, testProjectPath, commit)) return commit;
 
-        final @NotNull String marker = testProject.relativize(testRunPath.resolve(NodeType.TR.getMarker())).toString().replace('\\', '/');
+        final @NotNull String marker = testProjectPath.relativize(testRunPath.resolve(NodeType.TR.getMarker())).toString().replace('\\', '/');
         try {
-            final @NotNull String record = git.log(testProject, "-1", "--format=%H", "-G\"commit\"", "--", marker).strip();
+            final @NotNull String record = git.log(testProjectPath, "-1", "--format=%H", "-G\"commit\"", "--", marker).strip();
             return record.isEmpty() ? commit : record + "^";
         } catch (final GitFailed ex) {
             TestinLogger.info("The commit that recorded " + testRunPath.getFileName() + " could not be found, so its commit id is read as written: " + FailureText.of(ex));
@@ -80,9 +80,9 @@ public final class TestRunFromGit {
         }
     }
 
-    private static boolean isInTheBranch(final @NotNull GitRepositoryService git, final @NotNull Path testProject, final @NotNull String commit) {
+    private static boolean isInTheBranch(final @NotNull GitRepositoryService git, final @NotNull Path testProjectPath, final @NotNull String commit) {
         try {
-            return git.log(testProject, "-1", "--format=%H", commit, "--not", "HEAD").isBlank();
+            return git.log(testProjectPath, "-1", "--format=%H", commit, "--not", "HEAD").isBlank();
         } catch (final GitFailed notHere) {
             return false;
         }
@@ -94,7 +94,7 @@ public final class TestRunFromGit {
     }
 
     // Rule-EDITOR-PANEL-239
-    private static void readTheCommit(final @NotNull Project p, final @NotNull GitRepositoryService git, final @NotNull Path testProject, final @NotNull String commit, final @NotNull Set<UUID> testCaseIds) {
+    private static void readTheCommit(final @NotNull Project p, final @NotNull GitRepositoryService git, final @NotNull Path testProjectPath, final @NotNull String commit, final @NotNull Set<UUID> testCaseIds) {
         final @NotNull TestRuns testRuns = Services.getInstance(p, TestRuns.class);
         if (commit.isEmpty()) return;
 
@@ -103,10 +103,10 @@ public final class TestRunFromGit {
 
         final @NotNull Map<String, UUID> wanted = unread.stream().collect(Collectors.toMap(FileKind.TEST_CASE::fileName, Function.identity()));
         try {
-            final @NotNull List<String> listed = git.files(testProject, commit, NodeType.TCF.getFolderName()).stream()
+            final @NotNull List<String> listed = git.files(testProjectPath, commit, NodeType.TCF.getFolderName()).stream()
                     .filter(path -> wanted.containsKey(fileName(path)))
                     .toList();
-            final @NotNull Map<String, String> files = git.contents(testProject, commit, listed);
+            final @NotNull Map<String, String> files = git.contents(testProjectPath, commit, listed);
 
             final @NotNull Map<UUID, Optional<TestCaseDto>> testCases = new HashMap<>();
             wanted.values().forEach(id -> testCases.put(id, Optional.empty()));
@@ -119,17 +119,17 @@ public final class TestRunFromGit {
     }
 
     // Rule-EDITOR-PANEL-126
-    private static void readTheDeleted(final @NotNull Project p, final @NotNull GitRepositoryService git, final @NotNull Path testProject, final @NotNull List<UUID> deleted) {
+    private static void readTheDeleted(final @NotNull Project p, final @NotNull GitRepositoryService git, final @NotNull Path testProjectPath, final @NotNull List<UUID> deleted) {
         if (deleted.isEmpty()) return;
 
         final @NotNull Map<String, UUID> wanted = deleted.stream().collect(Collectors.toMap(FileKind.TEST_CASE::fileName, Function.identity()));
         try {
-            final @NotNull Map<String, UUID> lastVersions = lastVersions(git.log(testProject, Stream.concat(Stream.of(FORMAT, "--name-status", "--"),
+            final @NotNull Map<String, UUID> lastVersions = lastVersions(git.log(testProjectPath, Stream.concat(Stream.of(FORMAT, "--name-status", "--"),
                     deleted.stream().map(id -> BugHistory.pathspec(NodeType.TCF, FileKind.TEST_CASE, id))).toArray(String[]::new)), wanted);
             if (lastVersions.isEmpty()) return;
 
             final @NotNull Map<UUID, TestCaseDto> testCases = new HashMap<>();
-            git.objects(testProject, List.copyOf(lastVersions.keySet())).forEach((objectName, json) ->
+            git.objects(testProjectPath, List.copyOf(lastVersions.keySet())).forEach((objectName, json) ->
                     parsed(p, json).ifPresent(tc -> testCases.put(lastVersions.get(objectName), tc)));
             Services.getInstance(p, TestRuns.class).rememberLastInGit(testCases);
         } catch (final GitFailed ex) {

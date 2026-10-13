@@ -144,12 +144,12 @@ public class CreateTestCaseDialogIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-030, Rule-EDITOR-PANEL-008
     public void testANewTestCaseSortsLastAndConfirmsItselfOnce() {
-        final @NotNull TestSetNode ts = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
-        EditorFixtures.testCases(getProject(), ts, 3);
-        final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), ts, getTestRootDisposable());
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
+        EditorFixtures.testCases(getProject(), testSet, 3);
+        final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         final @NotNull Said balloons = Said.listening(getProject(), getTestRootDisposable());
 
-        ShownDialog.open(getProject(), CreateTestCaseDialog.class, () -> CreateTestCaseAction.openCreateDialog(getProject(), editor, ts));
+        ShownDialog.open(getProject(), CreateTestCaseDialog.class, () -> CreateTestCaseAction.openCreateDialog(getProject(), editor, testSet));
         Drawn.components(ShownDialog.content(getProject(), CreateTestCaseDialog.class)).stream().filter(EditorTextField.class::isInstance).map(EditorTextField.class::cast).findFirst().orElseThrow().setText("Pay with a saved card");
         save();
 

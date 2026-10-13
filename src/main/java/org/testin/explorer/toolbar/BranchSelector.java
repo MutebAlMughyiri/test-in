@@ -47,7 +47,7 @@ import java.util.Optional;
 
 public class BranchSelector {
     private final @NotNull Project p;
-    private final @NotNull TreePanel tp;
+    private final @NotNull TreePanel treePanel;
     private final @NotNull GitRepositoryService git;
     private final @NotNull Nodes nodes;
     private final @NotNull Notifier notifier;
@@ -64,9 +64,9 @@ public class BranchSelector {
 
     private boolean showingPlaceholder = false;
 
-    public BranchSelector(final @NotNull Project p, final @NotNull TreePanel tp, final @NotNull Optional<TestProjectNode> testProjectNode) {
+    public BranchSelector(final @NotNull Project p, final @NotNull TreePanel treePanel, final @NotNull Optional<TestProjectNode> testProjectNode) {
         this.p = p;
-        this.tp = tp;
+        this.treePanel = treePanel;
         this.git = new GitRepositoryService(p);
         this.nodes = Services.getInstance(p, Nodes.class);
         this.notifier = Services.getInstance(p, Notifier.class);
@@ -198,7 +198,7 @@ public class BranchSelector {
 
                 nodes.refreshDirectory(repositoryPath);
 
-                ApplicationManager.getApplication().invokeLater(() -> tp.reindex(Bundle.message("git.switched.to", checkedOut)));
+                ApplicationManager.getApplication().invokeLater(() -> treePanel.reindex(Bundle.message("git.switched.to", checkedOut)));
             }
         });
     }

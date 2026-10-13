@@ -240,12 +240,12 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-VIEW-PANEL-049
     public void testSavingAChangeRewritesTheAutomationCodeForThatField() {
-        final @NotNull TestSetNode ts = createdTestSet("Login");
-        final @NotNull TestCaseDto tc = createdTestCase(ts, "Log in with a valid user", "b");
+        final @NotNull TestSetNode testSet = createdTestSet("Login");
+        final @NotNull TestCaseDto tc = createdTestCase(testSet, "Log in with a valid user", "b");
         settled();
         assertEquals("\"Log in with a valid user\"", attributeOf(writtenMethodOf(LOGIN_TEST, tc), "description"));
         final @NotNull PopupsBuilt popups = PopupsBuilt.recording(getTestRootDisposable());
-        view.getPanel().show(List.of(tc), ts.getPath2());
+        view.getPanel().show(List.of(tc), testSet.getPath2());
 
         assertTrue(FieldChange.pressF2(getProject(), view));
         FieldChange.chooseTheDescription(popups.last());

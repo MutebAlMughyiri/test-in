@@ -53,27 +53,27 @@ public class OrderByNumberIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-223
     public void testATestSetWithUnplacedTestCasesIsPlacedOnceSoATypedPositionMeansSomething() {
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        final @NotNull TestSetNode ts = EditorFixtures.testSet(getProject(), tp, "Imported");
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), testProject, "Imported");
         final @NotNull List<TestCaseDto> unplaced = new ArrayList<>();
         for (final String description : List.of("Log in", "Log out", "Pay by card", "Check out"))
-            unplaced.add(EditorFixtures.testCase(getProject(), ts, description, ""));
+            unplaced.add(EditorFixtures.testCase(getProject(), testSet, description, ""));
         final @NotNull TestCaseDto last = TestCaseOrder.ordered(unplaced).getLast();
 
         final @NotNull TestCaseDto moved = movedTo(1, last);
 
         Await.until("the unplaced test cases were never given places", () -> unplaced.stream().filter(tc -> !tc.getId().equals(last.getId())).noneMatch(tc -> stored(tc).getOrder().isEmpty()));
-        final @NotNull List<TestCaseDto> nowOrdered = TestCaseOrder.ordered(theTestCases().getTestCasesForTestSet(ts.getPath()));
+        final @NotNull List<TestCaseDto> nowOrdered = TestCaseOrder.ordered(theTestCases().getTestCasesForTestSet(testSet.getPath()));
         assertEquals("the typed position meant nothing among test cases that had no place", moved.getId(), nowOrdered.getFirst().getId());
-        final @NotNull Map<String, String> placed = FilesUnder.snapshot(ts.getPath());
+        final @NotNull Map<String, String> placed = FilesUnder.snapshot(testSet.getPath());
 
         movedTo(3, moved);
 
-        assertEquals("the placing happened a second time", placed.keySet(), FilesUnder.snapshot(ts.getPath()).keySet());
+        assertEquals("the placing happened a second time", placed.keySet(), FilesUnder.snapshot(testSet.getPath()).keySet());
         for (final TestCaseDto tc : unplaced) {
             if (tc.getId().equals(moved.getId())) continue;
             final @NotNull String file = placed.keySet().stream().filter(name -> name.contains(tc.getId().toString())).findFirst().orElseThrow();
-            assertEquals("a test case around the one moved was written again", placed.get(file), FilesUnder.snapshot(ts.getPath()).get(file));
+            assertEquals("a test case around the one moved was written again", placed.get(file), FilesUnder.snapshot(testSet.getPath()).get(file));
         }
     }
 }

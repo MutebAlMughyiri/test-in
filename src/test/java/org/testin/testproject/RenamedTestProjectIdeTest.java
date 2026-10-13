@@ -43,13 +43,13 @@ public class RenamedTestProjectIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-TREE-PANEL-110
     public void testRenamingTheChosenTestProjectMovesTheChoiceAndWritesNoTestinYml() {
-        final @NotNull TestProjectNode tp = new NodesOnDisk(getProject()).testProject(root.resolve("NAFATH"));
+        final @NotNull TestProjectNode testProject = new NodesOnDisk(getProject()).testProject(root.resolve("NAFATH"));
         assertFalse("a testin.yml was there before the rename", aTestinYmlExists());
         bound().choose("NAFATH");
 
         try {
             final @NotNull AtomicBoolean done = new AtomicBoolean();
-            NodeRename.apply(getProject(), tp, "Nafath_App", () -> done.set(true));
+            NodeRename.apply(getProject(), testProject, "Nafath_App", () -> done.set(true));
             Await.until("the rename never finished", done::get);
 
             assertEquals("the test project chosen for this code project did not follow the rename", "Nafath_App", bound().name());

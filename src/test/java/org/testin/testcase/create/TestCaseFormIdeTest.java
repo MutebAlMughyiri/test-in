@@ -82,8 +82,8 @@ public class TestCaseFormIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull TestSetNode aTestSet() {
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        return EditorFixtures.testSet(getProject(), tp, "Checkout");
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        return EditorFixtures.testSet(getProject(), testProject, "Checkout");
     }
 
     private @NotNull CreateTestCaseDialog aShownCreateDialog() {

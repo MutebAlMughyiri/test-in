@@ -52,12 +52,12 @@ public class EditTestRunSaveIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestRunNode testRun = WriteAction.computeAndWait(() -> {
             final @NotNull NodeMapper mapper = Services.getInstance(getProject(), NodeMapper.class);
             final @NotNull Nodes nodes = Services.getInstance(getProject(), Nodes.class);
-            final @NotNull TestProjectNode tp = mapper.setTestProjectNode(root.resolve("NAFATH"));
-            nodes.addTestProject(tp);
+            final @NotNull TestProjectNode testProject = mapper.setTestProjectNode(root.resolve("NAFATH"));
+            nodes.addTestProject(testProject);
 
-            final @NotNull TestRunNode tr = mapper.setTestRunNode(tp.getTestRunsFolder().getPath().resolve("Cycle-1"), tp.getTestRunsFolder());
-            nodes.addTestRunNode(tr);
-            return tr;
+            final @NotNull TestRunNode created = mapper.setTestRunNode(testProject.getTestRunsFolder().getPath().resolve("Cycle-1"), testProject.getTestRunsFolder());
+            nodes.addTestRunNode(created);
+            return created;
         });
 
         indexedTestRuns().putRunItems(testRun.getPath(), new RunItems().setAll(List.of(

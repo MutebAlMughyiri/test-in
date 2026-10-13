@@ -49,16 +49,16 @@ public class FailureFormSavesToTheTestRunIdeTest extends AbstractTempRootIdeTest
         final @NotNull Path testRunPath = WriteAction.computeAndWait(() -> {
             final @NotNull NodeMapper mapper = Services.getInstance(getProject(), NodeMapper.class);
             final @NotNull Nodes nodes = Services.getInstance(getProject(), Nodes.class);
-            final @NotNull TestProjectNode tp = mapper.setTestProjectNode(root.resolve("NAFATH"));
-            nodes.addTestProject(tp);
+            final @NotNull TestProjectNode testProject = mapper.setTestProjectNode(root.resolve("NAFATH"));
+            nodes.addTestProject(testProject);
 
-            final @NotNull TestSetNode ts = mapper.getTestSetNode(tp.getTestCasesFolder().getPath().resolve("Checkout"), tp.getTestCasesFolder());
-            nodes.addTestSet(ts);
-            Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(ts.getPath(),
+            final @NotNull TestSetNode testSet = mapper.getTestSetNode(testProject.getTestCasesFolder().getPath().resolve("Checkout"), testProject.getTestCasesFolder());
+            nodes.addTestSet(testSet);
+            Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(),
                     TestCaseDto.builder().id(FAILED_TEST_CASE).description("Refuse an expired card").order("m").build());
 
-            final @NotNull Path path = tp.getTestRunsFolder().getPath().resolve("Cycle-1");
-            nodes.addTestRunNode(mapper.setTestRunNode(path, tp.getTestRunsFolder()));
+            final @NotNull Path path = testProject.getTestRunsFolder().getPath().resolve("Cycle-1");
+            nodes.addTestRunNode(mapper.setTestRunNode(path, testProject.getTestRunsFolder()));
             return path;
         });
 

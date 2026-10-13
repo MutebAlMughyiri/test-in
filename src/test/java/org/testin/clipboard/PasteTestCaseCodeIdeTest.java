@@ -44,10 +44,10 @@ public class PasteTestCaseCodeIdeTest extends AbstractCodegenIdeTest {
 
     private static final @NotNull String WRITTEN_BY_THE_TESTER = "int signedIn = 1;";
 
-    private @NotNull TestCaseDto automatedTestCase(final @NotNull TestSetNode ts) {
+    private @NotNull TestCaseDto automatedTestCase(final @NotNull TestSetNode testSet) {
         final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").order("m").build();
-        tc.setParent(ts);
-        Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(ts.getPath(), tc);
+        tc.setParent(testSet);
+        Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), tc);
         GenType.CREATE_TEST_CASE.execute(getProject(), tc);
 
         final @NotNull PsiCodeBlock body = methodOf(tc).map(PsiMethod::getBody).orElseThrow(() -> new AssertionError("the test case to copy got no method"));

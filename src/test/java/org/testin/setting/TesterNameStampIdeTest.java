@@ -48,45 +48,45 @@ public class TesterNameStampIdeTest extends AbstractTempRootIdeTest {
             final @NotNull NodeMapper mapper = Services.getInstance(getProject(), NodeMapper.class);
             final @NotNull Nodes nodes = Services.getInstance(getProject(), Nodes.class);
 
-            final @NotNull TestProjectNode tp = mapper.setTestProjectNode(root.resolve("NAFATH"));
-            nodes.addTestProject(tp);
+            final @NotNull TestProjectNode testProject = mapper.setTestProjectNode(root.resolve("NAFATH"));
+            nodes.addTestProject(testProject);
 
-            final @NotNull TestSetNode set = mapper.getTestSetNode(tp.getTestCasesFolder().getPath().resolve("Login"), tp.getTestCasesFolder());
+            final @NotNull TestSetNode set = mapper.getTestSetNode(testProject.getTestCasesFolder().getPath().resolve("Login"), testProject.getTestCasesFolder());
             nodes.addTestSet(set);
             return set;
         });
     }
 
-    private @NotNull TestCaseDto aTestCaseIn(final @NotNull TestSetNode ts) {
+    private @NotNull TestCaseDto aTestCaseIn(final @NotNull TestSetNode testSet) {
         final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
-        tc.setParent(ts);
+        tc.setParent(testSet);
         return tc;
     }
 
-    private void put(final @NotNull TestSetNode ts, final @NotNull TestCaseDto tc) {
-        assertTrue("the test case was not written", Services.getInstance(getProject(), TestCases.class).putTestCase(ts.getPath(), tc));
+    private void put(final @NotNull TestSetNode testSet, final @NotNull TestCaseDto tc) {
+        assertTrue("the test case was not written", Services.getInstance(getProject(), TestCases.class).putTestCase(testSet.getPath(), tc));
     }
 
     // Rule-SETTING-018
     public void testTheNameIsReadAtTheMomentItIsStamped() {
-        final @NotNull TestSetNode ts = loginTestSet();
-        final @NotNull TestCaseDto tc = aTestCaseIn(ts);
+        final @NotNull TestSetNode testSet = loginTestSet();
+        final @NotNull TestCaseDto tc = aTestCaseIn(testSet);
 
-        asTester("Sara", () -> put(ts, tc));
+        asTester("Sara", () -> put(testSet, tc));
         assertEquals("Sara", tc.getCreatedBy());
 
         tc.setDescription("Log in with a locked user");
-        asTester("Omar", () -> put(ts, tc));
+        asTester("Omar", () -> put(testSet, tc));
         assertEquals("the tester name changed, and the edit was stamped with the old one", "Omar", tc.getUpdatedBy());
         assertEquals("an edit changed who created the test case", "Sara", tc.getCreatedBy());
     }
 
     // Rule-SETTING-019
     public void testAnEmptyNameWritesNoName() {
-        final @NotNull TestSetNode ts = loginTestSet();
-        final @NotNull TestCaseDto tc = aTestCaseIn(ts);
+        final @NotNull TestSetNode testSet = loginTestSet();
+        final @NotNull TestCaseDto tc = aTestCaseIn(testSet);
 
-        asTester("", () -> put(ts, tc));
+        asTester("", () -> put(testSet, tc));
         assertEquals("an empty tester name was replaced by a name of Testin's own", "", tc.getCreatedBy());
     }
 }

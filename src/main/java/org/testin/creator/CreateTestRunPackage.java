@@ -39,8 +39,8 @@ public class CreateTestRunPackage implements NodeCreator {
     // UC-TREE-PANEL-010, Rule-TREE-PANEL-033
     @Override
     public @NotNull Optional<AbstractNode> execute(final @NotNull String name, final @NotNull AbstractNode parentNode, final @NotNull Path newDirPath) {
-        TestRunPackageNode tr = directoryMapper.getTestRunPackageNode(newDirPath, parentNode);
+        TestRunPackageNode testRunPackage = directoryMapper.getTestRunPackageNode(newDirPath, parentNode);
 
-        return nodes.addTestRunPackage(tr) ? Optional.of(tr) : Optional.empty();
+        return nodes.addTestRunPackage(testRunPackage) ? Optional.of(testRunPackage) : Optional.empty();
     }
 }

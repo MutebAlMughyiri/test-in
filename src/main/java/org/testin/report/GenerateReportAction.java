@@ -90,20 +90,20 @@ public class GenerateReportAction extends AbstractBoundProjectAction {
     @Override
     public void update(final @NotNull AnActionEvent e) {
         GrayWithReason.unless(this, e, isAvailable(), selectedTestRun.get()
-                .map(tr -> Bundle.message("toolbar.report.disabled", tr.getMarker().getStatus().getLabel()))
+                .map(testRun -> Bundle.message("toolbar.report.disabled", testRun.getMarker().getStatus().getLabel()))
                 .orElseGet(() -> Bundle.message("report.select.test.run.description")));
     }
 
     // UC-REPORT-001, Rule-REPORT-016
     public boolean isAvailable() {
-        return selectedTestRun.get().map(tr -> tr.getMarker().getStatus().isReportable()).orElse(false);
+        return selectedTestRun.get().map(testRun -> testRun.getMarker().getStatus().isReportable()).orElse(false);
     }
 
     // UC-REPORT-001
     public void execute() {
-        selectedTestRun.get().ifPresent(tr -> new GenerateReportDialog(p,
-                ReportFileName.suggestedFor(p, tr, ZonedDateTime.now(ZoneId.systemDefault())),
-                (format, file) -> processAndSave(tr, format, file)).show());
+        selectedTestRun.get().ifPresent(testRun -> new GenerateReportDialog(p,
+                ReportFileName.suggestedFor(p, testRun, ZonedDateTime.now(ZoneId.systemDefault())),
+                (format, file) -> processAndSave(testRun, format, file)).show());
     }
 
     @Override
@@ -112,19 +112,19 @@ public class GenerateReportAction extends AbstractBoundProjectAction {
     }
 
     // UC-REPORT-001, Rule-REPORT-003
-    private void processAndSave(final @NotNull TestRunNode tr, final @NotNull FileFormat format, final @NotNull File outputFile) {
-        BackgroundWork.run(p, Bundle.message("report.task.generating", format.getLabel(), tr.getName()), Bundle.message("report.failed.title", format.getLabel()), indicator -> writeReport(tr, format, outputFile, indicator));
+    private void processAndSave(final @NotNull TestRunNode testRun, final @NotNull FileFormat format, final @NotNull File outputFile) {
+        BackgroundWork.run(p, Bundle.message("report.task.generating", format.getLabel(), testRun.getName()), Bundle.message("report.failed.title", format.getLabel()), indicator -> writeReport(testRun, format, outputFile, indicator));
     }
 
     // UC-REPORT-001, Rule-REPORT-003
-    void writeReport(final @NotNull TestRunNode tr, final @NotNull FileFormat format, final @NotNull File outputFile, final @NotNull ProgressIndicator indicator) {
-        final @NotNull Path dirPath = tr.getPath();
+    void writeReport(final @NotNull TestRunNode testRun, final @NotNull FileFormat format, final @NotNull File outputFile, final @NotNull ProgressIndicator indicator) {
+        final @NotNull Path dirPath = testRun.getPath();
 
         // Rule-EDITOR-PANEL-239
         TestRunFromGit.read(p, dirPath);
         final @NotNull RunItems runItems = testRuns.getRunItems(dirPath);
 
-        final byte[] fileBytes = format.generateReport(p, tr, runItems);
+        final byte[] fileBytes = format.generateReport(p, testRun, runItems);
 
         // Rule-REPORT-003
         indicator.checkCanceled();

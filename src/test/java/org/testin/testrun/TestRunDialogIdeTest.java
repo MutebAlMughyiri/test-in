@@ -78,7 +78,7 @@ import java.util.UUID;
 
 public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
 
-    private TestProjectNode tp;
+    private TestProjectNode testProject;
     private TestSetNode login;
     private TestCaseDto first;
     private TestCaseDto second;
@@ -113,14 +113,14 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
         super.setUp();
         Services.getInstance(getProject(), ProjectIndexer.class).resetForReindex();
         final @NotNull NodesOnDisk made = new NodesOnDisk(getProject());
-        tp = made.testProject(root.resolve("NAFATH"));
-        login = made.testSet(tp.getTestCasesFolder(), "Login");
+        testProject = made.testProject(root.resolve("NAFATH"));
+        login = made.testSet(testProject.getTestCasesFolder(), "Login");
         first = made.testCase(login);
         second = made.testCase(login);
-        empty = made.testSet(tp.getTestCasesFolder(), "Empty");
-        old = made.testSet(tp.getTestCasesFolder(), "Old");
+        empty = made.testSet(testProject.getTestCasesFolder(), "Empty");
+        old = made.testSet(testProject.getTestCasesFolder(), "Old");
         inOld = made.testCase(old);
-        archive = made.testSetPackage(tp.getTestCasesFolder(), "Archive");
+        archive = made.testSetPackage(testProject.getTestCasesFolder(), "Archive");
         inside = made.testSet(archive, "Inside");
         inInside = made.testCase(inside);
         assertTrue(nodes().mark(old, TestSetStatus.DEPRECATED, "Mohammed AlZamil"));
@@ -154,7 +154,7 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
     }
 
     private void theCreateDialogOpened() {
-        new CreateTestRun(getProject()).configureTestRun(tp.getTestCasesFolder(), "Cycle-1", tp.getTestRunsFolder(), Set.of(), everyQuestionAnswered());
+        new CreateTestRun(getProject()).configureTestRun(testProject.getTestCasesFolder(), "Cycle-1", testProject.getTestRunsFolder(), Set.of(), everyQuestionAnswered());
         Await.until("the test run dialog never opened", () -> ShownDialog.isOpen(getProject(), TestRunConfigurationDialog.class));
         ShownDialog.sized(getProject(), TestRunConfigurationDialog.class);
     }
@@ -224,7 +224,7 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
         assertEquals("hovering over the gray Create does not say why", Bundle.message("test.run.form.no.test.case"), Drawn.hovering(create));
         create.doClick();
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
-        assertTrue("an empty test run was created", theTestRunsUnder(tp.getTestRunsFolder()).isEmpty());
+        assertTrue("an empty test run was created", theTestRunsUnder(testProject.getTestRunsFolder()).isEmpty());
 
         tree.setNodeState(rowOf(first), true);
 
@@ -244,14 +244,14 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
 
         assertEquals("Enter changed the change log", "", changeLog.getText());
         assertTrue("Enter closed the dialog", ShownDialog.isOpen(getProject(), TestRunConfigurationDialog.class));
-        assertTrue("Enter created the test run", theTestRunsUnder(tp.getTestRunsFolder()).isEmpty());
+        assertTrue("Enter created the test run", theTestRunsUnder(testProject.getTestRunsFolder()).isEmpty());
     }
 
     // Rule-TREE-PANEL-093
     public void testTheEditDialogTicksWhatTheTestRunCoversAndAFolderOnlyWhenAllUnderItIs() {
-        final @NotNull TestSetNode card = new NodesOnDisk(getProject()).testSet(tp.getTestCasesFolder(), "Card");
+        final @NotNull TestSetNode card = new NodesOnDisk(getProject()).testSet(testProject.getTestCasesFolder(), "Card");
         final @NotNull TestCaseDto paid = new NodesOnDisk(getProject()).testCase(card);
-        final @NotNull TestRunNode testRun = cycle1In(tp.getTestRunsFolder(), List.of(new RunItem().setId(first.getId()), new RunItem().setId(paid.getId())));
+        final @NotNull TestRunNode testRun = cycle1In(testProject.getTestRunsFolder(), List.of(new RunItem().setId(first.getId()), new RunItem().setId(paid.getId())));
 
         theEditDialogOpenedOn(testRun);
 
@@ -270,7 +270,7 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
     // Rule-TREE-PANEL-076, Rule-TREE-PANEL-134
     public void testSavingTheEditKeepsWhatTheDialogDoesNotShowAndTheDeletedTestCasesLeftTicked() {
         final @NotNull UUID deleted = UUID.randomUUID();
-        final @NotNull TestRunNode testRun = cycle1In(tp.getTestRunsFolder(), List.of(new RunItem().setId(first.getId()), new RunItem().setId(inOld.getId()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())), new RunItem().setId(deleted).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()))));
+        final @NotNull TestRunNode testRun = cycle1In(testProject.getTestRunsFolder(), List.of(new RunItem().setId(first.getId()), new RunItem().setId(inOld.getId()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())), new RunItem().setId(deleted).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()))));
 
         indexedTestRuns().changeTestRunMarker(testRun.getPath(), marker -> marker.configure(everyQuestionAnswered()));
         theEditDialogOpenedOn(testRun);
@@ -291,7 +291,7 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
     // Rule-TREE-PANEL-134
     public void testUntickingADeletedTestCaseAndSavingRemovesItFromTheTestRun() {
         final @NotNull UUID deleted = UUID.randomUUID();
-        final @NotNull TestRunNode testRun = cycle1In(tp.getTestRunsFolder(), List.of(new RunItem().setId(first.getId()), new RunItem().setId(deleted).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()))));
+        final @NotNull TestRunNode testRun = cycle1In(testProject.getTestRunsFolder(), List.of(new RunItem().setId(first.getId()), new RunItem().setId(deleted).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()))));
         indexedTestRuns().changeTestRunMarker(testRun.getPath(), marker -> marker.configure(everyQuestionAnswered()));
         theEditDialogOpenedOn(testRun);
 
@@ -305,7 +305,7 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
     // Rule-TREE-PANEL-070, Rule-TREE-PANEL-072
     public void testReCreatingCarriesOnlyTheTestCasesAndTheConfigurationIntoTheSameFolder() {
         final @NotNull TestRunPackageNode sprint = WriteAction.computeAndWait(() -> {
-            final @NotNull TestRunPackageNode made = Services.getInstance(getProject(), NodeMapper.class).getTestRunPackageNode(tp.getTestRunsFolder().getPath().resolve("Sprint"), tp.getTestRunsFolder());
+            final @NotNull TestRunPackageNode made = Services.getInstance(getProject(), NodeMapper.class).getTestRunPackageNode(testProject.getTestRunsFolder().getPath().resolve("Sprint"), testProject.getTestRunsFolder());
             nodes().addTestRunPackage(made);
             return made;
         });

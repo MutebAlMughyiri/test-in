@@ -97,8 +97,8 @@ public class TestCaseNumberIdeTest extends AbstractCodegenIdeTest {
         super.tearDown();
     }
 
-    private @NotNull TestSetEditor opened(final @NotNull TestSetNode ts) {
-        return EditorFixtures.openTestSetEditor(getProject(), ts, getTestRootDisposable());
+    private @NotNull TestSetEditor opened(final @NotNull TestSetNode testSet) {
+        return EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
     }
 
     // UC-INTERNAL-004, Rule-INTERNAL-025

@@ -61,8 +61,8 @@ public class SortMenuIdeTest extends AbstractTempRootIdeTest {
         }
     }
 
-    private @NotNull List<TestCaseDto> lowHighMedium(final @NotNull TestProjectNode tp) {
-        testSet = EditorFixtures.testSet(getProject(), tp, "Checkout");
+    private @NotNull List<TestCaseDto> lowHighMedium(final @NotNull TestProjectNode testProject) {
+        testSet = EditorFixtures.testSet(getProject(), testProject, "Checkout");
         final @NotNull List<TestCaseDto> made = EditorFixtures.testCases(getProject(), testSet, 3);
         final @NotNull List<Priority> priorities = List.of(Priority.LOW, Priority.HIGH, Priority.MEDIUM);
         for (int i = 0; i < made.size(); i++) {
@@ -91,10 +91,10 @@ public class SortMenuIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-276
     public void testTheRunFieldsAreGrayInATestSetEditorAndWorkInATestRun() {
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        final @NotNull List<TestCaseDto> made = lowHighMedium(tp);
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        final @NotNull List<TestCaseDto> made = lowHighMedium(testProject);
         final @NotNull TestSetEditor testSetEditor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
-        final @NotNull TestRunEditor testRunEditor = EditorFixtures.openTestRunEditor(getProject(), EditorFixtures.testRun(getProject(), tp, made.stream().map(EditorFixtures::pending).toList()), getTestRootDisposable());
+        final @NotNull TestRunEditor testRunEditor = EditorFixtures.openTestRunEditor(getProject(), EditorFixtures.testRun(getProject(), testProject, made.stream().map(EditorFixtures::pending).toList()), getTestRootDisposable());
         try {
             for (final SortField field : List.of(SortField.RUN_ITEM_STATUS, SortField.EXECUTED_AT, SortField.DURATION)) {
                 final @NotNull Presentation inATestSet = Gestures.updated(getProject(), Sorting.entry(sortOf(testSetEditor), field.getLabel()), testSetEditor.getList());

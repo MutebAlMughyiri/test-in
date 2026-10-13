@@ -66,11 +66,11 @@ public class RunItemLineIdeTest extends AbstractTempRootIdeTest {
         final @NotNull Path testRunPath = WriteAction.computeAndWait(() -> {
             final @NotNull NodeMapper mapper = Services.getInstance(getProject(), NodeMapper.class);
             final @NotNull Nodes nodes = Services.getInstance(getProject(), Nodes.class);
-            final @NotNull TestProjectNode tp = mapper.setTestProjectNode(root.resolve("NAFATH"));
-            nodes.addTestProject(tp);
+            final @NotNull TestProjectNode testProject = mapper.setTestProjectNode(root.resolve("NAFATH"));
+            nodes.addTestProject(testProject);
 
-            final @NotNull Path path = tp.getTestRunsFolder().getPath().resolve("Cycle-1");
-            nodes.addTestRunNode(mapper.setTestRunNode(path, tp.getTestRunsFolder()));
+            final @NotNull Path path = testProject.getTestRunsFolder().getPath().resolve("Cycle-1");
+            nodes.addTestRunNode(mapper.setTestRunNode(path, testProject.getTestRunsFolder()));
             return path;
         });
         return List.of(testRunPath.toString());

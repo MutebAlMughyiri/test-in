@@ -50,22 +50,22 @@ public class NodeCountsIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull TestProjectNode aTestProject() {
         return WriteAction.computeAndWait(() -> {
-            final @NotNull TestProjectNode tp = mapper().setTestProjectNode(root.resolve("Checkout"));
-            nodes().addTestProject(tp);
-            return tp;
+            final @NotNull TestProjectNode testProject = mapper().setTestProjectNode(root.resolve("Checkout"));
+            nodes().addTestProject(testProject);
+            return testProject;
         });
     }
 
     private @NotNull TestSetPackageNode aTestSetPackage(final @NotNull AbstractNode parent, final @NotNull String name) {
         return WriteAction.computeAndWait(() -> {
-            final @NotNull TestSetPackageNode tsp = mapper().getTestSetPackageNode(parent.getPath().resolve(name), parent);
-            nodes().addTestSetPackage(tsp);
-            return tsp;
+            final @NotNull TestSetPackageNode testSetPackage = mapper().getTestSetPackageNode(parent.getPath().resolve(name), parent);
+            nodes().addTestSetPackage(testSetPackage);
+            return testSetPackage;
         });
     }
 
     private @NotNull List<UUID> aTestSet(final @NotNull AbstractNode parent, final @NotNull String name, final int testCases, final @NotNull TestSetStatus status) {
-        final @NotNull TestSetNode ts = WriteAction.computeAndWait(() -> {
+        final @NotNull TestSetNode testSet = WriteAction.computeAndWait(() -> {
             final @NotNull TestSetNode created = mapper().getTestSetNode(parent.getPath().resolve(name), parent);
             created.getMarker().setStatus(status);
             nodes().addTestSet(created);
@@ -75,19 +75,19 @@ public class NodeCountsIdeTest extends AbstractTempRootIdeTest {
         final @NotNull List<UUID> ids = new ArrayList<>();
         for (int i = 0; i < testCases; i++) {
             final @NotNull TestCaseDto tc = TestCaseDto.builder().id(UUID.randomUUID()).description("Log in " + i).order("m" + i).build();
-            tc.setParent(ts);
-            Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(ts.getPath(), tc);
+            tc.setParent(testSet);
+            Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), tc);
             ids.add(tc.getId());
         }
 
         return ids;
     }
 
-    private @NotNull TestRunNode aTestRun(final @NotNull TestProjectNode tp) {
+    private @NotNull TestRunNode aTestRun(final @NotNull TestProjectNode testProject) {
         return WriteAction.computeAndWait(() -> {
-            final @NotNull TestRunNode tr = mapper().setTestRunNode(tp.getTestRunsFolder().getPath().resolve("Cycle 1"), tp.getTestRunsFolder());
-            nodes().addTestRunNode(tr);
-            return tr;
+            final @NotNull TestRunNode testRun = mapper().setTestRunNode(testProject.getTestRunsFolder().getPath().resolve("Cycle 1"), testProject.getTestRunsFolder());
+            nodes().addTestRunNode(testRun);
+            return testRun;
         });
     }
 
@@ -97,8 +97,8 @@ public class NodeCountsIdeTest extends AbstractTempRootIdeTest {
 
     // UC-INTERNAL-006, Rule-INTERNAL-047
     public void testAContainerIsTheSumOfEverythingBeneathItAtAnyDepth() {
-        final @NotNull TestProjectNode tp = aTestProject();
-        final @NotNull TestSetPackageNode auth = aTestSetPackage(tp.getTestCasesFolder(), "Auth");
+        final @NotNull TestProjectNode testProject = aTestProject();
+        final @NotNull TestSetPackageNode auth = aTestSetPackage(testProject.getTestCasesFolder(), "Auth");
         final @NotNull TestSetPackageNode admin = aTestSetPackage(auth, "Admin");
         aTestSet(auth, "Login", 2, TestSetStatus.ACTIVE);
         aTestSet(admin, "Roles", 3, TestSetStatus.ACTIVE);
@@ -112,11 +112,11 @@ public class NodeCountsIdeTest extends AbstractTempRootIdeTest {
 
     // UC-INTERNAL-006, Rule-INTERNAL-050
     public void testARetiredTestSetIsStillCounted() {
-        final @NotNull TestProjectNode tp = aTestProject();
-        aTestSet(tp.getTestCasesFolder(), "Login", 2, TestSetStatus.ACTIVE);
-        aTestSet(tp.getTestCasesFolder(), "Old login", 3, TestSetStatus.DEPRECATED);
+        final @NotNull TestProjectNode testProject = aTestProject();
+        aTestSet(testProject.getTestCasesFolder(), "Login", 2, TestSetStatus.ACTIVE);
+        aTestSet(testProject.getTestCasesFolder(), "Old login", 3, TestSetStatus.DEPRECATED);
 
-        final @NotNull NodeFigures figures = counted(tp.getTestCasesFolder());
+        final @NotNull NodeFigures figures = counted(testProject.getTestCasesFolder());
 
         assertEquals("a deprecated test set was left out of the count", 2, figures.testSets());
         assertEquals("the test cases of a deprecated test set were left out of the count", 5, figures.testCases());
@@ -124,14 +124,14 @@ public class NodeCountsIdeTest extends AbstractTempRootIdeTest {
 
     // UC-INTERNAL-006, Rule-INTERNAL-048
     public void testATestRunIsCountedFromTheRunItemStatusesItRecorded() {
-        final @NotNull TestProjectNode tp = aTestProject();
-        final @NotNull List<UUID> testCases = aTestSet(tp.getTestCasesFolder(), "Login", 4, TestSetStatus.ACTIVE);
-        final @NotNull TestRunNode tr = aTestRun(tp);
-        Services.getInstance(getProject(), TestRuns.class).putRunItems(tr.getPath(), new RunItems().setAll(new ArrayList<>(List.of(
+        final @NotNull TestProjectNode testProject = aTestProject();
+        final @NotNull List<UUID> testCases = aTestSet(testProject.getTestCasesFolder(), "Login", 4, TestSetStatus.ACTIVE);
+        final @NotNull TestRunNode testRun = aTestRun(testProject);
+        Services.getInstance(getProject(), TestRuns.class).putRunItems(testRun.getPath(), new RunItems().setAll(new ArrayList<>(List.of(
                 new RunItem().setId(testCases.getFirst()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())),
                 new RunItem().setId(testCases.get(1)).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build()))))));
 
-        final @NotNull TestRunSummary counted = NodeCounter.testRunFigures(getProject(), tr).testRun();
+        final @NotNull TestRunSummary counted = NodeCounter.testRunFigures(getProject(), testRun).testRun();
 
         assertEquals("a test run made from two of four test cases was not counted from its two run item statuses", 2, counted.total());
         assertEquals(1, counted.passed());
@@ -140,8 +140,8 @@ public class NodeCountsIdeTest extends AbstractTempRootIdeTest {
 
     // UC-INTERNAL-006, Rule-INTERNAL-051
     public void testATestRunThatCouldNotBeReadCountsAsNothing() {
-        final @NotNull TestRunNode tr = aTestRun(aTestProject());
+        final @NotNull TestRunNode testRun = aTestRun(aTestProject());
 
-        assertEquals("a test run the index could not read was not counted as nothing", NodeFigures.NONE, NodeCounter.testRunFigures(getProject(), tr));
+        assertEquals("a test run the index could not read was not counted as nothing", NodeFigures.NONE, NodeCounter.testRunFigures(getProject(), testRun));
     }
 }

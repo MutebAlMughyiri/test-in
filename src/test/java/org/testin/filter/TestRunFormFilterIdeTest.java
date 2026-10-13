@@ -63,17 +63,17 @@ public class TestRunFormFilterIdeTest extends AbstractTempRootIdeTest {
     protected void setUp() {
         super.setUp();
         final @NotNull NodesOnDisk made = new NodesOnDisk(getProject());
-        final @NotNull TestProjectNode tp = made.testProject(root.resolve("NAFATH"));
-        final @NotNull TestSetNode login = made.testSet(tp.getTestCasesFolder(), "Login");
-        final @NotNull TestSetNode card = made.testSet(tp.getTestCasesFolder(), "Card");
+        final @NotNull TestProjectNode testProject = made.testProject(root.resolve("NAFATH"));
+        final @NotNull TestSetNode login = made.testSet(testProject.getTestCasesFolder(), "Login");
+        final @NotNull TestSetNode card = made.testSet(testProject.getTestCasesFolder(), "Card");
         urgent = aTestCase(login, Priority.HIGH, "a");
         later = aTestCase(login, Priority.LOW, "b");
         paid = aTestCase(card, Priority.LOW, "c");
 
-        final @NotNull CheckedTreeNode top = new CheckedTreeNode(tp.getTestCasesFolder());
+        final @NotNull CheckedTreeNode top = new CheckedTreeNode(testProject.getTestCasesFolder());
         top.add(holding(login, urgent, later));
         top.add(holding(card, paid));
-        filter = new TestRunFormFilter(getProject(), tp.getTestCasesFolder().getPath(), top);
+        filter = new TestRunFormFilter(getProject(), testProject.getTestCasesFolder().getPath(), top);
     }
 
     private @NotNull TestCaseDto aTestCase(final @NotNull TestSetNode testSet, final @NotNull Priority priority, final @NotNull String order) {

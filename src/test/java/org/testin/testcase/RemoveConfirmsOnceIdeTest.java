@@ -38,8 +38,8 @@ public class RemoveConfirmsOnceIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-PRODUCT-014
     public void testRemovingSeveralTestCasesConfirmsOnceInThePastTenseWithACount() {
-        final @NotNull TestProjectNode tp = EditorFixtures.testProject(getProject(), root);
-        final @NotNull TestSetNode login = EditorFixtures.testSet(getProject(), tp, "Login");
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        final @NotNull TestSetNode login = EditorFixtures.testSet(getProject(), testProject, "Login");
         final @NotNull List<TestCaseDto> testCases = EditorFixtures.testCases(getProject(), login, 4);
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), login, getTestRootDisposable());
         final @NotNull List<TestCaseDto> chosen = testCases.subList(0, 3);

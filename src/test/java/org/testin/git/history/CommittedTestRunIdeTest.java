@@ -63,7 +63,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
     private static final @NotNull String COMPLETED = "Cycle 4";
     private static final @NotNull String MESSAGE = "Step 4 reads Press Pay";
 
-    private Path testProject;
+    private Path testProjectPath;
     private Path testSet;
     private UUID id;
 
@@ -98,8 +98,8 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
     @Override
     protected void setUp() {
         super.setUp();
-        testProject = aTestProjectAt(root.resolve("Shop"));
-        testSet = marked(theTestCasesOf(testProject).resolve("Login"), NodeType.TS);
+        testProjectPath = aTestProjectAt(root.resolve("Shop"));
+        testSet = marked(theTestCasesOf(testProjectPath).resolve("Login"), NodeType.TS);
         id = aTestCaseIn(testSet);
     }
 
@@ -110,18 +110,18 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
     }
 
     private @NotNull Path aTestRun(final @NotNull String name, final @NotNull TestRunStatus status) {
-        final @NotNull Path testRun = theTestRunsOf(testProject).resolve(name);
+        final @NotNull Path testRun = theTestRunsOf(testProjectPath).resolve(name);
         write(testRun.resolve(NodeType.TR.getMarker()), aTestRunMarker(status));
         resultIn(testRun, FileKind.RUN_ITEM.fileName(id), id);
         return testRun;
     }
 
     private void committedAsItIs() {
-        mustGit(testProject, "init", "--initial-branch=main");
-        mustGit(testProject, "config", "user.name", "Sara");
-        mustGit(testProject, "config", "user.email", "sara@example.invalid");
-        mustGit(testProject, "add", "-A");
-        mustGit(testProject, "commit", "-q", "-m", "base");
+        mustGit(testProjectPath, "init", "--initial-branch=main");
+        mustGit(testProjectPath, "config", "user.name", "Sara");
+        mustGit(testProjectPath, "config", "user.email", "sara@example.invalid");
+        mustGit(testProjectPath, "add", "-A");
+        mustGit(testProjectPath, "commit", "-q", "-m", "base");
     }
 
     private void theTestCaseReads(final @NotNull String description) {
@@ -134,7 +134,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
     }
 
     private @NotNull String subject(final @NotNull String revision) {
-        return mustGit(testProject, "log", "-1", "--format=%s", revision).trim();
+        return mustGit(testProjectPath, "log", "-1", "--format=%s", revision).trim();
     }
 
     private @NotNull TestRuns indexedTestRuns() {
@@ -160,13 +160,13 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
     }
 
     private void reviewed(final @NotNull String message, final @NotNull Consumer<JComponent> button) {
-        final @NotNull JComponent review = ShareGestures.theReviewOf(getProject(), testProject);
+        final @NotNull JComponent review = ShareGestures.theReviewOf(getProject(), testProjectPath);
         ShareGestures.type(review, message);
         button.accept(review);
     }
 
     private boolean isTheSubjectOf(final @NotNull String revision, final @NotNull String message) {
-        return git(testProject, "log", "-1", "--format=%s", revision).map(String::trim).filter(message::equals).isPresent();
+        return git(testProjectPath, "log", "-1", "--format=%s", revision).map(String::trim).filter(message::equals).isPresent();
     }
 
     private void recordedAfter(final @NotNull Consumer<JComponent> button) {
@@ -188,8 +188,8 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
             throw new AssertionError("Could not make the remote: " + ex.getMessage(), ex);
         }
         mustGit(remote, "init", "--bare", "--initial-branch=main");
-        mustGit(testProject, "remote", "add", "origin", remote.toUri().toString());
-        mustGit(testProject, "push", "-q", "-u", "origin", "main");
+        mustGit(testProjectPath, "remote", "add", "origin", remote.toUri().toString());
+        mustGit(testProjectPath, "push", "-q", "-u", "origin", "main");
         return remote;
     }
 
@@ -201,13 +201,13 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
 
         committedWithTheReview();
 
-        final @NotNull String testersCommit = mustGit(testProject, "rev-parse", "HEAD^").trim();
+        final @NotNull String testersCommit = mustGit(testProjectPath, "rev-parse", "HEAD^").trim();
         assertEquals(Bundle.message("test.run.record.commit", COMPLETED), subject("HEAD"));
         assertEquals(MESSAGE, subject("HEAD^"));
         assertEquals(TestRunStatus.COMMITTED, theTestRunAt(completed).getMarker().getStatus());
         assertEquals(testersCommit, theTestRunAt(completed).getMarker().getCommit());
         assertTrue("the commit was not written into the .tr", read(completed.resolve(NodeType.TR.getMarker())).contains(testersCommit));
-        assertEquals("the .tr was left out of Testin's commit", "", mustGit(testProject, "status", "--porcelain").trim());
+        assertEquals("the .tr was left out of Testin's commit", "", mustGit(testProjectPath, "status", "--porcelain").trim());
         assertEquals("a test run that was not Completed changed", TestRunStatus.IN_PROGRESS, theTestRunAt(inProgress).getMarker().getStatus());
         assertEquals("", theTestRunAt(inProgress).getMarker().getCommit());
     }
@@ -260,7 +260,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
     }
 
     private @NotNull List<TestCaseHistoryCard> theHistoryOfTheDeletedTestCase() {
-        Services.getInstance(getProject(), BoundTestProject.class).choose(String.valueOf(testProject.getFileName()));
+        Services.getInstance(getProject(), BoundTestProject.class).choose(String.valueOf(testProjectPath.getFileName()));
         try {
             return ApplicationManager.getApplication().executeOnPooledThread(() -> TestCaseHistory.deletedFile(getProject(), id)
                     .map(file -> TestCaseHistory.read(getProject(), file, Optional.empty()).entries())
@@ -296,7 +296,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
     public void testTheHistoryOfATestCaseWhoseDeletionIsCommittedEndsWithTheCommitThatRemovedIt() {
         committedAsItIs();
         theTestCaseIsDeleted();
-        mustGit(testProject, "commit", "-q", "-am", "Remove the login test case");
+        mustGit(testProjectPath, "commit", "-q", "-am", "Remove the login test case");
 
         final @NotNull List<TestCaseHistoryCard> entries = theHistoryOfTheDeletedTestCase();
         assertEquals(List.of(TestCaseHistoryKind.REMOVED, TestCaseHistoryKind.CREATED), entries.stream().map(TestCaseHistoryCard::kind).toList());
@@ -325,7 +325,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
 
         recordedAfter(ShareGestures::commitAndPush);
 
-        final @NotNull String recorded = mustGit(testProject, "rev-parse", "HEAD").trim();
+        final @NotNull String recorded = mustGit(testProjectPath, "rev-parse", "HEAD").trim();
         Await.until("the two commits never reached the remote", () -> git(remote, "rev-parse", "main").map(String::trim).filter(recorded::equals).isPresent());
         assertEquals(MESSAGE, mustGit(remote, "log", "-1", "--format=%s", "main^").trim());
     }
@@ -339,7 +339,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
 
         committedWithTheReview();
 
-        final @NotNull String testersCommit = mustGit(testProject, "rev-parse", "HEAD^").trim();
+        final @NotNull String testersCommit = mustGit(testProjectPath, "rev-parse", "HEAD^").trim();
         assertEquals(testersCommit, theTestRunAt(first).getMarker().getCommit());
         assertEquals(testersCommit, theTestRunAt(second).getMarker().getCommit());
         assertTrue("one commit does not name both test runs: " + subject("HEAD"), subject("HEAD").contains(COMPLETED) && subject("HEAD").contains("Cycle 7"));
@@ -372,7 +372,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
         committedAsItIs();
         committedWithTheReview();
 
-        final @NotNull Path checkout = marked(theTestCasesOf(testProject).resolve("Checkout"), NodeType.TS);
+        final @NotNull Path checkout = marked(theTestCasesOf(testProjectPath).resolve("Checkout"), NodeType.TS);
         final @NotNull Path moved = checkout.resolve(FileKind.TEST_CASE.fileName(id));
         try {
             Files.move(testSet.resolve(FileKind.TEST_CASE.fileName(id)), moved);
@@ -392,7 +392,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
         final @NotNull Path completed = aTestRun(COMPLETED, TestRunStatus.COMPLETED);
         committedAsItIs();
         theTestCaseReads("Press Pay");
-        mustGit(testProject, "commit", "-q", "-am", "made by hand");
+        mustGit(testProjectPath, "commit", "-q", "-am", "made by hand");
         readEverything();
 
         assertEquals("a commit Testin did not make recorded a test run", TestRunStatus.COMPLETED, theTestRunAt(completed).getMarker().getStatus());
@@ -433,7 +433,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
     public void testEveryTestRunRecordedInOneCommitShowsItsOwnTestCasesFromIt() {
         final @NotNull Path first = aTestRun(COMPLETED, TestRunStatus.COMPLETED);
         final @NotNull UUID other = aTestCaseIn(testSet);
-        final @NotNull Path second = theTestRunsOf(testProject).resolve("Cycle 5");
+        final @NotNull Path second = theTestRunsOf(testProjectPath).resolve("Cycle 5");
         write(second.resolve(NodeType.TR.getMarker()), aTestRunMarker(TestRunStatus.COMPLETED));
         resultIn(second, FileKind.RUN_ITEM.fileName(other), other);
         committedAsItIs();
@@ -463,11 +463,11 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
         committedWithTheReview();
 
         final @NotNull String recorded = theTestRunAt(completed).getMarker().getCommit();
-        mustGit(testProject, "pull", "-q", "--rebase", "origin", "main");
-        git(testProject, "update-ref", "-d", "ORIG_HEAD");
-        mustGit(testProject, "reflog", "expire", "--expire=now", "--all");
-        mustGit(testProject, "gc", "-q", "--prune=now");
-        assertTrue("the rebase kept the recorded commit, so this test proves nothing", git(testProject, "cat-file", "-e", recorded + "^{commit}").isEmpty());
+        mustGit(testProjectPath, "pull", "-q", "--rebase", "origin", "main");
+        git(testProjectPath, "update-ref", "-d", "ORIG_HEAD");
+        mustGit(testProjectPath, "reflog", "expire", "--expire=now", "--all");
+        mustGit(testProjectPath, "gc", "-q", "--prune=now");
+        assertTrue("the rebase kept the recorded commit, so this test proves nothing", git(testProjectPath, "cat-file", "-e", recorded + "^{commit}").isEmpty());
         theTestCaseReads("Edited after the commit");
         readEverything();
 
@@ -478,7 +478,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
     public void testARecordCommitThatFailsSaysTheTestersCommitIsIn() {
         aTestRun(COMPLETED, TestRunStatus.COMPLETED);
         committedAsItIs();
-        write(testProject.resolve(".git/hooks/commit-msg"), """
+        write(testProjectPath.resolve(".git/hooks/commit-msg"), """
                 #!/bin/sh
                 grep -q 'Record test run' "$1" && exit 1
                 exit 0
@@ -546,7 +546,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
     // UC-INTERNAL-002, Rule-EDITOR-PANEL-239
     public void testACommittedTestRunShowsItsRecordAsSoonAsTheIndexIsReadWithoutOpeningIt() {
         committedAsItIs();
-        final @NotNull String commit = mustGit(testProject, "rev-parse", "HEAD").trim();
+        final @NotNull String commit = mustGit(testProjectPath, "rev-parse", "HEAD").trim();
         final @NotNull Path committed = aCommittedTestRunFrom(commit);
         theTestCaseReads("Press Pay now");
 
@@ -564,7 +564,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
         theTestCaseReads("Press Pay");
         readEverything();
 
-        final @NotNull JTable changes = ShareGestures.table(ShareGestures.theReviewOf(getProject(), testProject));
+        final @NotNull JTable changes = ShareGestures.table(ShareGestures.theReviewOf(getProject(), testProjectPath));
         changes.clearSelection();
 
         assertTrue("the marker was unticked", changes.getSelectedRowCount() > 0);
@@ -579,7 +579,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
         theTestCaseReads("Press Pay");
         readEverything();
 
-        final @NotNull JComponent review = ShareGestures.theReviewOf(getProject(), testProject);
+        final @NotNull JComponent review = ShareGestures.theReviewOf(getProject(), testProjectPath);
         ShareGestures.table(review).clearSelection();
         ShareGestures.type(review, MESSAGE);
         ShareGestures.commitOnly(review);
