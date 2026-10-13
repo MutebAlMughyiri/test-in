@@ -28,7 +28,7 @@ import org.testin.model.testrun.RunItems;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.services.Services;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -76,7 +76,7 @@ public final class GlobalSearch {
         if (tooShort(wanted)) return List.of();
 
         return Services.getInstance(project, TestCases.class).getAllTestCases().stream()
-                .filter(testCase -> TestSetEditorAttributes.anyContains(testCase, wanted))
+                .filter(testCase -> TestSetEditorFields.anyContains(testCase, wanted))
                 .toList();
     }
 

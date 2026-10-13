@@ -171,7 +171,7 @@ There is no key for this. The tab is called **History**.
    with its state on GitHub when there is one. Clicking the test run's name opens that test run
    with the run item selected; a test run no longer in the test project is gray,
    and its tooltip says so.
-6. **A changed bug** — each of the bug's own attributes, from what it was to
+6. **A changed bug** — each of the bug's own fields, from what it was to
    what it became. A run item change that touches no bug is not shown.
 7. **A cleared bug** — the bar is green, and the card says why: the run item is
    no longer Failed and has no link, or it was removed from its test run.

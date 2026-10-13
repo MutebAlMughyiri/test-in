@@ -109,7 +109,7 @@ public final class Badges {
     // Rule-VIEW-PANEL-086
     // Rule-EDITOR-PANEL-270, Rule-VIEW-PANEL-086
     public static void addDurationBadge(final @NotNull List<Badge> badges, final @NotNull String duration) {
-        if (!duration.isBlank()) badges.add(new Framed(duration, CLOCK, Bundle.message("attribute.run.item.duration")));
+        if (!duration.isBlank()) badges.add(new Framed(duration, CLOCK, Bundle.message("field.run.item.duration")));
     }
 
     // Rule-VIEW-PANEL-085

@@ -25,7 +25,7 @@ import org.testin.model.markers.TestRunMarker;
 import org.testin.model.testrun.TestRunConfiguration;
 import org.testin.model.testrun.RunItem;
 import org.testin.report.generators.ReportText;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.util.Display;
 
 import java.util.List;
@@ -36,12 +36,12 @@ public record BugFacts(@NotNull String title, @NotNull BugSeverity severity, @No
     // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-068
     public static @NotNull BugFacts of(final @NotNull RunItem runItem, final @NotNull TestCaseDto testCase, final @NotNull TestRunMarker testRunMarker, final @NotNull String testRun, final @NotNull List<byte[]> screenshots) {
         return new BugFacts(
-                TestSetEditorAttributes.DESCRIPTION.displayValue(testCase),
+                TestSetEditorFields.DESCRIPTION.displayValue(testCase),
                 runItem.getBugSeverity(),
                 runItem.getBugPriority(),
                 ReportText.joined(BugTemplate.SEPARATOR, TestRunConfiguration.PLATFORM.valueIn(testRunMarker), TestRunConfiguration.COMPONENT.valueIn(testRunMarker)),
                 runItem.getActualResult(),
-                TestSetEditorAttributes.EXPECTED_RESULT.displayValue(testCase),
+                TestSetEditorFields.EXPECTED_RESULT.displayValue(testCase),
                 testCase.getSteps().stream().map(Display::format).toList(),
                 testCase.getTestData(),
                 runItem.getStacktrace(),

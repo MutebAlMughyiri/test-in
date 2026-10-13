@@ -26,7 +26,7 @@ import org.testin.model.TestCaseDto;
 import org.testin.notifications.Refused;
 import org.testin.services.Services;
 import org.testin.testcase.Can;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.testcase.TestCaseSnapshot;
 import org.testin.undo.UndoScope;
 import org.testin.util.Bundle;
@@ -59,21 +59,21 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
         this.testCases = Services.getInstance(project, TestCases.class);
     }
 
-    private static @NotNull String quoted(final @NotNull String typed, final @NotNull TestSetEditorAttributes attribute) {
-        return Bundle.message("grid.refused.as", typed.trim(), attribute.getName());
+    private static @NotNull String quoted(final @NotNull String typed, final @NotNull TestSetEditorFields field) {
+        return Bundle.message("grid.refused.as", typed.trim(), field.getName());
     }
 
     @Override
     protected int columnCount() {
-        return TestSetEditorAttributes.COLUMNS.size();
+        return TestSetEditorFields.COLUMNS.size();
     }
 
     // UC-EDITOR-PANEL-008, Rule-EDITOR-PANEL-050
     @Override
     protected @NotNull GridEdit apply(final @NotNull DefaultTableModel model, final @NotNull TestCaseDto testCase, final int row, final int col) {
-        final @NotNull TestSetEditorAttributes attribute = TestSetEditorAttributes.atColumn(col);
+        final @NotNull TestSetEditorFields field = TestSetEditorFields.atColumn(col);
 
-        if (!attribute.can(Can.EDIT)) return GridEdit.UNCHANGED;
+        if (!field.can(Can.EDIT)) return GridEdit.UNCHANGED;
 
         final @NotNull Optional<Changed> pending = Optional.ofNullable(changedThisGesture.get(testCase.getId()));
         final @NotNull TestCaseSnapshot undoFrom = pending.map(Changed::before)
@@ -82,27 +82,27 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
 
         final @NotNull String typed = String.valueOf(model.getValueAt(row, col));
 
-        final @NotNull Object before = attribute.gridValue(current);
-        final @NotNull Optional<TestCaseDto> took = attribute.getImportSetter().execute(project, current, typed);
-        final @NotNull Object after = attribute.gridValue(took.orElse(current));
+        final @NotNull Object before = field.gridValue(current);
+        final @NotNull Optional<TestCaseDto> took = field.getImportSetter().execute(project, current, typed);
+        final @NotNull Object after = field.gridValue(took.orElse(current));
 
         model.setValueAt(after, row, col);
 
         // Rule-EDITOR-PANEL-206
         if (took.isEmpty()) {
-            notifier.softRefuse(project, Refused.UNREADABLE, quoted(typed, attribute));
+            notifier.softRefuse(project, Refused.UNREADABLE, quoted(typed, field));
             return GridEdit.REFUSED;
         }
 
         if (Objects.equals(before, after)) return GridEdit.UNCHANGED;
 
-        persistAndGenerate(took.orElseThrow(), attribute, undoFrom);
+        persistAndGenerate(took.orElseThrow(), field, undoFrom);
 
         return GridEdit.WROTE;
     }
 
     // UC-EDITOR-PANEL-008, Rule-EDITOR-PANEL-053
-    private void persistAndGenerate(final @NotNull TestCaseDto edited, final @NotNull TestSetEditorAttributes attribute, final @NotNull TestCaseSnapshot undoFrom) {
+    private void persistAndGenerate(final @NotNull TestCaseDto edited, final @NotNull TestSetEditorFields field, final @NotNull TestCaseSnapshot undoFrom) {
         if (testSetPath.toString().isEmpty()) {
             TestinLogger.warn("[grid] edit not persisted - the editor has no test set path");
             return;
@@ -112,7 +112,7 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
         final @NotNull Set<GenType<TestCaseDto>> generators = Optional.ofNullable(changedThisGesture.get(edited.getId()))
                 .map(Changed::generators)
                 .orElseGet(LinkedHashSet::new);
-        generators.add(attribute.getGenType());
+        generators.add(field.getGenType());
         changedThisGesture.put(edited.getId(), new Changed(edited, undoFrom, generators));
 
         if (first) ApplicationManager.getApplication().invokeLater(this::saveTheGesture);

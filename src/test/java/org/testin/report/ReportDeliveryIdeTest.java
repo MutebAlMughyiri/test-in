@@ -63,7 +63,7 @@ import org.testin.model.status.RunItemStatus;
 import org.testin.services.Services;
 import org.testin.setting.AppSettingsState;
 import org.testin.testproject.BoundTestProject;
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testrun.TestRunEditorFields;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.util.Bundle;
 
@@ -403,7 +403,7 @@ public class ReportDeliveryIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull List<Float> pdfColumnWidths(final byte @NotNull [] pdf) {
-        final @NotNull String severity = TestRunEditorAttributes.BUG_SEVERITY.getName();
+        final @NotNull String severity = TestRunEditorFields.BUG_SEVERITY.getName();
         try (PdfDocument document = new PdfDocument(new PdfReader(new ByteArrayInputStream(pdf)))) {
             for (int page = 1; page <= document.getNumberOfPages(); page++) {
                 final @NotNull List<TextRenderInfo> chunks = chunksOf(document, page);

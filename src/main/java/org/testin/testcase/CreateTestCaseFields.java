@@ -39,7 +39,7 @@ import static org.testin.testcase.TestCaseDialogKey.NAVIGATE_TAB;
 @Getter
 public enum CreateTestCaseFields implements StatusBarItem {
     DESCRIPTION(
-            TestSetEditorAttributes.DESCRIPTION.getName(),
+            TestSetEditorFields.DESCRIPTION.getName(),
             Shortcuts.CreateTestCaseDescription,
             Icons.fieldLetter("D", Icons.GRAY),
             AbstractTestCaseDialog::getDescriptionSection,
@@ -48,7 +48,7 @@ public enum CreateTestCaseFields implements StatusBarItem {
     ),
 
     EXPECTED_RESULT(
-            TestSetEditorAttributes.EXPECTED_RESULT.getName(),
+            TestSetEditorFields.EXPECTED_RESULT.getName(),
             Shortcuts.CreateTestCaseExpectedResult,
             Icons.fieldLetter("E", Icons.GRAY),
             AbstractTestCaseDialog::getExpectedResultSection,
@@ -57,7 +57,7 @@ public enum CreateTestCaseFields implements StatusBarItem {
     ),
 
     MODULE(
-            TestSetEditorAttributes.MODULE.getName(),
+            TestSetEditorFields.MODULE.getName(),
             Shortcuts.CreateTestCaseModule,
             Icons.fieldLetter("M", Icons.GRAY),
             AbstractTestCaseDialog::getModuleSection,
@@ -66,7 +66,7 @@ public enum CreateTestCaseFields implements StatusBarItem {
     ),
 
     TEST_DATA(
-            TestSetEditorAttributes.TEST_DATA.getName(),
+            TestSetEditorFields.TEST_DATA.getName(),
             Shortcuts.CreateTestCaseTestData,
             Icons.fieldLetter("T", Icons.GRAY),
             AbstractTestCaseDialog::getTestDataSection,
@@ -75,7 +75,7 @@ public enum CreateTestCaseFields implements StatusBarItem {
     ),
 
     PRE_CONDITIONS(
-            TestSetEditorAttributes.PRE_CONDITIONS.getName(),
+            TestSetEditorFields.PRE_CONDITIONS.getName(),
             Shortcuts.CreateTestCasePreConditions,
             Icons.fieldLetter("B", Icons.GRAY),
             AbstractTestCaseDialog::getPreConditionsSection,
@@ -84,7 +84,7 @@ public enum CreateTestCaseFields implements StatusBarItem {
     ),
 
     STEPS(
-            TestSetEditorAttributes.STEPS.getName(),
+            TestSetEditorFields.STEPS.getName(),
             Shortcuts.CreateTestCaseSteps,
             Icons.fieldLetter("S", Icons.GRAY),
             AbstractTestCaseDialog::getStepsSection,
@@ -93,7 +93,7 @@ public enum CreateTestCaseFields implements StatusBarItem {
     ),
 
     PRIORITY(
-            TestSetEditorAttributes.PRIORITY.getName(),
+            TestSetEditorFields.PRIORITY.getName(),
             Shortcuts.CreateTestCasePriority,
             Icons.fieldLetter("P", Icons.GRAY),
             AbstractTestCaseDialog::getPrioritySection,
@@ -102,7 +102,7 @@ public enum CreateTestCaseFields implements StatusBarItem {
     ),
 
     GROUP(
-            TestSetEditorAttributes.GROUP.getName(),
+            TestSetEditorFields.GROUP.getName(),
             Shortcuts.CreateTestCaseGroup,
             Icons.fieldLetter("G", Icons.GRAY),
             AbstractTestCaseDialog::getGroupSection,
@@ -111,7 +111,7 @@ public enum CreateTestCaseFields implements StatusBarItem {
     ),
 
     REFERENCE(
-            TestSetEditorAttributes.REFERENCE.getName(),
+            TestSetEditorFields.REFERENCE.getName(),
             Shortcuts.CreateTestCaseReference,
             Icons.fieldLetter("R", Icons.GRAY),
             AbstractTestCaseDialog::getReferenceSection,

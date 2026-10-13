@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.importexport.FileFormat;
 import org.testin.importexport.shared.PreviewLoader;
 import org.testin.model.TestCaseDto;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.ui.dialogs.CollapsiblePanel;
 import org.testin.ui.dialogs.FormRows;
 import org.testin.ui.framework.DialogComponent;
@@ -43,9 +43,9 @@ public final class SourceSection implements DialogComponent {
     private final @NotNull JComponent panel;
 
     // UC-SHARE-005, Rule-INTERNAL-099
-    public SourceSection(final @NotNull Project project, final @NotNull List<TestSetEditorAttributes> importAttributes, final @NotNull BiFunction<File, FileFormat, Map<String, List<TestCaseDto>>> importLoader, final @NotNull Consumer<@NotNull Map<String, List<TestCaseDto>>> onDataLoaded) {
+    public SourceSection(final @NotNull Project project, final @NotNull List<TestSetEditorFields> importFields, final @NotNull BiFunction<File, FileFormat, Map<String, List<TestCaseDto>>> importLoader, final @NotNull Consumer<@NotNull Map<String, List<TestCaseDto>>> onDataLoaded) {
         source = SourceFileField.of(project);
-        hint = FileTypeHint.of(importAttributes);
+        hint = FileTypeHint.of(importFields);
 
         final @NotNull PreviewLoader preview = new PreviewLoader(source.field(), project, hint::showStatus, (format, parsedData) -> {
             hint.showFor(format);

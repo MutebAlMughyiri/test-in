@@ -28,8 +28,8 @@ import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.testcase.TestCaseOrder;
-import org.testin.testcase.TestSetEditorAttributes;
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
+import org.testin.testrun.TestRunEditorFields;
 import org.testin.ui.FontSync;
 import org.testin.util.Bundle;
 import org.testin.util.Display;
@@ -60,23 +60,23 @@ public class DetailsTab {
 
         return Band.of(Bundle.message("details.band.run"), List.of(
                 new RunItemSummary(runItem, treePath, showExecution),
-                new AttributeRow(TestRunEditorAttributes.ACTUAL_RESULT.getName(), (_, _) -> shown.getActualResult()),
+                new FieldRow(TestRunEditorFields.ACTUAL_RESULT.getName(), (_, _) -> shown.getActualResult()),
                 new StacktraceLine(shown, treePath),
-                new AttributeRow(TestRunEditorAttributes.EXECUTED_BY.getName(), (_, _) -> Display.whoAndWhen(shown.getExecutedBy(), shown.getExecutedAt()))));
+                new FieldRow(TestRunEditorFields.EXECUTED_BY.getName(), (_, _) -> Display.whoAndWhen(shown.getExecutedBy(), shown.getExecutedAt()))));
     }
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-087, Rule-VIEW-PANEL-103
     private static @NotNull List<AbstractDetails> testCaseFields() {
         return List.of(
-                new AttributeRow(TestSetEditorAttributes.EXPECTED_RESULT.getName(), (_, testCase) -> TestSetEditorAttributes.EXPECTED_RESULT.displayValue(testCase)),
+                new FieldRow(TestSetEditorFields.EXPECTED_RESULT.getName(), (_, testCase) -> TestSetEditorFields.EXPECTED_RESULT.displayValue(testCase)),
                 new Steps(),
-                new AttributeRow(TestSetEditorAttributes.PRE_CONDITIONS.getName(), (_, testCase) -> TestSetEditorAttributes.PRE_CONDITIONS.displayValue(testCase)),
-                new AttributeRow(TestSetEditorAttributes.TEST_DATA.getName(), (_, testCase) -> TestSetEditorAttributes.TEST_DATA.displayValue(testCase)),
-                new AttributeRow(TestSetEditorAttributes.REFERENCE.getName(), (_, testCase) -> TestSetEditorAttributes.REFERENCE.displayValue(testCase)),
-                new AttributeRow(TestSetEditorAttributes.MODULE.getName(), (_, testCase) -> TestSetEditorAttributes.MODULE.displayValue(testCase)),
-                new AttributeRow(TestSetEditorAttributes.ORDER.getName(), (project, testCase) -> TestCaseOrder.placeText(ExecutionPosition.placesOf(project, List.of(testCase)).getOrDefault(testCase.getId(), 0))),
-                new AttributeRow(Bundle.message("details.created"), (_, testCase) -> Display.whoAndWhen(testCase.getCreatedBy(), testCase.getCreatedAt())),
-                new AttributeRow(Bundle.message("details.updated"), (_, testCase) -> Display.whoAndWhen(testCase.getUpdatedBy(), testCase.getUpdatedAt())));
+                new FieldRow(TestSetEditorFields.PRE_CONDITIONS.getName(), (_, testCase) -> TestSetEditorFields.PRE_CONDITIONS.displayValue(testCase)),
+                new FieldRow(TestSetEditorFields.TEST_DATA.getName(), (_, testCase) -> TestSetEditorFields.TEST_DATA.displayValue(testCase)),
+                new FieldRow(TestSetEditorFields.REFERENCE.getName(), (_, testCase) -> TestSetEditorFields.REFERENCE.displayValue(testCase)),
+                new FieldRow(TestSetEditorFields.MODULE.getName(), (_, testCase) -> TestSetEditorFields.MODULE.displayValue(testCase)),
+                new FieldRow(TestSetEditorFields.ORDER.getName(), (project, testCase) -> TestCaseOrder.placeText(ExecutionPosition.placesOf(project, List.of(testCase)).getOrDefault(testCase.getId(), 0))),
+                new FieldRow(Bundle.message("details.created"), (_, testCase) -> Display.whoAndWhen(testCase.getCreatedBy(), testCase.getCreatedAt())),
+                new FieldRow(Bundle.message("details.updated"), (_, testCase) -> Display.whoAndWhen(testCase.getUpdatedBy(), testCase.getUpdatedAt())));
     }
 
     // UC-VIEW-PANEL-004

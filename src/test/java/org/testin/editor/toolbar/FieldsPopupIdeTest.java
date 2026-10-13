@@ -22,7 +22,7 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.ui.CheckBoxList;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.ShownFields;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -34,19 +34,19 @@ public class FieldsPopupIdeTest extends BasePlatformTestCase {
 
     private @NotNull String chosenBefore = "";
 
-    private static int indexOf(final @NotNull CheckBoxList<TestSetEditorAttributes> fields, final @NotNull TestSetEditorAttributes field) {
+    private static int indexOf(final @NotNull CheckBoxList<TestSetEditorFields> fields, final @NotNull TestSetEditorFields field) {
         for (int i = 0; i < fields.getModel().getSize(); i++)
             if (fields.getItemAt(i) == field) return i;
         throw new AssertionError(field.getName() + " is not on the list");
     }
 
-    private static void drawn(final @NotNull CheckBoxList<TestSetEditorAttributes> fields) {
+    private static void drawn(final @NotNull CheckBoxList<TestSetEditorFields> fields) {
         fields.setSize(300, 800);
         for (int i = 0; i < fields.getModel().getSize(); i++)
             fields.getCellRenderer().getListCellRendererComponent(fields, fields.getModel().getElementAt(i), i, false, false);
     }
 
-    private static void spaceOn(final @NotNull CheckBoxList<TestSetEditorAttributes> fields, final @NotNull TestSetEditorAttributes field) {
+    private static void spaceOn(final @NotNull CheckBoxList<TestSetEditorFields> fields, final @NotNull TestSetEditorFields field) {
         fields.setSelectedIndex(indexOf(fields, field));
         final @NotNull KeyEvent space = new KeyEvent(fields, KeyEvent.KEY_TYPED, System.currentTimeMillis(), 0, KeyEvent.VK_UNDEFINED, ' ');
         for (final KeyListener listener : fields.getKeyListeners()) listener.keyTyped(space);
@@ -78,54 +78,54 @@ public class FieldsPopupIdeTest extends BasePlatformTestCase {
     public void testDescriptionIsAlwaysShownOrderCanBeSwitchedOffAndIdOn() {
         final @NotNull TestSetFieldsPopupBtn button = new TestSetFieldsPopupBtn(() -> {
         });
-        final @NotNull CheckBoxList<TestSetEditorAttributes> fields = button.fieldList(() -> {
+        final @NotNull CheckBoxList<TestSetEditorFields> fields = button.fieldList(() -> {
         });
         drawn(fields);
 
-        assertFalse("ID is shown before anyone switched it on", button.getSelectedDetails().contains(TestSetEditorAttributes.ID));
-        assertTrue("Order is not on to start with", button.getSelectedDetails().contains(TestSetEditorAttributes.ORDER));
+        assertFalse("ID is shown before anyone switched it on", button.getSelectedDetails().contains(TestSetEditorFields.ID));
+        assertTrue("Order is not on to start with", button.getSelectedDetails().contains(TestSetEditorFields.ORDER));
 
-        spaceOn(fields, TestSetEditorAttributes.ORDER);
-        spaceOn(fields, TestSetEditorAttributes.DESCRIPTION);
-        spaceOn(fields, TestSetEditorAttributes.ID);
+        spaceOn(fields, TestSetEditorFields.ORDER);
+        spaceOn(fields, TestSetEditorFields.DESCRIPTION);
+        spaceOn(fields, TestSetEditorFields.ID);
 
-        assertFalse("Order could not be switched off", button.getSelectedDetails().contains(TestSetEditorAttributes.ORDER));
-        assertTrue("Description could be switched off", fields.isItemSelected(TestSetEditorAttributes.DESCRIPTION) && button.getSelectedDetails().contains(TestSetEditorAttributes.DESCRIPTION));
-        assertTrue("ID could not be switched on", button.getSelectedDetails().contains(TestSetEditorAttributes.ID));
+        assertFalse("Order could not be switched off", button.getSelectedDetails().contains(TestSetEditorFields.ORDER));
+        assertTrue("Description could be switched off", fields.isItemSelected(TestSetEditorFields.DESCRIPTION) && button.getSelectedDetails().contains(TestSetEditorFields.DESCRIPTION));
+        assertTrue("ID could not be switched on", button.getSelectedDetails().contains(TestSetEditorFields.ID));
 
-        ShownFields.write(ShownFields.IN_TEST_SETS, EnumSet.of(TestSetEditorAttributes.ID));
-        assertTrue("a remembered choice without Description hid it", ShownFields.read(ShownFields.IN_TEST_SETS, TestSetEditorAttributes.class).contains(TestSetEditorAttributes.DESCRIPTION));
-        assertFalse("a remembered choice without Order brought it back", ShownFields.read(ShownFields.IN_TEST_SETS, TestSetEditorAttributes.class).contains(TestSetEditorAttributes.ORDER));
+        ShownFields.write(ShownFields.IN_TEST_SETS, EnumSet.of(TestSetEditorFields.ID));
+        assertTrue("a remembered choice without Description hid it", ShownFields.read(ShownFields.IN_TEST_SETS, TestSetEditorFields.class).contains(TestSetEditorFields.DESCRIPTION));
+        assertFalse("a remembered choice without Order brought it back", ShownFields.read(ShownFields.IN_TEST_SETS, TestSetEditorFields.class).contains(TestSetEditorFields.ORDER));
     }
 
     // Rule-EDITOR-PANEL-272
     public void testTheGridNumberIsNotAFieldToChoose() {
-        final @NotNull CheckBoxList<TestSetEditorAttributes> fields = new TestSetFieldsPopupBtn(() -> {
+        final @NotNull CheckBoxList<TestSetEditorFields> fields = new TestSetFieldsPopupBtn(() -> {
         }).fieldList(() -> {
         });
 
         for (int i = 0; i < fields.getItemsCount(); i++) {
-            assertNotSame("Choose Fields lists the grid's # column", TestSetEditorAttributes.SEQUENCE, fields.getItemAt(i));
+            assertNotSame("Choose Fields lists the grid's # column", TestSetEditorFields.SEQUENCE, fields.getItemAt(i));
         }
-        assertTrue("a remembered choice could hide the grid's # column", ShownFields.read(ShownFields.IN_TEST_SETS, TestSetEditorAttributes.class).contains(TestSetEditorAttributes.SEQUENCE));
+        assertTrue("a remembered choice could hide the grid's # column", ShownFields.read(ShownFields.IN_TEST_SETS, TestSetEditorFields.class).contains(TestSetEditorFields.SEQUENCE));
     }
 
     // Rule-EDITOR-PANEL-024
     public void testABurstOfTicksCostsOneRedraw() {
         final @NotNull AtomicInteger redraws = new AtomicInteger();
         final @NotNull TestSetFieldsPopupBtn button = new TestSetFieldsPopupBtn(redraws::incrementAndGet);
-        final @NotNull CheckBoxList<TestSetEditorAttributes> fields = button.fieldList(redraws::incrementAndGet);
+        final @NotNull CheckBoxList<TestSetEditorFields> fields = button.fieldList(redraws::incrementAndGet);
         drawn(fields);
 
-        spaceOn(fields, TestSetEditorAttributes.STEPS);
-        spaceOn(fields, TestSetEditorAttributes.MODULE);
-        spaceOn(fields, TestSetEditorAttributes.TEST_DATA);
+        spaceOn(fields, TestSetEditorFields.STEPS);
+        spaceOn(fields, TestSetEditorFields.MODULE);
+        spaceOn(fields, TestSetEditorFields.TEST_DATA);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
-        assertTrue("the ticks were not taken", button.getSelectedDetails().containsAll(EnumSet.of(TestSetEditorAttributes.STEPS, TestSetEditorAttributes.MODULE, TestSetEditorAttributes.TEST_DATA)));
+        assertTrue("the ticks were not taken", button.getSelectedDetails().containsAll(EnumSet.of(TestSetEditorFields.STEPS, TestSetEditorFields.MODULE, TestSetEditorFields.TEST_DATA)));
         assertEquals("a burst of three ticks did not cost exactly one redraw", 1, redraws.get());
 
-        spaceOn(fields, TestSetEditorAttributes.REFERENCE);
+        spaceOn(fields, TestSetEditorFields.REFERENCE);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
         assertEquals("a tick after the burst was drawn did not redraw", 2, redraws.get());
     }

@@ -24,8 +24,8 @@ import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.open.EditorKind;
 import org.testin.testcase.Can;
-import org.testin.testcase.TestSetEditorAttributes;
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
+import org.testin.testrun.TestRunEditorFields;
 import org.testin.util.Shortcuts;
 
 import javax.swing.Action;
@@ -51,20 +51,20 @@ public class GridIdeTest extends BasePlatformTestCase {
     private static final int EXPECTED = 4;
     private static final int ID = 3;
 
-    private static final @NotNull String DESCRIPTION_WIDTH = EditorKind.TEST_SET.columnWidthKey(TestSetEditorAttributes.DESCRIPTION.getName());
+    private static final @NotNull String DESCRIPTION_WIDTH = EditorKind.TEST_SET.columnWidthKey(TestSetEditorFields.DESCRIPTION.getName());
 
     private static String @NotNull [] aRow(final int order, final @NotNull String description, final @NotNull String expected, final @NotNull String testCaseId) {
-        final String[] row = new String[TestSetEditorAttributes.values().length];
+        final String[] row = new String[TestSetEditorFields.values().length];
         Arrays.fill(row, "");
-        row[TestSetEditorAttributes.ORDER.column()] = String.valueOf(order);
-        row[TestSetEditorAttributes.DESCRIPTION.column()] = description;
-        row[TestSetEditorAttributes.EXPECTED_RESULT.column()] = expected;
-        row[TestSetEditorAttributes.ID.column()] = testCaseId;
+        row[TestSetEditorFields.ORDER.column()] = String.valueOf(order);
+        row[TestSetEditorFields.DESCRIPTION.column()] = description;
+        row[TestSetEditorFields.EXPECTED_RESULT.column()] = expected;
+        row[TestSetEditorFields.ID.column()] = testCaseId;
         return row;
     }
 
     private static @NotNull JBTable aGrid(final String @NotNull []... rows) {
-        return new GridTables().buildTestTable(List.of(rows), EnumSet.of(TestSetEditorAttributes.SEQUENCE, TestSetEditorAttributes.ORDER, TestSetEditorAttributes.DESCRIPTION, TestSetEditorAttributes.EXPECTED_RESULT, TestSetEditorAttributes.ID));
+        return new GridTables().buildTestTable(List.of(rows), EnumSet.of(TestSetEditorFields.SEQUENCE, TestSetEditorFields.ORDER, TestSetEditorFields.DESCRIPTION, TestSetEditorFields.EXPECTED_RESULT, TestSetEditorFields.ID));
     }
 
     private static @NotNull JBTable twoRows() {
@@ -146,7 +146,7 @@ public class GridIdeTest extends BasePlatformTestCase {
         }
 
         final int expectedBesideTheDescription = 3;
-        final @NotNull JBTable fresh = new GridTables().buildTestTable(List.of(aRow(1, "Log in", "", "id-1"), aRow(2, "Log out", "", "id-2")), EnumSet.of(TestSetEditorAttributes.SEQUENCE, TestSetEditorAttributes.ORDER, TestSetEditorAttributes.DESCRIPTION, TestSetEditorAttributes.EXPECTED_RESULT));
+        final @NotNull JBTable fresh = new GridTables().buildTestTable(List.of(aRow(1, "Log in", "", "id-1"), aRow(2, "Log out", "", "id-2")), EnumSet.of(TestSetEditorFields.SEQUENCE, TestSetEditorFields.ORDER, TestSetEditorFields.DESCRIPTION, TestSetEditorFields.EXPECTED_RESULT));
         selectDownTo(fresh, 0, DESCRIPTION);
         onClipboard("A\tB\nC\tD");
 
@@ -179,21 +179,21 @@ public class GridIdeTest extends BasePlatformTestCase {
 
     // Rule-EDITOR-PANEL-047
     public void testOnlyTheColumnsThatCanBeTypedIntoEverOpen() {
-        final @NotNull JBTable table = new GridTables().buildTestTable(List.<String[]>of(aRow(1, "Log in", "The dashboard opens", "id-1")), EnumSet.allOf(TestSetEditorAttributes.class));
+        final @NotNull JBTable table = new GridTables().buildTestTable(List.<String[]>of(aRow(1, "Log in", "The dashboard opens", "id-1")), EnumSet.allOf(TestSetEditorFields.class));
 
         for (int column = 0; column < table.getColumnCount(); column++) {
-            final @NotNull TestSetEditorAttributes attribute = TestSetEditorAttributes.atColumn(table.convertColumnIndexToModel(column));
-            assertEquals(attribute.getName() + " opens for typing or does not as it should", attribute.can(Can.EDIT), table.editCellAt(0, column));
+            final @NotNull TestSetEditorFields field = TestSetEditorFields.atColumn(table.convertColumnIndexToModel(column));
+            assertEquals(field.getName() + " opens for typing or does not as it should", field.can(Can.EDIT), table.editCellAt(0, column));
             if (table.isEditing()) table.getCellEditor().cancelCellEditing();
         }
 
-        final @NotNull List<String[]> runRow = List.<String[]>of(new String[TestRunEditorAttributes.values().length]);
-        final @NotNull JBTable open = new GridTables().buildTestRunTable(runRow, EnumSet.allOf(TestRunEditorAttributes.class), () -> true);
-        final @NotNull JBTable closed = new GridTables().buildTestRunTable(runRow, EnumSet.allOf(TestRunEditorAttributes.class), () -> false);
+        final @NotNull List<String[]> runRow = List.<String[]>of(new String[TestRunEditorFields.values().length]);
+        final @NotNull JBTable open = new GridTables().buildTestRunTable(runRow, EnumSet.allOf(TestRunEditorFields.class), () -> true);
+        final @NotNull JBTable closed = new GridTables().buildTestRunTable(runRow, EnumSet.allOf(TestRunEditorFields.class), () -> false);
         for (int column = 0; column < open.getColumnCount(); column++) {
-            final @NotNull TestRunEditorAttributes attribute = TestRunEditorAttributes.atColumn(open.convertColumnIndexToModel(column));
-            assertEquals(attribute.getName() + " in an open test run", attribute.isEdited(), open.isCellEditable(0, column));
-            assertFalse(attribute.getName() + " opens in a test run that is closed", closed.isCellEditable(0, column));
+            final @NotNull TestRunEditorFields field = TestRunEditorFields.atColumn(open.convertColumnIndexToModel(column));
+            assertEquals(field.getName() + " in an open test run", field.isEdited(), open.isCellEditable(0, column));
+            assertFalse(field.getName() + " opens in a test run that is closed", closed.isCellEditable(0, column));
         }
     }
 

@@ -40,7 +40,7 @@ import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.RunItem;
 import org.testin.services.Services;
 import org.testin.testcase.UpdateTestCaseFields;
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testrun.TestRunEditorFields;
 import org.testin.ui.Badge;
 import org.testin.ui.Badges;
 import org.testin.ui.Pill;
@@ -171,7 +171,7 @@ final class HistoryCardPanel {
     // Rule-VIEW-PANEL-105, Rule-VIEW-PANEL-108
     private static @NotNull List<JComponent> bugRows(final @NotNull Project project, final @NotNull BugEvent event) {
         return switch (event.kind()) {
-            case RECORDED -> bugAttributes(project, event.runItem());
+            case RECORDED -> bugFields(project, event.runItem());
             case CHANGED -> event.changes().stream().map(HistoryCardPanel::line).toList();
             case CLEARED ->
                     List.of(field(Bundle.message("view.history.bug.because"), plain(Bundle.message("view.history.bug.cleared.why", event.runItem().getStatus().getLabel()))));
@@ -180,13 +180,13 @@ final class HistoryCardPanel {
         };
     }
 
-    private static @NotNull List<JComponent> bugAttributes(final @NotNull Project project, final @NotNull RunItem runItem) {
+    private static @NotNull List<JComponent> bugFields(final @NotNull Project project, final @NotNull RunItem runItem) {
         final @NotNull List<JComponent> rows = new ArrayList<>();
         if (runItem.isFailed()) {
-            rows.add(field(TestRunEditorAttributes.BUG_SEVERITY.getName(), text(runItem.getBugSeverity().getLabel(), Fonts.body(), runItem.getBugSeverity().getColor())));
-            rows.add(field(TestRunEditorAttributes.BUG_PRIORITY.getName(), plain(runItem.getBugPriority().getLabel())));
+            rows.add(field(TestRunEditorFields.BUG_SEVERITY.getName(), text(runItem.getBugSeverity().getLabel(), Fonts.body(), runItem.getBugSeverity().getColor())));
+            rows.add(field(TestRunEditorFields.BUG_PRIORITY.getName(), plain(runItem.getBugPriority().getLabel())));
         }
-        runItem.bugIssue().ifPresent(url -> rows.add(field(TestRunEditorAttributes.BUG_ISSUE.getName(), BugIssueLink.of(project, url))));
+        runItem.bugIssue().ifPresent(url -> rows.add(field(TestRunEditorFields.BUG_ISSUE.getName(), BugIssueLink.of(project, url))));
         return rows;
     }
 

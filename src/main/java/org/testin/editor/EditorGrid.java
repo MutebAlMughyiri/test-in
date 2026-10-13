@@ -31,7 +31,7 @@ import org.testin.editor.grid.GridView;
 import org.testin.editor.statusbar.PageAction;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
-import org.testin.model.ShowableAttribute;
+import org.testin.model.ShowableField;
 import org.testin.open.OpenContextMenuAction;
 import org.testin.ui.FontSync;
 import org.testin.util.Bundle;
@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-final class EditorGrid<A extends Enum<A> & ShowableAttribute> {
+final class EditorGrid<A extends Enum<A> & ShowableField> {
     private final @NotNull AbstractTestinEditor<A, ?> editor;
     private final @NotNull List<TestCaseDto> rowsOnGrid = new ArrayList<>();
     private @NotNull Optional<GridView> view = Optional.empty();
@@ -84,11 +84,11 @@ final class EditorGrid<A extends Enum<A> & ShowableAttribute> {
         final boolean keepKeyboard = view.map(GridView::handOver).orElse(false);
 
         final @NotNull List<TestCaseDto> pageTestCases = showOnGrid(editor.getCurrentPageItems());
-        final @NotNull Set<A> attributes = editor.getSelectedDetails();
-        TestinLogger.debug("[grid] rebuildGrid start, pageItems=" + pageTestCases.size() + ", details=" + attributes);
+        final @NotNull Set<A> fields = editor.getSelectedDetails();
+        TestinLogger.debug("[grid] rebuildGrid start, pageItems=" + pageTestCases.size() + ", details=" + fields);
         final @NotNull Disposable fontSync = Disposer.newDisposable(editor.projectDisposable, "testin." + editor.getClass().getSimpleName() + ".gridFontSync");
         try {
-            final @NotNull JBTable table = editor.buildTable(editor.gridRows(pageTestCases), attributes);
+            final @NotNull JBTable table = editor.buildTable(editor.gridRows(pageTestCases), fields);
             FontSync.syncWithNativeEditor(editor.project, table, fontSync, _ -> GridTables.resizeToFont(table));
 
             table.getSelectionModel().addListSelectionListener(new GridSelectionListener(editor, table, editor.list, pageTestCases));

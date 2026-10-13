@@ -22,8 +22,8 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.model.DateFormats;
 import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.RunItem;
-import org.testin.testcase.TestSetEditorAttributes;
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
+import org.testin.testrun.TestRunEditorFields;
 import org.testin.util.Bundle;
 
 import java.time.Duration;
@@ -40,49 +40,49 @@ import java.util.function.Predicate;
 @AllArgsConstructor
 public enum SortField {
     ORDER(
-            TestSetEditorAttributes.ORDER.getName(),
+            TestSetEditorFields.ORDER.getName(),
             false,
             Comparator.comparingInt(_ -> 0),
             _ -> false
     ),
 
     DESCRIPTION(
-            TestSetEditorAttributes.DESCRIPTION.getName(),
+            TestSetEditorFields.DESCRIPTION.getName(),
             false,
             Comparator.comparing((SortedTestCase shown) -> shown.testCase().getDescription(), String.CASE_INSENSITIVE_ORDER),
             shown -> shown.testCase().getDescription().isBlank()
     ),
 
     PRIORITY(
-            TestSetEditorAttributes.PRIORITY.getName(),
+            TestSetEditorFields.PRIORITY.getName(),
             false,
             Comparator.comparing((SortedTestCase shown) -> shown.testCase().getPriority()).reversed(),
             _ -> false
     ),
 
     STATUS(
-            TestSetEditorAttributes.STATUS.getName(),
+            TestSetEditorFields.STATUS.getName(),
             false,
             Comparator.comparing((SortedTestCase shown) -> shown.testCase().getStatus()),
             _ -> false
     ),
 
     MODULE(
-            TestSetEditorAttributes.MODULE.getName(),
+            TestSetEditorFields.MODULE.getName(),
             false,
             Comparator.comparing((SortedTestCase shown) -> shown.testCase().getModule(), String.CASE_INSENSITIVE_ORDER),
             shown -> shown.testCase().getModule().isBlank()
     ),
 
     CREATED_AT(
-            TestSetEditorAttributes.CREATED_AT.getName(),
+            TestSetEditorFields.CREATED_AT.getName(),
             false,
             Comparator.comparing((SortedTestCase shown) -> shown.testCase().getCreatedAt()),
             _ -> false
     ),
 
     UPDATED_AT(
-            TestSetEditorAttributes.UPDATED_AT.getName(),
+            TestSetEditorFields.UPDATED_AT.getName(),
             false,
             Comparator.comparing((SortedTestCase shown) -> shown.testCase().getUpdatedAt()),
             shown -> shown.testCase().getUpdatedAt().equals(DateFormats.NOT_EXECUTED)
@@ -96,14 +96,14 @@ public enum SortField {
     ),
 
     EXECUTED_AT(
-            TestRunEditorAttributes.EXECUTED_AT.getName(),
+            TestRunEditorFields.EXECUTED_AT.getName(),
             true,
             Comparator.comparing((SortedTestCase shown) -> shown.runItem().map(RunItem::getExecutedAt).orElseThrow()),
             shown -> shown.runItem().map(RunItem::getExecutedAt).filter(at -> !at.equals(DateFormats.NOT_EXECUTED)).isEmpty()
     ),
 
     DURATION(
-            TestRunEditorAttributes.DURATION.getName(),
+            TestRunEditorFields.DURATION.getName(),
             true,
             Comparator.comparing((SortedTestCase shown) -> shown.runItem().map(RunItem::getDuration).orElseThrow()),
             shown -> shown.runItem().map(RunItem::getDuration).filter(duration -> !duration.equals(Duration.ZERO)).isEmpty()

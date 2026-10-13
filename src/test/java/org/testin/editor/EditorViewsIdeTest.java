@@ -46,7 +46,7 @@ import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.view.Drawn;
 
 import javax.accessibility.AccessibleContext;
@@ -96,7 +96,7 @@ public class EditorViewsIdeTest extends AbstractTempRootIdeTest {
     }
 
     private static int descriptionColumn(final @NotNull JBTable table) {
-        return table.convertColumnIndexToView(TestSetEditorAttributes.DESCRIPTION.column());
+        return table.convertColumnIndexToView(TestSetEditorFields.DESCRIPTION.column());
     }
 
     private static @NotNull List<String> headers(final @NotNull JBTable table) {
@@ -259,21 +259,21 @@ public class EditorViewsIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-020
     public void testTheGridHasOneColumnPerChosenFieldInTheFixedOrder() {
         final @NotNull TestSetEditor editor = openedTestSet(2);
-        final @NotNull Set<TestSetEditorAttributes> chosen = editor.getSelectedDetails();
+        final @NotNull Set<TestSetEditorFields> chosen = editor.getSelectedDetails();
         chosen.clear();
-        chosen.addAll(List.of(TestSetEditorAttributes.GROUP, TestSetEditorAttributes.STEPS, TestSetEditorAttributes.ORDER, TestSetEditorAttributes.DESCRIPTION, TestSetEditorAttributes.PRIORITY));
+        chosen.addAll(List.of(TestSetEditorFields.GROUP, TestSetEditorFields.STEPS, TestSetEditorFields.ORDER, TestSetEditorFields.DESCRIPTION, TestSetEditorFields.PRIORITY));
 
         switchToGrid(editor);
 
-        final @NotNull List<String> expected = EnumSet.copyOf(chosen).stream().map(TestSetEditorAttributes::getName).toList();
+        final @NotNull List<String> expected = EnumSet.copyOf(chosen).stream().map(TestSetEditorFields::getName).toList();
         assertEquals("the grid's columns are not the chosen fields in the fixed order", expected, headers(gridOf(editor)));
     }
 
     // Rule-EDITOR-PANEL-021
     public void testTickingAFieldShowsItAtOnceInWhicheverViewIsOnScreen() {
         final @NotNull TestSetEditor editor = openedTestSet(2);
-        final @NotNull Set<TestSetEditorAttributes> chosen = editor.getSelectedDetails();
-        chosen.remove(TestSetEditorAttributes.MODULE);
+        final @NotNull Set<TestSetEditorFields> chosen = editor.getSelectedDetails();
+        chosen.remove(TestSetEditorFields.MODULE);
         final @NotNull TestCaseDto first = editor.getList().getModel().getElementAt(0);
         first.setModule("Payments");
 
@@ -294,18 +294,18 @@ public class EditorViewsIdeTest extends AbstractTempRootIdeTest {
         });
 
         assertFalse("the card shows the module before it was ticked", spokenFirstCard(editor).contains("Payments"));
-        chosen.add(TestSetEditorAttributes.MODULE);
+        chosen.add(TestSetEditorFields.MODULE);
         editor.onToolBarDetailsSelectionChanged();
         assertTrue("ticking a field did not redraw the cards", redrawn.get() > 0);
         assertTrue("the card does not show the module just ticked", spokenFirstCard(editor).contains("Payments"));
 
-        chosen.remove(TestSetEditorAttributes.MODULE);
+        chosen.remove(TestSetEditorFields.MODULE);
         switchToGrid(editor);
-        assertFalse("the grid shows the module before it was ticked", headers(gridOf(editor)).contains(TestSetEditorAttributes.MODULE.getName()));
+        assertFalse("the grid shows the module before it was ticked", headers(gridOf(editor)).contains(TestSetEditorFields.MODULE.getName()));
 
-        chosen.add(TestSetEditorAttributes.MODULE);
+        chosen.add(TestSetEditorFields.MODULE);
         editor.onToolBarDetailsSelectionChanged();
-        assertTrue("the grid does not show the module just ticked", headers(gridOf(editor)).contains(TestSetEditorAttributes.MODULE.getName()));
+        assertTrue("the grid does not show the module just ticked", headers(gridOf(editor)).contains(TestSetEditorFields.MODULE.getName()));
     }
 
     // Rule-EDITOR-PANEL-010

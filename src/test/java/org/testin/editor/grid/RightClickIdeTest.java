@@ -27,7 +27,7 @@ import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.toolbar.GridViewBtn;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestSetNode;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.view.Drawn;
 
 import java.awt.Rectangle;
@@ -71,7 +71,7 @@ public class RightClickIdeTest extends AbstractTempRootIdeTest {
         table.setRowSelectionInterval(0, 1);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
-        final @NotNull Rectangle row = table.getCellRect(3, table.convertColumnIndexToView(TestSetEditorAttributes.DESCRIPTION.column()), true);
+        final @NotNull Rectangle row = table.getCellRect(3, table.convertColumnIndexToView(TestSetEditorFields.DESCRIPTION.column()), true);
         final @NotNull MouseEvent press = new MouseEvent(table, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), InputEvent.BUTTON3_DOWN_MASK, (int) row.getCenterX(), (int) row.getCenterY(), 1, true, MouseEvent.BUTTON3);
         final @NotNull BooleanSupplier moved = () -> Arrays.equals(new int[]{3}, table.getSelectedRows());
 

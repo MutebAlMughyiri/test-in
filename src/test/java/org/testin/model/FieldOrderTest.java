@@ -16,25 +16,25 @@
 
 package org.testin.model;
 
-import org.testin.testcase.TestSetEditorAttributes;
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
+import org.testin.testrun.TestRunEditorFields;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertSame;
 
-public class AttributeOrderTest {
+public class FieldOrderTest {
 
     // Rule-EDITOR-PANEL-272
     @Test
-    public void theSequenceThenTheOrderLeadTheTestAttributes() {
-        assertSame(TestSetEditorAttributes.atColumn(0), TestSetEditorAttributes.SEQUENCE);
-        assertSame(TestSetEditorAttributes.atColumn(1), TestSetEditorAttributes.ORDER);
+    public void theSequenceThenTheOrderLeadTheTestSetFields() {
+        assertSame(TestSetEditorFields.atColumn(0), TestSetEditorFields.SEQUENCE);
+        assertSame(TestSetEditorFields.atColumn(1), TestSetEditorFields.ORDER);
     }
 
     // Rule-EDITOR-PANEL-272
     @Test
-    public void theSequenceThenTheOrderLeadTheTestRunAttributes() {
-        assertSame(TestRunEditorAttributes.atColumn(0), TestRunEditorAttributes.SEQUENCE);
-        assertSame(TestRunEditorAttributes.atColumn(1), TestRunEditorAttributes.ORDER);
+    public void theSequenceThenTheOrderLeadTheTestRunFields() {
+        assertSame(TestRunEditorFields.atColumn(0), TestRunEditorFields.SEQUENCE);
+        assertSame(TestRunEditorFields.atColumn(1), TestRunEditorFields.ORDER);
     }
 }

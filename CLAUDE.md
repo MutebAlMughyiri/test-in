@@ -28,7 +28,7 @@ going stale (#99).
 4. **Formatting is display-only.** Rendering may reformat a value; saving never
    does. The stored JSON is byte-identical to what the tester typed, so an
    editable surface loads the raw value and a read-only one loads the formatted
-   value - `gridValue` and `displayValue` on `TestSetEditorAttributes`.
+   value - `gridValue` and `displayValue` on `TestSetEditorFields`.
 
 The fifth is not in that document, because it is about where a value is kept
 rather than how the plugin is shaped:
@@ -277,7 +277,7 @@ No name in the plugin abbreviates a word, in production code or tests (#426).
 Muteb, 13 October 2026: *"no abbriviations in our pligin at all. except java
 and all known like exception -> ex"*, and *"dont use `p`"*. The `Project` is
 `project`. A business word is never shortened: `testCase`, `testSet`,
-`testRun`, `runItem`, `testProject`, `node`, `testCaseId`, `attribute`. Nor is
+`testRun`, `runItem`, `testProject`, `node`, `testCaseId`, `field`. Nor is
 any other word: `button`, `label`, `column`, `index`, `text`, `background`,
 `component`, `message`, `directory`. What stays is in this table, and only
 here.

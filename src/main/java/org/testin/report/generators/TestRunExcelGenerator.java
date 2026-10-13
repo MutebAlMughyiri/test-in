@@ -35,7 +35,7 @@ import org.testin.model.testrun.TestRunSummary;
 import org.testin.report.ReportTile;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testrun.TestRunEditorFields;
 import org.testin.util.Bundle;
 import org.testin.util.Display;
 import org.testin.util.FailureText;
@@ -104,13 +104,13 @@ public final class TestRunExcelGenerator {
     private static void writeTestCases(final @NotNull Worksheet ws, final @NotNull RunItems runItems) {
         ws.value(0, 0, Bundle.message("report.excel.caption.id"));
         ws.value(0, 1, Bundle.message("caption.test.case"));
-        ws.value(0, 2, TestRunEditorAttributes.RUN_STATUS.getName());
-        ws.value(0, 3, TestRunEditorAttributes.ACTUAL_RESULT.getName());
-        ws.value(0, 4, TestRunEditorAttributes.BUG_SEVERITY.getName());
-        ws.value(0, 5, TestRunEditorAttributes.BUG_PRIORITY.getName());
-        ws.value(0, 6, TestRunEditorAttributes.DURATION.getName());
-        ws.value(0, 7, TestRunEditorAttributes.EXPECTED_RESULT.getName());
-        ws.value(0, 8, TestRunEditorAttributes.BUG_ISSUE.getName());
+        ws.value(0, 2, TestRunEditorFields.RUN_STATUS.getName());
+        ws.value(0, 3, TestRunEditorFields.ACTUAL_RESULT.getName());
+        ws.value(0, 4, TestRunEditorFields.BUG_SEVERITY.getName());
+        ws.value(0, 5, TestRunEditorFields.BUG_PRIORITY.getName());
+        ws.value(0, 6, TestRunEditorFields.DURATION.getName());
+        ws.value(0, 7, TestRunEditorFields.EXPECTED_RESULT.getName());
+        ws.value(0, 8, TestRunEditorFields.BUG_ISSUE.getName());
         ws.range(0, 0, 0, 8).style().bold().fillColor(ReportColor.PANEL.hex()).set();
 
         int row = 1;
@@ -124,8 +124,8 @@ public final class TestRunExcelGenerator {
             ws.value(row, 2, runItem.shownStatus().getLabel());
             // Rule-REPORT-027
             ws.value(row, 3, ReportText.joined("\n", runItem.getActualResult(), ReportText.otherExecutions(runItem).orElse("")));
-            ws.value(row, 4, TestRunEditorAttributes.BUG_SEVERITY.getRunItemValueExtractor().apply(runItem));
-            ws.value(row, 5, TestRunEditorAttributes.BUG_PRIORITY.getRunItemValueExtractor().apply(runItem));
+            ws.value(row, 4, TestRunEditorFields.BUG_SEVERITY.getRunItemValueExtractor().apply(runItem));
+            ws.value(row, 5, TestRunEditorFields.BUG_PRIORITY.getRunItemValueExtractor().apply(runItem));
             ws.value(row, 6, Display.formatDuration(runItem.getDuration()));
             ws.value(row, 7, orNotAvailable(details.getExpectedResult()));
 

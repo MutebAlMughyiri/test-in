@@ -29,7 +29,7 @@ import org.testin.editor.testset.TestSetEditor;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.testcase.update.UpdateTestCaseDialog;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.util.Shortcuts;
@@ -154,7 +154,7 @@ public class OrderCellIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-023, Rule-EDITOR-PANEL-014
     public void testUntickingOrderHidesTheCardNumberAndTheGridsOrderColumn() {
         final @NotNull TestSetEditor editor = threeTestCases();
-        editor.getSelectedDetails().remove(TestSetEditorAttributes.ORDER);
+        editor.getSelectedDetails().remove(TestSetEditorFields.ORDER);
         editor.onToolBarDetailsSelectionChanged();
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 

@@ -106,8 +106,8 @@ public class RunItemLineIdeTest extends AbstractTempRootIdeTest {
     public void testAnEmptyTestRunValueIsNotDrawn() {
         final @NotNull List<String> words = Drawn.words(drawn(RunItem.builder().id(TEST_CASE_ID).executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())).build(), shownTestRunTreePath()));
 
-        assertFalse("an empty actual result was drawn: " + words, words.contains(Bundle.message("attribute.run.item.actual.result").toUpperCase(Locale.ROOT)));
-        assertFalse("an empty executed by was drawn: " + words, words.contains(Bundle.message("attribute.run.item.executed.by").toUpperCase(Locale.ROOT)));
+        assertFalse("an empty actual result was drawn: " + words, words.contains(Bundle.message("field.run.item.actual.result").toUpperCase(Locale.ROOT)));
+        assertFalse("an empty executed by was drawn: " + words, words.contains(Bundle.message("field.run.item.executed.by").toUpperCase(Locale.ROOT)));
         assertFalse("a passed test case with no bug was offered a bug: " + words, words.contains(Bundle.message("bug.dialog.title")));
         assertFalse("a test case with no stacktrace was offered one: " + words, words.contains(Bundle.message("view.stacktrace.link")));
     }

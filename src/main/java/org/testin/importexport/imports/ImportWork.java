@@ -41,7 +41,7 @@ import org.testin.services.BackgroundWork;
 import org.testin.services.Services;
 import org.testin.testcase.Can;
 import org.testin.testcase.Rank;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.testcase.TestCaseOrder;
 import org.testin.util.Bundle;
 import org.testin.util.FailureText;
@@ -91,7 +91,7 @@ record ImportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
     }
 
     void openImportDialog(final @NotNull AbstractNode node) {
-        new ImportDialog(project, TestSetEditorAttributes.all(Can.IMPORT),
+        new ImportDialog(project, TestSetEditorFields.all(Can.IMPORT),
                 (file, format) -> format.importToFile(project, file),
                 selectedTestCasesBySheet -> executeImportWriteAction(node, selectedTestCasesBySheet))
                 .show();

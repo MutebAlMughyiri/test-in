@@ -19,7 +19,7 @@ package org.testin.testrun.failure;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.testrun.RunItem;
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testrun.TestRunEditorFields;
 import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.MultiLineField;
 import org.testin.util.Bundle;
@@ -29,7 +29,7 @@ public final class ActualResultSection implements FailureSection {
 
     // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-221, Rule-EDITOR-PANEL-246, Rule-INTERNAL-097
     public ActualResultSection(final @NotNull Project project, final @NotNull RunItem runItem) {
-        component = DialogPart.multiLineField(project, TestRunEditorAttributes.ACTUAL_RESULT.getName(), Bundle.message("dialog.failure.placeholder.actual"), runItem.getActualResult());
+        component = DialogPart.multiLineField(project, TestRunEditorFields.ACTUAL_RESULT.getName(), Bundle.message("dialog.failure.placeholder.actual"), runItem.getActualResult());
     }
 
     @Override

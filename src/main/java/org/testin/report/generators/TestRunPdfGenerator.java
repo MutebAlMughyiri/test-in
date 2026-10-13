@@ -56,7 +56,7 @@ import org.testin.notifications.Notifier;
 import org.testin.report.ReportTile;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testrun.TestRunEditorFields;
 import org.testin.util.Bundle;
 import org.testin.util.FailureText;
 import org.testin.util.ReportFont;
@@ -262,7 +262,7 @@ public final class TestRunPdfGenerator {
                 .setFont(regularFont).setFontSize(ReportFont.LEAD.pt()).setFontColor(BLACK)
                 .setMarginBottom(12));
 
-        final @NotNull List<TestRunEditorAttributes> failureDetail = section.getFailureDetailColumns();
+        final @NotNull List<TestRunEditorFields> failureDetail = section.getFailureDetailColumns();
         Table table = new Table(2 + failureDetail.size())
                 .useAllAvailableWidth()
                 .setAutoLayout()
@@ -272,7 +272,7 @@ public final class TestRunPdfGenerator {
         final @NotNull DeviceRgb headerFg = rgb(section.textHex());
         addTestCaseTableHeader(table, "#", headerBg, headerFg, boldFont);
         addTestCaseTableHeader(table, Bundle.message("caption.test.case"), headerBg, headerFg, boldFont);
-        for (final TestRunEditorAttributes detail : failureDetail) {
+        for (final TestRunEditorFields detail : failureDetail) {
             addTestCaseTableHeader(table, detail.getName(), headerBg, headerFg, boldFont);
         }
 

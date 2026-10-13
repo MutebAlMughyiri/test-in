@@ -79,7 +79,7 @@ and never saves the drawn form; an editable surface loads the **raw** value when
 editing begins. `Rule-EDITOR-PANEL-005` states it for a tester, and
 `Rule-VIEW-PANEL-026` names the four fields that are formatted at all.
 
-**Consequences.** `TestSetEditorAttributes` answers both questions in one place:
+**Consequences.** `TestSetEditorFields` answers both questions in one place:
 `displayValue` for a reader and `gridValue` for a cell. Reference, module and
 test data are never formatted. An identifier and a label are not sentences. Test
 data is a value that gets used rather than read, so a character the display

@@ -41,8 +41,8 @@ import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
-import org.testin.testcase.TestSetEditorAttributes;
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
+import org.testin.testrun.TestRunEditorFields;
 import org.testin.testrun.form.TestCaseSelectionRenderer;
 import org.testin.ui.dialogs.DialogStyle;
 import org.testin.ui.framework.AbstractFrameworkDialog;
@@ -120,7 +120,7 @@ public class ScreenReaderNamesIdeTest extends BasePlatformTestCase {
         view.model().add(testCase);
         final @NotNull JBList<TestCaseDto> list = view.list();
         list.setCellRenderer((_, shown, index, _, _) -> {
-            card.updateData(index, Set.of(TestRunEditorAttributes.RUN_STATUS), runItem, AbstractCard.titleText(index + 1, true, shown.getDescription()));
+            card.updateData(index, Set.of(TestRunEditorFields.RUN_STATUS), runItem, AbstractCard.titleText(index + 1, true, shown.getDescription()));
             return card;
         });
 
@@ -134,11 +134,11 @@ public class ScreenReaderNamesIdeTest extends BasePlatformTestCase {
 
     // Rule-INTERNAL-122
     public void testAGridCellSaysTheValueItShows() {
-        final String @NotNull [] row = new String[TestSetEditorAttributes.values().length];
+        final String @NotNull [] row = new String[TestSetEditorFields.values().length];
         Arrays.fill(row, "");
-        row[TestSetEditorAttributes.DESCRIPTION.column()] = "Log in with a valid user";
+        row[TestSetEditorFields.DESCRIPTION.column()] = "Log in with a valid user";
 
-        final @NotNull JBTable table = new GridTables().buildTestTable(List.<String[]>of(row), Set.of(TestSetEditorAttributes.DESCRIPTION));
+        final @NotNull JBTable table = new GridTables().buildTestTable(List.<String[]>of(row), Set.of(TestSetEditorFields.DESCRIPTION));
 
         assertEveryStopIsNamed("the grid", table);
         assertEquals("Log in with a valid user", spoken(table.getAccessibleContext().getAccessibleTable().getAccessibleAt(0, 0).getAccessibleContext()));

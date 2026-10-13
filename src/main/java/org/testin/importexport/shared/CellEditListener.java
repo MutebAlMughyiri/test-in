@@ -20,7 +20,7 @@ import com.intellij.openapi.project.Project;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCaseDto;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -30,7 +30,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 public class CellEditListener implements TableModelListener {
-    private final @NotNull List<TestSetEditorAttributes> importAttributes;
+    private final @NotNull List<TestSetEditorFields> importFields;
     private final @NotNull Project project;
     private final @NotNull List<TestCaseDto> testCases;
     private boolean isUpdating = false;
@@ -49,13 +49,13 @@ public class CellEditListener implements TableModelListener {
                 try {
                     final @NotNull DefaultTableModel model = (DefaultTableModel) e.getSource();
                     final @NotNull String updatedValue = String.valueOf(model.getValueAt(row, col));
-                    final @NotNull TestSetEditorAttributes currentAttribute = importAttributes.get(col - 2);
-                    final @NotNull Optional<TestCaseDto> took = currentAttribute.getImportSetter().execute(project, testCases.get(row), updatedValue);
+                    final @NotNull TestSetEditorFields currentField = importFields.get(col - 2);
+                    final @NotNull Optional<TestCaseDto> took = currentField.getImportSetter().execute(project, testCases.get(row), updatedValue);
 
                     // Rule-SHARE-106
-                    took.ifPresentOrElse(testCase -> testCases.set(row, testCase), () -> TestSetEditorAttributes.sayWhatWasRefused(project, 1));
+                    took.ifPresentOrElse(testCase -> testCases.set(row, testCase), () -> TestSetEditorFields.sayWhatWasRefused(project, 1));
 
-                    final @NotNull String formattedValue = currentAttribute.gridValue(testCases.get(row));
+                    final @NotNull String formattedValue = currentField.gridValue(testCases.get(row));
                     model.setValueAt(formattedValue, row, col);
                 } finally {
                     isUpdating = false;

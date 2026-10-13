@@ -17,7 +17,7 @@
 package org.testin.importexport.imports;
 
 import org.testin.testcase.Can;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
@@ -29,25 +29,25 @@ public class ImportColumnsTest {
     // Rule-SHARE-034
     @Test
     public void theImportTableHoldsThirteenColumnsAndTheExportTableSeventeen() {
-        assertEquals(TestSetEditorAttributes.all(Can.IMPORT).size(), 13, "the columns an import can read");
-        assertEquals(TestSetEditorAttributes.all(Can.EXPORT).size(), 17, "the columns an export can write");
+        assertEquals(TestSetEditorFields.all(Can.IMPORT).size(), 13, "the columns an import can read");
+        assertEquals(TestSetEditorFields.all(Can.EXPORT).size(), 17, "the columns an export can write");
     }
 
     // Rule-SHARE-110
     @Test
     public void aHeadingIsFoundByItsShownNameOrItsNameInTheCode() {
-        assertTrue(TestSetEditorAttributes.CREATED_AT.isColumn("Created At"), "the name Testin shows");
-        assertTrue(TestSetEditorAttributes.CREATED_AT.isColumn("created at"), "letter case does not matter");
-        assertTrue(TestSetEditorAttributes.CREATED_AT.isColumn("CREATED_AT"), "the name in the code");
-        assertTrue(TestSetEditorAttributes.CREATED_AT.isColumn("created_at"), "the name in the code, in any case");
-        assertTrue(TestSetEditorAttributes.PRE_CONDITIONS.isColumn("  pre conditions "), "the space around a heading is not part of it");
+        assertTrue(TestSetEditorFields.CREATED_AT.isColumn("Created At"), "the name Testin shows");
+        assertTrue(TestSetEditorFields.CREATED_AT.isColumn("created at"), "letter case does not matter");
+        assertTrue(TestSetEditorFields.CREATED_AT.isColumn("CREATED_AT"), "the name in the code");
+        assertTrue(TestSetEditorFields.CREATED_AT.isColumn("created_at"), "the name in the code, in any case");
+        assertTrue(TestSetEditorFields.PRE_CONDITIONS.isColumn("  pre conditions "), "the space around a heading is not part of it");
     }
 
     // Rule-SHARE-110
     @Test
     public void aHeadingNamesOneColumnAndNoOther() {
-        assertFalse(TestSetEditorAttributes.CREATED_AT.isColumn("Updated At"));
-        assertFalse(TestSetEditorAttributes.CREATED_AT.isColumn("Created"));
-        assertFalse(TestSetEditorAttributes.CREATED_AT.isColumn("CreatedAt"));
+        assertFalse(TestSetEditorFields.CREATED_AT.isColumn("Updated At"));
+        assertFalse(TestSetEditorFields.CREATED_AT.isColumn("Created"));
+        assertFalse(TestSetEditorFields.CREATED_AT.isColumn("CreatedAt"));
     }
 }

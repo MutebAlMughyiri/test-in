@@ -25,7 +25,7 @@ import org.testin.model.node.TestRunNode;
 import org.testin.model.testrun.TestRunConfiguration;
 import org.testin.model.testrun.TestRunExecution;
 import org.testin.model.testrun.TestRunSummary;
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testrun.TestRunEditorFields;
 import org.testin.util.Bundle;
 
 import java.util.ArrayList;
@@ -45,9 +45,9 @@ public final class ReportOverview {
 
         for (final TestRunConfiguration field : TestRunConfiguration.values()) addConfiguration(rows, field, marker);
 
-        add(rows, TestRunEditorAttributes.EXECUTED_BY.getName(), summary.executedBy());
+        add(rows, TestRunEditorFields.EXECUTED_BY.getName(), summary.executedBy());
         TestRunExecution.rowsOf(marker).forEach(row -> add(rows, row.caption(), row.value()));
-        add(rows, TestRunEditorAttributes.RUN_STATUS.getName(), marker.getStatus().getLabel());
+        add(rows, TestRunEditorFields.RUN_STATUS.getName(), marker.getStatus().getLabel());
 
         return List.copyOf(rows);
     }

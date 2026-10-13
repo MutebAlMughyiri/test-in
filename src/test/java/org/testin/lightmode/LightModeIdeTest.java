@@ -49,7 +49,7 @@ import org.testin.model.node.TestSetNode;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.services.Services;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.testrun.TestRunFixture;
 import org.testin.testrun.failure.FailureDetailDialog;
 import org.testin.ui.framework.ShownDialog;
@@ -282,7 +282,7 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
 
             editor.getList().setSelectedIndex(1);
             fixture.press(editor, RunItemStatus.BLOCKED);
-            final @NotNull String third = TestSetEditorAttributes.DESCRIPTION.displayValue(fixture.testCases().get(2));
+            final @NotNull String third = TestSetEditorFields.DESCRIPTION.displayValue(fixture.testCases().get(2));
             Await.until("light mode did not follow the run item status the editor recorded: " + describedIn(frame), () -> describedIn(frame).equals(third));
         } finally {
             Disposer.dispose(editor);
@@ -462,7 +462,7 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
             final @NotNull JBLabel name = everythingIn(frame).stream().filter(JBLabel.class::isInstance).map(JBLabel.class::cast)
                     .filter(label -> "Checkout".equals(label.getText())).findFirst().orElseThrow(() -> new AssertionError("light mode does not show the test set's name"));
             final @NotNull JTextArea description = everythingIn(frame).stream().filter(JTextArea.class::isInstance).map(JTextArea.class::cast)
-                    .filter(area -> area.getText().equals(TestSetEditorAttributes.DESCRIPTION.displayValue(fixture.testCases().getFirst()))).findFirst().orElseThrow();
+                    .filter(area -> area.getText().equals(TestSetEditorFields.DESCRIPTION.displayValue(fixture.testCases().getFirst()))).findFirst().orElseThrow();
 
             assertNull("the test set's name carries an icon", name.getIcon());
             assertTrue("the test set's name is not in a frame of its own", name.getBorder() instanceof CompoundBorder);

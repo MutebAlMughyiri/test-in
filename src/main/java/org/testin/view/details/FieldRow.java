@@ -27,7 +27,7 @@ import java.util.function.BiFunction;
 
 // Rule-VIEW-PANEL-061
 @RequiredArgsConstructor
-public final class AttributeRow extends AbstractDetails {
+public final class FieldRow extends AbstractDetails {
     private final @NotNull String caption;
     private final @NotNull BiFunction<Project, TestCaseDto, String> extractor;
 

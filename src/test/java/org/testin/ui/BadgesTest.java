@@ -23,8 +23,8 @@ import org.testin.model.bug.BugSeverity;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
-import org.testin.testcase.TestSetEditorAttributes;
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
+import org.testin.testrun.TestRunEditorFields;
 import org.testin.util.Display;
 import org.testng.annotations.Test;
 
@@ -47,8 +47,8 @@ public class BadgesTest {
     private static List<Badge> bugBadges(final RunItem runItem) {
         final List<Badge> badges = new ArrayList<>();
 
-        TestRunEditorAttributes.BUG_SEVERITY.applyToUI(runItem, badges, new HashMap<>());
-        TestRunEditorAttributes.BUG_PRIORITY.applyToUI(runItem, badges, new HashMap<>());
+        TestRunEditorFields.BUG_SEVERITY.applyToUI(runItem, badges, new HashMap<>());
+        TestRunEditorFields.BUG_PRIORITY.applyToUI(runItem, badges, new HashMap<>());
 
         return badges;
     }
@@ -153,8 +153,8 @@ public class BadgesTest {
         final List<Badge> badges = new ArrayList<>();
         final Map<String, String> details = new HashMap<>();
 
-        TestSetEditorAttributes.PRIORITY.applyToUI(testCase, badges, details);
-        TestRunEditorAttributes.PRIORITY.applyToUI(RunItem.pendingFor(testCase), badges, details);
+        TestSetEditorFields.PRIORITY.applyToUI(testCase, badges, details);
+        TestRunEditorFields.PRIORITY.applyToUI(RunItem.pendingFor(testCase), badges, details);
 
         assertTrue(badges.isEmpty(), "an editor's card still draws the priority as a badge");
         assertTrue(details.isEmpty(), "an editor's card draws the priority as a detail line");
@@ -212,12 +212,12 @@ public class BadgesTest {
         final List<Badge> badges = new ArrayList<>();
         final Map<String, String> details = new HashMap<>();
 
-        TestRunEditorAttributes.DURATION.applyToUI(RunItem.builder().executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).duration(Duration.ofSeconds(42)).build())).build(), badges, details);
+        TestRunEditorFields.DURATION.applyToUI(RunItem.builder().executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).duration(Duration.ofSeconds(42)).build())).build(), badges, details);
 
         assertEquals(badges.size(), 1, "the duration is not one badge");
         assertTrue(badges.getFirst() instanceof Framed framed && framed.text().equals(Display.formatDuration(Duration.ofSeconds(42))), "the badge does not show the duration");
         assertTrue(details.isEmpty(), "the duration is still drawn as a line");
-        assertEquals(badges.getFirst().tooltip(), TestRunEditorAttributes.DURATION.getName(), "hovering the duration badge does not say Duration");
+        assertEquals(badges.getFirst().tooltip(), TestRunEditorFields.DURATION.getName(), "hovering the duration badge does not say Duration");
     }
 
     // Rule-EDITOR-PANEL-270
@@ -225,7 +225,7 @@ public class BadgesTest {
     public void aRunItemNotRunYetHasNoDurationBadge() {
         final List<Badge> badges = new ArrayList<>();
 
-        TestRunEditorAttributes.DURATION.applyToUI(RunItem.builder().executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())).build(), badges, new HashMap<>());
+        TestRunEditorFields.DURATION.applyToUI(RunItem.builder().executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())).build(), badges, new HashMap<>());
 
         assertTrue(badges.isEmpty(), "a run item with no duration drew a badge");
     }

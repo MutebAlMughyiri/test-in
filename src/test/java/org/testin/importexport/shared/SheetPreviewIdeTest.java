@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.model.Priority;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.Can;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 
 import javax.swing.table.TableModel;
 import java.awt.event.MouseEvent;
@@ -55,8 +55,8 @@ public class SheetPreviewIdeTest extends BasePlatformTestCase {
         return (JBTable) ((JBScrollPane) tabs(preview).getComponentAt(0)).getViewport().getView();
     }
 
-    private static int column(final @NotNull Can capability, final @NotNull TestSetEditorAttributes attribute) {
-        return TestSetEditorAttributes.all(capability).indexOf(attribute) + 2;
+    private static int column(final @NotNull Can capability, final @NotNull TestSetEditorFields field) {
+        return TestSetEditorFields.all(capability).indexOf(field) + 2;
     }
 
     private static void clickTheTickHeading(final @NotNull JBTable table) {
@@ -73,7 +73,7 @@ public class SheetPreviewIdeTest extends BasePlatformTestCase {
     }
 
     private @NotNull SheetPreview shown(final @NotNull Can capability, final @NotNull Map<String, List<TestCaseDto>> sheets) {
-        final @NotNull SheetPreview preview = new SheetPreview(getProject(), TestSetEditorAttributes.all(capability));
+        final @NotNull SheetPreview preview = new SheetPreview(getProject(), TestSetEditorFields.all(capability));
         preview.show(sheets);
         return preview;
     }
@@ -108,7 +108,7 @@ public class SheetPreviewIdeTest extends BasePlatformTestCase {
         final @NotNull TestCaseDto typed = aTestCase("log in with a valid user");
         final @NotNull SheetPreview preview = shown(Can.EXPORT, sheets("Login", typed));
 
-        table(preview).getModel().setValueAt("log in with a valid user and a remembered device", 0, column(Can.EXPORT, TestSetEditorAttributes.DESCRIPTION));
+        table(preview).getModel().setValueAt("log in with a valid user and a remembered device", 0, column(Can.EXPORT, TestSetEditorFields.DESCRIPTION));
 
         assertEquals("log in with a valid user and a remembered device", Objects.requireNonNull(preview.selected().get("Login"), "no Login sheet is selected").getFirst().getDescription());
         assertEquals("the test case itself is untouched", "log in with a valid user", typed.getDescription());
@@ -119,7 +119,7 @@ public class SheetPreviewIdeTest extends BasePlatformTestCase {
         final @NotNull TestCaseDto read = aTestCase("log in with a valid user");
         final @NotNull SheetPreview preview = shown(Can.IMPORT, sheets("Login", read));
 
-        table(preview).getModel().setValueAt("the account dashboard opens", 0, column(Can.IMPORT, TestSetEditorAttributes.EXPECTED_RESULT));
+        table(preview).getModel().setValueAt("the account dashboard opens", 0, column(Can.IMPORT, TestSetEditorFields.EXPECTED_RESULT));
 
         assertEquals("the account dashboard opens", Objects.requireNonNull(preview.selected().get("Login"), "no Login sheet is selected").getFirst().getExpectedResult());
         assertEquals("what was read from the file is untouched", "", read.getExpectedResult());
@@ -129,7 +129,7 @@ public class SheetPreviewIdeTest extends BasePlatformTestCase {
     public void testAValueTestinCannotReadIsRefusedAndTheTestCaseKeepsWhatItHad() {
         final @NotNull SheetPreview preview = shown(Can.IMPORT, sheets("Login", aTestCase("log in with a valid user")));
         final @NotNull TableModel model = table(preview).getModel();
-        final int priority = column(Can.IMPORT, TestSetEditorAttributes.PRIORITY);
+        final int priority = column(Can.IMPORT, TestSetEditorFields.PRIORITY);
 
         model.setValueAt("Urgent", 0, priority);
 

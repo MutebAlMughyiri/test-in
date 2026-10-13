@@ -39,7 +39,7 @@ import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.notifications.Done;
 import org.testin.services.Services;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.undo.UndoHistories;
 import org.testin.undo.UndoScope;
 import org.testin.util.Bundle;
@@ -107,12 +107,12 @@ public class PageSizeAndGridIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         final @NotNull List<String> balloons = Said.listening(getProject(), getTestRootDisposable()).shown();
         try {
-            final @NotNull Set<TestSetEditorAttributes> fields = editor.getToolBar().getToolbarItem(TestSetFieldsPopupBtn.class).getSelectedDetails();
-            fields.add(TestSetEditorAttributes.MODULE);
+            final @NotNull Set<TestSetEditorFields> fields = editor.getToolBar().getToolbarItem(TestSetFieldsPopupBtn.class).getSelectedDetails();
+            fields.add(TestSetEditorFields.MODULE);
             editor.getToolBar().getToolbarItem(GridViewBtn.class).doClick();
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
             final @NotNull JBTable grid = (JBTable) editor.getPreferredFocusedComponent();
-            final int module = grid.convertColumnIndexToView(TestSetEditorAttributes.MODULE.column());
+            final int module = grid.convertColumnIndexToView(TestSetEditorFields.MODULE.column());
 
             CopyPasteManager.getInstance().setContents(new StringSelection("""
                     Login
@@ -161,7 +161,7 @@ public class PageSizeAndGridIdeTest extends AbstractTempRootIdeTest {
         aTestSetOfThree();
         final @NotNull TestSetEditor editor = new TestSetEditor(getProject(), new UnifiedVirtualFile(testSet)) {
             @Override
-            protected @NotNull JBTable buildTable(final @NotNull List<String[]> rows, final @NotNull Set<TestSetEditorAttributes> attributes) {
+            protected @NotNull JBTable buildTable(final @NotNull List<String[]> rows, final @NotNull Set<TestSetEditorFields> fields) {
                 throw new IllegalStateException("the grid broke");
             }
         };

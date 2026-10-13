@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.Can;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.util.FailureText;
 import org.testin.util.ReportFont;
 
@@ -73,22 +73,22 @@ public class ExportExcel {
                 sheet.trackAllColumnsForAutoSizing();
 
                 final @NotNull Row headerRow = sheet.createRow(0);
-                for (int i = 0; i < TestSetEditorAttributes.all(Can.EXPORT).size(); i++) {
+                for (int i = 0; i < TestSetEditorFields.all(Can.EXPORT).size(); i++) {
                     final @NotNull Cell cell = headerRow.createCell(i);
-                    cell.setCellValue(TestSetEditorAttributes.all(Can.EXPORT).get(i).getName());
+                    cell.setCellValue(TestSetEditorFields.all(Can.EXPORT).get(i).getName());
                     cell.setCellStyle(headerStyle);
                 }
 
                 int rowIndex = 1;
                 for (final TestCaseDto testCase : entry.getValue()) {
                     final @NotNull Row row = sheet.createRow(rowIndex++);
-                    for (int i = 0; i < TestSetEditorAttributes.all(Can.EXPORT).size(); i++) {
+                    for (int i = 0; i < TestSetEditorFields.all(Can.EXPORT).size(); i++) {
                         final @NotNull Cell cell = row.createCell(i);
-                        cell.setCellValue(TestSetEditorAttributes.all(Can.EXPORT).get(i).gridValue(testCase));
+                        cell.setCellValue(TestSetEditorFields.all(Can.EXPORT).get(i).gridValue(testCase));
                     }
                 }
 
-                for (int i = 0; i < TestSetEditorAttributes.all(Can.EXPORT).size(); i++) {
+                for (int i = 0; i < TestSetEditorFields.all(Can.EXPORT).size(); i++) {
                     sheet.autoSizeColumn(i);
                 }
             }

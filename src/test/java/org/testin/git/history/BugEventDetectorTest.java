@@ -21,7 +21,7 @@ import org.testin.model.bug.BugSeverity;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testrun.TestRunEditorFields;
 import org.testng.annotations.Test;
 
 import java.nio.file.Path;
@@ -71,18 +71,18 @@ public class BugEventDetectorTest {
 
     // Rule-VIEW-PANEL-105
     @Test
-    public void aChangedBugShowsOnlyTheBugsOwnAttributes() {
+    public void aChangedBugShowsOnlyTheBugsOwnFields() {
         final @NotNull BugEvent event = between(runItem(RunItemStatus.FAILED, BugSeverity.MINOR, "Sara"), runItem(RunItemStatus.FAILED, BugSeverity.MAJOR, "Muteb"));
 
         assertEquals(event.kind(), BugEventKind.CHANGED);
         assertEquals(event.changes().size(), 1, "who ran it is not the bug's: " + event.changes());
-        assertEquals(event.changes().getFirst().fieldName(), TestRunEditorAttributes.BUG_SEVERITY.getName());
+        assertEquals(event.changes().getFirst().fieldName(), TestRunEditorFields.BUG_SEVERITY.getName());
         assertEquals(event.changes().getFirst().newValue(), BugSeverity.MAJOR.getLabel());
     }
 
     // Rule-VIEW-PANEL-106
     @Test
-    public void aBugWhoseOwnAttributesStayTheSameShowsNothing() {
+    public void aBugWhoseOwnFieldsStayTheSameShowsNothing() {
         assertTrue(BugEventDetector.between(CYCLE_3, runItem(RunItemStatus.FAILED, BugSeverity.MINOR, "Sara"), runItem(RunItemStatus.FAILED, BugSeverity.MINOR, "Muteb")).isEmpty());
 
         final @NotNull Optional<RunItem> reworded = Optional.of(RunItem.builder().bugSeverity(BugSeverity.MINOR).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).executedBy("Sara").actualResult("The basket was emptied twice").build())).build());

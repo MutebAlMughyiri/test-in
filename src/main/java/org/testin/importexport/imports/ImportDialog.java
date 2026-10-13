@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.importexport.FileFormat;
 import org.testin.importexport.shared.SheetPreview;
 import org.testin.model.TestCaseDto;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.ui.framework.AbstractFrameworkDialog;
 import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.DialogSize;
@@ -42,14 +42,14 @@ public final class ImportDialog extends AbstractFrameworkDialog {
 
     private final @NotNull SheetPreview preview;
 
-    public ImportDialog(final @NotNull Project project, final @NotNull List<TestSetEditorAttributes> importAttributes, final @NotNull BiFunction<File, FileFormat, Map<String, List<TestCaseDto>>> importLoader, final @NotNull Consumer<@NotNull Map<String, List<TestCaseDto>>> onImport) {
+    public ImportDialog(final @NotNull Project project, final @NotNull List<TestSetEditorFields> importFields, final @NotNull BiFunction<File, FileFormat, Map<String, List<TestCaseDto>>> importLoader, final @NotNull Consumer<@NotNull Map<String, List<TestCaseDto>>> onImport) {
         super(project);
         this.onImport = onImport;
 
         title = Bundle.message("dialog.import.title");
 
-        preview = new SheetPreview(project, importAttributes);
-        form = new SourceSection(project, importAttributes, importLoader, preview::show);
+        preview = new SheetPreview(project, importFields);
+        form = new SourceSection(project, importFields, importLoader, preview::show);
 
         components = List.of(
                 DialogPart.of(form),

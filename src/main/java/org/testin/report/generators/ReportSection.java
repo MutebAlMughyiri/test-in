@@ -25,7 +25,7 @@ import org.testin.model.ReportColor;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.TestRunSummary;
 import org.testin.model.status.RunItemStatus;
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testrun.TestRunEditorFields;
 import org.testin.util.Bundle;
 
 import java.util.Arrays;
@@ -36,7 +36,7 @@ enum ReportSection {
             Bundle.message("report.section.failed.title"),
             Bundle.message("report.section.failed.description"),
             TestRunSummary::failed,
-            ImmutableList.of(TestRunEditorAttributes.BUG_PRIORITY, TestRunEditorAttributes.BUG_SEVERITY),
+            ImmutableList.of(TestRunEditorFields.BUG_PRIORITY, TestRunEditorFields.BUG_SEVERITY),
             RunItemStatus.FAILED),
 
     PASSED(
@@ -75,10 +75,10 @@ enum ReportSection {
     private final @NotNull String hexColor;
     private final @NotNull ToLongFunction<TestRunSummary> count;
     @Getter
-    private final @NotNull ImmutableList<TestRunEditorAttributes> failureDetailColumns;
+    private final @NotNull ImmutableList<TestRunEditorFields> failureDetailColumns;
     private final @NotNull ImmutableSet<RunItemStatus> statuses;
 
-    ReportSection(final @NotNull String title, final @NotNull String descriptionFmt, final @NotNull ToLongFunction<TestRunSummary> count, final @NotNull ImmutableList<TestRunEditorAttributes> failureDetailColumns, final @NotNull RunItemStatus... statuses) {
+    ReportSection(final @NotNull String title, final @NotNull String descriptionFmt, final @NotNull ToLongFunction<TestRunSummary> count, final @NotNull ImmutableList<TestRunEditorFields> failureDetailColumns, final @NotNull RunItemStatus... statuses) {
         this.title = title;
         this.descriptionFmt = descriptionFmt;
         this.hexColor = statuses[0].getReportHex();

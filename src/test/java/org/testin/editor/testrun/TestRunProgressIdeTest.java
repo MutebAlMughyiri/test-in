@@ -37,7 +37,7 @@ import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.services.Services;
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testrun.TestRunEditorFields;
 import org.testin.testrun.TestRunFixture;
 import org.testin.view.Drawn;
 
@@ -50,7 +50,7 @@ import java.util.UUID;
 
 public class TestRunProgressIdeTest extends AbstractTempRootIdeTest {
 
-    private static final int ACTUAL_RESULT = TestRunEditorAttributes.ACTUAL_RESULT.column();
+    private static final int ACTUAL_RESULT = TestRunEditorFields.ACTUAL_RESULT.column();
 
     private static @NotNull JBTable theGridOf(final @NotNull TestRunEditor editor) {
         editor.getToolBar().getToolbarItem(GridViewBtn.class).doClick();

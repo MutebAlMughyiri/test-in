@@ -47,7 +47,7 @@ import org.testin.indexer.ProjectIndexer;
 import org.testin.indexer.TestCases;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
-import org.testin.model.ShowableAttribute;
+import org.testin.model.ShowableField;
 import org.testin.model.node.AbstractNode;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
@@ -68,7 +68,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableAttribute, N extends AbstractNode> implements Disposable, ToolbarCallbacks, TestinEditor {
+public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N extends AbstractNode> implements Disposable, ToolbarCallbacks, TestinEditor {
     @Getter
     protected final @NotNull Project project;
     @Getter
@@ -324,7 +324,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableAttribute
 
     protected abstract @NotNull List<String[]> gridRows(final @NotNull List<TestCaseDto> pageTestCases);
 
-    protected abstract @NotNull JBTable buildTable(final @NotNull List<String[]> rows, final @NotNull Set<A> attributes);
+    protected abstract @NotNull JBTable buildTable(final @NotNull List<String[]> rows, final @NotNull Set<A> fields);
 
     protected abstract void installEditListener(final @NotNull JBTable table, final @NotNull List<TestCaseDto> pageTestCases);
 

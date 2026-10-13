@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.git.change.FieldChange;
 import org.testin.git.change.RunItemFieldChanges;
 import org.testin.model.testrun.RunItem;
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testrun.TestRunEditorFields;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -34,11 +34,11 @@ import java.util.stream.Stream;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class BugEventDetector {
     private static final @NotNull Set<String> BUG_FIELDS = Stream.of(
-            TestRunEditorAttributes.RUN_STATUS,
-            TestRunEditorAttributes.BUG_SEVERITY,
-            TestRunEditorAttributes.BUG_PRIORITY,
-            TestRunEditorAttributes.BUG_ISSUE
-    ).map(TestRunEditorAttributes::getName).collect(Collectors.toUnmodifiableSet());
+            TestRunEditorFields.RUN_STATUS,
+            TestRunEditorFields.BUG_SEVERITY,
+            TestRunEditorFields.BUG_PRIORITY,
+            TestRunEditorFields.BUG_ISSUE
+    ).map(TestRunEditorFields::getName).collect(Collectors.toUnmodifiableSet());
 
     // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-105, Rule-VIEW-PANEL-106, Rule-VIEW-PANEL-108
     static @NotNull Optional<BugEvent> between(final @NotNull Path testRun, final @NotNull Optional<RunItem> before, final @NotNull Optional<RunItem> after) {

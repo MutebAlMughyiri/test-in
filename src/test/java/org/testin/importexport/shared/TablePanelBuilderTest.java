@@ -19,7 +19,7 @@ package org.testin.importexport.shared;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.Can;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testng.annotations.Test;
 
 import javax.swing.table.DefaultTableModel;
@@ -30,7 +30,7 @@ import static org.testng.Assert.assertEquals;
 public class TablePanelBuilderTest {
 
     private static @NotNull DefaultTableModel model() {
-        return new TablePanelBuilder().createModel(TestSetEditorAttributes.all(Can.EXPORT), List.of(
+        return new TablePanelBuilder().createModel(TestSetEditorFields.all(Can.EXPORT), List.of(
                 TestCaseDto.builder().description("log in with a valid user").build(),
                 TestCaseDto.builder().description("log in with a wrong password").build()));
     }

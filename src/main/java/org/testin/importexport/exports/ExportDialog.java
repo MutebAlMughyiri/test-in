@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.importexport.FileFormat;
 import org.testin.importexport.shared.SheetPreview;
 import org.testin.model.TestCaseDto;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.ui.dialogs.Destination;
 import org.testin.ui.dialogs.DestinationForm;
 import org.testin.ui.framework.AbstractFrameworkDialog;
@@ -44,7 +44,7 @@ public final class ExportDialog extends AbstractFrameworkDialog {
     private final @NotNull BiConsumer<@NotNull Destination,
             @NotNull Map<String, List<TestCaseDto>>> onExport;
 
-    public ExportDialog(final @NotNull Project project, final @NotNull List<TestSetEditorAttributes> exportAttributes, final @NotNull Map<String, List<TestCaseDto>> sheetsData, final @NotNull VirtualFile exportTarget, final @NotNull BiConsumer<@NotNull Destination, @NotNull Map<String, List<TestCaseDto>>> onExport) {
+    public ExportDialog(final @NotNull Project project, final @NotNull List<TestSetEditorFields> exportFields, final @NotNull Map<String, List<TestCaseDto>> sheetsData, final @NotNull VirtualFile exportTarget, final @NotNull BiConsumer<@NotNull Destination, @NotNull Map<String, List<TestCaseDto>>> onExport) {
         super(project);
         this.onExport = onExport;
 
@@ -58,7 +58,7 @@ public final class ExportDialog extends AbstractFrameworkDialog {
                 Bundle.message("dialog.export.folder.message"),
                 Bundle.message("destination.section"));
 
-        preview = new SheetPreview(project, exportAttributes);
+        preview = new SheetPreview(project, exportFields);
         preview.show(sheetsData);
 
         components = List.of(

@@ -33,7 +33,7 @@ import org.testin.model.testrun.RunItem;
 import org.testin.services.Services;
 import org.testin.testrun.ChangedSinceCommit;
 import org.testin.testrun.RunItemRecorder;
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testrun.TestRunEditorFields;
 import org.testin.ui.Badge;
 import org.testin.ui.Badges;
 import org.testin.ui.Pill;
@@ -123,7 +123,7 @@ public final class RunItemSummary extends AbstractDetails {
         int row = currentRow;
         if (runItem.executedAtMostOnce()) {
             final @NotNull JBPanel<?> line = line(GAP);
-            pills(runItem.shownStatus(), TestRunEditorAttributes.DURATION.gridValue(runItem)).forEach(line::add);
+            pills(runItem.shownStatus(), TestRunEditorFields.DURATION.gridValue(runItem)).forEach(line::add);
             BugLine.of(project, runItem, treePath, testCase).ifPresent(line::add);
             row = addFullWidthRow(panel, gbc, line, JBUI.insets(INSETS_TOP, INSETS_SIDE, 0, INSETS_SIDE), row);
         } else {

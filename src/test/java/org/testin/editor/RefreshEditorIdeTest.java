@@ -47,7 +47,7 @@ import org.testin.model.status.RunItemStatus;
 import org.testin.notifications.Done;
 import org.testin.services.Services;
 import org.testin.services.TestCaseCompletions;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,7 +96,7 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
             editor.getToolBar().getSearchTxt().setText("Log in");
             Await.until("the search never narrowed the list", () -> editor.getCurrentTestCases().size() == 1);
             editor.getToolBar().getToolbarItem(GridViewBtn.class).doClick();
-            final @NotNull Set<TestSetEditorAttributes> fields = editor.getToolBar().getToolbarItem(TestSetFieldsPopupBtn.class).getSelectedDetails();
+            final @NotNull Set<TestSetEditorFields> fields = editor.getToolBar().getToolbarItem(TestSetFieldsPopupBtn.class).getSelectedDetails();
             Await.until("the group was never offered", () -> values.getGroups().contains(oldGroup));
 
             aTestCase(testSet, "Log in with a new user", "m0004", Priority.HIGH, newGroup);

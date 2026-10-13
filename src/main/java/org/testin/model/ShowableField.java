@@ -18,8 +18,8 @@ package org.testin.model;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface ShowableAttribute {
+public interface ShowableField {
     @NotNull String getName();
 
-    @NotNull AttributeDefault getToolBarDefault();
+    @NotNull FieldDefault getToolBarDefault();
 }

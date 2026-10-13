@@ -23,7 +23,7 @@ import com.intellij.ui.CheckBoxList;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.ShownFields;
-import org.testin.model.ShowableAttribute;
+import org.testin.model.ShowableField;
 import org.testin.ui.dialogs.DialogStyle;
 import org.testin.ui.framework.AbstractIconButton;
 import org.testin.util.Bundle;
@@ -35,7 +35,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public abstract class AbstractFieldsPopupBtn<E extends Enum<E> & ShowableAttribute> extends AbstractIconButton implements ToolbarItem {
+public abstract class AbstractFieldsPopupBtn<E extends Enum<E> & ShowableField> extends AbstractIconButton implements ToolbarItem {
     protected static final @NotNull String FIELDS = Bundle.message("toolbar.fields");
 
     @Getter
@@ -46,13 +46,13 @@ public abstract class AbstractFieldsPopupBtn<E extends Enum<E> & ShowableAttribu
 
     private final @NotNull AtomicBoolean refreshQueued = new AtomicBoolean();
 
-    protected AbstractFieldsPopupBtn(final @NotNull String tooltip, final @NotNull String propertyKey, final @NotNull Class<E> attributes, final @NotNull Runnable onToolBarDetailsSelectedChanged) {
+    protected AbstractFieldsPopupBtn(final @NotNull String tooltip, final @NotNull String propertyKey, final @NotNull Class<E> fieldType, final @NotNull Runnable onToolBarDetailsSelectedChanged) {
         super(tooltip, AllIcons.Actions.Selectall);
 
         this.propertyKey = propertyKey;
-        this.options = Arrays.stream(attributes.getEnumConstants()).filter(attribute -> attribute.getToolBarDefault().isListed()).toList();
+        this.options = Arrays.stream(fieldType.getEnumConstants()).filter(field -> field.getToolBarDefault().isListed()).toList();
 
-        selectedDetails.addAll(ShownFields.read(propertyKey, attributes));
+        selectedDetails.addAll(ShownFields.read(propertyKey, fieldType));
 
         addActionListener(_ -> showDetailsPopup(onToolBarDetailsSelectedChanged));
     }
@@ -81,7 +81,7 @@ public abstract class AbstractFieldsPopupBtn<E extends Enum<E> & ShowableAttribu
         };
         DialogStyle.styleContent(detailsList);
 
-        options.forEach(attribute -> detailsList.addItem(attribute, attribute.getName(), selectedDetails.contains(attribute)));
+        options.forEach(option -> detailsList.addItem(option, option.getName(), selectedDetails.contains(option)));
 
         detailsList.setCheckBoxListListener((index, state) -> {
             Optional.ofNullable(detailsList.getItemAt(index)).ifPresent(field -> {

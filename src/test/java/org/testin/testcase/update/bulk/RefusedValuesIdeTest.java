@@ -36,7 +36,7 @@ import org.testin.model.node.TestSetNode;
 import org.testin.notifications.Done;
 import org.testin.notifications.Refused;
 import org.testin.services.Services;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.util.Bundle;
 
 import java.util.ArrayList;
@@ -53,8 +53,8 @@ public class RefusedValuesIdeTest extends AbstractTempRootIdeTest {
         return (JBTable) editor.getPreferredFocusedComponent();
     }
 
-    private static void typed(final @NotNull JBTable grid, final int row, final @NotNull TestSetEditorAttributes attribute, final @NotNull String value) {
-        grid.getModel().setValueAt(value, row, attribute.column());
+    private static void typed(final @NotNull JBTable grid, final int row, final @NotNull TestSetEditorFields field, final @NotNull String value) {
+        grid.getModel().setValueAt(value, row, field.column());
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
 
@@ -96,11 +96,11 @@ public class RefusedValuesIdeTest extends AbstractTempRootIdeTest {
         try {
             final @NotNull JBTable grid = theGridOf(editor);
 
-            typed(grid, 0, TestSetEditorAttributes.PRIORITY, "Urgent");
+            typed(grid, 0, TestSetEditorFields.PRIORITY, "Urgent");
 
-            assertEquals("the cell kept a value Testin could not read", Priority.MEDIUM.getLabel(), grid.getModel().getValueAt(0, TestSetEditorAttributes.PRIORITY.column()));
+            assertEquals("the cell kept a value Testin could not read", Priority.MEDIUM.getLabel(), grid.getModel().getValueAt(0, TestSetEditorFields.PRIORITY.column()));
             assertEquals("what the test case had did not stay", Priority.MEDIUM, stored(testCases.getFirst()).getPriority());
-            assertEquals("the tester was not told once", List.of(unreadable(Bundle.message("grid.refused.as", "Urgent", TestSetEditorAttributes.PRIORITY.getName()))), balloons);
+            assertEquals("the tester was not told once", List.of(unreadable(Bundle.message("grid.refused.as", "Urgent", TestSetEditorFields.PRIORITY.getName()))), balloons);
         } finally {
             Disposer.dispose(editor);
         }
@@ -117,7 +117,7 @@ public class RefusedValuesIdeTest extends AbstractTempRootIdeTest {
 
         assertEquals("a refused test case was counted among the ones the change touched", List.of(testCases.get(2).getId()), written.stream().map(TestCaseDto::getId).toList());
         assertEquals(Priority.HIGH, written.getFirst().getPriority());
-        assertEquals("the bulk edit did not say once, with a count", List.of(unreadable(Bundle.message("attribute.value.many", "2"))), balloons);
+        assertEquals("the bulk edit did not say once, with a count", List.of(unreadable(Bundle.message("field.value.many", "2"))), balloons);
     }
 
     // Rule-EDITOR-PANEL-206
@@ -128,8 +128,8 @@ public class RefusedValuesIdeTest extends AbstractTempRootIdeTest {
         try {
             final @NotNull JBTable grid = theGridOf(editor);
 
-            typed(grid, 0, TestSetEditorAttributes.PRIORITY, "");
-            typed(grid, 1, TestSetEditorAttributes.GROUP, "");
+            typed(grid, 0, TestSetEditorFields.PRIORITY, "");
+            typed(grid, 1, TestSetEditorFields.GROUP, "");
 
             Await.until("a blank group was not written", () -> stored(testCases.get(1)).getGroups().isEmpty());
             assertEquals("a blank priority in a cell changed the priority", Priority.MEDIUM, stored(testCases.getFirst()).getPriority());
@@ -180,7 +180,7 @@ public class RefusedValuesIdeTest extends AbstractTempRootIdeTest {
         final @NotNull List<String> balloons = Said.listening(getProject(), getTestRootDisposable()).shown();
         try {
             final @NotNull JBTable grid = theGridOf(editor);
-            typed(grid, 0, TestSetEditorAttributes.PRIORITY, "Urgent");
+            typed(grid, 0, TestSetEditorFields.PRIORITY, "Urgent");
             assertFalse("a refused cell said it updated something: " + balloons, balloons.contains(Done.UPDATED.getOutcome()));
             assertEquals(Priority.MEDIUM, stored(testCases.getFirst()).getPriority());
         } finally {

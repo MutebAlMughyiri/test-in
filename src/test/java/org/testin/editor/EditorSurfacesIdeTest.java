@@ -36,7 +36,7 @@ import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.ui.framework.AbstractIconButton;
 import org.testin.ui.framework.RowStripe;
 
@@ -79,9 +79,9 @@ public class EditorSurfacesIdeTest extends AbstractTempRootIdeTest {
     }
 
     private static @NotNull String[] rowReading(final @NotNull String description) {
-        final String @NotNull [] row = new String[TestSetEditorAttributes.values().length];
+        final String @NotNull [] row = new String[TestSetEditorFields.values().length];
         Arrays.fill(row, "");
-        row[TestSetEditorAttributes.DESCRIPTION.column()] = description;
+        row[TestSetEditorFields.DESCRIPTION.column()] = description;
         return row;
     }
 
@@ -139,7 +139,7 @@ public class EditorSurfacesIdeTest extends AbstractTempRootIdeTest {
             editor.getToolBar().getToolbarItem(GridViewBtn.class).doClick();
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
             final @NotNull JBTable grid = (JBTable) editor.getPreferredFocusedComponent();
-            final int description = TestSetEditorAttributes.DESCRIPTION.column();
+            final int description = TestSetEditorFields.DESCRIPTION.column();
             grid.changeSelection(0, description, false, false);
             assertTrue(grid.editCellAt(0, description));
             grid.getEditorComponent().requestFocus();
@@ -156,8 +156,8 @@ public class EditorSurfacesIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-250
     public void testAGridRowIsDrawnInItsStripeOrTheSelectionColorAndNothingElse() {
         final @NotNull List<String[]> rows = List.of(rowReading("Log in"), rowReading("Pay by card"), rowReading("Log out"));
-        final @NotNull JBTable table = new GridTables().buildTestTable(rows, Set.of(TestSetEditorAttributes.DESCRIPTION));
-        final int column = TestSetEditorAttributes.DESCRIPTION.column();
+        final @NotNull JBTable table = new GridTables().buildTestTable(rows, Set.of(TestSetEditorFields.DESCRIPTION));
+        final int column = TestSetEditorFields.DESCRIPTION.column();
         final @NotNull JFrame frame = OnScreen.shown(new JBScrollPane(table), getTestRootDisposable());
 
         for (int row = 0; row < rows.size(); row++) {

@@ -22,7 +22,7 @@ import org.testin.logger.TestinLogger;
 import org.testin.model.ReportColor;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.Can;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.util.Bundle;
 import org.testin.util.Display;
 import org.testin.util.FailureText;
@@ -105,16 +105,16 @@ public class ExportHtml {
                 writer.newLine();
 
                 writer.write("<tr>");
-                for (final TestSetEditorAttributes attribute : TestSetEditorAttributes.all(Can.EXPORT)) {
-                    writer.write("<th>" + StringUtil.escapeXmlEntities(attribute.getName()) + "</th>");
+                for (final TestSetEditorFields field : TestSetEditorFields.all(Can.EXPORT)) {
+                    writer.write("<th>" + StringUtil.escapeXmlEntities(field.getName()) + "</th>");
                 }
                 writer.write("</tr>");
                 writer.newLine();
 
                 for (final TestCaseDto testCase : testCases) {
                     writer.write("<tr>");
-                    for (final TestSetEditorAttributes attribute : TestSetEditorAttributes.all(Can.EXPORT)) {
-                        writer.write("<td>" + StringUtil.escapeXmlEntities(attribute.gridValue(testCase)) + "</td>");
+                    for (final TestSetEditorFields field : TestSetEditorFields.all(Can.EXPORT)) {
+                        writer.write("<td>" + StringUtil.escapeXmlEntities(field.gridValue(testCase)) + "</td>");
                     }
                     writer.write("</tr>");
                     writer.newLine();

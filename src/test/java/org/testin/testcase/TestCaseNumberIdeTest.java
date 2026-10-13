@@ -44,7 +44,7 @@ public class TestCaseNumberIdeTest extends AbstractCodegenIdeTest {
 
     private static final @NotNull String LOGIN_TEST = "nafath.LoginTest";
 
-    private @NotNull Set<TestSetEditorAttributes> shownBefore = Set.of();
+    private @NotNull Set<TestSetEditorFields> shownBefore = Set.of();
 
     private static int numberOnTheCard(final @NotNull TestSetEditor editor, final @NotNull TestCaseDto testCase) {
         final @NotNull String title = editor.cardTitle(testCase);
@@ -64,8 +64,8 @@ public class TestCaseNumberIdeTest extends AbstractCodegenIdeTest {
         final @NotNull JBTable grid = Drawn.components(editor.getComponent()).stream().filter(JBTable.class::isInstance).map(JBTable.class::cast).findFirst()
                 .orElseThrow(() -> new AssertionError("the editor draws no grid"));
         for (int row = 0; row < grid.getModel().getRowCount(); row++) {
-            if (testCase.getDescription().equals(grid.getModel().getValueAt(row, TestSetEditorAttributes.DESCRIPTION.column())))
-                return Integer.parseInt(String.valueOf(grid.getModel().getValueAt(row, TestSetEditorAttributes.ORDER.column())));
+            if (testCase.getDescription().equals(grid.getModel().getValueAt(row, TestSetEditorFields.DESCRIPTION.column())))
+                return Integer.parseInt(String.valueOf(grid.getModel().getValueAt(row, TestSetEditorFields.ORDER.column())));
         }
         throw new AssertionError("the grid has no row for '" + testCase.getDescription() + "'");
     }
@@ -87,8 +87,8 @@ public class TestCaseNumberIdeTest extends AbstractCodegenIdeTest {
     @Override
     protected void setUp() {
         super.setUp();
-        shownBefore = ShownFields.read(ShownFields.IN_TEST_SETS, TestSetEditorAttributes.class);
-        ShownFields.write(ShownFields.IN_TEST_SETS, EnumSet.allOf(TestSetEditorAttributes.class));
+        shownBefore = ShownFields.read(ShownFields.IN_TEST_SETS, TestSetEditorFields.class);
+        ShownFields.write(ShownFields.IN_TEST_SETS, EnumSet.allOf(TestSetEditorFields.class));
     }
 
     @Override

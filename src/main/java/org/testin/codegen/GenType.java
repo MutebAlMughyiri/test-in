@@ -184,7 +184,7 @@ public record GenType<T>(@NotNull Class<T> payload, @NotNull String description,
     public static final @NotNull GenType<TestCaseDto> NO_CODE_CHANGE = new GenType<>(
             TestCaseDto.class,
             Bundle.message("codegen.no.code.change"),
-            new NoOpCodeUpdate("read-only attribute")
+            new NoOpCodeUpdate("read-only field")
     );
 
     // UC-CODEGEN-019, Rule-CODEGEN-005

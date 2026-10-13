@@ -50,7 +50,7 @@ public class UpdateMenuLettersTest {
     @Test
     public void referenceIsOpenedByRAndDrawsR() {
         assertEquals(UpdateTestCaseFields.REFERENCE.getShortcut().getKey(), KeyStroke.getKeyStroke(KeyEvent.VK_R, 0), "Reference is not opened by R");
-        assertEquals(UpdateTestCaseFields.iconOf(TestSetEditorAttributes.REFERENCE.getName()), Optional.of(CopyChoice.REFERENCE.getIcon()), "Reference does not draw the R the copy menu draws");
+        assertEquals(UpdateTestCaseFields.iconOf(TestSetEditorFields.REFERENCE.getName()), Optional.of(CopyChoice.REFERENCE.getIcon()), "Reference does not draw the R the copy menu draws");
     }
 
     // Rule-EDITOR-PANEL-209

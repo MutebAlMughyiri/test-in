@@ -68,7 +68,7 @@ import java.util.Optional;
 public abstract class AbstractCard extends JBPanel<AbstractCard> {
     protected final @NotNull JTextArea titleArea = Prose.of("");
     protected final @NotNull JBPanel<?> badgePanel = new JBPanel<>(new FlowLayout(FlowLayout.LEFT, JBUI.scale(10), 0));
-    protected final @NotNull Map<String, JBLabel> attributeLabels = new HashMap<>();
+    protected final @NotNull Map<String, JBLabel> fieldLabels = new HashMap<>();
     private final @NotNull Map<String, String> lineTooltips = new HashMap<>();
     protected final @NotNull JBPanel<?> content = new JBPanel<>(new VerticalLayout(JBUI.scale(4)));
     protected final @NotNull BorderLayoutPanel wrapper = new BorderLayoutPanel();
@@ -144,7 +144,7 @@ public abstract class AbstractCard extends JBPanel<AbstractCard> {
     public void applyCardViewLayout(final @NotNull JList<?> list) {
         titleArea.setFont(Fonts.title());
 
-        for (final JBLabel lbl : attributeLabels.values()) {
+        for (final JBLabel lbl : fieldLabels.values()) {
             lbl.setFont(Fonts.body());
         }
 
@@ -174,7 +174,7 @@ public abstract class AbstractCard extends JBPanel<AbstractCard> {
         Badges.showBadges(badgePanel, badges);
         shownBadges = List.copyOf(badges);
 
-        attributeLabels.values().forEach(lbl -> lbl.setVisible(false));
+        fieldLabels.values().forEach(lbl -> lbl.setVisible(false));
 
         final @NotNull List<String> spoken = new ArrayList<>();
         if (priority != Priority.DEFAULT) spoken.add(priority.getLabel());
@@ -183,7 +183,7 @@ public abstract class AbstractCard extends JBPanel<AbstractCard> {
         details.forEach((attrName, value) -> {
             if (value.isBlank()) return;
 
-            final @NotNull JBLabel lbl = attributeLabels.computeIfAbsent(attrName, _ -> {
+            final @NotNull JBLabel lbl = fieldLabels.computeIfAbsent(attrName, _ -> {
                 final @NotNull JBLabel newLbl = createDetailLabel();
                 content.add(newLbl);
                 return newLbl;
@@ -239,7 +239,7 @@ public abstract class AbstractCard extends JBPanel<AbstractCard> {
             if (SwingUtilities.convertRectangle(badgePanel, badgePanel.getComponent(i).getBounds(), this).contains(at))
                 return shownBadges.get(i).tooltip();
         }
-        return attributeLabels.entrySet().stream()
+        return fieldLabels.entrySet().stream()
                 .filter(line -> line.getValue().isVisible() && boundsOf(line.getValue()).contains(at))
                 .map(line -> isOnIcon(line.getKey(), line.getValue(), at) ? line.getKey() : lineTooltips.getOrDefault(line.getKey(), ""))
                 .findFirst()

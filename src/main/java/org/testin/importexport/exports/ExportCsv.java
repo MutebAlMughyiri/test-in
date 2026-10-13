@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.Can;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.util.FailureText;
 import org.testin.util.SeparatedValues;
 
@@ -38,8 +38,8 @@ public class ExportCsv {
     // UC-SHARE-002
     public void exportToFile(final @NotNull File destFile, final @NotNull Map<String, List<TestCaseDto>> sheetsData) {
         try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(destFile), StandardCharsets.UTF_8))) {
-            final @NotNull List<String> headerNames = TestSetEditorAttributes.all(Can.EXPORT).stream()
-                    .map(TestSetEditorAttributes::getName)
+            final @NotNull List<String> headerNames = TestSetEditorFields.all(Can.EXPORT).stream()
+                    .map(TestSetEditorFields::getName)
                     .toList();
 
             writer.write(String.join(",", headerNames));
@@ -48,8 +48,8 @@ public class ExportCsv {
             for (final Map.Entry<String, List<TestCaseDto>> entry : sheetsData.entrySet()) {
                 for (final TestCaseDto testCase : entry.getValue()) {
                     final @NotNull List<String> rowValues = new ArrayList<>();
-                    for (final TestSetEditorAttributes attribute : TestSetEditorAttributes.all(Can.EXPORT)) {
-                        rowValues.add(SeparatedValues.field(attribute.gridValue(testCase), ','));
+                    for (final TestSetEditorFields field : TestSetEditorFields.all(Can.EXPORT)) {
+                        rowValues.add(SeparatedValues.field(field.gridValue(testCase), ','));
                     }
                     writer.write(String.join(",", rowValues));
                     writer.newLine();

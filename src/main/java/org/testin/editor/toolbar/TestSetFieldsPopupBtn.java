@@ -18,14 +18,14 @@ package org.testin.editor.toolbar;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.ShownFields;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 
-public class TestSetFieldsPopupBtn extends AbstractFieldsPopupBtn<TestSetEditorAttributes> {
+public class TestSetFieldsPopupBtn extends AbstractFieldsPopupBtn<TestSetEditorFields> {
     // UC-EDITOR-PANEL-003, Rule-EDITOR-PANEL-022
     public TestSetFieldsPopupBtn(final @NotNull Runnable onToolBarDetailsSelectedChanged) {
         super(FIELDS,
                 ShownFields.IN_TEST_SETS,
-                TestSetEditorAttributes.class,
+                TestSetEditorFields.class,
                 onToolBarDetailsSelectedChanged);
     }
 }

@@ -35,10 +35,10 @@ import org.testin.editor.WheelForwarding;
 import org.testin.editor.open.EditorKind;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
-import org.testin.model.ShowableAttribute;
+import org.testin.model.ShowableField;
 import org.testin.testcase.Can;
-import org.testin.testcase.TestSetEditorAttributes;
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
+import org.testin.testrun.TestRunEditorFields;
 import org.testin.ui.Tooltip;
 import org.testin.ui.framework.RowStripe;
 import org.testin.util.Bundle;
@@ -323,37 +323,37 @@ public class GridTables {
     }
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-020, Rule-TREE-PANEL-009
-    public @NotNull JBTable buildTestRunTable(final @NotNull List<String[]> rows, final @NotNull Set<TestRunEditorAttributes> attributes, final @NotNull BooleanSupplier stillOpen) {
-        TestinLogger.debug("[GridTables] buildRunTable: rows=" + rows.size() + ", attributes=" + attributes);
-        final @NotNull List<TestRunEditorAttributes> ordered = TestRunEditorAttributes.COLUMNS;
+    public @NotNull JBTable buildTestRunTable(final @NotNull List<String[]> rows, final @NotNull Set<TestRunEditorFields> fields, final @NotNull BooleanSupplier stillOpen) {
+        TestinLogger.debug("[GridTables] buildRunTable: rows=" + rows.size() + ", fields=" + fields);
+        final @NotNull List<TestRunEditorFields> ordered = TestRunEditorFields.COLUMNS;
 
         final @NotNull JBTable table = buildTable(buildColumns(ordered), rows, column -> stillOpen.getAsBoolean() && ordered.get(column).isEdited(), EditorKind.TEST_RUN);
-        applyColumnVisibility(table, TestRunEditorAttributes.class, attributes);
+        applyColumnVisibility(table, TestRunEditorFields.class, fields);
         return table;
     }
 
     // UC-EDITOR-PANEL-002, Rule-EDITOR-PANEL-020
-    public @NotNull JBTable buildTestTable(final @NotNull List<String[]> rows, final @NotNull Set<TestSetEditorAttributes> attributes) {
-        TestinLogger.debug("[GridTables] buildTestTable: rows=" + rows.size() + ", attributes=" + attributes);
-        final @NotNull List<TestSetEditorAttributes> ordered = TestSetEditorAttributes.COLUMNS;
+    public @NotNull JBTable buildTestTable(final @NotNull List<String[]> rows, final @NotNull Set<TestSetEditorFields> fields) {
+        TestinLogger.debug("[GridTables] buildTestTable: rows=" + rows.size() + ", fields=" + fields);
+        final @NotNull List<TestSetEditorFields> ordered = TestSetEditorFields.COLUMNS;
 
         final @NotNull JBTable table = buildTable(buildColumns(ordered), rows, column -> ordered.get(column).can(Can.EDIT), EditorKind.TEST_SET);
-        applyColumnVisibility(table, TestSetEditorAttributes.class, attributes);
+        applyColumnVisibility(table, TestSetEditorFields.class, fields);
         return table;
     }
 
     // UC-EDITOR-PANEL-003, Rule-EDITOR-PANEL-021
-    public <E extends Enum<E> & ShowableAttribute> void applyColumnVisibility(final @NotNull JBTable table, final @NotNull Class<E> attributes, final @NotNull Set<E> selected) {
+    public <E extends Enum<E> & ShowableField> void applyColumnVisibility(final @NotNull JBTable table, final @NotNull Class<E> fieldType, final @NotNull Set<E> selected) {
         final @NotNull TableColumnModel cm = table.getColumnModel();
         while (cm.getColumnCount() > 0) {
             cm.removeColumn(cm.getColumn(cm.getColumnCount() - 1));
         }
 
-        final E @NotNull [] allValues = attributes.getEnumConstants();
+        final E @NotNull [] allValues = fieldType.getEnumConstants();
         for (int i = 0; i < allValues.length; i++) {
-            final @NotNull E attribute = allValues[i];
-            if (selected.contains(attribute)) {
-                cm.addColumn(columnFor(i, attribute.getName()));
+            final @NotNull E field = allValues[i];
+            if (selected.contains(field)) {
+                cm.addColumn(columnFor(i, field.getName()));
             }
         }
 
@@ -411,8 +411,8 @@ public class GridTables {
         return table;
     }
 
-    private String @NotNull [] buildColumns(final @NotNull List<? extends ShowableAttribute> attributes) {
-        return attributes.stream().map(ShowableAttribute::getName).toArray(String[]::new);
+    private String @NotNull [] buildColumns(final @NotNull List<? extends ShowableField> fields) {
+        return fields.stream().map(ShowableField::getName).toArray(String[]::new);
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

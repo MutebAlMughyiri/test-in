@@ -19,7 +19,7 @@ package org.testin.model;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.testrun.RunItem;
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testrun.TestRunEditorFields;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
@@ -38,29 +38,29 @@ public class TestRunGridEditingTest {
     // Rule-EDITOR-PANEL-171
     @Test
     public void actualResultIsTheOneColumnATesterCanTypeInto() {
-        final List<TestRunEditorAttributes> editable = Arrays.stream(TestRunEditorAttributes.values())
-                .filter(TestRunEditorAttributes::isEdited)
+        final List<TestRunEditorFields> editable = Arrays.stream(TestRunEditorFields.values())
+                .filter(TestRunEditorFields::isEdited)
                 .toList();
 
-        assertEquals(editable, List.of(TestRunEditorAttributes.ACTUAL_RESULT),
+        assertEquals(editable, List.of(TestRunEditorFields.ACTUAL_RESULT),
                 "a status, a severity or a description typed into a cell is a way of recording it "
                         + "that nothing else in the plugin knows about");
     }
 
     @Test
     public void theRunItemStatusColumnsRefuseEditingByTheirOwnDeclaration() {
-        assertFalse(TestRunEditorAttributes.RUN_STATUS.isEdited(), "P, F and B set a status");
-        assertFalse(TestRunEditorAttributes.BUG_SEVERITY.isEdited(), "the failure dialog collects this");
-        assertFalse(TestRunEditorAttributes.BUG_PRIORITY.isEdited(), "and this");
-        assertFalse(TestRunEditorAttributes.EXECUTED_BY.isEdited(), "recorded, not claimed");
-        assertFalse(TestRunEditorAttributes.EXECUTED_AT.isEdited(), "recorded, not claimed");
+        assertFalse(TestRunEditorFields.RUN_STATUS.isEdited(), "P, F and B set a status");
+        assertFalse(TestRunEditorFields.BUG_SEVERITY.isEdited(), "the failure dialog collects this");
+        assertFalse(TestRunEditorFields.BUG_PRIORITY.isEdited(), "and this");
+        assertFalse(TestRunEditorFields.EXECUTED_BY.isEdited(), "recorded, not claimed");
+        assertFalse(TestRunEditorFields.EXECUTED_AT.isEdited(), "recorded, not claimed");
     }
 
     @Test
     public void typingIntoTheCellIsWhatTheTestRunThenHolds() {
         final RunItem row = runItem();
 
-        TestRunEditorAttributes.ACTUAL_RESULT.getRunItemValueSetter().execute(row, "The balance showed 0.00");
+        TestRunEditorFields.ACTUAL_RESULT.getRunItemValueSetter().execute(row, "The balance showed 0.00");
 
         assertEquals(row.getActualResult(), "The balance showed 0.00");
     }

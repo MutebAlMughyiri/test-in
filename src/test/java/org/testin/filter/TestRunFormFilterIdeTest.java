@@ -31,7 +31,7 @@ import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.testrun.form.TestRunFormFilter;
 import org.testin.util.Bundle;
 import org.testin.view.Drawn;
@@ -111,9 +111,9 @@ public class TestRunFormFilterIdeTest extends AbstractTempRootIdeTest {
     public void testTheFilterMenuIsTheEditorsOne() {
         final @NotNull List<String> names = menu().stream().map(TestRunFormFilterIdeTest::nameOf).toList();
 
-        assertTrue("the Filter menu has no priority filter: " + names, names.contains(TestSetEditorAttributes.PRIORITY.getName()));
-        assertTrue("the Filter menu has no group filter: " + names, names.contains(TestSetEditorAttributes.GROUP.getName()));
-        assertTrue("the Filter menu has no module filter: " + names, names.contains(TestSetEditorAttributes.MODULE.getName()));
+        assertTrue("the Filter menu has no priority filter: " + names, names.contains(TestSetEditorFields.PRIORITY.getName()));
+        assertTrue("the Filter menu has no group filter: " + names, names.contains(TestSetEditorFields.GROUP.getName()));
+        assertTrue("the Filter menu has no module filter: " + names, names.contains(TestSetEditorFields.MODULE.getName()));
         assertTrue("the Filter menu has no automation filter: " + names, names.contains(Bundle.message("filter.automation")));
         assertTrue("the Filter menu has no status filter: " + names, names.contains(Bundle.message("filter.test.case.status")));
         assertTrue("the Filter menu is not the editors' one: " + names, names.contains(Bundle.message("filter.run.item.status")));
@@ -122,7 +122,7 @@ public class TestRunFormFilterIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-TREE-PANEL-129
     public void testAPriorityFilterPicksTheSameTestCasesAsInAnEditor() {
-        final @NotNull ToggleAction high = entriesOf(TestSetEditorAttributes.PRIORITY.getName()).stream()
+        final @NotNull ToggleAction high = entriesOf(TestSetEditorFields.PRIORITY.getName()).stream()
                 .filter(entry -> nameOf(entry).equals(Priority.HIGH.getLabel()))
                 .map(ToggleAction.class::cast)
                 .findFirst()

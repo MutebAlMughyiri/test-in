@@ -23,7 +23,7 @@ import org.testin.indexer.TestCases;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.util.Bundle;
 import org.testin.util.Fonts;
 import org.testin.view.Drawn;
@@ -44,13 +44,13 @@ public class DetailsRowsIdeTest extends BasePlatformTestCase {
 
     private static final @NotNull List<String> PATH = List.of("Demo", "Test Cases", "Login");
     private static final @NotNull List<String> ROWS_IN_ORDER = List.of(
-            caption("attribute.expected.result"),
-            caption("attribute.steps"),
-            caption("attribute.pre.conditions"),
-            caption("attribute.test.data"),
-            caption("attribute.reference"),
-            caption("attribute.module"),
-            caption("attribute.order"),
+            caption("field.expected.result"),
+            caption("field.steps"),
+            caption("field.pre.conditions"),
+            caption("field.test.data"),
+            caption("field.reference"),
+            caption("field.module"),
+            caption("field.order"),
             caption("details.created"),
             caption("details.updated"));
 
@@ -104,15 +104,15 @@ public class DetailsRowsIdeTest extends BasePlatformTestCase {
 
     // Rule-VIEW-PANEL-103
     public void testAFieldUntickedInFieldsIsStillDrawn() {
-        final @NotNull Set<TestSetEditorAttributes> was = ShownFields.read(ShownFields.IN_TEST_SETS, TestSetEditorAttributes.class);
-        final @NotNull Set<TestSetEditorAttributes> chosen = EnumSet.allOf(TestSetEditorAttributes.class);
-        chosen.removeAll(Set.of(TestSetEditorAttributes.STEPS, TestSetEditorAttributes.MODULE));
+        final @NotNull Set<TestSetEditorFields> was = ShownFields.read(ShownFields.IN_TEST_SETS, TestSetEditorFields.class);
+        final @NotNull Set<TestSetEditorFields> chosen = EnumSet.allOf(TestSetEditorFields.class);
+        chosen.removeAll(Set.of(TestSetEditorFields.STEPS, TestSetEditorFields.MODULE));
         ShownFields.write(ShownFields.IN_TEST_SETS, chosen);
         try {
             final @NotNull List<String> words = Drawn.words(Drawn.detailsTab(getProject(), everyFieldFilled(), Optional.empty(), PATH));
 
-            assertTrue("a row unticked in Fields went missing from the Details tab: " + words, words.contains(caption("attribute.steps")));
-            assertTrue("a row unticked in Fields went missing from the Details tab: " + words, words.contains(caption("attribute.module")));
+            assertTrue("a row unticked in Fields went missing from the Details tab: " + words, words.contains(caption("field.steps")));
+            assertTrue("a row unticked in Fields went missing from the Details tab: " + words, words.contains(caption("field.module")));
         } finally {
             ShownFields.write(ShownFields.IN_TEST_SETS, was);
         }
@@ -122,10 +122,10 @@ public class DetailsRowsIdeTest extends BasePlatformTestCase {
     public void testAnEmptyFieldIsNotDrawnAndNeitherIsItsCaption() {
         final @NotNull List<String> words = words(everyFieldFilled().toBuilder().preConditions("").testData(" ").reference("").build());
 
-        assertFalse("an empty pre conditions row was drawn: " + words, words.contains(caption("attribute.pre.conditions")));
-        assertFalse("a blank test data row was drawn: " + words, words.contains(caption("attribute.test.data")));
-        assertFalse("an empty reference row was drawn: " + words, words.contains(caption("attribute.reference")));
-        assertTrue("a filled field went missing with the empty ones: " + words, words.contains(caption("attribute.module")));
+        assertFalse("an empty pre conditions row was drawn: " + words, words.contains(caption("field.pre.conditions")));
+        assertFalse("a blank test data row was drawn: " + words, words.contains(caption("field.test.data")));
+        assertFalse("an empty reference row was drawn: " + words, words.contains(caption("field.reference")));
+        assertTrue("a filled field went missing with the empty ones: " + words, words.contains(caption("field.module")));
     }
 
     // Rule-VIEW-PANEL-025
@@ -148,7 +148,7 @@ public class DetailsRowsIdeTest extends BasePlatformTestCase {
     // Rule-VIEW-PANEL-082
     public void testACaptionSitsOnItsOwnLineAboveItsValue() {
         final @NotNull JBPanel<?> tab = drawn(everyFieldFilled());
-        final @NotNull Component caption = Drawn.reading(tab, caption("attribute.expected.result"));
+        final @NotNull Component caption = Drawn.reading(tab, caption("field.expected.result"));
         final @NotNull Component value = Drawn.reading(tab, "The dashboard opens.");
 
         assertSame("the caption and its value are not rows of the same panel", caption.getParent(), value.getParent());

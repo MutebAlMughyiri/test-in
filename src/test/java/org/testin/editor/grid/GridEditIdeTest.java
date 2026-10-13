@@ -30,7 +30,7 @@ import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestSetNode;
 import org.testin.notifications.Done;
 import org.testin.services.Services;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.undo.UndoHistories;
 import org.testin.undo.UndoScope;
 import org.testin.util.Bundle;
@@ -57,12 +57,12 @@ public class GridEditIdeTest extends AbstractTempRootIdeTest {
         return Drawn.components(editor.getComponent()).stream().filter(JBTable.class::isInstance).map(JBTable.class::cast).findFirst().orElseThrow(() -> new AssertionError("the grid was never built"));
     }
 
-    private static int column(final @NotNull JBTable table, final @NotNull TestSetEditorAttributes attribute) {
-        return table.convertColumnIndexToView(attribute.column());
+    private static int column(final @NotNull JBTable table, final @NotNull TestSetEditorFields field) {
+        return table.convertColumnIndexToView(field.column());
     }
 
-    private static void typeInto(final @NotNull JBTable table, final int row, final @NotNull TestSetEditorAttributes attribute, final @NotNull String typed) {
-        assertTrue(attribute.getName() + " did not open", table.editCellAt(row, column(table, attribute)));
+    private static void typeInto(final @NotNull JBTable table, final int row, final @NotNull TestSetEditorFields field, final @NotNull String typed) {
+        assertTrue(field.getName() + " did not open", table.editCellAt(row, column(table, field)));
         ((JTextComponent) table.getEditorComponent()).setText(typed);
         assertTrue("the cell did not close", table.getCellEditor().stopCellEditing());
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
@@ -97,7 +97,7 @@ public class GridEditIdeTest extends AbstractTempRootIdeTest {
         }
 
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
-        editor.getSelectedDetails().add(TestSetEditorAttributes.GROUP);
+        editor.getSelectedDetails().add(TestSetEditorFields.GROUP);
         editor.getToolBar().getToolbarItem(GridViewBtn.class).doClick();
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
         return editor;
@@ -122,10 +122,10 @@ public class GridEditIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestCaseDto testCase = editor.getList().getModel().getElementAt(0);
         final @NotNull Said balloons = Said.listening(getProject(), getTestRootDisposable());
 
-        typeInto(table, 0, TestSetEditorAttributes.GROUP, " Smoke ,  Regression ,Smoke");
+        typeInto(table, 0, TestSetEditorFields.GROUP, " Smoke ,  Regression ,Smoke");
 
         Await.until("the groups were never stored", () -> stored(testCase).getGroups().equals(List.of("Smoke", "Regression")));
-        assertEquals("the cell was not redrawn to what Testin stored", "Smoke, Regression", table.getValueAt(0, column(table, TestSetEditorAttributes.GROUP)));
+        assertEquals("the cell was not redrawn to what Testin stored", "Smoke, Regression", table.getValueAt(0, column(table, TestSetEditorFields.GROUP)));
         assertTrue("a cell that no longer shows what was typed did not say so", balloons.shown().contains(adjusted("Smoke, Regression", "Smoke ,  Regression ,Smoke")));
     }
 
@@ -136,9 +136,9 @@ public class GridEditIdeTest extends AbstractTempRootIdeTest {
         final @NotNull List<String> before = everyFile();
         final @NotNull Said balloons = Said.listening(getProject(), getTestRootDisposable());
 
-        typeInto(table, 0, TestSetEditorAttributes.GROUP, "Smoke ,");
+        typeInto(table, 0, TestSetEditorFields.GROUP, "Smoke ,");
 
-        assertEquals("the cell was not redrawn to what Testin holds", "Smoke", table.getValueAt(0, column(table, TestSetEditorAttributes.GROUP)));
+        assertEquals("the cell was not redrawn to what Testin holds", "Smoke", table.getValueAt(0, column(table, TestSetEditorFields.GROUP)));
         assertEquals("a cell that ended up as it was said something else than that it was adjusted", List.of(adjusted("Smoke", "Smoke ,")), balloons.shown());
         assertEquals("a cell that ended up as it was wrote a file", before, everyFile());
     }
@@ -150,8 +150,8 @@ public class GridEditIdeTest extends AbstractTempRootIdeTest {
         final @NotNull List<String> before = everyFile();
         final @NotNull Said balloons = Said.listening(getProject(), getTestRootDisposable());
 
-        typeInto(table, 0, TestSetEditorAttributes.GROUP, "Smoke");
-        typeInto(table, 0, TestSetEditorAttributes.DESCRIPTION, "Log in");
+        typeInto(table, 0, TestSetEditorFields.GROUP, "Smoke");
+        typeInto(table, 0, TestSetEditorFields.DESCRIPTION, "Log in");
 
         assertEquals("a cell that ended up as it started said something", List.of(), balloons.shown());
         assertEquals("a cell that ended up as it started wrote a file", before, everyFile());
@@ -165,10 +165,10 @@ public class GridEditIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestCaseDto testCase = editor.getList().getModel().getElementAt(0);
         table.setSize(1200, 600);
 
-        assertTrue(table.editCellAt(0, column(table, TestSetEditorAttributes.DESCRIPTION)));
+        assertTrue(table.editCellAt(0, column(table, TestSetEditorFields.DESCRIPTION)));
         ((JTextComponent) table.getEditorComponent()).setText("Sign in");
 
-        final @NotNull Rectangle elsewhere = table.getCellRect(1, column(table, TestSetEditorAttributes.DESCRIPTION), true);
+        final @NotNull Rectangle elsewhere = table.getCellRect(1, column(table, TestSetEditorFields.DESCRIPTION), true);
         final @NotNull MouseEvent click = new MouseEvent(table, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), InputEvent.BUTTON1_DOWN_MASK, (int) elsewhere.getCenterX(), (int) elsewhere.getCenterY(), 1, false, MouseEvent.BUTTON1);
         for (final MouseListener listener : table.getMouseListeners()) listener.mousePressed(click);
 
@@ -183,9 +183,9 @@ public class GridEditIdeTest extends AbstractTempRootIdeTest {
         final @NotNull UndoScope scope = UndoScope.of(testSet.getPath());
         final @NotNull Said balloons = Said.listening(getProject(), getTestRootDisposable());
 
-        typeInto(table, 0, TestSetEditorAttributes.DESCRIPTION, "Sign in");
+        typeInto(table, 0, TestSetEditorFields.DESCRIPTION, "Sign in");
         Await.until("the first cell never reached the undo history", () -> undoHistories().canUndo(scope));
-        typeInto(table, 1, TestSetEditorAttributes.DESCRIPTION, "Sign out");
+        typeInto(table, 1, TestSetEditorFields.DESCRIPTION, "Sign out");
         Await.until("the second cell never reached the undo history", () -> undoHistories().undoDescription(scope).contains("Sign out"));
 
         assertEquals(Bundle.message("snapshot.undo.one", Bundle.message("snapshot.verb.edit"), "Sign out"), undoHistories().undoDescription(scope));

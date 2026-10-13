@@ -36,7 +36,7 @@ import org.testin.model.Groups;
 import org.testin.model.Priority;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.status.TestCaseStatus;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.ui.framework.AbstractIconButton;
 import org.testin.util.Bundle;
 import org.testin.util.Icons;
@@ -162,7 +162,7 @@ public class FilterPopupBtn extends AbstractIconButton implements ToolbarItem {
         });
         filterResetBtn.addSeparator();
 
-        final @NotNull DefaultActionGroup filterPriorityMenu = new DefaultActionGroup(TestSetEditorAttributes.PRIORITY.getName(), true);
+        final @NotNull DefaultActionGroup filterPriorityMenu = new DefaultActionGroup(TestSetEditorFields.PRIORITY.getName(), true);
         Arrays.stream(Priority.values()).forEach(priority ->
                 filterPriorityMenu.add(new ToggleFilterAction<>(priority.getLabel(), Icons.dot(priority.getColor()),
                         priority, selectedPriority, FilterMembership.plain(), onChanged)));
@@ -173,7 +173,7 @@ public class FilterPopupBtn extends AbstractIconButton implements ToolbarItem {
                 a, selectedAutomation, FilterMembership.plain(), onChanged)));
         filterResetBtn.add(filterAutomationMenu);
 
-        final @NotNull ActionGroup filterGroupMenu = new ActionGroup(TestSetEditorAttributes.GROUP.getName(), true) {
+        final @NotNull ActionGroup filterGroupMenu = new ActionGroup(TestSetEditorFields.GROUP.getName(), true) {
             // UC-EDITOR-PANEL-020, Rule-EDITOR-PANEL-095
             @Override
             public AnAction @NotNull [] getChildren(final @Nullable AnActionEvent e) {
@@ -190,7 +190,7 @@ public class FilterPopupBtn extends AbstractIconButton implements ToolbarItem {
         };
         filterResetBtn.add(filterGroupMenu);
 
-        final @NotNull ActionGroup filterModuleMenu = new ActionGroup(TestSetEditorAttributes.MODULE.getName(), true) {
+        final @NotNull ActionGroup filterModuleMenu = new ActionGroup(TestSetEditorFields.MODULE.getName(), true) {
             // UC-EDITOR-PANEL-020, Rule-EDITOR-PANEL-095
             @Override
             public AnAction @NotNull [] getChildren(final @Nullable AnActionEvent e) {

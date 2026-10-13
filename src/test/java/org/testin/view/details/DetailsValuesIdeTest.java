@@ -32,8 +32,8 @@ import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.services.Services;
-import org.testin.testcase.TestSetEditorAttributes;
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
+import org.testin.testrun.TestRunEditorFields;
 import org.testin.ui.framework.ScreenshotImages;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.util.Bundle;
@@ -61,7 +61,7 @@ import java.util.Set;
 
 public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
 
-    private static final @NotNull String ORDER = TestSetEditorAttributes.ORDER.getName().toUpperCase(Locale.ROOT);
+    private static final @NotNull String ORDER = TestSetEditorFields.ORDER.getName().toUpperCase(Locale.ROOT);
 
     private static @NotNull TestCaseDto everyFieldFilled(final @NotNull TestCaseDto testCase) {
         testCase.setExpectedResult("The dashboard opens");
@@ -216,9 +216,9 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
         final @NotNull TestCaseDto testCase = aTestCase(testSet, "Log in with a valid user", "a");
         final @NotNull TestRunNode testRun = aTestRun(List.of(RunItem.builder().id(testCase.getId()).build()));
         final @NotNull List<String> names = Services.getInstance(getProject(), TestRuns.class).storeScreenshots(testRun.getPath(), List.of(aScreenshot(320, 200)));
-        final @NotNull Set<TestRunEditorAttributes> was = ShownFields.read(ShownFields.IN_TEST_RUNS, TestRunEditorAttributes.class);
-        final @NotNull Set<TestRunEditorAttributes> chosen = EnumSet.allOf(TestRunEditorAttributes.class);
-        chosen.remove(TestRunEditorAttributes.STACKTRACE);
+        final @NotNull Set<TestRunEditorFields> was = ShownFields.read(ShownFields.IN_TEST_RUNS, TestRunEditorFields.class);
+        final @NotNull Set<TestRunEditorFields> chosen = EnumSet.allOf(TestRunEditorFields.class);
+        chosen.remove(TestRunEditorFields.STACKTRACE);
         ShownFields.write(ShownFields.IN_TEST_RUNS, chosen);
         try {
             final @NotNull JBPanel<?> tab = Drawn.detailsTab(getProject(), testCase, Optional.of(failedWith(testCase, names)), testRun.treePath());

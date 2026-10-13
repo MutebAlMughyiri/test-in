@@ -23,7 +23,7 @@ import org.testin.model.NodeType;
 import org.testin.model.NodeFigures;
 import org.testin.model.markers.Marker;
 import org.testin.model.node.AbstractNode;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.ui.framework.AbstractFrameworkDialog;
 import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.StatusBarShortcut;
@@ -46,11 +46,11 @@ public final class NodeDetailsDialog extends AbstractFrameworkDialog {
         final @NotNull DialogPart.DetailsBuilder details = DialogPart.details()
                 .row(Bundle.message("caption.name"), node.getName())
                 .row(Bundle.message("caption.path"), node.getPath().toString())
-                .row(TestSetEditorAttributes.CREATED_BY.getName(), marker.getCreatedBy())
-                .row(TestSetEditorAttributes.CREATED_AT.getName(), Display.formatDate(marker.getCreatedAt()))
-                .row(TestSetEditorAttributes.UPDATED_BY.getName(), marker.getUpdatedBy())
-                .row(TestSetEditorAttributes.UPDATED_AT.getName(), Display.formatDate(marker.getUpdatedAt()))
-                .row(TestSetEditorAttributes.STATUS.getName(), marker.getStatusLabel());
+                .row(TestSetEditorFields.CREATED_BY.getName(), marker.getCreatedBy())
+                .row(TestSetEditorFields.CREATED_AT.getName(), Display.formatDate(marker.getCreatedAt()))
+                .row(TestSetEditorFields.UPDATED_BY.getName(), marker.getUpdatedBy())
+                .row(TestSetEditorFields.UPDATED_AT.getName(), Display.formatDate(marker.getUpdatedAt()))
+                .row(TestSetEditorFields.STATUS.getName(), marker.getStatusLabel());
 
         marker.getDetailRows().forEach(extra -> details.row(extra.caption(), extra.value()));
 

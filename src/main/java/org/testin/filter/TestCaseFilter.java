@@ -23,7 +23,7 @@ import org.testin.model.Groups;
 import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -57,7 +57,7 @@ public final class TestCaseFilter {
     private static boolean matches(final @NotNull TestCaseDto testCase, final @NotNull String query, final @NotNull FilterAndSortChoice wanted, final @NotNull Function<UUID, Optional<RunItem>> runItemProvider) {
         final @NotNull TestCaseDto shown = runItemProvider.apply(testCase.getId()).map(RunItem::shownTestCase).orElse(testCase);
 
-        final boolean matchesSearch = query.isEmpty() || TestSetEditorAttributes.anyContains(shown, query);
+        final boolean matchesSearch = query.isEmpty() || TestSetEditorFields.anyContains(shown, query);
         final boolean matchesPriority = wanted.priorities().isEmpty() || wanted.priorities().contains(shown.getPriority());
         final boolean matchesGroup = wanted.groups().isEmpty()
                 || (wanted.groups().contains(Groups.NONE) && shown.getGroups().isEmpty())

@@ -23,7 +23,7 @@ import org.testin.editor.card.AbstractCard;
 import org.testin.model.Priority;
 import org.testin.model.testrun.RunItem;
 import org.testin.testrun.ChangedSinceCommit;
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testrun.TestRunEditorFields;
 import org.testin.ui.Badge;
 import org.testin.util.Bundle;
 import org.testin.util.Fonts;
@@ -49,23 +49,23 @@ public class RunItemCard extends AbstractCard {
     }
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-267
-    public void updateData(final @NotNull Integer index, final @NotNull Set<TestRunEditorAttributes> activeDetails, final @NotNull RunItem runItem, final @NotNull String title) {
+    public void updateData(final @NotNull Integer index, final @NotNull Set<TestRunEditorFields> activeDetails, final @NotNull RunItem runItem, final @NotNull String title) {
         this.automation = automationState.of(runItem.getId());
-        this.priority = activeDetails.contains(TestRunEditorAttributes.PRIORITY) ? runItem.shownTestCase().getPriority() : Priority.DEFAULT;
+        this.priority = activeDetails.contains(TestRunEditorFields.PRIORITY) ? runItem.shownTestCase().getPriority() : Priority.DEFAULT;
 
         badges.clear();
         details.clear();
 
-        Arrays.stream(TestRunEditorAttributes.values())
+        Arrays.stream(TestRunEditorFields.values())
                 .filter(activeDetails::contains)
-                .forEach(attribute -> attribute.applyToUI(runItem, badges, details));
+                .forEach(field -> field.applyToUI(runItem, badges, details));
 
         updateUI(index, title, badges, details);
 
         // Rule-EDITOR-PANEL-263
         changedSince.setVisible(ChangedSinceCommit.of(runItem));
 
-        Optional.ofNullable(attributeLabels.get(TestRunEditorAttributes.RUN_STATUS.getName())).ifPresent(statusLabel -> {
+        Optional.ofNullable(fieldLabels.get(TestRunEditorFields.RUN_STATUS.getName())).ifPresent(statusLabel -> {
             statusLabel.setFont(Fonts.strong());
             statusLabel.setForeground(runItem.shownStatus().getRowColor());
             // Rule-EDITOR-PANEL-287

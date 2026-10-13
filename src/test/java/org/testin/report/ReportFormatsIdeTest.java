@@ -48,7 +48,7 @@ import org.testin.model.testrun.TestRunSummary;
 import org.testin.model.status.RunItemStatus;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testrun.TestRunEditorFields;
 import org.testin.util.Bundle;
 
 import java.io.ByteArrayInputStream;
@@ -276,7 +276,7 @@ public class ReportFormatsIdeTest extends AbstractTempRootIdeTest {
     // Rule-REPORT-019
     public void testEveryFormatNamesTheColumnsTheSameWay() {
         final @NotNull TestRunNode testRun = theTestRun();
-        final @NotNull List<String> words = List.of(Bundle.message("caption.test.case"), TestRunEditorAttributes.BUG_PRIORITY.getName(), TestRunEditorAttributes.BUG_SEVERITY.getName());
+        final @NotNull List<String> words = List.of(Bundle.message("caption.test.case"), TestRunEditorFields.BUG_PRIORITY.getName(), TestRunEditorFields.BUG_SEVERITY.getName());
 
         for (final String column : words) {
             assertPrints("The web page", html(testRun), ">" + column + "</th>");

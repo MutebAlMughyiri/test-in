@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.open.EditorKind;
 import org.testin.logger.TestinLogger;
-import org.testin.model.ShowableAttribute;
+import org.testin.model.ShowableField;
 import org.testin.util.FailureText;
 
 import java.util.HashSet;
@@ -37,8 +37,8 @@ public final class ShownFields {
     public static final @NotNull String IN_TEST_RUNS = EditorKind.TEST_RUN.detailsKey(7);
 
     // UC-EDITOR-PANEL-003, Rule-EDITOR-PANEL-022
-    public static <E extends Enum<E> & ShowableAttribute> @NotNull Set<E> read(final @NotNull String propertyKey, final @NotNull Class<E> attributes) {
-        final @NotNull List<E> options = List.of(attributes.getEnumConstants());
+    public static <E extends Enum<E> & ShowableField> @NotNull Set<E> read(final @NotNull String propertyKey, final @NotNull Class<E> fieldType) {
+        final @NotNull List<E> options = List.of(fieldType.getEnumConstants());
         final @NotNull String defaults = options.stream()
                 .filter(o -> o.getToolBarDefault().isSelectedByDefault())
                 .map(Enum::name)
@@ -48,9 +48,9 @@ public final class ShownFields {
         for (final String s : PropertiesComponent.getInstance().getValue(propertyKey, defaults).split(",", -1)) {
             if (s.isEmpty()) continue;
             try {
-                chosen.add(Enum.valueOf(attributes, s));
+                chosen.add(Enum.valueOf(fieldType, s));
             } catch (final IllegalArgumentException ex) {
-                TestinLogger.error("Invalid editor attribute '" + s + "' for " + propertyKey + ": " + FailureText.of(ex));
+                TestinLogger.error("Invalid editor field '" + s + "' for " + propertyKey + ": " + FailureText.of(ex));
             }
         }
 

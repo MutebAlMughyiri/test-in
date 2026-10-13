@@ -22,8 +22,8 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.RunItem;
 import org.testin.testcase.TestCaseOrder;
-import org.testin.testcase.TestSetEditorAttributes;
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
+import org.testin.testrun.TestRunEditorFields;
 
 import java.util.List;
 import java.util.Map;
@@ -38,14 +38,14 @@ public final class GridRows {
 
     // UC-EDITOR-PANEL-002, Rule-EDITOR-PANEL-020
     public static @NotNull List<String[]> ofTestCases(final @NotNull List<TestCaseDto> testCases, final int firstRow, final @NotNull ToIntFunction<TestCaseDto> position) {
-        return rows(testCases, firstRow, TestSetEditorAttributes.COLUMNS, TestSetEditorAttributes.SEQUENCE, TestSetEditorAttributes.ORDER, position, testCase -> attribute -> attribute.gridValue(testCase));
+        return rows(testCases, firstRow, TestSetEditorFields.COLUMNS, TestSetEditorFields.SEQUENCE, TestSetEditorFields.ORDER, position, testCase -> field -> field.gridValue(testCase));
     }
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-020
     public static @NotNull List<String[]> ofRunItems(final @NotNull List<TestCaseDto> testCases, final @NotNull Map<UUID, RunItem> runItems, final int firstRow, final @NotNull ToIntFunction<TestCaseDto> position) {
-        return rows(testCases, firstRow, TestRunEditorAttributes.COLUMNS, TestRunEditorAttributes.SEQUENCE, TestRunEditorAttributes.ORDER, position, testCase -> {
+        return rows(testCases, firstRow, TestRunEditorFields.COLUMNS, TestRunEditorFields.SEQUENCE, TestRunEditorFields.ORDER, position, testCase -> {
             final @NotNull RunItem runItem = runItemOf(testCase, runItems);
-            return attribute -> attribute.gridValue(runItem);
+            return field -> field.gridValue(runItem);
         });
     }
 

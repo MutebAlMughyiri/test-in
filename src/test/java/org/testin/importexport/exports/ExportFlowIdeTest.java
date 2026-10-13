@@ -39,7 +39,7 @@ import org.testin.services.BackgroundWork;
 import org.testin.services.Services;
 import org.testin.setting.AppSettingsState;
 import org.testin.testcase.Can;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.ui.framework.ConfirmDialog;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.util.Bundle;
@@ -133,7 +133,7 @@ public class ExportFlowIdeTest extends AbstractTempRootIdeTest {
     }
 
     private static int descriptionColumn() {
-        return TestSetEditorAttributes.all(Can.EXPORT).indexOf(TestSetEditorAttributes.DESCRIPTION) + 2;
+        return TestSetEditorFields.all(Can.EXPORT).indexOf(TestSetEditorFields.DESCRIPTION) + 2;
     }
 
     @Override

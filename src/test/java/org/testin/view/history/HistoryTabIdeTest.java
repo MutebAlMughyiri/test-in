@@ -70,7 +70,7 @@ public class HistoryTabIdeTest extends AbstractTempRootIdeTest {
     }
 
     // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-100, Rule-VIEW-PANEL-105, Rule-VIEW-PANEL-109
-    public void testABugIsACardOfItsOwnWithItsAttributesAndItsTestRunOpensTheRunItem() {
+    public void testABugIsACardOfItsOwnWithItsFieldsAndItsTestRunOpensTheRunItem() {
         final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
         final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), testProject, "Login");
         final @NotNull TestCaseDto testCase = EditorFixtures.testCase(getProject(), testSet, "Log in with a valid user", "a");

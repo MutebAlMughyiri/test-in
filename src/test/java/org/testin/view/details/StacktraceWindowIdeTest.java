@@ -20,7 +20,7 @@ import com.intellij.ui.components.JBLabel;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.CreateTestCaseFields;
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testrun.TestRunEditorFields;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.view.Drawn;
 
@@ -109,7 +109,7 @@ public class StacktraceWindowIdeTest extends BasePlatformTestCase {
 
         assertSame("the test case does not come after its icon", CreateTestCaseFields.DESCRIPTION.getIcon(), labelHolding(drawn, "Log in with a valid user").getIcon());
         assertSame("the expected result does not come after its icon", CreateTestCaseFields.EXPECTED_RESULT.getIcon(), labelHolding(drawn, "The session stays until the tester signs out").getIcon());
-        final @NotNull JBLabel caption = labelHolding(drawn, TestRunEditorAttributes.ACTUAL_RESULT.getName().toUpperCase(Locale.ROOT));
+        final @NotNull JBLabel caption = labelHolding(drawn, TestRunEditorFields.ACTUAL_RESULT.getName().toUpperCase(Locale.ROOT));
         final @NotNull JBLabel resultLabel = labelHolding(drawn, "The session was dropped");
         assertSame("the actual result's caption does not name it", resultLabel, caption.getLabelFor());
         assertTrue("the actual result does not come after its caption", topOf(caption, window) < topOf(resultLabel, window));

@@ -22,7 +22,7 @@ import org.testin.model.Priority;
 import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.status.TestCaseStatus;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testng.annotations.Test;
 
 import javax.swing.KeyStroke;
@@ -77,16 +77,16 @@ public class CopyChoiceTest {
     }
 
     @Test
-    public void everyRowButAllDetailsIsNamedByTheAttributeItCopies() {
+    public void everyRowButAllDetailsIsNamedByTheFieldItCopies() {
         for (final CopyChoice choice : CopyChoice.values()) {
             if (choice == CopyChoice.ALL_DETAILS) {
-                assertTrue(choice.getAttribute().isEmpty(), "ALL_DETAILS copies everything, so it names no single attribute");
+                assertTrue(choice.getField().isEmpty(), "ALL_DETAILS copies everything, so it names no single field");
                 continue;
             }
 
-            assertTrue(choice.getAttribute().isPresent(), choice + " copies no attribute, so there is nothing for it to copy");
-            assertEquals(choice.getName(), choice.getAttribute().orElseThrow().getName(),
-                    choice + " is captioned something other than the attribute it copies, so the two can drift apart");
+            assertTrue(choice.getField().isPresent(), choice + " copies no field, so there is nothing for it to copy");
+            assertEquals(choice.getName(), choice.getField().orElseThrow().getName(),
+                    choice + " is captioned something other than the field it copies, so the two can drift apart");
         }
     }
 
@@ -110,18 +110,18 @@ public class CopyChoiceTest {
     @Test
     public void allDetailsCopiesEveryFieldTheTesterWroteAsNameColonValue() {
         final @NotNull TestCaseDto testCase = writtenInFull();
-        final @NotNull List<TestSetEditorAttributes> written = List.of(
-                TestSetEditorAttributes.DESCRIPTION, TestSetEditorAttributes.EXPECTED_RESULT, TestSetEditorAttributes.STEPS,
-                TestSetEditorAttributes.PRIORITY, TestSetEditorAttributes.REFERENCE, TestSetEditorAttributes.TEST_DATA,
-                TestSetEditorAttributes.PRE_CONDITIONS, TestSetEditorAttributes.GROUP, TestSetEditorAttributes.MODULE,
-                TestSetEditorAttributes.STATUS);
+        final @NotNull List<TestSetEditorFields> written = List.of(
+                TestSetEditorFields.DESCRIPTION, TestSetEditorFields.EXPECTED_RESULT, TestSetEditorFields.STEPS,
+                TestSetEditorFields.PRIORITY, TestSetEditorFields.REFERENCE, TestSetEditorFields.TEST_DATA,
+                TestSetEditorFields.PRE_CONDITIONS, TestSetEditorFields.GROUP, TestSetEditorFields.MODULE,
+                TestSetEditorFields.STATUS);
 
         final @NotNull String copied = CopyChoice.ALL_DETAILS.from(testCase);
 
-        for (final TestSetEditorAttributes field : written) {
+        for (final TestSetEditorFields field : written) {
             assertTrue(copied.contains(field.getName() + ": " + field.gridValue(testCase)), field.getName() + " is not copied as its name, a colon and its value: " + copied);
         }
-        for (final TestSetEditorAttributes field : TestSetEditorAttributes.values()) {
+        for (final TestSetEditorFields field : TestSetEditorFields.values()) {
             if (written.contains(field)) continue;
 
             assertFalse(copied.contains(field.getName() + ": "), field.getName() + " is not a field the tester wrote, yet All Details copied it: " + copied);
@@ -134,7 +134,7 @@ public class CopyChoiceTest {
         final @NotNull TestCaseDto testCase = writtenInFull();
         testCase.setReference("");
 
-        assertFalse(CopyChoice.ALL_DETAILS.from(testCase).contains(TestSetEditorAttributes.REFERENCE.getName() + ":"), "an empty reference still got a line");
+        assertFalse(CopyChoice.ALL_DETAILS.from(testCase).contains(TestSetEditorFields.REFERENCE.getName() + ":"), "an empty reference still got a line");
     }
 
     // Rule-EDITOR-PANEL-074
@@ -157,6 +157,6 @@ public class CopyChoiceTest {
         assertEquals(CopyChoice.DESCRIPTION.from(testCase), "Refuse an expired card", "a single value carries no caption");
         assertEquals(CopyChoice.ID.from(testCase), testCase.getId().toString(), "the identity can be copied on its own");
         assertEquals(CopyChoice.FQCN.from(testCase), "shop.checkout.PaymentTest.refuseAnExpiredCard", "and the class name");
-        assertEquals(CopyChoice.PATH.from(testCase), TestSetEditorAttributes.PATH.gridValue(testCase), "and the path");
+        assertEquals(CopyChoice.PATH.from(testCase), TestSetEditorFields.PATH.gridValue(testCase), "and the path");
     }
 }

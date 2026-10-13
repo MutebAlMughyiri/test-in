@@ -20,7 +20,7 @@ import com.intellij.ui.components.JBLabel;
 import org.jetbrains.annotations.NotNull;
 import org.testin.importexport.FileFormat;
 import org.testin.testcase.Can;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.ui.dialogs.DialogStyle;
 import org.testin.util.Html;
 
@@ -28,12 +28,12 @@ import javax.swing.JComponent;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public record FileTypeHint(@NotNull JBLabel label, @NotNull List<TestSetEditorAttributes> attributes) {
-    public static @NotNull FileTypeHint of(final @NotNull List<TestSetEditorAttributes> attributes) {
+public record FileTypeHint(@NotNull JBLabel label, @NotNull List<TestSetEditorFields> fields) {
+    public static @NotNull FileTypeHint of(final @NotNull List<TestSetEditorFields> fields) {
         final @NotNull JBLabel label = DialogStyle.hint();
         label.setVisible(false);
 
-        return new FileTypeHint(label, attributes);
+        return new FileTypeHint(label, fields);
     }
 
     public @NotNull JComponent panel() {
@@ -48,9 +48,9 @@ public record FileTypeHint(@NotNull JBLabel label, @NotNull List<TestSetEditorAt
 
     // UC-SHARE-005
     public void showFor(final @NotNull FileFormat format) {
-        final @NotNull String columns = attributes.stream()
-                .filter(attribute -> attribute.can(Can.IMPORT))
-                .map(TestSetEditorAttributes::getName)
+        final @NotNull String columns = fields.stream()
+                .filter(field -> field.can(Can.IMPORT))
+                .map(TestSetEditorFields::getName)
                 .collect(Collectors.joining(", "));
 
         final @NotNull String hint = format.hintFor(columns);

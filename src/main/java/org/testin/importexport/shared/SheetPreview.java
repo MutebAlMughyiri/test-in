@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.ui.framework.DialogComponent;
 
 import javax.swing.JComponent;
@@ -38,7 +38,7 @@ public final class SheetPreview implements DialogComponent {
     private static final @NotNull DefaultTableModel NO_MODEL = new DefaultTableModel();
 
     private final @NotNull Project project;
-    private final @NotNull List<TestSetEditorAttributes> attributes;
+    private final @NotNull List<TestSetEditorFields> fields;
 
     private final @NotNull JBTabbedPane tabs = new JBTabbedPane();
     private final @NotNull Map<String, DefaultTableModel> models = new LinkedHashMap<>();
@@ -59,8 +59,8 @@ public final class SheetPreview implements DialogComponent {
         for (final Map.Entry<String, List<TestCaseDto>> entry : sheets.entrySet()) {
             final @NotNull List<TestCaseDto> testCases = entry.getValue();
 
-            final @NotNull DefaultTableModel model = new TablePanelBuilder().createModel(attributes, testCases);
-            model.addTableModelListener(new CellEditListener(attributes, project, testCases));
+            final @NotNull DefaultTableModel model = new TablePanelBuilder().createModel(fields, testCases);
+            model.addTableModelListener(new CellEditListener(fields, project, testCases));
 
             models.put(entry.getKey(), model);
             tabs.addTab(entry.getKey(), new JBScrollPane(new TablePanelBuilder().buildTable(model, project)));

@@ -28,8 +28,8 @@ import org.testin.importexport.imports.ImportSetter;
 import org.testin.model.Groups;
 import org.testin.model.TestCaseDto;
 import org.testin.model.TestCaseDto.TestCaseDtoBuilder;
-import org.testin.model.ShowableAttribute;
-import org.testin.model.AttributeDefault;
+import org.testin.model.ShowableField;
+import org.testin.model.FieldDefault;
 import org.testin.notifications.Notifier;
 import org.testin.notifications.Refused;
 import org.testin.services.Services;
@@ -53,10 +53,10 @@ import java.util.stream.Collectors;
 import static org.testin.importexport.imports.ImportSetter.always;
 
 @Getter
-public enum TestSetEditorAttributes implements ShowableAttribute {
+public enum TestSetEditorFields implements ShowableField {
     SEQUENCE(
-            Bundle.message("attribute.sequence"),
-            AttributeDefault.STRUCTURE,
+            Bundle.message("field.sequence"),
+            FieldDefault.STRUCTURE,
             _ -> "",
             (_, testCase, _) -> Optional.of(testCase),
             GenType.NO_CODE_CHANGE
@@ -67,8 +67,8 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
     },
 
     ORDER(
-            Bundle.message("attribute.order"),
-            AttributeDefault.ON,
+            Bundle.message("field.order"),
+            FieldDefault.ON,
             _ -> "",
             (_, testCase, _) -> Optional.of(testCase),
             GenType.NO_CODE_CHANGE
@@ -79,8 +79,8 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
     },
 
     DESCRIPTION(
-            Bundle.message("attribute.description"),
-            AttributeDefault.LOCKED_CHECKED,
+            Bundle.message("field.description"),
+            FieldDefault.LOCKED_CHECKED,
             TestCaseDto::getDescription,
             always((draft, v) -> draft.description(NameSanitizer.description(v))),
             GenType.UPDATE_TEST_CASE_DESCRIPTION,
@@ -92,8 +92,8 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
     },
 
     ID(
-            Bundle.message("attribute.id"),
-            AttributeDefault.OFF,
+            Bundle.message("field.id"),
+            FieldDefault.OFF,
             testCase -> String.valueOf(testCase.getId()),
             (_, testCase, _) -> Optional.of(testCase),
             GenType.NO_CODE_CHANGE,
@@ -101,8 +101,8 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
     ),
 
     EXPECTED_RESULT(
-            Bundle.message("attribute.expected.result"),
-            AttributeDefault.ON,
+            Bundle.message("field.expected.result"),
+            FieldDefault.ON,
             TestCaseDto::getExpectedResult,
             always(TestCaseDtoBuilder::expectedResult),
             GenType.UPDATE_TEST_CASE_EXPECTED_RESULT,
@@ -110,8 +110,8 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
     ),
 
     STEPS(
-            Bundle.message("attribute.steps"),
-            AttributeDefault.OFF,
+            Bundle.message("field.steps"),
+            FieldDefault.OFF,
             testCase -> String.join(", ", testCase.getSteps()),
             always((draft, v) -> draft.steps(TestCaseFieldParser.steps(v))),
             GenType.UPDATE_TEST_CASE_STEPS,
@@ -119,8 +119,8 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
     ),
 
     PRIORITY(
-            Bundle.message("attribute.priority"),
-            AttributeDefault.ON,
+            Bundle.message("field.priority"),
+            FieldDefault.ON,
             testCase -> testCase.getPriority().getLabel(),
             (_, testCase, v) -> TestCaseFieldParser.priority(v, testCase.getPriority()).map(priority -> testCase.edit().priority(priority).build()),
             GenType.UPDATE_TEST_CASE_PRIORITY,
@@ -132,8 +132,8 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
     },
 
     FQCN(
-            Bundle.message("attribute.fqcn"),
-            AttributeDefault.OFF,
+            Bundle.message("field.fqcn"),
+            FieldDefault.OFF,
             testCase -> String.join(" > ", Fqcn.ofMethod(testCase)),
             (_, testCase, _) -> Optional.of(testCase),
             GenType.NO_CODE_CHANGE,
@@ -141,8 +141,8 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
     ),
 
     REFERENCE(
-            Bundle.message("attribute.reference"),
-            AttributeDefault.OFF,
+            Bundle.message("field.reference"),
+            FieldDefault.OFF,
             TestCaseDto::getReference,
             always(TestCaseDtoBuilder::reference),
             GenType.NO_CODE_CHANGE,
@@ -150,8 +150,8 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
     ),
 
     TEST_DATA(
-            Bundle.message("attribute.test.data"),
-            AttributeDefault.OFF,
+            Bundle.message("field.test.data"),
+            FieldDefault.OFF,
             TestCaseDto::getTestData,
             always(TestCaseDtoBuilder::testData),
             GenType.UPDATE_TEST_CASE_TEST_DATA,
@@ -159,8 +159,8 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
     ),
 
     PRE_CONDITIONS(
-            Bundle.message("attribute.pre.conditions"),
-            AttributeDefault.OFF,
+            Bundle.message("field.pre.conditions"),
+            FieldDefault.OFF,
             TestCaseDto::getPreConditions,
             always(TestCaseDtoBuilder::preConditions),
             GenType.UPDATE_TEST_CASE_PRE_CONDITIONS,
@@ -168,8 +168,8 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
     ),
 
     GROUP(
-            Bundle.message("attribute.group"),
-            AttributeDefault.ON,
+            Bundle.message("field.group"),
+            FieldDefault.ON,
             testCase -> Groups.text(testCase.getGroups()),
             (_, testCase, v) -> TestCaseFieldParser.groups(v).map(groups -> testCase.edit().groups(groups).build()),
             GenType.UPDATE_TEST_CASE_GROUP,
@@ -182,8 +182,8 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
     },
 
     PATH(
-            Bundle.message("attribute.path"),
-            AttributeDefault.OFF,
+            Bundle.message("field.path"),
+            FieldDefault.OFF,
             testCase -> String.join(" > ", testCase.getParent().treePath()),
             (_, testCase, _) -> Optional.of(testCase),
             GenType.NO_CODE_CHANGE,
@@ -191,8 +191,8 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
     ),
 
     MODULE(
-            Bundle.message("attribute.module"),
-            AttributeDefault.OFF,
+            Bundle.message("field.module"),
+            FieldDefault.OFF,
             TestCaseDto::getModule,
             always(TestCaseDtoBuilder::module),
             GenType.UPDATE_TEST_CASE_MODULE,
@@ -200,8 +200,8 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
     ),
 
     STATUS(
-            Bundle.message("attribute.status"),
-            AttributeDefault.OFF,
+            Bundle.message("field.status"),
+            FieldDefault.OFF,
             testCase -> testCase.getStatus().getLabel(),
             (_, testCase, v) -> TestCaseFieldParser.testCaseStatus(v, testCase.getStatus()).map(status -> testCase.edit().status(status).build()),
             GenType.UPDATE_TEST_CASE_STATUS,
@@ -209,8 +209,8 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
     ),
 
     CREATED_BY(
-            Bundle.message("attribute.created.by"),
-            AttributeDefault.OFF,
+            Bundle.message("field.created.by"),
+            FieldDefault.OFF,
             TestCaseDto::getCreatedBy,
             always(TestCaseDtoBuilder::createdBy),
             GenType.NO_CODE_CHANGE,
@@ -218,8 +218,8 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
     ),
 
     UPDATED_BY(
-            Bundle.message("attribute.updated.by"),
-            AttributeDefault.OFF,
+            Bundle.message("field.updated.by"),
+            FieldDefault.OFF,
             TestCaseDto::getUpdatedBy,
             always(TestCaseDtoBuilder::updatedBy),
             GenType.NO_CODE_CHANGE,
@@ -227,8 +227,8 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
     ),
 
     CREATED_AT(
-            Bundle.message("attribute.created.at"),
-            AttributeDefault.OFF,
+            Bundle.message("field.created.at"),
+            FieldDefault.OFF,
             testCase -> Display.formatDate(testCase.getCreatedAt()),
             (_, testCase, v) -> TestCaseFieldParser.date(v).map(at -> testCase.edit().createdAt(at).build()),
             GenType.NO_CODE_CHANGE,
@@ -236,8 +236,8 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
     ),
 
     UPDATED_AT(
-            Bundle.message("attribute.updated.at"),
-            AttributeDefault.OFF,
+            Bundle.message("field.updated.at"),
+            FieldDefault.OFF,
             testCase -> Display.formatDate(testCase.getUpdatedAt()),
             (_, testCase, v) -> TestCaseFieldParser.date(v).map(at -> testCase.edit().updatedAt(at).build()),
             GenType.NO_CODE_CHANGE,
@@ -245,21 +245,21 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
     );
 
     // Rule-EDITOR-PANEL-020
-    public static final @NotNull List<TestSetEditorAttributes> COLUMNS = List.of(values());
+    public static final @NotNull List<TestSetEditorFields> COLUMNS = List.of(values());
     // Rule-VIEW-PANEL-026, Rule-EDITOR-PANEL-005
-    private static final @NotNull Set<TestSetEditorAttributes> PROSE =
+    private static final @NotNull Set<TestSetEditorFields> PROSE =
             EnumSet.of(DESCRIPTION, EXPECTED_RESULT, STEPS, PRE_CONDITIONS);
-    private static final @NotNull Map<Can, List<TestSetEditorAttributes>> BY_CAPABILITY = EnumSet.allOf(Can.class).stream()
-            .collect(Collectors.toUnmodifiableMap(capability -> capability, capability -> Arrays.stream(values()).filter(attribute -> attribute.can(capability)).toList()));
+    private static final @NotNull Map<Can, List<TestSetEditorFields>> BY_CAPABILITY = EnumSet.allOf(Can.class).stream()
+            .collect(Collectors.toUnmodifiableMap(capability -> capability, capability -> Arrays.stream(values()).filter(field -> field.can(capability)).toList()));
     private final @NotNull String name;
-    private final @NotNull AttributeDefault toolBarDefault;
+    private final @NotNull FieldDefault toolBarDefault;
     private final @NotNull Function<TestCaseDto, String> testValueExtractor;
     private final @NotNull ImportSetter importSetter;
     private final @NotNull GenType<TestCaseDto> genType;
     @Getter(AccessLevel.NONE)
     private final @NotNull ImmutableSet<Can> can;
 
-    TestSetEditorAttributes(final @NotNull String name, final @NotNull AttributeDefault toolBarDefault, final @NotNull Function<TestCaseDto, String> testValueExtractor, final @NotNull ImportSetter importSetter, final @NotNull GenType<TestCaseDto> genType, final @NotNull Can... can) {
+    TestSetEditorFields(final @NotNull String name, final @NotNull FieldDefault toolBarDefault, final @NotNull Function<TestCaseDto, String> testValueExtractor, final @NotNull ImportSetter importSetter, final @NotNull GenType<TestCaseDto> genType, final @NotNull Can... can) {
         this.name = name;
         this.toolBarDefault = toolBarDefault;
         this.testValueExtractor = testValueExtractor;
@@ -272,22 +272,22 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
     public static boolean anyContains(final @NotNull TestCaseDto testCase, final @NotNull String wanted) {
         final @NotNull String lowered = wanted.toLowerCase(Locale.ROOT);
 
-        for (final TestSetEditorAttributes attribute : values()) {
-            if (attribute.gridValue(testCase).toLowerCase(Locale.ROOT).contains(lowered)) return true;
+        for (final TestSetEditorFields field : values()) {
+            if (field.gridValue(testCase).toLowerCase(Locale.ROOT).contains(lowered)) return true;
         }
 
         return false;
     }
 
     // UC-SHARE-006, Rule-SHARE-106, Rule-EDITOR-PANEL-206
-    public static @NotNull ImportedRow importRow(final @NotNull Project project, final @NotNull Function<TestSetEditorAttributes, String> cell) {
+    public static @NotNull ImportedRow importRow(final @NotNull Project project, final @NotNull Function<TestSetEditorFields, String> cell) {
         TestCaseDto testCase = TestCaseDto.builder().build();
         int refused = 0;
 
-        for (final TestSetEditorAttributes attribute : values()) {
-            if (!attribute.can(Can.IMPORT)) continue;
+        for (final TestSetEditorFields field : values()) {
+            if (!field.can(Can.IMPORT)) continue;
 
-            final @NotNull Optional<TestCaseDto> took = attribute.importSetter.execute(project, testCase, cell.apply(attribute));
+            final @NotNull Optional<TestCaseDto> took = field.importSetter.execute(project, testCase, cell.apply(field));
             if (took.isPresent()) testCase = took.orElseThrow();
             else refused++;
         }
@@ -300,17 +300,17 @@ public enum TestSetEditorAttributes implements ShowableAttribute {
         if (refused == 0) return;
 
         Services.getInstance(project, Notifier.class).softRefuse(project, Refused.UNREADABLE, refused == 1
-                ? Bundle.message("attribute.value.one")
-                : Bundle.message("attribute.value.many", String.valueOf(refused)));
+                ? Bundle.message("field.value.one")
+                : Bundle.message("field.value.many", String.valueOf(refused)));
     }
 
     // UC-SHARE-002, Rule-SHARE-001
-    public static @NotNull List<TestSetEditorAttributes> all(final @NotNull Can capability) {
+    public static @NotNull List<TestSetEditorFields> all(final @NotNull Can capability) {
         return BY_CAPABILITY.getOrDefault(capability, List.of());
     }
 
     // Rule-EDITOR-PANEL-020
-    public static @NotNull TestSetEditorAttributes atColumn(final int column) {
+    public static @NotNull TestSetEditorFields atColumn(final int column) {
         return COLUMNS.get(column);
     }
 

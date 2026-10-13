@@ -25,7 +25,7 @@ import org.testin.model.TestCaseDto;
 import org.testin.model.status.ExecutionStatus;
 import org.testin.runner.TestNGExecution;
 import org.testin.services.Services;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.ui.Badge;
 import org.testin.ui.Badges;
 
@@ -58,11 +58,11 @@ public class TestCaseCard extends AbstractCard {
         this.isPendingCut = cutState.isPending(testCase.getId());
 
         this.automation = automationState.of(testCase.getId());
-        this.priority = activeDetails.contains(TestSetEditorAttributes.PRIORITY) ? testCase.getPriority() : Priority.DEFAULT;
+        this.priority = activeDetails.contains(TestSetEditorFields.PRIORITY) ? testCase.getPriority() : Priority.DEFAULT;
 
-        Arrays.stream(TestSetEditorAttributes.values())
+        Arrays.stream(TestSetEditorFields.values())
                 .filter(activeDetails::contains)
-                .forEach(attribute -> attribute.applyToUI(testCase, badges, details));
+                .forEach(field -> field.applyToUI(testCase, badges, details));
 
         if (testCase.getStatus().isBadged()) badges.add(Badges.createTestCaseStatusBadge(testCase.getStatus()));
 

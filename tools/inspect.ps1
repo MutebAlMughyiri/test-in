@@ -2224,8 +2224,8 @@ $problems += @(Read-ModelStatics @((Join-Path $repo 'src/main/java/org/testin/mo
 # on being listed after #111 moved them and the check quietly shrank to comparing
 # one pair - printing "Gate clear" either way (#66, finding 98).
 $problems += @(Read-DriftedCaptions @(
-        (Join-Path $repo 'src/main/java/org/testin/testcase/TestSetEditorAttributes.java'),
-        (Join-Path $repo 'src/main/java/org/testin/testrun/TestRunEditorAttributes.java'),
+        (Join-Path $repo 'src/main/java/org/testin/testcase/TestSetEditorFields.java'),
+        (Join-Path $repo 'src/main/java/org/testin/testrun/TestRunEditorFields.java'),
         (Join-Path $repo 'src/main/java/org/testin/testcase/CreateTestCaseFields.java'),
         (Join-Path $repo 'src/main/java/org/testin/testcase/UpdateTestCaseFields.java')))
 

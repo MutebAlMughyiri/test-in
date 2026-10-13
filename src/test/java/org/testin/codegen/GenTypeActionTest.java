@@ -27,7 +27,7 @@ import static org.testng.Assert.assertTrue;
 public class GenTypeActionTest {
 
     @Test
-    public void aDataOnlyAttributeCarriesTheNoOp() {
+    public void aDataOnlyFieldCarriesTheNoOp() {
         for (final GenType<?> type : List.of(
                 GenType.UPDATE_TEST_CASE_EXPECTED_RESULT,
                 GenType.UPDATE_TEST_CASE_MODULE,

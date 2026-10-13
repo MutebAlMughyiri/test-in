@@ -47,7 +47,7 @@ import org.testin.notifications.Refused;
 import org.testin.runner.ExecutionRecorder;
 import org.testin.services.Services;
 import org.testin.testcase.CreateTestCaseAction;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.testcase.TestCaseOrder;
 import org.testin.ui.SideScroll;
 import org.testin.util.Bundle;
@@ -61,7 +61,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes, TestSetNode> implements ToolbarCallbacks {
+public class TestSetEditor extends AbstractTestinEditor<TestSetEditorFields, TestSetNode> implements ToolbarCallbacks {
     private final @NotNull CardModelListener modelChangeNotifier;
 
     @Getter
@@ -250,11 +250,11 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes,
     // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-014
     @Override
     public @NotNull String cardTitle(final @NotNull TestCaseDto testCase) {
-        final @NotNull Set<TestSetEditorAttributes> selected = getSelectedDetails();
+        final @NotNull Set<TestSetEditorFields> selected = getSelectedDetails();
 
         return AbstractCard.titleText(positionOf(testCase),
-                selected.contains(TestSetEditorAttributes.ORDER),
-                selected.contains(TestSetEditorAttributes.DESCRIPTION) ? TestSetEditorAttributes.DESCRIPTION.displayValue(testCase) : "");
+                selected.contains(TestSetEditorFields.ORDER),
+                selected.contains(TestSetEditorFields.DESCRIPTION) ? TestSetEditorFields.DESCRIPTION.displayValue(testCase) : "");
     }
 
     @Override
@@ -263,8 +263,8 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes,
     }
 
     @Override
-    protected @NotNull Class<TestSetEditorAttributes> attributeType() {
-        return TestSetEditorAttributes.class;
+    protected @NotNull Class<TestSetEditorFields> attributeType() {
+        return TestSetEditorFields.class;
     }
 
     @Override
@@ -273,7 +273,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes,
     }
 
     @Override
-    public @NotNull Set<TestSetEditorAttributes> getSelectedDetails() {
+    public @NotNull Set<TestSetEditorFields> getSelectedDetails() {
         return getToolBar().getToolbarItem(TestSetFieldsPopupBtn.class).getSelectedDetails();
     }
 
@@ -363,8 +363,8 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorAttributes,
 
     // UC-EDITOR-PANEL-020
     @Override
-    protected @NotNull JBTable buildTable(final @NotNull List<String[]> rows, final @NotNull Set<TestSetEditorAttributes> attributes) {
-        return gridPanelBuilder.buildTestTable(rows, attributes);
+    protected @NotNull JBTable buildTable(final @NotNull List<String[]> rows, final @NotNull Set<TestSetEditorFields> fields) {
+        return gridPanelBuilder.buildTestTable(rows, fields);
     }
 
     @Override

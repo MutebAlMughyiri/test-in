@@ -28,7 +28,7 @@ import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.Can;
 import org.testin.testcase.ImportedRow;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.util.FailureText;
 
 import java.io.File;
@@ -88,7 +88,7 @@ public class ImportExcel {
         }
 
         // Rule-SHARE-106
-        TestSetEditorAttributes.sayWhatWasRefused(project, refused);
+        TestSetEditorFields.sayWhatWasRefused(project, refused);
     }
 
     private @NotNull ParsedTestCases parseSheet(final @NotNull Project project, final @NotNull Sheet sheet, final @NotNull DataFormatter dataFormatter) {
@@ -101,9 +101,9 @@ public class ImportExcel {
         final @NotNull Map<String, Integer> headerIndexMap = new HashMap<>();
         for (final Cell cell : headerRow) {
             final @NotNull String headerName = dataFormatter.formatCellValue(cell).trim();
-            for (final TestSetEditorAttributes importedAttribute : TestSetEditorAttributes.all(Can.IMPORT)) {
-                if (importedAttribute.isColumn(headerName)) {
-                    headerIndexMap.put(importedAttribute.getName().toLowerCase(Locale.ROOT), cell.getColumnIndex());
+            for (final TestSetEditorFields importedField : TestSetEditorFields.all(Can.IMPORT)) {
+                if (importedField.isColumn(headerName)) {
+                    headerIndexMap.put(importedField.getName().toLowerCase(Locale.ROOT), cell.getColumnIndex());
                 }
             }
         }
@@ -115,7 +115,7 @@ public class ImportExcel {
         for (final Row row : sheet) {
             if (row.getRowNum() == headerRow.getRowNum() || isEmpty(row, dataFormatter)) continue;
 
-            final @NotNull ImportedRow imported = TestSetEditorAttributes.importRow(project, attribute -> Optional.ofNullable(headerIndexMap.get(attribute.getName().toLowerCase(Locale.ROOT)))
+            final @NotNull ImportedRow imported = TestSetEditorFields.importRow(project, field -> Optional.ofNullable(headerIndexMap.get(field.getName().toLowerCase(Locale.ROOT)))
                     .map(colIndex -> dataFormatter.formatCellValue(row.getCell(colIndex)).trim())
                     .orElse(""));
 

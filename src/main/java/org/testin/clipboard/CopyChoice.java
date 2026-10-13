@@ -27,7 +27,7 @@ import org.testin.model.MenuItem;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.Can;
 import org.testin.testcase.CreateTestCaseFields;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.util.Bundle;
 import org.testin.util.Icons;
 import org.testin.util.Shortcuts;
@@ -52,80 +52,80 @@ public enum CopyChoice implements MenuItem {
     ),
 
     DESCRIPTION(
-            TestSetEditorAttributes.DESCRIPTION,
+            TestSetEditorFields.DESCRIPTION,
             Shortcuts.CopyDescription,
             CreateTestCaseFields.DESCRIPTION.getIcon()
     ),
 
     EXPECTED_RESULT(
-            TestSetEditorAttributes.EXPECTED_RESULT,
+            TestSetEditorFields.EXPECTED_RESULT,
             Shortcuts.CopyExpectedResult,
             CreateTestCaseFields.EXPECTED_RESULT.getIcon()
     ),
 
     STEPS(
-            TestSetEditorAttributes.STEPS,
+            TestSetEditorFields.STEPS,
             Shortcuts.CopySteps,
             CreateTestCaseFields.STEPS.getIcon()
     ),
 
     PRE_CONDITIONS(
-            TestSetEditorAttributes.PRE_CONDITIONS,
+            TestSetEditorFields.PRE_CONDITIONS,
             Shortcuts.CopyPreConditions,
             CreateTestCaseFields.PRE_CONDITIONS.getIcon()
     ),
 
     TEST_DATA(
-            TestSetEditorAttributes.TEST_DATA,
+            TestSetEditorFields.TEST_DATA,
             Shortcuts.CopyTestData,
             CreateTestCaseFields.TEST_DATA.getIcon()
     ),
 
     PRIORITY(
-            TestSetEditorAttributes.PRIORITY,
+            TestSetEditorFields.PRIORITY,
             Shortcuts.CopyPriority,
             CreateTestCaseFields.PRIORITY.getIcon()
     ),
 
     MODULE(
-            TestSetEditorAttributes.MODULE,
+            TestSetEditorFields.MODULE,
             Shortcuts.CopyModule,
             CreateTestCaseFields.MODULE.getIcon()
     ),
 
     GROUP(
-            TestSetEditorAttributes.GROUP,
+            TestSetEditorFields.GROUP,
             Shortcuts.CopyGroup,
             CreateTestCaseFields.GROUP.getIcon()
     ),
 
     STATUS(
-            TestSetEditorAttributes.STATUS,
+            TestSetEditorFields.STATUS,
             Shortcuts.CopyStatus,
             Icons.fieldLetter("U", Icons.GRAY)
     ),
 
     REFERENCE(
-            TestSetEditorAttributes.REFERENCE,
+            TestSetEditorFields.REFERENCE,
             Shortcuts.CopyReference,
             CreateTestCaseFields.REFERENCE.getIcon()
     ),
 
     FQCN(
-            TestSetEditorAttributes.FQCN,
+            TestSetEditorFields.FQCN,
             Shortcuts.CopyFqcn,
             Icons.fieldLetter("F", Icons.GRAY),
             testCase -> String.join(".", Fqcn.ofMethod(testCase))
     ),
 
     ID(
-            TestSetEditorAttributes.ID,
+            TestSetEditorFields.ID,
             Shortcuts.CopyId,
             Icons.fieldLetter("I", Icons.GRAY)
     ),
 
     PATH(
-            TestSetEditorAttributes.PATH,
+            TestSetEditorFields.PATH,
             Shortcuts.CopyPath,
             Icons.fieldLetter("H", Icons.GRAY)
     );
@@ -134,24 +134,24 @@ public enum CopyChoice implements MenuItem {
     private final @NotNull Shortcuts shortcut;
     private final Icons.@NotNull LetterIcon icon;
 
-    private final @NotNull Optional<TestSetEditorAttributes> attribute;
+    private final @NotNull Optional<TestSetEditorFields> field;
 
     @Getter(AccessLevel.NONE)
     private final @NotNull Function<TestCaseDto, String> copied;
 
-    CopyChoice(final @NotNull TestSetEditorAttributes attribute, final @NotNull Shortcuts shortcut, final Icons.@NotNull LetterIcon icon) {
-        this(attribute, shortcut, icon, attribute::gridValue);
+    CopyChoice(final @NotNull TestSetEditorFields field, final @NotNull Shortcuts shortcut, final Icons.@NotNull LetterIcon icon) {
+        this(field, shortcut, icon, field::gridValue);
     }
 
-    CopyChoice(final @NotNull TestSetEditorAttributes attribute, final @NotNull Shortcuts shortcut, final Icons.@NotNull LetterIcon icon, final @NotNull Function<TestCaseDto, String> copied) {
-        this(attribute.getName(), shortcut, icon, Optional.of(attribute), copied);
+    CopyChoice(final @NotNull TestSetEditorFields field, final @NotNull Shortcuts shortcut, final Icons.@NotNull LetterIcon icon, final @NotNull Function<TestCaseDto, String> copied) {
+        this(field.getName(), shortcut, icon, Optional.of(field), copied);
     }
 
     private static @NotNull String allDetailsOf(final @NotNull TestCaseDto testCase) {
-        return Arrays.stream(TestSetEditorAttributes.values())
-                .filter(attribute -> attribute.can(Can.COPY))
-                .filter(attribute -> !attribute.gridValue(testCase).isBlank())
-                .map(attribute -> attribute.getName() + ": " + attribute.gridValue(testCase))
+        return Arrays.stream(TestSetEditorFields.values())
+                .filter(field -> field.can(Can.COPY))
+                .filter(field -> !field.gridValue(testCase).isBlank())
+                .map(field -> field.getName() + ": " + field.gridValue(testCase))
                 .collect(Collectors.joining("\n"));
     }
 

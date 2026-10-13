@@ -44,7 +44,7 @@ import org.testin.model.status.RunItemStatus;
 import org.testin.model.status.TestCaseStatus;
 import org.testin.notifications.Refused;
 import org.testin.services.Services;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.util.Bundle;
 
 import java.nio.file.Path;
@@ -148,7 +148,7 @@ public class FilterMenuIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-EDITOR-PANEL-094
     public void testSevenThingsCanBeFilteredOnEachWhereItBelongs() {
-        final @NotNull List<String> everywhere = List.of(TestSetEditorAttributes.PRIORITY.getName(), Bundle.message("filter.automation"), TestSetEditorAttributes.GROUP.getName(), TestSetEditorAttributes.MODULE.getName(), Bundle.message("filter.test.case.status"));
+        final @NotNull List<String> everywhere = List.of(TestSetEditorFields.PRIORITY.getName(), Bundle.message("filter.automation"), TestSetEditorFields.GROUP.getName(), TestSetEditorFields.MODULE.getName(), Bundle.message("filter.test.case.status"));
 
         final @NotNull FilterPopupBtn inATestSet = filterOf(openedTestSet(3));
         assertEquals("a test set editor does not filter on the priority, the automation, the group, the module and the status", everywhere, entriesOf(inATestSet).subList(0, everywhere.size()));
@@ -198,7 +198,7 @@ public class FilterMenuIdeTest extends AbstractTempRootIdeTest {
         final @NotNull FilterPopupBtn filter = filterOf(editor);
         onThirdPage(editor);
 
-        tick(filter, TestSetEditorAttributes.PRIORITY.getName(), Priority.LOW.getLabel());
+        tick(filter, TestSetEditorFields.PRIORITY.getName(), Priority.LOW.getLabel());
 
         assertEquals("filtering did not go back to the first page", 1, editor.getCurrentPage());
         assertEquals("the button does not say one filter is on", "(1)", filter.getText());
@@ -213,10 +213,10 @@ public class FilterMenuIdeTest extends AbstractTempRootIdeTest {
         final @NotNull FilterPopupBtn filter = filterOf(editor);
         searchForNumberOne(editor);
 
-        tick(filter, TestSetEditorAttributes.PRIORITY.getName(), Priority.LOW.getLabel());
+        tick(filter, TestSetEditorFields.PRIORITY.getName(), Priority.LOW.getLabel());
         tick(filter, Bundle.message("filter.automation"), Automated.NONE.getLabel());
-        tick(filter, TestSetEditorAttributes.GROUP.getName(), Groups.NONE);
-        tick(filter, TestSetEditorAttributes.MODULE.getName(), "Payments");
+        tick(filter, TestSetEditorFields.GROUP.getName(), Groups.NONE);
+        tick(filter, TestSetEditorFields.MODULE.getName(), "Payments");
         tick(filter, Bundle.message("filter.run.item.status"), RunItemStatus.PENDING.getLabel());
         assertTrue("the filters did not narrow the list", editor.getCurrentTestCases().size() < 32);
 
@@ -239,7 +239,7 @@ public class FilterMenuIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestCaseDto hidden = editor.getAllTestCases().stream().filter(testCase -> testCase.getPriority() == Priority.LOW).findFirst().orElseThrow();
         final @NotNull Said balloons = Said.listening(getProject(), getTestRootDisposable());
 
-        tick(filter, TestSetEditorAttributes.PRIORITY.getName(), Priority.HIGH.getLabel());
+        tick(filter, TestSetEditorFields.PRIORITY.getName(), Priority.HIGH.getLabel());
         assertEquals("the filter did not narrow the list to the one high priority test case", 1, editor.getCurrentTestCases().size());
         assertEquals("filtering said something", List.of(), balloons.shown());
 

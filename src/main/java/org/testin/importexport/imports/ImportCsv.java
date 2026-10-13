@@ -22,7 +22,7 @@ import org.testin.logger.TestinLogger;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.Can;
 import org.testin.testcase.ImportedRow;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.util.FailureText;
 import org.testin.util.SeparatedValues;
 
@@ -58,8 +58,8 @@ public class ImportCsv {
 
         for (int i = 0; i < headers.size(); i++) {
             final @NotNull String headerName = headers.get(i).trim();
-            for (final TestSetEditorAttributes attribute : TestSetEditorAttributes.all(Can.IMPORT)) {
-                if (attribute.isColumn(headerName)) byName.put(attribute.getName().toLowerCase(Locale.ROOT), i);
+            for (final TestSetEditorFields field : TestSetEditorFields.all(Can.IMPORT)) {
+                if (field.isColumn(headerName)) byName.put(field.getName().toLowerCase(Locale.ROOT), i);
             }
         }
 
@@ -81,7 +81,7 @@ public class ImportCsv {
 
             if (values.stream().allMatch(String::isBlank)) continue;
 
-            final @NotNull ImportedRow imported = TestSetEditorAttributes.importRow(project, attribute -> Optional.ofNullable(headerIndexMap.get(attribute.getName().toLowerCase(Locale.ROOT)))
+            final @NotNull ImportedRow imported = TestSetEditorFields.importRow(project, field -> Optional.ofNullable(headerIndexMap.get(field.getName().toLowerCase(Locale.ROOT)))
                     .filter(colIndex -> colIndex < values.size())
                     .map(colIndex -> values.get(colIndex).trim())
                     .orElse(""));
@@ -90,7 +90,7 @@ public class ImportCsv {
             result.add(imported.testCase());
         }
 
-        TestSetEditorAttributes.sayWhatWasRefused(project, refused);
+        TestSetEditorFields.sayWhatWasRefused(project, refused);
 
         return result;
     }

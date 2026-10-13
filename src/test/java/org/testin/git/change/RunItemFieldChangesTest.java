@@ -22,7 +22,7 @@ import org.testin.model.bug.BugSeverity;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testrun.TestRunEditorFields;
 import org.testng.annotations.Test;
 
 import java.time.Duration;
@@ -78,7 +78,7 @@ public class RunItemFieldChangesTest {
     public void aRunItemStatusChangeShowsTheLabels() {
         final FieldChange change = onlyChange(changed(execution -> execution.setStatus(RunItemStatus.PASSED)));
 
-        assertEquals(change.fieldName(), TestRunEditorAttributes.RUN_STATUS.getName());
+        assertEquals(change.fieldName(), TestRunEditorFields.RUN_STATUS.getName());
         assertEquals(change.oldValue(), RunItemStatus.FAILED.getLabel());
         assertEquals(change.newValue(), RunItemStatus.PASSED.getLabel());
     }

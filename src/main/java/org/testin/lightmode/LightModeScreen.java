@@ -45,7 +45,7 @@ import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.services.Services;
 import org.testin.testcase.CreateTestCaseFields;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.testrun.RunItemRecorder;
 import org.testin.ui.Tooltip;
 import org.testin.ui.framework.Prose;
@@ -222,8 +222,8 @@ final class LightModeScreen {
         if (arrived) testCaseView.captureLeaving();
 
         set.setText(testCase.getParent().getName());
-        description.setText(TestSetEditorAttributes.DESCRIPTION.displayValue(testCase));
-        expected.setText(TestSetEditorAttributes.EXPECTED_RESULT.displayValue(testCase));
+        description.setText(TestSetEditorFields.DESCRIPTION.displayValue(testCase));
+        expected.setText(TestSetEditorFields.EXPECTED_RESULT.displayValue(testCase));
 
         details.show(testCase);
 

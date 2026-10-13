@@ -24,7 +24,7 @@ import java.util.Set;
 
 @Getter
 @AllArgsConstructor
-public enum AttributeDefault {
+public enum FieldDefault {
     OFF(
             false,
             true,
@@ -61,7 +61,7 @@ public enum AttributeDefault {
 
     private final boolean listed;
 
-    public <E extends ShowableAttribute> void enforceLock(final @NotNull E option, final @NotNull Set<E> selected) {
+    public <E extends ShowableField> void enforceLock(final @NotNull E option, final @NotNull Set<E> selected) {
         if (switchable) return;
 
         if (selectedByDefault) selected.add(option);

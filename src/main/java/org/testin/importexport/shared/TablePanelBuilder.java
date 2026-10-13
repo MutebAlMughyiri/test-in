@@ -25,7 +25,7 @@ import org.testin.editor.grid.GridTables;
 import org.testin.logger.TestinLogger;
 import org.testin.model.Priority;
 import org.testin.model.TestCaseDto;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.ui.Tooltip;
 import org.testin.ui.dialogs.DialogStyle;
 import org.testin.util.Bundle;
@@ -39,19 +39,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TablePanelBuilder {
-    public String @NotNull [] buildColumnNames(final @NotNull List<TestSetEditorAttributes> attributes) {
+    public String @NotNull [] buildColumnNames(final @NotNull List<TestSetEditorFields> fields) {
         final @NotNull List<String> columnNames = new ArrayList<>();
         columnNames.add("");
         columnNames.add("#");
-        for (final TestSetEditorAttributes attribute : attributes) {
-            columnNames.add(attribute.getName());
+        for (final TestSetEditorFields field : fields) {
+            columnNames.add(field.getName());
         }
         return columnNames.toArray(new String[0]);
     }
 
     // UC-SHARE-003, Rule-SHARE-017
-    public @NotNull DefaultTableModel createModel(final @NotNull List<TestSetEditorAttributes> importAttributes, final @NotNull List<TestCaseDto> testCases) {
-        final String @NotNull [] columns = buildColumnNames(importAttributes);
+    public @NotNull DefaultTableModel createModel(final @NotNull List<TestSetEditorFields> importFields, final @NotNull List<TestCaseDto> testCases) {
+        final String @NotNull [] columns = buildColumnNames(importFields);
         final @NotNull DefaultTableModel model = new DefaultTableModel(columns, 0) {
             @Override
             public @NotNull Class<?> getColumnClass(final int columnIndex) {
@@ -70,8 +70,8 @@ public class TablePanelBuilder {
             rowData[0] = true;
             rowData[1] = String.valueOf(index++);
 
-            for (int i = 0; i < importAttributes.size(); i++) {
-                rowData[i + 2] = importAttributes.get(i).gridValue(testCase);
+            for (int i = 0; i < importFields.size(); i++) {
+                rowData[i + 2] = importFields.get(i).gridValue(testCase);
             }
             model.addRow(rowData);
         }
@@ -101,14 +101,14 @@ public class TablePanelBuilder {
         );
 
         try {
-            final @NotNull TableColumn priorityCol = table.getColumn(TestSetEditorAttributes.PRIORITY.getName());
+            final @NotNull TableColumn priorityCol = table.getColumn(TestSetEditorFields.PRIORITY.getName());
             final @NotNull ComboBox<String> priorityBox = new ComboBox<>();
             for (final Priority pr : Priority.values()) {
                 priorityBox.addItem(pr.getLabel());
             }
             priorityCol.setCellEditor(new DefaultCellEditor(priorityBox));
 
-            final @NotNull TableColumn groupCol = table.getColumn(TestSetEditorAttributes.GROUP.getName());
+            final @NotNull TableColumn groupCol = table.getColumn(TestSetEditorFields.GROUP.getName());
             groupCol.setCellEditor(new GroupMultiSelectEditor(project));
         } catch (final IllegalArgumentException ex) {
             TestinLogger.error(FailureText.of(ex));

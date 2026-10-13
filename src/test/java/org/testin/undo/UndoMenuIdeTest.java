@@ -33,7 +33,7 @@ import org.testin.model.TestCaseDto;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
 import org.testin.setting.AppSettingsState;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.util.Bundle;
 import org.testin.util.JsonCodec;
 import org.testin.view.Drawn;
@@ -67,7 +67,7 @@ public class UndoMenuIdeTest extends AbstractTempRootIdeTest {
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
         final @NotNull JBTable grid = Drawn.components(editor.getComponent()).stream().filter(JBTable.class::isInstance).map(JBTable.class::cast).findFirst().orElseThrow();
 
-        assertTrue(grid.editCellAt(0, grid.convertColumnIndexToView(TestSetEditorAttributes.DESCRIPTION.column())));
+        assertTrue(grid.editCellAt(0, grid.convertColumnIndexToView(TestSetEditorFields.DESCRIPTION.column())));
         ((JTextComponent) grid.getEditorComponent()).setText("Sign in");
         assertTrue(grid.getCellEditor().stopCellEditing());
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();

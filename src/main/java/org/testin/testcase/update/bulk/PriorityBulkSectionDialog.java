@@ -20,7 +20,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.Priority;
 import org.testin.model.TestCaseDto;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.util.Bundle;
 
 import java.util.List;
@@ -33,8 +33,8 @@ public class PriorityBulkSectionDialog extends AbstractJsonSplitBulkSectionDialo
     }
 
     @Override
-    protected @NotNull TestSetEditorAttributes attribute() {
-        return TestSetEditorAttributes.PRIORITY;
+    protected @NotNull TestSetEditorFields attribute() {
+        return TestSetEditorFields.PRIORITY;
     }
 
     @Override

@@ -35,7 +35,7 @@ import org.testin.model.status.RunItemStatus;
 import org.testin.report.ReportTile;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testrun.TestRunEditorFields;
 import org.testin.util.Bundle;
 import org.testin.util.ReportFont;
 
@@ -156,7 +156,7 @@ public final class TestRunHtmlGenerator {
                 .append("; color: var(--section-").append(name).append("-ink)'>")
                 .append("<th class='seq'>#</th><th>").append(Bundle.message("caption.test.case")).append("</th>");
 
-        for (final TestRunEditorAttributes detail : section.getFailureDetailColumns()) {
+        for (final TestRunEditorFields detail : section.getFailureDetailColumns()) {
             html.append("<th class='run-item-status'>").append(detail.getName()).append("</th>");
         }
 

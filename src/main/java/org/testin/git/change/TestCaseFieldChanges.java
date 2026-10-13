@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
 import org.testin.model.Groups;
 import org.testin.model.TestCaseDto;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.util.Display;
 import org.testin.util.FailureText;
 
@@ -38,19 +38,19 @@ import java.util.stream.IntStream;
 public final class TestCaseFieldChanges {
     public static @NotNull List<FieldChange> compare(final @NotNull TestCaseDto oldState, final @NotNull TestCaseDto newState) {
         final @NotNull List<FieldChange> changes = new ArrayList<>();
-        addIfChanged(changes, TestSetEditorAttributes.DESCRIPTION.getName(), oldState.getDescription(), newState.getDescription(), ChangeType.CHANGE_DESCRIPTION);
-        addIfChanged(changes, TestSetEditorAttributes.EXPECTED_RESULT.getName(), oldState.getExpectedResult(), newState.getExpectedResult(), ChangeType.CHANGE_EXPECTED_RESULT);
+        addIfChanged(changes, TestSetEditorFields.DESCRIPTION.getName(), oldState.getDescription(), newState.getDescription(), ChangeType.CHANGE_DESCRIPTION);
+        addIfChanged(changes, TestSetEditorFields.EXPECTED_RESULT.getName(), oldState.getExpectedResult(), newState.getExpectedResult(), ChangeType.CHANGE_EXPECTED_RESULT);
         addStepsIfChanged(changes, oldState.getSteps(), newState.getSteps());
-        addIfChanged(changes, TestSetEditorAttributes.PRIORITY.getName(), oldState.getPriority().getLabel(), newState.getPriority().getLabel(), ChangeType.CHANGE_PRIORITY);
-        addIfChanged(changes, TestSetEditorAttributes.STATUS.getName(), oldState.getStatus().getLabel(), newState.getStatus().getLabel(), ChangeType.CHANGE_STATUS);
-        addIfChanged(changes, TestSetEditorAttributes.REFERENCE.getName(), oldState.getReference(), newState.getReference(), ChangeType.CHANGE_REFERENCE);
-        addIfChanged(changes, TestSetEditorAttributes.MODULE.getName(), oldState.getModule(), newState.getModule(), ChangeType.CHANGE_MODULE);
-        addIfChanged(changes, TestSetEditorAttributes.TEST_DATA.getName(), oldState.getTestData(), newState.getTestData(), ChangeType.CHANGE_TEST_DATA);
-        addIfChanged(changes, TestSetEditorAttributes.PRE_CONDITIONS.getName(), oldState.getPreConditions(), newState.getPreConditions(), ChangeType.CHANGE_PRECONDITIONS);
+        addIfChanged(changes, TestSetEditorFields.PRIORITY.getName(), oldState.getPriority().getLabel(), newState.getPriority().getLabel(), ChangeType.CHANGE_PRIORITY);
+        addIfChanged(changes, TestSetEditorFields.STATUS.getName(), oldState.getStatus().getLabel(), newState.getStatus().getLabel(), ChangeType.CHANGE_STATUS);
+        addIfChanged(changes, TestSetEditorFields.REFERENCE.getName(), oldState.getReference(), newState.getReference(), ChangeType.CHANGE_REFERENCE);
+        addIfChanged(changes, TestSetEditorFields.MODULE.getName(), oldState.getModule(), newState.getModule(), ChangeType.CHANGE_MODULE);
+        addIfChanged(changes, TestSetEditorFields.TEST_DATA.getName(), oldState.getTestData(), newState.getTestData(), ChangeType.CHANGE_TEST_DATA);
+        addIfChanged(changes, TestSetEditorFields.PRE_CONDITIONS.getName(), oldState.getPreConditions(), newState.getPreConditions(), ChangeType.CHANGE_PRECONDITIONS);
 
         if (!Objects.equals(oldState.getGroups(), newState.getGroups())) {
             changes.add(new FieldChange(
-                    TestSetEditorAttributes.GROUP.getName(), Groups.text(oldState.getGroups()), Groups.text(newState.getGroups()), ChangeType.CHANGE_GROUP));
+                    TestSetEditorFields.GROUP.getName(), Groups.text(oldState.getGroups()), Groups.text(newState.getGroups()), ChangeType.CHANGE_GROUP));
         }
         return changes;
     }
@@ -77,7 +77,7 @@ public final class TestCaseFieldChanges {
         }
         if (removed.isEmpty() && added.isEmpty()) return;
 
-        changes.add(new FieldChange(TestSetEditorAttributes.STEPS.getName(), String.join("\n", removed), String.join("\n", added), ChangeType.CHANGE_STEPS));
+        changes.add(new FieldChange(TestSetEditorFields.STEPS.getName(), String.join("\n", removed), String.join("\n", added), ChangeType.CHANGE_STEPS));
     }
 
     private static @NotNull List<String> numbered(final @NotNull List<String> steps, final int from, final int to) {

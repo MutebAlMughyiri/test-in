@@ -59,9 +59,9 @@ import org.testin.model.status.TestRunStatus;
 import org.testin.notifications.Done;
 import org.testin.runner.ExecutionRecorder;
 import org.testin.services.Services;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.testrun.TestRunResultAnalysisDialog;
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testrun.TestRunEditorFields;
 import org.testin.ui.SideScroll;
 import org.testin.util.Bundle;
 import org.testin.util.Display;
@@ -81,7 +81,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes, TestRunNode> implements ToolbarCallbacks {
+public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, TestRunNode> implements ToolbarCallbacks {
     private final @NotNull TestRuns testRuns = Services.getInstance(project, TestRuns.class);
 
     private final @NotNull LightMode lightMode = Services.getInstance(project, LightMode.class);
@@ -260,12 +260,12 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
     // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-014, Rule-EDITOR-PANEL-239
     @Override
     public @NotNull String cardTitle(final @NotNull TestCaseDto testCase) {
-        final @NotNull Set<TestRunEditorAttributes> selected = getSelectedDetails();
+        final @NotNull Set<TestRunEditorFields> selected = getSelectedDetails();
         final @NotNull TestCaseDto shown = runItem(testCase.getId()).map(RunItem::shownTestCase).orElse(testCase);
 
         return AbstractCard.titleText(positionOf(testCase),
-                selected.contains(TestRunEditorAttributes.ORDER),
-                selected.contains(TestRunEditorAttributes.DESCRIPTION) ? TestSetEditorAttributes.DESCRIPTION.displayValue(shown) : "");
+                selected.contains(TestRunEditorFields.ORDER),
+                selected.contains(TestRunEditorFields.DESCRIPTION) ? TestSetEditorFields.DESCRIPTION.displayValue(shown) : "");
     }
 
     @Override
@@ -274,8 +274,8 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
     }
 
     @Override
-    protected @NotNull Class<TestRunEditorAttributes> attributeType() {
-        return TestRunEditorAttributes.class;
+    protected @NotNull Class<TestRunEditorFields> attributeType() {
+        return TestRunEditorFields.class;
     }
 
     @Override
@@ -284,7 +284,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
     }
 
     @Override
-    public @NotNull Set<TestRunEditorAttributes> getSelectedDetails() {
+    public @NotNull Set<TestRunEditorFields> getSelectedDetails() {
         return getToolBar().getToolbarItem(TestRunFieldsPopupBtn.class).getSelectedDetails();
     }
 
@@ -362,8 +362,8 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorAttributes,
 
     // UC-EDITOR-PANEL-020, Rule-EDITOR-PANEL-094
     @Override
-    protected @NotNull JBTable buildTable(final @NotNull List<String[]> rows, final @NotNull Set<TestRunEditorAttributes> attributes) {
-        return gridPanelBuilder.buildTestRunTable(rows, attributes, getParent()::takesRunItemStatuses);
+    protected @NotNull JBTable buildTable(final @NotNull List<String[]> rows, final @NotNull Set<TestRunEditorFields> fields) {
+        return gridPanelBuilder.buildTestRunTable(rows, fields, getParent()::takesRunItemStatuses);
     }
 
     @Override

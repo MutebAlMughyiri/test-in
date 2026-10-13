@@ -24,7 +24,7 @@ import org.testin.model.TestCaseDto;
 import org.testin.model.testrun.RunItem;
 import org.testin.services.Services;
 import org.testin.testrun.RunItemRecorder;
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testrun.TestRunEditorFields;
 
 import javax.swing.table.DefaultTableModel;
 import java.util.List;
@@ -50,21 +50,21 @@ public class TestRunGridEditListener extends AbstractGridEditListener {
 
     @Override
     protected int columnCount() {
-        return TestRunEditorAttributes.COLUMNS.size();
+        return TestRunEditorFields.COLUMNS.size();
     }
 
     // UC-EDITOR-PANEL-041, Rule-EDITOR-PANEL-174
     @Override
     protected @NotNull GridEdit apply(final @NotNull DefaultTableModel model, final @NotNull TestCaseDto onThisRow, final int row, final int col) {
-        final @NotNull TestRunEditorAttributes attribute = TestRunEditorAttributes.atColumn(col);
+        final @NotNull TestRunEditorFields field = TestRunEditorFields.atColumn(col);
 
-        if (!attribute.isEdited()) return GridEdit.UNCHANGED;
+        if (!field.isEdited()) return GridEdit.UNCHANGED;
 
         final @NotNull Optional<RunItem> found = editor.runItem(onThisRow.getId());
         if (found.isEmpty()) return GridEdit.UNCHANGED;
         final @NotNull RunItem runItem = found.orElseThrow();
 
-        final @NotNull String before = attribute.getRunItemValueExtractor().apply(runItem);
+        final @NotNull String before = field.getRunItemValueExtractor().apply(runItem);
 
         if (runItem.isRemoved()) {
             model.setValueAt(before, row, col);
@@ -79,8 +79,8 @@ public class TestRunGridEditListener extends AbstractGridEditListener {
         }
 
         final @NotNull String typed = String.valueOf(model.getValueAt(row, col));
-        testRuns.changeRunItem(editor.getParent().getPath(), onThisRow.getId(), result -> attribute.getRunItemValueSetter().execute(result, typed));
-        final @NotNull String after = attribute.getRunItemValueExtractor().apply(runItem);
+        testRuns.changeRunItem(editor.getParent().getPath(), onThisRow.getId(), result -> field.getRunItemValueSetter().execute(result, typed));
+        final @NotNull String after = field.getRunItemValueExtractor().apply(runItem);
 
         model.setValueAt(after, row, col);
 

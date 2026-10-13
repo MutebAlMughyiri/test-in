@@ -20,7 +20,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCaseDto;
 import org.testin.testcase.CreateTestCaseFields;
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testrun.TestRunEditorFields;
 import org.testin.ui.framework.AbstractFrameworkDialog;
 import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.DialogSize;
@@ -45,7 +45,7 @@ public final class StacktraceDialog extends AbstractFrameworkDialog {
                 DialogPart.details()
                         .row(CreateTestCaseFields.DESCRIPTION.getIcon(), testCase.getDescription())
                         .row(CreateTestCaseFields.EXPECTED_RESULT.getIcon(), testCase.getExpectedResult())
-                        .row(TestRunEditorAttributes.ACTUAL_RESULT.getName(), actualResult)
+                        .row(TestRunEditorFields.ACTUAL_RESULT.getName(), actualResult)
                         .build(),
                 DialogPart.textArea()
                         .value(stacktrace)

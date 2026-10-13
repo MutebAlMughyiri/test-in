@@ -25,7 +25,7 @@ import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.status.TestCaseStatus;
-import org.testin.testcase.TestSetEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
 import org.testng.annotations.Test;
 
 import java.nio.file.Path;
@@ -143,7 +143,7 @@ public class TestCaseFilterTest {
         testCase.setParent(set);
 
         final @NotNull List<String> notFound = new ArrayList<>();
-        for (final TestSetEditorAttributes field : TestSetEditorAttributes.values()) {
+        for (final TestSetEditorFields field : TestSetEditorFields.values()) {
             final @NotNull String value = field.gridValue(testCase);
             if (value.isBlank()) continue;
 

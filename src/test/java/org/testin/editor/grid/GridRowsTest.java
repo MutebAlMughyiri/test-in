@@ -18,8 +18,8 @@ package org.testin.editor.grid;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCaseDto;
-import org.testin.testcase.TestSetEditorAttributes;
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testcase.TestSetEditorFields;
+import org.testin.testrun.TestRunEditorFields;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -42,11 +42,11 @@ public class GridRowsTest {
         final @NotNull List<String[]> rows = GridRows.ofTestCases(List.of(LOGIN, LOGOUT), 11, GridRowsTest::position);
 
         assertEquals(rows.size(), 2, "the test cases are not one row each");
-        assertEquals(rows.getFirst().length, TestSetEditorAttributes.values().length, "a row does not hold one cell per column");
-        assertEquals(rows.getFirst()[TestSetEditorAttributes.ORDER.column()], "7", "the order column does not show the test case's place");
-        assertEquals(rows.get(1)[TestSetEditorAttributes.DESCRIPTION.column()], "Log out", "the description column does not show the description");
-        assertEquals(rows.getFirst()[TestSetEditorAttributes.SEQUENCE.column()], "11", "the # column does not count on from the page's first row");
-        assertEquals(rows.get(1)[TestSetEditorAttributes.SEQUENCE.column()], "12", "the # column does not number the rows as shown");
+        assertEquals(rows.getFirst().length, TestSetEditorFields.values().length, "a row does not hold one cell per column");
+        assertEquals(rows.getFirst()[TestSetEditorFields.ORDER.column()], "7", "the order column does not show the test case's place");
+        assertEquals(rows.get(1)[TestSetEditorFields.DESCRIPTION.column()], "Log out", "the description column does not show the description");
+        assertEquals(rows.getFirst()[TestSetEditorFields.SEQUENCE.column()], "11", "the # column does not count on from the page's first row");
+        assertEquals(rows.get(1)[TestSetEditorFields.SEQUENCE.column()], "12", "the # column does not number the rows as shown");
     }
 
     // Rule-EDITOR-PANEL-020
@@ -55,9 +55,9 @@ public class GridRowsTest {
         final @NotNull List<String[]> rows = GridRows.ofRunItems(List.of(LOGIN), Map.of(), 1, GridRowsTest::position);
 
         assertEquals(rows.size(), 1, "a test case with no run item yet has no row");
-        assertEquals(rows.getFirst().length, TestRunEditorAttributes.values().length, "a row does not hold one cell per column");
-        assertEquals(rows.getFirst()[TestRunEditorAttributes.ORDER.column()], "7", "the order column does not show the test case's place");
-        assertEquals(rows.getFirst()[TestRunEditorAttributes.DESCRIPTION.column()], "Log in with a valid user", "the row does not show the test case it stands for");
+        assertEquals(rows.getFirst().length, TestRunEditorFields.values().length, "a row does not hold one cell per column");
+        assertEquals(rows.getFirst()[TestRunEditorFields.ORDER.column()], "7", "the order column does not show the test case's place");
+        assertEquals(rows.getFirst()[TestRunEditorFields.DESCRIPTION.column()], "Log in with a valid user", "the row does not show the test case it stands for");
     }
 
     // Rule-EDITOR-PANEL-014
@@ -65,6 +65,6 @@ public class GridRowsTest {
     public void aTestCaseWithNoPlaceInASetHasAnEmptyOrderCell() {
         final @NotNull List<String[]> rows = GridRows.ofRunItems(List.of(LOGIN), Map.of(), 1, _ -> 0);
 
-        assertEquals(rows.getFirst()[TestRunEditorAttributes.ORDER.column()], "", "a test case in no set shows a number in the Order column");
+        assertEquals(rows.getFirst()[TestRunEditorFields.ORDER.column()], "", "a test case in no set shows a number in the Order column");
     }
 }

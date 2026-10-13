@@ -62,7 +62,7 @@ import static org.testin.testcase.TestCaseDialogKey.NAVIGATE_TAB;
 @AllArgsConstructor
 public enum UpdateTestCaseFields implements MenuItem {
     DESCRIPTION(
-            TestSetEditorAttributes.DESCRIPTION.getName(),
+            TestSetEditorFields.DESCRIPTION.getName(),
             Shortcuts.UpdateTestCaseDescription,
             CreateTestCaseFields.DESCRIPTION.getIcon(),
             GenType.UPDATE_TEST_CASE_DESCRIPTION,
@@ -73,7 +73,7 @@ public enum UpdateTestCaseFields implements MenuItem {
     ),
 
     EXPECTED_RESULT(
-            TestSetEditorAttributes.EXPECTED_RESULT.getName(),
+            TestSetEditorFields.EXPECTED_RESULT.getName(),
             Shortcuts.UpdateTestCaseExpectedResult,
             CreateTestCaseFields.EXPECTED_RESULT.getIcon(),
             GenType.UPDATE_TEST_CASE_EXPECTED_RESULT,
@@ -84,7 +84,7 @@ public enum UpdateTestCaseFields implements MenuItem {
     ),
 
     MODULE(
-            TestSetEditorAttributes.MODULE.getName(),
+            TestSetEditorFields.MODULE.getName(),
             Shortcuts.UpdateTestCaseModule,
             CreateTestCaseFields.MODULE.getIcon(),
             GenType.UPDATE_TEST_CASE_MODULE,
@@ -95,7 +95,7 @@ public enum UpdateTestCaseFields implements MenuItem {
     ),
 
     TEST_DATA(
-            TestSetEditorAttributes.TEST_DATA.getName(),
+            TestSetEditorFields.TEST_DATA.getName(),
             Shortcuts.UpdateTestCaseTestData,
             CreateTestCaseFields.TEST_DATA.getIcon(),
             GenType.UPDATE_TEST_CASE_TEST_DATA,
@@ -106,7 +106,7 @@ public enum UpdateTestCaseFields implements MenuItem {
     ),
 
     PRE_CONDITIONS(
-            TestSetEditorAttributes.PRE_CONDITIONS.getName(),
+            TestSetEditorFields.PRE_CONDITIONS.getName(),
             Shortcuts.UpdateTestCasePreConditions,
             CreateTestCaseFields.PRE_CONDITIONS.getIcon(),
             GenType.UPDATE_TEST_CASE_PRE_CONDITIONS,
@@ -117,7 +117,7 @@ public enum UpdateTestCaseFields implements MenuItem {
     ),
 
     STEPS(
-            TestSetEditorAttributes.STEPS.getName(),
+            TestSetEditorFields.STEPS.getName(),
             Shortcuts.UpdateTestCaseSteps,
             CreateTestCaseFields.STEPS.getIcon(),
             GenType.UPDATE_TEST_CASE_STEPS,
@@ -128,7 +128,7 @@ public enum UpdateTestCaseFields implements MenuItem {
     ),
 
     PRIORITY(
-            TestSetEditorAttributes.PRIORITY.getName(),
+            TestSetEditorFields.PRIORITY.getName(),
             Shortcuts.UpdateTestCasePriority,
             CreateTestCaseFields.PRIORITY.getIcon(),
             GenType.UPDATE_TEST_CASE_PRIORITY,
@@ -139,7 +139,7 @@ public enum UpdateTestCaseFields implements MenuItem {
     ),
 
     GROUP(
-            TestSetEditorAttributes.GROUP.getName(),
+            TestSetEditorFields.GROUP.getName(),
             Shortcuts.UpdateTestCaseGroup,
             CreateTestCaseFields.GROUP.getIcon(),
             GenType.UPDATE_TEST_CASE_GROUP,
@@ -150,7 +150,7 @@ public enum UpdateTestCaseFields implements MenuItem {
     ),
 
     ORDER(
-            TestSetEditorAttributes.ORDER.getName(),
+            TestSetEditorFields.ORDER.getName(),
             Shortcuts.UpdateTestCaseOrder,
             Icons.fieldLetter("O", Icons.GRAY),
             GenType.UPDATE_TEST_CASE_ORDER,
@@ -162,7 +162,7 @@ public enum UpdateTestCaseFields implements MenuItem {
 
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-194
     REFERENCE(
-            TestSetEditorAttributes.REFERENCE.getName(),
+            TestSetEditorFields.REFERENCE.getName(),
             Shortcuts.UpdateTestCaseReference,
             CreateTestCaseFields.REFERENCE.getIcon(),
             GenType.NO_CODE_CHANGE,
@@ -174,7 +174,7 @@ public enum UpdateTestCaseFields implements MenuItem {
 
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-194
     STATUS(
-            TestSetEditorAttributes.STATUS.getName(),
+            TestSetEditorFields.STATUS.getName(),
             Shortcuts.UpdateTestCaseStatus,
             CopyChoice.STATUS.getIcon(),
             GenType.UPDATE_TEST_CASE_STATUS,

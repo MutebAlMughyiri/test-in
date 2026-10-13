@@ -16,7 +16,7 @@
 
 package org.testin.model;
 
-import org.testin.testrun.TestRunEditorAttributes;
+import org.testin.testrun.TestRunEditorFields;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -24,26 +24,26 @@ import java.util.List;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 
-public class TestRunAttributeCoverageTest {
+public class TestRunFieldCoverageTest {
 
     @Test
     public void theStacktraceIsReadOnlyAndOffByDefault() {
-        assertFalse(TestRunEditorAttributes.STACKTRACE.isEdited(),
+        assertFalse(TestRunEditorFields.STACKTRACE.isEdited(),
                 "the framework writes it; the tester edits it through the failure dialog, not a grid cell");
-        assertEquals(TestRunEditorAttributes.STACKTRACE.getToolBarDefault(), AttributeDefault.OFF,
+        assertEquals(TestRunEditorFields.STACKTRACE.getToolBarDefault(), FieldDefault.OFF,
                 "it is measured in paragraphs - a column of it on by default crowds out every other column");
     }
 
     @Test
     public void theDetailsPanelDrawsEveryRunItemValueWorthReading() {
-        final List<TestRunEditorAttributes> shown = List.of(
-                TestRunEditorAttributes.RUN_STATUS,
-                TestRunEditorAttributes.DURATION,
-                TestRunEditorAttributes.ACTUAL_RESULT,
-                TestRunEditorAttributes.STACKTRACE,
-                TestRunEditorAttributes.BUG_SEVERITY,
-                TestRunEditorAttributes.BUG_PRIORITY,
-                TestRunEditorAttributes.BUG_ISSUE);
+        final List<TestRunEditorFields> shown = List.of(
+                TestRunEditorFields.RUN_STATUS,
+                TestRunEditorFields.DURATION,
+                TestRunEditorFields.ACTUAL_RESULT,
+                TestRunEditorFields.STACKTRACE,
+                TestRunEditorFields.BUG_SEVERITY,
+                TestRunEditorFields.BUG_PRIORITY,
+                TestRunEditorFields.BUG_ISSUE);
 
         assertEquals(shown.size(), 7, "the rows DetailsTab appends for a test case viewed under a test run");
         assertEquals(shown.stream().distinct().count(), 7L, "each drawn once");
