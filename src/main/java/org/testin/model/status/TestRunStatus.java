@@ -116,11 +116,6 @@ public enum TestRunStatus implements MenuItem {
         return this == COMMITTED;
     }
 
-    // UC-TREE-PANEL-020
-    public boolean stopsExecution() {
-        return this == COMPLETED;
-    }
-
     @Override
     public @NotNull String getShortcutText() {
         return Shortcuts.shortcutText(shortcut);
