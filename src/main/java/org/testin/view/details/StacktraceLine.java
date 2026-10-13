@@ -30,7 +30,7 @@ import org.testin.model.testrun.RunItemExecution;
 import org.testin.services.Services;
 import org.testin.setting.TestinRoot;
 import org.testin.ui.Tooltip;
-import org.testin.ui.framework.Picture;
+import org.testin.ui.framework.ScreenshotImages;
 import org.testin.util.Bundle;
 
 import javax.swing.Icon;
@@ -87,7 +87,7 @@ public final class StacktraceLine extends AbstractDetails {
     private @NotNull JComponent thumbnail(final @NotNull Project p, final @NotNull Path testRunPath, final @NotNull String name) {
         final @NotNull TestRuns testRuns = Services.getInstance(p, TestRuns.class);
 
-        final @NotNull JBLabel square = new JBLabel(Picture.noThumbnail());
+        final @NotNull JBLabel square = new JBLabel(ScreenshotImages.noThumbnail());
         Tooltip.set(square, name);
         square.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         square.addMouseListener(new MouseAdapter() {
@@ -98,7 +98,7 @@ public final class StacktraceLine extends AbstractDetails {
         });
 
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
-            final @NotNull Icon thumbnail = Picture.thumbnail(testRuns.screenshot(testRunPath, name));
+            final @NotNull Icon thumbnail = ScreenshotImages.thumbnail(testRuns.screenshot(testRunPath, name));
             ApplicationManager.getApplication().invokeLater(() -> square.setIcon(thumbnail));
         });
 

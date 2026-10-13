@@ -231,8 +231,8 @@ public class FrameworkComponentsTest {
             final ByteArrayOutputStream png = new ByteArrayOutputStream();
             ImageIO.write(new BufferedImage(40, 20, BufferedImage.TYPE_INT_RGB), "png", png);
 
-            assertEquals(Picture.read(png.toByteArray()).map(BufferedImage::getWidth), Optional.of(40));
-            assertTrue(Picture.read(new byte[]{1, 2, 3}).isEmpty(), "bytes that are not a picture draw nothing, and throw nothing (#50)");
+            assertEquals(ScreenshotImages.read(png.toByteArray()).map(BufferedImage::getWidth), Optional.of(40));
+            assertTrue(ScreenshotImages.read(new byte[]{1, 2, 3}).isEmpty(), "bytes that are not a picture draw nothing, and throw nothing (#50)");
         } catch (final Exception e) {
             throw new AssertionError("the picture could not be encoded for the test", e);
         }

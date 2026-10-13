@@ -34,7 +34,7 @@ import org.testin.model.status.RunItemStatus;
 import org.testin.services.Services;
 import org.testin.testcase.TestSetEditorAttributes;
 import org.testin.testrun.TestRunEditorAttributes;
-import org.testin.ui.framework.Picture;
+import org.testin.ui.framework.ScreenshotImages;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.util.Bundle;
 import org.testin.view.AbstractViewPanelIdeTest;
@@ -79,7 +79,7 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
     }
 
     private static byte @NotNull [] aScreenshot(final int width, final int height) {
-        return Picture.toPng(new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB));
+        return ScreenshotImages.toPng(new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB));
     }
 
     private static @NotNull Container lineOf(final @NotNull Component part) {

@@ -46,7 +46,7 @@ final class ScreenshotStrip {
     void add(final byte @NotNull [] png) {
         final @NotNull JBPanel<?> thumbnail = new JBPanel<>(new BorderLayout());
         thumbnail.setOpaque(false);
-        thumbnail.add(new JBLabel(Picture.thumbnail(png)), BorderLayout.CENTER);
+        thumbnail.add(new JBLabel(ScreenshotImages.thumbnail(png)), BorderLayout.CENTER);
         thumbnail.add(AbstractIconButton.of(Bundle.message("dialog.failure.screenshot.remove"), AllIcons.Actions.Close, () -> remove(png, thumbnail)), BorderLayout.EAST);
 
         screenshots.add(png);

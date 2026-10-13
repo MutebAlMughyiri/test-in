@@ -92,7 +92,7 @@ public final class Screenshots implements DialogComponent {
     // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-219
     private void add(final @NotNull Transferable contents) {
         try {
-            final byte @NotNull [] png = Picture.toPng((Image) contents.getTransferData(DataFlavor.imageFlavor));
+            final byte @NotNull [] png = ScreenshotImages.toPng((Image) contents.getTransferData(DataFlavor.imageFlavor));
             if (png.length > 0) strip.add(png);
         } catch (final UnsupportedFlavorException | IOException ex) {
             TestinLogger.warn("Could not read the pasted image: " + FailureText.of(ex));
