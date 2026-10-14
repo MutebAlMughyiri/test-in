@@ -32,6 +32,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.status.TestCaseStatus;
 import org.testin.util.Bundle;
+import org.testin.util.JsonCodec;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -55,6 +56,8 @@ public final class TestCase {
     @Builder.Default
     private volatile String order = "";
 
+    // Rule-INTERNAL-012
+    @JsonIgnore
     @NonNull
     @Builder.Default
     private volatile UUID id = UUID.randomUUID();
@@ -122,6 +125,11 @@ public final class TestCase {
     @NonNull
     @Builder.Default
     private volatile String preConditions = "";
+
+    // UC-INTERNAL-002, Rule-INTERNAL-012
+    public static @NotNull TestCase read(final @NotNull JsonCodec mapper, final @NotNull String json, final @NotNull UUID testCaseId) {
+        return mapper.readValue(json, TestCase.class).setId(testCaseId);
+    }
 
     public static @NotNull TestCase deleted(final @NotNull UUID testCaseId) {
         return TestCase.builder()

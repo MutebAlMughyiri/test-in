@@ -91,7 +91,8 @@ public final class TestRuns {
         final @NotNull IndexerDataStore store = store();
         final @NotNull String commit = commitOf(testRunPath);
         final @NotNull Map<UUID, Optional<TestCase>> inCommit = recorded.getOrDefault(recordedAt.getOrDefault(testRunPath, commit), Map.of());
-        runItems.getAll().forEach(runItem -> runItem.showing(store.findTestCase(runItem.getId()), inCommit.getOrDefault(runItem.getId(), Optional.empty()), Optional.ofNullable(lastInGit.get(runItem.getId())), !commit.isEmpty()));
+        final boolean committed = store.findTestRunNode(testRunPath).map(node -> node.getMarker().getStatus().isRecord()).orElse(false);
+        runItems.getAll().forEach(runItem -> runItem.showing(store.findTestCase(runItem.getId()), inCommit.getOrDefault(runItem.getId(), Optional.empty()), Optional.ofNullable(lastInGit.get(runItem.getId())), committed));
         return runItems;
     }
 
@@ -205,6 +206,6 @@ public final class TestRuns {
     }
 
     public @NotNull List<byte[]> screenshots(final @NotNull Path testRunPath, final @NotNull RunItem runItem) {
-        return runItem.getScreenshots().stream().map(name -> screenshot(testRunPath, name)).toList();
+        return runItem.shownExecution().getScreenshots().stream().map(name -> screenshot(testRunPath, name)).toList();
     }
 }

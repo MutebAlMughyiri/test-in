@@ -73,6 +73,15 @@ final class ReadProblems {
                 (named, rest) -> Bundle.message("indexer.run.items.unread.many", String.valueOf(names.size()), named, rest));
     }
 
+    // UC-INTERNAL-002, Rule-INTERNAL-012
+    void handNamedTestCases(final @NotNull String testProjectName, final @NotNull Set<String> handNamed) {
+        final @NotNull List<String> names = handNamed.stream().sorted().toList();
+
+        say(Bundle.message("indexer.test.cases.unnamed.title", testProjectName), names,
+                name -> Bundle.message("indexer.test.cases.unnamed.one", name),
+                (named, rest) -> Bundle.message("indexer.test.cases.unnamed.many", String.valueOf(names.size()), named, rest));
+    }
+
     // UC-INTERNAL-002, Rule-INTERNAL-094
     void handNamedRunItems(final @NotNull String testProjectName, final @NotNull Set<String> handNamed) {
         final @NotNull List<String> names = handNamed.stream().sorted().toList();

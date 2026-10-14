@@ -44,15 +44,20 @@ public final class CopiedTestCases {
                 .orElseGet(List::of);
     }
 
+    // UC-EDITOR-PANEL-015, UC-EDITOR-PANEL-016, Rule-INTERNAL-012
+    static @NotNull String json(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
+        return Services.getInstance(project, JsonCodec.class).writeValueAsString(testCases.stream().map(ClipboardTestCase::of).toList());
+    }
+
     static @NotNull List<TestCase> in(final @NotNull Project project, final @NotNull Transferable contents) {
         try {
             final @NotNull String json = (String) contents.getTransferData(DataFlavor.stringFlavor);
             if (!json.trim().startsWith("[")) return List.of();
 
-            final @NotNull List<TestCase> parsed = Services.getInstance(project, JsonCodec.class).readValue(json, new TypeReference<>() {
+            final @NotNull List<ClipboardTestCase> parsed = Services.getInstance(project, JsonCodec.class).readValue(json, new TypeReference<>() {
             });
 
-            return parsed.stream().filter(Objects::nonNull).toList();
+            return parsed.stream().filter(Objects::nonNull).map(ClipboardTestCase::withItsId).toList();
         } catch (final UnsupportedFlavorException | IOException | UncheckedIOException ex) {
             TestinLogger.warn("[WARNING] Failed to parse clipboard JSON: " + FailureText.of(ex));
             return List.of();

@@ -67,7 +67,7 @@ public class EditTestRunSaveIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull RunItemStatus runItemStatusOf(final @NotNull TestRunNode testRun, final @NotNull UUID testCaseId) {
-        return indexedTestRuns().getRunItems(testRun.getPath()).runItemOf(testCaseId).map(runItem -> runItem.defaultExecution().map(RunItemExecution::getStatus).orElse(RunItemStatus.PENDING)).orElse(RunItemStatus.REMOVED);
+        return indexedTestRuns().getRunItems(testRun.getPath()).runItemOf(testCaseId).map(RunItem::shownExecution).map(RunItemExecution::getStatus).orElse(RunItemStatus.REMOVED);
     }
 
     private boolean save(final @NotNull TestRunNode testRun) {

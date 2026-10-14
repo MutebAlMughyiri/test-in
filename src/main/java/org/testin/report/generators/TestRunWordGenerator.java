@@ -310,7 +310,7 @@ public final class TestRunWordGenerator {
     }
 
     private void addFailureDetail(final @NotNull XWPFTableRow row, final @NotNull RunItem runItem, final @NotNull String rowBackground) {
-        final @NotNull String actualResult = runItem.getActualResult();
+        final @NotNull String actualResult = runItem.shownExecution().getActualResult();
         final @NotNull XWPFParagraph actualResultParagraph = row.getCell(1).addParagraph();
         styledTextRun(actualResultParagraph.createRun(), Bundle.message("report.actual.result", actualResult.isEmpty() ? "—" : actualResult), ReportFont.SMALL, DARK_GRAY);
 

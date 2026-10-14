@@ -25,8 +25,12 @@ import static org.testng.Assert.assertTrue;
 public class TestRunMergeTest {
 
     private static String runItem(final String severity, final String... executions) {
+        return chosen(severity, executions.length, executions);
+    }
+
+    private static String chosen(final String severity, final int defaultNumber, final String... executions) {
         return """
-                { "id" : "11111111-1111-4111-8111-111111111101", "bugSeverity" : "%s", "executions" : [ %s ] }""".formatted(severity, String.join(", ", executions));
+                { "bugSeverity" : "%s", "default" : %d, "executions" : [ %s ] }""".formatted(severity, defaultNumber, String.join(", ", executions));
     }
 
     private static final String EARLY = """
@@ -82,6 +86,7 @@ public class TestRunMergeTest {
         assertEquals(merge.merged().path("executions").get(0).path("executedBy").asText(), "Omar");
         assertEquals(merge.merged().path("executions").get(1).path("executedBy").asText(), "Muteb");
         assertEquals(merge.merged().path("executions").get(2).path("stacktrace").asText(), "boom", "each execution keeps its own evidence");
+        assertEquals(merge.merged().path("default").asInt(), 3, "the later side's default, by its place in the join");
         assertEquals(merge.settled().size(), 1, "and the tester is told a choice was made: " + merge.settled());
     }
 
@@ -94,15 +99,36 @@ public class TestRunMergeTest {
 
     // Rule-SHARE-081, Rule-VIEW-PANEL-119
     @Test
-    public void onlyTheLaterSidesChosenDefaultStays() {
-        final String chosenEarly = runItem("MINOR", BOTH.replace("{", "{ \"default\" : true,"), EARLY);
-        final String chosenLate = runItem("MAJOR", BOTH, LATE.replace("{", "{ \"default\" : true,"));
+    public void theLaterSidesChoiceIsWrittenByItsPlaceInTheJoin() {
+        final String choseEarly = chosen("MINOR", 2, BOTH, EARLY);
+        final String choseFirst = chosen("MAJOR", 1, BOTH, LATE);
 
-        final MergeOutcome merge = RunItemMerger.of(RealJsonCodec.build(), chosenEarly, chosenLate);
+        final MergeOutcome merge = RunItemMerger.of(RealJsonCodec.build(), choseEarly, choseFirst);
 
-        assertEquals(merge.merged().path("executions").size(), 3, "a flag does not make the same execution a second one");
-        assertTrue(merge.merged().path("executions").get(2).path("default").asBoolean(), "the later side's choice stays: " + merge.merged());
-        assertEquals(merge.merged().findValues("default").size(), 1, "and it is the only one");
+        assertEquals(merge.merged().path("executions").size(), 3);
+        assertEquals(merge.merged().path("default").asInt(), 1, "the later side chose the execution both hold, now first in the join: " + merge.merged());
+    }
+
+    // Rule-SHARE-081, Rule-EDITOR-PANEL-136
+    @Test
+    public void anOpenExecutionIsDroppedWhenTheOtherSideRecorded() {
+        final MergeOutcome merge = RunItemMerger.of(RealJsonCodec.build(), runItem("ENHANCEMENT", """
+                { "status" : "PENDING", "duration" : 12.0 }"""), runItem("ENHANCEMENT", EARLY));
+
+        assertEquals(merge.merged().path("executions").size(), 1, "no open execution is left beside a recorded one: " + merge.merged());
+        assertEquals(merge.merged().path("executions").get(0).path("status").asText(), "PASSED");
+        assertEquals(merge.merged().path("default").asInt(), 1);
+    }
+
+    // Rule-SHARE-081, Rule-TREE-PANEL-067
+    @Test
+    public void untestedWinsOverPendingWhenNeitherSideRecorded() {
+        final MergeOutcome merge = RunItemMerger.of(RealJsonCodec.build(), runItem("ENHANCEMENT", """
+                { "status" : "PENDING" }"""), runItem("ENHANCEMENT", """
+                { "status" : "UNTESTED" }"""));
+
+        assertEquals(merge.merged().path("executions").size(), 1);
+        assertEquals(merge.merged().path("executions").get(0).path("status").asText(), "UNTESTED", "a signed-off side's word is kept: " + merge.merged());
     }
 
     @Test

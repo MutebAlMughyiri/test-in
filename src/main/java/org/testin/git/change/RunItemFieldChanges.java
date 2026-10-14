@@ -46,19 +46,19 @@ public final class RunItemFieldChanges {
         final @NotNull List<FieldChange> changes = new ArrayList<>();
 
         addIfChanged(changes, TestRunEditorFields.RUN_STATUS.getName(), oldRunItem.getStatus().getLabel(), newRunItem.getStatus().getLabel());
-        addIfChanged(changes, TestRunEditorFields.ACTUAL_RESULT.getName(), oldRunItem.getActualResult(), newRunItem.getActualResult());
-        addIfChanged(changes, TestRunEditorFields.STACKTRACE.getName(), oldRunItem.getStacktrace(), newRunItem.getStacktrace());
+        addIfChanged(changes, TestRunEditorFields.ACTUAL_RESULT.getName(), oldRunItem.shownExecution().getActualResult(), newRunItem.shownExecution().getActualResult());
+        addIfChanged(changes, TestRunEditorFields.STACKTRACE.getName(), oldRunItem.shownExecution().getStacktrace(), newRunItem.shownExecution().getStacktrace());
         addIfChanged(changes, TestRunEditorFields.BUG_SEVERITY.getName(), oldRunItem.getBugSeverity().getLabel(), newRunItem.getBugSeverity().getLabel());
         addIfChanged(changes, TestRunEditorFields.BUG_PRIORITY.getName(), oldRunItem.getBugPriority().getLabel(), newRunItem.getBugPriority().getLabel());
         addIfChanged(changes, TestRunEditorFields.BUG_ISSUE.getName(), BugIssueUrl.reference(oldRunItem.getBugIssueUrl()), BugIssueUrl.reference(newRunItem.getBugIssueUrl()));
-        addIfChanged(changes, TestRunEditorFields.EXECUTED_BY.getName(), oldRunItem.getExecutedBy(), newRunItem.getExecutedBy());
-        addIfChanged(changes, TestRunEditorFields.EXECUTED_AT.getName(), Display.formatDate(oldRunItem.getExecutedAt()), Display.formatDate(newRunItem.getExecutedAt()));
-        addIfChanged(changes, Bundle.message("git.change.screenshots"), String.join(", ", oldRunItem.getScreenshots()), String.join(", ", newRunItem.getScreenshots()));
+        addIfChanged(changes, TestRunEditorFields.EXECUTED_BY.getName(), oldRunItem.shownExecution().getExecutedBy(), newRunItem.shownExecution().getExecutedBy());
+        addIfChanged(changes, TestRunEditorFields.EXECUTED_AT.getName(), Display.formatDate(oldRunItem.shownExecution().getExecutedAt()), Display.formatDate(newRunItem.shownExecution().getExecutedAt()));
+        addIfChanged(changes, Bundle.message("git.change.screenshots"), String.join(", ", oldRunItem.shownExecution().getScreenshots()), String.join(", ", newRunItem.shownExecution().getScreenshots()));
         return changes;
     }
 
     static @NotNull String summary(final @NotNull RunItem runItem) {
-        final @NotNull String said = runItem.getActualResult().isBlank() ? "" : " - " + runItem.getActualResult();
+        final @NotNull String said = runItem.shownExecution().getActualResult().isBlank() ? "" : " - " + runItem.shownExecution().getActualResult();
         return runItem.getStatus().getLabel() + said;
     }
 

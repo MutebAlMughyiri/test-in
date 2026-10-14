@@ -144,7 +144,7 @@ public class ReadTestProjectIdeTest extends AbstractReadTheRootIdeTest {
         final @NotNull Path testRun = marked(theTestRunsOf(testProjectPath).resolve("Cycle 1"), NodeType.TEST_RUN);
         final @NotNull Path testRunPackage = marked(theTestRunsOf(testProjectPath).resolve("Release 2"), NodeType.TEST_RUN_PACKAGE);
         final @NotNull Path unmarked = theTestRunsOf(testProjectPath).resolve("Old");
-        resultIn(unmarked, FileKind.RUN_ITEM.fileName(UUID.randomUUID()), UUID.randomUUID());
+        runItemIn(unmarked, FileKind.RUN_ITEM.fileName(UUID.randomUUID()));
 
         readEverything();
 

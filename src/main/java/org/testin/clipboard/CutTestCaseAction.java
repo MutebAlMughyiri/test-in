@@ -32,7 +32,6 @@ import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
 import org.testin.util.FailureText;
-import org.testin.util.JsonCodec;
 
 import java.awt.datatransfer.StringSelection;
 import java.util.List;
@@ -50,7 +49,7 @@ public class CutTestCaseAction extends AbstractAnyProjectAction {
 
         if (!selectedTestCases.isEmpty()) {
             try {
-                final @NotNull String json = Services.getInstance(project, JsonCodec.class).writeValueAsString(selectedTestCases);
+                final @NotNull String json = CopiedTestCases.json(project, selectedTestCases);
                 CopyPasteManager.getInstance().setContents(new StringSelection(json));
 
                 Services.getInstance(project, CutState.class).cut(editor, selectedTestCases);

@@ -112,7 +112,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
     private @NotNull Path aTestRun(final @NotNull String name, final @NotNull TestRunStatus testRunStatus) {
         final @NotNull Path testRun = theTestRunsOf(testProjectPath).resolve(name);
         write(testRun.resolve(NodeType.TEST_RUN.getMarker()), aTestRunMarker(testRunStatus));
-        resultIn(testRun, FileKind.RUN_ITEM.fileName(testCaseId), testCaseId);
+        runItemIn(testRun, FileKind.RUN_ITEM.fileName(testCaseId));
         return testRun;
     }
 
@@ -435,7 +435,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
         final @NotNull UUID other = aTestCaseIn(testSet);
         final @NotNull Path second = theTestRunsOf(testProjectPath).resolve("Cycle 5");
         write(second.resolve(NodeType.TEST_RUN.getMarker()), aTestRunMarker(TestRunStatus.COMPLETED));
-        resultIn(second, FileKind.RUN_ITEM.fileName(other), other);
+        runItemIn(second, FileKind.RUN_ITEM.fileName(other));
         committedAsItIs();
         committedWithTheReview();
 

@@ -39,8 +39,11 @@ There is no key for this. It starts on its own.
   `.testcase` directly inside a test set is a test case, and every file ending in `.runitem`
   directly inside a test run is one run item. Nothing looks inside a
   file to decide what it is.
-- **Rule-INTERNAL-012** — A test case is known by its file name. What the file
-  says its own name is does not decide.
+- **Rule-INTERNAL-012** — A test case is known by its file name,
+  `<test case id>.testcase`, and the file does not write its id. A `.testcase`
+  whose name is not an id is not read, and a warning names it; named by a new
+  id, it is read at the next Refresh. Two files named by one id are both kept,
+  and which one is the test case is for the tester to decide.
 - **Rule-INTERNAL-013** — Each test project is read by its own background job.
   The tester can cancel it, and the IDE stays usable while it runs.
 - **Rule-INTERNAL-014** — One thing that cannot be read never stops the rest.
@@ -83,17 +86,18 @@ There is no key for this. It starts on its own.
   stamped the first time Testin writes that marker, never changed afterward,
   and fresh on a copied folder. Nothing in Testin reads it; it names a test
   project, a test set or a test run for a tool outside the IDE.
-- **Rule-INTERNAL-093** — A result file Testin could not read is never written
+- **Rule-INTERNAL-093** — A run item file Testin could not read is never written
   over and never removed. The scan reports it and leaves it out of the test run,
   so the test run covers the test cases it could read; a later write touches
-  only the results the test run holds, and a removal takes only the file whose
+  only the run items the test run holds, and a removal takes only the file whose
   test case a change stopped covering. A run item status nobody can read is
   still a run item status somebody recorded, and the tester repairs the file and
   presses Refresh.
-- **Rule-INTERNAL-094** — A result is known by its file name, as a test case is.
-  A result file whose name is not a test case id is not read, and a warning
-  names it; renamed to its test case's id, it is read again at the next Refresh.
-  Nothing writes a second file for it.
+- **Rule-INTERNAL-094** — A run item is known by its file name,
+  `<test case id>.runitem`, as a test case is (Rule-INTERNAL-012), and the file
+  does not write the id. A run item file whose name is not a test case id is not
+  read, and a warning names it; renamed to its test case's id, it is read again
+  at the next Refresh. Nothing writes a second file for it.
 - **Rule-INTERNAL-111** — Waiting for the index is refused under a read lock. It
   logs an error and returns at once, because a read action that waits holds up
   every write in the IDE, the one that finishes indexing included.
@@ -128,11 +132,13 @@ There is no key for this. It starts on its own.
   empty field is not written, and a passed run item stores no failure detail: no
   actual result, stacktrace, screenshots, bug severity, bug priority or bug
   issue. When a test case or a node was created is always written, because a
-  fresh one holds the moment it was made.
+  fresh one holds the moment it was made, and so are a run item's `default` and
+  `executions` and each execution's `status`, so a run item says what it is in
+  every case (#432).
 
 ## The budget
 
-A test project of ten thousand test cases, and the results of its test runs,
+A test project of ten thousand test cases, and the run items of its test runs,
 measured rather than estimated.
 
 |                                   | Measured | Budget |
@@ -144,7 +150,7 @@ measured rather than estimated.
 | **Reading one run item**          | 8.8 µs   | 20 µs  |
 | **Reading four thousand**         | 35 ms    | 80 ms  |
 
-The results are their own line because they are their own files: since #305 a
+The run items are their own line because they are their own files: since #305 a
 test run of two thousand test cases is two thousand `.runitem` files rather than one
 `run.json`, so the question "what does a big cycle cost to read" is a question
 about four thousand small documents - one cycle of two thousand test cases and
@@ -152,7 +158,7 @@ fifty of forty, which is the shape of a real Testin folder. Two thousand of them
 parse in about 18 milliseconds.
 
 Measured on 9 September 2026 (the test cases) and 20 September 2026 (the
-results), Windows 11 with JBR 25, by `IndexerBudgetTest`. CI asserts the budget
+run items), Windows 11 with JBR 25, by `IndexerBudgetTest`. CI asserts the budget
 on every push, on a runner doing nothing else, so a change that doubles the
 cost fails rather than ships. It is its own run - `./gradlew test -Pbudget` -
 and not part of the ordinary one, because a clock on a machine that is also
@@ -216,7 +222,7 @@ the bottom of the IDE, beside the other background jobs.
 9. The bar reads the test project's name, then *test runs...*.
 10. Testin walks `Test Runs`. Each test run reads its own facts from its
     `.testrun` - its status, how it was configured, what the tester wrote about the
-    run item statuses, when it was executed. It also reads one file per result,
+    run item statuses, when it was executed. It also reads one file per run item,
     `<test case id>.runitem`, in the order their test cases sit in their test sets.
 11. The bar reads *Done -*, then the test project's name, and closes.
 12. The tree draws itself from memory. Every editor that was open when the IDE
@@ -235,7 +241,7 @@ Testin folder usually holds other things.
 not counted as read. The tester is told it could not be read, and why (Rule-INTERNAL-124). This is a fault in Testin,
 not in the files. A damaged file
 is never reported this way. A damaged `.testproject` or other marker is read as defaults.
-An unreadable test case or result is left out, as described below.
+An unreadable test case or run item is left out, as described below.
 
 **If a marker file is missing** — nothing is said. A node just created has no
 marker yet, so Testin uses defaults and the node appears normally.
@@ -262,10 +268,16 @@ noise.
 test set. The others are read. The set is drawn one row shorter, and nothing
 says which row is missing.
 
-**If one result file cannot be read** — the test run is drawn without that
-result, and once the read has finished one message names all of them. It is
-titled **Results not read in \<project\>** and it says the file names, up to
-five of them, then how many more there are. Nothing writes over a result Testin
+**If a test case file is not named by an id** — `login.testcase`, written by
+hand — it is not read, and once the read has finished one message names all of
+them, titled **Test cases not read in \<project\>**. Testin does not make up an
+id for it; named by a new id, it is read at the next **Refresh**
+(Rule-INTERNAL-012).
+
+**If one run item file cannot be read** — the test run is drawn without that
+run item, and once the read has finished one message names all of them. It is
+titled **Run items not read in \<project\>** and it says the file names, up to
+five of them, then how many more there are. Nothing writes over a run item Testin
 cannot read and nothing removes it, so the repair is to fix the file and press **Refresh**.
 
 **If two test case files claim the same identity** — the second one read goes

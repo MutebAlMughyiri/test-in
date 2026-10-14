@@ -111,14 +111,14 @@ public enum TestRunEditorFields implements ShowableField {
     ACTUAL_RESULT(
             Bundle.message("field.run.item.actual.result"),
             FieldDefault.ON,
-            RunItem::getActualResult,
+            runItem -> runItem.shownExecution().getActualResult(),
             RunItem::recordActualResult
     ),
 
     STACKTRACE(
             Bundle.message("field.run.item.stacktrace"),
             FieldDefault.OFF,
-            RunItem::getStacktrace
+            runItem -> runItem.shownExecution().getStacktrace()
     ),
 
     BUG_SEVERITY(
@@ -158,7 +158,7 @@ public enum TestRunEditorFields implements ShowableField {
     DURATION(
             Bundle.message("field.run.item.duration"),
             FieldDefault.ON,
-            runItem -> Display.formatDuration(runItem.getDuration())
+            runItem -> Display.formatDuration(runItem.shownExecution().getDuration())
     ) {
         // Rule-EDITOR-PANEL-270
         @Override
@@ -170,13 +170,13 @@ public enum TestRunEditorFields implements ShowableField {
     EXECUTED_BY(
             Bundle.message("field.run.item.executed.by"),
             FieldDefault.OFF,
-            RunItem::getExecutedBy
+            runItem -> runItem.shownExecution().getExecutedBy()
     ),
 
     EXECUTED_AT(
             Bundle.message("field.run.item.executed.at"),
             FieldDefault.OFF,
-            runItem -> Display.formatDate(runItem.getExecutedAt())
+            runItem -> Display.formatDate(runItem.shownExecution().getExecutedAt())
     ),
 
     PATH(

@@ -129,7 +129,7 @@ public final class RunItemRecorder {
     }
 
     // UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-183, Rule-EDITOR-PANEL-241, Rule-EDITOR-PANEL-242
-    public void recordReported(final @NotNull TestRunEditor editor, final @NotNull TestCase testCase, final @NotNull RunItemStatus runItemStatus, final @NotNull List<RunItemExecution> executions, final int written) {
+    public void recordReported(final @NotNull TestRunEditor editor, final @NotNull TestCase testCase, final @NotNull RunItemStatus runItemStatus, final @NotNull List<RunItemExecution> executions, final int written, final int deciding) {
         if (editor.getWalk().clockIsOn(testCase.getId())) editor.getWalk().stopTheClock();
 
         if (editor.getWalk().isExecuting(testCase.getId())) {
@@ -137,16 +137,16 @@ public final class RunItemRecorder {
         }
 
         final @NotNull String tester = tester();
-        recordOn(editor, testCase.getId(), runItemStatus, runItem -> runItem.recordExecutions(executions, written, tester));
+        recordOn(editor, testCase.getId(), runItemStatus, runItem -> runItem.recordExecutions(executions, written, deciding, tester));
     }
 
     // UC-EDITOR-PANEL-043, Rule-CODEGEN-111
-    public void showAttempts(final @NotNull TestRunEditor editor, final @NotNull TestCase testCase, final @NotNull List<RunItemExecution> executions, final int written) {
+    public void showAttempts(final @NotNull TestRunEditor editor, final @NotNull TestCase testCase, final @NotNull List<RunItemExecution> executions, final int written, final int deciding) {
         final @NotNull Path testRunPath = editor.getParent().getPath();
         if (refused(testRunPath, testCase.getId())) return;
 
         final @NotNull String tester = tester();
-        Services.getInstance(project, TestRuns.class).changeRunItem(testRunPath, testCase.getId(), runItem -> runItem.showExecutions(executions, written, tester));
+        Services.getInstance(project, TestRuns.class).changeRunItem(testRunPath, testCase.getId(), runItem -> runItem.recordExecutions(executions, written, deciding, tester));
     }
 
     // Rule-EDITOR-PANEL-225, Rule-TREE-PANEL-009
@@ -254,6 +254,11 @@ public final class RunItemRecorder {
 
     public void refuseRemoved() {
         Services.getInstance(project, Notifier.class).softRefuse(project, Bundle.message("run.item.status.test.case.removed"));
+    }
+
+    // UC-EDITOR-PANEL-041, Rule-EDITOR-PANEL-295
+    public void refuseUnjudged() {
+        Services.getInstance(project, Notifier.class).softRefuse(project, Bundle.message("run.item.status.actual.result.not.recorded"));
     }
 
     // UC-EDITOR-PANEL-032, UC-EDITOR-PANEL-038, UC-EDITOR-PANEL-039, Rule-EDITOR-PANEL-284

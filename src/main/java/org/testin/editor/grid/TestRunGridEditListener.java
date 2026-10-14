@@ -72,6 +72,13 @@ public class TestRunGridEditListener extends AbstractGridEditListener {
             return GridEdit.REFUSED;
         }
 
+        // Rule-EDITOR-PANEL-295
+        if (!runItem.isJudged()) {
+            model.setValueAt(before, row, column);
+            runItemStatusService.refuseUnjudged();
+            return GridEdit.REFUSED;
+        }
+
         // Rule-EDITOR-PANEL-174
         if (runItemStatusService.heldTestRun(editor.getParent().getPath()).isEmpty()) {
             model.setValueAt(before, row, column);

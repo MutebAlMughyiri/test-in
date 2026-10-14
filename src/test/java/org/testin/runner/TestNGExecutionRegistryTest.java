@@ -51,7 +51,7 @@ public class TestNGExecutionRegistryTest {
     }
 
     private static @NotNull Attempt attempt(final TestNGExecutionStatus testNGExecutionStatus, final String message) {
-        return new Attempt(testNGExecutionStatus, Duration.ZERO, new Failure(message, "", List.of()), "", DateFormats.NOT_EXECUTED);
+        return new Attempt(testNGExecutionStatus, Duration.ZERO, new Failure(message, "", List.of()), DateFormats.NOT_EXECUTED);
     }
 
     private static @NotNull TestNGExecutionStatus testNGExecutionStatusIn(final Map<UUID, Attempts> decided, final TestCase testCase) {

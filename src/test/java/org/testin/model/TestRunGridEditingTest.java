@@ -62,6 +62,6 @@ public class TestRunGridEditingTest {
 
         TestRunEditorFields.ACTUAL_RESULT.getRunItemValueSetter().execute(row, "The balance showed 0.00");
 
-        assertEquals(row.getActualResult(), "The balance showed 0.00");
+        assertEquals(row.shownExecution().getActualResult(), "The balance showed 0.00");
     }
 }

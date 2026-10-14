@@ -53,7 +53,7 @@ public class CommittedTestRunF2IdeTest extends AbstractReadTheRootIdeTest {
         } catch (final IOException ex) {
             throw new AssertionError("Could not write the test run: " + ex.getMessage(), ex);
         }
-        resultIn(testRun, FileKind.RUN_ITEM.fileName(testCaseId), testCaseId);
+        runItemIn(testRun, FileKind.RUN_ITEM.fileName(testCaseId));
         readEverything();
         final @NotNull TestCase shown = Services.getInstance(getProject(), TestCases.class).findTestCase(testCaseId).orElseThrow();
 

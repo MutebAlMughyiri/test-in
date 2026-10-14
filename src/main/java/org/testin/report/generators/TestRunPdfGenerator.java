@@ -319,7 +319,7 @@ public final class TestRunPdfGenerator {
     }
 
     private void addFailureDetail(final @NotNull Table table, final @NotNull Cell testCaseCell, final @NotNull RunItem runItem, final @NotNull DeviceRgb rowBackground, final @NotNull PdfFont boldFont, final @NotNull PdfFont regularFont) {
-        final @NotNull String actualResult = runItem.getActualResult();
+        final @NotNull String actualResult = runItem.shownExecution().getActualResult();
         final @NotNull Paragraph actual = paragraph(Bundle.message("report.actual.result", actualResult.isEmpty() ? "—" : actualResult))
                 .setFont(regularFont).setFontSize(ReportFont.SMALL.points()).setFontColor(DARK_GRAY);
 

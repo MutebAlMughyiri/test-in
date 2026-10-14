@@ -44,8 +44,8 @@ public class FailureTest {
         runItem.recordRunItemStatus(RunItemStatus.FAILED, "tester", Duration.ZERO,
                 new Failure("expected [true] but found [false]", "at testProject.SPTestTest.check(SPTestTest.java:42)", List.of()));
 
-        assertEquals(runItem.getActualResult(), "expected [true] but found [false]");
-        assertEquals(runItem.getStacktrace(), "at testProject.SPTestTest.check(SPTestTest.java:42)");
+        assertEquals(runItem.shownExecution().getActualResult(), "expected [true] but found [false]");
+        assertEquals(runItem.shownExecution().getStacktrace(), "at testProject.SPTestTest.check(SPTestTest.java:42)");
     }
 
     // Rule-EDITOR-PANEL-284
@@ -56,7 +56,7 @@ public class FailureTest {
 
         runItem.recordRunItemStatus(RunItemStatus.FAILED, "tester", Duration.ZERO, new Failure("Skipped/Terminated", "", List.of()));
 
-        assertEquals(runItem.getStacktrace(), "", "the new execution says what it says");
+        assertEquals(runItem.shownExecution().getStacktrace(), "", "the new execution says what it says");
         assertEquals(runItem.getExecutions().getFirst().getStacktrace(), "at Login.click", "and the first still says what it said");
     }
 
@@ -78,7 +78,7 @@ public class FailureTest {
 
         runItem.recordRunItemStatus(RunItemStatus.FAILED, "tester", Duration.ZERO, new Failure("second", "", List.of("m2p7q.png")));
 
-        assertEquals(runItem.getScreenshots(), List.of("m2p7q.png"));
+        assertEquals(runItem.shownExecution().getScreenshots(), List.of("m2p7q.png"));
         assertTrue(runItem.allScreenshots().contains("k3f9a.png"), "the first failure's screenshot is still in use");
     }
 
@@ -88,8 +88,8 @@ public class FailureTest {
 
         runItem.recordRunItemStatus(RunItemStatus.PASSED, "tester", Duration.ZERO, Failure.NONE);
 
-        assertEquals(runItem.getActualResult(), "");
-        assertEquals(runItem.getStacktrace(), "");
-        assertTrue(runItem.getScreenshots().isEmpty());
+        assertEquals(runItem.shownExecution().getActualResult(), "");
+        assertEquals(runItem.shownExecution().getStacktrace(), "");
+        assertTrue(runItem.shownExecution().getScreenshots().isEmpty());
     }
 }

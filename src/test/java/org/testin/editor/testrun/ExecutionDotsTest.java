@@ -41,6 +41,7 @@ public class ExecutionDotsTest {
     private static @NotNull RunItem executed(final int times) {
         return RunItem.builder().id(UUID.randomUUID())
                 .executions(IntStream.range(0, times).mapToObj(_ -> RunItemExecution.builder().status(RunItemStatus.PASSED).build()).toList())
+                .defaultNumber(times)
                 .build();
     }
 

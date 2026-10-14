@@ -20,17 +20,14 @@ import com.intellij.openapi.application.WriteAction;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
-import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.status.TestProjectStatus;
 import org.testin.services.Services;
-import org.testin.util.JsonCodec;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class RenameTestProjectIdeTest extends AbstractTempRootIdeTest {
@@ -99,29 +96,6 @@ public class RenameTestProjectIdeTest extends AbstractTempRootIdeTest {
                 .orElseThrow(() -> new AssertionError("the inactive project is not held under its new name"));
         assertEquals("its test cases folder kept the old path", to.resolve("Test Cases"), renamed.getTestCasesFolder().getPath());
         assertEquals("its test runs folder kept the old path", to.resolve("Test Runs"), renamed.getTestRunsFolder().getPath());
-    }
-
-    public void testAHandNamedTestCaseKeepsItsFile() {
-        final TestProjectNode testProject = aTestProject("NAFATH");
-        final TestSetNode testSet = aTestSetIn(testProject);
-        final UUID testCaseId = UUID.randomUUID();
-
-        try {
-            Files.writeString(testSet.getPath().resolve("login.testcase"), Services.getInstance(getProject(), JsonCodec.class)
-                    .writeValueAsString(TestCase.builder().id(testCaseId).description("Log in with a valid user").build()));
-        } catch (final Exception ex) {
-            throw new AssertionError("Could not write the hand-named test case: " + ex.getMessage(), ex);
-        }
-        indexer().scanSingleTestProject(testProject.getPath());
-
-        final Path to = root.resolve("Nafath_App");
-        rename(testProject.getPath(), to);
-
-        final TestCase testCase = indexedTestCases().findTestCase(testCaseId).orElseThrow();
-        final TestCaseFile file = indexedTestCases().testCaseFile(testCase).orElseThrow();
-
-        assertEquals("the test case is placed in the renamed project", to, file.testProject());
-        assertEquals("the test case lost its hand-named file", "login.testcase", file.inTestProject().getFileName().toString());
     }
 
     // Rule-TREE-PANEL-004

@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.model.DateFormats;
 import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItem;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.testrun.TestRunEditorFields;
 import org.testin.util.Bundle;
@@ -98,15 +99,15 @@ public enum SortField {
     EXECUTED_AT(
             TestRunEditorFields.EXECUTED_AT.getName(),
             true,
-            Comparator.comparing((SortedTestCase shown) -> shown.runItem().map(RunItem::getExecutedAt).orElseThrow()),
-            shown -> shown.runItem().map(RunItem::getExecutedAt).filter(at -> !at.equals(DateFormats.NOT_EXECUTED)).isEmpty()
+            Comparator.comparing((SortedTestCase shown) -> shown.runItem().map(RunItem::shownExecution).map(RunItemExecution::getExecutedAt).orElseThrow()),
+            shown -> shown.runItem().map(RunItem::shownExecution).map(RunItemExecution::getExecutedAt).filter(at -> !at.equals(DateFormats.NOT_EXECUTED)).isEmpty()
     ),
 
     DURATION(
             TestRunEditorFields.DURATION.getName(),
             true,
-            Comparator.comparing((SortedTestCase shown) -> shown.runItem().map(RunItem::getDuration).orElseThrow()),
-            shown -> shown.runItem().map(RunItem::getDuration).filter(duration -> !duration.equals(Duration.ZERO)).isEmpty()
+            Comparator.comparing((SortedTestCase shown) -> shown.runItem().map(RunItem::shownExecution).map(RunItemExecution::getDuration).orElseThrow()),
+            shown -> shown.runItem().map(RunItem::shownExecution).map(RunItemExecution::getDuration).filter(duration -> !duration.equals(Duration.ZERO)).isEmpty()
     );
 
     private final @NotNull String label;

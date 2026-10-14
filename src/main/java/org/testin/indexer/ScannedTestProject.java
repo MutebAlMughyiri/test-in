@@ -30,8 +30,6 @@ import org.testin.model.node.TestRunsFolderNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
 
-import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -56,10 +54,8 @@ final class ScannedTestProject {
     // UC-INTERNAL-002, Rule-INTERNAL-082
     private final @NotNull Set<String> clashingTestCases = ConcurrentHashMap.newKeySet();
 
-    private final @NotNull Set<UUID> clashingIds = ConcurrentHashMap.newKeySet();
-
-    // UC-INTERNAL-004, Rule-INTERNAL-084
-    private final @NotNull Map<UUID, Path> handNamedFiles = new ConcurrentHashMap<>();
+    // Rule-INTERNAL-012
+    private final @NotNull Set<String> handNamedTestCases = ConcurrentHashMap.newKeySet();
 
     // Rule-INTERNAL-011
     private final @NotNull Set<String> unreadableRunItems = ConcurrentHashMap.newKeySet();
@@ -69,12 +65,4 @@ final class ScannedTestProject {
 
     // UC-SHARE-002, Rule-SHARE-001
     private final @NotNull Map<String, Set<String>> unreadableTestCases = new ConcurrentHashMap<>();
-
-    // UC-INTERNAL-004, Rule-INTERNAL-084
-    @NotNull Map<UUID, Path> handNamedFilesAlone() {
-        final @NotNull Map<UUID, Path> alone = new HashMap<>(handNamedFiles);
-        alone.keySet().removeAll(clashingIds);
-
-        return alone;
-    }
 }

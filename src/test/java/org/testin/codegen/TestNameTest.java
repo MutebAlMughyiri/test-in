@@ -49,11 +49,9 @@ public class TestNameTest {
 
     // Rule-CODEGEN-112
     @Test
-    public void aDataProviderRowNamesTheSameTestCaseAndKeepsItsRow() {
+    public void aDataProviderRowNamesTheSameTestCase() {
         assertEquals(TestName.testCaseId(ID + "[1234]"), Optional.of(ID));
         assertEquals(TestName.testCaseId(ID + "[0000] (1)"), Optional.of(ID), "a later row is numbered like any other start");
-        assertEquals(TestName.parameters(ID + "[0000] (1)"), "[0000]");
-        assertEquals(TestName.parameters(ID + " (2)"), "", "a retry or an invocation has no row");
     }
 
     @Test

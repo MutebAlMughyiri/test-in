@@ -92,7 +92,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorFields, Tes
         mainPanel.add(SideScroll.of(statusBar), BorderLayout.SOUTH);
         EditorStatusBarPaging.attach(this);
 
-        TestNGExecutionRecorder.onReported(project, projectDisposable, (_, _, _, _) -> list.repaint());
+        TestNGExecutionRecorder.onReported(project, projectDisposable, (_, _, _, _, _) -> list.repaint());
 
         onToolBarSwitchedToCardView();
 

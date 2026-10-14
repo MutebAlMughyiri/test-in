@@ -32,6 +32,6 @@ public record BugCard(@NotNull String hash, @NotNull String who, @NotNull ZonedD
     static @NotNull BugCard notCommitted(final @NotNull BugEvent event) {
         if (event.kind() == BugEventKind.REMOVED) return new BugCard("", "", DateFormats.NOT_EXECUTED, event);
 
-        return new BugCard("", event.runItem().getExecutedBy(), event.runItem().getExecutedAt(), event);
+        return new BugCard("", event.runItem().shownExecution().getExecutedBy(), event.runItem().shownExecution().getExecutedAt(), event);
     }
 }

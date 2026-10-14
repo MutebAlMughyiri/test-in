@@ -107,7 +107,7 @@ public final class TestCaseHistory {
 
     // Rule-VIEW-PANEL-096, Rule-VIEW-PANEL-098, Rule-VIEW-PANEL-113
     static @NotNull List<TestCaseHistoryCard> entries(final @NotNull JsonCodec mapper, final @NotNull List<HistoryCommit> commits, final @NotNull Map<String, String> versions, final @NotNull Optional<TestCase> now) {
-        final @NotNull List<Optional<TestCase>> read = commits.stream().map(commit -> parsed(mapper, versions.getOrDefault(commit.objectName(), ""))).toList();
+        final @NotNull List<Optional<TestCase>> read = commits.stream().map(commit -> FileKind.TEST_CASE.idIn(Path.of(commit.path())).flatMap(testCaseId -> parsed(mapper, versions.getOrDefault(commit.objectName(), ""), testCaseId))).toList();
         final @NotNull List<TestCaseHistoryCard> entries = new ArrayList<>();
 
         uncommitted(read, now).ifPresent(entries::add);
@@ -150,11 +150,12 @@ public final class TestCaseHistory {
         return TestCaseHistoryCard.of(TestCaseHistoryKind.UPDATED, commit, changes.isEmpty() ? Bundle.message("git.change.no.field") : "", changes, was, now);
     }
 
-    static @NotNull Optional<TestCase> parsed(final @NotNull JsonCodec mapper, final @NotNull String json) {
+    // Rule-INTERNAL-012
+    static @NotNull Optional<TestCase> parsed(final @NotNull JsonCodec mapper, final @NotNull String json, final @NotNull UUID testCaseId) {
         if (json.isBlank()) return Optional.empty();
 
         try {
-            return Optional.of(mapper.readValue(json, TestCase.class));
+            return Optional.of(TestCase.read(mapper, json, testCaseId));
         } catch (final UncheckedIOException unreadable) {
             return Optional.empty();
         }

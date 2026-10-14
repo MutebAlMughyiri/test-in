@@ -31,7 +31,6 @@ import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
 import org.testin.util.FailureText;
-import org.testin.util.JsonCodec;
 
 import java.awt.datatransfer.StringSelection;
 import java.util.List;
@@ -44,7 +43,7 @@ public class CopyTestCaseAction extends AbstractAnyProjectAction {
 
         if (!testCases.isEmpty()) {
             try {
-                final @NotNull String json = Services.getInstance(project, JsonCodec.class).writeValueAsString(testCases);
+                final @NotNull String json = CopiedTestCases.json(project, testCases);
                 CopyPasteManager.getInstance().setContents(new StringSelection(json));
 
                 Services.getInstance(project, Notifier.class).softShowCounted(project, Done.COPIED, testCases.size());

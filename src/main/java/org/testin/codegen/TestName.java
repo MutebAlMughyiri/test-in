@@ -20,7 +20,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -28,19 +27,12 @@ import java.util.regex.Pattern;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestName {
-    private static final @NotNull Pattern TEST_CASE_ID = Pattern.compile("(\\p{XDigit}{8}-\\p{XDigit}{4}-\\p{XDigit}{4}-\\p{XDigit}{4}-\\p{XDigit}{12})(\\[.*])?(?: \\(\\d+\\))?");
+    private static final @NotNull Pattern TEST_CASE_ID = Pattern.compile("(\\p{XDigit}{8}-\\p{XDigit}{4}-\\p{XDigit}{4}-\\p{XDigit}{4}-\\p{XDigit}{12})(?:\\[.*])?(?: \\(\\d+\\))?");
 
     // Rule-CODEGEN-110
     public static @NotNull Optional<UUID> testCaseId(final @NotNull String testName) {
         final @NotNull Matcher matcher = TEST_CASE_ID.matcher(testName);
 
         return matcher.matches() ? Optional.of(UUID.fromString(matcher.group(1))) : Optional.empty();
-    }
-
-    // Rule-CODEGEN-112
-    public static @NotNull String parameters(final @NotNull String testName) {
-        final @NotNull Matcher matcher = TEST_CASE_ID.matcher(testName);
-
-        return matcher.matches() ? Objects.toString(matcher.group(2), "") : "";
     }
 }

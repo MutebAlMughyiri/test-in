@@ -89,7 +89,7 @@ The code runs, and Testin writes down whether each test case passed.
   starts again after was retried, and the start after it is *Retry 1*, *Retry
   2*... under the same invocation. A start after a passed or failed result is
   the next invocation, numbered *Invocation 1*, *Invocation 2*... only when the
-  method ran more than once. A data provider row is named by its row.
+  method ran more than once; a data provider row is an invocation like any other.
 
 ## The four ways in
 

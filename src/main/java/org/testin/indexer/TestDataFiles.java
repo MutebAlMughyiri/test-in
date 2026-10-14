@@ -105,7 +105,7 @@ final class TestDataFiles {
         try (Stream<Path> inside = Files.list(testRunPath)) {
             return inside.filter(file -> FileKind.of(file) == FileKind.RUN_ITEM).toList();
         } catch (final IOException ex) {
-            TestinLogger.warn("Could not list the results in " + testRunPath + ": " + FailureText.of(ex));
+            TestinLogger.warn("Could not list the run items in " + testRunPath + ": " + FailureText.of(ex));
             return List.of();
         }
     }

@@ -1,6 +1,5 @@
 {
   "order" : "h",
-  "id" : "22222222-2222-4222-8222-222222222201",
   "description" : "Pay with a valid card",
   "expectedResult" : "The order is confirmed and the confirmation number is shown.",
   "status" : "PENDING",

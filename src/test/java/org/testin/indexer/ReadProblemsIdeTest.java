@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.Await;
 import org.testin.TempTree;
 import org.testin.model.NodeType;
+import org.testin.model.TestCase;
 import org.testin.model.FileKind;
 import org.testin.model.testrun.RunItem;
 import org.testin.services.Services;
@@ -116,13 +117,26 @@ public class ReadProblemsIdeTest extends AbstractReadTheRootIdeTest {
         assertTrue("the report does not name the file: " + clashing, names(clashing, shared + ".testcase"));
     }
 
+    // UC-INTERNAL-002, Rule-INTERNAL-012
+    public void testATestCaseNotNamedByAnIdIsNotReadAndIsNamed() {
+        final @NotNull Path testSet = marked(theTestCasesOf(theTestProject()).resolve("Login"), NodeType.TEST_SET);
+        final @NotNull UUID named = aTestCaseIn(testSet);
+        SyntheticTree.write(testSet.resolve("login.testcase"), SyntheticTree.testCase(UUID.randomUUID(), "m"));
+
+        readEverything();
+
+        assertEquals("the test cases read are not exactly the one named by its id", List.of(named), indexedTestCases().getTestCasesForTestSet(testSet).stream().map(TestCase::getId).toList());
+
+        final @NotNull List<String> warned = said(Bundle.message("indexer.test.cases.unnamed.title", TEST_PROJECT));
+        assertTrue("the test case file not named by an id was not named in a warning: " + warned, names(warned, "Login/login.testcase"));
+    }
+
     // UC-INTERNAL-002, Rule-INTERNAL-094
     public void testARunItemNotNamedByATestCaseIdIsNotReadAndIsNamed() {
         final @NotNull Path testRun = marked(theTestRunsOf(theTestProject()).resolve("Cycle 1"), NodeType.TEST_RUN);
         final @NotNull UUID named = UUID.randomUUID();
-        final @NotNull UUID handNamed = UUID.randomUUID();
-        resultIn(testRun, FileKind.RUN_ITEM.fileName(named), named);
-        resultIn(testRun, "by hand.runitem", handNamed);
+        runItemIn(testRun, FileKind.RUN_ITEM.fileName(named));
+        runItemIn(testRun, "by hand.runitem");
 
         readEverything();
 

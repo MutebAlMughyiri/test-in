@@ -144,8 +144,8 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
 
             final @NotNull RunItem byKeyboard = runItemOf(testRun, testCases.getFirst());
             final @NotNull RunItem byAutomation = runItemOf(testRun, testCases.get(1));
-            assertEquals("the automation's run item status was recorded under another tester", byKeyboard.getExecutedBy(), byAutomation.getExecutedBy());
-            assertFalse("the automation's run item status says no time it was recorded", DateFormats.isNotExecuted(byAutomation.getExecutedAt()));
+            assertEquals("the automation's run item status was recorded under another tester", byKeyboard.shownExecution().getExecutedBy(), byAutomation.shownExecution().getExecutedBy());
+            assertFalse("the automation's run item status says no time it was recorded", DateFormats.isNotExecuted(byAutomation.shownExecution().getExecutedAt()));
 
             final @NotNull Map<?, ?> keyboardFile = writtenRunItem(testRun, testCases.getFirst());
             final @NotNull Map<?, ?> automationFile = writtenRunItem(testRun, testCases.get(1));
@@ -180,7 +180,7 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
             reported(testCases.getFirst(), TestNGExecutionStatus.PASSED, Duration.ofMillis(84));
 
             Await.until("the automation's run item status was not recorded", () -> runItemOf(testRun, testCases.getFirst()).getStatus() == RunItemStatus.PASSED);
-            assertEquals("the clock's count replaced the framework's own time", Duration.ofMillis(84), runItemOf(testRun, testCases.getFirst()).getDuration());
+            assertEquals("the clock's count replaced the framework's own time", Duration.ofMillis(84), runItemOf(testRun, testCases.getFirst()).shownExecution().getDuration());
         } finally {
             Disposer.dispose(editor);
         }

@@ -92,7 +92,7 @@ public record TestCaseSnapshot(@NotNull Path testSetPath, @NotNull List<TestCase
     }
 
     boolean sameAs(final @NotNull TestCaseSnapshot other, final @NotNull JsonCodec mapper) {
-        return absent.equals(other.absent) && asJson(mapper).equals(other.asJson(mapper));
+        return absent.equals(other.absent) && idsOf(present).equals(idsOf(other.present)) && asJson(mapper).equals(other.asJson(mapper));
     }
 
     private @NotNull List<String> asJson(final @NotNull JsonCodec mapper) {

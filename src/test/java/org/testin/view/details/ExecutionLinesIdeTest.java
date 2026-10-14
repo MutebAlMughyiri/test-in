@@ -39,16 +39,16 @@ public class ExecutionLinesIdeTest extends AbstractViewPanelIdeTest {
 
     private TestCase testCase;
 
-    private static @NotNull RunItemExecution execution(final @NotNull RunItemStatus runItemExecutionStatus, final int invocation, final int retry, final boolean retried, final @NotNull String actual) {
-        return RunItemExecution.builder().status(runItemExecutionStatus).invocation(invocation).retry(retry).retried(retried).actualResult(actual).build();
+    private static @NotNull RunItemExecution execution(final @NotNull RunItemStatus runItemExecutionStatus, final int invocation, final int retry, final @NotNull String actual) {
+        return RunItemExecution.builder().status(runItemExecutionStatus).invocation(invocation).retry(retry).actualResult(actual).build();
     }
 
     private @NotNull RunItem invokedThreeTimes() {
         return RunItem.builder().id(testCase.getId()).executions(List.of(
-                execution(RunItemStatus.PASSED, 1, 0, false, ""),
-                execution(RunItemStatus.FAILED, 2, 0, true, "The session ended early"),
-                execution(RunItemStatus.PASSED, 2, 1, false, ""),
-                execution(RunItemStatus.PASSED, 3, 0, false, "Stayed signed in"))).build();
+                execution(RunItemStatus.PASSED, 1, 0, ""),
+                execution(RunItemStatus.FAILED, 2, 0, "The session ended early"),
+                execution(RunItemStatus.PASSED, 2, 1, ""),
+                execution(RunItemStatus.PASSED, 3, 0, "Stayed signed in"))).defaultNumber(4).build();
     }
 
     private @NotNull TestRuns theTestRuns() {
@@ -68,7 +68,7 @@ public class ExecutionLinesIdeTest extends AbstractViewPanelIdeTest {
     // Rule-VIEW-PANEL-123
     public void testARunItemExecutedOnceReadsAsBefore() {
         final @NotNull TestRunNode testRun = aTestRun(List.of(RunItem.builder().id(testCase.getId()).build()));
-        final @NotNull RunItem once = RunItem.builder().id(testCase.getId()).executions(List.of(execution(RunItemStatus.PASSED, 0, 0, false, ""))).build();
+        final @NotNull RunItem once = RunItem.builder().id(testCase.getId()).executions(List.of(execution(RunItemStatus.PASSED, 0, 0, ""))).build();
 
         final @NotNull List<String> words = Drawn.words(Drawn.detailsTab(getProject(), testCase, Optional.of(once), testRun.treePath()));
 

@@ -29,7 +29,7 @@ public final class ActualResultSection implements FailureSection {
 
     // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-221, Rule-EDITOR-PANEL-246, Rule-INTERNAL-097
     public ActualResultSection(final @NotNull Project project, final @NotNull RunItem runItem) {
-        component = DialogPart.multiLineField(project, TestRunEditorFields.ACTUAL_RESULT.getName(), Bundle.message("dialog.failure.placeholder.actual"), runItem.getActualResult());
+        component = DialogPart.multiLineField(project, TestRunEditorFields.ACTUAL_RESULT.getName(), Bundle.message("dialog.failure.placeholder.actual"), runItem.shownExecution().getActualResult());
     }
 
     @Override

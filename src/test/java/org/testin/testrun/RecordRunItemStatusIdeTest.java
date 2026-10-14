@@ -101,7 +101,7 @@ public class RecordRunItemStatusIdeTest extends AbstractTempRootIdeTest {
 
             final @NotNull RunItem recorded = fixture.runItemOf(fixture.testCases().getFirst());
             assertEquals(RunItemStatus.PASSED, recorded.getStatus());
-            assertTrue("the time the walk counted was not recorded with the run item status: " + recorded.getDuration(), recorded.getDuration().compareTo(Duration.ofMillis(1400)) >= 0);
+            assertTrue("the time the walk counted was not recorded with the run item status: " + recorded.shownExecution().getDuration(), recorded.shownExecution().getDuration().compareTo(Duration.ofMillis(1400)) >= 0);
         } finally {
             Disposer.dispose(editor);
         }
@@ -154,8 +154,8 @@ public class RecordRunItemStatusIdeTest extends AbstractTempRootIdeTest {
             assertTrue("Blocked asked for an explanation", fixture.failureDialog().isEmpty());
             final @NotNull RunItem blocked = fixture.runItemOf(fixture.testCases().getFirst());
             assertEquals(RunItemStatus.BLOCKED, blocked.getStatus());
-            assertEquals("Blocked does not say who attempted it", Services.getInstance(getProject(), AppSettingsState.class).testerName, blocked.getExecutedBy());
-            assertFalse("Blocked does not say when it was attempted", DateFormats.isNotExecuted(blocked.getExecutedAt()));
+            assertEquals("Blocked does not say who attempted it", Services.getInstance(getProject(), AppSettingsState.class).testerName, blocked.shownExecution().getExecutedBy());
+            assertFalse("Blocked does not say when it was attempted", DateFormats.isNotExecuted(blocked.shownExecution().getExecutedAt()));
             awaitWalkOn(editor, 1);
 
             final @NotNull TestRunSummary summary = TestRunSummary.of(List.of(blocked));
@@ -251,7 +251,7 @@ public class RecordRunItemStatusIdeTest extends AbstractTempRootIdeTest {
             assertFalse("Escape asked before closing", ShownDialog.isOpen(getProject(), ConfirmDialog.class));
             final @NotNull RunItem kept = fixture.runItemOf(fixture.testCases().getFirst());
             assertEquals("Escape recorded a run item status", RunItemStatus.PENDING, kept.getStatus());
-            assertEquals("Escape recorded the detail", "", kept.getActualResult());
+            assertEquals("Escape recorded the detail", "", kept.shownExecution().getActualResult());
             awaitWrites();
             assertEquals("Escape wrote something", before, FilesUnder.snapshot(fixture.testRun().getPath()));
         } finally {
@@ -275,15 +275,15 @@ public class RecordRunItemStatusIdeTest extends AbstractTempRootIdeTest {
             awaitWrites();
 
             assertEquals("typing wrote to the test run", before, FilesUnder.snapshot(fixture.testRun().getPath()));
-            assertEquals("typing changed the test run Testin holds", "", fixture.runItemOf(fixture.testCases().getFirst()).getActualResult());
+            assertEquals("typing changed the test run Testin holds", "", fixture.runItemOf(fixture.testCases().getFirst()).shownExecution().getActualResult());
 
             OnScreen.pressKey(dialog, Shortcuts.Enter.getKey());
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
             awaitWrites();
 
             final @NotNull RunItem saved = fixture.runItemOf(fixture.testCases().getFirst());
-            assertEquals("The dashboard stayed blank", saved.getActualResult());
-            assertEquals("java.lang.AssertionError: expected [true]", saved.getStacktrace());
+            assertEquals("The dashboard stayed blank", saved.shownExecution().getActualResult());
+            assertEquals("java.lang.AssertionError: expected [true]", saved.shownExecution().getStacktrace());
             assertNotEquals("saving wrote nothing", before, FilesUnder.snapshot(fixture.testRun().getPath()));
         } finally {
             Disposer.dispose(editor);
@@ -303,7 +303,7 @@ public class RecordRunItemStatusIdeTest extends AbstractTempRootIdeTest {
             for (final TestCase testCase : List.of(fixture.testCases().getFirst(), fixture.testCases().get(2))) {
                 final @NotNull RunItem failed = fixture.runItemOf(testCase);
                 assertEquals(RunItemStatus.FAILED, failed.getStatus());
-                assertEquals("a test case failed with several was given detail", "", failed.getActualResult());
+                assertEquals("a test case failed with several was given detail", "", failed.shownExecution().getActualResult());
             }
             assertEquals(RunItemStatus.PENDING, fixture.runItemStatusOf(fixture.testCases().get(1)));
         } finally {

@@ -39,6 +39,7 @@ import org.testin.model.status.RunItemStatus;
 import org.testin.services.Services;
 import org.testin.testrun.TestRunEditorFields;
 import org.testin.testrun.TestRunFixture;
+import org.testin.util.Bundle;
 import org.testin.view.Drawn;
 
 import javax.swing.JComponent;
@@ -85,9 +86,28 @@ public class TestRunProgressIdeTest extends AbstractTempRootIdeTest {
             typedInto(grid, 0, "Slow but it passed");
             typedInto(grid, 1, "Not tried yet");
 
-            assertEquals("Slow but it passed", fixture.runItemOf(testCases.getFirst()).getActualResult());
+            assertEquals("Slow but it passed", fixture.runItemOf(testCases.getFirst()).shownExecution().getActualResult());
             assertEquals("typing changed a recorded run item status", RunItemStatus.PASSED, fixture.runItemStatusOf(testCases.getFirst()));
             assertEquals("typing recorded a run item status", RunItemStatus.PENDING, fixture.runItemStatusOf(testCases.get(1)));
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
+    // Rule-EDITOR-PANEL-295
+    public void testAnActualResultTypedOnATestCaseNobodyJudgedIsPutBackAndSaysWhy() {
+        final @NotNull List<TestCase> testCases = TestRunFixture.testCasesIn(getProject(), root, 1);
+        final @NotNull TestRunFixture fixture = TestRunFixture.of(getProject(), root, List.of(EditorFixtures.pending(testCases.getFirst())), testCases);
+        final @NotNull TestRunEditor editor = fixture.opened(getTestRootDisposable());
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+        try {
+            final @NotNull JBTable grid = theGridOf(editor);
+
+            typedInto(grid, 0, "Not tried yet");
+
+            assertEquals("an open execution took an actual result", "", fixture.runItemOf(testCases.getFirst()).shownExecution().getActualResult());
+            assertEquals("the cell kept what was typed", "", grid.getModel().getValueAt(0, ACTUAL_RESULT));
+            assertTrue("the refusal did not say why: " + said.shown(), said.shown().stream().anyMatch(shown -> shown.contains(Bundle.message("run.item.status.actual.result.not.recorded"))));
         } finally {
             Disposer.dispose(editor);
         }
@@ -119,8 +139,8 @@ public class TestRunProgressIdeTest extends AbstractTempRootIdeTest {
         final @NotNull List<TestCase> testCases = TestRunFixture.testCasesIn(getProject(), root, 1);
         final @NotNull UUID removed = UUID.randomUUID();
         final @NotNull TestRunFixture fixture = TestRunFixture.of(getProject(), root, List.of(
-                EditorFixtures.pending(testCases.getFirst()),
-                new RunItem().setId(removed).setUnrecordedActualResult("Kept from before")), testCases);
+                EditorFixtures.pending(testCases.getFirst()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())),
+                new RunItem().setId(removed).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("Kept from before").build()))), testCases);
         final @NotNull TestRunEditor editor = fixture.opened(getTestRootDisposable());
         try {
             final @NotNull JBTable grid = theGridOf(editor);
@@ -128,7 +148,7 @@ public class TestRunProgressIdeTest extends AbstractTempRootIdeTest {
             final int liveRow = 1 - removedRow;
 
             typedInto(grid, liveRow, "The dashboard stayed blank");
-            assertEquals("the cell does not hold what was stored", fixture.runItemOf(testCases.getFirst()).getActualResult(), grid.getModel().getValueAt(liveRow, ACTUAL_RESULT));
+            assertEquals("the cell does not hold what was stored", fixture.runItemOf(testCases.getFirst()).shownExecution().getActualResult(), grid.getModel().getValueAt(liveRow, ACTUAL_RESULT));
 
             typedInto(grid, removedRow, "Typed over a removed test case");
             assertEquals("the cell kept what was typed though nothing was stored", "Kept from before", grid.getModel().getValueAt(removedRow, ACTUAL_RESULT));
@@ -189,7 +209,7 @@ public class TestRunProgressIdeTest extends AbstractTempRootIdeTest {
     public void testTheClockAddsToTheTimeATestCaseAlreadyCarried() {
         final @NotNull List<TestCase> testCases = TestRunFixture.testCasesIn(getProject(), root, 2);
         final @NotNull TestRunFixture fixture = TestRunFixture.of(getProject(), root, List.of(
-                EditorFixtures.pending(testCases.getFirst()).setClock(Duration.ofSeconds(7)),
+                EditorFixtures.pending(testCases.getFirst()).setExecutions(List.of(RunItemExecution.builder().duration(Duration.ofSeconds(7)).build())),
                 EditorFixtures.pending(testCases.get(1))), testCases);
         final @NotNull TestRunEditor editor = fixture.opened(getTestRootDisposable());
         try {
@@ -201,7 +221,7 @@ public class TestRunProgressIdeTest extends AbstractTempRootIdeTest {
                 TimeoutUtil.sleep(20);
             }
 
-            final @NotNull Duration carried = editor.runItem(testCases.getFirst().getId()).orElseThrow().getDuration();
+            final @NotNull Duration carried = editor.runItem(testCases.getFirst().getId()).orElseThrow().shownExecution().getDuration();
             assertTrue("the clock started again instead of adding to the time already carried: " + carried, carried.compareTo(Duration.ofSeconds(8)) >= 0);
         } finally {
             Disposer.dispose(editor);

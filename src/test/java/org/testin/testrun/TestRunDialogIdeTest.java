@@ -325,9 +325,9 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
         final @NotNull RunItem carried = indexedTestRuns().getRunItems(made.getPath()).runItemOf(first.getId()).orElseThrow(() -> new AssertionError("the test case was not carried over"));
 
         assertEquals("the run item status was carried over", RunItemStatus.PENDING, carried.getStatus());
-        assertEquals("the duration was carried over", Duration.ZERO, carried.getDuration());
-        assertEquals("the failure was carried over", "", carried.getActualResult());
-        assertEquals("the failure was carried over", "", carried.getStacktrace());
+        assertEquals("the duration was carried over", Duration.ZERO, carried.shownExecution().getDuration());
+        assertEquals("the failure was carried over", "", carried.shownExecution().getActualResult());
+        assertEquals("the failure was carried over", "", carried.shownExecution().getStacktrace());
         assertEquals("the configuration was not carried over", TestRunConfiguration.TEST_TYPE.getOptions().get(1), TestRunConfiguration.TEST_TYPE.valueIn(((TestRunNode) made).getMarker()));
     }
 }

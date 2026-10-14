@@ -43,7 +43,7 @@ public record TestRunSummary(long total, long passed, long failed, long blocked,
 
     private static @NotNull String whoExecuted(final @NotNull List<RunItem> runItems) {
         return runItems.stream()
-                .map(RunItem::getExecutedBy)
+                .map(RunItem::shownExecution).map(RunItemExecution::getExecutedBy)
                 .filter(name -> !name.trim().isEmpty())
                 .distinct()
                 .collect(Collectors.joining(", "));

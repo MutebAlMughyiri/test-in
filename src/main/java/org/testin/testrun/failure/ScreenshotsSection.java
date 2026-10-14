@@ -39,7 +39,7 @@ public final class ScreenshotsSection implements FailureSection {
     // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-219
     public ScreenshotsSection(final @NotNull Project project, final @NotNull Path testRunPath, final @NotNull RunItem runItem) {
         final @NotNull List<byte[]> stored = Services.getInstance(project, TestRuns.class).screenshots(testRunPath, runItem);
-        IntStream.range(0, stored.size()).forEach(index -> named.put(stored.get(index), runItem.getScreenshots().get(index)));
+        IntStream.range(0, stored.size()).forEach(index -> named.put(stored.get(index), runItem.shownExecution().getScreenshots().get(index)));
 
         component = DialogPart.screenshots(Bundle.message("dialog.failure.caption.screenshots"), stored);
     }

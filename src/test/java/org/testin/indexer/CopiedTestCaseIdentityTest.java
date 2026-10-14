@@ -38,11 +38,11 @@ public class CopiedTestCaseIdentityTest {
         assertTrue(TestProjectIndexer.isTestCaseFile(TEST_SET.resolve("3f2b9c14-0d5e-4a71-9c33-8e1f4b2a7d60.testcase"), IS_TEST_SET));
     }
 
-    // Rule-INTERNAL-011
+    // Rule-INTERNAL-012
     @Test
-    public void aTestCaseTheTesterNamedIsATestCaseFileToo() {
-        assertTrue(TestProjectIndexer.isTestCaseFile(TEST_SET.resolve("login.testcase"), IS_TEST_SET),
-                "a hand-named test case file is still a test case, so a copy of it has to get an id of its own");
+    public void aFileTheTesterNamedIsNoTestCaseACopyRenames() {
+        assertFalse(TestProjectIndexer.isTestCaseFile(TEST_SET.resolve("login.testcase"), IS_TEST_SET),
+                "a file not named by an id is not read, so a copy keeps it as it is rather than giving it an id");
     }
 
     @Test

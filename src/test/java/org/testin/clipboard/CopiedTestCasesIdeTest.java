@@ -32,7 +32,17 @@ public class CopiedTestCasesIdeTest extends BasePlatformTestCase {
         CopyPasteManager.getInstance().setContents(new StringSelection("a line copied from a bug report"));
         assertTrue("text the tester copied elsewhere was read as test cases waiting to be pasted", CopiedTestCases.onTheClipboard(getProject()).isEmpty());
 
-        CopyPasteManager.getInstance().setContents(new StringSelection(Services.getInstance(getProject(), JsonCodec.class).writeValueAsString(List.of(TestCase.builder().description("Log in").build()))));
+        CopyPasteManager.getInstance().setContents(new StringSelection(CopiedTestCases.json(getProject(), List.of(TestCase.builder().description("Log in").build()))));
         assertEquals("a copied test case was not seen waiting on the clipboard", List.of("Log in"), CopiedTestCases.onTheClipboard(getProject()).stream().map(TestCase::getDescription).toList());
+    }
+
+    // Rule-INTERNAL-012, Rule-EDITOR-PANEL-262
+    public void testATestCaseOnTheClipboardKeepsItsIdAndOneWithoutIsNotATestCase() {
+        final TestCase copied = TestCase.builder().description("Log in").build();
+        CopyPasteManager.getInstance().setContents(new StringSelection(CopiedTestCases.json(getProject(), List.of(copied))));
+        assertEquals("the clipboard lost the test case's id, so a cut would paste a new test case", List.of(copied.getId()), CopiedTestCases.onTheClipboard(getProject()).stream().map(TestCase::getId).toList());
+
+        CopyPasteManager.getInstance().setContents(new StringSelection(Services.getInstance(getProject(), JsonCodec.class).writeValueAsString(List.of(copied))));
+        assertTrue("a test case's JSON without its id was read as one waiting to be pasted", CopiedTestCases.onTheClipboard(getProject()).isEmpty());
     }
 }

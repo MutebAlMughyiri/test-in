@@ -147,22 +147,19 @@ own file:
 ## A test case — `<uuid>.testcase`
 
 One file per test case, inside its test set. **Any `.testcase` file directly inside
-a test set is a test case** (Rule-INTERNAL-011), so `login.testcase` written by hand
-is read as one and a copy of it is given an id of its own; a `.testcase` sitting in
+a test set is a test case file** (Rule-INTERNAL-011); a `.testcase` sitting in
 `Test Cases` rather than in a set is not a test case at all. The file holds
 JSON; the name says what the JSON is, so nothing has to look inside to find
 out.
 
-Testin writes the file as `<id>.testcase`, and a hand-named one is filed under its
-id the next time anything writes it, the hand-named file going once that write
-has landed (Rule-INTERNAL-084). The two names answer different questions:
-the **file name** is what the tree shows (Rule-INTERNAL-012 — a `name` field
-inside the file would not decide it), and the **`id` field** is what a test run's
-recorded run item points at.
+Testin writes the file as `<test case id>.testcase`, and the name is the test
+case's identity: the file does not write it (Rule-INTERNAL-012). A `.testcase`
+whose name is not an id, `login.testcase` written by hand for one, is not read,
+and a warning names it. The id is what a test run's run item points at, and
+that run item's file carries the same name.
 
 | Field                     | Type             | Required               | Meaning                                                                                     |
 |---------------------------|------------------|------------------------|---------------------------------------------------------------------------------------------|
-| `id`                      | UUID string      | yes in practice        | Identity. A fresh random UUID when absent, which makes the test case a new one              |
 | `order`                   | string           | no, defaults `""`      | The rank that places the test case in its set — see below                                   |
 | `description`             | string           | no                     | What the test case is. The card title                                                       |
 | `expectedResult`          | string           | no                     |                                                                                             |
@@ -196,7 +193,6 @@ on each test case and nothing else.
 ```json
 {
   "order" : "zo",
-  "id" : "4fd2a19b-59c7-44df-8cc4-ec5d293b18e9",
   "description" : "Log in with a valid user",
   "expectedResult" : "The dashboard opens",
   "status" : "REVIEWED",
@@ -253,23 +249,20 @@ and moves one that no run item of the test run names anymore to the recycle bin
 after the next write. Any PNG in a test run folder named that way is taken for a
 screenshot, so one put there by hand under such a name goes too.
 
-| Field                    | Type             | Meaning                                                                                                                                                                                   |
-|--------------------------|------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `id`                     | UUID string      | The test case this run item is about - the same id the file is named by, which is what decides it (Rule-INTERNAL-012). Written so the file says what it is about on its own               |
-| `bugSeverity`            | enum             | `BLOCKER` `MAJOR` `MINOR` `ENHANCEMENT`. `ENHANCEMENT` until the tester chooses another (Rule-EDITOR-PANEL-147). A later execution never resets it (Rule-EDITOR-PANEL-284)                |
-| `bugPriority`            | enum             | `HIGH` `MEDIUM` `LOW`. `LOW` until the tester chooses another (Rule-EDITOR-PANEL-147). A later execution never resets it                                                                  |
-| `bugIssueUrl`            | string           | The GitHub issue the failure was reported as, written by [Report Bug](viewPanel/reportBug.md). Empty until then, and kept by every later execution                                        |
-| `untested`               | boolean          | `true` for a test case still pending when the test run completed or closed (Rule-TREE-PANEL-067). Left out otherwise                                                                      |
-| `clock`                  | number, seconds  | What the walk's clock counted on this test case before a run item status was recorded, so a walk that pauses picks it up again (Rule-EDITOR-PANEL-132). Left out when nothing was counted |
-| `unrecordedActualResult` | string           | An actual result typed before the test case was executed. The next execution takes it (Rule-EDITOR-PANEL-172). Left out when there is none                                                |
-| `executions`             | array of objects | Every execution of this test case in this test run, the oldest first (Rule-EDITOR-PANEL-136). Left out until the first; with none, the run item is Pending. Each is in the table below    |
+| Field         | Type             | Meaning                                                                                                                                                                                                                                                                |
+|---------------|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `bugSeverity` | enum             | `BLOCKER` `MAJOR` `MINOR` `ENHANCEMENT`. `ENHANCEMENT` until the tester chooses another (Rule-EDITOR-PANEL-147). A later execution never resets it (Rule-EDITOR-PANEL-284)                                                                                             |
+| `bugPriority` | enum             | `HIGH` `MEDIUM` `LOW`. `LOW` until the tester chooses another (Rule-EDITOR-PANEL-147). A later execution never resets it                                                                                                                                               |
+| `bugIssueUrl` | string           | The GitHub issue the failure was reported as, written by [Report Bug](viewPanel/reportBug.md). Empty until then, and kept by every later execution                                                                                                                     |
+| `default`     | number           | Which execution counts, from 1: its status is the run item status (Rule-VIEW-PANEL-119). Always written                                                                                                                                                                |
+| `executions`  | array of objects | Every execution of this test case in this test run, the oldest first (Rule-EDITOR-PANEL-136). Always one at least: before the first run item status, one open execution that says `PENDING`, or `UNTESTED` once the test run is signed off. Each is in the table below |
 
 An execution:
 
 | Field          | Type             | Meaning                                                                                                                                                                                                                      |
 |----------------|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `status`       | enum             | `PASSED` `FAILED` `BLOCKED`, as a tester or the automation judged it                                                                                                                                                         |
-| `duration`     | number, seconds  | Nanosecond precision, written as a decimal. Left out when nothing was timed                                                                                                                                                  |
+| `status`       | enum             | `PASSED` `FAILED` `BLOCKED`, as a tester or the automation judged it; `PENDING` or `UNTESTED` on the open execution of a test case nobody judged. Always written                                                             |
+| `duration`     | number, seconds  | Nanosecond precision, written as a decimal. On an open execution, what the walk's clock counted (Rule-EDITOR-PANEL-132). Left out when nothing was timed                                                                     |
 | `executedBy`   | string           |                                                                                                                                                                                                                              |
 | `executedAt`   | date             |                                                                                                                                                                                                                              |
 | `actualResult` | string           | What happened. Left out when nothing was written                                                                                                                                                                             |
@@ -277,14 +270,32 @@ An execution:
 | `screenshots`  | array of strings | The file names of the screenshots pasted with the failure, beside this file, in the order they were pasted. Left out when there are none; their files go with the next write after the last execution naming them is removed |
 | `invocation`   | number           | Which invocation of the method this was, from 1, when the automation ran it more than once (Rule-CODEGEN-112). Left out otherwise                                                                                            |
 | `retry`        | number           | Which retry of its invocation this was, from 1. Left out for the first attempt                                                                                                                                               |
-| `retried`      | boolean          | `true` for an attempt TestNG skipped and ran again. It is recorded as Failed and never decides (Rule-CODEGEN-111)                                                                                                            |
-| `parameters`   | string           | The data provider row this attempt ran, such as `[1234]`. Left out for a method with no data provider                                                                                                                        |
-| `default`      | boolean          | `true` on the execution a tester chose as the default (Rule-VIEW-PANEL-119). Written only when that is not the last; with none flagged, the last is the default                                                              |
 
-The run item status is the default execution's status. A run item with no
-executions is Pending, or Untested when `untested` says so; one whose test case
-was deleted since is shown as Removed while the test run is not Committed, and
-with the status its commit recorded once it is (Rule-EDITOR-PANEL-126).
+The run item status is the status of the execution `default` names. One whose
+test case was deleted since is shown as Removed while the test run is not
+Committed, and with the status its commit recorded once it is
+(Rule-EDITOR-PANEL-126). An attempt TestNG retried is the one the next
+execution's `retry` follows; nothing else records it.
+
+```json
+{
+  "bugSeverity" : "MAJOR",
+  "bugPriority" : "HIGH",
+  "default" : 2,
+  "executions" : [ {
+    "status" : "FAILED",
+    "duration" : 95.000000000,
+    "executedBy" : "Muteb",
+    "executedAt" : "Wednesday 07-10-2026 At 10:15:40 [Asia/Riyadh]",
+    "actualResult" : "The counter still resets when the app is reopened."
+  }, {
+    "status" : "PASSED",
+    "duration" : 51.000000000,
+    "executedBy" : "Muteb",
+    "executedAt" : "Sunday 11-10-2026 At 10:05:02 [Asia/Riyadh]"
+  } ]
+}
+```
 
 A run item keeps no copy of its test case (Rule-EDITOR-PANEL-238): a test run
 that is not Committed shows each test case as it is now, and a Committed one reads
@@ -340,8 +351,10 @@ That is the trade — forward compatibility is a *read*, not a round trip.
 stored type carries `@JsonInclude(NON_DEFAULT)`, so a value equal to what a
 newly made test case, run item or marker holds is left out, and a missing key
 reads back as exactly that value: an empty field, a default bug severity, an
-execution's empty failure detail. `createdAt` is the one exception and
-is always written, because a fresh object holds the moment it was made. The
+execution's empty failure detail. `createdAt` is always written, because a
+fresh object holds the moment it was made, and so are a run item's `default` and
+`executions` and each execution's `status`, so a run item says what it is in
+every case. The
 price is that **changing a field's default is a format change**: every file
 that left the key out would silently take the new default.
 
@@ -364,7 +377,12 @@ Format 5 names every file in full words, as the code names what it holds:
 `.testrun` and the rest, a test case `<id>.testcase` and a run item
 `<id>.runitem` (#427). A folder written in format 4 or earlier holds no
 `.testproject`, so it is not a test project (Rule-INTERNAL-003): it is not shown,
-not read and not touched.
+not read and not touched. A run item says its status in every case: before the
+first run item status it holds one open execution, `PENDING` or `UNTESTED`, and
+`default` names the execution that counts. `untested`, `clock`,
+`unrecordedActualResult`, `retried`, `parameters` and an execution's `default`
+flag are gone, and neither a test case file nor a run item file writes `id`:
+the file name is the id (#432).
 
 **The project says which format its files are in**, in its `.testproject`: `format`, and
 5 is the format this page describes. A project without the number, or with a

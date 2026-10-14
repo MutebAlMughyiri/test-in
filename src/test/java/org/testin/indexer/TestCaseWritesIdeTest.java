@@ -292,26 +292,12 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
                 indexedTestCases().getTestCasesForTestSet(signUp.getPath()).stream().noneMatch(each -> each.getId().equals(cut.getId())));
     }
 
-    // Rule-INTERNAL-084
-    public void testSavingAHandNamedTestCaseFilesItUnderItsId() {
+    // Rule-INTERNAL-012
+    public void testATestCaseFileNotNamedByAnIdIsNotRead() {
         final Path set = setWithAHandNamedTestCase();
-        final TestCase testCase = indexedTestCases().getTestCasesForTestSet(set).getFirst();
 
-        assertTrue("the save said it failed", indexedTestCases().putTestCaseVerbatim(set, testCase));
-
-        assertTrue("the test case was not filed under its id", Files.isRegularFile(set.resolve(testCase.getId() + ".testcase")));
-        assertFalse("the hand-named file was left beside it", Files.exists(set.resolve(HAND_NAMED)));
-    }
-
-    public void testASaveWhoseHandNamedFileWillNotGoIsTakenBack() {
-        final Path set = setWithAHandNamedTestCase();
-        final TestCase testCase = indexedTestCases().getTestCasesForTestSet(set).getFirst();
-        undeletable(set.resolve(HAND_NAMED));
-
-        assertFalse("a save that left the test case in two files was reported as saved", indexedTestCases().putTestCaseVerbatim(set, testCase));
-
-        assertFalse("the file filed under the id was left beside the hand-named one", Files.exists(set.resolve(testCase.getId() + ".testcase")));
-        assertTrue("the hand-named file went although its delete was refused", Files.exists(set.resolve(HAND_NAMED)));
+        assertTrue("a file not named by an id was read as a test case", indexedTestCases().getTestCasesForTestSet(set).isEmpty());
+        assertTrue("the file named by hand was moved or removed", Files.isRegularFile(set.resolve(HAND_NAMED)));
     }
 
     // UC-INTERNAL-004, Rule-INTERNAL-125

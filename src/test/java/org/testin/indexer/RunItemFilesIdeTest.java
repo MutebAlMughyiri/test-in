@@ -32,6 +32,7 @@ import org.testin.services.Services;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -46,7 +47,7 @@ public class RunItemFilesIdeTest extends AbstractTempRootIdeTest {
 
     private static final String A_PULLED_RESULT = """
             {
-              "id" : "11111111-1111-4111-8111-111111111103",
+              "default" : 1,
               "executions" : [ {
                 "status" : "PASSED",
                 "actualResult" : "Judged on the other machine"
@@ -144,7 +145,7 @@ public class RunItemFilesIdeTest extends AbstractTempRootIdeTest {
         awaitFile(runItemOf(testRun, UNTICKED_TEST_CASE), "the test run's results never reached disk");
         final String untouched = read(runItemOf(testRun, UNTICKED_TEST_CASE));
 
-        indexedTestRuns().findRunItems(testRun).orElseThrow().runItemOf(UNTICKED_TEST_CASE).orElseThrow().setUnrecordedActualResult("Not saved yet");
+        indexedTestRuns().findRunItems(testRun).orElseThrow().runItemOf(UNTICKED_TEST_CASE).orElseThrow().recordClock(Duration.ofSeconds(5));
         indexedTestRuns().changeRunItem(testRun, JUDGED_TEST_CASE, runItem -> runItem.setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())));
 
         Await.until("the run item status never reached its result file", () -> read(runItemOf(testRun, JUDGED_TEST_CASE)).contains("FAILED"));

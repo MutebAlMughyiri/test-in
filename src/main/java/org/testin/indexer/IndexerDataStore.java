@@ -115,7 +115,7 @@ final class IndexerDataStore {
     }
 
     @NotNull Path testCaseFileOf(final @NotNull TestCase testCase) {
-        return testCaseStore.fileOf(testCase.getParent().getPath(), testCase.getId());
+        return TestCaseStore.named(testCase.getParent().getPath(), testCase.getId());
     }
 
     @NotNull Map<String, List<UUID>> getTestCaseIdsByTestSet() {
@@ -274,7 +274,7 @@ final class IndexerDataStore {
         testRunNodesByPath.putAll(scanned.getTestRunNodes());
         runItemsByPath.putAll(scanned.getRunItemsByPath());
 
-        testCaseStore.swapIn(testProjectPath, scanned.getTestCasesById(), scanned.getTestCaseIdsByTestSet(), scanned.handNamedFilesAlone(), scanned.getUnreadableTestCases());
+        testCaseStore.swapIn(testProjectPath, scanned.getTestCasesById(), scanned.getTestCaseIdsByTestSet(), scanned.getUnreadableTestCases());
 
         dropUnseen(testProjectsByPath, testProjectPath, scanned.getTestProjects());
         dropUnseen(testCasesFoldersByPath, testProjectPath, scanned.getTestCasesFolders());

@@ -78,23 +78,6 @@ final class IndexingScanner {
         return scanned;
     }
 
-    // UC-INTERNAL-002, Rule-INTERNAL-012
-    private static @NotNull UUID identityOf(final @NotNull Path filePath, final @NotNull TestCase testCase) {
-        final @NotNull Optional<UUID> fromTheName = FileKind.TEST_CASE.idIn(filePath);
-
-        if (fromTheName.isPresent()) {
-            final @NotNull UUID fromName = fromTheName.orElseThrow();
-
-            if (!fromName.equals(testCase.getId())) {
-                TestinLogger.warn("Test case " + filePath.getFileName() + " says its id is " + testCase.getId()
-                        + "; the file name is the identity, so it is read as " + fromName);
-            }
-            return fromName;
-        }
-
-        return testCase.getId();
-    }
-
     // Rule-INTERNAL-124
     @NotNull Optional<String> scanTestProject(final @NotNull Path testProjectPath, final @NotNull ProgressIndicator indicator) {
         try {
@@ -170,6 +153,7 @@ final class IndexingScanner {
             problems.unreadFolders(testProject.getName(), unread);
             problems.damagedMarkers(testProject.getName(), store.takeDamagedMarkers(testProjectPath));
             problems.unreadableRunItems(testProject.getName(), scanned.getUnreadableRunItems());
+            problems.handNamedTestCases(testProject.getName(), scanned.getHandNamedTestCases());
             problems.handNamedRunItems(testProject.getName(), scanned.getHandNamedRunItems());
             problems.clashingTestCases(testProject.getName(), List.copyOf(scanned.getClashingTestCases()));
             return Optional.empty();
@@ -237,19 +221,19 @@ final class IndexingScanner {
                         .filter(file -> FileKind.of(file) == FileKind.TEST_CASE)
                         .parallel()
                         .forEach(filePath -> {
+                            // Rule-INTERNAL-012
+                            final @NotNull Optional<UUID> testCaseId = FileKind.TEST_CASE.idIn(filePath);
+                            if (testCaseId.isEmpty()) {
+                                scanned.getHandNamedTestCases().add(path.getFileName() + "/" + filePath.getFileName());
+                                return;
+                            }
+
                             try {
-                                final @NotNull TestCase testCase = mapper.readValue(Files.readAllBytes(filePath), TestCase.class);
+                                final @NotNull TestCase testCase = TestCase.read(mapper, Files.readString(filePath), testCaseId.orElseThrow());
                                 testCase.setParent(testSet);
-                                testCase.setId(identityOf(filePath, testCase));
 
                                 if (scanned.getTestCasesById().put(testCase.getId(), testCase) != null) {
                                     scanned.getClashingTestCases().add(testSet.getName() + "/" + filePath.getFileName());
-                                    scanned.getClashingIds().add(testCase.getId());
-                                }
-
-                                // Rule-INTERNAL-084
-                                if (!filePath.equals(TestCaseStore.named(path, testCase.getId()))) {
-                                    scanned.getHandNamedFiles().put(testCase.getId(), filePath);
                                 }
 
                                 testCaseIds.add(testCase.getId());

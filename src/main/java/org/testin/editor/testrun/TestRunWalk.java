@@ -203,7 +203,7 @@ public final class TestRunWalk {
     }
 
     // UC-EDITOR-PANEL-043, UC-EDITOR-PANEL-044, Rule-EDITOR-PANEL-182, Rule-EDITOR-PANEL-289
-    void executionReported(final @NotNull TestCase testCase, final @NotNull TestNGExecutionStatus testNGExecutionStatus, final @NotNull List<RunItemExecution> executions, final int written) {
+    void executionReported(final @NotNull TestCase testCase, final @NotNull TestNGExecutionStatus testNGExecutionStatus, final @NotNull List<RunItemExecution> executions, final int written, final int deciding) {
         if (!launchedHere.contains(testCase.getId())) return;
 
         if (!testNGExecutionStatus.stillGoing()) {
@@ -216,10 +216,10 @@ public final class TestRunWalk {
         if (!editor.getParent().takesRunItemStatuses()) return;
 
         if (testNGExecutionStatus.stillGoing() && !executions.isEmpty())
-            runItemStatusService.showAttempts(editor, testCase, executions, written);
+            runItemStatusService.showAttempts(editor, testCase, executions, written, deciding);
 
         testNGExecutionStatus.getRunItemStatus().ifPresent(runItemStatus -> {
-            runItemStatusService.recordReported(editor, testCase, runItemStatus, executions, written);
+            runItemStatusService.recordReported(editor, testCase, runItemStatus, executions, written, deciding);
 
             if (launchedHere.isEmpty()) sayWhatTheTestRunRecorded();
         });
@@ -256,7 +256,7 @@ public final class TestRunWalk {
     // UC-EDITOR-PANEL-046
     public @NotNull Duration getCurrentTestCaseElapsed() {
         return executingTestCase.flatMap(editor::runItem)
-                .map(RunItem::getDuration)
+                .map(RunItem::shownExecution).map(RunItemExecution::getDuration)
                 .orElse(Duration.ZERO);
     }
 

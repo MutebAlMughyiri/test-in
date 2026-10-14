@@ -34,6 +34,7 @@ public class ReportWarningTest {
     private static @NotNull RunItem executed(final @NotNull RunItemStatus... runItemExecutionStatuses) {
         return RunItem.builder().id(UUID.randomUUID())
                 .executions(Arrays.stream(runItemExecutionStatuses).map(runItemExecutionStatus -> RunItemExecution.builder().status(runItemExecutionStatus).build()).toList())
+                .defaultNumber(runItemExecutionStatuses.length)
                 .build();
     }
 

@@ -87,7 +87,7 @@ public class RecordRunItemStatusTest {
         runItem.recordRunItemStatus(RunItemStatus.FAILED, "tester", Duration.ZERO, new Failure("A timeout this time", "", List.of()));
 
         assertEquals(runItem.getExecutions().size(), 2);
-        assertEquals(runItem.getActualResult(), "A timeout this time", "the run item reads its newest execution");
+        assertEquals(runItem.shownExecution().getActualResult(), "A timeout this time", "the run item reads its newest execution");
         assertEquals(runItem.getExecutions().getFirst().getActualResult(), "NPE on the login button", "and the first keeps its own");
     }
 
@@ -111,8 +111,8 @@ public class RecordRunItemStatusTest {
         record(runItem, RunItemStatus.BLOCKED, "muteb");
 
         assertEquals(runItem.getStatus(), RunItemStatus.BLOCKED, "what it was");
-        assertEquals(runItem.getExecutedBy(), "muteb");
-        assertEquals(runItem.getExecutedAt().getNano(), 0, "stamped to the second, as the test run JSON stores it");
+        assertEquals(runItem.shownExecution().getExecutedBy(), "muteb");
+        assertEquals(runItem.shownExecution().getExecutedAt().getNano(), 0, "stamped to the second, as the test run JSON stores it");
     }
 
     @Test
@@ -137,7 +137,7 @@ public class RecordRunItemStatusTest {
         record(runItem, RunItemStatus.PASSED, "Omar");
 
         assertEquals(runItem.getStatus(), RunItemStatus.PASSED, "the newest recording decides");
-        assertEquals(runItem.getExecutedBy(), "Omar");
+        assertEquals(runItem.shownExecution().getExecutedBy(), "Omar");
         assertEquals(runItem.getExecutions().getFirst().getExecutedBy(), "Sara", "the first tester stays in the list");
         assertEquals(runItem.getExecutions().getFirst().getExecutedAt(), firstTime, "and so does the first time");
     }

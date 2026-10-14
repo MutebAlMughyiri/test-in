@@ -23,14 +23,11 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
 import org.testin.model.FileKind;
-import org.testin.model.TestCase;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
 import org.testin.util.FailureText;
-import org.testin.util.JsonCodec;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -47,8 +44,6 @@ final class NodeFiles {
     private final @NotNull TestProjectIndexer indexer;
     private final @NotNull IndexerDataStore store;
     private final @NotNull VfsExecutor vfs;
-    private final @NotNull JsonCodec mapper;
-    private final @NotNull TestDataFiles testDataFiles;
     private final @NotNull OwnWrites ownWrites;
 
     NodeFiles(final @NotNull Project project, final @NotNull TestProjectIndexer indexer, final @NotNull IndexerDataStore store) {
@@ -56,8 +51,6 @@ final class NodeFiles {
         this.indexer = indexer;
         this.store = store;
         this.vfs = Services.getInstance(project, VfsExecutor.class);
-        this.mapper = Services.getInstance(project, JsonCodec.class);
-        this.testDataFiles = Services.getInstance(project, TestDataFiles.class);
         this.ownWrites = Services.getInstance(OwnWrites.class);
     }
 
@@ -192,21 +185,16 @@ final class NodeFiles {
         TestinLogger.info("Gave " + folders + " of " + markerFiles.size() + " copied folder(s) ids of their own under " + copiedRoot.getFileName());
     }
 
-    // UC-TREE-PANEL-014, Rule-TREE-PANEL-051, Rule-INTERNAL-113
+    // UC-TREE-PANEL-014, Rule-TREE-PANEL-051, Rule-INTERNAL-012, Rule-INTERNAL-113
     private boolean reidentify(final @NotNull Path testCaseFile) {
+        final @NotNull Path fresh = testCaseFile.resolveSibling(FileKind.TEST_CASE.fileName(UUID.randomUUID()));
         try {
-            final @NotNull TestCase testCase = mapper.readValue(Files.readAllBytes(testCaseFile), TestCase.class);
-            final @NotNull UUID fresh = UUID.randomUUID();
-
-            testCase.setId(fresh);
-            if (!testDataFiles.write(testCaseFile.resolveSibling(FileKind.TEST_CASE.fileName(fresh)), testCase))
-                return false;
-
             ownWrites.record(project, testCaseFile);
-            Files.delete(testCaseFile);
+            ownWrites.record(project, fresh);
+            Files.move(testCaseFile, fresh);
             return true;
 
-        } catch (final IOException | UncheckedIOException ex) {
+        } catch (final IOException ex) {
             TestinLogger.error("Could not give the copied test case " + testCaseFile.getFileName() + " a new id: " + FailureText.of(ex));
             return false;
         }

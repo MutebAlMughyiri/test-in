@@ -19,6 +19,7 @@ package org.testin.model.testrun;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,7 +35,7 @@ import org.testin.model.bug.BugSeverity;
 import org.testin.model.status.RunItemStatus;
 
 import java.time.Duration;
-import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +45,6 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 @Setter
 @Getter
@@ -75,6 +75,8 @@ public class RunItem {
     @Setter(AccessLevel.NONE)
     @Builder.Default
     private @NotNull Optional<TestCase> lastInGit = Optional.empty();
+    // Rule-INTERNAL-094
+    @JsonIgnore
     @NotNull
     @Builder.Default
     private UUID id = new UUID(0L, 0L);
@@ -87,20 +89,16 @@ public class RunItem {
     @NotNull
     @Builder.Default
     private String bugIssueUrl = "";
-    // UC-TREE-PANEL-020, Rule-TREE-PANEL-067
-    private boolean untested;
-    // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-132
-    @NotNull
+    // Rule-VIEW-PANEL-119, Rule-INTERNAL-135
+    @JsonProperty("default")
+    @JsonInclude(JsonInclude.Include.ALWAYS)
     @Builder.Default
-    private Duration clock = Duration.ZERO;
-    // UC-EDITOR-PANEL-041, Rule-EDITOR-PANEL-172
+    private int defaultNumber = 1;
+    // UC-EDITOR-PANEL-032, Rule-EDITOR-PANEL-136, Rule-INTERNAL-135
     @NotNull
+    @JsonInclude(JsonInclude.Include.ALWAYS)
     @Builder.Default
-    private String unrecordedActualResult = "";
-    // UC-EDITOR-PANEL-032, Rule-EDITOR-PANEL-136
-    @NotNull
-    @Builder.Default
-    private List<RunItemExecution> executions = List.of();
+    private List<RunItemExecution> executions = List.of(RunItemExecution.pending());
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-126
     @JsonIgnore
     @Getter(AccessLevel.NONE)
@@ -127,17 +125,20 @@ public class RunItem {
         return removed;
     }
 
-    // Rule-VIEW-PANEL-119
-    public @NotNull Optional<RunItemExecution> defaultExecution() {
-        return executions.isEmpty() ? Optional.empty() : Optional.of(executions.get(defaultIndex()));
+    // Rule-EDITOR-PANEL-136
+    public @NotNull RunItem setExecutions(final @NotNull List<RunItemExecution> recorded) {
+        executions = recorded.isEmpty() ? List.of(RunItemExecution.pending()) : List.copyOf(recorded);
+        return this;
     }
 
     // Rule-VIEW-PANEL-119
     public int defaultIndex() {
-        for (int at = 0; at < executions.size(); at++) {
-            if (executions.get(at).isChosen()) return at;
-        }
-        return executions.size() - 1;
+        return Math.clamp(defaultNumber - 1L, 0, executions.size() - 1);
+    }
+
+    // Rule-VIEW-PANEL-119
+    public @NotNull RunItemExecution shownExecution() {
+        return executions.get(defaultIndex());
     }
 
     // Rule-VIEW-PANEL-119, Rule-VIEW-PANEL-123
@@ -148,49 +149,24 @@ public class RunItem {
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-122
     public @NotNull RunItemExecution shownExecution(final @NotNull OptionalInt line) {
-        return line.isPresent() && line.getAsInt() < executions.size() ? executions.get(line.getAsInt()) : shown();
-    }
-
-    // Rule-VIEW-PANEL-119
-    private @NotNull RunItemExecution shown() {
-        return executions.isEmpty() ? notYetExecuted() : executions.get(defaultIndex());
-    }
-
-    // Rule-TREE-PANEL-067, Rule-EDITOR-PANEL-132, Rule-EDITOR-PANEL-172
-    private @NotNull RunItemExecution notYetExecuted() {
-        return RunItemExecution.builder().status(untested ? RunItemStatus.UNTESTED : RunItemStatus.PENDING).duration(clock).actualResult(unrecordedActualResult).build();
+        return line.isPresent() && line.getAsInt() < executions.size() ? executions.get(line.getAsInt()) : shownExecution();
     }
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-126, Rule-EDITOR-PANEL-239, Rule-VIEW-PANEL-119
     @JsonIgnore
     public @NotNull RunItemStatus getStatus() {
-        return isRemoved() ? RunItemStatus.REMOVED : shown().getStatus();
+        return isRemoved() ? RunItemStatus.REMOVED : shownExecution().getStatus();
     }
 
-    // Rule-VIEW-PANEL-119, Rule-EDITOR-PANEL-132
+    // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-132
     @JsonIgnore
-    public @NotNull Duration getDuration() {
-        return shown().getDuration();
+    public @NotNull Duration getClock() {
+        return isJudged() ? Duration.ZERO : shownExecution().getDuration();
     }
 
-    @JsonIgnore
-    public @NotNull String getExecutedBy() {
-        return shown().getExecutedBy();
-    }
-
-    @JsonIgnore
-    public @NotNull ZonedDateTime getExecutedAt() {
-        return shown().getExecutedAt();
-    }
-
-    @JsonIgnore
-    public @NotNull String getActualResult() {
-        return shown().getActualResult();
-    }
-
-    // UC-EDITOR-PANEL-041, Rule-EDITOR-PANEL-172
+    // UC-EDITOR-PANEL-041, Rule-EDITOR-PANEL-172, Rule-EDITOR-PANEL-295
     public void recordActualResult(final @NotNull String actual) {
-        defaultExecution().ifPresentOrElse(execution -> execution.setActualResult(actual), () -> unrecordedActualResult = actual);
+        shownExecution().setActualResult(actual);
     }
 
     // Rule-VIEW-PANEL-105
@@ -199,20 +175,10 @@ public class RunItem {
         return isFailed() || !bugIssueUrl.isBlank();
     }
 
-    @JsonIgnore
-    public @NotNull String getStacktrace() {
-        return shown().getStacktrace();
-    }
-
-    @JsonIgnore
-    public @NotNull List<String> getScreenshots() {
-        return shown().getScreenshots();
-    }
-
     // UC-EDITOR-PANEL-042, Rule-EDITOR-PANEL-288
     @JsonIgnore
     public @NotNull Duration timeSpent() {
-        return executions.stream().map(RunItemExecution::getDuration).reduce(clock, Duration::plus);
+        return executions.stream().map(RunItemExecution::getDuration).reduce(Duration.ZERO, Duration::plus);
     }
 
     // Rule-REPORT-027
@@ -256,14 +222,14 @@ public class RunItem {
 
     // UC-EDITOR-PANEL-040, Rule-EDITOR-PANEL-286, Rule-INTERNAL-117
     public void reviseFailure(final @NotNull Failure failure) {
-        defaultExecution().ifPresent(execution -> execution.revise(failure));
+        shownExecution().revise(failure);
     }
 
     // UC-TREE-PANEL-020, Rule-TREE-PANEL-067, Rule-INTERNAL-117
     public boolean markUntestedIfPending() {
         if (getStatus() != RunItemStatus.PENDING) return false;
 
-        untested = true;
+        shownExecution().setStatus(RunItemStatus.UNTESTED);
         return true;
     }
 
@@ -271,7 +237,7 @@ public class RunItem {
     public void recordClock(final @NotNull Duration onTheClock) {
         if (isJudged()) return;
 
-        clock = onTheClock;
+        shownExecution().setDuration(onTheClock);
     }
 
     @JsonIgnore
@@ -281,40 +247,36 @@ public class RunItem {
 
     // UC-EDITOR-PANEL-031, UC-EDITOR-PANEL-038, UC-EDITOR-PANEL-039, UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-159, Rule-EDITOR-PANEL-160, Rule-EDITOR-PANEL-284
     public void recordRunItemStatus(final @NotNull RunItemStatus runItemStatus, final @NotNull String tester, final @NotNull Duration duration, final @NotNull Failure failure) {
-        recordExecutions(List.of(RunItemExecution.recorded(runItemStatus, tester, duration, failure)), 0, tester);
+        recordExecutions(List.of(RunItemExecution.recorded(runItemStatus, tester, duration, failure)), 0, 0, tester);
     }
 
-    // UC-CODEGEN-008, Rule-CODEGEN-111
-    public void showExecutions(final @NotNull List<RunItemExecution> attempts, final int written, final @NotNull String tester) {
-        replaceExecutions(attempts, written, tester);
-    }
-
-    // UC-CODEGEN-008, Rule-CODEGEN-111, Rule-EDITOR-PANEL-183, Rule-EDITOR-PANEL-172
-    public void recordExecutions(final @NotNull List<RunItemExecution> recorded, final int written, final @NotNull String tester) {
-        if (recorded.isEmpty()) return;
-
-        if (recorded.getLast().getActualResult().isBlank()) recorded.getLast().setActualResult(unrecordedActualResult);
-        replaceExecutions(recorded, written, tester);
-        clock = Duration.ZERO;
-        unrecordedActualResult = "";
-    }
-
-    // Rule-VIEW-PANEL-119, Rule-CODEGEN-111
-    private void replaceExecutions(final @NotNull List<RunItemExecution> replacing, final int written, final @NotNull String tester) {
-        final @NotNull List<RunItemExecution> kept = executions.subList(0, Math.max(0, executions.size() - written));
-        kept.forEach(execution -> execution.setChosen(false));
-        replacing.forEach(execution -> execution.setExecutedBy(tester));
-        executions = Stream.concat(kept.stream(), replacing.stream()).toList();
+    // UC-CODEGEN-008, Rule-CODEGEN-111, Rule-EDITOR-PANEL-183, Rule-EDITOR-PANEL-136, Rule-VIEW-PANEL-119
+    public void recordExecutions(final @NotNull List<RunItemExecution> attempts, final int written, final int deciding, final @NotNull String tester) {
+        final @NotNull List<RunItemExecution> kept = new ArrayList<>(executions.subList(0, Math.max(0, executions.size() - written)));
+        kept.removeIf(RunItemExecution::isOpen);
+        attempts.forEach(attempt -> attempt.setExecutedBy(tester));
+        defaultNumber = kept.size() + deciding + 1;
+        kept.addAll(attempts);
+        setExecutions(kept);
     }
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-120
     public void chooseExecution(final int index) {
-        IntStream.range(0, executions.size()).forEach(at -> executions.get(at).setChosen(at == index && index != executions.size() - 1));
+        defaultNumber = index + 1;
     }
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-121
     public void removeExecution(final int index) {
-        executions = IntStream.range(0, executions.size()).filter(at -> at != index).mapToObj(executions::get).toList();
+        final int removing = index + 1;
+        if (removing == defaultNumber) defaultNumber = executions.size() - 1;
+        else if (removing < defaultNumber) defaultNumber--;
+
+        setExecutions(IntStream.range(0, executions.size()).filter(at -> at != index).mapToObj(executions::get).toList());
+    }
+
+    // Rule-VIEW-PANEL-086, Rule-CODEGEN-112
+    public boolean isRetried(final int index) {
+        return index + 1 < executions.size() && executions.get(index + 1).getRetry() > 0;
     }
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-239, Rule-REPORT-021, Rule-VIEW-PANEL-083

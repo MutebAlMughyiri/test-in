@@ -23,5 +23,5 @@ import org.testin.model.testrun.Failure;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 
-record Attempt(@NotNull TestNGExecutionStatus testNGExecutionStatus, @NotNull Duration duration, @NotNull Failure failure, @NotNull String parameters, @NotNull ZonedDateTime at) {
+record Attempt(@NotNull TestNGExecutionStatus testNGExecutionStatus, @NotNull Duration duration, @NotNull Failure failure, @NotNull ZonedDateTime at) {
 }

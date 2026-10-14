@@ -38,10 +38,13 @@ import static org.testng.Assert.assertTrue;
 
 public class PendingChangeFactoryTest {
 
-    private static final Path PATH = Path.of("Test Cases", "login", "testCase.testcase");
+    private static final UUID ID = UUID.randomUUID();
+
+    private static final Path PATH = Path.of("Test Cases", "login", ID + ".testcase");
 
     private static @NotNull TestCase testCase(final String description) {
         return TestCase.builder()
+                .id(ID)
                 .description(description)
                 .expectedResult("the balance is shown")
                 .steps(new ArrayList<>(List.of("open the app", "log in")))

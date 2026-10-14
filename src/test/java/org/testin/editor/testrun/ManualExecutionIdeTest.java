@@ -278,7 +278,7 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
             final @NotNull RunItem written = Services.getInstance(getProject(), JsonCodec.class).readValue(fileOf(testRun, testCases.getFirst()), RunItem.class);
-            assertTrue("the time the clock counted was not written down by the stop: " + written.getDuration(), written.getDuration().compareTo(Duration.ofSeconds(1)) >= 0);
+            assertTrue("the time the clock counted was not written down by the stop: " + written.shownExecution().getDuration(), written.shownExecution().getDuration().compareTo(Duration.ofSeconds(1)) >= 0);
             assertFalse("stopping did not stamp when execution ended", DateFormats.isNotExecuted(editor.getParent().getMarker().getExecutionEndedAt()));
         } finally {
             Disposer.dispose(editor);
@@ -316,7 +316,7 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestRunNode testRun = aTestRunOver(List.of(
                 EditorFixtures.pending(testCases.getFirst()),
                 EditorFixtures.pending(testCases.get(1)),
-                EditorFixtures.pending(testCases.get(2)).setClock(Duration.ofSeconds(7))));
+                EditorFixtures.pending(testCases.get(2)).setExecutions(List.of(RunItemExecution.builder().duration(Duration.ofSeconds(7)).build()))));
         final @NotNull TestRunEditor editor = opened(testRun);
         try {
             editor.onStartExecutionClicked();
@@ -327,7 +327,7 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
             assertEquals("a run item status could not be recorded away from the walk", RunItemStatus.BLOCKED, runItemStatusOf(testRun, testCases.get(2)));
-            assertEquals("a run item status recorded away from the walk was timed", Duration.ofSeconds(7), runItemOf(testRun, testCases.get(2)).getDuration());
+            assertEquals("a run item status recorded away from the walk was timed", Duration.ofSeconds(7), runItemOf(testRun, testCases.get(2)).shownExecution().getDuration());
             assertTrue("recording away from the walk stopped it", editor.getWalk().isExecuting());
             assertEquals("recording away from the walk moved it", testCases.getFirst().getId(), walkingOn(editor));
         } finally {
@@ -370,8 +370,8 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
             assertEquals(RunItemStatus.BLOCKED, runItemStatusOf(testRun, testCases.getFirst()));
             assertEquals(RunItemStatus.BLOCKED, runItemStatusOf(testRun, testCases.get(1)));
             assertEquals("a test case removed from its test set was given the run item status", List.of(), theTestRuns().getRunItems(testRun.getPath()).runItemOf(removed).orElseThrow().getExecutions());
-            assertEquals("a run item status given to several at once was timed", Duration.ZERO, runItemOf(testRun, testCases.getFirst()).getDuration());
-            assertEquals(Duration.ZERO, runItemOf(testRun, testCases.get(1)).getDuration());
+            assertEquals("a run item status given to several at once was timed", Duration.ZERO, runItemOf(testRun, testCases.getFirst()).shownExecution().getDuration());
+            assertEquals(Duration.ZERO, runItemOf(testRun, testCases.get(1)).shownExecution().getDuration());
         } finally {
             Disposer.dispose(editor);
         }
@@ -478,7 +478,7 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
             editor.onStartExecutionClicked();
             awaitWalkOn(editor, testCases.getFirst());
 
-            runItemStatuses().recordReported(editor, testCases.getFirst(), RunItemStatus.PASSED, List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).duration(Duration.ofMillis(84)).build()), 0);
+            runItemStatuses().recordReported(editor, testCases.getFirst(), RunItemStatus.PASSED, List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).duration(Duration.ofMillis(84)).build()), 0, 0);
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
             assertEquals(RunItemStatus.PASSED, runItemStatusOf(testRun, testCases.getFirst()));

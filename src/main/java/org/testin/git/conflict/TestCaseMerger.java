@@ -41,7 +41,7 @@ public final class TestCaseMerger {
 
     private static final @NotNull Set<String> ORDER = Set.of("order");
 
-    private static final @NotNull Set<String> SETTLED = Set.of("id", "createdAt", "createdBy");
+    private static final @NotNull Set<String> SETTLED = Set.of("createdAt", "createdBy");
 
     public static boolean isTestCase(final @NotNull String relativePath) {
         final @NotNull String slashed = relativePath.replace('\\', '/');

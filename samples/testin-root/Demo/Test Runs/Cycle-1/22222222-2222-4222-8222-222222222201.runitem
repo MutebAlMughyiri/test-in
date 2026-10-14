@@ -1,5 +1,5 @@
 {
-  "id" : "22222222-2222-4222-8222-222222222201",
+  "default" : 1,
   "executions" : [ {
     "status" : "PASSED",
     "duration" : 8.771,

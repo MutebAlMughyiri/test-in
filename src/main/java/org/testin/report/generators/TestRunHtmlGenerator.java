@@ -187,7 +187,7 @@ public final class TestRunHtmlGenerator {
     }
 
     private void appendFailureDetail(final @NotNull StringBuilder html, final @NotNull RunItem runItem) {
-        final @NotNull String actual = runItem.getActualResult();
+        final @NotNull String actual = runItem.shownExecution().getActualResult();
         html.append("<div class='actual'>")
                 .append(Bundle.message("report.actual.result", StringUtil.escapeXmlEntities(actual.isEmpty() ? "—" : actual)));
 
@@ -196,7 +196,7 @@ public final class TestRunHtmlGenerator {
                 .append("</a>)"));
         html.append("</div>");
 
-        final @NotNull String stacktrace = runItem.getStacktrace();
+        final @NotNull String stacktrace = runItem.shownExecution().getStacktrace();
         if (!stacktrace.isBlank()) {
             html.append("<div class='stacktrace'>").append(StringUtil.escapeXmlEntities(stacktrace)).append("</div>");
         }

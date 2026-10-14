@@ -17,9 +17,9 @@
 package org.testin.model.testrun;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,8 +44,10 @@ import java.util.List;
 // Rule-INTERNAL-135
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class RunItemExecution {
+    // Rule-EDITOR-PANEL-136, Rule-INTERNAL-135
     @NotNull
     @Builder.Default
+    @JsonInclude(JsonInclude.Include.ALWAYS)
     private RunItemStatus status = RunItemStatus.PENDING;
     @NotNull
     @Builder.Default
@@ -71,15 +73,11 @@ public class RunItemExecution {
     private int invocation;
     // Rule-CODEGEN-112
     private int retry;
-    // Rule-CODEGEN-111
-    private boolean retried;
-    // Rule-CODEGEN-112
-    @NotNull
-    @Builder.Default
-    private String parameters = "";
-    // Rule-VIEW-PANEL-119
-    @JsonProperty("default")
-    private boolean chosen;
+
+    // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-136
+    public static @NotNull RunItemExecution pending() {
+        return RunItemExecution.builder().build();
+    }
 
     // UC-EDITOR-PANEL-032, UC-CODEGEN-008, Rule-EDITOR-PANEL-136
     public static @NotNull RunItemExecutionBuilder from(final @NotNull RunItemStatus runItemExecutionStatus, final @NotNull Duration duration, final @NotNull Failure failure) {
@@ -97,6 +95,12 @@ public class RunItemExecution {
                 .executedBy(tester)
                 .executedAt(ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS))
                 .build();
+    }
+
+    // Rule-EDITOR-PANEL-136
+    @JsonIgnore
+    public boolean isOpen() {
+        return !status.isJudged();
     }
 
     // UC-EDITOR-PANEL-040, Rule-EDITOR-PANEL-286

@@ -38,8 +38,8 @@ public class NotExecutedTimestampTest {
     public void aFreshRunItemHasNoExecutionTime() {
         final RunItem runItem = RunItem.builder().id(UUID.randomUUID()).build();
 
-        assertTrue(DateFormats.isNotExecuted(runItem.getExecutedAt()));
-        assertEquals(Display.formatDate(runItem.getExecutedAt()), "");
+        assertTrue(DateFormats.isNotExecuted(runItem.shownExecution().getExecutedAt()));
+        assertEquals(Display.formatDate(runItem.shownExecution().getExecutedAt()), "");
     }
 
     @Test
@@ -48,8 +48,8 @@ public class NotExecutedTimestampTest {
 
         runItem.recordRunItemStatus(RunItemStatus.PASSED, "tester", Duration.ZERO, Failure.NONE);
 
-        assertFalse(DateFormats.isNotExecuted(runItem.getExecutedAt()));
-        assertFalse(Display.formatDate(runItem.getExecutedAt()).isEmpty());
+        assertFalse(DateFormats.isNotExecuted(runItem.shownExecution().getExecutedAt()));
+        assertFalse(Display.formatDate(runItem.shownExecution().getExecutedAt()).isEmpty());
     }
 
     @Test

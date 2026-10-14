@@ -34,17 +34,17 @@ import static org.testng.Assert.assertTrue;
 
 public class AttemptsTest {
 
-    private static @NotNull Attempt attempt(final @NotNull TestNGExecutionStatus testNGExecutionStatus, final @NotNull String parameters) {
-        return new Attempt(testNGExecutionStatus, Duration.ZERO, new Failure(testNGExecutionStatus == TestNGExecutionStatus.PASSED ? "" : "attempt failed", "", List.of()), parameters, DateFormats.NOT_EXECUTED);
+    private static @NotNull Attempt attempt(final @NotNull TestNGExecutionStatus testNGExecutionStatus) {
+        return new Attempt(testNGExecutionStatus, Duration.ZERO, new Failure(testNGExecutionStatus == TestNGExecutionStatus.PASSED ? "" : "attempt failed", "", List.of()), DateFormats.NOT_EXECUTED);
     }
 
     private static @NotNull Attempts held(final @NotNull TestNGExecutionStatus... testNGExecutionStatuses) {
-        return new Attempts(Arrays.stream(testNGExecutionStatuses).map(testNGExecutionStatus -> attempt(testNGExecutionStatus, "")).toList(), 0);
+        return new Attempts(Arrays.stream(testNGExecutionStatuses).map(AttemptsTest::attempt).toList(), 0);
     }
 
     private static @NotNull List<String> labels(final @NotNull Attempts attempts) {
         return attempts.executions().stream()
-                .map(execution -> execution.getStatus().name() + " i" + execution.getInvocation() + " r" + execution.getRetry() + (execution.isRetried() ? " retried" : ""))
+                .map(execution -> execution.getStatus().name() + " i" + execution.getInvocation() + " r" + execution.getRetry())
                 .toList();
     }
 
@@ -53,10 +53,10 @@ public class AttemptsTest {
     public void aRetryThatPassesKeepsTheAttemptsBeforeIt() {
         final @NotNull Attempts attempts = held(TestNGExecutionStatus.SKIPPED, TestNGExecutionStatus.SKIPPED, TestNGExecutionStatus.PASSED);
 
-        assertEquals(labels(attempts), List.of("FAILED i0 r0 retried", "FAILED i0 r1 retried", "PASSED i0 r2"),
+        assertEquals(labels(attempts), List.of("FAILED i0 r0", "FAILED i0 r1", "PASSED i0 r2"),
                 "a retried attempt is kept as the failure it was, and nothing says Invocation for a method run once");
         assertEquals(attempts.testNGExecutionStatus(), TestNGExecutionStatus.PASSED);
-        assertEquals(attempts.deciding(), 2);
+        assertEquals(attempts.decidingExecution(), 2);
     }
 
     // Rule-CODEGEN-111, Rule-CODEGEN-112
@@ -66,7 +66,7 @@ public class AttemptsTest {
 
         assertEquals(labels(attempts), List.of("PASSED i1 r0", "FAILED i2 r0", "PASSED i3 r0", "PASSED i4 r0"));
         assertEquals(attempts.testNGExecutionStatus(), TestNGExecutionStatus.FAILED, "one failed invocation fails the test case");
-        assertEquals(attempts.deciding(), 1);
+        assertEquals(attempts.decidingExecution(), 1);
     }
 
     // Rule-CODEGEN-111, Rule-CODEGEN-112
@@ -74,9 +74,9 @@ public class AttemptsTest {
     public void aRetryIsNumberedUnderItsInvocation() {
         final @NotNull Attempts attempts = held(TestNGExecutionStatus.PASSED, TestNGExecutionStatus.SKIPPED, TestNGExecutionStatus.PASSED, TestNGExecutionStatus.PASSED);
 
-        assertEquals(labels(attempts), List.of("PASSED i1 r0", "FAILED i2 r0 retried", "PASSED i2 r1", "PASSED i3 r0"));
+        assertEquals(labels(attempts), List.of("PASSED i1 r0", "FAILED i2 r0", "PASSED i2 r1", "PASSED i3 r0"));
         assertEquals(attempts.testNGExecutionStatus(), TestNGExecutionStatus.PASSED, "the retried failure never decides");
-        assertEquals(attempts.deciding(), 3);
+        assertEquals(attempts.decidingExecution(), 3);
     }
 
     // Rule-CODEGEN-075, Rule-CODEGEN-111
@@ -90,30 +90,20 @@ public class AttemptsTest {
 
     // Rule-CODEGEN-112
     @Test
-    public void aDataProviderRowKeepsItsRow() {
-        final @NotNull Attempts attempts = new Attempts(List.of(
-                attempt(TestNGExecutionStatus.PASSED, "[1234]"), attempt(TestNGExecutionStatus.FAILED, "[0000]"), attempt(TestNGExecutionStatus.PASSED, "[9876]")), 0);
+    public void aDataProviderRowIsAnInvocationLikeAnyOther() {
+        final @NotNull Attempts attempts = held(TestNGExecutionStatus.PASSED, TestNGExecutionStatus.FAILED, TestNGExecutionStatus.PASSED);
 
-        assertEquals(attempts.executions().stream().map(RunItemExecution::getParameters).toList(), List.of("[1234]", "[0000]", "[9876]"));
-        assertEquals(attempts.executions().get(attempts.deciding()).getParameters(), "[0000]", "the failing row decides");
+        assertEquals(labels(attempts), List.of("PASSED i1 r0", "FAILED i2 r0", "PASSED i3 r0"));
+        assertEquals(attempts.decidingExecution(), 1, "the failing row decides");
     }
 
     // Rule-CODEGEN-111, Rule-VIEW-PANEL-119
     @Test
-    public void theDecidingExecutionIsTheDefaultEvenWhenAStopCameFirst() {
-        final @NotNull List<RunItemExecution> decided = held(TestNGExecutionStatus.IDLE, TestNGExecutionStatus.FAILED, TestNGExecutionStatus.PASSED).decidedExecutions();
+    public void theDecidingExecutionIsCountedAmongTheExecutionsEvenWhenAStopCameFirst() {
+        final @NotNull Attempts attempts = held(TestNGExecutionStatus.IDLE, TestNGExecutionStatus.FAILED, TestNGExecutionStatus.PASSED);
 
-        assertEquals(decided.stream().map(RunItemExecution::getStatus).toList(), List.of(RunItemStatus.FAILED, RunItemStatus.PASSED));
-        assertEquals(decided.stream().map(RunItemExecution::isChosen).toList(), List.of(true, false), "the failed invocation decides, not the one after it");
-    }
-
-    // Rule-CODEGEN-111
-    @Test
-    public void aDecidingLastAttemptCarriesNoFlagAndALiveOneNeverDoes() {
-        assertEquals(held(TestNGExecutionStatus.PASSED, TestNGExecutionStatus.FAILED).decidedExecutions().stream().map(RunItemExecution::isChosen).toList(), List.of(false, false),
-                "the last execution is the default without a flag");
-        assertEquals(held(TestNGExecutionStatus.FAILED, TestNGExecutionStatus.PASSED).executions().stream().map(RunItemExecution::isChosen).toList(), List.of(false, false),
-                "attempts shown while TestNG runs choose nothing");
+        assertEquals(attempts.executions().stream().map(RunItemExecution::getStatus).toList(), List.of(RunItemStatus.FAILED, RunItemStatus.PASSED));
+        assertEquals(attempts.decidingExecution(), 0, "the failed invocation decides, not the one after it, and the stop is no execution");
     }
 
     @Test

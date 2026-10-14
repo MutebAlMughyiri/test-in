@@ -110,7 +110,7 @@ public class ViewPanel implements Disposable {
 
         refreshCurrentView();
 
-        TestNGExecutionRecorder.onReported(project, this, (testCase, testNGExecutionStatus, _, _) -> executionReported(testCase, testNGExecutionStatus));
+        TestNGExecutionRecorder.onReported(project, this, (testCase, testNGExecutionStatus, _, _, _) -> executionReported(testCase, testNGExecutionStatus));
     }
 
     private @NotNull Stream<JPanel> tabs() {

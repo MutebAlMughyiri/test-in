@@ -21,7 +21,6 @@ import org.testin.model.status.TestNGExecutionStatus;
 import org.testin.model.testrun.RunItemExecution;
 
 import java.util.List;
-import java.util.function.IntPredicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -56,20 +55,13 @@ record Attempts(@NotNull List<Attempt> all, int written) {
         return lastAttempts.stream().filter(at -> testNGExecutionStatusAt(at) == TestNGExecutionStatus.FAILED).reduce((_, last) -> last).orElse(lastAttempts.getLast());
     }
 
-    // Rule-CODEGEN-111
-    @NotNull List<RunItemExecution> executions() {
-        return executions(_ -> false);
-    }
-
     // Rule-CODEGEN-111, Rule-VIEW-PANEL-119
-    @NotNull List<RunItemExecution> decidedExecutions() {
-        final int deciding = deciding();
-        final int last = IntStream.range(0, all.size()).filter(this::isExecution).max().orElse(deciding);
-        return executions(at -> at == deciding && at != last);
+    int decidingExecution() {
+        return (int) IntStream.range(0, deciding()).filter(this::isExecution).count();
     }
 
     // Rule-CODEGEN-111, Rule-CODEGEN-112
-    private @NotNull List<RunItemExecution> executions(final @NotNull IntPredicate chosen) {
+    @NotNull List<RunItemExecution> executions() {
         final int[] invocation = new int[all.size()];
         final int[] retry = new int[all.size()];
         for (int at = 0; at < all.size(); at++) {
@@ -85,9 +77,6 @@ record Attempts(@NotNull List<Attempt> all, int written) {
                         .executedAt(all.get(at).at())
                         .invocation(invokedMoreThanOnce ? invocation[at] : 0)
                         .retry(retry[at])
-                        .retried(retriedAt(at))
-                        .parameters(all.get(at).parameters())
-                        .chosen(chosen.test(at))
                         .build())
                 .toList();
     }

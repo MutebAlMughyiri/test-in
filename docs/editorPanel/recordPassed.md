@@ -38,7 +38,9 @@ duration.
   that would act on the row is refused.
 - **Rule-EDITOR-PANEL-136** — A run item status is recorded as an execution of
   its own: what it was, who recorded it, and when, to the second. A run item
-  keeps every execution, in the order they happened.
+  keeps every execution, in the order they happened. Before the first, it holds
+  one open execution that says Pending, or Untested once the test run is signed
+  off, and the first run item status recorded takes its place.
 - **Rule-EDITOR-PANEL-137** — A run item status recorded on the test case the
   walk is timing also records how long it took.
 - **Rule-EDITOR-PANEL-139** — The walk then moves to the next test case and

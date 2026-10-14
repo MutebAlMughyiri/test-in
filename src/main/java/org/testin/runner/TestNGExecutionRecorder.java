@@ -69,7 +69,7 @@ public final class TestNGExecutionRecorder implements Disposable {
 
         final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
 
-        final @NotNull Attempt attempt = new Attempt(testNGExecutionStatus, duration, failure, TestName.parameters(testName), ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS));
+        final @NotNull Attempt attempt = new Attempt(testNGExecutionStatus, duration, failure, ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS));
 
         TestName.testCaseId(testName).flatMap(testCases::findTestCase).ifPresentOrElse(
                 testCase -> {
@@ -84,19 +84,19 @@ public final class TestNGExecutionRecorder implements Disposable {
     private void show(final @NotNull TestCase testCase, final @NotNull Attempts live) {
         final @NotNull List<RunItemExecution> executions = live.executions();
 
-        surfaces.forEach(surface -> surface.accept(testCase, TestNGExecutionStatus.RUNNING, executions, live.written()));
+        surfaces.forEach(surface -> surface.accept(testCase, TestNGExecutionStatus.RUNNING, executions, live.written(), executions.size() - 1));
     }
 
     // Rule-CODEGEN-110, Rule-CODEGEN-111
     private void report(final @NotNull TestCase testCase, final @NotNull Attempts decided) {
         final @NotNull TestNGExecutionStatus reportedTestNGExecutionStatus = runItemStatusFor(testCase, decided.testNGExecutionStatus());
-        final @NotNull List<RunItemExecution> executions = reportedTestNGExecutionStatus == TestNGExecutionStatus.IDLE ? List.of() : decided.decidedExecutions();
+        final @NotNull List<RunItemExecution> executions = reportedTestNGExecutionStatus == TestNGExecutionStatus.IDLE ? List.of() : decided.executions();
 
         TestinLogger.debug("  reporting on '" + testCase.getDescription() + "': " + reportedTestNGExecutionStatus + " from " + decided.all().size() + " attempt(s)");
 
         Services.getInstance(project, TestNGExecution.class).reported(testCase.getId(), reportedTestNGExecutionStatus);
 
-        surfaces.forEach(surface -> surface.accept(testCase, reportedTestNGExecutionStatus, executions, decided.written()));
+        surfaces.forEach(surface -> surface.accept(testCase, reportedTestNGExecutionStatus, executions, decided.written(), decided.decidingExecution()));
     }
 
     @Override
@@ -114,6 +114,6 @@ public final class TestNGExecutionRecorder implements Disposable {
 
     @FunctionalInterface
     public interface Reported {
-        void accept(final @NotNull TestCase testCase, final @NotNull TestNGExecutionStatus testNGExecutionStatus, final @NotNull List<RunItemExecution> executions, final int written);
+        void accept(final @NotNull TestCase testCase, final @NotNull TestNGExecutionStatus testNGExecutionStatus, final @NotNull List<RunItemExecution> executions, final int written, final int deciding);
     }
 }

@@ -45,7 +45,7 @@ public class RunItemFieldChangesTest {
 
     private static @NotNull RunItem changed(final @NotNull Consumer<RunItemExecution> change) {
         final @NotNull RunItem after = base();
-        after.defaultExecution().ifPresent(change);
+        change.accept(after.shownExecution());
         return after;
     }
 

@@ -41,33 +41,64 @@ public class RunItemTest {
     }
 
     private static @NotNull RunItem withExecutions(final @NotNull RunItemExecution... executions) {
-        return RunItem.builder().id(UUID.randomUUID()).executions(List.of(executions)).build();
+        return RunItem.builder().id(UUID.randomUUID()).executions(List.of(executions)).defaultNumber(executions.length).build();
     }
 
-    // Rule-INTERNAL-135, Rule-VIEW-PANEL-119
+    // Rule-INTERNAL-135, Rule-VIEW-PANEL-119, Rule-INTERNAL-094
     @Test
-    public void anOrdinaryRunItemStoresOnlyItsExecutions() {
+    public void anOrdinaryRunItemStoresOnlyItsDefaultAndExecutions() {
         final @NotNull RunItem runItem = RunItem.builder().id(UUID.randomUUID()).build();
         runItem.recordRunItemStatus(RunItemStatus.PASSED, "muteb", Duration.ZERO, Failure.NONE);
 
         final @NotNull String json = RealJsonCodec.build().writeValueAsString(runItem);
 
-        for (final String key : List.of("actualResult", "stacktrace", "screenshots", "bugSeverity", "bugPriority", "bugIssueUrl", "default", "untested", "clock", "invocation", "retry", "retried")) {
+        for (final String key : List.of("id", "actualResult", "stacktrace", "screenshots", "bugSeverity", "bugPriority", "bugIssueUrl", "untested", "clock", "invocation", "retry", "retried", "parameters")) {
             assertFalse(json.contains("\"" + key + "\""), "an ordinary passed run item stored " + key + ": " + json);
         }
-        assertTrue(json.contains("\"executions\"") && json.contains("PASSED"), json);
+        assertTrue(json.contains("\"default\" : 1") && json.contains("\"executions\"") && json.contains("PASSED"), json);
+    }
+
+    // Rule-INTERNAL-135, Rule-EDITOR-PANEL-136, Rule-TREE-PANEL-067
+    @Test
+    public void aRunItemNobodyJudgedWritesItsOneOpenExecution() {
+        final @NotNull RunItem runItem = RunItem.builder().id(UUID.randomUUID()).build();
+
+        assertEquals(RealJsonCodec.build().writeValueAsString(runItem).replaceAll("\\s", ""), "{\"default\":1,\"executions\":[{\"status\":\"PENDING\"}]}");
+
+        runItem.markUntestedIfPending();
+
+        assertEquals(RealJsonCodec.build().writeValueAsString(runItem).replaceAll("\\s", ""), "{\"default\":1,\"executions\":[{\"status\":\"UNTESTED\"}]}", "sign-off writes Untested as the open execution's status");
+    }
+
+    // Rule-EDITOR-PANEL-136
+    @Test
+    public void aFileWithNoExecutionReadsAsOneOpenExecution() {
+        final @NotNull RunItem read = RealJsonCodec.build().readValue("{\"default\" : 1, \"executions\" : [ ]}", RunItem.class);
+
+        assertEquals(read.getExecutions().size(), 1);
+        assertEquals(read.getStatus(), RunItemStatus.PENDING);
+    }
+
+    // Rule-VIEW-PANEL-119
+    @Test
+    public void aDefaultOutsideTheListReadsAsItsNearestEnd() {
+        final @NotNull RunItem below = withExecutions(execution(RunItemStatus.FAILED, "first"), execution(RunItemStatus.PASSED, "second")).setDefaultNumber(0);
+        final @NotNull RunItem above = withExecutions(execution(RunItemStatus.FAILED, "first"), execution(RunItemStatus.PASSED, "second")).setDefaultNumber(9);
+
+        assertEquals(below.getStatus(), RunItemStatus.FAILED, "a default below 1 reads as the first");
+        assertEquals(above.getStatus(), RunItemStatus.PASSED, "a default past the list reads as the last");
     }
 
     // Rule-INTERNAL-135
     @Test
     public void aKeyLeftOutOrUnknownReadsBackAsAFreshRunItemHoldsIt() {
-        final @NotNull RunItem read = RealJsonCodec.build().readValue("{\"id\" : \"" + UUID.randomUUID() + "\", \"executions\" : [ { \"status\" : \"PASSED\", \"fromANewerTestin\" : 1 } ]}", RunItem.class);
+        final @NotNull RunItem read = RealJsonCodec.build().readValue("{\"executions\" : [ { \"status\" : \"PASSED\", \"fromANewerTestin\" : 1 } ]}", RunItem.class);
 
         assertEquals(read.getStatus(), RunItemStatus.PASSED);
         assertEquals(read.getBugSeverity(), BugSeverity.DEFAULT);
         assertEquals(read.getBugPriority(), BugPriority.DEFAULT);
-        assertEquals(read.getActualResult(), "");
-        assertEquals(read.getDuration(), Duration.ZERO);
+        assertEquals(read.shownExecution().getActualResult(), "");
+        assertEquals(read.shownExecution().getDuration(), Duration.ZERO);
     }
 
     // Rule-VIEW-PANEL-119
@@ -80,7 +111,7 @@ public class RunItemTest {
         runItem.chooseExecution(0);
 
         assertEquals(runItem.getStatus(), RunItemStatus.FAILED, "the chosen one decides");
-        assertEquals(runItem.getActualResult(), "first", "and every reader reads it");
+        assertEquals(runItem.shownExecution().getActualResult(), "first", "and every reader reads it");
     }
 
     // Rule-VIEW-PANEL-119
@@ -92,54 +123,78 @@ public class RunItemTest {
         runItem.recordRunItemStatus(RunItemStatus.BLOCKED, "tester", Duration.ZERO, Failure.NONE);
 
         assertEquals(runItem.getStatus(), RunItemStatus.BLOCKED);
-        assertTrue(runItem.getExecutions().stream().noneMatch(RunItemExecution::isChosen), "no flag is left behind to disagree with the newest");
+        assertEquals(runItem.getDefaultNumber(), 3, "the new recording is the default, whatever was chosen before");
     }
 
     // Rule-VIEW-PANEL-120
     @Test
-    public void choosingTheLastExecutionStoresNoFlag() {
+    public void choosingAnExecutionStoresItsNumber() {
         final @NotNull RunItem runItem = withExecutions(execution(RunItemStatus.FAILED, "first"), execution(RunItemStatus.PASSED, "second"));
+
         runItem.chooseExecution(0);
+        assertEquals(runItem.getDefaultNumber(), 1);
+        assertEquals(runItem.getStatus(), RunItemStatus.FAILED);
 
         runItem.chooseExecution(1);
-
+        assertEquals(runItem.getDefaultNumber(), 2);
         assertEquals(runItem.getStatus(), RunItemStatus.PASSED);
-        assertTrue(runItem.getExecutions().stream().noneMatch(RunItemExecution::isChosen), "the last needs no flag to be the default");
     }
 
     // Rule-VIEW-PANEL-121
     @Test
-    public void removingTheDefaultFallsBackToTheLastAndRemovingAllLeavesPending() {
+    public void removingTheDefaultFallsBackToTheLastAndAnEarlierOneKeepsTheDefault() {
         final @NotNull RunItem runItem = withExecutions(execution(RunItemStatus.FAILED, "first"), execution(RunItemStatus.BLOCKED, "second"), execution(RunItemStatus.PASSED, "third"));
-        runItem.chooseExecution(0);
+        runItem.chooseExecution(1);
+
+        runItem.removeExecution(0);
+
+        assertEquals(runItem.getStatus(), RunItemStatus.BLOCKED, "removing an earlier execution keeps the chosen one the default");
+        assertEquals(runItem.getDefaultNumber(), 1);
 
         runItem.removeExecution(0);
 
         assertEquals(runItem.getStatus(), RunItemStatus.PASSED, "with the chosen one gone, the last decides");
-
-        runItem.removeExecution(1);
-        runItem.removeExecution(0);
-
-        assertEquals(runItem.getStatus(), RunItemStatus.PENDING, "with none left the run item is Pending again");
+        assertEquals(runItem.getExecutions().size(), 1);
     }
 
-    // Rule-CODEGEN-111
+    // Rule-CODEGEN-111, Rule-EDITOR-PANEL-136
     @Test
     public void attemptsShownLiveAreReplacedByTheDecisionAndKeepWhatCameBefore() {
         final @NotNull RunItem runItem = withExecutions(execution(RunItemStatus.BLOCKED, "by hand"));
 
-        runItem.showExecutions(List.of(execution(RunItemStatus.PASSED, "")), 0, "Muteb");
+        runItem.recordExecutions(List.of(execution(RunItemStatus.PASSED, "")), 0, 0, "Muteb");
         assertEquals(runItem.getStatus(), RunItemStatus.PASSED, "the last attempt so far is the default while TestNG runs");
 
-        runItem.showExecutions(List.of(execution(RunItemStatus.PASSED, ""), execution(RunItemStatus.FAILED, "invocation 2")), 1, "Muteb");
+        runItem.recordExecutions(List.of(execution(RunItemStatus.PASSED, ""), execution(RunItemStatus.FAILED, "invocation 2")), 1, 1, "Muteb");
         assertEquals(runItem.getExecutions().size(), 3, "the attempt already shown is replaced, not added twice");
 
-        final @NotNull RunItemExecution decides = execution(RunItemStatus.FAILED, "invocation 2");
-        decides.setChosen(true);
-        runItem.recordExecutions(List.of(execution(RunItemStatus.PASSED, ""), decides, execution(RunItemStatus.PASSED, "")), 2, "Muteb");
+        runItem.recordExecutions(List.of(execution(RunItemStatus.PASSED, ""), execution(RunItemStatus.FAILED, "invocation 2"), execution(RunItemStatus.PASSED, "")), 2, 1, "Muteb");
         assertEquals(runItem.getExecutions().size(), 4);
         assertEquals(runItem.getExecutions().getFirst().getActualResult(), "by hand", "an earlier execution is never touched");
         assertEquals(runItem.getStatus(), RunItemStatus.FAILED, "the failed invocation decides");
+        assertEquals(runItem.getDefaultNumber(), 3);
+    }
+
+    // Rule-CODEGEN-111, Rule-EDITOR-PANEL-136
+    @Test
+    public void theFirstAttemptReplacesTheOpenExecution() {
+        final @NotNull RunItem runItem = RunItem.builder().id(UUID.randomUUID()).build();
+
+        runItem.recordExecutions(List.of(execution(RunItemStatus.FAILED, "Skipped/Terminated"), execution(RunItemStatus.PASSED, "")), 0, 1, "Muteb");
+
+        assertEquals(runItem.getExecutions().stream().map(RunItemExecution::getStatus).toList(), List.of(RunItemStatus.FAILED, RunItemStatus.PASSED), "no open execution is left beside a recorded one");
+        assertEquals(runItem.getDefaultNumber(), 2);
+    }
+
+    // Rule-VIEW-PANEL-086, Rule-CODEGEN-112
+    @Test
+    public void aRetriedAttemptIsTheOneTheNextRetryFollows() {
+        final @NotNull RunItemExecution retry = execution(RunItemStatus.PASSED, "");
+        retry.setRetry(1);
+        final @NotNull RunItem runItem = withExecutions(execution(RunItemStatus.FAILED, "Skipped/Terminated"), retry);
+
+        assertTrue(runItem.isRetried(0));
+        assertFalse(runItem.isRetried(1), "the last attempt was not retried");
     }
 
     // Rule-EDITOR-PANEL-288
@@ -152,20 +207,21 @@ public class RunItemTest {
         final @NotNull RunItem runItem = withExecutions(first, again);
 
         assertEquals(runItem.timeSpent(), Duration.ofSeconds(13), "a re-run's time is part of what the test run cost");
-        assertEquals(runItem.getDuration(), Duration.ofSeconds(10), "the card shows the default's own duration");
+        assertEquals(runItem.shownExecution().getDuration(), Duration.ofSeconds(10), "the card shows the default's own duration");
     }
 
     // Rule-EDITOR-PANEL-288
     @Test
     public void theTimeSpentIncludesWhatTheWalkIsCounting() {
-        final @NotNull RunItem runItem = RunItem.builder().id(UUID.randomUUID()).clock(Duration.ofSeconds(7)).build();
+        final @NotNull RunItem runItem = RunItem.builder().id(UUID.randomUUID()).build();
+        runItem.recordClock(Duration.ofSeconds(7));
 
         assertEquals(runItem.timeSpent(), Duration.ofSeconds(7));
     }
 
     // Rule-TREE-PANEL-067
     @Test
-    public void onlyARunItemWithNoExecutionBecomesUntested() {
+    public void onlyAnOpenExecutionBecomesUntested() {
         final @NotNull RunItem never = RunItem.builder().id(UUID.randomUUID()).build();
         final @NotNull RunItem passed = withExecutions(execution(RunItemStatus.PASSED, ""));
 
@@ -183,7 +239,7 @@ public class RunItemTest {
                 RunItemExecution.builder().status(RunItemStatus.FAILED).screenshots(List.of("k3f9a.png")).build(),
                 RunItemExecution.builder().status(RunItemStatus.FAILED).screenshots(List.of("m2p7q.png")).build());
 
-        assertEquals(runItem.getScreenshots(), List.of("m2p7q.png"), "a reader sees the default's");
+        assertEquals(runItem.shownExecution().getScreenshots(), List.of("m2p7q.png"), "a reader sees the default's");
         assertEquals(runItem.allScreenshots(), List.of("k3f9a.png", "m2p7q.png"), "but the files of the first are still in use");
     }
 
@@ -231,7 +287,7 @@ public class RunItemTest {
 
         runItem.recordRunItemStatus(RunItemStatus.PASSED, "Muteb", runItem.getClock(), Failure.NONE);
 
-        assertEquals(runItem.getDuration(), Duration.ofSeconds(24));
+        assertEquals(runItem.shownExecution().getDuration(), Duration.ofSeconds(24));
         assertEquals(runItem.getClock(), Duration.ZERO, "the count went into the execution");
     }
 
@@ -243,22 +299,21 @@ public class RunItemTest {
 
         runItem.recordClock(Duration.ofSeconds(24));
 
-        assertEquals(runItem.getDuration(), Duration.ofMillis(10017),
+        assertEquals(runItem.shownExecution().getDuration(), Duration.ofMillis(10017),
                 "a clock still ticking on a judged test case would save the tester's watching time as the method's");
     }
 
-    // Rule-EDITOR-PANEL-172
+    // Rule-EDITOR-PANEL-136, Rule-EDITOR-PANEL-132
     @Test
-    public void anActualResultTypedBeforeTheFirstExecutionGoesIntoIt() {
+    public void theFirstRunItemStatusTakesTheOpenExecutionsPlace() {
         final RunItem runItem = RunItem.builder().id(UUID.randomUUID()).build();
-        runItem.recordActualResult("The balance showed 0.00");
+        runItem.recordClock(Duration.ofSeconds(37));
 
-        assertEquals(runItem.getStatus(), RunItemStatus.PENDING, "typing does not change the run item status");
+        runItem.recordRunItemStatus(RunItemStatus.FAILED, "tester", runItem.getClock(), Failure.NONE);
 
-        runItem.recordRunItemStatus(RunItemStatus.FAILED, "tester", Duration.ZERO, Failure.NONE);
-
-        assertEquals(runItem.getActualResult(), "The balance showed 0.00");
-        assertEquals(runItem.getUnrecordedActualResult(), "");
+        assertEquals(runItem.getExecutions().size(), 1, "the open execution was closed, not kept beside the recording");
+        assertEquals(runItem.shownExecution().getDuration(), Duration.ofSeconds(37));
+        assertEquals(runItem.getDefaultNumber(), 1);
     }
 
     // Rule-EDITOR-PANEL-172, Rule-EDITOR-PANEL-286

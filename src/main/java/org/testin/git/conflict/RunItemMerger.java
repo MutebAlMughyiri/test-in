@@ -23,11 +23,13 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.DateFormats;
+import org.testin.model.status.RunItemStatus;
 import org.testin.util.Bundle;
 import org.testin.util.JsonCodec;
 import org.testin.util.TestCaseFieldParser;
 
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
@@ -38,8 +40,9 @@ final class RunItemMerger {
     private static final @NotNull String EXECUTIONS = "executions";
     private static final @NotNull String EXECUTED_AT = "executedAt";
     private static final @NotNull String DEFAULT = "default";
+    private static final @NotNull String STATUS = "status";
 
-    // UC-SHARE-018, Rule-SHARE-080, Rule-SHARE-081
+    // UC-SHARE-018, Rule-SHARE-080, Rule-SHARE-081, Rule-EDITOR-PANEL-136, Rule-VIEW-PANEL-119
     public static @NotNull MergeOutcome of(final @NotNull JsonCodec mapper, final @NotNull String mine, final @NotNull String theirs) {
         final @NotNull ObjectNode mineNode = mapper.readTree(mine);
         final @NotNull ObjectNode theirsNode = mapper.readTree(theirs);
@@ -47,30 +50,38 @@ final class RunItemMerger {
         if (mineNode.equals(theirsNode)) return new MergeOutcome(mineNode, List.of(), List.of());
 
         final @NotNull ObjectNode later = lastRecorded(theirsNode).isAfter(lastRecorded(mineNode)) ? theirsNode : mineNode;
+        final @NotNull List<JsonNode> joined = joined(mineNode, theirsNode);
+        final int chosen = executions(later).skip(Math.max(0, later.path(DEFAULT).asInt(1) - 1)).findFirst().map(joined::indexOf).orElse(-1);
+
         final @NotNull ObjectNode merged = later.deepCopy();
-        final @NotNull ArrayNode joined = merged.putArray(EXECUTIONS);
-
-        Stream.concat(executions(mineNode), executions(theirsNode))
-                .map(RunItemMerger::unflagged)
-                .distinct()
-                .sorted(Comparator.comparing(RunItemMerger::executedAt))
-                .forEach(joined::add);
-
-        executions(later).filter(execution -> execution.path(DEFAULT).asBoolean()).findFirst().map(RunItemMerger::unflagged)
-                .flatMap(chosen -> StreamSupport.stream(joined.spliterator(), false).filter(chosen::equals).findFirst())
-                .ifPresent(chosen -> ((ObjectNode) chosen).put(DEFAULT, true));
+        merged.put(DEFAULT, chosen < 0 ? joined.size() : chosen + 1);
+        final @NotNull ArrayNode executions = merged.putArray(EXECUTIONS);
+        joined.forEach(executions::add);
 
         return new MergeOutcome(merged, List.of(), List.of(Bundle.message("git.merge.run.item.status")));
+    }
+
+    // Rule-EDITOR-PANEL-136, Rule-TREE-PANEL-067
+    private static @NotNull List<JsonNode> joined(final @NotNull ObjectNode mine, final @NotNull ObjectNode theirs) {
+        final @NotNull List<JsonNode> recorded = Stream.concat(executions(mine), executions(theirs))
+                .filter(RunItemMerger::isRecorded)
+                .distinct()
+                .sorted(Comparator.comparing(RunItemMerger::executedAt))
+                .toList();
+
+        return recorded.isEmpty() ? Stream.concat(executions(mine), executions(theirs)).max(Comparator.comparing(RunItemMerger::isUntested)).stream().toList() : recorded;
     }
 
     private static @NotNull Stream<JsonNode> executions(final @NotNull ObjectNode runItem) {
         return StreamSupport.stream(runItem.path(EXECUTIONS).spliterator(), false);
     }
 
-    private static @NotNull JsonNode unflagged(final @NotNull JsonNode execution) {
-        final @NotNull JsonNode copy = execution.deepCopy();
-        if (copy instanceof ObjectNode object) object.remove(DEFAULT);
-        return copy;
+    private static boolean isRecorded(final @NotNull JsonNode execution) {
+        return Arrays.stream(RunItemStatus.values()).filter(runItemExecutionStatus -> runItemExecutionStatus.name().equals(execution.path(STATUS).asText(""))).anyMatch(RunItemStatus::isJudged);
+    }
+
+    private static boolean isUntested(final @NotNull JsonNode execution) {
+        return RunItemStatus.UNTESTED.name().equals(execution.path(STATUS).asText(""));
     }
 
     private static @NotNull ZonedDateTime executedAt(final @NotNull JsonNode execution) {

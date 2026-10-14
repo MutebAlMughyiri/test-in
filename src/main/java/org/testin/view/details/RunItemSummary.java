@@ -73,13 +73,13 @@ public final class RunItemSummary extends AbstractDetails {
         return label;
     }
 
-    // Rule-CODEGEN-112
-    private static @NotNull String whatItWas(final @NotNull RunItemExecution execution) {
-        final @NotNull String kind = !execution.getParameters().isBlank() ? execution.getParameters()
-                : execution.getRetry() > 0 ? Bundle.message("execution.retry", String.valueOf(execution.getRetry()))
+    // Rule-CODEGEN-112, Rule-VIEW-PANEL-086
+    private @NotNull String whatItWas(final int at) {
+        final @NotNull RunItemExecution execution = runItem.getExecutions().get(at);
+        final @NotNull String kind = execution.getRetry() > 0 ? Bundle.message("execution.retry", String.valueOf(execution.getRetry()))
                 : execution.getInvocation() > 0 ? Bundle.message("execution.invocation", String.valueOf(execution.getInvocation()))
                 : "";
-        return execution.isRetried() ? (kind + " " + Bundle.message("execution.retried")).strip() : kind;
+        return runItem.isRetried(at) ? (kind + " " + Bundle.message("execution.retried")).strip() : kind;
     }
 
     // UC-VIEW-PANEL-005, Rule-VIEW-PANEL-086
@@ -156,8 +156,8 @@ public final class RunItemSummary extends AbstractDetails {
 
         pills(execution.getStatus(), Display.formatDuration(execution.getDuration())).forEach(line::add);
 
-        final @NotNull JBLabel what = new JBLabel(whatItWas(execution));
-        if (execution.isRetried()) what.setForeground(UIUtil.getContextHelpForeground());
+        final @NotNull JBLabel what = new JBLabel(whatItWas(at));
+        if (runItem.isRetried(at)) what.setForeground(UIUtil.getContextHelpForeground());
         line.add(what);
 
         if (isDefault) {

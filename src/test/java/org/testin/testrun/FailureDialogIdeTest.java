@@ -196,15 +196,15 @@ public class FailureDialogIdeTest extends AbstractTempRootIdeTest {
 
             final @NotNull RunItem failed = fixture.runItemOf(fixture.testCases().getFirst());
             assertEquals(RunItemStatus.FAILED, failed.getStatus());
-            assertEquals("the screenshots were not kept", 2, failed.getScreenshots().size());
+            assertEquals("the screenshots were not kept", 2, failed.shownExecution().getScreenshots().size());
             final @NotNull List<byte[]> kept = Services.getInstance(getProject(), TestRuns.class).screenshots(fixture.testRun().getPath(), failed);
             assertEquals("the first picture pasted is not the first kept", Color.RED.getRGB(), firstPixelOf(kept.getFirst()));
             assertEquals("the second picture pasted is not the second kept", Color.BLUE.getRGB(), firstPixelOf(kept.get(1)));
-            for (final String name : failed.getScreenshots()) {
+            for (final String name : failed.shownExecution().getScreenshots()) {
                 assertTrue("a screenshot is not a picture file beside the test run: " + name, Files.isRegularFile(TestRunNode.screenshotFile(fixture.testRun().getPath(), name)));
             }
 
-            final @NotNull List<String> pastedNames = List.copyOf(failed.getScreenshots());
+            final @NotNull List<String> pastedNames = List.copyOf(failed.shownExecution().getScreenshots());
             editor.getList().setSelectedIndex(0);
             editTheFailureOf(editor);
             final @NotNull JComponent again = fixture.openFailureDialog();
@@ -214,7 +214,7 @@ public class FailureDialogIdeTest extends AbstractTempRootIdeTest {
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
             final @NotNull RunItem edited = fixture.runItemOf(fixture.testCases().getFirst());
-            assertEquals("taking a picture out did not take it out of the test run", List.of(pastedNames.get(1)), edited.getScreenshots());
+            assertEquals("taking a picture out did not take it out of the test run", List.of(pastedNames.get(1)), edited.shownExecution().getScreenshots());
         } finally {
             Disposer.dispose(editor);
         }
@@ -322,7 +322,7 @@ public class FailureDialogIdeTest extends AbstractTempRootIdeTest {
             Gestures.press(getProject(), actionFor(box, Shortcuts.Enter.getKey()), box);
 
             assertEquals("Enter in the box did not record the failure", RunItemStatus.FAILED, fixture.runItemStatusOf(fixture.testCases().getFirst()));
-            assertTrue(fixture.runItemOf(fixture.testCases().getFirst()).getActualResult().startsWith("The dashboard stayed blank"));
+            assertTrue(fixture.runItemOf(fixture.testCases().getFirst()).shownExecution().getActualResult().startsWith("The dashboard stayed blank"));
         } finally {
             Disposer.dispose(editor);
         }
@@ -336,7 +336,7 @@ public class FailureDialogIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestRunEditor editor = fixture.opened(getTestRootDisposable());
         try {
             final @NotNull RunItem before = fixture.runItemOf(testCases.getFirst());
-            final @NotNull String executedBy = before.getExecutedBy();
+            final @NotNull String executedBy = before.shownExecution().getExecutedBy();
             editor.getList().setSelectedIndex(0);
 
             editTheFailureOf(editor);
@@ -349,9 +349,9 @@ public class FailureDialogIdeTest extends AbstractTempRootIdeTest {
 
             final @NotNull RunItem after = fixture.runItemOf(testCases.getFirst());
             assertEquals("editing the detail changed the run item status", RunItemStatus.FAILED, after.getStatus());
-            assertEquals("editing the detail changed who recorded it", executedBy, after.getExecutedBy());
-            assertEquals("It froze on the second login", after.getActualResult());
-            assertEquals("java.lang.IllegalStateException", after.getStacktrace());
+            assertEquals("editing the detail changed who recorded it", executedBy, after.shownExecution().getExecutedBy());
+            assertEquals("It froze on the second login", after.shownExecution().getActualResult());
+            assertEquals("java.lang.IllegalStateException", after.shownExecution().getStacktrace());
         } finally {
             Disposer.dispose(editor);
         }
@@ -392,7 +392,7 @@ public class FailureDialogIdeTest extends AbstractTempRootIdeTest {
         final @NotNull List<String> heldWhenSaid = new ArrayList<>();
         Services.getInstance(getProject(), Notifier.class).watchBalloons(getTestRootDisposable(), html -> {
             if (html.contains(Bundle.message("run.item.updated")))
-                heldWhenSaid.add(fixture.runItemOf(testCases.getFirst()).getActualResult());
+                heldWhenSaid.add(fixture.runItemOf(testCases.getFirst()).shownExecution().getActualResult());
         });
         try {
             editor.getList().setSelectedIndex(0);

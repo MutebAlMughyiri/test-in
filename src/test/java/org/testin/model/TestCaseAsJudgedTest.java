@@ -80,7 +80,7 @@ public class TestCaseAsJudgedTest {
         runItem.recordRunItemStatus(RunItemStatus.FAILED, "other tester", Duration.ZERO, Failure.NONE);
 
         assertEquals(runItem.getStatus(), RunItemStatus.FAILED);
-        assertEquals(runItem.getExecutedBy(), "other tester");
+        assertEquals(runItem.shownExecution().getExecutedBy(), "other tester");
         assertEquals(runItem.shownTestCase().getDescription(), "now");
     }
 
@@ -94,7 +94,7 @@ public class TestCaseAsJudgedTest {
 
         assertTrue(runItem.isRemoved(), "nothing may act on the run item of a test case that no longer exists");
         assertEquals(runItem.getStatus(), RunItemStatus.REMOVED, "a deleted test case reads Removed while its test run is not Committed");
-        assertEquals(runItem.defaultExecution().orElseThrow().getStatus(), RunItemStatus.PASSED, "the file keeps the run item status it was given");
+        assertEquals(runItem.shownExecution().getStatus(), RunItemStatus.PASSED, "the file keeps the run item status it was given");
         assertEquals(runItem.shownTestCase().getDescription(), "as Git last held it");
     }
 

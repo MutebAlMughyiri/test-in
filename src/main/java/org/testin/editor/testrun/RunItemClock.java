@@ -50,7 +50,7 @@ final class RunItemClock implements Disposable {
     void start(final @NotNull RunItem runItem, final @NotNull Runnable repaint) {
         stop();
 
-        alreadyCounted = runItem.getDuration();
+        alreadyCounted = runItem.shownExecution().getDuration();
         counting = Optional.of(runItem);
         startedAt = System.currentTimeMillis();
 

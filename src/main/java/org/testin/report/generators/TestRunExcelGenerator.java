@@ -123,10 +123,10 @@ public final class TestRunExcelGenerator {
             worksheet.value(row, 1, orNotAvailable(details.getDescription()));
             worksheet.value(row, 2, runItem.getStatus().getLabel());
             // Rule-REPORT-027
-            worksheet.value(row, 3, ReportText.joined("\n", runItem.getActualResult(), ReportText.otherExecutions(runItem).orElse("")));
+            worksheet.value(row, 3, ReportText.joined("\n", runItem.shownExecution().getActualResult(), ReportText.otherExecutions(runItem).orElse("")));
             worksheet.value(row, 4, TestRunEditorFields.BUG_SEVERITY.getRunItemValueExtractor().apply(runItem));
             worksheet.value(row, 5, TestRunEditorFields.BUG_PRIORITY.getRunItemValueExtractor().apply(runItem));
-            worksheet.value(row, 6, Display.formatDuration(runItem.getDuration()));
+            worksheet.value(row, 6, Display.formatDuration(runItem.shownExecution().getDuration()));
             worksheet.value(row, 7, orNotAvailable(details.getExpectedResult()));
 
             final @NotNull ReportSection runItemStatus = ReportSection.of(runItem);

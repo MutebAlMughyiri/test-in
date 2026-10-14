@@ -73,27 +73,29 @@ final class PendingChangeFactory {
 
     private static @NotNull PendingChange testCase(final @NotNull GitStatusKind gitStatusKind, final @NotNull String beforeJson, final @NotNull String afterJson, final @NotNull Path relativePath, final @NotNull JsonCodec mapper) {
         final @NotNull String testSet = parentName(relativePath);
+        // Rule-INTERNAL-012
+        final @NotNull UUID testCaseId = FileKind.TEST_CASE.idIn(relativePath).orElseGet(UUID::randomUUID);
 
         return switch (gitStatusKind) {
             case ADDED -> {
-                final @NotNull TestCase newState = read(mapper, afterJson, TestCase.class);
+                final @NotNull TestCase newState = TestCase.read(mapper, afterJson, testCaseId);
                 yield new PendingChange(ChangeSubject.TEST_CASE, newState.getDescription(), testSet,
-                        newState.getId().toString(), relativePath, GitStatusKind.ADDED, nothingCommitted(),
+                        testCaseId.toString(), relativePath, GitStatusKind.ADDED, nothingCommitted(),
                         List.of(new FieldChange(Bundle.message("caption.test.case"), "", newState.getDescription(), ChangeSubject.TEST_CASE.getCreated())));
             }
             case DELETED -> {
-                final @NotNull TestCase oldState = read(mapper, beforeJson, TestCase.class);
+                final @NotNull TestCase oldState = TestCase.read(mapper, beforeJson, testCaseId);
                 yield new PendingChange(ChangeSubject.TEST_CASE, oldState.getDescription(), testSet,
-                        oldState.getId().toString(), relativePath, GitStatusKind.DELETED, oldState,
+                        testCaseId.toString(), relativePath, GitStatusKind.DELETED, oldState,
                         List.of(new FieldChange(Bundle.message("caption.test.case"), oldState.getDescription(), "", ChangeSubject.TEST_CASE.getRemoved())));
             }
             case MODIFIED -> {
-                final @NotNull TestCase oldState = read(mapper, beforeJson, TestCase.class);
-                final @NotNull TestCase newState = read(mapper, afterJson, TestCase.class);
+                final @NotNull TestCase oldState = TestCase.read(mapper, beforeJson, testCaseId);
+                final @NotNull TestCase newState = TestCase.read(mapper, afterJson, testCaseId);
                 final @NotNull List<FieldChange> fieldChanges = TestCaseFieldChanges.compare(oldState, newState);
 
                 yield new PendingChange(ChangeSubject.TEST_CASE, newState.getDescription(), testSet,
-                        newState.getId().toString(), relativePath, GitStatusKind.MODIFIED, oldState,
+                        testCaseId.toString(), relativePath, GitStatusKind.MODIFIED, oldState,
                         fieldChanges.isEmpty()
                                 ? List.of(new FieldChange(Bundle.message("caption.test.case"), "", Bundle.message("git.change.no.field"), ChangeSubject.TEST_CASE.getChanged()))
                                 : fieldChanges);

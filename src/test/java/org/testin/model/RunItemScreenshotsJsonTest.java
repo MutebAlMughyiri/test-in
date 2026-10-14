@@ -47,8 +47,8 @@ public class RunItemScreenshotsJsonTest {
 
             assertTrue(json.contains("\"" + NAME + "\""), "the file is named: " + json);
             assertFalse(json.contains("iVBORw"), "and no base64 of the picture is written: " + json);
-            assertEquals(read.getScreenshots(), List.of(NAME));
-            assertEquals(read.getStacktrace(), "boom", "the text stays text");
+            assertEquals(read.shownExecution().getScreenshots(), List.of(NAME));
+            assertEquals(read.shownExecution().getStacktrace(), "boom", "the text stays text");
         } catch (final Exception ex) {
             throw new AssertionError("the run item could not be written and read back", ex);
         }

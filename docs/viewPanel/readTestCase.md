@@ -71,8 +71,8 @@ There is no key for this. It is what the **Details** tab shows.
 - **Rule-VIEW-PANEL-086** — What a test run recorded is one line per execution
   under the band's name, the oldest first: the run item status in its own color
   and how long it took, then, when the automation ran the method more than once,
-  what it was - *Invocation n*, *↳ Retry n* under the attempt it retried, or the
-  data provider row; an attempt TestNG retried is dimmed. The bug's severity and
+  what it was - *Invocation n*, or *↳ Retry n* under the attempt it retried; an
+  attempt TestNG retried is dimmed. The bug's severity and
   priority chip, the issue and the link that raises one stay on the default's
   line, and hovering the chip names each half as a test run's card does. The
   duration carries a clock and a plain frame, so it reads as a measurement
@@ -91,18 +91,17 @@ There is no key for this. It is what the **Details** tab shows.
   priority, which uses the same words.
 - **Rule-VIEW-PANEL-119** — One execution is the run item's default: its status
   is the run item status on the card, in the grid, in the totals and in the
-  reports, and it carries a ★. It is the execution a tester chose with ☆, or the
-  last one when none was chosen. A tester's new recording becomes the default,
-  and so does the one the automation picked (Rule-CODEGEN-111).
+  reports, and it carries a ★. A tester's new recording becomes the default, so
+  does the one the automation picked (Rule-CODEGEN-111), and so does the one a
+  tester chooses with ☆.
 - **Rule-VIEW-PANEL-120** — Hovering an execution's line shows ☆ and × over its
   right end, as a card shows its hover actions, taking no room of their own. ☆
   makes that execution the default, and the run item status follows at once.
 - **Rule-VIEW-PANEL-121** — × removes that execution at once, asks nothing, and
-  says *Removed*. If it was the default, the last one left becomes the default;
-  with none left, the run item is Pending again. ☆ and × are gray, and say why,
-  once the test run is Committed (Rule-TREE-PANEL-009), and while the automation
-  is still running that test case, because its attempts are still being written
-  (Rule-CODEGEN-111).
+  says *Removed*. If it was the default, the last one left becomes the default.
+  ☆ and × are gray, and say why, once the test run is Committed
+  (Rule-TREE-PANEL-009), and while the automation is still running that test
+  case, because its attempts are still being written (Rule-CODEGEN-111).
 - **Rule-VIEW-PANEL-122** — Clicking an execution's line shows that execution's
   actual result, error, screenshots and who ran it in the rows below, and
   changes nothing else. The panel opens on the default.

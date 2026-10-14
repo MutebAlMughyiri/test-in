@@ -88,12 +88,12 @@ public class TestRunCoverageTest {
                 "The result is carried across, not rebuilt from its id. Rebuilding it is how all nine fields below"
                         + " would go quiet, one release after somebody 'simplified' this into a stream of new items");
         assertEquals(kept.getStatus(), RunItemStatus.FAILED);
-        assertEquals(kept.getActualResult(), "The lockout counter reset on reload");
+        assertEquals(kept.shownExecution().getActualResult(), "The lockout counter reset on reload");
         assertEquals(kept.getBugSeverity(), BugSeverity.MAJOR);
         assertEquals(kept.getBugPriority(), BugPriority.HIGH);
-        assertEquals(kept.getDuration(), Duration.ofSeconds(252));
-        assertEquals(kept.getExecutedBy(), "Muteb");
-        assertFalse(kept.getStacktrace().isBlank());
+        assertEquals(kept.shownExecution().getDuration(), Duration.ofSeconds(252));
+        assertEquals(kept.shownExecution().getExecutedBy(), "Muteb");
+        assertFalse(kept.shownExecution().getStacktrace().isBlank());
     }
 
     @Test
@@ -104,8 +104,8 @@ public class TestRunCoverageTest {
 
         assertEquals(fresh.getId(), ADDED, "A test case added to a test set after the test run was created is the whole point");
         assertEquals(fresh.getStatus(), RunItemStatus.PENDING);
-        assertEquals(fresh.getDuration(), Duration.ZERO);
-        assertEquals(fresh.getExecutedAt(), DateFormats.NOT_EXECUTED,
+        assertEquals(fresh.shownExecution().getDuration(), Duration.ZERO);
+        assertEquals(fresh.shownExecution().getExecutedAt(), DateFormats.NOT_EXECUTED,
                 "Nothing has run it, so it carries no plausible execution time");
     }
 

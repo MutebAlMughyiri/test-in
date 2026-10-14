@@ -111,7 +111,7 @@ public final class TestRunFromGit {
             final @NotNull Map<UUID, Optional<TestCase>> testCases = new HashMap<>();
             wanted.values().forEach(testCaseId -> testCases.put(testCaseId, Optional.empty()));
             listed.forEach(path -> testCases.remove(wanted.get(fileName(path))));
-            files.forEach((path, json) -> testCases.put(wanted.get(fileName(path)), parsed(project, json)));
+            files.forEach((path, json) -> Optional.ofNullable(wanted.get(fileName(path))).ifPresent(testCaseId -> testCases.put(testCaseId, parsed(project, json, testCaseId))));
             testRuns.rememberRecorded(commit, testCases);
         } catch (final GitFailed ex) {
             TestinLogger.info("The test cases of commit " + commit + " could not be read, so the test cases are shown as they are now: " + FailureText.of(ex));
@@ -130,7 +130,7 @@ public final class TestRunFromGit {
 
             final @NotNull Map<UUID, TestCase> testCases = new HashMap<>();
             git.objects(testProjectPath, List.copyOf(lastVersions.keySet())).forEach((objectName, json) ->
-                    parsed(project, json).ifPresent(testCase -> testCases.put(lastVersions.get(objectName), testCase)));
+                    Optional.ofNullable(lastVersions.get(objectName)).ifPresent(testCaseId -> parsed(project, json, testCaseId).ifPresent(testCase -> testCases.put(testCaseId, testCase))));
             Services.getInstance(project, TestRuns.class).rememberLastInGit(testCases);
         } catch (final GitFailed ex) {
             TestinLogger.info("The deleted test cases could not be read from Git, so they show as deleted: " + FailureText.of(ex));
@@ -154,8 +154,8 @@ public final class TestRunFromGit {
         return found;
     }
 
-    private static @NotNull Optional<TestCase> parsed(final @NotNull Project project, final @NotNull String json) {
-        return TestCaseHistory.parsed(Services.getInstance(project, JsonCodec.class), json);
+    private static @NotNull Optional<TestCase> parsed(final @NotNull Project project, final @NotNull String json, final @NotNull UUID testCaseId) {
+        return TestCaseHistory.parsed(Services.getInstance(project, JsonCodec.class), json, testCaseId);
     }
 
     private static @NotNull String fileName(final @NotNull String path) {

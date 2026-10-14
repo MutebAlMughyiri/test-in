@@ -1,6 +1,5 @@
 {
   "order" : "t",
-  "id" : "22222222-2222-4222-8222-222222222203",
   "description" : "Keep the basket when payment fails",
   "expectedResult" : "The basket still holds the same item and the same quantity after a refused payment.",
   "status" : "PENDING",

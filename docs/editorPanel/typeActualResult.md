@@ -61,6 +61,9 @@ need five dialogs.
   bar scrolls that bar sideways under the pointer, with the mouse wheel or a
   touchpad. No scrollbar is shown and the bar keeps its height, so nothing on it
   is cut off and the editor below does not move.
+- **Rule-EDITOR-PANEL-295** — An actual result describes what was recorded, so
+  Actual Result takes text only on a test case that has a run item status. On a
+  Pending or Untested test case the cell is put back to what it held.
 
 ## The screen
 
@@ -101,6 +104,10 @@ test run is read only.
 **If the test case was deleted from its test set** — the cell is put back to
 what it held, and a message reads *The test case was removed - the test run
 keeps what it recorded.*
+
+**If the test case has no run item status yet** — Pending, or Untested — the
+cell is put back to what it held, and a message reads *Record a run item status
+first: an actual result describes what was recorded.*
 
 **If the test run is no longer there** — removed, renamed, or being brought in
 by a sync — the cell is put back to what it held. A message reads *This test run is no longer here, so nothing was

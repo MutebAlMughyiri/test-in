@@ -91,9 +91,9 @@ public final class TestProjectIndexer {
         this.nodeFiles = new NodeFiles(project, this, store);
     }
 
-    // UC-INTERNAL-002, Rule-INTERNAL-011
+    // UC-INTERNAL-002, Rule-INTERNAL-011, Rule-INTERNAL-012
     static boolean isTestCaseFile(final @NotNull Path file, final @NotNull Predicate<Path> isTestSet) {
-        return FileKind.of(file) == FileKind.TEST_CASE && isTestSet.test(file.getParent());
+        return FileKind.TEST_CASE.idIn(file).isPresent() && isTestSet.test(file.getParent());
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-013
