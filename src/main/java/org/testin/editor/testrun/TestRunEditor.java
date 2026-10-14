@@ -57,7 +57,7 @@ import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.TestRunSummary;
 import org.testin.model.status.TestRunStatus;
 import org.testin.notifications.Done;
-import org.testin.runner.ExecutionRecorder;
+import org.testin.runner.TestNGExecutionRecorder;
 import org.testin.services.Services;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.testrun.TestRunResultAnalysisDialog;
@@ -108,7 +108,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
         super(project, file.getTestRun());
         Services.getInstance(project, Guides.class).add(Guide.TEST_RUN_EDITOR_SHORTCUTS);
 
-        ExecutionRecorder.onReported(project, projectDisposable, walk::executionReported);
+        TestNGExecutionRecorder.onReported(project, projectDisposable, walk::executionReported);
 
         this.toolBar = new TestRunToolbar(project, this);
         buildOpeningPanel();

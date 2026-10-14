@@ -37,8 +37,8 @@ import org.testin.model.testrun.Failure;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.status.TestNGExecutionStatus;
 import org.testin.notifications.Done;
-import org.testin.runner.ExecutionReported;
-import org.testin.runner.ExecutionRecorder;
+import org.testin.runner.TestNGExecutionReported;
+import org.testin.runner.TestNGExecutionRecorder;
 import org.testin.runner.TestNGExecution;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
@@ -223,7 +223,7 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
     public void testF5StopsTheTestCaseOnDisplayAndItIsRecordedAsNotRun() {
         final @NotNull TestCase testCase = aTestCase();
         final @NotNull TestNGExecution execution = Services.getInstance(getProject(), TestNGExecution.class);
-        ExecutionRecorder.startRecording(getProject());
+        TestNGExecutionRecorder.startRecording(getProject());
         view.getPanel().show(List.of(testCase), testCase.getParent().treePath());
         execution.starting(testCase);
 
@@ -232,7 +232,7 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
         assertFalse("F5 did not stop the running test case", execution.isRunning(testCase.getId()));
         assertTrue("stopping said nothing: " + said, said.stream().anyMatch(words -> words.contains(Done.STOPPED.getOutcome())));
 
-        ExecutionReported.broadcast(getProject(), testCase.getId().toString(), TestNGExecutionStatus.FAILED, Duration.ZERO, Failure.NONE);
+        TestNGExecutionReported.broadcast(getProject(), testCase.getId().toString(), TestNGExecutionStatus.FAILED, Duration.ZERO, Failure.NONE);
         settled();
         view.getPanel().refreshCurrentView();
         assertEquals("the test case the tester stopped was recorded as failed", TestNGExecutionStatus.IDLE, execution.testNGExecutionStatusOf(testCase));

@@ -33,7 +33,7 @@ import org.testin.help.SetupStep;
 import org.testin.indexer.DeletedNodes;
 import org.testin.indexer.TestProjectIndexer;
 import org.testin.logger.TestinLogger;
-import org.testin.runner.ExecutionRecorder;
+import org.testin.runner.TestNGExecutionRecorder;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
 import org.testin.util.Bundle;
@@ -59,7 +59,7 @@ public final class TestinStartup implements ProjectActivity {
 
         CutState.startClipboardWatch(project);
 
-        ExecutionRecorder.startRecording(project);
+        TestNGExecutionRecorder.startRecording(project);
     }
 
     // UC-SETTING-002, Rule-SETTING-014, Rule-SETTING-046

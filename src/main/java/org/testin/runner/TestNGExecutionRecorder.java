@@ -39,26 +39,26 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service(Service.Level.PROJECT)
-public final class ExecutionRecorder implements Disposable {
+public final class TestNGExecutionRecorder implements Disposable {
     private final @NotNull Project project;
 
     private final @NotNull List<Reported> surfaces = new CopyOnWriteArrayList<>();
 
-    ExecutionRecorder(final @NotNull Project project) {
+    TestNGExecutionRecorder(final @NotNull Project project) {
         this.project = project;
 
-        project.getMessageBus().connect(this).subscribe(ExecutionReported.TOPIC,
-                (ExecutionReported) (testName, testNGExecutionStatus, duration, failure) ->
+        project.getMessageBus().connect(this).subscribe(TestNGExecutionReported.TOPIC,
+                (TestNGExecutionReported) (testName, testNGExecutionStatus, duration, failure) ->
                         ApplicationManager.getApplication().invokeLater(
                                 () -> record(testName, testNGExecutionStatus, duration, failure)));
     }
 
     public static void startRecording(final @NotNull Project project) {
-        Services.getInstance(project, ExecutionRecorder.class);
+        Services.getInstance(project, TestNGExecutionRecorder.class);
     }
 
     public static void onReported(final @NotNull Project project, final @NotNull Disposable parentDisposable, final @NotNull Reported onUpdated) {
-        final @NotNull ExecutionRecorder recorder = Services.getInstance(project, ExecutionRecorder.class);
+        final @NotNull TestNGExecutionRecorder recorder = Services.getInstance(project, TestNGExecutionRecorder.class);
 
         recorder.surfaces.add(onUpdated);
         Disposer.register(parentDisposable, () -> recorder.surfaces.remove(onUpdated));

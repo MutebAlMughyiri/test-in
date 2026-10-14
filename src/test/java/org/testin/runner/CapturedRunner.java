@@ -39,7 +39,7 @@ public final class CapturedRunner implements AutomationExecutor {
     }
 
     public static void reports(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull TestNGExecutionStatus testNGExecutionStatus, final @NotNull Duration duration) {
-        ExecutionReported.broadcast(project, testCase.getId().toString(), testNGExecutionStatus, duration, Failure.NONE);
+        TestNGExecutionReported.broadcast(project, testCase.getId().toString(), testNGExecutionStatus, duration, Failure.NONE);
     }
 
     public static void startedByTestNg(final @NotNull Project project, final @NotNull TestCase testCase) {

@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.testrun.Failure;
 import org.testin.model.status.TestNGExecutionStatus;
-import org.testin.runner.ExecutionReported;
+import org.testin.runner.TestNGExecutionReported;
 import org.testin.util.Bundle;
 
 import java.time.Duration;
@@ -39,14 +39,14 @@ public final class TestNGEventRelay extends SMTRunnerEventsAdapter {
     // UC-CODEGEN-008
     @Override
     public void onTestStarted(final @NotNull SMTestProxy test) {
-        ExecutionReported.broadcast(project, test.getPresentableName(), TestNGExecutionStatus.RUNNING, Duration.ZERO, Failure.NONE);
+        TestNGExecutionReported.broadcast(project, test.getPresentableName(), TestNGExecutionStatus.RUNNING, Duration.ZERO, Failure.NONE);
     }
 
     // UC-CODEGEN-008, Rule-CODEGEN-075, Rule-CODEGEN-110
     @Override
     public void onTestFinished(final @NotNull SMTestProxy test) {
         final @NotNull FinishedAttempt finished = finished(test);
-        ExecutionReported.broadcast(project, test.getPresentableName(), finished.testNGExecutionStatus(), durationOf(test), finished.failure());
+        TestNGExecutionReported.broadcast(project, test.getPresentableName(), finished.testNGExecutionStatus(), durationOf(test), finished.failure());
     }
 
     // Rule-CODEGEN-075, Rule-CODEGEN-110

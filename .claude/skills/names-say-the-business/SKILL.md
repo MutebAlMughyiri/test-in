@@ -20,20 +20,20 @@ name should match our correct names in business."*
 
 **Name it after the thing it is about, with the business word spelled out.**
 
-| Not this                    | This                                         | Why                                                                                           |
-|-----------------------------|----------------------------------------------|-----------------------------------------------------------------------------------------------|
-| `CaseDetails`               | `TestCaseDetails`                            | A case is a court case. The plugin has test cases                                             |
-| `caseId`, `caseIds`         | `testCaseId`, `testCaseIds`                  | The id of what?                                                                               |
-| `cases`                     | `testCases`                                  | Even where the type says `List<TestCase>`: the reader is reading the name                     |
-| `shownCase`, `liveCase`     | `shownTestCase`, `liveTestCase`              | Same word, same thing, everywhere                                                             |
-| `item` on its own           | `runItem`                                    | A run item is a test case's row in a test run                                                 |
-| `A_CASE`, `JUDGED_CASE`     | `A_TEST_CASE`, `JUDGED_TEST_CASE`            | Constants are names too                                                                       |
-| `aCaseThatArrivesIsPending` | `aTestCaseThatArrivesIsPending`              | A test's name is a sentence about the business                                                |
-| `RunEditor`, `runPath`      | `TestRunEditor`, `testRunPath`               | Run alone is a verb. The thing is a test run                                                  |
-| `TestStatus`, `verdict`     | `RunItemStatus`, `runItemStatus`             | Passed, Failed, Blocked is what a test run records for a run item                             |
-| `status` of one execution   | `runItemExecutionStatus`                     | A run item has many executions, each with its own status. `testNGExecutionStatus` is TestNG's |
-| `RunStatus`, `RunRegistry`  | `TestNGExecutionStatus`, `ExecutionRegistry` | Executing TestNG methods is an execution, not a test run                                      |
-| `TestEditor`, `TestToolbar` | `TestSetEditor`, `TestSetToolbar`            | The editor of a test set's test cases                                                         |
+| Not this                    | This                                               | Why                                                                                           |
+|-----------------------------|----------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| `CaseDetails`               | `TestCaseDetails`                                  | A case is a court case. The plugin has test cases                                             |
+| `caseId`, `caseIds`         | `testCaseId`, `testCaseIds`                        | The id of what?                                                                               |
+| `cases`                     | `testCases`                                        | Even where the type says `List<TestCase>`: the reader is reading the name                     |
+| `shownCase`, `liveCase`     | `shownTestCase`, `liveTestCase`                    | Same word, same thing, everywhere                                                             |
+| `item` on its own           | `runItem`                                          | A run item is a test case's row in a test run                                                 |
+| `A_CASE`, `JUDGED_CASE`     | `A_TEST_CASE`, `JUDGED_TEST_CASE`                  | Constants are names too                                                                       |
+| `aCaseThatArrivesIsPending` | `aTestCaseThatArrivesIsPending`                    | A test's name is a sentence about the business                                                |
+| `RunEditor`, `runPath`      | `TestRunEditor`, `testRunPath`                     | Run alone is a verb. The thing is a test run                                                  |
+| `TestStatus`, `verdict`     | `RunItemStatus`, `runItemStatus`                   | Passed, Failed, Blocked is what a test run records for a run item                             |
+| `status` of one execution   | `runItemExecutionStatus`                           | A run item has many executions, each with its own status. `testNGExecutionStatus` is TestNG's |
+| `RunStatus`, `RunRegistry`  | `TestNGExecutionStatus`, `TestNGExecutionRegistry` | Executing TestNG methods is an execution, not a test run                                      |
+| `TestEditor`, `TestToolbar` | `TestSetEditor`, `TestSetToolbar`                  | The editor of a test set's test cases                                                         |
 
 It holds for the documentation and for issues as well: *test case id*, never *case id*; *run item*, never *item*.
 

@@ -44,7 +44,7 @@ import org.testin.model.Modules;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.notifications.Refused;
-import org.testin.runner.ExecutionRecorder;
+import org.testin.runner.TestNGExecutionRecorder;
 import org.testin.services.Services;
 import org.testin.testcase.CreateTestCaseAction;
 import org.testin.testcase.TestSetEditorFields;
@@ -92,7 +92,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorFields, Tes
         mainPanel.add(SideScroll.of(statusBar), BorderLayout.SOUTH);
         EditorStatusBarPaging.attach(this);
 
-        ExecutionRecorder.onReported(project, projectDisposable, (_, _, _, _) -> list.repaint());
+        TestNGExecutionRecorder.onReported(project, projectDisposable, (_, _, _, _) -> list.repaint());
 
         onToolBarSwitchedToCardView();
 

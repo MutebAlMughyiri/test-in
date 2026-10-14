@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-final class ExecutionRegistry {
+final class TestNGExecutionRegistry {
     private final @NotNull Set<String> launchedNames = ConcurrentHashMap.newKeySet();
 
     private final @NotNull Set<UUID> pending = ConcurrentHashMap.newKeySet();

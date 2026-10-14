@@ -55,7 +55,7 @@ public final class TestNGExecution implements Disposable {
     private final @NotNull Project project;
     private final @NotNull Notifier notifier;
 
-    private final @NotNull ExecutionRegistry registry = new ExecutionRegistry();
+    private final @NotNull TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
 
     private final @NotNull Map<ProcessHandler, String> live = new ConcurrentHashMap<>();
 
@@ -96,7 +96,7 @@ public final class TestNGExecution implements Disposable {
     public void starting(final @NotNull TestCase testCase) {
         registry.starting(testCase.getId());
 
-        ExecutionReported.broadcast(project, key(testCase.getId()), TestNGExecutionStatus.RUNNING, Duration.ZERO, Failure.NONE);
+        TestNGExecutionReported.broadcast(project, key(testCase.getId()), TestNGExecutionStatus.RUNNING, Duration.ZERO, Failure.NONE);
     }
 
     @FromContentModule
@@ -134,7 +134,7 @@ public final class TestNGExecution implements Disposable {
     public void notStarting(final @NotNull TestCase testCase) {
         registry.notStarting(testCase.getId());
 
-        ExecutionReported.broadcast(project, key(testCase.getId()), TestNGExecutionStatus.IDLE, Duration.ZERO, Failure.NONE);
+        TestNGExecutionReported.broadcast(project, key(testCase.getId()), TestNGExecutionStatus.IDLE, Duration.ZERO, Failure.NONE);
     }
 
     // UC-CODEGEN-008
@@ -204,7 +204,7 @@ public final class TestNGExecution implements Disposable {
                 + " execution(s): " + theirs.size() + " had reached a process");
 
         theirs.forEach(this::kill);
-        stop.testCases().forEach(testCaseId -> ExecutionReported.broadcast(project, key(testCaseId), TestNGExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
+        stop.testCases().forEach(testCaseId -> TestNGExecutionReported.broadcast(project, key(testCaseId), TestNGExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
 
         return stop.testCases().size();
     }
@@ -217,7 +217,7 @@ public final class TestNGExecution implements Disposable {
             if (open.isEmpty()) return;
 
             TestinLogger.info("'" + testRunName + "' ended with " + open.size() + " test case(s) still open");
-            open.forEach(testCaseId -> ExecutionReported.broadcast(project, key(testCaseId), TestNGExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
+            open.forEach(testCaseId -> TestNGExecutionReported.broadcast(project, key(testCaseId), TestNGExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
         });
     }
 

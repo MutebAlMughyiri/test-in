@@ -160,7 +160,7 @@ are, and three pairs say otherwise:
 | `importexport` -> `codegen` | An import creates test cases, and a created test case gets its generated method like any other.                                            |
 
 **How the surfaces learn of a change.** The indexer announces each change on
-`IndexChanged`, the same shape as `ExecutionReported`: a node changed, a
+`IndexChanged`, the same shape as `TestNGExecutionReported`: a node changed, a
 test project changed, or a project was read again from disk. It announces after
 the change is recorded and after the caller's own callback has run, so a rename
 has moved the binding before the panel redraws. The tree panel subscribes when it
@@ -386,9 +386,9 @@ how to run anything; a content module does.
 | 5  | `runner/TestNGExecution.launch`                                                  | Hands the configuration to the platform and remembers which test cases this environment covers, so a stop knows what to put back.                                                                                                                                    |
 | 6  | `runner/TestNGExecution.starting`                                                | Broadcasts each test case as running before the process exists, so the cards change at the click rather than at the first report.                                                                                                                                    |
 | 7  | the platform                                                                     | Compiles, starts a JVM, runs TestNG.                                                                                                                                                                                                                                 |
-| 8  | `testin-testng/TestNGEventRelay`                                                 | Declared in the TestNG module's descriptor as a listener on `SMTRunnerEventsListener`, so it exists only where TestNG does. Turns each started and finished event into a `ExecutionReported.broadcast`.                                                              |
-| 9  | `runner/ExecutionRecorder.record`                                                | On the EDT. The test name **is** the test case's id, because that is what Testin named the generated method — so there is nothing to look up. A name that is not an id is nobody's, and is logged.                                                                   |
-| 10 | `runner/ExecutionRecorder.report`                                                | Decides what the report means: a test case the tester stopped reports itself failed, and that is not a failure. Records the run item status against the **id**, then tells the surfaces.                                                                             |
+| 8  | `testin-testng/TestNGEventRelay`                                                 | Declared in the TestNG module's descriptor as a listener on `SMTRunnerEventsListener`, so it exists only where TestNG does. Turns each started and finished event into a `TestNGExecutionReported.broadcast`.                                                        |
+| 9  | `runner/TestNGExecutionRecorder.record`                                          | On the EDT. The test name **is** the test case's id, because that is what Testin named the generated method — so there is nothing to look up. A name that is not an id is nobody's, and is logged.                                                                   |
+| 10 | `runner/TestNGExecutionRecorder.report`                                          | Decides what the report means: a test case the tester stopped reports itself failed, and that is not a failure. Records the run item status against the **id**, then tells the surfaces.                                                                             |
 | 11 | `editor/testset/TestSetEditor`, `editor/testrun/TestRunEditor`, `view/ViewPanel` | Repaint.                                                                                                                                                                                                                                                             |
 
 **One recorder per project, not one per surface.** Step 10 runs even when

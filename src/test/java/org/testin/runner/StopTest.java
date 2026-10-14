@@ -36,7 +36,7 @@ public class StopTest {
 
     @Test
     public void aTestCaseStoppedBeforeItsLaunchIsNeverTaken() {
-        final ExecutionRegistry registry = new ExecutionRegistry();
+        final TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
         registry.starting(ONE);
         registry.starting(TWO);
 
@@ -49,7 +49,7 @@ public class StopTest {
     // Rule-CODEGEN-037
     @Test
     public void aStopTakesItsOwnExecutionAndNoOther() {
-        final ExecutionRegistry registry = new ExecutionRegistry();
+        final TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
         registry.launched(List.of(ONE, TWO), "cycle 1");
         registry.launched(List.of(THREE), "cycle 2");
 
@@ -63,7 +63,7 @@ public class StopTest {
 
     @Test
     public void aPassedTestCaseKeepsItsRunItemStatusThroughAStop() {
-        final ExecutionRegistry registry = new ExecutionRegistry();
+        final TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
         registry.launched(List.of(ONE, TWO), "cycle 1");
         registry.reported(ONE, TestNGExecutionStatus.PASSED);
 
@@ -76,7 +76,7 @@ public class StopTest {
 
     @Test
     public void stoppingNothingIsItsOwnAnswer() {
-        final ExecutionRegistry registry = new ExecutionRegistry();
+        final TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
 
         assertEquals(registry.stopping(List.of(ONE)), Stop.NOTHING);
     }
@@ -84,7 +84,7 @@ public class StopTest {
     // Rule-CODEGEN-092
     @Test
     public void anExecutionThatEndsQuietlyReleasesTheTestCasesItHeld() {
-        final ExecutionRegistry registry = new ExecutionRegistry();
+        final TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
         registry.launched(List.of(ONE, TWO), "cycle 1");
 
         assertEquals(Set.copyOf(registry.ended("cycle 1")), Set.of(ONE, TWO));
@@ -94,7 +94,7 @@ public class StopTest {
 
     @Test
     public void anExecutionTestinDidNotStartIsLeftAlone() {
-        final ExecutionRegistry registry = new ExecutionRegistry();
+        final TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
 
         assertEquals(registry.ended("someone else's run"), List.of());
     }

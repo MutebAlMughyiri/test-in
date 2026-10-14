@@ -24,8 +24,8 @@ import org.testin.model.status.TestNGExecutionStatus;
 
 import java.time.Duration;
 
-public interface ExecutionReported {
-    Topic<ExecutionReported> TOPIC = Topic.create("RunTestCaseNotification", ExecutionReported.class);
+public interface TestNGExecutionReported {
+    Topic<TestNGExecutionReported> TOPIC = Topic.create("RunTestCaseNotification", TestNGExecutionReported.class);
 
     static void broadcast(final @NotNull Project project, final @NotNull String testName, final @NotNull TestNGExecutionStatus testNGExecutionStatus, final @NotNull Duration duration, final @NotNull Failure failure) {
         if (project.isDisposed()) return;

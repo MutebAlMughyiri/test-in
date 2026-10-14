@@ -34,7 +34,7 @@ import org.testin.indexer.TestRuns;
 import org.testin.model.TestCase;
 import org.testin.model.status.TestNGExecutionStatus;
 import org.testin.model.testrun.RunItem;
-import org.testin.runner.ExecutionRecorder;
+import org.testin.runner.TestNGExecutionRecorder;
 import org.testin.services.ProjectLifetime;
 import org.testin.services.Services;
 import org.testin.setting.TestinRoot;
@@ -110,7 +110,7 @@ public class ViewPanel implements Disposable {
 
         refreshCurrentView();
 
-        ExecutionRecorder.onReported(project, this, (testCase, testNGExecutionStatus, _, _) -> executionReported(testCase, testNGExecutionStatus));
+        TestNGExecutionRecorder.onReported(project, this, (testCase, testNGExecutionStatus, _, _) -> executionReported(testCase, testNGExecutionStatus));
     }
 
     private @NotNull Stream<JPanel> tabs() {
