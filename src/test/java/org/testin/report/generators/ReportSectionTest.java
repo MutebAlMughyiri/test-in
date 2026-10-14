@@ -155,7 +155,7 @@ public class ReportSectionTest {
 
     private @NotNull RunItem runItem(final RunItemStatus runItemStatus) {
         final RunItem runItem = new RunItem();
-        runItem.setId(UUID.randomUUID());
+        runItem.setUuid(UUID.randomUUID());
         runItem.setExecutions(List.of(RunItemExecution.builder().status(runItemStatus).build()));
         return runItem;
     }

@@ -59,7 +59,7 @@ public class AutomateTestCaseAction extends AbstractAnyProjectAction {
     private static @NotNull List<TestCase> withoutAMethod(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
         final @NotNull AutomationState state = Services.getInstance(project, AutomationState.class);
 
-        return testCases.stream().filter(testCase -> !state.hasMethod(testCase.getId())).toList();
+        return testCases.stream().filter(testCase -> !state.hasMethod(testCase.getUuid())).toList();
     }
 
     // Rule-CODEGEN-002

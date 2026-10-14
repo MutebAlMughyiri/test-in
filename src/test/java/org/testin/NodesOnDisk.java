@@ -77,7 +77,7 @@ public record NodesOnDisk(@NotNull Project project) {
 
     public @NotNull TestCase testCase(final @NotNull TestSetNode testSet) {
         final @NotNull TestCase testCase = TestCase.builder()
-                .id(UUID.randomUUID())
+                .uuid(UUID.randomUUID())
                 .description("Log in with a valid user")
                 .order("m")
                 .build();

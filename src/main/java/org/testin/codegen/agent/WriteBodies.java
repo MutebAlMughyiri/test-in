@@ -58,8 +58,8 @@ public final class WriteBodies {
 
     // UC-CODEGEN-021, Rule-CODEGEN-084, Rule-CODEGEN-091
     private static void askOrConfirm(final @NotNull Project project, final @NotNull AgentConnection connection, final @NotNull List<TestCase> testCases, final @NotNull Set<UUID> written, final @NotNull Optional<TestinEditor> editor) {
-        final @NotNull List<TestCase> theirs = testCases.stream().filter(testCase -> written.contains(testCase.getId())).toList();
-        final @NotNull List<TestCase> empty = testCases.stream().filter(testCase -> !written.contains(testCase.getId())).toList();
+        final @NotNull List<TestCase> theirs = testCases.stream().filter(testCase -> written.contains(testCase.getUuid())).toList();
+        final @NotNull List<TestCase> empty = testCases.stream().filter(testCase -> !written.contains(testCase.getUuid())).toList();
 
         if (theirs.isEmpty()) {
             ask(project, connection, empty, List.of(), editor);

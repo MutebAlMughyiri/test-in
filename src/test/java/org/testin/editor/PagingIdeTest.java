@@ -85,7 +85,7 @@ public class PagingIdeTest extends AbstractTempRootIdeTest {
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
         assertEquals("reloading did not land on the page that holds the selected test case", 3, editor.getCurrentPage());
-        assertEquals("the selected test case is not selected after reloading", Optional.of(selected.getId()), Optional.ofNullable(editor.getList().getSelectedValue()).map(TestCase::getId));
+        assertEquals("the selected test case is not selected after reloading", Optional.of(selected.getUuid()), Optional.ofNullable(editor.getList().getSelectedValue()).map(TestCase::getUuid));
     }
 
     @Override

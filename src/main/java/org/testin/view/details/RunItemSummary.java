@@ -128,7 +128,7 @@ public final class RunItemSummary extends AbstractDetails {
         } else {
             final int defaultAt = runItem.defaultIndex();
             final @NotNull Optional<TestRunNode> testRun = testRunOf(project, treePath);
-            final @NotNull Optional<String> whyNot = testRun.flatMap(shownIn -> Services.getInstance(project, RunItemRecorder.class).whyExecutionsAreFixed(shownIn.getPath(), runItem.getId()));
+            final @NotNull Optional<String> whyNot = testRun.flatMap(shownIn -> Services.getInstance(project, RunItemRecorder.class).whyExecutionsAreFixed(shownIn.getPath(), runItem.getUuid()));
             final @NotNull List<Runnable> hideEveryLine = new ArrayList<>();
 
             for (int at = 0; at < runItem.getExecutions().size(); at++) {
@@ -177,12 +177,12 @@ public final class RunItemSummary extends AbstractDetails {
 
         if (!isDefault) {
             actions.add(HoverButton.of(project, whyNot, AllIcons.Nodes.NotFavoriteOnHover, Bundle.message("execution.set.default"), "", () -> {
-                if (runItemRecorder.chooseExecution(testRun.getPath(), runItem.getId(), at))
+                if (runItemRecorder.chooseExecution(testRun.getPath(), runItem.getUuid(), at))
                     redraw(project, testCase, testRun);
             }));
         }
         actions.add(HoverButton.of(project, whyNot, AllIcons.Actions.Close, Bundle.message("execution.remove"), "", () -> {
-            if (!runItemRecorder.removeExecution(testRun.getPath(), runItem.getId(), at)) return;
+            if (!runItemRecorder.removeExecution(testRun.getPath(), runItem.getUuid(), at)) return;
 
             showExecution.accept(OptionalInt.empty());
             redraw(project, testCase, testRun);

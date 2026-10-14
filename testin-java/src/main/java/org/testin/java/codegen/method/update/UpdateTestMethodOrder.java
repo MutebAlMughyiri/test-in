@@ -67,7 +67,7 @@ public class UpdateTestMethodOrder extends BaseTestMethodChange implements CodeC
     }
 
     private static @NotNull Optional<PsiMethod> firstGenerated(final @NotNull PsiClass testClass) {
-        return Arrays.stream(testClass.getMethods()).filter(method -> GeneratedMethod.testCaseIdOf(method).isPresent()).findFirst();
+        return Arrays.stream(testClass.getMethods()).filter(method -> GeneratedMethod.testCaseUuidOf(method).isPresent()).findFirst();
     }
 
     private static @NotNull Optional<PsiElement> nextAfter(final @NotNull PsiElement element) {
@@ -111,7 +111,7 @@ public class UpdateTestMethodOrder extends BaseTestMethodChange implements CodeC
 
         final @NotNull PsiClass testClass = target.get();
 
-        final @NotNull Map<String, PsiMethod> methods = GeneratedMethod.byTestCaseId(testClass);
+        final @NotNull Map<String, PsiMethod> methods = GeneratedMethod.byTestCaseUuid(testClass);
 
         @NotNull Optional<PsiElement> after = Optional.empty();
         int position = 0;
@@ -120,7 +120,7 @@ public class UpdateTestMethodOrder extends BaseTestMethodChange implements CodeC
         for (final TestCase testCase : inSet) {
             position++;
 
-            final @Nullable PsiMethod testMethod = methods.get(testCase.getId().toString());
+            final @Nullable PsiMethod testMethod = methods.get(testCase.getUuid().toString());
             if (testMethod == null) continue;
 
             updateTestAnnotationAttribute(project, testMethod, "priority", String.valueOf(position));

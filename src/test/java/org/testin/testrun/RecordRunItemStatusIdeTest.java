@@ -172,7 +172,7 @@ public class RecordRunItemStatusIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-142
     public void testRecordingBlockedClearsNothingAlreadyWrittenAboutTheTestCase() {
         final @NotNull List<TestCase> testCases = TestRunFixture.testCasesIn(getProject(), root, 2);
-        final @NotNull RunItem failed = RunItem.builder().id(testCases.getFirst().getId()).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl("https://github.com/acme/shop/issues/7")
+        final @NotNull RunItem failed = RunItem.builder().uuid(testCases.getFirst().getUuid()).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl("https://github.com/acme/shop/issues/7")
                 .executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The session was dropped").stacktrace("java.lang.AssertionError: logged out").build())).build();
         final @NotNull TestRunFixture fixture = TestRunFixture.of(getProject(), root, List.of(failed, EditorFixtures.pending(testCases.get(1))), testCases);
         final @NotNull TestRunEditor editor = fixture.opened(getTestRootDisposable());

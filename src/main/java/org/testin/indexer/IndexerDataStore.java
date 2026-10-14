@@ -106,8 +106,8 @@ final class IndexerDataStore {
         held.keySet().removeIf(key -> Path.of(key).startsWith(testProjectPath) && !found.containsKey(key));
     }
 
-    @NotNull Map<UUID, TestCase> getTestCasesById() {
-        return testCaseStore.getTestCasesById();
+    @NotNull Map<UUID, TestCase> getTestCasesByUuid() {
+        return testCaseStore.getTestCasesByUuid();
     }
 
     @NotNull Set<String> unreadableTestCasesIn(final @NotNull Path testSetPath) {
@@ -115,11 +115,11 @@ final class IndexerDataStore {
     }
 
     @NotNull Path testCaseFileOf(final @NotNull TestCase testCase) {
-        return TestCaseStore.named(testCase.getParent().getPath(), testCase.getId());
+        return TestCaseStore.named(testCase.getParent().getPath(), testCase.getUuid());
     }
 
-    @NotNull Map<String, List<UUID>> getTestCaseIdsByTestSet() {
-        return testCaseStore.getTestCaseIdsByTestSet();
+    @NotNull Map<String, List<UUID>> getTestCaseUuidsByTestSet() {
+        return testCaseStore.getTestCaseUuidsByTestSet();
     }
 
     @NotNull List<TestCase> getTestCasesForTestSet(final @NotNull Path testSetPath) {
@@ -141,8 +141,8 @@ final class IndexerDataStore {
     }
 
     @NotNull
-    Optional<TestCase> findTestCase(final @NotNull UUID testCaseId) {
-        return Optional.ofNullable(testCaseStore.getTestCasesById().get(testCaseId));
+    Optional<TestCase> findTestCase(final @NotNull UUID testCaseUuid) {
+        return Optional.ofNullable(testCaseStore.getTestCasesByUuid().get(testCaseUuid));
     }
 
     // UC-INTERNAL-004, Rule-INTERNAL-033
@@ -171,8 +171,8 @@ final class IndexerDataStore {
         return true;
     }
 
-    boolean removeTestCase(final @NotNull Path testSetPath, final @NotNull UUID testCaseId) {
-        if (!testCaseStore.remove(testSetPath, testCaseId)) return false;
+    boolean removeTestCase(final @NotNull Path testSetPath, final @NotNull UUID testCaseUuid) {
+        if (!testCaseStore.remove(testSetPath, testCaseUuid)) return false;
 
         markTestSetModified(testSetPath);
         return true;
@@ -242,8 +242,8 @@ final class IndexerDataStore {
     }
 
     // Rule-INTERNAL-090, Rule-TREE-PANEL-051
-    boolean giveFreshMarkerId(final @NotNull Path markerFile) {
-        return markers.giveFreshId(markerFile);
+    boolean giveFreshMarkerUuid(final @NotNull Path markerFile) {
+        return markers.giveFreshUuid(markerFile);
     }
 
     boolean hasMarker(final @NotNull Path directory, final @NotNull NodeType kind) {
@@ -274,7 +274,7 @@ final class IndexerDataStore {
         testRunNodesByPath.putAll(scanned.getTestRunNodes());
         runItemsByPath.putAll(scanned.getRunItemsByPath());
 
-        testCaseStore.swapIn(testProjectPath, scanned.getTestCasesById(), scanned.getTestCaseIdsByTestSet(), scanned.getUnreadableTestCases());
+        testCaseStore.swapIn(testProjectPath, scanned.getTestCasesByUuid(), scanned.getTestCaseUuidsByTestSet(), scanned.getUnreadableTestCases());
 
         dropUnseen(testProjectsByPath, testProjectPath, scanned.getTestProjects());
         dropUnseen(testCasesFoldersByPath, testProjectPath, scanned.getTestCasesFolders());
@@ -422,11 +422,11 @@ final class IndexerDataStore {
         }
 
 
-        rename.moveEntry(testCaseStore.getTestCaseIdsByTestSet(), _ -> {
+        rename.moveEntry(testCaseStore.getTestCaseUuidsByTestSet(), _ -> {
         });
         rename.moveEntry(runItemsByPath, _ -> {
         });
-        rename.moveKeysUnder(testCaseStore.getTestCaseIdsByTestSet());
+        rename.moveKeysUnder(testCaseStore.getTestCaseUuidsByTestSet());
         rename.moveKeysUnder(runItemsByPath);
         testCaseStore.renamed(oldPath, newPath);
         childrenIndex.invalidate();

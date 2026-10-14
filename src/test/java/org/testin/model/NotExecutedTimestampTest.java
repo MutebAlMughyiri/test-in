@@ -36,7 +36,7 @@ public class NotExecutedTimestampTest {
 
     @Test
     public void aFreshRunItemHasNoExecutionTime() {
-        final RunItem runItem = RunItem.builder().id(UUID.randomUUID()).build();
+        final RunItem runItem = RunItem.builder().uuid(UUID.randomUUID()).build();
 
         assertTrue(DateFormats.isNotExecuted(runItem.shownExecution().getExecutedAt()));
         assertEquals(Display.formatDate(runItem.shownExecution().getExecutedAt()), "");
@@ -44,7 +44,7 @@ public class NotExecutedTimestampTest {
 
     @Test
     public void aRunItemStatusGivesTheTestCaseARealTime() {
-        final RunItem runItem = RunItem.builder().id(UUID.randomUUID()).build();
+        final RunItem runItem = RunItem.builder().uuid(UUID.randomUUID()).build();
 
         runItem.recordRunItemStatus(RunItemStatus.PASSED, "tester", Duration.ZERO, Failure.NONE);
 

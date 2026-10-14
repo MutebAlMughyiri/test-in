@@ -140,7 +140,7 @@ public class SampleTestProjectTest {
         for (final Path file : testCases) {
             final @NotNull TestCase testCase = read(file, TestCase.class);
 
-            assertEquals(testCase.getId().toString(), file.getFileName().toString().replace(".testcase", ""),
+            assertEquals(testCase.getUuid().toString(), file.getFileName().toString().replace(".testcase", ""),
                     "A test case's file name is its identity, so the sample must agree with itself: " + file);
             assertFalse(testCase.getOrder().isEmpty(),
                     "The sample is what a project written by the current build looks like, and that means ranked: " + file);
@@ -151,7 +151,7 @@ public class SampleTestProjectTest {
 
     @Test
     public void everyTestRunParsesAndItsRunItemsNameTestCasesThatExist() {
-        final @NotNull List<String> testCaseIds = testCaseFiles().stream()
+        final @NotNull List<String> testCaseUuids = testCaseFiles().stream()
                 .map(file -> file.getFileName().toString().replace(".testcase", ""))
                 .toList();
 
@@ -169,10 +169,10 @@ public class SampleTestProjectTest {
             for (final Path file : results) {
                 final @NotNull RunItem runItem = read(file, RunItem.class);
 
-                assertEquals(runItem.getId().toString(), file.getFileName().toString().replace(".runitem", ""),
-                        "A result's file name is its test case's id, so the sample must agree with itself: " + file);
-                assertTrue(testCaseIds.contains(runItem.getId().toString()),
-                        "The result " + file.getFileName() + " names a test case the sample does not hold: " + runItem.getId());
+                assertEquals(runItem.getUuid().toString(), file.getFileName().toString().replace(".runitem", ""),
+                        "A run item's file name is its test case's UUID, so the sample must agree with itself: " + file);
+                assertTrue(testCaseUuids.contains(runItem.getUuid().toString()),
+                        "The result " + file.getFileName() + " names a test case the sample does not hold: " + runItem.getUuid());
             }
         }
     }

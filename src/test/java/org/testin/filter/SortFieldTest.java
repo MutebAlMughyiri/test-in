@@ -36,7 +36,7 @@ import static org.testng.Assert.assertEquals;
 public class SortFieldTest {
 
     private static @NotNull TestCase aTestCase(final @NotNull String description, final @NotNull Priority priority, final @NotNull String module) {
-        return TestCase.builder().id(UUID.randomUUID()).description(description).priority(priority).module(module).build();
+        return TestCase.builder().uuid(UUID.randomUUID()).description(description).priority(priority).module(module).build();
     }
 
     private static @NotNull List<String> descriptionsOf(final @NotNull List<TestCase> testCases) {
@@ -90,10 +90,10 @@ public class SortFieldTest {
         final @NotNull TestCase quick = aTestCase("quick", Priority.LOW, "");
         final @NotNull TestCase waiting = aTestCase("waiting", Priority.LOW, "");
         final @NotNull Map<UUID, RunItem> runItems = Map.of(
-                slow.getId(), RunItem.builder().id(slow.getId()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).duration(Duration.ofMinutes(5)).build())).build(),
-                quick.getId(), RunItem.builder().id(quick.getId()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).duration(Duration.ofSeconds(20)).build())).build(),
-                waiting.getId(), RunItem.builder().id(waiting.getId()).build());
-        final @NotNull Function<UUID, Optional<RunItem>> inTheTestRun = testCaseId -> Optional.ofNullable(runItems.get(testCaseId));
+                slow.getUuid(), RunItem.builder().uuid(slow.getUuid()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).duration(Duration.ofMinutes(5)).build())).build(),
+                quick.getUuid(), RunItem.builder().uuid(quick.getUuid()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).duration(Duration.ofSeconds(20)).build())).build(),
+                waiting.getUuid(), RunItem.builder().uuid(waiting.getUuid()).build());
+        final @NotNull Function<UUID, Optional<RunItem>> inTheTestRun = testCaseUuid -> Optional.ofNullable(runItems.get(testCaseUuid));
 
         assertEquals(descriptionsOf(SortField.DURATION.sorted(List.of(waiting, slow, quick), SortDirection.DESCENDING, inTheTestRun)), List.of("slow", "quick", "waiting"));
         assertEquals(descriptionsOf(SortField.RUN_ITEM_STATUS.sorted(List.of(waiting, slow, quick), SortDirection.ASCENDING, inTheTestRun)), List.of("quick", "slow", "waiting"),

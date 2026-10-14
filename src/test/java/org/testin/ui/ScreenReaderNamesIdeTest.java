@@ -112,8 +112,8 @@ public class ScreenReaderNamesIdeTest extends BasePlatformTestCase {
 
     // Rule-INTERNAL-122
     public void testACardSaysItsTitleThenTheRunItemStatusItShows() {
-        final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
-        final @NotNull RunItem runItem = new RunItem().setId(testCase.getId()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).showing(Optional.of(testCase), Optional.empty(), Optional.empty(), false);
+        final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description("Log in with a valid user").build();
+        final @NotNull RunItem runItem = new RunItem().setUuid(testCase.getUuid()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).showing(Optional.of(testCase), Optional.empty(), Optional.empty(), false);
         final @NotNull RunItemCard card = new RunItemCard(getProject());
 
         final @NotNull CardView view = CardPanelBuilder.build(getProject(), getTestRootDisposable(), StandIn.of(TestinEditor.class));

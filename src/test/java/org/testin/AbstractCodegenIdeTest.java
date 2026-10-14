@@ -149,7 +149,7 @@ public abstract class AbstractCodegenIdeTest extends AbstractTempRootIdeTest {
     }
 
     protected @NotNull TestCase indexedTestCase(final @NotNull TestSetNode testSet, final @NotNull String description, final @NotNull String order) {
-        final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description(description).order(order).build();
+        final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description(description).order(order).build();
         testCase.setParent(testSet);
         Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase);
         return testCase;
@@ -170,7 +170,7 @@ public abstract class AbstractCodegenIdeTest extends AbstractTempRootIdeTest {
     protected @NotNull Optional<PsiMethod> methodOf(final @NotNull String qualifiedName, final @NotNull TestCase testCase) {
         return generatedClass(qualifiedName).stream()
                 .flatMap(testClass -> Arrays.stream(testClass.getMethods()))
-                .filter(testMethod -> attributeOf(testMethod, "testName").equals("\"" + testCase.getId() + "\""))
+                .filter(testMethod -> attributeOf(testMethod, "testName").equals("\"" + testCase.getUuid() + "\""))
                 .findFirst();
     }
 

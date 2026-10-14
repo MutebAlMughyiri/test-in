@@ -91,10 +91,10 @@ public enum TestSetEditorFields implements ShowableField {
         }
     },
 
-    ID(
-            Bundle.message("field.id"),
+    UUID(
+            Bundle.message("field.uuid"),
             FieldDefault.OFF,
-            testCase -> String.valueOf(testCase.getId()),
+            testCase -> String.valueOf(testCase.getUuid()),
             (_, testCase, _) -> Optional.of(testCase),
             CodeChangeType.NO_CODE_CHANGE,
             Can.EXPORT

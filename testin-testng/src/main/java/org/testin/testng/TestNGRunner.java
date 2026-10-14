@@ -98,7 +98,7 @@ public final class TestNGRunner implements AutomationExecutor {
             final @NotNull List<TestCase> withoutCode = new ArrayList<>();
 
             for (final TestCase testCase : testCases) {
-                Optional.ofNullable(methods.get(testCase.getId())).ifPresentOrElse(
+                Optional.ofNullable(methods.get(testCase.getUuid())).ifPresentOrElse(
                         method -> found.add(new Generated(testCase, method)),
                         () -> withoutCode.add(testCase));
             }

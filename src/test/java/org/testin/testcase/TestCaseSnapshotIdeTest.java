@@ -65,50 +65,50 @@ public class TestCaseSnapshotIdeTest extends AbstractTempRootIdeTest {
         final Path source = destination.getPath().resolveSibling("Login");
 
         final TestCase moved = TestCase.builder()
-                .id(UUID.randomUUID())
+                .uuid(UUID.randomUUID())
                 .description("Log in with a valid user")
                 .order("m")
                 .build();
         moved.setParent(destination);
-        final List<UUID> testCaseIds = List.of(moved.getId());
+        final List<UUID> testCaseUuids = List.of(moved.getUuid());
 
         final TestCaseSnapshot sourceBefore = new TestCaseSnapshot(source, List.of(moved), List.of());
-        final TestCaseSnapshot destinationBefore = TestCaseSnapshot.of(getProject(), destination.getPath(), testCaseIds);
+        final TestCaseSnapshot destinationBefore = TestCaseSnapshot.of(getProject(), destination.getPath(), testCaseUuids);
 
         indexedTestCases().putTestCaseVerbatim(destination.getPath(), moved);
 
         final UndoScope scope = UndoScope.of(destination.getPath());
         TestCaseSnapshot.record(getProject(), scope, "Paste",
                 List.of(sourceBefore, destinationBefore),
-                List.of(TestCaseSnapshot.of(getProject(), source, testCaseIds), TestCaseSnapshot.of(getProject(), destination.getPath(), testCaseIds)));
+                List.of(TestCaseSnapshot.of(getProject(), source, testCaseUuids), TestCaseSnapshot.of(getProject(), destination.getPath(), testCaseUuids)));
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
         assertFalse("an undo into a set no longer indexed was not refused",
                 Services.getInstance(getProject(), UndoHistories.class).undo(scope));
         assertTrue("the pasted test case was taken out of the destination by a refused undo",
-                indexedTestCases().findTestCase(moved.getId()).isPresent());
+                indexedTestCases().findTestCase(moved.getUuid()).isPresent());
     }
 
     public void testUndoingARemovalPutsTheTestCaseBack() {
         final TestSetNode testSet = checkoutSet();
         final TestCase removed = TestCase.builder()
-                .id(UUID.randomUUID())
+                .uuid(UUID.randomUUID())
                 .description("Pay with a saved card")
                 .order("m")
                 .build();
         removed.setParent(testSet);
         indexedTestCases().putTestCaseVerbatim(testSet.getPath(), removed);
-        final List<UUID> testCaseIds = List.of(removed.getId());
+        final List<UUID> testCaseUuids = List.of(removed.getUuid());
 
-        final TestCaseSnapshot before = TestCaseSnapshot.of(getProject(), testSet.getPath(), testCaseIds);
-        assertTrue("the removal being undone did not happen", indexedTestCases().removeTestCase(testSet.getPath(), removed.getId()));
+        final TestCaseSnapshot before = TestCaseSnapshot.of(getProject(), testSet.getPath(), testCaseUuids);
+        assertTrue("the removal being undone did not happen", indexedTestCases().removeTestCase(testSet.getPath(), removed.getUuid()));
 
         final UndoScope scope = UndoScope.of(testSet.getPath());
-        TestCaseSnapshot.record(getProject(), scope, "Remove", List.of(before), List.of(TestCaseSnapshot.of(getProject(), testSet.getPath(), testCaseIds)));
+        TestCaseSnapshot.record(getProject(), scope, "Remove", List.of(before), List.of(TestCaseSnapshot.of(getProject(), testSet.getPath(), testCaseUuids)));
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
         assertTrue("the undo said it could not put the test case back", Services.getInstance(getProject(), UndoHistories.class).undo(scope));
-        assertTrue("the test case is not back in the index", indexedTestCases().findTestCase(removed.getId()).isPresent());
-        assertTrue("the test case's file is not back on disk", Files.isRegularFile(testSet.getPath().resolve(removed.getId() + ".testcase")));
+        assertTrue("the test case is not back in the index", indexedTestCases().findTestCase(removed.getUuid()).isPresent());
+        assertTrue("the test case's file is not back on disk", Files.isRegularFile(testSet.getPath().resolve(removed.getUuid() + ".testcase")));
     }
 }

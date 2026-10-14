@@ -52,7 +52,7 @@ public class TestRunCoverageTest {
 
     private static @NotNull RunItem executed() {
         return new RunItem()
-                .setId(EXECUTED)
+                .setUuid(EXECUTED)
                 .setBugSeverity(BugSeverity.MAJOR)
                 .setBugPriority(BugPriority.HIGH)
                 .setExecutions(List.of(RunItemExecution.builder()
@@ -69,12 +69,12 @@ public class TestRunCoverageTest {
         return new RunItems().setAll(new ArrayList<>(List.of(runItems)));
     }
 
-    private static @NotNull Set<UUID> setOf(final @NotNull UUID... testCaseIds) {
-        return new LinkedHashSet<>(List.of(testCaseIds));
+    private static @NotNull Set<UUID> setOf(final @NotNull UUID... testCaseUuids) {
+        return new LinkedHashSet<>(List.of(testCaseUuids));
     }
 
     private static @NotNull List<UUID> coveredBy(final @NotNull RunItems runItems) {
-        return runItems.getAll().stream().map(RunItem::getId).collect(Collectors.toList());
+        return runItems.getAll().stream().map(RunItem::getUuid).collect(Collectors.toList());
     }
 
     @Test
@@ -85,7 +85,7 @@ public class TestRunCoverageTest {
         final @NotNull RunItem kept = after.getAll().getFirst();
 
         assertSame(kept, before,
-                "The result is carried across, not rebuilt from its id. Rebuilding it is how all nine fields below"
+                "The result is carried across, not rebuilt from its UUID. Rebuilding it is how all nine fields below"
                         + " would go quiet, one release after somebody 'simplified' this into a stream of new items");
         assertEquals(kept.getStatus(), RunItemStatus.FAILED);
         assertEquals(kept.shownExecution().getActualResult(), "The lockout counter reset on reload");
@@ -102,7 +102,7 @@ public class TestRunCoverageTest {
 
         final @NotNull RunItem fresh = after.getAll().get(1);
 
-        assertEquals(fresh.getId(), ADDED, "A test case added to a test set after the test run was created is the whole point");
+        assertEquals(fresh.getUuid(), ADDED, "A test case added to a test set after the test run was created is the whole point");
         assertEquals(fresh.getStatus(), RunItemStatus.PENDING);
         assertEquals(fresh.shownExecution().getDuration(), Duration.ZERO);
         assertEquals(fresh.shownExecution().getExecutedAt(), DateFormats.NOT_EXECUTED,
@@ -111,7 +111,7 @@ public class TestRunCoverageTest {
 
     @Test
     public void aTestCaseThatGoesIsGoneWithWhatItRecorded() {
-        final @NotNull RunItems after = aTestRunOf(executed(), new RunItem().setId(UNTOUCHED)).coverOnly(setOf(UNTOUCHED));
+        final @NotNull RunItems after = aTestRunOf(executed(), new RunItem().setUuid(UNTOUCHED)).coverOnly(setOf(UNTOUCHED));
 
         assertEquals(coveredBy(after), List.of(UNTOUCHED),
                 "Unticking an executed test case discards its result, with no confirmation - decided 2026-09-03."
@@ -120,7 +120,7 @@ public class TestRunCoverageTest {
 
     @Test
     public void theTestRunKeepsItsOwnOrderAndNewTestCasesGoOnTheEnd() {
-        final @NotNull RunItems runItems = aTestRunOf(new RunItem().setId(UNTOUCHED), executed());
+        final @NotNull RunItems runItems = aTestRunOf(new RunItem().setUuid(UNTOUCHED), executed());
 
         final @NotNull RunItems after = runItems.coverOnly(setOf(ADDED, EXECUTED, UNTOUCHED));
 
@@ -130,7 +130,7 @@ public class TestRunCoverageTest {
 
     @Test
     public void theTestRunItWasIsLeftAlone() {
-        final @NotNull RunItems runItems = aTestRunOf(executed(), new RunItem().setId(UNTOUCHED));
+        final @NotNull RunItems runItems = aTestRunOf(executed(), new RunItem().setUuid(UNTOUCHED));
         final @NotNull RunItems after = runItems.coverOnly(setOf(EXECUTED));
 
         assertNotSame(after, runItems);

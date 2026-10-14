@@ -98,7 +98,7 @@ public class DetailsRowsIdeTest extends BasePlatformTestCase {
 
             assertEquals("the test case's rows were drawn out of their fixed order", ROWS_IN_ORDER, captions);
         } finally {
-            testCases.removeTestCase(login.getPath(), testCase.getId());
+            testCases.removeTestCase(login.getPath(), testCase.getUuid());
         }
     }
 

@@ -66,16 +66,16 @@ public final class TestRuns {
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-127, Rule-REPORT-026
     public @NotNull RunItems getRunItems(final @NotNull Path testRunPath) {
-        return withTestCasesShown(testRunPath, store().getRunItems(testRunPath)).inOrderOf(testCaseIdsInTreeOrder(testRunPath));
+        return withTestCasesShown(testRunPath, store().getRunItems(testRunPath)).inOrderOf(testCaseUuidsInTreeOrder(testRunPath));
     }
 
     // Rule-EDITOR-PANEL-127
-    private @NotNull List<UUID> testCaseIdsInTreeOrder(final @NotNull Path testRunPath) {
+    private @NotNull List<UUID> testCaseUuidsInTreeOrder(final @NotNull Path testRunPath) {
         return testCasesFolderOf(testRunPath)
                 .map(Services.getInstance(project, TestCases.class)::getTestCasesUnder)
                 .orElse(List.of())
                 .stream()
-                .map(TestCase::getId)
+                .map(TestCase::getUuid)
                 .toList();
     }
 
@@ -92,7 +92,7 @@ public final class TestRuns {
         final @NotNull String commit = commitOf(testRunPath);
         final @NotNull Map<UUID, Optional<TestCase>> inCommit = recorded.getOrDefault(recordedAt.getOrDefault(testRunPath, commit), Map.of());
         final boolean committed = store.findTestRunNode(testRunPath).map(node -> node.getMarker().getStatus().isRecord()).orElse(false);
-        runItems.getAll().forEach(runItem -> runItem.showing(store.findTestCase(runItem.getId()), inCommit.getOrDefault(runItem.getId(), Optional.empty()), Optional.ofNullable(lastInGit.get(runItem.getId())), committed));
+        runItems.getAll().forEach(runItem -> runItem.showing(store.findTestCase(runItem.getUuid()), inCommit.getOrDefault(runItem.getUuid(), Optional.empty()), Optional.ofNullable(lastInGit.get(runItem.getUuid())), committed));
         return runItems;
     }
 
@@ -107,9 +107,9 @@ public final class TestRuns {
     }
 
     // Rule-EDITOR-PANEL-239
-    public @NotNull Set<UUID> notReadFrom(final @NotNull String commit, final @NotNull Set<UUID> testCaseIds) {
+    public @NotNull Set<UUID> notReadFrom(final @NotNull String commit, final @NotNull Set<UUID> testCaseUuids) {
         final @NotNull Map<UUID, Optional<TestCase>> read = recorded.getOrDefault(commit, Map.of());
-        return testCaseIds.stream().filter(testCaseId -> !read.containsKey(testCaseId)).collect(Collectors.toSet());
+        return testCaseUuids.stream().filter(testCaseUuid -> !read.containsKey(testCaseUuid)).collect(Collectors.toSet());
     }
 
     // Rule-EDITOR-PANEL-126
@@ -129,9 +129,9 @@ public final class TestRuns {
     }
 
     // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-107
-    public @NotNull Map<Path, RunItem> runItemsOf(final @NotNull UUID testCaseId) {
+    public @NotNull Map<Path, RunItem> runItemsOf(final @NotNull UUID testCaseUuid) {
         final @NotNull Map<Path, RunItem> runItems = new HashMap<>();
-        store().getRunItemsByPath().forEach((testRunPath, held) -> held.runItemOf(testCaseId).ifPresent(runItem -> runItems.put(Path.of(testRunPath), runItem)));
+        store().getRunItemsByPath().forEach((testRunPath, held) -> held.runItemOf(testCaseUuid).ifPresent(runItem -> runItems.put(Path.of(testRunPath), runItem)));
         return runItems;
     }
 
@@ -147,20 +147,20 @@ public final class TestRuns {
     public void changeRunItems(final @NotNull Path testRunPath, final @NotNull Consumer<RunItems> change) {
         findRunItems(testRunPath).ifPresentOrElse(runItems -> {
             // Rule-INTERNAL-011
-            final @NotNull Set<UUID> gone = runItems.coveredIds();
+            final @NotNull Set<UUID> gone = runItems.coveredUuids();
             change.accept(runItems);
-            gone.removeAll(runItems.coveredIds());
+            gone.removeAll(runItems.coveredUuids());
 
             runItemWriter().persist(testRunPath, runItems, gone);
         }, () -> TestinLogger.warn("Test run no longer indexed, so a change to it was dropped: " + testRunPath.getFileName()));
     }
 
     // Rule-INTERNAL-011
-    public void changeRunItem(final @NotNull Path testRunPath, final @NotNull UUID testCaseId, final @NotNull Consumer<RunItem> change) {
-        findRunItems(testRunPath).ifPresentOrElse(runItems -> runItems.runItemOf(testCaseId).ifPresentOrElse(runItem -> {
+    public void changeRunItem(final @NotNull Path testRunPath, final @NotNull UUID testCaseUuid, final @NotNull Consumer<RunItem> change) {
+        findRunItems(testRunPath).ifPresentOrElse(runItems -> runItems.runItemOf(testCaseUuid).ifPresentOrElse(runItem -> {
                     change.accept(runItem);
                     runItemWriter().persistRunItem(testRunPath, runItems, runItem);
-                }, () -> TestinLogger.warn("'" + testRunPath.getFileName() + "' no longer covers " + testCaseId + ", so a change to its run item was dropped")),
+                }, () -> TestinLogger.warn("'" + testRunPath.getFileName() + "' no longer covers " + testCaseUuid + ", so a change to its run item was dropped")),
                 () -> TestinLogger.warn("Test run no longer indexed, so a change to it was dropped: " + testRunPath.getFileName()));
     }
 

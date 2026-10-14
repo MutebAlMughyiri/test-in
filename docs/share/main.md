@@ -107,7 +107,7 @@ Choosing it once produced a file in the newer format under the older name.
 
 ## What one exported row holds
 
-Seventeen columns, in this order: **Description**, **ID**, **Expected Result**, **Steps**, **Priority**, **FQCN**,
+Seventeen columns, in this order: **Description**, **UUID**, **Expected Result**, **Steps**, **Priority**, **FQCN**,
 **Reference**, **Test Data**, **Pre
 Conditions**, **Group**, **Path**, **Module**, **Status**, **Created By**, **Updated By**, **Created At**, **Updated
 At**.
@@ -123,7 +123,7 @@ stores it, not the 17 columns.
 Thirteen columns: **Description**, **Expected Result**, **Steps**, **Priority**, **Reference**, **Test Data**, **Pre
 Conditions**, **Group**, **Module**, **Created By**, **Updated By**, **Created At**, **Updated At**.
 
-**Order**, **ID**, **FQCN**, **Path** and **Status** are never imported. A file
+**Order**, **UUID**, **FQCN**, **Path** and **Status** are never imported. A file
 carrying a status column has it ignored.
 
 Headings are matched whatever their capitals, and spaces around them are

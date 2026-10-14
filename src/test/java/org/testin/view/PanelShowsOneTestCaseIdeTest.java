@@ -49,7 +49,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
     private static final @NotNull String RUN_ITEM_BAND = Bundle.message("details.band.run.item").toUpperCase(Locale.ROOT);
 
     private static @NotNull TestCase handedCopy(final @NotNull TestCase testCase, final @NotNull String description) {
-        final @NotNull TestCase copy = TestCase.builder().id(testCase.getId()).description(description).build();
+        final @NotNull TestCase copy = TestCase.builder().uuid(testCase.getUuid()).description(description).build();
         copy.setParent(testCase.getParent());
         return copy;
     }
@@ -166,7 +166,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
     // Rule-VIEW-PANEL-014
     public void testTheFolderThePanelWasOpenedFromDecidesWhetherTheTestRunIsDrawn() {
         final @NotNull TestCase testCase = threeTestCases().getFirst();
-        final @NotNull TestRunNode testRun = aTestRun(List.of(RunItem.builder().id(testCase.getId()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build()));
+        final @NotNull TestRunNode testRun = aTestRun(List.of(RunItem.builder().uuid(testCase.getUuid()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build()));
 
         view.getPanel().show(List.of(testCase), treePathOf(testRun));
         assertTrue("opened from the test run, the panel drew no test run band: " + details(), details().contains(RUN_ITEM_BAND));
@@ -196,7 +196,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
     // Rule-VIEW-PANEL-029
     public void testTheTestRunBandIsDrawnOnlyWhenTheTestRunHoldsTheTestCase() {
         final @NotNull List<TestCase> handed = threeTestCases();
-        final @NotNull TestRunNode testRun = aTestRun(List.of(RunItem.builder().id(handed.getFirst().getId()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build()));
+        final @NotNull TestRunNode testRun = aTestRun(List.of(RunItem.builder().uuid(handed.getFirst().getUuid()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build()));
 
         view.getPanel().show(List.of(handed.get(1)), treePathOf(testRun));
         assertFalse("the test run band was drawn for a test case the test run does not hold: " + details(), details().contains(RUN_ITEM_BAND));
@@ -214,13 +214,13 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
         assertTrue(details().contains(RunItemStatus.PENDING.getLabel()));
 
         final @NotNull TestRuns testRuns = Services.getInstance(getProject(), TestRuns.class);
-        testRuns.changeRunItem(testRun.getPath(), testCase.getId(), result -> {
+        testRuns.changeRunItem(testRun.getPath(), testCase.getUuid(), result -> {
             result.setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build()));
             result.recordActualResult("The session was dropped");
         });
         view.getPanel().refreshIfShowing(List.of(testCase));
 
-        final @NotNull RunItem recorded = testRuns.findRunItems(testRun.getPath()).flatMap(runItems -> runItems.runItemOf(testCase.getId())).orElseThrow();
+        final @NotNull RunItem recorded = testRuns.findRunItems(testRun.getPath()).flatMap(runItems -> runItems.runItemOf(testCase.getUuid())).orElseThrow();
         assertTrue("the band does not show the run item status the test run holds: " + details(), details().contains(recorded.getStatus().getLabel()));
         assertTrue("the band does not show the actual result the test run holds: " + details(), holds(details(), recorded.shownExecution().getActualResult()));
         assertFalse("the band still shows what it drew before the test run changed: " + details(), details().contains(RunItemStatus.PENDING.getLabel()));
@@ -257,7 +257,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
         assertTrue("the panel did not show the test case as the test run's run item shows it: " + details(), holds(details(), testCase.getDescription()));
         assertFalse("the panel showed the copy it was handed: " + details(), holds(details(), "The copy the editor handed over"));
 
-        Services.getInstance(getProject(), TestRuns.class).changeRunItem(testRun.getPath(), testCase.getId(), result -> result.recordRunItemStatus(RunItemStatus.PASSED, "muteb", Duration.ZERO, Failure.NONE));
+        Services.getInstance(getProject(), TestRuns.class).changeRunItem(testRun.getPath(), testCase.getUuid(), result -> result.recordRunItemStatus(RunItemStatus.PASSED, "muteb", Duration.ZERO, Failure.NONE));
         view.getPanel().refreshCurrentView();
 
         assertTrue("the panel did not read the run item again when it refreshed: " + details(), holds(details(), RunItemStatus.PASSED.getLabel()));
@@ -269,7 +269,7 @@ public class PanelShowsOneTestCaseIdeTest extends AbstractViewPanelIdeTest {
         final @NotNull TestRunNode testRun = aTestRun(List.of(EditorFixtures.pending(testCase)));
         final @NotNull TestRuns testRuns = Services.getInstance(getProject(), TestRuns.class);
         testRuns.changeTestRunMarker(testRun.getPath(), marker -> marker.recordCommit("ea9a501"));
-        testRuns.rememberRecorded("ea9a501", Map.of(testCase.getId(), Optional.of(handedCopy(testCase, "As the commit recorded it"))));
+        testRuns.rememberRecorded("ea9a501", Map.of(testCase.getUuid(), Optional.of(handedCopy(testCase, "As the commit recorded it"))));
 
         view.getPanel().show(List.of(testCase), treePathOf(testRun));
 

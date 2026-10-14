@@ -40,9 +40,9 @@ There is no key for this. It starts on its own.
   directly inside a test run is one run item. Nothing looks inside a
   file to decide what it is.
 - **Rule-INTERNAL-012** — A test case is known by its file name,
-  `<test case id>.testcase`, and the file does not write its id. A `.testcase`
-  whose name is not an id is not read, and a warning names it; named by a new
-  id, it is read at the next Refresh. Two files named by one id are both kept,
+  `<test case UUID>.testcase`, and the file does not write its UUID. A `.testcase`
+  whose name is not a UUID is not read, and a warning names it; named by a new
+  UUID, it is read at the next Refresh. Two files named by one UUID are both kept,
   and which one is the test case is for the tester to decide.
 - **Rule-INTERNAL-013** — Each test project is read by its own background job.
   The tester can cancel it, and the IDE stays usable while it runs.
@@ -82,7 +82,7 @@ There is no key for this. It starts on its own.
   only the automation code stays off (Rule-CODEGEN-082). When it is there, what
   it says is read in one place, so a missing value means the same thing
   everywhere.
-- **Rule-INTERNAL-090** — Every folder carries an id of its own in its marker:
+- **Rule-INTERNAL-090** — Every folder carries a UUID of its own in its marker:
   stamped the first time Testin writes that marker, never changed afterward,
   and fresh on a copied folder. Nothing in Testin reads it; it names a test
   project, a test set or a test run for a tool outside the IDE.
@@ -94,9 +94,9 @@ There is no key for this. It starts on its own.
   still a run item status somebody recorded, and the tester repairs the file and
   presses Refresh.
 - **Rule-INTERNAL-094** — A run item is known by its file name,
-  `<test case id>.runitem`, as a test case is (Rule-INTERNAL-012), and the file
-  does not write the id. A run item file whose name is not a test case id is not
-  read, and a warning names it; renamed to its test case's id, it is read again
+  `<test case UUID>.runitem`, as a test case is (Rule-INTERNAL-012), and the file
+  does not write the UUID. A run item file whose name is not a test case UUID is not
+  read, and a warning names it; renamed to its test case's UUID, it is read again
   at the next Refresh. Nothing writes a second file for it.
 - **Rule-INTERNAL-111** — Waiting for the index is refused under a read lock. It
   logs an error and returns at once, because a read action that waits holds up
@@ -223,7 +223,7 @@ the bottom of the IDE, beside the other background jobs.
 10. Testin walks `Test Runs`. Each test run reads its own facts from its
     `.testrun` - its status, how it was configured, what the tester wrote about the
     run item statuses, when it was executed. It also reads one file per run item,
-    `<test case id>.runitem`, in the order their test cases sit in their test sets.
+    `<test case UUID>.runitem`, in the order their test cases sit in their test sets.
 11. The bar reads *Done -*, then the test project's name, and closes.
 12. The tree draws itself from memory. Every editor that was open when the IDE
     closed opens again.
@@ -268,10 +268,10 @@ noise.
 test set. The others are read. The set is drawn one row shorter, and nothing
 says which row is missing.
 
-**If a test case file is not named by an id** — `login.testcase`, written by
+**If a test case file is not named by a UUID** — `login.testcase`, written by
 hand — it is not read, and once the read has finished one message names all of
-them, titled **Test cases not read in \<project\>**. Testin does not make up an
-id for it; named by a new id, it is read at the next **Refresh**
+them, titled **Test cases not read in \<project\>**. Testin does not make up a
+UUID for it; named by a new UUID, it is read at the next **Refresh**
 (Rule-INTERNAL-012).
 
 **If one run item file cannot be read** — the test run is drawn without that

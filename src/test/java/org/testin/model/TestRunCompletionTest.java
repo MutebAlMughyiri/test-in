@@ -33,7 +33,7 @@ import static org.testng.Assert.assertTrue;
 public class TestRunCompletionTest {
 
     private static @NotNull RunItem runItem(final RunItemStatus runItemStatus) {
-        return RunItem.builder().id(UUID.randomUUID()).executions(List.of(RunItemExecution.builder().status(runItemStatus).build())).build();
+        return RunItem.builder().uuid(UUID.randomUUID()).executions(List.of(RunItemExecution.builder().status(runItemStatus).build())).build();
     }
 
     private static @NotNull RunItems testRunOf(final RunItem... runItems) {
@@ -58,7 +58,7 @@ public class TestRunCompletionTest {
 
     @Test
     public void aDeletedTestCaseDoesNotHoldItOpenForever() {
-        assertTrue(testRunOf(runItem(RunItemStatus.PASSED), RunItem.builder().id(UUID.randomUUID()).removed(true).build()).isFullyJudged());
+        assertTrue(testRunOf(runItem(RunItemStatus.PASSED), RunItem.builder().uuid(UUID.randomUUID()).removed(true).build()).isFullyJudged());
     }
 
     @Test

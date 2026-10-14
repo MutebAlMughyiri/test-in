@@ -171,8 +171,8 @@ public abstract class AbstractJsonSplitBulkSectionDialog extends AbstractFramewo
             final @NotNull String escapedValue = BulkValueText.escape(getOriginalValue(testCase));
             originalEscaped.add(escapedValue);
 
-            final @NotNull StringBuilder prefixText = new StringBuilder("  {\n    \"id\": \"")
-                    .append(BulkValueText.escape(testCase.getId().toString())).append("\",\n");
+            final @NotNull StringBuilder prefixText = new StringBuilder("  {\n    \"uuid\": \"")
+                    .append(BulkValueText.escape(testCase.getUuid().toString())).append("\",\n");
             if (showsDescriptionContext()) {
                 prefixText.append("    \"description\": \"").append(BulkValueText.escape(testCase.getDescription())).append("\",\n");
             }

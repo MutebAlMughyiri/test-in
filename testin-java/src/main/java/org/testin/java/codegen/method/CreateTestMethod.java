@@ -100,7 +100,7 @@ public class CreateTestMethod implements CodeChange<TestCase> {
 
         final @NotNull String annotation = String.format("@Test(description = %s, testName = \"%s\"%s)",
                 JavaLiteral.of(testCase.getDescription()),
-                testCase.getId(),
+                testCase.getUuid(),
                 attributes);
 
         return annotation + "\npublic void " + methodName + "() " + GeneratedMethod.emptyBody(methodName);
@@ -137,7 +137,7 @@ public class CreateTestMethod implements CodeChange<TestCase> {
     }
 
     private void noMethodFor(final @NotNull TestCase testCase, final @NotNull List<String> fqcn) {
-        if (fqcn.isEmpty()) TestinLogger.debug("No description yet, so no method to write for " + testCase.getId());
+        if (fqcn.isEmpty()) TestinLogger.debug("No description yet, so no method to write for " + testCase.getUuid());
         else TestinLogger.error("FQCN list is too short to generate a method: " + fqcn);
     }
 
@@ -170,15 +170,15 @@ public class CreateTestMethod implements CodeChange<TestCase> {
         for (final PsiMethod testMethod : targetClass.getMethods()) {
             final @NotNull String methodKey = NameSanitizer.methodKey(testMethod.getName());
 
-            owners.putIfAbsent(methodKey, GeneratedMethod.testCaseIdOf(testMethod).orElse(""));
+            owners.putIfAbsent(methodKey, GeneratedMethod.testCaseUuidOf(testMethod).orElse(""));
             byKey.putIfAbsent(methodKey, testMethod);
         }
 
-        final @NotNull Map<String, PsiMethod> generated = GeneratedMethod.byTestCaseId(targetClass);
+        final @NotNull Map<String, PsiMethod> generated = GeneratedMethod.byTestCaseUuid(targetClass);
         final @NotNull Map<String, PsiMethod> describedByHand = GeneratedMethod.untaggedByDescription(targetClass);
         final @NotNull ToIntFunction<TestCase> positions = ExecutionPosition.ofEach(project);
 
-        final @NotNull List<TestCase> missing = testCases.stream().filter(testCase -> !generated.containsKey(testCase.getId().toString())).toList();
+        final @NotNull List<TestCase> missing = testCases.stream().filter(testCase -> !generated.containsKey(testCase.getUuid().toString())).toList();
         final @NotNull List<TestCase> cannotBeNamed = missing.stream().filter(testCase -> NameSanitizer.cannotMakeMethodName(testCase.getDescription())).toList();
         final @NotNull List<TestCase> nameable = missing.stream().filter(testCase -> !NameSanitizer.cannotMakeMethodName(testCase.getDescription())).toList();
         final int alreadyThere = testCases.size() - missing.size();
@@ -188,7 +188,7 @@ public class CreateTestMethod implements CodeChange<TestCase> {
         int adopted = 0;
 
         for (final TestCase testCase : nameable) {
-            final @NotNull String testCaseId = testCase.getId().toString();
+            final @NotNull String testCaseUuid = testCase.getUuid().toString();
             final @NotNull String methodName = Fqcn.methodNameOf(testCase);
             final @NotNull String key = NameSanitizer.methodKey(methodName);
             final @NotNull Optional<String> owner = Optional.ofNullable(owners.get(key));
@@ -196,7 +196,7 @@ public class CreateTestMethod implements CodeChange<TestCase> {
 
             if (theTestersOwn.isPresent()) {
                 GeneratedMethod.adopt(project, theTestersOwn.orElseThrow(), testCase);
-                owners.put(NameSanitizer.methodKey(theTestersOwn.orElseThrow().getName()), testCaseId);
+                owners.put(NameSanitizer.methodKey(theTestersOwn.orElseThrow().getName()), testCaseUuid);
                 adopted++;
                 continue;
             }
@@ -206,7 +206,7 @@ public class CreateTestMethod implements CodeChange<TestCase> {
                 continue;
             }
 
-            owners.put(key, testCaseId);
+            owners.put(key, testCaseUuid);
             methods.append('\n').append(methodText(methodName, testCase, positions.applyAsInt(testCase))).append('\n');
         }
 
@@ -337,7 +337,7 @@ public class CreateTestMethod implements CodeChange<TestCase> {
                     .findFirst();
 
             if (sameName.isPresent()) {
-                if (GeneratedMethod.testCaseIdOf(sameName.orElseThrow()).isPresent() || GeneratedMethod.testAnnotationOf(sameName.orElseThrow()).isEmpty())
+                if (GeneratedMethod.testCaseUuidOf(sameName.orElseThrow()).isPresent() || GeneratedMethod.testAnnotationOf(sameName.orElseThrow()).isEmpty())
                     reportLostTheName(project, targetClass, List.of(testCase));
                 else
                     TestinLogger.info("Method already exists: " + methodName);

@@ -113,6 +113,6 @@ public class WithoutGitIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestProjectIndexer indexer = Services.getInstance(getProject(), TestProjectIndexer.class);
         indexer.resetForReindex();
         ApplicationManager.getApplication().executeOnPooledThread(indexer::awaitIndexing);
-        Await.until("without Git the test cases on disk are not read", () -> Services.getInstance(getProject(), TestCases.class).findTestCase(testCase.getId()).isPresent());
+        Await.until("without Git the test cases on disk are not read", () -> Services.getInstance(getProject(), TestCases.class).findTestCase(testCase.getUuid()).isPresent());
     }
 }

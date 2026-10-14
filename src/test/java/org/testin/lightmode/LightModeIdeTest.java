@@ -183,7 +183,7 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), testProject, "Checkout");
         final @NotNull List<TestCase> made = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description("Test case number " + (i + 1)).expectedResult("It works " + (i + 1))
+            final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description("Test case number " + (i + 1)).expectedResult("It works " + (i + 1))
                     .steps(new ArrayList<>(IntStream.rangeClosed(1, steps).mapToObj(step -> "Do step " + step + " of the test case and look at what happens").toList()))
                     .order(String.format("m%04d", i)).build();
             testCase.setParent(testSet);
@@ -261,7 +261,7 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
             press(frame, RunItemStatus.PASSED.getShortcut());
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
-            assertEquals("light mode recorded somewhere the editor does not see", RunItemStatus.PASSED, editor.runItem(fixture.testCases().getFirst().getId()).map(RunItem::getStatus).orElseThrow());
+            assertEquals("light mode recorded somewhere the editor does not see", RunItemStatus.PASSED, editor.runItem(fixture.testCases().getFirst().getUuid()).map(RunItem::getStatus).orElseThrow());
             assertEquals(RunItemStatus.PASSED, fixture.runItemStatusOf(fixture.testCases().getFirst()));
             Await.until("the editor's walk did not move with light mode", () -> editor.getWalk().getCurrentlyExecutingIndex() == 1);
 
@@ -477,7 +477,7 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
             typed.setText("The dashboard stayed blank");
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
             final @NotNull TestCase walked = fixture.testCases().getFirst();
-            Services.getInstance(getProject(), TestRuns.class).changeRunItems(fixture.testRun().getPath(), testRun -> testRun.getAll().removeIf(runItem -> runItem.getId().equals(walked.getId())));
+            Services.getInstance(getProject(), TestRuns.class).changeRunItems(fixture.testRun().getPath(), testRun -> testRun.getAll().removeIf(runItem -> runItem.getUuid().equals(walked.getUuid())));
 
             press(frame, Shortcuts.Enter.getKey());
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();

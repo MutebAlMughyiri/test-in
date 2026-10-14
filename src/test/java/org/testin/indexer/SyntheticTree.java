@@ -39,11 +39,10 @@ final class SyntheticTree {
               "format" : %d
             }""".formatted(TestProjectMarker.FORMAT);
 
-    static @NotNull String testCase(final @NotNull UUID testCaseId, final @NotNull String order) {
+    static @NotNull String testCase(final @NotNull String order) {
         return """
                 {
                   "order" : "%s",
-                  "id" : "%s",
                   "description" : "Log in with a valid user and reach the dashboard",
                   "expectedResult" : "The dashboard opens and the user name is shown",
                   "status" : "REVIEWED",
@@ -58,7 +57,7 @@ final class SyntheticTree {
                   "module" : "Authentication",
                   "testData" : "user=valid.user password=****",
                   "preConditions" : "The user exists and is not locked"
-                }""".formatted(order, testCaseId);
+                }""".formatted(order);
     }
 
     static @NotNull String marker() {
@@ -76,8 +75,8 @@ final class SyntheticTree {
             write(set.resolve(".testset"), MARKER);
 
             for (int testCaseIndex = 0; testCaseIndex < perSet; testCaseIndex++) {
-                final @NotNull UUID testCaseId = UUID.randomUUID();
-                write(set.resolve(testCaseId + ".testcase"), testCase(testCaseId, "a" + testCaseIndex));
+                final @NotNull UUID testCaseUuid = UUID.randomUUID();
+                write(set.resolve(testCaseUuid + ".testcase"), testCase("a" + testCaseIndex));
             }
         }
 

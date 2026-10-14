@@ -93,9 +93,9 @@ public final class GlobalSearch {
             final @NotNull Optional<RunItems> recorded = testRuns.findRunItems(node.getPath());
             if (recorded.isEmpty()) continue;
 
-            final @NotNull Set<UUID> covered = recorded.orElseThrow().coveredIds();
+            final @NotNull Set<UUID> covered = recorded.orElseThrow().coveredUuids();
             testCases.stream()
-                    .filter(testCase -> covered.contains(testCase.getId()))
+                    .filter(testCase -> covered.contains(testCase.getUuid()))
                     .map(testCase -> Hit.of(testCase, node))
                     .forEach(rows::add);
         }

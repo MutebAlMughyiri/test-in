@@ -74,28 +74,28 @@ final class PendingChangeFactory {
     private static @NotNull PendingChange testCase(final @NotNull GitStatusKind gitStatusKind, final @NotNull String beforeJson, final @NotNull String afterJson, final @NotNull Path relativePath, final @NotNull JsonCodec mapper) {
         final @NotNull String testSet = parentName(relativePath);
         // Rule-INTERNAL-012
-        final @NotNull UUID testCaseId = FileKind.TEST_CASE.idIn(relativePath).orElseGet(UUID::randomUUID);
+        final @NotNull UUID testCaseUuid = FileKind.TEST_CASE.uuidIn(relativePath).orElseGet(UUID::randomUUID);
 
         return switch (gitStatusKind) {
             case ADDED -> {
-                final @NotNull TestCase newState = TestCase.read(mapper, afterJson, testCaseId);
+                final @NotNull TestCase newState = TestCase.read(mapper, afterJson, testCaseUuid);
                 yield new PendingChange(ChangeSubject.TEST_CASE, newState.getDescription(), testSet,
-                        testCaseId.toString(), relativePath, GitStatusKind.ADDED, nothingCommitted(),
+                        testCaseUuid.toString(), relativePath, GitStatusKind.ADDED, nothingCommitted(),
                         List.of(new FieldChange(Bundle.message("caption.test.case"), "", newState.getDescription(), ChangeSubject.TEST_CASE.getCreated())));
             }
             case DELETED -> {
-                final @NotNull TestCase oldState = TestCase.read(mapper, beforeJson, testCaseId);
+                final @NotNull TestCase oldState = TestCase.read(mapper, beforeJson, testCaseUuid);
                 yield new PendingChange(ChangeSubject.TEST_CASE, oldState.getDescription(), testSet,
-                        testCaseId.toString(), relativePath, GitStatusKind.DELETED, oldState,
+                        testCaseUuid.toString(), relativePath, GitStatusKind.DELETED, oldState,
                         List.of(new FieldChange(Bundle.message("caption.test.case"), oldState.getDescription(), "", ChangeSubject.TEST_CASE.getRemoved())));
             }
             case MODIFIED -> {
-                final @NotNull TestCase oldState = TestCase.read(mapper, beforeJson, testCaseId);
-                final @NotNull TestCase newState = TestCase.read(mapper, afterJson, testCaseId);
+                final @NotNull TestCase oldState = TestCase.read(mapper, beforeJson, testCaseUuid);
+                final @NotNull TestCase newState = TestCase.read(mapper, afterJson, testCaseUuid);
                 final @NotNull List<FieldChange> fieldChanges = TestCaseFieldChanges.compare(oldState, newState);
 
                 yield new PendingChange(ChangeSubject.TEST_CASE, newState.getDescription(), testSet,
-                        testCaseId.toString(), relativePath, GitStatusKind.MODIFIED, oldState,
+                        testCaseUuid.toString(), relativePath, GitStatusKind.MODIFIED, oldState,
                         fieldChanges.isEmpty()
                                 ? List.of(new FieldChange(Bundle.message("caption.test.case"), "", Bundle.message("git.change.no.field"), ChangeSubject.TEST_CASE.getChanged()))
                                 : fieldChanges);
@@ -105,8 +105,8 @@ final class PendingChangeFactory {
 
     // UC-SHARE-010, Rule-SHARE-047
     private static @NotNull PendingChange runItem(final @NotNull GitStatusKind gitStatusKind, final @NotNull String beforeJson, final @NotNull String afterJson, final @NotNull Path relativePath, final @NotNull JsonCodec mapper, final @NotNull Function<UUID, Optional<TestCase>> testCases) {
-        final @NotNull Optional<UUID> testCaseId = FileKind.RUN_ITEM.idIn(relativePath);
-        final @NotNull Optional<TestCase> testCase = testCaseId.flatMap(testCases);
+        final @NotNull Optional<UUID> testCaseUuid = FileKind.RUN_ITEM.uuidIn(relativePath);
+        final @NotNull Optional<TestCase> testCase = testCaseUuid.flatMap(testCases);
 
         final @NotNull String name = testCase.map(TestCase::getDescription).filter(description -> !description.isBlank())
                 .orElseGet(() -> String.valueOf(relativePath.getFileName()));
@@ -121,7 +121,7 @@ final class PendingChangeFactory {
                     read(mapper, beforeJson, RunItem.class), read(mapper, afterJson, RunItem.class));
         };
 
-        return new PendingChange(ChangeSubject.RUN_ITEM, name, testSet, testCaseId.map(UUID::toString).orElse(""),
+        return new PendingChange(ChangeSubject.RUN_ITEM, name, testSet, testCaseUuid.map(UUID::toString).orElse(""),
                 relativePath, gitStatusKind, nothingCommitted(), changes);
     }
 

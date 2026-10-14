@@ -38,13 +38,13 @@ import static org.testng.Assert.assertTrue;
 
 public class PendingChangeFactoryTest {
 
-    private static final UUID ID = UUID.randomUUID();
+    private static final UUID TEST_CASE_UUID = UUID.randomUUID();
 
-    private static final Path PATH = Path.of("Test Cases", "login", ID + ".testcase");
+    private static final Path PATH = Path.of("Test Cases", "login", TEST_CASE_UUID + ".testcase");
 
     private static @NotNull TestCase testCase(final String description) {
         return TestCase.builder()
-                .id(ID)
+                .uuid(TEST_CASE_UUID)
                 .description(description)
                 .expectedResult("the balance is shown")
                 .steps(new ArrayList<>(List.of("open the app", "log in")))
@@ -66,7 +66,7 @@ public class PendingChangeFactoryTest {
 
         assertNotNull(diff);
         assertEquals(diff.gitStatusKind(), GitStatusKind.ADDED);
-        assertEquals(diff.testCaseId(), added.getId().toString());
+        assertEquals(diff.testCaseUuid(), added.getUuid().toString());
         assertEquals(diff.relativeFilePath(), PATH);
         assertTrue(diff.committed().getDescription().isEmpty(), "an added file has no before state");
 
@@ -100,7 +100,7 @@ public class PendingChangeFactoryTest {
     public void aModifiedFileListsOnlyTheFieldsThatChanged() {
         final TestCase before = testCase("the original description");
         final TestCase after = testCase("the original description")
-                .setId(before.getId())
+                .setUuid(before.getUuid())
                 .setModule("billing")
                 .setPriority(Priority.HIGH);
 
@@ -131,17 +131,17 @@ public class PendingChangeFactoryTest {
 
     @Test
     public void aRunItemIsItsOwnKindOfChange() {
-        final UUID testCaseId = UUID.randomUUID();
+        final UUID testCaseUuid = UUID.randomUUID();
         final String before = """
-                {"id":"%s"}""".formatted(testCaseId);
+                {"default":1,"executions":[{"status":"PENDING"}]}""";
         final String after = """
-                {"id":"%s","executions":[{"status":"PASSED","actualResult":"Signed in"}]}""".formatted(testCaseId);
+                {"default":1,"executions":[{"status":"PASSED","actualResult":"Signed in"}]}""";
 
         final PendingChange change = PendingChangeFactory.fromFile(
-                GitStatusKind.MODIFIED, before, after, Path.of("Test Runs", "cycle 4", testCaseId + ".runitem"), RealJsonCodec.build(), _ -> Optional.empty());
+                GitStatusKind.MODIFIED, before, after, Path.of("Test Runs", "cycle 4", testCaseUuid + ".runitem"), RealJsonCodec.build(), _ -> Optional.empty());
 
         assertEquals(change.subject(), ChangeSubject.RUN_ITEM);
-        assertEquals(change.testCaseId(), testCaseId.toString(), "the result says which test case it is about");
+        assertEquals(change.testCaseUuid(), testCaseUuid.toString(), "the run item says which test case it is about");
         assertFalse(change.isRevertible(), "a run item status is a record of work, not an edit to undo");
         assertFalse(change.fieldChanges().isEmpty(), "and the row says what the run item status became");
         assertEquals(change.fieldChanges().getFirst().newValue(), "Passed");
@@ -200,7 +200,7 @@ public class PendingChangeFactoryTest {
     public void everyKindOfChangeCanNameItsTestCase() {
         final TestCase added = testCase("added");
         final TestCase before = testCase("before");
-        final TestCase after = testCase("after").setId(before.getId());
+        final TestCase after = testCase("after").setUuid(before.getUuid());
 
         assertEquals(PendingChangeFactory.fromFile(GitStatusKind.ADDED, "", json(added), PATH, RealJsonCodec.build(), _ -> Optional.empty())
                 .name(), "added");
@@ -230,8 +230,8 @@ public class PendingChangeFactoryTest {
     @Test
     public void onlyAChangeToATestCaseCanBePutBack() {
         final @NotNull TestCase before = testCase("before");
-        final @NotNull TestCase after = testCase("after").setId(before.getId());
-        final @NotNull UUID testCaseId = UUID.randomUUID();
+        final @NotNull TestCase after = testCase("after").setUuid(before.getUuid());
+        final @NotNull UUID testCaseUuid = UUID.randomUUID();
 
         assertTrue(PendingChangeFactory.fromFile(GitStatusKind.ADDED, "", json(after), PATH, RealJsonCodec.build(), _ -> Optional.empty()).isRevertible(),
                 "a new test case can be taken out again");
@@ -241,7 +241,7 @@ public class PendingChangeFactoryTest {
                 "a changed field can be put back");
 
         assertFalse(PendingChangeFactory.fromFile(GitStatusKind.MODIFIED, "{\"status\":\"PENDING\"}", "{\"status\":\"PASSED\"}",
-                Path.of("Test Runs", "cycle 4", testCaseId + ".runitem"), RealJsonCodec.build(), _ -> Optional.empty()).isRevertible(), "a run item status is not a change to a test case");
+                Path.of("Test Runs", "cycle 4", testCaseUuid + ".runitem"), RealJsonCodec.build(), _ -> Optional.empty()).isRevertible(), "a run item status is not a change to a test case");
         assertFalse(PendingChangeFactory.fromFile(GitStatusKind.MODIFIED, "{\"status\":\"ACTIVE\"}", "{\"status\":\"ARCHIVED\"}",
                 Path.of("Test Cases", "login", ".testset"), RealJsonCodec.build(), _ -> Optional.empty()).isRevertible(), "a marker is not a change to a test case");
         assertFalse(PendingChangeFactory.fromFile(GitStatusKind.ADDED, "", "notes",

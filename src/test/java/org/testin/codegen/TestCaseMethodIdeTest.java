@@ -45,12 +45,12 @@ public class TestCaseMethodIdeTest extends AbstractCodegenIdeTest {
     }
 
     // Rule-CODEGEN-013
-    public void testTestNameCarriesTheTestCaseId() {
+    public void testTestNameCarriesTheTestCaseUuid() {
         final @NotNull TestCase testCase = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
 
         final @NotNull PsiMethod testMethod = generatedClass(LOGIN_TEST).orElseThrow().getMethods()[0];
 
-        assertEquals("testName does not carry the test case id, so nothing could find the method afterward", "\"" + testCase.getId() + "\"", attributeOf(testMethod, "testName"));
+        assertEquals("testName does not carry the test case UUID, so nothing could find the method afterward", "\"" + testCase.getUuid() + "\"", attributeOf(testMethod, "testName"));
     }
 
     // Rule-CODEGEN-003

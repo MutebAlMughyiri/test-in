@@ -47,14 +47,14 @@ record UpdateTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor
 
         TestinLogger.trace("update test cases: " + selectedTestCases.stream().map(TestCase::getDescription).collect(Collectors.joining(", ")));
 
-        final @NotNull List<UUID> testCaseIds = TestCaseSnapshot.idsOf(selectedTestCases);
-        final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(project, path, testCaseIds);
+        final @NotNull List<UUID> testCaseUuids = TestCaseSnapshot.uuidsOf(selectedTestCases);
+        final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(project, path, testCaseUuids);
 
         open.accept(new UpdateTestCaseMenu(project, selectedTestCases, (updatedTestCases, field) -> ApplicationManager.getApplication().executeOnPooledThread(() ->
-                save(path, testCaseIds, before, updatedTestCases, field))));
+                save(path, testCaseUuids, before, updatedTestCases, field))));
     }
 
-    private void save(final @NotNull Path path, final @NotNull List<UUID> testCaseIds, final @NotNull TestCaseSnapshot before, final @NotNull List<TestCase> updatedTestCases, final @NotNull UpdateTestCaseFields field) {
+    private void save(final @NotNull Path path, final @NotNull List<UUID> testCaseUuids, final @NotNull TestCaseSnapshot before, final @NotNull List<TestCase> updatedTestCases, final @NotNull UpdateTestCaseFields field) {
         int counted = 0;
         for (final TestCase testCase : updatedTestCases)
             if (testCases.putTestCase(path, testCase)) counted++;
@@ -62,7 +62,7 @@ record UpdateTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor
 
         if (written == 0) return;
 
-        TestCaseSnapshot.record(project, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.update"), updatedTestCases), before, TestCaseSnapshot.of(project, path, testCaseIds));
+        TestCaseSnapshot.record(project, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.update"), updatedTestCases), before, TestCaseSnapshot.of(project, path, testCaseUuids));
 
         ApplicationManager.getApplication().invokeLater(() -> {
             // Rule-EDITOR-PANEL-008

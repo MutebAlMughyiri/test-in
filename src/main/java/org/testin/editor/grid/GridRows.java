@@ -50,7 +50,7 @@ public final class GridRows {
     }
 
     private static @NotNull RunItem runItemOf(final @NotNull TestCase testCase, final @NotNull Map<UUID, RunItem> runItems) {
-        return Optional.ofNullable(runItems.get(testCase.getId())).orElseGet(() -> RunItem.pendingFor(testCase));
+        return Optional.ofNullable(runItems.get(testCase.getUuid())).orElseGet(() -> RunItem.pendingFor(testCase));
     }
 
     // Rule-EDITOR-PANEL-272, Rule-EDITOR-PANEL-014

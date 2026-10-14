@@ -16,7 +16,7 @@ This is the fastest way to reach one test set, one test run or one test case.
 - **Rule-INTERNAL-001** — Nodes are found by name, from the first character
   typed. Test cases are found from the second character on, and every field of a
   test case is searched:
-    1. its description, its id, its steps and its expected result
+    1. its description, its UUID, its steps and its expected result
     2. its priority, its status, its groups and its module
     3. its preconditions, its reference and its test data
     4. where it sits in the tree, and its generated code
@@ -61,7 +61,7 @@ This is the fastest way to reach one test set, one test run or one test case.
   was typed. That is not how many it shows: the list stops at fifty.
 - **Rule-INTERNAL-074** — Nothing in a search row is lined up into a column.
   The path sits against the name it belongs to, whatever length the name is.
-- **Rule-INTERNAL-098** — A test case id also finds the test runs that ran it:
+- **Rule-INTERNAL-098** — A test case UUID also finds the test runs that ran it:
   one row for each test run holding a run item status for a test case that
   matched, after the test cases themselves. The row carries the test run's icon
   and the test run's path, because Rule-INTERNAL-072 says the icon is the tree's
@@ -105,7 +105,7 @@ the IDE, and the tree is only where it lands.
    the field changes to the icon of whichever row is selected.
 3. **Nothing is lined up into columns.** The path sits against the name it
    belongs to, whatever length the name is.
-4. **A test run that ran it.** Searching a test case id lists the test case,
+4. **A test run that ran it.** Searching a test case UUID lists the test case,
    then one row for every test run that recorded a run item status for it. The
    row reads the same as the test case's own, so the path under it is what says
    which test run it was, and the icon is the test run's.

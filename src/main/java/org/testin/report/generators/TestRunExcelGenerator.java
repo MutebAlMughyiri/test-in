@@ -102,7 +102,7 @@ public final class TestRunExcelGenerator {
 
     // Rule-REPORT-019, Rule-REPORT-020
     private static void writeTestCases(final @NotNull Worksheet worksheet, final @NotNull RunItems runItems) {
-        worksheet.value(0, 0, Bundle.message("report.excel.caption.id"));
+        worksheet.value(0, 0, Bundle.message("report.excel.caption.uuid"));
         worksheet.value(0, 1, Bundle.message("caption.test.case"));
         worksheet.value(0, 2, TestRunEditorFields.RUN_STATUS.getName());
         worksheet.value(0, 3, TestRunEditorFields.ACTUAL_RESULT.getName());
@@ -116,10 +116,10 @@ public final class TestRunExcelGenerator {
         int row = 1;
         for (final RunItem runItem : runItems.getAll()) {
             ProgressManager.checkCanceled();
-            final @NotNull UUID testCaseId = runItem.getId();
+            final @NotNull UUID testCaseUuid = runItem.getUuid();
             final @NotNull TestCase details = runItem.shownTestCase();
 
-            worksheet.value(row, 0, testCaseId.toString());
+            worksheet.value(row, 0, testCaseUuid.toString());
             worksheet.value(row, 1, orNotAvailable(details.getDescription()));
             worksheet.value(row, 2, runItem.getStatus().getLabel());
             // Rule-REPORT-027

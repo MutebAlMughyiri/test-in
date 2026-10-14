@@ -67,7 +67,7 @@ final class IndexingScanner {
     }
 
     private static boolean looksLikeATestCaseFile(final @NotNull Path file) {
-        return FileKind.TEST_CASE.idIn(file).isPresent();
+        return FileKind.TEST_CASE.uuidIn(file).isPresent();
     }
 
     // Rule-INTERNAL-091
@@ -214,7 +214,7 @@ final class IndexingScanner {
 
             scanned.getTestSets().put(path.toString(), testSet);
 
-            final @NotNull List<UUID> testCaseIds = TestCaseStore.testCaseIds(List.of());
+            final @NotNull List<UUID> testCaseUuids = TestCaseStore.testCaseUuids(List.of());
 
             try (Stream<Path> files = Files.list(path)) {
                 files.filter(Files::isRegularFile)
@@ -222,21 +222,21 @@ final class IndexingScanner {
                         .parallel()
                         .forEach(filePath -> {
                             // Rule-INTERNAL-012
-                            final @NotNull Optional<UUID> testCaseId = FileKind.TEST_CASE.idIn(filePath);
-                            if (testCaseId.isEmpty()) {
+                            final @NotNull Optional<UUID> testCaseUuid = FileKind.TEST_CASE.uuidIn(filePath);
+                            if (testCaseUuid.isEmpty()) {
                                 scanned.getHandNamedTestCases().add(path.getFileName() + "/" + filePath.getFileName());
                                 return;
                             }
 
                             try {
-                                final @NotNull TestCase testCase = TestCase.read(mapper, Files.readString(filePath), testCaseId.orElseThrow());
+                                final @NotNull TestCase testCase = TestCase.read(mapper, Files.readString(filePath), testCaseUuid.orElseThrow());
                                 testCase.setParent(testSet);
 
-                                if (scanned.getTestCasesById().put(testCase.getId(), testCase) != null) {
+                                if (scanned.getTestCasesByUuid().put(testCase.getUuid(), testCase) != null) {
                                     scanned.getClashingTestCases().add(testSet.getName() + "/" + filePath.getFileName());
                                 }
 
-                                testCaseIds.add(testCase.getId());
+                                testCaseUuids.add(testCase.getUuid());
                             } catch (final IOException | UncheckedIOException ex) {
                                 TestinLogger.error("Failed to read test case '" + filePath.toAbsolutePath() +
                                         "': " + FailureText.of(ex));
@@ -247,9 +247,9 @@ final class IndexingScanner {
                         });
             }
 
-            scanned.getTestCaseIdsByTestSet().put(path.toString(), testCaseIds);
+            scanned.getTestCaseUuidsByTestSet().put(path.toString(), testCaseUuids);
 
-            indicator.setText(Bundle.message("indexer.progress.test.set", testSet.getName(), String.valueOf(testCaseIds.size())));
+            indicator.setText(Bundle.message("indexer.progress.test.set", testSet.getName(), String.valueOf(testCaseUuids.size())));
 
         } catch (final IOException | UncheckedIOException ex) {
             TestinLogger.error("Failed to scan test set '" +
@@ -334,15 +334,15 @@ final class IndexingScanner {
 
         for (final Path file : testDataFiles.runItemsIn(testRunPath)) {
             // Rule-INTERNAL-094
-            final @NotNull Optional<UUID> testCaseId = FileKind.RUN_ITEM.idIn(file);
-            if (testCaseId.isEmpty()) {
+            final @NotNull Optional<UUID> testCaseUuid = FileKind.RUN_ITEM.uuidIn(file);
+            if (testCaseUuid.isEmpty()) {
                 scanned.getHandNamedRunItems().add(testRunPath.getFileName() + "/" + file.getFileName());
                 continue;
             }
 
             try {
                 final @NotNull RunItem runItem = mapper.readValue(Files.readAllBytes(file), RunItem.class);
-                runItem.setId(testCaseId.orElseThrow());
+                runItem.setUuid(testCaseUuid.orElseThrow());
                 read.add(runItem);
 
             } catch (final IOException | UncheckedIOException ex) {

@@ -163,7 +163,7 @@ public class ExportFlowIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull TestCase aTestCase(final @NotNull TestSetNode testSet, final @NotNull String description) {
-        final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description(description).order("m" + description.length()).build();
+        final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description(description).order("m" + description.length()).build();
         assertTrue("the test case was not written", indexedTestCases().putTestCaseVerbatim(testSet.getPath(), testCase));
         return testCase;
     }
@@ -178,9 +178,9 @@ public class ExportFlowIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestSetNode login = new NodesOnDisk(getProject()).testSet(testProject.getTestCasesFolder(), "Login");
         final @NotNull TestCase first = aTestCase(login, "log in with a valid user");
         final @NotNull TestCase second = aTestCase(login, "a wrong password is refused");
-        final @NotNull Path firstFile = login.getPath().resolve(first.getId() + ".testcase");
+        final @NotNull Path firstFile = login.getPath().resolve(first.getUuid() + ".testcase");
         final byte @NotNull [] firstBefore = bytesOf(firstFile);
-        final byte @NotNull [] secondBefore = bytesOf(login.getPath().resolve(second.getId() + ".testcase"));
+        final byte @NotNull [] secondBefore = bytesOf(login.getPath().resolve(second.getUuid() + ".testcase"));
         final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
 
         final @NotNull JComponent dialog = theExportDialogFor(login);
@@ -191,9 +191,9 @@ public class ExportFlowIdeTest extends AbstractTempRootIdeTest {
         exported(said, 2);
 
         assertArrayEquals("the test case file changed on disk", firstBefore, bytesOf(firstFile));
-        assertArrayEquals("the second test case file changed on disk", secondBefore, bytesOf(login.getPath().resolve(second.getId() + ".testcase")));
-        assertEquals("the test case Testin holds changed", "log in with a valid user", indexedTestCases().findTestCase(first.getId()).orElseThrow().getDescription());
-        assertEquals("a wrong password is refused", indexedTestCases().findTestCase(second.getId()).orElseThrow().getDescription());
+        assertArrayEquals("the second test case file changed on disk", secondBefore, bytesOf(login.getPath().resolve(second.getUuid() + ".testcase")));
+        assertEquals("the test case Testin holds changed", "log in with a valid user", indexedTestCases().findTestCase(first.getUuid()).orElseThrow().getDescription());
+        assertEquals("a wrong password is refused", indexedTestCases().findTestCase(second.getUuid()).orElseThrow().getDescription());
     }
 
     // UC-SHARE-001, Rule-SHARE-009

@@ -118,12 +118,12 @@ public class HistoryTab {
         reading.setRepeats(false);
         reading.start();
 
-        final @NotNull Map<Path, String> runItemsNow = BugHistory.runItemsNow(project, testCase.getId());
+        final @NotNull Map<Path, String> runItemsNow = BugHistory.runItemsNow(project, testCase.getUuid());
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
             final @NotNull History history = testCases.testCaseFile(testCase)
-                    .or(() -> TestCaseHistory.deletedFile(project, testCase.getId()))
-                    .map(file -> BugHistory.addTo(TestCaseHistory.read(project, file, testCases.findTestCase(testCase.getId())), project, file, testCase.getId(), runItemsNow))
+                    .or(() -> TestCaseHistory.deletedFile(project, testCase.getUuid()))
+                    .map(file -> BugHistory.addTo(TestCaseHistory.read(project, file, testCases.findTestCase(testCase.getUuid())), project, file, testCase.getUuid(), runItemsNow))
                     .orElseGet(() -> History.failed(Bundle.message("view.history.no.file")));
 
             ApplicationManager.getApplication().invokeLater(() -> {

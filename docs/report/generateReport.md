@@ -55,7 +55,7 @@ cannot.
   item status.
 - **Rule-REPORT-021** — Every row names its test case the way the test run shows
   it, in every format. A test case deleted since the test run was made is named
-  as the test run names it, Deleted test case and its id; no row is left blank
+  as the test run names it, Deleted test case and its UUID; no row is left blank
   or printed as a dash.
 - **Rule-REPORT-022** — Words printed on a run item status's color, in every
   format, are white or near-black, whichever contrasts more with that color.

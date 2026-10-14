@@ -35,17 +35,17 @@ import static org.testng.Assert.assertTrue;
 
 public class DeletedTestCaseInATestRunTest {
 
-    private static @NotNull RunItem removedRunItem(final UUID testCaseId) {
+    private static @NotNull RunItem removedRunItem(final UUID testCaseUuid) {
         return RunItem.builder()
-                .id(testCaseId).removed(true)
+                .uuid(testCaseUuid).removed(true)
                 .build();
     }
 
     @Test
     public void aRowWhoseTestCaseIsGoneSaysSoByName() {
-        final UUID testCaseId = UUID.randomUUID();
+        final UUID testCaseUuid = UUID.randomUUID();
 
-        assertTrue(removedRunItem(testCaseId).isRemoved(),
+        assertTrue(removedRunItem(testCaseUuid).isRemoved(),
                 "the run item status path, the details editor and the walker all ask this");
     }
 
@@ -56,13 +56,13 @@ public class DeletedTestCaseInATestRunTest {
 
     @Test
     public void theRowStillShowsAndStillNamesItsTestCase() {
-        final UUID testCaseId = UUID.randomUUID();
-        final RunItem runItem = removedRunItem(testCaseId);
+        final UUID testCaseUuid = UUID.randomUUID();
+        final RunItem runItem = removedRunItem(testCaseUuid);
 
         final TestCase shown = runItem.shownTestCase();
 
-        assertEquals(shown.getId(), testCaseId, "the id is the only identity a deleted test case has left");
-        assertTrue(shown.getDescription().contains(testCaseId.toString()),
+        assertEquals(shown.getUuid(), testCaseUuid, "the UUID is the only identity a deleted test case has left");
+        assertTrue(shown.getDescription().contains(testCaseUuid.toString()),
                 "the row names itself rather than drawing blank: " + shown.getDescription());
     }
 
@@ -70,7 +70,7 @@ public class DeletedTestCaseInATestRunTest {
     @Test
     public void aRowNeverJudgedOfADeletedTestCaseIsShownRemoved() {
         final RunItem runItem = RunItem.builder()
-                .id(UUID.randomUUID())
+                .uuid(UUID.randomUUID())
                 .removed(true)
                 .build();
 
@@ -81,7 +81,7 @@ public class DeletedTestCaseInATestRunTest {
     @Test
     public void aJudgedRunItemOfADeletedTestCaseShowsRemovedAndKeepsItsRunItemStatusInTheFile() {
         final RunItem runItem = RunItem.builder()
-                .id(UUID.randomUUID())
+                .uuid(UUID.randomUUID())
                 .removed(true).executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()))
                 .build();
 

@@ -49,7 +49,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class KnownBugIssueStatesIdeTest extends AbstractTempRootIdeTest {
 
-    private static final @NotNull UUID TEST_CASE_ID = UUID.fromString("66666666-6666-4666-8666-666666666693");
+    private static final @NotNull UUID TEST_CASE_UUID = UUID.fromString("66666666-6666-4666-8666-666666666693");
     private static final @NotNull String FIXED = "https://github.com/mtb550/test-03/issues/9";
     private static final @NotNull String OPEN = "https://github.com/mtb550/test-03/issues/14";
     private static final @NotNull String ANSWER = """
@@ -69,7 +69,7 @@ public class KnownBugIssueStatesIdeTest extends AbstractTempRootIdeTest {
     }
 
     private void filed(final @NotNull String testRun, final @NotNull String bugIssueUrl) {
-        final @NotNull RunItem failed = RunItem.builder().id(TEST_CASE_ID).bugIssueUrl(bugIssueUrl).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build();
+        final @NotNull RunItem failed = RunItem.builder().uuid(TEST_CASE_UUID).bugIssueUrl(bugIssueUrl).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build();
         Services.getInstance(getProject(), TestRuns.class).putRunItems(root.resolve("NAFATH").resolve("Test Runs").resolve(testRun), RunItems.builder().all(new ArrayList<>(List.of(failed))).build());
     }
 
@@ -112,7 +112,7 @@ public class KnownBugIssueStatesIdeTest extends AbstractTempRootIdeTest {
         assertEquals(Bundle.message("bug.state.fixed"), states().of(FIXED).label());
         assertEquals(Bundle.message("bug.state.open"), states().of(OPEN).label());
 
-        final @NotNull List<BugCard> bugs = BugHistory.addTo(History.NOT_UNDER_GIT, getProject(), new TestCaseFile(root.resolve("NAFATH"), Path.of("Test Cases", "Login", TEST_CASE_ID + ".testcase")), TEST_CASE_ID, BugHistory.runItemsNow(getProject(), TEST_CASE_ID)).bugs();
+        final @NotNull List<BugCard> bugs = BugHistory.addTo(History.NOT_UNDER_GIT, getProject(), new TestCaseFile(root.resolve("NAFATH"), Path.of("Test Cases", "Login", TEST_CASE_UUID + ".testcase")), TEST_CASE_UUID, BugHistory.runItemsNow(getProject(), TEST_CASE_UUID)).bugs();
         assertEquals("the fixed bug left the history", 2, bugs.size());
 
         final @NotNull List<String> fixed = Drawn.words(BugIssueLink.of(getProject(), FIXED));

@@ -37,12 +37,12 @@ public class CopiedTestCasesIdeTest extends BasePlatformTestCase {
     }
 
     // Rule-INTERNAL-012, Rule-EDITOR-PANEL-262
-    public void testATestCaseOnTheClipboardKeepsItsIdAndOneWithoutIsNotATestCase() {
+    public void testATestCaseOnTheClipboardKeepsItsUuidAndOneWithoutIsNotATestCase() {
         final TestCase copied = TestCase.builder().description("Log in").build();
         CopyPasteManager.getInstance().setContents(new StringSelection(CopiedTestCases.json(getProject(), List.of(copied))));
-        assertEquals("the clipboard lost the test case's id, so a cut would paste a new test case", List.of(copied.getId()), CopiedTestCases.onTheClipboard(getProject()).stream().map(TestCase::getId).toList());
+        assertEquals("the clipboard lost the test case's UUID, so a cut would paste a new test case", List.of(copied.getUuid()), CopiedTestCases.onTheClipboard(getProject()).stream().map(TestCase::getUuid).toList());
 
         CopyPasteManager.getInstance().setContents(new StringSelection(Services.getInstance(getProject(), JsonCodec.class).writeValueAsString(List.of(copied))));
-        assertTrue("a test case's JSON without its id was read as one waiting to be pasted", CopiedTestCases.onTheClipboard(getProject()).isEmpty());
+        assertTrue("a test case's JSON without its UUID was read as one waiting to be pasted", CopiedTestCases.onTheClipboard(getProject()).isEmpty());
     }
 }

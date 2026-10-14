@@ -63,7 +63,7 @@ public class JsonCodecFailureTest {
         final TestCase readBack = mapper.readValue(mapper.writeValueAsString(original), TestCase.class);
 
         assertEquals(readBack.getDescription(), original.getDescription());
-        assertEquals(readBack.getId(), original.getId());
+        assertEquals(readBack.getUuid(), original.getUuid());
     }
 
     @Test

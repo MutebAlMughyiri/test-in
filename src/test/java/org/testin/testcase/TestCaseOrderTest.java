@@ -33,7 +33,7 @@ public class TestCaseOrderTest {
 
     private static @NotNull TestCase testCase(final String description, final String rank) {
         return TestCase.builder()
-                .id(UUID.randomUUID())
+                .uuid(UUID.randomUUID())
                 .description(description)
                 .order(rank)
                 .createdAt(ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS))
@@ -68,8 +68,8 @@ public class TestCaseOrderTest {
     public void testCasesWithNoRankComeLastWithTheOldestFirst() {
         final @NotNull ZonedDateTime now = ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS);
         final @NotNull TestCase ranked = testCase("sign in", "c");
-        final @NotNull TestCase older = TestCase.builder().id(UUID.randomUUID()).description("copied in last week").createdAt(now.minusDays(7)).build();
-        final @NotNull TestCase newer = TestCase.builder().id(UUID.randomUUID()).description("copied in today").createdAt(now).build();
+        final @NotNull TestCase older = TestCase.builder().uuid(UUID.randomUUID()).description("copied in last week").createdAt(now.minusDays(7)).build();
+        final @NotNull TestCase newer = TestCase.builder().uuid(UUID.randomUUID()).description("copied in today").createdAt(now).build();
 
         assertEquals(TestCaseOrder.ordered(List.of(newer, ranked, older)), List.of(ranked, older, newer),
                 "test cases with no place yet sort after every placed one, the oldest of them first");
@@ -94,7 +94,7 @@ public class TestCaseOrderTest {
         final List<TestCase> arranged = new ArrayList<>(List.of(first, third, second));
         final List<TestCase> moved = TestCaseOrder.place(arranged);
         final List<TestCase> placed = arranged.stream()
-                .map(testCase -> moved.stream().filter(copy -> copy.getId().equals(testCase.getId())).findFirst().orElse(testCase))
+                .map(testCase -> moved.stream().filter(copy -> copy.getUuid().equals(testCase.getUuid())).findFirst().orElse(testCase))
                 .toList();
 
         assertEquals(moved.size(), 1, "one drag, one file");
@@ -111,7 +111,7 @@ public class TestCaseOrderTest {
         final List<TestCase> moved = TestCaseOrder.place(new ArrayList<>(List.of(ranked, arrived)));
 
         assertEquals(moved.size(), 1);
-        assertEquals(moved.getFirst().getId(), arrived.getId());
+        assertEquals(moved.getFirst().getUuid(), arrived.getUuid());
         assertEquals(ranked.getOrder(), "c");
         assertEquals(TestCaseOrder.ordered(List.of(moved.getFirst(), ranked)), List.of(ranked, moved.getFirst()));
     }

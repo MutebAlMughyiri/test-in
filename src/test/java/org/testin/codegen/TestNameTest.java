@@ -27,35 +27,35 @@ import static org.testng.Assert.assertTrue;
 
 public class TestNameTest {
 
-    private static final UUID ID = UUID.fromString("0f8fad5b-d9cb-469f-a165-70867728950e");
+    private static final UUID TEST_CASE_UUID = UUID.fromString("0f8fad5b-d9cb-469f-a165-70867728950e");
 
     @Test
-    public void theFirstAttemptIsTheTestCaseId() {
-        assertEquals(TestName.testCaseId(ID.toString()), Optional.of(ID));
+    public void theFirstAttemptIsTheTestCaseUuid() {
+        assertEquals(TestName.testCaseUuid(TEST_CASE_UUID.toString()), Optional.of(TEST_CASE_UUID));
     }
 
     // Rule-CODEGEN-110
     @Test
     public void aRetriedAttemptNamesTheSameTestCase() {
-        assertEquals(TestName.testCaseId(ID + " (1)"), Optional.of(ID), "the IDE numbers each attempt TestNG retries");
-        assertEquals(TestName.testCaseId(ID + " (12)"), Optional.of(ID));
+        assertEquals(TestName.testCaseUuid(TEST_CASE_UUID + " (1)"), Optional.of(TEST_CASE_UUID), "the IDE numbers each attempt TestNG retries");
+        assertEquals(TestName.testCaseUuid(TEST_CASE_UUID + " (12)"), Optional.of(TEST_CASE_UUID));
     }
 
     @Test
-    public void aNameThatIsNotAnIdNamesNoTestCase() {
-        assertTrue(TestName.testCaseId("logsIn").isEmpty());
-        assertTrue(TestName.testCaseId(ID + " (one)").isEmpty());
+    public void aNameThatIsNotAUuidNamesNoTestCase() {
+        assertTrue(TestName.testCaseUuid("logsIn").isEmpty());
+        assertTrue(TestName.testCaseUuid(TEST_CASE_UUID + " (one)").isEmpty());
     }
 
     // Rule-CODEGEN-112
     @Test
     public void aDataProviderRowNamesTheSameTestCase() {
-        assertEquals(TestName.testCaseId(ID + "[1234]"), Optional.of(ID));
-        assertEquals(TestName.testCaseId(ID + "[0000] (1)"), Optional.of(ID), "a later row is numbered like any other start");
+        assertEquals(TestName.testCaseUuid(TEST_CASE_UUID + "[1234]"), Optional.of(TEST_CASE_UUID));
+        assertEquals(TestName.testCaseUuid(TEST_CASE_UUID + "[0000] (1)"), Optional.of(TEST_CASE_UUID), "a later row is numbered like any other start");
     }
 
     @Test
-    public void anIdInCapitalsIsTheSameTestCase() {
-        assertEquals(TestName.testCaseId(ID.toString().toUpperCase(Locale.ROOT)), Optional.of(ID), "the IDE's name is no longer lowercased");
+    public void aUuidInCapitalsIsTheSameTestCase() {
+        assertEquals(TestName.testCaseUuid(TEST_CASE_UUID.toString().toUpperCase(Locale.ROOT)), Optional.of(TEST_CASE_UUID), "the IDE's name is no longer lowercased");
     }
 }

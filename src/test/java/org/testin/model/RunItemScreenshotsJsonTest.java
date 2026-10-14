@@ -39,7 +39,7 @@ public class RunItemScreenshotsJsonTest {
 
     @Test
     public void theTestRunFileNamesTheScreenshotsAndHoldsNoPicture() {
-        final RunItem written = RunItem.builder().id(UUID.randomUUID()).executions(List.of(RunItemExecution.builder().stacktrace("boom").screenshots(List.of(NAME)).build())).build();
+        final RunItem written = RunItem.builder().uuid(UUID.randomUUID()).executions(List.of(RunItemExecution.builder().stacktrace("boom").screenshots(List.of(NAME)).build())).build();
 
         try {
             final String json = new String(RealJsonCodec.build().writeValueAsBytes(written), StandardCharsets.UTF_8);
@@ -57,7 +57,7 @@ public class RunItemScreenshotsJsonTest {
     @Test
     public void aRunItemWithNoScreenshotWritesNoKey() {
         try {
-            final String json = new String(RealJsonCodec.build().writeValueAsBytes(RunItem.builder().id(UUID.randomUUID()).build()), StandardCharsets.UTF_8);
+            final String json = new String(RealJsonCodec.build().writeValueAsBytes(RunItem.builder().uuid(UUID.randomUUID()).build()), StandardCharsets.UTF_8);
 
             assertFalse(json.contains("screenshots"), json);
         } catch (final Exception ex) {

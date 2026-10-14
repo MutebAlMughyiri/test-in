@@ -60,7 +60,7 @@ public class TestRunGridEditListener extends AbstractGridEditListener {
 
         if (!field.isEdited()) return GridEdit.UNCHANGED;
 
-        final @NotNull Optional<RunItem> found = editor.runItem(onThisRow.getId());
+        final @NotNull Optional<RunItem> found = editor.runItem(onThisRow.getUuid());
         if (found.isEmpty()) return GridEdit.UNCHANGED;
         final @NotNull RunItem runItem = found.orElseThrow();
 
@@ -86,7 +86,7 @@ public class TestRunGridEditListener extends AbstractGridEditListener {
         }
 
         final @NotNull String typed = String.valueOf(model.getValueAt(row, column));
-        testRuns.changeRunItem(editor.getParent().getPath(), onThisRow.getId(), result -> field.getRunItemValueSetter().execute(result, typed));
+        testRuns.changeRunItem(editor.getParent().getPath(), onThisRow.getUuid(), result -> field.getRunItemValueSetter().execute(result, typed));
         final @NotNull String after = field.getRunItemValueExtractor().apply(runItem);
 
         model.setValueAt(after, row, column);

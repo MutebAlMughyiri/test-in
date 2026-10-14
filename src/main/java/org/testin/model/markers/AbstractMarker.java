@@ -39,7 +39,7 @@ import java.time.temporal.ChronoUnit;
 public abstract class AbstractMarker implements Marker {
     // Rule-INTERNAL-090, Rule-TREE-PANEL-051, Rule-INTERNAL-083
     @NonNull
-    private String id = "";
+    private String uuid = "";
 
     private int order = Marker.NOT_ORDERED;
     @NonNull

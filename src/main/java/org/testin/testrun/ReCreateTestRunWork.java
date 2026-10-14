@@ -47,7 +47,7 @@ record ReCreateTestRunWork(@NotNull Project project, @NotNull TestRuns testRuns,
     }
 
     private void reCreate(final @NotNull TestRunNode source, final @NotNull AbstractNode parent) {
-        final @NotNull Set<UUID> testCases = testRuns.getRunItems(source.getPath()).coveredIds();
+        final @NotNull Set<UUID> testCases = testRuns.getRunItems(source.getPath()).coveredUuids();
 
         final @NotNull Set<String> taken = nodes.getChildren(parent.getPath()).stream()
                 .map(AbstractNode::getName)

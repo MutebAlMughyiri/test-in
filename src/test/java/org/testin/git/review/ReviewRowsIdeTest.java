@@ -73,7 +73,7 @@ public class ReviewRowsIdeTest extends AbstractGitRemoteIdeTest {
         final @NotNull TestProjectNode demo = new NodesOnDisk(getProject()).testProject(work);
         login = new NodesOnDisk(getProject()).testSet(demo.getTestCasesFolder(), "Login");
         first = new NodesOnDisk(getProject()).testCase(login);
-        second = TestCase.builder().id(UUID.randomUUID()).description("A wrong password is refused").order("n").build();
+        second = TestCase.builder().uuid(UUID.randomUUID()).description("A wrong password is refused").order("n").build();
         assertTrue(indexedTestCases().putTestCaseVerbatim(login.getPath(), second));
         commitAll(work, "the Login test set");
 
@@ -92,11 +92,11 @@ public class ReviewRowsIdeTest extends AbstractGitRemoteIdeTest {
     }
 
     private void typed(final @NotNull TestCase testCase, final @NotNull String description) {
-        assertTrue("the edit was not saved", indexedTestCases().putTestCase(login.getPath(), indexedTestCases().findTestCase(testCase.getId()).orElseThrow().edit().description(description).build()));
+        assertTrue("the edit was not saved", indexedTestCases().putTestCase(login.getPath(), indexedTestCases().findTestCase(testCase.getUuid()).orElseThrow().edit().description(description).build()));
     }
 
     private @NotNull String onDisk(final @NotNull TestCase testCase) {
-        return Services.getInstance(getProject(), JsonCodec.class).readValue(read(work, work.relativize(login.getPath()).resolve(testCase.getId() + ".testcase").toString()), TestCase.class).getDescription();
+        return Services.getInstance(getProject(), JsonCodec.class).readValue(read(work, work.relativize(login.getPath()).resolve(testCase.getUuid() + ".testcase").toString()), TestCase.class).getDescription();
     }
 
     private @NotNull JBTable theReviewTable() {

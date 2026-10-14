@@ -36,7 +36,7 @@ public class AgentCommandTest {
 
     private static @NotNull TestCase aTestCase() {
         return TestCase.builder()
-                .id(UUID.randomUUID())
+                .uuid(UUID.randomUUID())
                 .description("Sign in with a valid account")
                 .expectedResult("The dashboard opens")
                 .testData("1098765432 / Passw0rd!")
@@ -91,7 +91,7 @@ public class AgentCommandTest {
 
         assertEquals(written, "signInWithAValidAccount: Sign in with a valid account / The dashboard opens"
                 + " / 1098765432 / Passw0rd! / The account is active / Accounts / ");
-        assertFalse(written.contains(testCase.getId().toString()), "the test case id is not the agent's business");
+        assertFalse(written.contains(testCase.getUuid().toString()), "the test case UUID is not the agent's business");
     }
 
     // Rule-CODEGEN-086

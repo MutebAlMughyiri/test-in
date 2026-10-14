@@ -49,7 +49,7 @@ public class SearchTest {
     }
 
     private static @NotNull TestCase testCase(final String description, final TestSetNode in) {
-        final TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description(description).build();
+        final TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description(description).build();
         testCase.setParent(in);
 
         return testCase;

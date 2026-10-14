@@ -43,11 +43,11 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReportBug {
     // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-067
-    public static void start(final @NotNull Project project, final @NotNull TestRunNode testRunNode, final @NotNull UUID runItemId, final @NotNull TestCase testCase, final @NotNull Runnable redraw) {
+    public static void start(final @NotNull Project project, final @NotNull TestRunNode testRunNode, final @NotNull UUID runItemUuid, final @NotNull TestCase testCase, final @NotNull Runnable redraw) {
         final @NotNull TestRuns testRuns = Services.getInstance(project, TestRuns.class);
         final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
         final @NotNull OpenBugReports reports = Services.getInstance(project, OpenBugReports.class);
-        final @NotNull RunItemPath runItemPath = new RunItemPath(testRunNode.getPath(), runItemId);
+        final @NotNull RunItemPath runItemPath = new RunItemPath(testRunNode.getPath(), runItemUuid);
 
         final @NotNull Optional<RunItems> runItems = testRuns.findRunItems(runItemPath.testRunPath());
         final @NotNull Optional<RunItem> failed = runItems.flatMap(runItemPath::failedIn);

@@ -55,7 +55,7 @@ The copy is new and separate. Changing it never changes the original.
   never. A test run always says its status, because where a cycle stands is what
   the tree is read for.
 - **Rule-TREE-PANEL-051** — A copied test case is a new test case, with its own
-  id. Editing the copy never changes the original.
+  UUID. Editing the copy never changes the original.
 - **Rule-TREE-PANEL-052** — A copy cannot be undone. To take one back, remove
   it, which is [UC-TREE-PANEL-012](removeNode.md).
 - **Rule-TREE-PANEL-053** — A copy carries everything the original had, as well
@@ -90,7 +90,7 @@ into '\<folder\>'?*.
 4. The tester presses `Ctrl+V`, or chooses **Actions → Paste**.
 5. The **Paste** dialog asks what will be copied, and where to.
 6. The tester presses `Enter`. The nodes are duplicated, and Testin shows *Pasted*, or *Pasted N*.
-7. Every test case in the copy gets its own id, and the copy is selected in the
+7. Every test case in the copy gets its own UUID, and the copy is selected in the
    tree.
 
 **By dragging.** The tester holds `Ctrl` while releasing a dragged node. The
@@ -105,7 +105,7 @@ The same refusals as a move, and they are on
 in the notification log, with the reason under it.
 
 **If one copied test case cannot be given its new identity** — its file under
-the new id cannot be written — the file it was copied as is kept rather than
+the new UUID cannot be written — the file it was copied as is kept rather than
 removed, and the writer says that writing it failed. That file still carries the
 original's identity, so the next scan reports the two as one test case in two
 files, which the tester can resolve; removing it would have left the copy one

@@ -31,7 +31,7 @@ public final class TestCaseOrder {
             .comparing((TestCase testCase) -> testCase.getOrder().isEmpty())
             .thenComparing(TestCase::getOrder)
             .thenComparing(TestCase::getCreatedAt)
-            .thenComparing(TestCase::getId);
+            .thenComparing(TestCase::getUuid);
 
     // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-013
     public static @NotNull List<TestCase> ordered(final @NotNull List<TestCase> testCases) {
@@ -41,7 +41,7 @@ public final class TestCaseOrder {
     // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-014
     public static int positionOf(final @NotNull List<TestCase> ordered, final @NotNull TestCase testCase) {
         for (int i = 0; i < ordered.size(); i++) {
-            if (ordered.get(i).getId().equals(testCase.getId())) return i + 1;
+            if (ordered.get(i).getUuid().equals(testCase.getUuid())) return i + 1;
         }
 
         return ordered.size() + 1;

@@ -154,16 +154,14 @@ public class ReadTestProjectIdeTest extends AbstractReadTheRootIdeTest {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-012
-    public void testATestCaseIsKnownByItsFileNameNotByWhatTheFileSays() {
+    public void testATestCaseIsKnownByItsFileName() {
         final @NotNull Path testProjectPath = aTestProjectAt(root.resolve("Checkout"));
         final @NotNull Path testSet = marked(theTestCasesOf(testProjectPath).resolve("Login"), NodeType.TEST_SET);
         final @NotNull UUID byName = UUID.randomUUID();
-        final @NotNull UUID inside = UUID.randomUUID();
-        SyntheticTree.write(testSet.resolve(FileKind.TEST_CASE.fileName(byName)), SyntheticTree.testCase(inside, "m"));
+        SyntheticTree.write(testSet.resolve(FileKind.TEST_CASE.fileName(byName)), SyntheticTree.testCase("m"));
 
         readEverything();
 
-        assertTrue("the test case was not read under the id its file name gives", indexedTestCases().findTestCase(byName).isPresent());
-        assertTrue("the test case was read under the id its file says", indexedTestCases().findTestCase(inside).isEmpty());
+        assertTrue("the test case was not read under the UUID its file name gives", indexedTestCases().findTestCase(byName).isPresent());
     }
 }

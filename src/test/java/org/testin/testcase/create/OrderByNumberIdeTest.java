@@ -39,7 +39,7 @@ public class OrderByNumberIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull TestCase stored(final @NotNull TestCase testCase) {
-        return theTestCases().findTestCase(testCase.getId()).orElseThrow();
+        return theTestCases().findTestCase(testCase.getUuid()).orElseThrow();
     }
 
     private @NotNull TestCase movedTo(final int position, final @NotNull TestCase testCase) {
@@ -62,17 +62,17 @@ public class OrderByNumberIdeTest extends AbstractTempRootIdeTest {
 
         final @NotNull TestCase moved = movedTo(1, last);
 
-        Await.until("the unplaced test cases were never given places", () -> unplaced.stream().filter(testCase -> !testCase.getId().equals(last.getId())).noneMatch(testCase -> stored(testCase).getOrder().isEmpty()));
+        Await.until("the unplaced test cases were never given places", () -> unplaced.stream().filter(testCase -> !testCase.getUuid().equals(last.getUuid())).noneMatch(testCase -> stored(testCase).getOrder().isEmpty()));
         final @NotNull List<TestCase> nowOrdered = TestCaseOrder.ordered(theTestCases().getTestCasesForTestSet(testSet.getPath()));
-        assertEquals("the typed position meant nothing among test cases that had no place", moved.getId(), nowOrdered.getFirst().getId());
+        assertEquals("the typed position meant nothing among test cases that had no place", moved.getUuid(), nowOrdered.getFirst().getUuid());
         final @NotNull Map<String, String> placed = FilesUnder.snapshot(testSet.getPath());
 
         movedTo(3, moved);
 
         assertEquals("the placing happened a second time", placed.keySet(), FilesUnder.snapshot(testSet.getPath()).keySet());
         for (final TestCase testCase : unplaced) {
-            if (testCase.getId().equals(moved.getId())) continue;
-            final @NotNull String file = placed.keySet().stream().filter(name -> name.contains(testCase.getId().toString())).findFirst().orElseThrow();
+            if (testCase.getUuid().equals(moved.getUuid())) continue;
+            final @NotNull String file = placed.keySet().stream().filter(name -> name.contains(testCase.getUuid().toString())).findFirst().orElseThrow();
             assertEquals("a test case around the one moved was written again", placed.get(file), FilesUnder.snapshot(testSet.getPath()).get(file));
         }
     }

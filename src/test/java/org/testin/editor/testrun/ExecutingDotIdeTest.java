@@ -59,7 +59,7 @@ public class ExecutingDotIdeTest extends AbstractCodegenIdeTest {
     }
 
     private boolean executingNow(final @NotNull TestCase testCase) {
-        return ExecutingNow.is(getProject(), testCase.getId());
+        return ExecutingNow.is(getProject(), testCase.getUuid());
     }
 
     private static @NotNull List<Offered> runAndNavigate() {
@@ -95,7 +95,7 @@ public class ExecutingDotIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), EditorFixtures.testRunOver(getProject(), root, testCases), getTestRootDisposable());
         try {
             TestCaseQuickAction.RUN_TEST_METHOD.executeFor(editor, testCases.getFirst());
-            assertTrue("the run button did not hand the test case over", Services.getInstance(getProject(), TestNGExecution.class).isRunning(testCases.getFirst().getId()));
+            assertTrue("the run button did not hand the test case over", Services.getInstance(getProject(), TestNGExecution.class).isRunning(testCases.getFirst().getUuid()));
 
             assertFalse("a test case TestNG has not started yet shows as executing", executingNow(testCases.getFirst()));
         } finally {

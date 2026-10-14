@@ -78,7 +78,7 @@ public class WrapsToWidthIdeTest extends AbstractViewPanelIdeTest {
     // Rule-VIEW-PANEL-124
     public void testANarrowerPanelMovesTheBugChipAndItsLinkToASecondRowRatherThanHidingThem() {
         final @NotNull TestCase testCase = aTestCase(aTestSet("Transfers"), "No retry, fails (transfer) - expect Failed at once.", "1");
-        final @NotNull TestRunNode testRun = aTestRun(List.of(RunItem.builder().id(testCase.getId())
+        final @NotNull TestRunNode testRun = aTestRun(List.of(RunItem.builder().uuid(testCase.getUuid())
                 .executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The transfer went through although it was above the balance").build())).build()));
         view.getPanel().show(List.of(testCase), testRun.treePath());
         settled();

@@ -57,7 +57,7 @@ public class ChangeOneFieldIdeTest extends AbstractViewPanelIdeTest {
     }
 
     private @NotNull String descriptionOf(final @NotNull TestCase testCase) {
-        return Services.getInstance(getProject(), TestCases.class).findTestCase(testCase.getId()).map(TestCase::getDescription).orElse("");
+        return Services.getInstance(getProject(), TestCases.class).findTestCase(testCase.getUuid()).map(TestCase::getDescription).orElse("");
     }
 
     private void changeTheDescriptionTo(final @NotNull String now) {
@@ -69,7 +69,7 @@ public class ChangeOneFieldIdeTest extends AbstractViewPanelIdeTest {
 
     private @NotNull Path fileOf(final @NotNull TestCase testCase) {
         try (final Stream<Path> files = Files.walk(testSet.getPath())) {
-            return files.filter(Files::isRegularFile).filter(file -> file.getFileName().toString().contains(testCase.getId().toString())).findFirst()
+            return files.filter(Files::isRegularFile).filter(file -> file.getFileName().toString().contains(testCase.getUuid().toString())).findFirst()
                     .orElseThrow(() -> new AssertionError("the test case has no file in " + testSet.getPath()));
         } catch (final IOException ex) {
             throw new AssertionError("Could not look for the test case's file: " + ex.getMessage(), ex);
@@ -113,7 +113,7 @@ public class ChangeOneFieldIdeTest extends AbstractViewPanelIdeTest {
     // Rule-VIEW-PANEL-046
     public void testAnEditOfACopyHandedOverWithoutItsTestSetIsWrittenToTheTestSetThatHoldsIt() {
         final @NotNull TestCase testCase = aTestCase(testSet, "Log in with a valid user", "a");
-        final @NotNull TestCase handed = TestCase.builder().id(testCase.getId()).description(testCase.getDescription()).build();
+        final @NotNull TestCase handed = TestCase.builder().uuid(testCase.getUuid()).description(testCase.getDescription()).build();
         view.getPanel().show(List.of(handed), List.of());
 
         changeTheDescriptionTo("Sign in with a valid user");

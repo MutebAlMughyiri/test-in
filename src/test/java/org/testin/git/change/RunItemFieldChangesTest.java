@@ -51,7 +51,7 @@ public class RunItemFieldChangesTest {
 
     private static @NotNull RunItem base() {
         return RunItem.builder()
-                .id(JUDGED_TEST_CASE)
+                .uuid(JUDGED_TEST_CASE)
                 .bugSeverity(BugSeverity.MAJOR)
                 .bugPriority(BugPriority.HIGH)
                 .bugIssueUrl("https://github.com/mtb550/test-in/issues/305").executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The dashboard never opened").stacktrace("java.lang.AssertionError: no dashboard").executedBy("Mohammed AlZamil").executedAt(EXECUTED_AT).screenshots(List.of("a1b2c.png")).build()))
@@ -66,7 +66,7 @@ public class RunItemFieldChangesTest {
 
     @Test
     public void comparesEverythingARunItemRecords() {
-        final List<FieldChange> changes = RunItemFieldChanges.compare(new RunItem().setId(JUDGED_TEST_CASE), base());
+        final List<FieldChange> changes = RunItemFieldChanges.compare(new RunItem().setUuid(JUDGED_TEST_CASE), base());
 
         assertEquals(changes.size(), 9, "a field a tester filled in and the review does not list cannot be read"
                 + " before committing it: " + changes);

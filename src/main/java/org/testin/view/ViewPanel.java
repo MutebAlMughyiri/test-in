@@ -220,17 +220,17 @@ public class ViewPanel implements Disposable {
 
     // Rule-VIEW-PANEL-005, Rule-CODEGEN-111
     private void executionReported(final @NotNull TestCase testCase, final @NotNull TestNGExecutionStatus testNGExecutionStatus) {
-        if (testNGExecutionStatus.stillGoing()) reloadDetailsIfShowing(testCase.getId());
-        else if (shows(testCase.getId())) refreshCurrentView();
+        if (testNGExecutionStatus.stillGoing()) reloadDetailsIfShowing(testCase.getUuid());
+        else if (shows(testCase.getUuid())) refreshCurrentView();
     }
 
     // Rule-VIEW-PANEL-005, Rule-VIEW-PANEL-125
-    public void reloadDetailsIfShowing(final @NotNull UUID testCaseId) {
-        if (shows(testCaseId)) ViewTab.DETAILS.load(this);
+    public void reloadDetailsIfShowing(final @NotNull UUID testCaseUuid) {
+        if (shows(testCaseUuid)) ViewTab.DETAILS.load(this);
     }
 
-    private boolean shows(final @NotNull UUID testCaseId) {
-        return getCurrentTestCase().filter(current -> current.getId().equals(testCaseId)).isPresent();
+    private boolean shows(final @NotNull UUID testCaseUuid) {
+        return getCurrentTestCase().filter(current -> current.getUuid().equals(testCaseUuid)).isPresent();
     }
 
     // Rule-VIEW-PANEL-008
@@ -241,7 +241,7 @@ public class ViewPanel implements Disposable {
     // Rule-VIEW-PANEL-005
     public void refreshIfShowing(final @NotNull Collection<TestCase> updated) {
         getCurrentTestCase()
-                .filter(current -> updated.stream().anyMatch(testCase -> testCase.getId().equals(current.getId())))
+                .filter(current -> updated.stream().anyMatch(testCase -> testCase.getUuid().equals(current.getUuid())))
                 .ifPresent(_ -> refreshCurrentView());
     }
 
@@ -260,7 +260,7 @@ public class ViewPanel implements Disposable {
     }
 
     private @NotNull TestCase liveOf(final @NotNull TestCase shown) {
-        return testCases.findTestCase(shown.getId()).orElse(shown);
+        return testCases.findTestCase(shown.getUuid()).orElse(shown);
     }
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-083
@@ -269,7 +269,7 @@ public class ViewPanel implements Disposable {
         if (treePath.isEmpty()) return Optional.empty();
 
         return getCurrentTestCase().flatMap(shown -> testRuns.findRunItems(testinRoot.resolve(treePath))
-                .flatMap(testRun -> testRun.runItemOf(shown.getId())));
+                .flatMap(testRun -> testRun.runItemOf(shown.getUuid())));
     }
 
     // UC-VIEW-PANEL-001, Rule-VIEW-PANEL-011, Rule-VIEW-PANEL-012

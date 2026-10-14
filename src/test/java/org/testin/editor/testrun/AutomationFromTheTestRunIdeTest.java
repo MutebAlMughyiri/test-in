@@ -91,7 +91,7 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
     }
 
     private @NotNull RunItem runItemOf(final @NotNull TestRunNode testRun, final @NotNull TestCase testCase) {
-        return Services.getInstance(getProject(), TestRuns.class).getRunItems(testRun.getPath()).runItemOf(testCase.getId()).orElseThrow();
+        return Services.getInstance(getProject(), TestRuns.class).getRunItems(testRun.getPath()).runItemOf(testCase.getUuid()).orElseThrow();
     }
 
     private void reported(final @NotNull TestCase testCase, final @NotNull TestNGExecutionStatus testNGExecutionStatus, final @NotNull Duration duration) {
@@ -102,7 +102,7 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
     private @NotNull Map<?, ?> writtenRunItem(final @NotNull TestRunNode testRun, final @NotNull TestCase testCase) {
         Services.getInstance(getProject(), TestRuns.class).awaitWrites();
         try {
-            return Services.getInstance(getProject(), JsonCodec.class).readValue(Files.readString(testRun.getPath().resolve(FileKind.RUN_ITEM.fileName(testCase.getId()))), Map.class);
+            return Services.getInstance(getProject(), JsonCodec.class).readValue(Files.readString(testRun.getPath().resolve(FileKind.RUN_ITEM.fileName(testCase.getUuid()))), Map.class);
         } catch (final IOException ex) {
             throw new AssertionError("the run item of '" + testCase.getDescription() + "' was never written", ex);
         }
@@ -189,7 +189,7 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
     // Rule-EDITOR-PANEL-241
     public void testRunningAJudgedRunItemAgainIsOneMoreExecutionAfterTheOnesBefore() {
         final @NotNull TestCase testCase = automatedTestCases(1).getFirst();
-        final @NotNull RunItem failed = RunItem.builder().id(testCase.getId()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The session was dropped").build())).build();
+        final @NotNull RunItem failed = RunItem.builder().uuid(testCase.getUuid()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The session was dropped").build())).build();
         final @NotNull TestRunNode testRun = aTestRun("Cycle-1", List.of(failed));
         final @NotNull TestRunEditor editor = opened(testRun);
         try {
@@ -213,25 +213,25 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestNGExecution execution = Services.getInstance(getProject(), TestNGExecution.class);
         try {
             TestCaseQuickAction.RUN_TEST_METHOD.executeFor(editor, testCases.getFirst());
-            assertTrue(execution.isRunning(testCases.getFirst().getId()));
+            assertTrue(execution.isRunning(testCases.getFirst().getUuid()));
 
             editor.getToolBar().getToolbarItem(RefreshButton.class).doClick();
             Await.until("refresh never finished", () -> editor.loadedRunItems().isPresent());
             editor.getList().setSelectedIndex(1);
             Gestures.press(getProject(), TestRunFixture.keyFor(editor, RunItemStatus.BLOCKED), editor.getList());
-            assertTrue("something other than the tester's stop ended the automation", execution.isRunning(testCases.getFirst().getId()));
+            assertTrue("something other than the tester's stop ended the automation", execution.isRunning(testCases.getFirst().getUuid()));
 
             editor.onStopExecutionClicked();
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
-            assertFalse("the tester's stop did not end the automation this editor started", execution.isRunning(testCases.getFirst().getId()));
+            assertFalse("the tester's stop did not end the automation this editor started", execution.isRunning(testCases.getFirst().getUuid()));
 
             TestCaseQuickAction.RUN_TEST_METHOD.executeFor(editor, testCases.get(2));
-            assertTrue(execution.isRunning(testCases.get(2).getId()));
+            assertTrue(execution.isRunning(testCases.get(2).getUuid()));
         } finally {
             Disposer.dispose(editor);
         }
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
-        assertFalse("closing the tab did not end the automation this editor started", execution.isRunning(testCases.get(2).getId()));
+        assertFalse("closing the tab did not end the automation this editor started", execution.isRunning(testCases.get(2).getUuid()));
     }
 
     // Rule-EDITOR-PANEL-184, Rule-EDITOR-PANEL-185

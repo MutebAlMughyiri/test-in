@@ -76,7 +76,7 @@ public class TestCaseNumberIdeTest extends AbstractCodegenIdeTest {
     }
 
     private static byte @NotNull [] fileOf(final @NotNull TestCase testCase) {
-        final @NotNull Path file = testCase.getParent().getPath().resolve(FileKind.TEST_CASE.fileName(testCase.getId()));
+        final @NotNull Path file = testCase.getParent().getPath().resolve(FileKind.TEST_CASE.fileName(testCase.getUuid()));
         try {
             return Files.readAllBytes(file);
         } catch (final IOException ex) {

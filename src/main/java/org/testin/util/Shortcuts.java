@@ -163,7 +163,7 @@ public enum Shortcuts {
     ),
 
     CopyStatus(
-            KeyStroke.getKeyStroke(KeyEvent.VK_U, 0)
+            KeyStroke.getKeyStroke(KeyEvent.VK_Z, 0)
     ),
 
     CopyReference(
@@ -174,8 +174,8 @@ public enum Shortcuts {
             KeyStroke.getKeyStroke(KeyEvent.VK_F, 0)
     ),
 
-    CopyId(
-            KeyStroke.getKeyStroke(KeyEvent.VK_I, 0)
+    CopyUuid(
+            KeyStroke.getKeyStroke(KeyEvent.VK_U, 0)
     ),
 
     CopyPath(
@@ -279,7 +279,7 @@ public enum Shortcuts {
     ),
 
     UpdateTestCaseStatus(
-            KeyStroke.getKeyStroke(KeyEvent.VK_U, 0)
+            KeyStroke.getKeyStroke(KeyEvent.VK_Z, 0)
     );
 
     public static final @NotNull KeyStroke NO_KEY = EMPTY.getKey();

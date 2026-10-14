@@ -71,11 +71,11 @@ public final class TestNGExecutionRecorder implements Disposable {
 
         final @NotNull Attempt attempt = new Attempt(testNGExecutionStatus, duration, failure, ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS));
 
-        TestName.testCaseId(testName).flatMap(testCases::findTestCase).ifPresentOrElse(
+        TestName.testCaseUuid(testName).flatMap(testCases::findTestCase).ifPresentOrElse(
                 testCase -> {
                     final @NotNull TestNGExecution execution = Services.getInstance(project, TestNGExecution.class);
-                    execution.attempted(testCase.getId(), attempt).forEach((testCaseId, decided) -> testCases.findTestCase(testCaseId).ifPresent(decidedTestCase -> report(decidedTestCase, decided)));
-                    execution.takeUnwritten(testCase.getId()).ifPresent(live -> show(testCase, live));
+                    execution.attempted(testCase.getUuid(), attempt).forEach((testCaseUuid, decided) -> testCases.findTestCase(testCaseUuid).ifPresent(decidedTestCase -> report(decidedTestCase, decided)));
+                    execution.takeUnwritten(testCase.getUuid()).ifPresent(live -> show(testCase, live));
                 },
                 () -> TestinLogger.debug("  '" + testName + "' is not a generated test case - reported against none"));
     }
@@ -94,7 +94,7 @@ public final class TestNGExecutionRecorder implements Disposable {
 
         TestinLogger.debug("  reporting on '" + testCase.getDescription() + "': " + reportedTestNGExecutionStatus + " from " + decided.all().size() + " attempt(s)");
 
-        Services.getInstance(project, TestNGExecution.class).reported(testCase.getId(), reportedTestNGExecutionStatus);
+        Services.getInstance(project, TestNGExecution.class).reported(testCase.getUuid(), reportedTestNGExecutionStatus);
 
         surfaces.forEach(surface -> surface.accept(testCase, reportedTestNGExecutionStatus, executions, decided.written(), decided.decidingExecution()));
     }

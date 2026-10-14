@@ -70,7 +70,7 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull TestCase aTestCase(final @NotNull TestSetNode testSet, final @NotNull String description, final @NotNull String order, final @NotNull Priority priority, final @NotNull String group) {
-        final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description(description).order(order).priority(priority).groups(new ArrayList<>(List.of(group))).build();
+        final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description(description).order(order).priority(priority).groups(new ArrayList<>(List.of(group))).build();
         testCase.setParent(testSet);
         Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase);
         return testCase;
@@ -139,7 +139,7 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
             Await.until("refresh did not read the new test cases", () -> editor.getAllTestCases().size() == 7 && !editor.isLoading());
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
             assertEquals("refresh did not land on the page now holding the selected test case", 4, editor.getCurrentPage());
-            assertEquals("refresh forgot which test case was selected", testCases.get(4).getId(), editor.getList().getSelectedValue().getId());
+            assertEquals("refresh forgot which test case was selected", testCases.get(4).getUuid(), editor.getList().getSelectedValue().getUuid());
         } finally {
             editor.choosePageSize(TestinEditor.DEFAULT_PAGE_SIZE);
             Disposer.dispose(editor);
@@ -165,7 +165,7 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
             Await.until("refresh did not read the test run again", () -> editor.loadedRunItems().isPresent() && editor.getAllTestCases().size() == 5);
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
             assertEquals("refresh did not land on the page holding the selected test case", 1, editor.getCurrentPage());
-            assertEquals("refresh forgot which test case was selected", testCases.get(4).getId(), editor.getList().getSelectedValue().getId());
+            assertEquals("refresh forgot which test case was selected", testCases.get(4).getUuid(), editor.getList().getSelectedValue().getUuid());
         } finally {
             editor.choosePageSize(TestinEditor.DEFAULT_PAGE_SIZE);
             Disposer.dispose(editor);
@@ -243,9 +243,9 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
 
             pressRefresh(editor);
 
-            Await.until("refresh did not read the test run again", () -> editor.runItem(testCases.get(1).getId()).map(RunItem::getStatus).filter(RunItemStatus.PASSED::equals).isPresent());
+            Await.until("refresh did not read the test run again", () -> editor.runItem(testCases.get(1).getUuid()).map(RunItem::getStatus).filter(RunItemStatus.PASSED::equals).isPresent());
             assertFalse("refresh did not stop the execution", editor.getWalk().isExecuting());
-            assertFalse("the clock kept running on the copy refresh replaced", editor.getWalk().clockIsOn(testCases.getFirst().getId()));
+            assertFalse("the clock kept running on the copy refresh replaced", editor.getWalk().clockIsOn(testCases.getFirst().getUuid()));
             Await.until("the message did not say the execution stopped: " + balloons, () -> balloons.contains(Done.REFRESHED_EXECUTION_STOPPED.getOutcome()));
             assertFalse("the message said only Refreshed", balloons.contains(Done.REFRESHED.getOutcome()));
         } finally {

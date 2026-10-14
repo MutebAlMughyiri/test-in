@@ -29,7 +29,7 @@ import java.util.UUID;
 
 public class TestMethodGutterIdeTest extends AbstractCodegenIdeTest {
 
-    private static final @NotNull String TEST_CASE_ID = UUID.randomUUID().toString();
+    private static final @NotNull String TEST_CASE_UUID = UUID.randomUUID().toString();
 
     private static @NotNull String aTestMethod(final @NotNull String imports, final @NotNull String testName) {
         return LoginTestSource.withImports(imports, testName);
@@ -47,16 +47,16 @@ public class TestMethodGutterIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-CODEGEN-028
     public void testTheMarkIsBesideTheIdentityOnTheRightOfTheGutter() {
-        final @NotNull String text = aTestMethod("import org.testng.annotations.Test;\n", TEST_CASE_ID);
+        final @NotNull String text = aTestMethod("import org.testng.annotations.Test;\n", TEST_CASE_UUID);
 
-        final @NotNull List<GutterMark> marks = gutterMarksAt(text, TEST_CASE_ID);
+        final @NotNull List<GutterMark> marks = gutterMarksAt(text, TEST_CASE_UUID);
 
         assertEquals("the identity inside the annotation has no mark beside it", 1, marks.size());
         assertEquals("the mark is not on the right of the gutter", GutterIconRenderer.Alignment.RIGHT, ((GutterIconRenderer) marks.getFirst()).getAlignment());
     }
 
     // Rule-CODEGEN-029
-    public void testATestNameThatIsNotATestCaseIdHasNoMark() {
+    public void testATestNameThatIsNotATestCaseUuidHasNoMark() {
         final @NotNull String text = aTestMethod("import org.testng.annotations.Test;\n", "Log in");
 
         assertTrue("a testName Testin did not write was given a mark", gutterMarksAt(text, "Log in\")").isEmpty());
@@ -72,8 +72,8 @@ public class TestMethodGutterIdeTest extends AbstractCodegenIdeTest {
                     String testName();
                 }
                 """);
-        final @NotNull String text = aTestMethod("", TEST_CASE_ID);
+        final @NotNull String text = aTestMethod("", TEST_CASE_UUID);
 
-        assertTrue("an annotation that only looks like TestNG's was given a mark", gutterMarksAt(text, TEST_CASE_ID).isEmpty());
+        assertTrue("an annotation that only looks like TestNG's was given a mark", gutterMarksAt(text, TEST_CASE_UUID).isEmpty());
     }
 }

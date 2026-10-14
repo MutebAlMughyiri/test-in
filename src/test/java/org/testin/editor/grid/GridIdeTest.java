@@ -49,26 +49,26 @@ public class GridIdeTest extends BasePlatformTestCase {
     private static final int SEQUENCE = 0;
     private static final int DESCRIPTION = 2;
     private static final int EXPECTED = 4;
-    private static final int ID = 3;
+    private static final int UUID = 3;
 
     private static final @NotNull String DESCRIPTION_WIDTH = EditorKind.TEST_SET.columnWidthKey(TestSetEditorFields.DESCRIPTION.getName());
 
-    private static String @NotNull [] aRow(final int order, final @NotNull String description, final @NotNull String expected, final @NotNull String testCaseId) {
+    private static String @NotNull [] aRow(final int order, final @NotNull String description, final @NotNull String expected, final @NotNull String testCaseUuid) {
         final String[] row = new String[TestSetEditorFields.values().length];
         Arrays.fill(row, "");
         row[TestSetEditorFields.ORDER.column()] = String.valueOf(order);
         row[TestSetEditorFields.DESCRIPTION.column()] = description;
         row[TestSetEditorFields.EXPECTED_RESULT.column()] = expected;
-        row[TestSetEditorFields.ID.column()] = testCaseId;
+        row[TestSetEditorFields.UUID.column()] = testCaseUuid;
         return row;
     }
 
     private static @NotNull JBTable aGrid(final String @NotNull []... rows) {
-        return new GridTables().buildTestTable(List.of(rows), EnumSet.of(TestSetEditorFields.SEQUENCE, TestSetEditorFields.ORDER, TestSetEditorFields.DESCRIPTION, TestSetEditorFields.EXPECTED_RESULT, TestSetEditorFields.ID));
+        return new GridTables().buildTestTable(List.of(rows), EnumSet.of(TestSetEditorFields.SEQUENCE, TestSetEditorFields.ORDER, TestSetEditorFields.DESCRIPTION, TestSetEditorFields.EXPECTED_RESULT, TestSetEditorFields.UUID));
     }
 
     private static @NotNull JBTable twoRows() {
-        return aGrid(aRow(1, "Log in", "The dashboard opens", "id-1"), aRow(2, "Log out", "The login page opens", "id-2"));
+        return aGrid(aRow(1, "Log in", "The dashboard opens", "uuid-1"), aRow(2, "Log out", "The login page opens", "uuid-2"));
     }
 
     private static void selectDownTo(final @NotNull JBTable table, final int lastRow, final int @NotNull ... columns) {
@@ -146,7 +146,7 @@ public class GridIdeTest extends BasePlatformTestCase {
         }
 
         final int expectedBesideTheDescription = 3;
-        final @NotNull JBTable fresh = new GridTables().buildTestTable(List.of(aRow(1, "Log in", "", "id-1"), aRow(2, "Log out", "", "id-2")), EnumSet.of(TestSetEditorFields.SEQUENCE, TestSetEditorFields.ORDER, TestSetEditorFields.DESCRIPTION, TestSetEditorFields.EXPECTED_RESULT));
+        final @NotNull JBTable fresh = new GridTables().buildTestTable(List.of(aRow(1, "Log in", "", "uuid-1"), aRow(2, "Log out", "", "uuid-2")), EnumSet.of(TestSetEditorFields.SEQUENCE, TestSetEditorFields.ORDER, TestSetEditorFields.DESCRIPTION, TestSetEditorFields.EXPECTED_RESULT));
         selectDownTo(fresh, 0, DESCRIPTION);
         onClipboard("A\tB\nC\tD");
 
@@ -161,25 +161,25 @@ public class GridIdeTest extends BasePlatformTestCase {
     // Rule-EDITOR-PANEL-089
     public void testACellThatCannotBeTypedIntoIsSkippedByCutAndByPaste() {
         final @NotNull JBTable table = twoRows();
-        selectDownTo(table, 0, DESCRIPTION, EXPECTED, ID);
+        selectDownTo(table, 0, DESCRIPTION, EXPECTED, UUID);
 
         press(table, GridKeys.CUT);
 
         assertEquals("the cut did not take the description", "", at(table, 0, DESCRIPTION));
         assertEquals("the cut did not take the expected result", "", at(table, 0, EXPECTED));
-        assertEquals("the cut emptied the id, which cannot be typed into", "id-1", at(table, 0, ID));
+        assertEquals("the cut emptied the UUID, which cannot be typed into", "uuid-1", at(table, 0, UUID));
 
         onClipboard("A\tB\tC");
         press(table, GridKeys.PASTE);
 
         assertEquals("A", at(table, 0, DESCRIPTION));
         assertEquals("C", at(table, 0, EXPECTED));
-        assertEquals("the paste wrote into the id, which cannot be typed into", "id-1", at(table, 0, ID));
+        assertEquals("the paste wrote into the UUID, which cannot be typed into", "uuid-1", at(table, 0, UUID));
     }
 
     // Rule-EDITOR-PANEL-047
     public void testOnlyTheColumnsThatCanBeTypedIntoEverOpen() {
-        final @NotNull JBTable table = new GridTables().buildTestTable(List.<String[]>of(aRow(1, "Log in", "The dashboard opens", "id-1")), EnumSet.allOf(TestSetEditorFields.class));
+        final @NotNull JBTable table = new GridTables().buildTestTable(List.<String[]>of(aRow(1, "Log in", "The dashboard opens", "uuid-1")), EnumSet.allOf(TestSetEditorFields.class));
 
         for (int column = 0; column < table.getColumnCount(); column++) {
             final @NotNull TestSetEditorFields field = TestSetEditorFields.atColumn(table.convertColumnIndexToModel(column));
@@ -214,7 +214,7 @@ public class GridIdeTest extends BasePlatformTestCase {
 
     // Rule-EDITOR-PANEL-027
     public void testAColumnTestinSizesFitsItsContentUpToFiveHundredPoints() {
-        final @NotNull JBTable table = aGrid(aRow(1, "W".repeat(400), "Short", "id-1"));
+        final @NotNull JBTable table = aGrid(aRow(1, "W".repeat(400), "Short", "uuid-1"));
 
         assertEquals("a column of long text is not stopped at 500 points", 500, descriptionColumn(table).getPreferredWidth());
 

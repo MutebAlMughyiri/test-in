@@ -157,11 +157,11 @@ public final class PendingChangesDialog extends AbstractFrameworkDialog {
             if (found.isEmpty()) return;
 
             final @NotNull Path testSetPath = found.orElseThrow();
-            final @NotNull UUID testCaseId = UUID.fromString(diff.testCaseId());
-            final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(project, testSetPath, List.of(testCaseId));
+            final @NotNull UUID testCaseUuid = UUID.fromString(diff.testCaseUuid());
+            final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(project, testSetPath, List.of(testCaseUuid));
 
             final boolean reverted = switch (diff.gitStatusKind()) {
-                case ADDED -> removeNewTestCase(testSetPath, testCaseId, before);
+                case ADDED -> removeNewTestCase(testSetPath, testCaseUuid, before);
                 // Rule-INTERNAL-035
                 case DELETED -> testCases.putTestCaseVerbatim(testSetPath, diff.committed());
                 case MODIFIED -> revertField(testSetPath, changeType, diff);
@@ -169,7 +169,7 @@ public final class PendingChangesDialog extends AbstractFrameworkDialog {
 
             if (!reverted) return;
 
-            final @NotNull TestCaseSnapshot after = TestCaseSnapshot.of(project, testSetPath, List.of(testCaseId));
+            final @NotNull TestCaseSnapshot after = TestCaseSnapshot.of(project, testSetPath, List.of(testCaseUuid));
             final @NotNull List<TestCase> named = before.present().isEmpty() ? after.present() : before.present();
             TestCaseSnapshot.record(project, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.revert"), named), before, after);
 
@@ -182,8 +182,8 @@ public final class PendingChangesDialog extends AbstractFrameworkDialog {
     }
 
     // UC-SHARE-011, Rule-CODEGEN-049
-    private boolean removeNewTestCase(final @NotNull Path testSetPath, final @NotNull UUID testCaseId, final @NotNull TestCaseSnapshot before) {
-        if (!testCases.removeTestCase(testSetPath, testCaseId)) return false;
+    private boolean removeNewTestCase(final @NotNull Path testSetPath, final @NotNull UUID testCaseUuid, final @NotNull TestCaseSnapshot before) {
+        if (!testCases.removeTestCase(testSetPath, testCaseUuid)) return false;
 
         CodeChangeType.REMOVE_TEST_CASE.executeAll(project, before.present());
         return true;
@@ -196,7 +196,7 @@ public final class PendingChangesDialog extends AbstractFrameworkDialog {
             return false;
         }
 
-        final @NotNull Optional<TestCase> current = testCases.findTestCase(UUID.fromString(diff.testCaseId()));
+        final @NotNull Optional<TestCase> current = testCases.findTestCase(UUID.fromString(diff.testCaseUuid()));
         if (current.isEmpty()) {
             notifier.softRefuse(project, Bundle.message("dialog.pending.revert.gone"));
             return false;

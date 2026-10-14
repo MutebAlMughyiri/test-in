@@ -54,8 +54,8 @@ public class RunItemFilesIdeTest extends AbstractTempRootIdeTest {
               } ]
             }""";
 
-    private static @NotNull Path runItemOf(final Path testRunPath, final UUID testCaseId) {
-        return testRunPath.resolve(FileKind.RUN_ITEM.fileName(testCaseId));
+    private static @NotNull Path runItemOf(final Path testRunPath, final UUID testCaseUuid) {
+        return testRunPath.resolve(FileKind.RUN_ITEM.fileName(testCaseUuid));
     }
 
     private static void awaitFile(final Path file, final String what) {
@@ -101,8 +101,8 @@ public class RunItemFilesIdeTest extends AbstractTempRootIdeTest {
         });
 
         final List<RunItem> runItems = new ArrayList<>();
-        for (final UUID testCaseId : List.of(JUDGED_TEST_CASE, UNTICKED_TEST_CASE)) {
-            runItems.add(new RunItem().setId(testCaseId).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())));
+        for (final UUID testCaseUuid : List.of(JUDGED_TEST_CASE, UNTICKED_TEST_CASE)) {
+            runItems.add(new RunItem().setUuid(testCaseUuid).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())));
         }
 
         indexedTestRuns().putRunItems(testRunPath, new RunItems().setAll(runItems));
@@ -124,7 +124,7 @@ public class RunItemFilesIdeTest extends AbstractTempRootIdeTest {
         writePulledRunItem(runItemOf(testRun, PULLED_TEST_CASE));
 
         indexedTestRuns().changeRunItems(testRun, runItems -> runItems.setAll(new ArrayList<>(runItems.getAll().stream()
-                .filter(runItem -> runItem.getId().equals(JUDGED_TEST_CASE))
+                .filter(runItem -> runItem.getUuid().equals(JUDGED_TEST_CASE))
                 .toList())));
 
         Await.until("the result of the test case the tester unticked is still in the test run's folder",

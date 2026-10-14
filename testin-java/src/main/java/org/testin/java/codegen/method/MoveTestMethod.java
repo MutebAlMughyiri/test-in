@@ -78,7 +78,7 @@ public class MoveTestMethod extends BaseTestMethodChange implements CodeChange<M
 
         final @NotNull Optional<PsiMethod> method = GeneratedMethod.forTestCase(from.orElseThrow(), testCase);
         if (method.isEmpty()) {
-            TestinLogger.debug("Nothing to move for '" + testCase.getDescription() + "': no method with testName=" + testCase.getId());
+            TestinLogger.debug("Nothing to move for '" + testCase.getDescription() + "': no method with testName=" + testCase.getUuid());
             return Optional.empty();
         }
 

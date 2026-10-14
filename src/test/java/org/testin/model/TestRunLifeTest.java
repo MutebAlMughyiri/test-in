@@ -47,7 +47,7 @@ public class TestRunLifeTest {
         assertEquals(new TestRunMarker().getStatus(), TestRunStatus.CREATED, "a new test run does not start as Created");
 
         final @NotNull RunItems runItems = new RunItems().coverOnly(chosen);
-        assertEquals(runItems.getAll().stream().map(RunItem::getId).toList(), List.copyOf(chosen));
+        assertEquals(runItems.getAll().stream().map(RunItem::getUuid).toList(), List.copyOf(chosen));
         assertEquals(runItems.getAll().stream().map(RunItem::getStatus).distinct().toList(), List.of(RunItemStatus.PENDING),
                 "a test case in a new test run does not start Pending");
     }

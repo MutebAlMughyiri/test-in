@@ -190,7 +190,7 @@ public class GitWorkflowTest {
         }
 
         for (final TestCase testCase : testCases) {
-            write(work, "Test Cases/login flow/" + testCase.getId() + ".testcase", testCase);
+            write(work, "Test Cases/login flow/" + testCase.getUuid() + ".testcase", testCase);
         }
         return testCases;
     }
@@ -245,7 +245,7 @@ public class GitWorkflowTest {
 
         final Path colleague = cloneAsColleague();
         for (final TestCase testCase : testCases) {
-            assertTrue(Files.exists(colleague.resolve("Test Cases/login flow/" + testCase.getId() + ".testcase")),
+            assertTrue(Files.exists(colleague.resolve("Test Cases/login flow/" + testCase.getUuid() + ".testcase")),
                     "the colleague received " + testCase.getDescription());
         }
     }
@@ -288,7 +288,7 @@ public class GitWorkflowTest {
         assertEquals(review(), List.of(), "nothing is pending straight after a commit");
 
         final TestCase edited = testCases.getFirst().setModule("payments");
-        write(work, "Test Cases/login flow/" + edited.getId() + ".testcase", edited);
+        write(work, "Test Cases/login flow/" + edited.getUuid() + ".testcase", edited);
 
         final List<PendingChange> pending = review();
 
@@ -306,7 +306,7 @@ public class GitWorkflowTest {
         commit(stagedFor(review()), "the first commit");
 
         final TestCase extra = testCase("a locked account cannot sign in");
-        write(work, "Test Cases/login flow/" + extra.getId() + ".testcase", extra);
+        write(work, "Test Cases/login flow/" + extra.getUuid() + ".testcase", extra);
 
         final List<PendingChange> pending = review();
 
@@ -321,7 +321,7 @@ public class GitWorkflowTest {
             final List<TestCase> testCases = writeTestProject();
             commit(stagedFor(review()), "the first commit");
 
-            Files.delete(work.resolve("Test Cases/login flow/" + testCases.getFirst().getId() + ".testcase"));
+            Files.delete(work.resolve("Test Cases/login flow/" + testCases.getFirst().getUuid() + ".testcase"));
 
             final List<PendingChange> pending = review();
 
@@ -338,7 +338,7 @@ public class GitWorkflowTest {
         final List<TestCase> testCases = writeTestProject();
         commit(stagedFor(review()), "the first commit");
 
-        final String file = testCases.getFirst().getId() + ".testcase";
+        final String file = testCases.getFirst().getUuid() + ".testcase";
         mustGit(work, "mv", "Test Cases/login flow/" + file, "Test Cases/" + file);
 
         final List<PendingChange> pending = review();
@@ -362,7 +362,7 @@ public class GitWorkflowTest {
             commit(stagedFor(review()), "the first commit");
             mustGit(work, "push", "-u", "origin", "main");
 
-            final String relativePath = "Test Cases/login flow/" + testCases.getFirst().getId() + ".testcase";
+            final String relativePath = "Test Cases/login flow/" + testCases.getFirst().getUuid() + ".testcase";
 
             final Path colleague = cloneAsColleague();
             mustGit(colleague, "config", "user.name", "Colleague");
@@ -426,14 +426,14 @@ public class GitWorkflowTest {
             mustGit(colleague, "config", "user.email", "colleague@example.invalid");
 
             final TestCase theirNewTestCase = testCase("a locked account cannot sign in").setOrder("s");
-            write(colleague, "Test Cases/login flow/" + theirNewTestCase.getId() + ".testcase", theirNewTestCase);
+            write(colleague, "Test Cases/login flow/" + theirNewTestCase.getUuid() + ".testcase", theirNewTestCase);
 
             mustGit(colleague, "add", "-A");
             mustGit(colleague, "commit", "-m", "added the locked account test case");
             mustGit(colleague, "push", "origin", "main");
 
             final TestCase myNewTestCase = testCase("a signed-in user signs out").setOrder("s");
-            write(work, "Test Cases/login flow/" + myNewTestCase.getId() + ".testcase", myNewTestCase);
+            write(work, "Test Cases/login flow/" + myNewTestCase.getUuid() + ".testcase", myNewTestCase);
             commit(stagedFor(review()), "added the sign out test case");
 
             assertTrue(git(work, "pull", "--rebase", "--autostash", "origin", "main").isPresent(),
@@ -451,8 +451,8 @@ public class GitWorkflowTest {
             final List<TestCase> ordered = TestCaseOrder.ordered(after);
             assertEquals(ordered, TestCaseOrder.ordered(new ArrayList<>(after.reversed())),
                     "the order does not depend on what order the files were read in");
-            assertTrue(ordered.stream().anyMatch(testCase -> testCase.getId().equals(theirNewTestCase.getId())));
-            assertTrue(ordered.stream().anyMatch(testCase -> testCase.getId().equals(myNewTestCase.getId())));
+            assertTrue(ordered.stream().anyMatch(testCase -> testCase.getUuid().equals(theirNewTestCase.getUuid())));
+            assertTrue(ordered.stream().anyMatch(testCase -> testCase.getUuid().equals(myNewTestCase.getUuid())));
             assertEquals(mustGit(work, "status", "--porcelain", "-uall").strip(), "");
         } catch (final IOException ex) {
             throw new AssertionError(ex);
@@ -470,7 +470,7 @@ public class GitWorkflowTest {
             mustGit(colleague, "config", "user.name", "Colleague");
             mustGit(colleague, "config", "user.email", "colleague@example.invalid");
 
-            final Path theirCopy = colleague.resolve("Test Cases/login flow/" + testCases.getFirst().getId() + ".testcase");
+            final Path theirCopy = colleague.resolve("Test Cases/login flow/" + testCases.getFirst().getUuid() + ".testcase");
             final TestCase theirs = RealJsonCodec.build().readValue(Files.readString(theirCopy, StandardCharsets.UTF_8), TestCase.class);
             Files.writeString(theirCopy, RealJsonCodec.build().writeValueAsString(theirs.setExpectedResult("the dashboard opens within two seconds")),
                     StandardCharsets.UTF_8);
@@ -481,7 +481,7 @@ public class GitWorkflowTest {
             mustGit(work, "pull", "--rebase", "--autostash", "origin", "main");
 
             final TestCase pulled = RealJsonCodec.build().readValue(
-                    Files.readString(work.resolve("Test Cases/login flow/" + testCases.getFirst().getId() + ".testcase"),
+                    Files.readString(work.resolve("Test Cases/login flow/" + testCases.getFirst().getUuid() + ".testcase"),
                             StandardCharsets.UTF_8), TestCase.class);
 
             assertEquals(pulled.getExpectedResult(), "the dashboard opens within two seconds");

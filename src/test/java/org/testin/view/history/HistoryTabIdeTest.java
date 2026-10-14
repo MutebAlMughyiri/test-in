@@ -65,7 +65,7 @@ public class HistoryTabIdeTest extends AbstractTempRootIdeTest {
     private final @NotNull JBPanel<?> tab = new JBPanel<>(new BorderLayout());
 
     private static @NotNull RunItem failed(final @NotNull TestCase testCase) {
-        return RunItem.builder().id(testCase.getId()).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl("https://github.com/mtb550/test-in/issues/412").executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The basket was emptied").build())).build();
+        return RunItem.builder().uuid(testCase.getUuid()).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl("https://github.com/mtb550/test-in/issues/412").executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The basket was emptied").build())).build();
     }
 
     private @NotNull TestCase aTestCase() {
@@ -98,7 +98,7 @@ public class HistoryTabIdeTest extends AbstractTempRootIdeTest {
             ((ActionLink) Drawn.reading(tab, testRun.getName())).doClick();
             Await.until("the test run did not open", () -> editors.editorFor(testRun).filter(TestRunEditor.class::isInstance).isPresent());
             final @NotNull TestRunEditor opened = (TestRunEditor) editors.editorFor(testRun).orElseThrow();
-            Await.until("the run item was not selected in its test run", () -> Optional.ofNullable(opened.getList().getSelectedValue()).map(TestCase::getId).filter(testCase.getId()::equals).isPresent());
+            Await.until("the run item was not selected in its test run", () -> Optional.ofNullable(opened.getList().getSelectedValue()).map(TestCase::getUuid).filter(testCase.getUuid()::equals).isPresent());
         } finally {
             editors.closeAll();
         }

@@ -74,7 +74,7 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
     }
 
     private static @NotNull RunItem failedWith(final @NotNull TestCase testCase, final @NotNull List<String> screenshots) {
-        return RunItem.builder().id(testCase.getId())
+        return RunItem.builder().uuid(testCase.getUuid())
                 .bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The session was dropped").duration(Duration.ofSeconds(134)).executedBy("muteb").stacktrace("java.lang.AssertionError: expected [true]").screenshots(screenshots).build())).build();
     }
 
@@ -115,7 +115,7 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
         final @NotNull TestSetNode testSet = aTestSet("Login");
         final @NotNull TestCase testCase = everyFieldFilled(aTestCase(testSet, "Log in with a valid user", "a"));
         final @NotNull TestRunNode testRun = aTestRun(List.of(failedWith(testCase, List.of())));
-        final @NotNull JBPanel<?> tab = drawnWithEveryBandOpen(testCase, Services.getInstance(getProject(), TestRuns.class).findRunItems(testRun.getPath()).flatMap(runItems -> runItems.runItemOf(testCase.getId())), testRun.treePath());
+        final @NotNull JBPanel<?> tab = drawnWithEveryBandOpen(testCase, Services.getInstance(getProject(), TestRuns.class).findRunItems(testRun.getPath()).flatMap(runItems -> runItems.runItemOf(testCase.getUuid())), testRun.treePath());
 
         final @NotNull List<Component> drawn = Drawn.components(tab);
         assertTrue("the test case's own band was not drawn open: " + Drawn.words(tab), Drawn.holds(Drawn.words(tab), "The dashboard opens"));
@@ -177,7 +177,7 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
     public void testTheStacktraceLinkComesFirstThenOneThumbnailForEachScreenshot() {
         final @NotNull TestSetNode testSet = aTestSet("Login");
         final @NotNull TestCase testCase = aTestCase(testSet, "Log in with a valid user", "a");
-        final @NotNull TestRunNode testRun = aTestRun(List.of(RunItem.builder().id(testCase.getId()).build()));
+        final @NotNull TestRunNode testRun = aTestRun(List.of(RunItem.builder().uuid(testCase.getUuid()).build()));
         final @NotNull TestRuns testRuns = Services.getInstance(getProject(), TestRuns.class);
         final @NotNull List<String> names = testRuns.storeScreenshots(testRun.getPath(), List.of(aScreenshot(320, 200), aScreenshot(640, 400)));
         assertEquals(2, names.size());
@@ -214,7 +214,7 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
     public void testTheStacktraceAndScreenshotsAreDrawnWhenFieldsHidesTheStacktrace() {
         final @NotNull TestSetNode testSet = aTestSet("Login");
         final @NotNull TestCase testCase = aTestCase(testSet, "Log in with a valid user", "a");
-        final @NotNull TestRunNode testRun = aTestRun(List.of(RunItem.builder().id(testCase.getId()).build()));
+        final @NotNull TestRunNode testRun = aTestRun(List.of(RunItem.builder().uuid(testCase.getUuid()).build()));
         final @NotNull List<String> names = Services.getInstance(getProject(), TestRuns.class).storeScreenshots(testRun.getPath(), List.of(aScreenshot(320, 200)));
         final @NotNull Set<TestRunEditorFields> was = ShownFields.read(ShownFields.IN_TEST_RUNS, TestRunEditorFields.class);
         final @NotNull Set<TestRunEditorFields> chosen = EnumSet.allOf(TestRunEditorFields.class);

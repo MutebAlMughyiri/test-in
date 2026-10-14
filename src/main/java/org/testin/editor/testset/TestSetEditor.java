@@ -231,7 +231,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorFields, Tes
 
     private void hold(final @NotNull TestCase testCase) {
         synchronized (allTestCases) {
-            if (allTestCases.stream().noneMatch(held -> held.getId().equals(testCase.getId())))
+            if (allTestCases.stream().noneMatch(held -> held.getUuid().equals(testCase.getUuid())))
                 allTestCases.add(testCase);
         }
     }

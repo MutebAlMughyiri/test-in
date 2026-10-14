@@ -83,10 +83,10 @@ This copies words a person can read. It does not copy the test case itself.
 │    [P] Priority                          P   │
 │    [M] Module                            M   │
 │    [G] Group                             G   │
-│    [U] Status                            U   │
+│    [Z] Status                            Z   │
 │    [R] Reference                         R   │
 │    [F] FQCN                              F   │
-│    [I] ID                                I   │
+│    [U] UUID                              U   │
 │    [H] Path                              H   │
 └──────────────────────────────────────────────┘
 ```

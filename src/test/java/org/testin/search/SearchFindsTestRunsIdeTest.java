@@ -56,7 +56,7 @@ public class SearchFindsTestRunsIdeTest extends AbstractTempRootIdeTest {
         });
 
         testCase = aTestCaseIn(testProject);
-        ranIt = aTestRunOver(testProject, "Cycle-1", testCase.getId());
+        ranIt = aTestRunOver(testProject, "Cycle-1", testCase.getUuid());
         ranSomethingElse = aTestRunOver(testProject, "Cycle-2", UUID.randomUUID());
     }
 
@@ -85,7 +85,7 @@ public class SearchFindsTestRunsIdeTest extends AbstractTempRootIdeTest {
         });
 
         final TestCase testCase = TestCase.builder()
-                .id(UUID.randomUUID())
+                .uuid(UUID.randomUUID())
                 .description("Log in with a valid user")
                 .order("m")
                 .build();
@@ -95,7 +95,7 @@ public class SearchFindsTestRunsIdeTest extends AbstractTempRootIdeTest {
         return testCase;
     }
 
-    private @NotNull Path aTestRunOver(final TestProjectNode testProject, final String named, final UUID testCaseId) {
+    private @NotNull Path aTestRunOver(final TestProjectNode testProject, final String named, final UUID testCaseUuid) {
         final Path testRunPath = WriteAction.computeAndWait(() -> {
             final Path path = testProject.getTestRunsFolder().getPath().resolve(named);
             final TestRunNode testRun = mapper().setTestRunNode(path, testProject.getTestRunsFolder());
@@ -104,43 +104,43 @@ public class SearchFindsTestRunsIdeTest extends AbstractTempRootIdeTest {
             return path;
         });
 
-        indexedTestRuns().putRunItems(testRunPath, new RunItems().setAll(List.of(new RunItem().setId(testCaseId).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())))));
+        indexedTestRuns().putRunItems(testRunPath, new RunItems().setAll(List.of(new RunItem().setUuid(testCaseUuid).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())))));
         return testRunPath;
     }
 
-    private @NotNull List<Hit> forTheId() {
-        return GlobalSearch.forQuery(getProject(), testCase.getId().toString()).hits();
+    private @NotNull List<Hit> forTheUuid() {
+        return GlobalSearch.forQuery(getProject(), testCase.getUuid().toString()).hits();
     }
 
     // UC-INTERNAL-001, Rule-INTERNAL-098
-    public void testSearchingATestCaseIdAlsoFindsTheTestRunThatRanIt() {
-        assertTrue("a test case id found no row for the test run holding its run item status",
-                forTheId().stream().anyMatch(hit -> hit.node().getPath().equals(ranIt)));
+    public void testSearchingATestCaseUuidAlsoFindsTheTestRunThatRanIt() {
+        assertTrue("a test case UUID found no row for the test run holding its run item status",
+                forTheUuid().stream().anyMatch(hit -> hit.node().getPath().equals(ranIt)));
     }
 
     // UC-INTERNAL-001, Rule-INTERNAL-098
     public void testTheTestRunRowCarriesTheTestCaseSoItOpensWhereTheRunItemStatusIs() {
-        final Hit inTheTestRun = forTheId().stream()
+        final Hit inTheTestRun = forTheUuid().stream()
                 .filter(hit -> hit.node().getPath().equals(ranIt))
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("no row for the test run that ran the test case"));
 
         assertEquals("the row does not carry the test case, so choosing it would open the test run at no row",
-                testCase.getId(), inTheTestRun.testCase().orElseThrow().getId());
+                testCase.getUuid(), inTheTestRun.testCase().orElseThrow().getUuid());
         assertEquals("a test run row is named by the test case it holds", testCase.getDescription(), inTheTestRun.name());
     }
 
     // UC-INTERNAL-001, Rule-INTERNAL-098
     public void testATestRunThatDoesNotCoverTheTestCaseIsNoRow() {
         assertFalse("a test run with no run item status for the test case was listed",
-                forTheId().stream().anyMatch(hit -> hit.node().getPath().equals(ranSomethingElse)));
+                forTheUuid().stream().anyMatch(hit -> hit.node().getPath().equals(ranSomethingElse)));
     }
 
     // UC-INTERNAL-001, Rule-INTERNAL-001
-    public void testTheTestCaseItselfIsStillTheFirstRowForItsId() {
-        final List<Hit> hits = forTheId();
+    public void testTheTestCaseItselfIsStillTheFirstRowForItsUuid() {
+        final List<Hit> hits = forTheUuid();
 
-        assertFalse("nothing was found for a test case id", hits.isEmpty());
+        assertFalse("nothing was found for a test case UUID", hits.isEmpty());
         assertEquals("the test case's own row is no longer first", testCase.getParent().getPath(), hits.getFirst().node().getPath());
     }
 }

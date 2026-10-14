@@ -85,24 +85,24 @@ final class MarkerFiles {
         }
 
         // Rule-INTERNAL-090
-        if (marker.getId().isEmpty()) marker.setId(UUID.randomUUID().toString());
+        if (marker.getUuid().isEmpty()) marker.setUuid(UUID.randomUUID().toString());
 
         return testDataFiles.write(file, marker);
     }
 
     // Rule-INTERNAL-090, Rule-TREE-PANEL-051
-    boolean giveFreshId(final @NotNull Path markerFile) {
+    boolean giveFreshUuid(final @NotNull Path markerFile) {
         final @NotNull Optional<NodeType> kind = NodeType.byMarker(String.valueOf(markerFile.getFileName()));
         if (kind.isEmpty()) return false;
 
         try {
             final @NotNull AbstractMarker marker = mapper.readValue(Files.readAllBytes(markerFile), kind.orElseThrow().getMarkerClass());
-            marker.setId(UUID.randomUUID().toString());
+            marker.setUuid(UUID.randomUUID().toString());
 
             return testDataFiles.write(markerFile, marker);
 
         } catch (final IOException | UncheckedIOException ex) {
-            TestinLogger.warn("Left the copied marker " + markerFile + " without an id of its own: " + FailureText.of(ex));
+            TestinLogger.warn("Left the copied marker " + markerFile + " without a UUID of its own: " + FailureText.of(ex));
             return false;
         }
     }

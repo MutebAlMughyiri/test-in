@@ -27,11 +27,11 @@ import java.util.regex.Pattern;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestName {
-    private static final @NotNull Pattern TEST_CASE_ID = Pattern.compile("(\\p{XDigit}{8}-\\p{XDigit}{4}-\\p{XDigit}{4}-\\p{XDigit}{4}-\\p{XDigit}{12})(?:\\[.*])?(?: \\(\\d+\\))?");
+    private static final @NotNull Pattern TEST_CASE_UUID = Pattern.compile("(\\p{XDigit}{8}-\\p{XDigit}{4}-\\p{XDigit}{4}-\\p{XDigit}{4}-\\p{XDigit}{12})(?:\\[.*])?(?: \\(\\d+\\))?");
 
     // Rule-CODEGEN-110
-    public static @NotNull Optional<UUID> testCaseId(final @NotNull String testName) {
-        final @NotNull Matcher matcher = TEST_CASE_ID.matcher(testName);
+    public static @NotNull Optional<UUID> testCaseUuid(final @NotNull String testName) {
+        final @NotNull Matcher matcher = TEST_CASE_UUID.matcher(testName);
 
         return matcher.matches() ? Optional.of(UUID.fromString(matcher.group(1))) : Optional.empty();
     }

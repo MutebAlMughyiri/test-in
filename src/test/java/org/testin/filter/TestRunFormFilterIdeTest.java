@@ -77,7 +77,7 @@ public class TestRunFormFilterIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull TestCase aTestCase(final @NotNull TestSetNode testSet, final @NotNull Priority priority, final @NotNull String order) {
-        final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description("Pay with a " + priority + " card").order(order).priority(priority).build();
+        final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description("Pay with a " + priority + " card").order(order).priority(priority).build();
         testCase.setParent(testSet);
         assertTrue(Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase));
         return testCase;

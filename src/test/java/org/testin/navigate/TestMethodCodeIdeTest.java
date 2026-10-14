@@ -64,7 +64,7 @@ public class TestMethodCodeIdeTest extends AbstractCodegenIdeTest {
     public void testRunningFindsTheMethodByIdentityNeverByName() {
         final @NotNull TestCase testCase = aRenamedTestCaseWhoseMethodHasAnotherName();
 
-        assertEquals("the method to run was named from the description rather than found by the test case id", List.of("nafath", "LoginTest", "whatTheTesterCalledIt"), TestMethodCode.available().methodFqcnsOf(getProject(), List.of(testCase)).get(testCase.getId()));
+        assertEquals("the method to run was named from the description rather than found by the test case UUID", List.of("nafath", "LoginTest", "whatTheTesterCalledIt"), TestMethodCode.available().methodFqcnsOf(getProject(), List.of(testCase)).get(testCase.getUuid()));
     }
 
     // Rule-CODEGEN-003

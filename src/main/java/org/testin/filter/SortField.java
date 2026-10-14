@@ -127,7 +127,7 @@ public enum SortField {
         final @NotNull List<TestCase> blank = new ArrayList<>();
 
         for (final TestCase testCase : testCases) {
-            final @NotNull Optional<RunItem> runItem = runItemProvider.apply(testCase.getId());
+            final @NotNull Optional<RunItem> runItem = runItemProvider.apply(testCase.getUuid());
             final @NotNull SortedTestCase view = new SortedTestCase(runItem.map(RunItem::shownTestCase).orElse(testCase), runItem);
             shown.put(testCase, view);
             (empty.test(view) ? blank : filled).add(testCase);

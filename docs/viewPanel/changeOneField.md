@@ -70,7 +70,7 @@ One field, one small dialog. The rest of the test case is left alone.
    The icon is that letter in a rounded frame, the same icon the field has
    wherever it is offered.
 2. **The first row** — selected when the menu opens.
-3. **Status** — the last row, with the letter `U` as on the copy menu.
+3. **Status** — the last row, with the letter `Z` as on the copy menu.
    **Reference** has the letter `R`.
 
 Choosing a row opens that field's own small dialog. Those dialogs belong to the

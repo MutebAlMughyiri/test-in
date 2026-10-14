@@ -75,10 +75,10 @@ public class BugFilingIdeTest extends AbstractTempRootIdeTest {
         return runItemPathOf(indexedTestCase(), runItemStatus);
     }
 
-    private @NotNull RunItemPath runItemPathOf(final UUID testCaseId, final RunItemStatus runItemStatus) {
-        final RunItem runItem = RunItem.builder().id(testCaseId).executions(List.of(RunItemExecution.builder().status(runItemStatus).build())).build();
+    private @NotNull RunItemPath runItemPathOf(final UUID testCaseUuid, final RunItemStatus runItemStatus) {
+        final RunItem runItem = RunItem.builder().uuid(testCaseUuid).executions(List.of(RunItemExecution.builder().status(runItemStatus).build())).build();
         indexedTestRuns().putRunItems(sprint7TestRunPath(), RunItems.builder().all(new ArrayList<>(List.of(runItem))).build());
-        return new RunItemPath(sprint7TestRunPath(), testCaseId);
+        return new RunItemPath(sprint7TestRunPath(), testCaseUuid);
     }
 
     private @NotNull UUID indexedTestCase() {
@@ -92,10 +92,10 @@ public class BugFilingIdeTest extends AbstractTempRootIdeTest {
             return set;
         });
 
-        final TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
+        final TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description("Log in with a valid user").build();
         testCase.setParent(testSet);
         indexedTestCases().putTestCase(testSet.getPath(), testCase);
-        return testCase.getId();
+        return testCase.getUuid();
     }
 
     private @NotNull String storedLink(final RunItemPath runItemPath) {
@@ -109,7 +109,7 @@ public class BugFilingIdeTest extends AbstractTempRootIdeTest {
         assertEquals(Optional.empty(), BugFiling.store(getProject(), runItemPath, ISSUE));
         assertEquals("the run item the indexer holds did not take the link", ISSUE, storedLink(runItemPath));
 
-        final Path result = runItemPath.testRunPath().resolve(FileKind.RUN_ITEM.fileName(runItemPath.testCaseId()));
+        final Path result = runItemPath.testRunPath().resolve(FileKind.RUN_ITEM.fileName(runItemPath.testCaseUuid()));
         Await.until("the link did not reach the test case's own result file", () -> read(result).contains(ISSUE));
     }
 

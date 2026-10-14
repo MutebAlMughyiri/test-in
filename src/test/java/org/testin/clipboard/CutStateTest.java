@@ -35,7 +35,7 @@ public class CutStateTest {
     }
 
     private static @NotNull TestCase testCase() {
-        return TestCase.builder().id(UUID.randomUUID()).build();
+        return TestCase.builder().uuid(UUID.randomUUID()).build();
     }
 
     @Test

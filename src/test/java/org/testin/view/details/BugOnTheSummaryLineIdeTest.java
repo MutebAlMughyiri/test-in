@@ -43,7 +43,7 @@ public class BugOnTheSummaryLineIdeTest extends AbstractViewPanelIdeTest {
     private TestRunNode testRun;
 
     private static @NotNull RunItem recorded(final @NotNull TestCase testCase, final @NotNull RunItemStatus runItemStatus, final @NotNull String bugIssueUrl) {
-        return RunItem.builder().id(testCase.getId()).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl(bugIssueUrl).executions(List.of(RunItemExecution.builder().status(runItemStatus).build())).build();
+        return RunItem.builder().uuid(testCase.getUuid()).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl(bugIssueUrl).executions(List.of(RunItemExecution.builder().status(runItemStatus).build())).build();
     }
 
     private static @NotNull Component rowOf(final @NotNull Component drawn) {
@@ -56,7 +56,7 @@ public class BugOnTheSummaryLineIdeTest extends AbstractViewPanelIdeTest {
     protected void setUp() {
         super.setUp();
         testCase = aTestCase(aTestSet("Login"), "Log in with a valid user", "a");
-        testRun = aTestRun(List.of(RunItem.builder().id(testCase.getId()).build()));
+        testRun = aTestRun(List.of(RunItem.builder().uuid(testCase.getUuid()).build()));
     }
 
     private @NotNull JBPanel<?> drawn(final @NotNull RunItem runItem) {

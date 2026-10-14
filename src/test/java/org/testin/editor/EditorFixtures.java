@@ -65,7 +65,7 @@ public final class EditorFixtures {
     }
 
     public static @NotNull TestCase testCase(final @NotNull Project project, final @NotNull TestSetNode testSet, final @NotNull String description, final @NotNull String order) {
-        final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description(description).order(order).build();
+        final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description(description).order(order).build();
         testCase.setParent(testSet);
         Services.getInstance(project, TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase);
         return testCase;
@@ -101,7 +101,7 @@ public final class EditorFixtures {
     }
 
     public static @NotNull RunItem pending(final @NotNull TestCase testCase) {
-        return new RunItem().setId(testCase.getId());
+        return new RunItem().setUuid(testCase.getUuid());
     }
 
     public static @NotNull TestSetEditor openTestSetEditor(final @NotNull Project project, final @NotNull TestSetNode testSet, final @NotNull Disposable owner) {

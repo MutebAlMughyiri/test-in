@@ -66,7 +66,7 @@ record EditTestRunWork(@NotNull Project project, @NotNull TestRuns testRuns, @No
         final @NotNull List<TestCase> deleted = held.getAll().stream().filter(RunItem::isRemoved).map(RunItem::shownTestCase).toList();
 
         boundTestProject.get().ifPresentOrElse(
-                testProject -> new TestRunFormOpener(project).open(testProject.getTestCasesFolder(), testRun.getName(), held.coveredIds(), deleted, testRun.getMarker().getConfiguration(), saves(testRun)),
+                testProject -> new TestRunFormOpener(project).open(testProject.getTestCasesFolder(), testRun.getName(), held.coveredUuids(), deleted, testRun.getMarker().getConfiguration(), saves(testRun)),
                 () -> TestinLogger.warn("Edit test run: no test project is bound to " + project.getName()));
     }
 
@@ -108,7 +108,7 @@ record EditTestRunWork(@NotNull Project project, @NotNull TestRuns testRuns, @No
     // UC-TREE-PANEL-022, Rule-TREE-PANEL-076
     private @NotNull Set<UUID> wanted(final @NotNull RunItems from, final @NotNull Set<UUID> checked, final @NotNull Predicate<UUID> couldBeTicked) {
         final @NotNull Set<UUID> wanted = new LinkedHashSet<>(checked);
-        from.coveredIds().stream()
+        from.coveredUuids().stream()
                 .filter(couldBeTicked.negate())
                 .forEach(wanted::add);
         return wanted;

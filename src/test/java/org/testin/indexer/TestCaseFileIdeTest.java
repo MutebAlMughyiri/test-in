@@ -30,7 +30,7 @@ import java.util.UUID;
 public class TestCaseFileIdeTest extends AbstractTempRootIdeTest {
 
     private static @NotNull TestCase aTestCaseIn(final TestSetNode testSet) {
-        final TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
+        final TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description("Log in with a valid user").build();
         testCase.setParent(testSet);
         return testCase;
     }
@@ -69,11 +69,11 @@ public class TestCaseFileIdeTest extends AbstractTempRootIdeTest {
 
         assertEquals("the test case was placed in the wrong test project", testProject.getPath(), file.testProject());
         assertEquals("the test case's file is not where the store writes it",
-                Path.of(testProject.getTestCasesFolder().getPath().getFileName().toString(), "Login", testCase.getId() + ".testcase"), file.inTestProject());
+                Path.of(testProject.getTestCasesFolder().getPath().getFileName().toString(), "Login", testCase.getUuid() + ".testcase"), file.inTestProject());
     }
 
     public void testATestCaseNoIndexedTestProjectHoldsHasNoFile() {
-        final TestCase testCase = TestCase.builder().id(UUID.randomUUID()).build();
+        final TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).build();
 
         assertTrue("a test case with no test set was given a file", indexedTestCases().testCaseFile(testCase).isEmpty());
     }

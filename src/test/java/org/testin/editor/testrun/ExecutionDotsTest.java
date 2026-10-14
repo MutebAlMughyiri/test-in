@@ -39,7 +39,7 @@ public class ExecutionDotsTest {
     private static final @NotNull Font FONT = new Font(Font.DIALOG, Font.PLAIN, 12);
 
     private static @NotNull RunItem executed(final int times) {
-        return RunItem.builder().id(UUID.randomUUID())
+        return RunItem.builder().uuid(UUID.randomUUID())
                 .executions(IntStream.range(0, times).mapToObj(_ -> RunItemExecution.builder().status(RunItemStatus.PASSED).build()).toList())
                 .defaultNumber(times)
                 .build();
@@ -68,7 +68,7 @@ public class ExecutionDotsTest {
 
     @Test
     public void theDotsAreTheirExecutionsColors() {
-        final @NotNull RunItem mixed = RunItem.builder().id(UUID.randomUUID()).executions(List.of(
+        final @NotNull RunItem mixed = RunItem.builder().uuid(UUID.randomUUID()).executions(List.of(
                 RunItemExecution.builder().status(RunItemStatus.FAILED).build(),
                 RunItemExecution.builder().status(RunItemStatus.PASSED).build())).build();
 

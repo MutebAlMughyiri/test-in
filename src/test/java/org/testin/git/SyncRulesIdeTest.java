@@ -117,13 +117,13 @@ public class SyncRulesIdeTest extends AbstractGitRemoteIdeTest {
         commitAll(work, "the Login test set");
         mustGit(work, "push", "origin", MAIN);
 
-        final @NotNull TestCase theirs = TestCase.builder().id(UUID.randomUUID()).description("sign in with a passkey").order("z").build();
-        final @NotNull String relative = work.relativize(login.getPath()).resolve(theirs.getId() + ".testcase").toString().replace('\\', '/');
+        final @NotNull TestCase theirs = TestCase.builder().uuid(UUID.randomUUID()).description("sign in with a passkey").order("z").build();
+        final @NotNull String relative = work.relativize(login.getPath()).resolve(theirs.getUuid() + ".testcase").toString().replace('\\', '/');
         theColleagueAdds(relative, Services.getInstance(getProject(), JsonCodec.class).writeValueAsString(theirs));
 
         synced(Said.listening(getProject(), getTestRootDisposable()).notifications());
 
-        Await.until("Testin's reading of the folder does not hold the colleague's test case", () -> Services.getInstance(getProject(), TestCases.class).findTestCase(theirs.getId()).isPresent());
+        Await.until("Testin's reading of the folder does not hold the colleague's test case", () -> Services.getInstance(getProject(), TestCases.class).findTestCase(theirs.getUuid()).isPresent());
         assertNotNull("the IDE's view of the folder was not read again", LocalFileSystem.getInstance().findFileByNioFile(work.resolve(relative)));
     }
 }

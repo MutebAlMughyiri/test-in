@@ -79,7 +79,7 @@ public class RunItem {
     @JsonIgnore
     @NotNull
     @Builder.Default
-    private UUID id = new UUID(0L, 0L);
+    private UUID uuid = new UUID(0L, 0L);
     @NotNull
     @Builder.Default
     private BugSeverity bugSeverity = BugSeverity.DEFAULT;
@@ -107,7 +107,7 @@ public class RunItem {
 
     // UC-EDITOR-PANEL-030
     public static @NotNull RunItem pendingFor(final @NotNull TestCase testCase) {
-        return RunItem.builder().id(testCase.getId()).build().showing(Optional.of(testCase), Optional.empty(), Optional.empty(), false);
+        return RunItem.builder().uuid(testCase.getUuid()).build().showing(Optional.of(testCase), Optional.empty(), Optional.empty(), false);
     }
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-126, Rule-EDITOR-PANEL-239
@@ -281,7 +281,7 @@ public class RunItem {
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-239, Rule-REPORT-021, Rule-VIEW-PANEL-083
     public @NotNull TestCase shownTestCase() {
-        return recorded.or(() -> live).or(() -> lastInGit).orElseGet(() -> TestCase.deleted(id));
+        return recorded.or(() -> live).or(() -> lastInGit).orElseGet(() -> TestCase.deleted(uuid));
     }
 
     // Rule-EDITOR-PANEL-263
@@ -291,6 +291,6 @@ public class RunItem {
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-126
     public @NotNull TestCase liveTestCase() {
-        return live.orElseGet(() -> TestCase.deleted(id));
+        return live.orElseGet(() -> TestCase.deleted(uuid));
     }
 }

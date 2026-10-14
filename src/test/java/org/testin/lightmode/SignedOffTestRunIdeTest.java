@@ -49,18 +49,18 @@ public class SignedOffTestRunIdeTest extends AbstractTempRootIdeTest {
         super.setUp();
         final @NotNull NodesOnDisk made = new NodesOnDisk(getProject());
         final @NotNull TestProjectNode testProject = made.testProject(root.resolve("NAFATH"));
-        failed = made.testCase(made.testSet(testProject.getTestCasesFolder(), "Payments")).getId();
+        failed = made.testCase(made.testSet(testProject.getTestCasesFolder(), "Payments")).getUuid();
         cycle = made.testRun(testProject.getTestRunsFolder(), "Cycle-1").getPath();
     }
 
     private @NotNull Path aTestRunWithOneFailure() {
         indexedTestRuns().putRunItems(cycle, new RunItems().setAll(List.of(
-                new RunItem().setId(failed).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult(RECORDED).build())))));
+                new RunItem().setUuid(failed).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult(RECORDED).build())))));
         return cycle;
     }
 
     private boolean saveAFailureOnto(final @NotNull Path testRunPath) {
-        final @NotNull RunItem row = new RunItem().setId(failed).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("Typed after the sign-off").build()));
+        final @NotNull RunItem row = new RunItem().setUuid(failed).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("Typed after the sign-off").build()));
         final @NotNull FailureForm form = new FailureForm(getProject(), testRunPath, row, 1f, () -> {
         }, () -> {
         });

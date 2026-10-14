@@ -76,31 +76,31 @@ public final class TestRunWalk {
     public int getCurrentlyExecutingIndex() {
         final @NotNull List<TestCase> shown = editor.getCurrentTestCases();
 
-        return executingTestCase.map(testCaseId -> {
+        return executingTestCase.map(testCaseUuid -> {
             for (int i = 0; i < shown.size(); i++) {
-                if (shown.get(i).getId().equals(testCaseId)) return i;
+                if (shown.get(i).getUuid().equals(testCaseUuid)) return i;
             }
             return -1;
         }).orElse(-1);
     }
 
     // Rule-EDITOR-PANEL-291
-    boolean walksOn(final @NotNull UUID testCaseId) {
-        return executingTestCase.filter(testCaseId::equals).isPresent();
+    boolean walksOn(final @NotNull UUID testCaseUuid) {
+        return executingTestCase.filter(testCaseUuid::equals).isPresent();
     }
 
     // Rule-EDITOR-PANEL-291
-    private void walkTo(final @NotNull Optional<UUID> testCaseId) {
+    private void walkTo(final @NotNull Optional<UUID> testCaseUuid) {
         final @NotNull Optional<UUID> left = executingTestCase;
-        executingTestCase = testCaseId;
+        executingTestCase = testCaseUuid;
 
-        left.ifPresent(leftTestCaseId -> ExecutingNow.changed(project, leftTestCaseId));
-        testCaseId.ifPresent(reachedTestCaseId -> ExecutingNow.changed(project, reachedTestCaseId));
+        left.ifPresent(leftTestCaseUuid -> ExecutingNow.changed(project, leftTestCaseUuid));
+        testCaseUuid.ifPresent(reachedTestCaseUuid -> ExecutingNow.changed(project, reachedTestCaseUuid));
     }
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-227
-    public boolean isExecuting(final @NotNull UUID testCaseId) {
-        return walksOn(testCaseId) && getCurrentlyExecutingIndex() != -1;
+    public boolean isExecuting(final @NotNull UUID testCaseUuid) {
+        return walksOn(testCaseUuid) && getCurrentlyExecutingIndex() != -1;
     }
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-227
@@ -121,12 +121,12 @@ public final class TestRunWalk {
         }
 
         final @NotNull TestCase currentTestCase = shown.get(globalIndex);
-        walkTo(Optional.of(currentTestCase.getId()));
+        walkTo(Optional.of(currentTestCase.getUuid()));
 
         editor.showExecuting(globalIndex);
 
-        editor.runItem(currentTestCase.getId()).ifPresent(runItem -> executionTimer.start(runItem, () -> {
-            editor.repaint(currentTestCase.getId());
+        editor.runItem(currentTestCase.getUuid()).ifPresent(runItem -> executionTimer.start(runItem, () -> {
+            editor.repaint(currentTestCase.getUuid());
             editor.showElapsed();
         }));
 
@@ -138,7 +138,7 @@ public final class TestRunWalk {
         final @NotNull List<TestCase> shown = editor.getCurrentTestCases();
 
         for (int i = Math.max(from, 0); i < shown.size(); i++) {
-            if (editor.runItem(shown.get(i).getId())
+            if (editor.runItem(shown.get(i).getUuid())
                     .filter(runItem -> runItem.getStatus() == RunItemStatus.PENDING)
                     .isPresent()) return i;
         }
@@ -147,8 +147,8 @@ public final class TestRunWalk {
     }
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-132
-    public boolean clockIsOn(final @NotNull UUID testCaseId) {
-        return executionTimer.isOn(testCaseId);
+    public boolean clockIsOn(final @NotNull UUID testCaseUuid) {
+        return executionTimer.isOn(testCaseUuid);
     }
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-137
@@ -156,8 +156,8 @@ public final class TestRunWalk {
         executionTimer.stop();
     }
 
-    void launching(final @NotNull UUID testCaseId) {
-        launchedHere.add(testCaseId);
+    void launching(final @NotNull UUID testCaseUuid) {
+        launchedHere.add(testCaseUuid);
 
         markStartedByAutomation();
     }
@@ -183,8 +183,8 @@ public final class TestRunWalk {
         if (!editor.getParent().isOpen()) return;
 
         final @NotNull List<TestCase> automated = editor.snapshotOfAll().stream()
-                .filter(testCase -> editor.runItem(testCase.getId()).filter(runItem -> !runItem.isRemoved()).isPresent())
-                .filter(testCase -> !testNGExecution.isRunning(testCase.getId()))
+                .filter(testCase -> editor.runItem(testCase.getUuid()).filter(runItem -> !runItem.isRemoved()).isPresent())
+                .filter(testCase -> !testNGExecution.isRunning(testCase.getUuid()))
                 .toList();
 
         if (automated.isEmpty()) {
@@ -195,8 +195,8 @@ public final class TestRunWalk {
         TestinLogger.info("Running " + editor.getParent().getName() + " with " + automated.size() + " test case(s)");
 
         automated.forEach(testCase -> {
-            launchedByRunTests.add(testCase.getId());
-            launching(testCase.getId());
+            launchedByRunTests.add(testCase.getUuid());
+            launching(testCase.getUuid());
         });
 
         ExecuteTestCases.run(project, automated);
@@ -204,14 +204,14 @@ public final class TestRunWalk {
 
     // UC-EDITOR-PANEL-043, UC-EDITOR-PANEL-044, Rule-EDITOR-PANEL-182, Rule-EDITOR-PANEL-289
     void executionReported(final @NotNull TestCase testCase, final @NotNull TestNGExecutionStatus testNGExecutionStatus, final @NotNull List<RunItemExecution> executions, final int written, final int deciding) {
-        if (!launchedHere.contains(testCase.getId())) return;
+        if (!launchedHere.contains(testCase.getUuid())) return;
 
         if (!testNGExecutionStatus.stillGoing()) {
-            launchedHere.remove(testCase.getId());
-            launchedByRunTests.remove(testCase.getId());
+            launchedHere.remove(testCase.getUuid());
+            launchedByRunTests.remove(testCase.getUuid());
         }
 
-        if (editor.runItem(testCase.getId()).filter(runItem -> !runItem.isRemoved()).isEmpty()) return;
+        if (editor.runItem(testCase.getUuid()).filter(runItem -> !runItem.isRemoved()).isEmpty()) return;
 
         if (!editor.getParent().takesRunItemStatuses()) return;
 
@@ -224,10 +224,10 @@ public final class TestRunWalk {
             if (launchedHere.isEmpty()) sayWhatTheTestRunRecorded();
         });
 
-        if (launchedByRunTests.contains(testCase.getId()) && testNGExecution.isExecutingNow(testCase.getId()))
+        if (launchedByRunTests.contains(testCase.getUuid()) && testNGExecution.isExecutingNow(testCase.getUuid()))
             editor.showRunItem(testCase);
 
-        editor.repaint(testCase.getId());
+        editor.repaint(testCase.getUuid());
         editor.showTestRunTotals();
 
         editor.onExecutionStateChanged();

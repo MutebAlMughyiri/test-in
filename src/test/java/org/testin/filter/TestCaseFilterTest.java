@@ -69,17 +69,17 @@ public class TestCaseFilterTest {
         final TestCase passed = TestCase.builder().description("passed").build();
         final TestCase missing = TestCase.builder().description("missing").build();
         final RunItem runItem = RunItem.builder()
-                .id(passed.getId())
+                .uuid(passed.getUuid())
                 .executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()))
                 .build()
                 .showing(Optional.of(passed), Optional.empty(), Optional.empty(), false);
 
-        final Map<UUID, RunItem> recorded = Map.of(passed.getId(), runItem);
+        final Map<UUID, RunItem> recorded = Map.of(passed.getUuid(), runItem);
 
         final List<TestCase> result = TestCaseFilter.filter(
                 List.of(passed, missing),
                 new FilterAndSortChoice("", Set.of(), Set.of(), Set.of(), Set.of(), Set.of(RunItemStatus.PASSED), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING),
-                testCaseId -> Optional.ofNullable(recorded.get(testCaseId)));
+                testCaseUuid -> Optional.ofNullable(recorded.get(testCaseUuid)));
 
         assertEquals(result, List.of(passed));
     }
@@ -124,7 +124,7 @@ public class TestCaseFilterTest {
     public void theSearchReadsEveryFieldTheFieldsPopupLists() {
         final @NotNull TestSetNode set = NodeChain.testSetAt("Shop", "Checkout");
         final @NotNull TestCase testCase = TestCase.builder()
-                .id(UUID.randomUUID())
+                .uuid(UUID.randomUUID())
                 .description("Refuse an expired card")
                 .expectedResult("The payment is declined")
                 .steps(List.of("Enter the card number"))

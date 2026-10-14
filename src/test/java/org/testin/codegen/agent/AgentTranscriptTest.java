@@ -32,9 +32,9 @@ public class AgentTranscriptTest {
     public void theCountIsTheBodiesThatLanded() {
         final AgentTranscript transcript = new AgentTranscript();
 
-        transcript.record(TestCase.builder().id(UUID.randomUUID()).description("Log in").build(), "prompt", "statements", true, "written");
-        transcript.record(TestCase.builder().id(UUID.randomUUID()).description("Log out").build(), "prompt", "I am sorry", false, "not Java");
-        transcript.record(TestCase.builder().id(UUID.randomUUID()).description("Lock").build(), "prompt", "statements", true, "written");
+        transcript.record(TestCase.builder().uuid(UUID.randomUUID()).description("Log in").build(), "prompt", "statements", true, "written");
+        transcript.record(TestCase.builder().uuid(UUID.randomUUID()).description("Log out").build(), "prompt", "I am sorry", false, "not Java");
+        transcript.record(TestCase.builder().uuid(UUID.randomUUID()).description("Lock").build(), "prompt", "statements", true, "written");
 
         assertEquals(transcript.landed(), 2);
     }
@@ -44,8 +44,8 @@ public class AgentTranscriptTest {
     public void everyExchangeIsKeptInOrderWithTheDroppedOnesMarked() {
         final @NotNull AgentTranscript transcript = new AgentTranscript();
 
-        transcript.record(TestCase.builder().id(UUID.randomUUID()).description("Log in").build(), "write log in", "driver.get(url);", true, "written");
-        transcript.record(TestCase.builder().id(UUID.randomUUID()).description("Log out").build(), "write log out", "I am sorry", false, "not Java");
+        transcript.record(TestCase.builder().uuid(UUID.randomUUID()).description("Log in").build(), "write log in", "driver.get(url);", true, "written");
+        transcript.record(TestCase.builder().uuid(UUID.randomUUID()).description("Log out").build(), "write log out", "I am sorry", false, "not Java");
 
         final @NotNull String read = transcript.read();
         assertTrue(read.indexOf("write log in") < read.indexOf("driver.get(url);"), "what was asked does not come before what came back");

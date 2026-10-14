@@ -119,7 +119,7 @@ public class FilterMenuIdeTest extends AbstractTempRootIdeTest {
         final @NotNull List<TestCase> made = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             final @NotNull TestCase testCase = TestCase.builder()
-                    .id(UUID.randomUUID())
+                    .uuid(UUID.randomUUID())
                     .description("Test case number " + (i + 1))
                     .order(String.format("m%04d", i))
                     .priority(i == 0 ? Priority.HIGH : Priority.LOW)
@@ -261,7 +261,7 @@ public class FilterMenuIdeTest extends AbstractTempRootIdeTest {
         try {
             tick(filterOf(editor), Bundle.message("filter.test.set"), "Checkout");
 
-            assertEquals("the Test Set filter did not narrow the test run to Checkout", checkout.stream().map(TestCase::getId).toList(), editor.getCurrentTestCases().stream().map(TestCase::getId).toList());
+            assertEquals("the Test Set filter did not narrow the test run to Checkout", checkout.stream().map(TestCase::getUuid).toList(), editor.getCurrentTestCases().stream().map(TestCase::getUuid).toList());
         } finally {
             Disposer.dispose(editor);
         }
@@ -272,7 +272,7 @@ public class FilterMenuIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
         final @NotNull List<TestCase> login = EditorFixtures.testCases(getProject(), EditorFixtures.testSet(getProject(), testProject, "Login"), 2);
         final @NotNull List<TestCase> withADeletedOne = new ArrayList<>(login);
-        withADeletedOne.add(TestCase.builder().id(UUID.randomUUID()).description("Deleted since").build());
+        withADeletedOne.add(TestCase.builder().uuid(UUID.randomUUID()).description("Deleted since").build());
         final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), EditorFixtures.testRun(getProject(), testProject, withADeletedOne.stream().map(EditorFixtures::pending).toList()), getTestRootDisposable());
         try {
             assertEquals("a deleted test case brought a test set of its own into the filter", List.of("Login"),

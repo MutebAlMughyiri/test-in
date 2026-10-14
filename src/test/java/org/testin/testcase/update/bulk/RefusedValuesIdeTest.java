@@ -75,7 +75,7 @@ public class RefusedValuesIdeTest extends AbstractTempRootIdeTest {
         testSet = EditorFixtures.testSet(getProject(), testProject, "Checkout");
         final @NotNull List<TestCase> made = new ArrayList<>();
         for (int i = 0; i < descriptions.length; i++) {
-            final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description(descriptions[i]).order(String.format("m%04d", i))
+            final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description(descriptions[i]).order(String.format("m%04d", i))
                     .priority(Priority.MEDIUM).groups(new ArrayList<>(List.of("Smoke"))).build();
             testCase.setParent(testSet);
             Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase);
@@ -85,7 +85,7 @@ public class RefusedValuesIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull TestCase stored(final @NotNull TestCase testCase) {
-        return Services.getInstance(getProject(), TestCases.class).findTestCase(testCase.getId()).orElseThrow();
+        return Services.getInstance(getProject(), TestCases.class).findTestCase(testCase.getUuid()).orElseThrow();
     }
 
     // Rule-EDITOR-PANEL-206
@@ -115,7 +115,7 @@ public class RefusedValuesIdeTest extends AbstractTempRootIdeTest {
 
         final @NotNull List<TestCase> written = dialog.applyValues(testCases, List.of(EditedValue.of("Urgent"), EditedValue.of("Soon"), EditedValue.of(Priority.HIGH.getLabel())));
 
-        assertEquals("a refused test case was counted among the ones the change touched", List.of(testCases.get(2).getId()), written.stream().map(TestCase::getId).toList());
+        assertEquals("a refused test case was counted among the ones the change touched", List.of(testCases.get(2).getUuid()), written.stream().map(TestCase::getUuid).toList());
         assertEquals(Priority.HIGH, written.getFirst().getPriority());
         assertEquals("the bulk edit did not say once, with a count", List.of(unreadable(Bundle.message("field.value.many", "2"))), balloons);
     }
@@ -155,7 +155,7 @@ public class RefusedValuesIdeTest extends AbstractTempRootIdeTest {
 
         final @NotNull List<TestCase> written = dialog.applyValues(inTheDialog, List.of(EditedValue.of("123 go"), EditedValue.of("Check out!"), EditedValue.of("Pay by card again")));
 
-        assertEquals("a refused description was written", List.of(testCases.get(2).getId()), written.stream().map(TestCase::getId).toList());
+        assertEquals("a refused description was written", List.of(testCases.get(2).getUuid()), written.stream().map(TestCase::getUuid).toList());
         assertTrue("the message does not say the description cannot name a method: " + balloons, balloons.stream().anyMatch(said -> said.startsWith(Bundle.message("description.not.a.method.title"))));
         assertTrue("the message does not say another test case names that method: " + balloons, balloons.stream().anyMatch(said -> said.startsWith(Bundle.message("description.taken.title"))));
     }

@@ -216,8 +216,8 @@ final class LightModeScreen {
 
     // UC-EDITOR-PANEL-046, Rule-EDITOR-PANEL-201
     private void showTestCase(final @NotNull TestCase testCase) {
-        final boolean arrived = shownTestCase.map(previous -> !previous.equals(testCase.getId())).orElse(false);
-        shownTestCase = Optional.of(testCase.getId());
+        final boolean arrived = shownTestCase.map(previous -> !previous.equals(testCase.getUuid())).orElse(false);
+        shownTestCase = Optional.of(testCase.getUuid());
 
         if (arrived) testCaseView.captureLeaving();
 
@@ -421,7 +421,7 @@ final class LightModeScreen {
 
         testCaseForButtons().ifPresent(testCase -> {
             final @NotNull Project project = editor.getProject();
-            final @NotNull Automated automation = automationState.of(testCase.getId());
+            final @NotNull Automated automation = automationState.of(testCase.getUuid());
 
             TestCaseQuickAction.onCard(project, editor.getParent(), testCase).stream()
                     .filter(offered -> viewMenu.getSelectedDetails().stream().anyMatch(part -> part.governs(offered.action())))
@@ -445,7 +445,7 @@ final class LightModeScreen {
 
     private @NotNull Optional<RunItem> executingRunItem() {
         return executingTestCase()
-                .flatMap(testCase -> editor.runItem(testCase.getId()))
+                .flatMap(testCase -> editor.runItem(testCase.getUuid()))
                 .filter(runItem -> !runItem.isRemoved());
     }
 

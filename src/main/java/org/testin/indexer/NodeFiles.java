@@ -178,11 +178,11 @@ final class NodeFiles {
         }
 
         final long given = testCaseFiles.stream().filter(this::reidentify).count();
-        TestinLogger.info("Gave " + given + " of " + testCaseFiles.size() + " copied test case(s) new ids under " + copiedRoot.getFileName());
+        TestinLogger.info("Gave " + given + " of " + testCaseFiles.size() + " copied test case(s) new UUIDs under " + copiedRoot.getFileName());
 
         // Rule-INTERNAL-090
-        final long folders = markerFiles.stream().filter(store::giveFreshMarkerId).count();
-        TestinLogger.info("Gave " + folders + " of " + markerFiles.size() + " copied folder(s) ids of their own under " + copiedRoot.getFileName());
+        final long folders = markerFiles.stream().filter(store::giveFreshMarkerUuid).count();
+        TestinLogger.info("Gave " + folders + " of " + markerFiles.size() + " copied folder(s) UUIDs of their own under " + copiedRoot.getFileName());
     }
 
     // UC-TREE-PANEL-014, Rule-TREE-PANEL-051, Rule-INTERNAL-012, Rule-INTERNAL-113
@@ -195,7 +195,7 @@ final class NodeFiles {
             return true;
 
         } catch (final IOException ex) {
-            TestinLogger.error("Could not give the copied test case " + testCaseFile.getFileName() + " a new id: " + FailureText.of(ex));
+            TestinLogger.error("Could not give the copied test case " + testCaseFile.getFileName() + " a new UUID: " + FailureText.of(ex));
             return false;
         }
     }

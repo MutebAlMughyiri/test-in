@@ -31,7 +31,7 @@ import static org.testng.Assert.assertTrue;
 
 public class BugTemplateTest {
 
-    private static final UUID ID = UUID.fromString("07f7e754-b849-4b38-9e6e-a2cacd84e927");
+    private static final UUID TEST_CASE_UUID = UUID.fromString("07f7e754-b849-4b38-9e6e-a2cacd84e927");
     private static final String LINK = "https://github.com/mtb550/test-03/blob/master/Test%20Cases/ts2/07f7e754-b849-4b38-9e6e-a2cacd84e927.testcase";
     private static final byte[] SCREENSHOT = {(byte) 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n', 0};
 
@@ -56,7 +56,7 @@ public class BugTemplateTest {
                 .device("Samsung")
                 .language("English")
                 .commit("")
-                .testCaseId(ID)
+                .testCaseUuid(TEST_CASE_UUID)
                 .testSetName("ActivateApp")
                 .build();
     }

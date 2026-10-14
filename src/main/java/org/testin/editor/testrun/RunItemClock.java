@@ -42,8 +42,8 @@ final class RunItemClock implements Disposable {
     }
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-132
-    boolean isOn(final @NotNull UUID testCaseId) {
-        return counting.filter(runItem -> runItem.getId().equals(testCaseId)).isPresent();
+    boolean isOn(final @NotNull UUID testCaseUuid) {
+        return counting.filter(runItem -> runItem.getUuid().equals(testCaseUuid)).isPresent();
     }
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-132

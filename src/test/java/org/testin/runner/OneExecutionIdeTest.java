@@ -129,7 +129,7 @@ public class OneExecutionIdeTest extends AbstractCodegenIdeTest {
         settled();
 
         assertTrue("the refusal does not name both modules: " + balloons, balloons.contains(Refused.ACROSS_MODULES.about("app, api")));
-        assertTrue("a test case of the refused selection still reads as running", selected.stream().noneMatch(testCase -> execution().isRunning(testCase.getId())));
+        assertTrue("a test case of the refused selection still reads as running", selected.stream().noneMatch(testCase -> execution().isRunning(testCase.getUuid())));
     }
 
     // Rule-CODEGEN-031

@@ -51,7 +51,7 @@ public class EditFailureDetailAction extends AbstractAnyProjectAction {
 
     // UC-EDITOR-PANEL-040, Rule-EDITOR-PANEL-167
     private void edit(final @NotNull Project project, final @NotNull TestRunEditor testRunEditor, final @NotNull TestCase testCase) {
-        final @NotNull Optional<RunItem> found = testRunEditor.runItem(testCase.getId());
+        final @NotNull Optional<RunItem> found = testRunEditor.runItem(testCase.getUuid());
         if (found.isEmpty()) return;
 
         final @NotNull RunItem runItem = found.orElseThrow();
@@ -64,7 +64,7 @@ public class EditFailureDetailAction extends AbstractAnyProjectAction {
         TestinLogger.trace("update test run item for: " + testCase.getDescription());
 
         new FailureDetailDialog(project, testRunEditor.getParent().getPath(), runItem, fields -> {
-            if (!Services.getInstance(project, RunItemRecorder.class).reviseFailure(testRunEditor.getParent().getPath(), testCase.getId(), fields))
+            if (!Services.getInstance(project, RunItemRecorder.class).reviseFailure(testRunEditor.getParent().getPath(), testCase.getUuid(), fields))
                 return;
 
             ApplicationManager.getApplication().invokeLater(() -> {
@@ -83,7 +83,7 @@ public class EditFailureDetailAction extends AbstractAnyProjectAction {
         final @NotNull Optional<String> signedOff = TestinDataKeys.testRunEditor(e).flatMap(testRunEditor -> testRunEditor.getParent().whySignedOff());
 
         GrayWithReason.unless(this, e, signedOff.isEmpty() && TestinDataKeys.testRunEditor(e)
-                        .flatMap(testRunEditor -> TestinDataKeys.singleSelectedTestCase(e).flatMap(testCase -> testRunEditor.runItem(testCase.getId())))
+                        .flatMap(testRunEditor -> TestinDataKeys.singleSelectedTestCase(e).flatMap(testCase -> testRunEditor.runItem(testCase.getUuid())))
                         .filter(RunItem::isFailed)
                         .isPresent(),
                 signedOff.orElse(Bundle.message("run.item.details.disabled.description")));

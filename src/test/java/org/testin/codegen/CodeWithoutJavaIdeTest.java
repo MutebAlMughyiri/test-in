@@ -92,7 +92,7 @@ public class CodeWithoutJavaIdeTest extends AbstractCodegenIdeTest {
     }
 
     private @NotNull String grayed(final @NotNull TestCase testCase, final @NotNull JBLabel label) {
-        final @NotNull Icon drawn = Services.getInstance(getProject(), AutomationState.class).of(testCase.getId()).getIcon();
+        final @NotNull Icon drawn = Services.getInstance(getProject(), AutomationState.class).of(testCase.getUuid()).getIcon();
         return String.valueOf(IconUtil.scale(IconLoader.getDisabledIcon(drawn), label, DRAWN_AT));
     }
 
@@ -109,7 +109,7 @@ public class CodeWithoutJavaIdeTest extends AbstractCodegenIdeTest {
         settled();
 
         assertNull("code was written without the Java code generators", theTestSourceRoot().findFileByRelativePath("nafath/LoginTest.java"));
-        assertTrue("the test case was lost because its code could not be written", Services.getInstance(getProject(), TestCases.class).findTestCase(testCase.getId()).isPresent());
+        assertTrue("the test case was lost because its code could not be written", Services.getInstance(getProject(), TestCases.class).findTestCase(testCase.getUuid()).isPresent());
     }
 
     // Rule-CODEGEN-006
@@ -161,7 +161,7 @@ public class CodeWithoutJavaIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-CODEGEN-063
     public void testAPluginTestinFoundMissingStaysMissingUntilTheIdeRestarts() {
-        final @NotNull PluginId java = PluginId.getId("com.intellij.java");
+        final @NotNull PluginId java = PluginId.getUuid("com.intellij.java");
         assertTrue("the Java plugin is not installed and switched on here, so this proves nothing", PluginManagerCore.isPluginInstalled(java) && !PluginManagerCore.isDisabled(java));
 
         OptionalPlugin.JAVA.missingUntil(getTestRootDisposable());

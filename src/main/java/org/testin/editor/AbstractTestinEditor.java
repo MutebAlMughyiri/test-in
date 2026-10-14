@@ -250,9 +250,9 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
 
     // Rule-EDITOR-PANEL-291
     @Override
-    public void repaint(final @NotNull UUID testCaseId) {
+    public void repaint(final @NotNull UUID testCaseUuid) {
         model.getItems().stream()
-                .filter(testCase -> testCase.getId().equals(testCaseId))
+                .filter(testCase -> testCase.getUuid().equals(testCaseUuid))
                 .findFirst()
                 .ifPresent(model::contentsChanged);
     }
@@ -385,11 +385,11 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
 
     // UC-EDITOR-PANEL-022, Rule-EDITOR-PANEL-104, Rule-EDITOR-PANEL-009
     @Override
-    public void selectWhenLoaded(final @NotNull UUID testCaseId) {
+    public void selectWhenLoaded(final @NotNull UUID testCaseUuid) {
         final @NotNull Optional<TestCase> loaded;
         synchronized (allTestCases) {
             loaded = allTestCases.stream()
-                    .filter(testCase -> testCaseId.equals(testCase.getId()))
+                    .filter(testCase -> testCaseUuid.equals(testCase.getUuid()))
                     .findFirst();
         }
 
@@ -398,7 +398,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
             return;
         }
 
-        pending.waitFor(testCaseId);
+        pending.waitFor(testCaseUuid);
     }
 
     protected void focusIfGoingTo() {
@@ -437,7 +437,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
     }
 
     protected void rememberSelection() {
-        pending.keep(Optional.ofNullable(list.getSelectedValue()).map(TestCase::getId));
+        pending.keep(Optional.ofNullable(list.getSelectedValue()).map(TestCase::getUuid));
     }
 
     protected void wireList() {
@@ -469,14 +469,14 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
 
         final @NotNull List<TestCase> pageTestCases = new ArrayList<>(currentTestCases.subList(page.fromIndex(), page.toIndex()));
 
-        final @NotNull Optional<UUID> selectedId = pending.take()
-                .or(() -> Optional.ofNullable(list.getSelectedValue()).map(TestCase::getId));
+        final @NotNull Optional<UUID> selectedUuid = pending.take()
+                .or(() -> Optional.ofNullable(list.getSelectedValue()).map(TestCase::getUuid));
 
         replaceModel(pageTestCases);
 
-        selectedId.ifPresent(testCaseId -> {
+        selectedUuid.ifPresent(testCaseUuid -> {
             for (final TestCase testCase : pageTestCases) {
-                if (testCaseId.equals(testCase.getId())) {
+                if (testCaseUuid.equals(testCase.getUuid())) {
                     list.setSelectedValue(testCase, true);
                     break;
                 }
@@ -573,8 +573,8 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
 
     // UC-EDITOR-PANEL-027, Rule-EDITOR-PANEL-118
     protected void jumpToPageOfPendingSelection() {
-        pending.waiting().ifPresent(testCaseId -> {
-            if (!paging.turnToPageHolding(testCaseId, currentTestCases)) pending.forget();
+        pending.waiting().ifPresent(testCaseUuid -> {
+            if (!paging.turnToPageHolding(testCaseUuid, currentTestCases)) pending.forget();
         });
     }
 }

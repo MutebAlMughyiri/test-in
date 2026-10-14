@@ -103,13 +103,13 @@ at the end, where a tester looks for it.
 **If a test case's place is lost** — the same. Nothing becomes unsorted. What is
 in the folder is on the screen, in the order the places give.
 
-**If a tester copies a test case file by hand under a new id** — it becomes a
+**If a tester copies a test case file by hand under a new UUID** — it becomes a
 second, separate test case. The file name is the identity, so both are read and
 both get a number.
 
-**If a test case file is not named by an id** — `login.testcase`, written by
+**If a test case file is not named by a UUID** — `login.testcase`, written by
 hand — it is not read, and a warning names it (Rule-INTERNAL-012). Testin does
-not make up an id for it: a new one at every Refresh would make it a new test
+not make up a UUID for it: a new one at every Refresh would make it a new test
 case each time.
 
 **If two testers add a test case at the same time** — both are kept. There is

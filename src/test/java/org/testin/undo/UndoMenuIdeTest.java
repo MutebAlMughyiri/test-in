@@ -95,7 +95,7 @@ public class UndoMenuIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
         final @NotNull TestCase testCase = EditorFixtures.testCase(getProject(), testSet, "Log in", "m");
         final @NotNull JsonCodec mapper = Services.getInstance(getProject(), JsonCodec.class);
-        final @NotNull String original = mapper.writeValueAsString(theTestCases().findTestCase(testCase.getId()).orElseThrow());
+        final @NotNull String original = mapper.writeValueAsString(theTestCases().findTestCase(testCase.getUuid()).orElseThrow());
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         final @NotNull AnAction undo = entry(editor, UndoDirection.UNDO);
         final @NotNull AnAction redo = entry(editor, UndoDirection.REDO);
@@ -105,12 +105,12 @@ public class UndoMenuIdeTest extends AbstractTempRootIdeTest {
         Await.until("the edit never reached the undo history", () -> updated(undo).getPresentation().isEnabled());
 
         assertEquals("Undo does not say what it would take back", UndoDirection.UNDO.getTitle() + " " + named, said(undo));
-        assertEquals("the tester who changed it is not recorded", "Sara", theTestCases().findTestCase(testCase.getId()).orElseThrow().getUpdatedBy());
+        assertEquals("the tester who changed it is not recorded", "Sara", theTestCases().findTestCase(testCase.getUuid()).orElseThrow().getUpdatedBy());
 
         ActionUtil.performAction(undo, updated(undo));
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
-        assertEquals("undo did not put the test case back exactly, with who last changed it and when", original, mapper.writeValueAsString(theTestCases().findTestCase(testCase.getId()).orElseThrow()));
+        assertEquals("undo did not put the test case back exactly, with who last changed it and when", original, mapper.writeValueAsString(theTestCases().findTestCase(testCase.getUuid()).orElseThrow()));
         assertEquals("Redo does not say what it would put back", UndoDirection.REDO.getTitle() + " " + named, said(redo));
         assertEquals("Undo names something with nothing left to take back", UndoDirection.UNDO.getTitle(), said(undo));
     }

@@ -74,7 +74,7 @@ public class PageSizeAndGridIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull TestCase stored(final @NotNull TestCase testCase) {
-        return Services.getInstance(getProject(), TestCases.class).findTestCase(testCase.getId()).orElseThrow();
+        return Services.getInstance(getProject(), TestCases.class).findTestCase(testCase.getUuid()).orElseThrow();
     }
 
     // Rule-EDITOR-PANEL-222

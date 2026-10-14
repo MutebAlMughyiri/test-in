@@ -52,7 +52,7 @@ public class RescanKeepsTheIndexIdeTest extends AbstractTempRootIdeTest {
         indexer().scanSingleTestProject(testProjectPath);
 
         final Path set = testProjectPath.resolve("Test Cases").resolve("set-0");
-        final UUID testCase = indexedTestCases().getTestCasesForTestSet(set).getFirst().getId();
+        final UUID testCase = indexedTestCases().getTestCasesForTestSet(set).getFirst().getUuid();
 
         assertTrue("the first pass did not index the project, so there is nothing to watch",
                 nodes().nodeExists(set) && indexedTestCases().findTestCase(testCase).isPresent());
@@ -90,8 +90,8 @@ public class RescanKeepsTheIndexIdeTest extends AbstractTempRootIdeTest {
         final Path deleted = testProjectPath.resolve("Test Cases").resolve("set-1");
         final Path kept = testProjectPath.resolve("Test Cases").resolve("set-2");
 
-        final UUID testCaseInDeleted = indexedTestCases().getTestCasesForTestSet(deleted).getFirst().getId();
-        final UUID testCaseInKept = indexedTestCases().getTestCasesForTestSet(kept).getFirst().getId();
+        final UUID testCaseInDeleted = indexedTestCases().getTestCasesForTestSet(deleted).getFirst().getUuid();
+        final UUID testCaseInKept = indexedTestCases().getTestCasesForTestSet(kept).getFirst().getUuid();
 
         assertTrue("could not delete " + deleted, TempTree.delete(deleted));
         indexer().scanSingleTestProject(testProjectPath);

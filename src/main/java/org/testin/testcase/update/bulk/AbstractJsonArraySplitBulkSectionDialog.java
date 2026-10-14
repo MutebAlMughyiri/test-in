@@ -191,7 +191,7 @@ public abstract class AbstractJsonArraySplitBulkSectionDialog extends AbstractFr
 
         for (int i = 0; i < selectedTestCases.size(); i++) {
             final @NotNull TestCase selectedTestCase = selectedTestCases.get(i);
-            final @NotNull String prefix = "  {\n    \"id\": \"" + BulkValueText.escape(selectedTestCase.getId().toString())
+            final @NotNull String prefix = "  {\n    \"uuid\": \"" + BulkValueText.escape(selectedTestCase.getUuid().toString())
                     + "\",\n    \"description\": \"" + BulkValueText.escape(selectedTestCase.getDescription())
                     + "\",\n    \"" + getArrayFieldName() + "\": [\n";
             left.append(prefix);

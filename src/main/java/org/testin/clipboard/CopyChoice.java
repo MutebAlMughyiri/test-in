@@ -102,7 +102,7 @@ public enum CopyChoice implements MenuItem {
     STATUS(
             TestSetEditorFields.STATUS,
             Shortcuts.CopyStatus,
-            Icons.fieldLetter("U", Icons.GRAY)
+            Icons.fieldLetter("Z", Icons.GRAY)
     ),
 
     REFERENCE(
@@ -118,10 +118,10 @@ public enum CopyChoice implements MenuItem {
             testCase -> String.join(".", Fqcn.ofMethod(testCase))
     ),
 
-    ID(
-            TestSetEditorFields.ID,
-            Shortcuts.CopyId,
-            Icons.fieldLetter("I", Icons.GRAY)
+    UUID(
+            TestSetEditorFields.UUID,
+            Shortcuts.CopyUuid,
+            Icons.fieldLetter("U", Icons.GRAY)
     ),
 
     PATH(

@@ -26,9 +26,9 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.UUID;
 
-public record RunItemPath(@NotNull Path testRunPath, @NotNull UUID testCaseId) {
+public record RunItemPath(@NotNull Path testRunPath, @NotNull UUID testCaseUuid) {
     public @NotNull Optional<RunItem> in(final @NotNull RunItems runItems) {
-        return runItems.runItemOf(testCaseId).filter(runItem -> !runItem.isRemoved());
+        return runItems.runItemOf(testCaseUuid).filter(runItem -> !runItem.isRemoved());
     }
 
     public @NotNull Optional<RunItem> failedIn(final @NotNull RunItems runItems) {

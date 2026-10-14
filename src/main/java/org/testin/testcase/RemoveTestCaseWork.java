@@ -71,15 +71,15 @@ record RemoveTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor
 
     // UC-EDITOR-PANEL-011, Rule-EDITOR-PANEL-064
     private void removeFromDisk(final @NotNull List<TestCase> selectedTestCases) {
-        final @NotNull List<UUID> testCaseIds = TestCaseSnapshot.idsOf(selectedTestCases);
-        final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(project, node.getPath(), testCaseIds);
+        final @NotNull List<UUID> testCaseUuids = TestCaseSnapshot.uuidsOf(selectedTestCases);
+        final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(project, node.getPath(), testCaseUuids);
 
         final @NotNull List<TestCase> removed = new ArrayList<>();
         for (final TestCase testCase : selectedTestCases) {
-            if (testCases.removeTestCase(node.getPath(), testCase.getId())) removed.add(testCase);
+            if (testCases.removeTestCase(node.getPath(), testCase.getUuid())) removed.add(testCase);
         }
 
-        TestCaseSnapshot.record(project, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.remove"), removed), before, TestCaseSnapshot.of(project, node.getPath(), testCaseIds));
+        TestCaseSnapshot.record(project, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.remove"), removed), before, TestCaseSnapshot.of(project, node.getPath(), testCaseUuids));
 
         ApplicationManager.getApplication().invokeLater(() -> {
             if (!removed.isEmpty()) CodeChangeType.REMOVE_TEST_CASE.executeAll(project, removed);

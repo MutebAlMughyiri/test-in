@@ -36,7 +36,7 @@ public class FollowSelectionIdeTest extends AbstractViewPanelIdeTest {
     }
 
     private void selectIn(final @NotNull TestSetEditor editor, final @NotNull TestCase testCase) {
-        editor.selectWhenLoaded(testCase.getId());
+        editor.selectWhenLoaded(testCase.getUuid());
         settled();
     }
 

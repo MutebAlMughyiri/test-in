@@ -32,11 +32,11 @@ public class PendingSelectionTest {
     @Test
     public void aTestCaseWaitedForIsHandedOverOnceAndAsksForFocusOnce() {
         final @NotNull PendingSelection pending = new PendingSelection();
-        final @NotNull UUID testCaseId = UUID.randomUUID();
+        final @NotNull UUID testCaseUuid = UUID.randomUUID();
 
-        pending.waitFor(testCaseId);
+        pending.waitFor(testCaseUuid);
 
-        assertEquals(pending.take(), Optional.of(testCaseId), "the test case waited for was not handed over");
+        assertEquals(pending.take(), Optional.of(testCaseUuid), "the test case waited for was not handed over");
         assertEquals(pending.take(), Optional.empty(), "the test case was handed over twice");
         assertTrue(pending.takeFocus(), "waiting for a test case did not ask for the focus");
         assertFalse(pending.takeFocus(), "the focus was asked for twice");
@@ -46,11 +46,11 @@ public class PendingSelectionTest {
     @Test
     public void aSelectionKeptAcrossAReloadAsksForNoFocus() {
         final @NotNull PendingSelection pending = new PendingSelection();
-        final @NotNull UUID testCaseId = UUID.randomUUID();
+        final @NotNull UUID testCaseUuid = UUID.randomUUID();
 
-        pending.keep(Optional.of(testCaseId));
+        pending.keep(Optional.of(testCaseUuid));
 
-        assertEquals(pending.waiting(), Optional.of(testCaseId), "the selection kept across a reload was lost");
+        assertEquals(pending.waiting(), Optional.of(testCaseUuid), "the selection kept across a reload was lost");
         assertFalse(pending.takeFocus(), "keeping the selection across a reload took the focus");
     }
 

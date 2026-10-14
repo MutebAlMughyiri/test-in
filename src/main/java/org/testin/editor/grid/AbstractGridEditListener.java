@@ -99,7 +99,7 @@ public abstract class AbstractGridEditListener implements TableModelListener {
     // UC-EDITOR-PANEL-008, Rule-EDITOR-PANEL-008
     private void confirmEdit(final @NotNull TestCase edited) {
         final boolean first = writtenThisGesture.isEmpty();
-        writtenThisGesture.add(edited.getId());
+        writtenThisGesture.add(edited.getUuid());
         if (!first) return;
 
         ApplicationManager.getApplication().invokeLater(() -> {

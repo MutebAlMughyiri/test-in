@@ -42,16 +42,16 @@ public class MarkerJsonTest {
     private final String onDisk = DateTimeFormatter.ofPattern(DateFormats.DATE_FORMAT_PATTERN, Locale.US).format(when);
 
     @Test
-    public void theFoldersIdIsWrittenOnlyOnceItHasOne() {
+    public void theFoldersUuidIsWrittenOnlyOnceItHasOne() {
         try {
-            assertFalse(mapper.writeValueAsString(new TestSetMarker()).contains("\"id\""), "a marker with no id says nothing about one");
+            assertFalse(mapper.writeValueAsString(new TestSetMarker()).contains("\"uuid\""), "a marker with no UUID says nothing about one");
 
             final TestSetMarker marker = new TestSetMarker();
-            marker.setId("0bb7f0de-8a59-4a0c-9a2f-0e2ba6a3b8f1");
+            marker.setUuid("0bb7f0de-8a59-4a0c-9a2f-0e2ba6a3b8f1");
 
             final String json = mapper.writeValueAsString(marker);
-            assertTrue(json.contains("\"id\":\"0bb7f0de-8a59-4a0c-9a2f-0e2ba6a3b8f1\""), json);
-            assertEquals(mapper.readValue(json, TestSetMarker.class).getId(), "0bb7f0de-8a59-4a0c-9a2f-0e2ba6a3b8f1");
+            assertTrue(json.contains("\"uuid\":\"0bb7f0de-8a59-4a0c-9a2f-0e2ba6a3b8f1\""), json);
+            assertEquals(mapper.readValue(json, TestSetMarker.class).getUuid(), "0bb7f0de-8a59-4a0c-9a2f-0e2ba6a3b8f1");
         } catch (final Exception ex) {
             throw new AssertionError(ex);
         }

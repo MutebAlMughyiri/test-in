@@ -46,7 +46,7 @@ public final class TestCaseHoverButtons {
         final @NotNull AutomationState automation = Services.getInstance(project, AutomationState.class);
         automation.read(project, List.of(shownTestCase), () -> ViewToolWindowFactory.panel(project).ifPresent(ViewPanel::refreshCurrentView));
 
-        final @NotNull Automated state = automation.of(shownTestCase.getId());
+        final @NotNull Automated state = automation.of(shownTestCase.getUuid());
 
         return List.of(
                 HoverButton.of(project, navigate, state.getIcon(), navigate.action().getTooltip(), () -> navigate.action().execute(project, shownTestCase)),

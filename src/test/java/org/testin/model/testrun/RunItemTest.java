@@ -41,18 +41,18 @@ public class RunItemTest {
     }
 
     private static @NotNull RunItem withExecutions(final @NotNull RunItemExecution... executions) {
-        return RunItem.builder().id(UUID.randomUUID()).executions(List.of(executions)).defaultNumber(executions.length).build();
+        return RunItem.builder().uuid(UUID.randomUUID()).executions(List.of(executions)).defaultNumber(executions.length).build();
     }
 
     // Rule-INTERNAL-135, Rule-VIEW-PANEL-119, Rule-INTERNAL-094
     @Test
     public void anOrdinaryRunItemStoresOnlyItsDefaultAndExecutions() {
-        final @NotNull RunItem runItem = RunItem.builder().id(UUID.randomUUID()).build();
+        final @NotNull RunItem runItem = RunItem.builder().uuid(UUID.randomUUID()).build();
         runItem.recordRunItemStatus(RunItemStatus.PASSED, "muteb", Duration.ZERO, Failure.NONE);
 
         final @NotNull String json = RealJsonCodec.build().writeValueAsString(runItem);
 
-        for (final String key : List.of("id", "actualResult", "stacktrace", "screenshots", "bugSeverity", "bugPriority", "bugIssueUrl", "untested", "clock", "invocation", "retry", "retried", "parameters")) {
+        for (final String key : List.of("uuid", "actualResult", "stacktrace", "screenshots", "bugSeverity", "bugPriority", "bugIssueUrl", "untested", "clock", "invocation", "retry", "retried", "parameters")) {
             assertFalse(json.contains("\"" + key + "\""), "an ordinary passed run item stored " + key + ": " + json);
         }
         assertTrue(json.contains("\"default\" : 1") && json.contains("\"executions\"") && json.contains("PASSED"), json);
@@ -61,7 +61,7 @@ public class RunItemTest {
     // Rule-INTERNAL-135, Rule-EDITOR-PANEL-136, Rule-TREE-PANEL-067
     @Test
     public void aRunItemNobodyJudgedWritesItsOneOpenExecution() {
-        final @NotNull RunItem runItem = RunItem.builder().id(UUID.randomUUID()).build();
+        final @NotNull RunItem runItem = RunItem.builder().uuid(UUID.randomUUID()).build();
 
         assertEquals(RealJsonCodec.build().writeValueAsString(runItem).replaceAll("\\s", ""), "{\"default\":1,\"executions\":[{\"status\":\"PENDING\"}]}");
 
@@ -178,7 +178,7 @@ public class RunItemTest {
     // Rule-CODEGEN-111, Rule-EDITOR-PANEL-136
     @Test
     public void theFirstAttemptReplacesTheOpenExecution() {
-        final @NotNull RunItem runItem = RunItem.builder().id(UUID.randomUUID()).build();
+        final @NotNull RunItem runItem = RunItem.builder().uuid(UUID.randomUUID()).build();
 
         runItem.recordExecutions(List.of(execution(RunItemStatus.FAILED, "Skipped/Terminated"), execution(RunItemStatus.PASSED, "")), 0, 1, "Muteb");
 
@@ -213,7 +213,7 @@ public class RunItemTest {
     // Rule-EDITOR-PANEL-288
     @Test
     public void theTimeSpentIncludesWhatTheWalkIsCounting() {
-        final @NotNull RunItem runItem = RunItem.builder().id(UUID.randomUUID()).build();
+        final @NotNull RunItem runItem = RunItem.builder().uuid(UUID.randomUUID()).build();
         runItem.recordClock(Duration.ofSeconds(7));
 
         assertEquals(runItem.timeSpent(), Duration.ofSeconds(7));
@@ -222,7 +222,7 @@ public class RunItemTest {
     // Rule-TREE-PANEL-067
     @Test
     public void onlyAnOpenExecutionBecomesUntested() {
-        final @NotNull RunItem never = RunItem.builder().id(UUID.randomUUID()).build();
+        final @NotNull RunItem never = RunItem.builder().uuid(UUID.randomUUID()).build();
         final @NotNull RunItem passed = withExecutions(execution(RunItemStatus.PASSED, ""));
 
         assertTrue(never.markUntestedIfPending());
@@ -245,8 +245,8 @@ public class RunItemTest {
 
     @Test
     public void shownTestCaseIsTheWiredTestCase() {
-        final TestCase testCase = TestCase.builder().id(UUID.randomUUID()).build();
-        final RunItem runItem = RunItem.builder().id(UUID.randomUUID()).build().showing(Optional.of(testCase), Optional.empty(), Optional.empty(), false);
+        final TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).build();
+        final RunItem runItem = RunItem.builder().uuid(UUID.randomUUID()).build().showing(Optional.of(testCase), Optional.empty(), Optional.empty(), false);
 
         assertSame(runItem.shownTestCase(), testCase);
         assertFalse(runItem.isRemoved(), "a row showing a live test case is not removed");
@@ -254,27 +254,27 @@ public class RunItemTest {
 
     @Test
     public void showingNoTestCaseMarksTheRowRemovedAndNamesIt() {
-        final UUID testCaseId = UUID.randomUUID();
-        final RunItem runItem = RunItem.builder().id(testCaseId).build()
-                .showing(Optional.of(TestCase.builder().id(testCaseId).build()), Optional.empty(), Optional.empty(), false)
+        final UUID testCaseUuid = UUID.randomUUID();
+        final RunItem runItem = RunItem.builder().uuid(testCaseUuid).build()
+                .showing(Optional.of(TestCase.builder().uuid(testCaseUuid).build()), Optional.empty(), Optional.empty(), false)
                 .showing(Optional.empty(), Optional.empty(), Optional.empty(), false);
 
         assertTrue(runItem.isRemoved(), "the live test case and the removed mark are set by one call, so they cannot disagree");
-        assertEquals(runItem.shownTestCase().getDescription(), TestCase.deleted(testCaseId).getDescription());
+        assertEquals(runItem.shownTestCase().getDescription(), TestCase.deleted(testCaseUuid).getDescription());
     }
 
     @Test
     public void anUnwiredRunItemShowsAsARemovedTestCaseRatherThanThrowing() {
-        final UUID testCaseId = UUID.randomUUID();
-        final RunItem runItem = RunItem.builder().id(testCaseId).build();
+        final UUID testCaseUuid = UUID.randomUUID();
+        final RunItem runItem = RunItem.builder().uuid(testCaseUuid).build();
 
-        assertEquals(runItem.shownTestCase().getDescription(), TestCase.deleted(testCaseId).getDescription());
-        assertEquals(runItem.shownTestCase().getId(), testCaseId);
+        assertEquals(runItem.shownTestCase().getDescription(), TestCase.deleted(testCaseUuid).getDescription());
+        assertEquals(runItem.shownTestCase().getUuid(), testCaseUuid);
     }
 
     @Test
     public void aRunItemNeverExecutedIsPending() {
-        final RunItem runItem = RunItem.builder().id(UUID.randomUUID()).build();
+        final RunItem runItem = RunItem.builder().uuid(UUID.randomUUID()).build();
 
         assertEquals(runItem.getStatus(), RunItemStatus.PENDING, "an unrun item defaults to PENDING");
     }
@@ -282,7 +282,7 @@ public class RunItemTest {
     // Rule-EDITOR-PANEL-132
     @Test
     public void theClocksCountIsTheNextExecutionsDuration() {
-        final RunItem runItem = RunItem.builder().id(UUID.randomUUID()).build();
+        final RunItem runItem = RunItem.builder().uuid(UUID.randomUUID()).build();
         runItem.recordClock(Duration.ofSeconds(24));
 
         runItem.recordRunItemStatus(RunItemStatus.PASSED, "Muteb", runItem.getClock(), Failure.NONE);
@@ -294,7 +294,7 @@ public class RunItemTest {
     // Rule-EDITOR-PANEL-132
     @Test
     public void theClockStopsCountingOnceTheRunItemStatusIsIn() {
-        final RunItem runItem = RunItem.builder().id(UUID.randomUUID()).build();
+        final RunItem runItem = RunItem.builder().uuid(UUID.randomUUID()).build();
         runItem.recordRunItemStatus(RunItemStatus.PASSED, "Muteb", Duration.ofMillis(10017), Failure.NONE);
 
         runItem.recordClock(Duration.ofSeconds(24));
@@ -306,7 +306,7 @@ public class RunItemTest {
     // Rule-EDITOR-PANEL-136, Rule-EDITOR-PANEL-132
     @Test
     public void theFirstRunItemStatusTakesTheOpenExecutionsPlace() {
-        final RunItem runItem = RunItem.builder().id(UUID.randomUUID()).build();
+        final RunItem runItem = RunItem.builder().uuid(UUID.randomUUID()).build();
         runItem.recordClock(Duration.ofSeconds(37));
 
         runItem.recordRunItemStatus(RunItemStatus.FAILED, "tester", runItem.getClock(), Failure.NONE);

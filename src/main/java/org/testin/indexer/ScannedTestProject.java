@@ -48,8 +48,8 @@ final class ScannedTestProject {
     private final @NotNull Map<String, TestSetNode> testSets = new ConcurrentHashMap<>();
     private final @NotNull Map<String, TestRunNode> testRunNodes = new ConcurrentHashMap<>();
     private final @NotNull Map<String, RunItems> runItemsByPath = new ConcurrentHashMap<>();
-    private final @NotNull Map<UUID, TestCase> testCasesById = new ConcurrentHashMap<>();
-    private final @NotNull Map<String, List<UUID>> testCaseIdsByTestSet = new ConcurrentHashMap<>();
+    private final @NotNull Map<UUID, TestCase> testCasesByUuid = new ConcurrentHashMap<>();
+    private final @NotNull Map<String, List<UUID>> testCaseUuidsByTestSet = new ConcurrentHashMap<>();
 
     // UC-INTERNAL-002, Rule-INTERNAL-082
     private final @NotNull Set<String> clashingTestCases = ConcurrentHashMap.newKeySet();

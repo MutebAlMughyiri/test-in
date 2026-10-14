@@ -55,7 +55,7 @@ public final class TestCaseFilter {
 
     // UC-EDITOR-PANEL-019, Rule-EDITOR-PANEL-091, Rule-EDITOR-PANEL-239, Rule-EDITOR-PANEL-260, Rule-EDITOR-PANEL-261
     private static boolean matches(final @NotNull TestCase testCase, final @NotNull String query, final @NotNull FilterAndSortChoice wanted, final @NotNull Function<UUID, Optional<RunItem>> runItemProvider) {
-        final @NotNull TestCase shown = runItemProvider.apply(testCase.getId()).map(RunItem::shownTestCase).orElse(testCase);
+        final @NotNull TestCase shown = runItemProvider.apply(testCase.getUuid()).map(RunItem::shownTestCase).orElse(testCase);
 
         final boolean matchesSearch = query.isEmpty() || TestSetEditorFields.anyContains(shown, query);
         final boolean matchesPriority = wanted.priorities().isEmpty() || wanted.priorities().contains(shown.getPriority());
@@ -65,14 +65,14 @@ public final class TestCaseFilter {
         final boolean matchesModule = wanted.modules().isEmpty() || wanted.modules().contains(shown.getModule());
         final boolean matchesTestCaseStatus = wanted.testCaseStatuses().isEmpty() || wanted.testCaseStatuses().contains(shown.getStatus());
         final boolean matchesRunItemStatus = wanted.runItemStatuses().isEmpty()
-                || matchesRunItemStatus(testCase.getId(), wanted.runItemStatuses(), runItemProvider);
+                || matchesRunItemStatus(testCase.getUuid(), wanted.runItemStatuses(), runItemProvider);
         final boolean matchesTestSet = wanted.testSets().isEmpty() || wanted.testSets().contains(testCase.getParent().getPath());
 
         return matchesSearch && matchesPriority && matchesGroup && matchesModule && matchesTestCaseStatus && matchesRunItemStatus && matchesTestSet;
     }
 
-    private static boolean matchesRunItemStatus(final @NotNull UUID testCaseId, final @NotNull Set<RunItemStatus> runItemStatuses, final @NotNull Function<UUID, Optional<RunItem>> runItemProvider) {
-        return runItemProvider.apply(testCaseId)
+    private static boolean matchesRunItemStatus(final @NotNull UUID testCaseUuid, final @NotNull Set<RunItemStatus> runItemStatuses, final @NotNull Function<UUID, Optional<RunItem>> runItemProvider) {
+        return runItemProvider.apply(testCaseUuid)
                 .map(RunItem::getStatus)
                 .filter(runItemStatuses::contains)
                 .isPresent();

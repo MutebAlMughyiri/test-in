@@ -34,10 +34,10 @@ public record PageWindow(int page, int totalPages, int fromIndex, int toIndex) {
     }
 
     // UC-EDITOR-PANEL-022, Rule-EDITOR-PANEL-104
-    public static int pageContaining(final @NotNull UUID testCaseId, final @NotNull List<TestCase> testCases, final int pageSize) {
+    public static int pageContaining(final @NotNull UUID testCaseUuid, final @NotNull List<TestCase> testCases, final int pageSize) {
         final int safePageSize = Math.max(1, pageSize);
         for (int i = 0; i < testCases.size(); i++) {
-            if (testCaseId.equals(testCases.get(i).getId())) return (i / safePageSize) + 1;
+            if (testCaseUuid.equals(testCases.get(i).getUuid())) return (i / safePageSize) + 1;
         }
 
         return 0;

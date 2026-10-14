@@ -36,7 +36,7 @@ public class RunItemCardRenderer extends AbstractCardRenderer<TestRunEditor> {
     // UC-EDITOR-PANEL-030
     @Override
     protected @NotNull RunItemCard bindDataAndGetCard(final @NotNull JList<? extends TestCase> list, final @NotNull TestCase testCase, final int row, final boolean isSelected, final boolean isRowHovered, final @NotNull String hover) {
-        final @NotNull RunItem runItem = editor.runItem(testCase.getId())
+        final @NotNull RunItem runItem = editor.runItem(testCase.getUuid())
                 .orElseGet(() -> RunItem.pendingFor(testCase));
 
         card.updateData(row, editor.getSelectedDetails(), runItem, editor.cardTitle(testCase));

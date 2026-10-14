@@ -57,14 +57,14 @@ public class TestCaseTransferHandler extends TransferHandler {
     }
 
     private static int landingIndex(final @NotNull List<TestCase> allTestCases, final @NotNull Optional<TestCase> above, final @NotNull Optional<TestCase> below) {
-        return above.map(testCase -> Math.min(indexOfId(allTestCases, testCase.getId()) + 1, allTestCases.size()))
-                .or(() -> below.map(testCase -> indexOfId(allTestCases, testCase.getId())))
+        return above.map(testCase -> Math.min(indexOfUuid(allTestCases, testCase.getUuid()) + 1, allTestCases.size()))
+                .or(() -> below.map(testCase -> indexOfUuid(allTestCases, testCase.getUuid())))
                 .orElse(allTestCases.size());
     }
 
-    private static int indexOfId(final @NotNull List<TestCase> testCases, final @NotNull UUID testCaseId) {
+    private static int indexOfUuid(final @NotNull List<TestCase> testCases, final @NotNull UUID testCaseUuid) {
         for (int i = 0; i < testCases.size(); i++) {
-            if (testCaseId.equals(testCases.get(i).getId())) return i;
+            if (testCaseUuid.equals(testCases.get(i).getUuid())) return i;
         }
 
         return testCases.size();
@@ -127,30 +127,30 @@ public class TestCaseTransferHandler extends TransferHandler {
 
             if (testCasesToMove.isEmpty()) return false;
 
-            final @NotNull Set<UUID> movedIds = testCasesToMove.stream().map(TestCase::getId).collect(Collectors.toSet());
+            final @NotNull Set<UUID> movedUuids = testCasesToMove.stream().map(TestCase::getUuid).collect(Collectors.toSet());
 
-            final @NotNull Optional<TestCase> above = anchorAboveDrop(support, movedIds);
-            final @NotNull Optional<TestCase> below = anchorBelowDrop(support, movedIds);
+            final @NotNull Optional<TestCase> above = anchorAboveDrop(support, movedUuids);
+            final @NotNull Optional<TestCase> below = anchorBelowDrop(support, movedUuids);
 
             final @NotNull List<TestCase> allTestCases = editor.getAllTestCases();
-            final @NotNull List<UUID> testCaseIds;
+            final @NotNull List<UUID> testCaseUuids;
 
             synchronized (allTestCases) {
-                final @NotNull Set<UUID> here = allTestCases.stream().map(TestCase::getId).collect(Collectors.toSet());
-                if (!here.containsAll(movedIds)) return false;
+                final @NotNull Set<UUID> here = allTestCases.stream().map(TestCase::getUuid).collect(Collectors.toSet());
+                if (!here.containsAll(movedUuids)) return false;
 
-                allTestCases.removeIf(testCase -> movedIds.contains(testCase.getId()));
+                allTestCases.removeIf(testCase -> movedUuids.contains(testCase.getUuid()));
                 allTestCases.addAll(landingIndex(allTestCases, above, below), testCasesToMove);
-                testCaseIds = TestCaseSnapshot.idsOf(allTestCases);
+                testCaseUuids = TestCaseSnapshot.uuidsOf(allTestCases);
             }
 
-            if (testCaseIds.equals(TestCaseSnapshot.idsOf(orderBefore))) return false;
+            if (testCaseUuids.equals(TestCaseSnapshot.uuidsOf(orderBefore))) return false;
 
             final @NotNull Path setPath = editor.getParent().getPath();
-            final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(project, setPath, testCaseIds);
+            final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(project, setPath, testCaseUuids);
 
             editor.updateSequenceAndSaveAll(() -> {
-                TestCaseSnapshot.record(project, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.reorder"), testCasesToMove), before, TestCaseSnapshot.of(project, setPath, testCaseIds));
+                TestCaseSnapshot.record(project, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.reorder"), testCasesToMove), before, TestCaseSnapshot.of(project, setPath, testCaseUuids));
                 notifier.softShowCounted(project, Done.RE_SORTED, testCasesToMove.size());
             });
 
@@ -186,13 +186,13 @@ public class TestCaseTransferHandler extends TransferHandler {
         return ((JList.DropLocation) support.getDropLocation()).getIndex();
     }
 
-    private @NotNull Optional<TestCase> anchorBelowDrop(final @NotNull TransferSupport support, final @NotNull Set<UUID> movedIds) {
+    private @NotNull Optional<TestCase> anchorBelowDrop(final @NotNull TransferSupport support, final @NotNull Set<UUID> movedUuids) {
         if (!(support.getComponent() instanceof JBList<?> target)) return Optional.empty();
 
         final @NotNull ListModel<?> rows = target.getModel();
 
         for (int row = Math.max(0, dropIndex(support)); row < rows.getSize(); row++) {
-            if (rows.getElementAt(row) instanceof TestCase testCase && !movedIds.contains(testCase.getId()))
+            if (rows.getElementAt(row) instanceof TestCase testCase && !movedUuids.contains(testCase.getUuid()))
                 return Optional.of(testCase);
         }
 
@@ -200,14 +200,14 @@ public class TestCaseTransferHandler extends TransferHandler {
     }
 
     // UC-EDITOR-PANEL-010, Rule-EDITOR-PANEL-059
-    private @NotNull Optional<TestCase> anchorAboveDrop(final @NotNull TransferSupport support, final @NotNull Set<UUID> movedIds) {
+    private @NotNull Optional<TestCase> anchorAboveDrop(final @NotNull TransferSupport support, final @NotNull Set<UUID> movedUuids) {
         if (!(support.getComponent() instanceof JBList<?> target)) return Optional.empty();
 
         final @NotNull ListModel<?> rows = target.getModel();
         final int drop = Math.min(dropIndex(support), rows.getSize());
 
         for (int row = drop - 1; row >= 0; row--) {
-            if (rows.getElementAt(row) instanceof TestCase testCase && !movedIds.contains(testCase.getId()))
+            if (rows.getElementAt(row) instanceof TestCase testCase && !movedUuids.contains(testCase.getUuid()))
                 return Optional.of(testCase);
         }
 

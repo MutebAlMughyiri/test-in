@@ -32,10 +32,10 @@ import static org.junit.Assert.assertNotEquals;
 
 public class ImportJsonIdeTest extends BasePlatformTestCase {
 
-    private static final @NotNull UUID EXPORTED_ID = UUID.fromString("8f7b1a52-0c44-4c1e-9d6b-2a3f5e7c9011");
+    private static final @NotNull UUID EXPORTED_UUID = UUID.fromString("8f7b1a52-0c44-4c1e-9d6b-2a3f5e7c9011");
 
     private static final @NotNull String EXPORTED = """
-            {"Login":[{"id":"8f7b1a52-0c44-4c1e-9d6b-2a3f5e7c9011","description":"Log in with a valid user",\
+            {"Login":[{"uuid":"8f7b1a52-0c44-4c1e-9d6b-2a3f5e7c9011","description":"Log in with a valid user",\
             "expectedResult":"The dashboard opens","module":"Accounts","status":"REVIEWED","order":"a5"}]}""";
 
     private @NotNull TestCase imported() {
@@ -53,7 +53,7 @@ public class ImportJsonIdeTest extends BasePlatformTestCase {
 
     // UC-SHARE-005, Rule-SHARE-024
     public void testAnImportedTestCaseIsNewAndNotTheOneTheFileNames() {
-        assertNotEquals("the id in the file names a test case in the project it was exported from", EXPORTED_ID, imported().getId());
+        assertNotEquals("the UUID in the file names a test case in the project it was exported from", EXPORTED_UUID, imported().getUuid());
     }
 
     // UC-SHARE-005, Rule-SHARE-029

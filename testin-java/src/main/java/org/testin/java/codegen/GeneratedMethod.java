@@ -59,22 +59,22 @@ public final class GeneratedMethod {
 
     // Rule-CODEGEN-001
     public static @NotNull Optional<PsiMethod> forTestCase(final @NotNull PsiClass testClass, final @NotNull TestCase testCase) {
-        return Optional.ofNullable(byTestCaseId(testClass).get(testCase.getId().toString()));
+        return Optional.ofNullable(byTestCaseUuid(testClass).get(testCase.getUuid().toString()));
     }
 
     // Rule-CODEGEN-001
-    public static @NotNull Map<String, PsiMethod> byTestCaseId(final @NotNull PsiClass testClass) {
-        final @NotNull Map<String, PsiMethod> byId = new LinkedHashMap<>();
+    public static @NotNull Map<String, PsiMethod> byTestCaseUuid(final @NotNull PsiClass testClass) {
+        final @NotNull Map<String, PsiMethod> byUuid = new LinkedHashMap<>();
 
         for (final PsiMethod testMethod : testClass.getMethods()) {
-            testCaseIdOf(testMethod).ifPresent(testCaseId -> byId.putIfAbsent(testCaseId, testMethod));
+            testCaseUuidOf(testMethod).ifPresent(testCaseUuid -> byUuid.putIfAbsent(testCaseUuid, testMethod));
         }
 
-        return byId;
+        return byUuid;
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-013
-    public static @NotNull Optional<String> testCaseIdOf(final @NotNull PsiMethod testMethod) {
+    public static @NotNull Optional<String> testCaseUuidOf(final @NotNull PsiMethod testMethod) {
         return testAnnotationOf(testMethod)
                 .map(annotation -> annotation.findDeclaredAttributeValue(TEST_NAME))
                 .filter(PsiLiteralValue.class::isInstance)
@@ -85,11 +85,11 @@ public final class GeneratedMethod {
 
     // UC-CODEGEN-002, Rule-CODEGEN-001
     public static void adopt(final @NotNull Project project, final @NotNull PsiMethod testMethod, final @NotNull TestCase testCase) {
-        if (testCaseIdOf(testMethod).isPresent()) return;
+        if (testCaseUuidOf(testMethod).isPresent()) return;
 
         testAnnotationOf(testMethod).ifPresent(annotation -> {
             final @NotNull PsiAnnotation written = JavaPsiFacade.getElementFactory(project)
-                    .createAnnotationFromText("@Test(" + TEST_NAME + " = " + JavaLiteral.of(testCase.getId().toString()) + ")", testMethod);
+                    .createAnnotationFromText("@Test(" + TEST_NAME + " = " + JavaLiteral.of(testCase.getUuid().toString()) + ")", testMethod);
 
             Optional.ofNullable(written.findDeclaredAttributeValue(TEST_NAME))
                     .ifPresent(value -> annotation.setDeclaredAttributeValue(TEST_NAME, value));
@@ -100,7 +100,7 @@ public final class GeneratedMethod {
     public static @NotNull Map<String, PsiMethod> untaggedByDescription(final @NotNull PsiClass testClass) {
         final @NotNull Map<String, PsiMethod> found = new LinkedHashMap<>();
         for (final PsiMethod testMethod : testClass.getMethods()) {
-            if (testCaseIdOf(testMethod).isPresent()) continue;
+            if (testCaseUuidOf(testMethod).isPresent()) continue;
 
             testAnnotationOf(testMethod)
                     .map(annotation -> AnnotationUtil.getStringAttributeValue(annotation, DESCRIPTION))

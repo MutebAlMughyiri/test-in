@@ -40,7 +40,7 @@ public class CardWrapIdeTest extends AbstractTempRootIdeTest {
     private static final @NotNull String LONG = "Invocation 4, all pass - expect stay through 4 invocations, then Passed.";
 
     private static @NotNull RunItem passed(final @NotNull TestCase testCase) {
-        return RunItem.builder().id(testCase.getId()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())).build();
+        return RunItem.builder().uuid(testCase.getUuid()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())).build();
     }
 
     private static int heightAt(final @NotNull JBList<TestCase> list, final int width) {

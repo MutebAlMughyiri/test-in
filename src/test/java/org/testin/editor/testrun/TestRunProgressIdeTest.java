@@ -140,11 +140,11 @@ public class TestRunProgressIdeTest extends AbstractTempRootIdeTest {
         final @NotNull UUID removed = UUID.randomUUID();
         final @NotNull TestRunFixture fixture = TestRunFixture.of(getProject(), root, List.of(
                 EditorFixtures.pending(testCases.getFirst()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())),
-                new RunItem().setId(removed).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("Kept from before").build()))), testCases);
+                new RunItem().setUuid(removed).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("Kept from before").build()))), testCases);
         final @NotNull TestRunEditor editor = fixture.opened(getTestRootDisposable());
         try {
             final @NotNull JBTable grid = theGridOf(editor);
-            final int removedRow = editor.getCurrentTestCases().stream().map(TestCase::getId).toList().indexOf(removed);
+            final int removedRow = editor.getCurrentTestCases().stream().map(TestCase::getUuid).toList().indexOf(removed);
             final int liveRow = 1 - removedRow;
 
             typedInto(grid, liveRow, "The dashboard stayed blank");
@@ -165,7 +165,7 @@ public class TestRunProgressIdeTest extends AbstractTempRootIdeTest {
             awaitWrites();
             final @NotNull Map<String, String> onDisk = FilesUnder.snapshot(fixture.testRun().getPath());
 
-            editor.runItem(fixture.testCases().getFirst().getId()).orElseThrow().setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()));
+            editor.runItem(fixture.testCases().getFirst().getUuid()).orElseThrow().setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()));
             editor.refreshAfterTestRunStatusChanged();
 
             assertTrue("the figures do not count what the test run holds now: " + Drawn.words(editor.getStatusBar()),
@@ -196,7 +196,7 @@ public class TestRunProgressIdeTest extends AbstractTempRootIdeTest {
             assertTrue("the test run's status is not shown", inTheTestRun.getFirst().isVisible());
             assertFalse("the clock shows though nothing was timed", inTheTestRun.get(2).isVisible() && Drawn.text(inTheTestRun.get(2)).isEmpty());
 
-            testRunEditor.runItem(fixture.testCases().getFirst().getId()).orElseThrow().setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()));
+            testRunEditor.runItem(fixture.testCases().getFirst().getUuid()).orElseThrow().setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()));
             testRunEditor.refreshAfterTestRunStatusChanged();
             assertTrue("the figures are hidden though a run item status was recorded", inTheTestRun.get(1).isVisible());
         } finally {
@@ -221,7 +221,7 @@ public class TestRunProgressIdeTest extends AbstractTempRootIdeTest {
                 TimeoutUtil.sleep(20);
             }
 
-            final @NotNull Duration carried = editor.runItem(testCases.getFirst().getId()).orElseThrow().shownExecution().getDuration();
+            final @NotNull Duration carried = editor.runItem(testCases.getFirst().getUuid()).orElseThrow().shownExecution().getDuration();
             assertTrue("the clock started again instead of adding to the time already carried: " + carried, carried.compareTo(Duration.ofSeconds(8)) >= 0);
         } finally {
             Disposer.dispose(editor);

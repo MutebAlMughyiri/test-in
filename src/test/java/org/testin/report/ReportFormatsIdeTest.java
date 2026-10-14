@@ -132,8 +132,8 @@ public class ReportFormatsIdeTest extends AbstractTempRootIdeTest {
         super.tearDown();
     }
 
-    private void aTestCase(final @NotNull UUID testCaseId, final @NotNull String description) {
-        final @NotNull TestCase testCase = TestCase.builder().id(testCaseId).description(description).order(testCaseId.toString()).build();
+    private void aTestCase(final @NotNull UUID testCaseUuid, final @NotNull String description) {
+        final @NotNull TestCase testCase = TestCase.builder().uuid(testCaseUuid).description(description).order(testCaseUuid.toString()).build();
         testCase.setParent(login);
         Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(login.getPath(), testCase);
     }
@@ -151,9 +151,9 @@ public class ReportFormatsIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull TestRunNode theTestRun() {
         return aTestRun(TEST_RUN, List.of(
-                new RunItem().setId(opens).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())),
-                new RunItem().setId(locks).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The account\nstayed open").stacktrace(STACKTRACE).screenshots(List.of(SCREENSHOT)).build())),
-                new RunItem().setId(deleted).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()))));
+                new RunItem().setUuid(opens).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())),
+                new RunItem().setUuid(locks).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The account\nstayed open").stacktrace(STACKTRACE).screenshots(List.of(SCREENSHOT)).build())),
+                new RunItem().setUuid(deleted).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()))));
     }
 
     private @NotNull RunItems resultsOf(final @NotNull TestRunNode testRun) {
@@ -264,7 +264,7 @@ public class ReportFormatsIdeTest extends AbstractTempRootIdeTest {
     // Rule-REPORT-018
     public void testThePdfSaysWhatItCouldNotPrint() {
         aTestCase(opens, "سجل الدخول");
-        final @NotNull TestRunNode testRun = aTestRun("Cycle-Arabic", List.of(new RunItem().setId(opens).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()))));
+        final @NotNull TestRunNode testRun = aTestRun("Cycle-Arabic", List.of(new RunItem().setUuid(opens).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()))));
 
         final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
 
@@ -328,12 +328,12 @@ public class ReportFormatsIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-REPORT-026
     public void testEveryFormatListsTheRunItemsInTheTestRunsOrder() {
-        final @NotNull List<UUID> inTheSet = Services.getInstance(getProject(), TestCases.class).getTestCasesUnder(testProject.getTestCasesFolder()).stream().map(TestCase::getId).toList();
+        final @NotNull List<UUID> inTheSet = Services.getInstance(getProject(), TestCases.class).getTestCasesUnder(testProject.getTestCasesFolder()).stream().map(TestCase::getUuid).toList();
         final @NotNull UUID first = inTheSet.getFirst();
         final @NotNull UUID second = inTheSet.get(1);
         final @NotNull TestRunNode testRun = aTestRun("Stored backwards", List.of(
-                new RunItem().setId(second).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())),
-                new RunItem().setId(first).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()))));
+                new RunItem().setUuid(second).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())),
+                new RunItem().setUuid(first).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()))));
         final @NotNull String firstWords = squeezed(first.equals(opens) ? "Open the app" : "Lock the account");
         final @NotNull String secondWords = squeezed(second.equals(opens) ? "Open the app" : "Lock the account");
 

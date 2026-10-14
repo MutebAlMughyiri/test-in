@@ -69,8 +69,8 @@ public final class EditorPaging {
     }
 
     // UC-EDITOR-PANEL-022, Rule-EDITOR-PANEL-104
-    public boolean turnToPageHolding(final @NotNull UUID testCaseId, final @NotNull List<TestCase> testCases) {
-        final int holding = PageWindow.pageContaining(testCaseId, testCases, size);
+    public boolean turnToPageHolding(final @NotNull UUID testCaseUuid, final @NotNull List<TestCase> testCases) {
+        final int holding = PageWindow.pageContaining(testCaseUuid, testCases, size);
         if (holding == 0) return false;
 
         page = holding;

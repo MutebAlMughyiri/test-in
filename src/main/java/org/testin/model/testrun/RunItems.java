@@ -55,16 +55,16 @@ public class RunItems {
 
     public @NotNull RunItems coverOnly(final @NotNull Set<UUID> wanted) {
         final @NotNull Map<UUID, RunItem> held = new LinkedHashMap<>();
-        all.forEach(runItem -> held.put(runItem.getId(), runItem));
+        all.forEach(runItem -> held.put(runItem.getUuid(), runItem));
 
         final @NotNull List<RunItem> covered = new ArrayList<>();
-        held.forEach((testCaseId, runItem) -> {
-            if (wanted.contains(testCaseId)) covered.add(runItem);
+        held.forEach((testCaseUuid, runItem) -> {
+            if (wanted.contains(testCaseUuid)) covered.add(runItem);
         });
 
         wanted.stream()
-                .filter(testCaseId -> !held.containsKey(testCaseId))
-                .forEach(testCaseId -> covered.add(new RunItem().setId(testCaseId)));
+                .filter(testCaseUuid -> !held.containsKey(testCaseUuid))
+                .forEach(testCaseUuid -> covered.add(new RunItem().setUuid(testCaseUuid)));
 
         return new RunItems().setAll(covered);
     }
@@ -79,23 +79,23 @@ public class RunItems {
         return !all.isEmpty() && all.stream().allMatch(RunItem::isJudged);
     }
 
-    public @NotNull Set<UUID> coveredIds() {
-        return all.stream().map(RunItem::getId).collect(Collectors.toCollection(LinkedHashSet::new));
+    public @NotNull Set<UUID> coveredUuids() {
+        return all.stream().map(RunItem::getUuid).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     // Rule-EDITOR-PANEL-127, Rule-REPORT-026
-    public @NotNull RunItems inOrderOf(final @NotNull List<UUID> testCaseIds) {
+    public @NotNull RunItems inOrderOf(final @NotNull List<UUID> testCaseUuids) {
         final @NotNull Map<UUID, Integer> places = new HashMap<>();
-        for (int i = 0; i < testCaseIds.size(); i++) {
-            places.putIfAbsent(testCaseIds.get(i), i);
+        for (int i = 0; i < testCaseUuids.size(); i++) {
+            places.putIfAbsent(testCaseUuids.get(i), i);
         }
 
         return new RunItems().setAll(all.stream()
-                .sorted(Comparator.comparingInt(runItem -> places.getOrDefault(runItem.getId(), testCaseIds.size())))
+                .sorted(Comparator.comparingInt(runItem -> places.getOrDefault(runItem.getUuid(), testCaseUuids.size())))
                 .collect(Collectors.toCollection(ArrayList::new)));
     }
 
-    public @NotNull Optional<RunItem> runItemOf(final @NotNull UUID testCaseId) {
-        return all.stream().filter(runItem -> runItem.getId().equals(testCaseId)).findFirst();
+    public @NotNull Optional<RunItem> runItemOf(final @NotNull UUID testCaseUuid) {
+        return all.stream().filter(runItem -> runItem.getUuid().equals(testCaseUuid)).findFirst();
     }
 }

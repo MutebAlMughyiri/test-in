@@ -174,7 +174,7 @@ public class CreateTestCaseDialogIdeTest extends AbstractTempRootIdeTest {
         Await.until("the new test case never reached the editor", () -> editor.getAllTestCases().size() == 4);
         final @NotNull TestCase created = editor.getAllTestCases().getLast();
         assertEquals("the new test case is not last", "Pay with a saved card", created.getDescription());
-        Await.until("the new test case was never given a place after the others", () -> testCases.findTestCase(created.getId()).map(TestCase::getOrder).filter(order -> order.compareTo("m0002") > 0).isPresent());
+        Await.until("the new test case was never given a place after the others", () -> testCases.findTestCase(created.getUuid()).map(TestCase::getOrder).filter(order -> order.compareTo("m0002") > 0).isPresent());
         Await.until("the creation never confirmed itself", () -> balloons.shown().contains(Done.CREATED.getOutcome()));
         assertEquals("the creation confirmed itself more than once", 1, Collections.frequency(balloons.shown(), Done.CREATED.getOutcome()));
     }

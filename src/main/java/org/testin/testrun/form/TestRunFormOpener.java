@@ -52,24 +52,24 @@ public final class TestRunFormOpener {
     }
 
     public static @NotNull Set<UUID> checkedTestCases(final @NotNull SelectionTree selection) {
-        final @NotNull Set<UUID> testCaseIds = new LinkedHashSet<>();
+        final @NotNull Set<UUID> testCaseUuids = new LinkedHashSet<>();
 
         selection.forEachChecked(checked -> {
-            if (checked instanceof TestCase testCase) testCaseIds.add(testCase.getId());
+            if (checked instanceof TestCase testCase) testCaseUuids.add(testCase.getUuid());
         });
 
-        return testCaseIds;
+        return testCaseUuids;
     }
 
     // UC-TREE-PANEL-022, Rule-TREE-PANEL-076
     public static @NotNull Set<UUID> offeredTestCases(final @NotNull SelectionTree selection) {
-        final @NotNull Set<UUID> testCaseIds = new LinkedHashSet<>();
+        final @NotNull Set<UUID> testCaseUuids = new LinkedHashSet<>();
 
         selection.forEachLeaf(leaf -> {
-            if (leaf instanceof TestCase testCase) testCaseIds.add(testCase.getId());
+            if (leaf instanceof TestCase testCase) testCaseUuids.add(testCase.getUuid());
         });
 
-        return testCaseIds;
+        return testCaseUuids;
     }
 
     // UC-TREE-PANEL-022, Rule-TREE-PANEL-134
@@ -99,7 +99,7 @@ public final class TestRunFormOpener {
     // UC-TREE-PANEL-022, Rule-TREE-PANEL-093, Rule-TREE-PANEL-076
     private boolean checkOnly(final @NotNull CheckedTreeNode treeNode, final @NotNull Set<UUID> wanted) {
         if (treeNode.getUserObject() instanceof TestCase testCase) {
-            final boolean covered = wanted.contains(testCase.getId());
+            final boolean covered = wanted.contains(testCase.getUuid());
             treeNode.setChecked(covered);
 
             return covered;

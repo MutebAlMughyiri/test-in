@@ -44,7 +44,7 @@ public class UpdateTestCaseDialog extends AbstractTestCaseDialog {
         // Rule-CODEGEN-001
         descriptionSection.compareAgainst(() -> testCases
                 .getTestCasesForTestSet(existingTestCase.getParent().getPath()).stream()
-                .filter(sibling -> !sibling.getId().equals(existingTestCase.getId()))
+                .filter(sibling -> !sibling.getUuid().equals(existingTestCase.getUuid()))
                 .toList());
 
         final @NotNull TestCaseSection targetSection = selectedField.getSectionExtractor().apply(this);

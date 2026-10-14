@@ -126,7 +126,7 @@ public final class TestinEditors {
 
     // UC-EDITOR-PANEL-048, Rule-EDITOR-PANEL-233, Rule-VIEW-PANEL-016
     public void openAndSelect(final @NotNull AbstractNode node, final @NotNull TestCase testCase) {
-        openThen(node, editor -> editor.selectWhenLoaded(testCase.getId()));
+        openThen(node, editor -> editor.selectWhenLoaded(testCase.getUuid()));
     }
 
     public @NotNull Optional<TestRunEditor> testRunEditorFor(final @NotNull TestRunNode testRun) {
@@ -181,13 +181,13 @@ public final class TestinEditors {
     }
 
     // Rule-EDITOR-PANEL-291
-    public boolean walking(final @NotNull UUID testCaseId) {
-        return openEditors().anyMatch(editor -> editor.walksOn(testCaseId));
+    public boolean walking(final @NotNull UUID testCaseUuid) {
+        return openEditors().anyMatch(editor -> editor.walksOn(testCaseUuid));
     }
 
     // Rule-EDITOR-PANEL-291
-    public void repaint(final @NotNull UUID testCaseId) {
-        openEditors().forEach(editor -> editor.repaint(testCaseId));
+    public void repaint(final @NotNull UUID testCaseUuid) {
+        openEditors().forEach(editor -> editor.repaint(testCaseUuid));
     }
 
     private @NotNull Stream<TestinEditor> openEditors() {

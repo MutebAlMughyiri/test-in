@@ -40,10 +40,10 @@ public class BugFactsTest {
     // Rule-VIEW-PANEL-068
     @Test
     public void theFactsAreReadOffTheRunItemItsTestCaseAndItsTestRun() {
-        final UUID testCaseId = UUID.randomUUID();
-        final TestCase testCase = TestCase.builder().id(testCaseId).description("  Log in with a valid user ").expectedResult("Welcome")
+        final UUID testCaseUuid = UUID.randomUUID();
+        final TestCase testCase = TestCase.builder().uuid(testCaseUuid).description("  Log in with a valid user ").expectedResult("Welcome")
                 .steps(List.of("Open", "Log in")).testData("user=a").build();
-        final RunItem runItem = RunItem.builder().id(testCaseId)
+        final RunItem runItem = RunItem.builder().uuid(testCaseUuid)
                 .bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("Error page").stacktrace("boom").executedBy("Muteb").executedAt(ZonedDateTime.of(2026, 9, 13, 14, 14, 0, 0, ZoneId.of("Asia/Riyadh"))).build())).build();
         final TestRunMarker testRunMarker = new TestRunMarker();
         testRunMarker.setConfiguration(new EnumMap<>(Map.of(
@@ -65,13 +65,13 @@ public class BugFactsTest {
         assertEquals(facts.commit(), "933a3984");
         assertEquals(facts.stacktrace(), "boom");
         assertEquals(facts.testRun(), "Sprint 7");
-        assertEquals(facts.testCaseId(), testCaseId);
+        assertEquals(facts.testCaseUuid(), testCaseUuid);
     }
 
     @Test
     public void aRunItemNobodyExecutedHasNoExecuted() {
         final TestCase testCase = TestCase.builder().build();
-        final RunItem runItem = RunItem.builder().id(testCase.getId()).build();
+        final RunItem runItem = RunItem.builder().uuid(testCase.getUuid()).build();
 
         assertEquals(BugFacts.of(runItem, testCase, new TestRunMarker(), "Sprint 7", List.of()).executed(), "");
     }

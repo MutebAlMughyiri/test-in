@@ -118,7 +118,7 @@ public class OrderSection implements TestCaseSection {
         if (target == TestCaseOrder.positionOf(inSet, ordered)) return ordered;
 
         final @NotNull List<TestCase> others = rankTheUnranked(inSet, ordered).stream()
-                .filter(testCase -> !testCase.getId().equals(ordered.getId()))
+                .filter(testCase -> !testCase.getUuid().equals(ordered.getUuid()))
                 .toList();
 
         final @NotNull String before = target > 1 ? others.get(target - 2).getOrder() : "";
@@ -132,9 +132,9 @@ public class OrderSection implements TestCaseSection {
         if (inSet.stream().noneMatch(testCase -> testCase.getOrder().isEmpty())) return inSet;
 
         final @NotNull Map<UUID, TestCase> placed = TestCaseOrder.place(inSet).stream()
-                .collect(Collectors.toMap(TestCase::getId, moved -> moved));
+                .collect(Collectors.toMap(TestCase::getUuid, moved -> moved));
         final @NotNull List<TestCase> ranked = placed.values().stream()
-                .filter(moved -> !moved.getId().equals(ordered.getId()))
+                .filter(moved -> !moved.getUuid().equals(ordered.getUuid()))
                 .toList();
 
         if (!ranked.isEmpty()) {
@@ -145,7 +145,7 @@ public class OrderSection implements TestCaseSection {
                     ranked.forEach(moved -> testCases.putTestCase(setPath, moved)));
         }
 
-        return inSet.stream().map(testCase -> placed.getOrDefault(testCase.getId(), testCase)).toList();
+        return inSet.stream().map(testCase -> placed.getOrDefault(testCase.getUuid(), testCase)).toList();
     }
 
     @Override

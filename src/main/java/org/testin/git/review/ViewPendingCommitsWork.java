@@ -266,7 +266,7 @@ public record ViewPendingCommitsWork(@NotNull Project project, @NotNull GitRepos
     // Rule-SHARE-130
     private boolean isWholeInTheCommit(final @NotNull Path repoPath, final @NotNull TestRunNode testRun, final @NotNull List<String> leftOut) {
         final @NotNull String folder = repoPath.relativize(testRun.getPath()).toString().replace('\\', '/') + "/";
-        final @NotNull Set<String> testCaseFiles = Services.getInstance(project, TestRuns.class).findRunItems(testRun.getPath()).map(RunItems::coveredIds).orElse(Set.of()).stream()
+        final @NotNull Set<String> testCaseFiles = Services.getInstance(project, TestRuns.class).findRunItems(testRun.getPath()).map(RunItems::coveredUuids).orElse(Set.of()).stream()
                 .map(FileKind.TEST_CASE::fileName)
                 .collect(Collectors.toSet());
 

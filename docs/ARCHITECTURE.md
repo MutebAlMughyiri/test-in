@@ -251,7 +251,7 @@ one cache and one `IndexChanged` announcement per change.
 Test runs in particular are saved and read only through the indexer —
 `TestRuns.putRunItems` to create one, `changeRunItems` and `saveRunItems` to change
 its run items, `changeTestRunMarker`, and `Nodes.addTestRunNode` for its folder. The
-sequential run item writer lives inside the package. It writes one file per run item - `<test case id>.runitem` - so recording
+sequential run item writer lives inside the package. It writes one file per run item - `<test case UUID>.runitem` - so recording
 a run item status writes that one file, and two testers judging different test cases of a test run never touch the
 same one. A test run's screenshots are its files too:
 `TestRuns.storeScreenshots` writes them, `screenshot` reads one, and the test
@@ -339,7 +339,7 @@ anything else happens at all.
 | 4  | `indexer/IndexerDataStore.putTestCase`                   | Delegates the write, then stamps the **set's** marker as modified — but only if the write happened.                                          |
 | 5  | `indexer/TestCaseStore.put`                              | The funnel every save arrives at: the update dialog, a grid cell, the details panel, a paste.                                                |
 | 6  | `indexer/TestDataFiles.alreadyHolds`                     | Serializes the test case and compares the bytes to the file. **Identical, and nothing below runs.**                                          |
-| 7  | `indexer/TestCaseStore.put`                              | Stamps the audit — `touch` if the index already knows this id, `stampCreated` if it does not.                                                |
+| 7  | `indexer/TestCaseStore.put`                              | Stamps the audit — `touch` if the index already knows this UUID, `stampCreated` if it does not.                                              |
 | 8  | `indexer/TestCaseStore.store`                            | Updates the two maps, then writes.                                                                                                           |
 | 9  | `indexer/TestDataFiles.write`                            | Refuses a zero-byte write, claims the path in `OwnWrites` **before** `Files.write`, writes, then records what landed.                        |
 | 10 | back in `TestSetGridEditListener`                        | The field's `CodeChangeType` regenerates the test method, and `TestCaseSnapshot.record` files the undo entry.                                |
@@ -387,8 +387,8 @@ how to run anything; a content module does.
 | 6  | `runner/TestNGExecution.starting`                                                | Broadcasts each test case as running before the process exists, so the cards change at the click rather than at the first report.                                                                                                                                    |
 | 7  | the platform                                                                     | Compiles, starts a JVM, runs TestNG.                                                                                                                                                                                                                                 |
 | 8  | `testin-testng/TestNGEventRelay`                                                 | Declared in the TestNG module's descriptor as a listener on `SMTRunnerEventsListener`, so it exists only where TestNG does. Turns each started and finished event into a `TestNGExecutionReported.broadcast`.                                                        |
-| 9  | `runner/TestNGExecutionRecorder.record`                                          | On the EDT. The test name **is** the test case's id, because that is what Testin named the generated method — so there is nothing to look up. A name that is not an id is nobody's, and is logged.                                                                   |
-| 10 | `runner/TestNGExecutionRecorder.report`                                          | Decides what the report means: a test case the tester stopped reports itself failed, and that is not a failure. Records the run item status against the **id**, then tells the surfaces.                                                                             |
+| 9  | `runner/TestNGExecutionRecorder.record`                                          | On the EDT. The test name **is** the test case's UUID, because that is what Testin named the generated method — so there is nothing to look up. A name that is not a UUID is nobody's, and is logged.                                                                |
+| 10 | `runner/TestNGExecutionRecorder.report`                                          | Decides what the report means: a test case the tester stopped reports itself failed, and that is not a failure. Records the run item status against the **UUID**, then tells the surfaces.                                                                           |
 | 11 | `editor/testset/TestSetEditor`, `editor/testrun/TestRunEditor`, `view/ViewPanel` | Repaint.                                                                                                                                                                                                                                                             |
 
 **One recorder per project, not one per surface.** Step 10 runs even when
@@ -404,7 +404,7 @@ redraw reads what is running from `TestNGExecution`, so it must not be told befo
 surfaces gives that; two independent subscriptions would have run in whichever
 order the message bus chose.
 
-**The run item status is recorded against the id, not the object.** The
+**The run item status is recorded against the UUID, not the object.** The
 `TestCase` in hand is replaced by the next rescan, and a run item status that
 lived on it went with it — which is how a test case that had just passed lost
 its badge at the tester's next keystroke (#116).

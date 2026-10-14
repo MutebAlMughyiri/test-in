@@ -45,15 +45,15 @@ import java.util.stream.Stream;
 
 public class RunItemLineIdeTest extends AbstractTempRootIdeTest {
 
-    private static final @NotNull UUID TEST_CASE_ID = UUID.fromString("55555555-5555-4555-8555-555555555501");
+    private static final @NotNull UUID TEST_CASE_UUID = UUID.fromString("55555555-5555-4555-8555-555555555501");
     private static final @NotNull String ISSUE = "https://github.com/mtb550/test-in/issues/412";
 
     private static @NotNull TestCase aTestCase() {
-        return TestCase.builder().id(TEST_CASE_ID).description("Log in with a valid user").expectedResult("The dashboard opens").build();
+        return TestCase.builder().uuid(TEST_CASE_UUID).description("Log in with a valid user").expectedResult("The dashboard opens").build();
     }
 
     private static @NotNull RunItem failed(final @NotNull String bugIssueUrl) {
-        return RunItem.builder().id(TEST_CASE_ID).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl(bugIssueUrl).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).duration(Duration.ofSeconds(134)).stacktrace("java.lang.AssertionError: expected [true]").build())).build();
+        return RunItem.builder().uuid(TEST_CASE_UUID).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl(bugIssueUrl).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).duration(Duration.ofSeconds(134)).stacktrace("java.lang.AssertionError: expected [true]").build())).build();
     }
 
     private static @NotNull Component rowOf(final @NotNull Component drawn) {
@@ -97,14 +97,14 @@ public class RunItemLineIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-VIEW-PANEL-033
     public void testATestCaseTheTestRunHasNotReachedReadsPending() {
-        final @NotNull List<String> words = Drawn.words(drawn(RunItem.builder().id(TEST_CASE_ID).build(), shownTestRunTreePath()));
+        final @NotNull List<String> words = Drawn.words(drawn(RunItem.builder().uuid(TEST_CASE_UUID).build(), shownTestRunTreePath()));
 
         assertTrue("an unreached test case does not read Pending: " + words, words.contains(Bundle.message("status.run.item.pending")));
     }
 
     // Rule-VIEW-PANEL-031
     public void testAnEmptyTestRunValueIsNotDrawn() {
-        final @NotNull List<String> words = Drawn.words(drawn(RunItem.builder().id(TEST_CASE_ID).executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())).build(), shownTestRunTreePath()));
+        final @NotNull List<String> words = Drawn.words(drawn(RunItem.builder().uuid(TEST_CASE_UUID).executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())).build(), shownTestRunTreePath()));
 
         assertFalse("an empty actual result was drawn: " + words, words.contains(Bundle.message("field.run.item.actual.result").toUpperCase(Locale.ROOT)));
         assertFalse("an empty executed by was drawn: " + words, words.contains(Bundle.message("field.run.item.executed.by").toUpperCase(Locale.ROOT)));

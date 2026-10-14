@@ -93,7 +93,7 @@ public class MoveCodeIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestSetNode visa = indexedTestSet("Visa", indexedPackage("Cards", theTestCasesDirectory()));
 
         final @NotNull TestCases testCases = Services.getInstance(getProject(), TestCases.class);
-        testCases.removeTestCase(login.getPath(), testCase.getId());
+        testCases.removeTestCase(login.getPath(), testCase.getUuid());
         testCase.setParent(visa);
         testCases.putTestCaseVerbatim(visa.getPath(), testCase);
         CodeChangeType.MOVE_TEST_CASE.execute(getProject(), new MovedTestCase(testCase, login));

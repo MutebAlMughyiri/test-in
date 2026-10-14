@@ -33,7 +33,7 @@ public class PageWindowTest {
         final List<TestCase> testCases = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             final TestCase testCase = new TestCase();
-            testCase.setId(UUID.randomUUID());
+            testCase.setUuid(UUID.randomUUID());
             testCases.add(testCase);
         }
         return testCases;
@@ -74,10 +74,10 @@ public class PageWindowTest {
     public void findsThePageHoldingATestCase() {
         final List<TestCase> testCases = testCasesOf(125);
 
-        assertEquals(PageWindow.pageContaining(testCases.getFirst().getId(), testCases, 50), 1);
-        assertEquals(PageWindow.pageContaining(testCases.get(49).getId(), testCases, 50), 1);
-        assertEquals(PageWindow.pageContaining(testCases.get(50).getId(), testCases, 50), 2);
-        assertEquals(PageWindow.pageContaining(testCases.get(124).getId(), testCases, 50), 3);
+        assertEquals(PageWindow.pageContaining(testCases.getFirst().getUuid(), testCases, 50), 1);
+        assertEquals(PageWindow.pageContaining(testCases.get(49).getUuid(), testCases, 50), 1);
+        assertEquals(PageWindow.pageContaining(testCases.get(50).getUuid(), testCases, 50), 2);
+        assertEquals(PageWindow.pageContaining(testCases.get(124).getUuid(), testCases, 50), 3);
     }
 
     @Test
@@ -90,6 +90,6 @@ public class PageWindowTest {
     public void protectsAgainstInvalidPageSizeWhenSearching() {
         final List<TestCase> testCases = testCasesOf(3);
 
-        assertEquals(PageWindow.pageContaining(testCases.get(2).getId(), testCases, 0), 3);
+        assertEquals(PageWindow.pageContaining(testCases.get(2).getUuid(), testCases, 0), 3);
     }
 }

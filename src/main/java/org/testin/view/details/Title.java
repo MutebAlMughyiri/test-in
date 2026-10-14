@@ -44,7 +44,7 @@ public class Title extends AbstractDetails {
         final @NotNull String titleText = TestSetEditorFields.DESCRIPTION.displayValue(testCase);
         final @NotNull String finalValue = titleText.trim().isEmpty() ? "-" : titleText;
 
-        final boolean executing = ExecutingNow.is(project, testCase.getId());
+        final boolean executing = ExecutingNow.is(project, testCase.getUuid());
         final @NotNull JTextArea mainTitleArea = Prose.of(finalValue, executing ? Icons.EXECUTING : EmptyIcon.ICON_0);
         if (executing)
             mainTitleArea.getAccessibleContext().setAccessibleDescription(Bundle.message("execution.executing"));

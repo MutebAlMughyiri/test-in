@@ -75,25 +75,25 @@ public class FieldsPopupIdeTest extends BasePlatformTestCase {
     }
 
     // Rule-EDITOR-PANEL-023
-    public void testDescriptionIsAlwaysShownOrderCanBeSwitchedOffAndIdOn() {
+    public void testDescriptionIsAlwaysShownOrderCanBeSwitchedOffAndUuidOn() {
         final @NotNull TestSetFieldsPopupButton button = new TestSetFieldsPopupButton(() -> {
         });
         final @NotNull CheckBoxList<TestSetEditorFields> fields = button.fieldList(() -> {
         });
         drawn(fields);
 
-        assertFalse("ID is shown before anyone switched it on", button.getSelectedDetails().contains(TestSetEditorFields.ID));
+        assertFalse("UUID is shown before anyone switched it on", button.getSelectedDetails().contains(TestSetEditorFields.UUID));
         assertTrue("Order is not on to start with", button.getSelectedDetails().contains(TestSetEditorFields.ORDER));
 
         spaceOn(fields, TestSetEditorFields.ORDER);
         spaceOn(fields, TestSetEditorFields.DESCRIPTION);
-        spaceOn(fields, TestSetEditorFields.ID);
+        spaceOn(fields, TestSetEditorFields.UUID);
 
         assertFalse("Order could not be switched off", button.getSelectedDetails().contains(TestSetEditorFields.ORDER));
         assertTrue("Description could be switched off", fields.isItemSelected(TestSetEditorFields.DESCRIPTION) && button.getSelectedDetails().contains(TestSetEditorFields.DESCRIPTION));
-        assertTrue("ID could not be switched on", button.getSelectedDetails().contains(TestSetEditorFields.ID));
+        assertTrue("UUID could not be switched on", button.getSelectedDetails().contains(TestSetEditorFields.UUID));
 
-        ShownFields.write(ShownFields.IN_TEST_SETS, EnumSet.of(TestSetEditorFields.ID));
+        ShownFields.write(ShownFields.IN_TEST_SETS, EnumSet.of(TestSetEditorFields.UUID));
         assertTrue("a remembered choice without Description hid it", ShownFields.read(ShownFields.IN_TEST_SETS, TestSetEditorFields.class).contains(TestSetEditorFields.DESCRIPTION));
         assertFalse("a remembered choice without Order brought it back", ShownFields.read(ShownFields.IN_TEST_SETS, TestSetEditorFields.class).contains(TestSetEditorFields.ORDER));
     }

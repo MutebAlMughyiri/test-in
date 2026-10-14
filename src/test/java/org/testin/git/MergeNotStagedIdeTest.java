@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.testin.git.LocalGit.git;
@@ -37,8 +36,8 @@ import static org.testin.git.LocalGit.mustGit;
 public class MergeNotStagedIdeTest extends AbstractGitRemoteIdeTest {
     private static final @NotNull String TEST_CASE = "Test Cases/Login/login.testcase";
 
-    private static @NotNull String oneLine(final @NotNull String testCaseId, final @NotNull String description, final @NotNull String expected) {
-        return "{\"id\":\"" + testCaseId + "\",\"description\":\"" + description + "\",\"expectedResult\":\"" + expected + "\"}";
+    private static @NotNull String oneLine(final @NotNull String description, final @NotNull String expected) {
+        return "{\"description\":\"" + description + "\",\"expectedResult\":\"" + expected + "\"}";
     }
 
     private static void deleteTheLock(final @NotNull Path lock) {
@@ -50,17 +49,16 @@ public class MergeNotStagedIdeTest extends AbstractGitRemoteIdeTest {
     }
 
     private void bothChangeTheTestCase() {
-        final @NotNull String testCaseId = UUID.randomUUID().toString();
-        write(work, TEST_CASE, oneLine(testCaseId, "Log in", "The dashboard opens"));
+        write(work, TEST_CASE, oneLine("Log in", "The dashboard opens"));
         commitAll(work, "the test case");
         mustGit(work, "push", "origin", MAIN);
 
         final @NotNull Path colleague = colleague();
-        write(colleague, TEST_CASE, oneLine(testCaseId, "Sign in", "The dashboard opens"));
+        write(colleague, TEST_CASE, oneLine("Sign in", "The dashboard opens"));
         commitAll(colleague, "their wording");
         mustGit(colleague, "push", "origin", MAIN);
 
-        write(work, TEST_CASE, oneLine(testCaseId, "Log in", "The account page opens"));
+        write(work, TEST_CASE, oneLine("Log in", "The account page opens"));
         commitAll(work, "my expected result");
         assertTrue("the pull did not stop on the test case", git(work, "pull", "--rebase", "origin", MAIN).isEmpty());
         assertEquals(List.of(TEST_CASE), new GitRepositoryService(getProject()).conflictingPaths(work));

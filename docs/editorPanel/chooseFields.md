@@ -43,7 +43,7 @@ There is no key for this. The button's tooltip reads **Fields**.
 - **Rule-EDITOR-PANEL-023** — In a test set editor **Description** is always
   shown. **Order**, the number on a card and the grid's Order column, is on to
   start with and can be switched off. The grid's first column, **#**, is not a
-  field: it is always shown and Choose Fields does not list it. **ID** is off to
+  field: it is always shown and Choose Fields does not list it. **UUID** is off to
   start with and can be switched on like any other field - it is the only place a
   tester can read a test case's identity, and the view panel does not show it.
 - **Rule-EDITOR-PANEL-024** — A burst of ticks costs one redraw, not one for
@@ -82,7 +82,7 @@ The list opens under the button. It has no title.
 ┌──────────────────────────────┐
 │ [x] Order            (gray)  │
 │ [x] Description      (gray)  │
-│ [ ] ID                       │
+│ [ ] UUID                     │
 │ [x] Expected Result          │
 │ [ ] Steps                    │
 │ [x] Priority                 │
@@ -106,7 +106,7 @@ The list opens under the button. It has no title.
 |-----------------|---------------------|----------------|
 | Order           | Yes                 | **No**         |
 | Description     | Yes                 | **No**         |
-| ID              | No                  | Yes            |
+| UUID            | No                  | Yes            |
 | Expected Result | Yes                 | Yes            |
 | Steps           | No                  | Yes            |
 | Priority        | Yes                 | Yes            |

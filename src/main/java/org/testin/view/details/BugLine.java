@@ -67,10 +67,10 @@ public final class BugLine {
     // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-066, Rule-VIEW-PANEL-075
     private static @NotNull ActionLink report(final @NotNull Project project, final @NotNull RunItem runItem, final @NotNull TestCase testCase, final @NotNull TestRunNode testRunNode) {
         final @NotNull Optional<String> off = Services.getInstance(project, OpenBugReports.class)
-                .whyReportBugIsOff(new RunItemPath(testRunNode.getPath(), runItem.getId()), runItem);
+                .whyReportBugIsOff(new RunItemPath(testRunNode.getPath(), runItem.getUuid()), runItem);
 
         final @NotNull ActionLink report = AbstractDetails.link(Bundle.message("bug.dialog.title"),
-                _ -> ReportBug.start(project, testRunNode, runItem.getId(), testCase, () -> AbstractDetails.redraw(project, testCase, testRunNode)));
+                _ -> ReportBug.start(project, testRunNode, runItem.getUuid(), testCase, () -> AbstractDetails.redraw(project, testCase, testRunNode)));
 
         report.setEnabled(off.isEmpty());
         Tooltip.set(report, off.orElse(""));

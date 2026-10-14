@@ -44,7 +44,7 @@ public class AdoptByDescriptionIdeTest extends AbstractCodegenIdeTest {
         final @NotNull PsiClass after = generatedClass("nafath.LoginTest").orElseThrow();
         assertEquals("a stub was written beside the tester's own method", 1, after.getMethods().length);
         final @NotNull PsiMethod signIn = after.findMethodsByName("signIn", false)[0];
-        assertTrue("the tester's method was not tagged with the test case", signIn.getText().contains(testCase.getId().toString()));
+        assertTrue("the tester's method was not tagged with the test case", signIn.getText().contains(testCase.getUuid().toString()));
         assertTrue("the tester's body was not kept", signIn.getText().contains("login(\"sara\")"));
     }
 }

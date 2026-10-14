@@ -56,7 +56,7 @@ public final class BugTemplate {
 
     // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-068, Rule-VIEW-PANEL-076
     static @NotNull String body(final @NotNull BugFacts facts, final @NotNull Optional<String> testCaseLink) {
-        final @NotNull String shortId = facts.testCaseId().toString().substring(0, 8);
+        final @NotNull String shortUuid = facts.testCaseUuid().toString().substring(0, 8);
 
         return fill(Map.ofEntries(
                 Map.entry("severity", facts.severity().getInBugReport()),
@@ -73,7 +73,7 @@ public final class BugTemplate {
                 Map.entry("executed", cell(facts.executed())),
                 Map.entry("browserDeviceLanguage", String.join(SEPARATOR, cell(facts.browser()), cell(facts.device()), cell(facts.language()))),
                 Map.entry("commit", cell(facts.commit())),
-                Map.entry("testCase", testCaseLink.map(link -> "[" + shortId + "](" + link + ")").orElse(shortId)),
+                Map.entry("testCase", testCaseLink.map(link -> "[" + shortUuid + "](" + link + ")").orElse(shortUuid)),
                 Map.entry("testSet", cell(facts.testSetName())),
                 Map.entry("tag", inline("#" + facts.testSetName().replaceAll("\\s+", "")))));
     }

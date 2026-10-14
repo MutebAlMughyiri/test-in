@@ -98,9 +98,9 @@ No dialog opens. The cell itself becomes a box.
 
 ## Which columns can be typed into
 
-| Can be typed into                                                                                          | Cannot                                                                |
-|------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------|
-| Description, Expected Result, Steps, Priority, Reference, Test Data, Pre Conditions, Group, Module, Status | Order, ID, FQCN, Path, Created By, Updated By, Created At, Updated At |
+| Can be typed into                                                                                          | Cannot                                                                  |
+|------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------|
+| Description, Expected Result, Steps, Priority, Reference, Test Data, Pre Conditions, Group, Module, Status | Order, UUID, FQCN, Path, Created By, Updated By, Created At, Updated At |
 
 In a test run editor only **Actual Result** can be typed into.
 

@@ -34,11 +34,11 @@ import static org.testin.git.LocalGit.mustGit;
 
 public class TestCaseHistoryIdeTest extends AbstractGitRemoteIdeTest {
 
-    private static final @NotNull UUID ID = UUID.fromString("77777777-7777-4777-8777-777777777151");
-    private static final @NotNull String FILE = ID + ".testcase";
+    private static final @NotNull UUID TEST_CASE_UUID = UUID.fromString("77777777-7777-4777-8777-777777777151");
+    private static final @NotNull String FILE = TEST_CASE_UUID + ".testcase";
 
     private @NotNull TestCase version(final @NotNull String expectedResult) {
-        return TestCase.builder().id(ID).description("Log in with a valid user").expectedResult(expectedResult).createdBy("Muteb").build();
+        return TestCase.builder().uuid(TEST_CASE_UUID).description("Log in with a valid user").expectedResult(expectedResult).createdBy("Muteb").build();
     }
 
     private void save(final @NotNull String relativePath, final @NotNull TestCase testCase) {

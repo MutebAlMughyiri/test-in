@@ -110,7 +110,7 @@ public class FilterMenuEntriesIdeTest extends AbstractCodegenIdeTest {
         final @NotNull AutomationState state = Services.getInstance(getProject(), AutomationState.class);
         Await.until("the automation state never arrived", () -> {
             editor.refreshView();
-            return testCases.stream().noneMatch(testCase -> state.of(testCase.getId()) == Automated.UNKNOWN);
+            return testCases.stream().noneMatch(testCase -> state.of(testCase.getUuid()) == Automated.UNKNOWN);
         });
     }
 
@@ -186,7 +186,7 @@ public class FilterMenuEntriesIdeTest extends AbstractCodegenIdeTest {
 
             final @NotNull CheckedTreeNode tree = new CheckedTreeNode("all");
             final @NotNull CheckedTreeNode set = new CheckedTreeNode(testSet);
-            testCases.forEach(testCase -> set.add(new CheckedTreeNode(testCase.getId().equals(reviewed.getId()) ? reviewed : testCase)));
+            testCases.forEach(testCase -> set.add(new CheckedTreeNode(testCase.getUuid().equals(reviewed.getUuid()) ? reviewed : testCase)));
             tree.add(set);
             final @NotNull TestRunFormFilter form = new TestRunFormFilter(getProject(), theTestCasesDirectory().getPath(), tree);
             final @NotNull FilterPopupButton formFilter = (FilterPopupButton) Drawn.components(form.getSelection().getPanel()).stream().filter(FilterPopupButton.class::isInstance).findFirst().orElseThrow();

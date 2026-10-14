@@ -208,8 +208,8 @@ public class ReportDeliveryIdeTest extends AbstractTempRootIdeTest {
         }
     }
 
-    private void aTestCase(final @NotNull UUID testCaseId, final @NotNull String description) {
-        final @NotNull TestCase testCase = TestCase.builder().id(testCaseId).description(description).order(testCaseId.toString()).build();
+    private void aTestCase(final @NotNull UUID testCaseUuid, final @NotNull String description) {
+        final @NotNull TestCase testCase = TestCase.builder().uuid(testCaseUuid).description(description).order(testCaseUuid.toString()).build();
         testCase.setParent(login);
         Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(login.getPath(), testCase);
     }
@@ -226,8 +226,8 @@ public class ReportDeliveryIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull TestRunNode theTestRun() {
         return aTestRun("Cycle-1", List.of(
-                new RunItem().setId(opens).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())),
-                new RunItem().setId(locks).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The account stayed open").build()))));
+                new RunItem().setUuid(opens).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())),
+                new RunItem().setUuid(locks).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The account stayed open").build()))));
     }
 
     private @NotNull RunItems resultsOf(final @NotNull TestRunNode testRun) {
@@ -257,7 +257,7 @@ public class ReportDeliveryIdeTest extends AbstractTempRootIdeTest {
     public void testAReportIsAboutExactlyOneTestRun() {
         final @NotNull TestRunNode chosen = theTestRun();
         aTestCase(UUID.randomUUID(), "Reset a forgotten password");
-        final @NotNull TestRunNode other = aTestRun("Cycle-2", List.of(new RunItem().setId(locks).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.BLOCKED).build()))));
+        final @NotNull TestRunNode other = aTestRun("Cycle-2", List.of(new RunItem().setUuid(locks).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.BLOCKED).build()))));
 
         final @NotNull String html = new String(FileFormat.HTML.generateReport(getProject(), chosen, resultsOf(chosen)), StandardCharsets.UTF_8);
 

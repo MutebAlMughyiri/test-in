@@ -31,7 +31,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.testng.Assert.assertEquals;
@@ -57,17 +56,17 @@ public class IndexerBudgetTest {
         for (int i = 0; i < RESULTS; i++) {
             documents.add("""
                     {
-                      "id" : "%s",
-                      "status" : "%s",
-                      "duration" : 4.125,
-                      "executedBy" : "Muteb AlMughyiri",
-                      "executedAt" : "Monday 14-09-2026 At 10:22:05 [Asia/Riyadh]",
-                      "actualResult" : "The dashboard opened and the header showed the account name",
-                      "stacktrace" : "",
-                      "bugSeverity" : "ENHANCEMENT",
-                      "bugPriority" : "LOW",
-                      "bugIssueUrl" : ""
-                    }""".formatted(UUID.randomUUID(), i % 4 == 0 ? "FAILED" : "PASSED"));
+                      "bugSeverity" : "MAJOR",
+                      "bugPriority" : "HIGH",
+                      "default" : 1,
+                      "executions" : [ {
+                        "status" : "%s",
+                        "duration" : 4.125,
+                        "executedBy" : "Muteb AlMughyiri",
+                        "executedAt" : "Monday 14-09-2026 At 10:22:05 [Asia/Riyadh]",
+                        "actualResult" : "The dashboard opened and the header showed the account name"
+                      } ]
+                    }""".formatted(i % 4 == 0 ? "FAILED" : "PASSED"));
         }
 
         return documents;
@@ -146,7 +145,7 @@ public class IndexerBudgetTest {
         final @NotNull List<String> documents = new ArrayList<>(TEST_CASES);
 
         for (int i = 0; i < TEST_CASES; i++) {
-            documents.add(SyntheticTree.testCase(UUID.randomUUID(), "a" + i));
+            documents.add(SyntheticTree.testCase("a" + i));
         }
 
         return documents;

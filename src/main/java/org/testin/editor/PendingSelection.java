@@ -26,14 +26,14 @@ public final class PendingSelection {
     private boolean focus;
 
     // UC-EDITOR-PANEL-022, Rule-EDITOR-PANEL-104
-    public void waitFor(final @NotNull UUID testCaseId) {
-        waiting = Optional.of(testCaseId);
+    public void waitFor(final @NotNull UUID testCaseUuid) {
+        waiting = Optional.of(testCaseUuid);
         focus = true;
     }
 
     // UC-EDITOR-PANEL-027, Rule-EDITOR-PANEL-118
-    public void keep(final @NotNull Optional<UUID> testCaseId) {
-        waiting = testCaseId;
+    public void keep(final @NotNull Optional<UUID> testCaseUuid) {
+        waiting = testCaseUuid;
     }
 
     public @NotNull Optional<UUID> waiting() {

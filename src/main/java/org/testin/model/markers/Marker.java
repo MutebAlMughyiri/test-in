@@ -29,9 +29,9 @@ import java.util.List;
 public interface Marker {
     int NOT_ORDERED = Integer.MAX_VALUE;
 
-    @NotNull String getId();
+    @NotNull String getUuid();
 
-    void setId(@NotNull String markerId);
+    void setUuid(@NotNull String markerUuid);
 
     int getOrder();
 

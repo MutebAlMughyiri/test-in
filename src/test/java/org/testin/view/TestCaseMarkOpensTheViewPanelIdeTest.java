@@ -60,11 +60,11 @@ public class TestCaseMarkOpensTheViewPanelIdeTest extends AbstractCodegenIdeTest
     }
 
     private @NotNull GutterMark theMarkBeside(final @NotNull TestCase testCase) {
-        final @NotNull String testCaseId = testCase.getId().toString();
-        final @NotNull String text = LoginTestSource.withTestNg(testCaseId);
+        final @NotNull String testCaseUuid = testCase.getUuid().toString();
+        final @NotNull String text = LoginTestSource.withTestNg(testCaseUuid);
         final @NotNull PsiFile file = myFixture.addFileToProject("nafath/LoginTest.java", text);
         myFixture.configureFromExistingVirtualFile(file.getVirtualFile());
-        myFixture.getEditor().getCaretModel().moveToOffset(text.indexOf(testCaseId));
+        myFixture.getEditor().getCaretModel().moveToOffset(text.indexOf(testCaseUuid));
 
         return myFixture.findGuttersAtCaret().stream()
                 .filter(mark -> Bundle.message("gutter.view.details").equals(mark.getTooltipText()))
@@ -73,7 +73,7 @@ public class TestCaseMarkOpensTheViewPanelIdeTest extends AbstractCodegenIdeTest
     }
 
     private boolean showing(final @NotNull TestCase testCase) {
-        return view.getPanel().getCurrentTestCase().filter(shown -> shown.getId().equals(testCase.getId())).isPresent();
+        return view.getPanel().getCurrentTestCase().filter(shown -> shown.getUuid().equals(testCase.getUuid())).isPresent();
     }
 
     // Rule-CODEGEN-070
@@ -104,7 +104,7 @@ public class TestCaseMarkOpensTheViewPanelIdeTest extends AbstractCodegenIdeTest
         settings.rootTestinPath = root.toString();
         try {
             indexer.resetForReindex();
-            assertTrue("the test case is still known before indexing, so waiting proves nothing", Services.getInstance(getProject(), TestCases.class).findTestCase(testCase.getId()).isEmpty());
+            assertTrue("the test case is still known before indexing, so waiting proves nothing", Services.getInstance(getProject(), TestCases.class).findTestCase(testCase.getUuid()).isEmpty());
 
             clicked(mark);
 

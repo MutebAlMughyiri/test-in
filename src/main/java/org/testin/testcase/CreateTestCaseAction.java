@@ -45,11 +45,11 @@ public class CreateTestCaseAction extends AbstractAnyProjectAction {
         new CreateTestCaseDialog(project, testSet, testCase -> {
             final @NotNull List<TestCase> affectedNodes = List.of(testCase);
 
-            final @NotNull List<UUID> testCaseIds = TestCaseSnapshot.idsOf(affectedNodes);
-            final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(project, testSet.getPath(), testCaseIds);
+            final @NotNull List<UUID> testCaseUuids = TestCaseSnapshot.uuidsOf(affectedNodes);
+            final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(project, testSet.getPath(), testCaseUuids);
 
             editor.appendNewTestCase(testCase, () -> {
-                TestCaseSnapshot.record(project, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.create"), affectedNodes), before, TestCaseSnapshot.of(project, testSet.getPath(), testCaseIds));
+                TestCaseSnapshot.record(project, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.create"), affectedNodes), before, TestCaseSnapshot.of(project, testSet.getPath(), testCaseUuids));
 
                 ApplicationManager.getApplication().invokeLater(() -> {
                     Services.getInstance(project, Notifier.class).softShow(project, Done.CREATED);

@@ -33,7 +33,7 @@ public class FailureTest {
     private static final @NotNull String ISSUE = "https://github.com/acme/test-cases/issues/7";
 
     private static @NotNull RunItem row() {
-        return RunItem.builder().id(UUID.randomUUID()).build();
+        return RunItem.builder().uuid(UUID.randomUUID()).build();
     }
 
     // Rule-EDITOR-PANEL-285, Rule-CODEGEN-111

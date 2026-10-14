@@ -97,7 +97,7 @@ public class PendingChangeReaderTest {
     @Test
     public void anEditedTestCaseListsOnlyTheFieldsThatMoved() {
         final TestCase before = testCase("the original");
-        final TestCase after = testCase("the original").setId(before.getId()).setModule("billing");
+        final TestCase after = testCase("the original").setUuid(before.getUuid()).setModule("billing");
 
         committed.put("Test Cases/login/testCase.testcase", RealJsonCodec.build().writeValueAsString(before));
         onDisk("Test Cases/login/testCase.testcase", after);

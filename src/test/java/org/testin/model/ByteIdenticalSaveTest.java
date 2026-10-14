@@ -42,7 +42,7 @@ public class ByteIdenticalSaveTest {
     private static @NotNull TestCase typedByATester() {
         final TestCase testCase = new TestCase();
 
-        testCase.setId(UUID.fromString("11111111-2222-3333-4444-555555555555"));
+        testCase.setUuid(UUID.fromString("11111111-2222-3333-4444-555555555555"));
         testCase.setOrder("zo");
         testCase.setDescription("Log in with a valid user");
         testCase.setExpectedResult("The tester reaches the dashboard.");

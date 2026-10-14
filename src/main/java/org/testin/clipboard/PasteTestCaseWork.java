@@ -74,13 +74,13 @@ record PasteTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor,
         if (!isCut) cutState.clear();
 
         final @NotNull List<TestCase> cutTestCases = cutState.source()
-                .map(sourceEditor -> sourceEditor.getAllTestCases().stream().filter(testCase -> cutState.isPending(testCase.getId())).toList())
+                .map(sourceEditor -> sourceEditor.getAllTestCases().stream().filter(testCase -> cutState.isPending(testCase.getUuid())).toList())
                 .orElseGet(List::of);
         final @NotNull Optional<TestCaseSnapshot> cutFrom = cutState.source()
-                .map(sourceEditor -> TestCaseSnapshot.of(project, sourceEditor.getParent().getPath(), TestCaseSnapshot.idsOf(cutTestCases)));
+                .map(sourceEditor -> TestCaseSnapshot.of(project, sourceEditor.getParent().getPath(), TestCaseSnapshot.uuidsOf(cutTestCases)));
 
         // Rule-EDITOR-PANEL-083
-        final @NotNull List<String> ranks = ranksUnderTheSelection(destinationEditor, isCut ? Set.copyOf(TestCaseSnapshot.idsOf(pastedTestCases)) : Set.of(), pastedTestCases.size());
+        final @NotNull List<String> ranks = ranksUnderTheSelection(destinationEditor, isCut ? Set.copyOf(TestCaseSnapshot.uuidsOf(pastedTestCases)) : Set.of(), pastedTestCases.size());
 
         final @NotNull List<TestCase> pastedHere = new ArrayList<>(clonesInto(destinationEditor, pastedTestCases, isCut, ranks));
 
@@ -88,10 +88,10 @@ record PasteTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor,
         final @NotNull List<CopiedTestCase> copied = isCut ? List.of() : copiedFrom(pastedTestCases, pastedHere);
 
         final @NotNull Path destPath = destinationEditor.getParent().getPath();
-        final @NotNull List<UUID> pastedIds = TestCaseSnapshot.idsOf(pastedHere);
+        final @NotNull List<UUID> pastedUuids = TestCaseSnapshot.uuidsOf(pastedHere);
         final @NotNull List<TestCaseSnapshot> before = new ArrayList<>();
         cutFrom.ifPresent(before::add);
-        before.add(TestCaseSnapshot.of(project, destPath, pastedIds));
+        before.add(TestCaseSnapshot.of(project, destPath, pastedUuids));
 
         // Rule-EDITOR-PANEL-082, Rule-INTERNAL-035
         cutState.source().ifPresent(sourceEditor -> moveCut(sourceEditor, destinationEditor, cutTestCases, pastedHere));
@@ -102,8 +102,8 @@ record PasteTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor,
 
         destinationEditor.reorderAndPersist(() -> {
             final @NotNull List<TestCaseSnapshot> after = new ArrayList<>();
-            cutFrom.ifPresent(taken -> after.add(TestCaseSnapshot.of(project, taken.testSetPath(), taken.ids())));
-            after.add(TestCaseSnapshot.of(project, destPath, pastedIds));
+            cutFrom.ifPresent(taken -> after.add(TestCaseSnapshot.of(project, taken.testSetPath(), taken.uuids())));
+            after.add(TestCaseSnapshot.of(project, destPath, pastedUuids));
 
             TestCaseSnapshot.record(project, UndoScope.of(destPath), TestCaseSnapshot.describe(isCut ? Bundle.message("snapshot.verb.move") : Bundle.message("snapshot.verb.paste"), pastedHere), before, after);
 
@@ -136,7 +136,7 @@ record PasteTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor,
         final @NotNull List<CopiedTestCase> copied = new ArrayList<>(originals.size());
         for (int i = 0; i < originals.size(); i++) {
             final @NotNull TestCase original = originals.get(i);
-            copied.add(new CopiedTestCase(copies.get(i), testCases.findTestCase(original.getId()).orElse(original)));
+            copied.add(new CopiedTestCase(copies.get(i), testCases.findTestCase(original.getUuid()).orElse(original)));
         }
 
         return copied;
@@ -155,8 +155,8 @@ record PasteTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor,
         pastedHere.removeAll(stayed);
         destinationEditor.getAllTestCases().removeAll(stayed);
 
-        final @NotNull Set<UUID> arrived = new HashSet<>(TestCaseSnapshot.idsOf(pastedHere));
-        sourceEditor.getAllTestCases().removeAll(cutTestCases.stream().filter(testCase -> arrived.contains(testCase.getId())).toList());
+        final @NotNull Set<UUID> arrived = new HashSet<>(TestCaseSnapshot.uuidsOf(pastedHere));
+        sourceEditor.getAllTestCases().removeAll(cutTestCases.stream().filter(testCase -> arrived.contains(testCase.getUuid())).toList());
         if (!sourceEditor.equals(destinationEditor)) sourceEditor.reorderAndPersist();
     }
 
@@ -166,7 +166,7 @@ record PasteTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor,
 
     // UC-EDITOR-PANEL-017, Rule-EDITOR-PANEL-083
     private @NotNull List<String> ranksUnderTheSelection(final @NotNull TestSetEditor destinationEditor, final @NotNull Set<UUID> leaving, final int count) {
-        final @NotNull List<TestCase> ordered = TestCaseOrder.ordered(destinationEditor.getAllTestCases().stream().filter(testCase -> !leaving.contains(testCase.getId())).toList());
+        final @NotNull List<TestCase> ordered = TestCaseOrder.ordered(destinationEditor.getAllTestCases().stream().filter(testCase -> !leaving.contains(testCase.getUuid())).toList());
         final @NotNull Optional<TestCase> anchor = destinationEditor.getSelectedTestCases().stream()
                 .filter(selected -> !selected.getOrder().isEmpty())
                 .reduce((_, last) -> last);
@@ -197,7 +197,7 @@ record PasteTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor,
 
         final @NotNull ZonedDateTime now = ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS);
 
-        return draft.id(UUID.randomUUID())
+        return draft.uuid(UUID.randomUUID())
                 .description(Bundle.message("paste.copy.suffix", original.getDescription()))
                 .createdAt(now)
                 .updatedAt(now)

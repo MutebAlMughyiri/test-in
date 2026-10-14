@@ -42,13 +42,13 @@ public class CopiedTestCaseIdentityTest {
     @Test
     public void aFileTheTesterNamedIsNoTestCaseACopyRenames() {
         assertFalse(TestProjectIndexer.isTestCaseFile(TEST_SET.resolve("login.testcase"), IS_TEST_SET),
-                "a file not named by an id is not read, so a copy keeps it as it is rather than giving it an id");
+                "a file not named by a UUID is not read, so a copy keeps it as it is rather than giving it a UUID");
     }
 
     @Test
     public void aTestRunsOwnFileIsNotATestCaseFile() {
         assertFalse(TestProjectIndexer.isTestCaseFile(TEST_RUN.resolve("Cycle 1.json"), IS_TEST_SET),
-                "a test run's file is named for its folder and must keep the test case ids it executed");
+                "a test run's file is named for its folder and must keep the test case UUIDs it executed");
     }
 
     @Test

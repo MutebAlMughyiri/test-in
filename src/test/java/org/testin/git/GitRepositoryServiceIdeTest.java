@@ -64,7 +64,7 @@ public class GitRepositoryServiceIdeTest extends AbstractGitRemoteIdeTest {
     // UC-SHARE-010, Rule-SHARE-044
     public void testTheReviewReadsGitForARepositoryTheIdeDoesNotTrack() {
         final @NotNull TestCase neverSeen = TestCase.builder().description("a test case Git has never seen").build();
-        write(work, "Test Cases/login/" + neverSeen.getId() + ".testcase", RealJsonCodec.build().writeValueAsString(neverSeen));
+        write(work, "Test Cases/login/" + neverSeen.getUuid() + ".testcase", RealJsonCodec.build().writeValueAsString(neverSeen));
 
         final @NotNull List<PendingChange> review = PendingChangeReader.getPendingChanges(getProject(), work);
 

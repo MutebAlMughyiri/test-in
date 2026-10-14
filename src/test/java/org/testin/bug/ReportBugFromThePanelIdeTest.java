@@ -147,9 +147,9 @@ public class ReportBugFromThePanelIdeTest extends AbstractTempRootIdeTest {
 
         final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
         testCase = EditorFixtures.testCase(getProject(), EditorFixtures.testSet(getProject(), testProject, "Login"), "Log in with a valid user", "a");
-        failed = RunItem.builder().id(testCase.getId()).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The session was dropped").build())).build();
+        failed = RunItem.builder().uuid(testCase.getUuid()).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The session was dropped").build())).build();
         testRun = EditorFixtures.testRun(getProject(), testProject, List.of(failed));
-        runItemPath = new RunItemPath(testRun.getPath(), testCase.getId());
+        runItemPath = new RunItemPath(testRun.getPath(), testCase.getUuid());
     }
 
     @Override
@@ -237,7 +237,7 @@ public class ReportBugFromThePanelIdeTest extends AbstractTempRootIdeTest {
             return false;
         });
 
-        ReportBug.start(getProject(), testRun, testCase.getId(), testCase, () -> {
+        ReportBug.start(getProject(), testRun, testCase.getUuid(), testCase, () -> {
         });
 
         Await.until("Report Bug never opened the bug", () -> ShownDialog.isOpen(getProject(), ReportBugDialog.class));
@@ -250,7 +250,7 @@ public class ReportBugFromThePanelIdeTest extends AbstractTempRootIdeTest {
     public void testStoppingTheProgressBarOpensNothing() {
         BackgroundWork.watch(getTestRootDisposable(), task -> Bundle.message("bug.preparing").equals(task.getTitle()));
 
-        ReportBug.start(getProject(), testRun, testCase.getId(), testCase, () -> {
+        ReportBug.start(getProject(), testRun, testCase.getUuid(), testCase, () -> {
         });
 
         Await.until("the stopped preparation never finished", () -> Services.getInstance(getProject(), OpenBugReports.class).whyReportBugIsOff(runItemPath, failed).isEmpty());
@@ -393,7 +393,7 @@ public class ReportBugFromThePanelIdeTest extends AbstractTempRootIdeTest {
         }
         final @NotNull Hints hints = Services.getInstance(getProject(), Hints.class);
 
-        ReportBug.start(getProject(), testRun, testCase.getId(), testCase, () -> {
+        ReportBug.start(getProject(), testRun, testCase.getUuid(), testCase, () -> {
         });
         Await.until("Report Bug never opened the bug", () -> ShownDialog.isOpen(getProject(), ReportBugDialog.class));
 

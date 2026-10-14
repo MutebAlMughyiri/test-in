@@ -54,14 +54,14 @@ public final class TestCaseHistory {
     private static final @NotNull String FORMAT = "--format=%x1e%H%x1f%an%x1f%aI%x1f%s";
 
     // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-113
-    public static @NotNull Optional<TestCaseFile> deletedFile(final @NotNull Project project, final @NotNull UUID testCaseId) {
+    public static @NotNull Optional<TestCaseFile> deletedFile(final @NotNull Project project, final @NotNull UUID testCaseUuid) {
         final @NotNull GitRepositoryService git = new GitRepositoryService(project);
         return Services.getInstance(project, BoundTestProject.class).get()
                 .map(AbstractNode::getPath)
                 .filter(testProject -> !git.isNotRepository(testProject))
                 .flatMap(testProject -> {
                     try {
-                        return git.log(testProject, "-1", "--format=", "--name-only", "--", BugHistory.pathspec(NodeType.TEST_CASES_FOLDER, FileKind.TEST_CASE, testCaseId)).lines()
+                        return git.log(testProject, "-1", "--format=", "--name-only", "--", BugHistory.pathspec(NodeType.TEST_CASES_FOLDER, FileKind.TEST_CASE, testCaseUuid)).lines()
                                 .filter(line -> !line.isBlank())
                                 .findFirst()
                                 .map(path -> new TestCaseFile(testProject, Path.of(path.strip())));
@@ -107,7 +107,7 @@ public final class TestCaseHistory {
 
     // Rule-VIEW-PANEL-096, Rule-VIEW-PANEL-098, Rule-VIEW-PANEL-113
     static @NotNull List<TestCaseHistoryCard> entries(final @NotNull JsonCodec mapper, final @NotNull List<HistoryCommit> commits, final @NotNull Map<String, String> versions, final @NotNull Optional<TestCase> now) {
-        final @NotNull List<Optional<TestCase>> read = commits.stream().map(commit -> FileKind.TEST_CASE.idIn(Path.of(commit.path())).flatMap(testCaseId -> parsed(mapper, versions.getOrDefault(commit.objectName(), ""), testCaseId))).toList();
+        final @NotNull List<Optional<TestCase>> read = commits.stream().map(commit -> FileKind.TEST_CASE.uuidIn(Path.of(commit.path())).flatMap(testCaseUuid -> parsed(mapper, versions.getOrDefault(commit.objectName(), ""), testCaseUuid))).toList();
         final @NotNull List<TestCaseHistoryCard> entries = new ArrayList<>();
 
         uncommitted(read, now).ifPresent(entries::add);
@@ -151,11 +151,11 @@ public final class TestCaseHistory {
     }
 
     // Rule-INTERNAL-012
-    static @NotNull Optional<TestCase> parsed(final @NotNull JsonCodec mapper, final @NotNull String json, final @NotNull UUID testCaseId) {
+    static @NotNull Optional<TestCase> parsed(final @NotNull JsonCodec mapper, final @NotNull String json, final @NotNull UUID testCaseUuid) {
         if (json.isBlank()) return Optional.empty();
 
         try {
-            return Optional.of(TestCase.read(mapper, json, testCaseId));
+            return Optional.of(TestCase.read(mapper, json, testCaseUuid));
         } catch (final UncheckedIOException unreadable) {
             return Optional.empty();
         }

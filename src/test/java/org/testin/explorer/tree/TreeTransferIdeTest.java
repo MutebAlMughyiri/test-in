@@ -150,11 +150,11 @@ public class TreeTransferIdeTest extends AbstractTempRootIdeTest {
     public void testACopiedTestCaseIsANewTestCase() {
         pasteAndWaitForTheCopy();
 
-        final @NotNull List<UUID> copied = heldTestCasesIn(inPayments()).stream().map(TestCase::getId).toList();
+        final @NotNull List<UUID> copied = heldTestCasesIn(inPayments()).stream().map(TestCase::getUuid).toList();
 
         assertEquals(1, copied.size());
-        assertFalse("the copy has the original's id", copied.contains(loginTestCase.getId()));
-        assertEquals("the original lost its test case", List.of(loginTestCase.getId()), heldTestCasesIn(login.getPath()).stream().map(TestCase::getId).toList());
+        assertFalse("the copy has the original's UUID", copied.contains(loginTestCase.getUuid()));
+        assertEquals("the original lost its test case", List.of(loginTestCase.getUuid()), heldTestCasesIn(login.getPath()).stream().map(TestCase::getUuid).toList());
     }
 
     // Rule-TREE-PANEL-052

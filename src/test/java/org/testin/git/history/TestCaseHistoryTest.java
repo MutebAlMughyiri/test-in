@@ -44,11 +44,11 @@ import static org.testng.Assert.assertTrue;
 public class TestCaseHistoryTest {
 
     private static final @NotNull JsonCodec MAPPER = RealJsonCodec.build();
-    private static final @NotNull UUID ID = UUID.fromString("77777777-7777-4777-8777-777777777150");
-    private static final @NotNull String PATH = "Test Cases/Login/" + ID + ".testcase";
+    private static final @NotNull UUID TEST_CASE_UUID = UUID.fromString("77777777-7777-4777-8777-777777777150");
+    private static final @NotNull String PATH = "Test Cases/Login/" + TEST_CASE_UUID + ".testcase";
 
     private static @NotNull TestCase version(final @NotNull String expectedResult) {
-        return TestCase.builder().id(ID).description("Log in with a valid user").expectedResult(expectedResult).createdBy("Muteb").build();
+        return TestCase.builder().uuid(TEST_CASE_UUID).description("Log in with a valid user").expectedResult(expectedResult).createdBy("Muteb").build();
     }
 
     private static @NotNull HistoryCommit commit(final int at, final @NotNull String message) {
@@ -75,7 +75,7 @@ public class TestCaseHistoryTest {
     @Test
     public void everyCommitIsReadWithItsHashAuthorDateMessageAndThePathItHadThen() {
         final @NotNull String log = RECORD + "a".repeat(40) + FIELD + "Sara" + FIELD + "2026-10-02T16:40:00+03:00" + FIELD + "Cycle 4 review: steps | expected\n\n" + PATH + "\n"
-                + RECORD + "b".repeat(40) + FIELD + "Muteb" + FIELD + "2026-09-24T16:07:00+03:00" + FIELD + "\n\nTest Cases/Old name/" + ID + ".testcase\n";
+                + RECORD + "b".repeat(40) + FIELD + "Muteb" + FIELD + "2026-09-24T16:07:00+03:00" + FIELD + "\n\nTest Cases/Old name/" + TEST_CASE_UUID + ".testcase\n";
 
         final @NotNull List<HistoryCommit> commits = TestCaseHistory.commits(log, PATH);
 
@@ -84,8 +84,8 @@ public class TestCaseHistoryTest {
         assertEquals(commits.getFirst().who(), "Sara");
         assertEquals(commits.getFirst().path(), PATH);
         assertEquals(commits.get(1).message(), "", "a commit with an empty subject is still an entry");
-        assertEquals(commits.get(1).path(), "Test Cases/Old name/" + ID + ".testcase", "a moved test case is read where it was then");
-        assertEquals(commits.get(1).objectName(), "b".repeat(40) + ":Test Cases/Old name/" + ID + ".testcase");
+        assertEquals(commits.get(1).path(), "Test Cases/Old name/" + TEST_CASE_UUID + ".testcase", "a moved test case is read where it was then");
+        assertEquals(commits.get(1).objectName(), "b".repeat(40) + ":Test Cases/Old name/" + TEST_CASE_UUID + ".testcase");
     }
 
     // Rule-VIEW-PANEL-096, Rule-VIEW-PANEL-097

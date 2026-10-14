@@ -43,7 +43,7 @@ public class DetailsBandsIdeTest extends BasePlatformTestCase {
 
     private static final @NotNull String RUN_ITEM_BAND = Bundle.message("details.band.run.item").toUpperCase(Locale.ROOT);
     private static final @NotNull String TEST_CASE = Bundle.message("details.band.test.case").toUpperCase(Locale.ROOT);
-    private static final @NotNull UUID ID = UUID.fromString("3f2a05c1-8b44-4e2a-9f31-0c7d6b1a9c1b");
+    private static final @NotNull UUID TEST_CASE_UUID = UUID.fromString("3f2a05c1-8b44-4e2a-9f31-0c7d6b1a9c1b");
     private static final @NotNull String LAST_STEP = "Login";
     private static final @NotNull String STACKTRACE = """
             java.lang.AssertionError: expected [true]
@@ -54,11 +54,11 @@ public class DetailsBandsIdeTest extends BasePlatformTestCase {
                 at five""";
 
     private static @NotNull TestCase aTestCase() {
-        return TestCase.builder().id(ID).description("Log in with a valid user").expectedResult("The dashboard opens").module("Accounts").build();
+        return TestCase.builder().uuid(TEST_CASE_UUID).description("Log in with a valid user").expectedResult("The dashboard opens").module("Accounts").build();
     }
 
     private static @NotNull RunItem failed() {
-        return RunItem.builder().id(ID).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The session was dropped").duration(Duration.ofSeconds(134)).executedBy("muteb").stacktrace(STACKTRACE).build())).build();
+        return RunItem.builder().uuid(TEST_CASE_UUID).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The session was dropped").duration(Duration.ofSeconds(134)).executedBy("muteb").stacktrace(STACKTRACE).build())).build();
     }
 
     private @NotNull List<String> shown(final @NotNull Optional<RunItem> runItem) {
@@ -91,8 +91,8 @@ public class DetailsBandsIdeTest extends BasePlatformTestCase {
         assertTrue("the test case's fields were not drawn: " + words, holds(words, "The dashboard opens"));
     }
 
-    public void testThePanelShowsNoTestCaseId() {
-        assertFalse("the panel is still drawing the id", shown(Optional.empty()).contains(ID.toString()));
+    public void testThePanelShowsNoTestCaseUuid() {
+        assertFalse("the panel is still drawing the UUID", shown(Optional.empty()).contains(TEST_CASE_UUID.toString()));
     }
 
     // Rule-VIEW-PANEL-087

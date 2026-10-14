@@ -56,7 +56,7 @@ public final class ExecutionPosition {
         for (final TestCase testCase : testCases) {
             final @NotNull List<TestCase> set = sets.computeIfAbsent(testCase.getParent().getPath(), _ -> setOf(project, testCase));
             final int place = TestCaseOrder.positionOf(set, testCase);
-            if (place <= set.size()) places.put(testCase.getId(), place);
+            if (place <= set.size()) places.put(testCase.getUuid(), place);
         }
 
         return places;

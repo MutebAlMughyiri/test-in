@@ -59,11 +59,11 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
 
     private static @NotNull UUID walkingOn(final @NotNull TestRunEditor editor) {
         final int index = editor.getWalk().getCurrentlyExecutingIndex();
-        return index < 0 ? new UUID(0L, 0L) : editor.getCurrentTestCases().get(index).getId();
+        return index < 0 ? new UUID(0L, 0L) : editor.getCurrentTestCases().get(index).getUuid();
     }
 
     private static void awaitWalkOn(final @NotNull TestRunEditor editor, final @NotNull TestCase testCase) {
-        Await.until("the walk never reached '" + testCase.getDescription() + "'", () -> walkingOn(editor).equals(testCase.getId()));
+        Await.until("the walk never reached '" + testCase.getDescription() + "'", () -> walkingOn(editor).equals(testCase.getUuid()));
     }
 
     private @NotNull TestRuns theTestRuns() {
@@ -94,11 +94,11 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull RunItemStatus runItemStatusOf(final @NotNull TestRunNode testRun, final @NotNull TestCase testCase) {
-        return theTestRuns().getRunItems(testRun.getPath()).runItemOf(testCase.getId()).map(RunItem::getStatus).orElseThrow();
+        return theTestRuns().getRunItems(testRun.getPath()).runItemOf(testCase.getUuid()).map(RunItem::getStatus).orElseThrow();
     }
 
     private @NotNull RunItem runItemOf(final @NotNull TestRunNode testRun, final @NotNull TestCase testCase) {
-        return theTestRuns().getRunItems(testRun.getPath()).runItemOf(testCase.getId()).orElseThrow();
+        return theTestRuns().getRunItems(testRun.getPath()).runItemOf(testCase.getUuid()).orElseThrow();
     }
 
     private void record(final @NotNull TestRunEditor editor, final @NotNull RunItemStatus runItemStatus) {
@@ -109,7 +109,7 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
     private @NotNull String fileOf(final @NotNull TestRunNode testRun, final @NotNull TestCase testCase) {
         theTestRuns().awaitWrites();
         try {
-            return Files.readString(testRun.getPath().resolve(FileKind.RUN_ITEM.fileName(testCase.getId())));
+            return Files.readString(testRun.getPath().resolve(FileKind.RUN_ITEM.fileName(testCase.getUuid())));
         } catch (final IOException ex) {
             throw new AssertionError("the run item of '" + testCase.getDescription() + "' was never written", ex);
         }
@@ -155,7 +155,7 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
             record(editor, RunItemStatus.PASSED);
 
             awaitWalkOn(editor, testCases.get(3));
-            assertEquals("the run item status was not recorded on the test case the walk was on", RunItemStatus.PASSED, editor.runItem(testCases.get(1).getId()).orElseThrow().getStatus());
+            assertEquals("the run item status was not recorded on the test case the walk was on", RunItemStatus.PASSED, editor.runItem(testCases.get(1).getUuid()).orElseThrow().getStatus());
         } finally {
             Disposer.dispose(editor);
         }
@@ -329,7 +329,7 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
             assertEquals("a run item status could not be recorded away from the walk", RunItemStatus.BLOCKED, runItemStatusOf(testRun, testCases.get(2)));
             assertEquals("a run item status recorded away from the walk was timed", Duration.ofSeconds(7), runItemOf(testRun, testCases.get(2)).shownExecution().getDuration());
             assertTrue("recording away from the walk stopped it", editor.getWalk().isExecuting());
-            assertEquals("recording away from the walk moved it", testCases.getFirst().getId(), walkingOn(editor));
+            assertEquals("recording away from the walk moved it", testCases.getFirst().getUuid(), walkingOn(editor));
         } finally {
             Disposer.dispose(editor);
         }
@@ -358,7 +358,7 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestRunNode testRun = aTestRunOver(List.of(
                 EditorFixtures.pending(testCases.getFirst()),
                 EditorFixtures.pending(testCases.get(1)),
-                new RunItem().setId(removed)));
+                new RunItem().setUuid(removed)));
         final @NotNull TestRunEditor editor = opened(testRun);
         try {
             final @NotNull List<TestCase> everyRow = new ArrayList<>(editor.getAllTestCases());
@@ -395,7 +395,7 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
             assertEquals("the hidden test case being executed was judged", RunItemStatus.PENDING, runItemStatusOf(testRun, testCases.getFirst()));
 
             editor.getToolBar().getSearchText().setText("");
-            Await.until("clearing the filter did not bring the test case being executed back", () -> walkingOn(editor).equals(testCases.getFirst().getId()));
+            Await.until("clearing the filter did not bring the test case being executed back", () -> walkingOn(editor).equals(testCases.getFirst().getUuid()));
         } finally {
             Disposer.dispose(editor);
         }
@@ -423,13 +423,13 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
         final @NotNull List<TestCase> login = EditorFixtures.testCases(getProject(), EditorFixtures.testSet(getProject(), testProject, "Login"), 3);
         final @NotNull List<TestCase> checkout = EditorFixtures.testCases(getProject(), EditorFixtures.testSet(getProject(), testProject, "Checkout"), 2);
-        final @NotNull List<UUID> asTheFormListsThem = Services.getInstance(getProject(), TestCases.class).getTestCasesUnder(testProject.getTestCasesFolder()).stream().map(TestCase::getId).toList();
+        final @NotNull List<UUID> asTheFormListsThem = Services.getInstance(getProject(), TestCases.class).getTestCasesUnder(testProject.getTestCasesFolder()).stream().map(TestCase::getUuid).toList();
 
         final @NotNull TestRunNode testRun = aPendingTestRunOver(List.of(checkout.get(1), login.get(2), checkout.getFirst(), login.getFirst(), login.get(1)));
         final @NotNull TestRunEditor editor = opened(testRun);
         try {
-            assertEquals("the reports read the run items in this order", asTheFormListsThem, theTestRuns().getRunItems(testRun.getPath()).getAll().stream().map(RunItem::getId).toList());
-            assertEquals(asTheFormListsThem, editor.getAllTestCases().stream().map(TestCase::getId).toList());
+            assertEquals("the reports read the run items in this order", asTheFormListsThem, theTestRuns().getRunItems(testRun.getPath()).getAll().stream().map(RunItem::getUuid).toList());
+            assertEquals(asTheFormListsThem, editor.getAllTestCases().stream().map(TestCase::getUuid).toList());
             for (final List<TestCase> testSet : List.of(login, checkout)) {
                 for (int place = 1; place <= testSet.size(); place++) {
                     assertEquals("a test run card is numbered by its place in its own test set", place, editor.positionOf(testSet.get(place - 1)));
@@ -443,11 +443,11 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-127, Rule-EDITOR-PANEL-014
     public void testATestCaseThatWasDeletedComesLastWithNoNumber() {
         final @NotNull List<TestCase> testCases = createdTestCases(2);
-        final @NotNull TestCase deleted = TestCase.builder().id(UUID.randomUUID()).description("Deleted since").build();
+        final @NotNull TestCase deleted = TestCase.builder().uuid(UUID.randomUUID()).description("Deleted since").build();
 
         final @NotNull TestRunEditor editor = opened(aPendingTestRunOver(List.of(deleted, testCases.get(1), testCases.getFirst())));
         try {
-            assertEquals(deleted.getId(), editor.getAllTestCases().getLast().getId());
+            assertEquals(deleted.getUuid(), editor.getAllTestCases().getLast().getUuid());
             assertFalse("a test case that was deleted has no place in a set, so its card shows no number",
                     Character.isDigit(editor.cardTitle(editor.getAllTestCases().getLast()).charAt(0)));
         } finally {
@@ -460,7 +460,7 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
         final @NotNull List<TestCase> testCases = createdTestCases(2);
         final @NotNull TestRunEditor editor = opened(aPendingTestRunOver(testCases));
         try {
-            editor.launching(testCases.getFirst().getId());
+            editor.launching(testCases.getFirst().getUuid());
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
             assertEquals(TestRunStatus.IN_PROGRESS, editor.getParent().getMarker().getStatus());

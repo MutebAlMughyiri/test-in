@@ -32,7 +32,7 @@ import static org.testng.Assert.assertFalse;
 public class TestRunGridEditingTest {
 
     private static @NotNull RunItem runItem() {
-        return RunItem.builder().id(UUID.randomUUID()).build();
+        return RunItem.builder().uuid(UUID.randomUUID()).build();
     }
 
     // Rule-EDITOR-PANEL-171

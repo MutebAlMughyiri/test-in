@@ -23,7 +23,7 @@ name should match our correct names in business."*
 | Not this                    | This                                               | Why                                                                                           |
 |-----------------------------|----------------------------------------------------|-----------------------------------------------------------------------------------------------|
 | `CaseDetails`               | `TestCaseDetails`                                  | A case is a court case. The plugin has test cases                                             |
-| `caseId`, `caseIds`         | `testCaseId`, `testCaseIds`                        | The id of what?                                                                               |
+| `caseId`, `testCaseId`      | `testCaseUuid`, `testCaseUuids`                    | The identity of what, and what kind: a test case's identity is a UUID (#434)                  |
 | `cases`                     | `testCases`                                        | Even where the type says `List<TestCase>`: the reader is reading the name                     |
 | `shownCase`, `liveCase`     | `shownTestCase`, `liveTestCase`                    | Same word, same thing, everywhere                                                             |
 | `item` on its own           | `runItem`                                          | A run item is a test case's row in a test run                                                 |
@@ -35,7 +35,7 @@ name should match our correct names in business."*
 | `RunStatus`, `RunRegistry`  | `TestNGExecutionStatus`, `TestNGExecutionRegistry` | Executing TestNG methods is an execution, not a test run                                      |
 | `TestEditor`, `TestToolbar` | `TestSetEditor`, `TestSetToolbar`                  | The editor of a test set's test cases                                                         |
 
-It holds for the documentation and for issues as well: *test case id*, never *case id*; *run item*, never *item*.
+It holds for the documentation and for issues as well: *test case UUID*, never *case id*; *run item*, never *item*.
 
 **And for every sentence written to Muteb** - chat, a design, an `AskUserQuestion`
 brief and its options. A question that says "the run" or "run the tests" was sent
@@ -71,7 +71,7 @@ Two halves, and a pair of names must sit on the same half:
   button a tester presses says **Card View**.
 - **One thing is singular, a list is plural.** `RunItem` for one run item, never
   `TestRunItems`; `groups` for a test case's list of groups, never `group`.
-- **A run item is never a result.** `getRunItems()`, `runItemOf(id)`,
+- **A run item is never a result.** `getRunItems()`, `runItemOf(uuid)`,
   `RunItemsInTestCaseOrderTest`, and the words a tester reads: Record Run Item,
   Run items not read. "Result" stays only where the business says it: Actual
   Result, Expected Result, Result Analysis.
@@ -85,7 +85,7 @@ Two halves, and a pair of names must sit on the same half:
 | `TestRunCard`, `TestRunListRenderer`   | `RunItemCard`, `RunItemCardRenderer`         |
 | `ListView`, `ListViewBtn`, `LIST_VIEW` | `CardView`, `CardViewButton`, `CARD_VIEW`    |
 | `TestRunItems`, `getResults()`         | `RunItem`, `getRunItems()`                   |
-| `bug.RunItem` (a test run and an id)   | `RunItemPath`                                |
+| `bug.RunItem` (a test run and a UUID)  | `RunItemPath`                                |
 | `FailedResultDialog`                   | `FailureDetailDialog`                        |
 | `EditorKind.TEST`, `EditorKind.RUN`    | `EditorKind.TEST_SET`, `EditorKind.TEST_RUN` |
 

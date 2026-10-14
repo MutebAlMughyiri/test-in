@@ -51,9 +51,9 @@ public class MoveUndoIdeTest extends AbstractTempRootIdeTest {
     private @NotNull TestSetNode from = new TestSetNode();
     private @NotNull TestSetNode to = new TestSetNode();
 
-    private static boolean onDisk(final @NotNull Path testSet, final @NotNull UUID testCaseId) {
+    private static boolean onDisk(final @NotNull Path testSet, final @NotNull UUID testCaseUuid) {
         try (final Stream<Path> files = Files.list(testSet)) {
-            return files.anyMatch(file -> file.getFileName().toString().contains(testCaseId.toString()));
+            return files.anyMatch(file -> file.getFileName().toString().contains(testCaseUuid.toString()));
         } catch (final IOException ex) {
             throw new AssertionError("could not read " + testSet, ex);
         }
@@ -75,7 +75,7 @@ public class MoveUndoIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull List<UUID> idsIn(final @NotNull TestSetNode testSet) {
-        return theTestCases().getTestCasesForTestSet(testSet.getPath()).stream().map(TestCase::getId).toList();
+        return theTestCases().getTestCasesForTestSet(testSet.getPath()).stream().map(TestCase::getUuid).toList();
     }
 
     private @NotNull TestCase movedFromTheFirstSetToTheSecond(final @NotNull TestSetEditor source, final @NotNull TestSetEditor target, final @NotNull List<String> balloons) {
@@ -86,7 +86,7 @@ public class MoveUndoIdeTest extends AbstractTempRootIdeTest {
         Gestures.press(getProject(), ActionManager.getInstance().getAction("Testin.PasteTestCaseNode"), target.getList());
 
         Await.until("the move was never recorded: " + balloons, () -> balloons.contains(Done.PASTED.getOutcome()) && histories().canUndo(UndoScope.of(to.getPath())));
-        assertTrue("the test case did not move", idsIn(to).contains(moving.getId()) && !idsIn(from).contains(moving.getId()));
+        assertTrue("the test case did not move", idsIn(to).contains(moving.getUuid()) && !idsIn(from).contains(moving.getUuid()));
         return moving;
     }
 
@@ -111,11 +111,11 @@ public class MoveUndoIdeTest extends AbstractTempRootIdeTest {
             assertTrue("the move could not be undone", histories().undo(UndoScope.of(to.getPath())));
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
-            assertTrue("undo did not put the test case back in the set it came from", idsIn(from).contains(moved.getId()));
-            assertFalse("undo left the test case where it landed", idsIn(to).contains(moved.getId()));
-            assertTrue("undo deleted the test case from the set it came from", onDisk(from.getPath(), moved.getId()));
-            assertFalse("undo left the test case's file where it landed", onDisk(to.getPath(), moved.getId()));
-            assertEquals("the test case came back as another one", from.getPath(), theTestCases().findTestCase(moved.getId()).orElseThrow().getParent().getPath());
+            assertTrue("undo did not put the test case back in the set it came from", idsIn(from).contains(moved.getUuid()));
+            assertFalse("undo left the test case where it landed", idsIn(to).contains(moved.getUuid()));
+            assertTrue("undo deleted the test case from the set it came from", onDisk(from.getPath(), moved.getUuid()));
+            assertFalse("undo left the test case's file where it landed", onDisk(to.getPath(), moved.getUuid()));
+            assertEquals("the test case came back as another one", from.getPath(), theTestCases().findTestCase(moved.getUuid()).orElseThrow().getParent().getPath());
         } finally {
             Disposer.dispose(source);
             Disposer.dispose(target);
@@ -135,10 +135,10 @@ public class MoveUndoIdeTest extends AbstractTempRootIdeTest {
 
             assertTrue("the move taken back did not come back with redo", histories().redo(UndoScope.of(to.getPath())));
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
-            assertTrue("redo did not move the test case again", idsIn(to).contains(moved.getId()) && !idsIn(from).contains(moved.getId()));
+            assertTrue("redo did not move the test case again", idsIn(to).contains(moved.getUuid()) && !idsIn(from).contains(moved.getUuid()));
             assertFalse("a move was refused as somebody else's change: " + balloons, balloons.stream().anyMatch(said -> said.startsWith(Bundle.message("snapshot.changed.title"))));
 
-            final @NotNull TestCase changedElsewhere = theTestCases().findTestCase(moved.getId()).orElseThrow().edit().description("Changed by somebody else").build();
+            final @NotNull TestCase changedElsewhere = theTestCases().findTestCase(moved.getUuid()).orElseThrow().edit().description("Changed by somebody else").build();
             theTestCases().putTestCaseVerbatim(to.getPath(), changedElsewhere);
             assertFalse("a change somebody else made was undone over", histories().undo(UndoScope.of(to.getPath())));
             assertTrue("a change somebody else made was not refused as one: " + balloons, balloons.stream().anyMatch(said -> said.startsWith(Bundle.message("snapshot.changed.title"))));

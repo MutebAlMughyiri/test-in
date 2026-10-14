@@ -83,8 +83,8 @@ public final class TestNGExecution implements Disposable {
         });
     }
 
-    private static @NotNull String key(final @NotNull UUID testCaseId) {
-        return testCaseId.toString().toLowerCase(Locale.ROOT);
+    private static @NotNull String key(final @NotNull UUID testCaseUuid) {
+        return testCaseUuid.toString().toLowerCase(Locale.ROOT);
     }
 
     @Override
@@ -94,14 +94,14 @@ public final class TestNGExecution implements Disposable {
     // UC-CODEGEN-008, Rule-CODEGEN-034
     @FromContentModule
     public void starting(final @NotNull TestCase testCase) {
-        registry.starting(testCase.getId());
+        registry.starting(testCase.getUuid());
 
-        TestNGExecutionReported.broadcast(project, key(testCase.getId()), TestNGExecutionStatus.RUNNING, Duration.ZERO, Failure.NONE);
+        TestNGExecutionReported.broadcast(project, key(testCase.getUuid()), TestNGExecutionStatus.RUNNING, Duration.ZERO, Failure.NONE);
     }
 
     @FromContentModule
     public @NotNull List<TestCase> stillWanted(final @NotNull List<TestCase> testCases) {
-        return testCases.stream().filter(testCase -> registry.take(testCase.getId())).toList();
+        return testCases.stream().filter(testCase -> registry.take(testCase.getUuid())).toList();
     }
 
     // UC-CODEGEN-008, Rule-CODEGEN-076
@@ -120,7 +120,7 @@ public final class TestNGExecution implements Disposable {
     }
 
     void launched(final @NotNull List<TestCase> testCases, final @NotNull String testRunName) {
-        registry.launched(testCases.stream().map(TestCase::getId).toList(), testRunName);
+        registry.launched(testCases.stream().map(TestCase::getUuid).toList(), testRunName);
     }
 
     // UC-CODEGEN-008, Rule-CODEGEN-097
@@ -132,9 +132,9 @@ public final class TestNGExecution implements Disposable {
     }
 
     public void notStarting(final @NotNull TestCase testCase) {
-        registry.notStarting(testCase.getId());
+        registry.notStarting(testCase.getUuid());
 
-        TestNGExecutionReported.broadcast(project, key(testCase.getId()), TestNGExecutionStatus.IDLE, Duration.ZERO, Failure.NONE);
+        TestNGExecutionReported.broadcast(project, key(testCase.getUuid()), TestNGExecutionStatus.IDLE, Duration.ZERO, Failure.NONE);
     }
 
     // UC-CODEGEN-008
@@ -157,46 +157,46 @@ public final class TestNGExecution implements Disposable {
 
     // UC-CODEGEN-009, Rule-CODEGEN-038
     public boolean isStopped(final @NotNull TestCase testCase) {
-        return registry.isStopped(testCase.getId());
+        return registry.isStopped(testCase.getUuid());
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-036
-    public boolean isRunning(final @NotNull UUID testCaseId) {
-        return registry.isRunning(testCaseId);
+    public boolean isRunning(final @NotNull UUID testCaseUuid) {
+        return registry.isRunning(testCaseUuid);
     }
 
     // Rule-EDITOR-PANEL-291
-    public boolean isExecutingNow(final @NotNull UUID testCaseId) {
-        return registry.isExecutingNow(testCaseId);
+    public boolean isExecutingNow(final @NotNull UUID testCaseUuid) {
+        return registry.isExecutingNow(testCaseUuid);
     }
 
     public @NotNull TestNGExecutionStatus testNGExecutionStatusOf(final @NotNull TestCase testCase) {
-        return registry.testNGExecutionStatusOf(testCase.getId());
+        return registry.testNGExecutionStatusOf(testCase.getUuid());
     }
 
     // UC-CODEGEN-008
-    void reported(final @NotNull UUID testCaseId, final @NotNull TestNGExecutionStatus testNGExecutionStatus) {
-        registry.reported(testCaseId, testNGExecutionStatus);
+    void reported(final @NotNull UUID testCaseUuid, final @NotNull TestNGExecutionStatus testNGExecutionStatus) {
+        registry.reported(testCaseUuid, testNGExecutionStatus);
     }
 
     // Rule-CODEGEN-110
-    @NotNull Map<UUID, Attempts> attempted(final @NotNull UUID testCaseId, final @NotNull Attempt attempt) {
-        return registry.attempted(testCaseId, attempt);
+    @NotNull Map<UUID, Attempts> attempted(final @NotNull UUID testCaseUuid, final @NotNull Attempt attempt) {
+        return registry.attempted(testCaseUuid, attempt);
     }
 
     // Rule-CODEGEN-111
-    @NotNull Optional<Attempts> takeUnwritten(final @NotNull UUID testCaseId) {
-        return registry.takeUnwritten(testCaseId);
+    @NotNull Optional<Attempts> takeUnwritten(final @NotNull UUID testCaseUuid) {
+        return registry.takeUnwritten(testCaseUuid);
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-037
     public int stop(final @NotNull List<TestCase> testCases) {
-        return stopTestCases(testCases.stream().map(TestCase::getId).toList());
+        return stopTestCases(testCases.stream().map(TestCase::getUuid).toList());
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-037
-    public int stopTestCases(final @NotNull Collection<UUID> testCaseIds) {
-        final @NotNull Stop stop = registry.stopping(List.copyOf(testCaseIds));
+    public int stopTestCases(final @NotNull Collection<UUID> testCaseUuids) {
+        final @NotNull Stop stop = registry.stopping(List.copyOf(testCaseUuids));
         if (stop.testCases().isEmpty()) return 0;
 
         final @NotNull Map<ProcessHandler, String> theirs = running(stop.executions());
@@ -204,7 +204,7 @@ public final class TestNGExecution implements Disposable {
                 + " execution(s): " + theirs.size() + " had reached a process");
 
         theirs.forEach(this::kill);
-        stop.testCases().forEach(testCaseId -> TestNGExecutionReported.broadcast(project, key(testCaseId), TestNGExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
+        stop.testCases().forEach(testCaseUuid -> TestNGExecutionReported.broadcast(project, key(testCaseUuid), TestNGExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
 
         return stop.testCases().size();
     }
@@ -217,7 +217,7 @@ public final class TestNGExecution implements Disposable {
             if (open.isEmpty()) return;
 
             TestinLogger.info("'" + testRunName + "' ended with " + open.size() + " test case(s) still open");
-            open.forEach(testCaseId -> TestNGExecutionReported.broadcast(project, key(testCaseId), TestNGExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
+            open.forEach(testCaseUuid -> TestNGExecutionReported.broadcast(project, key(testCaseUuid), TestNGExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
         });
     }
 

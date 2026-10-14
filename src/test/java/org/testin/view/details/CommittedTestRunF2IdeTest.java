@@ -39,7 +39,7 @@ public class CommittedTestRunF2IdeTest extends AbstractReadTheRootIdeTest {
     public void testF2OnARunItemOfACommittedTestRunChangesNothingAndSaysWhere() {
         final @NotNull Path testProjectPath = aTestProjectAt(root.resolve("Shop"));
         final @NotNull Path testSet = marked(theTestCasesOf(testProjectPath).resolve("Login"), NodeType.TEST_SET);
-        final @NotNull UUID testCaseId = aTestCaseIn(testSet);
+        final @NotNull UUID testCaseUuid = aTestCaseIn(testSet);
         final @NotNull Path testRun = theTestRunsOf(testProjectPath).resolve("Cycle 4");
         try {
             Files.createDirectories(testRun);
@@ -53,9 +53,9 @@ public class CommittedTestRunF2IdeTest extends AbstractReadTheRootIdeTest {
         } catch (final IOException ex) {
             throw new AssertionError("Could not write the test run: " + ex.getMessage(), ex);
         }
-        runItemIn(testRun, FileKind.RUN_ITEM.fileName(testCaseId));
+        runItemIn(testRun, FileKind.RUN_ITEM.fileName(testCaseUuid));
         readEverything();
-        final @NotNull TestCase shown = Services.getInstance(getProject(), TestCases.class).findTestCase(testCaseId).orElseThrow();
+        final @NotNull TestCase shown = Services.getInstance(getProject(), TestCases.class).findTestCase(testCaseUuid).orElseThrow();
 
         final @NotNull List<String> said = Said.during(getProject(), () -> EditShownTestCase.openIfEditable(getProject(), shown, List.of("Shop", "Test Runs", "Cycle 4")));
 
@@ -66,15 +66,15 @@ public class CommittedTestRunF2IdeTest extends AbstractReadTheRootIdeTest {
     public void testF2OnADeletedTestCaseChangesNothingAndSaysWhy() {
         final @NotNull Path testProjectPath = aTestProjectAt(root.resolve("Shop"));
         final @NotNull Path login = marked(theTestCasesOf(testProjectPath).resolve("Login"), NodeType.TEST_SET);
-        final @NotNull UUID testCaseId = aTestCaseIn(login);
+        final @NotNull UUID testCaseUuid = aTestCaseIn(login);
         try {
-            Files.delete(login.resolve(FileKind.TEST_CASE.fileName(testCaseId)));
+            Files.delete(login.resolve(FileKind.TEST_CASE.fileName(testCaseUuid)));
         } catch (final IOException ex) {
             throw new AssertionError("Could not delete the test case: " + ex.getMessage(), ex);
         }
         readEverything();
 
-        final @NotNull List<String> said = Said.during(getProject(), () -> EditShownTestCase.openIfEditable(getProject(), TestCase.deleted(testCaseId), List.of("Shop", "Test Cases", "Login")));
+        final @NotNull List<String> said = Said.during(getProject(), () -> EditShownTestCase.openIfEditable(getProject(), TestCase.deleted(testCaseUuid), List.of("Shop", "Test Cases", "Login")));
 
         assertTrue("F2 did not say the test case was deleted: " + said, said.stream().anyMatch(line -> line.contains(Bundle.message("details.deleted.no.edit"))));
     }

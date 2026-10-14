@@ -34,7 +34,7 @@ uncommitted work reaches it.
 - **Rule-SHARE-046** — A file Git says has changed gets a row even when Testin
   can see no difference inside it, so the tester can still commit it.
 - **Rule-SHARE-047** — Testin decides what a file is by its name, not by reading
-  it: a `.testcase` is a test case, a `<test case id>.runitem` is one test case's result,
+  it: a `.testcase` is a test case, a `<test case UUID>.runitem` is one test case's result,
   and the seven fixed marker names are markers. A record is identified by the
   name it is written under, so a file the review cannot parse still gets the
   right kind of row.

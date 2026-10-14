@@ -60,7 +60,7 @@ public final class TestCase {
     @JsonIgnore
     @NonNull
     @Builder.Default
-    private volatile UUID id = UUID.randomUUID();
+    private volatile UUID uuid = UUID.randomUUID();
 
     @NonNull
     @Builder.Default
@@ -127,14 +127,14 @@ public final class TestCase {
     private volatile String preConditions = "";
 
     // UC-INTERNAL-002, Rule-INTERNAL-012
-    public static @NotNull TestCase read(final @NotNull JsonCodec mapper, final @NotNull String json, final @NotNull UUID testCaseId) {
-        return mapper.readValue(json, TestCase.class).setId(testCaseId);
+    public static @NotNull TestCase read(final @NotNull JsonCodec mapper, final @NotNull String json, final @NotNull UUID testCaseUuid) {
+        return mapper.readValue(json, TestCase.class).setUuid(testCaseUuid);
     }
 
-    public static @NotNull TestCase deleted(final @NotNull UUID testCaseId) {
+    public static @NotNull TestCase deleted(final @NotNull UUID testCaseUuid) {
         return TestCase.builder()
-                .id(testCaseId)
-                .description(Bundle.message("testcase.deleted", testCaseId))
+                .uuid(testCaseUuid)
+                .description(Bundle.message("testcase.deleted", testCaseUuid))
                 .build();
     }
 

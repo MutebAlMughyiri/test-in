@@ -44,7 +44,7 @@ public class PasteTestCaseCodeIdeTest extends AbstractCodegenIdeTest {
     private static final @NotNull String WRITTEN_BY_THE_TESTER = "int signedIn = 1;";
 
     private @NotNull TestCase automatedTestCase(final @NotNull TestSetNode testSet) {
-        final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description("Log in with a valid user").order("m").build();
+        final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description("Log in with a valid user").order("m").build();
         testCase.setParent(testSet);
         Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase);
         CodeChangeType.CREATE_TEST_CASE.execute(getProject(), testCase);
@@ -58,7 +58,7 @@ public class PasteTestCaseCodeIdeTest extends AbstractCodegenIdeTest {
 
     private @NotNull Optional<PsiMethod> methodOf(final @NotNull TestCase testCase) {
         return Arrays.stream(generatedClass("nafath.LoginTest").orElseThrow().getMethods())
-                .filter(method -> method.getModifierList().getText().contains(testCase.getId().toString()))
+                .filter(method -> method.getModifierList().getText().contains(testCase.getUuid().toString()))
                 .findFirst();
     }
 
@@ -74,7 +74,7 @@ public class PasteTestCaseCodeIdeTest extends AbstractCodegenIdeTest {
             new PasteTestCaseWork(getProject(), editor).paste();
 
             Await.until("the copy was never pasted", () -> editor.getAllTestCases().size() == 2);
-            final @NotNull TestCase copy = editor.getAllTestCases().stream().filter(testCase -> !testCase.getId().equals(original.getId())).findFirst().orElseThrow();
+            final @NotNull TestCase copy = editor.getAllTestCases().stream().filter(testCase -> !testCase.getUuid().equals(original.getUuid())).findFirst().orElseThrow();
 
             Await.until("the pasted copy never got a method of its own", () -> methodOf(copy).isPresent());
             assertTrue("the copy's method did not carry the original's body", methodOf(copy).orElseThrow().getText().contains(WRITTEN_BY_THE_TESTER));

@@ -23,12 +23,12 @@ import org.testin.model.TestCase;
 import java.util.UUID;
 
 // UC-EDITOR-PANEL-017, Rule-INTERNAL-012
-record ClipboardTestCase(@JsonProperty(required = true) @NotNull UUID testCaseId, @JsonProperty(required = true) @NotNull TestCase testCase) {
+record ClipboardTestCase(@JsonProperty(required = true) @NotNull UUID testCaseUuid, @JsonProperty(required = true) @NotNull TestCase testCase) {
     static @NotNull ClipboardTestCase of(final @NotNull TestCase testCase) {
-        return new ClipboardTestCase(testCase.getId(), testCase);
+        return new ClipboardTestCase(testCase.getUuid(), testCase);
     }
 
-    @NotNull TestCase withItsId() {
-        return testCase.setId(testCaseId);
+    @NotNull TestCase withItsUuid() {
+        return testCase.setUuid(testCaseUuid);
     }
 }

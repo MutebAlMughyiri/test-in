@@ -54,7 +54,7 @@ public final class AutomationState implements Disposable {
 
     // UC-EDITOR-PANEL-047, Rule-EDITOR-PANEL-195, Rule-CODEGEN-002
     private static @NotNull Automated stateOf(final @NotNull TestCase testCase, final @NotNull Map<UUID, Boolean> methods) {
-        final @NotNull Optional<Boolean> method = Optional.ofNullable(methods.get(testCase.getId()));
+        final @NotNull Optional<Boolean> method = Optional.ofNullable(methods.get(testCase.getUuid()));
 
         if (method.isPresent()) return method.orElseThrow() ? Automated.WRITTEN : Automated.NONE;
 
@@ -70,8 +70,8 @@ public final class AutomationState implements Disposable {
             final @NotNull Map<UUID, Boolean> methods = TestMethodCode.available().methodsFor(project, testCases);
 
             for (final TestCase testCase : testCases) {
-                answers.put(testCase.getId(), stateOf(testCase, methods));
-                if (methods.containsKey(testCase.getId())) found.add(testCase.getId());
+                answers.put(testCase.getUuid(), stateOf(testCase, methods));
+                if (methods.containsKey(testCase.getUuid())) found.add(testCase.getUuid());
             }
         } catch (final ProcessCanceledException cancelled) {
             throw cancelled;
@@ -83,13 +83,13 @@ public final class AutomationState implements Disposable {
     }
 
     // UC-EDITOR-PANEL-047, Rule-EDITOR-PANEL-197
-    public @NotNull Automated of(final @NotNull UUID testCaseId) {
-        return known.getOrDefault(testCaseId, Automated.UNKNOWN);
+    public @NotNull Automated of(final @NotNull UUID testCaseUuid) {
+        return known.getOrDefault(testCaseUuid, Automated.UNKNOWN);
     }
 
     // UC-CODEGEN-005, Rule-CODEGEN-025
-    public boolean hasMethod(final @NotNull UUID testCaseId) {
-        return withAMethod.contains(testCaseId);
+    public boolean hasMethod(final @NotNull UUID testCaseUuid) {
+        return withAMethod.contains(testCaseUuid);
     }
 
     // UC-EDITOR-PANEL-047, Rule-EDITOR-PANEL-196
@@ -111,7 +111,7 @@ public final class AutomationState implements Disposable {
 
         final @NotNull List<TestCase> reading = List.copyOf(testCases);
         final @NotNull Map<UUID, Automated> asking = reading.stream()
-                .collect(Collectors.toMap(TestCase::getId, testCase -> of(testCase.getId()), (first, _) -> first));
+                .collect(Collectors.toMap(TestCase::getUuid, testCase -> of(testCase.getUuid()), (first, _) -> first));
 
         BackgroundWork.logged(ReadAction.nonBlocking(() -> answer(project, reading))
                 .inSmartMode(project)
@@ -124,7 +124,7 @@ public final class AutomationState implements Disposable {
     // UC-EDITOR-PANEL-047, Rule-EDITOR-PANEL-197
     private boolean alreadyAnswered(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
         return readAtCodeVersion == PsiModificationTracker.getInstance(project).getModificationCount()
-                && testCases.stream().allMatch(testCase -> known.containsKey(testCase.getId()));
+                && testCases.stream().allMatch(testCase -> known.containsKey(testCase.getUuid()));
     }
 
     // Rule-CODEGEN-082, Rule-EDITOR-PANEL-211
@@ -135,8 +135,8 @@ public final class AutomationState implements Disposable {
         readAtCodeVersion = answer.codeVersion();
 
         for (final TestCase testCase : testCases) {
-            if (answer.withMethods().contains(testCase.getId())) withAMethod.add(testCase.getId());
-            else withAMethod.remove(testCase.getId());
+            if (answer.withMethods().contains(testCase.getUuid())) withAMethod.add(testCase.getUuid());
+            else withAMethod.remove(testCase.getUuid());
         }
 
         if (answer.states().equals(asking)) return;
@@ -149,19 +149,19 @@ public final class AutomationState implements Disposable {
 
     // UC-EDITOR-PANEL-047, Rule-EDITOR-PANEL-210
     public int writtenIn(final @NotNull List<TestCase> testCases) {
-        return (int) testCases.stream().filter(testCase -> of(testCase.getId()) == Automated.WRITTEN).count();
+        return (int) testCases.stream().filter(testCase -> of(testCase.getUuid()) == Automated.WRITTEN).count();
     }
 
     // UC-EDITOR-PANEL-047, Rule-EDITOR-PANEL-211
     public int knownIn(final @NotNull List<TestCase> testCases) {
-        return (int) testCases.stream().filter(testCase -> of(testCase.getId()) != Automated.UNKNOWN).count();
+        return (int) testCases.stream().filter(testCase -> of(testCase.getUuid()) != Automated.UNKNOWN).count();
     }
 
     // UC-EDITOR-PANEL-047, Rule-EDITOR-PANEL-198
     public @NotNull List<TestCase> matching(final @NotNull List<TestCase> testCases, final @NotNull Set<Automated> wanted) {
         if (wanted.isEmpty()) return testCases;
 
-        return testCases.stream().filter(testCase -> wanted.contains(of(testCase.getId()))).toList();
+        return testCases.stream().filter(testCase -> wanted.contains(of(testCase.getUuid()))).toList();
     }
 
     @Override

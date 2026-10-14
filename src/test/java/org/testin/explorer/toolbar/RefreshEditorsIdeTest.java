@@ -58,10 +58,10 @@ public class RefreshEditorsIdeTest extends AbstractOpenEditorsIdeTest {
     }
 
     private static void aSecondTestCaseWrittenBesides(final @NotNull TestSetNode testSet, final @NotNull TestCase first) {
-        final @NotNull Path written = testSet.getPath().resolve(FileKind.TEST_CASE.fileName(first.getId()));
+        final @NotNull Path written = testSet.getPath().resolve(FileKind.TEST_CASE.fileName(first.getUuid()));
         final @NotNull UUID second = UUID.randomUUID();
         try {
-            Files.writeString(testSet.getPath().resolve(FileKind.TEST_CASE.fileName(second)), Files.readString(written).replace(first.getId().toString(), second.toString()).replace("\"m\"", "\"n\""));
+            Files.writeString(testSet.getPath().resolve(FileKind.TEST_CASE.fileName(second)), Files.readString(written).replace(first.getUuid().toString(), second.toString()).replace("\"m\"", "\"n\""));
         } catch (final IOException ex) {
             throw new AssertionError("could not write a second test case into " + testSet.getName() + ": " + ex.getMessage(), ex);
         }

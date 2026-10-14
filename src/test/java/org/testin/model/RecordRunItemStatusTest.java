@@ -43,7 +43,7 @@ public class RecordRunItemStatusTest {
 
     private static @NotNull RunItem failedWithBug() {
         return RunItem.builder()
-                .id(UUID.randomUUID())
+                .uuid(UUID.randomUUID())
                 .bugSeverity(BugSeverity.MAJOR)
                 .bugPriority(BugPriority.HIGH)
                 .bugIssueUrl(ISSUE)
@@ -93,7 +93,7 @@ public class RecordRunItemStatusTest {
 
     @Test
     public void passingATestCaseThatNeverRanChangesNothingElse() {
-        final RunItem runItem = RunItem.builder().id(UUID.randomUUID()).build();
+        final RunItem runItem = RunItem.builder().uuid(UUID.randomUUID()).build();
 
         record(runItem, RunItemStatus.PASSED, "tester");
 
@@ -117,8 +117,8 @@ public class RecordRunItemStatusTest {
 
     @Test
     public void everyFailureRecordsABug() {
-        final RunItem failed = RunItem.builder().id(UUID.randomUUID()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build();
-        final RunItem blocked = RunItem.builder().id(UUID.randomUUID()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.BLOCKED).build())).build();
+        final RunItem failed = RunItem.builder().uuid(UUID.randomUUID()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build();
+        final RunItem blocked = RunItem.builder().uuid(UUID.randomUUID()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.BLOCKED).build())).build();
 
         assertTrue(failed.recordsABug(), "a failure is Enhancement / Low until the tester says otherwise");
         assertFalse(blocked.recordsABug(), "a result that is not a failure records no bug");
@@ -130,7 +130,7 @@ public class RecordRunItemStatusTest {
     public void recordingAgainKeepsWhoRecordedTheFirstAndWhen() {
         final @NotNull ZonedDateTime firstTime = ZonedDateTime.now(ZoneId.systemDefault()).minusDays(3).truncatedTo(ChronoUnit.SECONDS);
         final @NotNull RunItem runItem = RunItem.builder()
-                .id(UUID.randomUUID())
+                .uuid(UUID.randomUUID())
                 .executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).executedBy("Sara").executedAt(firstTime).build()))
                 .build();
 

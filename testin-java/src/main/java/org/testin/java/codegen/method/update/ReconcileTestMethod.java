@@ -68,11 +68,11 @@ public class ReconcileTestMethod extends BaseTestMethodChange implements CodeCha
         if (target.isEmpty()) return;
 
         final @NotNull PsiClass testClass = target.orElseThrow();
-        final @NotNull Map<String, PsiMethod> methods = GeneratedMethod.byTestCaseId(testClass);
+        final @NotNull Map<String, PsiMethod> methods = GeneratedMethod.byTestCaseUuid(testClass);
 
         int written = 0;
         for (final TestCase testCase : inClass) {
-            final @Nullable PsiMethod testMethod = methods.get(testCase.getId().toString());
+            final @Nullable PsiMethod testMethod = methods.get(testCase.getUuid().toString());
             if (testMethod == null) continue;
 
             writeDescription(project, testMethod, testCase);

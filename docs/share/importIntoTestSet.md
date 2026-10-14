@@ -36,7 +36,7 @@ There is no key for this. The menu entry is **Import**.
 - **Rule-SHARE-027** — Every sheet in the file goes into this one test set.
 - **Rule-SHARE-028** — The file is read as soon as the box holds a path Testin
   recognizes.
-- **Rule-SHARE-029** — Thirteen columns are read. **Order**, **ID**, **FQCN**, **Path** and **Status** are not.
+- **Rule-SHARE-029** — Thirteen columns are read. **Order**, **UUID**, **FQCN**, **Path** and **Status** are not.
 - **Rule-SHARE-030** — Importing the same file twice makes two copies of
   everything.
 - **Rule-SHARE-110** — A column heading is matched by the name Testin shows for

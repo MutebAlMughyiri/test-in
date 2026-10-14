@@ -125,7 +125,7 @@ public enum TestCaseQuickAction {
     public static @NotNull TestCaseQuickAction executionSlot(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
         final @NotNull TestNGExecution execution = Services.getInstance(project, TestNGExecution.class);
 
-        return testCases.stream().anyMatch(testCase -> execution.isRunning(testCase.getId()))
+        return testCases.stream().anyMatch(testCase -> execution.isRunning(testCase.getUuid()))
                 ? STOP_TEST_METHOD
                 : RUN_TEST_METHOD;
     }
@@ -155,7 +155,7 @@ public enum TestCaseQuickAction {
     // UC-EDITOR-PANEL-035, UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-180
     public void executeFor(final @NotNull Project project, final @NotNull Optional<TestinEditor> editor, final @NotNull List<TestCase> testCases) {
         if (this == RUN_TEST_METHOD)
-            editor.ifPresent(openEditor -> testCases.forEach(testCase -> openEditor.launching(testCase.getId())));
+            editor.ifPresent(openEditor -> testCases.forEach(testCase -> openEditor.launching(testCase.getUuid())));
 
         execute(project, testCases);
     }

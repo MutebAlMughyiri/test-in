@@ -78,7 +78,7 @@ public class AutomateTestCaseIdeTest extends AbstractCodegenIdeTest {
         final @NotNull AutomationState state = Services.getInstance(getProject(), AutomationState.class);
         state.read(getProject(), List.of(testCase), () -> {
         });
-        Await.until("the automation state never learned the test case has a method", () -> state.hasMethod(testCase.getId()));
+        Await.until("the automation state never learned the test case has a method", () -> state.hasMethod(testCase.getUuid()));
 
         final @NotNull AnActionEvent again = updated(testCase);
         assertFalse("Automate Test Case is live for a test case whose method is already written", again.getPresentation().isEnabled());

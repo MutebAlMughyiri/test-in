@@ -91,7 +91,7 @@ public class GridEditIdeTest extends AbstractTempRootIdeTest {
     private @NotNull TestSetEditor aGridOver(final @NotNull String... descriptions) {
         testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
         for (int i = 0; i < descriptions.length; i++) {
-            final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description(descriptions[i]).order(String.format("m%04d", i)).groups(new ArrayList<>(List.of("Smoke"))).build();
+            final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description(descriptions[i]).order(String.format("m%04d", i)).groups(new ArrayList<>(List.of("Smoke"))).build();
             testCase.setParent(testSet);
             theTestCases().putTestCaseVerbatim(testSet.getPath(), testCase);
         }
@@ -104,7 +104,7 @@ public class GridEditIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull TestCase stored(final @NotNull TestCase testCase) {
-        return theTestCases().findTestCase(testCase.getId()).orElseThrow();
+        return theTestCases().findTestCase(testCase.getUuid()).orElseThrow();
     }
 
     private @NotNull List<String> everyFile() {

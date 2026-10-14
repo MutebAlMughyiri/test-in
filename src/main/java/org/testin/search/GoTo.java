@@ -52,7 +52,7 @@ public final class GoTo {
 
         // Rule-VIEW-PANEL-010
         Services.getInstance(project, TestinEditors.class).openThen(hit.node(), editor -> {
-            editor.selectWhenLoaded(testCase.getId());
+            editor.selectWhenLoaded(testCase.getUuid());
             ViewToolWindowFactory.showPanel(project, List.of(testCase), hit.node().treePath());
         });
     }

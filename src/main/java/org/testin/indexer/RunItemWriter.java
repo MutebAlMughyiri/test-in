@@ -92,7 +92,7 @@ final class RunItemWriter {
 
         final @NotNull Map<Path, byte[]> snapshots = new LinkedHashMap<>();
         for (final RunItem runItem : changed) {
-            snapshot(runItem).ifPresent(bytes -> snapshots.put(testRunPath.resolve(FileKind.RUN_ITEM.fileName(runItem.getId())), bytes));
+            snapshot(runItem).ifPresent(bytes -> snapshots.put(testRunPath.resolve(FileKind.RUN_ITEM.fileName(runItem.getUuid())), bytes));
         }
 
         queue.execute(() -> {
@@ -119,8 +119,8 @@ final class RunItemWriter {
 
     // UC-TREE-PANEL-022, Rule-INTERNAL-011
     private void removeRunItemsOf(final @NotNull Path testRunPath, final @NotNull Set<UUID> gone) {
-        for (final UUID testCaseId : gone) {
-            final @NotNull Path file = testRunPath.resolve(FileKind.RUN_ITEM.fileName(testCaseId));
+        for (final UUID testCaseUuid : gone) {
+            final @NotNull Path file = testRunPath.resolve(FileKind.RUN_ITEM.fileName(testCaseUuid));
             if (!Files.exists(file)) continue;
 
             TestinLogger.info("Removing the run item of a test case the test run no longer covers: " + file.getFileName());

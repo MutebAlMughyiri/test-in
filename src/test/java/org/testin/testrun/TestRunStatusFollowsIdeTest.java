@@ -51,7 +51,7 @@ public class TestRunStatusFollowsIdeTest extends AbstractOpenEditorsIdeTest {
         final @NotNull TestProjectNode testProject = made.testProject(root.resolve("NAFATH"));
         final @NotNull TestSetNode login = made.testSet(testProject.getTestCasesFolder(), "Login");
         testRun = made.testRun(testProject.getTestRunsFolder(), "Cycle-1");
-        Services.getInstance(getProject(), TestRuns.class).putRunItems(testRun.getPath(), new RunItems().setAll(new ArrayList<>(List.of(new RunItem().setId(made.testCase(login).getId())))));
+        Services.getInstance(getProject(), TestRuns.class).putRunItems(testRun.getPath(), new RunItems().setAll(new ArrayList<>(List.of(new RunItem().setUuid(made.testCase(login).getUuid())))));
     }
 
     private @NotNull TestRunEditor theEditor() {

@@ -93,7 +93,7 @@ public final class TestProjectIndexer {
 
     // UC-INTERNAL-002, Rule-INTERNAL-011, Rule-INTERNAL-012
     static boolean isTestCaseFile(final @NotNull Path file, final @NotNull Predicate<Path> isTestSet) {
-        return FileKind.TEST_CASE.idIn(file).isPresent() && isTestSet.test(file.getParent());
+        return FileKind.TEST_CASE.uuidIn(file).isPresent() && isTestSet.test(file.getParent());
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-013
@@ -348,7 +348,7 @@ public final class TestProjectIndexer {
 
     private void logSummary() {
         TestinLogger.info("Indexing complete: " +
-                store.getTestCasesById().size() + " test cases, " +
+                store.getTestCasesByUuid().size() + " test cases, " +
                 store.getRunItemsByPath().size() + " test runs, " +
                 store.getTestProjectsByPath().size() + " test projects, " +
                 store.getTestSetNodesByPath().size() + " test sets, " +

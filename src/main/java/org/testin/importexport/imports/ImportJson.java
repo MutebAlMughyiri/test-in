@@ -41,7 +41,7 @@ public class ImportJson {
         final @NotNull TestCase fresh = TestCase.builder().build();
 
         return read.edit()
-                .id(UUID.randomUUID())
+                .uuid(UUID.randomUUID())
                 .status(fresh.getStatus())
                 .order(fresh.getOrder())
                 .build();

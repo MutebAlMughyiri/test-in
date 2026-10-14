@@ -187,15 +187,15 @@ public class ImportFlowIdeTest extends AbstractTempRootIdeTest {
     public void testAnImportNeverOverwritesAnExistingTestCase() {
         final @NotNull TestSetNode login = new NodesOnDisk(getProject()).testSet(testProject.getTestCasesFolder(), "Login");
         final @NotNull TestCase existing = new NodesOnDisk(getProject()).testCase(login);
-        final @NotNull Path existingFile = login.getPath().resolve(existing.getId() + ".testcase");
+        final @NotNull Path existingFile = login.getPath().resolve(existing.getUuid() + ".testcase");
         final byte @NotNull [] before = bytesOf(existingFile);
-        final @NotNull TestCase sameId = existing.edit().description("a colleague's wording of the same test case").build();
+        final @NotNull TestCase sameUuid = existing.edit().description("a colleague's wording of the same test case").build();
 
-        imported(login, read(aFile("Login.json", sheets("Login", sameId))));
+        imported(login, read(aFile("Login.json", sheets("Login", sameUuid))));
 
         assertArrayEquals("the existing test case was written over", before, bytesOf(existingFile));
         assertEquals("the imported test case is not a new one", 2, indexedTestCasesIn(login.getPath()).size());
-        assertEquals(2, indexedTestCasesIn(login.getPath()).stream().map(TestCase::getId).distinct().count());
+        assertEquals(2, indexedTestCasesIn(login.getPath()).stream().map(TestCase::getUuid).distinct().count());
     }
 
     // UC-SHARE-005, Rule-SHARE-026

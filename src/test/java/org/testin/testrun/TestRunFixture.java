@@ -58,7 +58,7 @@ public record TestRunFixture(@NotNull Project project, @NotNull List<TestCase> t
         final @NotNull TestSetNode testSet = EditorFixtures.testSet(project, testProject, "Checkout");
         final @NotNull List<TestCase> made = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description("Test case number " + (i + 1)).expectedResult("It works " + (i + 1)).order(String.format("m%04d", i)).build();
+            final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description("Test case number " + (i + 1)).expectedResult("It works " + (i + 1)).order(String.format("m%04d", i)).build();
             testCase.setParent(testSet);
             Services.getInstance(project, TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase);
             made.add(testCase);
@@ -87,7 +87,7 @@ public record TestRunFixture(@NotNull Project project, @NotNull List<TestCase> t
     }
 
     public @NotNull RunItem runItemOf(final @NotNull TestCase testCase) {
-        return Services.getInstance(project, TestRuns.class).getRunItems(testRun.getPath()).runItemOf(testCase.getId()).orElseThrow();
+        return Services.getInstance(project, TestRuns.class).getRunItems(testRun.getPath()).runItemOf(testCase.getUuid()).orElseThrow();
     }
 
     public @NotNull RunItemStatus runItemStatusOf(final @NotNull TestCase testCase) {

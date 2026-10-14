@@ -253,7 +253,7 @@ public class EditorViewsIdeTest extends AbstractTempRootIdeTest {
         switchToGrid(editor);
 
         final @NotNull TestCases testCases = Services.getInstance(getProject(), TestCases.class);
-        Await.until("the half typed description was thrown away when the grid was rebuilt", () -> testCases.findTestCase(first.getId()).map(TestCase::getDescription).filter("Pay with a saved card"::equals).isPresent());
+        Await.until("the half typed description was thrown away when the grid was rebuilt", () -> testCases.findTestCase(first.getUuid()).map(TestCase::getDescription).filter("Pay with a saved card"::equals).isPresent());
     }
 
     // Rule-EDITOR-PANEL-020

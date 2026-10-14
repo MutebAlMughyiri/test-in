@@ -42,16 +42,16 @@ public class RunItemsInOrderTest {
 
     private static final @NotNull List<UUID> AS_THE_TREE_LISTS_THEM = List.of(LOGIN_FIRST, LOGIN_SECOND, CHECKOUT_FIRST);
 
-    private static @NotNull RunItem runItem(final @NotNull UUID testCaseId, final @NotNull RunItemStatus runItemStatus) {
-        return RunItem.builder().id(testCaseId).executions(List.of(RunItemExecution.builder().status(runItemStatus).build())).build();
+    private static @NotNull RunItem runItem(final @NotNull UUID testCaseUuid, final @NotNull RunItemStatus runItemStatus) {
+        return RunItem.builder().uuid(testCaseUuid).executions(List.of(RunItemExecution.builder().status(runItemStatus).build())).build();
     }
 
     private static @NotNull RunItems runItemsOf(final @NotNull RunItem... runItems) {
         return new RunItems().setAll(new ArrayList<>(List.of(runItems)));
     }
 
-    private static @NotNull List<UUID> idsOf(final @NotNull RunItems runItems) {
-        return runItems.getAll().stream().map(RunItem::getId).toList();
+    private static @NotNull List<UUID> uuidsOf(final @NotNull RunItems runItems) {
+        return runItems.getAll().stream().map(RunItem::getUuid).toList();
     }
 
     @Test
@@ -61,7 +61,7 @@ public class RunItemsInOrderTest {
                 runItem(LOGIN_SECOND, RunItemStatus.PASSED),
                 runItem(LOGIN_FIRST, RunItemStatus.PASSED));
 
-        assertEquals(idsOf(asTheFolderListedThem.inOrderOf(AS_THE_TREE_LISTS_THEM)), AS_THE_TREE_LISTS_THEM,
+        assertEquals(uuidsOf(asTheFolderListedThem.inOrderOf(AS_THE_TREE_LISTS_THEM)), AS_THE_TREE_LISTS_THEM,
                 "A test run is drawn, walked and reported test set by test set, each set in its own order, as the Create"
                         + " Test Run form lists them - never the order the folder happened to list the files in");
     }
@@ -76,7 +76,7 @@ public class RunItemsInOrderTest {
 
         final @NotNull RunItems ordered = asTheFolderListedThem.inOrderOf(AS_THE_TREE_LISTS_THEM);
 
-        assertEquals(idsOf(ordered), List.of(LOGIN_FIRST, LOGIN_SECOND, DELETED_TEST_CASE, IN_A_RETIRED_SET),
+        assertEquals(uuidsOf(ordered), List.of(LOGIN_FIRST, LOGIN_SECOND, DELETED_TEST_CASE, IN_A_RETIRED_SET),
                 "A run item whose test case is not in the tree has no place in it, so it comes after the others, in the"
                         + " order it was read, rather than being dropped or sorted among them");
         assertEquals(ordered.getAll().get(2).getStatus(), RunItemStatus.FAILED,
@@ -92,7 +92,7 @@ public class RunItemsInOrderTest {
 
         assertNotSame(ordered.getAll(), stored.getAll(),
                 "The stored list is read by the run item writer and the walk while it is ordered, so ordering never rearranges it");
-        assertEquals(idsOf(stored), List.of(CHECKOUT_FIRST, LOGIN_FIRST), "Ordering left the stored list as it was");
+        assertEquals(uuidsOf(stored), List.of(CHECKOUT_FIRST, LOGIN_FIRST), "Ordering left the stored list as it was");
         assertSame(ordered.getAll().getFirst(), login,
                 "A run item status recorded on what the editor holds must reach the stored test run, so both share each run item");
     }

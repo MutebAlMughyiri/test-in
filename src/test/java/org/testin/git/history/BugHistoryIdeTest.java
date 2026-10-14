@@ -40,11 +40,11 @@ import static org.testin.git.LocalGit.mustGit;
 
 public class BugHistoryIdeTest extends AbstractGitRemoteIdeTest {
 
-    private static final @NotNull UUID ID = UUID.fromString("77777777-7777-4777-8777-777777777397");
-    private static final @NotNull String RUN_ITEM = ID + ".runitem";
+    private static final @NotNull UUID TEST_CASE_UUID = UUID.fromString("77777777-7777-4777-8777-777777777397");
+    private static final @NotNull String RUN_ITEM = TEST_CASE_UUID + ".runitem";
 
     private static @NotNull RunItem runItem(final @NotNull RunItemStatus runItemStatus, final @NotNull BugSeverity severity) {
-        return RunItem.builder().id(ID).bugSeverity(severity).executions(List.of(RunItemExecution.builder().status(runItemStatus).actualResult("The basket was emptied").executedBy("Sara").build())).build();
+        return RunItem.builder().uuid(TEST_CASE_UUID).bugSeverity(severity).executions(List.of(RunItemExecution.builder().status(runItemStatus).actualResult("The basket was emptied").executedBy("Sara").build())).build();
     }
 
     private static @NotNull List<String> told(final @NotNull List<BugCard> bugs) {
@@ -60,9 +60,9 @@ public class BugHistoryIdeTest extends AbstractGitRemoteIdeTest {
     }
 
     private @NotNull List<BugCard> bugsOf(final @NotNull Path testProjectPath) {
-        final @NotNull Map<Path, String> now = BugHistory.runItemsNow(getProject(), ID);
+        final @NotNull Map<Path, String> now = BugHistory.runItemsNow(getProject(), TEST_CASE_UUID);
         try {
-            return ApplicationManager.getApplication().executeOnPooledThread(() -> BugHistory.addTo(History.read(List.of()), getProject(), new TestCaseFile(testProjectPath, Path.of("Test Cases", "Login", ID + ".testcase")), ID, now).bugs()).get();
+            return ApplicationManager.getApplication().executeOnPooledThread(() -> BugHistory.addTo(History.read(List.of()), getProject(), new TestCaseFile(testProjectPath, Path.of("Test Cases", "Login", TEST_CASE_UUID + ".testcase")), TEST_CASE_UUID, now).bugs()).get();
         } catch (final InterruptedException | ExecutionException ex) {
             throw new AssertionError("the bugs were never read", ex);
         }
@@ -75,7 +75,7 @@ public class BugHistoryIdeTest extends AbstractGitRemoteIdeTest {
         save("Cycle 5", runItem(RunItemStatus.PASSED, BugSeverity.MINOR));
         commitAll(work, "Cycle 3 results");
         save("Cycle 3", runItem(RunItemStatus.FAILED, BugSeverity.MAJOR));
-        save("Cycle 5", RunItem.builder().id(ID).executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).executedBy("Muteb").build())).build());
+        save("Cycle 5", RunItem.builder().uuid(TEST_CASE_UUID).executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).executedBy("Muteb").build())).build());
         commitAll(work, "Severity");
         save("Cycle 3", runItem(RunItemStatus.PASSED, BugSeverity.MAJOR));
         mustGit(work, "rm", "-q", "Test Runs/Cycle 4/" + RUN_ITEM);
@@ -87,7 +87,7 @@ public class BugHistoryIdeTest extends AbstractGitRemoteIdeTest {
         mustGit(work, "checkout", "-q", MAIN);
 
         holdsNow(work, "Cycle 3", runItem(RunItemStatus.FAILED, BugSeverity.MAJOR));
-        holdsNow(work, "Cycle 5", RunItem.builder().id(ID).executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).executedBy("Muteb").build())).build());
+        holdsNow(work, "Cycle 5", RunItem.builder().uuid(TEST_CASE_UUID).executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).executedBy("Muteb").build())).build());
 
         final @NotNull List<BugCard> bugs = bugsOf(work);
 

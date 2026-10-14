@@ -74,24 +74,24 @@ public class TreeOperationsIdeTest extends AbstractTempRootIdeTest {
     }
 
     // Rule-INTERNAL-090
-    public void testAFoldersIdIsWrittenOnceAndKept() {
+    public void testAFoldersUuidIsWrittenOnceAndKept() {
         final Path testProjectPath = root.resolve("NAFATH");
 
         final TestProjectNode testProject = create(testProjectPath);
-        final String stamped = testProject.getMarker().getId();
+        final String stamped = testProject.getMarker().getUuid();
 
-        assertFalse("a folder Testin wrote carries an id", stamped.isEmpty());
+        assertFalse("a folder Testin wrote carries a UUID", stamped.isEmpty());
         assertFalse("and so do the two containers under it",
-                nodes().readMarker(testProjectPath.resolve(NodeType.TEST_CASES_FOLDER.getFolderName()), NodeType.TEST_CASES_FOLDER, TestCasesFolderMarker.class).getId().isEmpty());
+                nodes().readMarker(testProjectPath.resolve(NodeType.TEST_CASES_FOLDER.getFolderName()), NodeType.TEST_CASES_FOLDER, TestCasesFolderMarker.class).getUuid().isEmpty());
 
         WriteAction.runAndWait(() -> {
             testProject.getMarker().setStatus(TestProjectStatus.INACTIVE);
             nodes().persistMarker(testProject);
         });
 
-        assertEquals("the id a folder has is the id it keeps",
+        assertEquals("the UUID a folder has is the UUID it keeps",
                 stamped,
-                nodes().readMarker(testProjectPath, NodeType.TEST_PROJECT, TestProjectMarker.class).getId());
+                nodes().readMarker(testProjectPath, NodeType.TEST_PROJECT, TestProjectMarker.class).getUuid());
     }
 
     public void testACreatedNodeIsOnDiskAndInTheCache() {

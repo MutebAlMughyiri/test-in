@@ -40,7 +40,7 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
 
     private static @NotNull TestCase pastedInto(final TestSetNode testSet, final TestCase cut) {
         final TestCase pasted = TestCase.builder()
-                .id(cut.getId())
+                .uuid(cut.getUuid())
                 .description(cut.getDescription())
                 .order(cut.getOrder())
                 .build()
@@ -61,7 +61,7 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
 
     private static @NotNull TestCase aTestCaseIn(final TestSetNode testSet, final String rank) {
         final TestCase testCase = TestCase.builder()
-                .id(UUID.randomUUID())
+                .uuid(UUID.randomUUID())
                 .description("Log in with a valid user")
                 .order(rank)
                 .build();
@@ -70,7 +70,7 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
     }
 
     private static @NotNull Path fileOf(final TestSetNode testSet, final TestCase testCase) {
-        return testSet.getPath().resolve(testCase.getId() + ".testcase");
+        return testSet.getPath().resolve(testCase.getUuid() + ".testcase");
     }
 
     private static byte @NotNull [] bytesOf(final @NotNull Path file) {
@@ -166,7 +166,7 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
         assertFalse("the order write said every test case landed", indexedTestCases().updateSequence(testSet.getPath(), List.of(pasted), List.of()));
 
         assertTrue("the index holds a test case whose file was never written",
-                indexedTestCases().findTestCase(pasted.getId()).isEmpty());
+                indexedTestCases().findTestCase(pasted.getUuid()).isEmpty());
         assertEquals("the test set counts a test case that is not on disk", 0, indexedTestCases().testCaseCountOf(testSet.getPath()));
     }
 
@@ -179,7 +179,7 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
         indexedTestCases().putTestCaseVerbatim(testSet.getPath(), moved);
         indexedTestCases().updateSequence(testSet.getPath(), List.of(moved), List.of());
 
-        final TestCase indexed = indexedTestCases().findTestCase(moved.getId()).orElseThrow();
+        final TestCase indexed = indexedTestCases().findTestCase(moved.getUuid()).orElseThrow();
         assertEquals("a moved test case took the paster's name as its creator", "Mohammed AlZamil", indexed.getCreatedBy());
         assertEquals("a moved test case took a new creation date", createdAt, indexed.getCreatedAt());
     }
@@ -193,7 +193,7 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
         final TestCase edited = held.edit().description("Log in with a locked user").build();
         assertTrue("the edit said it failed", indexedTestCases().putTestCase(testSet.getPath(), edited));
 
-        assertSame("the index swapped its test case for the copy, so an open editor lost it", held, indexedTestCases().findTestCase(held.getId()).orElseThrow());
+        assertSame("the index swapped its test case for the copy, so an open editor lost it", held, indexedTestCases().findTestCase(held.getUuid()).orElseThrow());
         assertEquals("the test case the index holds did not take the edit", "Log in with a locked user", held.getDescription());
     }
 
@@ -205,7 +205,7 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
 
         indexedTestCases().updateSequence(testSet.getPath(), arranged, TestCaseOrder.place(arranged));
 
-        final TestCase indexed = indexedTestCases().findTestCase(created.getId()).orElseThrow();
+        final TestCase indexed = indexedTestCases().findTestCase(created.getUuid()).orElseThrow();
         assertFalse("the order write gave the new test case no rank", indexed.getOrder().isEmpty());
         assertEquals("the order write did not stamp the new test case as created",
                 Services.getInstance(getProject(), AppSettingsState.class).testerName, indexed.getCreatedBy());
@@ -231,11 +231,11 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
         assertTrue("the moved test case was not written into its new set", Files.isRegularFile(fileOf(signUp, cut)));
         assertFalse("the moved test case's old file was left behind", Files.exists(fileOf(login, cut)));
 
-        final TestCase indexed = indexedTestCases().findTestCase(cut.getId()).orElseThrow();
+        final TestCase indexed = indexedTestCases().findTestCase(cut.getUuid()).orElseThrow();
         assertEquals("the index still files the test case under its old set", signUp.getPath(), indexed.getParent().getPath());
         assertEquals("the move took a new creator", "Mohammed AlZamil", indexed.getCreatedBy());
         assertTrue("the old set still lists the test case",
-                indexedTestCases().getTestCasesForTestSet(login.getPath()).stream().noneMatch(testCase -> testCase.getId().equals(cut.getId())));
+                indexedTestCases().getTestCasesForTestSet(login.getPath()).stream().noneMatch(testCase -> testCase.getUuid().equals(cut.getUuid())));
     }
 
     // Rule-INTERNAL-112
@@ -256,7 +256,7 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
 
         assertTrue("a refused move took the test case's file out of its set", Files.isRegularFile(fileOf(login, cut)));
         assertEquals("a refused move took the test case out of its set in the index",
-                login.getPath(), indexedTestCases().findTestCase(cut.getId()).orElseThrow().getParent().getPath());
+                login.getPath(), indexedTestCases().findTestCase(cut.getUuid()).orElseThrow().getParent().getPath());
     }
 
     // Rule-INTERNAL-112
@@ -267,11 +267,11 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
 
         undeletable(fileOf(testSet, testCase));
 
-        assertFalse("a refused delete was reported as a removal", indexedTestCases().removeTestCase(testSet.getPath(), testCase.getId()));
+        assertFalse("a refused delete was reported as a removal", indexedTestCases().removeTestCase(testSet.getPath(), testCase.getUuid()));
 
-        assertTrue("a refused delete took the test case out of the index", indexedTestCases().findTestCase(testCase.getId()).isPresent());
+        assertTrue("a refused delete took the test case out of the index", indexedTestCases().findTestCase(testCase.getUuid()).isPresent());
         assertTrue("a refused delete took the test case out of its set",
-                indexedTestCases().getTestCasesForTestSet(testSet.getPath()).stream().anyMatch(each -> each.getId().equals(testCase.getId())));
+                indexedTestCases().getTestCasesForTestSet(testSet.getPath()).stream().anyMatch(each -> each.getUuid().equals(testCase.getUuid())));
     }
 
     public void testAMoveWhoseOldFileWillNotGoLeavesTheTestCaseWhereItWas() {
@@ -287,16 +287,16 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
 
         assertFalse("the new file was left behind beside the old one", Files.exists(fileOf(signUp, cut)));
         assertEquals("the index files the test case under the set it could not leave",
-                login.getPath(), indexedTestCases().findTestCase(cut.getId()).orElseThrow().getParent().getPath());
+                login.getPath(), indexedTestCases().findTestCase(cut.getUuid()).orElseThrow().getParent().getPath());
         assertTrue("the new set lists a test case that did not arrive",
-                indexedTestCases().getTestCasesForTestSet(signUp.getPath()).stream().noneMatch(each -> each.getId().equals(cut.getId())));
+                indexedTestCases().getTestCasesForTestSet(signUp.getPath()).stream().noneMatch(each -> each.getUuid().equals(cut.getUuid())));
     }
 
     // Rule-INTERNAL-012
-    public void testATestCaseFileNotNamedByAnIdIsNotRead() {
+    public void testATestCaseFileNotNamedByAUuidIsNotRead() {
         final Path set = setWithAHandNamedTestCase();
 
-        assertTrue("a file not named by an id was read as a test case", indexedTestCases().getTestCasesForTestSet(set).isEmpty());
+        assertTrue("a file not named by a UUID was read as a test case", indexedTestCases().getTestCasesForTestSet(set).isEmpty());
         assertTrue("the file named by hand was moved or removed", Files.isRegularFile(set.resolve(HAND_NAMED)));
     }
 
@@ -356,11 +356,11 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
             assertTrue("the new test case said it failed", indexedTestCases().putTestCase(testSet.getPath(), fresh));
         });
 
-        final @NotNull TestCase edited = indexedTestCases().findTestCase(known.getId()).orElseThrow();
+        final @NotNull TestCase edited = indexedTestCases().findTestCase(known.getUuid()).orElseThrow();
         assertEquals("a save of a test case the index knows took a new creator", "Mohammed AlZamil", edited.getCreatedBy());
         assertEquals("a save of a test case the index knows did not record who changed it", "Muteb AlMughyiri", edited.getUpdatedBy());
 
-        final @NotNull TestCase created = indexedTestCases().findTestCase(fresh.getId()).orElseThrow();
+        final @NotNull TestCase created = indexedTestCases().findTestCase(fresh.getUuid()).orElseThrow();
         assertEquals("a save of a test case the index has never seen was not stamped as created", "Muteb AlMughyiri", created.getCreatedBy());
         assertEquals("a save of a test case the index has never seen was recorded as a change", "", created.getUpdatedBy());
     }

@@ -75,9 +75,9 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
 
         if (!field.can(Can.EDIT)) return GridEdit.UNCHANGED;
 
-        final @NotNull Optional<Changed> pending = Optional.ofNullable(changedThisGesture.get(testCase.getId()));
+        final @NotNull Optional<Changed> pending = Optional.ofNullable(changedThisGesture.get(testCase.getUuid()));
         final @NotNull TestCaseSnapshot undoFrom = pending.map(Changed::before)
-                .orElseGet(() -> TestCaseSnapshot.of(project, testSetPath, List.of(testCase.getId())));
+                .orElseGet(() -> TestCaseSnapshot.of(project, testSetPath, List.of(testCase.getUuid())));
         final @NotNull TestCase current = pending.map(Changed::testCase).orElse(testCase);
 
         final @NotNull String typed = String.valueOf(model.getValueAt(row, column));
@@ -109,11 +109,11 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
         }
 
         final boolean first = changedThisGesture.isEmpty();
-        final @NotNull Set<CodeChangeType<TestCase>> generators = Optional.ofNullable(changedThisGesture.get(edited.getId()))
+        final @NotNull Set<CodeChangeType<TestCase>> generators = Optional.ofNullable(changedThisGesture.get(edited.getUuid()))
                 .map(Changed::generators)
                 .orElseGet(LinkedHashSet::new);
         generators.add(field.getCodeChangeType());
-        changedThisGesture.put(edited.getId(), new Changed(edited, undoFrom, generators));
+        changedThisGesture.put(edited.getUuid(), new Changed(edited, undoFrom, generators));
 
         if (first) ApplicationManager.getApplication().invokeLater(this::saveTheGesture);
     }
@@ -140,7 +140,7 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
             if (written.isEmpty()) return;
 
             TestCaseSnapshot.record(project, UndoScope.of(testSetPath), TestCaseSnapshot.describe(Bundle.message("snapshot.verb.edit"), written),
-                    before, List.of(TestCaseSnapshot.of(project, testSetPath, TestCaseSnapshot.idsOf(written))));
+                    before, List.of(TestCaseSnapshot.of(project, testSetPath, TestCaseSnapshot.uuidsOf(written))));
         });
     }
 }

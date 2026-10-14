@@ -108,7 +108,7 @@ public class ReadProblemsIdeTest extends AbstractReadTheRootIdeTest {
         final @NotNull Path login = marked(theTestCasesOf(theTestProject()).resolve("Login"), NodeType.TEST_SET);
         final @NotNull Path signUp = marked(theTestCasesOf(theTestProject()).resolve("Sign up"), NodeType.TEST_SET);
         final @NotNull UUID shared = aTestCaseIn(login);
-        SyntheticTree.write(signUp.resolve(FileKind.TEST_CASE.fileName(shared)), SyntheticTree.testCase(shared, "m"));
+        SyntheticTree.write(signUp.resolve(FileKind.TEST_CASE.fileName(shared)), SyntheticTree.testCase("m"));
 
         readEverything();
 
@@ -118,21 +118,21 @@ public class ReadProblemsIdeTest extends AbstractReadTheRootIdeTest {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-012
-    public void testATestCaseNotNamedByAnIdIsNotReadAndIsNamed() {
+    public void testATestCaseNotNamedByAUuidIsNotReadAndIsNamed() {
         final @NotNull Path testSet = marked(theTestCasesOf(theTestProject()).resolve("Login"), NodeType.TEST_SET);
         final @NotNull UUID named = aTestCaseIn(testSet);
-        SyntheticTree.write(testSet.resolve("login.testcase"), SyntheticTree.testCase(UUID.randomUUID(), "m"));
+        SyntheticTree.write(testSet.resolve("login.testcase"), SyntheticTree.testCase("m"));
 
         readEverything();
 
-        assertEquals("the test cases read are not exactly the one named by its id", List.of(named), indexedTestCases().getTestCasesForTestSet(testSet).stream().map(TestCase::getId).toList());
+        assertEquals("the test cases read are not exactly the one named by its UUID", List.of(named), indexedTestCases().getTestCasesForTestSet(testSet).stream().map(TestCase::getUuid).toList());
 
         final @NotNull List<String> warned = said(Bundle.message("indexer.test.cases.unnamed.title", TEST_PROJECT));
-        assertTrue("the test case file not named by an id was not named in a warning: " + warned, names(warned, "Login/login.testcase"));
+        assertTrue("the test case file not named by a UUID was not named in a warning: " + warned, names(warned, "Login/login.testcase"));
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-094
-    public void testARunItemNotNamedByATestCaseIdIsNotReadAndIsNamed() {
+    public void testARunItemNotNamedByATestCaseUuidIsNotReadAndIsNamed() {
         final @NotNull Path testRun = marked(theTestRunsOf(theTestProject()).resolve("Cycle 1"), NodeType.TEST_RUN);
         final @NotNull UUID named = UUID.randomUUID();
         runItemIn(testRun, FileKind.RUN_ITEM.fileName(named));
@@ -141,11 +141,11 @@ public class ReadProblemsIdeTest extends AbstractReadTheRootIdeTest {
         readEverything();
 
         final @NotNull List<UUID> read = Services.getInstance(getProject(), TestRuns.class).getRunItems(testRun).getAll().stream()
-                .map(RunItem::getId)
+                .map(RunItem::getUuid)
                 .toList();
-        assertEquals("the results read are not exactly the one named by its test case id", List.of(named), read);
+        assertEquals("the run items read are not exactly the one named by its test case UUID", List.of(named), read);
 
         final @NotNull List<String> warned = said(Bundle.message("indexer.run.items.unnamed.title", TEST_PROJECT));
-        assertTrue("the result file not named by a test case id was not named in a warning: " + warned, names(warned, "by hand.runitem"));
+        assertTrue("the run item file not named by a test case UUID was not named in a warning: " + warned, names(warned, "by hand.runitem"));
     }
 }

@@ -61,13 +61,13 @@ public class EditTestRunSaveIdeTest extends AbstractTempRootIdeTest {
         });
 
         indexedTestRuns().putRunItems(testRun.getPath(), new RunItems().setAll(List.of(
-                new RunItem().setId(JUDGED_WHILE_OPEN),
-                new RunItem().setId(STILL_PENDING))));
+                new RunItem().setUuid(JUDGED_WHILE_OPEN),
+                new RunItem().setUuid(STILL_PENDING))));
         return testRun;
     }
 
-    private @NotNull RunItemStatus runItemStatusOf(final @NotNull TestRunNode testRun, final @NotNull UUID testCaseId) {
-        return indexedTestRuns().getRunItems(testRun.getPath()).runItemOf(testCaseId).map(RunItem::shownExecution).map(RunItemExecution::getStatus).orElse(RunItemStatus.REMOVED);
+    private @NotNull RunItemStatus runItemStatusOf(final @NotNull TestRunNode testRun, final @NotNull UUID testCaseUuid) {
+        return indexedTestRuns().getRunItems(testRun.getPath()).runItemOf(testCaseUuid).map(RunItem::shownExecution).map(RunItemExecution::getStatus).orElse(RunItemStatus.REMOVED);
     }
 
     private boolean save(final @NotNull TestRunNode testRun) {
@@ -94,7 +94,7 @@ public class EditTestRunSaveIdeTest extends AbstractTempRootIdeTest {
         testRun.getMarker().changeStatus(testRunStatus);
 
         assertFalse("a " + testRunStatus + " test run took an edit", save(testRun));
-        assertEquals("a " + testRunStatus + " test run changed what it covers", Set.of(JUDGED_WHILE_OPEN, STILL_PENDING), indexedTestRuns().getRunItems(testRun.getPath()).coveredIds());
+        assertEquals("a " + testRunStatus + " test run changed what it covers", Set.of(JUDGED_WHILE_OPEN, STILL_PENDING), indexedTestRuns().getRunItems(testRun.getPath()).coveredUuids());
     }
 
     // Rule-TREE-PANEL-009, Rule-TREE-PANEL-073

@@ -74,10 +74,10 @@ public class UpdateOneFieldIdeTest extends AbstractTempRootIdeTest {
         if (testSet.getPath().toString().isEmpty())
             testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
 
-        final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description(description).expectedResult(expectedResult).order("m" + description.length()).build();
+        final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description(description).expectedResult(expectedResult).order("m" + description.length()).build();
         testCase.setParent(testSet);
         theTestCases().putTestCaseVerbatim(testSet.getPath(), testCase);
-        return theTestCases().findTestCase(testCase.getId()).orElseThrow();
+        return theTestCases().findTestCase(testCase.getUuid()).orElseThrow();
     }
 
     private @NotNull UpdateTestCaseDialog shown(final @NotNull TestCase testCase, final @NotNull UpdateTestCaseFields field) {
@@ -93,14 +93,14 @@ public class UpdateOneFieldIdeTest extends AbstractTempRootIdeTest {
     private @NotNull TestSetEditor anEditorSelecting(final @NotNull TestCase testCase) {
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         for (int i = 0; i < editor.getList().getModel().getSize(); i++)
-            if (editor.getList().getModel().getElementAt(i).getId().equals(testCase.getId()))
+            if (editor.getList().getModel().getElementAt(i).getUuid().equals(testCase.getUuid()))
                 editor.getList().setSelectedIndex(i);
         return editor;
     }
 
     private @NotNull String fileOf(final @NotNull TestCase testCase) {
         try (final Stream<Path> files = Files.list(testSet.getPath())) {
-            final @NotNull Path file = files.filter(candidate -> candidate.getFileName().toString().startsWith(testCase.getId().toString())).findFirst().orElseThrow(() -> new AssertionError("no file holds " + testCase.getDescription()));
+            final @NotNull Path file = files.filter(candidate -> candidate.getFileName().toString().startsWith(testCase.getUuid().toString())).findFirst().orElseThrow(() -> new AssertionError("no file holds " + testCase.getDescription()));
             return Files.readString(file) + "@" + file.toFile().lastModified();
         } catch (final IOException ex) {
             throw new AssertionError("the test set could not be read", ex);
@@ -177,11 +177,11 @@ public class UpdateOneFieldIdeTest extends AbstractTempRootIdeTest {
             theOpenField().setText("The dashboard opens");
             save();
             Await.until("the update never reached the undo history", () -> Services.getInstance(getProject(), UndoHistories.class).canUndo(scope));
-            assertEquals("the update did not record who changed the test case", "Sara", theTestCases().findTestCase(testCase.getId()).orElseThrow().getUpdatedBy());
+            assertEquals("the update did not record who changed the test case", "Sara", theTestCases().findTestCase(testCase.getUuid()).orElseThrow().getUpdatedBy());
 
             assertTrue("the update could not be taken back", Services.getInstance(getProject(), UndoHistories.class).undo(scope));
 
-            assertEquals("undo did not put the test case back exactly", original, mapper.writeValueAsString(theTestCases().findTestCase(testCase.getId()).orElseThrow()));
+            assertEquals("undo did not put the test case back exactly", original, mapper.writeValueAsString(theTestCases().findTestCase(testCase.getUuid()).orElseThrow()));
         } finally {
             settings.testerName = tester;
         }

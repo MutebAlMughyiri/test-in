@@ -66,7 +66,7 @@ public class NavigateToTestCaseIdeTest extends AbstractCodegenIdeTest {
         for (final AnAction entry : menu.getChildren(ActionManager.getInstance())) {
             if (entry instanceof Separator) continue;
             final @NotNull AnAction own = entry instanceof final AnActionWrapper wrapper ? wrapper.getDelegate() : entry;
-            names.add(Objects.requireNonNullElse(ActionManager.getInstance().getId(own), Objects.requireNonNullElse(own.getTemplatePresentation().getText(), "")));
+            names.add(Objects.requireNonNullElse(ActionManager.getInstance().getUuid(own), Objects.requireNonNullElse(own.getTemplatePresentation().getText(), "")));
         }
         return names;
     }
@@ -97,7 +97,7 @@ public class NavigateToTestCaseIdeTest extends AbstractCodegenIdeTest {
             Await.until("the test case's own test set did not open in the test set editor", () -> editors.editorFor(testSet).filter(TestSetEditor.class::isInstance).isPresent());
             final @NotNull TestSetEditor opened = (TestSetEditor) editors.editorFor(testSet).orElseThrow();
             assertEquals("a test set other than the test case's own opened", List.of(testSet.getPath().toAbsolutePath()), editors.openNodePaths());
-            Await.until("the test case was not selected in its test set", () -> Optional.ofNullable(opened.getList().getSelectedValue()).map(TestCase::getId).filter(testCases.get(1).getId()::equals).isPresent());
+            Await.until("the test case was not selected in its test set", () -> Optional.ofNullable(opened.getList().getSelectedValue()).map(TestCase::getUuid).filter(testCases.get(1).getUuid()::equals).isPresent());
         } finally {
             Disposer.dispose(testRun);
             editors.closeAll();
@@ -122,7 +122,7 @@ public class NavigateToTestCaseIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-EDITOR-PANEL-236
     public void testATestCaseInNoTestSetIsRefusedAndNothingOpens() {
-        final @NotNull TestRunEditor testRun = aTestRunEditorOver(List.of(new RunItem().setId(UUID.randomUUID())));
+        final @NotNull TestRunEditor testRun = aTestRunEditorOver(List.of(new RunItem().setUuid(UUID.randomUUID())));
         final @NotNull List<String> balloons = Said.listening(getProject(), getTestRootDisposable()).shown();
         try {
             testRun.getList().setSelectedIndex(0);
@@ -145,7 +145,7 @@ public class NavigateToTestCaseIdeTest extends AbstractCodegenIdeTest {
         final @NotNull AutomationState state = Services.getInstance(getProject(), AutomationState.class);
         state.read(getProject(), testCases, () -> {
         });
-        Await.until("the automation state never arrived", () -> state.of(testCases.getFirst().getId()) != Automated.UNKNOWN);
+        Await.until("the automation state never arrived", () -> state.of(testCases.getFirst().getUuid()) != Automated.UNKNOWN);
 
         assertEquals(TO_THE_TEST_CASE, navigateToTestCase().getTemplatePresentation().getText());
         assertEquals(TO_THE_METHOD, ActionManager.getInstance().getAction("Testin.NavigateToTestMethod").getTemplatePresentation().getText());

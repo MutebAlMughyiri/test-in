@@ -50,7 +50,7 @@ public class RunItemCard extends AbstractCard {
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-267
     public void updateData(final @NotNull Integer index, final @NotNull Set<TestRunEditorFields> activeDetails, final @NotNull RunItem runItem, final @NotNull String title) {
-        this.automation = automationState.of(runItem.getId());
+        this.automation = automationState.of(runItem.getUuid());
         this.priority = activeDetails.contains(TestRunEditorFields.PRIORITY) ? runItem.shownTestCase().getPriority() : Priority.DEFAULT;
 
         badges.clear();

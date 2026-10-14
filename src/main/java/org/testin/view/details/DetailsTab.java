@@ -74,7 +74,7 @@ public class DetailsTab {
                 new FieldRow(TestSetEditorFields.TEST_DATA.getName(), (_, testCase) -> TestSetEditorFields.TEST_DATA.displayValue(testCase)),
                 new FieldRow(TestSetEditorFields.REFERENCE.getName(), (_, testCase) -> TestSetEditorFields.REFERENCE.displayValue(testCase)),
                 new FieldRow(TestSetEditorFields.MODULE.getName(), (_, testCase) -> TestSetEditorFields.MODULE.displayValue(testCase)),
-                new FieldRow(TestSetEditorFields.ORDER.getName(), (project, testCase) -> TestCaseOrder.placeText(ExecutionPosition.placesOf(project, List.of(testCase)).getOrDefault(testCase.getId(), 0))),
+                new FieldRow(TestSetEditorFields.ORDER.getName(), (project, testCase) -> TestCaseOrder.placeText(ExecutionPosition.placesOf(project, List.of(testCase)).getOrDefault(testCase.getUuid(), 0))),
                 new FieldRow(Bundle.message("details.created"), (_, testCase) -> Display.whoAndWhen(testCase.getCreatedBy(), testCase.getCreatedAt())),
                 new FieldRow(Bundle.message("details.updated"), (_, testCase) -> Display.whoAndWhen(testCase.getUpdatedBy(), testCase.getUpdatedAt())));
     }

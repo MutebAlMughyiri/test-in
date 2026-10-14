@@ -29,7 +29,7 @@
     │   │   └── .testsetpackage
     │   └── ts2/                  a test set
     │       ├── .testset
-    │       └── 4fd2a19b-….testcase     one test case, named by its id
+    │       └── 4fd2a19b-….testcase     one test case, named by its UUID
     └── Test Runs/
         ├── .testrunsfolder                  the Test Runs directory marker
         ├── Cycles/               a test run package
@@ -71,14 +71,14 @@ Every marker shares the same six fields, from `AbstractMarker`, and most add a
 
 ### Shared by all seven
 
-| Field       | Type        | Required                    | Meaning                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-|-------------|-------------|-----------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `id`        | UUID string | no, **omitted while empty** | The folder's own id. Stamped the first time Testin writes the marker and never changed after — not by a rename, a move, a status or an order change, or a merge — and fresh on a copied folder, because a copy is another folder. A marker written before ids has none and is stamped the next time anything writes it. One marker writer stamps them, and it refuses to write over a marker file that is there and will not parse, so a damaged marker is left for the tester to repair rather than replaced by defaults with an id on top (Rule-INTERNAL-083). Nothing in the plugin reads the id: it names a test project, a test set or a test run for a tool outside the IDE (Rule-INTERNAL-090) |
-| `order`     | integer     | no                          | Where the node sits among its siblings. **Omitted entirely when the node is unordered**, which is `Integer.MAX_VALUE` in memory — an absent `order` is normal, not a defect                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `createdBy` | string      | no, defaults `""`           | The tester's name as the settings hold it                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| `createdAt` | date        | no, defaults to now         | When the directory was made                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `updatedBy` | string      | no, defaults `""`           | Who last changed it                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `updatedAt` | date        | no, defaults to the epoch   | When it last changed                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Field       | Type        | Required                    | Meaning                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+|-------------|-------------|-----------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `uuid`      | UUID string | no, **omitted while empty** | The folder's own UUID. Stamped the first time Testin writes the marker and never changed after — not by a rename, a move, a status or an order change, or a merge — and fresh on a copied folder, because a copy is another folder. A marker written before UUIDs has none and is stamped the next time anything writes it. One marker writer stamps them, and it refuses to write over a marker file that is there and will not parse, so a damaged marker is left for the tester to repair rather than replaced by defaults with a UUID on top (Rule-INTERNAL-083). Nothing in the plugin reads the UUID: it names a test project, a test set or a test run for a tool outside the IDE (Rule-INTERNAL-090) |
+| `order`     | integer     | no                          | Where the node sits among its siblings. **Omitted entirely when the node is unordered**, which is `Integer.MAX_VALUE` in memory — an absent `order` is normal, not a defect                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `createdBy` | string      | no, defaults `""`           | The tester's name as the settings hold it                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `createdAt` | date        | no, defaults to now         | When the directory was made                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `updatedBy` | string      | no, defaults `""`           | Who last changed it                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `updatedAt` | date        | no, defaults to the epoch   | When it last changed                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 
 **A blank `updatedBy` reads back as `createdBy`, and a blank `updatedAt` as
 `createdAt`** — a node that was never modified was last touched when it was
@@ -105,7 +105,7 @@ precedence, and nothing else may ask in a different order.
 
 ```json
 {
-  "id" : "8c1f0f2e-6a44-4a31-9f0b-5b2a7c4e91d3",
+  "uuid" : "8c1f0f2e-6a44-4a31-9f0b-5b2a7c4e91d3",
   "createdBy" : "Mohammed AlZamil",
   "createdAt" : "Wednesday 02-09-2026 At 23:29:16 [Asia/Riyadh]",
   "updatedBy" : "Mohammed AlZamil",
@@ -130,7 +130,7 @@ own file:
 
 ```json
 {
-  "id" : "b7d3a5c1-2e48-4f6a-8d09-1c5b7e2a4f80",
+  "uuid" : "b7d3a5c1-2e48-4f6a-8d09-1c5b7e2a4f80",
   "createdBy" : "Mohammed AlZamil",
   "createdAt" : "Sunday 13-09-2026 At 09:00:00 [Asia/Riyadh]",
   "updatedBy" : "Mohammed AlZamil",
@@ -152,10 +152,10 @@ a test set is a test case file** (Rule-INTERNAL-011); a `.testcase` sitting in
 JSON; the name says what the JSON is, so nothing has to look inside to find
 out.
 
-Testin writes the file as `<test case id>.testcase`, and the name is the test
+Testin writes the file as `<test case UUID>.testcase`, and the name is the test
 case's identity: the file does not write it (Rule-INTERNAL-012). A `.testcase`
-whose name is not an id, `login.testcase` written by hand for one, is not read,
-and a warning names it. The id is what a test run's run item points at, and
+whose name is not a UUID, `login.testcase` written by hand for one, is not read,
+and a warning names it. The UUID is what a test run's run item points at, and
 that run item's file carries the same name.
 
 | Field                     | Type             | Required               | Meaning                                                                                     |
@@ -212,10 +212,10 @@ on each test case and nothing else.
 
 ---
 
-## A run item — `<test case id>.runitem`
+## A run item — `<test case UUID>.runitem`
 
 One file per test case the test run covers, inside the test run's folder, beside
-its `.testrun`. A test case appears in a test run once, so the test case's id is the
+its `.testrun`. A test case appears in a test run once, so the test case's UUID is the
 file's name and two testers adding the same test case offline write the same
 file rather than two.
 
@@ -238,9 +238,9 @@ asked to lose. Writing a run item status writes the one file it is about, so two
 testers judging different test cases of one test run never touch the same file.
 
 **A run item is known by its file name** (Rule-INTERNAL-094). A `.runitem` whose name
-is not a test case id, `login-result.runitem` renamed by hand for one, is not read:
+is not a test case UUID, `login-result.runitem` renamed by hand for one, is not read:
 the scan names it in a warning, and nothing writes a second file for it.
-Renamed to its test case's id, it is read again at the next Refresh.
+Renamed to its test case's UUID, it is read again at the next Refresh.
 
 The screenshots a failure names sit in the same folder, one PNG each, named by
 five random lowercase letters and digits that no run item of the test run already
@@ -374,15 +374,15 @@ Format 4 keeps every execution of a run item: the top-level `status`,
 
 Format 5 names every file in full words, as the code names what it holds:
 `.tp`, `.ts`, `.tr` and the other markers became `.testproject`, `.testset`,
-`.testrun` and the rest, a test case `<id>.testcase` and a run item
-`<id>.runitem` (#427). A folder written in format 4 or earlier holds no
+`.testrun` and the rest, a test case `<uuid>.testcase` and a run item
+`<uuid>.runitem` (#427). A folder written in format 4 or earlier holds no
 `.testproject`, so it is not a test project (Rule-INTERNAL-003): it is not shown,
 not read and not touched. A run item says its status in every case: before the
 first run item status it holds one open execution, `PENDING` or `UNTESTED`, and
 `default` names the execution that counts. `untested`, `clock`,
 `unrecordedActualResult`, `retried`, `parameters` and an execution's `default`
-flag are gone, and neither a test case file nor a run item file writes `id`:
-the file name is the id (#432).
+flag are gone, and neither a test case file nor a run item file writes its UUID:
+the file name is the UUID (#432).
 
 **The project says which format its files are in**, in its `.testproject`: `format`, and
 5 is the format this page describes. A project without the number, or with a

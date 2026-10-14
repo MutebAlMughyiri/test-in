@@ -93,11 +93,11 @@ Select several test cases, then `F2` or the field's own letter.
 ├──────────────────────────────────┬─────────────────────────────────────────┤
 │ 1  [                             │ 1  [                                    │
 │ 2    {                           │ 2    {                                  │
-│ 3      "id": "3f2a...",          │ 3      "id": "3f2a...",                 │
+│ 3      "uuid": "3f2a...",        │ 3      "uuid": "3f2a...",               │
 │ 4      "description": "Log in"   │ 4      "description": "Sign in"         │
 │ 5    },                          │ 5    },                                 │
 │ 6    {                           │ 6    {                                  │
-│ 7      "id": "8b44...",          │ 7      "id": "8b44...",                 │
+│ 7      "uuid": "8b44...",        │ 7      "uuid": "8b44...",               │
 │ 8      "description": "Log out"  │ 8      "description": "Log out"         │
 │ 9    }                           │ 9    }                                  │
 │10  ]                             │10  ]                                    │

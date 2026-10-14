@@ -31,7 +31,7 @@ import static org.testng.Assert.assertTrue;
 public class EditorPagingTest {
 
     private static @NotNull List<TestCase> twentyFiveTestCases() {
-        return IntStream.range(0, 25).mapToObj(_ -> TestCase.builder().id(UUID.randomUUID()).build()).toList();
+        return IntStream.range(0, 25).mapToObj(_ -> TestCase.builder().uuid(UUID.randomUUID()).build()).toList();
     }
 
     // Rule-EDITOR-PANEL-101
@@ -75,7 +75,7 @@ public class EditorPagingTest {
         final @NotNull List<TestCase> all = twentyFiveTestCases();
         final @NotNull EditorPaging paging = new EditorPaging(10);
 
-        assertTrue(paging.turnToPageHolding(all.get(14).getId(), all), "the page holding the test case was not turned to");
+        assertTrue(paging.turnToPageHolding(all.get(14).getUuid(), all), "the page holding the test case was not turned to");
         assertEquals(paging.getPage(), 2);
         assertFalse(paging.turnToPageHolding(UUID.randomUUID(), all), "a test case on no page turned the page");
         assertEquals(paging.getPage(), 2, "a test case on no page moved the page");

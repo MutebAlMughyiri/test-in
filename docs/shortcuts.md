@@ -80,7 +80,7 @@ On the cards of a test set editor.
 |---------------------------------------------|-------------------------------------------------|
 | `Ctrl+M`, `Ctrl+Alt+Cmd+M` on a Mac         | Creates a test case                             |
 | `F2`                                        | Opens the menu of fields to change              |
-| `D` `E` `M` `T` `B` `S` `P` `G` `O` `R` `U` | Opens that one field straight away              |
+| `D` `E` `M` `T` `B` `S` `P` `G` `O` `R` `Z` | Opens that one field straight away              |
 | `Enter`                                     | Inside the F2 menu, takes the highlighted field |
 
 ## The editor panel: executing a test run
@@ -271,8 +271,8 @@ particular thing is on screen.
 
 | Keys                                                                    | Where                                          | Why they stay                                                                                                                                                                       |
 |-------------------------------------------------------------------------|------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `D` `E` `M` `T` `B` `S` `P` `G` `O` `R` `U`                             | The update menu, and a selected card           | Bare letters that stand for a field. They mean nothing outside a test case, and in the Keymap they would answer while a tester types                                                |
-| `A` `D` `E` `S` `B` `T` `P` `M` `G` `U` `R` `F` `I` `H`                 | The copy menu                                  | The same, for the fourteen values a copy can take                                                                                                                                   |
+| `D` `E` `M` `T` `B` `S` `P` `G` `O` `R` `Z`                             | The update menu, and a selected card           | Bare letters that stand for a field. They mean nothing outside a test case, and in the Keymap they would answer while a tester types                                                |
+| `A` `D` `E` `S` `B` `T` `P` `M` `G` `Z` `R` `F` `U` `H`                 | The copy menu                                  | The same, for the fourteen values a copy can take                                                                                                                                   |
 | `1` `2` `3`                                                             | The test run status popup                      | Numbers standing for the three test run statuses, live only while that popup is open                                                                                                |
 | `Ctrl+D` `Ctrl+E` `Ctrl+M` `Ctrl+S` `Ctrl+T` `Ctrl+B` `Ctrl+G` `Ctrl+P` | The create and update test case dialogs        | Each opens one field of the dialog in front of the tester. Outside it there is no field to open. The top of this page names their Mac keys                                          |
 | `Tab` `Shift+Tab` `Up` `Down` `Space`                                   | Any dialog                                     | Moving between fields and choices is the platform's own gesture, not a command                                                                                                      |

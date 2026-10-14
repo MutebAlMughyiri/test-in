@@ -55,9 +55,9 @@ public class TestCaseCard extends AbstractCard {
         badges.clear();
         details.clear();
 
-        this.isPendingCut = cutState.isPending(testCase.getId());
+        this.isPendingCut = cutState.isPending(testCase.getUuid());
 
-        this.automation = automationState.of(testCase.getId());
+        this.automation = automationState.of(testCase.getUuid());
         this.priority = activeDetails.contains(TestSetEditorFields.PRIORITY) ? testCase.getPriority() : Priority.DEFAULT;
 
         Arrays.stream(TestSetEditorFields.values())

@@ -60,8 +60,8 @@ public final class TestRunFromGit {
                     testRuns.findRunItems(testRunPath).ifPresent(testRun -> {
                         final @NotNull String revision = recordedRevision(git, testProject, testRunPath, testRuns.commitOf(testRunPath));
                         testRuns.rememberRecordedAt(testRunPath, revision);
-                        readTheCommit(project, git, testProject, revision, testRun.coveredIds());
-                        readTheDeleted(project, git, testProject, testRun.getAll().stream().filter(RunItem::isRemoved).map(RunItem::getId).toList());
+                        readTheCommit(project, git, testProject, revision, testRun.coveredUuids());
+                        readTheDeleted(project, git, testProject, testRun.getAll().stream().filter(RunItem::isRemoved).map(RunItem::getUuid).toList());
                     });
                 });
     }
@@ -94,11 +94,11 @@ public final class TestRunFromGit {
     }
 
     // Rule-EDITOR-PANEL-239
-    private static void readTheCommit(final @NotNull Project project, final @NotNull GitRepositoryService git, final @NotNull Path testProjectPath, final @NotNull String commit, final @NotNull Set<UUID> testCaseIds) {
+    private static void readTheCommit(final @NotNull Project project, final @NotNull GitRepositoryService git, final @NotNull Path testProjectPath, final @NotNull String commit, final @NotNull Set<UUID> testCaseUuids) {
         final @NotNull TestRuns testRuns = Services.getInstance(project, TestRuns.class);
         if (commit.isEmpty()) return;
 
-        final @NotNull Set<UUID> unread = testRuns.notReadFrom(commit, testCaseIds);
+        final @NotNull Set<UUID> unread = testRuns.notReadFrom(commit, testCaseUuids);
         if (unread.isEmpty()) return;
 
         final @NotNull Map<String, UUID> wanted = unread.stream().collect(Collectors.toMap(FileKind.TEST_CASE::fileName, Function.identity()));
@@ -109,9 +109,9 @@ public final class TestRunFromGit {
             final @NotNull Map<String, String> files = git.contents(testProjectPath, commit, listed);
 
             final @NotNull Map<UUID, Optional<TestCase>> testCases = new HashMap<>();
-            wanted.values().forEach(testCaseId -> testCases.put(testCaseId, Optional.empty()));
+            wanted.values().forEach(testCaseUuid -> testCases.put(testCaseUuid, Optional.empty()));
             listed.forEach(path -> testCases.remove(wanted.get(fileName(path))));
-            files.forEach((path, json) -> Optional.ofNullable(wanted.get(fileName(path))).ifPresent(testCaseId -> testCases.put(testCaseId, parsed(project, json, testCaseId))));
+            files.forEach((path, json) -> Optional.ofNullable(wanted.get(fileName(path))).ifPresent(testCaseUuid -> testCases.put(testCaseUuid, parsed(project, json, testCaseUuid))));
             testRuns.rememberRecorded(commit, testCases);
         } catch (final GitFailed ex) {
             TestinLogger.info("The test cases of commit " + commit + " could not be read, so the test cases are shown as they are now: " + FailureText.of(ex));
@@ -125,12 +125,12 @@ public final class TestRunFromGit {
         final @NotNull Map<String, UUID> wanted = deleted.stream().collect(Collectors.toMap(FileKind.TEST_CASE::fileName, Function.identity()));
         try {
             final @NotNull Map<String, UUID> lastVersions = lastVersions(git.log(testProjectPath, Stream.concat(Stream.of(FORMAT, "--name-status", "--"),
-                    deleted.stream().map(testCaseId -> BugHistory.pathspec(NodeType.TEST_CASES_FOLDER, FileKind.TEST_CASE, testCaseId))).toArray(String[]::new)), wanted);
+                    deleted.stream().map(testCaseUuid -> BugHistory.pathspec(NodeType.TEST_CASES_FOLDER, FileKind.TEST_CASE, testCaseUuid))).toArray(String[]::new)), wanted);
             if (lastVersions.isEmpty()) return;
 
             final @NotNull Map<UUID, TestCase> testCases = new HashMap<>();
             git.objects(testProjectPath, List.copyOf(lastVersions.keySet())).forEach((objectName, json) ->
-                    Optional.ofNullable(lastVersions.get(objectName)).ifPresent(testCaseId -> parsed(project, json, testCaseId).ifPresent(testCase -> testCases.put(testCaseId, testCase))));
+                    Optional.ofNullable(lastVersions.get(objectName)).ifPresent(testCaseUuid -> parsed(project, json, testCaseUuid).ifPresent(testCase -> testCases.put(testCaseUuid, testCase))));
             Services.getInstance(project, TestRuns.class).rememberLastInGit(testCases);
         } catch (final GitFailed ex) {
             TestinLogger.info("The deleted test cases could not be read from Git, so they show as deleted: " + FailureText.of(ex));
@@ -147,15 +147,15 @@ public final class TestRunFromGit {
             lines.stream().skip(1).map(line -> line.split("\t")).forEach(change -> {
                 final @NotNull String path = change[change.length - 1];
                 Optional.ofNullable(wanted.get(fileName(path)))
-                        .filter(testCaseId -> !found.containsValue(testCaseId))
-                        .ifPresent(testCaseId -> found.put((change[0].startsWith(DELETED) ? hash + "^" : hash) + ":" + path, testCaseId));
+                        .filter(testCaseUuid -> !found.containsValue(testCaseUuid))
+                        .ifPresent(testCaseUuid -> found.put((change[0].startsWith(DELETED) ? hash + "^" : hash) + ":" + path, testCaseUuid));
             });
         }
         return found;
     }
 
-    private static @NotNull Optional<TestCase> parsed(final @NotNull Project project, final @NotNull String json, final @NotNull UUID testCaseId) {
-        return TestCaseHistory.parsed(Services.getInstance(project, JsonCodec.class), json, testCaseId);
+    private static @NotNull Optional<TestCase> parsed(final @NotNull Project project, final @NotNull String json, final @NotNull UUID testCaseUuid) {
+        return TestCaseHistory.parsed(Services.getInstance(project, JsonCodec.class), json, testCaseUuid);
     }
 
     private static @NotNull String fileName(final @NotNull String path) {

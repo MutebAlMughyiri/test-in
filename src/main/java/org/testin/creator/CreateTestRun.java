@@ -83,7 +83,7 @@ public class CreateTestRun implements NodeCreator {
     public void configureTestRun(final @NotNull AbstractNode testCasesRoot, final @NotNull String name, final @NotNull AbstractNode parentNode, final @NotNull Set<UUID> sourceTestCases, final @NotNull Map<TestRunConfiguration, String> sourceConfiguration) {
         final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
         final @NotNull Set<UUID> enabled = sourceTestCases.stream()
-                .filter(testCaseId -> testCases.findTestCase(testCaseId).map(testCase -> testCase.getStatus().isEnabled()).orElse(true))
+                .filter(testCaseUuid -> testCases.findTestCase(testCaseUuid).map(testCase -> testCase.getStatus().isEnabled()).orElse(true))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
         new TestRunFormOpener(project).open(testCasesRoot, name, enabled, List.of(), sourceConfiguration,

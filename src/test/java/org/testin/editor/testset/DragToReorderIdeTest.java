@@ -115,13 +115,13 @@ public class DragToReorderIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-058
     public void testADragIsAlwaysAMove() {
         final @NotNull TestSetEditor editor = aTestSetOf("Log in", "Log out", "Reset the password");
-        final @NotNull Set<UUID> before = theTestCases().getTestCasesForTestSet(testSet.getPath()).stream().map(TestCase::getId).collect(Collectors.toSet());
+        final @NotNull Set<UUID> before = theTestCases().getTestCasesForTestSet(testSet.getPath()).stream().map(TestCase::getUuid).collect(Collectors.toSet());
 
         assertEquals("a drag offers something other than a move", TransferHandler.MOVE, new TestCaseTransferHandler(getProject(), editor).getSourceActions(editor.getList()));
         assertTrue("the drop was refused", drag(editor, new int[]{0}, 3));
 
         awaitStoredOrder(List.of("Log out", "Reset the password", "Log in"));
-        assertEquals("the drag copied or lost a test case", before, theTestCases().getTestCasesForTestSet(testSet.getPath()).stream().map(TestCase::getId).collect(Collectors.toSet()));
+        assertEquals("the drag copied or lost a test case", before, theTestCases().getTestCasesForTestSet(testSet.getPath()).stream().map(TestCase::getUuid).collect(Collectors.toSet()));
     }
 
     // Rule-EDITOR-PANEL-059

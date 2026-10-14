@@ -80,7 +80,7 @@ public class DescriptionBulkSectionDialog extends AbstractJsonSplitBulkSectionDi
     // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-224
     @Override
     protected @NotNull Set<Integer> clashing(final @NotNull List<TestCase> testCases, final @NotNull List<EditedValue> newValues) {
-        final @NotNull Set<UUID> inThisDialog = testCases.stream().map(TestCase::getId).collect(Collectors.toSet());
+        final @NotNull Set<UUID> inThisDialog = testCases.stream().map(TestCase::getUuid).collect(Collectors.toSet());
         final @NotNull Map<Path, Set<String>> taken = new HashMap<>();
 
         for (int i = 0; i < testCases.size(); i++) {
@@ -126,7 +126,7 @@ public class DescriptionBulkSectionDialog extends AbstractJsonSplitBulkSectionDi
         final @NotNull Set<String> keys = new HashSet<>();
 
         testCases.getTestCasesForTestSet(testSet).stream()
-                .filter(sibling -> !inThisDialog.contains(sibling.getId()))
+                .filter(sibling -> !inThisDialog.contains(sibling.getUuid()))
                 .forEach(sibling -> keyOf(sibling.getDescription()).ifPresent(keys::add));
 
         return keys;

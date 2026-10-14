@@ -60,22 +60,22 @@ public enum FileKind {
     }
 
     // Rule-INTERNAL-012
-    public @NotNull String fileName(final @NotNull UUID testCaseId) {
+    public @NotNull String fileName(final @NotNull UUID testCaseUuid) {
         if (extension.isEmpty()) {
-            throw new IllegalStateException("A " + this + " is not named by an id: its name is fixed, or it is not Testin's file");
+            throw new IllegalStateException("A " + this + " is not named by a UUID: its name is fixed, or it is not Testin's file");
         }
 
-        return testCaseId + extension;
+        return testCaseUuid + extension;
     }
 
     // Rule-INTERNAL-012, Rule-INTERNAL-094
-    public @NotNull Optional<UUID> idIn(final @NotNull Path file) {
+    public @NotNull Optional<UUID> uuidIn(final @NotNull Path file) {
         final @NotNull String name = String.valueOf(file.getFileName());
         if (!name.endsWith(extension) || extension.isEmpty()) return Optional.empty();
 
         try {
             return Optional.of(UUID.fromString(name.substring(0, name.length() - extension.length())));
-        } catch (final IllegalArgumentException notAnId) {
+        } catch (final IllegalArgumentException notAUuid) {
             return Optional.empty();
         }
     }

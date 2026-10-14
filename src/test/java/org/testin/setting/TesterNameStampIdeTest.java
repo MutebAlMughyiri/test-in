@@ -58,7 +58,7 @@ public class TesterNameStampIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull TestCase aTestCaseIn(final @NotNull TestSetNode testSet) {
-        final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description("Log in with a valid user").build();
+        final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description("Log in with a valid user").build();
         testCase.setParent(testSet);
         return testCase;
     }

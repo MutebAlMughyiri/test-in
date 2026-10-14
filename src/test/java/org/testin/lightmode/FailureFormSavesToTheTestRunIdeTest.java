@@ -55,7 +55,7 @@ public class FailureFormSavesToTheTestRunIdeTest extends AbstractTempRootIdeTest
             final @NotNull TestSetNode testSet = mapper.getTestSetNode(testProject.getTestCasesFolder().getPath().resolve("Checkout"), testProject.getTestCasesFolder());
             nodes.addTestSet(testSet);
             Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(),
-                    TestCase.builder().id(FAILED_TEST_CASE).description("Refuse an expired card").order("m").build());
+                    TestCase.builder().uuid(FAILED_TEST_CASE).description("Refuse an expired card").order("m").build());
 
             final @NotNull Path path = testProject.getTestRunsFolder().getPath().resolve("Cycle-1");
             nodes.addTestRunNode(mapper.setTestRunNode(path, testProject.getTestRunsFolder()));
@@ -63,7 +63,7 @@ public class FailureFormSavesToTheTestRunIdeTest extends AbstractTempRootIdeTest
         });
 
         indexedTestRuns().putRunItems(testRunPath, new RunItems().setAll(List.of(
-                new RunItem().setId(FAILED_TEST_CASE).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())))));
+                new RunItem().setUuid(FAILED_TEST_CASE).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())))));
         return testRunPath;
     }
 
@@ -73,7 +73,7 @@ public class FailureFormSavesToTheTestRunIdeTest extends AbstractTempRootIdeTest
         assertTrue("the test run was not indexed", indexedTestRuns().findRunItems(testRunPath).isPresent());
         assertTrue("the test run does not cover the test case", indexedTestRuns().getRunItems(testRunPath).runItemOf(FAILED_TEST_CASE).isPresent());
 
-        final @NotNull RunItem editorsOwnRow = new RunItem().setId(FAILED_TEST_CASE).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult(TYPED).build()));
+        final @NotNull RunItem editorsOwnRow = new RunItem().setUuid(FAILED_TEST_CASE).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult(TYPED).build()));
 
         final @NotNull FailureForm form = new FailureForm(getProject(), testRunPath, editorsOwnRow, 1f, () -> {
         }, () -> {

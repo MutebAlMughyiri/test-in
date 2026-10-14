@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Builder(toBuilder = true)
-public record BugFacts(@NotNull String title, @NotNull BugSeverity severity, @NotNull BugPriority priority, @NotNull String platform, @NotNull String actualResult, @NotNull String expectedResult, @NotNull List<String> steps, @NotNull String testData, @NotNull String stacktrace, @NotNull List<byte[]> screenshots, @NotNull String testRun, @NotNull String executed, @NotNull String browser, @NotNull String device, @NotNull String language, @NotNull String commit, @NotNull UUID testCaseId, @NotNull String testSetName) {
+public record BugFacts(@NotNull String title, @NotNull BugSeverity severity, @NotNull BugPriority priority, @NotNull String platform, @NotNull String actualResult, @NotNull String expectedResult, @NotNull List<String> steps, @NotNull String testData, @NotNull String stacktrace, @NotNull List<byte[]> screenshots, @NotNull String testRun, @NotNull String executed, @NotNull String browser, @NotNull String device, @NotNull String language, @NotNull String commit, @NotNull UUID testCaseUuid, @NotNull String testSetName) {
     // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-068
     public static @NotNull BugFacts of(final @NotNull RunItem runItem, final @NotNull TestCase testCase, final @NotNull TestRunMarker testRunMarker, final @NotNull String testRun, final @NotNull List<byte[]> screenshots) {
         return new BugFacts(
@@ -52,7 +52,7 @@ public record BugFacts(@NotNull String title, @NotNull BugSeverity severity, @No
                 TestRunConfiguration.DEVICE_TYPE.valueIn(testRunMarker),
                 TestRunConfiguration.LANGUAGE.valueIn(testRunMarker),
                 TestRunConfiguration.COMMIT.valueIn(testRunMarker),
-                testCase.getId(),
+                testCase.getUuid(),
                 testCase.getParent().getName());
     }
 }

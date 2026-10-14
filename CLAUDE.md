@@ -147,9 +147,11 @@ silently has no effect costs more than the setting it was meant to hold.
   `super(...)` and Lombok writes an empty body. Read the
   `lombok-writes-the-boilerplate` skill under `.claude/skills/`.
 - **Names say the business word, in full.** A test case is a `TestCase`, never
-  a `Case`: `TestCaseDetails`, `testCaseId`, `testCases`, `A_TEST_CASE`. The
-  same holds for the documentation and for issues - *test case id*, never *case
-  id*. Nothing Testin names is abbreviated: `testCase`, never `tc`;
+  a `Case`: `TestCaseDetails`, `testCaseUuid`, `testCases`, `A_TEST_CASE`. The
+  same holds for the documentation and for issues - *test case UUID*, never
+  *case id*. A test case's, a run item's or a folder's identity is a UUID and is
+  named `uuid`, never `id` (#434); `id` stays only in IntelliJ's own names, such
+  as an action id. Nothing Testin names is abbreviated: `testCase`, never `tc`;
   `testProject`, never `tp`; `button`, never `btn`. **Abbreviations** below
   lists the Java idioms and known acronyms that stay. No business word stands
   bare either (#431): `testProject`, never `project`, unless it is IntelliJ's
@@ -285,7 +287,7 @@ No name in the plugin abbreviates a word, in production code or tests (#426).
 Muteb, 13 October 2026: *"no abbreviations in our plugin at all. except java
 and all known like exception → ex"*, and *"don't use `p`"*. The `Project` is
 `project`. A business word is never shortened: `testCase`, `testSet`,
-`testRun`, `runItem`, `testProject`, `node`, `testCaseId`, `field`. Nor is
+`testRun`, `runItem`, `testProject`, `node`, `testCaseUuid`, `field`. Nor is
 any other word: `button`, `label`, `column`, `index`, `text`, `background`,
 `component`, `message`, `directory`. What stays is in this table, and only
 here.
@@ -299,7 +301,7 @@ here.
 | `g`, `g2`                                                                                        | `Graphics`, `Graphics2D`                                                                                                                 | A painting method's graphics                                                                  |
 | `sb`                                                                                             | `StringBuilder`                                                                                                                          | A local building a string                                                                     |
 | `args`                                                                                           | arguments                                                                                                                                | A varargs parameter                                                                           |
-| `Id`, `UUID`, `Url`, `Http`, `Ssh`, `Api`, `Cli`, `Os`, `Iso`, `Rgb`, `Hex`, `Lf`, `Nul`, `Todo` | the standards, characters and words of those names                                                                                       | Inside a longer name: `testCaseId`, `bugRepoUrl`, `isoTime`, `nulSeparated`                   |
+| `Id`, `UUID`, `Url`, `Http`, `Ssh`, `Api`, `Cli`, `Os`, `Iso`, `Rgb`, `Hex`, `Lf`, `Nul`, `Todo` | the standards, characters and words of those names                                                                                       | Inside a longer name: `testCaseUuid`, `bugRepoUrl`, `isoTime`, `nulSeparated`                 |
 | `Json`, `Yaml`, `Yml`, `Xml`, `Html`, `Css`, `Pdf`, `Csv`, `Tsv`, `Xls`, `Xlsx`, `Png`           | the file formats of those names                                                                                                          | `Yml` only for `testin.yml`, the file's own name                                              |
 | `Enum`, `Bi`, `Max`, `Min`, `Temp`, `Info`, `NoOp`                                               | enumeration, two, maximum, minimum, temporary, information, no operation                                                                 | As Java writes them: `BiConsumer`, `Math.max`, `createTempFile`, the `INFO` log level         |
 | `Ide`, `Edt`, `Psi`, `Vfs`, `Ui`, `App`                                                          | integrated development environment, event dispatch thread, program structure interface, virtual file system, user interface, application | As IntelliJ's API writes them: `PsiMethod`, `Service.Level.APP`, `*IdeTest`                   |

@@ -51,23 +51,23 @@ public final class BugHistory {
     private static final @NotNull String HEAD = "HEAD";
 
     // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-107
-    public static @NotNull Map<Path, String> runItemsNow(final @NotNull Project project, final @NotNull UUID testCaseId) {
+    public static @NotNull Map<Path, String> runItemsNow(final @NotNull Project project, final @NotNull UUID testCaseUuid) {
         final @NotNull JsonCodec mapper = Services.getInstance(project, JsonCodec.class);
-        return Services.getInstance(project, TestRuns.class).runItemsOf(testCaseId).entrySet().stream()
+        return Services.getInstance(project, TestRuns.class).runItemsOf(testCaseUuid).entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, runItem -> mapper.writeValueAsString(runItem.getValue())));
     }
 
     // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-100, Rule-VIEW-PANEL-106, Rule-VIEW-PANEL-107
-    public static @NotNull History addTo(final @NotNull History history, final @NotNull Project project, final @NotNull TestCaseFile file, final @NotNull UUID testCaseId, final @NotNull Map<Path, String> runItemsNow) {
+    public static @NotNull History addTo(final @NotNull History history, final @NotNull Project project, final @NotNull TestCaseFile file, final @NotNull UUID testCaseUuid, final @NotNull Map<Path, String> runItemsNow) {
         final @NotNull Path testProjectPath = file.testProject();
-        final @NotNull Map<String, String> now = inTestProject(testProjectPath, FileKind.RUN_ITEM.fileName(testCaseId), runItemsNow);
+        final @NotNull Map<String, String> now = inTestProject(testProjectPath, FileKind.RUN_ITEM.fileName(testCaseUuid), runItemsNow);
         final @NotNull JsonCodec mapper = Services.getInstance(project, JsonCodec.class);
         final @NotNull GitRepositoryService git = new GitRepositoryService(project);
         if (git.isNotRepository(testProjectPath))
             return history.with(notCommitted(testProjectPath, List.of(), now, Map.of(), mapper), List.of());
 
         try {
-            final @NotNull List<BugCommit> commits = commits(git.log(testProjectPath, FORMAT, "--name-status", "--", pathspec(NodeType.TEST_RUNS_FOLDER, FileKind.RUN_ITEM, testCaseId), pathspec(NodeType.TEST_CASES_FOLDER, FileKind.TEST_CASE, testCaseId)));
+            final @NotNull List<BugCommit> commits = commits(git.log(testProjectPath, FORMAT, "--name-status", "--", pathspec(NodeType.TEST_RUNS_FOLDER, FileKind.RUN_ITEM, testCaseUuid), pathspec(NodeType.TEST_CASES_FOLDER, FileKind.TEST_CASE, testCaseUuid)));
             final @NotNull List<String> paths = commits.stream().flatMap(BugCommit::paths).distinct().toList();
             final @NotNull Map<String, String> versions = commits.isEmpty()
                     ? Map.of()
@@ -77,13 +77,13 @@ public final class BugHistory {
             commits.forEach(commit -> commit.files().forEach(changed -> card(testProjectPath, commit, changed, versions, mapper).ifPresent(cards::add)));
             return history.with(cards, commits.stream().map(BugCommit::hash).toList());
         } catch (final GitFailed ex) {
-            TestinLogger.warn("Could not read the bugs of " + testCaseId + " from Git: " + FailureText.of(ex));
+            TestinLogger.warn("Could not read the bugs of " + testCaseUuid + " from Git: " + FailureText.of(ex));
             return history.withoutBugs(FailureText.of(ex));
         }
     }
 
-    static @NotNull String pathspec(final @NotNull NodeType folder, final @NotNull FileKind kind, final @NotNull UUID testCaseId) {
-        return ":(glob)" + folder.getFolderName() + "/**/" + kind.fileName(testCaseId);
+    static @NotNull String pathspec(final @NotNull NodeType folder, final @NotNull FileKind kind, final @NotNull UUID testCaseUuid) {
+        return ":(glob)" + folder.getFolderName() + "/**/" + kind.fileName(testCaseUuid);
     }
 
     private static @NotNull Map<String, String> inTestProject(final @NotNull Path testProjectPath, final @NotNull String runItem, final @NotNull Map<Path, String> runItemsNow) {

@@ -36,7 +36,7 @@ public class StoppedTestCaseIdeTest extends AbstractCodegenIdeTest {
 
         execution.starting(testCase);
         execution.stop(List.of(testCase));
-        TestNGExecutionReported.broadcast(getProject(), testCase.getId().toString(), TestNGExecutionStatus.FAILED, Duration.ZERO, Failure.NONE);
+        TestNGExecutionReported.broadcast(getProject(), testCase.getUuid().toString(), TestNGExecutionStatus.FAILED, Duration.ZERO, Failure.NONE);
         settled();
 
         assertEquals("the killed process reported the stopped test case as failed, and it was recorded so", TestNGExecutionStatus.IDLE, execution.testNGExecutionStatusOf(testCase));

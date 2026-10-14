@@ -62,7 +62,7 @@ public class RemoveTestCasesIdeTest extends AbstractTempRootIdeTest {
 
     private static @NotNull String stamp(final @NotNull Path testSet, final @NotNull TestCase testCase) {
         try (final Stream<Path> files = Files.list(testSet)) {
-            final @NotNull Path file = files.filter(candidate -> candidate.getFileName().toString().startsWith(testCase.getId().toString())).findFirst().orElseThrow();
+            final @NotNull Path file = files.filter(candidate -> candidate.getFileName().toString().startsWith(testCase.getUuid().toString())).findFirst().orElseThrow();
             return Files.readString(file) + "@" + file.toFile().lastModified();
         } catch (final IOException ex) {
             throw new AssertionError("the test set could not be read", ex);
@@ -107,7 +107,7 @@ public class RemoveTestCasesIdeTest extends AbstractTempRootIdeTest {
     }
 
     private void awaitGone(final @NotNull TestCase testCase) {
-        Await.until("'" + testCase.getDescription() + "' was never removed", () -> theTestCases().findTestCase(testCase.getId()).isEmpty());
+        Await.until("'" + testCase.getDescription() + "' was never removed", () -> theTestCases().findTestCase(testCase.getUuid()).isEmpty());
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
 
@@ -141,7 +141,7 @@ public class RemoveTestCasesIdeTest extends AbstractTempRootIdeTest {
         Await.until("the removal never reached the undo history", () -> eventOn(undo, editor).getPresentation().isEnabled());
         ActionUtil.performAction(undo, eventOn(undo, editor));
 
-        Await.until("Ctrl+Z did not bring the removed test case back", () -> theTestCases().findTestCase(removed.getId()).isPresent());
+        Await.until("Ctrl+Z did not bring the removed test case back", () -> theTestCases().findTestCase(removed.getUuid()).isPresent());
     }
 
     // Rule-EDITOR-PANEL-064

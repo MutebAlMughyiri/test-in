@@ -82,8 +82,8 @@ public class TestMethodGutter extends RelatedItemLineMarkerProvider implements D
     }
 
     // UC-CODEGEN-007, Rule-CODEGEN-069
-    private static void refuseMissingTestCase(final @NotNull Project project, final @NotNull UUID testCaseId, final @NotNull String methodName) {
-        TestinLogger.info("No test case behind " + methodName + ": " + testCaseId);
+    private static void refuseMissingTestCase(final @NotNull Project project, final @NotNull UUID testCaseUuid, final @NotNull String methodName) {
+        TestinLogger.info("No test case behind " + methodName + ": " + testCaseUuid);
 
         ApplicationManager.getApplication().invokeLater(() ->
                 Services.getInstance(project, Notifier.class).softRefuse(project, Refused.NO_TEST_CASE_BEHIND_IT, methodName));
@@ -101,22 +101,22 @@ public class TestMethodGutter extends RelatedItemLineMarkerProvider implements D
         Optional.ofNullable(PsiTreeUtil.getParentOfType(token, PsiLiteralExpression.class))
                 .filter(TestMethodGutter::namesATestCase)
                 .map(literal -> StringUtil.unquoteString(literal.getText()).trim())
-                .flatMap(TestName::testCaseId)
+                .flatMap(TestName::testCaseUuid)
                 .filter(_ -> CodeOn.isOn(project))
-                .ifPresent(testCaseId -> result.add(new RelatedItemLineMarkerInfo<>(
+                .ifPresent(testCaseUuid -> result.add(new RelatedItemLineMarkerInfo<>(
                         element,
                         element.getTextRange(),
                         AllIcons.Nodes.Related,
                         _ -> Bundle.message("gutter.view.details"),
-                        (_, psiElement) -> openViewPanel(project, testCaseId, methodName(psiElement)),
+                        (_, psiElement) -> openViewPanel(project, testCaseUuid, methodName(psiElement)),
                         GutterIconRenderer.Alignment.RIGHT,
                         Collections::emptyList
                 )));
     }
 
     // UC-CODEGEN-007, Rule-CODEGEN-030, Rule-CODEGEN-069
-    private void openViewPanel(final @NotNull Project project, final @NotNull UUID testCaseId, final @NotNull String methodName) {
-        TestinLogger.info("Searching for UUID: " + testCaseId);
+    private void openViewPanel(final @NotNull Project project, final @NotNull UUID testCaseUuid, final @NotNull String methodName) {
+        TestinLogger.info("Searching for UUID: " + testCaseUuid);
 
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             try {
@@ -124,14 +124,14 @@ public class TestMethodGutter extends RelatedItemLineMarkerProvider implements D
                 final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
                 indexer.awaitIndexing();
 
-                testCases.findTestCase(testCaseId).ifPresentOrElse(
+                testCases.findTestCase(testCaseUuid).ifPresentOrElse(
                         node -> {
                             TestinLogger.info("Found in indexer: " + node.getDescription());
 
                             ApplicationManager.getApplication().invokeLater(() ->
                                     ViewToolWindowFactory.showPanel(project, List.of(node), node.getParent().treePath(), ViewPanel::focusDetailsTab));
                         },
-                        () -> refuseMissingTestCase(project, testCaseId, methodName));
+                        () -> refuseMissingTestCase(project, testCaseUuid, methodName));
 
             } catch (final Exception ex) {
                 TestinLogger.error("Could not open the test case behind this mark: " + FailureText.of(ex));

@@ -231,13 +231,13 @@ public class FailureDialogIdeTest extends AbstractTempRootIdeTest {
             actualResultBox(dialog).setText("The dashboard stayed blank");
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
             final @NotNull TestCase walked = fixture.testCases().getFirst();
-            Services.getInstance(getProject(), TestRuns.class).changeRunItems(fixture.testRun().getPath(), testRun -> testRun.getAll().removeIf(runItem -> runItem.getId().equals(walked.getId())));
+            Services.getInstance(getProject(), TestRuns.class).changeRunItems(fixture.testRun().getPath(), testRun -> testRun.getAll().removeIf(runItem -> runItem.getUuid().equals(walked.getUuid())));
 
             OnScreen.pressKey(dialog, Shortcuts.Enter.getKey());
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
             assertTrue("Failed was recorded on a test run that no longer covers the test case",
-                    Services.getInstance(getProject(), TestRuns.class).getRunItems(fixture.testRun().getPath()).runItemOf(walked.getId()).isEmpty());
+                    Services.getInstance(getProject(), TestRuns.class).getRunItems(fixture.testRun().getPath()).runItemOf(walked.getUuid()).isEmpty());
             assertTrue("no message said why nothing was recorded: " + balloons, balloons.contains(Bundle.message("run.item.status.test.case.not.covered")));
             assertFalse("Failed was announced though nothing was recorded", balloons.contains(RunItemStatus.FAILED.getLabel()));
         } finally {
@@ -410,7 +410,7 @@ public class FailureDialogIdeTest extends AbstractTempRootIdeTest {
             final @NotNull JComponent dropped = fixture.openFailureDialog();
             actualResultBox(dropped).setText("Never kept");
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
-            Services.getInstance(getProject(), TestRuns.class).changeRunItems(fixture.testRun().getPath(), testRun -> testRun.getAll().removeIf(runItem -> runItem.getId().equals(testCases.get(1).getId())));
+            Services.getInstance(getProject(), TestRuns.class).changeRunItems(fixture.testRun().getPath(), testRun -> testRun.getAll().removeIf(runItem -> runItem.getUuid().equals(testCases.get(1).getUuid())));
             OnScreen.pressKey(dropped, Shortcuts.Enter.getKey());
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 

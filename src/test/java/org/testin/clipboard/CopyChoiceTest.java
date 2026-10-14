@@ -43,7 +43,7 @@ public class CopyChoiceTest {
         final @NotNull TestSetNode set = NodeChain.testSetAt("shop", "checkout", "Payment");
 
         final @NotNull TestCase testCase = TestCase.builder()
-                .id(UUID.randomUUID())
+                .uuid(UUID.randomUUID())
                 .description("Refuse an expired card")
                 .expectedResult("The payment is declined")
                 .steps(List.of("Enter the card", "Press Pay"))
@@ -155,7 +155,7 @@ public class CopyChoiceTest {
         final @NotNull TestCase testCase = writtenInFull();
 
         assertEquals(CopyChoice.DESCRIPTION.from(testCase), "Refuse an expired card", "a single value carries no caption");
-        assertEquals(CopyChoice.ID.from(testCase), testCase.getId().toString(), "the identity can be copied on its own");
+        assertEquals(CopyChoice.UUID.from(testCase), testCase.getUuid().toString(), "the identity can be copied on its own");
         assertEquals(CopyChoice.FQCN.from(testCase), "shop.checkout.PaymentTest.refuseAnExpiredCard", "and the class name");
         assertEquals(CopyChoice.PATH.from(testCase), TestSetEditorFields.PATH.gridValue(testCase), "and the path");
     }

@@ -51,7 +51,7 @@ public final class TestCases {
 
     // UC-INTERNAL-006, Rule-INTERNAL-046
     public long testCaseCountOf(final @NotNull Path testSetPath) {
-        return store().getTestCaseIdsByTestSet().getOrDefault(testSetPath.toString(), List.of()).size();
+        return store().getTestCaseUuidsByTestSet().getOrDefault(testSetPath.toString(), List.of()).size();
     }
 
     // Rule-TREE-PANEL-008
@@ -67,8 +67,8 @@ public final class TestCases {
         return testCases;
     }
 
-    public @NotNull Optional<TestCase> findTestCase(final @NotNull UUID testCaseId) {
-        return store().findTestCase(testCaseId);
+    public @NotNull Optional<TestCase> findTestCase(final @NotNull UUID testCaseUuid) {
+        return store().findTestCase(testCaseUuid);
     }
 
     // UC-INTERNAL-004, Rule-INTERNAL-033
@@ -87,15 +87,15 @@ public final class TestCases {
     }
 
     // UC-EDITOR-PANEL-011, Rule-EDITOR-PANEL-064
-    public boolean removeTestCase(final @NotNull Path testSetPath, final @NotNull UUID testCaseId) {
-        if (!store().removeTestCase(testSetPath, testCaseId)) return false;
+    public boolean removeTestCase(final @NotNull Path testSetPath, final @NotNull UUID testCaseUuid) {
+        if (!store().removeTestCase(testSetPath, testCaseUuid)) return false;
 
         testCaseValues.reload(this::getAllTestCases);
         return true;
     }
 
     public @NotNull List<TestCase> getAllTestCases() {
-        return List.copyOf(store().getTestCasesById().values());
+        return List.copyOf(store().getTestCasesByUuid().values());
     }
 
     // UC-INTERNAL-004, Rule-INTERNAL-031

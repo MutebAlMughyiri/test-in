@@ -72,15 +72,15 @@ public class NodeCountsIdeTest extends AbstractTempRootIdeTest {
             return created;
         });
 
-        final @NotNull List<UUID> testCaseIds = new ArrayList<>();
+        final @NotNull List<UUID> testCaseUuids = new ArrayList<>();
         for (int i = 0; i < testCases; i++) {
-            final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description("Log in " + i).order("m" + i).build();
+            final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description("Log in " + i).order("m" + i).build();
             testCase.setParent(testSet);
             Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase);
-            testCaseIds.add(testCase.getId());
+            testCaseUuids.add(testCase.getUuid());
         }
 
-        return testCaseIds;
+        return testCaseUuids;
     }
 
     private @NotNull TestRunNode aTestRun(final @NotNull TestProjectNode testProject) {
@@ -128,8 +128,8 @@ public class NodeCountsIdeTest extends AbstractTempRootIdeTest {
         final @NotNull List<UUID> testCases = aTestSet(testProject.getTestCasesFolder(), "Login", 4, TestSetStatus.ACTIVE);
         final @NotNull TestRunNode testRun = aTestRun(testProject);
         Services.getInstance(getProject(), TestRuns.class).putRunItems(testRun.getPath(), new RunItems().setAll(new ArrayList<>(List.of(
-                new RunItem().setId(testCases.getFirst()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())),
-                new RunItem().setId(testCases.get(1)).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build()))))));
+                new RunItem().setUuid(testCases.getFirst()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())),
+                new RunItem().setUuid(testCases.get(1)).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build()))))));
 
         final @NotNull TestRunSummary counted = NodeCounter.testRunFigures(getProject(), testRun).testRun();
 

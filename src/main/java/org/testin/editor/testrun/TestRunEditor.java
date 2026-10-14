@@ -86,7 +86,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
 
     private final @NotNull LightMode lightMode = Services.getInstance(project, LightMode.class);
 
-    private final @NotNull Map<UUID, RunItem> runItemsById = new ConcurrentHashMap<>();
+    private final @NotNull Map<UUID, RunItem> runItemsByUuid = new ConcurrentHashMap<>();
 
     @Getter
     private final @NotNull TestRunToolbar toolBar;
@@ -130,7 +130,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
                 final @NotNull RunItems fromDisk = loadedRunItems.orElseGet(() -> testRuns.getRunItems(parent.getPath()));
 
                 final @NotNull Map<UUID, RunItem> runItemsOnDisk = fromDisk.getAll().stream()
-                        .collect(Collectors.toMap(RunItem::getId, runItem -> runItem,
+                        .collect(Collectors.toMap(RunItem::getUuid, runItem -> runItem,
                                 (existingItem, _) -> existingItem));
 
                 final @NotNull List<TestCase> ordered = fromDisk.getAll().stream().map(RunItem::liveTestCase).toList();
@@ -141,7 +141,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
                     if (generation != loadGeneration.get()) return;
                     loadedRunItems = Optional.of(fromDisk);
                     placesInTheirSets = places;
-                    runItemsById.putAll(runItemsOnDisk);
+                    runItemsByUuid.putAll(runItemsOnDisk);
                     allTestCases.clear();
                     allTestCases.addAll(ordered);
                     currentTestCases.clear();
@@ -186,7 +186,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
 
     @Override
     protected void clearLoadedData() {
-        runItemsById.clear();
+        runItemsByUuid.clear();
 
         loadedRunItems = Optional.empty();
         placesInTheirSets = Map.of();
@@ -205,17 +205,17 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
 
     @Override
     protected void disposeLoadedData() {
-        runItemsById.clear();
+        runItemsByUuid.clear();
     }
 
-    public @NotNull Optional<RunItem> runItem(final @NotNull UUID testCaseId) {
-        return Optional.ofNullable(runItemsById.get(testCaseId));
+    public @NotNull Optional<RunItem> runItem(final @NotNull UUID testCaseUuid) {
+        return Optional.ofNullable(runItemsByUuid.get(testCaseUuid));
     }
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-014
     @Override
     public int positionOf(final @NotNull TestCase testCase) {
-        return placesInTheirSets.getOrDefault(testCase.getId(), 0);
+        return placesInTheirSets.getOrDefault(testCase.getUuid(), 0);
     }
 
     public @NotNull Optional<RunItems> loadedRunItems() {
@@ -261,7 +261,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
     @Override
     public @NotNull String cardTitle(final @NotNull TestCase testCase) {
         final @NotNull Set<TestRunEditorFields> selected = getSelectedDetails();
-        final @NotNull TestCase shown = runItem(testCase.getId()).map(RunItem::shownTestCase).orElse(testCase);
+        final @NotNull TestCase shown = runItem(testCase.getUuid()).map(RunItem::shownTestCase).orElse(testCase);
 
         return AbstractCard.titleText(positionOf(testCase),
                 selected.contains(TestRunEditorFields.ORDER),
@@ -334,7 +334,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
     public @NotNull Map<Path, String> getAvailableTestSets() {
         final @NotNull Map<Path, String> testSets = new LinkedHashMap<>();
         testRuns.testCasesFolderOf(parent.getPath()).ifPresent(folder -> snapshotOfAll().stream()
-                .filter(testCase -> placesInTheirSets.containsKey(testCase.getId()))
+                .filter(testCase -> placesInTheirSets.containsKey(testCase.getUuid()))
                 .map(TestCase::getParent)
                 .forEach(testSet -> testSets.putIfAbsent(testSet.getPath(), testSet.nameUnder(folder.getPath()))));
         return testSets;
@@ -357,7 +357,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
     // UC-EDITOR-PANEL-020, Rule-EDITOR-PANEL-094
     @Override
     protected @NotNull List<String[]> gridRows(final @NotNull List<TestCase> pageTestCases) {
-        return GridRows.ofRunItems(pageTestCases, runItemsById, firstRowOnPage(), this::positionOf);
+        return GridRows.ofRunItems(pageTestCases, runItemsByUuid, firstRowOnPage(), this::positionOf);
     }
 
     // UC-EDITOR-PANEL-020, Rule-EDITOR-PANEL-094
@@ -389,8 +389,8 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
     }
 
     @Override
-    public void launching(final @NotNull UUID testCaseId) {
-        walk.launching(testCaseId);
+    public void launching(final @NotNull UUID testCaseUuid) {
+        walk.launching(testCaseUuid);
     }
 
     // UC-REPORT-001
@@ -431,12 +431,12 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
 
     // Rule-EDITOR-PANEL-291
     @Override
-    public boolean walksOn(final @NotNull UUID testCaseId) {
-        return walk.walksOn(testCaseId);
+    public boolean walksOn(final @NotNull UUID testCaseUuid) {
+        return walk.walksOn(testCaseUuid);
     }
 
     @NotNull List<RunItem> runItems() {
-        return List.copyOf(runItemsById.values());
+        return List.copyOf(runItemsByUuid.values());
     }
 
     // UC-EDITOR-PANEL-042, Rule-EDITOR-PANEL-177
@@ -458,7 +458,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
 
     // UC-EDITOR-PANEL-042, Rule-EDITOR-PANEL-288
     public @NotNull Duration getElapsed() {
-        return runItemsById.values().stream()
+        return runItemsByUuid.values().stream()
                 .map(RunItem::timeSpent)
                 .reduce(Duration.ZERO, Duration::plus);
     }

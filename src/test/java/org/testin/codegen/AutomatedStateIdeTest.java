@@ -66,7 +66,7 @@ public class AutomatedStateIdeTest extends AbstractCodegenIdeTest {
     private void readAndAwait(final @NotNull List<TestCase> testCases) {
         state().read(getProject(), testCases, () -> {
         });
-        Await.until("the automation state never arrived", () -> testCases.stream().noneMatch(testCase -> state().of(testCase.getId()) == Automated.UNKNOWN));
+        Await.until("the automation state never arrived", () -> testCases.stream().noneMatch(testCase -> state().of(testCase.getUuid()) == Automated.UNKNOWN));
     }
 
     // Rule-EDITOR-PANEL-195
@@ -76,10 +76,10 @@ public class AutomatedStateIdeTest extends AbstractCodegenIdeTest {
 
         readAndAwait(List.of(testCases.getFirst(), testCases.get(1), testCases.get(2), nameless));
 
-        assertEquals("a method with something in it is not automation", Automated.WRITTEN, state().of(testCases.getFirst().getId()));
-        assertEquals("a generated method nobody filled in counts as automation", Automated.NONE, state().of(testCases.get(1).getId()));
-        assertEquals("a test case naming a method it does not have is not reported missing", Automated.MISSING, state().of(testCases.get(2).getId()));
-        assertEquals("a test case that names no method is not reported not automated", Automated.NONE, state().of(nameless.getId()));
+        assertEquals("a method with something in it is not automation", Automated.WRITTEN, state().of(testCases.getFirst().getUuid()));
+        assertEquals("a generated method nobody filled in counts as automation", Automated.NONE, state().of(testCases.get(1).getUuid()));
+        assertEquals("a test case naming a method it does not have is not reported missing", Automated.MISSING, state().of(testCases.get(2).getUuid()));
+        assertEquals("a test case that names no method is not reported not automated", Automated.NONE, state().of(nameless.getUuid()));
     }
 
     // Rule-EDITOR-PANEL-196
@@ -90,9 +90,9 @@ public class AutomatedStateIdeTest extends AbstractCodegenIdeTest {
         });
 
         for (final TestCase testCase : testCases) {
-            assertEquals("the state was read on the screen's thread, or reported before it was read", Automated.UNKNOWN, state().of(testCase.getId()));
+            assertEquals("the state was read on the screen's thread, or reported before it was read", Automated.UNKNOWN, state().of(testCase.getUuid()));
         }
-        Await.until("the answers never arrived", () -> testCases.stream().noneMatch(testCase -> state().of(testCase.getId()) == Automated.UNKNOWN));
+        Await.until("the answers never arrived", () -> testCases.stream().noneMatch(testCase -> state().of(testCase.getUuid()) == Automated.UNKNOWN));
     }
 
     // Rule-EDITOR-PANEL-197
@@ -101,7 +101,7 @@ public class AutomatedStateIdeTest extends AbstractCodegenIdeTest {
         final @NotNull Map<String, String> before = FilesUnder.snapshot(root);
 
         readAndAwait(testCases);
-        assertEquals(Automated.NONE, state().of(testCases.get(1).getId()));
+        assertEquals(Automated.NONE, state().of(testCases.get(1).getUuid()));
         assertEquals("reading the automation state wrote something", before, FilesUnder.snapshot(root));
 
         writtenByTheTester(writtenMethodOf(GENERATED_CLASS, testCases.get(1)), "System.out.println(2);");
@@ -109,7 +109,7 @@ public class AutomatedStateIdeTest extends AbstractCodegenIdeTest {
         state().read(getProject(), testCases, () -> {
         });
 
-        Await.until("a method written since the last look did not show", () -> state().of(testCases.get(1).getId()) == Automated.WRITTEN);
+        Await.until("a method written since the last look did not show", () -> state().of(testCases.get(1).getUuid()) == Automated.WRITTEN);
     }
 
     // Rule-EDITOR-PANEL-210

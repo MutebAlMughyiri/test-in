@@ -88,7 +88,7 @@ public class TestProjectOnDiskIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestCase testCase = onDisk.testCase(login);
         final @NotNull TestRunNode testRun = onDisk.testRun(testProject.getTestRunsFolder(), "Cycle-1");
         final @NotNull TestRuns testRuns = Services.getInstance(getProject(), TestRuns.class);
-        testRuns.putRunItems(testRun.getPath(), new RunItems().setAll(new ArrayList<>(List.of(new RunItem().setId(testCase.getId()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()))))));
+        testRuns.putRunItems(testRun.getPath(), new RunItems().setAll(new ArrayList<>(List.of(new RunItem().setUuid(testCase.getUuid()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()))))));
         testRuns.awaitWrites();
         return testCase;
     }
@@ -98,7 +98,7 @@ public class TestProjectOnDiskIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestCase testCase = aTestProjectWithEverythingInIt();
 
         final @NotNull List<Path> files = filesUnder(chosen);
-        assertTrue("the test case is not a file in the folder the tester chose: " + files, files.stream().anyMatch(file -> file.getFileName().toString().startsWith(testCase.getId().toString())));
+        assertTrue("the test case is not a file in the folder the tester chose: " + files, files.stream().anyMatch(file -> file.getFileName().toString().startsWith(testCase.getUuid().toString())));
         assertTrue("something was written outside the folder the tester chose", filesUnder(root.resolve("somewhere else")).isEmpty());
     }
 

@@ -229,10 +229,10 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
 
         final @NotNull List<String> said = Said.during(getProject(), () -> assertTrue("F5 did nothing on a running test case", KeyPress.press(getProject(), view.keyboardTarget(ViewTab.DETAILS), f5())));
 
-        assertFalse("F5 did not stop the running test case", execution.isRunning(testCase.getId()));
+        assertFalse("F5 did not stop the running test case", execution.isRunning(testCase.getUuid()));
         assertTrue("stopping said nothing: " + said, said.stream().anyMatch(words -> words.contains(Done.STOPPED.getOutcome())));
 
-        TestNGExecutionReported.broadcast(getProject(), testCase.getId().toString(), TestNGExecutionStatus.FAILED, Duration.ZERO, Failure.NONE);
+        TestNGExecutionReported.broadcast(getProject(), testCase.getUuid().toString(), TestNGExecutionStatus.FAILED, Duration.ZERO, Failure.NONE);
         settled();
         view.getPanel().refreshCurrentView();
         assertEquals("the test case the tester stopped was recorded as failed", TestNGExecutionStatus.IDLE, execution.testNGExecutionStatusOf(testCase));
@@ -261,10 +261,10 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
     // Rule-VIEW-PANEL-010, Rule-VIEW-PANEL-011, Rule-VIEW-PANEL-022
     public void testClickingTheMarkBesideATestMethodOpensThePanelOnThatOneTestCase() {
         final @NotNull TestCase testCase = aTestCase();
-        final @NotNull String text = LoginTestSource.withTestNg(testCase.getId().toString());
+        final @NotNull String text = LoginTestSource.withTestNg(testCase.getUuid().toString());
         final @NotNull PsiFile file = myFixture.addFileToProject("nafath/LoginMarkTest.java", text);
         myFixture.configureFromExistingVirtualFile(file.getVirtualFile());
-        myFixture.getEditor().getCaretModel().moveToOffset(text.indexOf(testCase.getId().toString()));
+        myFixture.getEditor().getCaretModel().moveToOffset(text.indexOf(testCase.getUuid().toString()));
         final @NotNull GutterMark mark = myFixture.findGuttersAtCaret().stream()
                 .filter(found -> Bundle.message("gutter.view.details").equals(found.getTooltipText()))
                 .findFirst()

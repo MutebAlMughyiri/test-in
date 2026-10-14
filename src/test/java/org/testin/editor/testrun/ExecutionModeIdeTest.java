@@ -75,7 +75,7 @@ public class ExecutionModeIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), EditorFixtures.testRunOver(getProject(), root, testCases), getTestRootDisposable());
         try {
             TestCaseQuickAction.RUN_TEST_METHOD.executeFor(editor, testCases.getFirst());
-            assertTrue("the run button did not start its test case", Services.getInstance(getProject(), TestNGExecution.class).isRunning(testCases.getFirst().getId()));
+            assertTrue("the run button did not start its test case", Services.getInstance(getProject(), TestNGExecution.class).isRunning(testCases.getFirst().getUuid()));
 
             assertEquals("a single run button put the test run in a mode", ExecutionMode.IDLE, editor.getWalk().mode());
             final @NotNull StartExecutionButton start = editor.getToolBar().getToolbarItem(StartExecutionButton.class);

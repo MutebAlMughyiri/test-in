@@ -35,15 +35,15 @@ import java.util.UUID;
 
 public record TestCaseSnapshot(@NotNull Path testSetPath, @NotNull List<TestCase> present, @NotNull List<UUID> absent) {
     // UC-EDITOR-PANEL-012, Rule-EDITOR-PANEL-228
-    public static @NotNull TestCaseSnapshot of(final @NotNull Project project, final @NotNull Path testSetPath, final @NotNull List<UUID> testCaseIds) {
+    public static @NotNull TestCaseSnapshot of(final @NotNull Project project, final @NotNull Path testSetPath, final @NotNull List<UUID> testCaseUuids) {
         final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
-        final @NotNull List<TestCase> present = new ArrayList<>(testCaseIds.size());
+        final @NotNull List<TestCase> present = new ArrayList<>(testCaseUuids.size());
         final @NotNull List<UUID> absent = new ArrayList<>();
 
-        for (final UUID testCaseId : testCaseIds)
-            testCases.findTestCase(testCaseId)
+        for (final UUID testCaseUuid : testCaseUuids)
+            testCases.findTestCase(testCaseUuid)
                     .filter(testCase -> testCase.getParent().getPath().equals(testSetPath))
-                    .ifPresentOrElse(testCase -> present.add(testCase.copy()), () -> absent.add(testCaseId));
+                    .ifPresentOrElse(testCase -> present.add(testCase.copy()), () -> absent.add(testCaseUuid));
 
         return new TestCaseSnapshot(testSetPath, present, absent);
     }
@@ -55,8 +55,8 @@ public record TestCaseSnapshot(@NotNull Path testSetPath, @NotNull List<TestCase
                 : Bundle.message("snapshot.undo.many", verb, String.valueOf(testCases.size()));
     }
 
-    public static @NotNull List<UUID> idsOf(final @NotNull List<TestCase> testCases) {
-        return testCases.stream().map(TestCase::getId).toList();
+    public static @NotNull List<UUID> uuidsOf(final @NotNull List<TestCase> testCases) {
+        return testCases.stream().map(TestCase::getUuid).toList();
     }
 
     // UC-EDITOR-PANEL-012, Rule-EDITOR-PANEL-038
@@ -85,14 +85,14 @@ public record TestCaseSnapshot(@NotNull Path testSetPath, @NotNull List<TestCase
         return true;
     }
 
-    public @NotNull List<UUID> ids() {
-        final @NotNull List<UUID> testCaseIds = new ArrayList<>(idsOf(present));
-        testCaseIds.addAll(absent);
-        return testCaseIds;
+    public @NotNull List<UUID> uuids() {
+        final @NotNull List<UUID> testCaseUuids = new ArrayList<>(uuidsOf(present));
+        testCaseUuids.addAll(absent);
+        return testCaseUuids;
     }
 
     boolean sameAs(final @NotNull TestCaseSnapshot other, final @NotNull JsonCodec mapper) {
-        return absent.equals(other.absent) && idsOf(present).equals(idsOf(other.present)) && asJson(mapper).equals(other.asJson(mapper));
+        return absent.equals(other.absent) && uuidsOf(present).equals(uuidsOf(other.present)) && asJson(mapper).equals(other.asJson(mapper));
     }
 
     private @NotNull List<String> asJson(final @NotNull JsonCodec mapper) {

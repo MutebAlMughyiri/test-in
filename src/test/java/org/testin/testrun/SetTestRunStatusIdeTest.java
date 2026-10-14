@@ -43,15 +43,15 @@ public class SetTestRunStatusIdeTest extends AbstractTempRootIdeTest {
         final @NotNull NodesOnDisk made = new NodesOnDisk(getProject());
         final @NotNull TestProjectNode testProject = made.testProject(root.resolve("NAFATH"));
         final @NotNull TestSetNode login = made.testSet(testProject.getTestCasesFolder(), "Login");
-        final @NotNull UUID passed = made.testCase(login).getId();
-        final @NotNull UUID stillPending = made.testCase(login).getId();
-        final @NotNull UUID alsoPending = made.testCase(login).getId();
+        final @NotNull UUID passed = made.testCase(login).getUuid();
+        final @NotNull UUID stillPending = made.testCase(login).getUuid();
+        final @NotNull UUID alsoPending = made.testCase(login).getUuid();
 
         final @NotNull TestRunNode testRun = made.testRun(testProject.getTestRunsFolder(), "Cycle-1");
         indexedTestRuns().putRunItems(testRun.getPath(), new RunItems().setAll(List.of(
-                new RunItem().setId(passed).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())),
-                new RunItem().setId(stillPending),
-                new RunItem().setId(alsoPending))));
+                new RunItem().setUuid(passed).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())),
+                new RunItem().setUuid(stillPending),
+                new RunItem().setUuid(alsoPending))));
 
         new TestRunStatusChange(getProject()).apply(testRun, finalTestRunStatus);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
@@ -63,8 +63,8 @@ public class SetTestRunStatusIdeTest extends AbstractTempRootIdeTest {
         assertEquals("a pending test case is still pending once the test run is " + finalTestRunStatus, RunItemStatus.UNTESTED, runItemStatusOf(testRun, alsoPending));
     }
 
-    private @NotNull RunItemStatus runItemStatusOf(final @NotNull TestRunNode testRun, final @NotNull UUID testCaseId) {
-        return indexedTestRuns().getRunItems(testRun.getPath()).runItemOf(testCaseId).map(RunItem::getStatus).orElse(RunItemStatus.REMOVED);
+    private @NotNull RunItemStatus runItemStatusOf(final @NotNull TestRunNode testRun, final @NotNull UUID testCaseUuid) {
+        return indexedTestRuns().getRunItems(testRun.getPath()).runItemOf(testCaseUuid).map(RunItem::getStatus).orElse(RunItemStatus.REMOVED);
     }
 
     // Rule-TREE-PANEL-067, Rule-TREE-PANEL-009

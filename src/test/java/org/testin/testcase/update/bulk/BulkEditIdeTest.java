@@ -105,10 +105,10 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
         testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
         final @NotNull List<TestCase> made = new ArrayList<>();
         for (int i = 0; i < modules.length; i++) {
-            final @NotNull TestCase testCase = TestCase.builder().id(UUID.randomUUID()).description("Test case number " + (i + 1)).order(String.format("m%04d", i)).module(modules[i]).build();
+            final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description("Test case number " + (i + 1)).order(String.format("m%04d", i)).module(modules[i]).build();
             testCase.setParent(testSet);
             theTestCases().putTestCaseVerbatim(testSet.getPath(), testCase);
-            made.add(theTestCases().findTestCase(testCase.getId()).orElseThrow());
+            made.add(theTestCases().findTestCase(testCase.getUuid()).orElseThrow());
         }
         return made;
     }
@@ -163,7 +163,7 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull String moduleOf(final @NotNull TestCase testCase) {
-        return theTestCases().findTestCase(testCase.getId()).orElseThrow().getModule();
+        return theTestCases().findTestCase(testCase.getUuid()).orElseThrow().getModule();
     }
 
     private @NotNull List<RangeHighlighter> greenIn(final @NotNull Editor editor) {
@@ -191,7 +191,7 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-041, Rule-EDITOR-PANEL-042
     public void testOnlyTheRowsTheTesterEditedAreWrittenAndTheyAreTrimmed() {
         final @NotNull List<TestCase> testCases = aTestSetWithModules("  Payments  ", "Cart");
-        final @NotNull String untouched = everyFile().stream().filter(file -> file.contains(testCases.getFirst().getId().toString())).findFirst().orElseThrow();
+        final @NotNull String untouched = everyFile().stream().filter(file -> file.contains(testCases.getFirst().getUuid().toString())).findFirst().orElseThrow();
         bulkEditTheModules();
 
         type(1, "  Basket  ");

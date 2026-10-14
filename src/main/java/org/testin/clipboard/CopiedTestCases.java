@@ -57,7 +57,7 @@ public final class CopiedTestCases {
             final @NotNull List<ClipboardTestCase> parsed = Services.getInstance(project, JsonCodec.class).readValue(json, new TypeReference<>() {
             });
 
-            return parsed.stream().filter(Objects::nonNull).map(ClipboardTestCase::withItsId).toList();
+            return parsed.stream().filter(Objects::nonNull).map(ClipboardTestCase::withItsUuid).toList();
         } catch (final UnsupportedFlavorException | IOException | UncheckedIOException ex) {
             TestinLogger.warn("[WARNING] Failed to parse clipboard JSON: " + FailureText.of(ex));
             return List.of();

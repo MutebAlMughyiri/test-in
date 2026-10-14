@@ -54,7 +54,7 @@ public interface TestinEditor extends Disposable {
     }
 
     // UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-180
-    default void launching(final @NotNull UUID testCaseId) {
+    default void launching(final @NotNull UUID testCaseUuid) {
     }
 
     @NotNull AbstractNode getParent();
@@ -125,10 +125,10 @@ public interface TestinEditor extends Disposable {
     void refreshView();
 
     // Rule-EDITOR-PANEL-291
-    void repaint(final @NotNull UUID testCaseId);
+    void repaint(final @NotNull UUID testCaseUuid);
 
     // Rule-EDITOR-PANEL-291
-    default boolean walksOn(final @NotNull UUID testCaseId) {
+    default boolean walksOn(final @NotNull UUID testCaseUuid) {
         return false;
     }
 
@@ -184,7 +184,7 @@ public interface TestinEditor extends Disposable {
 
     void selectTestCase(final @NotNull TestCase testCase);
 
-    void selectWhenLoaded(final @NotNull UUID testCaseId);
+    void selectWhenLoaded(final @NotNull UUID testCaseUuid);
 
     default void runWhenLoaded() {
     }

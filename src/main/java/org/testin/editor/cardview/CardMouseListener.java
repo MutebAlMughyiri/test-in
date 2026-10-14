@@ -194,7 +194,7 @@ public class CardMouseListener extends MouseAdapter {
 
         final @NotNull TestCase testCase = list.getModel().getElementAt(index);
         final @NotNull List<Offered> buttons = TestCaseQuickAction.onCard(project, editor.getParent(), testCase);
-        final boolean executing = ExecutingNow.is(project, testCase.getId());
+        final boolean executing = ExecutingNow.is(project, testCase.getUuid());
         final int titleWidth = CardTitle.titleWidth(list, editor.cardTitle(testCase), CardTitle.slotCount(buttons, executing));
 
         return CardTitle.descriptionActionIcons(titleWidth, buttons, executing).at(xInCell, yInCell);

@@ -181,11 +181,11 @@ public class BaseTestMethodChange {
 
         final @NotNull PsiClass testClass = target.orElseThrow();
 
-        final @NotNull Map<String, PsiMethod> methods = GeneratedMethod.byTestCaseId(testClass);
+        final @NotNull Map<String, PsiMethod> methods = GeneratedMethod.byTestCaseUuid(testClass);
 
         int written = 0;
         for (final TestCase testCase : testCases) {
-            final @Nullable PsiMethod testMethod = methods.get(testCase.getId().toString());
+            final @Nullable PsiMethod testMethod = methods.get(testCase.getUuid().toString());
             if (testMethod == null) continue;
 
             updater.accept(testMethod, testCase);
@@ -205,7 +205,7 @@ public class BaseTestMethodChange {
                         GeneratedClass.find(project, classSegments)
                                 .ifPresentOrElse(
                                         targetClass -> findMethodByTestName(targetClass, testCase).ifPresentOrElse(updater,
-                                                () -> onMissing.accept("no method with testName=" + testCase.getId())),
+                                                () -> onMissing.accept("no method with testName=" + testCase.getUuid())),
                                         () -> onMissing.accept("class not found: " + String.join(".", classSegments))));
 
         if (CommandProcessor.getInstance().getCurrentCommand() != null) inCommand.run();

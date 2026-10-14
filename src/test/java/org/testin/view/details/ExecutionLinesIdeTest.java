@@ -44,7 +44,7 @@ public class ExecutionLinesIdeTest extends AbstractViewPanelIdeTest {
     }
 
     private @NotNull RunItem invokedThreeTimes() {
-        return RunItem.builder().id(testCase.getId()).executions(List.of(
+        return RunItem.builder().uuid(testCase.getUuid()).executions(List.of(
                 execution(RunItemStatus.PASSED, 1, 0, ""),
                 execution(RunItemStatus.FAILED, 2, 0, "The session ended early"),
                 execution(RunItemStatus.PASSED, 2, 1, ""),
@@ -67,8 +67,8 @@ public class ExecutionLinesIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-123
     public void testARunItemExecutedOnceReadsAsBefore() {
-        final @NotNull TestRunNode testRun = aTestRun(List.of(RunItem.builder().id(testCase.getId()).build()));
-        final @NotNull RunItem once = RunItem.builder().id(testCase.getId()).executions(List.of(execution(RunItemStatus.PASSED, 0, 0, ""))).build();
+        final @NotNull TestRunNode testRun = aTestRun(List.of(RunItem.builder().uuid(testCase.getUuid()).build()));
+        final @NotNull RunItem once = RunItem.builder().uuid(testCase.getUuid()).executions(List.of(execution(RunItemStatus.PASSED, 0, 0, ""))).build();
 
         final @NotNull List<String> words = Drawn.words(Drawn.detailsTab(getProject(), testCase, Optional.of(once), testRun.treePath()));
 
@@ -78,7 +78,7 @@ public class ExecutionLinesIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-086, Rule-CODEGEN-112
     public void testEachExecutionHasALineThatSaysWhatItWas() {
-        final @NotNull TestRunNode testRun = aTestRun(List.of(RunItem.builder().id(testCase.getId()).build()));
+        final @NotNull TestRunNode testRun = aTestRun(List.of(RunItem.builder().uuid(testCase.getUuid()).build()));
 
         final @NotNull List<String> words = Drawn.words(Drawn.detailsTab(getProject(), testCase, Optional.of(invokedThreeTimes()), testRun.treePath()));
 
@@ -90,7 +90,7 @@ public class ExecutionLinesIdeTest extends AbstractViewPanelIdeTest {
 
     // Rule-VIEW-PANEL-122
     public void testTheRowsBelowShowTheExecutionClickedOrElseTheDefault() {
-        final @NotNull TestRunNode testRun = aTestRun(List.of(RunItem.builder().id(testCase.getId()).build()));
+        final @NotNull TestRunNode testRun = aTestRun(List.of(RunItem.builder().uuid(testCase.getUuid()).build()));
 
         final @NotNull List<String> byDefault = Drawn.words(Drawn.detailsTab(getProject(), testCase, Optional.of(invokedThreeTimes()), testRun.treePath()));
         final @NotNull List<String> clicked = Drawn.words(Drawn.detailsTab(getProject(), testCase, Optional.of(invokedThreeTimes()), testRun.treePath(), OptionalInt.of(1)));
@@ -103,12 +103,12 @@ public class ExecutionLinesIdeTest extends AbstractViewPanelIdeTest {
     // Rule-VIEW-PANEL-120, Rule-VIEW-PANEL-121
     public void testTheStarMovesTheDefaultAndTheCrossFallsBackToTheLast() {
         final @NotNull TestRunNode testRun = aTestRun(List.of(invokedThreeTimes()));
-        final @NotNull RunItem held = theTestRuns().getRunItems(testRun.getPath()).runItemOf(testCase.getId()).orElseThrow();
+        final @NotNull RunItem held = theTestRuns().getRunItems(testRun.getPath()).runItemOf(testCase.getUuid()).orElseThrow();
 
-        assertTrue(runItemStatuses().chooseExecution(testRun.getPath(), testCase.getId(), 1));
+        assertTrue(runItemStatuses().chooseExecution(testRun.getPath(), testCase.getUuid(), 1));
         assertEquals("the chosen execution does not decide", RunItemStatus.FAILED, held.getStatus());
 
-        assertTrue(runItemStatuses().removeExecution(testRun.getPath(), testCase.getId(), 1));
+        assertTrue(runItemStatuses().removeExecution(testRun.getPath(), testCase.getUuid(), 1));
         assertEquals("with the chosen one gone, the last does not decide", RunItemStatus.PASSED, held.getStatus());
         assertEquals(3, held.getExecutions().size());
     }
@@ -118,8 +118,8 @@ public class ExecutionLinesIdeTest extends AbstractViewPanelIdeTest {
         final @NotNull TestRunNode testRun = aTestRun(List.of(invokedThreeTimes()));
         theTestRuns().changeTestRunMarker(testRun.getPath(), marker -> marker.setStatus(TestRunStatus.COMMITTED));
 
-        assertFalse("a committed test run changed its default", runItemStatuses().chooseExecution(testRun.getPath(), testCase.getId(), 1));
-        assertFalse("a committed test run lost an execution", runItemStatuses().removeExecution(testRun.getPath(), testCase.getId(), 0));
-        assertEquals(4, theTestRuns().getRunItems(testRun.getPath()).runItemOf(testCase.getId()).orElseThrow().getExecutions().size());
+        assertFalse("a committed test run changed its default", runItemStatuses().chooseExecution(testRun.getPath(), testCase.getUuid(), 1));
+        assertFalse("a committed test run lost an execution", runItemStatuses().removeExecution(testRun.getPath(), testCase.getUuid(), 0));
+        assertEquals(4, theTestRuns().getRunItems(testRun.getPath()).runItemOf(testCase.getUuid()).orElseThrow().getExecutions().size());
     }
 }

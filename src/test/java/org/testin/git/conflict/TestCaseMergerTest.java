@@ -31,7 +31,6 @@ public class TestCaseMergerTest {
         return """
                 {
                   "order" : "%s",
-                  "id" : "929b97e9-48c1-47c1-9256-2d54080cb2cb",
                   "description" : "%s",
                   "expectedResult" : "%s",
                   "status" : "PENDING",

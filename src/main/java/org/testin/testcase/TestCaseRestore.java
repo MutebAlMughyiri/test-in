@@ -69,18 +69,18 @@ final class TestCaseRestore {
     // UC-EDITOR-PANEL-017, Rule-EDITOR-PANEL-255
     private static boolean stillStands(final @NotNull Project project, final @NotNull TestCaseSnapshot snapshot) {
         return Services.getInstance(project, Nodes.class).nodeExists(snapshot.testSetPath())
-                && snapshot.sameAs(TestCaseSnapshot.of(project, snapshot.testSetPath(), snapshot.ids()), Services.getInstance(project, JsonCodec.class));
+                && snapshot.sameAs(TestCaseSnapshot.of(project, snapshot.testSetPath(), snapshot.uuids()), Services.getInstance(project, JsonCodec.class));
     }
 
     // UC-EDITOR-PANEL-017, Rule-EDITOR-PANEL-215
     private static boolean removeAbsent(final @NotNull Project project, final @NotNull TestCaseSnapshot snapshot, final @NotNull RestoredTestCases written) {
         final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
 
-        final @NotNull List<TestCase> stillThere = snapshot.absent().stream().flatMap(testCaseId -> testCases.findTestCase(testCaseId).stream()).toList();
+        final @NotNull List<TestCase> stillThere = snapshot.absent().stream().flatMap(testCaseUuid -> testCases.findTestCase(testCaseUuid).stream()).toList();
 
         boolean allWent = true;
         for (final TestCase testCase : stillThere) {
-            if (testCases.removeTestCase(snapshot.testSetPath(), testCase.getId())) written.removed().add(testCase);
+            if (testCases.removeTestCase(snapshot.testSetPath(), testCase.getUuid())) written.removed().add(testCase);
             else allWent = false;
         }
 
@@ -93,7 +93,7 @@ final class TestCaseRestore {
 
         boolean allBack = true;
         for (final TestCase testCase : snapshot.present()) {
-            final boolean isComingBack = testCases.findTestCase(testCase.getId()).isEmpty();
+            final boolean isComingBack = testCases.findTestCase(testCase.getUuid()).isEmpty();
 
             final @NotNull TestCase stored = testCase.copy();
             if (!testCases.putTestCaseVerbatim(snapshot.testSetPath(), stored)) {

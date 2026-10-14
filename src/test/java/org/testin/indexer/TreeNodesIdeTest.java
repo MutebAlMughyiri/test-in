@@ -73,8 +73,8 @@ public class TreeNodesIdeTest extends AbstractTempRootIdeTest {
         }
     }
 
-    private static @NotNull List<UUID> idsOf(final @NotNull List<TestCase> testCases) {
-        return testCases.stream().map(TestCase::getId).toList();
+    private static @NotNull List<UUID> uuidsOf(final @NotNull List<TestCase> testCases) {
+        return testCases.stream().map(TestCase::getUuid).toList();
     }
 
     private @NotNull NodesOnDisk made() {
@@ -104,7 +104,7 @@ public class TreeNodesIdeTest extends AbstractTempRootIdeTest {
 
         assertTrue("archiving did not retire the package", payments.isRetired());
         assertTrue("archiving removed a test set from the index", nodes().nodeExists(refunds.getPath()));
-        assertEquals("archiving lost a test case", List.of(testCase.getId()), idsOf(indexedTestCases().getTestCasesForTestSet(refunds.getPath())));
+        assertEquals("archiving lost a test case", List.of(testCase.getUuid()), uuidsOf(indexedTestCases().getTestCasesForTestSet(refunds.getPath())));
         assertEquals("archiving changed a file inside the package", before, filesUnder(refunds.getPath(), ""));
     }
 
@@ -139,8 +139,8 @@ public class TreeNodesIdeTest extends AbstractTempRootIdeTest {
         made().testCase(made().testSet(archived, "Refunds"));
         assertTrue(nodes().mark(archived, PackageStatus.ARCHIVED, TESTER));
 
-        assertEquals("running Test Cases ran a retired branch", List.of(live.getId()), idsOf(indexedTestCases().getTestCasesUnder(testCasesRoot)));
-        assertEquals("running a deprecated test set directly ran nothing", List.of(inTheDeprecatedSet.getId()), idsOf(indexedTestCases().getTestCasesUnder(deprecated)));
+        assertEquals("running Test Cases ran a retired branch", List.of(live.getUuid()), uuidsOf(indexedTestCases().getTestCasesUnder(testCasesRoot)));
+        assertEquals("running a deprecated test set directly ran nothing", List.of(inTheDeprecatedSet.getUuid()), uuidsOf(indexedTestCases().getTestCasesUnder(deprecated)));
     }
 
     // Rule-TREE-PANEL-016
@@ -190,7 +190,7 @@ public class TreeNodesIdeTest extends AbstractTempRootIdeTest {
             assertTrue("adding a test case did not move the Updated row", markerOnDisk(login).getUpdatedAt().isAfter(yesterday));
 
             settings().testerName = "Hind";
-            assertTrue(indexedTestCases().removeTestCase(login.getPath(), added.getId()));
+            assertTrue(indexedTestCases().removeTestCase(login.getPath(), added.getUuid()));
             assertEquals("removing a test case did not name who did it", "Hind", markerOnDisk(login).getUpdatedBy());
 
         } finally {

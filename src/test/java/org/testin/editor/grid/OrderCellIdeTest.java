@@ -106,11 +106,11 @@ public class OrderCellIdeTest extends AbstractTempRootIdeTest {
         ShownDialog.press(getProject(), UpdateTestCaseDialog.class, Shortcuts.Enter.getKey());
 
         final @NotNull TestCase moved = testCases.getLast();
-        Await.until("the test case never moved to the top of its set", () -> editor.getAllTestCases().getFirst().getId().equals(moved.getId()));
+        Await.until("the test case never moved to the top of its set", () -> editor.getAllTestCases().getFirst().getUuid().equals(moved.getUuid()));
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
         final @NotNull JBTable redrawn = gridOf(editor);
-        assertEquals("the grid did not follow the moved test case", moved.getId(), editor.getList().getSelectedValue().getId());
+        assertEquals("the grid did not follow the moved test case", moved.getUuid(), editor.getList().getSelectedValue().getUuid());
         assertEquals("the grid's selected row is not the moved test case's", 0, redrawn.getSelectedRow());
     }
 

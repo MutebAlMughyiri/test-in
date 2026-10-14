@@ -41,9 +41,9 @@ public class UpdateMenuLettersTest {
 
     // Rule-EDITOR-PANEL-194
     @Test
-    public void testCaseStatusIsOpenedByUAndDrawsTheUTheCopyMenuDraws() {
-        assertEquals(UpdateTestCaseFields.STATUS.getShortcut().getKey(), KeyStroke.getKeyStroke(KeyEvent.VK_U, 0), "Status is not opened by U");
-        assertSame(UpdateTestCaseFields.STATUS.getIcon(), CopyChoice.STATUS.getIcon(), "Status does not draw the U the copy menu draws");
+    public void testCaseStatusIsOpenedByZAndDrawsTheZTheCopyMenuDraws() {
+        assertEquals(UpdateTestCaseFields.STATUS.getShortcut().getKey(), KeyStroke.getKeyStroke(KeyEvent.VK_Z, 0), "Status is not opened by Z");
+        assertSame(UpdateTestCaseFields.STATUS.getIcon(), CopyChoice.STATUS.getIcon(), "Status does not draw the Z the copy menu draws");
     }
 
     // Rule-EDITOR-PANEL-194
