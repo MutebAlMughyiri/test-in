@@ -64,13 +64,17 @@ public final class PopupsBuilt {
 
     public static final class Built {
         private static final int OFF_SCREEN_WIDTH = 800;
+
         private static final int OFF_SCREEN_HEIGHT = 600;
 
         @Getter
         private final @NotNull JComponent content;
+
         private final @NotNull Map<String, List<Object>> asked = new ConcurrentHashMap<>();
+
         @Getter
         private @NotNull String title = "";
+
         private @NotNull Optional<JBPopup> popup = Optional.empty();
 
         private Built(final @NotNull JComponent content) {

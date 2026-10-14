@@ -40,6 +40,7 @@ public class BugOnTheSummaryLineIdeTest extends AbstractViewPanelIdeTest {
     private static final @NotNull String ISSUE = "https://github.com/mtb550/test-in/issues/412";
 
     private TestCase testCase;
+
     private TestRunNode testRun;
 
     private static @NotNull RunItem recorded(final @NotNull TestCase testCase, final @NotNull RunItemStatus runItemStatus, final @NotNull String bugIssueUrl) {

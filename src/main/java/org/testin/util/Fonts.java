@@ -33,14 +33,23 @@ public final class Fonts {
     public static final float FLOOR = 8.0f;
 
     private static final float TITLE = 3.0f;
+
     private static final float LABEL = -2.0f;
+
     private static final float CAPTION = -2.0f;
+
     private static final float ROW = 1.0f;
+
     private static final float BADGE = -3.0f;
+
     private static final float FIELD = 6.0f;
+
     private static final float OPTION = 3.0f;
+
     private static final float FIGURE = 2.0f;
+
     private static final float ICON_LETTER = 9.0f;
+
     private static final @NotNull String CAPTION_FAMILY = "JetBrains Mono";
 
     // Rule-SETTING-037

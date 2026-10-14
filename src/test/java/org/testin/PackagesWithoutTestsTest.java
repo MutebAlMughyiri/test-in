@@ -34,6 +34,7 @@ import static org.testng.Assert.fail;
 public class PackagesWithoutTestsTest {
 
     private static final @NotNull Path MAIN = Path.of("src", "main", "java", "org", "testin");
+
     private static final @NotNull Path TEST = Path.of("src", "test", "java", "org", "testin");
 
     private static final @NotNull Map<String, String> WITHOUT_TESTS = Map.of(

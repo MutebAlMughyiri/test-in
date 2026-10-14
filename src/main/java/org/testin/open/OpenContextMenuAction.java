@@ -39,6 +39,7 @@ import java.util.function.Supplier;
 
 public class OpenContextMenuAction extends DumbAwareAction {
     private final @NotNull JComponent owner;
+
     private final @NotNull DefaultActionGroup contextMenu;
 
     private final @NotNull Supplier<Optional<Point>> anchor;

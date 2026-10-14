@@ -35,7 +35,9 @@ import java.util.Optional;
 @AllArgsConstructor
 public class TreeMouseListener extends PopupHandler {
     private final @NotNull Project project;
+
     private final @NotNull SimpleTree tree;
+
     private final @NotNull TreeContextMenu treeContextMenu;
 
     @Override

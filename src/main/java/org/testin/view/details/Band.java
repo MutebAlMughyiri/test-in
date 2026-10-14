@@ -42,10 +42,13 @@ import java.util.Optional;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Band extends AbstractDetails {
     private static final int INSETS_TOP = 18;
+
     private static final int INSETS_SIDE = 16;
 
     private final @NotNull String name;
+
     private final @NotNull String rememberedAs;
+
     private final @NotNull List<AbstractDetails> rows;
 
     // Rule-VIEW-PANEL-085

@@ -80,18 +80,27 @@ import java.util.function.Function;
 public class ReportBugFromThePanelIdeTest extends AbstractTempRootIdeTest {
 
     private static final @NotNull String REPOSITORY = "https://example.invalid/acme/shop";
+
     private static final @NotNull String ISSUE = "https://example.invalid/acme/shop/issues/7";
+
     private static final @NotNull KeyStroke ENTER = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
 
     private final @NotNull List<List<String>> asked = new CopyOnWriteArrayList<>();
+
     private final @NotNull List<String> bodies = new CopyOnWriteArrayList<>();
+
     private final @NotNull List<ProcessOutput> answers = new CopyOnWriteArrayList<>();
 
     private TestCase testCase;
+
     private TestRunNode testRun;
+
     private RunItem failed;
+
     private RunItemPath runItemPath;
+
     private Optional<String> ymlBefore = Optional.empty();
+
     private Function<ProgressIndicator, GitHubCli> ghBefore;
 
     private static @NotNull String read(final @NotNull Path file) {

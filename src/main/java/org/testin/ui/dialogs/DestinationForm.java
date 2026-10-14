@@ -34,8 +34,11 @@ public final class DestinationForm implements DialogComponent {
     private static final boolean EXPANDED = true;
 
     private final @NotNull TextInput folder;
+
     private final @NotNull TextInput fileName;
+
     private final @NotNull FormatSection format;
+
     private final @NotNull JComponent panel;
 
     private DestinationForm(final @NotNull Project project, final FileFormat @NotNull [] formats, final @NotNull FileFormat defaultFormat, final @NotNull String suggestedName, final @NotNull String chooserTitle, final @NotNull String chooserDescription, final @NotNull String section) {

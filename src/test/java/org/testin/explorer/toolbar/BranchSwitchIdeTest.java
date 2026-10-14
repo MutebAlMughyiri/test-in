@@ -45,9 +45,13 @@ import java.util.Optional;
 public class BranchSwitchIdeTest extends AbstractOpenEditorsIdeTest {
 
     private @NotNull String rootWas = "";
+
     private TestProjectNode testProject;
+
     private TestSetNode login;
+
     private TestSetNode checkout;
+
     private TreePanel panel;
 
     private static @NotNull AppSettingsState settings() {

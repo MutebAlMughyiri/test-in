@@ -30,6 +30,7 @@ import javax.swing.JComponent;
 // Rule-EDITOR-PANEL-247
 public class PrioritySection implements TestCaseSection {
     private final @NotNull RadioSelection<Priority> priority;
+
     private final @NotNull JBPanel<?> wrapper;
 
     // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-031, Rule-EDITOR-PANEL-247

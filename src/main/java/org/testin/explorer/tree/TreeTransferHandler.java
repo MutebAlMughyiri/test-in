@@ -70,13 +70,18 @@ public class TreeTransferHandler extends TransferHandler {
             new DataFlavor(TreeTransferPayload.class, "Testin tree nodes");
 
     private final @NotNull Project project;
+
     private final @NotNull SimpleTree tree;
 
     private final @NotNull Nodes nodes;
+
     private final @NotNull Notifier notifier;
+
     private final @NotNull NodeMoveOrCopy transfer;
+
     @Getter
     private final @NotNull Set<Path> selectedNodes;
+
     private int clipboardAction = COPY;
 
     public TreeTransferHandler(final @NotNull Project project, final @NotNull SimpleTree tree, final @NotNull Set<Path> selectedNodes, final @NotNull Consumer<Path> revealAfterRefresh) {

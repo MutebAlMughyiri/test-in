@@ -39,7 +39,9 @@ public enum TestProjectStatus implements NodeStatus {
     );
 
     private final @NotNull String label;
+
     private final @NotNull String buttonName;
+
     private final @NotNull String buttonDescription;
 
     private final boolean active;

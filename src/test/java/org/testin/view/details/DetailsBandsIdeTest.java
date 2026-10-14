@@ -42,9 +42,13 @@ import static org.testin.view.Drawn.holds;
 public class DetailsBandsIdeTest extends BasePlatformTestCase {
 
     private static final @NotNull String RUN_ITEM_BAND = Bundle.message("details.band.run.item").toUpperCase(Locale.ROOT);
+
     private static final @NotNull String TEST_CASE = Bundle.message("details.band.test.case").toUpperCase(Locale.ROOT);
+
     private static final @NotNull UUID TEST_CASE_UUID = UUID.fromString("3f2a05c1-8b44-4e2a-9f31-0c7d6b1a9c1b");
+
     private static final @NotNull String LAST_STEP = "Login";
+
     private static final @NotNull String STACKTRACE = """
             java.lang.AssertionError: expected [true]
                 at one

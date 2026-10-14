@@ -30,9 +30,13 @@ import java.util.Objects;
 record TestinProjectConfig(@NotNull TestinLocation location, @NotNull String repoUrl, @NotNull String testinProject, @NotNull String bugRepoUrl) {
     public static final @NotNull TestinProjectConfig EMPTY = new TestinProjectConfig(
             TestinLocation.LOCAL, "", "", "");
+
     static final @NotNull String TEST_PROJECT_KEY = "testinProject";
+
     static final @NotNull String LOCATION_KEY = "location";
+
     static final @NotNull String REPO_URL_KEY = "repoUrl";
+
     static final @NotNull String BUG_REPO_URL_KEY = "bugRepoUrl";
 
     public TestinProjectConfig {

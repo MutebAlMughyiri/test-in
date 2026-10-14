@@ -30,6 +30,7 @@ import java.awt.KeyboardFocusManager;
 
 public final class PlainTextArea implements DialogComponent {
     private final @NotNull JBTextArea area;
+
     private final @NotNull JComponent panel;
 
     PlainTextArea(final @NotNull String placeholder, final @NotNull String value, final int rows, final boolean readOnly) {

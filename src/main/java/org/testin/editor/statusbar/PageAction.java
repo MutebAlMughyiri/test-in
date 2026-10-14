@@ -28,6 +28,7 @@ import javax.swing.JComponent;
 
 public class PageAction extends DumbAwareAction {
     private final @NotNull TestinEditor editor;
+
     private final @NotNull PageStep step;
 
     private PageAction(final @NotNull TestinEditor editor, final @NotNull PageStep step) {

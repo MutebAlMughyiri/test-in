@@ -31,6 +31,7 @@ import java.awt.event.KeyEvent;
 
 public class SearchText extends SearchTextField implements Disposable, ToolbarItem {
     private final @NotNull Timer searchDebounceTimer;
+
     private final @NotNull Runnable onFocusReleased;
 
     // UC-EDITOR-PANEL-019, Rule-EDITOR-PANEL-090

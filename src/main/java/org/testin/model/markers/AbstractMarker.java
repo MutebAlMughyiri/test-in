@@ -42,14 +42,18 @@ public abstract class AbstractMarker implements Marker {
     private String uuid = "";
 
     private int order = Marker.NOT_ORDERED;
+
     @NonNull
     private String createdBy = "";
+
     @NonNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateFormats.DATE_FORMAT_PATTERN, locale = DateFormats.DATE_FORMAT_LOCALE)
     @JsonInclude(JsonInclude.Include.ALWAYS)
     private ZonedDateTime createdAt = ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS);
+
     @NonNull
     private String updatedBy = "";
+
     @NonNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateFormats.DATE_FORMAT_PATTERN, locale = DateFormats.DATE_FORMAT_LOCALE)
     private ZonedDateTime updatedAt = DateFormats.NOT_EXECUTED;

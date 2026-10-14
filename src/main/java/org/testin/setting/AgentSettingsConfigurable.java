@@ -43,8 +43,11 @@ public final class AgentSettingsConfigurable implements SearchableConfigurable {
     private static final @NotNull Duration CHECK_TIMEOUT = Duration.ofSeconds(20);
 
     private final @NotNull JBTextField commandField = new JBTextField();
+
     private final @NotNull JBTextField argumentsField = new JBTextField();
+
     private final @NotNull JBLabel said = new JBLabel("");
+
     private final @NotNull AppSettingsState settings = Services.getInstance(AppSettingsState.class);
 
     private static @NotNull JBLabel hint(final @NotNull String text) {

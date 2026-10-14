@@ -41,6 +41,7 @@ import static org.testin.view.Drawn.holds;
 public class WaysInIdeTest extends AbstractViewPanelIdeTest {
 
     private TestSetNode testSet;
+
     private List<TestCase> testCases;
 
     @Override

@@ -28,9 +28,13 @@ import java.util.List;
 
 public record BugIssueState(@NotNull String label, @NotNull Color color, @NotNull String tooltip) {
     public static final @NotNull BugIssueState NOT_READ = new BugIssueState("", JBColor.GRAY, "");
+
     static final @NotNull BugIssueState OPEN = new BugIssueState(Bundle.message("bug.state.open"), RunItemStatus.FAILED.getRowColor(), "");
+
     static final @NotNull BugIssueState FIXED = new BugIssueState(Bundle.message("bug.state.fixed"), RunItemStatus.PASSED.getRowColor(), "");
+
     static final @NotNull BugIssueState NOT_PLANNED = new BugIssueState(Bundle.message("bug.state.not.planned"), JBColor.GRAY, "");
+
     static final @NotNull BugIssueState DUPLICATE = new BugIssueState(Bundle.message("bug.state.not.planned"), JBColor.GRAY, Bundle.message("bug.state.duplicate.tooltip"));
 
     static @NotNull BugIssueState onBoard(final @NotNull String column, final @NotNull String colorName, final @NotNull String gitHubProject) {

@@ -42,6 +42,7 @@ public class DescriptionSection extends AbstractOneLineSection {
     private static final @NotNull Icon REFUSED = Icons.fieldLetter(CreateTestCaseFields.DESCRIPTION.getIcon().letter(), Icons.RED);
 
     private final @NotNull Project project;
+
     private final @NotNull Notifier notifier;
 
     private final @NotNull TextAttributes hint = new TextAttributes();

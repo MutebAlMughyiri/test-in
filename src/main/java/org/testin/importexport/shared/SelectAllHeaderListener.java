@@ -28,7 +28,9 @@ import java.awt.event.MouseEvent;
 @AllArgsConstructor
 public class SelectAllHeaderListener extends MouseAdapter {
     private final @NotNull JBTable table;
+
     private final @NotNull DefaultTableModel model;
+
     private final @NotNull JBCheckBox headerCheckbox;
 
     // UC-SHARE-003, Rule-SHARE-018

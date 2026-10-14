@@ -79,14 +79,23 @@ import java.util.UUID;
 public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
 
     private TestProjectNode testProject;
+
     private TestSetNode login;
+
     private TestCase first;
+
     private TestCase second;
+
     private TestSetNode empty;
+
     private TestSetNode old;
+
     private TestCase inOld;
+
     private TestSetPackageNode archive;
+
     private TestSetNode inside;
+
     private TestCase inInside;
 
     private static @NotNull Map<TestRunConfiguration, String> everyQuestionAnswered() {

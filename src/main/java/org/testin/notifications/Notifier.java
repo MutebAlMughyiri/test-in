@@ -52,6 +52,7 @@ import java.util.function.Consumer;
 @Service(Service.Level.PROJECT)
 public final class Notifier {
     private static final @NotNull String GROUP_ID = "testin.notifications";
+
     private static final @NotNull String NO_TITLE = "";
 
     private final @NotNull List<Consumer<String>> balloonWatchers = new CopyOnWriteArrayList<>();

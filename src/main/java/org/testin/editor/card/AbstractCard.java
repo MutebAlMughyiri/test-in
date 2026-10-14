@@ -67,26 +67,44 @@ import java.util.Optional;
 
 public abstract class AbstractCard extends JBPanel<AbstractCard> {
     protected final @NotNull JTextArea titleArea = Prose.of("");
+
     protected final @NotNull JBPanel<?> badgePanel = new JBPanel<>(new FlowLayout(FlowLayout.LEFT, JBUI.scale(10), 0));
+
     protected final @NotNull Map<String, JBLabel> fieldLabels = new HashMap<>();
+
     private final @NotNull Map<String, String> lineTooltips = new HashMap<>();
+
     protected final @NotNull JBPanel<?> content = new JBPanel<>(new VerticalLayout(JBUI.scale(4)));
+
     protected final @NotNull BorderLayoutPanel wrapper = new BorderLayoutPanel();
+
     // Rule-CODEGEN-082
     protected final @NotNull Project project;
+
     protected final @NotNull AutomationState automationState;
+
     protected boolean isRowHovered;
+
     protected @NotNull String hoveredAction = "";
+
     protected @NotNull Automated automation = Automated.UNKNOWN;
+
     private static final @NotNull Border SELECTED_BORDER = JBUI.Borders.customLine(EditorColors.SELECTION_BORDER, 1);
+
     private static final @NotNull Border UNSELECTED_BORDER = JBUI.Borders.empty(1);
 
     protected @NotNull Priority priority = Priority.DEFAULT;
+
     private @NotNull List<Offered> hoverButtons = List.of();
+
     private boolean executing;
+
     private @NotNull String plainTitle = "";
+
     private @NotNull List<Badge> shownBadges = List.of();
+
     private int titleColumnWidth = Integer.MAX_VALUE;
+
     private int titleWidth;
 
     public AbstractCard(final @NotNull Project project) {
@@ -162,6 +180,7 @@ public abstract class AbstractCard extends JBPanel<AbstractCard> {
     private void layOutTitle() {
         titleArea.setText(plainTitle);
         titleArea.setSize(Math.min(titleColumnWidth, Short.MAX_VALUE), Short.MAX_VALUE);
+        titleArea.setMaximumSize(titleArea.getSize());
         UIUtil.uiParents(titleArea, false).takeWhile(part -> SwingUtilities.isDescendingFrom(part, this)).forEach(Component::invalidate);
     }
 
@@ -180,7 +199,6 @@ public abstract class AbstractCard extends JBPanel<AbstractCard> {
         if (priority != Priority.DEFAULT) spoken.add(priority.getLabel());
         spoken.addAll(badges.stream().map(Badge::text).toList());
 
-        titleArea.setMaximumSize(titleArea.getSize());
         details.forEach((fieldName, value) -> {
             if (value.isBlank()) return;
 

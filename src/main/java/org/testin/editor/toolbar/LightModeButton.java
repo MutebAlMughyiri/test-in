@@ -26,6 +26,7 @@ import org.testin.util.Bundle;
 
 public class LightModeButton extends AbstractIconButton implements ToolbarItem {
     private final @NotNull TestRunEditor editor;
+
     private final @NotNull LightMode lightMode;
 
     // UC-EDITOR-PANEL-046

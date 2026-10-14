@@ -24,6 +24,7 @@ import org.testin.util.Shortcuts;
 
 public record StatusBarShortcut(@NotNull Shortcuts shortcut, @NotNull String displayText, @NotNull String name, @NotNull Runnable action) implements StatusBarItem {
     public static final @NotNull String SAVE = Bundle.message("shortcut.save");
+
     public static final @NotNull String SELECT = Bundle.message("shortcut.select");
 
     // UC-INTERNAL-007, Rule-INTERNAL-054

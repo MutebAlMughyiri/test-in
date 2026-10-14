@@ -41,6 +41,7 @@ import static org.testng.Assert.assertTrue;
 public class PendingChangeReaderTest {
 
     private final Map<String, String> committed = new HashMap<>();
+
     private Path root;
 
     @BeforeMethod

@@ -58,9 +58,13 @@ public enum OptionalPlugin {
     );
 
     private static final @NotNull Map<OptionalPlugin, Boolean> AVAILABLE = new ConcurrentHashMap<>();
+
     private final @NotNull String pluginId;
+
     private final @NotNull String label;
+
     private final @NotNull String requirement;
+
     private final @NotNull SetupStep step;
 
     OptionalPlugin(final @NotNull String pluginId, final @NotNull String label, final @NotNull String requirement, final @NotNull SetupStep step) {

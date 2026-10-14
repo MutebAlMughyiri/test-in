@@ -31,12 +31,15 @@ import java.util.Optional;
 
 public record DialogSize(double heightPart) {
     public static final @NotNull DialogSize CONTENT = new DialogSize(0);
+
     public static final @NotNull DialogSize HALF = new DialogSize(0.50);
+
     public static final @NotNull DialogSize TALL = new DialogSize(0.70);
 
     static final int VISIBLE_ROWS = 8;
 
     private static final double WIDTH = 0.60;
+
     private static final int MARGIN = 32;
 
     // Rule-INTERNAL-100

@@ -76,12 +76,19 @@ public final class TestRunWordGenerator {
     final String NO_BORDER = "";
 
     final String DARK_NAVY = ReportColor.HEADING.hex();
+
     final String MEDIUM_BLUE = ReportColor.ACCENT.hex();
+
     final String DARK_GRAY = ReportColor.MUTED.hex();
+
     final String LINK_BLUE = ReportColor.LINK.hex();
+
     final String LIGHT_BG = ReportColor.PANEL.hex();
+
     final String BORDER_GRAY = ReportColor.LINE.hex();
+
     final String WHITE = ReportColor.PAGE.hex();
+
     final String BLACK = ReportColor.INK.hex();
 
     // UC-REPORT-001, Rule-REPORT-002, Rule-REPORT-005

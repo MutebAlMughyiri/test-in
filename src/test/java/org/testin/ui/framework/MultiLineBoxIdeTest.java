@@ -170,7 +170,9 @@ public class MultiLineBoxIdeTest extends BasePlatformTestCase {
 
     private static final class Host implements DialogHost {
         private final @NotNull JComponent root = new JPanel();
+
         private final @NotNull AtomicInteger refits = new AtomicInteger();
+
         private final @NotNull List<Binding> bindings = new ArrayList<>();
 
         @Override

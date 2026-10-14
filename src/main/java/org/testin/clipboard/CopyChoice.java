@@ -131,7 +131,9 @@ public enum CopyChoice implements MenuItem {
     );
 
     private final @NotNull String name;
+
     private final @NotNull Shortcuts shortcut;
+
     private final Icons.@NotNull LetterIcon icon;
 
     private final @NotNull Optional<TestSetEditorFields> field;

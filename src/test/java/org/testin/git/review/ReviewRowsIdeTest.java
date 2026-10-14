@@ -50,7 +50,9 @@ import java.util.UUID;
 
 public class ReviewRowsIdeTest extends AbstractGitRemoteIdeTest {
     private TestSetNode login;
+
     private TestCase first;
+
     private TestCase second;
 
     private static int rowNamed(final @NotNull JBTable table, final @NotNull String name) {

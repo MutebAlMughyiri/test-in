@@ -36,11 +36,17 @@ import java.util.function.Consumer;
 public abstract class AbstractJsonArraySplitBulkSectionDialog extends AbstractFrameworkDialog {
     private static final @NotNull EntryRecorder RECORDS_NOTHING = (_, _, _, _) -> {
     };
+
     private final @NotNull List<TestCase> selectedTestCases;
+
     private final @NotNull Consumer<List<TestCase>> updatedTestCases;
+
     private final @NotNull BulkJsonEditors editors;
+
     private final @NotNull List<List<String>> originalValues = new ArrayList<>();
+
     private final @NotNull List<List<String>> activeValues = new ArrayList<>();
+
     private final @NotNull List<int[]> spanOwners = new ArrayList<>();
 
     protected AbstractJsonArraySplitBulkSectionDialog(final @NotNull Project project, final @NotNull List<TestCase> selectedTestCases, final @NotNull Consumer<List<TestCase>> updatedTestCases) {

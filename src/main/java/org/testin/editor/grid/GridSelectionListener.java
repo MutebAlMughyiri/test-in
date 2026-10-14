@@ -32,8 +32,11 @@ import java.util.List;
 @AllArgsConstructor
 public class GridSelectionListener implements ListSelectionListener {
     private final @NotNull TestinEditor editor;
+
     private final @NotNull JBTable table;
+
     private final @NotNull JBList<TestCase> list;
+
     private final @NotNull List<TestCase> pageTestCases;
 
     // UC-EDITOR-PANEL-024, Rule-EDITOR-PANEL-111

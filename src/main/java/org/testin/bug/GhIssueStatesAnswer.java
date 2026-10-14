@@ -29,7 +29,9 @@ import java.util.stream.StreamSupport;
 
 record GhIssueStatesAnswer(@NotNull Map<Integer, BugIssueState> states, boolean boardRefused, @NotNull String problem) {
     private static final int SIGNED_OUT = 4;
+
     private static final @NotNull String NO_GITHUB_PROJECT_SCOPE = "INSUFFICIENT_SCOPES";
+
     private static final @NotNull Map<String, BugIssueState> BY_GITHUB = Map.of(
             "OPEN", BugIssueState.OPEN,
             "COMPLETED", BugIssueState.FIXED,

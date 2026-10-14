@@ -54,17 +54,27 @@ import java.util.function.BiFunction;
 
 final class ApiModelDialog extends AbstractFrameworkDialog {
     private static final @NotNull String REMEMBERED_LAYOUT = "testin.apiModel.sideBySide";
+
     private static final @NotNull String REQUEST = "Request";
+
     private static final @NotNull String RESPONSE = "Response";
+
     private static final int EMPTY_LINES = 3;
 
     private final @NotNull PsiDirectory directory;
+
     private final @NotNull String packageName;
+
     private final @NotNull TextInput nameInput;
+
     private final @NotNull MultiLineField request;
+
     private final @NotNull MultiLineField response;
+
     private final @NotNull JBLabel requestTitle = new JBLabel(Bundle.message("dialog.api.model.request.caption"));
+
     private final @NotNull JBLabel responseTitle = new JBLabel(Bundle.message("dialog.api.model.response.caption"));
+
     private final @NotNull FieldPair pair;
 
     // UC-CODEGEN-022, Rule-CODEGEN-099, Rule-CODEGEN-106, Rule-CODEGEN-107, Rule-CODEGEN-109

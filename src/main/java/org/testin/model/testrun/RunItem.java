@@ -75,30 +75,37 @@ public class RunItem {
     @Setter(AccessLevel.NONE)
     @Builder.Default
     private @NotNull Optional<TestCase> lastInGit = Optional.empty();
+
     // Rule-INTERNAL-094
     @JsonIgnore
     @NotNull
     @Builder.Default
     private UUID uuid = new UUID(0L, 0L);
+
     @NotNull
     @Builder.Default
     private BugSeverity bugSeverity = BugSeverity.DEFAULT;
+
     @NotNull
     @Builder.Default
     private BugPriority bugPriority = BugPriority.DEFAULT;
+
     @NotNull
     @Builder.Default
     private String bugIssueUrl = "";
+
     // Rule-VIEW-PANEL-119, Rule-INTERNAL-135
     @JsonProperty("default")
     @JsonInclude(JsonInclude.Include.ALWAYS)
     @Builder.Default
     private int defaultNumber = 1;
+
     // UC-EDITOR-PANEL-032, Rule-EDITOR-PANEL-136, Rule-INTERNAL-135
     @NotNull
     @JsonInclude(JsonInclude.Include.ALWAYS)
     @Builder.Default
     private List<RunItemExecution> executions = List.of(RunItemExecution.pending());
+
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-126
     @JsonIgnore
     @Getter(AccessLevel.NONE)

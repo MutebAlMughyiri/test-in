@@ -195,7 +195,9 @@ public enum TestRunEditorFields implements ShowableField {
     public static final @NotNull List<TestRunEditorFields> COLUMNS = List.of(values());
 
     private final @NotNull String name;
+
     private final @NotNull FieldDefault toolBarDefault;
+
     private final @NotNull Function<RunItem, String> runItemValueExtractor;
 
     private final @NotNull RunItemValueSetter runItemValueSetter;

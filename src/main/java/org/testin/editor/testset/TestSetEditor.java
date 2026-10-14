@@ -66,6 +66,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorFields, Tes
 
     @Getter
     private final @NotNull TestSetToolbar toolBar;
+
     private final @NotNull AtomicInteger modelGeneration = new AtomicInteger();
 
     private volatile boolean loading;

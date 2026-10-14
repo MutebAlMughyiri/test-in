@@ -47,8 +47,11 @@ import java.util.Objects;
 
 public class GridIdeTest extends BasePlatformTestCase {
     private static final int SEQUENCE = 0;
+
     private static final int DESCRIPTION = 2;
+
     private static final int EXPECTED = 4;
+
     private static final int UUID = 3;
 
     private static final @NotNull String DESCRIPTION_WIDTH = EditorKind.TEST_SET.columnWidthKey(TestSetEditorFields.DESCRIPTION.getName());

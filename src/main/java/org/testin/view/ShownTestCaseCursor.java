@@ -28,7 +28,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ShownTestCaseCursor {
     private final @NotNull ViewPanel viewPanel;
+
     private @NotNull List<TestCase> shownTestCases = List.of();
+
     private int currentIndex = 0;
 
     @Getter

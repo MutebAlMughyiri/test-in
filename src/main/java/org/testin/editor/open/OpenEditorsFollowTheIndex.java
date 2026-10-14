@@ -24,6 +24,7 @@ import org.testin.services.Services;
 
 public final class OpenEditorsFollowTheIndex implements IndexChanged {
     private final @NotNull Project project;
+
     private final @NotNull TestinEditors testinEditors;
 
     public OpenEditorsFollowTheIndex(final @NotNull Project project) {

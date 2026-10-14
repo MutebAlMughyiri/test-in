@@ -54,15 +54,23 @@ import java.util.function.Consumer;
 
 public final class PendingChangesDialog extends AbstractFrameworkDialog {
     private static final @NotNull String PUSH = Bundle.message("dialog.pending.button.push");
+
     private static final @NotNull String COMMIT = Bundle.message("dialog.pending.button.commit");
 
     private final @NotNull List<Row> rowDifferences = new ArrayList<>();
+
     private final @NotNull Path repoRoot;
+
     private final @NotNull SelectionTable changes;
+
     private final @NotNull ChoiceInput branch;
+
     private final @NotNull TextInput message;
+
     private final @NotNull DialogSplitButton commit;
+
     private final @NotNull Consumer<Request> onCommit;
+
     private final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
 
     public PendingChangesDialog(final @NotNull Project project, final @NotNull List<PendingChange> differences, final @NotNull Path repoRoot, final @NotNull List<String> branches, final @NotNull String currentBranch, final @NotNull Consumer<Request> onCommit) {

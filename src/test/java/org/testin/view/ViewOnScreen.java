@@ -51,13 +51,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public final class ViewOnScreen {
     public static final @NotNull String TREE = "testin.tree";
+
     private static final @NotNull String VIEW = "testin.view";
 
     private final @NotNull Windows windows;
+
     @Getter
     private final @NotNull ViewPanel panel;
+
     @Getter
     private final @NotNull List<AnAction> arrows;
+
     private final @NotNull AtomicInteger detailsFocused;
 
     private ViewOnScreen(final @NotNull Windows windows, final @NotNull ViewPanel panel, final @NotNull List<AnAction> arrows, final @NotNull AtomicInteger detailsFocused) {
@@ -158,7 +162,9 @@ public final class ViewOnScreen {
 
     private static final class Windows extends ToolWindowManager {
         private final @NotNull ToolWindowManager headless;
+
         private final @NotNull Map<String, ShownToolWindow> shown;
+
         private final @NotNull AtomicInteger editorActivated = new AtomicInteger();
 
         private Windows(final @NotNull ToolWindowManager headless, final @NotNull Map<String, ShownToolWindow> shown) {
@@ -264,10 +270,15 @@ public final class ViewOnScreen {
 
     private static final class ShownToolWindow implements InvocationHandler {
         private final @NotNull ContentManager contents;
+
         private final @NotNull JPanel component = new JPanel(new BorderLayout());
+
         private final @NotNull AtomicInteger activated = new AtomicInteger();
+
         private final @NotNull ToolWindow window;
+
         private @NotNull List<AnAction> titleActions = List.of();
+
         private boolean visible;
 
         private ShownToolWindow(final @NotNull Project project, final @NotNull Disposable test) {

@@ -38,6 +38,7 @@ public final class GoTo {
     private static final @NotNull String TREE = "testin.tree";
 
     private static final boolean WITH_FOCUS = true;
+
     private static final boolean WITHOUT_FOCUS = false;
 
     // UC-INTERNAL-001, Rule-INTERNAL-002

@@ -58,23 +58,37 @@ import java.util.stream.Stream;
 @Service(Service.Level.PROJECT)
 public final class TestProjectIndexer {
     private final @NotNull Project project;
+
     @Getter(AccessLevel.PACKAGE)
     private final @NotNull IndexerDataStore store;
+
     private final @NotNull ReadProblems problems;
+
     @Getter(AccessLevel.PACKAGE)
     private final @NotNull TestProjectScanCoordinator scanCoordinator;
+
     private final @NotNull AtomicBoolean indexed = new AtomicBoolean(false);
+
     private final @NotNull AtomicBoolean indexing = new AtomicBoolean(false);
+
     private final @NotNull AtomicBoolean restoreEditorsOnComplete = new AtomicBoolean(true);
+
     @Getter(AccessLevel.PACKAGE)
     private final @NotNull RunItemWriter runItemWriter;
+
     @Getter(AccessLevel.PACKAGE)
     private final @NotNull NodeFiles nodeFiles;
+
     private final @NotNull TestinRoot testinRoot;
+
     private final @NotNull Rescan rescan;
+
     private final @NotNull BoundTestProject boundTestProject;
+
     private final @NotNull NodeMapper directoryMapper;
+
     private final @NotNull LastOpenEditors lastOpenEditors;
+
     private volatile @NotNull CountDownLatch indexingLatch = new CountDownLatch(1);
 
     public TestProjectIndexer(final @NotNull Project project) {

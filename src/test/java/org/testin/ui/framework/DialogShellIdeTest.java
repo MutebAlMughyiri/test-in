@@ -396,6 +396,7 @@ public class DialogShellIdeTest extends BasePlatformTestCase {
 
     private static final class Form extends AbstractFrameworkDialog {
         private final @NotNull AtomicInteger submitted = new AtomicInteger();
+
         private final @NotNull AtomicInteger searched = new AtomicInteger();
 
         private Form(final @NotNull Project project, final @NotNull List<? extends DialogPart<?>> fields) {

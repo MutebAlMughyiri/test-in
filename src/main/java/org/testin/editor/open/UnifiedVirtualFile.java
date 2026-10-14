@@ -29,6 +29,7 @@ public class UnifiedVirtualFile extends LightVirtualFile {
     private static final @NotNull String PROTOCOL = "testin";
 
     private final @NotNull AbstractNode node;
+
     private final @NotNull EditorKind kind;
 
     public UnifiedVirtualFile(final @NotNull AbstractNode node) {

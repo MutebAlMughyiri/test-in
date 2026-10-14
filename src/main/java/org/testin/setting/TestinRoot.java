@@ -32,7 +32,9 @@ import java.util.Optional;
 @Service(Service.Level.PROJECT)
 public final class TestinRoot {
     public static final @NotNull Path NONE = Path.of("");
+
     private final @NotNull Project project;
+
     private final @NotNull AppSettingsState settings;
 
     public TestinRoot(final @NotNull Project project) {

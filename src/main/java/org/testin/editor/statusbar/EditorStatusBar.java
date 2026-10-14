@@ -73,6 +73,7 @@ public class EditorStatusBar extends JBPanel<EditorStatusBar> {
     private final @NotNull JBTextField pageSizeField = new JBTextField("", 4);
 
     private final @NotNull JBPanel<?> navigationRow;
+
     private final @NotNull JBPanel<?> rightRow;
 
     public EditorStatusBar() {

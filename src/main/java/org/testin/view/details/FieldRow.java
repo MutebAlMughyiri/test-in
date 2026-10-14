@@ -29,6 +29,7 @@ import java.util.function.BiFunction;
 @RequiredArgsConstructor
 public final class FieldRow extends AbstractDetails {
     private final @NotNull String caption;
+
     private final @NotNull BiFunction<Project, TestCase, String> extractor;
 
     // UC-VIEW-PANEL-004

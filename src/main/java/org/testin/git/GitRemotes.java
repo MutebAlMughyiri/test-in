@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 public final class GitRemotes {
     // UC-TREE-PANEL-001, Rule-TREE-PANEL-117
     private static final @NotNull Pattern CLONE_CHARACTERS = Pattern.compile("^[A-Za-z0-9._~:/?#@%+=-]+$");
+
     private static final @NotNull Pattern REMOTE_SCHEME = Pattern.compile("^(https?|ssh|git)://");
 
     // UC-SHARE-016, Rule-SHARE-122

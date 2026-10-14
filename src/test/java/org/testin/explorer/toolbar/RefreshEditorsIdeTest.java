@@ -46,11 +46,17 @@ import java.util.UUID;
 public class RefreshEditorsIdeTest extends AbstractOpenEditorsIdeTest {
 
     private @NotNull String rootWas = "";
+
     private TestSetNode login;
+
     private TestSetNode checkout;
+
     private TestSetNode card;
+
     private TestCase inCheckout;
+
     private TestCase inCard;
+
     private TreePanel panel;
 
     private static @NotNull AppSettingsState settings() {

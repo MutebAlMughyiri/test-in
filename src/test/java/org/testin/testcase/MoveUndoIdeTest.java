@@ -49,6 +49,7 @@ import java.util.stream.Stream;
 public class MoveUndoIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull TestSetNode from = new TestSetNode();
+
     private @NotNull TestSetNode to = new TestSetNode();
 
     private static boolean onDisk(final @NotNull Path testSet, final @NotNull UUID testCaseUuid) {

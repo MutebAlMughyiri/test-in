@@ -46,6 +46,7 @@ public enum EditorKind {
             NodeType.TEST_RUN, TEST_RUN);
 
     private final @NotNull String word;
+
     @Getter
     private final @NotNull EditorFileType fileType;
 

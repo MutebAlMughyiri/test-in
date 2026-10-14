@@ -60,6 +60,7 @@ import static org.testng.Assert.assertTrue;
 public class GitWorkflowTest {
 
     private static final int WINDOWS_COMMAND_LINE_LIMIT = 32767;
+
     private Path remote;
 
     private Path work;

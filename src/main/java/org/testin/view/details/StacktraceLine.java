@@ -46,7 +46,9 @@ import java.util.List;
 @AllArgsConstructor
 public final class StacktraceLine extends AbstractDetails {
     private static final int GAP = 12;
+
     private static final int INSETS_TOP = 8;
+
     private static final int INSETS_SIDE = 16;
 
     private final @NotNull RunItemExecution shown;

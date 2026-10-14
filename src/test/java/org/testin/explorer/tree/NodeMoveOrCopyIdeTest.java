@@ -36,7 +36,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class NodeMoveOrCopyIdeTest extends AbstractTempRootIdeTest {
 
     private final @NotNull List<Path> revealed = new CopyOnWriteArrayList<>();
+
     private @NotNull TestSetPackageNode payments = new TestSetPackageNode();
+
     private @NotNull TestSetNode login = new TestSetNode();
 
     @Override

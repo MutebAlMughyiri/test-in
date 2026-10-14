@@ -61,16 +61,26 @@ public final class TextFieldWithSelections<T> implements DialogComponent, TextVa
     private static final int DEBOUNCE_MILLIS = 300;
 
     private final @NotNull TextInputField input;
+
     private final @NotNull JTextField textField;
+
     private final @NotNull CollectionListModel<Selection<T>> rowModel = new CollectionListModel<>();
+
     private final @NotNull JBList<Selection<T>> list;
+
     private final @NotNull JBPanel<?> panel;
+
     private final @NotNull JBScrollPane scrollPane;
+
     private final int visibleRows;
+
     private final @NotNull SelectionSource<T> rows;
+
     private final @NotNull AtomicInteger queryGeneration = new AtomicInteger();
+
     private @NotNull Runnable submitRequest = () -> {
     };
+
     private boolean askedOnce;
 
     TextFieldWithSelections(final @NotNull Icon icon, final @NotNull String placeHolderText, final @NotNull List<Selection<T>> shownBeforeAsking, final @NotNull SelectionSource<T> rows, final int visibleRows) {

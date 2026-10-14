@@ -48,8 +48,10 @@ public final class AutomationState implements Disposable {
     private static final long NEVER_READ = -1;
 
     private final @NotNull Map<UUID, Automated> known = new ConcurrentHashMap<>();
+
     // UC-CODEGEN-005, Rule-CODEGEN-025
     private final @NotNull Set<UUID> withAMethod = ConcurrentHashMap.newKeySet();
+
     private volatile long readAtCodeVersion = NEVER_READ;
 
     // UC-EDITOR-PANEL-047, Rule-EDITOR-PANEL-195, Rule-CODEGEN-002

@@ -49,28 +49,36 @@ public class RunItemExecution {
     @Builder.Default
     @JsonInclude(JsonInclude.Include.ALWAYS)
     private RunItemStatus status = RunItemStatus.PENDING;
+
     @NotNull
     @Builder.Default
     private Duration duration = Duration.ZERO;
+
     @NotNull
     @Builder.Default
     private String executedBy = "";
+
     @NotNull
     @Builder.Default
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateFormats.DATE_FORMAT_PATTERN, locale = DateFormats.DATE_FORMAT_LOCALE)
     private ZonedDateTime executedAt = DateFormats.NOT_EXECUTED;
+
     @NotNull
     @Builder.Default
     private String actualResult = "";
+
     @NotNull
     @Builder.Default
     private String stacktrace = "";
+
     // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-219
     @NotNull
     @Builder.Default
     private List<String> screenshots = List.of();
+
     // Rule-CODEGEN-112
     private int invocation;
+
     // Rule-CODEGEN-112
     private int retry;
 

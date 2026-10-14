@@ -49,6 +49,7 @@ import java.util.Map;
 public class TextSizeIdeTest extends AbstractTempRootIdeTest {
 
     private static final float BASE = 13.0f;
+
     private static final float DELTA = 0.001f;
 
     private float wasSize;

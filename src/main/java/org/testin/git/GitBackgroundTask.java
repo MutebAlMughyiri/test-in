@@ -27,6 +27,7 @@ import java.util.function.Consumer;
 
 public final class GitBackgroundTask extends Task.Backgroundable {
     private final @NotNull GitTaskWork work;
+
     private final @NotNull Consumer<Exception> onError;
 
     public GitBackgroundTask(final @NotNull Project project, final @NotNull String title, final boolean cancellable, final @NotNull GitTaskWork work, final @NotNull Consumer<Exception> onError) {

@@ -41,6 +41,7 @@ import static org.testin.git.LocalGit.mustGit;
 public class BugHistoryIdeTest extends AbstractGitRemoteIdeTest {
 
     private static final @NotNull UUID TEST_CASE_UUID = UUID.fromString("77777777-7777-4777-8777-777777777397");
+
     private static final @NotNull String RUN_ITEM = TEST_CASE_UUID + ".runitem";
 
     private static @NotNull RunItem runItem(final @NotNull RunItemStatus runItemStatus, final @NotNull BugSeverity severity) {

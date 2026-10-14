@@ -45,8 +45,11 @@ import java.util.stream.IntStream;
 
 public class HistoryTab {
     private static final @NotNull String REQUEST = "testin.history.request";
+
     private static final int READING_AFTER_MILLIS = 300;
+
     private static final int GROUP = 50;
+
     private static final int GAP = 12;
 
     private static boolean isCurrent(final @NotNull JPanel historyTab, final @NotNull Object request) {

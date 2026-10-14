@@ -34,7 +34,9 @@ import java.util.Optional;
 
 public final class ChoiceInput implements DialogComponent {
     private static final @NotNull String PICK = "testin.choice.pick";
+
     private final @NotNull JBPanel<?> panel;
+
     private final @NotNull ComboBox<String> combo;
 
     ChoiceInput(final @NotNull String caption, final @NotNull List<String> options, final @NotNull String selected) {

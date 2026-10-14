@@ -73,15 +73,23 @@ final class BulkJsonEditors implements DialogComponent {
     private final @NotNull Project project;
 
     private final @NotNull Document leftDocument;
+
     private final @NotNull Document rightDocument;
+
     private final @NotNull Editor leftEditor;
+
     private final @NotNull Editor rightEditor;
+
     private final @NotNull JBSplitter splitter;
 
     private final @NotNull List<RangeMarker> markers = new ArrayList<>();
+
     private final @NotNull List<RangeMarker> guardBlocks = new ArrayList<>();
+
     private final @NotNull List<RangeHighlighter> leftLineHighlighters = new ArrayList<>();
+
     private final @NotNull TextAttributes leftLineAttributes = new TextAttributes();
+
     private final @NotNull Disposable documentListenerDisposable = Disposer.newDisposable();
 
     private @NotNull IntFunction<String> originalTextAt = _ -> "";

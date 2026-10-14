@@ -42,6 +42,7 @@ import java.util.Objects;
 
 public class GroupMultiSelectEditor extends AbstractCellEditor implements TableCellEditor {
     private final @NotNull JButton button = new JButton();
+
     private final @NotNull TestCaseCompletions testCaseValues;
 
     private @NotNull String currentValue = "";

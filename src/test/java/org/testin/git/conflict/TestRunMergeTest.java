@@ -53,6 +53,7 @@ public class TestRunMergeTest {
               "status" : "CREATED",
               "configuration" : { "platform" : "Web" }
             }""";
+
     private static final String MINE_MARKER = """
             {
               "createdBy" : "Muteb",
@@ -64,6 +65,7 @@ public class TestRunMergeTest {
               "executionStartedAt" : "Monday 14-09-2026 At 10:00:00 [Asia/Riyadh]",
               "executionEndedAt" : "Monday 14-09-2026 At 10:20:00 [Asia/Riyadh]"
             }""";
+
     private static final String THEIRS_MARKER = """
             {
               "createdBy" : "Muteb",

@@ -84,8 +84,11 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
     @NotNull String WITH_TYPOS = "The dashbord stayd blank";
 
     private static final @NotNull KeyStroke DETAILS = Shortcuts.ToggleDetails.getKey();
+
     private static final @NotNull KeyStroke DETAILS_RELEASED = KeyStroke.getKeyStroke(DETAILS.getKeyCode(), DETAILS.getModifiers(), true);
+
     private static final int STEPS = 10;
+
     private final @NotNull List<LightModeScreen> opened = new ArrayList<>();
 
     private static void press(final @NotNull JFrame frame, final @NotNull KeyStroke key) {

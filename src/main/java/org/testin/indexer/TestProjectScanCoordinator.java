@@ -28,6 +28,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class TestProjectScanCoordinator {
     private final @NotNull IndexingScanner scanner;
+
     private final @NotNull ReentrantReadWriteLock scanLock = new ReentrantReadWriteLock();
 
     @NotNull Optional<String> scan(final @NotNull Path testProjectPath, final @NotNull ProgressIndicator indicator) {

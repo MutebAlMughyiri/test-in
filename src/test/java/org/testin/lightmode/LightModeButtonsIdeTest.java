@@ -64,7 +64,9 @@ import java.util.Objects;
 public class LightModeButtonsIdeTest extends AbstractCodegenIdeTest {
 
     private static final @NotNull String TO_THE_METHOD = Bundle.message("action.Testin.NavigateToTestMethod.text");
+
     private static final @NotNull String RUN_TEST_METHOD_TEXT = Bundle.message("action.Testin.RunTestMethod.text");
+
     private static final @NotNull String TO_THE_TEST_CASE = Bundle.message("action.Testin.NavigateToTestCase.text");
 
     private final @NotNull List<LightModeScreen> opened = new ArrayList<>();

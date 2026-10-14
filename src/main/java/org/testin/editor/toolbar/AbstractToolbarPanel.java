@@ -36,12 +36,16 @@ import java.util.Optional;
 
 public abstract class AbstractToolbarPanel extends JBPanel<AbstractToolbarPanel> implements Disposable {
     public static final int BAR_HEIGHT = JBUI.scale(30);
+
     @Getter
     protected final @NotNull SearchText searchText;
+
     @Getter
     private final @NotNull ToolbarCallbacks callbacks;
+
     @Getter
     private final @NotNull Map<Class<? extends ToolbarItem>, ToolbarItem> toolbarItems = new HashMap<>();
+
     @Getter
     private @NotNull ViewMode currentView = ViewMode.CARD_VIEW;
 

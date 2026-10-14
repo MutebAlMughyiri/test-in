@@ -27,6 +27,7 @@ import java.util.UUID;
 @Getter
 public final class EditorPaging {
     private int page = 1;
+
     private int size;
 
     public EditorPaging(final int size) {

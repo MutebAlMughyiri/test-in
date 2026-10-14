@@ -30,9 +30,13 @@ import java.util.List;
 
 public class GridContextMenuListener extends MouseAdapter {
     private final @NotNull JBTable table;
+
     private final @NotNull JBList<TestCase> list;
+
     private final @NotNull AbstractEditorContextMenu contextMenu;
+
     private final @NotNull List<TestCase> pageTestCases;
+
     private boolean popupShownOnPress;
 
     public GridContextMenuListener(final @NotNull JBTable table, final @NotNull JBList<TestCase> list, final @NotNull AbstractEditorContextMenu contextMenu, final @NotNull List<TestCase> pageTestCases) {

@@ -38,5 +38,6 @@ public enum GridEdit {
     );
 
     private final boolean written;
+
     private final boolean said;
 }

@@ -41,14 +41,23 @@ import java.util.Arrays;
 
 public class ShortcutStrip {
     private static final @NotNull String INNER_SEPARATOR = " ";
+
     private static final @NotNull String OUTER_SEPARATOR = "       ";
+
     private final @NotNull JBPanel<?> statusBar;
+
     private final @NotNull AppSettingsState settings = Services.getInstance(AppSettingsState.class);
+
     private final @NotNull Color labelColor = JBUI.CurrentTheme.Label.foreground();
+
     private final @NotNull Color dotColor = JBUI.CurrentTheme.ContextHelp.FOREGROUND;
+
     private final @NotNull Color separatorColor = JBUI.CurrentTheme.ContextHelp.FOREGROUND;
+
     private final @NotNull Font font = Fonts.small();
+
     private final @NotNull Icon icon = AllIcons.General.Keyboard;
+
     private final @NotNull Border border = JBUI.Borders.emptyRight(Spacing.S);
 
     // UC-INTERNAL-007, Rule-INTERNAL-079

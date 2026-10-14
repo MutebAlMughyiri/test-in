@@ -36,8 +36,11 @@ import static org.testng.Assert.assertEquals;
 
 public class PackageSizeTest {
     private static final int LINE = 20;
+
     private static final @NotNull Path SOURCES = Path.of("src", "main", "java", "org", "testin");
+
     private static final @NotNull Path ARCHITECTURE = Path.of("docs", "ARCHITECTURE.md");
+
     private static final @NotNull Pattern ROW = Pattern.compile("^\\| `([a-z.]+)` +\\|", Pattern.MULTILINE);
 
     private static @NotNull Map<String, Long> sizes() {

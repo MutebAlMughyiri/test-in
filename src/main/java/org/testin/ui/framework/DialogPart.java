@@ -124,6 +124,7 @@ public final class DialogPart<C extends DialogComponent> {
 
     public static final class TableBuilder {
         private final @NotNull List<String> columns = new ArrayList<>();
+
         private final @NotNull List<Integer> widths = new ArrayList<>();
 
         public @NotNull TableBuilder column(final @NotNull String heading, final int width) {
@@ -163,7 +164,9 @@ public final class DialogPart<C extends DialogComponent> {
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class RadioBuilder<T> {
         private final @NotNull String caption;
+
         private final @NotNull List<Option<T>> options = new ArrayList<>();
+
         private @NotNull Optional<T> selected = Optional.empty();
 
         public @NotNull RadioBuilder<T> option(final @NotNull String name, final @NotNull T value) {
@@ -195,8 +198,11 @@ public final class DialogPart<C extends DialogComponent> {
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class TextAreaBuilder {
         private @NotNull String placeholder = "";
+
         private @NotNull String value = "";
+
         private int rows = 5;
+
         private boolean readOnly = false;
 
         public @NotNull TextAreaBuilder placeholder(final @NotNull String placeholder) {
@@ -228,10 +234,15 @@ public final class DialogPart<C extends DialogComponent> {
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class TextInputBuilder {
         private @NotNull Icon icon = DialogStyle.NO_ICON;
+
         private @NotNull String caption = "";
+
         private @NotNull String placeholder = "";
+
         private @NotNull String value = "";
+
         private @NotNull String accepts = TextInput.ANYTHING;
+
         private @NotNull Optional<Consumer<TextInput>> browsing = Optional.empty();
 
         public @NotNull TextInputBuilder icon(final @NotNull Icon icon) {
@@ -277,8 +288,11 @@ public final class DialogPart<C extends DialogComponent> {
         private static final int SEARCH_ROWS = 12;
 
         private final @NotNull List<Selection<T>> selections = new ArrayList<>();
+
         private @NotNull Optional<SelectionSource<T>> rows = Optional.empty();
+
         private @NotNull Icon icon = DialogStyle.NO_ICON;
+
         private @NotNull String placeholder = "";
 
         public @NotNull TextFieldBuilder<T> icon(final @NotNull Icon icon) {

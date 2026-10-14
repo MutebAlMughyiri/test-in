@@ -23,8 +23,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Spacing {
     public static final int XS = 4;
+
     public static final int S = 6;
+
     public static final int M = 8;
+
     public static final int L = 10;
+
     public static final int XL = 12;
 }

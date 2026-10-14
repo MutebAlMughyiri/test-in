@@ -44,8 +44,11 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public final class ShortcutMenuPopup<T extends MenuItem> {
     private final @NotNull Project project;
+
     private final @NotNull String title;
+
     private final T @NotNull [] items;
+
     private final @NotNull Consumer<T> onSelection;
 
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-009

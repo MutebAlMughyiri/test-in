@@ -32,7 +32,9 @@ import java.util.Optional;
 // UC-INTERNAL-007, Rule-INTERNAL-080
 final class ButtonFooter {
     private final @NotNull JComponent button;
+
     private final @NotNull JBLabel tally = new JBLabel();
+
     private final @NotNull JBPanel<?> panel;
 
     // Rule-INTERNAL-095, Rule-INTERNAL-119, Rule-INTERNAL-140

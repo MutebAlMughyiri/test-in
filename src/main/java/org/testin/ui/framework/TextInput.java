@@ -43,7 +43,9 @@ public final class TextInput implements DialogComponent, TextValue {
     static final @NotNull String ANYTHING = ".*";
 
     private final @NotNull TextInputField input;
+
     private final @NotNull JTextField textField;
+
     private final @NotNull JComponent panel;
 
     private @NotNull Optional<Runnable> chooser = Optional.empty();

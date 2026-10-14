@@ -52,11 +52,17 @@ import java.util.stream.Collectors;
 
 public class CreateTestRun implements NodeCreator {
     private final @NotNull Project project;
+
     private final @NotNull BoundTestProject boundTestProject;
+
     private final @NotNull Nodes nodes;
+
     private final @NotNull Notifier notifier;
+
     private final @NotNull NodeMapper directoryMapper;
+
     private final @NotNull TestRuns testRuns;
+
     private final @NotNull TestinEditors editors;
 
     public CreateTestRun(final @NotNull Project project) {

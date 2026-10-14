@@ -50,7 +50,9 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestCaseHistory {
     static final @NotNull String RECORD = Character.toString(0x1E);
+
     static final @NotNull String FIELD = Character.toString(0x1F);
+
     private static final @NotNull String FORMAT = "--format=%x1e%H%x1f%an%x1f%aI%x1f%s";
 
     // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-113

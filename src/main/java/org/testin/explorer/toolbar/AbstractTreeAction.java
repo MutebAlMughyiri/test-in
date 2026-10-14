@@ -29,6 +29,7 @@ import java.util.function.Consumer;
 
 abstract class AbstractTreeAction extends DumbAwareAction {
     private final @NotNull TreePanel treePanel;
+
     private final @NotNull Consumer<SimpleTree> operation;
 
     protected AbstractTreeAction(final @NotNull TreePanel treePanel, final @NotNull String title, final @NotNull String description, final @NotNull Icon icon, final @NotNull Consumer<SimpleTree> operation) {

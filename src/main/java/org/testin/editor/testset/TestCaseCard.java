@@ -41,9 +41,13 @@ import java.util.Set;
 
 public class TestCaseCard extends AbstractCard {
     private final @NotNull List<Badge> badges = new ArrayList<>();
+
     private final @NotNull Map<String, String> details = new LinkedHashMap<>();
+
     private final @NotNull CutState cutState = Services.getInstance(project, CutState.class);
+
     private final @NotNull TestNGExecution testNGExecution = Services.getInstance(project, TestNGExecution.class);
+
     private boolean isPendingCut = false;
 
     public TestCaseCard(final @NotNull Project project) {

@@ -37,7 +37,9 @@ import java.util.function.Supplier;
 // UC-EDITOR-PANEL-005, UC-EDITOR-PANEL-006
 public final class TestCaseForm implements DialogComponent {
     private final @NotNull JBPanel<?> sections = new JBPanel<>();
+
     private final @NotNull JBPanel<?> panel;
+
     private final @NotNull Supplier<JComponent> focus;
 
     public TestCaseForm(final @NotNull Supplier<JComponent> focus, final boolean scrollsOnlyWhenOverflowing) {

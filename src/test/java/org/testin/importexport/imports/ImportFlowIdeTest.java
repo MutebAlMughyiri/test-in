@@ -76,6 +76,7 @@ public class ImportFlowIdeTest extends AbstractTempRootIdeTest {
     private static final @NotNull ZonedDateTime CREATED = ZonedDateTime.of(2026, 8, 20, 3, 33, 24, 0, ZoneId.of("Asia/Riyadh"));
 
     private final @NotNull StandInEditorProvider standIn = new StandInEditorProvider();
+
     private TestProjectNode testProject;
 
     private static @NotNull TestCase aTestCase(final @NotNull String description) {
@@ -330,6 +331,7 @@ public class ImportFlowIdeTest extends AbstractTempRootIdeTest {
 
     private static final class StandInEditor extends UserDataHolderBase implements FileEditor {
         private final @NotNull VirtualFile file;
+
         private final @NotNull JPanel component = new JPanel();
 
         private StandInEditor(final @NotNull VirtualFile file) {

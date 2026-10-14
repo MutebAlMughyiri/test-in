@@ -45,8 +45,11 @@ import java.util.UUID;
 public class TestRunFormFilterIdeTest extends AbstractTempRootIdeTest {
 
     private TestCase urgent;
+
     private TestCase later;
+
     private TestCase paid;
+
     private TestRunFormFilter filter;
 
     private static @NotNull CheckedTreeNode holding(final @NotNull TestSetNode testSet, final @NotNull TestCase... testCases) {

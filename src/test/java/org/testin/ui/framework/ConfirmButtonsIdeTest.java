@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ConfirmButtonsIdeTest extends AbstractTempRootIdeTest {
 
     private final @NotNull AtomicInteger switched = new AtomicInteger();
+
     private final @NotNull AtomicInteger reviewed = new AtomicInteger();
 
     @Override

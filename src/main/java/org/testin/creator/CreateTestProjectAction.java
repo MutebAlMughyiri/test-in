@@ -37,6 +37,7 @@ import org.testin.util.Bundle;
 
 public class CreateTestProjectAction extends AbstractBoundTestProjectAction {
     private final @NotNull TreePanel treePanel;
+
     private final @NotNull TestinRoot testinRoot = Services.getInstance(project, TestinRoot.class);
 
     public CreateTestProjectAction(final @NotNull Project project, final @NotNull TreePanel treePanel) {

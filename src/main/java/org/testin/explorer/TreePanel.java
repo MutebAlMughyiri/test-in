@@ -65,14 +65,21 @@ public final class TreePanel implements Disposable {
 
     private static final @NotNull
     @NlsSafe String AUTHOR = "Muteb AlMughyiri";
+
     private final @NotNull Project project;
+
     private final @NotNull TestinRoot testinRoot;
+
     private final @NotNull TestProjectIndexer indexer;
+
     private final @NotNull BoundTestProject boundTestProject;
+
     @Getter
     private final @NotNull JBPanelWithEmptyText panel = new JBPanelWithEmptyText(new BorderLayout());
+
     // UC-TREE-PANEL-001, Rule-TREE-PANEL-097
     private final @NotNull JBPanel<?> treeView = new JBPanel<>(new BorderLayout());
+
     private final @NotNull BranchSelector branchSelector;
 
     @Getter
@@ -80,8 +87,10 @@ public final class TreePanel implements Disposable {
 
     @Getter
     private final @NotNull TestProjectTree testProjectTree;
+
     // UC-TREE-PANEL-028, Rule-TREE-PANEL-101
     private @NotNull Optional<Content> content = Optional.empty();
+
     private @NotNull Map<String, TestProjectStatus> underRoot = Map.of();
 
     public TreePanel(final @NotNull Project project) {

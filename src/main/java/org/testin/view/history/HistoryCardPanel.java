@@ -73,6 +73,7 @@ import java.util.stream.Stream;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class HistoryCardPanel {
     private static final int SHOWN = 2;
+
     private static final int CAPTION_CHARACTERS = 12;
 
     // Rule-VIEW-PANEL-096, Rule-VIEW-PANEL-105, Rule-VIEW-PANEL-115

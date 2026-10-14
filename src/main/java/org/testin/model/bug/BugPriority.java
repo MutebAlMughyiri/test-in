@@ -51,8 +51,12 @@ public enum BugPriority {
 
     // Rule-EDITOR-PANEL-147
     public static final @NotNull BugPriority DEFAULT = LOW;
+
     private final @NotNull String label;
+
     private final @NotNull Color color;
+
     private final @NotNull ReportEmphasis emphasis;
+
     private final @NotNull String inBugReport;
 }

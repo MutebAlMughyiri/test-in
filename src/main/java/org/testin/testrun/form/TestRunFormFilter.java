@@ -45,10 +45,15 @@ import java.util.stream.Collectors;
 // UC-TREE-PANEL-009, Rule-TREE-PANEL-129
 public final class TestRunFormFilter implements FilterSource {
     private final @NotNull Project project;
+
     private final @NotNull AutomationState automation;
+
     private final @NotNull List<TestCase> offered = new ArrayList<>();
+
     private final @NotNull Map<Path, String> testSets = new LinkedHashMap<>();
+
     private final @NotNull FilterPopupButton button;
+
     private final @NotNull SelectionTree selection;
 
     public TestRunFormFilter(final @NotNull Project project, final @NotNull Path testCasesRoot, final @NotNull CheckedTreeNode root) {

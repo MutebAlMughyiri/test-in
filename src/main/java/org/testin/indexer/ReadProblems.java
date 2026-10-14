@@ -34,7 +34,9 @@ final class ReadProblems {
     private static final int SHOWN = 5;
 
     private final @NotNull Project project;
+
     private final @NotNull IndexerDataStore store;
+
     private final @NotNull Notifier notifier;
 
     ReadProblems(final @NotNull Project project, final @NotNull IndexerDataStore store) {

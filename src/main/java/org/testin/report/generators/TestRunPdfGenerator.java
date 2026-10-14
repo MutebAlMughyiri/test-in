@@ -73,14 +73,23 @@ import java.util.Set;
 
 public final class TestRunPdfGenerator {
     private final @NotNull Set<String> leftOut = new LinkedHashSet<>();
+
     private final @NotNull DeviceRgb DARK_NAVY = rgb(ReportColor.HEADING.hex());
+
     private final @NotNull DeviceRgb MEDIUM_BLUE = rgb(ReportColor.ACCENT.hex());
+
     private final @NotNull DeviceRgb DARK_GRAY = rgb(ReportColor.MUTED.hex());
+
     private final @NotNull DeviceRgb LIGHT_BG = rgb(ReportColor.PANEL.hex());
+
     private final @NotNull DeviceRgb BORDER_GRAY = rgb(ReportColor.LINE.hex());
+
     private final @NotNull DeviceRgb WHITE = rgb(ReportColor.PAGE.hex());
+
     private final @NotNull DeviceRgb BLACK = rgb(ReportColor.INK.hex());
+
     private final @NotNull DeviceRgb LINK_BLUE = rgb(ReportColor.LINK.hex());
+
     private @NotNull Optional<PdfFont> printsWith = Optional.empty();
 
     // UC-REPORT-001, Rule-REPORT-002, Rule-REPORT-005

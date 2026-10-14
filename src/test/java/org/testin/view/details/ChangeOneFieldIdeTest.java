@@ -39,6 +39,7 @@ import java.util.stream.Stream;
 public class ChangeOneFieldIdeTest extends AbstractViewPanelIdeTest {
 
     private PopupsBuilt popups;
+
     private TestSetNode testSet;
 
     private static @NotNull FileTime writtenAt(final @NotNull Path file) {

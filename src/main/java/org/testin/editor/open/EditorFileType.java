@@ -34,8 +34,11 @@ import java.util.function.BiFunction;
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public class EditorFileType extends FakeFileType {
     private final @NotNull String name;
+
     private final @NotNull String description;
+
     private final @NotNull Icon icon;
+
     private final @NotNull BiFunction<Project, UnifiedVirtualFile, TestinEditor> factory;
 
     @Override

@@ -48,6 +48,7 @@ import java.util.stream.Stream;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BugHistory {
     private static final @NotNull String FORMAT = "--format=%x1e%H%x1f%an%x1f%aI";
+
     private static final @NotNull String HEAD = "HEAD";
 
     // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-107

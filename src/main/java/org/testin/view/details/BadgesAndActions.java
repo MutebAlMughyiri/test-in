@@ -32,7 +32,9 @@ import java.util.List;
 @AllArgsConstructor
 public final class BadgesAndActions extends AbstractDetails {
     private static final int GAP = 8;
+
     private static final int INSETS_TOP = 8;
+
     private static final int INSETS_SIDE = 16;
 
     private final @NotNull List<String> treePath;

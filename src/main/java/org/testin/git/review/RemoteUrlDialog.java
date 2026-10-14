@@ -31,6 +31,7 @@ import java.util.function.Consumer;
 
 final class RemoteUrlDialog extends AbstractFrameworkDialog {
     private final @NotNull TextInput urlField;
+
     private final @NotNull Consumer<@NotNull String> onUrl;
 
     RemoteUrlDialog(final @NotNull Project project, final @NotNull String remoteName, final @NotNull Consumer<@NotNull String> onUrl) {

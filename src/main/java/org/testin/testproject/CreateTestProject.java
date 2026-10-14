@@ -31,11 +31,17 @@ import java.nio.file.Path;
 // UC-TREE-PANEL-002
 public final class CreateTestProject {
     private final @NotNull Project project;
+
     private final @NotNull TreePanel treePanel;
+
     private final @NotNull String testProjectName;
+
     private final @NotNull NodeMapper directoryMapper;
+
     private final @NotNull Nodes nodes;
+
     private final @NotNull BoundTestProject boundTestProject;
+
     private final @NotNull Notifier notifier;
 
     public CreateTestProject(final @NotNull Project project, final @NotNull TreePanel treePanel, final @NotNull String testProjectName) {

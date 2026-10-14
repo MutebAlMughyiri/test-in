@@ -48,9 +48,13 @@ import java.util.function.Consumer;
 
 public class DetailsTab {
     static final @NotNull String TEST_CASE_OPEN = "testin.viewPanel.testCaseOpen";
+
     final @NotNull String PLACEHOLDER_TEXT = Bundle.message("details.placeholder");
+
     final int INSETS_DEFAULT = 5;
+
     final double WEIGHT_X = 1.0;
+
     final double SPACER_WEIGHT_Y = 1.0;
 
     // UC-VIEW-PANEL-005, Rule-VIEW-PANEL-061, Rule-VIEW-PANEL-085, Rule-VIEW-PANEL-086, Rule-VIEW-PANEL-103

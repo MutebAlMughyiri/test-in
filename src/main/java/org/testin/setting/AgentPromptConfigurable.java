@@ -37,10 +37,13 @@ import javax.swing.JComponent;
 // UC-CODEGEN-021, Rule-CODEGEN-086
 public final class AgentPromptConfigurable implements SearchableConfigurable {
     private static final int PROMPT_ROWS = 10;
+
     private static final int PROMPT_COLUMNS = 60;
 
     private final @NotNull JBTextArea promptArea = new JBTextArea(PROMPT_ROWS, PROMPT_COLUMNS);
+
     private final @NotNull JBTextField timeoutField = new JBTextField();
+
     private final @NotNull AppSettingsState settings = Services.getInstance(AppSettingsState.class);
 
     private static @NotNull JBLabel hint(final @NotNull String text) {

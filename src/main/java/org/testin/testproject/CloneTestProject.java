@@ -46,12 +46,19 @@ import java.util.Optional;
 // UC-TREE-PANEL-003
 public final class CloneTestProject {
     private final @NotNull Project project;
+
     private final @NotNull String gitUrl;
+
     private final @NotNull String testProjectName;
+
     private final @NotNull TreePanel treePanel;
+
     private final @NotNull Notifier notifier;
+
     private final @NotNull TestinRoot testinRoot;
+
     private final @NotNull TestProjectIndexer indexer;
+
     private final @NotNull BoundTestProject boundTestProject;
 
     public CloneTestProject(final @NotNull Project project, final @NotNull String gitUrl, final @NotNull String testProjectName, final @NotNull TreePanel treePanel) {

@@ -57,7 +57,9 @@ public enum PageStep {
     };
 
     private final @NotNull String tooltip;
+
     private final @NotNull String description;
+
     private final @NotNull Icon icon;
 
     private final @NotNull Shortcuts shortcut;

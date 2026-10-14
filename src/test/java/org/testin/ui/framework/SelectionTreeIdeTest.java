@@ -31,8 +31,11 @@ import java.util.Set;
 public class SelectionTreeIdeTest extends BasePlatformTestCase {
 
     private static final @NotNull String LOGIN_VALID = "Log in with a valid user";
+
     private static final @NotNull String LOGIN_LOCKED = "Log in with a locked user";
+
     private static final @NotNull String REFUND = "Refund a paid order";
+
     private static final @NotNull Set<String> IN_LOGIN = Set.of(LOGIN_VALID, LOGIN_LOCKED);
 
     private static @NotNull CheckedTreeNode aTestCase(final @NotNull String name, final boolean ticked) {

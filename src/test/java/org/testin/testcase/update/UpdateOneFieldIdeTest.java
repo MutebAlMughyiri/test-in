@@ -50,6 +50,7 @@ import java.util.stream.Stream;
 public class UpdateOneFieldIdeTest extends AbstractTempRootIdeTest {
 
     private final @NotNull List<TestCase> saved = new ArrayList<>();
+
     private @NotNull TestSetNode testSet = new TestSetNode();
 
     private static @NotNull TestCase with(final @NotNull TestCase testCase, final @NotNull String description, final @NotNull String expectedResult) {

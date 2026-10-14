@@ -123,8 +123,11 @@ public enum CreateTestCaseFields implements StatusBarItem {
             List.of(DESCRIPTION, EXPECTED_RESULT, MODULE, STEPS, TEST_DATA, PRE_CONDITIONS, PRIORITY, GROUP, REFERENCE);
 
     private final @NotNull String name;
+
     private final @NotNull Shortcuts shortcut;
+
     private final Icons.@NotNull LetterIcon icon;
+
     private final @NotNull Function<AbstractTestCaseDialog, TestCaseSection> sectionExtractor;
 
     private final @NotNull String placeholder;

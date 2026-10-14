@@ -31,8 +31,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CellEditListener implements TableModelListener {
     private final @NotNull List<TestSetEditorFields> importFields;
+
     private final @NotNull Project project;
+
     private final @NotNull List<TestCase> testCases;
+
     private boolean isUpdating = false;
 
     // UC-SHARE-003, Rule-SHARE-021

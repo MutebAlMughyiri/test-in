@@ -34,6 +34,7 @@ import java.util.List;
 
 record ExecutionDots(@NotNull List<Color> colors, int ringed, int older, int olderWidth, @NotNull Font font) implements Icon {
     private static final int SHOWN = 8;
+
     private static final @NotNull FontRenderContext MEASURE = new FontRenderContext(new AffineTransform(), true, true);
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-287

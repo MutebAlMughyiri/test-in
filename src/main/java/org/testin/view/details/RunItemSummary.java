@@ -56,14 +56,21 @@ import java.util.function.Consumer;
 @AllArgsConstructor
 public final class RunItemSummary extends AbstractDetails {
     private static final int GAP = 6;
+
     private static final int INSETS_TOP = 8;
+
     private static final int INSETS_SIDE = 16;
+
     private static final int RETRY_INDENT = 24;
+
     private static final @NotNull String ACTIONS_SHOWN = "shown";
+
     private static final @NotNull String ACTIONS_HIDDEN = "hidden";
 
     private final @NotNull RunItem runItem;
+
     private final @NotNull List<String> treePath;
+
     private final @NotNull Consumer<OptionalInt> showExecution;
 
     // Rule-EDITOR-PANEL-263

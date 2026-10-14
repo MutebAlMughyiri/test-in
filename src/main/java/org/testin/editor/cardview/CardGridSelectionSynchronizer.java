@@ -32,8 +32,11 @@ import java.util.function.ToIntFunction;
 @AllArgsConstructor
 public final class CardGridSelectionSynchronizer implements ListSelectionListener {
     private final @NotNull JBList<TestCase> list;
+
     private final @NotNull Supplier<Optional<JBTable>> tableSupplier;
+
     private final @NotNull BooleanSupplier gridActiveSupplier;
+
     private final @NotNull ToIntFunction<TestCase> rowOnGrid;
 
     // UC-EDITOR-PANEL-024, Rule-EDITOR-PANEL-111

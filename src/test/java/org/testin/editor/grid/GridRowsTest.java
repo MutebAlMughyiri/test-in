@@ -30,6 +30,7 @@ import static org.testng.Assert.assertEquals;
 
 public class GridRowsTest {
     private static final @NotNull TestCase LOGIN = TestCase.builder().uuid(UUID.randomUUID()).description("Log in with a valid user").build();
+
     private static final @NotNull TestCase LOGOUT = TestCase.builder().uuid(UUID.randomUUID()).description("Log out").build();
 
     private static int position(final @NotNull TestCase testCase) {

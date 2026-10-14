@@ -23,6 +23,7 @@ import java.util.UUID;
 
 public final class PendingSelection {
     private @NotNull Optional<UUID> waiting = Optional.empty();
+
     private boolean focus;
 
     // UC-EDITOR-PANEL-022, Rule-EDITOR-PANEL-104

@@ -39,6 +39,7 @@ import static org.testin.view.Drawn.holds;
 public class PanelKeysIdeTest extends AbstractViewPanelIdeTest {
 
     private TestSetNode testSet;
+
     private List<TestCase> testCases;
 
     private static @NotNull KeyStroke key(final @NotNull Shortcuts shortcut) {

@@ -87,9 +87,13 @@ public class ReportDeliveryIdeTest extends AbstractTempRootIdeTest {
     private static final @NotNull String TEST_PROJECT = "NAFATH";
 
     private final @NotNull AppSettingsState wasStored = new AppSettingsState();
+
     private final @NotNull UUID opens = UUID.randomUUID();
+
     private final @NotNull UUID locks = UUID.randomUUID();
+
     private @NotNull List<Notification> said = List.of();
+
     private String wasBound;
 
     private Path testin;

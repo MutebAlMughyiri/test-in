@@ -34,6 +34,7 @@ import java.awt.geom.RoundRectangle2D;
 // Rule-INTERNAL-099
 final class SectionFill implements Border {
     private static final float ARC = 12;
+
     private static final float LINE = 1;
 
     @Override

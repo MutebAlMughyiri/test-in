@@ -36,8 +36,11 @@ final class NodeChildrenIndex {
             .thenComparingInt(AbstractNode::getOrder)
             .thenComparing(node -> node.getMarker().getCreatedAt())
             .thenComparing(AbstractNode::getName);
+
     private final @NotNull AtomicLong invalidations = new AtomicLong();
+
     private volatile @NotNull Map<Path, List<AbstractNode>> childrenByParent = Map.of();
+
     private volatile long builtAfter = -1;
 
     @NotNull

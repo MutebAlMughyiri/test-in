@@ -46,8 +46,11 @@ import java.util.stream.Collectors;
 
 public class TestCaseTransferHandler extends TransferHandler {
     private static final @NotNull DataFlavor FLAVOR = new DataFlavor(List.class, "List of TestCase");
+
     private final @NotNull Project project;
+
     private final @NotNull TestinEditor editor;
+
     private final @NotNull Notifier notifier;
 
     public TestCaseTransferHandler(final @NotNull Project project, final @NotNull TestinEditor editor) {

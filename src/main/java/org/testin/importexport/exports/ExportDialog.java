@@ -41,6 +41,7 @@ public final class ExportDialog extends AbstractFrameworkDialog {
     private final @NotNull DestinationForm form;
 
     private final @NotNull SheetPreview preview;
+
     private final @NotNull BiConsumer<@NotNull Destination,
             @NotNull Map<String, List<TestCase>>> onExport;
 

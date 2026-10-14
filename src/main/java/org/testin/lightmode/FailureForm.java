@@ -45,8 +45,11 @@ import java.util.Map;
 
 class FailureForm extends JBPanel<FailureForm> implements DialogHost {
     private final @NotNull FailureFields fields;
+
     private final @NotNull Map<Component, Font> baseFonts = new HashMap<>();
+
     private final @NotNull Runnable resized;
+
     private final @NotNull Runnable onEnter;
 
     // UC-EDITOR-PANEL-046, Rule-EDITOR-PANEL-202

@@ -32,9 +32,13 @@ import java.util.Optional;
 
 public final class RadioSelection<T> implements DialogComponent {
     private final @NotNull JBPanel<?> panel;
+
     private final @NotNull JRadioButton firstButton;
+
     private final @NotNull Map<T, JRadioButton> buttons = new LinkedHashMap<>();
+
     private @NotNull T selected;
+
     private @NotNull Runnable changed = () -> {
     };
 

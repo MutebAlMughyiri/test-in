@@ -58,10 +58,13 @@ public enum TestCaseStatus {
     );
 
     private final @NotNull String label;
+
     // Rule-CODEGEN-047, Rule-CODEGEN-048
     private final boolean enabled;
+
     // Rule-EDITOR-PANEL-294
     private final @NotNull Color descriptionColor;
+
     // Rule-EDITOR-PANEL-294
     private final boolean badged;
 }

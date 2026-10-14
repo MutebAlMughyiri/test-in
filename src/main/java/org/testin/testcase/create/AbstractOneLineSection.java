@@ -31,6 +31,7 @@ public abstract class AbstractOneLineSection implements TestCaseSection {
     protected final @NotNull JBLabel icon;
 
     private final @NotNull JBPanel<?> wrapper;
+
     private final @NotNull Shortcuts shortcut;
 
     protected AbstractOneLineSection(final @NotNull EditorTextField field, final @NotNull CreateTestCaseFields describes, final @NotNull Shortcuts shortcut) {

@@ -36,8 +36,11 @@ import java.util.Map;
 
 public final class SelectTestProjectAction extends AbstractBoundTestProjectAction {
     private final @NotNull TreePanel treePanel;
+
     private final @NotNull TestProjectIndexer indexer = Services.getInstance(project, TestProjectIndexer.class);
+
     private final @NotNull Notifier notifier = Services.getInstance(project, Notifier.class);
+
     private final @NotNull TestinRoot testinRoot = Services.getInstance(project, TestinRoot.class);
 
     public SelectTestProjectAction(final @NotNull Project project, final @NotNull TreePanel treePanel) {

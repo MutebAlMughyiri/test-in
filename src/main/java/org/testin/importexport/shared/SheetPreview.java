@@ -38,9 +38,11 @@ public final class SheetPreview implements DialogComponent {
     private static final @NotNull DefaultTableModel NO_MODEL = new DefaultTableModel();
 
     private final @NotNull Project project;
+
     private final @NotNull List<TestSetEditorFields> fields;
 
     private final @NotNull JBTabbedPane tabs = new JBTabbedPane();
+
     private final @NotNull Map<String, DefaultTableModel> models = new LinkedHashMap<>();
 
     private @NotNull Map<String, List<TestCase>> sheets = new LinkedHashMap<>();

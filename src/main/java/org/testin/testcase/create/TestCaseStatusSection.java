@@ -30,6 +30,7 @@ import java.util.List;
 // Rule-EDITOR-PANEL-258
 public class TestCaseStatusSection implements TestCaseSection {
     private final @NotNull RadioSelection<TestCaseStatus> testCaseStatus;
+
     private final @NotNull JBPanel<?> wrapper;
 
     // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-194, Rule-EDITOR-PANEL-258

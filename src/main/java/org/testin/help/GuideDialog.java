@@ -32,6 +32,7 @@ import java.util.List;
 
 public final class GuideDialog extends AbstractFrameworkDialog {
     private final @NotNull HtmlPage page;
+
     private @NotNull BundledPage shown;
 
     // UC-INTERNAL-009, Rule-INTERNAL-130

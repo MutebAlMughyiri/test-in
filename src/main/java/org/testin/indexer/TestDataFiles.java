@@ -47,6 +47,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 final class TestDataFiles {
     private static final int MOVE_ATTEMPTS = 6;
+
     private static final long MOVE_PAUSE_MILLIS = 25;
 
     private final @NotNull Project project;

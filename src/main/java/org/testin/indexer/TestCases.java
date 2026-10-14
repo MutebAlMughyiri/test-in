@@ -34,6 +34,7 @@ import java.util.UUID;
 @Service(Service.Level.PROJECT)
 public final class TestCases {
     private final @NotNull TestProjectIndexer indexer;
+
     private final @NotNull TestCaseCompletions testCaseValues;
 
     public TestCases(final @NotNull Project project) {

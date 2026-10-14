@@ -53,8 +53,11 @@ import java.util.stream.Stream;
 @Service(Service.Level.PROJECT)
 public final class KnownBugIssueStates {
     private final @NotNull Project project;
+
     private final @NotNull Map<BugIssue, BugIssueState> answers = new ConcurrentHashMap<>();
+
     private final @NotNull AtomicBoolean reading = new AtomicBoolean();
+
     private volatile @NotNull Optional<Function<ProgressIndicator, GitHubCli>> gh;
 
     public KnownBugIssueStates(final @NotNull Project project) {

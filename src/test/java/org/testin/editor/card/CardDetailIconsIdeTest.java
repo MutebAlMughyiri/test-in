@@ -44,7 +44,9 @@ import java.util.UUID;
 
 public class CardDetailIconsIdeTest extends BasePlatformTestCase {
     private static final @NotNull String EXPECTED = "The dashboard opens.";
+
     private static final @NotNull String REFERENCE = "JIRA-412";
+
     private static final @NotNull Dimension CELL = new Dimension(900, 120);
 
     private static @NotNull JBLabel theLineSaying(final @NotNull AbstractCard card, final @NotNull String words) {

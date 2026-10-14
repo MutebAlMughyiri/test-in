@@ -31,7 +31,9 @@ import java.util.Optional;
 
 public final class TestRunConfigurationDialog extends AbstractFrameworkDialog {
     private final @NotNull TestRunFormPurpose action;
+
     private final @NotNull TestRunConfigurationForm form;
+
     private final @NotNull SelectionTree selection;
 
     public TestRunConfigurationDialog(final @NotNull Project project, final @NotNull TestRunConfigurationForm form, final @NotNull TestRunFormFilter filter, final @NotNull TestRunFormPurpose action) {

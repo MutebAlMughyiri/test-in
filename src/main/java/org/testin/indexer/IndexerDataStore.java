@@ -53,6 +53,7 @@ final class IndexerDataStore {
     private final @NotNull NodeChildrenIndex childrenIndex = new NodeChildrenIndex();
 
     private final @NotNull MarkerFiles markers;
+
     private final @NotNull TestCaseStore testCaseStore;
 
     @Getter
@@ -87,6 +88,7 @@ final class IndexerDataStore {
             testRunPackagesByPath,
             testCasesFoldersByPath,
             testRunsFoldersByPath);
+
     // Rule-INTERNAL-091
     private final @NotNull Map<String, String> refusedTestProjects = new ConcurrentHashMap<>();
 

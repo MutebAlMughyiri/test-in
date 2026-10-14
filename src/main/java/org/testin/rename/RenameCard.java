@@ -40,6 +40,7 @@ final class RenameCard implements DialogComponent {
     private static final int ICON_GAP = 8;
 
     private final @NotNull TextInput field;
+
     private final @NotNull JComponent panel;
 
     // UC-TREE-PANEL-011, Rule-INTERNAL-087, Rule-INTERNAL-099, Rule-INTERNAL-108, Rule-TREE-PANEL-123

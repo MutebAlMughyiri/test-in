@@ -31,7 +31,9 @@ import java.util.List;
 
 public abstract class AbstractViewPanelIdeTest extends AbstractTempRootIdeTest {
     protected ViewOnScreen view;
+
     protected TestProjectNode testProject;
+
     private String rootBefore = "";
 
     private static @NotNull AppSettingsState settings() {

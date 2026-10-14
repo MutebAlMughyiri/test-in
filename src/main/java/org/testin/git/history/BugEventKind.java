@@ -51,6 +51,7 @@ public enum BugEventKind implements CardKind {
     );
 
     private final @NotNull Color color;
+
     private final boolean open;
 
     // Rule-VIEW-PANEL-115

@@ -40,5 +40,6 @@ public enum ReportEmphasis {
     );
 
     private final @NotNull String hexColor;
+
     private final @NotNull String cssToken;
 }

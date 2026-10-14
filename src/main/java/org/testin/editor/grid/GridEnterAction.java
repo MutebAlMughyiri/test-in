@@ -40,8 +40,11 @@ import java.util.Optional;
 
 public final class GridEnterAction extends AbstractBoundTestProjectAction {
     private final @NotNull TestinEditor editor;
+
     private final @NotNull JBTable table;
+
     private final @NotNull List<TestCase> pageTestCases;
+
     private final @NotNull List<String> treePath;
 
     public GridEnterAction(final @NotNull TestinEditor editor, final @NotNull JBTable table, final @NotNull List<TestCase> pageTestCases, final @NotNull List<String> treePath) {

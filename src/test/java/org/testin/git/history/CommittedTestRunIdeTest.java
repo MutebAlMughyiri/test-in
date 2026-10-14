@@ -60,11 +60,15 @@ import static org.testin.git.LocalGit.mustGit;
 
 public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
     private static final @NotNull String DESCRIPTION = "Log in with a valid user and reach the dashboard";
+
     private static final @NotNull String COMPLETED = "Cycle 4";
+
     private static final @NotNull String MESSAGE = "Step 4 reads Press Pay";
 
     private Path testProjectPath;
+
     private Path testSet;
+
     private UUID testCaseUuid;
 
     private static void write(final @NotNull Path file, final @NotNull String content) {

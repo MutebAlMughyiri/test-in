@@ -33,7 +33,9 @@ import java.util.function.BiConsumer;
 
 public class UpdateTestCaseMenu {
     private final @NotNull Project project;
+
     private final @NotNull List<TestCase> testCases;
+
     private final @NotNull BiConsumer<@NotNull List<TestCase>, @NotNull UpdateTestCaseFields> updatedTestCases;
 
     public UpdateTestCaseMenu(final @NotNull Project project, final @NotNull List<TestCase> testCases, final @NotNull BiConsumer<@NotNull List<TestCase>, @NotNull UpdateTestCaseFields> updatedTestCases) {

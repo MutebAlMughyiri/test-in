@@ -42,6 +42,7 @@ public abstract class AbstractFieldsPopupButton<E extends Enum<E> & ShowableFiel
     private final @NotNull Set<E> selectedDetails = new HashSet<>();
 
     private final @NotNull String propertyKey;
+
     private final @NotNull List<E> options;
 
     private final @NotNull AtomicBoolean refreshQueued = new AtomicBoolean();

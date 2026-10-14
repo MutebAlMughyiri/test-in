@@ -40,8 +40,11 @@ public class PreviewLoaderIdeTest extends AbstractTempRootIdeTest {
     private static final long LONGER_THAN_THE_PAUSE = 900;
 
     private final @NotNull AtomicReference<String> typed = new AtomicReference<>("");
+
     private final @NotNull List<String> messages = new CopyOnWriteArrayList<>();
+
     private final @NotNull List<String> read = new CopyOnWriteArrayList<>();
+
     private final @NotNull List<String> loaded = new CopyOnWriteArrayList<>();
 
     private final @NotNull TextValue box = new TextValue() {

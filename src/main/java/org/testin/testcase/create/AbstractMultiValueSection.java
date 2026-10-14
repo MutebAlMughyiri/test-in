@@ -42,12 +42,14 @@ import java.util.Set;
 // UC-EDITOR-PANEL-005
 public abstract class AbstractMultiValueSection implements TestCaseSection {
     protected final @NotNull Project project;
+
     private final @NotNull TestCaseCompletions testCaseValues;
 
     @Getter
     private final @NotNull List<EditorTextField> fields = new ArrayList<>();
 
     private final @NotNull JBPanel<?> container;
+
     private final @NotNull JBPanel<?> wrapper;
 
     protected AbstractMultiValueSection(final @NotNull Project project) {

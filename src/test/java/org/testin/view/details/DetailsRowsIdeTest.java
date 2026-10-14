@@ -43,6 +43,7 @@ import java.util.Set;
 public class DetailsRowsIdeTest extends BasePlatformTestCase {
 
     private static final @NotNull List<String> PATH = List.of("Demo", "Test Cases", "Login");
+
     private static final @NotNull List<String> ROWS_IN_ORDER = List.of(
             caption("field.expected.result"),
             caption("field.steps"),

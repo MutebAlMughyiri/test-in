@@ -39,7 +39,9 @@ import java.util.Set;
 
 public class RunItemCard extends AbstractCard {
     private final @NotNull List<Badge> badges = new ArrayList<>();
+
     private final @NotNull Map<String, String> details = new LinkedHashMap<>();
+
     private final @NotNull JBLabel changedSince = createDetailLabel();
 
     public RunItemCard(final @NotNull Project project) {

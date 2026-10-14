@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MainClasses {
     private static final @NotNull Path SOURCE_ROOT = Path.of("src", "main", "java");
+
     private static final @NotNull Path ROOT_PACKAGE = SOURCE_ROOT.resolve("org", "testin");
 
     public static @NotNull List<Class<?>> all() {

@@ -48,6 +48,7 @@ import java.util.function.IntConsumer;
 @Service(Service.Level.PROJECT)
 public final class Nodes {
     private final @NotNull Project project;
+
     private final @NotNull DeletedNodes deletedNodes;
 
     public Nodes(final @NotNull Project project) {

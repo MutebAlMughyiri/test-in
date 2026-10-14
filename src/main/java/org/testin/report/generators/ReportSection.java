@@ -65,12 +65,17 @@ enum ReportSection {
             RunItemStatus.REMOVED);
 
     private final @NotNull RunItemStatus runItemStatus;
+
     private final @NotNull String descriptionFormat;
+
     @Getter
     private final @NotNull String hexColor;
+
     private final @NotNull ToLongFunction<TestRunSummary> count;
+
     @Getter
     private final @NotNull ImmutableList<TestRunEditorFields> failureDetailColumns;
+
     private final @NotNull ImmutableSet<RunItemStatus> runItemStatuses;
 
     ReportSection(final @NotNull String descriptionFormat, final @NotNull ToLongFunction<TestRunSummary> count, final @NotNull ImmutableList<TestRunEditorFields> failureDetailColumns, final @NotNull RunItemStatus... runItemStatuses) {

@@ -29,9 +29,13 @@ import java.util.function.Function;
 
 public final class FailureFields {
     private final @NotNull ActualResultSection actualResult;
+
     private final @NotNull BugSeveritySection bugSeverity;
+
     private final @NotNull BugPrioritySection bugPriority;
+
     private final @NotNull StacktraceSection stacktrace;
+
     private final @NotNull ScreenshotsSection screenshots;
 
     private final @NotNull List<FailureSection> sections;

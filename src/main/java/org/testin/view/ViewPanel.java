@@ -60,11 +60,13 @@ public class ViewPanel implements Disposable {
 
     @Getter
     private final @NotNull JBPanel<?> detailsTab;
+
     @Getter
     private final @NotNull JPanel historyTab;
 
     @Getter
     private final @NotNull JBScrollPane detailsScrollPane;
+
     @Getter
     private final @NotNull JBScrollPane historyScrollPane;
 
@@ -75,7 +77,9 @@ public class ViewPanel implements Disposable {
     private final @NotNull Project project;
 
     private final @NotNull TestCases testCases;
+
     private final @NotNull TestRuns testRuns;
+
     private final @NotNull TestinRoot testinRoot;
 
     public ViewPanel(final @NotNull Project project) {

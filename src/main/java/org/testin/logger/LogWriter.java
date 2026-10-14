@@ -46,13 +46,21 @@ public final class LogWriter implements Disposable {
     private static final int JOIN_TIMEOUT = 2000;
 
     private static final @NotNull Logger IDE_LOG = Logger.getInstance(LogWriter.class);
+
     private static final @NotNull Object SHUTDOWN = new Object();
+
     private final @NotNull BlockingQueue<Object> logQueue = new ArrayBlockingQueue<>(10000);
+
     private final @NotNull DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
+
     private final @NotNull Path logFile = Path.of(PathManager.getLogPath(), "testin.log");
+
     private final @NotNull AtomicBoolean dropping = new AtomicBoolean();
+
     private volatile boolean isRunning = true;
+
     private volatile @NotNull LogLevel currentLogLevel = LogLevel.DISABLED;
+
     private @NotNull Optional<Thread> writerThread = Optional.empty();
 
     public LogWriter() {

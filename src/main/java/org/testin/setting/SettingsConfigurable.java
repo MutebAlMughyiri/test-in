@@ -53,13 +53,17 @@ import java.util.Optional;
 
 public final class SettingsConfigurable implements SearchableConfigurable {
     private final @NotNull TestinPathPanel testinPathPanel;
+
     private final @NotNull JBTextField testerNameField = new JBTextField();
+
     private final @NotNull JBTextField testerRoleField = new JBTextField();
+
     private final @NotNull TextFieldWithBrowseButton downloadFolderField = new TextFieldWithBrowseButton();
 
     private final @NotNull ComboBox<String> logLevelComboBox;
 
     private final @NotNull JBCheckBox showShortcutHintsBox = new JBCheckBox(Bundle.message("settings.show.shortcuts"));
+
     private final @NotNull AppSettingsState settings = Services.getInstance(AppSettingsState.class);
 
     public SettingsConfigurable() {

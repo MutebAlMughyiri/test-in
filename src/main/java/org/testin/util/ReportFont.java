@@ -69,13 +69,19 @@ public enum ReportFont {
     );
 
     public static final @NotNull String FAMILY = "Calibri";
+
     public static final @NotNull String CSS_FAMILY = FAMILY + ", Arial, sans-serif";
+
     public static final @NotNull String CSS_MONO = "ui-monospace, Consolas, monospace";
+
     public static final @NotNull String PDF_REGULAR = StandardFonts.HELVETICA;
+
     public static final @NotNull String PDF_BOLD = StandardFonts.HELVETICA_BOLD;
+
     public static final @NotNull String PDF_ITALIC = StandardFonts.HELVETICA_OBLIQUE;
 
     private final float points;
+
     private final int pixels;
 
     public float points() {

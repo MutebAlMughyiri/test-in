@@ -35,7 +35,9 @@ import static org.testng.Assert.fail;
 
 public class FrameworkRegisterTest {
     private static final @NotNull Path FRAMEWORK = Paths.get("src", "main", "java", "org", "testin", "ui", "framework");
+
     private static final @NotNull Path PAGE = DocumentedRules.DOCS.resolve("internal").resolve("dialogFramework.md");
+
     private static final @NotNull Pattern NAMED = Pattern.compile("`([A-Z][A-Za-z]+)`");
 
     private static @NotNull Set<String> files() {

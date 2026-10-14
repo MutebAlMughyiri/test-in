@@ -41,7 +41,9 @@ public final class OwnWrites {
     private static final @NotNull ByteBuffer NOTHING_TO_COMPARE = ByteBuffer.allocate(0).asReadOnlyBuffer();
 
     private static final long SETTLES_IN_MILLIS = 5_000;
+
     private final @NotNull Map<String, Claim> written = new ConcurrentHashMap<>();
+
     private final @NotNull AtomicLong lastPurge = new AtomicLong();
 
     private static boolean stillSays(final @NotNull Path path, final @NotNull ByteBuffer ourContent) {

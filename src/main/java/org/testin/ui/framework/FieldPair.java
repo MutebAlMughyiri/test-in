@@ -39,11 +39,17 @@ public final class FieldPair implements DialogComponent {
     private static final double BOXES_SHARE = 0.60;
 
     private final @NotNull Project project;
+
     private final @NotNull String rememberedAs;
+
     private final @NotNull MultiLineField first;
+
     private final @NotNull MultiLineField second;
+
     private final @NotNull List<JComponent> sections;
+
     private final @NotNull JBPanel<?> panel = new JBPanel<>();
+
     private final @NotNull AbstractIconButton layoutButton;
 
     private @NotNull Runnable refit = () -> {

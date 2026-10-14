@@ -86,44 +86,73 @@ final class LightModeScreen {
     private static final @NotNull List<TestCaseQuickAction> KEYED = List.of(TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD, TestCaseQuickAction.RUN_TEST_METHOD);
 
     private final @NotNull TestRunEditor editor;
+
     private final @NotNull RunItemRecorder runItemStatusService;
+
     private final @NotNull AutomationState automationState;
+
     private final @NotNull Runnable onClosed;
 
     private final @NotNull TitleBarButton start = new TitleBarButton(ExecutionControl.START.getLabel(), ExecutionControl.START.getIcon());
+
     private final @NotNull TitleBarButton stop = new TitleBarButton(ExecutionControl.STOP.getLabel(), ExecutionControl.STOP.getIcon());
+
     private final @NotNull JBLabel counter = new JBLabel();
 
     private final @NotNull Font setFont = Fonts.label();
+
     private final @NotNull Font descriptionFont = Fonts.title();
+
     private final @NotNull Font expectedFont = Fonts.body();
 
     private final @NotNull JBLabel set = new JBLabel();
+
     private final @NotNull JTextArea description = Prose.of(descriptionFont, JBUI.CurrentTheme.Label.foreground());
+
     private final @NotNull JTextArea expected = Prose.of(expectedFont, JBUI.CurrentTheme.ContextHelp.FOREGROUND);
 
     private final @NotNull JComponent expectedRow = iconBefore(CreateTestCaseFields.EXPECTED_RESULT.getIcon(), expected);
+
     private final @NotNull JBLabel idle = new JBLabel(Bundle.message("light.idle"), SwingConstants.CENTER);
 
     private final @NotNull JBLabel chosen = new JBLabel();
+
     private final @NotNull SlidingPanel testCaseView = new SlidingPanel(new BorderLayout());
+
     private final @NotNull Disposable motionScope = Disposer.newDisposable("Testin light mode motion");
+
     private final @NotNull LightModeFrame frame = new LightModeFrame(motionScope);
+
     private final @NotNull TestCaseDetails details;
+
     private final @NotNull JBPanel<?> underTestCase = new JBPanel<>(new BorderLayout());
+
     private final @NotNull JBLabel testCaseClock = clock(Bundle.message("light.test.case.clock"));
+
     private final @NotNull JBLabel testRunClock = clock(Bundle.message("light.test.run.clock"));
+
     private final @NotNull JBPanel<?> strip = new JBPanel<>(new BorderLayout());
+
     private final @NotNull JBPanel<?> setLine = new JBPanel<>(new GridBagLayout());
+
     private final @NotNull JBPanel<?> buttons = new JBPanel<>(new GridLayout(1, 0, JBUI.scale(BUTTON_GAP), 0));
+
     private final @NotNull JBPanel<?> footer = new JBPanel<>(new BorderLayout());
+
     private final @NotNull JComponent runItemStatusRow = runItemStatusButtons();
+
     private final @NotNull ShortcutStrip statusBar = new ShortcutStrip(new StatusBarItem[0]);
+
     private final @NotNull ViewMenuButton viewMenu = new ViewMenuButton(this::applyView);
+
     private final @NotNull LightModeZoom zoom = LightModeZoom.remembered();
+
     private @NotNull Optional<UUID> shownTestCase = Optional.empty();
+
     private @NotNull Optional<Animator> slideMotion = Optional.empty();
+
     private @NotNull Optional<FailureForm> capture = Optional.empty();
+
     private boolean detailsKeyHeld = false;
 
     LightModeScreen(final @NotNull TestRunEditor editor, final @NotNull Runnable onClosed) {

@@ -63,20 +63,32 @@ public abstract class AbstractFrameworkDialog implements DialogHost {
     protected final @NotNull Notifier notifier;
 
     private final @NotNull DialogsOnScreen openDialogs;
+
     private final @NotNull Maximized maximized = new Maximized();
+
     protected @NotNull String title = "";
+
     protected @NotNull List<? extends DialogPart<?>> components = List.of();
+
     protected @NotNull List<StatusBarShortcut> shortcuts = List.of();
+
     protected @NotNull DialogSize size = DialogSize.CONTENT;
+
     // UC-INTERNAL-007, Rule-INTERNAL-076
     protected boolean dismissOnClickOutside;
+
     protected boolean resizable;
+
     private @NotNull Optional<DialogDeclaration> dialog = Optional.empty();
+
     private @NotNull Optional<List<DialogComponent>> built = Optional.empty();
+
     private @NotNull Optional<JBPopup> popup = Optional.empty();
+
     private @NotNull Optional<JComponent> content = Optional.empty();
 
     private @NotNull Optional<ShortcutStrip> strip = Optional.empty();
+
     private @NotNull Optional<StatusBarItem[]> keysShown = Optional.empty();
 
     protected AbstractFrameworkDialog(final @NotNull Project project) {

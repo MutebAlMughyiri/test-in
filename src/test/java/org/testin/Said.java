@@ -36,7 +36,9 @@ import java.util.stream.Stream;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Said {
     private final @NotNull List<String> asDrawn = new CopyOnWriteArrayList<>();
+
     private final @NotNull List<String> balloons = new CopyOnWriteArrayList<>();
+
     private final @NotNull List<Notification> notifications = new CopyOnWriteArrayList<>();
 
     public static @NotNull Said listening(final @NotNull Project project, final @NotNull Disposable owner) {

@@ -48,18 +48,23 @@ public final class Icons {
     public static final @NotNull Icon TEST_CASE = gray(AllIcons.Nodes.Type);
 
     public static final @NotNull Color GRAY = FixedColors.GRAY.darker();
+
     public static final @NotNull Color RED = FixedColors.RED.darker();
+
     public static final @NotNull Color GREEN = FixedColors.GREEN.darker();
 
     // UC-EDITOR-PANEL-005
     public static final @NotNull Icon TEST_CASE_LETTER = fieldLetter("tc", GREEN);
+
     public static final @NotNull Icon PLUGIN = IconLoader.getIcon("/icons/pluginIcon.svg", Icons.class);
 
     // Rule-EDITOR-PANEL-291, Rule-VIEW-PANEL-125
     public static final @NotNull Icon EXECUTING = blinking(dot(JBColor.GREEN));
 
     private static final float SCALE_FACTOR = 1.3f;
+
     private static final int DOT_SIZE = 10;
+
     private static final int BLINK_MILLIS = 500;
 
     public static @NotNull LetterIcon fieldLetter(final @NotNull String letter, final @NotNull Color color) {

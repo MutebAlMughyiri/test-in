@@ -39,7 +39,9 @@ public final class SourceSection implements DialogComponent {
     private static final boolean EXPANDED = true;
 
     private final @NotNull SourceFileField source;
+
     private final @NotNull FileTypeHint hint;
+
     private final @NotNull JComponent panel;
 
     // UC-SHARE-005, Rule-INTERNAL-099

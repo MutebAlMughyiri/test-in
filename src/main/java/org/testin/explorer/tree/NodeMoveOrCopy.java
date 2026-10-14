@@ -43,9 +43,13 @@ import java.util.function.IntConsumer;
 
 final class NodeMoveOrCopy {
     private final @NotNull Project project;
+
     private final @NotNull Consumer<Path> revealAfterRefresh;
+
     private final @NotNull Nodes nodes;
+
     private final @NotNull Notifier notifier;
+
     private final @NotNull UndoHistories undoHistories;
 
     NodeMoveOrCopy(final @NotNull Project project, final @NotNull Consumer<Path> revealAfterRefresh) {

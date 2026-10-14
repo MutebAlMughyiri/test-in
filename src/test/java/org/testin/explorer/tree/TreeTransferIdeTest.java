@@ -48,9 +48,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class TreeTransferIdeTest extends AbstractTempRootIdeTest {
 
     private final @NotNull List<Path> revealed = new CopyOnWriteArrayList<>();
+
     private TestSetPackageNode payments;
+
     private TestSetNode login;
+
     private TestCase loginTestCase;
+
     private TreeTransferHandler handler;
 
     @Override

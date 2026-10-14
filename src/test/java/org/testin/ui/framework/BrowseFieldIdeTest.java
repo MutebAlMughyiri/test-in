@@ -82,6 +82,7 @@ public class BrowseFieldIdeTest extends AbstractTempRootIdeTest {
 
     private static final class Chooser extends FileChooserFactory {
         private final @NotNull VirtualFile answer;
+
         private final @NotNull List<VirtualFile> openedAt = new ArrayList<>();
 
         private Chooser(final @NotNull VirtualFile answer) {

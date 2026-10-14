@@ -29,6 +29,7 @@ import static org.testng.Assert.assertTrue;
 public class UndoHistoriesTest {
 
     private static final UndoScope TREE = UndoScope.TREE;
+
     private static final UndoScope EDITOR = UndoScope.of(Path.of("root", "project", "Test Cases", "login"));
 
     private static @NotNull Operation counting(final String description, final AtomicInteger undone, final AtomicInteger redone) {

@@ -34,6 +34,7 @@ public abstract class AbstractGitRemoteIdeTest extends AbstractTempRootIdeTest {
     protected static final @NotNull String MAIN = "main";
 
     protected Path remote;
+
     protected Path work;
 
     protected static void identify(final @NotNull Path repository, final @NotNull String name, final @NotNull String email) {

@@ -65,8 +65,11 @@ public enum UndoDirection {
     };
 
     private final @NotNull String title;
+
     private final @NotNull Icon icon;
+
     private final @NotNull KeyStroke shortcut;
+
     private final @NotNull Done done;
 
     public abstract boolean can(final @NotNull UndoHistories service, final @NotNull UndoScope scope);

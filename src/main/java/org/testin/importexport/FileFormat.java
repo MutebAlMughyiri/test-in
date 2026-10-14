@@ -112,11 +112,15 @@ public enum FileFormat {
     );
 
     private final @NotNull String label;
+
     private final @NotNull String extension;
 
     private final @NotNull Function<String, String> hint;
+
     private final @NotNull ExportHandler exportHandler;
+
     private final @NotNull ImportHandler importHandler;
+
     private final @NotNull ReportHandler reportHandler;
 
     public static @NotNull Optional<FileFormat> importerFor(final @NotNull String fileName) {

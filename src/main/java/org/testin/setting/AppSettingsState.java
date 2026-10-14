@@ -34,15 +34,21 @@ public final class AppSettingsState implements PersistentStateComponent<AppSetti
     public static final int DEFAULT_TIMEOUT_SECONDS = 180;
 
     public @NotNull String rootTestinPath = "";
+
     public @NotNull String logLevel = "INFO";
+
     public @NotNull String defaultDownloadFolder = "";
+
     public @NotNull String testerName = "";
+
     public @NotNull String testerRole = "";
 
     public boolean showShortcutHints = true;
 
     public @NotNull String agentCommand = "";
+
     public @NotNull String agentArguments = "";
+
     public @NotNull String agentPrompt = "";
 
     public int agentTimeoutSeconds = DEFAULT_TIMEOUT_SECONDS;

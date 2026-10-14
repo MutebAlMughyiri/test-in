@@ -46,7 +46,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class RemoveWithEditorsOpenIdeTest extends AbstractOpenEditorsIdeTest {
 
     private final @NotNull Map<String, Boolean> cancelableByTitle = new ConcurrentHashMap<>();
+
     private TestProjectNode testProject;
+
     private @NotNull String cancelTheOneTitled = "";
 
     private boolean isCancelable(final @NotNull String title) {

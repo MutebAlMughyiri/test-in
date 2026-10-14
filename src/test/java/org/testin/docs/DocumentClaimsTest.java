@@ -42,6 +42,7 @@ import static org.testng.Assert.fail;
 public class DocumentClaimsTest {
 
     private static final @NotNull Path DOCS = Paths.get("docs");
+
     private static final @NotNull Path README = DOCS.resolve("README.md");
 
     private static final @NotNull Path ROOT_README = Paths.get("README.md");

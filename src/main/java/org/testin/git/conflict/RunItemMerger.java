@@ -38,8 +38,11 @@ import java.util.stream.StreamSupport;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class RunItemMerger {
     private static final @NotNull String EXECUTIONS = "executions";
+
     private static final @NotNull String EXECUTED_AT = "executedAt";
+
     private static final @NotNull String DEFAULT = "default";
+
     private static final @NotNull String STATUS = "status";
 
     // UC-SHARE-018, Rule-SHARE-080, Rule-SHARE-081, Rule-EDITOR-PANEL-136, Rule-VIEW-PANEL-119

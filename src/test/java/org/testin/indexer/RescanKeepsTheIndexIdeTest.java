@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 public class RescanKeepsTheIndexIdeTest extends AbstractTempRootIdeTest {
 
     private static final int SETS = 60;
+
     private static final int TEST_CASES_PER_SET = 10;
 
     private static final int SCAN_TIMEOUT_SECONDS = 120;

@@ -44,11 +44,17 @@ import java.util.function.Predicate;
 
 public final class SelectionTree implements DialogComponent {
     private final @NotNull CheckboxTree tree;
+
     private final @NotNull CheckedTreeNode full;
+
     private final @NotNull Set<Object> leaves = new LinkedHashSet<>();
+
     private final @NotNull Set<Object> chosen = new LinkedHashSet<>();
+
     private final @NotNull List<Runnable> changed = new ArrayList<>();
+
     private final @NotNull JComponent panel;
+
     private final @NotNull AbstractIconButton tickAll = AbstractIconButton.of(Bundle.message("selection.tick.all"), AllIcons.Actions.Selectall, this::flipTicks);
 
     public SelectionTree(final @NotNull String caption, final @NotNull CheckedTreeNode root, final @NotNull CheckboxTree.CheckboxTreeCellRenderer renderer, final @NotNull Optional<JComponent> trailing) {

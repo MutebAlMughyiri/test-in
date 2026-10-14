@@ -33,6 +33,7 @@ import static org.testng.Assert.assertTrue;
 
 public class RenamedPathsTest {
     private static final @NotNull Path TEST_CASES = Path.of("NAFATH", "Test Cases");
+
     private static final @NotNull RenamedPaths ACCOUNTS = new RenamedPaths(TEST_CASES.resolve("Accounts"), TEST_CASES.resolve("Users"));
 
     private static @NotNull TestSetNode aTestSetAt(final @NotNull Path path) {

@@ -31,6 +31,7 @@ import org.testin.testrun.SetRunItemStatusGroup;
 
 public class TestRunEditorContextMenu extends AbstractEditorContextMenu {
     private final @NotNull Project project;
+
     private final @NotNull TestinEditor editor;
 
     public TestRunEditorContextMenu(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull AbstractNode node, final @NotNull JBList<TestCase> list) {

@@ -42,9 +42,12 @@ import java.util.stream.Collectors;
 
 final class TestCaseStore {
     private final @NotNull TestDataFiles testDataFiles;
+
     private final @NotNull AppSettingsState settings;
+
     @Getter(AccessLevel.PACKAGE)
     private final @NotNull Map<UUID, TestCase> testCasesByUuid = new ConcurrentHashMap<>();
+
     @Getter(AccessLevel.PACKAGE)
     private final @NotNull Map<String, List<UUID>> testCaseUuidsByTestSet = new ConcurrentHashMap<>();
 

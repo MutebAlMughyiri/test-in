@@ -48,8 +48,12 @@ enum Direction {
     );
 
     private final @NotNull Shortcuts key;
+
     private final @NotNull String text;
+
     private final @NotNull String description;
+
     private final @NotNull Icon icon;
+
     private final @NotNull Function<ContentManager, ActionCallback> select;
 }

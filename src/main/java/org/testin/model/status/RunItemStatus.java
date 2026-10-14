@@ -78,7 +78,9 @@ public enum RunItemStatus {
     );
 
     private final @NotNull Color rowColor;
+
     private final @NotNull Color reportColor;
+
     private final @NotNull String label;
 
     private final @NotNull KeyStroke shortcut;

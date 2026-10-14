@@ -27,6 +27,7 @@ import java.util.List;
 // UC-CODEGEN-021, Rule-CODEGEN-090
 public final class AgentTranscript {
     private final @NotNull List<String> exchanges = new ArrayList<>();
+
     private int landed;
 
     // UC-CODEGEN-021, Rule-CODEGEN-090

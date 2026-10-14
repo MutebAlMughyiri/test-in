@@ -71,41 +71,67 @@ import java.util.UUID;
 public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N extends AbstractNode> implements Disposable, ToolbarCallbacks, TestinEditor {
     @Getter
     protected final @NotNull Project project;
+
     @Getter
     protected final @NotNull List<TestCase> allTestCases;
+
     @Getter
     protected final @NotNull List<TestCase> currentTestCases;
+
     protected final @NotNull TestProjectIndexer indexer;
+
     protected final @NotNull Nodes nodes;
+
     protected final @NotNull TestCases testCases;
+
     protected final @NotNull TestCaseCompletions testCaseValues;
+
     protected final @NotNull AutomationState automationState;
+
     protected final @NotNull Notifier notifier;
+
     protected final @NotNull GridTables gridPanelBuilder = new GridTables();
+
     protected final @NotNull Disposable projectDisposable;
+
     protected final @NotNull JBPanel<?> mainPanel;
+
     protected final @NotNull EditorCenter center;
+
     @Getter
     protected final @NotNull JBList<TestCase> list;
+
     protected final @NotNull CollectionListModel<TestCase> model;
+
     protected final @NotNull JBScrollPane scrollPane;
+
     protected final @NotNull CardView cardView;
+
     protected final @NotNull AbstractEditorContextMenu contextMenu;
+
     @Getter
     protected final @NotNull EditorStatusBar statusBar = new EditorStatusBar();
+
     // UC-EDITOR-PANEL-023, Rule-EDITOR-PANEL-222
     protected final @NotNull EditorPaging paging = new EditorPaging(TestinEditor.pageSizeOf(PropertiesComponent.getInstance().getValue(TestinEditor.PAGE_SIZE_KEY, "")));
+
     private final @NotNull UndoHistories undoHistories;
+
     private final @NotNull EditorGrid<A> grid = new EditorGrid<>(this);
+
     private final @NotNull PendingSelection pending = new PendingSelection();
+
     @Getter
     protected volatile @NotNull N parent;
+
     @Getter
     @Setter
     protected @NotNull String hoveredIconAction = "";
+
     @Getter
     @Setter
     protected int hoveredIndex = -1;
+
     private boolean disposed;
 
     protected AbstractTestinEditor(final @NotNull Project project, final @NotNull N parent) {

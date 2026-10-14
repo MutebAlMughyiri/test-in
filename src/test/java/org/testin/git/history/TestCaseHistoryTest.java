@@ -44,7 +44,9 @@ import static org.testng.Assert.assertTrue;
 public class TestCaseHistoryTest {
 
     private static final @NotNull JsonCodec MAPPER = RealJsonCodec.build();
+
     private static final @NotNull UUID TEST_CASE_UUID = UUID.fromString("77777777-7777-4777-8777-777777777150");
+
     private static final @NotNull String PATH = "Test Cases/Login/" + TEST_CASE_UUID + ".testcase";
 
     private static @NotNull TestCase version(final @NotNull String expectedResult) {

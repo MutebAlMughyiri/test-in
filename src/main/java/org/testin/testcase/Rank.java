@@ -24,9 +24,13 @@ import org.jetbrains.annotations.NotNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Rank {
     public static final @NotNull String MIDDLE = "m";
+
     private static final char FIRST = 'a';
+
     private static final char LAST = 'z';
+
     private static final char BELOW_FIRST = FIRST - 1;
+
     private static final char ABOVE_LAST = LAST + 1;
 
     public static @NotNull String between(final @NotNull String before, final @NotNull String after) {

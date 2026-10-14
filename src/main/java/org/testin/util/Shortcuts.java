@@ -283,6 +283,7 @@ public enum Shortcuts {
     );
 
     public static final @NotNull KeyStroke NO_KEY = EMPTY.getKey();
+
     private final @NotNull ImmutableList<KeyStroke> keys;
 
     Shortcuts(final @NotNull KeyStroke key, final @NotNull KeyStroke @NotNull ... alternatives) {

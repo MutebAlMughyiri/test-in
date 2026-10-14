@@ -40,6 +40,7 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HoverButton {
     private static final float BASE_SCALE = 1.3f;
+
     private static final float HOVER_SCALE = 1.8f;
 
     // UC-VIEW-PANEL-012, UC-VIEW-PANEL-014, UC-EDITOR-PANEL-046, Rule-VIEW-PANEL-056, Rule-EDITOR-PANEL-243

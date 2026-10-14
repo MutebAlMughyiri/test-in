@@ -27,7 +27,9 @@ import java.util.stream.Stream;
 
 public final class DialogButton implements DialogComponent {
     private final @NotNull JButton button;
+
     private final @NotNull ButtonFooter footer;
+
     private @NotNull Runnable submitRequest = () -> {
     };
 

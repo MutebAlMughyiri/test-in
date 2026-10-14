@@ -44,7 +44,9 @@ import java.util.Optional;
 public class RenameWithEditorsOpenIdeTest extends AbstractOpenEditorsIdeTest {
 
     private TestSetPackageNode payments;
+
     private TestSetNode card;
+
     private TestSetNode login;
 
     @Override

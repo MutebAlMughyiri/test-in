@@ -45,9 +45,13 @@ import java.util.function.IntConsumer;
 
 public final class SelectionTable implements DialogComponent {
     private final @NotNull JBTable table;
+
     private final @NotNull DefaultTableModel model;
+
     private final @NotNull JBScrollPane scroll;
+
     private final @NotNull JBPopupMenu rowMenu = new JBPopupMenu();
+
     private final @NotNull Map<Integer, String> fixed = new HashMap<>();
 
     private int menuRow = -1;

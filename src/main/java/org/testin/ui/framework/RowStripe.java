@@ -27,6 +27,7 @@ import java.awt.Color;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RowStripe {
     private static final @NotNull Color PLAIN = JBColor.lazy(UIUtil::getListBackground);
+
     private static final @NotNull Color STRIPED = JBColor.lazy(UIUtil::getDecoratedRowColor);
 
     public static @NotNull Color of(final int index) {

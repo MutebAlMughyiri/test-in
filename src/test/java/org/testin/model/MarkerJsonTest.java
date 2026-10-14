@@ -38,7 +38,9 @@ import static org.testng.Assert.assertTrue;
 public class MarkerJsonTest {
 
     private final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+
     private final ZonedDateTime when = ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS).minusYears(3);
+
     private final String onDisk = DateTimeFormatter.ofPattern(DateFormats.DATE_FORMAT_PATTERN, Locale.US).format(when);
 
     @Test

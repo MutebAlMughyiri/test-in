@@ -40,8 +40,11 @@ import java.util.UUID;
 
 public final class TestRunFormOpener {
     private final @NotNull Project project;
+
     private final @NotNull TestProjectIndexer indexer;
+
     private final @NotNull TestCases testCases;
+
     private final @NotNull Nodes nodes;
 
     public TestRunFormOpener(final @NotNull Project project) {

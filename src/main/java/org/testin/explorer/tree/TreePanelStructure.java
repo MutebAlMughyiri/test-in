@@ -30,6 +30,7 @@ public final class TreePanelStructure extends AbstractTreeStructure {
     private static final @NotNull String NO_TEST_PROJECT = Bundle.message("tree.root.test.project");
 
     private final @NotNull Project project;
+
     private volatile @NotNull TreePanelNode root;
 
     public TreePanelStructure(final @NotNull Project project, final @NotNull Optional<TestProjectNode> selectedTestProject) {

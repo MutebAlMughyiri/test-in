@@ -29,10 +29,15 @@ import java.util.function.BooleanSupplier;
 
 final class ToggleFilterAction<T> extends DumbAwareToggleAction {
     private final @NotNull T value;
+
     private final @NotNull Set<T> selection;
+
     private final @NotNull FilterMembership<T> membership;
+
     private final @NotNull Runnable onChanged;
+
     private final @NotNull BooleanSupplier works;
+
     private final @NotNull String whyNot;
 
     ToggleFilterAction(final @NotNull String text, final @Nullable Icon icon, final @NotNull T value, final @NotNull Set<T> selection, final @NotNull FilterMembership<T> membership, final @NotNull Runnable onChanged) {

@@ -35,6 +35,7 @@ import static org.testng.Assert.assertTrue;
 public class OpenBugReportsTest {
 
     private static final RunItemPath RUN_ITEM_PATH = new RunItemPath(Path.of("NAFATH", "Test Runs", "Sprint 7"), UUID.randomUUID());
+
     private static final RunItemPath SAME_TEST_CASE_OTHER_TEST_RUN = new RunItemPath(Path.of("NAFATH", "Test Runs", "Sprint 8"), RUN_ITEM_PATH.testCaseUuid());
 
     private static @NotNull RunItem failed() {

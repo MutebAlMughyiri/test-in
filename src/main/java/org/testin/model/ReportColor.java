@@ -76,7 +76,9 @@ public enum ReportColor {
     );
 
     private final @NotNull Color onLightPage;
+
     private final @NotNull Color onDarkPage;
+
     private final @NotNull String cssName;
 
     ReportColor(final @NotNull Color onLightPage, final @NotNull String cssName) {

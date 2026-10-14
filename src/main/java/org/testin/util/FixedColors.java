@@ -27,17 +27,27 @@ import java.awt.Color;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FixedColors {
     public static final @NotNull JBColor WHITE = new JBColor(Color.WHITE, Color.WHITE);
+
     public static final @NotNull JBColor BLACK = new JBColor(Color.BLACK, Color.BLACK);
+
     public static final @NotNull JBColor GRAY = new JBColor(Color.GRAY, Color.GRAY);
+
     public static final @NotNull JBColor LIGHT_GRAY = new JBColor(Color.LIGHT_GRAY, Color.LIGHT_GRAY);
+
     public static final @NotNull JBColor DARK_GRAY = new JBColor(Color.DARK_GRAY, Color.DARK_GRAY);
+
     public static final @NotNull JBColor BLUE = new JBColor(Color.BLUE, Color.BLUE);
+
     public static final @NotNull JBColor RED = new JBColor(Color.RED, Color.RED);
+
     public static final @NotNull JBColor GREEN = new JBColor(Color.GREEN, Color.GREEN);
+
     public static final @NotNull JBColor ORANGE = new JBColor(Color.ORANGE, Color.ORANGE);
+
     public static final @NotNull JBColor YELLOW = new JBColor(Color.YELLOW, Color.YELLOW);
 
     private static final @NotNull Color PALE_YELLOW = ColorUtil.mix(WHITE, YELLOW, 0.2);
+
     private static final @NotNull Color DARK_YELLOW = ColorUtil.mix(YELLOW, BLACK, 0.4);
 
     // Rule-EDITOR-PANEL-294

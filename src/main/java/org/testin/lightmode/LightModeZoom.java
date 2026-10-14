@@ -25,8 +25,11 @@ import java.awt.Font;
 
 final class LightModeZoom {
     static final float STEP = 0.1f;
+
     private static final float MIN = 0.8f;
+
     private static final float MAX = 2.0f;
+
     private static final @NotNull String KEY = "testin.lightMode.zoom.v1";
 
     @Getter

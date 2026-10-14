@@ -33,6 +33,7 @@ import java.util.function.Consumer;
 
 public class FailureDetailDialog extends AbstractFrameworkDialog {
     private final @NotNull Consumer<FailureFields> onSave;
+
     private final @NotNull FailureFields fields;
 
     // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-143

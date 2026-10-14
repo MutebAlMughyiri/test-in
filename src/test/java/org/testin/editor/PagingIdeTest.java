@@ -42,8 +42,11 @@ import java.util.stream.Stream;
 
 public class PagingIdeTest extends AbstractTempRootIdeTest {
     private static final int PAGE = 50;
+
     private static final int LONG_TEST_SET = 120;
+
     private static final @NotNull String SEARCHED = "number 1";
+
     private static final int NARROWED_TO = 32;
 
     private @NotNull String pageSizeBefore = "";

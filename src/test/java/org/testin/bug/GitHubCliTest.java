@@ -41,6 +41,7 @@ public class GitHubCliTest {
             gh version 2.100.0 (2026-09-03)
             https://github.com/cli/cli/releases/tag/v2.100.0
             """;
+
     private static final String ISSUE = "https://github.com/mtb550/test-in/issues/412";
 
     private static @NotNull ProcessOutput answer(final String stdout, final String stderr, final int exitCode) {
@@ -189,6 +190,7 @@ public class GitHubCliTest {
 
     private static final class FakeGh {
         private final List<List<String>> asked = new ArrayList<>();
+
         private final Deque<ProcessOutput> answers;
 
         private FakeGh(final ProcessOutput... answers) {

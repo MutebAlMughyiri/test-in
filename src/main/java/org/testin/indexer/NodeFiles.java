@@ -41,9 +41,13 @@ import java.util.stream.Stream;
 
 final class NodeFiles {
     private final @NotNull Project project;
+
     private final @NotNull TestProjectIndexer indexer;
+
     private final @NotNull IndexerDataStore store;
+
     private final @NotNull VfsExecutor vfs;
+
     private final @NotNull OwnWrites ownWrites;
 
     NodeFiles(final @NotNull Project project, final @NotNull TestProjectIndexer indexer, final @NotNull IndexerDataStore store) {

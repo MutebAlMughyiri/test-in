@@ -43,6 +43,7 @@ import java.nio.file.Path;
 
 public final class TestinStartup implements ProjectActivity {
     private static final @NotNull Key<Boolean> STARTED = Key.create("testin.started");
+
     private static final @NotNull Key<Boolean> READ = Key.create("testin.read");
 
     // UC-SETTING-002

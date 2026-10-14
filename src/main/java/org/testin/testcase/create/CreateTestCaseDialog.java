@@ -40,8 +40,11 @@ import java.util.function.Consumer;
 public class CreateTestCaseDialog extends AbstractTestCaseDialog {
     // Rule-INTERNAL-054
     private static final @NotNull StatusBarItem ADD_FIELD = StatusBarShortcut.hint(addFieldKeys(), Bundle.message("dialog.key.add.field"));
+
     private final @NotNull TestSetNode testSet;
+
     private final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
+
     private final @NotNull Nodes nodes = Services.getInstance(project, Nodes.class);
 
     // UC-EDITOR-PANEL-005, Rule-CODEGEN-001

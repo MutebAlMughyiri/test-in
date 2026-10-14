@@ -53,6 +53,7 @@ import java.util.stream.Collectors;
 @Service(Service.Level.PROJECT)
 public final class TestNGExecution implements Disposable {
     private final @NotNull Project project;
+
     private final @NotNull Notifier notifier;
 
     private final @NotNull TestNGExecutionRegistry registry = new TestNGExecutionRegistry();

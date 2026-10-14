@@ -46,6 +46,7 @@ import java.util.stream.Stream;
 public class RunItemLineIdeTest extends AbstractTempRootIdeTest {
 
     private static final @NotNull UUID TEST_CASE_UUID = UUID.fromString("55555555-5555-4555-8555-555555555501");
+
     private static final @NotNull String ISSUE = "https://github.com/mtb550/test-in/issues/412";
 
     private static @NotNull TestCase aTestCase() {

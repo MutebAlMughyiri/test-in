@@ -39,6 +39,7 @@ import java.util.UUID;
 
 public class FailureFormSavesToTheTestRunIdeTest extends AbstractTempRootIdeTest {
     private static final @NotNull UUID FAILED_TEST_CASE = UUID.fromString("33333333-3333-4333-8333-333333333301");
+
     private static final @NotNull String TYPED = "The expired card was accepted";
 
     private @NotNull TestRuns indexedTestRuns() {

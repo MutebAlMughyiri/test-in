@@ -29,6 +29,7 @@ public class SyncToANewBranchIdeTest extends AbstractTempRootIdeTest {
     private static final @NotNull String BRANCH = "feature/new-test-cases";
 
     private Path remote;
+
     private Path work;
 
     @Override

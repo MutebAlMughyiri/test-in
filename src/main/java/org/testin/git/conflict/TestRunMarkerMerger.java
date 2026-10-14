@@ -35,10 +35,15 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class TestRunMarkerMerger {
     private static final @NotNull String STARTED = "executionStartedAt";
+
     private static final @NotNull String ENDED = "executionEndedAt";
+
     private static final @NotNull String TEST_RUN_STATUS_KEY = "status";
+
     private static final @NotNull String COMMIT = "commit";
+
     private static final @NotNull String MODIFIED_AT = "updatedAt";
+
     private static final @NotNull String MODIFIED_BY = "updatedBy";
 
     private static final @NotNull List<String> WRITTEN_INTO = List.of("configuration", "resultAnalysis");

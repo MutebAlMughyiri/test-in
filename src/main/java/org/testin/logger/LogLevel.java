@@ -59,6 +59,7 @@ public enum LogLevel {
     );
 
     public final int priority;
+
     public final @NotNull String paddedName;
 
     // UC-SETTING-007, Rule-SETTING-025

@@ -58,18 +58,28 @@ public class TestProjectTree implements Disposable {
     private static final long QUIET_MILLIS = 100;
 
     private final @NotNull Project project;
+
     private final @NotNull BoundTestProject boundTestProject;
+
     private final @NotNull JBScrollPane scrollPane;
+
     private final @NotNull TreePanelStructure treeStructure;
+
     private final @NotNull StructureTreeModel<TreePanelStructure> structureModel;
+
     private final @NotNull AsyncTreeModel treeModel;
+
     @Getter
     private final @NotNull SimpleTree mainTree;
+
     private final @NotNull AtomicBoolean refreshScheduled = new AtomicBoolean();
+
     private final @NotNull Set<Path> changedFolders = ConcurrentHashMap.newKeySet();
+
     private final @NotNull AtomicBoolean foldersBooked = new AtomicBoolean();
 
     private volatile @NotNull String expandedTestProjectPath = "";
+
     private volatile boolean disposed;
 
     private @NotNull Optional<Path> revealAfterRebuild = Optional.empty();

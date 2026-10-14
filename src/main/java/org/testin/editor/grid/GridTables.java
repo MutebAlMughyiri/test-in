@@ -78,16 +78,25 @@ import java.util.function.IntPredicate;
 
 public class GridTables {
     static final int CELL_PADDING = 10;
+
     static final @NotNull Color GRID_COLOR = JBColor.border();
+
     static final @NotNull Color SELECTION_BACKGROUND = EditorColors.SELECTION_BACKGROUND;
+
     private static final int MAX_COL_WIDTH = 500;
+
     private static final @NotNull String GRID_KIND_KEY = "testin.grid.kind";
+
     private static final @NotNull Border FIRST_CELL_SELECTION_BORDER = new SelectionCellBorder(true);
+
     private static final @NotNull Border CELL_SELECTION_BORDER = new SelectionCellBorder(false);
 
     private static final @NotNull Border FIRST_CELL_BORDER = cellBorder(1);
+
     private static final @NotNull Border CELL_BORDER = cellBorder(0);
+
     private static final int SEQUENCE_COLUMN = 0;
+
     private static final int ORDER_COLUMN = 1;
 
     private static @NotNull Border cellBorder(final int leftPadding) {
@@ -107,9 +116,13 @@ public class GridTables {
     private static @NotNull TableCellRenderer wrappingRenderer() {
         return new TableCellRenderer() {
             private final @NotNull JTextArea textArea = new JTextArea();
+
             private final @NotNull GridBagLayout layout = new GridBagLayout();
+
             private final @NotNull JPanel wrapper = new JPanel(layout);
+
             private final @NotNull GridBagConstraints constraints = new GridBagConstraints();
+
             private final @NotNull GridBagConstraints centered = new GridBagConstraints();
 
             {
@@ -418,9 +431,11 @@ public class GridTables {
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class RowHeights {
         private final @NotNull JBTable table;
+
         private final @NotNull AtomicBoolean pending = new AtomicBoolean();
 
         private int from = Integer.MAX_VALUE;
+
         private int to = -1;
 
         private void scheduleAll() {

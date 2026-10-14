@@ -43,6 +43,7 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 public class ArchitectureTest {
 
     private static final @NotNull JavaClasses CLASSES = productionClasses();
+
     private static final String @NotNull [] ABOVE_MODEL = {
             "org.testin.indexer..", "org.testin.editor..", "org.testin.view..", "org.testin.codegen..",
             "org.testin.services..", "org.testin.creator..", "org.testin.explorer..",
@@ -53,7 +54,9 @@ public class ArchitectureTest {
             "org.testin.setting..", "org.testin.config..", "org.testin.actions..", "org.testin.bug..",
             "org.testin.help.."
     };
+
     private static final @NotNull Set<String> MODEL_LEAF_EXCEPTIONS = Set.of();
+
     private static final String @NotNull [] FEATURES = {
             "org.testin.indexer..", "org.testin.editor..", "org.testin.view..", "org.testin.codegen..",
             "org.testin.creator..", "org.testin.explorer..", "org.testin.ui..",
@@ -62,17 +65,23 @@ public class ArchitectureTest {
             "org.testin.undo..", "org.testin.rename..", "org.testin.remove..", "org.testin.open..",
             "org.testin.clipboard..", "org.testin.runner..", "org.testin.bug..", "org.testin.help.."
     };
+
     private static final @NotNull Set<String> UTIL_EXCEPTIONS = Set.of();
+
     private static final @NotNull Set<String> FILE_ACCESS_EXCEPTIONS = Set.of("org.testin.ui.framework.TextInput");
+
     private static final @NotNull Set<String> FILE_APIS = Set.of(
             "java.nio.file.Files", "java.nio.channels.FileChannel", "java.io.RandomAccessFile",
             "java.io.FileInputStream", "java.io.FileOutputStream", "java.io.FileReader", "java.io.FileWriter",
             "com.intellij.openapi.vfs.LocalFileSystem", "com.intellij.openapi.vfs.VfsUtil", "com.intellij.openapi.vfs.VfsUtilCore",
             "com.intellij.openapi.util.io.FileUtil", "com.intellij.openapi.util.io.FileUtilRt");
+
     private static final @NotNull String VIRTUAL_FILE_OPERATIONS = "delete|move|copy|rename|createChildData|createChildDirectory"
             + "|setBinaryContent|getOutputStream|getInputStream|contentsToByteArray";
+
     private static final @NotNull String FILE_ON_DISK = "exists|isFile|isDirectory|list|listFiles|length|lastModified|canRead|canWrite"
             + "|delete|deleteOnExit|mkdir|mkdirs|renameTo|createNewFile|setLastModified|setReadable|setWritable";
+
     private static final @NotNull Set<String> REFRESH_EXCEPTIONS = Set.of("org.testin.testproject.SaveTestinYml");
 
     private static @NotNull JavaClasses productionClasses() {

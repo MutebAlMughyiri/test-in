@@ -47,11 +47,17 @@ import java.util.Optional;
 
 public class BranchSelector {
     private final @NotNull Project project;
+
     private final @NotNull TreePanel treePanel;
+
     private final @NotNull GitRepositoryService git;
+
     private final @NotNull Nodes nodes;
+
     private final @NotNull Notifier notifier;
+
     private final @NotNull ComboBox<String> comboBox;
+
     private final @NotNull DefaultComboBoxModel<String> model;
 
     private @NotNull Path testProjectPath = Path.of("");

@@ -37,6 +37,7 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestCaseMerger {
     private static final @NotNull String UPDATED_AT = "updatedAt";
+
     private static final @NotNull String UPDATED_BY = "updatedBy";
 
     private static final @NotNull Set<String> ORDER = Set.of("order");

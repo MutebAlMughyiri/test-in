@@ -45,11 +45,17 @@ public final class BugTemplate {
     private static final @NotNull String UNLINK = "&#8203;";
 
     private static final @NotNull Pattern PLACEHOLDER = Pattern.compile("\\{\\{(\\w+)}}");
+
     private static final @NotNull Pattern MENTION = Pattern.compile("(?<!\\w)@(?=[A-Za-z0-9])");
+
     private static final @NotNull Pattern REFERENCE = Pattern.compile("(?<!&)#(?=\\d)");
+
     private static final @NotNull Pattern HEADING = Pattern.compile("^( {0,3})#");
+
     private static final @NotNull Pattern RULE = Pattern.compile("^( {0,3})(?=(?:[-=]+|(?:[-*_] *){3,}) *$)");
+
     private static final @NotNull Pattern BACKTICKS = Pattern.compile("`+");
+
     private static final @NotNull Pattern TRAILING_LINE_BREAKS = Pattern.compile("\\R+\\z");
 
     private static final @NotNull String TEMPLATE = load();

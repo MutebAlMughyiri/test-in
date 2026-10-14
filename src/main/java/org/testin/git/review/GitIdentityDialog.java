@@ -31,8 +31,11 @@ import java.util.function.Consumer;
 
 final class GitIdentityDialog extends AbstractFrameworkDialog {
     private final @NotNull TextInput nameField;
+
     private final @NotNull TextInput emailField;
+
     private final @NotNull RadioSelection<Boolean> scope;
+
     private final @NotNull Consumer<@NotNull Identity> onSet;
 
     GitIdentityDialog(final @NotNull Project project, final @NotNull Consumer<@NotNull Identity> onSet) {

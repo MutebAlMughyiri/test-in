@@ -22,8 +22,11 @@ import static org.testng.Assert.assertEquals;
 
 public class EditorStatusBarWidthsTest {
     private static final int SENTENCE = 150;
+
     private static final int ARROWS = 160;
+
     private static final int FIGURES = 420;
+
     private static final int CONTENT = SENTENCE + ARROWS + FIGURES;
 
     @Test

@@ -84,8 +84,11 @@ import java.util.stream.IntStream;
 
 public class ApiModelActionIdeTest extends AbstractCodegenIdeTest {
     private static final @NotNull String ACTION = "Testin.ApiModel";
+
     private static final @NotNull String REMEMBERED_LAYOUT = "testin.apiModel.sideBySide";
+
     private static final @NotNull String REQUEST_BODY = "{\"user\":\"ada\",\"password\":\"secret\"}";
+
     private static final @NotNull String RESPONSE_BODY = "{\"token\":\"t-1\",\"expiresIn\":3600}";
 
     @Override

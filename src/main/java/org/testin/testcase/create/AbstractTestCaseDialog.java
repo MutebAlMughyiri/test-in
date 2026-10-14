@@ -52,29 +52,49 @@ import java.util.stream.Stream;
 public abstract class AbstractTestCaseDialog extends AbstractFrameworkDialog {
     @Getter(AccessLevel.NONE)
     private static final @NotNull StatusBarItem[] NO_ITEMS = new StatusBarItem[0];
+
     private static final @NotNull PropertyChangeListener NOTHING_ON_FOCUS = _ -> {
     };
+
     protected final @NotNull DescriptionSection descriptionSection;
+
     protected final @NotNull ExpectedResultSection expectedResultSection;
+
     protected final @NotNull ModuleSection moduleSection;
+
     protected final @NotNull TestDataSection testDataSection;
+
     protected final @NotNull PreConditionsSection preConditionsSection;
+
     protected final @NotNull PrioritySection prioritySection;
+
     protected final @NotNull GroupSection groupSection;
+
     protected final @NotNull StepsSection stepsSection;
+
     protected final @NotNull OrderSection orderSection;
+
     protected final @NotNull TestCaseStatusSection testCaseStatusSection;
+
     protected final @NotNull ReferenceSection referenceSection;
+
     protected final @NotNull Disposable dialogDisposable;
+
     protected final @NotNull Map<TestCaseSection, StatusBarItem[]> statusBarMapping;
+
     @Getter(AccessLevel.NONE)
     private final @NotNull TestCase testCase;
+
     @Getter(AccessLevel.NONE)
     private final @NotNull Consumer<@NotNull TestCase> onSave;
+
     @Getter(AccessLevel.NONE)
     private final StatusBarItem @NotNull [] dialogKeys;
+
     private final @NotNull List<TestCaseSection> cachedSections;
+
     private @NotNull PropertyChangeListener focusListener = NOTHING_ON_FOCUS;
+
     private @NotNull Optional<TestCaseSection> editableSection = Optional.empty();
 
     public AbstractTestCaseDialog(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull Consumer<@NotNull TestCase> onSave, final StatusBarItem @NotNull ... dialogKeys) {

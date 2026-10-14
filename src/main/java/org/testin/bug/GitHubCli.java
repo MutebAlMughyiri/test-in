@@ -47,16 +47,25 @@ import java.util.stream.IntStream;
 @AllArgsConstructor
 public final class GitHubCli {
     static final @NotNull Duration TIMEOUT = Duration.ofMinutes(2);
+
     private static final @NotNull List<Integer> OLDEST = List.of(2, 99, 0);
+
     private static final @NotNull String BODY_FILE = "bug.md";
+
     private static final @NotNull String DEV_BUILD = "DEV";
+
     private static final @NotNull Pattern VERSION = Pattern.compile("gh version (\\S+)");
+
     private static final @NotNull Pattern NUMBER = Pattern.compile("\\d{1,9}");
+
     private static final @NotNull String STATE = "state stateReason";
+
     private static final @NotNull String BOARD = "projectItems(first: 10) { nodes { project { title } fieldValueByName(name: $field) { ... on ProjectV2ItemFieldSingleSelectValue { name color } } } }";
+
     private static final @NotNull String BOARD_FIELD = "Status";
 
     private static final @NotNull Path ANYWHERE = Path.of(System.getProperty("java.io.tmpdir"));
+
     private final @NotNull Launcher launcher;
 
     public static @NotNull GitHubCli onPath(final @NotNull ProgressIndicator indicator) {

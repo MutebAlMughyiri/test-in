@@ -48,14 +48,23 @@ public final class Badges {
     static final int BADGE_RADIUS = 20;
 
     static final int TAG_NOTCH = 7;
+
     static final @NotNull String PAIR_JOIN = " / ";
+
     static final @NotNull Icon BUG_MARK = IconUtil.colorize(IconUtil.resizeSquared(AllIcons.Toolwindows.ToolWindowDebugger, 20), FixedColors.BLACK);
+
     private static final int BADGE_ICON_GAP = 4;
+
     private static final int BADGE_PAD_V = 2;
+
     private static final int BADGE_PAD_H = 10;
+
     private static final @NotNull Color TEXT_ON_LIGHT = FixedColors.DARK_GRAY;
+
     private static final @NotNull Color TEXT_ON_DARK = FixedColors.WHITE;
+
     private static final @NotNull Color GROUP_COLOR = JBColor.darkGray;
+
     private static final @NotNull Icon CLOCK = IconUtil.resizeSquared(AllIcons.Vcs.History, 14);
 
     // Rule-VIEW-PANEL-114, Rule-EDITOR-PANEL-268

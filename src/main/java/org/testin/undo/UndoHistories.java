@@ -113,6 +113,7 @@ public final class UndoHistories {
 
     private static final class History {
         private final @NotNull Deque<Operation> undoStack = new ArrayDeque<>();
+
         private final @NotNull Deque<Operation> redoStack = new ArrayDeque<>();
     }
 }

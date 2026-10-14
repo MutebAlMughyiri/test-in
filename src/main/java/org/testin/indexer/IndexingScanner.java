@@ -53,9 +53,13 @@ import java.util.stream.Stream;
 
 final class IndexingScanner {
     private final @NotNull IndexerDataStore store;
+
     private final @NotNull NodeMapper directoryMapper;
+
     private final @NotNull JsonCodec mapper;
+
     private final @NotNull ReadProblems problems;
+
     private final @NotNull TestDataFiles testDataFiles;
 
     IndexingScanner(final @NotNull Project project, final @NotNull IndexerDataStore store) {

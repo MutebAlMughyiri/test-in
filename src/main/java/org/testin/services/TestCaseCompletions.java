@@ -33,11 +33,15 @@ import java.util.function.Supplier;
 @Service(Service.Level.PROJECT)
 public final class TestCaseCompletions implements Disposable {
     private final @NotNull Set<String> descriptions = ConcurrentHashMap.newKeySet();
+
     private final @NotNull Set<String> expectedResults = ConcurrentHashMap.newKeySet();
+
     private final @NotNull Set<String> modules = ConcurrentHashMap.newKeySet();
+
     private final @NotNull Set<String> steps = ConcurrentHashMap.newKeySet();
 
     private final @NotNull Set<String> groups = ConcurrentHashMap.newKeySet();
+
     private final @NotNull AtomicBoolean reloadScheduled = new AtomicBoolean();
 
     private final @NotNull ExecutorService updates = SequentialTaskExecutor.createSequentialApplicationPoolExecutor("Testin completion values");

@@ -37,7 +37,9 @@ import java.util.function.Consumer;
 
 public abstract class AbstractJsonSplitBulkSectionDialog extends AbstractFrameworkDialog {
     private final @NotNull List<TestCase> selectedTestCases;
+
     private final @NotNull Consumer<List<TestCase>> updatedTestCases;
+
     private final @NotNull BulkJsonEditors editors;
 
     private final @NotNull List<String> originalEscaped = new ArrayList<>();

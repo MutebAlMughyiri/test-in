@@ -30,8 +30,11 @@ import javax.swing.JComponent;
 
 public class TestinUndoAction extends AbstractBoundTestProjectAction {
     private final @NotNull UndoDirection direction;
+
     private final @NotNull UndoScope scope;
+
     private final @NotNull UndoHistories undoHistories = Services.getInstance(project, UndoHistories.class);
+
     private final @NotNull Notifier notifier = Services.getInstance(project, Notifier.class);
 
     public TestinUndoAction(final @NotNull Project project, final @NotNull JComponent on, final @NotNull UndoScope scope, final @NotNull UndoDirection direction) {

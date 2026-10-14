@@ -50,6 +50,7 @@ public class DifferenceNumbersTest {
             Pattern.CASE_INSENSITIVE);
 
     private static final Pattern RULE_WRITTEN = Pattern.compile("\\*\\*(Rule-[A-Z][A-Z-]*-\\d+)\\*\\*");
+
     private static final Pattern RULE_NAMED = Pattern.compile("Rule-[A-Z][A-Z-]*-\\d+");
 
     private static void forEachCitation(final Citation tell) {

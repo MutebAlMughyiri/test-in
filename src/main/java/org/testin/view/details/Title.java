@@ -34,8 +34,11 @@ import java.awt.GridBagConstraints;
 
 public class Title extends AbstractDetails {
     final int INSETS_TOP = 20;
+
     final int INSETS_LEFT = 16;
+
     final int INSETS_BOTTOM = 0;
+
     final int INSETS_RIGHT = 16;
 
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-025, Rule-VIEW-PANEL-125

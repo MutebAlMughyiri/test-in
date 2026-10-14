@@ -38,14 +38,21 @@ import java.util.Optional;
 
 public class TestRunConfigurationForm implements DialogComponent {
     private static final boolean EXPANDED = true;
+
     private static final int COLUMN_GAP = 12;
 
     private final @NotNull JBPanel<?> wrapper;
+
     private final @NotNull TestRunNameSection testRunName;
+
     private final @NotNull ChangeLogSection changeLog;
+
     private final @NotNull Map<TestRunConfiguration, ChoiceSection> choices = new EnumMap<>(TestRunConfiguration.class);
+
     private final @NotNull List<TestRunSection> sections = new ArrayList<>();
+
     private final @NotNull List<List<DialogPart<?>>> rows = new ArrayList<>();
+
     private @NotNull Runnable answered = () -> {
     };
 

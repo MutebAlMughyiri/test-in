@@ -114,7 +114,9 @@ public enum NodeFigureRow {
 
     @Getter(AccessLevel.NONE)
     private final @NotNull String caption;
+
     private final @NotNull ToLongFunction<NodeFigures> reader;
+
     private final @NotNull LongFunction<String> format;
 
     private final @NotNull Color swatch;

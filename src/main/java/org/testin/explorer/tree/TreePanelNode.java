@@ -40,7 +40,9 @@ import java.util.Optional;
 
 public final class TreePanelNode extends AbstractTreeNode<Object> {
     private final @NotNull Project project;
+
     private final @NotNull TestProjectIndexer indexer;
+
     private final @NotNull Nodes nodes;
 
     public TreePanelNode(final @NotNull Project project, final @NotNull Object value) {

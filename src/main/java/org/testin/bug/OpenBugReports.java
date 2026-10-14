@@ -28,6 +28,7 @@ import java.util.Optional;
 @Service(Service.Level.PROJECT)
 public final class OpenBugReports {
     private final @NotNull Map<RunItemPath, Stage> onTheWay = new HashMap<>();
+
     private final @NotNull Map<RunItemPath, BugReportEdits> unsent = new HashMap<>();
 
     void begin(final @NotNull RunItemPath runItemPath) {

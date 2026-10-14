@@ -38,6 +38,7 @@ import java.util.List;
 // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-219
 public final class Screenshots implements DialogComponent {
     private final @NotNull ScreenshotStrip strip;
+
     private final @NotNull BorderLayoutPanel panel;
 
     private @NotNull Runnable changed = () -> {

@@ -57,10 +57,15 @@ import java.util.function.Supplier;
 
 public final class HelpMark implements CustomStatusBarWidget {
     private static final int MARK_SIZE = 20;
+
     private static final @NotNull Icon QUIET = IconUtil.resizeSquared(AllIcons.General.QuestionDialog, MARK_SIZE);
+
     private static final @NotNull Icon WAITING = IconUtil.colorize(QUIET, Icons.RED, true);
+
     private static final int HINT_CHARACTERS = 48;
+
     private static final double SCREEN_PART = 0.25;
+
     private static final int GAP = 8;
 
     private final @NotNull Project project;

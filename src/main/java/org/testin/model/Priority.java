@@ -55,7 +55,9 @@ public enum Priority {
     public static final @NotNull Priority DEFAULT = LOW;
 
     private final @NotNull String label;
+
     private final @NotNull Color color;
+
     private final boolean active;
 
     // Rule-EDITOR-PANEL-267

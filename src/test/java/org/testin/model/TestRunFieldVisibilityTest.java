@@ -31,8 +31,11 @@ import static org.testng.Assert.assertTrue;
 public class TestRunFieldVisibilityTest {
 
     private static final @NotNull String WEB = "Web";
+
     private static final @NotNull String MOBILE = "Mobile";
+
     private static final @NotNull String FRONTEND = "Frontend";
+
     private static final @NotNull String BACKEND = "Backend";
 
     private static @NotNull TestRunConfiguration.Chosen answers(final @NotNull String platform, final @NotNull String component) {

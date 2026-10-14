@@ -43,9 +43,13 @@ import java.util.Optional;
 @Service(Service.Level.PROJECT)
 public final class TestRunStatusChange {
     private final @NotNull Project project;
+
     private final @NotNull TestinEditors editors;
+
     private final @NotNull Notifier notifier;
+
     private final @NotNull TestRuns testRuns;
+
     private final @NotNull AppSettingsState settings;
 
     public TestRunStatusChange(final @NotNull Project project) {

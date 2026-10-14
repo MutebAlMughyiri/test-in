@@ -29,12 +29,19 @@ import java.util.stream.Stream;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JavaModelText {
     private static final char OPEN = '{';
+
     private static final char CLOSE = '}';
+
     private static final @NotNull String INDENT = "    ";
+
     private static final @NotNull String CONTINUATION = INDENT + INDENT;
+
     private static final @NotNull String JAVA = "java.";
+
     private static final @NotNull String JSON_PROPERTY = "com.fasterxml.jackson.annotation.JsonProperty";
+
     private static final @NotNull List<String> LOMBOK_ON_EVERY_CLASS = List.of("lombok.Data", "lombok.NoArgsConstructor");
+
     private static final @NotNull List<String> LOMBOK_ON_A_CLASS_WITH_FIELDS = List.of("lombok.Builder", "lombok.AllArgsConstructor", "lombok.experimental.Accessors");
 
     // UC-CODEGEN-022, Rule-CODEGEN-100, Rule-CODEGEN-101

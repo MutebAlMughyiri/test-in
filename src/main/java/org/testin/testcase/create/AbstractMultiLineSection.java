@@ -31,6 +31,7 @@ public abstract class AbstractMultiLineSection implements TestCaseSection {
     protected final @NotNull MultiLineField field;
 
     private final @NotNull JBPanel<?> wrapper;
+
     private final @NotNull Shortcuts shortcut;
 
     protected AbstractMultiLineSection(final @NotNull Project project, final @NotNull EditorTextField field, final @NotNull CreateTestCaseFields describes) {

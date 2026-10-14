@@ -43,9 +43,13 @@ import java.util.Optional;
 
 public abstract class AbstractIconButton extends JButton {
     private @NotNull Icon restIcon;
+
     private @NotNull Icon zoomedIcon;
+
     private final @NotNull Optional<String> shortcutText;
+
     private boolean hovered;
+
     private boolean on;
 
     public AbstractIconButton(final @NotNull String tooltip, final @NotNull Icon icon) {

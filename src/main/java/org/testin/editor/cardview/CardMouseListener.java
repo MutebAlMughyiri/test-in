@@ -52,12 +52,19 @@ import java.util.Optional;
 
 public class CardMouseListener extends MouseAdapter {
     private final @NotNull Project project;
+
     private final @NotNull JBList<TestCase> list;
+
     private final @NotNull CollectionListModel<TestCase> model;
+
     private final @NotNull AbstractEditorContextMenu contextMenu;
+
     private final @NotNull List<String> treePath;
+
     private final @NotNull TestinEditor editor;
+
     private final @NotNull Notifier notifier;
+
     private @NotNull String shownTip = "";
 
     public CardMouseListener(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull JBList<TestCase> list, final @NotNull CollectionListModel<TestCase> model, final @NotNull AbstractNode node, final @NotNull AbstractEditorContextMenu contextMenu) {

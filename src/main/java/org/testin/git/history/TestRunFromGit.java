@@ -48,6 +48,7 @@ import java.util.stream.Stream;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestRunFromGit {
     private static final @NotNull String FORMAT = "--format=%x1e%H";
+
     private static final @NotNull String DELETED = "D";
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-126, Rule-EDITOR-PANEL-239

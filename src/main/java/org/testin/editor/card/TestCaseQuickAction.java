@@ -87,7 +87,9 @@ public enum TestCaseQuickAction {
     );
 
     private final @NotNull String tooltip;
+
     private final @NotNull String actionId;
+
     @Getter(AccessLevel.NONE)
     private final @NotNull ImmutableList<OptionalPlugin> requires;
 

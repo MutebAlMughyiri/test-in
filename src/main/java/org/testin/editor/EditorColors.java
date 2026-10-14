@@ -28,7 +28,9 @@ import java.awt.Color;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EditorColors {
     public static final @NotNull Color SELECTION_BACKGROUND = JBColor.lazy(() -> UIUtil.getListSelectionBackground(true));
+
     public static final @NotNull Color SELECTION_FOREGROUND = JBColor.lazy(() -> UIUtil.getListSelectionForeground(true));
+
     public static final @NotNull Color SELECTION_BORDER = JBColor.blue;
 
     public static final @NotNull Color FILTER_ACTIVE = JBUI.CurrentTheme.Link.Foreground.ENABLED;

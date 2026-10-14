@@ -39,5 +39,6 @@ public enum ExecutionControl {
     );
 
     private final @NotNull String label;
+
     private final @NotNull Icon icon;
 }

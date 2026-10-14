@@ -246,16 +246,24 @@ public enum TestSetEditorFields implements ShowableField {
 
     // Rule-EDITOR-PANEL-020
     public static final @NotNull List<TestSetEditorFields> COLUMNS = List.of(values());
+
     // Rule-VIEW-PANEL-026, Rule-EDITOR-PANEL-005
     private static final @NotNull Set<TestSetEditorFields> PROSE =
             EnumSet.of(DESCRIPTION, EXPECTED_RESULT, STEPS, PRE_CONDITIONS);
+
     private static final @NotNull Map<Can, List<TestSetEditorFields>> BY_CAPABILITY = EnumSet.allOf(Can.class).stream()
             .collect(Collectors.toUnmodifiableMap(capability -> capability, capability -> Arrays.stream(values()).filter(field -> field.can(capability)).toList()));
+
     private final @NotNull String name;
+
     private final @NotNull FieldDefault toolBarDefault;
+
     private final @NotNull Function<TestCase, String> testValueExtractor;
+
     private final @NotNull ImportSetter importSetter;
+
     private final @NotNull CodeChangeType<TestCase> codeChangeType;
+
     @Getter(AccessLevel.NONE)
     private final @NotNull ImmutableSet<Can> can;
 

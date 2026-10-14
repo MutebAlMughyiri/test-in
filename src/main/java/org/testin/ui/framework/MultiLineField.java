@@ -56,9 +56,13 @@ public final class MultiLineField implements DialogComponent {
     private static final int VISIBLE_LINES = 6;
 
     private final @NotNull Project project;
+
     private final @NotNull EditorTextField field;
+
     private final @NotNull String caption;
+
     private final int minimumLines;
+
     private final int maximumLines;
 
     private @NotNull IntSupplier heightCap = () -> Integer.MAX_VALUE;

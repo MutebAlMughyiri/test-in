@@ -62,7 +62,9 @@ import static org.junit.Assert.assertNotEquals;
 
 public class ClipboardGesturesIdeTest extends AbstractTempRootIdeTest {
     private static final @NotNull String COPY = "Testin.CopyTestCaseNode";
+
     private static final @NotNull String CUT = "Testin.CutTestCaseNode";
+
     private static final @NotNull String PASTE = "Testin.PasteTestCaseNode";
 
     private @NotNull TestProjectNode testProject = new TestProjectNode();

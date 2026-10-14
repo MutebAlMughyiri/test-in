@@ -29,6 +29,7 @@ import static org.testng.Assert.assertTrue;
 public class CopiedTestCaseIdentityTest {
 
     private static final @NotNull Path TEST_SET = Path.of("root", "Test Cases", "Login");
+
     private static final @NotNull Path TEST_RUN = Path.of("root", "Test Runs", "Cycle 1");
 
     private static final @NotNull Predicate<Path> IS_TEST_SET = Set.of(TEST_SET)::contains;

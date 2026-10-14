@@ -35,6 +35,7 @@ import static org.testin.git.LocalGit.mustGit;
 public class TestCaseHistoryIdeTest extends AbstractGitRemoteIdeTest {
 
     private static final @NotNull UUID TEST_CASE_UUID = UUID.fromString("77777777-7777-4777-8777-777777777151");
+
     private static final @NotNull String FILE = TEST_CASE_UUID + ".testcase";
 
     private @NotNull TestCase version(final @NotNull String expectedResult) {

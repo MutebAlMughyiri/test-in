@@ -27,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NotWhileEditing extends AnAction {
     private final @NotNull AnAction delegate;
+
     private final @NotNull JBTable table;
 
     public static void bind(final @NotNull JBTable table, final @NotNull AnAction action) {

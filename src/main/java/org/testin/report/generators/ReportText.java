@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReportText {
     public static final @NotNull String PLUGIN_NAME = "Testin";
+
     public static final @NotNull String PLUGIN_URL = "https://plugins.jetbrains.com/plugin/31514-testin";
 
     public static @NotNull String footerLead() {

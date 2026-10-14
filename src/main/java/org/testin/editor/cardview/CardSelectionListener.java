@@ -31,8 +31,11 @@ import java.util.List;
 @AllArgsConstructor
 public class CardSelectionListener implements ListSelectionListener {
     private final @NotNull Project project;
+
     private final @NotNull JBList<TestCase> list;
+
     private final @NotNull TestinEditor editor;
+
     private final @NotNull List<String> treePath;
 
     // UC-EDITOR-PANEL-025, Rule-EDITOR-PANEL-113

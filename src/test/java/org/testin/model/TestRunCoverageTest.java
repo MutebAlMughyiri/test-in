@@ -47,7 +47,9 @@ import static org.testng.Assert.assertTrue;
 public class TestRunCoverageTest {
 
     private static final @NotNull UUID EXECUTED = UUID.fromString("11111111-1111-4111-8111-111111111101");
+
     private static final @NotNull UUID UNTOUCHED = UUID.fromString("11111111-1111-4111-8111-111111111102");
+
     private static final @NotNull UUID ADDED = UUID.fromString("11111111-1111-4111-8111-111111111103");
 
     private static @NotNull RunItem executed() {

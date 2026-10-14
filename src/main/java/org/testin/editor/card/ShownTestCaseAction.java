@@ -35,8 +35,11 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShownTestCaseAction extends DumbAwareAction {
     private final @NotNull Project project;
+
     private final @NotNull TestCaseQuickAction button;
+
     private final @NotNull Supplier<Optional<TestCase>> shown;
+
     private final @NotNull BiConsumer<TestCaseQuickAction, TestCase> press;
 
     public static void bind(final @NotNull Project project, final @NotNull TestCaseQuickAction button, final @NotNull Supplier<Optional<TestCase>> shown, final @NotNull BiConsumer<TestCaseQuickAction, TestCase> press, final @NotNull JComponent component) {

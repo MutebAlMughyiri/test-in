@@ -37,7 +37,9 @@ import java.util.function.Consumer;
 
 public final class TestRunResultAnalysisDialog extends AbstractFrameworkDialog {
     private final @NotNull Map<TestRunResultAnalysis, PlainTextArea> written = new EnumMap<>(TestRunResultAnalysis.class);
+
     private final @NotNull Consumer<@NotNull Map<TestRunResultAnalysis, String>> onSave;
+
     private final boolean readOnly;
 
     // UC-EDITOR-PANEL-045, Rule-EDITOR-PANEL-190

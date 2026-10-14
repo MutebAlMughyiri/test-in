@@ -47,7 +47,9 @@ import java.util.HashSet;
 public class PasteNodeAsksFirstIdeTest extends AbstractTempRootIdeTest {
 
     private TestSetNode login;
+
     private TestSetPackageNode payments;
+
     private TreeTransferHandler handler;
 
     @Override

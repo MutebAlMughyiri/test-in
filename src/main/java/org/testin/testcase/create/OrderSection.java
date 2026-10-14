@@ -48,12 +48,16 @@ import java.util.stream.Collectors;
 
 public class OrderSection implements TestCaseSection {
     private final @NotNull Project project;
+
     private final @NotNull Notifier notifier;
+
     private final @NotNull TestCases testCases;
 
     @Getter
     private final @NotNull IntegerField position;
+
     private final @NotNull JBLabel outOf;
+
     private final @NotNull JBPanel<?> wrapper;
 
     public OrderSection(final @NotNull Project project) {

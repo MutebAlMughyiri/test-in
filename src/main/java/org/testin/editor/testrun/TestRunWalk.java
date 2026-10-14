@@ -49,15 +49,23 @@ import java.util.stream.Collectors;
 
 public final class TestRunWalk {
     private final @NotNull TestRunEditor editor;
+
     private final @NotNull Project project;
+
     private final @NotNull TestRuns testRuns;
+
     private final @NotNull TestRunStatusChange testRunStatusChange;
+
     private final @NotNull RunItemRecorder runItemStatusService;
+
     private final @NotNull TestNGExecution testNGExecution;
+
     private final @NotNull Notifier notifier;
 
     private final @NotNull RunItemClock executionTimer = new RunItemClock();
+
     private final @NotNull Set<UUID> launchedHere = ConcurrentHashMap.newKeySet();
+
     private final @NotNull Set<UUID> launchedByRunTests = ConcurrentHashMap.newKeySet();
 
     private @NotNull Optional<UUID> executingTestCase = Optional.empty();

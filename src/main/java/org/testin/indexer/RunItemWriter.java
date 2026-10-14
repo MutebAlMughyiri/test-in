@@ -46,7 +46,9 @@ import java.util.stream.Collectors;
 
 final class RunItemWriter {
     private final @NotNull IndexerDataStore store;
+
     private final @NotNull TestDataFiles files;
+
     private final @NotNull JsonCodec mapper;
 
     private final @NotNull ExecutorService queue =

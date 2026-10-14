@@ -157,6 +157,7 @@ public final class RunItemStatusDonut implements DialogComponent {
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class Ring extends JComponent {
         private final @NotNull List<NodeFigureRow> slices;
+
         private final @NotNull NodeFigures figures;
 
         @Override

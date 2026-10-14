@@ -38,6 +38,7 @@ public class SignedOffTestRunIdeTest extends AbstractTempRootIdeTest {
     private static final @NotNull String RECORDED = "The expired card was accepted";
 
     private UUID failed;
+
     private Path cycle;
 
     private @NotNull TestRuns indexedTestRuns() {

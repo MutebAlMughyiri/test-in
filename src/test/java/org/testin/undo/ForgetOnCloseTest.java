@@ -29,6 +29,7 @@ import static org.testng.Assert.assertTrue;
 public class ForgetOnCloseTest {
 
     private static final @NotNull UndoScope ONE = UndoScope.of(Path.of("root", "Test Cases", "Login"));
+
     private static final @NotNull UndoScope ANOTHER = UndoScope.of(Path.of("root", "Test Cases", "Payment"));
 
     private static @NotNull Operation held(final @NotNull AtomicInteger released) {

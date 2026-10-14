@@ -105,10 +105,14 @@ public enum TestRunConfiguration {
     );
 
     private final @NotNull String displayName;
+
     private final @NotNull Icon icon;
+
     private final @NotNull ImmutableList<String> options;
+
     @Getter(AccessLevel.NONE)
     private final @NotNull ShownWhen shownWhen;
+
     private final @NotNull String defaultAnswer;
 
     public static @NotNull List<DetailRow> rowsOf(final @NotNull TestRunMarker testRun) {
@@ -159,7 +163,9 @@ public enum TestRunConfiguration {
 
     private static final class Answer {
         private static final @NotNull String WEB = "Web";
+
         private static final @NotNull String MOBILE = "Mobile";
+
         private static final @NotNull String FRONTEND = "Frontend";
     }
 }

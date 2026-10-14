@@ -45,7 +45,9 @@ import java.util.function.Consumer;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ConflictResolution {
     private static final @NotNull String BASE = ":1";
+
     private static final @NotNull String REMOTE = ":2";
+
     private static final @NotNull String MINE = ":3";
 
     // UC-SHARE-017

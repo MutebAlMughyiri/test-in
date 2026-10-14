@@ -84,10 +84,14 @@ public enum TestRunStatus implements MenuItem {
     );
 
     private final @NotNull String label;
+
     private final @NotNull KeyStroke shortcut;
+
     private final @NotNull Icon icon;
+
     @Getter(AccessLevel.NONE)
     private final int stage;
+
     @Getter(AccessLevel.NONE)
     private final @NotNull SetBy setBy;
 
@@ -141,9 +145,13 @@ public enum TestRunStatus implements MenuItem {
     // UC-TREE-PANEL-020, Rule-TREE-PANEL-092
     private static final class Stage {
         private static final int MADE = 0;
+
         private static final int HANDED_OUT = 1;
+
         private static final int RUNNING = 2;
+
         private static final int OVER = 3;
+
         private static final int RECORDED = 4;
     }
 }

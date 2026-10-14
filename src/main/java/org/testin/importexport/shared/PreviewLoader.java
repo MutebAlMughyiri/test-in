@@ -43,12 +43,15 @@ public class PreviewLoader {
     private static final long QUIET_MILLIS = 300;
 
     private final @NotNull TextValue fileField;
+
     private final @NotNull Project project;
+
     private final @NotNull Notifier notifier;
 
     private final @NotNull Consumer<String> onMessage;
 
     private final @NotNull BiConsumer<FileFormat, Map<String, List<TestCase>>> onDataLoaded;
+
     private final @NotNull BiFunction<File, FileFormat, Map<String, List<TestCase>>> importLoader;
 
     private final @NotNull AtomicReference<String> awaiting = new AtomicReference<>("");

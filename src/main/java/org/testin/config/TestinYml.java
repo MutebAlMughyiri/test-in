@@ -65,10 +65,13 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestinYml {
     public static final @NotNull String SCP_PREFIX = "git@";
+
     private static final @NotNull String[] FILE_NAMES = {"testin.yml", "testin.yaml"};
+
     private static final @NotNull Key<ParsedTestinYml> READ = Key.create("testin.yml");
 
     private static final @NotNull ParsedTestinYml NOTHING_SAID = new ParsedTestinYml(TestinProjectConfig.EMPTY, true);
+
     private static final @NotNull ObjectMapper YAML = new ObjectMapper(new YAMLFactory())
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
             .addHandler(new DeserializationProblemHandler() {

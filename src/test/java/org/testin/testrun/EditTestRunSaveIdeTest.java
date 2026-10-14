@@ -41,7 +41,9 @@ import java.util.UUID;
 
 public class EditTestRunSaveIdeTest extends AbstractTempRootIdeTest {
     private static final @NotNull UUID JUDGED_WHILE_OPEN = UUID.fromString("22222222-2222-4222-8222-222222222201");
+
     private static final @NotNull UUID STILL_PENDING = UUID.fromString("22222222-2222-4222-8222-222222222202");
+
     private static final @NotNull UUID ADDED_BY_THE_EDIT = UUID.fromString("22222222-2222-4222-8222-222222222203");
 
     private @NotNull TestRuns indexedTestRuns() {

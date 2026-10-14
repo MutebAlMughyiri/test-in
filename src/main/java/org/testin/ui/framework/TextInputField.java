@@ -38,10 +38,13 @@ import java.util.Optional;
 
 final class TextInputField {
     private final @NotNull ExtendableTextField field;
+
     private final @NotNull String placeholder;
 
     private @NotNull Icon icon;
+
     private @NotNull String note = "";
+
     private @NotNull Optional<Runnable> browse = Optional.empty();
 
     private boolean emptyWarningShown;

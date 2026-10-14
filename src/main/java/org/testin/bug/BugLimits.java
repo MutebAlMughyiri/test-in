@@ -26,7 +26,9 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BugLimits {
     private static final int TITLE = 256;
+
     private static final int BODY = 65_536;
+
     private static final int SCREENSHOTS = 50;
 
     // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-071

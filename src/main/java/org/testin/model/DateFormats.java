@@ -35,10 +35,14 @@ public final class DateFormats {
     public static final @NotNull String DATE_WITHOUT_WEEKDAY_PATTERN = "dd-MM-yyyy 'At' HH:mm:ss '['VV']'";
 
     public static final @NotNull String DATE_FORMAT_PATTERN = "EEEE " + DATE_WITHOUT_WEEKDAY_PATTERN;
+
     public static final @NotNull String DATE_FORMAT_LOCALE = "en_US";
+
     public static final @NotNull ZonedDateTime NOT_EXECUTED = Instant.EPOCH.atZone(ZoneOffset.UTC);
+
     @Getter
     private static final @NotNull DateTimeFormatter dateFormatterPattern = DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN, Locale.US);
+
     public static final @NotNull Pattern DATE_TEXT = Pattern.compile("\\p{L}+ (\\d{2}-\\d{2}-\\d{4}) At \\d{2}:\\d{2}:\\d{2} \\[[^]]+]");
 
     public static boolean isNotExecuted(final @NotNull ZonedDateTime at) {

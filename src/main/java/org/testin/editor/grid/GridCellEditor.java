@@ -37,7 +37,9 @@ import java.util.Optional;
 
 public class GridCellEditor extends AbstractCellEditor implements TableCellEditor {
     private final @NotNull JBTextArea textArea = new JBTextArea();
+
     private @NotNull Optional<JTable> editingTable = Optional.empty();
+
     private int editingRow = -1;
 
     // UC-EDITOR-PANEL-008, Rule-EDITOR-PANEL-048

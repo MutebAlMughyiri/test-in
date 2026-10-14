@@ -28,9 +28,13 @@ public final class SeparatedValues {
     private static final String BYTE_ORDER_MARK = "﻿";
 
     private final @NotNull String text;
+
     private final char separator;
+
     private final @NotNull List<List<String>> records = new ArrayList<>();
+
     private final @NotNull StringBuilder current = new StringBuilder();
+
     private @NotNull List<String> fields = new ArrayList<>();
 
     // Rule-EDITOR-PANEL-254, Rule-SHARE-124

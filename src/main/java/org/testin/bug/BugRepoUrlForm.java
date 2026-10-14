@@ -46,6 +46,7 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BugRepoUrlForm {
     private static final int COLUMNS = 30;
+
     private static final int GAP = 8;
 
     // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-104

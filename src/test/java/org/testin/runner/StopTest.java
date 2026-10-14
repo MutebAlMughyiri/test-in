@@ -31,7 +31,9 @@ import static org.testng.Assert.assertTrue;
 public class StopTest {
 
     private static final @NotNull UUID ONE = UUID.fromString("00000000-0000-0000-0000-000000000001");
+
     private static final @NotNull UUID TWO = UUID.fromString("00000000-0000-0000-0000-000000000002");
+
     private static final @NotNull UUID THREE = UUID.fromString("00000000-0000-0000-0000-000000000003");
 
     @Test

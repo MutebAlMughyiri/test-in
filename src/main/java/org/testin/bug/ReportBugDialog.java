@@ -35,13 +35,19 @@ import java.util.Optional;
 
 final class ReportBugDialog extends AbstractFrameworkDialog {
     private final @NotNull RunItemPath runItemPath;
+
     private final @NotNull PreparedBug bug;
+
     private final @NotNull Runnable redraw;
+
     private final @NotNull OpenBugReports reports = Services.getInstance(project, OpenBugReports.class);
+
     private final @NotNull TestRuns testRuns = Services.getInstance(project, TestRuns.class);
 
     private final @NotNull DialogPart<TextInput> titleField;
+
     private final @NotNull DialogPart<PlainTextArea> bodyArea;
+
     private final @NotNull DialogPart<DialogButton> sendButton;
 
     private boolean sent;

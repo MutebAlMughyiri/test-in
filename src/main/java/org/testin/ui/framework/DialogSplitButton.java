@@ -28,9 +28,13 @@ import java.util.Optional;
 
 public final class DialogSplitButton implements DialogComponent {
     private final @NotNull JBOptionButton button;
+
     private final @NotNull ButtonFooter footer;
+
     private final @NotNull String defaultLabel;
+
     private @NotNull String chosen;
+
     private @NotNull Runnable submitRequest = () -> {
     };
 

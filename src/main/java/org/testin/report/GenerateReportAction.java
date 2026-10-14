@@ -53,7 +53,9 @@ import java.util.function.Supplier;
 
 public class GenerateReportAction extends AbstractBoundTestProjectAction {
     private final @NotNull Supplier<Optional<TestRunNode>> selectedTestRun;
+
     private final @NotNull TestRuns testRuns = Services.getInstance(project, TestRuns.class);
+
     private final @NotNull Notifier notifier = Services.getInstance(project, Notifier.class);
 
     public GenerateReportAction(final @NotNull Project project, final @NotNull SimpleTree tree) {

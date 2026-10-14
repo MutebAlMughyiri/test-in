@@ -36,6 +36,7 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TreeValues {
     private static final TreePath @NotNull [] NO_PATHS = new TreePath[0];
+
     private static final int @NotNull [] NO_ROWS = new int[0];
 
     private static @NotNull Optional<Object> valueOf(final @Nullable Object component) {

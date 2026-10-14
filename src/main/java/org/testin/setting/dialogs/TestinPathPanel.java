@@ -42,6 +42,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public final class TestinPathPanel {
     private final @NotNull TextFieldWithBrowseButton pathField = new TextFieldWithBrowseButton();
+
     private final @NotNull JButton openFolderButton = new JButton(Bundle.message("settings.path.open"));
 
     private final @NotNull ExecutorService probe = AppExecutorUtil.createBoundedApplicationPoolExecutor("Testin Folder Probe", 1);

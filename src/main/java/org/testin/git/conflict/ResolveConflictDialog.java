@@ -39,8 +39,11 @@ public final class ResolveConflictDialog extends AbstractFrameworkDialog {
     private static final @NotNull String LINE = "\n";
 
     private final @NotNull List<Question> questions;
+
     private final @NotNull List<RadioSelection<Boolean>> answers = new ArrayList<>();
+
     private final @NotNull Consumer<Set<String>> onResolved;
+
     private final @NotNull Runnable onSkipped;
 
     public ResolveConflictDialog(final @NotNull Project project, final @NotNull String testCase, final @NotNull List<Question> questions, final @NotNull List<String> settled, final @NotNull Consumer<Set<String>> onResolved, final @NotNull Runnable onSkipped) {

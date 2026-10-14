@@ -37,7 +37,9 @@ import java.util.Map;
 // Rule-TREE-PANEL-106
 public final class BindTestProjectDialog extends AbstractFrameworkDialog {
     private final @NotNull SelectionTable testProjects;
+
     private final @NotNull Runnable onBound;
+
     private final @NotNull BoundTestProject boundTestProject = Services.getInstance(project, BoundTestProject.class);
 
     public BindTestProjectDialog(final @NotNull Project project, final @NotNull Map<String, TestProjectStatus> underRoot, final @NotNull Runnable onBound) {

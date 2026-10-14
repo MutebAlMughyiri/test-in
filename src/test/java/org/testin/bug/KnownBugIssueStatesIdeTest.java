@@ -50,10 +50,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class KnownBugIssueStatesIdeTest extends AbstractTempRootIdeTest {
 
     private static final @NotNull UUID TEST_CASE_UUID = UUID.fromString("66666666-6666-4666-8666-666666666693");
+
     private static final @NotNull String FIXED = "https://github.com/mtb550/test-03/issues/9";
+
     private static final @NotNull String OPEN = "https://github.com/mtb550/test-03/issues/14";
+
     private static final @NotNull String ANSWER = """
             {"data":{"repository":{"i9":{"state":"CLOSED","stateReason":"COMPLETED"},"i14":{"state":"OPEN","stateReason":null}}}}""";
+
     private static final @NotNull String NO_GITHUB_PROJECT_SCOPE = """
             {"errors":[{"type":"INSUFFICIENT_SCOPES","message":"The 'title' field requires one of the following scopes: ['read:project']"}]}""";
 

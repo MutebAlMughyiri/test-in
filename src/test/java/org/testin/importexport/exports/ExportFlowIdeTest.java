@@ -64,7 +64,9 @@ import static org.junit.Assert.assertArrayEquals;
 
 public class ExportFlowIdeTest extends AbstractTempRootIdeTest {
     private @NotNull String downloadFolderBefore = "";
+
     private Path downloads;
+
     private TestProjectNode testProject;
 
     private static @NotNull Path folder(final @NotNull Path path) {

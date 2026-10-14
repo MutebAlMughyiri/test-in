@@ -44,7 +44,9 @@ import java.util.Set;
 
 final class EditorGrid<A extends Enum<A> & ShowableField> {
     private final @NotNull AbstractTestinEditor<A, ?> editor;
+
     private final @NotNull List<TestCase> rowsOnGrid = new ArrayList<>();
+
     private @NotNull Optional<GridView> view = Optional.empty();
 
     EditorGrid(final @NotNull AbstractTestinEditor<A, ?> editor) {
