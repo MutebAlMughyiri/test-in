@@ -83,6 +83,6 @@ public class FailureFormSavesToTheTestRunIdeTest extends AbstractTempRootIdeTest
         assertTrue("the form refused to save a failure the test run covers",
                 Services.getInstance(getProject(), RunItemRecorder.class).reviseFailure(testRunPath, FAILED_TEST_CASE, form.fields()));
         assertEquals("the failure was written somewhere other than the test run the index holds", TYPED,
-                indexedTestRuns().getRunItems(testRunPath).runItemOf(FAILED_TEST_CASE).map(RunItem::getActualResult).orElse(""));
+                indexedTestRuns().getRunItems(testRunPath).runItemOf(FAILED_TEST_CASE).map(RunItem::shownExecution).map(RunItemExecution::getActualResult).orElse(""));
     }
 }

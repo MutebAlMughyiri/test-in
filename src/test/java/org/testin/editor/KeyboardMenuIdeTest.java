@@ -91,7 +91,7 @@ public class KeyboardMenuIdeTest extends AbstractTempRootIdeTest {
     }
 
     private static @NotNull Set<KeyStroke> keysOfTheKeymap(final @NotNull AnAction entry) {
-        final @NotNull String actionId = Objects.requireNonNullElse(ActionManager.getInstance().getUuid(unwrapped(entry)), "");
+        final @NotNull String actionId = Objects.requireNonNullElse(ActionManager.getInstance().getId(unwrapped(entry)), "");
         return actionId.isEmpty() ? Set.of() : keysOf(ActionManager.getInstance().getAction(actionId));
     }
 

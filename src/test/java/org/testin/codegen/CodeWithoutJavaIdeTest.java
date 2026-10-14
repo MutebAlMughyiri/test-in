@@ -161,7 +161,7 @@ public class CodeWithoutJavaIdeTest extends AbstractCodegenIdeTest {
 
     // Rule-CODEGEN-063
     public void testAPluginTestinFoundMissingStaysMissingUntilTheIdeRestarts() {
-        final @NotNull PluginId java = PluginId.getUuid("com.intellij.java");
+        final @NotNull PluginId java = PluginId.getId("com.intellij.java");
         assertTrue("the Java plugin is not installed and switched on here, so this proves nothing", PluginManagerCore.isPluginInstalled(java) && !PluginManagerCore.isDisabled(java));
 
         OptionalPlugin.JAVA.missingUntil(getTestRootDisposable());

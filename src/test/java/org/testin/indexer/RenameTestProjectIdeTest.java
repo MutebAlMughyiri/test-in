@@ -21,7 +21,6 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
 import org.testin.model.node.TestProjectNode;
-import org.testin.model.node.TestSetNode;
 import org.testin.model.status.TestProjectStatus;
 import org.testin.services.Services;
 
@@ -36,10 +35,6 @@ public class RenameTestProjectIdeTest extends AbstractTempRootIdeTest {
         return Services.getInstance(getProject(), TestProjectIndexer.class);
     }
 
-    private @NotNull TestCases indexedTestCases() {
-        return Services.getInstance(getProject(), TestCases.class);
-    }
-
     private @NotNull Nodes nodes() {
         return Services.getInstance(getProject(), Nodes.class);
     }
@@ -49,15 +44,6 @@ public class RenameTestProjectIdeTest extends AbstractTempRootIdeTest {
             final TestProjectNode testProject = Services.getInstance(getProject(), NodeMapper.class).setTestProjectNode(root.resolve(name));
             nodes().addTestProject(testProject);
             return testProject;
-        });
-    }
-
-    private @NotNull TestSetNode aTestSetIn(final TestProjectNode testProject) {
-        return WriteAction.computeAndWait(() -> {
-            final TestSetNode testSet = Services.getInstance(getProject(), NodeMapper.class)
-                    .getTestSetNode(testProject.getTestCasesFolder().getPath().resolve("Login"), testProject.getTestCasesFolder());
-            nodes().addTestSet(testSet);
-            return testSet;
         });
     }
 

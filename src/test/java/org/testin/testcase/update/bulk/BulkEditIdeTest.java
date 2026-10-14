@@ -267,7 +267,7 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
         for (final KeyStroke stroke : Shortcuts.AddItem.getKeys())
             ShownDialog.press(getProject(), StepsBulkSectionDialog.class, stroke);
 
-        assertEquals("not every add key added an item to the steps", lines + Shortcuts.AddItem.getKeys().length, steps.getLineCount());
+        assertEquals("not every add key added an item to the steps", lines + Shortcuts.AddItem.getKeys().size(), steps.getLineCount());
     }
 
     // Rule-EDITOR-PANEL-006

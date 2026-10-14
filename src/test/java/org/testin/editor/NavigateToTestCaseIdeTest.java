@@ -68,7 +68,7 @@ public class NavigateToTestCaseIdeTest extends AbstractCodegenIdeTest {
         for (final AnAction entry : menu.getChildren(ActionManager.getInstance())) {
             if (entry instanceof Separator) continue;
             final @NotNull AnAction own = entry instanceof final AnActionWrapper wrapper ? wrapper.getDelegate() : entry;
-            names.add(Objects.requireNonNullElse(ActionManager.getInstance().getUuid(own), Objects.requireNonNullElse(own.getTemplatePresentation().getText(), "")));
+            names.add(Objects.requireNonNullElse(ActionManager.getInstance().getId(own), Objects.requireNonNullElse(own.getTemplatePresentation().getText(), "")));
         }
         return names;
     }

@@ -69,7 +69,7 @@ public class SignedOffTestRunIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull String recordedOn(final @NotNull Path testRunPath) {
-        return indexedTestRuns().getRunItems(testRunPath).runItemOf(failed).map(RunItem::getActualResult).orElse("");
+        return indexedTestRuns().getRunItems(testRunPath).runItemOf(failed).map(RunItem::shownExecution).map(RunItemExecution::getActualResult).orElse("");
     }
 
     // Rule-TREE-PANEL-135, Rule-PRODUCT-011
