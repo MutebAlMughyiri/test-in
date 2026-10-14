@@ -16,6 +16,7 @@
 
 package org.testin.util;
 
+import com.google.common.collect.ImmutableList;
 import com.intellij.openapi.actionSystem.CustomShortcutSet;
 import com.intellij.openapi.actionSystem.Shortcut;
 import com.intellij.openapi.actionSystem.ShortcutSet;
@@ -31,7 +32,6 @@ import java.awt.Toolkit;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
-import java.util.stream.Stream;
 
 @Getter
 public enum Shortcuts {
@@ -283,14 +283,14 @@ public enum Shortcuts {
     );
 
     public static final @NotNull KeyStroke NO_KEY = EMPTY.getKey();
-    private final @NotNull KeyStroke @NotNull [] keys;
+    private final @NotNull ImmutableList<KeyStroke> keys;
 
     Shortcuts(final @NotNull KeyStroke key, final @NotNull KeyStroke @NotNull ... alternatives) {
-        this.keys = Stream.concat(Stream.of(key), Arrays.stream(alternatives)).toArray(KeyStroke[]::new);
+        this.keys = ImmutableList.<KeyStroke>builder().add(key).add(alternatives).build();
     }
 
     public @NotNull KeyStroke getKey() {
-        return keys[0];
+        return keys.getFirst();
     }
 
     @MagicConstant(flagsFromClass = InputEvent.class)
@@ -324,7 +324,7 @@ public enum Shortcuts {
     }
 
     public @NotNull CustomShortcutSet getCustomShortcut() {
-        return new CustomShortcutSet(Arrays.stream(keys).map(Shortcuts::customShortcut).flatMap(set -> Arrays.stream(set.getShortcuts())).toArray(Shortcut[]::new));
+        return new CustomShortcutSet(keys.stream().map(Shortcuts::customShortcut).flatMap(set -> Arrays.stream(set.getShortcuts())).toArray(Shortcut[]::new));
     }
 
     public @NotNull String getShortcutText() {
@@ -332,7 +332,7 @@ public enum Shortcuts {
     }
 
     public boolean matches(final @NotNull KeyEvent e) {
-        return Arrays.stream(keys).anyMatch(stroke -> matches(e, stroke));
+        return keys.stream().anyMatch(stroke -> matches(e, stroke));
     }
 
     // Rule-INTERNAL-054
