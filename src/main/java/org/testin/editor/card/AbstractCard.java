@@ -180,6 +180,7 @@ public abstract class AbstractCard extends JBPanel<AbstractCard> {
         if (priority != Priority.DEFAULT) spoken.add(priority.getLabel());
         spoken.addAll(badges.stream().map(Badge::text).toList());
 
+        titleArea.setMaximumSize(titleArea.getSize());
         details.forEach((fieldName, value) -> {
             if (value.isBlank()) return;
 
