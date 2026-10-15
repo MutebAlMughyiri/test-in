@@ -19,6 +19,7 @@ package org.testin.clipboard;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCase;
+import org.testin.util.JsonCodec;
 
 import java.util.UUID;
 
@@ -28,7 +29,7 @@ record ClipboardTestCase(@JsonProperty(required = true) @NotNull UUID testCaseUu
         return new ClipboardTestCase(testCase.getUuid(), testCase);
     }
 
-    @NotNull TestCase withItsUuid() {
-        return testCase.setUuid(testCaseUuid);
+    @NotNull TestCase read(final @NotNull JsonCodec mapper) {
+        return TestCase.read(mapper, mapper.writeValueAsString(testCase), testCaseUuid);
     }
 }

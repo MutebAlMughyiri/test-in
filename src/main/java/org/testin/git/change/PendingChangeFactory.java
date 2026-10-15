@@ -78,20 +78,20 @@ final class PendingChangeFactory {
 
         return switch (gitStatusKind) {
             case ADDED -> {
-                final @NotNull TestCase newState = TestCase.read(mapper, afterJson, testCaseUuid);
+                final @NotNull TestCase newState = TestCase.read(mapper, revision(afterJson), testCaseUuid);
                 yield new PendingChange(ChangeSubject.TEST_CASE, newState.getDescription(), testSet,
                         testCaseUuid.toString(), relativePath, GitStatusKind.ADDED, nothingCommitted(),
                         List.of(new FieldChange(Bundle.message("caption.test.case"), "", newState.getDescription(), ChangeSubject.TEST_CASE.getCreated())));
             }
             case DELETED -> {
-                final @NotNull TestCase oldState = TestCase.read(mapper, beforeJson, testCaseUuid);
+                final @NotNull TestCase oldState = TestCase.read(mapper, revision(beforeJson), testCaseUuid);
                 yield new PendingChange(ChangeSubject.TEST_CASE, oldState.getDescription(), testSet,
                         testCaseUuid.toString(), relativePath, GitStatusKind.DELETED, oldState,
                         List.of(new FieldChange(Bundle.message("caption.test.case"), oldState.getDescription(), "", ChangeSubject.TEST_CASE.getRemoved())));
             }
             case MODIFIED -> {
-                final @NotNull TestCase oldState = TestCase.read(mapper, beforeJson, testCaseUuid);
-                final @NotNull TestCase newState = TestCase.read(mapper, afterJson, testCaseUuid);
+                final @NotNull TestCase oldState = TestCase.read(mapper, revision(beforeJson), testCaseUuid);
+                final @NotNull TestCase newState = TestCase.read(mapper, revision(afterJson), testCaseUuid);
                 final @NotNull List<FieldChange> fieldChanges = TestCaseFieldChanges.compare(oldState, newState);
 
                 yield new PendingChange(ChangeSubject.TEST_CASE, newState.getDescription(), testSet,
@@ -161,9 +161,13 @@ final class PendingChangeFactory {
         return Optional.ofNullable(relativePath.getParent()).map(Path::getFileName).map(Path::toString).orElse("");
     }
 
-    private static <T> @NotNull T read(final @NotNull JsonCodec mapper, final @NotNull String json, final @NotNull Class<T> type) {
+    private static @NotNull String revision(final @NotNull String json) {
         if (json.isEmpty()) throw new IllegalStateException("Missing Git file revision");
-        return mapper.readValue(json, type);
+        return json;
+    }
+
+    private static <T> @NotNull T read(final @NotNull JsonCodec mapper, final @NotNull String json, final @NotNull Class<T> type) {
+        return mapper.readValue(revision(json), type);
     }
 
     private static @NotNull TestCase nothingCommitted() {

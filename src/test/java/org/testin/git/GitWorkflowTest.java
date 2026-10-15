@@ -27,6 +27,7 @@ import org.testin.git.change.PendingChange;
 import org.testin.git.conflict.MergeOutcome;
 import org.testin.git.conflict.TestCaseMerger;
 import org.testin.model.Priority;
+import org.testin.model.FileKind;
 import org.testin.model.TestCase;
 import org.testin.testcase.Rank;
 import org.testin.testcase.TestCaseOrder;
@@ -443,7 +444,7 @@ public class GitWorkflowTest {
             final List<TestCase> after = new ArrayList<>();
             try (Stream<Path> files = Files.list(work.resolve("Test Cases/login flow"))) {
                 for (final Path file : files.filter(candidate -> candidate.getFileName().toString().endsWith(".testcase")).sorted().toList()) {
-                    after.add(RealJsonCodec.build().readValue(Files.readString(file, StandardCharsets.UTF_8), TestCase.class));
+                    after.add(TestCase.read(RealJsonCodec.build(), Files.readString(file, StandardCharsets.UTF_8), FileKind.TEST_CASE.uuidIn(file).orElseThrow()));
                 }
             }
 

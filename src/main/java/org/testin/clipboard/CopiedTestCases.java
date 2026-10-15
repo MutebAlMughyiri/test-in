@@ -54,10 +54,11 @@ public final class CopiedTestCases {
             final @NotNull String json = (String) contents.getTransferData(DataFlavor.stringFlavor);
             if (!json.trim().startsWith("[")) return List.of();
 
-            final @NotNull List<ClipboardTestCase> parsed = Services.getInstance(project, JsonCodec.class).readValue(json, new TypeReference<>() {
+            final @NotNull JsonCodec mapper = Services.getInstance(project, JsonCodec.class);
+            final @NotNull List<ClipboardTestCase> parsed = mapper.readValue(json, new TypeReference<>() {
             });
 
-            return parsed.stream().filter(Objects::nonNull).map(ClipboardTestCase::withItsUuid).toList();
+            return parsed.stream().filter(Objects::nonNull).map(clipped -> clipped.read(mapper)).toList();
         } catch (final UnsupportedFlavorException | IOException | UncheckedIOException ex) {
             TestinLogger.warn("[WARNING] Failed to parse clipboard JSON: " + FailureText.of(ex));
             return List.of();

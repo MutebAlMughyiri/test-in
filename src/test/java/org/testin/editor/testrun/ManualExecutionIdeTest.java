@@ -369,7 +369,7 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
 
             assertEquals(RunItemStatus.BLOCKED, runItemStatusOf(testRun, testCases.getFirst()));
             assertEquals(RunItemStatus.BLOCKED, runItemStatusOf(testRun, testCases.get(1)));
-            assertEquals("a test case removed from its test set was given the run item status", List.of(), theTestRuns().getRunItems(testRun.getPath()).runItemOf(removed).orElseThrow().getExecutions());
+            assertEquals("a test case removed from its test set was given the run item status", List.of(RunItemStatus.PENDING), theTestRuns().getRunItems(testRun.getPath()).runItemOf(removed).orElseThrow().getExecutions().stream().map(RunItemExecution::getStatus).toList());
             assertEquals("a run item status given to several at once was timed", Duration.ZERO, runItemOf(testRun, testCases.getFirst()).shownExecution().getDuration());
             assertEquals(Duration.ZERO, runItemOf(testRun, testCases.get(1)).shownExecution().getDuration());
         } finally {

@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,6 +47,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+// Rule-INTERNAL-135
 @Setter
 @Getter
 @AllArgsConstructor
@@ -53,8 +55,8 @@ import java.util.stream.IntStream;
 @Accessors(chain = true)
 @SuperBuilder
 @JsonIgnoreProperties(ignoreUnknown = true)
-// Rule-INTERNAL-135
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+@JsonPropertyOrder({"bugSeverity", "bugPriority", "bugIssueUrl", "default", "executions"})
 public class RunItem {
     @JsonIgnore
     @Getter(AccessLevel.NONE)

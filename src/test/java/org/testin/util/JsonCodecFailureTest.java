@@ -24,6 +24,7 @@ import java.nio.charset.StandardCharsets;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.expectThrows;
 
@@ -60,10 +61,10 @@ public class JsonCodecFailureTest {
         final JsonCodec mapper = RealJsonCodec.build();
         final TestCase original = TestCase.builder().description("written and read back").build();
 
-        final TestCase readBack = mapper.readValue(mapper.writeValueAsString(original), TestCase.class);
+        final TestCase readBack = TestCase.read(mapper, mapper.writeValueAsString(original), original.getUuid());
 
         assertEquals(readBack.getDescription(), original.getDescription());
-        assertEquals(readBack.getUuid(), original.getUuid());
+        assertFalse(mapper.writeValueAsString(original).contains(original.getUuid().toString()), "a test case's UUID is its file name, never a value inside the file");
     }
 
     @Test
