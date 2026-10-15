@@ -47,12 +47,14 @@ import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class GitCommandRunner {
+    private static final @NotNull String NO_LINE_ENDING_CHECK = "core.safecrlf=false";
+
     static @NotNull String execute(final @NotNull Project project, final @NotNull Path workingDirectory, final @NotNull GitCommand command, final @NotNull String... parameters) {
-        return run(project, workingDirectory, "", command, parameters);
+        return run(project, workingDirectory, "", List.of(), command, parameters);
     }
 
     static @NotNull String executeRemote(final @NotNull Project project, final @NotNull Path workingDirectory, final @NotNull String remoteUrl, final @NotNull GitCommand command, final @NotNull String... parameters) {
-        return run(project, workingDirectory, remoteUrl, command, parameters);
+        return run(project, workingDirectory, remoteUrl, List.of(), command, parameters);
     }
 
     // UC-SHARE-012, Rule-SHARE-058
@@ -65,7 +67,7 @@ final class GitCommandRunner {
             full[parameters.length] = "--pathspec-from-file=" + pathspec;
             full[parameters.length + 1] = "--pathspec-file-nul";
 
-            run(project, workingDirectory, "", command, full);
+            run(project, workingDirectory, "", List.of(NO_LINE_ENDING_CHECK), command, full);
         } finally {
             try {
                 Files.deleteIfExists(pathspec);
@@ -165,9 +167,10 @@ final class GitCommandRunner {
         return -1;
     }
 
-    // UC-SHARE-012, Rule-SHARE-056
-    private static @NotNull String run(final @NotNull Project project, final @NotNull Path workingDirectory, final @NotNull String remoteUrl, final @NotNull GitCommand command, final @NotNull String... parameters) {
+    // UC-SHARE-012, Rule-SHARE-056, Rule-SHARE-058
+    private static @NotNull String run(final @NotNull Project project, final @NotNull Path workingDirectory, final @NotNull String remoteUrl, final @NotNull List<String> config, final @NotNull GitCommand command, final @NotNull String... parameters) {
         final @NotNull GitLineHandler handler = new GitLineHandler(project, workingDirectory, command);
+        handler.addConfigParameters(config);
 
         handler.addCustomEnvironmentVariable(GitCommand.GIT_EDITOR_ENV, "true");
 

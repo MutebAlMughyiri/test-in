@@ -156,6 +156,17 @@ public class GitCommitAndPushIdeTest extends AbstractGitRemoteIdeTest {
         assertEquals("", mustGit(work, "status", "--porcelain", "-uall").strip());
     }
 
+    // UC-SHARE-012, Rule-SHARE-058
+    public void testALineEndingCheckOnEveryFileStopsNoCommit() {
+        mustGit(work, "config", "core.autocrlf", "true");
+        mustGit(work, "config", "core.safecrlf", "true");
+        write(work, "Test Cases/login/a.testcase", "{}\n");
+
+        commits().stageAndCommit(work, "one test case", List.of(ticked("Test Cases/login/a.testcase", GitStatusKind.ADDED)));
+
+        assertTrue("Git checked the test case's line endings and refused the commit: " + committedPaths(), committedPaths().contains("Test Cases/login/a.testcase"));
+    }
+
     // UC-SHARE-016, Rule-SHARE-071
     public void testThePullRebasesAndKeepsWhatWasNotCommitted() {
         final @NotNull Path colleague = colleague();

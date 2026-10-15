@@ -33,7 +33,9 @@ There is no key for this. **Commit** is behind the arrow of the split button.
 - **Rule-SHARE-057** — A password inside a remote address is never written to
   the log or shown.
 - **Rule-SHARE-058** — The list of paths reaches Git in a file, not on the
-  command line, so a very large commit does not fail for length.
+  command line, so a very large commit does not fail for length. Git does not
+  check each file's line endings either, so a commit of thousands of files
+  prints no warning for each one and no line-ending setting refuses it.
 - **Rule-SHARE-112** — A test run's screenshots travel with it. The review lists
   none of them on its own, and committing the test run commits the screenshots its
   folder gained or lost.
