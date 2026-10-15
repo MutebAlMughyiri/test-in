@@ -64,7 +64,7 @@ import static org.testin.testcase.TestCaseDialogKey.NAVIGATE_TAB;
 public enum UpdateTestCaseFields implements MenuItem {
     DESCRIPTION(
             TestSetEditorFields.DESCRIPTION.getName(),
-            Shortcuts.UpdateTestCaseDescription,
+            Shortcuts.FieldDescription,
             CreateTestCaseFields.DESCRIPTION.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_DESCRIPTION,
             Done.UPDATED,
@@ -75,7 +75,7 @@ public enum UpdateTestCaseFields implements MenuItem {
 
     EXPECTED_RESULT(
             TestSetEditorFields.EXPECTED_RESULT.getName(),
-            Shortcuts.UpdateTestCaseExpectedResult,
+            Shortcuts.FieldExpectedResult,
             CreateTestCaseFields.EXPECTED_RESULT.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_EXPECTED_RESULT,
             Done.UPDATED,
@@ -86,7 +86,7 @@ public enum UpdateTestCaseFields implements MenuItem {
 
     MODULE(
             TestSetEditorFields.MODULE.getName(),
-            Shortcuts.UpdateTestCaseModule,
+            Shortcuts.FieldModule,
             CreateTestCaseFields.MODULE.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_MODULE,
             Done.UPDATED,
@@ -97,7 +97,7 @@ public enum UpdateTestCaseFields implements MenuItem {
 
     TEST_DATA(
             TestSetEditorFields.TEST_DATA.getName(),
-            Shortcuts.UpdateTestCaseTestData,
+            Shortcuts.FieldTestData,
             CreateTestCaseFields.TEST_DATA.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_TEST_DATA,
             Done.UPDATED,
@@ -108,7 +108,7 @@ public enum UpdateTestCaseFields implements MenuItem {
 
     PRE_CONDITIONS(
             TestSetEditorFields.PRE_CONDITIONS.getName(),
-            Shortcuts.UpdateTestCasePreConditions,
+            Shortcuts.FieldPreConditions,
             CreateTestCaseFields.PRE_CONDITIONS.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_PRE_CONDITIONS,
             Done.UPDATED,
@@ -119,7 +119,7 @@ public enum UpdateTestCaseFields implements MenuItem {
 
     STEPS(
             TestSetEditorFields.STEPS.getName(),
-            Shortcuts.UpdateTestCaseSteps,
+            Shortcuts.FieldSteps,
             CreateTestCaseFields.STEPS.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_STEPS,
             Done.UPDATED,
@@ -130,7 +130,7 @@ public enum UpdateTestCaseFields implements MenuItem {
 
     PRIORITY(
             TestSetEditorFields.PRIORITY.getName(),
-            Shortcuts.UpdateTestCasePriority,
+            Shortcuts.FieldPriority,
             CreateTestCaseFields.PRIORITY.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_PRIORITY,
             Done.UPDATED,
@@ -141,7 +141,7 @@ public enum UpdateTestCaseFields implements MenuItem {
 
     GROUP(
             TestSetEditorFields.GROUP.getName(),
-            Shortcuts.UpdateTestCaseGroup,
+            Shortcuts.FieldGroup,
             CreateTestCaseFields.GROUP.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_GROUP,
             Done.UPDATED,
@@ -164,7 +164,7 @@ public enum UpdateTestCaseFields implements MenuItem {
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-194
     REFERENCE(
             TestSetEditorFields.REFERENCE.getName(),
-            Shortcuts.UpdateTestCaseReference,
+            Shortcuts.FieldReference,
             CreateTestCaseFields.REFERENCE.getIcon(),
             CodeChangeType.NO_CODE_CHANGE,
             Done.UPDATED,
@@ -176,7 +176,7 @@ public enum UpdateTestCaseFields implements MenuItem {
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-194
     STATUS(
             TestSetEditorFields.STATUS.getName(),
-            Shortcuts.UpdateTestCaseStatus,
+            Shortcuts.FieldStatus,
             CopyChoice.STATUS.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_STATUS,
             Done.UPDATED,

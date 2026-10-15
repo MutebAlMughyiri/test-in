@@ -58,9 +58,9 @@ Retiring deletes nothing. It only moves the node out of the way.
 - **Rule-TREE-PANEL-063** — A test project that is not **Active** shows nothing
   under it.
 - **Rule-TREE-PANEL-064** — An **Inactive** test project is still opened, and
-  still bound. What it does not do is hold anything: the tree draws the node and
-  its contents are not read. Until #66 there was an **Archived** status as well,
-  which meant the same thing and was not opened at all.
+  still bound: retiring it does not let go of it. What it holds is
+  Rule-TREE-PANEL-100's. Until #66 there was an **Archived** status as well, which
+  was not opened at all.
 - **Rule-TREE-PANEL-065** — A status is set on one node at a time. The status a
   node already has is offered gray, so the tester can see what it is now.
 - **Rule-TREE-PANEL-100** — A test project that is not active is shown in the

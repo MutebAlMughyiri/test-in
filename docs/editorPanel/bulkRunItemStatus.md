@@ -38,8 +38,9 @@ Select several test cases, then `P`, `F` or `B`.
   that would act on the row is refused.
 - **Rule-EDITOR-PANEL-163** — Every selected test case gets the run item status.
   Test cases that were removed from their test set are skipped and not counted.
-- **Rule-EDITOR-PANEL-164** — Nothing is timed. Each run item gets one more
-  execution, with no duration.
+- **Rule-EDITOR-PANEL-164** — Nothing is timed. A run item nobody judged has its
+  one open execution replaced by the recording, and one already judged gets one
+  more execution. Neither carries a duration.
 - **Rule-EDITOR-PANEL-165** — One message with a count, however many were
   recorded.
 - **Rule-EDITOR-PANEL-166** — Failing several does not open the failure dialog.

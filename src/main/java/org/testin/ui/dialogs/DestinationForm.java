@@ -20,6 +20,10 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.importexport.FileFormat;
+import org.testin.notifications.Notifier;
+import org.testin.notifications.Refused;
+import org.testin.services.Services;
+import org.testin.setting.TestinRoot;
 import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.DialogComponent;
 import org.testin.ui.framework.TextInput;
@@ -33,6 +37,8 @@ import java.util.Optional;
 public final class DestinationForm implements DialogComponent {
     private static final boolean EXPANDED = true;
 
+    private final @NotNull Project project;
+
     private final @NotNull TextInput folder;
 
     private final @NotNull TextInput fileName;
@@ -42,6 +48,7 @@ public final class DestinationForm implements DialogComponent {
     private final @NotNull JComponent panel;
 
     private DestinationForm(final @NotNull Project project, final FileFormat @NotNull [] formats, final @NotNull FileFormat defaultFormat, final @NotNull String suggestedName, final @NotNull String chooserTitle, final @NotNull String chooserDescription, final @NotNull String section) {
+        this.project = project;
         folder = DialogPart.textInput()
                 .caption(Bundle.message("destination.caption.folder"))
                 .placeholder(Bundle.message("destination.choose.folder"))
@@ -88,13 +95,18 @@ public final class DestinationForm implements DialogComponent {
         return tailIsAnExtension ? fileName.substring(0, dot) + extension : fileName + extension;
     }
 
-    // UC-SHARE-001, Rule-INTERNAL-067, Rule-SETTING-022
+    // UC-SHARE-001, UC-REPORT-001, Rule-INTERNAL-067, Rule-SETTING-022, Rule-REPORT-004, Rule-SHARE-010
     public @NotNull Optional<Destination> resolve() {
         final @NotNull String named = fileName.accepted();
         if (named.isEmpty()) return Optional.empty();
 
         final @NotNull String chosenFolder = folder.accepted();
         if (chosenFolder.isEmpty()) return Optional.empty();
+
+        if (Services.getInstance(project, TestinRoot.class).holds(chosenFolder)) {
+            Services.getInstance(project, Notifier.class).softRefuse(project, Refused.INSIDE_THE_TESTIN_FOLDER, chosenFolder);
+            return Optional.empty();
+        }
 
         final @NotNull FileFormat chosen = format.chosen();
 

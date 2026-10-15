@@ -16,21 +16,24 @@
 
 package org.testin.indexer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.jetbrains.annotations.NotNull;
 import org.testin.TempTree;
 import org.testin.logger.TestinLogger;
+import org.testin.model.FileKind;
 import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItem;
+import org.testin.util.JsonCodec;
+import org.testin.util.RealJsonCodec;
 import org.testng.SkipException;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.testng.Assert.assertEquals;
@@ -48,7 +51,7 @@ public class IndexerBudgetTest {
 
     private static final int PASSES = 15;
 
-    private static final @NotNull ObjectMapper MAPPER = new ObjectMapper().registerModule(new JavaTimeModule());
+    private static final @NotNull JsonCodec MAPPER = RealJsonCodec.build();
 
     private static @NotNull List<String> runItems() {
         final @NotNull List<String> documents = new ArrayList<>(RESULTS);
@@ -118,7 +121,7 @@ public class IndexerBudgetTest {
             for (final Path file : walk.toList()) {
                 if (!file.getFileName().toString().endsWith(".testcase")) continue;
 
-                testCases.add(MAPPER.readValue(file.toFile(), TestCase.class));
+                testCases.add(TestCase.read(MAPPER, Files.readString(file), FileKind.TEST_CASE.uuidIn(file).orElseThrow()));
             }
         } catch (final IOException ex) {
             throw new AssertionError("Could not read the generated tree at " + testProject + ": " + ex.getMessage(), ex);
@@ -132,8 +135,8 @@ public class IndexerBudgetTest {
 
         for (final String document : documents) {
             try {
-                testCases.add(MAPPER.readValue(document, TestCase.class));
-            } catch (final IOException ex) {
+                testCases.add(TestCase.read(MAPPER, document, UUID.randomUUID()));
+            } catch (final UncheckedIOException ex) {
                 throw new AssertionError("A generated test case no longer parses: " + ex.getMessage(), ex);
             }
         }

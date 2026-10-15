@@ -151,6 +151,12 @@ and reads *Name the file*, the cursor moves into it, and the dialog stays open.
 **If the folder is empty** — the same, with the folder box reading *Choose a
 folder*.
 
+**If the folder is the Testin folder or inside it** — nothing is written and the
+dialog stays open. A message reads *'C:\Users\...\Testin' is inside the Testin
+folder, which holds only test data*. The Testin folder holds the test projects,
+and a report there would be read with them and shared with them
+(Rule-REPORT-004).
+
 **If the file cannot be written** — a message titled *Could not generate the*,
 the format, *report* gives the reason under it.
 

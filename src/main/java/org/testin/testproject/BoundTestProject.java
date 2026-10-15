@@ -65,7 +65,7 @@ public final class BoundTestProject {
         return !name().isEmpty();
     }
 
-    // UC-TREE-PANEL-001, Rule-TREE-PANEL-001
+    // UC-TREE-PANEL-001, Rule-TREE-PANEL-001, Rule-TREE-PANEL-064
     public @NotNull Optional<TestProjectNode> get() {
         final @NotNull String name = name();
         if (name.isEmpty()) return Optional.empty();

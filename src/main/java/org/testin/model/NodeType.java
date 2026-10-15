@@ -132,10 +132,10 @@ public enum NodeType {
     // UC-TREE-PANEL-013, UC-TREE-PANEL-014, Rule-TREE-PANEL-043, Rule-TREE-PANEL-044, Rule-TREE-PANEL-003, Rule-TREE-PANEL-028, Rule-TREE-PANEL-034, Rule-PRODUCT-005
     private static final @NotNull Map<NodeType, Set<NodeType>> ACCEPTS = Map.of(
             TEST_PROJECT, Set.of(),
-            TEST_CASES_FOLDER, Set.of(TEST_SET, TEST_SET_PACKAGE),
-            TEST_RUNS_FOLDER, Set.of(TEST_RUN, TEST_RUN_PACKAGE),
-            TEST_SET_PACKAGE, Set.of(TEST_SET, TEST_SET_PACKAGE),
-            TEST_RUN_PACKAGE, Set.of(TEST_RUN, TEST_RUN_PACKAGE),
+            TEST_CASES_FOLDER, Set.copyOf(UNDER_TEST_CASES),
+            TEST_RUNS_FOLDER, Set.copyOf(UNDER_TEST_RUNS),
+            TEST_SET_PACKAGE, Set.copyOf(UNDER_TEST_CASES),
+            TEST_RUN_PACKAGE, Set.copyOf(UNDER_TEST_RUNS),
             TEST_SET, Set.of(),
             TEST_RUN, Set.of());
 

@@ -66,12 +66,14 @@ import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.status.TestRunStatus;
+import org.testin.notifications.Refused;
 import org.testin.services.Services;
 import org.testin.setting.AppSettingsState;
 import org.testin.testproject.BoundTestProject;
 import org.testin.testrun.TestRunEditorFields;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.util.Bundle;
+import org.testin.util.Shortcuts;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -352,6 +354,21 @@ public class ReportDeliveryIdeTest extends AbstractTempRootIdeTest {
 
         assertTrue("the report is not where the tester chose", file.isFile());
         assertEquals("the report put something under the Testin folder", before, everythingUnder(testin));
+    }
+
+    // Rule-REPORT-004
+    public void testAReportIsNeverWrittenInsideTheTestinFolder() {
+        final @NotNull List<String> balloons = Said.listening(getProject(), getTestRootDisposable()).shown();
+        try {
+            ShownDialog.open(getProject(), GenerateReportDialog.class, () -> new GenerateReportDialog(getProject(), "TestRun_NAFATH", (_, file) -> fail("a report was written inside the Testin folder: " + file)).show());
+            ShownDialog.typed(getProject(), GenerateReportDialog.class, testin.toString());
+            ShownDialog.press(getProject(), GenerateReportDialog.class, Shortcuts.Enter);
+
+            assertTrue("the dialog closed over a folder inside the Testin folder", ShownDialog.isOpen(getProject(), GenerateReportDialog.class));
+            assertTrue("nothing said why the folder was refused: " + balloons, balloons.contains(Refused.INSIDE_THE_TESTIN_FOLDER.about(testin.toString())));
+        } finally {
+            ShownDialog.close(getProject(), GenerateReportDialog.class);
+        }
     }
 
     // Rule-REPORT-009

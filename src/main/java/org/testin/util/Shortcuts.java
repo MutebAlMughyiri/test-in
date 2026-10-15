@@ -130,43 +130,43 @@ public enum Shortcuts {
             KeyStroke.getKeyStroke(KeyEvent.VK_A, 0)
     ),
 
-    CopyDescription(
+    FieldDescription(
             KeyStroke.getKeyStroke(KeyEvent.VK_D, 0)
     ),
 
-    CopyExpectedResult(
+    FieldExpectedResult(
             KeyStroke.getKeyStroke(KeyEvent.VK_E, 0)
     ),
 
-    CopySteps(
+    FieldSteps(
             KeyStroke.getKeyStroke(KeyEvent.VK_S, 0)
     ),
 
-    CopyPreConditions(
+    FieldPreConditions(
             KeyStroke.getKeyStroke(KeyEvent.VK_B, 0)
     ),
 
-    CopyTestData(
+    FieldTestData(
             KeyStroke.getKeyStroke(KeyEvent.VK_T, 0)
     ),
 
-    CopyPriority(
+    FieldPriority(
             KeyStroke.getKeyStroke(KeyEvent.VK_P, 0)
     ),
 
-    CopyModule(
+    FieldModule(
             KeyStroke.getKeyStroke(KeyEvent.VK_M, 0)
     ),
 
-    CopyGroup(
+    FieldGroup(
             KeyStroke.getKeyStroke(KeyEvent.VK_G, 0)
     ),
 
-    CopyStatus(
+    FieldStatus(
             KeyStroke.getKeyStroke(KeyEvent.VK_Z, 0)
     ),
 
-    CopyReference(
+    FieldReference(
             KeyStroke.getKeyStroke(KeyEvent.VK_R, 0)
     ),
 
@@ -238,48 +238,8 @@ public enum Shortcuts {
             KeyStroke.getKeyStroke(KeyEvent.VK_R, menuMask())
     ),
 
-    UpdateTestCaseDescription(
-            KeyStroke.getKeyStroke(KeyEvent.VK_D, 0)
-    ),
-
-    UpdateTestCaseExpectedResult(
-            KeyStroke.getKeyStroke(KeyEvent.VK_E, 0)
-    ),
-
-    UpdateTestCaseModule(
-            KeyStroke.getKeyStroke(KeyEvent.VK_M, 0)
-    ),
-
-    UpdateTestCaseTestData(
-            KeyStroke.getKeyStroke(KeyEvent.VK_T, 0)
-    ),
-
-    UpdateTestCasePreConditions(
-            KeyStroke.getKeyStroke(KeyEvent.VK_B, 0)
-    ),
-
-    UpdateTestCaseSteps(
-            KeyStroke.getKeyStroke(KeyEvent.VK_S, 0)
-    ),
-
-    UpdateTestCasePriority(
-            KeyStroke.getKeyStroke(KeyEvent.VK_P, 0)
-    ),
-
-    UpdateTestCaseGroup(
-            KeyStroke.getKeyStroke(KeyEvent.VK_G, 0)
-    ),
-
     UpdateTestCaseOrder(
             KeyStroke.getKeyStroke(KeyEvent.VK_O, 0)
-    ),
-
-    UpdateTestCaseReference(
-            KeyStroke.getKeyStroke(KeyEvent.VK_R, 0)
-    ),
-
-    UpdateTestCaseStatus(
-            KeyStroke.getKeyStroke(KeyEvent.VK_Z, 0)
     );
 
     public static final @NotNull KeyStroke NO_KEY = EMPTY.getKey();

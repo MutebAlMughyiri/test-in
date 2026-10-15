@@ -53,61 +53,61 @@ public enum CopyChoice implements MenuItem {
 
     DESCRIPTION(
             TestSetEditorFields.DESCRIPTION,
-            Shortcuts.CopyDescription,
+            Shortcuts.FieldDescription,
             CreateTestCaseFields.DESCRIPTION.getIcon()
     ),
 
     EXPECTED_RESULT(
             TestSetEditorFields.EXPECTED_RESULT,
-            Shortcuts.CopyExpectedResult,
+            Shortcuts.FieldExpectedResult,
             CreateTestCaseFields.EXPECTED_RESULT.getIcon()
     ),
 
     STEPS(
             TestSetEditorFields.STEPS,
-            Shortcuts.CopySteps,
+            Shortcuts.FieldSteps,
             CreateTestCaseFields.STEPS.getIcon()
     ),
 
     PRE_CONDITIONS(
             TestSetEditorFields.PRE_CONDITIONS,
-            Shortcuts.CopyPreConditions,
+            Shortcuts.FieldPreConditions,
             CreateTestCaseFields.PRE_CONDITIONS.getIcon()
     ),
 
     TEST_DATA(
             TestSetEditorFields.TEST_DATA,
-            Shortcuts.CopyTestData,
+            Shortcuts.FieldTestData,
             CreateTestCaseFields.TEST_DATA.getIcon()
     ),
 
     PRIORITY(
             TestSetEditorFields.PRIORITY,
-            Shortcuts.CopyPriority,
+            Shortcuts.FieldPriority,
             CreateTestCaseFields.PRIORITY.getIcon()
     ),
 
     MODULE(
             TestSetEditorFields.MODULE,
-            Shortcuts.CopyModule,
+            Shortcuts.FieldModule,
             CreateTestCaseFields.MODULE.getIcon()
     ),
 
     GROUP(
             TestSetEditorFields.GROUP,
-            Shortcuts.CopyGroup,
+            Shortcuts.FieldGroup,
             CreateTestCaseFields.GROUP.getIcon()
     ),
 
     STATUS(
             TestSetEditorFields.STATUS,
-            Shortcuts.CopyStatus,
+            Shortcuts.FieldStatus,
             Icons.fieldLetter("Z", Icons.GRAY)
     ),
 
     REFERENCE(
             TestSetEditorFields.REFERENCE,
-            Shortcuts.CopyReference,
+            Shortcuts.FieldReference,
             CreateTestCaseFields.REFERENCE.getIcon()
     ),
 

@@ -55,7 +55,7 @@ public class RefreshTreeAction extends AbstractBoundTestProjectAction {
 
     private final @NotNull AtomicBoolean refreshGuard = new AtomicBoolean(false);
 
-    // UC-TREE-PANEL-025, UC-TREE-PANEL-026, Rule-TREE-PANEL-081
+    // UC-TREE-PANEL-025, UC-TREE-PANEL-026, Rule-TREE-PANEL-083
     private final @NotNull AtomicReference<Optional<String>> queued = new AtomicReference<>(Optional.empty());
 
     public RefreshTreeAction(final @NotNull Project project, final @NotNull TreePanel treePanel) {
@@ -122,7 +122,7 @@ public class RefreshTreeAction extends AbstractBoundTestProjectAction {
         }
     }
 
-    // UC-TREE-PANEL-025, Rule-TREE-PANEL-081
+    // UC-TREE-PANEL-025, Rule-TREE-PANEL-083
     private void releaseAndRunWhatWaited() {
         refreshGuard.set(false);
 

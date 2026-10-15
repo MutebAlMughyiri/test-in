@@ -99,7 +99,7 @@ final class IndexingScanner {
         }
     }
 
-    // UC-INTERNAL-002, Rule-INTERNAL-005, Rule-INTERNAL-007, Rule-INTERNAL-091, Rule-TREE-PANEL-064
+    // UC-INTERNAL-002, Rule-INTERNAL-005, Rule-INTERNAL-007, Rule-INTERNAL-091
     private @NotNull Optional<String> scanTestProjectContents(final @NotNull Path testProjectPath, final @NotNull ProgressIndicator indicator) {
         try {
             final @NotNull TestProjectNode testProject = directoryMapper.getTestProjectNode(testProjectPath);

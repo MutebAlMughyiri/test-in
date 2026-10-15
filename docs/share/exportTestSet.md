@@ -100,6 +100,10 @@ than one is empty.
 
 **If the folder is empty** — the same, reading *Choose a folder*.
 
+**If the folder is the Testin folder or inside it** — nothing is written and the
+dialog stays open. A message reads *'C:\Users\...\Testin' is inside the Testin
+folder, which holds only test data* (Rule-SHARE-010).
+
 **If the file cannot be written** — a message titled **Export Failed** carries
 the reason.
 

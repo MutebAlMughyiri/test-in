@@ -120,6 +120,12 @@ public final class TestinRoot {
         return getPath();
     }
 
+    // Rule-REPORT-004, Rule-SHARE-010
+    public boolean holds(final @NotNull String rawPath) {
+        final @NotNull Path root = absolutePath();
+        return isConfigured(root) && pathOf(rawPath).map(path -> path.toAbsolutePath().normalize().startsWith(root)).orElse(false);
+    }
+
     // UC-INTERNAL-007, Rule-INTERNAL-108
     public @NotNull List<String> place(final @NotNull String rawPath) {
         return place(absolutePath(), rawPath);

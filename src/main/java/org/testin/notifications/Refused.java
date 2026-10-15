@@ -118,6 +118,11 @@ public enum Refused {
     // UC-EDITOR-PANEL-008, UC-SHARE-006, Rule-EDITOR-PANEL-206, Rule-SHARE-106
     UNREADABLE(
             Bundle.message("refused.unreadable")
+    ),
+
+    // UC-REPORT-001, UC-SHARE-001, Rule-REPORT-004, Rule-SHARE-010
+    INSIDE_THE_TESTIN_FOLDER(
+            Bundle.message("refused.inside.the.testin.folder")
     );
 
     private final @NotNull String sentence;
