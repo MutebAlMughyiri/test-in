@@ -70,7 +70,7 @@ public class StoppedTestCaseIdeTest extends AbstractCodegenIdeTest {
         process.startNotify();
         getProject().getMessageBus().syncPublisher(ExecutionManager.EXECUTION_TOPIC).processStarted(DefaultRunExecutor.EXECUTOR_ID, launchOf(testRunName), process);
 
-        assertTrue("the process of an execution stopped while the IDE was still building was left running", Boolean.TRUE.equals(process.getUserData(ProcessHandler.TERMINATION_REQUESTED)));
+        assertEquals("the process of an execution stopped while the IDE was still building was left running", Boolean.TRUE, process.getUserData(ProcessHandler.TERMINATION_REQUESTED));
         assertTrue("the process of an execution stopped while the IDE was still building is not ending", process.isProcessTerminating() || process.isProcessTerminated());
     }
 
@@ -79,7 +79,7 @@ public class StoppedTestCaseIdeTest extends AbstractCodegenIdeTest {
             @Override
             public @NotNull RunProfileState getState(final @NotNull Executor executor, final @NotNull ExecutionEnvironment environment) {
                 return (_, _) -> {
-                    throw new ExecutionException("a stand-in launch runs nothing");
+                    throw new ExecutionException("A stand-in launch runs nothing");
                 };
             }
 
