@@ -58,4 +58,9 @@ public class PluginDependenciesTest {
                 .toList();
         assertEquals(mandatoryModules, List.of(), "a content module that is not optional fails to load in an IDE without its plugin");
     }
+
+    @Test
+    public void testinIsNotOfferedToTheRemoteDevelopmentLauncherOrItsThinClient() {
+        assertEquals(elements("incompatible-with").stream().map(Element::getTextContent).toList(), List.of("com.jetbrains.gateway", "com.intellij.jetbrains.client"), "Gateway and JetBrains Client hold no project and lack the Git4Idea classes Testin calls");
+    }
 }

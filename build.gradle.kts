@@ -398,10 +398,6 @@ intellijPlatform {
         //
         //     gradlew verifyPlugin -PverifyIde=GoLand
         //     gradlew verifyPlugin -PverifyIde=Rider -PverifyVersions=2026.2.3
-        //
-        // JetBrains Client is in no releases listing the Gradle plugin reads, so
-        // its version cannot be resolved. verify.yml downloads and unpacks it
-        // and names the folders with -PverifyLocal=<dir,dir> instead.
         ides {
             // Two versions, not one. sinceBuild is 262 with no untilBuild, so
             // the plugin claims every build from 262 onward - and that is what
@@ -416,10 +412,7 @@ intellijPlatform {
             val products = providers.gradleProperty("verifyIde").map { listOf(IntelliJPlatformType.valueOf(it)) }
                 .getOrElse(listOf(IntelliJPlatformType.IntellijIdea, IntelliJPlatformType.PyCharm, IntelliJPlatformType.Rider))
 
-            val unpacked = providers.gradleProperty("verifyLocal").map { it.split(",") }
-
-            if (unpacked.isPresent) unpacked.get().forEach { local(layout.projectDirectory.dir(it)) }
-            else products.forEach { ide -> versions.forEach { create(ide, it) } }
+            products.forEach { ide -> versions.forEach { create(ide, it) } }
         }
 
         // Eleven of the twelve levels the verifier offers, so the gate fails on

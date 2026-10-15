@@ -76,6 +76,12 @@
     <depends optional="true" config-file="testin-git.xml">Git4Idea</depends>
     <depends optional="true" config-file="testin-json.xml">com.intellij.modules.json</depends>
 
+    <!-- Remote development's launcher and its thin front end hold no project,  -->
+    <!-- and neither ships the Git4Idea classes the Git code calls (#419).       -->
+    <!-- Testin runs in the host IDE there, beside the project.                 -->
+    <incompatible-with>com.jetbrains.gateway</incompatible-with>
+    <incompatible-with>com.intellij.jetbrains.client</incompatible-with>
+
     <!-- ================================================================== -->
     <!-- Content modules                                                    -->
     <!-- Code that needs an optional plugin lives in a module of its own,   -->
