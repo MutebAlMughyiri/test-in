@@ -443,15 +443,18 @@ plugin starts using an API that needs it; do not add an upper bound.
 The Gradle `platformVersion` is the other end of the same range and is what the
 Marketplace checks.
 
-**Two products are left out by name.** `plugin.xml` declares Testin
-`<incompatible-with>` JetBrains Gateway (`com.jetbrains.gateway`) and JetBrains
-Client (`com.intellij.jetbrains.client`), which is also Code With Me's guest.
-The first is remote development's launcher, and the second its thin front end.
-Neither holds a project, and neither ships the Git4Idea classes Testin's Git code
-calls, so the verifier found the Git code unresolved in both. In remote
-development Testin runs in the host IDE, beside the project (#419).
-`PluginDependenciesTest` holds the two lines, and Verify does not run against
-either product.
+**Two products are left out.** JetBrains Gateway is remote development's
+launcher, and JetBrains Client its thin front end, which is also Code With Me's
+guest. Neither holds a project, and neither ships the Git4Idea classes Testin's
+Git code calls, so the verifier found the Git code unresolved in both. In remote
+development Testin runs in the host IDE, beside the project (#419). `plugin.xml`
+declares Testin `<incompatible-with>` JetBrains Client
+(`com.intellij.jetbrains.client`), and leaves Gateway out by requiring
+`com.intellij.modules.lang`, which every IDE has and Gateway does not. It cannot
+name Gateway's id, `com.jetbrains.gateway`: IntelliJ IDEA bundles the Remote
+Development Gateway plugin under that id, so Testin would not load in IDEA
+either. `PluginDependenciesTest` holds these lines, and Verify does not run
+against either product.
 
 ## Conventions
 

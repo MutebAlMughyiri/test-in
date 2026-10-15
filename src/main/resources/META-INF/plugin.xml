@@ -71,18 +71,21 @@
     <!-- org.testin.services.OptionalPlugin before touching their classes.  -->
     <!-- ================================================================== -->
     <depends>com.intellij.modules.platform</depends>
+    <!-- Every IDE has the language support and JetBrains Gateway, remote    -->
+    <!-- development's launcher, does not, so this leaves the launcher out   -->
+    <!-- (#419). Naming Gateway's id would leave out IntelliJ IDEA too: it   -->
+    <!-- bundles the Remote Development Gateway plugin under the same id.    -->
+    <depends>com.intellij.modules.lang</depends>
     <depends optional="true" config-file="testin-java.xml">com.intellij.modules.java</depends>
     <depends optional="true" config-file="testin-testng.xml">TestNG-J</depends>
     <depends optional="true" config-file="testin-git.xml">Git4Idea</depends>
     <depends optional="true" config-file="testin-json.xml">com.intellij.modules.json</depends>
 
-    <!-- Remote development's launcher and its thin front end hold no project,  -->
-    <!-- and neither ships the Git4Idea classes the Git code calls (#419).       -->
-    <!-- Testin runs in the host IDE there, beside the project.                 -->
-    <!-- Neither product is in the IDE the inspection reads, so it cannot   -->
-    <!-- resolve their ids; the Plugin Verifier and the Marketplace do.     -->
-    <!--suppress PluginXmlValidity -->
-    <incompatible-with>com.jetbrains.gateway</incompatible-with>
+    <!-- JetBrains Client, remote development's thin front end and Code     -->
+    <!-- With Me's guest, holds no project and ships none of the Git4Idea   -->
+    <!-- classes the Git code calls (#419). Testin runs in the host IDE.    -->
+    <!-- The IDE the inspection reads holds no such module, so it cannot    -->
+    <!-- resolve the id; the Plugin Verifier and the Marketplace do.        -->
     <!--suppress PluginXmlValidity -->
     <incompatible-with>com.intellij.jetbrains.client</incompatible-with>
 

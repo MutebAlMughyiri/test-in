@@ -58,9 +58,9 @@ jobs:
     # its job says so on the run page rather than failing or passing.
     #
     # JetBrains Gateway and JetBrains Client, Code With Me's guest among them,
-    # are not here: plugin.xml declares Testin incompatible with both, so the
-    # Marketplace does not offer it there (#419). Android Studio has one release
-    # on 262.
+    # are not here: plugin.xml leaves both out, the Client by name and Gateway
+    # by requiring the language support it lacks, so the Marketplace does not
+    # offer Testin there (#419). Android Studio has one release on 262.
     strategy:
       fail-fast: false
       matrix:

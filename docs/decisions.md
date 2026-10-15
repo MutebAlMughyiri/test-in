@@ -467,8 +467,9 @@ before, so the cost of being wrong is a tab color rather than a failure.
 **If you are about to reverse it.** Removing the override puts every Testin tab
 back in the "unknown file" color, in every IDE and both themes. Replacing it
 with a `FileStatusProvider` adds `com.intellij.modules.vcs` to a plugin whose
-only required dependency is `com.intellij.modules.platform` — the reason it
-runs in PyCharm, Rider, GoLand and WebStorm at all.
+only required dependencies are `com.intellij.modules.platform` and
+`com.intellij.modules.lang`, which every IDE has — the reason it runs in
+PyCharm, Rider, GoLand and WebStorm at all.
 
 ---
 

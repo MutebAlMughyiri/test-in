@@ -50,7 +50,7 @@ public class PluginDependenciesTest {
                 .filter(depends -> !"true".equals(depends.getAttribute("optional")))
                 .map(Element::getTextContent)
                 .toList();
-        assertEquals(required, List.of("com.intellij.modules.platform"), "an IDE without one of these cannot install Testin at all");
+        assertEquals(required, List.of("com.intellij.modules.platform", "com.intellij.modules.lang"), "an IDE without one of these cannot install Testin at all");
 
         final @NotNull List<String> mandatoryModules = elements("module").stream()
                 .filter(module -> module.hasAttribute("loading") && !"optional".equals(module.getAttribute("loading")))
@@ -60,7 +60,7 @@ public class PluginDependenciesTest {
     }
 
     @Test
-    public void testinIsNotOfferedToTheRemoteDevelopmentLauncherOrItsThinClient() {
-        assertEquals(elements("incompatible-with").stream().map(Element::getTextContent).toList(), List.of("com.jetbrains.gateway", "com.intellij.jetbrains.client"), "Gateway and JetBrains Client hold no project and lack the Git4Idea classes Testin calls");
+    public void testinIsNotOfferedToTheRemoteDevelopmentThinClientAndStillLoadsInIntellijIdea() {
+        assertEquals(elements("incompatible-with").stream().map(Element::getTextContent).toList(), List.of("com.intellij.jetbrains.client"), "JetBrains Client holds no project and lacks the Git4Idea classes Testin calls; com.jetbrains.gateway is also a plugin IntelliJ IDEA bundles");
     }
 }
