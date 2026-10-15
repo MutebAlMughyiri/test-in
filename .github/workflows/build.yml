@@ -113,7 +113,7 @@ jobs:
         # failure never hides the others': pmdMain failing stopped this step
         # before ideTest on three pushes in a row (#66, finding 388).
         run: |
-          ./gradlew compileJava test pmdMain ideTest jacocoTestCoverageVerification verifyPlugin verifyDistribution --continue
+          ./gradlew compileJava test pmdMain ideTest ruleTrace jacocoTestCoverageVerification verifyPlugin verifyDistribution --continue
           ./gradlew test -Pbudget
 
       - name: Keep the reports
@@ -126,6 +126,7 @@ jobs:
             build/reports/tests/test
             build/reports/tests/ideTest*
             build/reports/rule-coverage
+            build/reports/rule-trace
             build/reports/jacoco/test
             build/reports/pluginVerifier
 

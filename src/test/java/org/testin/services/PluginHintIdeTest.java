@@ -17,8 +17,8 @@
 
 package org.testin.services;
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.Said;
 import org.testin.help.SetupHint;
 import org.testin.help.Hints;
@@ -27,7 +27,7 @@ import org.testin.util.Bundle;
 
 import java.util.List;
 
-public class PluginHintIdeTest extends BasePlatformTestCase {
+public class PluginHintIdeTest extends AbstractIdeTest {
 
     private @NotNull List<String> hintsFor(final @NotNull SetupStep step) {
         return Services.getInstance(getProject(), Hints.class).waiting().stream().filter(hint -> hint.step() == step).map(SetupHint::text).toList();

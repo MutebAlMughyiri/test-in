@@ -18,16 +18,16 @@ package org.testin.editor.toolbar;
 
 import com.intellij.openapi.util.Disposer;
 import com.intellij.testFramework.PlatformTestUtil;
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.util.TimeoutUtil;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.Await;
 
 import java.awt.event.KeyEvent;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class SearchBoxIdeTest extends BasePlatformTestCase {
+public class SearchBoxIdeTest extends AbstractIdeTest {
 
     private @NotNull SearchText aSearchBox(final @NotNull Runnable onNarrow, final @NotNull Runnable onRelease) {
         final @NotNull SearchText box = new SearchText(onNarrow, onRelease);

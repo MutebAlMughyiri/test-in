@@ -16,8 +16,8 @@
 
 package org.testin.git;
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.git.conflict.ResolveConflictDialog;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.util.Shortcuts;
@@ -25,7 +25,7 @@ import org.testin.util.Shortcuts;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SkipAMergeQuestionIdeTest extends BasePlatformTestCase {
+public class SkipAMergeQuestionIdeTest extends AbstractIdeTest {
 
     // Rule-SHARE-084, Rule-INTERNAL-054
     public void testEscapeSkipsTheFileAndMovesOnToTheNext() {

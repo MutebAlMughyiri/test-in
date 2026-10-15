@@ -16,8 +16,8 @@
 
 package org.testin.editor.statusbar;
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.model.markers.TestRunMarker;
 import org.testin.model.status.TestRunStatus;
 import org.testin.services.Services;
@@ -25,7 +25,7 @@ import org.testin.setting.AppSettingsState;
 
 import java.util.List;
 
-public class TestRunStatusLabelIdeTest extends BasePlatformTestCase {
+public class TestRunStatusLabelIdeTest extends AbstractIdeTest {
     private static @NotNull TestRunMarker aTestRunMarkerIn(final @NotNull TestRunStatus testRunStatus) {
         final @NotNull TestRunMarker marker = new TestRunMarker();
         marker.changeStatus(testRunStatus);

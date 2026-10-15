@@ -16,11 +16,11 @@
 
 package org.testin.importexport.shared;
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTabbedPane;
 import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.model.Priority;
 import org.testin.model.TestCase;
 import org.testin.testcase.Can;
@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class SheetPreviewIdeTest extends BasePlatformTestCase {
+public class SheetPreviewIdeTest extends AbstractIdeTest {
 
     private static @NotNull TestCase aTestCase(final @NotNull String description) {
         return TestCase.builder().description(description).priority(Priority.HIGH).build();

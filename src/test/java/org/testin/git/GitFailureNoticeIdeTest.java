@@ -17,15 +17,15 @@
 package org.testin.git;
 
 import com.intellij.notification.Notification;
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.Await;
 import org.testin.Said;
 import org.testin.util.Bundle;
 
 import java.util.List;
 
-public class GitFailureNoticeIdeTest extends BasePlatformTestCase {
+public class GitFailureNoticeIdeTest extends AbstractIdeTest {
 
     // Rule-SHARE-127
     public void testAFailedGitStepOffersTheGitLog() {

@@ -18,10 +18,10 @@ package org.testin.editor.grid;
 
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.ide.CopyPasteManager;
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.ui.table.JBTable;
 import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.editor.open.EditorKind;
 import org.testin.testcase.Can;
 import org.testin.testcase.TestSetEditorFields;
@@ -45,7 +45,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 
-public class GridIdeTest extends BasePlatformTestCase {
+public class GridIdeTest extends AbstractIdeTest {
     private static final int SEQUENCE = 0;
 
     private static final int DESCRIPTION = 2;

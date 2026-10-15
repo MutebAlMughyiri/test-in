@@ -16,14 +16,14 @@
 
 package org.testin.model;
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.model.markers.TestProjectMarker;
 import org.testin.util.Bundle;
 
 import java.util.Optional;
 
-public class TestProjectFormatIdeTest extends BasePlatformTestCase {
+public class TestProjectFormatIdeTest extends AbstractIdeTest {
 
     private static @NotNull Optional<String> refusalFor(final int format) {
         final @NotNull TestProjectMarker marker = new TestProjectMarker();

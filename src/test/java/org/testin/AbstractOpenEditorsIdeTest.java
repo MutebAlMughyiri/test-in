@@ -51,6 +51,7 @@ public abstract class AbstractOpenEditorsIdeTest extends FileEditorManagerTestCa
             Services.getInstance(getProject(), TestinEditors.class).closeAll();
             Services.getInstance(getProject(), TestRuns.class).awaitWrites();
             TempTree.delete(root);
+            TestCoverage.save(getClass(), getName());
             super.tearDown();
         } catch (final Exception ex) {
             throw new AssertionError("Could not tear down " + getName() + ": " + ex.getMessage(), ex);

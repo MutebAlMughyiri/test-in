@@ -16,14 +16,13 @@
 
 package org.testin;
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.testin.indexer.TestRuns;
 import org.testin.services.Services;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public abstract class AbstractTempRootIdeTest extends BasePlatformTestCase {
+public abstract class AbstractTempRootIdeTest extends AbstractIdeTest {
 
     protected Path root;
 

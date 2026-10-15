@@ -16,11 +16,11 @@
 
 package org.testin.git.review;
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.ui.SimpleColoredComponent;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.ui.components.fields.ExtendableTextField;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.Await;
 import org.testin.TestinLog;
 import org.testin.notifications.Refused;
@@ -32,7 +32,7 @@ import org.testin.view.Drawn;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RefusedValueStaysIdeTest extends BasePlatformTestCase {
+public class RefusedValueStaysIdeTest extends AbstractIdeTest {
 
     private static @NotNull List<SimpleTextAttributes> hintAttributesOf(final @NotNull ExtendableTextField field) {
         final @NotNull List<SimpleTextAttributes> attributes = new ArrayList<>();

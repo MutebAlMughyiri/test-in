@@ -15,9 +15,9 @@
  */
 package org.testin.view.details;
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.ui.components.JBLabel;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.model.TestCase;
 import org.testin.testcase.CreateTestCaseFields;
 import org.testin.testrun.TestRunEditorFields;
@@ -32,7 +32,7 @@ import java.awt.Container;
 import java.util.List;
 import java.util.Locale;
 
-public class StacktraceWindowIdeTest extends BasePlatformTestCase {
+public class StacktraceWindowIdeTest extends AbstractIdeTest {
 
     private static final @NotNull String STACKTRACE = """
             java.lang.AssertionError: expected [true]

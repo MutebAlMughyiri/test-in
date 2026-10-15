@@ -16,9 +16,9 @@
 package org.testin.editor;
 
 import com.intellij.openapi.project.Project;
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.ui.components.JBList;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.editor.card.AbstractCard;
 import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.editor.card.CardTitle;
@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class CardTitleWrapIdeTest extends BasePlatformTestCase {
+public class CardTitleWrapIdeTest extends AbstractIdeTest {
 
     private static final @NotNull String LONG = "Log in with a valid user and check that the dashboard opens with every widget it is supposed to show and nothing else at all";
 

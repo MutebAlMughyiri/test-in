@@ -16,15 +16,16 @@
 
 package org.testin.testcase;
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.testin.AbstractIdeTest;
+
 // Rule-EDITOR-PANEL-259
-public class UpdateMenuHoldsEveryEditableFieldIdeTest extends BasePlatformTestCase {
+public class UpdateMenuHoldsEveryEditableFieldIdeTest extends AbstractIdeTest {
 
     public void testEveryFieldEditableInTheGridIsOnTheUpdateMenu() {
         final Set<String> onTheMenu = Arrays.stream(UpdateTestCaseFields.values())

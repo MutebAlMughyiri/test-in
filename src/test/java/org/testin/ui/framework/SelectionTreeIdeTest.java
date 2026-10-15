@@ -16,10 +16,10 @@
 
 package org.testin.ui.framework;
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.ui.CheckboxTree;
 import com.intellij.ui.CheckedTreeNode;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.util.Bundle;
 import org.testin.view.Drawn;
 
@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public class SelectionTreeIdeTest extends BasePlatformTestCase {
+public class SelectionTreeIdeTest extends AbstractIdeTest {
 
     private static final @NotNull String LOGIN_VALID = "Log in with a valid user";
 

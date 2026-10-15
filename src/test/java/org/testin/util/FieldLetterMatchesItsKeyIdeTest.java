@@ -16,15 +16,15 @@
 
 package org.testin.util;
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.clipboard.CopyChoice;
 import org.testin.testcase.CreateTestCaseFields;
 import org.testin.testcase.UpdateTestCaseFields;
 
 import java.awt.event.KeyEvent;
 
-public class FieldLetterMatchesItsKeyIdeTest extends BasePlatformTestCase {
+public class FieldLetterMatchesItsKeyIdeTest extends AbstractIdeTest {
 
     public void testEveryFieldDrawsTheLetterOfTheKeyThatOpensIt() {
         for (final CreateTestCaseFields field : CreateTestCaseFields.values()) {

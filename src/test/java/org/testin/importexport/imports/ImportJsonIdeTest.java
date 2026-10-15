@@ -15,8 +15,8 @@
  */
 package org.testin.importexport.imports;
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.model.TestCase;
 import org.testin.model.status.TestCaseStatus;
 
@@ -30,7 +30,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertNotEquals;
 
-public class ImportJsonIdeTest extends BasePlatformTestCase {
+public class ImportJsonIdeTest extends AbstractIdeTest {
 
     private static final @NotNull UUID EXPORTED_UUID = UUID.fromString("8f7b1a52-0c44-4c1e-9d6b-2a3f5e7c9011");
 

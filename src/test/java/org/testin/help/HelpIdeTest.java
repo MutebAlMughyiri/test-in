@@ -22,12 +22,12 @@ import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.wm.CustomStatusBarWidget;
 import com.intellij.openapi.wm.StatusBarWidget;
 import com.intellij.openapi.wm.StatusBarWidgetFactory;
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.ui.components.ActionLink;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.util.IconUtil;
 import com.intellij.util.ui.ImageUtil;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.services.Services;
 
 import javax.swing.Icon;
@@ -39,7 +39,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertArrayEquals;
 
-public class HelpIdeTest extends BasePlatformTestCase {
+public class HelpIdeTest extends AbstractIdeTest {
 
     private @NotNull Hints nothingWaits() {
         final @NotNull Hints hints = Services.getInstance(getProject(), Hints.class);

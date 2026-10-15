@@ -16,10 +16,10 @@
 
 package org.testin.ui.framework;
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.util.ui.JBUI;
+import org.testin.AbstractIdeTest;
 
-public class DialogSizeOnATinyFrameIdeTest extends BasePlatformTestCase {
+public class DialogSizeOnATinyFrameIdeTest extends AbstractIdeTest {
 
     // Rule-INTERNAL-100
     public void testAFrameSmallerThanItsMarginStillSizesADialog() {

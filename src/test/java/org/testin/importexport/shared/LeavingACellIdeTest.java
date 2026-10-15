@@ -16,11 +16,11 @@
 
 package org.testin.importexport.shared;
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTabbedPane;
 import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.model.TestCase;
 import org.testin.testcase.Can;
 import org.testin.testcase.TestSetEditorFields;
@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class LeavingACellIdeTest extends BasePlatformTestCase {
+public class LeavingACellIdeTest extends AbstractIdeTest {
 
     private static int column(final @NotNull TestSetEditorFields field) {
         return TestSetEditorFields.all(Can.EXPORT).indexOf(field) + 2;

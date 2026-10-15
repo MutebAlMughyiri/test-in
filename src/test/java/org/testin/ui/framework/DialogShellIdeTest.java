@@ -19,7 +19,6 @@ package org.testin.ui.framework;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.util.SystemInfo;
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.ui.CheckedTreeNode;
 import com.intellij.ui.TitlePanel;
 import com.intellij.ui.components.JBList;
@@ -29,6 +28,7 @@ import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.ui.JBUI;
 import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.model.node.TestSetNode;
 import org.testin.search.GlobalSearchDialog;
 import org.testin.testrun.form.TestCaseSelectionRenderer;
@@ -63,7 +63,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
-public class DialogShellIdeTest extends BasePlatformTestCase {
+public class DialogShellIdeTest extends AbstractIdeTest {
 
     private final @NotNull List<AbstractFrameworkDialog> opened = new ArrayList<>();
 

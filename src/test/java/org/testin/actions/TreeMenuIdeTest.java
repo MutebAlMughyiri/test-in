@@ -23,8 +23,8 @@ import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext;
 import com.intellij.testFramework.TestActionEvent;
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.creator.CreateTreeNodeAction;
 import org.testin.explorer.tree.UpdateNodeStatusAction;
 import org.testin.model.NodeType;
@@ -48,7 +48,7 @@ import org.testin.testrun.ReCreateTestRunAction;
 import java.util.List;
 import java.util.Objects;
 
-public class TreeMenuIdeTest extends BasePlatformTestCase {
+public class TreeMenuIdeTest extends AbstractIdeTest {
 
     private static @NotNull List<AbstractNode> everyKind() {
         return List.of(new TestProjectNode(), new TestCasesFolderNode(), new TestRunsFolderNode(),

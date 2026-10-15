@@ -18,11 +18,11 @@ package org.testin.ui.framework;
 
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.json.JsonLanguage;
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.ui.ActiveComponent;
 import com.intellij.ui.EditorTextField;
 import com.intellij.ui.components.JBLabel;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.util.Bundle;
 import org.testin.view.Drawn;
 
@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class FieldPairIdeTest extends BasePlatformTestCase {
+public class FieldPairIdeTest extends AbstractIdeTest {
     private static final @NotNull String REMEMBERED_AS = "testin.test.fieldPair.sideBySide";
 
     @Override

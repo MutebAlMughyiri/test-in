@@ -18,9 +18,9 @@ package org.testin.editor.toolbar;
 
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.testFramework.PlatformTestUtil;
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.ui.CheckBoxList;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.editor.ShownFields;
 import org.testin.testcase.TestSetEditorFields;
 
@@ -30,7 +30,7 @@ import java.util.EnumSet;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class FieldsPopupIdeTest extends BasePlatformTestCase {
+public class FieldsPopupIdeTest extends AbstractIdeTest {
 
     private @NotNull String chosenBefore = "";
 

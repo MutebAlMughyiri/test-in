@@ -215,10 +215,37 @@ where `plugin.xml` carries the rules no Java declaration holds (#425):
 So a rule is linked both ways: a test proves it and the code that carries it
 names it. A new rule lands with both markers, in the same commit.
 
+### Whether the test runs the code
+
+A marker at both ends does not show that the test reaches the code. `ruleTrace`
+checks that it does (#425):
+
+```bash
+./gradlew ruleTrace   # runs test and the three IDE test shares first
+```
+
+After every test method, `TestCoverage` asks the JaCoCo agent what that test
+alone ran, over JMX, and saves it under `build/jacoco/per-test/<task>`.
+`TestCoverageListener` does it for `test`. For the IDE tests it is
+`AbstractIdeTest` and `AbstractOpenEditorsIdeTest`, which is why every IDE test
+extends one of them. `RuleTraceTest` then reads every marker above a test method.
+A marker is traced when that test ran at least one line of a declaration that
+the production code marks the same way.
+
+It writes `build/reports/rule-trace/untraced.md`, listing:
+- each marker whose test runs none of its code;
+- each marked test that saved nothing it ran.
+
+CI runs it after the tests and keeps the report. For now it only reports. It
+fails the build once the markers it lists are fixed.
+
 ### The coverage gate
 
 JaCoCo measures the lines and branches both test tasks run, `test` and
 `ideTest`, across the three modules, and reports them per package in one report (#325).
+It measures only the `org.testin` classes. The report reads the per-test files
+too: each save resets the agent, so the files left at the end hold almost
+nothing on their own.
 
 ```bash
 ./gradlew check                            # both test tasks, every gate, and the report

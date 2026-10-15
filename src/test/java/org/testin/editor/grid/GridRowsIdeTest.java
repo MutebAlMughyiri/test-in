@@ -16,16 +16,16 @@
 
 package org.testin.editor.grid;
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.testcase.TestSetEditorFields;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-public class GridRowsIdeTest extends BasePlatformTestCase {
+public class GridRowsIdeTest extends AbstractIdeTest {
 
     private static String @NotNull [] aRow(final String description) {
         final String[] row = new String[TestSetEditorFields.values().length];

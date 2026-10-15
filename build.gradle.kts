@@ -173,14 +173,17 @@ allprojects {
 // minimum is the whole percent under what was measured on 13 October 2026 -
 // 86.13% of lines, 53.73% of branches - so it stops coverage falling, and
 // raising it is a decision rather than a side effect. #425 raises it toward
-// 100% of both as the tests it asks for land.
+// 100% of both as the tests it asks for land. The agent measures only Testin's
+// own classes, and answers over JMX, so each test can save what it alone ran:
+// ruleTrace reads those files, and the report reads them with the rest.
 allprojects {
     pluginManager.apply("jacoco")
 
     tasks.withType<Test>().configureEach {
         extensions.configure<JacocoTaskExtension> {
             isIncludeNoLocationClasses = true
-            excludes = listOf("jdk.internal.*")
+            includes = listOf("org.testin.*")
+            isJmx = true
         }
     }
 
@@ -196,7 +199,7 @@ tasks.withType<JacocoReportBase>().configureEach {
 
     allprojects.forEach { module ->
         dependsOn(module.tasks.withType<Test>())
-        executionData.from(module.fileTree(module.layout.buildDirectory.dir("jacoco")).include("*.exec"))
+        executionData.from(module.fileTree(module.layout.buildDirectory.dir("jacoco")).include("**/*.exec"))
         classDirectories.from(module.tasks.named("instrumentCode"))
         sourceDirectories.from(module.the<SourceSetContainer>()["main"].java.srcDirs)
     }
@@ -228,7 +231,7 @@ tasks.jacocoTestCoverageVerification {
 }
 
 tasks.check {
-    dependsOn(tasks.jacocoTestCoverageVerification)
+    dependsOn(tasks.jacocoTestCoverageVerification, "ruleTrace")
 }
 
 // The IntelliJ Platform Gradle Plugin points each bundled plugin and module at
@@ -302,6 +305,8 @@ dependencies {
     implementation(libs.jackson.dataformat.yaml)
     testImplementation(libs.testng)
     testImplementation(libs.junit)
+    // RuleTraceTest reads what each test ran, at the version the agent wrote it.
+    testImplementation("org.jacoco:org.jacoco.core:${project.the<JacocoPluginExtension>().toolVersion}")
     implementation(libs.iText.kernel)
     implementation(libs.iText.layout)
     implementation(libs.fastexcel)
@@ -485,6 +490,14 @@ tasks {
         // default instead (#125).
         System.getProperty("testin.budget.testCases")?.let { systemProperty("testin.budget.testCases", it) }
 
+        // What each test ran, saved by TestCoverage after every test method into a
+        // folder of this task's own: the three IDE test shares run at once in one
+        // build folder, and one emptying a shared folder would wipe the others'
+        // (#425).
+        val ranByEachTest = layout.buildDirectory.dir("jacoco/per-test/$name")
+        systemProperty("testin.testCoverage", ranByEachTest.get().asFile.path)
+        doFirst { ranByEachTest.get().asFile.deleteRecursively() }
+
         // The documents are an input to the tests that read them - RuleNumbersTest
         // scans every page for the numbers the code cites. Without this Gradle
         // sees only the Java, calls the task up to date after a documentation
@@ -529,7 +542,8 @@ tasks {
         // platform plugin's launcher: a separately registered Test task starts
         // on the daemon's JDK, which refuses the JVM flag every test task gets.
         useTestNG {
-            if (providers.gradleProperty("budget").isPresent) includeGroups("budget") else excludeGroups("budget")
+            listeners.add("org.testin.TestCoverageListener")
+            if (providers.gradleProperty("budget").isPresent) includeGroups("budget") else excludeGroups("budget", "trace")
         }
         exclude("**/*IdeTest.class")
     }
@@ -639,6 +653,30 @@ tasks.register("ideTest") {
     group = "verification"
     description = "The tests that need a running IDE, as three shares at once"
     dependsOn(ideTestShares.keys)
+}
+
+/**
+ * Whether every test labeled with a rule or a use case runs the code labeled
+ * with it (#425). RuleTraceTest reads what each test ran, saved by `test` and
+ * the three IDE test shares, so it runs after them all, as a TestNG task of its
+ * own on the same JDK as `test`. It measures nothing itself.
+ */
+tasks.register<Test>("ruleTrace") {
+    group = "verification"
+    description = "Every test labeled with a rule or a use case runs the code labeled with it"
+
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["test"].runtimeClasspath
+    javaLauncher.set(tasks.test.flatMap { it.javaLauncher })
+    useTestNG { includeGroups("trace") }
+    include("org/testin/docs/RuleTraceTest.class")
+
+    dependsOn(tasks.test, ideTestShares.keys)
+    inputs.files(layout.buildDirectory.dir("jacoco/per-test")).withPropertyName("ranByEachTest").withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs.files(listOf("src", "testin-java/src", "testin-testng/src", "testin-apimodel/src").map { layout.projectDirectory.dir(it) })
+        .withPropertyName("labeledSources")
+        .withPathSensitivity(PathSensitivity.RELATIVE)
+    extensions.configure<JacocoTaskExtension> { isEnabled = false }
 }
 
 configurations.all {

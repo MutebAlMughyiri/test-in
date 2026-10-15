@@ -266,10 +266,12 @@ silently has no effect costs more than the setting it was meant to hold.
     check behind it, `refusalOfTheRoot`, returns the refusal rather than
     throwing it, so `apply` is the only method that declares it.
 
-  An `*IdeTest` that needs a folder on disk extends `AbstractTempRootIdeTest`.
-  It owns `root`, creates it before the fixture and deletes it after, and is the
-  one place that turns `BasePlatformTestCase`'s `throws Exception` into an
-  `AssertionError`. Its subclasses override `setUp` and `tearDown` without
+  Every `*IdeTest` extends `AbstractIdeTest`, or `AbstractOpenEditorsIdeTest`
+  when it opens editors. Each saves what the test alone ran, which `ruleTrace`
+  reads (#425). One that needs a folder on disk extends `AbstractTempRootIdeTest`,
+  which owns `root`, creates it before the fixture and deletes it after. Those
+  bases are where `BasePlatformTestCase`'s `throws Exception` turns into an
+  `AssertionError`. Their subclasses override `setUp` and `tearDown` without
   `throws`, and catch their own checked calls the same way.
 
   Adding another is a decision, not a shortcut: it needs the same shape (a

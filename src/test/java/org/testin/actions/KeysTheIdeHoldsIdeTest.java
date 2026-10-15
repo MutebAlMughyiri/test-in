@@ -25,8 +25,8 @@ import com.intellij.openapi.keymap.Keymap;
 import com.intellij.openapi.keymap.KeymapManager;
 import com.intellij.openapi.keymap.KeymapUtil;
 import com.intellij.openapi.keymap.ex.KeymapManagerEx;
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.util.Shortcuts;
 
 import javax.swing.JPanel;
@@ -45,7 +45,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-public class KeysTheIdeHoldsIdeTest extends BasePlatformTestCase {
+public class KeysTheIdeHoldsIdeTest extends AbstractIdeTest {
 
     private static final @NotNull Map<String, Shortcuts> SURFACE_KEYS = new LinkedHashMap<>(Map.of(
             "Testin.Open", Shortcuts.Enter,

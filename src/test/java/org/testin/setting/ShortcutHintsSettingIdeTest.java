@@ -16,15 +16,15 @@
 
 package org.testin.setting;
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.model.StatusBarItem;
 import org.testin.services.Services;
 import org.testin.testcase.TestCaseDialogKey;
 import org.testin.ui.framework.ShortcutStrip;
 import org.testin.ui.framework.StatusBarShortcut;
 
-public class ShortcutHintsSettingIdeTest extends BasePlatformTestCase {
+public class ShortcutHintsSettingIdeTest extends AbstractIdeTest {
 
     private static final StatusBarItem @NotNull [] TEST_CASE_DIALOG = {TestCaseDialogKey.SAVE, TestCaseDialogKey.CANCEL};
 

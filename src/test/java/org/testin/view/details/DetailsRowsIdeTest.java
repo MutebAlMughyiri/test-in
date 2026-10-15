@@ -15,9 +15,9 @@
  */
 package org.testin.view.details;
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.ui.components.JBPanel;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.editor.ShownFields;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCase;
@@ -40,7 +40,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
-public class DetailsRowsIdeTest extends BasePlatformTestCase {
+public class DetailsRowsIdeTest extends AbstractIdeTest {
 
     private static final @NotNull List<String> PATH = List.of("Demo", "Test Cases", "Login");
 

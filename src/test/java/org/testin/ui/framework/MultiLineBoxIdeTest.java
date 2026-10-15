@@ -22,10 +22,10 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.actions.IncrementalFindAction;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.testFramework.PlatformTestUtil;
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.ui.EditorTextField;
 import com.intellij.ui.components.JBScrollPane;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.util.Fonts;
 import org.testin.util.Shortcuts;
 import org.testin.view.Drawn;
@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MultiLineBoxIdeTest extends BasePlatformTestCase {
+public class MultiLineBoxIdeTest extends AbstractIdeTest {
 
     private final @NotNull List<EditorTextField> realized = new ArrayList<>();
 

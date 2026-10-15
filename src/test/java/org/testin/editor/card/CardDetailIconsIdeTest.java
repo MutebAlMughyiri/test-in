@@ -15,9 +15,9 @@
  */
 package org.testin.editor.card;
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.ui.components.JBLabel;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.editor.testset.TestCaseCard;
 import org.testin.editor.testrun.RunItemCard;
 import org.testin.model.TestCase;
@@ -42,7 +42,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-public class CardDetailIconsIdeTest extends BasePlatformTestCase {
+public class CardDetailIconsIdeTest extends AbstractIdeTest {
     private static final @NotNull String EXPECTED = "The dashboard opens.";
 
     private static final @NotNull String REFERENCE = "JIRA-412";

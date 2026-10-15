@@ -16,9 +16,9 @@
 
 package org.testin.explorer.tree;
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.ui.tree.LeafState;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
@@ -31,7 +31,7 @@ import java.util.Objects;
 
 import static org.testng.Assert.assertNotEquals;
 
-public class TreePanelNodeIdeTest extends BasePlatformTestCase {
+public class TreePanelNodeIdeTest extends AbstractIdeTest {
 
     private static final Path SET = Path.of("project", "Test Cases", "Login");
 

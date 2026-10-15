@@ -24,9 +24,9 @@ import com.intellij.openapi.actionSystem.impl.SimpleDataContext;
 import com.intellij.openapi.keymap.Keymap;
 import com.intellij.openapi.keymap.ex.KeymapManagerEx;
 import com.intellij.testFramework.TestActionEvent;
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.ui.treeStructure.SimpleTree;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.explorer.tree.TreeContextMenu;
 import org.testin.services.OptionalPlugin;
 import org.testin.util.Bundle;
@@ -34,7 +34,7 @@ import org.testin.util.Bundle;
 import java.util.Arrays;
 import java.util.List;
 
-public class ShareMenuIdeTest extends BasePlatformTestCase {
+public class ShareMenuIdeTest extends AbstractIdeTest {
     private static final @NotNull List<String> SHARE_ACTIONS = List.of("Testin.Export", "Testin.Import", "Testin.SyncWithRemote", "Testin.ViewPendingCommits");
 
     private static @NotNull AnAction action(final @NotNull String actionId) {

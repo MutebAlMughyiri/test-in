@@ -18,12 +18,12 @@ package org.testin.ui;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.ui.CheckedTreeNode;
 import com.intellij.ui.EditorTextField;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.StandIn;
 import org.testin.editor.TestinEditor;
 import org.testin.editor.card.AbstractCard;
@@ -66,7 +66,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-public class ScreenReaderNamesIdeTest extends BasePlatformTestCase {
+public class ScreenReaderNamesIdeTest extends AbstractIdeTest {
 
     private static @NotNull String spoken(final @NotNull AccessibleContext context) {
         return Objects.requireNonNullElse(context.getAccessibleName(), "").trim();

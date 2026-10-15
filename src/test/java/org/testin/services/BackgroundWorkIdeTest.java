@@ -17,9 +17,9 @@
 package org.testin.services;
 
 import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.concurrency.AsyncPromise;
+import org.testin.AbstractIdeTest;
 import org.testin.Await;
 import org.testin.TestinLog;
 
@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class BackgroundWorkIdeTest extends BasePlatformTestCase {
+public class BackgroundWorkIdeTest extends AbstractIdeTest {
 
     // Rule-CODEGEN-089
     public void testTheEndIsReportedWhenTheTesterCancels() {

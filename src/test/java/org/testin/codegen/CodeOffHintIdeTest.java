@@ -17,8 +17,8 @@
 
 package org.testin.codegen;
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.Said;
 import org.testin.config.TestinYml;
 import org.testin.help.SetupHint;
@@ -32,7 +32,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-public class CodeOffHintIdeTest extends BasePlatformTestCase {
+public class CodeOffHintIdeTest extends AbstractIdeTest {
 
     private @NotNull List<SetupHint> waiting() {
         return Services.getInstance(getProject(), Hints.class).waiting().stream().filter(hint -> hint.step() == SetupStep.TEST_PROJECT_LINK).toList();

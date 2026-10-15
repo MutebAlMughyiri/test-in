@@ -16,9 +16,9 @@
 package org.testin.view.details;
 
 import com.intellij.icons.AllIcons;
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.ui.components.JBPanel;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
@@ -39,7 +39,7 @@ import javax.swing.JLabel;
 
 import static org.testin.view.Drawn.holds;
 
-public class DetailsBandsIdeTest extends BasePlatformTestCase {
+public class DetailsBandsIdeTest extends AbstractIdeTest {
 
     private static final @NotNull String RUN_ITEM_BAND = Bundle.message("details.band.run.item").toUpperCase(Locale.ROOT);
 

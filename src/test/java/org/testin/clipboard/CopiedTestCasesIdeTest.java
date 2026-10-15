@@ -17,7 +17,7 @@
 package org.testin.clipboard;
 
 import com.intellij.openapi.ide.CopyPasteManager;
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
+import org.testin.AbstractIdeTest;
 import org.testin.model.TestCase;
 import org.testin.services.Services;
 import org.testin.util.JsonCodec;
@@ -25,7 +25,7 @@ import org.testin.util.JsonCodec;
 import java.awt.datatransfer.StringSelection;
 import java.util.List;
 
-public class CopiedTestCasesIdeTest extends BasePlatformTestCase {
+public class CopiedTestCasesIdeTest extends AbstractIdeTest {
 
     // Rule-EDITOR-PANEL-262
     public void testOnlyTestCasesOnTheClipboardAreWaitingToBePasted() {

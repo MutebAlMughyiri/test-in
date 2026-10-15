@@ -18,7 +18,6 @@ package org.testin.ui.framework;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.ui.laf.darcula.ui.DarculaButtonUI;
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.ui.CheckedTreeNode;
 import com.intellij.ui.ColorUtil;
 import com.intellij.ui.JBColor;
@@ -29,6 +28,7 @@ import com.intellij.ui.components.fields.ExtendableTextField;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.model.StatusBarItem;
 import org.testin.testrun.form.TestCaseSelectionRenderer;
 import org.testin.ui.Caption;
@@ -72,7 +72,7 @@ import java.util.stream.Stream;
 
 import static org.junit.Assert.assertNotEquals;
 
-public class DialogLooksIdeTest extends BasePlatformTestCase {
+public class DialogLooksIdeTest extends AbstractIdeTest {
 
     private static final float MOST_A_GRAY_MAY_LEAN = 0.25f;
 

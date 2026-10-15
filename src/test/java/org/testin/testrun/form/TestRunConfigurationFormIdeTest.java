@@ -16,8 +16,8 @@
 
 package org.testin.testrun.form;
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.model.testrun.TestRunConfiguration;
 import org.testin.view.Drawn;
 
@@ -25,7 +25,7 @@ import javax.swing.AbstractButton;
 import java.util.EnumMap;
 import java.util.Map;
 
-public class TestRunConfigurationFormIdeTest extends BasePlatformTestCase {
+public class TestRunConfigurationFormIdeTest extends AbstractIdeTest {
 
     private static void choose(final @NotNull TestRunConfigurationForm form, final @NotNull String answer) {
         ((AbstractButton) Drawn.reading(form.getPanel(), answer)).doClick();

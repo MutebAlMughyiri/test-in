@@ -16,8 +16,8 @@
 
 package org.testin.codegen.agent;
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.jetbrains.annotations.NotNull;
+import org.testin.AbstractIdeTest;
 import org.testin.ui.framework.ConfirmDialog;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.util.Shortcuts;
@@ -25,7 +25,7 @@ import org.testin.util.Shortcuts;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WriteOverOrLeaveIdeTest extends BasePlatformTestCase {
+public class WriteOverOrLeaveIdeTest extends AbstractIdeTest {
 
     // Rule-CODEGEN-091
     public void testEscapeLeavesTheTestersBodiesAndStillSendsTheRest() {
