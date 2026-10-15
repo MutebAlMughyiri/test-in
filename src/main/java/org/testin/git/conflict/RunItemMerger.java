@@ -28,7 +28,6 @@ import org.testin.util.Bundle;
 import org.testin.util.JsonCodec;
 import org.testin.util.TestCaseFieldParser;
 
-import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,11 +46,7 @@ final class RunItemMerger {
 
     private static final @NotNull String DEFAULT = "default";
 
-    private static final @NotNull String STATUS = "status";
-
-    private static final @NotNull String INVOCATION = "invocation";
-
-    private static final @NotNull String RETRY = "retry";
+    static final @NotNull String STATUS = "status";
 
     private static final @NotNull String BUG_ISSUE_URL = "bugIssueUrl";
 
@@ -108,18 +103,11 @@ final class RunItemMerger {
         return RunItemStatus.UNTESTED.name().equals(execution.path(STATUS).asText(""));
     }
 
-    private static @NotNull ZonedDateTime executedAt(final @NotNull JsonNode execution) {
+    static @NotNull ZonedDateTime executedAt(final @NotNull JsonNode execution) {
         return TestCaseFieldParser.date(execution.path(EXECUTED_AT).asText("")).orElse(DateFormats.NOT_EXECUTED);
     }
 
     private static @NotNull ZonedDateTime lastRecorded(final @NotNull ObjectNode runItem) {
         return executions(runItem).map(RunItemMerger::executedAt).max(Comparator.naturalOrder()).orElse(DateFormats.NOT_EXECUTED);
-    }
-
-    // Rule-SHARE-133
-    private record ExecutionIdentity(@NotNull String status, @NotNull Instant executedAt, int invocation, int retry) {
-        static @NotNull ExecutionIdentity of(final @NotNull JsonNode execution) {
-            return new ExecutionIdentity(execution.path(STATUS).asText(""), RunItemMerger.executedAt(execution).toInstant(), execution.path(INVOCATION).asInt(), execution.path(RETRY).asInt());
-        }
     }
 }
