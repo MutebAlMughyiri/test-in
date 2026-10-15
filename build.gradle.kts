@@ -199,12 +199,11 @@ allprojects {
 subprojects {
     pluginManager.withPlugin("java") {
         dependencies {
-            "testRuntimeOnly"(files(rootProject.layout.buildDirectory.dir("classes/java/test"), rootProject.layout.buildDirectory.dir("resources/test")))
+            "testRuntimeOnly"(files(rootProject.layout.buildDirectory.dir("classes/java/test"), rootProject.layout.buildDirectory.dir("resources/test")).builtBy(":testClasses"))
         }
     }
 
     tasks.withType<Test>().configureEach {
-        dependsOn(":testClasses")
         val ranByEachTest = rootProject.layout.buildDirectory.dir("jacoco/per-test/${project.name}-$name")
         systemProperty("testin.testCoverage", ranByEachTest.get().asFile.path)
         doFirst { ranByEachTest.get().asFile.deleteRecursively() }
