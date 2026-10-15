@@ -79,7 +79,11 @@
     <!-- Remote development's launcher and its thin front end hold no project,  -->
     <!-- and neither ships the Git4Idea classes the Git code calls (#419).       -->
     <!-- Testin runs in the host IDE there, beside the project.                 -->
+    <!-- Neither product is in the IDE the inspection reads, so it cannot   -->
+    <!-- resolve their ids; the Plugin Verifier and the Marketplace do.     -->
+    <!--suppress PluginXmlValidity -->
     <incompatible-with>com.jetbrains.gateway</incompatible-with>
+    <!--suppress PluginXmlValidity -->
     <incompatible-with>com.intellij.jetbrains.client</incompatible-with>
 
     <!-- ================================================================== -->
