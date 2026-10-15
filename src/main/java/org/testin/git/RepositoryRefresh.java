@@ -35,6 +35,6 @@ public final class RepositoryRefresh {
         Optional.ofNullable(LocalFileSystem.getInstance().refreshAndFindFileByIoFile(repoPath.toFile()))
                 .ifPresent(GitUtil::refreshVfsInRoot);
 
-        Services.getInstance(project, TestProjectIndexer.class).scanSingleTestProject(repoPath);
+        Services.getInstance(project, TestProjectIndexer.class).readAgainInBackground(repoPath);
     }
 }

@@ -399,6 +399,19 @@ public final class TestProjectIndexer {
         scanSingleTestProject(testProjectPath, new EmptyProgressIndicator());
     }
 
+    // UC-SHARE-016, Rule-SHARE-073, Rule-INTERNAL-013
+    public void readAgainInBackground(final @NotNull Path testProjectPath) {
+        final @NotNull String testProjectName = testProjectPath.getFileName().toString();
+
+        BackgroundWork.start(new Task.Backgroundable(project, Bundle.message("indexer.task.title", testProjectName), true) {
+            @Override
+            public void run(final @NotNull ProgressIndicator indicator) {
+                indicator.setText(Bundle.message("indexer.progress.indexing", testProjectName));
+                scanSingleTestProject(testProjectPath, indicator);
+            }
+        });
+    }
+
     // UC-INTERNAL-003, Rule-INTERNAL-021
     public void scanSingleTestProject(final @NotNull Path testProjectPath, final @NotNull ProgressIndicator indicator) {
         TestinLogger.info("Scanning single project: " + testProjectPath.getFileName());
