@@ -107,9 +107,13 @@ public class KeepRemovedNodeIdeTest extends AbstractReadTheRootIdeTest {
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
 
+    private void pressed(final @NotNull UndoDirection direction) {
+        final @NotNull TestinUndoAction action = new TestinUndoAction(getProject(), new JPanel(), UndoScope.TREE, direction);
+        action.actionPerformed(TestActionEvent.createTestEvent(action));
+    }
+
     private void pressedCtrlZ() {
-        final @NotNull TestinUndoAction undo = new TestinUndoAction(getProject(), new JPanel(), UndoScope.TREE, UndoDirection.UNDO);
-        undo.actionPerformed(TestActionEvent.createTestEvent(undo));
+        pressed(UndoDirection.UNDO);
     }
 
     private void settled() {
@@ -197,5 +201,17 @@ public class KeepRemovedNodeIdeTest extends AbstractReadTheRootIdeTest {
         final @NotNull String written = said.written();
         assertFalse("a Ctrl+Z that could not put everything back also said Undone: " + written, written.contains(">" + Bundle.message("done.undone") + "<"));
         assertTrue("the press was spent although nothing came back", undoHistories().canUndo(UndoScope.TREE));
+    }
+
+    // UC-TREE-PANEL-017
+    public void testCtrlYRemovesAgainWhatCtrlZPutBack() {
+        final @NotNull TestSetNode login = aTestSetHolding("Login");
+        removedByTheTester(List.of(login));
+        pressedCtrlZ();
+        Await.until("Ctrl+Z did not put the test set back", () -> nodes().nodeExists(login.getPath()));
+
+        pressed(UndoDirection.REDO);
+
+        Await.until("Ctrl+Y did not remove the test set again", () -> !Files.exists(login.getPath()) && !nodes().nodeExists(login.getPath()));
     }
 }

@@ -24,6 +24,7 @@ import org.testin.git.change.GitStatusKind;
 import org.testin.git.change.PendingChange;
 import org.testin.git.conflict.ConflictResolution;
 import org.testin.git.conflict.RebaseEnd;
+import org.testin.model.NodeType;
 import org.testin.model.TestCase;
 import org.testin.util.Bundle;
 
@@ -40,6 +41,12 @@ import static org.testin.git.LocalGit.mustGit;
 
 public class GitCommitAndPushIdeTest extends AbstractGitRemoteIdeTest {
     private static final int WINDOWS_COMMAND_LINE_LIMIT = 32767;
+
+    private static final @NotNull String LOGIN = NodeType.TEST_CASES_FOLDER.getFolderName() + "/Login/0b7d6a52-1c1e-4d0e-9a52-3f1d2c4b5a60.testcase";
+
+    private static @NotNull String login(final @NotNull String description, final @NotNull String expectedResult) {
+        return "{\"description\":\"" + description + "\",\"expectedResult\":\"" + expectedResult + "\"}\n";
+    }
 
     private static @NotNull PendingChange ticked(final @NotNull String relativePath, final @NotNull GitStatusKind gitStatusKind) {
         return new PendingChange(ChangeSubject.TEST_CASE, "a test case", "login", UUID.randomUUID().toString(), Path.of(relativePath), gitStatusKind, TestCase.builder().build(), List.of());
@@ -74,6 +81,30 @@ public class GitCommitAndPushIdeTest extends AbstractGitRemoteIdeTest {
 
         write(work, "notes.txt", "mine\n");
         commitAll(work, "my change");
+    }
+
+    private void bothChangeTheLoginTestCase() {
+        write(work, LOGIN, login("Log in", "The home page opens"));
+        write(work, "notes.txt", "base\n");
+        commitAll(work, "the common ancestor");
+        mustGit(work, "push", "origin", MAIN);
+
+        final @NotNull Path colleague = colleague();
+        write(colleague, LOGIN, login("Log in with a valid user", "The home page opens"));
+        write(colleague, "notes.txt", "theirs\n");
+        commitAll(colleague, "their change");
+        mustGit(colleague, "push", "origin", MAIN);
+
+        write(work, LOGIN, login("Log in", "The home page opens with the user's name"));
+        commitAll(work, "my change");
+    }
+
+    private @NotNull List<String> theRebaseResolved(final @NotNull AtomicBoolean finished) {
+        final @NotNull AtomicReference<List<String>> stuck = new AtomicReference<>(List.of());
+        ApplicationManager.getApplication().executeOnPooledThread(() -> ConflictResolution.resolveRebase(getProject(), work, () -> finished.set(true), stuck::set));
+
+        Await.until("the rebase neither finished nor named what is in the way", () -> finished.get() || !Objects.requireNonNull(stuck.get(), "nothing was named back").isEmpty());
+        return Objects.requireNonNull(stuck.get(), "nothing was named back");
     }
 
     // UC-SHARE-012, Rule-SHARE-054
@@ -222,6 +253,36 @@ public class GitCommitAndPushIdeTest extends AbstractGitRemoteIdeTest {
 
         Await.until("the file Testin cannot merge was not named back", () -> !Objects.requireNonNull(leftOver.get(), "nothing was named back").isEmpty() || resolved.get());
         assertEquals(List.of("notes.txt"), leftOver.get());
+        assertTrue(git(work, "rebase", "--abort").isPresent());
+    }
+
+    // UC-SHARE-017
+    public void testAPullWhoseConflictTestinMergesFinishesTheRebase() {
+        bothChangeTheLoginTestCase();
+        pullStopsOnAConflict();
+
+        final @NotNull AtomicBoolean finished = new AtomicBoolean();
+        final @NotNull List<String> stuck = theRebaseResolved(finished);
+
+        assertTrue("the rebase stopped on " + stuck, finished.get());
+        assertTrue("the rebase is still unfinished", new GitRepositoryService(getProject()).unfinished(work).isEmpty());
+        final @NotNull String merged = read(work, LOGIN);
+        assertTrue("their description was lost: " + merged, merged.contains("Log in with a valid user"));
+        assertTrue("my expected result was lost: " + merged, merged.contains("with the user's name"));
+    }
+
+    // UC-SHARE-017, Rule-SHARE-079
+    public void testAPullThatMovesOnToAConflictTestinCannotMergeNamesTheFileStillInTheWay() {
+        bothChangeTheLoginTestCase();
+        write(work, "notes.txt", "mine\n");
+        commitAll(work, "my notes");
+        pullStopsOnAConflict();
+
+        final @NotNull AtomicBoolean finished = new AtomicBoolean();
+        final @NotNull List<String> stuck = theRebaseResolved(finished);
+
+        assertFalse("the rebase finished over a conflict Testin cannot merge", finished.get());
+        assertEquals("the file still in the way was not named again", List.of("notes.txt"), stuck);
         assertTrue(git(work, "rebase", "--abort").isPresent());
     }
 }

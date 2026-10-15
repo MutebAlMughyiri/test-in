@@ -19,7 +19,9 @@ package org.testin.indexer;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.NodesOnDisk;
+import org.testin.TreeGesture;
 import org.testin.creator.NodeCreators;
+import org.testin.explorer.tree.UpdateNodeStatusAction;
 import org.testin.model.NodeType;
 import org.testin.model.TestCase;
 import org.testin.model.markers.TestSetMarker;
@@ -122,6 +124,17 @@ public class TreeNodesIdeTest extends AbstractTempRootIdeTest {
         assertEquals(TestSetStatus.ACTIVE, login.getMarker().getStatus());
         assertEquals("bringing the test set back lost its order number", 2, login.getOrder());
         assertEquals("bringing the test set back changed what it holds", left, filesUnder(login.getPath(), NodeType.TEST_SET.getMarker()));
+    }
+
+    // UC-TREE-PANEL-018, UC-TREE-PANEL-019
+    public void testTheMenuDeprecatesATestSetAndBringsItBack() {
+        final @NotNull TestSetNode login = made().testSet(aTestProject().getTestCasesFolder(), "Login");
+
+        TreeGesture.pressed(getProject(), new UpdateNodeStatusAction(TestSetStatus.DEPRECATED), List.of(login));
+        assertEquals("Deprecated on the menu did not deprecate the test set", TestSetStatus.DEPRECATED, login.getMarker().getStatus());
+
+        TreeGesture.pressed(getProject(), new UpdateNodeStatusAction(TestSetStatus.ACTIVE), List.of(login));
+        assertEquals("Active on the menu did not bring the test set back", TestSetStatus.ACTIVE, login.getMarker().getStatus());
     }
 
     // Rule-TREE-PANEL-077

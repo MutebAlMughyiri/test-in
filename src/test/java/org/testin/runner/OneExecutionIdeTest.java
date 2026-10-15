@@ -16,9 +16,11 @@
 
 package org.testin.runner;
 
+import com.intellij.execution.ExecutionManager;
 import com.intellij.execution.RunManager;
 import com.intellij.execution.configurations.RunProfile;
 import com.intellij.execution.configurations.RunnerSettings;
+import com.intellij.execution.executors.DefaultRunExecutor;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.runners.ProgramRunner;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -53,7 +55,7 @@ public class OneExecutionIdeTest extends AbstractCodegenIdeTest {
 
     private static final @NotNull String LOGIN_TEST = "nafath.LoginTest";
 
-    private final @NotNull List<RunProfile> launched = new ArrayList<>();
+    private final @NotNull List<ExecutionEnvironment> launched = new ArrayList<>();
 
     private final @NotNull List<TestCase> involved = new ArrayList<>();
 
@@ -94,7 +96,7 @@ public class OneExecutionIdeTest extends AbstractCodegenIdeTest {
 
             @Override
             public void execute(final @NotNull ExecutionEnvironment environment) {
-                launched.add(environment.getRunProfile());
+                launched.add(environment);
             }
         };
         ExtensionTestUtil.maskExtensions(ProgramRunner.PROGRAM_RUNNER_EP, List.of(standIn), getTestRootDisposable());
@@ -157,7 +159,7 @@ public class OneExecutionIdeTest extends AbstractCodegenIdeTest {
         settled();
 
         assertEquals("the selection was not one execution: " + launched, 1, launched.size());
-        assertEquals("the one execution does not run every test case that has a method", 2, ((TestNGConfiguration) launched.getFirst()).getPersistantData().getPatterns().size());
+        assertEquals("the one execution does not run every test case that has a method", 2, ((TestNGConfiguration) launched.getFirst().getRunProfile()).getPersistantData().getPatterns().size());
         final @NotNull List<String> runningSaid = balloons.stream().filter(said -> said.startsWith(running(1))).toList();
         assertEquals("the running message was not said once, counting the test cases that started: " + balloons, List.of(running(2)), runningSaid);
     }
@@ -213,5 +215,23 @@ public class OneExecutionIdeTest extends AbstractCodegenIdeTest {
         assertEquals("one test case with no method was not reported exactly once: " + shown, 1, shown.stream().filter(said -> said.equals(Refused.NO_GENERATED_CODE.about(alone.getDescription()))).count());
         assertEquals("several test cases with no method were reported more than once, or one by one: " + shown, 1, shown.stream().filter(said -> said.contains("no generated code")).count() - 1);
         assertTrue("an execution with nothing to run still said it was running: " + shown, shown.stream().noneMatch(said -> said.startsWith(running(1))));
+    }
+
+    // Rule-CODEGEN-092
+    public void testAnExecutionThatEndsWithoutReportingTakesItsTestCasesOutOfRunning() {
+        nothingIsReallyStarted();
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull List<TestCase> selected = theTestCases(List.of(createdTestCase(login, "Log in", "b"), createdTestCase(login, "Log out", "c")));
+        settled();
+
+        ExecuteTestCases.run(getProject(), selected);
+        Await.until("the execution never started", () -> !launched.isEmpty());
+        settled();
+        assertTrue("the started test cases do not read as running", selected.stream().allMatch(testCase -> execution().isRunning(testCase.getUuid())));
+
+        getProject().getMessageBus().syncPublisher(ExecutionManager.EXECUTION_TOPIC).processNotStarted(DefaultRunExecutor.EXECUTOR_ID, launched.getFirst());
+        settled();
+
+        assertTrue("a test case still reads as running after its execution ended without reporting it", selected.stream().noneMatch(testCase -> execution().isRunning(testCase.getUuid())));
     }
 }

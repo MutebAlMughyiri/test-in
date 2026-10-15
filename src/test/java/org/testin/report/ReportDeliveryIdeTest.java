@@ -22,6 +22,10 @@ import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationGroupManager;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.openapi.actionSystem.ex.ActionUtil;
+import com.intellij.openapi.actionSystem.impl.SimpleDataContext;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.ide.CopyPasteManager;
@@ -30,6 +34,7 @@ import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
 import com.intellij.testFramework.ServiceContainerUtil;
+import com.intellij.testFramework.TestActionEvent;
 import com.intellij.ui.treeStructure.SimpleTree;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.itextpdf.kernel.geom.Vector;
@@ -60,6 +65,7 @@ import org.testin.model.node.TestSetNode;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
+import org.testin.model.status.TestRunStatus;
 import org.testin.services.Services;
 import org.testin.setting.AppSettingsState;
 import org.testin.testproject.BoundTestProject;
@@ -67,6 +73,9 @@ import org.testin.testrun.TestRunEditorFields;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.util.Bundle;
 
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import java.awt.datatransfer.DataFlavor;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -74,6 +83,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -242,6 +253,21 @@ public class ReportDeliveryIdeTest extends AbstractTempRootIdeTest {
         return new GenerateReportAction(getProject(), new SimpleTree());
     }
 
+    private @NotNull GenerateReportAction theActionOn(final @NotNull Object selected) {
+        final @NotNull DefaultMutableTreeNode row = new DefaultMutableTreeNode(selected);
+        final @NotNull DefaultMutableTreeNode top = new DefaultMutableTreeNode(testProject);
+        top.add(row);
+        final @NotNull SimpleTree tree = new SimpleTree(new DefaultTreeModel(top));
+        tree.setSelectionPath(new TreePath(row.getPath()));
+        return new GenerateReportAction(getProject(), tree);
+    }
+
+    private @NotNull Presentation updated(final @NotNull GenerateReportAction action) {
+        final @NotNull AnActionEvent e = TestActionEvent.createTestEvent(action, SimpleDataContext.getProjectContext(getProject()));
+        ActionUtil.updateAction(action, e);
+        return e.getPresentation();
+    }
+
     private @NotNull File aReportWritten(final @NotNull FileFormat format, final @NotNull String name) {
         final @NotNull File file = folder("reports").resolve(name).toFile();
         theAction().writeReport(theTestRun(), format, file, new EmptyProgressIndicator());
@@ -268,6 +294,36 @@ public class ReportDeliveryIdeTest extends AbstractTempRootIdeTest {
         assertTrue("the report does not name its test run", html.contains(chosen.getName()));
         assertFalse("the report names a second test run", html.contains(other.getName()));
         assertFalse("the report carries a test case the test run never held", html.contains("Reset a forgotten password"));
+    }
+
+    // Rule-REPORT-001
+    public void testAReportIsOfferedOnlyWhenOneTestRunIsSelected() {
+        final @NotNull Presentation nothing = updated(theAction());
+        assertFalse("a report was offered with nothing selected", nothing.isEnabled());
+        assertEquals(Bundle.message("report.select.test.run.description"), nothing.getDescription());
+
+        final @NotNull Presentation testSet = updated(theActionOn(login));
+        assertFalse("a report was offered on a test set", testSet.isEnabled());
+        assertEquals(Bundle.message("report.select.test.run.description"), testSet.getDescription());
+
+        assertTrue("no report was offered on the selected test run", updated(theActionOn(theTestRun())).isEnabled());
+    }
+
+    // Rule-REPORT-016
+    public void testATestRunInProgressIsNotReportedAndSaysWhy() {
+        final @NotNull TestRunNode testRun = theTestRun();
+        testRun.getMarker().changeStatus(TestRunStatus.IN_PROGRESS);
+
+        final @NotNull Presentation inProgress = updated(theActionOn(testRun));
+        assertFalse("a test run in progress was offered a report", inProgress.isEnabled());
+        assertEquals(Bundle.message("toolbar.report.disabled", TestRunStatus.IN_PROGRESS.getLabel()), inProgress.getDescription());
+    }
+
+    // UC-REPORT-001, Rule-REPORT-006
+    public void testTheSuggestedFileNameNamesTheBoundTestProjectTheTestRunAndWhen() {
+        final @NotNull ZonedDateTime at = ZonedDateTime.of(2026, 10, 15, 9, 5, 0, 0, ZoneId.of("Asia/Riyadh"));
+
+        assertEquals("TestRun_NAFATH_Cycle-1_15-10-2026_09-05-00AM", ReportFileName.suggestedFor(getProject(), theTestRun(), at));
     }
 
     // Rule-REPORT-003

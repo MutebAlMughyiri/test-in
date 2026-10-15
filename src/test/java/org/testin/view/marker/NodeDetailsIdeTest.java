@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.NodesOnDisk;
 import org.testin.Said;
+import org.testin.TreeGesture;
 import org.testin.indexer.NodeCounter;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
@@ -69,14 +70,21 @@ public class NodeDetailsIdeTest extends AbstractTempRootIdeTest {
         return login.getType().getCounts().getFirst().of(NodeCounter.figures(getProject(), login));
     }
 
-    // Rule-TREE-PANEL-087
+    // UC-TREE-PANEL-027, Rule-TREE-PANEL-087
     public void testOpeningDetailsChangesNothingAndSaysNothing() {
         final @NotNull String before = bytesOf(marker());
         final @NotNull Said balloons = Said.listening(getProject(), getTestRootDisposable());
-        new NodeDetailsDialog(getProject(), login);
+        ShownDialog.open(getProject(), NodeDetailsDialog.class, () -> TreeGesture.pressed(getProject(), new ShowNodeDetailsAction(), List.of(login)));
 
+        assertTrue("Details did not open", ShownDialog.isOpen(getProject(), NodeDetailsDialog.class));
         assertEquals("opening Details said something", List.of(), balloons.shown());
         assertEquals("opening Details changed the node", before, bytesOf(marker()));
+    }
+
+    // UC-TREE-PANEL-027
+    public void testDetailsAreOfferedForOneNodeAtATime() {
+        assertFalse("Details was offered with nothing selected", TreeGesture.updated(getProject(), new ShowNodeDetailsAction(), List.of()).isEnabled());
+        assertFalse("Details was offered for two nodes at once", TreeGesture.updated(getProject(), new ShowNodeDetailsAction(), List.of(login, new TestSetNode())).isEnabled());
     }
 
     // Rule-TREE-PANEL-137, Rule-EDITOR-PANEL-281
