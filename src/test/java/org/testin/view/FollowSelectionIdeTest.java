@@ -15,7 +15,10 @@
  */
 package org.testin.view;
 
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.util.Disposer;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.testFramework.LightVirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.open.UnifiedFileEditor;
@@ -55,6 +58,24 @@ public class FollowSelectionIdeTest extends AbstractViewPanelIdeTest {
         view.closedByTheTester();
         selectIn(editor, third);
         assertFalse("moving the selection filled a panel that was off the screen: " + details(), holds(details(), "Log in with no password"));
+    }
+
+    // Rule-VIEW-PANEL-015, Rule-EDITOR-PANEL-289
+    public void testAnEditorBehindAnotherLeavesThePanelAsItIs() {
+        final @NotNull TestSetNode testSet = aTestSet("Login");
+        final @NotNull TestCase first = aTestCase(testSet, "Log in with a valid user", "a");
+        final @NotNull TestCase second = aTestCase(testSet, "Log in with a locked user", "b");
+        final @NotNull TestSetEditor behind = anEditorOn(testSet);
+        final @NotNull VirtualFile inFront = new LightVirtualFile("notes.txt", "what the tester reads now");
+        FileEditorManager.getInstance(getProject()).openFile(inFront, true);
+        try {
+            view.getPanel().show(List.of(first), testSet.treePath());
+            selectIn(behind, second);
+
+            assertTrue("an editor behind another took the panel away from what the tester opened: " + details(), holds(details(), "Log in with a valid user"));
+        } finally {
+            FileEditorManager.getInstance(getProject()).closeFile(inFront);
+        }
     }
 
     // Rule-VIEW-PANEL-102

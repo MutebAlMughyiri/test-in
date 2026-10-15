@@ -31,7 +31,9 @@ There is no key for this. It happens once the panel is open.
   panel is showing one of that editor's test cases, and leaves it alone
   otherwise.
 - **Rule-VIEW-PANEL-015** — Moving the selection in an editor fills the panel
-  again, but only while the panel is on screen.
+  again, but only while the panel is on screen and that editor is in front. An
+  editor behind another one, such as a test run whose automation moves its
+  selection (Rule-EDITOR-PANEL-289), leaves the panel as it is.
 - **Rule-VIEW-PANEL-016** — Following never opens the panel. A panel the tester
   closed does not come back on the next click.
 - **Rule-VIEW-PANEL-017** — Moving to a Testin editor with nothing selected

@@ -191,6 +191,12 @@ public final class TestinEditors {
         openEditors().forEach(editor -> editor.repaint(testCaseUuid));
     }
 
+    // Rule-VIEW-PANEL-015
+    public boolean isBehindAnother(final @NotNull TestinEditor editor) {
+        final VirtualFile @NotNull [] inFront = FileEditorManager.getInstance(project).getSelectedFiles();
+        return inFront.length > 0 && Arrays.stream(inFront).noneMatch(file -> file instanceof final UnifiedVirtualFile shown && shown.getNode().getPath().equals(editor.getParent().getPath()));
+    }
+
     private @NotNull Stream<TestinEditor> openEditors() {
         return editorsOf(Arrays.stream(FileEditorManager.getInstance(project).getOpenFiles()));
     }
