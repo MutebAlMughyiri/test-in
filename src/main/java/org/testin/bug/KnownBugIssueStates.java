@@ -29,10 +29,10 @@ import org.testin.help.SetupHint;
 import org.testin.help.Hints;
 import org.testin.help.SetupStep;
 import org.testin.indexer.TestRuns;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.bug.BugIssue;
 import org.testin.model.bug.BugIssueUrl;
-import org.testin.model.testrun.RunItem;
 import org.testin.services.BackgroundWork;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
@@ -69,7 +69,8 @@ public final class KnownBugIssueStates {
     static @NotNull Map<BugRepository, Set<Integer>> filedIn(final @NotNull Collection<RunItems> testRuns) {
         return testRuns.stream()
                 .flatMap(testRun -> testRun.getAll().stream())
-                .map(RunItem::bugIssue)
+                .flatMap(runItem -> runItem.getExecutions().stream())
+                .map(RunItemExecution::bugIssue)
                 .flatMap(Optional::stream)
                 .map(BugIssueUrl::issue)
                 .flatMap(Optional::stream)

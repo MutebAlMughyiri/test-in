@@ -1,6 +1,4 @@
 {
-  "bugSeverity" : "MAJOR",
-  "bugPriority" : "HIGH",
   "default" : 1,
   "executions" : [ {
     "status" : "FAILED",
@@ -8,6 +6,8 @@
     "executedBy" : "Testin Sample",
     "executedAt" : "Wednesday 07-01-2026 At 10:05:30 [UTC]",
     "actualResult" : "The sixth attempt was accepted. Reloading the page reset the counter to zero.",
-    "stacktrace" : "java.lang.AssertionError: expected the account to be locked\n\tat org.example.LoginTest.locksAfterFiveRefusals(LoginTest.java:64)"
+    "stacktrace" : "java.lang.AssertionError: expected the account to be locked\n\tat org.example.LoginTest.locksAfterFiveRefusals(LoginTest.java:64)",
+    "bugSeverity" : "MAJOR",
+    "bugPriority" : "HIGH"
   } ]
 }

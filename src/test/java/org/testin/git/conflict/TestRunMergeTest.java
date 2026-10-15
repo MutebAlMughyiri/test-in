@@ -19,18 +19,20 @@ package org.testin.git.conflict;
 import org.testin.util.RealJsonCodec;
 import org.testng.annotations.Test;
 
+import java.util.List;
+
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 public class TestRunMergeTest {
 
-    private static String runItem(final String severity, final String... executions) {
-        return chosen(severity, executions.length, executions);
+    private static String runItem(final String... executions) {
+        return chosen(executions.length, executions);
     }
 
-    private static String chosen(final String severity, final int defaultNumber, final String... executions) {
+    private static String chosen(final int defaultNumber, final String... executions) {
         return """
-                { "bugSeverity" : "%s", "default" : %d, "executions" : [ %s ] }""".formatted(severity, defaultNumber, String.join(", ", executions));
+                { "default" : %d, "executions" : [ %s ] }""".formatted(defaultNumber, String.join(", ", executions));
     }
 
     private static final String EARLY = """
@@ -42,9 +44,18 @@ public class TestRunMergeTest {
     private static final String BOTH = """
             { "status" : "BLOCKED", "executedBy" : "Omar", "executedAt" : "Monday 14-09-2026 At 09:00:00 [Asia/Riyadh]" }""";
 
-    private static final String MINE_RUN_ITEM = runItem("MINOR", BOTH, EARLY);
+    private static final String LATE_REPORTED = """
+            { "status" : "FAILED", "actualResult" : "The lockout counter never reset", "stacktrace" : "boom", "executedBy" : "Sara", "executedAt" : "Monday 14-09-2026 At 11:30:00 [Asia/Riyadh]", "bugSeverity" : "MAJOR", "bugIssueUrl" : "https://github.com/mtb550/test-in/issues/412" }""";
 
-    private static final String THEIRS_RUN_ITEM = runItem("MAJOR", BOTH, LATE);
+    private static final String LATE_TRIAGED_MINOR = """
+            { "status" : "FAILED", "actualResult" : "The lockout counter never reset", "stacktrace" : "boom", "executedBy" : "Sara", "executedAt" : "Monday 14-09-2026 At 11:30:00 [Asia/Riyadh]", "bugSeverity" : "MINOR" }""";
+
+    private static final String AFTER = """
+            { "status" : "PASSED", "executedBy" : "Sara", "executedAt" : "Monday 14-09-2026 At 12:00:00 [Asia/Riyadh]" }""";
+
+    private static final String MINE_RUN_ITEM = runItem(BOTH, EARLY);
+
+    private static final String THEIRS_RUN_ITEM = runItem(BOTH, LATE);
 
     private static final String BASE_MARKER = """
             {
@@ -92,18 +103,44 @@ public class TestRunMergeTest {
         assertEquals(merge.settled().size(), 1, "and the tester is told a choice was made: " + merge.settled());
     }
 
-    // Rule-SHARE-081
+    // Rule-SHARE-133
     @Test
-    public void theBugFieldsComeFromWhoeverRecordedLastWhicheverSideIsMine() {
-        assertEquals(RunItemMerger.of(RealJsonCodec.build(), MINE_RUN_ITEM, THEIRS_RUN_ITEM).merged().path("bugSeverity").asText(), "MAJOR");
-        assertEquals(RunItemMerger.of(RealJsonCodec.build(), THEIRS_RUN_ITEM, MINE_RUN_ITEM).merged().path("bugSeverity").asText(), "MAJOR");
+    public void aFailureOneSideReportedIsKeptOnceWithItsIssueWhicheverSideIsMine() {
+        for (final MergeOutcome merge : List.of(RunItemMerger.of(RealJsonCodec.build(), runItem(BOTH, LATE), runItem(BOTH, LATE_REPORTED)), RunItemMerger.of(RealJsonCodec.build(), runItem(BOTH, LATE_REPORTED), runItem(BOTH, LATE)))) {
+            assertEquals(merge.merged().path("executions").size(), 2, "the failure both sides hold was kept twice: " + merge.merged());
+            assertEquals(merge.merged().path("executions").get(1).path("bugIssueUrl").asText(), "https://github.com/mtb550/test-in/issues/412", "the issue one side reported was lost: " + merge.merged());
+            assertEquals(merge.merged().path("default").asInt(), 2, "the default moved off the failure: " + merge.merged());
+        }
+    }
+
+    // Rule-SHARE-133, Rule-SHARE-081
+    @Test
+    public void theSideThatExecutedLastGivesTheTriageOfAnExecutionBothHold() {
+        final MergeOutcome merge = RunItemMerger.of(RealJsonCodec.build(), runItem(BOTH, LATE_TRIAGED_MINOR), chosen(2, BOTH, LATE_REPORTED, AFTER));
+
+        assertEquals(merge.merged().path("executions").size(), 3, merge.merged().toString());
+        assertEquals(merge.merged().path("executions").get(1).path("bugSeverity").asText(), "MAJOR", "the triage did not come from the side that executed last: " + merge.merged());
+        assertEquals(merge.merged().path("default").asInt(), 2, "the later side's default, the reported failure: " + merge.merged());
+    }
+
+    // Rule-SHARE-133, Rule-CODEGEN-112
+    @Test
+    public void twoRetriesInOneSecondStayTwoExecutions() {
+        final String first = """
+                { "status" : "FAILED", "executedAt" : "Monday 14-09-2026 At 11:30:00 [Asia/Riyadh]" }""";
+        final String retried = """
+                { "status" : "FAILED", "executedAt" : "Monday 14-09-2026 At 11:30:00 [Asia/Riyadh]", "retry" : 1 }""";
+
+        final MergeOutcome merge = RunItemMerger.of(RealJsonCodec.build(), runItem(first, retried), runItem(BOTH, first, retried));
+
+        assertEquals(merge.merged().path("executions").size(), 3, "two attempts of one second were taken for one: " + merge.merged());
     }
 
     // Rule-SHARE-081, Rule-VIEW-PANEL-119
     @Test
     public void theLaterSidesChoiceIsWrittenByItsPlaceInTheJoin() {
-        final String choseEarly = chosen("MINOR", 2, BOTH, EARLY);
-        final String choseFirst = chosen("MAJOR", 1, BOTH, LATE);
+        final String choseEarly = chosen(2, BOTH, EARLY);
+        final String choseFirst = chosen(1, BOTH, LATE);
 
         final MergeOutcome merge = RunItemMerger.of(RealJsonCodec.build(), choseEarly, choseFirst);
 
@@ -114,8 +151,8 @@ public class TestRunMergeTest {
     // Rule-SHARE-081, Rule-EDITOR-PANEL-136
     @Test
     public void anOpenExecutionIsDroppedWhenTheOtherSideRecorded() {
-        final MergeOutcome merge = RunItemMerger.of(RealJsonCodec.build(), runItem("ENHANCEMENT", """
-                { "status" : "PENDING", "duration" : 12.0 }"""), runItem("ENHANCEMENT", EARLY));
+        final MergeOutcome merge = RunItemMerger.of(RealJsonCodec.build(), runItem("""
+                { "status" : "PENDING", "duration" : 12.0 }"""), runItem(EARLY));
 
         assertEquals(merge.merged().path("executions").size(), 1, "no open execution is left beside a recorded one: " + merge.merged());
         assertEquals(merge.merged().path("executions").get(0).path("status").asText(), "PASSED");
@@ -125,8 +162,8 @@ public class TestRunMergeTest {
     // Rule-SHARE-081, Rule-TREE-PANEL-067
     @Test
     public void untestedWinsOverPendingWhenNeitherSideRecorded() {
-        final MergeOutcome merge = RunItemMerger.of(RealJsonCodec.build(), runItem("ENHANCEMENT", """
-                { "status" : "PENDING" }"""), runItem("ENHANCEMENT", """
+        final MergeOutcome merge = RunItemMerger.of(RealJsonCodec.build(), runItem("""
+                { "status" : "PENDING" }"""), runItem("""
                 { "status" : "UNTESTED" }"""));
 
         assertEquals(merge.merged().path("executions").size(), 1);

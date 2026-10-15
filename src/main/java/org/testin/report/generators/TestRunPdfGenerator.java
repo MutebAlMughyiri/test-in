@@ -332,15 +332,15 @@ public final class TestRunPdfGenerator {
         final @NotNull Paragraph actual = paragraph(Bundle.message("report.actual.result", actualResult.isEmpty() ? "—" : actualResult))
                 .setFont(regularFont).setFontSize(ReportFont.SMALL.points()).setFontColor(DARK_GRAY);
 
-        runItem.bugIssue().ifPresent(url -> actual.add(text(" ("))
+        runItem.shownExecution().bugIssue().ifPresent(url -> actual.add(text(" ("))
                 .add(new Link(BugIssueUrl.shortReference(url), PdfAction.createURI(url)).setFontColor(LINK_BLUE))
                 .add(text(")")));
         testCaseCell.add(actual);
 
-        final @NotNull BugPriority priority = runItem.getBugPriority();
+        final @NotNull BugPriority priority = runItem.shownExecution().getBugPriority();
         table.addCell(runItemStatusCell(priority.getLabel(), rgb(priority.getEmphasis().getHexColor()), rowBackground, boldFont));
 
-        final @NotNull BugSeverity severity = runItem.getBugSeverity();
+        final @NotNull BugSeverity severity = runItem.shownExecution().getBugSeverity();
         table.addCell(runItemStatusCell(severity.getLabel(), rgb(severity.getEmphasis().getHexColor()), rowBackground, boldFont));
     }
 

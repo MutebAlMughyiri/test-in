@@ -62,6 +62,6 @@ public enum BugEventKind implements CardKind {
 
     // Rule-VIEW-PANEL-105, Rule-VIEW-PANEL-108
     public @NotNull Color barOf(final @NotNull RunItem runItem) {
-        return open && runItem.isFailed() ? runItem.getBugSeverity().getColor() : color;
+        return open && runItem.isFailed() ? runItem.shownExecution().getBugSeverity().getColor() : color;
     }
 }

@@ -36,9 +36,9 @@ summary line in the Details tab.
   panel is showing one of that editor's test cases, and leaves it alone
   otherwise.
 - **Rule-VIEW-PANEL-066** — A failed test case viewed under a test run carries
-  the bug on the test run band's summary line, with a **Report Bug** link. It
-  stays for as long as the test case has a bug issue link, whatever its run item
-  status.
+  the bug on the test run band's summary line, with a **Report Bug** link. It is
+  the default execution's bug, and it stays for as long as that execution
+  carries the issue it was reported as.
 - **Rule-VIEW-PANEL-067** — Report Bug prepares the bug under the IDE's progress
   bar, and reads `testin.yml` again first. Then the bug opens. Stopping the
   progress bar opens nothing.
@@ -54,13 +54,13 @@ summary line in the Details tab.
   Hovering over it says why.
 - **Rule-VIEW-PANEL-072** — Report Bug is gray while this test case's report is
   prepared, open or sent. It is also gray while another test case's report is
-  open, and once the test case is reported. Hovering over it says why.
+  open, and once the default execution is reported. Hovering over it says why.
 - **Rule-VIEW-PANEL-073** — Sending runs in the background and cannot be
   canceled. After 120 seconds it stops, and says it is not known whether the
   issue was created.
-- **Rule-VIEW-PANEL-074** — The issue's address is stored on the test case's
-  result only when the test run and the result still exist, and the test case is
-  still failed. The message says *Reported* either way. It says why when the
+- **Rule-VIEW-PANEL-074** — The issue's address is stored in the default
+  execution only when the test run and the run item still exist, and that
+  execution is still Failed. The message says *Reported* either way. It says why when the
   address was not stored. A completed or closed test run takes the address too.
   It is the one change a signed-off test run accepts, because it changes no
   run item status.
@@ -275,9 +275,11 @@ test case was no longer failed when it was sent*.
 
 **An issue stays on GitHub.** Testin never closes, reopens or edits it.
 
-**A pass clears the link.** Recording a pass on the test case clears its bug
-issue link with the rest of what the failure recorded. The issue stays on
-GitHub. When the test case fails again, **Report Bug** is back.
+**A pass leaves the link with the failure.** Recording a pass adds an execution
+that carries no issue, so the summary line shows none. The failed execution
+keeps its link, and shows it again when it is chosen as the default. The issue
+stays on GitHub. When the test case fails again, **Report Bug** is back for the
+new failure.
 
 ---
 

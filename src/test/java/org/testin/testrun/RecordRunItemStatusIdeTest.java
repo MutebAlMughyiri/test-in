@@ -172,8 +172,8 @@ public class RecordRunItemStatusIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-142
     public void testRecordingBlockedClearsNothingAlreadyWrittenAboutTheTestCase() {
         final @NotNull List<TestCase> testCases = TestRunFixture.testCasesIn(getProject(), root, 2);
-        final @NotNull RunItem failed = RunItem.builder().uuid(testCases.getFirst().getUuid()).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl("https://github.com/acme/shop/issues/7")
-                .executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The session was dropped").stacktrace("java.lang.AssertionError: logged out").build())).build();
+        final @NotNull RunItem failed = RunItem.builder().uuid(testCases.getFirst().getUuid())
+                .executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl("https://github.com/acme/shop/issues/7").actualResult("The session was dropped").stacktrace("java.lang.AssertionError: logged out").build())).build();
         final @NotNull TestRunFixture fixture = TestRunFixture.of(getProject(), root, List.of(failed, EditorFixtures.pending(testCases.get(1))), testCases);
         final @NotNull TestRunEditor editor = fixture.opened(getTestRootDisposable());
         try {
@@ -185,7 +185,7 @@ public class RecordRunItemStatusIdeTest extends AbstractTempRootIdeTest {
             assertEquals(RunItemStatus.BLOCKED, blocked.getStatus());
             final @NotNull RunItemExecution before = blocked.getExecutions().getFirst();
             assertEquals("Blocked cleared the failure written before it", List.of(RunItemStatus.FAILED, "The session was dropped", "java.lang.AssertionError: logged out"), List.of(before.getStatus(), before.getActualResult(), before.getStacktrace()));
-            assertEquals("Blocked cleared the bug written before it", List.of(BugSeverity.MAJOR, BugPriority.HIGH, "https://github.com/acme/shop/issues/7"), List.of(blocked.getBugSeverity(), blocked.getBugPriority(), blocked.getBugIssueUrl()));
+            assertEquals("Blocked cleared the bug written before it", List.of(BugSeverity.MAJOR, BugPriority.HIGH, "https://github.com/acme/shop/issues/7"), List.of(before.getBugSeverity(), before.getBugPriority(), before.getBugIssueUrl()));
         } finally {
             Disposer.dispose(editor);
         }

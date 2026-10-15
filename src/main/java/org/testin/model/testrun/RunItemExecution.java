@@ -27,6 +27,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.DateFormats;
+import org.testin.model.bug.BugPriority;
+import org.testin.model.bug.BugSeverity;
 import org.testin.model.status.RunItemStatus;
 
 import java.time.Duration;
@@ -34,6 +36,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 
 @Setter
 @Getter
@@ -76,6 +79,18 @@ public class RunItemExecution {
     @Builder.Default
     private List<String> screenshots = List.of();
 
+    @NotNull
+    @Builder.Default
+    private BugSeverity bugSeverity = BugSeverity.DEFAULT;
+
+    @NotNull
+    @Builder.Default
+    private BugPriority bugPriority = BugPriority.DEFAULT;
+
+    @NotNull
+    @Builder.Default
+    private String bugIssueUrl = "";
+
     // Rule-CODEGEN-112
     private int invocation;
 
@@ -87,14 +102,16 @@ public class RunItemExecution {
         return RunItemExecution.builder().build();
     }
 
-    // UC-EDITOR-PANEL-032, UC-CODEGEN-008, Rule-EDITOR-PANEL-136
+    // UC-EDITOR-PANEL-032, UC-CODEGEN-008, Rule-EDITOR-PANEL-136, Rule-EDITOR-PANEL-296
     public static @NotNull RunItemExecutionBuilder from(final @NotNull RunItemStatus runItemExecutionStatus, final @NotNull Duration duration, final @NotNull Failure failure) {
         return RunItemExecution.builder()
                 .status(runItemExecutionStatus)
                 .duration(duration)
                 .actualResult(failure.message())
                 .stacktrace(failure.stacktrace())
-                .screenshots(failure.screenshots());
+                .screenshots(failure.screenshots())
+                .bugSeverity(failure.bugSeverity())
+                .bugPriority(failure.bugPriority());
     }
 
     // UC-EDITOR-PANEL-032, Rule-EDITOR-PANEL-136
@@ -111,10 +128,17 @@ public class RunItemExecution {
         return !status.isJudged();
     }
 
-    // UC-EDITOR-PANEL-040, Rule-EDITOR-PANEL-286
+    // Rule-VIEW-PANEL-066, Rule-EDITOR-PANEL-296
+    public @NotNull Optional<String> bugIssue() {
+        return bugIssueUrl.isBlank() ? Optional.empty() : Optional.of(bugIssueUrl);
+    }
+
+    // UC-EDITOR-PANEL-040, Rule-EDITOR-PANEL-286, Rule-EDITOR-PANEL-296
     void revise(final @NotNull Failure failure) {
         actualResult = failure.message();
         stacktrace = failure.stacktrace();
         screenshots = failure.screenshots();
+        bugSeverity = failure.bugSeverity();
+        bugPriority = failure.bugPriority();
     }
 }

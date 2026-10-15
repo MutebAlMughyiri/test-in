@@ -126,29 +126,29 @@ public enum TestRunEditorFields implements ShowableField {
     BUG_SEVERITY(
             Bundle.message("field.run.item.bug.severity"),
             FieldDefault.ON,
-            runItem -> runItem.isFailed() ? runItem.getBugSeverity().getLabel() : ""
+            runItem -> runItem.isFailed() ? runItem.shownExecution().getBugSeverity().getLabel() : ""
     ) {
         @Override
         public void applyToUI(final @NotNull RunItem runItem, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
-            Badges.addBugBadge(badges, getName(), getRunItemValueExtractor().apply(runItem), runItem.getBugSeverity().getColor());
+            Badges.addBugBadge(badges, getName(), getRunItemValueExtractor().apply(runItem), runItem.shownExecution().getBugSeverity().getColor());
         }
     },
 
     BUG_PRIORITY(
             Bundle.message("field.run.item.bug.priority"),
             FieldDefault.ON,
-            runItem -> runItem.isFailed() ? runItem.getBugPriority().getLabel() : ""
+            runItem -> runItem.isFailed() ? runItem.shownExecution().getBugPriority().getLabel() : ""
     ) {
         @Override
         public void applyToUI(final @NotNull RunItem runItem, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
-            Badges.addBugBadge(badges, getName(), getRunItemValueExtractor().apply(runItem), runItem.getBugPriority().getColor());
+            Badges.addBugBadge(badges, getName(), getRunItemValueExtractor().apply(runItem), runItem.shownExecution().getBugPriority().getColor());
         }
     },
 
     BUG_ISSUE(
             Bundle.message("field.run.item.bug.issue"),
             FieldDefault.OFF,
-            runItem -> BugIssueUrl.reference(runItem.getBugIssueUrl())
+            runItem -> BugIssueUrl.reference(runItem.shownExecution().getBugIssueUrl())
     ),
 
     RUN_STATUS(

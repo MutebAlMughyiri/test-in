@@ -74,8 +74,8 @@ There is no key for this. The tab is called **History**.
 - **Rule-VIEW-PANEL-101** — The tab shows every commit that changed the test
   case. Git is read away from the screen, and the entries are drawn in groups,
   so the IDE never waits for a long history.
-- **Rule-VIEW-PANEL-105** — A bug is what a run item records about a failure: a
-  Failed run item status, or the link of the issue it was filed as. Each bug
+- **Rule-VIEW-PANEL-105** — A bug is what a run item's default execution
+  records about a failure: a Failed status, or the issue it was reported as. Each bug
   event in any test run is a bug card of its own, apart from the test case
   cards: recorded, changed, cleared, or its run item removed. It opens with the
   event, its test run, when, who and the commit, then shows the bug's severity

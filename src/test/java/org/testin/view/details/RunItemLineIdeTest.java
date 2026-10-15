@@ -54,7 +54,7 @@ public class RunItemLineIdeTest extends AbstractTempRootIdeTest {
     }
 
     private static @NotNull RunItem failed(final @NotNull String bugIssueUrl) {
-        return RunItem.builder().uuid(TEST_CASE_UUID).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl(bugIssueUrl).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).duration(Duration.ofSeconds(134)).stacktrace("java.lang.AssertionError: expected [true]").build())).build();
+        return RunItem.builder().uuid(TEST_CASE_UUID).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl(bugIssueUrl).duration(Duration.ofSeconds(134)).stacktrace("java.lang.AssertionError: expected [true]").build())).build();
     }
 
     private static @NotNull Component rowOf(final @NotNull Component drawn) {

@@ -15,7 +15,8 @@ is named as the tester already knows that key - **Platform**, or the heading the
 analysis was written under. A run item is
 never asked about at all: both sides' executions are joined in time order,
 because each execution is one account of one attempt - its status, actual
-result, stacktrace and screenshots travel together - and neither side's
+result, stacktrace, screenshots, bug severity, bug priority and reported issue
+travel together - and neither side's
 attempt is wrong ([UC-SHARE-017](resolveConflicts.md)).
 
 There is no key that opens this. It opens during a merge.
@@ -44,14 +45,18 @@ There is no key that opens this. It opens during a merge.
   for each thing that disagrees: a field of a test case, or a key both sides
   wrote differently into a test run's own marker. A run item raises no
   question: both sides' executions are joined in time order, an execution both
-  hold is kept once, and the default chosen and the bug fields come from the
-  side that executed last.
+  hold is kept once (Rule-SHARE-133), and the default chosen comes from the side
+  that executed last.
 - **Rule-SHARE-082** — The tester's own value is chosen to start with.
 - **Rule-SHARE-083** — A value is shown on one line, cut at 70 characters. An
   empty one says that it is empty rather than showing nothing.
 - **Rule-SHARE-084** — `Escape` answers nothing for this file and moves on to
   the next. The file is left as the other side has it and is named at the end
   with everything else that was not resolved. Answers already given are kept.
+- **Rule-SHARE-133** — An execution both sides hold is one with the same status,
+  recorded at the same moment, in the same invocation and retry. It is kept
+  once, as the side that executed last holds it, with the issue either side
+  reported it as.
 
 ## The screen
 

@@ -64,7 +64,7 @@ public final class OpenBugReports {
         final @NotNull Optional<Stage> stage = Optional.ofNullable(onTheWay.get(runItemPath));
         if (stage.isPresent()) return stage.map(Stage::getReason);
 
-        if (runItem.bugIssue().isPresent()) return Optional.of(Bundle.message("bug.already.reported"));
+        if (runItem.shownExecution().bugIssue().isPresent()) return Optional.of(Bundle.message("bug.already.reported"));
         if (anotherIsOpen(runItemPath)) return Optional.of(Bundle.message("bug.finish.open.report"));
 
         return Optional.empty();

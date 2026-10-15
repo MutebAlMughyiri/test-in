@@ -38,6 +38,7 @@ import org.testin.git.history.TestCaseHistoryCard;
 import org.testin.indexer.TestRuns;
 import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItem;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.services.Services;
 import org.testin.testcase.UpdateTestCaseFields;
 import org.testin.testrun.TestRunEditorFields;
@@ -182,12 +183,13 @@ final class HistoryCardPanel {
     }
 
     private static @NotNull List<JComponent> bugFields(final @NotNull Project project, final @NotNull RunItem runItem) {
+        final @NotNull RunItemExecution shown = runItem.shownExecution();
         final @NotNull List<JComponent> rows = new ArrayList<>();
         if (runItem.isFailed()) {
-            rows.add(field(TestRunEditorFields.BUG_SEVERITY.getName(), text(runItem.getBugSeverity().getLabel(), Fonts.body(), runItem.getBugSeverity().getColor())));
-            rows.add(field(TestRunEditorFields.BUG_PRIORITY.getName(), plain(runItem.getBugPriority().getLabel())));
+            rows.add(field(TestRunEditorFields.BUG_SEVERITY.getName(), text(shown.getBugSeverity().getLabel(), Fonts.body(), shown.getBugSeverity().getColor())));
+            rows.add(field(TestRunEditorFields.BUG_PRIORITY.getName(), plain(shown.getBugPriority().getLabel())));
         }
-        runItem.bugIssue().ifPresent(url -> rows.add(field(TestRunEditorFields.BUG_ISSUE.getName(), BugIssueLink.of(project, url))));
+        shown.bugIssue().ifPresent(url -> rows.add(field(TestRunEditorFields.BUG_ISSUE.getName(), BugIssueLink.of(project, url))));
         return rows;
     }
 

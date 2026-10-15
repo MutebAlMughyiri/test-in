@@ -251,9 +251,6 @@ screenshot, so one put there by hand under such a name goes too.
 
 | Field         | Type             | Meaning                                                                                                                                                                                                                                                                |
 |---------------|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `bugSeverity` | enum             | `BLOCKER` `MAJOR` `MINOR` `ENHANCEMENT`. `ENHANCEMENT` until the tester chooses another (Rule-EDITOR-PANEL-147). A later execution never resets it (Rule-EDITOR-PANEL-284)                                                                                             |
-| `bugPriority` | enum             | `HIGH` `MEDIUM` `LOW`. `LOW` until the tester chooses another (Rule-EDITOR-PANEL-147). A later execution never resets it                                                                                                                                               |
-| `bugIssueUrl` | string           | The GitHub issue the failure was reported as, written by [Report Bug](viewPanel/reportBug.md). Empty until then, and kept by every later execution                                                                                                                     |
 | `default`     | number           | Which execution counts, from 1: its status is the run item status (Rule-VIEW-PANEL-119). Always written                                                                                                                                                                |
 | `executions`  | array of objects | Every execution of this test case in this test run, the oldest first (Rule-EDITOR-PANEL-136). Always one at least: before the first run item status, one open execution that says `PENDING`, or `UNTESTED` once the test run is signed off. Each is in the table below |
 
@@ -268,6 +265,9 @@ An execution:
 | `actualResult` | string           | What happened. Left out when nothing was written                                                                                                                                                                             |
 | `stacktrace`   | string           | The error. Text only: a pasted screenshot is never in it                                                                                                                                                                     |
 | `screenshots`  | array of strings | The file names of the screenshots pasted with the failure, beside this file, in the order they were pasted. Left out when there are none; their files go with the next write after the last execution naming them is removed |
+| `bugSeverity`  | enum             | `BLOCKER` `MAJOR` `MINOR` `ENHANCEMENT`, as the tester triaged this failure (Rule-EDITOR-PANEL-147). Only a failure carries it (Rule-EDITOR-PANEL-296). Left out at `ENHANCEMENT`                                            |
+| `bugPriority`  | enum             | `HIGH` `MEDIUM` `LOW`. Only a failure carries it. Left out at `LOW`                                                                                                                                                          |
+| `bugIssueUrl`  | string           | The GitHub issue this failure was reported as, written by [Report Bug](viewPanel/reportBug.md). Left out until then                                                                                                          |
 | `invocation`   | number           | Which invocation of the method this was, from 1, when the automation ran it more than once (Rule-CODEGEN-112). Left out otherwise                                                                                            |
 | `retry`        | number           | Which retry of its invocation this was, from 1. Left out for the first attempt                                                                                                                                               |
 
@@ -279,15 +279,16 @@ execution's `retry` follows; nothing else records it.
 
 ```json
 {
-  "bugSeverity" : "MAJOR",
-  "bugPriority" : "HIGH",
   "default" : 2,
   "executions" : [ {
     "status" : "FAILED",
     "duration" : 95.000000000,
     "executedBy" : "Muteb",
     "executedAt" : "Wednesday 07-10-2026 At 10:15:40 [Asia/Riyadh]",
-    "actualResult" : "The counter still resets when the app is reopened."
+    "actualResult" : "The counter still resets when the app is reopened.",
+    "bugSeverity" : "MAJOR",
+    "bugPriority" : "HIGH",
+    "bugIssueUrl" : "https://github.com/mtb550/bank-app/issues/42"
   }, {
     "status" : "PASSED",
     "duration" : 51.000000000,
@@ -301,9 +302,9 @@ A run item keeps no copy of its test case (Rule-EDITOR-PANEL-238): a test run
 that is not Committed shows each test case as it is now, and a Committed one reads
 it from its `commit`. A `testCase` object an earlier version wrote is not read.
 
-A severity and a priority are never missing. A run item nobody triaged carries
-`"bugSeverity" : "ENHANCEMENT"`, and only a failure shows it. A file that still
-holds `"EMPTY"`, which earlier versions wrote, cannot be read.
+An execution nobody triaged leaves both out and reads as Enhancement and Low;
+only a failure shows them. A run item's own `bugSeverity`, `bugPriority` and
+`bugIssueUrl`, which earlier builds wrote, are not read.
 
 ---
 

@@ -44,11 +44,11 @@ public class RecordRunItemStatusTest {
     private static @NotNull RunItem failedWithBug() {
         return RunItem.builder()
                 .uuid(UUID.randomUUID())
-                .bugSeverity(BugSeverity.MAJOR)
-                .bugPriority(BugPriority.HIGH)
-                .bugIssueUrl(ISSUE)
                 .executions(List.of(RunItemExecution.builder()
                         .status(RunItemStatus.FAILED)
+                        .bugSeverity(BugSeverity.MAJOR)
+                        .bugPriority(BugPriority.HIGH)
+                        .bugIssueUrl(ISSUE)
                         .actualResult("NPE on the login button")
                         .stacktrace("java.lang.NullPointerException at Login.click(Login.java:42)")
                         .screenshots(List.of("k3f9a.png"))
@@ -60,7 +60,7 @@ public class RecordRunItemStatusTest {
         runItem.recordRunItemStatus(runItemStatus, tester, Duration.ZERO, Failure.NONE);
     }
 
-    // Rule-EDITOR-PANEL-284
+    // Rule-EDITOR-PANEL-284, Rule-EDITOR-PANEL-296
     @Test
     public void passingAFailedTestCaseErasesNothingTheFailureDescribed() {
         final RunItem runItem = failedWithBug();
@@ -74,12 +74,16 @@ public class RecordRunItemStatusTest {
         assertEquals(failure.getActualResult(), "NPE on the login button", "the failure still says what happened");
         assertFalse(failure.getStacktrace().isEmpty());
         assertEquals(failure.getScreenshots(), List.of("k3f9a.png"));
-        assertEquals(runItem.getBugSeverity(), BugSeverity.MAJOR, "the bug stays on the run item");
-        assertEquals(runItem.getBugPriority(), BugPriority.HIGH);
-        assertEquals(runItem.getBugIssueUrl(), ISSUE);
+        assertEquals(failure.getBugSeverity(), BugSeverity.MAJOR, "the bug stays with the failure");
+        assertEquals(failure.getBugPriority(), BugPriority.HIGH);
+        assertEquals(failure.getBugIssueUrl(), ISSUE);
+
+        final @NotNull RunItemExecution pass = runItem.shownExecution();
+        assertEquals(List.of(pass.getBugSeverity(), pass.getBugPriority(), pass.getBugIssueUrl()), List.of(BugSeverity.DEFAULT, BugPriority.DEFAULT, ""), "the pass carries the failure's bug");
+        assertFalse(runItem.recordsABug(), "a pass records the bug of the failure before it");
     }
 
-    // Rule-EDITOR-PANEL-159, Rule-EDITOR-PANEL-284
+    // Rule-EDITOR-PANEL-159, Rule-EDITOR-PANEL-284, Rule-EDITOR-PANEL-147, Rule-EDITOR-PANEL-296
     @Test
     public void failingAgainAddsAnExecutionAndKeepsTheFirst() {
         final RunItem runItem = failedWithBug();
@@ -89,6 +93,8 @@ public class RecordRunItemStatusTest {
         assertEquals(runItem.getExecutions().size(), 2);
         assertEquals(runItem.shownExecution().getActualResult(), "A timeout this time", "the run item reads its newest execution");
         assertEquals(runItem.getExecutions().getFirst().getActualResult(), "NPE on the login button", "and the first keeps its own");
+        assertEquals(runItem.getExecutions().getFirst().getBugIssueUrl(), ISSUE, "the first failure keeps the issue it was reported as");
+        assertEquals(List.of(runItem.shownExecution().getBugSeverity(), runItem.shownExecution().getBugPriority(), runItem.shownExecution().getBugIssueUrl()), List.of(BugSeverity.ENHANCEMENT, BugPriority.LOW, ""), "an untriaged failure starts at Enhancement and Low, unreported");
     }
 
     @Test
@@ -99,8 +105,21 @@ public class RecordRunItemStatusTest {
 
         assertEquals(runItem.getStatus(), RunItemStatus.PASSED);
         assertEquals(runItem.getExecutions().size(), 1);
-        assertEquals(runItem.getBugSeverity(), BugSeverity.ENHANCEMENT);
-        assertEquals(runItem.getBugPriority(), BugPriority.LOW);
+        assertEquals(runItem.shownExecution().getBugSeverity(), BugSeverity.ENHANCEMENT);
+        assertEquals(runItem.shownExecution().getBugPriority(), BugPriority.LOW);
+    }
+
+    // Rule-EDITOR-PANEL-296, Rule-VIEW-PANEL-121
+    @Test
+    public void removingAFailureRemovesItsBug() {
+        final RunItem runItem = failedWithBug();
+        record(runItem, RunItemStatus.BLOCKED, "tester");
+
+        runItem.removeExecution(0);
+
+        assertEquals(runItem.getExecutions().size(), 1);
+        assertEquals(List.of(runItem.shownExecution().getBugSeverity(), runItem.shownExecution().getBugPriority(), runItem.shownExecution().getBugIssueUrl()), List.of(BugSeverity.DEFAULT, BugPriority.DEFAULT, ""), "the block kept the removed failure's bug");
+        assertFalse(runItem.recordsABug());
     }
 
     // Rule-PRODUCT-010, Rule-EDITOR-PANEL-136
@@ -115,6 +134,7 @@ public class RecordRunItemStatusTest {
         assertEquals(runItem.shownExecution().getExecutedAt().getNano(), 0, "stamped to the second, as the test run JSON stores it");
     }
 
+    // Rule-VIEW-PANEL-105
     @Test
     public void everyFailureRecordsABug() {
         final RunItem failed = RunItem.builder().uuid(UUID.randomUUID()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build();
@@ -122,7 +142,8 @@ public class RecordRunItemStatusTest {
 
         assertTrue(failed.recordsABug(), "a failure is Enhancement / Low until the tester says otherwise");
         assertFalse(blocked.recordsABug(), "a result that is not a failure records no bug");
-        assertTrue(blocked.setBugIssueUrl(ISSUE).recordsABug(), "unless an issue was filed for it");
+        blocked.linkBug(ISSUE);
+        assertTrue(blocked.recordsABug(), "unless an issue was filed for it");
     }
 
     // Rule-EDITOR-PANEL-160, Rule-EDITOR-PANEL-159

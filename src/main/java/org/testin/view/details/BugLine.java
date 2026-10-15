@@ -28,6 +28,7 @@ import org.testin.bug.RunItemPath;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.testrun.RunItem;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.services.Services;
 import org.testin.testrun.TestRunEditorFields;
 import org.testin.ui.Badge;
@@ -46,7 +47,7 @@ public final class BugLine {
 
     // UC-VIEW-PANEL-005, UC-VIEW-PANEL-016, Rule-VIEW-PANEL-031, Rule-VIEW-PANEL-086
     public static @NotNull Optional<JComponent> of(final @NotNull Project project, final @NotNull RunItem runItem, final @NotNull List<String> treePath, final @NotNull TestCase testCase) {
-        final @NotNull Optional<String> bugIssue = runItem.bugIssue();
+        final @NotNull Optional<String> bugIssue = runItem.shownExecution().bugIssue();
         if (!runItem.recordsABug()) return Optional.empty();
 
         return AbstractDetails.testRunOf(project, treePath).map(testRunNode -> drawn(project, runItem, testCase, bugIssue, testRunNode));
@@ -82,9 +83,10 @@ public final class BugLine {
     private static @NotNull Optional<JComponent> chip(final @NotNull RunItem runItem) {
         if (!runItem.isFailed()) return Optional.empty();
 
+        final @NotNull RunItemExecution shown = runItem.shownExecution();
         final @NotNull List<Badge> bug = new ArrayList<>();
-        Badges.addBugBadge(bug, TestRunEditorFields.BUG_SEVERITY.getName(), runItem.getBugSeverity().getLabel(), runItem.getBugSeverity().getColor());
-        Badges.addBugBadge(bug, TestRunEditorFields.BUG_PRIORITY.getName(), runItem.getBugPriority().getLabel(), runItem.getBugSeverity().getColor());
+        Badges.addBugBadge(bug, TestRunEditorFields.BUG_SEVERITY.getName(), shown.getBugSeverity().getLabel(), shown.getBugSeverity().getColor());
+        Badges.addBugBadge(bug, TestRunEditorFields.BUG_PRIORITY.getName(), shown.getBugPriority().getLabel(), shown.getBugSeverity().getColor());
 
         final @NotNull JBPanel<?> holder = AbstractDetails.row(0);
         Badges.showBadges(holder, bug);

@@ -111,10 +111,7 @@ public final class RunItemRecorder {
     private @NotNull Consumer<RunItem> applying(final @NotNull Path testRunPath, final @NotNull FailureFields fields, final @NotNull BiConsumer<RunItem, Failure> step) {
         fields.storePasted(pasted -> Services.getInstance(project, TestRuns.class).storeScreenshots(testRunPath, pasted));
 
-        return runItem -> {
-            fields.applyBugTo(runItem);
-            step.accept(runItem, fields.failure());
-        };
+        return runItem -> step.accept(runItem, fields.failure());
     }
 
     private @NotNull String tester() {

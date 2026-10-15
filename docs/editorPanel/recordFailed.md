@@ -46,8 +46,9 @@ a small form before it records anything.
 - **Rule-EDITOR-PANEL-146** — The dialog opens for one test case. Several at
   once are failed with no detail collected.
 - **Rule-EDITOR-PANEL-147** — A bug severity nobody chose is **Enhancement**, and
-  a bug priority nobody chose is **Low**. The dialog starts there, and so does
-  an automated failure.
+  a bug priority nobody chose is **Low**. An automated failure starts there. The
+  failure dialog starts from the default execution's, which is there too unless
+  that execution is a failure someone triaged.
 - **Rule-EDITOR-PANEL-148** — The five fields - what happened, the bug severity,
   the bug priority, the stacktrace and the screenshots - are the same five the
   failure form in light mode uses, and each is drawn by a section of its own.
@@ -92,10 +93,14 @@ a small form before it records anything.
   touchpad. No scrollbar is shown and the bar keeps its height, so nothing on it
   is cut off and the editor below does not move.
 - **Rule-EDITOR-PANEL-285** — A failure is recorded in one step: the Failed
-  execution carries the actual result, the error and the screenshots the form
-  collected, and the bug severity and priority go on the run item. Nothing is
-  written before the form is saved, and nothing an earlier execution recorded
-  changes.
+  execution carries the actual result, the error, the screenshots, the bug
+  severity and the bug priority the form collected. Nothing is written before
+  the form is saved, and nothing an earlier execution recorded changes.
+- **Rule-EDITOR-PANEL-296** — Everything a failure says belongs to the execution
+  it describes: what happened, the error, the screenshots, the bug severity and
+  priority, and the issue it was reported as. The run item holds none of it. A
+  Passed or Blocked execution says none of it, and removing an execution removes
+  all it said.
 
 ## The screen
 
@@ -170,8 +175,8 @@ a small form before it records anything.
    the error.
 5. The tester presses `Enter`.
 6. **Failed** is recorded as one more execution, carrying the actual result,
-   the error and the screenshots, with the tester's name, the time and the
-   duration. The bug severity and priority go on the run item.
+   the error, the screenshots, the bug severity and the bug priority, with the
+   tester's name, the time and the duration.
 7. A message reads *Failed*.
 8. The walk moves to the next test case.
 

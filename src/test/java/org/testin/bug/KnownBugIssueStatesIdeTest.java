@@ -73,7 +73,7 @@ public class KnownBugIssueStatesIdeTest extends AbstractTempRootIdeTest {
     }
 
     private void filed(final @NotNull String testRun, final @NotNull String bugIssueUrl) {
-        final @NotNull RunItem failed = RunItem.builder().uuid(TEST_CASE_UUID).bugIssueUrl(bugIssueUrl).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build();
+        final @NotNull RunItem failed = RunItem.builder().uuid(TEST_CASE_UUID).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).bugIssueUrl(bugIssueUrl).build())).build();
         Services.getInstance(getProject(), TestRuns.class).putRunItems(root.resolve("NAFATH").resolve("Test Runs").resolve(testRun), RunItems.builder().all(new ArrayList<>(List.of(failed))).build());
     }
 

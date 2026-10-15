@@ -95,10 +95,11 @@ once.
 
 **A run item two testers executed** — both executions are kept. Each
 execution is one tester's account of one attempt: the status, when they gave
-it, what they saw, the stacktrace and the screenshots. Those travel together,
-so the two lists are joined in `executedAt` order, an execution both sides hold
-is kept once, and the default chosen and the bug fields come from the side
-that executed last. Nothing is asked. Nothing is said either: the
+it, what they saw, the stacktrace, the screenshots, the bug severity and
+priority, and the issue it was reported as. Those travel together, so the two
+lists are joined in `executedAt` order, an execution both sides hold is kept
+once with the issue either side reported it as, and the default chosen comes
+from the side that executed last. Nothing is asked. Nothing is said either: the
 line naming what was settled belongs to the merge window, and that window opens
 only when a question is left. That is difference 20. Two testers judging **different** test cases of one test run never
 conflict at all: their run item statuses are

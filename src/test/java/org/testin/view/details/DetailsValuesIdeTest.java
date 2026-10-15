@@ -74,8 +74,7 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
     }
 
     private static @NotNull RunItem failedWith(final @NotNull TestCase testCase, final @NotNull List<String> screenshots) {
-        return RunItem.builder().uuid(testCase.getUuid())
-                .bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The session was dropped").duration(Duration.ofSeconds(134)).executedBy("muteb").stacktrace("java.lang.AssertionError: expected [true]").screenshots(screenshots).build())).build();
+        return RunItem.builder().uuid(testCase.getUuid()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).actualResult("The session was dropped").duration(Duration.ofSeconds(134)).executedBy("muteb").stacktrace("java.lang.AssertionError: expected [true]").screenshots(screenshots).build())).build();
     }
 
     private static byte @NotNull [] aScreenshot(final int width, final int height) {

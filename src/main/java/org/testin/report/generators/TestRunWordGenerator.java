@@ -321,7 +321,7 @@ public final class TestRunWordGenerator {
         final @NotNull XWPFParagraph actualResultParagraph = row.getCell(1).addParagraph();
         styledTextRun(actualResultParagraph.createRun(), Bundle.message("report.actual.result", actualResult.isEmpty() ? "—" : actualResult), ReportFont.SMALL, DARK_GRAY);
 
-        runItem.bugIssue().ifPresent(url -> {
+        runItem.shownExecution().bugIssue().ifPresent(url -> {
             styledTextRun(actualResultParagraph.createRun(), " (", ReportFont.SMALL, DARK_GRAY);
             final @NotNull XWPFHyperlinkRun issue = actualResultParagraph.createHyperlinkRun(url);
             styledTextRun(issue, BugIssueUrl.shortReference(url), ReportFont.SMALL, LINK_BLUE);
@@ -332,13 +332,13 @@ public final class TestRunWordGenerator {
         final @NotNull XWPFTableCell priorityCell = row.getCell(2);
         shadeCell(priorityCell, rowBackground);
         setCellPadding(priorityCell, 4, 6, 4, 6);
-        final @NotNull BugPriority priority = runItem.getBugPriority();
+        final @NotNull BugPriority priority = runItem.shownExecution().getBugPriority();
         setCellText(priorityCell, priority.getLabel(), ReportFont.BODY.roundedPoints(), true, priority.getEmphasis().getHexColor());
 
         final @NotNull XWPFTableCell severityCell = row.getCell(3);
         shadeCell(severityCell, rowBackground);
         setCellPadding(severityCell, 4, 6, 4, 6);
-        final @NotNull BugSeverity severity = runItem.getBugSeverity();
+        final @NotNull BugSeverity severity = runItem.shownExecution().getBugSeverity();
         setCellText(severityCell, severity.getLabel(), ReportFont.BODY.roundedPoints(), true, severity.getEmphasis().getHexColor());
     }
 

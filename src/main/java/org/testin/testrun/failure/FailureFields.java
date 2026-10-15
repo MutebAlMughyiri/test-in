@@ -56,14 +56,9 @@ public final class FailureFields {
         return sections.stream().map(FailureSection::component).toList();
     }
 
-    // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-145
+    // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-145, Rule-EDITOR-PANEL-285, Rule-EDITOR-PANEL-296
     public @NotNull Failure failure() {
-        return new Failure(actualResult.typed(), stacktrace.typed(), screenshots.names());
-    }
-
-    // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-147
-    public void applyBugTo(final @NotNull RunItem runItem) {
-        runItem.recordBug(bugSeverity.selected(), bugPriority.selected());
+        return new Failure(actualResult.typed(), stacktrace.typed(), screenshots.names(), bugSeverity.selected(), bugPriority.selected());
     }
 
     // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-219

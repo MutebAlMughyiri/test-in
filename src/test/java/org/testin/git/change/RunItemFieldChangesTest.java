@@ -51,10 +51,7 @@ public class RunItemFieldChangesTest {
 
     private static @NotNull RunItem base() {
         return RunItem.builder()
-                .uuid(JUDGED_TEST_CASE)
-                .bugSeverity(BugSeverity.MAJOR)
-                .bugPriority(BugPriority.HIGH)
-                .bugIssueUrl("https://github.com/mtb550/test-in/issues/305").executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The dashboard never opened").stacktrace("java.lang.AssertionError: no dashboard").executedBy("Mohammed AlZamil").executedAt(EXECUTED_AT).screenshots(List.of("a1b2c.png")).build()))
+                .uuid(JUDGED_TEST_CASE).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl("https://github.com/mtb550/test-in/issues/305").actualResult("The dashboard never opened").stacktrace("java.lang.AssertionError: no dashboard").executedBy("Mohammed AlZamil").executedAt(EXECUTED_AT).screenshots(List.of("a1b2c.png")).build()))
                 .build();
     }
 

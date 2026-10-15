@@ -35,7 +35,7 @@
 2. On the summary line, click **Report Bug**. Testin writes the title and the
    body.
 3. Edit them if you want, then click **Send**. ([Report a bug from a failed test case](../viewPanel/reportBug.md))
-4. The issue's link appears on the run item. Its state on GitHub appears beside
+4. The issue's link appears with the failure it reports. Its state on GitHub appears beside
    it when the test run next opens, or on **Refresh**.
    ([Read what a test run recorded](../viewPanel/readRunItem.md))
 

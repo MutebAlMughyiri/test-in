@@ -28,10 +28,14 @@ import org.testin.util.Bundle;
 import org.testin.util.JsonCodec;
 import org.testin.util.TestCaseFieldParser;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -45,16 +49,24 @@ final class RunItemMerger {
 
     private static final @NotNull String STATUS = "status";
 
-    // UC-SHARE-018, Rule-SHARE-080, Rule-SHARE-081, Rule-EDITOR-PANEL-136, Rule-VIEW-PANEL-119
+    private static final @NotNull String INVOCATION = "invocation";
+
+    private static final @NotNull String RETRY = "retry";
+
+    private static final @NotNull String BUG_ISSUE_URL = "bugIssueUrl";
+
+    // UC-SHARE-018, Rule-SHARE-080, Rule-SHARE-081, Rule-SHARE-133, Rule-EDITOR-PANEL-136, Rule-VIEW-PANEL-119
     public static @NotNull MergeOutcome of(final @NotNull JsonCodec mapper, final @NotNull String mine, final @NotNull String theirs) {
         final @NotNull ObjectNode mineNode = mapper.readTree(mine);
         final @NotNull ObjectNode theirsNode = mapper.readTree(theirs);
 
         if (mineNode.equals(theirsNode)) return new MergeOutcome(mineNode, List.of(), List.of());
 
-        final @NotNull ObjectNode later = lastRecorded(theirsNode).isAfter(lastRecorded(mineNode)) ? theirsNode : mineNode;
-        final @NotNull List<JsonNode> joined = joined(mineNode, theirsNode);
-        final int chosen = executions(later).skip(Math.max(0, later.path(DEFAULT).asInt(1) - 1)).findFirst().map(joined::indexOf).orElse(-1);
+        final boolean theirsLater = lastRecorded(theirsNode).isAfter(lastRecorded(mineNode));
+        final @NotNull ObjectNode later = theirsLater ? theirsNode : mineNode;
+        final @NotNull List<JsonNode> joined = joined(later, theirsLater ? mineNode : theirsNode);
+        final @NotNull List<ExecutionIdentity> identities = joined.stream().map(ExecutionIdentity::of).toList();
+        final int chosen = executions(later).skip(Math.max(0, later.path(DEFAULT).asInt(1) - 1)).findFirst().map(ExecutionIdentity::of).map(identities::indexOf).orElse(-1);
 
         final @NotNull ObjectNode merged = later.deepCopy();
         merged.put(DEFAULT, chosen < 0 ? joined.size() : chosen + 1);
@@ -64,15 +76,24 @@ final class RunItemMerger {
         return new MergeOutcome(merged, List.of(), List.of(Bundle.message("git.merge.run.item.status")));
     }
 
-    // Rule-EDITOR-PANEL-136, Rule-TREE-PANEL-067
-    private static @NotNull List<JsonNode> joined(final @NotNull ObjectNode mine, final @NotNull ObjectNode theirs) {
-        final @NotNull List<JsonNode> recorded = Stream.concat(executions(mine), executions(theirs))
+    // Rule-EDITOR-PANEL-136, Rule-TREE-PANEL-067, Rule-SHARE-133
+    private static @NotNull List<JsonNode> joined(final @NotNull ObjectNode later, final @NotNull ObjectNode earlier) {
+        final @NotNull Map<ExecutionIdentity, JsonNode> byIdentity = new LinkedHashMap<>();
+        Stream.concat(executions(later), executions(earlier))
                 .filter(RunItemMerger::isRecorded)
-                .distinct()
-                .sorted(Comparator.comparing(RunItemMerger::executedAt))
-                .toList();
+                .forEach(execution -> byIdentity.merge(ExecutionIdentity.of(execution), execution.deepCopy(), RunItemMerger::keepTheIssue));
 
-        return recorded.isEmpty() ? Stream.concat(executions(mine), executions(theirs)).max(Comparator.comparing(RunItemMerger::isUntested)).stream().toList() : recorded;
+        final @NotNull List<JsonNode> recorded = new ArrayList<>(byIdentity.values());
+        recorded.sort(Comparator.comparing(RunItemMerger::executedAt));
+
+        return recorded.isEmpty() ? Stream.concat(executions(later), executions(earlier)).max(Comparator.comparing(RunItemMerger::isUntested)).stream().toList() : recorded;
+    }
+
+    // Rule-SHARE-133
+    private static @NotNull JsonNode keepTheIssue(final @NotNull JsonNode kept, final @NotNull JsonNode other) {
+        if (kept.path(BUG_ISSUE_URL).asText("").isEmpty() && other.hasNonNull(BUG_ISSUE_URL) && kept instanceof final ObjectNode keptExecution)
+            keptExecution.set(BUG_ISSUE_URL, other.get(BUG_ISSUE_URL));
+        return kept;
     }
 
     private static @NotNull Stream<JsonNode> executions(final @NotNull ObjectNode runItem) {
@@ -93,5 +114,12 @@ final class RunItemMerger {
 
     private static @NotNull ZonedDateTime lastRecorded(final @NotNull ObjectNode runItem) {
         return executions(runItem).map(RunItemMerger::executedAt).max(Comparator.naturalOrder()).orElse(DateFormats.NOT_EXECUTED);
+    }
+
+    // Rule-SHARE-133
+    private record ExecutionIdentity(@NotNull String status, @NotNull Instant executedAt, int invocation, int retry) {
+        static @NotNull ExecutionIdentity of(final @NotNull JsonNode execution) {
+            return new ExecutionIdentity(execution.path(STATUS).asText(""), RunItemMerger.executedAt(execution).toInstant(), execution.path(INVOCATION).asInt(), execution.path(RETRY).asInt());
+        }
     }
 }

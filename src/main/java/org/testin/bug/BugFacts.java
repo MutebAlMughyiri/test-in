@@ -37,8 +37,8 @@ public record BugFacts(@NotNull String title, @NotNull BugSeverity severity, @No
     public static @NotNull BugFacts of(final @NotNull RunItem runItem, final @NotNull TestCase testCase, final @NotNull TestRunMarker testRunMarker, final @NotNull String testRun, final @NotNull List<byte[]> screenshots) {
         return new BugFacts(
                 TestSetEditorFields.DESCRIPTION.displayValue(testCase),
-                runItem.getBugSeverity(),
-                runItem.getBugPriority(),
+                runItem.shownExecution().getBugSeverity(),
+                runItem.shownExecution().getBugPriority(),
                 ReportText.joined(BugTemplate.SEPARATOR, TestRunConfiguration.PLATFORM.valueIn(testRunMarker), TestRunConfiguration.COMPONENT.valueIn(testRunMarker)),
                 runItem.shownExecution().getActualResult(),
                 TestSetEditorFields.EXPECTED_RESULT.displayValue(testCase),

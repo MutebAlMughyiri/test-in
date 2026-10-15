@@ -59,15 +59,15 @@ public class IndexerBudgetTest {
         for (int i = 0; i < RESULTS; i++) {
             documents.add("""
                     {
-                      "bugSeverity" : "MAJOR",
-                      "bugPriority" : "HIGH",
                       "default" : 1,
                       "executions" : [ {
                         "status" : "%s",
                         "duration" : 4.125,
                         "executedBy" : "Muteb AlMughyiri",
                         "executedAt" : "Monday 14-09-2026 At 10:22:05 [Asia/Riyadh]",
-                        "actualResult" : "The dashboard opened and the header showed the account name"
+                        "actualResult" : "The dashboard opened and the header showed the account name",
+                        "bugSeverity" : "MAJOR",
+                        "bugPriority" : "HIGH"
                       } ]
                     }""".formatted(i % 4 == 0 ? "FAILED" : "PASSED"));
         }

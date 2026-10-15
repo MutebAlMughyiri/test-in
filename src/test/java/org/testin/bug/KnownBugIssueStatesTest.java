@@ -37,7 +37,7 @@ public class KnownBugIssueStatesTest {
     private static @NotNull RunItems filed(final @NotNull String... bugIssueUrls) {
         final @NotNull List<RunItem> runItems = new ArrayList<>();
         for (final String url : bugIssueUrls) {
-            runItems.add(RunItem.builder().uuid(UUID.randomUUID()).bugIssueUrl(url).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build());
+            runItems.add(RunItem.builder().uuid(UUID.randomUUID()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).bugIssueUrl(url).build())).build());
         }
         return RunItems.builder().all(runItems).build();
     }

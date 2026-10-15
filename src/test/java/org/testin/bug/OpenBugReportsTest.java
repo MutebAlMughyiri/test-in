@@ -68,9 +68,20 @@ public class OpenBugReportsTest {
     @Test
     public void aReportedBugKeepsReportBugOff() {
         final OpenBugReports reports = new OpenBugReports();
-        final RunItem reported = RunItem.builder().uuid(RUN_ITEM_PATH.testCaseUuid()).bugIssueUrl("https://github.com/mtb550/test-in/issues/412").executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build();
+        final RunItem reported = RunItem.builder().uuid(RUN_ITEM_PATH.testCaseUuid()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).bugIssueUrl("https://github.com/mtb550/test-in/issues/412").build())).build();
 
         assertEquals(reports.whyReportBugIsOff(RUN_ITEM_PATH, reported), Optional.of(Bundle.message("bug.already.reported")));
+    }
+
+    // Rule-VIEW-PANEL-072, Rule-EDITOR-PANEL-296
+    @Test
+    public void aNewFailureCanBeReportedOnItsOwn() {
+        final OpenBugReports reports = new OpenBugReports();
+        final RunItem failedAgain = RunItem.builder().uuid(RUN_ITEM_PATH.testCaseUuid()).defaultNumber(2).executions(List.of(
+                RunItemExecution.builder().status(RunItemStatus.FAILED).bugIssueUrl("https://github.com/mtb550/test-in/issues/412").build(),
+                RunItemExecution.builder().status(RunItemStatus.FAILED).build())).build();
+
+        assertEquals(reports.whyReportBugIsOff(RUN_ITEM_PATH, failedAgain), Optional.empty(), "the issue of an earlier failure keeps the new one from being reported");
     }
 
     // Rule-VIEW-PANEL-072

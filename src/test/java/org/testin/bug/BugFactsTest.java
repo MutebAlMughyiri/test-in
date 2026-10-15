@@ -43,8 +43,7 @@ public class BugFactsTest {
         final UUID testCaseUuid = UUID.randomUUID();
         final TestCase testCase = TestCase.builder().uuid(testCaseUuid).description("  Log in with a valid user ").expectedResult("Welcome")
                 .steps(List.of("Open", "Log in")).testData("user=a").build();
-        final RunItem runItem = RunItem.builder().uuid(testCaseUuid)
-                .bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("Error page").stacktrace("boom").executedBy("Muteb").executedAt(ZonedDateTime.of(2026, 9, 13, 14, 14, 0, 0, ZoneId.of("Asia/Riyadh"))).build())).build();
+        final RunItem runItem = RunItem.builder().uuid(testCaseUuid).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).actualResult("Error page").stacktrace("boom").executedBy("Muteb").executedAt(ZonedDateTime.of(2026, 9, 13, 14, 14, 0, 0, ZoneId.of("Asia/Riyadh"))).build())).build();
         final TestRunMarker testRunMarker = new TestRunMarker();
         testRunMarker.setConfiguration(new EnumMap<>(Map.of(
                 TestRunConfiguration.PLATFORM, "Web",

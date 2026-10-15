@@ -156,7 +156,7 @@ public class ReportBugFromThePanelIdeTest extends AbstractTempRootIdeTest {
 
         final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
         testCase = EditorFixtures.testCase(getProject(), EditorFixtures.testSet(getProject(), testProject, "Login"), "Log in with a valid user", "a");
-        failed = RunItem.builder().uuid(testCase.getUuid()).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The session was dropped").build())).build();
+        failed = RunItem.builder().uuid(testCase.getUuid()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).actualResult("The session was dropped").build())).build();
         testRun = EditorFixtures.testRun(getProject(), testProject, List.of(failed));
         runItemPath = new RunItemPath(testRun.getPath(), testCase.getUuid());
     }

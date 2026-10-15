@@ -84,7 +84,7 @@ public final class BugFiling {
         if (found.orElseThrow().getStatus() != RunItemStatus.FAILED)
             return Optional.of(Bundle.message("bug.not.stored.no.longer.failed"));
 
-        testRuns.changeRunItems(runItemPath.testRunPath(), testRun -> runItemPath.failedIn(testRun).ifPresentOrElse(result -> result.linkBug(url),
+        testRuns.changeRunItems(runItemPath.testRunPath(), testRun -> runItemPath.failedIn(testRun).ifPresentOrElse(runItem -> runItem.linkBug(url),
                 () -> TestinLogger.warn("The test run a sync brought in no longer has this failure, so its bug link was not stored: " + url)));
         return Optional.empty();
     }

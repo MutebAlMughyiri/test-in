@@ -26,11 +26,11 @@ import org.testin.ui.framework.RadioSelection;
 import java.util.List;
 
 public record BugSeveritySection(@NotNull DialogPart<RadioSelection<BugSeverity>> component) implements FailureSection {
-    // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-148
+    // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-148, Rule-EDITOR-PANEL-147
     public static @NotNull BugSeveritySection of(final @NotNull RunItem runItem) {
         return new BugSeveritySection(DialogPart.<BugSeverity>radios(TestRunEditorFields.BUG_SEVERITY.getName())
                 .options(List.of(BugSeverity.values()), BugSeverity::getLabel)
-                .select(runItem.getBugSeverity())
+                .select(runItem.shownExecution().getBugSeverity())
                 .build());
     }
 

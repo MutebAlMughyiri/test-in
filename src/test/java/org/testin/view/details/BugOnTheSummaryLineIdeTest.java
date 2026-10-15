@@ -44,7 +44,7 @@ public class BugOnTheSummaryLineIdeTest extends AbstractViewPanelIdeTest {
     private TestRunNode testRun;
 
     private static @NotNull RunItem recorded(final @NotNull TestCase testCase, final @NotNull RunItemStatus runItemStatus, final @NotNull String bugIssueUrl) {
-        return RunItem.builder().uuid(testCase.getUuid()).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl(bugIssueUrl).executions(List.of(RunItemExecution.builder().status(runItemStatus).build())).build();
+        return RunItem.builder().uuid(testCase.getUuid()).executions(List.of(RunItemExecution.builder().status(runItemStatus).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl(bugIssueUrl).build())).build();
     }
 
     private static @NotNull Component rowOf(final @NotNull Component drawn) {
@@ -75,13 +75,17 @@ public class BugOnTheSummaryLineIdeTest extends AbstractViewPanelIdeTest {
         assertTrue("the bug's chip is not on the summary line", Drawn.words(tab).stream().anyMatch(word -> word.startsWith(BugSeverity.MAJOR.getLabel())));
     }
 
-    // Rule-VIEW-PANEL-066
-    public void testTheBugStaysWhileTheTestCaseHasAnIssueWhateverItsRunItemStatus() {
-        for (final RunItemStatus runItemStatus : List.of(RunItemStatus.PASSED, RunItemStatus.BLOCKED, RunItemStatus.FAILED)) {
-            final @NotNull JBPanel<?> tab = drawn(recorded(testCase, runItemStatus, ISSUE));
-            final @NotNull Component issue = Drawn.reading(tab, "#412");
-            assertSame("the issue of a " + runItemStatus.getLabel() + " test case is not on the summary line", rowOf(Drawn.reading(tab, runItemStatus.getLabel())), rowOf(issue));
-        }
+    // Rule-VIEW-PANEL-066, Rule-EDITOR-PANEL-296
+    public void testTheBugIsTheDefaultExecutionsAndComesBackWithIt() {
+        final @NotNull RunItem reportedThenPassed = RunItem.builder().uuid(testCase.getUuid()).defaultNumber(2).executions(List.of(
+                RunItemExecution.builder().status(RunItemStatus.FAILED).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl(ISSUE).build(),
+                RunItemExecution.builder().status(RunItemStatus.PASSED).build())).build();
+        assertFalse("a pass carries the bug of the failure before it: " + Drawn.words(drawn(reportedThenPassed)), Drawn.holds(Drawn.words(drawn(reportedThenPassed)), "#412"));
+
+        reportedThenPassed.chooseExecution(0);
+
+        final @NotNull JBPanel<?> tab = drawn(reportedThenPassed);
+        assertSame("the chosen failure's issue is not on its line", rowOf(Drawn.reading(tab, RunItemStatus.FAILED.getLabel())), rowOf(Drawn.reading(tab, "#412")));
         assertFalse("a passed test case with no issue still carries a bug", Drawn.words(drawn(recorded(testCase, RunItemStatus.PASSED, ""))).contains(Bundle.message("bug.dialog.title")));
     }
 

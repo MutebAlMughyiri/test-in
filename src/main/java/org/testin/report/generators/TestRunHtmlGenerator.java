@@ -192,7 +192,7 @@ public final class TestRunHtmlGenerator {
         html.append("<div class='actual'>")
                 .append(Bundle.message("report.actual.result", StringUtil.escapeXmlEntities(actual.isEmpty() ? "—" : actual)));
 
-        runItem.bugIssue().ifPresent(url -> html.append(" (<a href='").append(StringUtil.escapeXmlEntities(url)).append("' target='_blank'>")
+        runItem.shownExecution().bugIssue().ifPresent(url -> html.append(" (<a href='").append(StringUtil.escapeXmlEntities(url)).append("' target='_blank'>")
                 .append(StringUtil.escapeXmlEntities(BugIssueUrl.shortReference(url)))
                 .append("</a>)"));
         html.append("</div>");
@@ -202,8 +202,8 @@ public final class TestRunHtmlGenerator {
             html.append("<div class='stacktrace'>").append(StringUtil.escapeXmlEntities(stacktrace)).append("</div>");
         }
 
-        final @NotNull BugPriority priority = runItem.getBugPriority();
-        final @NotNull BugSeverity severity = runItem.getBugSeverity();
+        final @NotNull BugPriority priority = runItem.shownExecution().getBugPriority();
+        final @NotNull BugSeverity severity = runItem.shownExecution().getBugSeverity();
 
         html.append("</td>")
                 .append("<td class='run-item-status' style='color: ")

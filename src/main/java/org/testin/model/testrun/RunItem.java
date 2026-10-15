@@ -31,8 +31,6 @@ import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCase;
-import org.testin.model.bug.BugPriority;
-import org.testin.model.bug.BugSeverity;
 import org.testin.model.status.RunItemStatus;
 
 import java.time.Duration;
@@ -56,7 +54,7 @@ import java.util.stream.IntStream;
 @SuperBuilder
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-@JsonPropertyOrder({"bugSeverity", "bugPriority", "bugIssueUrl", "default", "executions"})
+@JsonPropertyOrder({"default", "executions"})
 public class RunItem {
     @JsonIgnore
     @Getter(AccessLevel.NONE)
@@ -83,18 +81,6 @@ public class RunItem {
     @NotNull
     @Builder.Default
     private UUID uuid = new UUID(0L, 0L);
-
-    @NotNull
-    @Builder.Default
-    private BugSeverity bugSeverity = BugSeverity.DEFAULT;
-
-    @NotNull
-    @Builder.Default
-    private BugPriority bugPriority = BugPriority.DEFAULT;
-
-    @NotNull
-    @Builder.Default
-    private String bugIssueUrl = "";
 
     // Rule-VIEW-PANEL-119, Rule-INTERNAL-135
     @JsonProperty("default")
@@ -181,7 +167,7 @@ public class RunItem {
     // Rule-VIEW-PANEL-105
     @JsonIgnore
     public boolean recordsABug() {
-        return isFailed() || !bugIssueUrl.isBlank();
+        return isFailed() || shownExecution().bugIssue().isPresent();
     }
 
     // UC-EDITOR-PANEL-042, Rule-EDITOR-PANEL-288
@@ -214,19 +200,9 @@ public class RunItem {
         return getStatus() == RunItemStatus.FAILED;
     }
 
-    public @NotNull Optional<String> bugIssue() {
-        return bugIssueUrl.isBlank() ? Optional.empty() : Optional.of(bugIssueUrl);
-    }
-
-    // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-074, Rule-INTERNAL-117
+    // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-074, Rule-INTERNAL-117, Rule-EDITOR-PANEL-296
     public void linkBug(final @NotNull String url) {
-        bugIssueUrl = url;
-    }
-
-    // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-147, Rule-INTERNAL-117
-    public void recordBug(final @NotNull BugSeverity severity, final @NotNull BugPriority priority) {
-        bugSeverity = severity;
-        bugPriority = priority;
+        shownExecution().setBugIssueUrl(url);
     }
 
     // UC-EDITOR-PANEL-040, Rule-EDITOR-PANEL-286, Rule-INTERNAL-117

@@ -55,10 +55,10 @@ public class TestRunCoverageTest {
     private static @NotNull RunItem executed() {
         return new RunItem()
                 .setUuid(EXECUTED)
-                .setBugSeverity(BugSeverity.MAJOR)
-                .setBugPriority(BugPriority.HIGH)
                 .setExecutions(List.of(RunItemExecution.builder()
                         .status(RunItemStatus.FAILED)
+                        .bugSeverity(BugSeverity.MAJOR)
+                        .bugPriority(BugPriority.HIGH)
                         .actualResult("The lockout counter reset on reload")
                         .duration(Duration.ofSeconds(252))
                         .executedBy("Muteb")
@@ -91,8 +91,8 @@ public class TestRunCoverageTest {
                         + " would go quiet, one release after somebody 'simplified' this into a stream of new items");
         assertEquals(kept.getStatus(), RunItemStatus.FAILED);
         assertEquals(kept.shownExecution().getActualResult(), "The lockout counter reset on reload");
-        assertEquals(kept.getBugSeverity(), BugSeverity.MAJOR);
-        assertEquals(kept.getBugPriority(), BugPriority.HIGH);
+        assertEquals(kept.shownExecution().getBugSeverity(), BugSeverity.MAJOR);
+        assertEquals(kept.shownExecution().getBugPriority(), BugPriority.HIGH);
         assertEquals(kept.shownExecution().getDuration(), Duration.ofSeconds(252));
         assertEquals(kept.shownExecution().getExecutedBy(), "Muteb");
         assertFalse(kept.shownExecution().getStacktrace().isBlank());

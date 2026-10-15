@@ -99,7 +99,7 @@ public class BugFilingIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull String storedLink(final RunItemPath runItemPath) {
-        return indexedTestRuns().findRunItems(runItemPath.testRunPath()).flatMap(runItemPath::in).orElseThrow().getBugIssueUrl();
+        return indexedTestRuns().findRunItems(runItemPath.testRunPath()).flatMap(runItemPath::in).orElseThrow().shownExecution().getBugIssueUrl();
     }
 
     // Rule-VIEW-PANEL-074

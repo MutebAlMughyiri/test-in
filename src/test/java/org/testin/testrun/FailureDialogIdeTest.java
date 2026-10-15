@@ -420,12 +420,11 @@ public class FailureDialogIdeTest extends AbstractTempRootIdeTest {
         }
     }
 
-    // Rule-EDITOR-PANEL-170
+    // Rule-EDITOR-PANEL-170, Rule-EDITOR-PANEL-147
     public void testEditingOpensTheSameDialogFFilledInWithWhatIsThere() {
         final @NotNull List<TestCase> testCases = TestRunFixture.testCasesIn(getProject(), root, 1);
         final @NotNull TestRunFixture fixture = TestRunFixture.of(getProject(), root, List.of(
-                EditorFixtures.pending(testCases.getFirst()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("It froze").stacktrace("java.lang.IllegalStateException").build()))
-                        .setBugSeverity(BugSeverity.BLOCKER).setBugPriority(BugPriority.HIGH)), testCases);
+                EditorFixtures.pending(testCases.getFirst()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).bugSeverity(BugSeverity.BLOCKER).bugPriority(BugPriority.HIGH).actualResult("It froze").stacktrace("java.lang.IllegalStateException").build()))), testCases);
         final @NotNull TestRunEditor editor = fixture.opened(getTestRootDisposable());
         try {
             editor.getList().setSelectedIndex(0);

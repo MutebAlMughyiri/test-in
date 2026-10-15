@@ -16,6 +16,7 @@
 
 package org.testin.model.testrun;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCase;
 import org.testin.model.bug.BugPriority;
@@ -35,6 +36,8 @@ import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 public class RunItemTest {
+
+    private static final @NotNull String ISSUE = "https://github.com/mtb550/bank-app/issues/42";
 
     private static @NotNull RunItemExecution execution(final @NotNull RunItemStatus runItemExecutionStatus, final @NotNull String actual) {
         return RunItemExecution.builder().status(runItemExecutionStatus).actualResult(actual).build();
@@ -56,6 +59,32 @@ public class RunItemTest {
             assertFalse(json.contains("\"" + key + "\""), "an ordinary passed run item stored " + key + ": " + json);
         }
         assertTrue(json.contains("\"default\" : 1") && json.contains("\"executions\"") && json.contains("PASSED"), json);
+    }
+
+    // Rule-EDITOR-PANEL-296, Rule-INTERNAL-135
+    @Test
+    public void aFailureStoresItsBugInItsOwnExecution() {
+        final @NotNull RunItem runItem = RunItem.builder().uuid(UUID.randomUUID()).build();
+        runItem.recordRunItemStatus(RunItemStatus.FAILED, "muteb", Duration.ZERO, new Failure("The counter still resets", "", List.of(), BugSeverity.MAJOR, BugPriority.HIGH));
+        runItem.linkBug(ISSUE);
+        runItem.recordRunItemStatus(RunItemStatus.PASSED, "muteb", Duration.ZERO, Failure.NONE);
+
+        final @NotNull JsonNode stored = RealJsonCodec.build().readTree(RealJsonCodec.build().writeValueAsString(runItem));
+
+        assertEquals(List.of(stored.has("bugSeverity"), stored.has("bugPriority"), stored.has("bugIssueUrl")), List.of(false, false, false), "the run item holds a bug: " + stored);
+        final @NotNull JsonNode failure = stored.path("executions").get(0);
+        assertEquals(List.of(failure.path("bugSeverity").asText(), failure.path("bugPriority").asText(), failure.path("bugIssueUrl").asText()), List.of("MAJOR", "HIGH", ISSUE), "the failure does not hold its bug: " + stored);
+        final @NotNull JsonNode pass = stored.path("executions").get(1);
+        assertEquals(List.of(pass.has("bugSeverity"), pass.has("bugPriority"), pass.has("bugIssueUrl")), List.of(false, false, false), "the pass holds a bug: " + stored);
+    }
+
+    // Rule-INTERNAL-135
+    @Test
+    public void aBugAnEarlierBuildWroteOnTheRunItemIsNotRead() {
+        final @NotNull RunItem read = RealJsonCodec.build().readValue("{\"bugSeverity\" : \"MAJOR\", \"bugIssueUrl\" : \"" + ISSUE + "\", \"executions\" : [ { \"status\" : \"BLOCKED\" } ]}", RunItem.class);
+
+        assertEquals(read.shownExecution().getBugSeverity(), BugSeverity.DEFAULT);
+        assertFalse(read.recordsABug(), "a blocked run item read the bug its file held outside the executions");
     }
 
     // Rule-INTERNAL-135, Rule-EDITOR-PANEL-136, Rule-TREE-PANEL-067
@@ -95,8 +124,8 @@ public class RunItemTest {
         final @NotNull RunItem read = RealJsonCodec.build().readValue("{\"executions\" : [ { \"status\" : \"PASSED\", \"fromANewerTestin\" : 1 } ]}", RunItem.class);
 
         assertEquals(read.getStatus(), RunItemStatus.PASSED);
-        assertEquals(read.getBugSeverity(), BugSeverity.DEFAULT);
-        assertEquals(read.getBugPriority(), BugPriority.DEFAULT);
+        assertEquals(read.shownExecution().getBugSeverity(), BugSeverity.DEFAULT);
+        assertEquals(read.shownExecution().getBugPriority(), BugPriority.DEFAULT);
         assertEquals(read.shownExecution().getActualResult(), "");
         assertEquals(read.shownExecution().getDuration(), Duration.ZERO);
     }

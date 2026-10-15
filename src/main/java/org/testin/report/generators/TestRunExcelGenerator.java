@@ -133,7 +133,7 @@ public final class TestRunExcelGenerator {
             worksheet.range(row, 0, row, 8).style().fillColor(runItemStatus.getHexColor()).fontColor(runItemStatus.textHex()).wrapText(true).set();
 
             final int line = row;
-            runItem.bugIssue().ifPresent(url -> {
+            runItem.shownExecution().bugIssue().ifPresent(url -> {
                 worksheet.hyperlink(line, 8, HyperLink.external(url, BugIssueUrl.shortReference(url)));
                 worksheet.style(line, 8).fillColor(runItemStatus.getHexColor()).fontColor(runItemStatus.textHex()).underlined().set();
             });

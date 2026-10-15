@@ -65,7 +65,7 @@ public class HistoryTabIdeTest extends AbstractTempRootIdeTest {
     private final @NotNull JBPanel<?> tab = new JBPanel<>(new BorderLayout());
 
     private static @NotNull RunItem failed(final @NotNull TestCase testCase) {
-        return RunItem.builder().uuid(testCase.getUuid()).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl("https://github.com/mtb550/test-in/issues/412").executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The basket was emptied").build())).build();
+        return RunItem.builder().uuid(testCase.getUuid()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl("https://github.com/mtb550/test-in/issues/412").actualResult("The basket was emptied").build())).build();
     }
 
     private @NotNull TestCase aTestCase() {

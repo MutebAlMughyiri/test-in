@@ -17,10 +17,17 @@
 package org.testin.model.testrun;
 
 import org.jetbrains.annotations.NotNull;
+import org.testin.model.bug.BugPriority;
+import org.testin.model.bug.BugSeverity;
 
 import java.util.List;
 
-// UC-EDITOR-PANEL-034, UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-285
-public record Failure(@NotNull String message, @NotNull String stacktrace, @NotNull List<String> screenshots) {
+// UC-EDITOR-PANEL-034, UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-285, Rule-EDITOR-PANEL-296
+public record Failure(@NotNull String message, @NotNull String stacktrace, @NotNull List<String> screenshots, @NotNull BugSeverity bugSeverity, @NotNull BugPriority bugPriority) {
     public static final @NotNull Failure NONE = new Failure("", "", List.of());
+
+    // UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-147
+    public Failure(final @NotNull String message, final @NotNull String stacktrace, final @NotNull List<String> screenshots) {
+        this(message, stacktrace, screenshots, BugSeverity.DEFAULT, BugPriority.DEFAULT);
+    }
 }

@@ -18,6 +18,8 @@ package org.testin.model.testrun;
 
 
 import org.jetbrains.annotations.NotNull;
+import org.testin.model.bug.BugPriority;
+import org.testin.model.bug.BugSeverity;
 import org.testin.model.status.RunItemStatus;
 import org.testng.annotations.Test;
 
@@ -60,14 +62,42 @@ public class FailureTest {
         assertEquals(runItem.getExecutions().getFirst().getStacktrace(), "at Login.click", "and the first still says what it said");
     }
 
-    // Rule-EDITOR-PANEL-284
+    // Rule-EDITOR-PANEL-284, Rule-EDITOR-PANEL-296, Rule-EDITOR-PANEL-147
     @Test
-    public void anAutomatedFailureKeepsTheBugIssueLink() {
-        final RunItem runItem = row().setBugIssueUrl(ISSUE);
+    public void anAutomatedFailureLeavesTheEarlierFailuresIssueWithIt() {
+        final RunItem runItem = row();
+        runItem.recordRunItemStatus(RunItemStatus.FAILED, "tester", Duration.ZERO, new Failure("first", "", List.of(), BugSeverity.MAJOR, BugPriority.HIGH));
+        runItem.linkBug(ISSUE);
 
         runItem.recordRunItemStatus(RunItemStatus.FAILED, "tester", Duration.ZERO, new Failure("boom", "", List.of()));
 
-        assertEquals(runItem.getBugIssueUrl(), ISSUE);
+        assertEquals(runItem.getExecutions().getFirst().getBugIssueUrl(), ISSUE, "the first failure lost the issue it was reported as");
+        assertEquals(runItem.getExecutions().getFirst().getBugSeverity(), BugSeverity.MAJOR);
+        assertEquals(List.of(runItem.shownExecution().getBugSeverity(), runItem.shownExecution().getBugPriority(), runItem.shownExecution().getBugIssueUrl()), List.of(BugSeverity.ENHANCEMENT, BugPriority.LOW, ""), "an automated failure starts at Enhancement and Low, unreported");
+    }
+
+    // Rule-EDITOR-PANEL-285, Rule-EDITOR-PANEL-296
+    @Test
+    public void aFailureCarriesTheTriageItWasGivenIntoItsOwnExecution() {
+        final RunItem runItem = row();
+
+        runItem.recordRunItemStatus(RunItemStatus.FAILED, "tester", Duration.ZERO, new Failure("boom", "", List.of(), BugSeverity.BLOCKER, BugPriority.MEDIUM));
+
+        assertEquals(runItem.shownExecution().getBugSeverity(), BugSeverity.BLOCKER);
+        assertEquals(runItem.shownExecution().getBugPriority(), BugPriority.MEDIUM);
+    }
+
+    // Rule-EDITOR-PANEL-286, Rule-EDITOR-PANEL-296
+    @Test
+    public void revisingAFailureRevisesItsTriageAndKeepsItsIssue() {
+        final RunItem runItem = row();
+        runItem.recordRunItemStatus(RunItemStatus.FAILED, "tester", Duration.ZERO, new Failure("first", "", List.of(), BugSeverity.MINOR, BugPriority.LOW));
+        runItem.linkBug(ISSUE);
+
+        runItem.reviseFailure(new Failure("edited", "", List.of(), BugSeverity.BLOCKER, BugPriority.HIGH));
+
+        assertEquals(runItem.getExecutions().size(), 1, "revising added an execution");
+        assertEquals(List.of(runItem.shownExecution().getBugSeverity(), runItem.shownExecution().getBugPriority(), runItem.shownExecution().getBugIssueUrl()), List.of(BugSeverity.BLOCKER, BugPriority.HIGH, ISSUE));
     }
 
     // Rule-EDITOR-PANEL-219, Rule-EDITOR-PANEL-285

@@ -65,9 +65,9 @@ Press the key for the right run item status on the test case.
   touchpad. No scrollbar is shown and the bar keeps its height, so nothing on it
   is cut off and the editor below does not move.
 - **Rule-EDITOR-PANEL-284** — Recording a run item status never erases what an
-  earlier execution recorded. Its actual result, error, screenshots and duration
-  stay with it, so passing a failed test case asks nothing first. The bug
-  severity, priority and issue link stay on the run item.
+  earlier execution recorded. Its actual result, error, screenshots, duration,
+  bug severity, bug priority and reported issue stay with it, so passing a
+  failed test case asks nothing first.
 
 ## Main flow
 
