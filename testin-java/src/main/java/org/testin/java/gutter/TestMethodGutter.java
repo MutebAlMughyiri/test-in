@@ -114,7 +114,7 @@ public class TestMethodGutter extends RelatedItemLineMarkerProvider implements D
                 )));
     }
 
-    // UC-CODEGEN-007, Rule-CODEGEN-030, Rule-CODEGEN-069
+    // UC-CODEGEN-007, Rule-CODEGEN-030, Rule-CODEGEN-069, Rule-CODEGEN-070
     private void openViewPanel(final @NotNull Project project, final @NotNull UUID testCaseUuid, final @NotNull String methodName) {
         TestinLogger.info("Searching for UUID: " + testCaseUuid);
 

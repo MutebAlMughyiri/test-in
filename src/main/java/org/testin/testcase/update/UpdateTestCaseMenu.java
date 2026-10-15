@@ -44,6 +44,7 @@ public class UpdateTestCaseMenu {
         this.updatedTestCases = updatedTestCases;
     }
 
+    // Rule-VIEW-PANEL-049
     public static void applyAftermath(final @NotNull Project project, final @NotNull List<TestCase> updated, final @NotNull CodeChangeType<TestCase> codeChangeType) {
         ViewToolWindowFactory.refreshIfShowing(project, updated);
 

@@ -85,7 +85,7 @@ public final class ExportNotice {
         });
     }
 
-    // UC-REPORT-003, Rule-REPORT-015
+    // UC-REPORT-003, Rule-REPORT-015, Rule-REPORT-013
     public static @NotNull NotificationAction copyPath(final @NotNull Project project, final @NotNull File file) {
         final @NotNull NotificationAction copy = Services.getInstance(project, Notifier.class).action(Bundle.message("notification.copy.path"),
                 () -> CopyPasteManager.getInstance().setContents(new StringSelection(file.getAbsolutePath())));

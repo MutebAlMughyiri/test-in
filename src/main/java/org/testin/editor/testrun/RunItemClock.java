@@ -46,7 +46,7 @@ final class RunItemClock implements Disposable {
         return counting.filter(runItem -> runItem.getUuid().equals(testCaseUuid)).isPresent();
     }
 
-    // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-132
+    // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-132, Rule-EDITOR-PANEL-154
     void start(final @NotNull RunItem runItem, final @NotNull Runnable repaint) {
         stop();
 

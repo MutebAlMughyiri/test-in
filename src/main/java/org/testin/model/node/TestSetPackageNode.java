@@ -50,6 +50,7 @@ public class TestSetPackageNode extends AbstractNode {
         return NodeType.TEST_SET_PACKAGE;
     }
 
+    // Rule-TREE-PANEL-028
     @Override
     public @NotNull List<NodeType> childKinds() {
         return NodeType.UNDER_TEST_CASES;

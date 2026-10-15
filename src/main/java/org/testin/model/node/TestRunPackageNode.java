@@ -45,6 +45,7 @@ public class TestRunPackageNode extends AbstractNode {
         return NodeType.TEST_RUN_PACKAGE;
     }
 
+    // Rule-TREE-PANEL-034
     @Override
     public @NotNull List<NodeType> childKinds() {
         return NodeType.UNDER_TEST_RUNS;

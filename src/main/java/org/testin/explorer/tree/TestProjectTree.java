@@ -84,6 +84,7 @@ public class TestProjectTree implements Disposable {
 
     private @NotNull Optional<Path> revealAfterRebuild = Optional.empty();
 
+    // Rule-TREE-PANEL-049
     public TestProjectTree(final @NotNull Project project) {
         this.project = project;
         this.boundTestProject = Services.getInstance(project, BoundTestProject.class);

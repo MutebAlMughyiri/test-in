@@ -58,6 +58,7 @@ import static org.testin.testcase.TestCaseDialogKey.CORRECTIONS;
 import static org.testin.testcase.TestCaseDialogKey.NAVIGATE_ARROWS;
 import static org.testin.testcase.TestCaseDialogKey.NAVIGATE_TAB;
 
+// Rule-EDITOR-PANEL-259
 @Getter
 @AllArgsConstructor
 public enum UpdateTestCaseFields implements MenuItem {

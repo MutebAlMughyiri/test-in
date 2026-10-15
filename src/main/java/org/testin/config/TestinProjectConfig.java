@@ -66,7 +66,7 @@ record TestinProjectConfig(@NotNull TestinLocation location, @NotNull String rep
         return Objects.requireNonNullElse(value, "").strip();
     }
 
-    // Rule-SHARE-004
+    // Rule-SHARE-004, Rule-PRODUCT-004
     static @NotNull String withoutCredentials(final @NotNull String address) {
         final @NotNull String url = address.strip();
         final int scheme = url.indexOf("://");

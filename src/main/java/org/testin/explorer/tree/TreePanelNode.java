@@ -67,7 +67,7 @@ public final class TreePanelNode extends AbstractTreeNode<Object> {
         return node;
     }
 
-    // UC-TREE-PANEL-018, Rule-TREE-PANEL-063
+    // UC-TREE-PANEL-018, Rule-TREE-PANEL-063, Rule-TREE-PANEL-012
     @Override
     public @NotNull Collection<? extends AbstractTreeNode<?>> getChildren() {
         final @NotNull Object value = getValue();

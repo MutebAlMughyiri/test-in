@@ -66,7 +66,7 @@ final class NodeMoveOrCopy {
                 : Bundle.message("transfer.nodes", String.valueOf(sources.size()));
     }
 
-    // UC-TREE-PANEL-013, UC-TREE-PANEL-014, Rule-TREE-PANEL-006
+    // UC-TREE-PANEL-013, UC-TREE-PANEL-014, Rule-TREE-PANEL-006, Rule-TREE-PANEL-052
     void carryOut(final int action, final @NotNull List<AbstractNode> sources, final @NotNull AbstractNode target) {
         if (action == TransferHandler.MOVE) {
             moveNodes(sources, target);

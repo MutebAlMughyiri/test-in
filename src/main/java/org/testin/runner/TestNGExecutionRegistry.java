@@ -151,7 +151,7 @@ final class TestNGExecutionRegistry {
         testNGExecutionStatuses.put(testCaseUuid, testNGExecutionStatus);
     }
 
-    // UC-CODEGEN-009, Rule-CODEGEN-037
+    // UC-CODEGEN-009, Rule-CODEGEN-037, Rule-VIEW-PANEL-054
     @NotNull Stop stopping(final @NotNull List<UUID> asked) {
         final @NotNull List<UUID> running = asked.stream().filter(this::isRunning).toList();
         if (running.isEmpty()) return Stop.NOTHING;

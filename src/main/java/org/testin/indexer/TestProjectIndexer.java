@@ -334,7 +334,7 @@ public final class TestProjectIndexer {
         return byName;
     }
 
-    // UC-INTERNAL-002, Rule-INTERNAL-003, Rule-INTERNAL-004
+    // UC-INTERNAL-002, Rule-INTERNAL-003, Rule-INTERNAL-004, Rule-TREE-PANEL-016
     private @NotNull List<Path> collectValidTestProjects(final @NotNull Path rootPath) {
         if (!Files.exists(rootPath) || !Files.isDirectory(rootPath)) return List.of();
 

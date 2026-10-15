@@ -38,11 +38,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
 public class RuleCoverageTest {
-    private static final @NotNull List<Path> TEST_ROOTS = List.of(
-            Paths.get("src", "test", "java"),
-            Paths.get("testin-java", "src", "test", "java"),
-            Paths.get("testin-testng", "src", "test", "java"),
-            Paths.get("testin-apimodel", "src", "test", "java"));
+    private static final @NotNull List<Path> TEST_ROOTS = DocumentedRules.MODULES.stream().map(module -> Paths.get(module, "src", "test", "java")).toList();
 
     private static final @NotNull Path REPORT = Paths.get("build", "reports", "rule-coverage", "unproven.md");
 
@@ -93,7 +89,7 @@ public class RuleCoverageTest {
 
     @Test
     public void everyRuleATestNamesExists() {
-        final @NotNull Set<String> written = DocumentedRules.names();
+        final @NotNull Set<String> written = DocumentedRules.liveNames();
         final @NotNull List<String> dangling = new ArrayList<>();
 
         provenBy().forEach((rule, tests) -> {
@@ -101,7 +97,7 @@ public class RuleCoverageTest {
         });
 
         if (!dangling.isEmpty())
-            fail("These test markers name rules no document writes:\n  " + String.join("\n  ", dangling));
+            fail("These test markers name rules no document writes, or rules that are retired:\n  " + String.join("\n  ", dangling));
     }
 
     @Test

@@ -118,7 +118,7 @@ public class GenerateReportAction extends AbstractBoundTestProjectAction {
         BackgroundWork.run(project, Bundle.message("report.task.generating", format.getLabel(), testRun.getName()), Bundle.message("report.failed.title", format.getLabel()), indicator -> writeReport(testRun, format, outputFile, indicator));
     }
 
-    // UC-REPORT-001, Rule-REPORT-003
+    // UC-REPORT-001, Rule-REPORT-003, Rule-REPORT-004, Rule-REPORT-010
     void writeReport(final @NotNull TestRunNode testRun, final @NotNull FileFormat format, final @NotNull File outputFile, final @NotNull ProgressIndicator indicator) {
         final @NotNull Path directory = testRun.getPath();
 

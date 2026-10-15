@@ -120,6 +120,7 @@ public final class TestNGRunner implements AutomationExecutor {
         DumbService.getInstance(project).showDumbModeNotification(Bundle.message("testng.indexing.interrupted"));
     }
 
+    // Rule-EDITOR-PANEL-188
     private void start(final @NotNull Project project, final @NotNull Prepared prepared) {
         final @NotNull TestNGExecution execution = Services.getInstance(project, TestNGExecution.class);
 
@@ -137,6 +138,7 @@ public final class TestNGRunner implements AutomationExecutor {
         launch(project, prepared.found(), prepared.modules().stream().findFirst());
     }
 
+    // Rule-EDITOR-PANEL-185, Rule-EDITOR-PANEL-187
     private void launch(final @NotNull Project project, final @NotNull List<Generated> found, final @NotNull Optional<Module> module) {
         final @NotNull TestNGExecution execution = Services.getInstance(project, TestNGExecution.class);
 

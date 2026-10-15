@@ -39,7 +39,7 @@ public final class CaptionValueRow {
 
     private static final int SIDE = 16;
 
-    // Rule-VIEW-PANEL-006, Rule-INTERNAL-132
+    // Rule-VIEW-PANEL-006, Rule-INTERNAL-132, Rule-VIEW-PANEL-024
     public static int add(final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull String caption, final @NotNull String valueText, final int row) {
         if (valueText.trim().isEmpty()) return row;
 

@@ -49,6 +49,7 @@ public abstract class AbstractJsonArraySplitBulkSectionDialog extends AbstractFr
 
     private final @NotNull List<int[]> spanOwners = new ArrayList<>();
 
+    // Rule-EDITOR-PANEL-045
     protected AbstractJsonArraySplitBulkSectionDialog(final @NotNull Project project, final @NotNull List<TestCase> selectedTestCases, final @NotNull Consumer<List<TestCase>> updatedTestCases) {
         super(project);
         this.selectedTestCases = selectedTestCases;

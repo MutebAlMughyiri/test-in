@@ -108,6 +108,7 @@ public enum TestRunEditorFields implements ShowableField {
         }
     },
 
+    // Rule-EDITOR-PANEL-171
     ACTUAL_RESULT(
             Bundle.message("field.run.item.actual.result"),
             FieldDefault.ON,

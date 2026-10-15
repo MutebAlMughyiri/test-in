@@ -224,7 +224,7 @@ public final class DialogStyle {
         };
     }
 
-    // UC-INTERNAL-007, Rule-INTERNAL-076
+    // UC-INTERNAL-007, Rule-INTERNAL-076, Rule-EDITOR-PANEL-034
     public static @NotNull ComponentPopupBuilder createPopupBuilder(final @NotNull JComponent content, final @NotNull JComponent focusComponent, final @NotNull String title, final boolean dismissOnClickOutside) {
         return JBPopupFactory.getInstance()
                 .createComponentPopupBuilder(content, focusComponent)

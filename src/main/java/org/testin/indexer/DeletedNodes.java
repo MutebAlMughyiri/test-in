@@ -38,13 +38,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Service(Service.Level.APP)
 @NoArgsConstructor
 public final class DeletedNodes {
+    // Rule-INTERNAL-038
     private final @NotNull Path staging = Path.of(PathManager.getSystemPath(), "testin", "deleted");
 
     private final @NotNull AtomicBoolean swept = new AtomicBoolean();
 
     private final @NotNull OwnWrites ownWrites = Services.getInstance(OwnWrites.class);
 
-    // UC-INTERNAL-005, Rule-INTERNAL-044
+    // UC-INTERNAL-005, Rule-INTERNAL-044, Rule-TREE-PANEL-059
     public void sweep() {
         if (!swept.compareAndSet(false, true)) return;
         if (!Files.isDirectory(staging)) return;

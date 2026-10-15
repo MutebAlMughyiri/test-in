@@ -23,6 +23,7 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.util.Bundle;
 
+// Rule-INTERNAL-131
 @Getter
 @AllArgsConstructor
 public enum Guide {

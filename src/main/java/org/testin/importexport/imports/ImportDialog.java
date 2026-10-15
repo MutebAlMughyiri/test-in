@@ -42,6 +42,7 @@ public final class ImportDialog extends AbstractFrameworkDialog {
 
     private final @NotNull SheetPreview preview;
 
+    // Rule-SHARE-035
     public ImportDialog(final @NotNull Project project, final @NotNull List<TestSetEditorFields> importFields, final @NotNull BiFunction<File, FileFormat, Map<String, List<TestCase>>> importLoader, final @NotNull Consumer<@NotNull Map<String, List<TestCase>>> onImport) {
         super(project);
         this.onImport = onImport;

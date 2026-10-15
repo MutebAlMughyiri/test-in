@@ -101,6 +101,7 @@ public class GridCellEditor extends AbstractCellEditor implements TableCellEdito
         return textArea.getText();
     }
 
+    // Rule-EDITOR-PANEL-049
     @Override
     public boolean stopCellEditing() {
         fireEditingStopped();

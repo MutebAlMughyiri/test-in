@@ -50,6 +50,7 @@ import java.util.function.BiFunction;
 @Getter
 @AllArgsConstructor
 public enum TestCaseQuickAction {
+    // Rule-CODEGEN-027
     NAVIGATE_TO_TEST_METHOD(
             Bundle.message("action.Testin.NavigateToTestMethod.text"),
             "Testin.NavigateToTestMethod",
@@ -123,7 +124,7 @@ public enum TestCaseQuickAction {
         return executionSlot(project, List.of(testCase));
     }
 
-    // UC-EDITOR-PANEL-043
+    // UC-EDITOR-PANEL-043, Rule-VIEW-PANEL-051, Rule-VIEW-PANEL-053
     public static @NotNull TestCaseQuickAction executionSlot(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
         final @NotNull TestNGExecution execution = Services.getInstance(project, TestNGExecution.class);
 

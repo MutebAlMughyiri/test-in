@@ -47,7 +47,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-// Rule-INTERNAL-135
+// Rule-INTERNAL-135, Rule-PRODUCT-007
 @Setter
 @Getter
 @AllArgsConstructor
@@ -254,12 +254,12 @@ public class RunItem {
         return getStatus().isJudged() || isRemoved();
     }
 
-    // UC-EDITOR-PANEL-031, UC-EDITOR-PANEL-038, UC-EDITOR-PANEL-039, UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-159, Rule-EDITOR-PANEL-160, Rule-EDITOR-PANEL-284
+    // UC-EDITOR-PANEL-031, UC-EDITOR-PANEL-038, UC-EDITOR-PANEL-039, UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-159, Rule-EDITOR-PANEL-160, Rule-EDITOR-PANEL-284, Rule-EDITOR-PANEL-142
     public void recordRunItemStatus(final @NotNull RunItemStatus runItemStatus, final @NotNull String tester, final @NotNull Duration duration, final @NotNull Failure failure) {
         recordExecutions(List.of(RunItemExecution.recorded(runItemStatus, tester, duration, failure)), 0, 0, tester);
     }
 
-    // UC-CODEGEN-008, Rule-CODEGEN-111, Rule-EDITOR-PANEL-183, Rule-EDITOR-PANEL-136, Rule-VIEW-PANEL-119
+    // UC-CODEGEN-008, Rule-CODEGEN-111, Rule-EDITOR-PANEL-183, Rule-EDITOR-PANEL-136, Rule-VIEW-PANEL-119, Rule-PRODUCT-010
     public void recordExecutions(final @NotNull List<RunItemExecution> attempts, final int written, final int deciding, final @NotNull String tester) {
         final @NotNull List<RunItemExecution> kept = new ArrayList<>(executions.subList(0, Math.max(0, executions.size() - written)));
         kept.removeIf(RunItemExecution::isOpen);

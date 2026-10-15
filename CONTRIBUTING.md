@@ -191,12 +191,29 @@ test root and does two things with them (#325):
 
 | Check                          | What happens                                                                                                                                                                              |
 |--------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `everyRuleATestNamesExists`    | Fails when a test marker names a rule no document writes, as `RuleNumbersTest` does for the production code                                                                               |
+| `everyRuleATestNamesExists`    | Fails when a test marker names a rule no document writes, or a retired rule, as `RuleNumbersTest` does for the production code                                                            |
 | `everyLiveRuleIsProvenByATest` | Fails when a rule that is not retired has no test carrying its marker, and writes `build/reports/rule-coverage/unproven.md`: proven against total per part, then each rule no test proves |
 
 Every live rule has had a test since 13 October 2026 (#425), so a new rule
 lands with the test that proves it, in the same commit. CI keeps the report
 with the other test reports.
+
+### Which code carries a rule
+
+The other direction is `RuleNumbersTest`'s. It reads the production code of the
+four modules, the root, `testin-java`, `testin-testng` and `testin-apimodel`:
+the Java under each `src/main/java`, and the XML under each `src/main/resources`,
+where `plugin.xml` carries the rules no Java declaration holds (#425):
+
+| Check                             | What happens                                                                                                   |
+|-----------------------------------|----------------------------------------------------------------------------------------------------------------|
+| `everyRuleTheCodeCitesExists`     | Fails when a marker names a rule no document writes, or a retired rule                                         |
+| `everyUseCaseTheCodeCitesExists`  | Fails when a marker names a use case no page writes                                                            |
+| `everyLiveRuleIsCarriedByTheCode` | Fails when a live rule has no marker in the production code: the declaration that makes the rule true names it |
+| `everyUseCaseIsCarriedByTheCode`  | Fails when a use case has no marker in the production code                                                     |
+
+So a rule is linked both ways: a test proves it and the code that carries it
+names it. A new rule lands with both markers, in the same commit.
 
 ### The coverage gate
 

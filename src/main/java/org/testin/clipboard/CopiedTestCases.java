@@ -44,11 +44,12 @@ public final class CopiedTestCases {
                 .orElseGet(List::of);
     }
 
-    // UC-EDITOR-PANEL-015, UC-EDITOR-PANEL-016, Rule-INTERNAL-012
+    // UC-EDITOR-PANEL-015, UC-EDITOR-PANEL-016, Rule-INTERNAL-012, Rule-EDITOR-PANEL-075
     static @NotNull String json(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
         return Services.getInstance(project, JsonCodec.class).writeValueAsString(testCases.stream().map(ClipboardTestCase::of).toList());
     }
 
+    // Rule-EDITOR-PANEL-085
     static @NotNull List<TestCase> in(final @NotNull Project project, final @NotNull Transferable contents) {
         try {
             final @NotNull String json = (String) contents.getTransferData(DataFlavor.stringFlavor);

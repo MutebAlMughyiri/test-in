@@ -43,6 +43,8 @@ final class DocumentedRules {
 
     static final @NotNull String PRODUCT = "product.md";
 
+    static final @NotNull List<String> MODULES = List.of("", "testin-java", "testin-testng", "testin-apimodel");
+
     private static final @NotNull Pattern USE_CASE_PAGE = Pattern.compile("^# (UC-[A-Z][A-Z-]*-\\d+):", Pattern.MULTILINE);
 
     private static final @NotNull Pattern DEFINITION = Pattern.compile(
@@ -81,9 +83,9 @@ final class DocumentedRules {
         return byPart;
     }
 
-    static @NotNull Set<String> names() {
+    static @NotNull Set<String> liveNames() {
         final @NotNull Set<String> written = new LinkedHashSet<>();
-        definitions().forEach((part, numbers) -> numbers.keySet().forEach(number -> written.add(name(part, number))));
+        live().forEach((part, numbers) -> numbers.keySet().forEach(number -> written.add(name(part, number))));
         return written;
     }
 

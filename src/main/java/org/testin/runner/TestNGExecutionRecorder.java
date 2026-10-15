@@ -104,7 +104,7 @@ public final class TestNGExecutionRecorder implements Disposable {
         surfaces.clear();
     }
 
-    // UC-CODEGEN-009, Rule-CODEGEN-038
+    // UC-CODEGEN-009, Rule-CODEGEN-038, Rule-VIEW-PANEL-055
     private @NotNull TestNGExecutionStatus runItemStatusFor(final @NotNull TestCase testCase, final @NotNull TestNGExecutionStatus testNGExecutionStatus) {
         final boolean stopped = testNGExecutionStatus == TestNGExecutionStatus.FAILED
                 && Services.getInstance(project, TestNGExecution.class).isStopped(testCase);

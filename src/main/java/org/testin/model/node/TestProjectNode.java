@@ -28,6 +28,7 @@ import org.testin.model.markers.TestProjectMarker;
 
 import java.util.List;
 
+// Rule-PRODUCT-002
 @Setter
 @Getter
 @NoArgsConstructor

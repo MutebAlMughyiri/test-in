@@ -28,6 +28,7 @@ import org.testin.logger.TestinLogger;
 
 import java.util.Objects;
 
+// Rule-SETTING-001, Rule-SETTING-020
 @State(name = "testin.settings.AppSettingsState", storages = @Storage("testinSettings.xml"))
 @Service(Service.Level.APP)
 public final class AppSettingsState implements PersistentStateComponent<AppSettingsState> {
@@ -39,10 +40,12 @@ public final class AppSettingsState implements PersistentStateComponent<AppSetti
 
     public @NotNull String defaultDownloadFolder = "";
 
+    // Rule-SETTING-018
     public @NotNull String testerName = "";
 
     public @NotNull String testerRole = "";
 
+    // Rule-SETTING-027
     public boolean showShortcutHints = true;
 
     public @NotNull String agentCommand = "";

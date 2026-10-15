@@ -98,6 +98,7 @@ public final class TestinYml {
         return TestinProjectConfig.BUG_REPO_URL_KEY;
     }
 
+    // Rule-INTERNAL-024
     public static void reload(final @NotNull Project project) {
         project.putUserData(READ, load(project));
     }

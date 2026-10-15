@@ -85,7 +85,7 @@ public final class EditShownTestCase {
         return committed ? Optional.of(Bundle.message("details.committed.no.edit")) : Optional.empty();
     }
 
-    // UC-VIEW-PANEL-011, Rule-VIEW-PANEL-007
+    // UC-VIEW-PANEL-011, Rule-VIEW-PANEL-007, Rule-VIEW-PANEL-045
     private static void open(final @NotNull Project project, final @NotNull TestCase testCase) {
         final @NotNull List<TestCase> shownTestCases = List.of(testCase);
         final @NotNull List<UUID> testCaseUuids = TestCaseSnapshot.uuidsOf(shownTestCases);
@@ -94,7 +94,7 @@ public final class EditShownTestCase {
         new UpdateTestCaseMenu(project, shownTestCases, (testCases, field) -> save(project, testCase, testCases, field, testCaseUuids, before)).show();
     }
 
-    // UC-VIEW-PANEL-011, Rule-VIEW-PANEL-007, Rule-VIEW-PANEL-046
+    // UC-VIEW-PANEL-011, Rule-VIEW-PANEL-007, Rule-VIEW-PANEL-046, Rule-VIEW-PANEL-047, Rule-VIEW-PANEL-048
     private static void save(final @NotNull Project project, final @NotNull TestCase shownTestCase, final @NotNull List<TestCase> updatedTestCases, final @NotNull UpdateTestCaseFields field, final @NotNull List<UUID> testCaseUuids, final @NotNull Optional<TestCaseSnapshot> before) {
         final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
 

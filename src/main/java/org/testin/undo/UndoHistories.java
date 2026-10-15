@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+// Rule-TREE-PANEL-059
 @Service(Service.Level.PROJECT)
 public final class UndoHistories {
     private static final int LIMIT = 20;
@@ -40,7 +41,7 @@ public final class UndoHistories {
         return Objects.requireNonNullElse(stack.peek(), NOTHING);
     }
 
-    // UC-INTERNAL-005, Rule-INTERNAL-043
+    // UC-INTERNAL-005, Rule-INTERNAL-043, Rule-TREE-PANEL-061, Rule-EDITOR-PANEL-072
     public void push(final @NotNull UndoScope scope, final @NotNull Operation operation) {
         final @NotNull History history = of(scope);
 

@@ -54,7 +54,7 @@ public class TestRunEditorContextMenu extends AbstractEditorContextMenu {
         add(Declared.forMenu("Testin.NavigateToTestMethod"));
     }
 
-    // UC-EDITOR-PANEL-026, UC-EDITOR-PANEL-029
+    // UC-EDITOR-PANEL-026, UC-EDITOR-PANEL-029, Rule-PRODUCT-024
     @Override
     public void registerShortcuts(final @NotNull JBList<TestCase> list) {
         new TestinEscapeAction(project, list);

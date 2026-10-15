@@ -69,7 +69,7 @@ public class DetailsTab {
                 new FieldRow(TestRunEditorFields.EXECUTED_BY.getName(), (_, _) -> Display.whoAndWhen(shown.getExecutedBy(), shown.getExecutedAt()))));
     }
 
-    // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-087, Rule-VIEW-PANEL-103
+    // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-087, Rule-VIEW-PANEL-103, Rule-VIEW-PANEL-023
     private static @NotNull List<AbstractDetails> testCaseFields() {
         return List.of(
                 new FieldRow(TestSetEditorFields.EXPECTED_RESULT.getName(), (_, testCase) -> TestSetEditorFields.EXPECTED_RESULT.displayValue(testCase)),

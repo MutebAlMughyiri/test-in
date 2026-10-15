@@ -52,6 +52,7 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 @ToString
 public final class TestCase {
+    // Rule-INTERNAL-029
     @NonNull
     @Builder.Default
     private volatile String order = "";
@@ -126,7 +127,7 @@ public final class TestCase {
     @Builder.Default
     private volatile String preConditions = "";
 
-    // UC-INTERNAL-002, Rule-INTERNAL-012
+    // UC-INTERNAL-002, Rule-INTERNAL-012, Rule-INTERNAL-062
     public static @NotNull TestCase read(final @NotNull JsonCodec mapper, final @NotNull String json, final @NotNull UUID testCaseUuid) {
         return mapper.readValue(json, TestCase.class).setUuid(testCaseUuid);
     }
@@ -138,6 +139,7 @@ public final class TestCase {
                 .build();
     }
 
+    // Rule-SETTING-019
     public void stampCreated(final @NotNull String tester) {
         createdBy = tester;
         createdAt = ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS);

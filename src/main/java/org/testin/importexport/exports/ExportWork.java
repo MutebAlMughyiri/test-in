@@ -116,7 +116,7 @@ record ExportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
                 });
     }
 
-    // UC-SHARE-002, Rule-SHARE-001
+    // UC-SHARE-002, Rule-SHARE-001, Rule-SHARE-013
     private @NotNull GatheredSheets gather(final @NotNull AbstractNode node) {
         final @NotNull List<Sheet> found = new ArrayList<>();
         final @NotNull List<String> unreadable = new ArrayList<>();
@@ -129,13 +129,14 @@ record ExportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
         return new GatheredSheets(sheets, unreadable);
     }
 
-    // UC-SHARE-003, Rule-SHARE-020
+    // UC-SHARE-003, Rule-SHARE-020, Rule-SHARE-011
     private @NotNull List<TestCase> detached(final @NotNull List<TestCase> testCases) {
         return testCases.stream()
                 .map(TestCase::copy)
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
+    // Rule-SHARE-007, Rule-SHARE-014
     private void walk(final @NotNull AbstractNode node, final @NotNull List<String> treePath, final @NotNull List<Sheet> found, final @NotNull List<String> unreadable) {
         final @NotNull List<TestCase> here = testCases.getTestCasesForTestSet(node.getPath());
         if (!here.isEmpty()) found.add(new Sheet(treePath, detached(here)));

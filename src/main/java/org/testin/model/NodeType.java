@@ -129,7 +129,7 @@ public enum NodeType {
     // UC-TREE-PANEL-008, Rule-TREE-PANEL-095, Rule-CODEGEN-008
     public static final @NotNull List<NodeType> BECOME_JAVA_PACKAGES = List.of(TEST_PROJECT, TEST_SET_PACKAGE);
 
-    // UC-TREE-PANEL-013, UC-TREE-PANEL-014, Rule-TREE-PANEL-043, Rule-TREE-PANEL-044
+    // UC-TREE-PANEL-013, UC-TREE-PANEL-014, Rule-TREE-PANEL-043, Rule-TREE-PANEL-044, Rule-TREE-PANEL-003, Rule-TREE-PANEL-028, Rule-TREE-PANEL-034, Rule-PRODUCT-005
     private static final @NotNull Map<NodeType, Set<NodeType>> ACCEPTS = Map.of(
             TEST_PROJECT, Set.of(),
             TEST_CASES_FOLDER, Set.of(TEST_SET, TEST_SET_PACKAGE),

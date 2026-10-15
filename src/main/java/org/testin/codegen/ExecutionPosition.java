@@ -48,7 +48,7 @@ public final class ExecutionPosition {
         return testCase -> TestCaseOrder.positionOf(sets.computeIfAbsent(testCase.getParent().getPath(), _ -> setOf(project, testCase)), testCase);
     }
 
-    // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-014
+    // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-014, Rule-VIEW-PANEL-062
     public static @NotNull Map<UUID, Integer> placesOf(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
         final @NotNull Map<Path, List<TestCase>> sets = new HashMap<>();
         final @NotNull Map<UUID, Integer> places = new HashMap<>();

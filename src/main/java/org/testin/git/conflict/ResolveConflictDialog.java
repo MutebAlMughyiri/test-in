@@ -46,6 +46,7 @@ public final class ResolveConflictDialog extends AbstractFrameworkDialog {
 
     private final @NotNull Runnable onSkipped;
 
+    // Rule-SHARE-082
     public ResolveConflictDialog(final @NotNull Project project, final @NotNull String testCase, final @NotNull List<Question> questions, final @NotNull List<String> settled, final @NotNull Consumer<Set<String>> onResolved, final @NotNull Runnable onSkipped) {
         super(project);
         this.questions = questions;

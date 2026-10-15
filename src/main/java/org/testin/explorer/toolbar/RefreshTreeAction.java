@@ -72,7 +72,7 @@ public class RefreshTreeAction extends AbstractBoundTestProjectAction {
         execute(REFRESHED);
     }
 
-    // UC-TREE-PANEL-025, UC-TREE-PANEL-026, Rule-TREE-PANEL-081
+    // UC-TREE-PANEL-025, UC-TREE-PANEL-026, Rule-TREE-PANEL-081, Rule-TREE-PANEL-083
     public void execute(final @NotNull String outcome) {
         if (!refreshGuard.compareAndSet(false, true)) {
             queued.set(Optional.of(outcome));

@@ -116,7 +116,7 @@ public final class TestRunWalk {
         return executingTestCase.isPresent() && getCurrentlyExecutingIndex() == -1;
     }
 
-    // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-130, Rule-EDITOR-PANEL-134
+    // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-130, Rule-EDITOR-PANEL-134, Rule-EDITOR-PANEL-139
     public void startTimerForIndex(final int from) {
         final @NotNull List<TestCase> shown = editor.getCurrentTestCases();
         final int globalIndex = nextPendingIndex(from);
@@ -178,7 +178,7 @@ public final class TestRunWalk {
         markStarted();
     }
 
-    // UC-EDITOR-PANEL-031, UC-EDITOR-PANEL-043
+    // UC-EDITOR-PANEL-031, UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-131
     private void markStarted() {
         testRuns.changeTestRunMarker(editor.getParent().getPath(), TestRunMarker::markExecutionStarted);
         testRunStatusChange.apply(editor.getParent(), TestRunStatus.IN_PROGRESS);
@@ -252,7 +252,7 @@ public final class TestRunWalk {
         if (!recorded.isEmpty()) notifier.softShow(project, recorded);
     }
 
-    // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-134
+    // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-134, Rule-EDITOR-PANEL-186
     public void finishIfEverythingIsJudged() {
         if (!editor.getParent().isOpen() || !launchedHere.isEmpty()) return;
 

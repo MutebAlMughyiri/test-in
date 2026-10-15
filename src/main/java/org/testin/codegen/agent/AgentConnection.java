@@ -23,7 +23,7 @@ import org.testin.util.Bundle;
 
 import java.time.Duration;
 
-// UC-CODEGEN-021, Rule-CODEGEN-083
+// UC-CODEGEN-021, Rule-CODEGEN-083, Rule-CODEGEN-087
 public record AgentConnection(@NotNull String command, @NotNull String arguments, @NotNull String prompt, @NotNull Duration timeout) {
     // UC-CODEGEN-021, Rule-CODEGEN-083
     public static @NotNull AgentConnection stored() {

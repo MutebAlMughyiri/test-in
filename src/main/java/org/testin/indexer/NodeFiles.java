@@ -101,7 +101,7 @@ final class NodeFiles {
         });
     }
 
-    // Rule-INTERNAL-113
+    // Rule-INTERNAL-113, Rule-TREE-PANEL-053
     void copy(final @NotNull List<Path> sourcePaths, final @NotNull Path targetPath, final @NotNull IntConsumer onComplete) {
         if (sourcePaths.isEmpty()) {
             onComplete.accept(0);

@@ -53,6 +53,7 @@ public final class LogWriter implements Disposable {
 
     private final @NotNull DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
 
+    // Rule-SETTING-026
     private final @NotNull Path logFile = Path.of(PathManager.getLogPath(), "testin.log");
 
     private final @NotNull AtomicBoolean dropping = new AtomicBoolean();

@@ -186,6 +186,7 @@ public final class TestRunHtmlGenerator {
         html.append("</table>");
     }
 
+    // Rule-REPORT-017
     private void appendFailureDetail(final @NotNull StringBuilder html, final @NotNull RunItem runItem) {
         final @NotNull String actual = runItem.shownExecution().getActualResult();
         html.append("<div class='actual'>")

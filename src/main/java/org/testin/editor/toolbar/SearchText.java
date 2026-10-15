@@ -56,7 +56,7 @@ public class SearchText extends SearchTextField implements Disposable, ToolbarIt
         });
     }
 
-    // UC-EDITOR-PANEL-019, Rule-EDITOR-PANEL-093
+    // UC-EDITOR-PANEL-019, Rule-EDITOR-PANEL-093, Rule-EDITOR-PANEL-116
     @Override
     protected boolean preprocessEventForTextField(final KeyEvent e) {
         if (Shortcuts.Escape.matches(e) && e.getID() == KeyEvent.KEY_PRESSED) {

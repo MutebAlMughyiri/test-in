@@ -34,7 +34,7 @@ import java.util.function.Consumer;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GitConflictOffer {
-    // UC-SHARE-017
+    // UC-SHARE-017, Rule-SHARE-075
     public static void showIfConflicting(final @NotNull Project project, final @NotNull GitRepositoryService git, final @NotNull Path repoPath, final @NotNull Consumer<List<String>> offer, final @NotNull Runnable otherwise) {
         final @NotNull List<String> conflicting = git.conflictingPaths(repoPath);
 
@@ -44,7 +44,7 @@ public final class GitConflictOffer {
         }, project.getDisposed());
     }
 
-    // UC-SHARE-017, Rule-INTERNAL-129
+    // UC-SHARE-017, Rule-INTERNAL-129, Rule-SHARE-076
     public static void show(final @NotNull Project project, final @NotNull List<String> conflicting, final @NotNull Runnable onResolve, final @NotNull Runnable onContinue, final @NotNull Runnable onAbort) {
         Services.getInstance(project, Guides.class).add(Guide.RESOLVE_GIT_CONFLICTS);
         final @NotNull Notifier notifier = Services.getInstance(project, Notifier.class);

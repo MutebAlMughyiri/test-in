@@ -31,6 +31,7 @@ public record BugIssueState(@NotNull String label, @NotNull Color color, @NotNul
 
     static final @NotNull BugIssueState OPEN = new BugIssueState(Bundle.message("bug.state.open"), RunItemStatus.FAILED.getRowColor(), "");
 
+    // Rule-VIEW-PANEL-095
     static final @NotNull BugIssueState FIXED = new BugIssueState(Bundle.message("bug.state.fixed"), RunItemStatus.PASSED.getRowColor(), "");
 
     static final @NotNull BugIssueState NOT_PLANNED = new BugIssueState(Bundle.message("bug.state.not.planned"), JBColor.GRAY, "");

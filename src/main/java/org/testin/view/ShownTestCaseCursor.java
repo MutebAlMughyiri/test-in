@@ -43,13 +43,14 @@ public class ShownTestCaseCursor {
         this.treePath = treePath;
     }
 
+    // Rule-VIEW-PANEL-002
     public @NotNull Optional<TestCase> getCurrentTestCase() {
         return currentIndex >= 0 && currentIndex < shownTestCases.size()
                 ? Optional.of(shownTestCases.get(currentIndex))
                 : Optional.empty();
     }
 
-    // UC-VIEW-PANEL-003
+    // UC-VIEW-PANEL-003, Rule-VIEW-PANEL-021
     public void goNext() {
         if (hasNext()) {
             currentIndex++;
@@ -57,7 +58,7 @@ public class ShownTestCaseCursor {
         }
     }
 
-    // UC-VIEW-PANEL-003
+    // UC-VIEW-PANEL-003, Rule-VIEW-PANEL-021
     public void goPrevious() {
         if (hasPrevious()) {
             currentIndex--;

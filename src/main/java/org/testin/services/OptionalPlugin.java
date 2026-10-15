@@ -35,7 +35,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
+// Rule-PRODUCT-019
 public enum OptionalPlugin {
+    // Rule-PRODUCT-020
     JAVA(
             "com.intellij.java",
             "Java",
@@ -50,6 +52,7 @@ public enum OptionalPlugin {
             SetupStep.TESTNG_PLUGIN
     ),
 
+    // Rule-PRODUCT-021
     GIT(
             "Git4Idea",
             "Git",
@@ -74,11 +77,12 @@ public enum OptionalPlugin {
         this.step = step;
     }
 
-    // Rule-CODEGEN-005
+    // Rule-CODEGEN-005, Rule-CODEGEN-063
     public boolean isAvailable() {
         return AVAILABLE.computeIfAbsent(this, OptionalPlugin::isEnabledInIde);
     }
 
+    // Rule-CODEGEN-063
     private boolean isEnabledInIde() {
         final @NotNull PluginId platformId = PluginId.getId(pluginId);
 

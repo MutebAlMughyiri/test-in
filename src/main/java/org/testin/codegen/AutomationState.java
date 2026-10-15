@@ -159,7 +159,7 @@ public final class AutomationState implements Disposable {
         return (int) testCases.stream().filter(testCase -> of(testCase.getUuid()) != Automated.UNKNOWN).count();
     }
 
-    // UC-EDITOR-PANEL-047, Rule-EDITOR-PANEL-198
+    // UC-EDITOR-PANEL-047, Rule-EDITOR-PANEL-198, Rule-EDITOR-PANEL-096
     public @NotNull List<TestCase> matching(final @NotNull List<TestCase> testCases, final @NotNull Set<Automated> wanted) {
         if (wanted.isEmpty()) return testCases;
 

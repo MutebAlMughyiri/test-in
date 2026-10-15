@@ -33,7 +33,7 @@ import java.util.Set;
 // UC-INTERNAL-007, Rule-INTERNAL-054, Rule-INTERNAL-056
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DialogKeys {
-    // UC-INTERNAL-007, Rule-INTERNAL-055, Rule-INTERNAL-056
+    // UC-INTERNAL-007, Rule-INTERNAL-055, Rule-INTERNAL-056, Rule-SHARE-006
     public static void install(final @NotNull JComponent target, final @MagicConstant(intValues = {JComponent.WHEN_FOCUSED, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, JComponent.WHEN_IN_FOCUSED_WINDOW}) int condition, final @NotNull List<StatusBarShortcut> declared) {
         final @NotNull Set<KeyStroke> bound = new HashSet<>();
 

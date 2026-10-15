@@ -158,6 +158,7 @@ public final class TestinEditors {
         ApplicationManager.getApplication().invokeLater(() -> openNow(node, focus));
     }
 
+    // Rule-TREE-PANEL-023
     private boolean openNow(final @NotNull AbstractNode node, final boolean focus) {
         ThreadingAssertions.assertEventDispatchThread();
         final @NotNull FileEditorManager editorManager = FileEditorManager.getInstance(project);

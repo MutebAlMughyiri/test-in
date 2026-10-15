@@ -29,6 +29,7 @@ record RestoredTestCases(@NotNull List<TestCase> removed, @NotNull List<TestCase
         this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
     }
 
+    // Rule-EDITOR-PANEL-069
     void generate(final @NotNull Project project) {
         if (!removed.isEmpty()) CodeChangeType.REMOVE_TEST_CASE.executeAll(project, removed);
         if (!comingBack.isEmpty()) CodeChangeType.CREATE_TEST_CASE.executeAll(project, comingBack);

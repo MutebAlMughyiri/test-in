@@ -34,6 +34,7 @@ import org.testin.util.Shortcuts;
 import java.util.List;
 
 public final class NodeDetailsDialog extends AbstractFrameworkDialog {
+    // Rule-EDITOR-PANEL-122
     public NodeDetailsDialog(final @NotNull Project project, final @NotNull AbstractNode node) {
         super(project);
 

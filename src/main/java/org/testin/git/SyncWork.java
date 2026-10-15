@@ -53,7 +53,7 @@ record SyncWork(@NotNull Project project, @NotNull GitRepositoryService git, @No
                 : Bundle.message("git.synced.pushed.many", String.valueOf(pushed.getAsInt()));
     }
 
-    // UC-SHARE-016, Rule-SHARE-069, Rule-INTERNAL-127
+    // UC-SHARE-016, Rule-SHARE-069, Rule-INTERNAL-127, Rule-SHARE-003
     void syncRepository(final @NotNull Path repoPath) {
         if (git.isNotRepository(repoPath)) {
             notifier.softRefuse(project, Bundle.message("git.sync.nothing.title"),

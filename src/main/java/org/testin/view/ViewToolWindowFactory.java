@@ -59,7 +59,7 @@ public class ViewToolWindowFactory implements ToolWindowFactory, DumbAware {
         panel(project).ifPresent(view -> view.refreshIfShowing(written));
     }
 
-    // UC-VIEW-PANEL-001, Rule-VIEW-PANEL-010
+    // UC-VIEW-PANEL-001, Rule-VIEW-PANEL-010, Rule-EDITOR-PANEL-112
     public static void showPanel(final @NotNull Project project, final @NotNull List<TestCase> testCases, final @NotNull List<String> treePath, final @NotNull Consumer<ViewPanel> onReadyAction) {
         toolWindow(project).ifPresent(toolWindow -> toolWindow.show(() -> panel(project).ifPresent(viewer -> {
             viewer.show(testCases, treePath);

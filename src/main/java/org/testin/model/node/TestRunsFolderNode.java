@@ -29,6 +29,7 @@ import org.testin.model.markers.TestRunsFolderMarker;
 
 import java.util.List;
 
+// Rule-PRODUCT-006
 @Setter
 @Getter
 @NoArgsConstructor

@@ -77,7 +77,7 @@ public class CardMouseListener extends MouseAdapter {
         this.notifier = Services.getInstance(project, Notifier.class);
     }
 
-    // UC-EDITOR-PANEL-024, UC-EDITOR-PANEL-025
+    // UC-EDITOR-PANEL-024, UC-EDITOR-PANEL-025, Rule-EDITOR-PANEL-109
     @Override
     public void mouseClicked(final MouseEvent e) {
         final int index = list.locationToIndex(e.getPoint());

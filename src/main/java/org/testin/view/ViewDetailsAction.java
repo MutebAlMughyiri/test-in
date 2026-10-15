@@ -29,7 +29,7 @@ import java.util.List;
 
 // UC-VIEW-PANEL-001
 public class ViewDetailsAction extends AbstractAnyProjectAction {
-    // UC-VIEW-PANEL-001, Rule-VIEW-PANEL-011, Rule-VIEW-PANEL-013
+    // UC-VIEW-PANEL-001, Rule-VIEW-PANEL-011, Rule-VIEW-PANEL-013, Rule-VIEW-PANEL-022
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
         final @NotNull List<TestCase> selected = TestinDataKeys.selectedTestCases(e);

@@ -57,6 +57,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+// Rule-INTERNAL-120
 public abstract class AbstractFrameworkDialog implements DialogHost {
     protected final @NotNull Project project;
 

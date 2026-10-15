@@ -60,7 +60,7 @@ record RemoveTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor
         new ConfirmDialog(project, Bundle.message("remove.confirm.title"), message, node.getPath().toString(), "", Bundle.message("remove.confirm.button"), delete).show();
     }
 
-    // UC-EDITOR-PANEL-011, Rule-EDITOR-PANEL-064
+    // UC-EDITOR-PANEL-011, Rule-EDITOR-PANEL-064, Rule-EDITOR-PANEL-065
     private void performDeletion(final @NotNull List<TestCase> selectedTestCases) {
         editor.getAllTestCases().removeAll(selectedTestCases);
 
@@ -69,7 +69,7 @@ record RemoveTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor
         ApplicationManager.getApplication().executeOnPooledThread(() -> removeFromDisk(selectedTestCases));
     }
 
-    // UC-EDITOR-PANEL-011, Rule-EDITOR-PANEL-064
+    // UC-EDITOR-PANEL-011, Rule-EDITOR-PANEL-064, Rule-EDITOR-PANEL-063
     private void removeFromDisk(final @NotNull List<TestCase> selectedTestCases) {
         final @NotNull List<UUID> testCaseUuids = TestCaseSnapshot.uuidsOf(selectedTestCases);
         final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(project, node.getPath(), testCaseUuids);

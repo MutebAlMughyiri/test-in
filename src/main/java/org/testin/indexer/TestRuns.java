@@ -68,7 +68,7 @@ public final class TestRuns {
         return indexer.getRunItemWriter();
     }
 
-    // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-127, Rule-REPORT-026
+    // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-127, Rule-REPORT-026, Rule-EDITOR-PANEL-187
     public @NotNull RunItems getRunItems(final @NotNull Path testRunPath) {
         return withTestCasesShown(testRunPath, store().getRunItems(testRunPath)).inOrderOf(testCaseUuidsInTreeOrder(testRunPath));
     }
@@ -148,6 +148,7 @@ public final class TestRuns {
         return store().findRunItems(testRunPath).map(runItems -> withTestCasesShown(testRunPath, runItems));
     }
 
+    // Rule-INTERNAL-093
     public void changeRunItems(final @NotNull Path testRunPath, final @NotNull Consumer<RunItems> change) {
         findRunItems(testRunPath).ifPresentOrElse(runItems -> {
             // Rule-INTERNAL-011
@@ -159,7 +160,7 @@ public final class TestRuns {
         }, () -> TestinLogger.warn("Test run no longer indexed, so a change to it was dropped: " + testRunPath.getFileName()));
     }
 
-    // Rule-INTERNAL-011
+    // Rule-INTERNAL-011, Rule-PRODUCT-008
     public void changeRunItem(final @NotNull Path testRunPath, final @NotNull UUID testCaseUuid, final @NotNull Consumer<RunItem> change) {
         findRunItems(testRunPath).ifPresentOrElse(runItems -> runItems.runItemOf(testCaseUuid).ifPresentOrElse(runItem -> {
                     change.accept(runItem);

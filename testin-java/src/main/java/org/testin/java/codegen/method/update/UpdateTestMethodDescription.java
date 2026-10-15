@@ -24,6 +24,7 @@ import org.testin.model.TestCase;
 
 import java.util.List;
 
+// Rule-CODEGEN-020
 public class UpdateTestMethodDescription extends BaseTestMethodChange implements CodeChange<TestCase> {
     // UC-CODEGEN-010, Rule-CODEGEN-001, Rule-CODEGEN-040
     @Override

@@ -132,7 +132,7 @@ record RemoveWork(@NotNull Project project, @NotNull Nodes nodes, @NotNull Testi
         }
     }
 
-    // UC-TREE-PANEL-012, Rule-TREE-PANEL-040
+    // UC-TREE-PANEL-012, Rule-TREE-PANEL-040, Rule-INTERNAL-040
     private void recordRemoval(final @NotNull List<AbstractNode> asked, final @NotNull List<Kept> kept) {
         final @NotNull String what = asked.size() == 1
                 ? Bundle.message("remove.undo.one", asked.getFirst().getName())

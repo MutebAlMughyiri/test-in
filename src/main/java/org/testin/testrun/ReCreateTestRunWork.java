@@ -38,6 +38,7 @@ record ReCreateTestRunWork(@NotNull Project project, @NotNull TestRuns testRuns,
         this(project, Services.getInstance(project, TestRuns.class), Services.getInstance(project, Nodes.class), Services.getInstance(project, BoundTestProject.class));
     }
 
+    // Rule-TREE-PANEL-072
     void reCreateAt(final @NotNull TreePath path) {
         TreeValues.directoryAt(path)
                 .filter(TestRunNode.class::isInstance)
@@ -46,6 +47,7 @@ record ReCreateTestRunWork(@NotNull Project project, @NotNull TestRuns testRuns,
                         .ifPresent(parent -> reCreate(source, parent)));
     }
 
+    // Rule-TREE-PANEL-070
     private void reCreate(final @NotNull TestRunNode source, final @NotNull AbstractNode parent) {
         final @NotNull Set<UUID> testCases = testRuns.getRunItems(source.getPath()).coveredUuids();
 

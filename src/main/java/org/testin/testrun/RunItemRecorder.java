@@ -178,7 +178,7 @@ public final class RunItemRecorder {
         return changeExecutions(testRunPath, testCaseUuid, runItem -> runItem.removeExecution(index), Done.REMOVED);
     }
 
-    // Rule-VIEW-PANEL-121, Rule-TREE-PANEL-009, Rule-CODEGEN-111
+    // Rule-VIEW-PANEL-121, Rule-TREE-PANEL-009, Rule-CODEGEN-111, Rule-EDITOR-PANEL-240
     public @NotNull Optional<String> whyExecutionsAreFixed(final @NotNull Path testRunPath, final @NotNull UUID testCaseUuid) {
         return Services.getInstance(project, TestRuns.class).findTestRunNode(testRunPath).flatMap(TestRunNode::whySignedOff)
                 .or(() -> Services.getInstance(project, TestNGExecution.class).isRunning(testCaseUuid) ? Optional.of(Bundle.message("execution.still.running")) : Optional.empty());
@@ -275,7 +275,7 @@ public final class RunItemRecorder {
         recordOne(RunItemStatus.FAILED, editor, testCase, failing(editor.getParent().getPath(), fields));
     }
 
-    // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-264
+    // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-264, Rule-EDITOR-PANEL-157, Rule-EDITOR-PANEL-158
     private void recordOne(final @NotNull RunItemStatus runItemStatus, final @NotNull TestRunEditor editor, final @NotNull TestCase testCase, final @NotNull Consumer<RunItem> recording) {
         if (editor.getWalk().isExecuting(testCase.getUuid())) executeNext(editor, runItemStatus, recording);
         else if (recordOn(editor, testCase.getUuid(), runItemStatus, recording)) confirmRunItemStatus(runItemStatus, 1);
@@ -283,6 +283,7 @@ public final class RunItemRecorder {
         editor.getWalk().finishIfEverythingIsJudged();
     }
 
+    // Rule-EDITOR-PANEL-163, Rule-EDITOR-PANEL-165
     private void recordMany(final @NotNull RunItemStatus runItemStatus, final @NotNull TestRunEditor editor, final @NotNull List<TestCase> selectedTestCases) {
         final @NotNull Optional<RunItems> held = heldTestRun(editor.getParent().getPath());
         if (held.isEmpty()) return;
@@ -310,6 +311,7 @@ public final class RunItemRecorder {
         editor.getWalk().finishIfEverythingIsJudged();
     }
 
+    // Rule-EDITOR-PANEL-140
     private void confirmRunItemStatus(final @NotNull RunItemStatus runItemStatus, final int count) {
         Services.getInstance(project, Notifier.class).softShowCounted(project, runItemStatus.getLabel(), count);
     }

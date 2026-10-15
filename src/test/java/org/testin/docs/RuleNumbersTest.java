@@ -28,6 +28,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -37,7 +39,7 @@ import static org.testng.Assert.fail;
 
 public class RuleNumbersTest {
 
-    private static final List<Path> SOURCES = List.of(Paths.get("src", "main", "java"), Paths.get("testin-java", "src", "main", "java"), Paths.get("testin-testng", "src", "main", "java"), Paths.get("testin-apimodel", "src", "main", "java"));
+    private static final List<Path> PRODUCTION = DocumentedRules.MODULES.stream().map(module -> Paths.get(module, "src", "main")).toList();
 
     private static final Pattern REFERENCE = Pattern.compile("Rule-([A-Z][A-Z-]*)-(\\d+)");
 
@@ -45,18 +47,33 @@ public class RuleNumbersTest {
 
     private static final Pattern RANGE = Pattern.compile("Rules are `Rule-([A-Z][A-Z-]*)-\\d+` to `Rule-[A-Z][A-Z-]*-(\\d+)`");
 
-    private static @NotNull List<Path> javaFiles() {
+    private static @NotNull List<Path> productionFiles() {
         final List<Path> files = new ArrayList<>();
 
-        for (final Path root : SOURCES) {
+        for (final Path root : PRODUCTION) {
             try (Stream<Path> tree = Files.walk(root)) {
-                files.addAll(tree.filter(file -> file.toString().endsWith(".java")).toList());
+                files.addAll(tree.filter(file -> file.toString().endsWith(".java") || file.toString().endsWith(".xml")).toList());
             } catch (final IOException ex) {
                 fail("Could not read " + root + ": " + ex.getMessage());
             }
         }
 
         return files;
+    }
+
+    private static @NotNull Map<String, Set<String>> citedByTheCode(final @NotNull Pattern reference) {
+        final @NotNull Map<String, Set<String>> cited = new TreeMap<>();
+
+        for (final Path source : productionFiles()) {
+            final @NotNull Matcher found = reference.matcher(DocumentedRules.read(source));
+            while (found.find()) cited.computeIfAbsent(found.group(), _ -> new TreeSet<>()).add(String.valueOf(source.getFileName()));
+        }
+
+        return cited;
+    }
+
+    private static @NotNull List<String> notWrittenIn(final @NotNull Set<String> written, final @NotNull Map<String, Set<String>> cited) {
+        return cited.entrySet().stream().filter(name -> !written.contains(name.getKey())).map(name -> name.getKey() + " in " + name.getValue()).toList();
     }
 
     private static @NotNull Path numberingPage(final String part) {
@@ -123,37 +140,41 @@ public class RuleNumbersTest {
 
     @Test
     public void everyRuleTheCodeCitesExists() {
-        final Set<String> written = DocumentedRules.names();
-
-        final List<String> dangling = new ArrayList<>();
-        for (final Path source : javaFiles()) {
-            final Matcher cited = REFERENCE.matcher(DocumentedRules.read(source));
-
-            while (cited.find()) {
-                if (!written.contains(cited.group())) dangling.add(cited.group() + " in " + source.getFileName());
-            }
-        }
+        final @NotNull List<String> dangling = notWrittenIn(DocumentedRules.liveNames(), citedByTheCode(REFERENCE));
 
         if (!dangling.isEmpty()) {
-            fail("These markers name rules no document writes:\n  " + String.join("\n  ", dangling));
+            fail("These markers name rules no document writes, or rules that are retired:\n  " + String.join("\n  ", dangling));
+        }
+    }
+
+    @Test
+    public void everyLiveRuleIsCarriedByTheCode() {
+        final @NotNull Set<String> carried = citedByTheCode(REFERENCE).keySet();
+        final @NotNull List<String> uncarried = DocumentedRules.liveNames().stream().filter(rule -> !carried.contains(rule)).toList();
+
+        if (!uncarried.isEmpty()) {
+            fail("A live rule is carried by the production code that makes it true, and that declaration names it "
+                    + "in a marker. No production code names these:\n  " + String.join("\n  ", uncarried));
         }
     }
 
     @Test
     public void everyUseCaseTheCodeCitesExists() {
-        final Set<String> written = DocumentedRules.useCases();
-
-        final List<String> dangling = new ArrayList<>();
-        for (final Path source : javaFiles()) {
-            final Matcher cited = USE_CASE_REFERENCE.matcher(DocumentedRules.read(source));
-
-            while (cited.find()) {
-                if (!written.contains(cited.group())) dangling.add(cited.group() + " in " + source.getFileName());
-            }
-        }
+        final @NotNull List<String> dangling = notWrittenIn(DocumentedRules.useCases(), citedByTheCode(USE_CASE_REFERENCE));
 
         if (!dangling.isEmpty()) {
             fail("These markers name use cases no page writes:\n  " + String.join("\n  ", dangling));
+        }
+    }
+
+    @Test
+    public void everyUseCaseIsCarriedByTheCode() {
+        final @NotNull Set<String> carried = citedByTheCode(USE_CASE_REFERENCE).keySet();
+        final @NotNull List<String> uncarried = DocumentedRules.useCases().stream().filter(useCase -> !carried.contains(useCase)).toList();
+
+        if (!uncarried.isEmpty()) {
+            fail("A use case is carried by the production code a tester reaches it through, and that declaration "
+                    + "names it in a marker. No production code names these:\n  " + String.join("\n  ", uncarried));
         }
     }
 }

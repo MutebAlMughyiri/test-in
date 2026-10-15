@@ -342,12 +342,12 @@ is worth seeing.
 
 Four tests, in the ordinary test run. Each of them has caught something real.
 
-| Test                    | What it settles                                                                                                                                                                |
-|-------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `RuleNumbersTest`       | No number names two rules; every part's `Numbering` row is honest; every rule a marker in the Java cites is one a document writes; every copy of a rule says the same thing    |
-| `DifferenceNumbersTest` | No page describes a difference its part has retired; no page points at a number no part lists; no number is live and retired at once; no difference names a rule nobody wrote  |
-| `DocumentClaimsTest`    | Every internal link goes somewhere; the README's per-part counts are the counts; its total is the sum of its own rows; every refusal Testin has words for is written on a page |
-| `SampleTestProjectTest` | The committed sample project still parses                                                                                                                                      |
+| Test                    | What it settles                                                                                                                                                                                                                                                     |
+|-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `RuleNumbersTest`       | No number names two rules; every part's `Numbering` row is honest; every rule a marker in the Java cites is a live rule a document writes; every live rule and every use case is named by a marker in the production code; every copy of a rule says the same thing |
+| `DifferenceNumbersTest` | No page describes a difference its part has retired; no page points at a number no part lists; no number is live and retired at once; no difference names a rule nobody wrote                                                                                       |
+| `DocumentClaimsTest`    | Every internal link goes somewhere; the README's per-part counts are the counts; its total is the sum of its own rows; every refusal Testin has words for is written on a page                                                                                      |
+| `SampleTestProjectTest` | The committed sample project still parses                                                                                                                                                                                                                           |
 
 What none of them can settle is whether a sentence is **true** — whether a
 difference names the right rule, whether a refusal's page describes the situation

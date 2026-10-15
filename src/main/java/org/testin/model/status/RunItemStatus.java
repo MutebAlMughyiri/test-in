@@ -49,6 +49,7 @@ public enum RunItemStatus {
             KeyStroke.getKeyStroke(KeyEvent.VK_F, 0)
     ),
 
+    // Rule-EDITOR-PANEL-141
     BLOCKED(
             JBColor.ORANGE,
             FixedColors.ORANGE.darker(),
@@ -110,7 +111,7 @@ public enum RunItemStatus {
         return this == UNTESTED && !testRunStatus.isTerminal() ? PENDING.label : label;
     }
 
-    // Rule-PRODUCT-012
+    // Rule-PRODUCT-012, Rule-PRODUCT-013
     public boolean isJudged() {
         return !Shortcuts.isNoKey(shortcut);
     }

@@ -39,7 +39,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-// UC-EDITOR-PANEL-014, Rule-EDITOR-PANEL-207
+// UC-EDITOR-PANEL-014, Rule-EDITOR-PANEL-207, Rule-EDITOR-PANEL-209
 @Getter
 @AllArgsConstructor
 public enum CopyChoice implements MenuItem {
@@ -149,6 +149,7 @@ public enum CopyChoice implements MenuItem {
         this(field.getName(), shortcut, icon, Optional.of(field), copied);
     }
 
+    // Rule-EDITOR-PANEL-073
     private static @NotNull String allDetailsOf(final @NotNull TestCase testCase) {
         return Arrays.stream(TestSetEditorFields.values())
                 .filter(field -> field.can(Can.COPY))
@@ -183,6 +184,7 @@ public enum CopyChoice implements MenuItem {
         }.registerCustomShortcutSet(shortcut.getCustomShortcut(), component);
     }
 
+    // Rule-EDITOR-PANEL-074
     public @NotNull String from(final @NotNull List<TestCase> testCases) {
         return testCases.stream().map(this::from).collect(Collectors.joining("\n\n"));
     }

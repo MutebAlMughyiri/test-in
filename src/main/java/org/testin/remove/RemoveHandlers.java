@@ -26,7 +26,7 @@ import org.testin.services.Services;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RemoveHandlers {
-    // UC-TREE-PANEL-013, Rule-TREE-PANEL-046
+    // UC-TREE-PANEL-013, Rule-TREE-PANEL-046, Rule-TREE-PANEL-039
     public static @NotNull RemoveHandler of(final @NotNull NodeType type) {
         return switch (type) {
             case TEST_PROJECT ->

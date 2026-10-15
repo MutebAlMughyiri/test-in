@@ -115,7 +115,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
         loadDataAsync();
     }
 
-    // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-126, Rule-VIEW-PANEL-092
+    // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-126, Rule-VIEW-PANEL-092, Rule-EDITOR-PANEL-125
     @Override
     protected void loadDataAsync(final @NotNull Runnable onLoaded) {
         final int generation = loadGeneration.incrementAndGet();
@@ -173,12 +173,13 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
         });
     }
 
+    // Rule-EDITOR-PANEL-120
     @Override
     protected @NotNull Done refreshed() {
         return walk.isExecuting() ? Done.REFRESHED_EXECUTION_STOPPED : Done.REFRESHED;
     }
 
-    // UC-EDITOR-PANEL-035, Rule-EDITOR-PANEL-150
+    // UC-EDITOR-PANEL-035, Rule-EDITOR-PANEL-150, Rule-EDITOR-PANEL-120
     @Override
     protected void beforeReload() {
         walk.haltBeforeReload();

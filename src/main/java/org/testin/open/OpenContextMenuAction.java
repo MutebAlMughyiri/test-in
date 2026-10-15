@@ -37,6 +37,7 @@ import java.awt.Rectangle;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+// Rule-EDITOR-PANEL-123
 public class OpenContextMenuAction extends DumbAwareAction {
     private final @NotNull JComponent owner;
 
@@ -94,6 +95,7 @@ public class OpenContextMenuAction extends DumbAwareAction {
         return anchor.get();
     }
 
+    // Rule-EDITOR-PANEL-124
     @Override
     public void actionPerformed(final @NotNull AnActionEvent e) {
         anchor.get().ifPresent(at -> ActionManager.getInstance()

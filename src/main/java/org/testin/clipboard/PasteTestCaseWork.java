@@ -65,6 +65,7 @@ record PasteTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor,
         });
     }
 
+    // Rule-EDITOR-PANEL-084
     private void pasteInto(final @NotNull TestSetEditor destinationEditor, final @NotNull List<TestCase> pastedTestCases) {
         final boolean isCut = cutState.isCutOf(pastedTestCases);
 

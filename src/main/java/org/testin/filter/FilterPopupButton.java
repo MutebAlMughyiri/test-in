@@ -122,7 +122,7 @@ public class FilterPopupButton extends AbstractIconButton implements ToolbarItem
         }
     }
 
-    // UC-EDITOR-PANEL-021
+    // UC-EDITOR-PANEL-021, Rule-EDITOR-PANEL-100
     public void resetToolBarFilter() {
         clearFilters();
         source.onToolBarFilterResetButtonClicked();

@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class ExecuteTestsAction extends AbstractAnyProjectAction {
-    // Rule-TREE-PANEL-079, Rule-TREE-PANEL-141
+    // Rule-TREE-PANEL-079, Rule-TREE-PANEL-141, Rule-TREE-PANEL-080
     @Override
     protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
         if (CodeOn.grayedWithReason(this, e, project)) return;

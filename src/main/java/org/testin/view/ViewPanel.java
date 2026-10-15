@@ -161,7 +161,7 @@ public class ViewPanel implements Disposable {
         }));
     }
 
-    // UC-VIEW-PANEL-002, Rule-VIEW-PANEL-015, Rule-VIEW-PANEL-016, Rule-VIEW-PANEL-102
+    // UC-VIEW-PANEL-002, Rule-VIEW-PANEL-015, Rule-VIEW-PANEL-016, Rule-VIEW-PANEL-102, Rule-VIEW-PANEL-004, Rule-VIEW-PANEL-059
     public void showIfOpen(final @NotNull List<TestCase> testCases, final @NotNull List<String> treePath) {
         if (isClosed() || testCases.isEmpty()) return;
 
@@ -196,7 +196,7 @@ public class ViewPanel implements Disposable {
         });
     }
 
-    // UC-VIEW-PANEL-015, Rule-VIEW-PANEL-060
+    // UC-VIEW-PANEL-015, Rule-VIEW-PANEL-060, Rule-VIEW-PANEL-009
     public void hide(final @NotNull List<String> closingTreePath) {
         if (isClosed()) return;
         if (!page.getTreePath().equals(closingTreePath)) return;
@@ -267,7 +267,7 @@ public class ViewPanel implements Disposable {
         return testCases.findTestCase(shown.getUuid()).orElse(shown);
     }
 
-    // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-083
+    // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-083, Rule-VIEW-PANEL-014, Rule-VIEW-PANEL-029, Rule-VIEW-PANEL-030
     @NotNull Optional<RunItem> shownRunItem() {
         final @NotNull List<String> treePath = page.getTreePath();
         if (treePath.isEmpty()) return Optional.empty();

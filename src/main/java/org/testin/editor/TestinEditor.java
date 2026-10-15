@@ -107,7 +107,7 @@ public interface TestinEditor extends Disposable {
 
     @NotNull Project getProject();
 
-    // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-014
+    // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-014, Rule-INTERNAL-028
     default int positionOf(final @NotNull TestCase testCase) {
         final @NotNull List<TestCase> all = getAllTestCases();
 

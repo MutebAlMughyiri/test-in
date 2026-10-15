@@ -73,6 +73,7 @@ public final class PendingChangesDialog extends AbstractFrameworkDialog {
 
     private final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
 
+    // Rule-SHARE-049
     public PendingChangesDialog(final @NotNull Project project, final @NotNull List<PendingChange> differences, final @NotNull Path repoRoot, final @NotNull List<String> branches, final @NotNull String currentBranch, final @NotNull Consumer<Request> onCommit) {
         super(project);
         this.repoRoot = repoRoot;
@@ -148,7 +149,7 @@ public final class PendingChangesDialog extends AbstractFrameworkDialog {
         return List.copyOf(selected);
     }
 
-    // UC-SHARE-011, Rule-SHARE-051, Rule-SHARE-119
+    // UC-SHARE-011, Rule-SHARE-051, Rule-SHARE-119, Rule-SHARE-053
     private void revertRow(final int row) {
         if (row >= rowDifferences.size()) return;
 

@@ -39,6 +39,7 @@ import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.util.Arrays;
 
+// Rule-SETTING-028
 public class ShortcutStrip {
     private static final @NotNull String INNER_SEPARATOR = " ";
 
@@ -71,7 +72,7 @@ public class ShortcutStrip {
         setShown(true);
     }
 
-    // UC-SETTING-008, Rule-SETTING-029
+    // UC-SETTING-008, Rule-SETTING-029, Rule-SETTING-030
     public void setShown(final boolean wanted) {
         statusBar.setVisible(wanted && settings.showShortcutHints);
     }

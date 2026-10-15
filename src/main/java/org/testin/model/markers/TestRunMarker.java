@@ -83,11 +83,13 @@ public class TestRunMarker extends AbstractMarker {
         resultAnalysis = written;
     }
 
+    // Rule-EDITOR-PANEL-131, Rule-EDITOR-PANEL-155
     public void markExecutionStarted() {
         if (DateFormats.isNotExecuted(executionStartedAt))
             executionStartedAt = ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS);
     }
 
+    // Rule-EDITOR-PANEL-155
     public void markExecutionEnded() {
         if (DateFormats.isNotExecuted(executionStartedAt)) return;
 

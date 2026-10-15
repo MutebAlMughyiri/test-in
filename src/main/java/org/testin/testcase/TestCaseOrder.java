@@ -38,7 +38,7 @@ public final class TestCaseOrder {
         return testCases.stream().sorted(BY_RANK).toList();
     }
 
-    // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-014
+    // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-014, Rule-INTERNAL-025, Rule-INTERNAL-026, Rule-INTERNAL-027
     public static int positionOf(final @NotNull List<TestCase> ordered, final @NotNull TestCase testCase) {
         for (int i = 0; i < ordered.size(); i++) {
             if (ordered.get(i).getUuid().equals(testCase.getUuid())) return i + 1;

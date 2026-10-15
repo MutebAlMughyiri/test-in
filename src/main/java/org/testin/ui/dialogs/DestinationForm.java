@@ -88,7 +88,7 @@ public final class DestinationForm implements DialogComponent {
         return tailIsAnExtension ? fileName.substring(0, dot) + extension : fileName + extension;
     }
 
-    // UC-SHARE-001, Rule-INTERNAL-067
+    // UC-SHARE-001, Rule-INTERNAL-067, Rule-SETTING-022
     public @NotNull Optional<Destination> resolve() {
         final @NotNull String named = fileName.accepted();
         if (named.isEmpty()) return Optional.empty();

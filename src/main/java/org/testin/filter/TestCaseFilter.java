@@ -53,7 +53,7 @@ public final class TestCaseFilter {
         return wanted.sortBy().sorted(matched, wanted.direction(), runItemProvider);
     }
 
-    // UC-EDITOR-PANEL-019, Rule-EDITOR-PANEL-091, Rule-EDITOR-PANEL-239, Rule-EDITOR-PANEL-260, Rule-EDITOR-PANEL-261
+    // UC-EDITOR-PANEL-019, Rule-EDITOR-PANEL-091, Rule-EDITOR-PANEL-239, Rule-EDITOR-PANEL-260, Rule-EDITOR-PANEL-261, Rule-EDITOR-PANEL-096
     private static boolean matches(final @NotNull TestCase testCase, final @NotNull String query, final @NotNull FilterAndSortChoice wanted, final @NotNull Function<UUID, Optional<RunItem>> runItemProvider) {
         final @NotNull TestCase shown = runItemProvider.apply(testCase.getUuid()).map(RunItem::shownTestCase).orElse(testCase);
 

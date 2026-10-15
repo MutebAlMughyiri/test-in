@@ -30,7 +30,7 @@ import org.testin.testproject.SelectTestProjectAction;
 import java.util.List;
 
 public class TreePanelToolbar {
-    // UC-TREE-PANEL-028
+    // UC-TREE-PANEL-028, Rule-TREE-PANEL-090
     public @NotNull List<AnAction> create(final @NotNull Project project, final @NotNull TreePanel treePanel) {
         return List.of(
                 GlobalSearchAction.registered(),

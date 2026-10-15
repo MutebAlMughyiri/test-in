@@ -135,6 +135,7 @@ public final class Notifier {
         notify(project, title, message, NotificationType.ERROR);
     }
 
+    // Rule-REPORT-011, Rule-SHARE-023
     public @NotNull NotificationAction action(final @NotNull String name, final @NotNull Runnable action) {
         return NotificationAction.createSimpleExpiring(name, action);
     }

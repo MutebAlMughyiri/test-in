@@ -67,7 +67,7 @@ public class SetRunItemStatusAction extends AbstractAnyProjectAction {
                 fields -> Services.getInstance(project, RunItemRecorder.class).applyFailure(editor, selectedTestCases.getFirst(), fields)).show();
     }
 
-    // UC-EDITOR-PANEL-034
+    // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-146, Rule-EDITOR-PANEL-166
     private @NotNull Optional<RunItem> askingForFailureDetails(final @NotNull TestRunEditor editor, final @NotNull List<TestCase> selectedTestCases) {
         if (!runItemStatus.collectsFailureDetails() || selectedTestCases.size() != 1) return Optional.empty();
 

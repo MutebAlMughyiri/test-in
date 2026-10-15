@@ -33,7 +33,7 @@ import java.util.List;
 public final class StacktraceDialog extends AbstractFrameworkDialog {
     private static final int VISIBLE_ROWS = 22;
 
-    // UC-VIEW-PANEL-006, Rule-VIEW-PANEL-036
+    // UC-VIEW-PANEL-006, Rule-VIEW-PANEL-036, Rule-VIEW-PANEL-035
     public StacktraceDialog(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull String actualResult, final @NotNull String stacktrace) {
         super(project);
 

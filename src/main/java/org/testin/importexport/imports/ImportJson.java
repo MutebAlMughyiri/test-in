@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class ImportJson {
-    // UC-SHARE-005, Rule-SHARE-029
+    // UC-SHARE-005, Rule-SHARE-029, Rule-SHARE-002, Rule-SHARE-030
     private static @NotNull TestCase asNewTestCase(final @NotNull TestCase read) {
         final @NotNull TestCase fresh = TestCase.builder().build();
 

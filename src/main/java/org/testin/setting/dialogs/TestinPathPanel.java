@@ -78,6 +78,7 @@ public final class TestinPathPanel {
         );
     }
 
+    // Rule-SETTING-016
     private void setupOpenButton() {
         openFolderButton.setIcon(AllIcons.Actions.MenuOpen);
         openFolderButton.setDisabledIcon(IconLoader.getDisabledIcon(AllIcons.Actions.MenuOpen));
@@ -104,7 +105,7 @@ public final class TestinPathPanel {
         });
     }
 
-    // UC-SETTING-003, Rule-SETTING-015, Rule-SETTING-017
+    // UC-SETTING-003, Rule-SETTING-015, Rule-SETTING-017, Rule-SETTING-016
     private void updateOpenButtonState() {
         final @NotNull String pathText = pathField.getText();
         asked.set(pathText);

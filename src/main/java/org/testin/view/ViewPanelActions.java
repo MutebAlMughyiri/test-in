@@ -26,7 +26,7 @@ import javax.swing.JComponent;
 import java.util.List;
 
 public class ViewPanelActions {
-    // UC-VIEW-PANEL-003, UC-VIEW-PANEL-012, UC-VIEW-PANEL-014
+    // UC-VIEW-PANEL-003, UC-VIEW-PANEL-012, UC-VIEW-PANEL-014, Rule-VIEW-PANEL-019
     public @NotNull List<AnAction> create(final @NotNull ViewPanel panel, final @NotNull JComponent component) {
         final @NotNull Project project = panel.getProject();
 

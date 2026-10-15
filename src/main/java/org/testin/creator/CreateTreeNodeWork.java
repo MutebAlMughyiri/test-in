@@ -40,7 +40,7 @@ record CreateTreeNodeWork(@NotNull Project project, @NotNull Nodes nodes, @NotNu
         this(project, Services.getInstance(project, Nodes.class), Services.getInstance(project, Notifier.class), Services.getInstance(project, TestinEditors.class));
     }
 
-    // UC-TREE-PANEL-007, UC-TREE-PANEL-008, UC-TREE-PANEL-009, UC-TREE-PANEL-010, Rule-TREE-PANEL-004
+    // UC-TREE-PANEL-007, UC-TREE-PANEL-008, UC-TREE-PANEL-009, UC-TREE-PANEL-010, Rule-TREE-PANEL-004, Rule-TREE-PANEL-026
     void createUnder(final @NotNull AbstractNode parentNode) {
         final @NotNull BiConsumer<String, NodeType> onCreate = (name, type) -> {
             if (name.isEmpty()) return;

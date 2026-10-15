@@ -113,7 +113,7 @@ public class OrderSection implements TestCaseSection {
         }
     }
 
-    // UC-EDITOR-PANEL-009, Rule-EDITOR-PANEL-055, Rule-EDITOR-PANEL-282
+    // UC-EDITOR-PANEL-009, Rule-EDITOR-PANEL-055, Rule-EDITOR-PANEL-282, Rule-EDITOR-PANEL-056
     @Override
     public @NotNull TestCase applyTo(final @NotNull TestCase ordered) {
         final @NotNull List<TestCase> inSet = ExecutionPosition.setOf(project, ordered);
@@ -131,7 +131,7 @@ public class OrderSection implements TestCaseSection {
         return ordered.edit().order(Rank.between(before, after)).build();
     }
 
-    // UC-EDITOR-PANEL-009, Rule-EDITOR-PANEL-055
+    // UC-EDITOR-PANEL-009, Rule-EDITOR-PANEL-055, Rule-EDITOR-PANEL-223
     private @NotNull List<TestCase> rankTheUnranked(final @NotNull List<TestCase> inSet, final @NotNull TestCase ordered) {
         if (inSet.stream().noneMatch(testCase -> testCase.getOrder().isEmpty())) return inSet;
 

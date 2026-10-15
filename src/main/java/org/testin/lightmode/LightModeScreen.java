@@ -85,6 +85,7 @@ final class LightModeScreen {
 
     private static final @NotNull List<TestCaseQuickAction> KEYED = List.of(TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD, TestCaseQuickAction.RUN_TEST_METHOD);
 
+    // Rule-EDITOR-PANEL-128
     private final @NotNull TestRunEditor editor;
 
     private final @NotNull RunItemRecorder runItemStatusService;

@@ -55,7 +55,7 @@ public final class TestCases {
         return store().getTestCaseUuidsByTestSet().getOrDefault(testSetPath.toString(), List.of()).size();
     }
 
-    // Rule-TREE-PANEL-008
+    // Rule-TREE-PANEL-008, Rule-TREE-PANEL-077
     public @NotNull List<TestCase> getTestCasesUnder(final @NotNull AbstractNode node) {
         final @NotNull List<TestCase> testCases = new ArrayList<>(getTestCasesForTestSet(node.getPath()));
 

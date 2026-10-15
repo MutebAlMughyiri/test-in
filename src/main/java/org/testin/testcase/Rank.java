@@ -33,6 +33,7 @@ public final class Rank {
 
     private static final char ABOVE_LAST = LAST + 1;
 
+    // Rule-INTERNAL-032
     public static @NotNull String between(final @NotNull String before, final @NotNull String after) {
         if (after.isEmpty()) return after(before);
 

@@ -99,7 +99,7 @@ final class IndexingScanner {
         }
     }
 
-    // UC-INTERNAL-002, Rule-INTERNAL-005, Rule-INTERNAL-007, Rule-INTERNAL-091
+    // UC-INTERNAL-002, Rule-INTERNAL-005, Rule-INTERNAL-007, Rule-INTERNAL-091, Rule-TREE-PANEL-064
     private @NotNull Optional<String> scanTestProjectContents(final @NotNull Path testProjectPath, final @NotNull ProgressIndicator indicator) {
         try {
             final @NotNull TestProjectNode testProject = directoryMapper.getTestProjectNode(testProjectPath);
@@ -211,7 +211,7 @@ final class IndexingScanner {
         }
     }
 
-    // UC-INTERNAL-002, Rule-INTERNAL-011
+    // UC-INTERNAL-002, Rule-INTERNAL-011, Rule-SHARE-009
     private void scanTestSet(final @NotNull Path path, final @NotNull AbstractNode parent, final @NotNull ProgressIndicator indicator, final @NotNull ScannedTestProject scanned) {
         try {
             final @NotNull TestSetNode testSet = directoryMapper.getTestSetNode(path, parent);

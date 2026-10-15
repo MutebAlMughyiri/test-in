@@ -28,6 +28,7 @@ import javax.swing.JComponent;
 import javax.swing.event.DocumentEvent;
 import java.awt.KeyboardFocusManager;
 
+// Rule-EDITOR-PANEL-192
 public final class PlainTextArea implements DialogComponent {
     private final @NotNull JBTextArea area;
 

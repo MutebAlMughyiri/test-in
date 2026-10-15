@@ -145,7 +145,7 @@ final class BulkJsonEditors implements DialogComponent {
         }.registerCustomShortcutSet(keys, target);
     }
 
-    // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-040
+    // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-040, Rule-EDITOR-PANEL-045
     void setContent(final @NotNull String leftText, final @NotNull String rightText, final @NotNull List<int[]> editableRanges) {
         WriteCommandAction.runWriteCommandAction(project, () -> {
             for (final RangeMarker guard : guardBlocks) rightDocument.removeGuardedBlock(guard);

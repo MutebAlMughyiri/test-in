@@ -54,6 +54,7 @@ record UpdateTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor
                 save(path, testCaseUuids, before, updatedTestCases, field))));
     }
 
+    // Rule-EDITOR-PANEL-006
     private void save(final @NotNull Path path, final @NotNull List<UUID> testCaseUuids, final @NotNull TestCaseSnapshot before, final @NotNull List<TestCase> updatedTestCases, final @NotNull UpdateTestCaseFields field) {
         int counted = 0;
         for (final TestCase testCase : updatedTestCases)

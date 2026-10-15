@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.util.Bundle;
 
+// Rule-PRODUCT-023
 @Getter
 @AllArgsConstructor
 public enum PackageStatus implements NodeStatus {

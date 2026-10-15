@@ -287,7 +287,7 @@ public enum TestSetEditorFields implements ShowableField {
         return false;
     }
 
-    // UC-SHARE-006, Rule-SHARE-106, Rule-EDITOR-PANEL-206
+    // UC-SHARE-006, Rule-SHARE-106, Rule-EDITOR-PANEL-206, Rule-SHARE-002, Rule-SHARE-030
     public static @NotNull ImportedRow importRow(final @NotNull Project project, final @NotNull Function<TestSetEditorFields, String> cell) {
         TestCase testCase = TestCase.builder().build();
         int refused = 0;

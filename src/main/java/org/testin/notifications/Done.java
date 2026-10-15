@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.util.Bundle;
 
+// Rule-PRODUCT-014
 @Getter
 @AllArgsConstructor
 public enum Done {

@@ -164,7 +164,7 @@ public abstract class AbstractTestCaseDialog extends AbstractFrameworkDialog {
         focusListener = NOTHING_ON_FOCUS;
     }
 
-    // Rule-EDITOR-PANEL-199
+    // Rule-EDITOR-PANEL-199, Rule-EDITOR-PANEL-200
     protected final void showSectionKeys(final StatusBarItem @NotNull [] items) {
         final @NotNull List<StatusBarItem> all = new ArrayList<>(List.of(items));
         all.addAll(List.of(dialogKeys));

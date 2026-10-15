@@ -89,7 +89,7 @@ public final class SettingsConfigurable implements SearchableConfigurable {
         return "org.testin.setting.SettingsConfigurable";
     }
 
-    // UC-SETTING-001
+    // UC-SETTING-001, Rule-SETTING-005, Rule-SETTING-006
     @Override
     public @NotNull JComponent createComponent() {
         downloadFolderField.addBrowseFolderListener(null, FileChooserDescriptorFactory.singleDir()
@@ -191,6 +191,7 @@ public final class SettingsConfigurable implements SearchableConfigurable {
         if (levelChanged) offerTheLogsGuide();
     }
 
+    // Rule-SETTING-012
     private void refreshEveryOpenProject() {
         for (final Project open : ProjectManager.getInstance().getOpenProjects()) {
             if (open.isDisposed()) continue;

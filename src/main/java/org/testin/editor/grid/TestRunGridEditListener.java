@@ -53,7 +53,7 @@ public class TestRunGridEditListener extends AbstractGridEditListener {
         return TestRunEditorFields.COLUMNS.size();
     }
 
-    // UC-EDITOR-PANEL-041, Rule-EDITOR-PANEL-174
+    // UC-EDITOR-PANEL-041, Rule-EDITOR-PANEL-174, Rule-EDITOR-PANEL-173
     @Override
     protected @NotNull GridEdit apply(final @NotNull DefaultTableModel model, final @NotNull TestCase onThisRow, final int row, final int column) {
         final @NotNull TestRunEditorFields field = TestRunEditorFields.atColumn(column);

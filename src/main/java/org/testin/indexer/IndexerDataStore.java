@@ -265,7 +265,7 @@ final class IndexerDataStore {
                 LocalFileSystem.getInstance().refreshNioFiles(List.of(path), true, recursive, null));
     }
 
-    // UC-INTERNAL-002, Rule-INTERNAL-021
+    // UC-INTERNAL-002, Rule-INTERNAL-021, Rule-INTERNAL-081
     void swapIn(final @NotNull Path testProjectPath, final @NotNull ScannedTestProject scanned) {
         testProjectsByPath.putAll(scanned.getTestProjects());
         testCasesFoldersByPath.putAll(scanned.getTestCasesFolders());

@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NodeCounter {
+    // Rule-TREE-PANEL-088
     public static @NotNull NodeFigures figures(final @NotNull Project project, final @NotNull AbstractNode node) {
         return FiguresByStatistics.valueOf(node.getType().getStatistics().name()).getGather().of(project, node);
     }

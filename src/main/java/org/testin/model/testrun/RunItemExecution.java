@@ -44,7 +44,7 @@ import java.util.List;
 // Rule-INTERNAL-135
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class RunItemExecution {
-    // Rule-EDITOR-PANEL-136, Rule-INTERNAL-135
+    // Rule-EDITOR-PANEL-136, Rule-INTERNAL-135, Rule-VIEW-PANEL-033
     @NotNull
     @Builder.Default
     @JsonInclude(JsonInclude.Include.ALWAYS)

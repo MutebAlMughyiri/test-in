@@ -58,6 +58,7 @@ public class TablePanelBuilder {
                 return columnIndex == 0 ? Boolean.class : String.class;
             }
 
+            // Rule-SHARE-019
             @Override
             public boolean isCellEditable(final int row, final int column) {
                 return column == 0 || column >= 2;

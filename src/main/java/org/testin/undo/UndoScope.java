@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 
+// Rule-EDITOR-PANEL-007
 public record UndoScope(@NotNull String key) {
     public static final @NotNull UndoScope TREE = new UndoScope("tree");
 

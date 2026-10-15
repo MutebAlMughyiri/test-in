@@ -96,7 +96,7 @@ public abstract class AbstractGridEditListener implements TableModelListener {
 
     protected abstract @NotNull GridEdit apply(final @NotNull DefaultTableModel model, final @NotNull TestCase onThisRow, final int row, final int column);
 
-    // UC-EDITOR-PANEL-008, Rule-EDITOR-PANEL-008
+    // UC-EDITOR-PANEL-008, Rule-EDITOR-PANEL-008, Rule-EDITOR-PANEL-226
     private void confirmEdit(final @NotNull TestCase edited) {
         final boolean first = writtenThisGesture.isEmpty();
         writtenThisGesture.add(edited.getUuid());
@@ -110,7 +110,7 @@ public abstract class AbstractGridEditListener implements TableModelListener {
         });
     }
 
-    // UC-EDITOR-PANEL-008, Rule-EDITOR-PANEL-005
+    // UC-EDITOR-PANEL-008, Rule-EDITOR-PANEL-005, Rule-EDITOR-PANEL-051
     private void sayIfRewritten(final @NotNull String typed, final @NotNull String stored) {
         if (typed.equals(stored)) return;
 

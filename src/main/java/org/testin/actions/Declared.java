@@ -57,6 +57,7 @@ public final class Declared {
         return action;
     }
 
+    // Rule-PRODUCT-016
     public static @NotNull String shortcutText(final @NotNull String actionId) {
         if (actionId.isEmpty()) return "";
 

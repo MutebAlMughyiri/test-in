@@ -38,7 +38,7 @@ public final class Prose {
         return of(text, EmptyIcon.ICON_0);
     }
 
-    // Rule-VIEW-PANEL-125
+    // Rule-VIEW-PANEL-125, Rule-VIEW-PANEL-028
     public static @NotNull JTextArea of(final @NotNull String text, final @NotNull Icon ending) {
         final @NotNull JTextArea area = new JTextArea(text) {
             // Rule-VIEW-PANEL-124

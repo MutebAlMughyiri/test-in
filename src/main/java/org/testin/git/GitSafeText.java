@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 public final class GitSafeText {
     private static final @NotNull Pattern CREDENTIALS = Pattern.compile("([a-zA-Z][a-zA-Z0-9+.\\-]*://)[^/@\\s]+@");
 
-    // UC-SHARE-013, Rule-SHARE-062
+    // UC-SHARE-013, Rule-SHARE-062, Rule-SHARE-057
     public static @NotNull String withoutCredentials(final @NotNull String text) {
         return CREDENTIALS.matcher(text).replaceAll("$1***@");
     }

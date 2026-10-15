@@ -90,6 +90,7 @@ record ImportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
         return name.isEmpty() ? Bundle.message("import.sheet.no.name") : name;
     }
 
+    // Rule-SHARE-034
     void openImportDialog(final @NotNull AbstractNode node) {
         new ImportDialog(project, TestSetEditorFields.all(Can.IMPORT),
                 (file, format) -> format.importToFile(project, file),
@@ -107,7 +108,7 @@ record ImportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
                 Bundle.message("import.failed.title"), indicator -> importInBackground(selectedNode, selectedTestCasesBySheet, generateCode, total, indicator));
     }
 
-    // UC-SHARE-005, UC-SHARE-006
+    // UC-SHARE-005, UC-SHARE-006, Rule-SHARE-032, Rule-SHARE-033
     void importInBackground(final @NotNull AbstractNode selectedNode, final @NotNull Map<String, List<TestCase>> selectedTestCasesBySheet, final boolean generateCode, final int total, final @NotNull ProgressIndicator indicator) {
         final @NotNull Path targetPath = selectedNode.getPath();
 
@@ -188,7 +189,7 @@ record ImportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
                 Bundle.message("import.empty.message", count, named, rest));
     }
 
-    // UC-SHARE-006, Rule-SHARE-031
+    // UC-SHARE-006, Rule-SHARE-031, Rule-SHARE-027
     private @NotNull Map<TestSetNode, List<TestCase>> targetSets(final @NotNull AbstractNode selectedNode, final @NotNull Path targetPath, final @NotNull Map<String, List<TestCase>> testCasesBySheet) {
         if (selectedNode instanceof TestSetNode testSet) {
             final @NotNull List<TestCase> everything = new ArrayList<>();
@@ -239,7 +240,7 @@ record ImportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
                 + (System.currentTimeMillis() - startedAt) + "ms");
     }
 
-    // UC-SHARE-005, Rule-SHARE-025, Rule-SHARE-037
+    // UC-SHARE-005, Rule-SHARE-025, Rule-SHARE-037, Rule-SHARE-026
     private @NotNull List<TestCase> linkAndSaveTestCases(final @NotNull TestSetNode into, final @NotNull List<TestCase> testCases, final @NotNull String tailRank, final @NotNull ProgressIndicator indicator, final int done, final int total) {
         String rank = tailRank;
 

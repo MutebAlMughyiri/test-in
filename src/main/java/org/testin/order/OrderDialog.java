@@ -72,7 +72,7 @@ final class OrderDialog extends AbstractFrameworkDialog {
         }
     }
 
-    // UC-TREE-PANEL-015, Rule-TREE-PANEL-055
+    // UC-TREE-PANEL-015, Rule-TREE-PANEL-055, Rule-TREE-PANEL-054
     @Override
     protected void submit() {
         final @NotNull String text = orderInput.getText().trim();

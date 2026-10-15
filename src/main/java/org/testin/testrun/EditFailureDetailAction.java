@@ -49,7 +49,7 @@ public class EditFailureDetailAction extends AbstractAnyProjectAction {
         edit(project, testRunEditor.orElseThrow(), selected.orElseThrow());
     }
 
-    // UC-EDITOR-PANEL-040, Rule-EDITOR-PANEL-167
+    // UC-EDITOR-PANEL-040, Rule-EDITOR-PANEL-167, Rule-EDITOR-PANEL-169, Rule-EDITOR-PANEL-170
     private void edit(final @NotNull Project project, final @NotNull TestRunEditor testRunEditor, final @NotNull TestCase testCase) {
         final @NotNull Optional<RunItem> found = testRunEditor.runItem(testCase.getUuid());
         if (found.isEmpty()) return;

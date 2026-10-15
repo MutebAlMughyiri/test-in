@@ -38,7 +38,7 @@ public class CellEditListener implements TableModelListener {
 
     private boolean isUpdating = false;
 
-    // UC-SHARE-003, Rule-SHARE-021
+    // UC-SHARE-003, Rule-SHARE-021, Rule-SHARE-038
     @Override
     public void tableChanged(final @NotNull TableModelEvent e) {
         if (isUpdating) return;

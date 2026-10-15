@@ -42,7 +42,7 @@ public final class TestRunResultAnalysisDialog extends AbstractFrameworkDialog {
 
     private final boolean readOnly;
 
-    // UC-EDITOR-PANEL-045, Rule-EDITOR-PANEL-190
+    // UC-EDITOR-PANEL-045, Rule-EDITOR-PANEL-190, Rule-EDITOR-PANEL-192
     public TestRunResultAnalysisDialog(final @NotNull Project project, final @NotNull TestRunSummary summary, final @NotNull Map<TestRunResultAnalysis, String> current, final @NotNull TestRunStatus testRunStatus, final @NotNull Consumer<@NotNull Map<TestRunResultAnalysis, String>> onSave) {
         super(project);
         this.onSave = onSave;

@@ -118,7 +118,7 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
         if (first) ApplicationManager.getApplication().invokeLater(this::saveTheGesture);
     }
 
-    // UC-EDITOR-PANEL-008, Rule-EDITOR-PANEL-053, Rule-EDITOR-PANEL-038
+    // UC-EDITOR-PANEL-008, Rule-EDITOR-PANEL-053, Rule-EDITOR-PANEL-038, Rule-EDITOR-PANEL-226
     private void saveTheGesture() {
         final @NotNull List<Changed> gesture = List.copyOf(changedThisGesture.values());
         changedThisGesture.clear();
