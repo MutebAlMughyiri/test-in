@@ -66,7 +66,8 @@ public class RuleNumbersTest {
 
         for (final Path source : productionFiles()) {
             final @NotNull Matcher found = reference.matcher(DocumentedRules.read(source));
-            while (found.find()) cited.computeIfAbsent(found.group(), _ -> new TreeSet<>()).add(String.valueOf(source.getFileName()));
+            while (found.find())
+                cited.computeIfAbsent(found.group(), _ -> new TreeSet<>()).add(String.valueOf(source.getFileName()));
         }
 
         return cited;

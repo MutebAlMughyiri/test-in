@@ -221,14 +221,16 @@ A marker at both ends does not show that the test reaches the code. `ruleTrace`
 checks that it does (#425):
 
 ```bash
-./gradlew ruleTrace   # runs test and the three IDE test shares first
+./gradlew test ideTest ruleTrace   # it reads what the tests left, so run them first
 ```
 
 After every test method, `TestCoverage` asks the JaCoCo agent what that test
 alone ran, over JMX, and saves it under `build/jacoco/per-test/<task>`.
-`TestCoverageListener` does it for `test`. For the IDE tests it is
-`AbstractIdeTest` and `AbstractOpenEditorsIdeTest`, which is why every IDE test
-extends one of them. `RuleTraceTest` then reads every marker above a test method.
+`TestCoverageListener` does it for the TestNG tests of all four modules: TestNG
+finds it through `META-INF/services/org.testng.ITestNGListener` in the root's
+test resources. For the IDE tests it is `AbstractIdeTest` and
+`AbstractOpenEditorsIdeTest`, which is why every IDE test extends one of them.
+The budget tests run alone after `ruleTrace`, so they are not traced. `RuleTraceTest` then reads every marker above a test method.
 A marker is traced when that test ran at least one line of a declaration that
 the production code marks the same way.
 
@@ -236,8 +238,10 @@ It writes `build/reports/rule-trace/untraced.md`, listing:
 - each marker whose test runs none of its code;
 - each marked test that saved nothing it ran.
 
-CI runs it after the tests and keeps the report. For now it only reports. It
-fails the build once the markers it lists are fixed.
+CI runs it after the tests and keeps the report. For now, it only reports. It
+fails the build once the markers it lists are fixed. A static field or an enum
+constant runs once, when its class loads, so it counts as reached when the test
+runs any line of its file.
 
 ### The coverage gate
 

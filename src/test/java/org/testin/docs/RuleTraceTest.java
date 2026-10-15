@@ -21,7 +21,6 @@ import org.jacoco.core.analysis.CoverageBuilder;
 import org.jacoco.core.analysis.ISourceFileCoverage;
 import org.jacoco.core.tools.ExecFileLoader;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.TestinLogger;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -56,7 +55,9 @@ public class RuleTraceTest {
 
     private static final @NotNull Pattern TEST_METHOD = Pattern.compile("public void (\\w+)\\(");
 
-    private record Span(@NotNull String source, int from, int to) {
+    private static final @NotNull Pattern LOADED_ONCE = Pattern.compile("^\\s*(?:(?:public|private|protected)\\s+)?static\\b|^\\s*[A-Z][A-Z0-9_]*\\s*[(,;]");
+
+    private record Span(@NotNull String source, int from, int to, boolean loadedOnce) {
         @NotNull String where() {
             return source + ":" + from;
         }
@@ -107,9 +108,10 @@ public class RuleTraceTest {
             parentheses += count(code, '(', ')');
 
             final boolean ended = opened ? braces <= 0 : parentheses <= 0 && (code.endsWith(";") || code.endsWith(","));
-            if (ended) return new Span(source, declaration + 1, i + 1);
+            if (ended)
+                return new Span(source, declaration + 1, i + 1, !opened && LOADED_ONCE.matcher(lines.get(declaration)).find());
         }
-        return new Span(source, declaration + 1, lines.size());
+        return new Span(source, declaration + 1, lines.size(), false);
     }
 
     private static @NotNull Map<String, List<Span>> labeledCode() {
@@ -195,7 +197,7 @@ public class RuleTraceTest {
 
     private static boolean ran(final @NotNull Map<String, ISourceFileCoverage> ran, final @NotNull Span span) {
         return Optional.ofNullable(ran.get(span.source()))
-                .map(file -> IntStream.rangeClosed(span.from(), span.to()).anyMatch(line -> file.getLine(line).getInstructionCounter().getCoveredCount() > 0))
+                .map(file -> span.loadedOnce() ? file.getLineCounter().getCoveredCount() > 0 : IntStream.rangeClosed(span.from(), span.to()).anyMatch(line -> file.getLine(line).getInstructionCounter().getCoveredCount() > 0))
                 .orElse(false);
     }
 
@@ -243,7 +245,7 @@ public class RuleTraceTest {
         writeReport("""
                 # %s
                 
-                A test carries a label - `// Rule-PART-NNN` or `// UC-PART-NNN` above the test method. It is traced when that test, run on its own, runs at least one line of a declaration the production code labels the same way.
+                A test carries a label - `// Rule-PART-NNN` or `// UC-PART-NNN` above the test method. It is traced when that test, run on its own, runs at least one line of a declaration the production code labels the same way. A static field or an enum constant runs once, when its class loads, so it counts as run when the test runs any line of its file.
                 
                 # Labels whose test runs none of the code labeled with them (%d)
                 
@@ -253,6 +255,5 @@ public class RuleTraceTest {
                 
                 %s
                 """.formatted(summary, untraced.size(), String.join("\n", untraced), unmeasured.size(), unmeasuredLabels, String.join("\n", unmeasured)));
-        TestinLogger.info(summary + " - the rest are listed in " + REPORT);
     }
 }

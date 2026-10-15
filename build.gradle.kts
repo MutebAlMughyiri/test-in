@@ -192,13 +192,32 @@ allprojects {
     }
 }
 
+// The three modules' tests save what each one ran too (#425). TestNG finds
+// TestCoverageListener through the service file in the root's test resources,
+// so the root's test classes go on each module's test classpath, and the files
+// land in the root's per-test folder, where ruleTrace and the report read them.
+subprojects {
+    pluginManager.withPlugin("java") {
+        dependencies {
+            "testRuntimeOnly"(files(rootProject.layout.buildDirectory.dir("classes/java/test"), rootProject.layout.buildDirectory.dir("resources/test")))
+        }
+    }
+
+    tasks.withType<Test>().configureEach {
+        dependsOn(":testClasses")
+        val ranByEachTest = rootProject.layout.buildDirectory.dir("jacoco/per-test/${project.name}-$name")
+        systemProperty("testin.testCoverage", ranByEachTest.get().asFile.path)
+        doFirst { ranByEachTest.get().asFile.deleteRecursively() }
+    }
+}
+
 tasks.withType<JacocoReportBase>().configureEach {
     executionData.setFrom()
     classDirectories.setFrom()
     sourceDirectories.setFrom()
 
     allprojects.forEach { module ->
-        dependsOn(module.tasks.withType<Test>())
+        dependsOn(module.tasks.withType<Test>().matching { it.name != "ruleTrace" })
         executionData.from(module.fileTree(module.layout.buildDirectory.dir("jacoco")).include("**/*.exec"))
         classDirectories.from(module.tasks.named("instrumentCode"))
         sourceDirectories.from(module.the<SourceSetContainer>()["main"].java.srcDirs)
@@ -542,7 +561,6 @@ tasks {
         // platform plugin's launcher: a separately registered Test task starts
         // on the daemon's JDK, which refuses the JVM flag every test task gets.
         useTestNG {
-            listeners.add("org.testin.TestCoverageListener")
             if (providers.gradleProperty("budget").isPresent) includeGroups("budget") else excludeGroups("budget", "trace")
         }
         exclude("**/*IdeTest.class")
@@ -657,9 +675,10 @@ tasks.register("ideTest") {
 
 /**
  * Whether every test labeled with a rule or a use case runs the code labeled
- * with it (#425). RuleTraceTest reads what each test ran, saved by `test` and
- * the three IDE test shares, so it runs after them all, as a TestNG task of its
- * own on the same JDK as `test`. It measures nothing itself.
+ * with it (#425). RuleTraceTest reads what each test ran, saved by every test
+ * task, so it runs after them all, as a TestNG task of its own on the same JDK
+ * as `test`. After, not on: a failing test must not stop the report. It
+ * measures nothing itself.
  */
 tasks.register<Test>("ruleTrace") {
     group = "verification"
@@ -671,7 +690,7 @@ tasks.register<Test>("ruleTrace") {
     useTestNG { includeGroups("trace") }
     include("org/testin/docs/RuleTraceTest.class")
 
-    dependsOn(tasks.test, ideTestShares.keys)
+    mustRunAfter(listOf("test") + ideTestShares.keys + subprojects.map { "${it.path}:test" })
     inputs.files(layout.buildDirectory.dir("jacoco/per-test")).withPropertyName("ranByEachTest").withPathSensitivity(PathSensitivity.RELATIVE)
     inputs.files(listOf("src", "testin-java/src", "testin-testng/src", "testin-apimodel/src").map { layout.projectDirectory.dir(it) })
         .withPropertyName("labeledSources")
