@@ -146,12 +146,15 @@ public final class TestRunWalk {
         final @NotNull List<TestCase> shown = editor.getCurrentTestCases();
 
         for (int i = Math.max(from, 0); i < shown.size(); i++) {
-            if (editor.runItem(shown.get(i).getUuid())
-                    .filter(runItem -> runItem.getStatus() == RunItemStatus.PENDING)
-                    .isPresent()) return i;
+            if (waitsForARunItemStatus(shown.get(i))) return i;
         }
 
         return shown.size();
+    }
+
+    // Rule-EDITOR-PANEL-130, Rule-EDITOR-PANEL-184
+    private boolean waitsForARunItemStatus(final @NotNull TestCase testCase) {
+        return editor.runItem(testCase.getUuid()).filter(runItem -> runItem.getStatus() == RunItemStatus.PENDING).isPresent();
     }
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-132
@@ -191,7 +194,7 @@ public final class TestRunWalk {
         if (!editor.getParent().isOpen()) return;
 
         final @NotNull List<TestCase> automated = editor.snapshotOfAll().stream()
-                .filter(testCase -> editor.runItem(testCase.getUuid()).filter(runItem -> !runItem.isRemoved()).isPresent())
+                .filter(this::waitsForARunItemStatus)
                 .filter(testCase -> !testNGExecution.isRunning(testCase.getUuid()))
                 .toList();
 

@@ -3,9 +3,10 @@
 # UC-EDITOR-PANEL-044: Run every automated test case
 
 **As a** tester, **I want** to set the whole test run's automation going and come back later, **so that** a regression
-test run of 200 test cases executes while I do something else. The test cases that already have a result run again too.
+test run of 200 test cases executes while I do something else. Stopped half way and run again, it carries on from the
+first test case still waiting, as the walk does by hand.
 
-Testin runs every test case that has a generated method, in one go, judged or not.
+Testin runs every test case still waiting for a run item status that has a generated method, in one go.
 
 There is no key and no button in the editor. It starts from the tree, with **Run Tests** on the test run.
 
@@ -35,9 +36,11 @@ There is no key and no button in the editor. It starts from the tree, with **Run
   reported rather than brought into view.
 - **Rule-EDITOR-PANEL-010** — While a grid cell is open for editing, every key
   that would act on the row is refused.
-- **Rule-EDITOR-PANEL-184** — Every test case with a generated method is run,
-  judged or not, and each run adds one more execution (Rule-EDITOR-PANEL-136). A
-  test case without one stays as it is.
+- **Rule-EDITOR-PANEL-184** — Every test case still waiting for a run item
+  status that has a generated method is run, the ones the walk lands on by hand
+  (Rule-EDITOR-PANEL-130). A test case already judged is passed over; its own
+  run button runs it again, as one more execution (Rule-EDITOR-PANEL-136). A
+  test case without a method stays as it is.
 - **Rule-EDITOR-PANEL-185** — The whole set is one configuration and one
   process.
 - **Rule-EDITOR-PANEL-186** — A test run in which every test case has been
@@ -87,7 +90,7 @@ Failed 8*.
 
 1. The tester right-clicks the test run in the tree and chooses **Run Tests**.
 2. The test run's editor opens, or comes to the front.
-3. Testin gathers every test case in the test run, judged or not.
+3. Testin gathers every test case in the test run still waiting for a run item status, and passes over the judged ones.
 4. All of them are claimed by this editor.
 5. They are handed to TestNG as one configuration; a test case with no generated method is dropped.
 6. Results come back one at a time and are written into the test run, silently, each as one more execution. The
