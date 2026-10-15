@@ -60,15 +60,21 @@ public final class TestNGExecution implements Disposable {
 
     private final @NotNull Map<ProcessHandler, String> live = new ConcurrentHashMap<>();
 
+    private final @NotNull Set<String> stopWhenStarted = ConcurrentHashMap.newKeySet();
+
     public TestNGExecution(final @NotNull Project project) {
         this.project = project;
         this.notifier = Services.getInstance(project, Notifier.class);
 
         project.getMessageBus().connect(this).subscribe(ExecutionManager.EXECUTION_TOPIC, new ExecutionListener() {
+            // UC-CODEGEN-009, Rule-CODEGEN-037
             @Override
             public void processStarted(final @NotNull String executorId, final @NotNull ExecutionEnvironment environment, final @NotNull ProcessHandler handler) {
                 final @NotNull String testRunName = environment.getRunProfile().getName();
-                if (registry.launchedHere(testRunName)) live.put(handler, testRunName);
+                if (!registry.launchedHere(testRunName)) return;
+
+                live.put(handler, testRunName);
+                if (stopWhenStarted.remove(testRunName)) kill(handler, testRunName);
             }
 
             @Override
@@ -201,8 +207,9 @@ public final class TestNGExecution implements Disposable {
         if (stop.testCases().isEmpty()) return 0;
 
         final @NotNull Map<ProcessHandler, String> theirs = running(stop.executions());
+        stop.executions().stream().filter(testRunName -> !theirs.containsValue(testRunName)).forEach(stopWhenStarted::add);
         TestinLogger.info("Stopping " + stop.testCases().size() + " test case(s) in " + stop.executions().size()
-                + " execution(s): " + theirs.size() + " had reached a process");
+                + " execution(s): " + theirs.size() + " had reached a process, the rest end as theirs starts");
 
         theirs.forEach(this::kill);
         stop.testCases().forEach(testCaseUuid -> TestNGExecutionReported.broadcast(project, key(testCaseUuid), TestNGExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
@@ -212,6 +219,7 @@ public final class TestNGExecution implements Disposable {
 
     // UC-CODEGEN-008, Rule-CODEGEN-092, Rule-CODEGEN-110
     private void ended(final @NotNull ExecutionEnvironment environment) {
+        stopWhenStarted.remove(environment.getRunProfile().getName());
         ApplicationManager.getApplication().invokeLater(() -> {
             final @NotNull String testRunName = environment.getRunProfile().getName();
             final @NotNull List<UUID> open = registry.ended(testRunName);

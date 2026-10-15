@@ -33,7 +33,8 @@ There is no key of its own. `F5` on a running test case stops it.
 - **Rule-CODEGEN-036** — While a test case is running, the run button and the
   menu entry both become the stop.
 - **Rule-CODEGEN-037** — Stopping one test case stops every test case running
-  with it. One execution is one process.
+  with it. One execution is one process. An execution stopped while the IDE is
+  still building it ends the moment its process starts.
 - **Rule-CODEGEN-038** — A test case the tester stopped is recorded as not run,
   never as failed.
 - **Rule-CODEGEN-094** — Stop ends only executions Testin started. An execution
