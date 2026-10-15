@@ -171,7 +171,7 @@ public class RunItem {
         return isJudged() ? Duration.ZERO : shownExecution().getDuration();
     }
 
-    // UC-EDITOR-PANEL-041, Rule-EDITOR-PANEL-172, Rule-EDITOR-PANEL-295
+    // UC-EDITOR-PANEL-041, Rule-EDITOR-PANEL-172
     public void recordActualResult(final @NotNull String actual) {
         shownExecution().setActualResult(actual);
     }

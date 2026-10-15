@@ -132,9 +132,9 @@ There is no key for this. It starts on its own.
   empty field is not written, and a passed run item stores no failure detail: no
   actual result, stacktrace, screenshots, bug severity, bug priority or bug
   issue. When a test case or a node was created is always written, because a
-  fresh one holds the moment it was made, and so are a run item's `default` and
-  `executions` and each execution's `status`, so a run item says what it is in
-  every case (#432).
+  fresh one holds the moment it was made. A run item's `default` and
+  `executions` and each execution's `status` are always written too, so a run
+  item says what it is in every case (#432).
 
 ## The budget
 
