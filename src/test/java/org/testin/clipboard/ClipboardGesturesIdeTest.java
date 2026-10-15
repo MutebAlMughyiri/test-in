@@ -132,6 +132,13 @@ public class ClipboardGesturesIdeTest extends AbstractTempRootIdeTest {
         return e;
     }
 
+    private void pressedEscapeOn(final @NotNull JComponent on) {
+        final @NotNull AnAction escape = ActionUtil.getActions(on).stream()
+                .filter(action -> Stream.of(action.getShortcutSet().getShortcuts()).anyMatch(shortcut -> shortcut instanceof final KeyboardShortcut key && Shortcuts.Escape.getKey().equals(key.getFirstKeyStroke())))
+                .findFirst().orElseThrow(() -> new AssertionError("nothing on the cards answers Escape"));
+        ActionUtil.performAction(escape, eventOn(escape, on));
+    }
+
     private boolean offered(final @NotNull String actionId, final @NotNull JComponent on) {
         return eventOn(ActionManager.getInstance().getAction(actionId), on).getPresentation().isEnabled();
     }
@@ -229,11 +236,20 @@ public class ClipboardGesturesIdeTest extends AbstractTempRootIdeTest {
 
         choose(CUT, login.getList());
         assertTrue(cutState().isCutting());
-        final @NotNull AnAction escape = ActionUtil.getActions(login.getList()).stream()
-                .filter(action -> Stream.of(action.getShortcutSet().getShortcuts()).anyMatch(shortcut -> shortcut instanceof final KeyboardShortcut key && Shortcuts.Escape.getKey().equals(key.getFirstKeyStroke())))
-                .findFirst().orElseThrow(() -> new AssertionError("nothing on the cards answers Escape"));
-        ActionUtil.performAction(escape, eventOn(escape, login.getList()));
+        pressedEscapeOn(login.getList());
         assertFalse("Escape did not call the cut off", cutState().isCutting());
+    }
+
+    // Rule-EDITOR-PANEL-262
+    public void testEscapeDropsCopiedTestCasesAndEmptiesTheClipboard() {
+        final @NotNull TestSetEditor login = aTestSetOf("Login", "Log in", "Log out");
+        login.getList().setSelectedIndex(0);
+        choose(COPY, login.getList());
+        assertFalse("nothing was copied", CopiedTestCases.onTheClipboard(getProject()).isEmpty());
+
+        pressedEscapeOn(login.getList());
+
+        assertTrue("copied test cases still wait to be pasted after Escape", CopiedTestCases.onTheClipboard(getProject()).isEmpty());
     }
 
     // Rule-EDITOR-PANEL-081, Rule-EDITOR-PANEL-083

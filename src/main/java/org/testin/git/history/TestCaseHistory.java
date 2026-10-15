@@ -91,6 +91,7 @@ public final class TestCaseHistory {
         }
     }
 
+    // Rule-VIEW-PANEL-096
     static @NotNull List<HistoryCommit> commits(final @NotNull String log, final @NotNull String path) {
         return Arrays.stream(log.split(RECORD)).filter(record -> !record.isBlank()).map(record -> commit(record, path)).toList();
     }
@@ -107,7 +108,7 @@ public final class TestCaseHistory {
         return new HistoryCommit(fields[0], fields[1], authoredAt(fields[2]), fields.length > 3 ? fields[3] : "", lines.size() > 1 ? lines.getLast().strip() : path);
     }
 
-    // Rule-VIEW-PANEL-096, Rule-VIEW-PANEL-098, Rule-VIEW-PANEL-113
+    // Rule-VIEW-PANEL-096, Rule-VIEW-PANEL-098, Rule-VIEW-PANEL-113, Rule-VIEW-PANEL-101
     static @NotNull List<TestCaseHistoryCard> entries(final @NotNull JsonCodec mapper, final @NotNull List<HistoryCommit> commits, final @NotNull Map<String, String> versions, final @NotNull Optional<TestCase> now) {
         final @NotNull List<Optional<TestCase>> read = commits.stream().map(commit -> FileKind.TEST_CASE.uuidIn(Path.of(commit.path())).flatMap(testCaseUuid -> parsed(mapper, versions.getOrDefault(commit.objectName(), ""), testCaseUuid))).toList();
         final @NotNull List<TestCaseHistoryCard> entries = new ArrayList<>();

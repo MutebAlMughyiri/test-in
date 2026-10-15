@@ -249,7 +249,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorFields, Tes
         CreateTestCaseAction.openCreateDialog(project, this, parent);
     }
 
-    // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-014
+    // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-014, Rule-EDITOR-PANEL-023
     @Override
     public @NotNull String cardTitle(final @NotNull TestCase testCase) {
         final @NotNull Set<TestSetEditorFields> selected = getSelectedDetails();

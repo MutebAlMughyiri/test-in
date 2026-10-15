@@ -72,7 +72,7 @@ public class TestRunMarker extends AbstractMarker {
         status = testRunStatus;
     }
 
-    // UC-SHARE-012, Rule-EDITOR-PANEL-239, Rule-INTERNAL-117
+    // UC-SHARE-012, Rule-EDITOR-PANEL-239, Rule-INTERNAL-117, Rule-SHARE-130, Rule-TREE-PANEL-135
     public void recordCommit(final @NotNull String hash) {
         commit = hash;
         status = TestRunStatus.COMMITTED;
@@ -89,7 +89,7 @@ public class TestRunMarker extends AbstractMarker {
             executionStartedAt = ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS);
     }
 
-    // Rule-EDITOR-PANEL-155
+    // Rule-EDITOR-PANEL-155, Rule-EDITOR-PANEL-151
     public void markExecutionEnded() {
         if (DateFormats.isNotExecuted(executionStartedAt)) return;
 

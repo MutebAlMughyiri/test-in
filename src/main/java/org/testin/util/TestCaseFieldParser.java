@@ -81,6 +81,7 @@ public final class TestCaseFieldParser {
         return Optional.empty();
     }
 
+    // Rule-SHARE-106
     public static @NotNull Optional<TestCaseStatus> testCaseStatus(final @NotNull String value, final @NotNull TestCaseStatus currentTestCaseStatus) {
         final @NotNull String wanted = value.trim();
         if (wanted.isEmpty()) return Optional.of(currentTestCaseStatus);
@@ -93,7 +94,7 @@ public final class TestCaseFieldParser {
         return Optional.empty();
     }
 
-    // UC-SHARE-005, Rule-SHARE-121
+    // UC-SHARE-005, Rule-SHARE-121, Rule-SHARE-106, Rule-SHARE-106
     public static @NotNull Optional<ZonedDateTime> date(final @NotNull String value) {
         if (value.isBlank()) return Optional.of(DateFormats.NOT_EXECUTED);
 
@@ -110,6 +111,7 @@ public final class TestCaseFieldParser {
         }
     }
 
+    // Rule-SHARE-106
     public static @NotNull Optional<List<String>> groups(final @NotNull String rawGroups) {
         return Optional.of(Groups.read(rawGroups));
     }

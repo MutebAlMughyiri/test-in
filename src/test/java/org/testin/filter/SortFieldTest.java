@@ -83,7 +83,7 @@ public class SortFieldTest {
         assertEquals(sorted(SortField.DESCRIPTION, SortDirection.ASCENDING, inTheSet), List.of("Apple", "banana", "cherry"));
     }
 
-    // Rule-EDITOR-PANEL-274, Rule-EDITOR-PANEL-276
+    // Rule-EDITOR-PANEL-274, Rule-EDITOR-PANEL-275
     @Test
     public void theRunItemFieldsReadTheRunItemAndLeaveTheUnexecutedLast() {
         final @NotNull TestCase slow = aTestCase("slow", Priority.LOW, "");
@@ -100,7 +100,7 @@ public class SortFieldTest {
                 "Run Item Status follows the order the Run Item Status filter lists them in: Passed, Failed, Blocked, Pending");
     }
 
-    // Rule-EDITOR-PANEL-276
+    // Rule-EDITOR-PANEL-275
     @Test
     public void aRunItemFieldWithNoRunItemSortsNothingAndLosesNothing() {
         final @NotNull List<TestCase> inTheSet = List.of(aTestCase("a", Priority.LOW, ""), aTestCase("b", Priority.LOW, ""));

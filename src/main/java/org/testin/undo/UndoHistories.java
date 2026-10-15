@@ -108,6 +108,7 @@ public final class UndoHistories {
         history.redoStack.forEach(operation -> operation.forget().run());
     }
 
+    // Rule-EDITOR-PANEL-007, Rule-INTERNAL-045
     private @NotNull History of(final @NotNull UndoScope scope) {
         return histories.computeIfAbsent(scope, _ -> new History());
     }

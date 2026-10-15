@@ -42,6 +42,7 @@ public final class RadioSelection<T> implements DialogComponent {
     private @NotNull Runnable changed = () -> {
     };
 
+    // Rule-INTERNAL-107
     RadioSelection(final @NotNull String caption, final @NotNull List<Option<T>> options, final @NotNull T initial) {
         this.selected = initial;
 

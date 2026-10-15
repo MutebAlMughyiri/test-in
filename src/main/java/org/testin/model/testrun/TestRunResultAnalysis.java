@@ -82,6 +82,7 @@ public enum TestRunResultAnalysis {
         return false;
     }
 
+    // Rule-EDITOR-PANEL-191
     public static @NotNull Map<TestRunResultAnalysis, String> written(final @NotNull Map<TestRunResultAnalysis, String> analysis) {
         final @NotNull Map<TestRunResultAnalysis, String> kept = new EnumMap<>(TestRunResultAnalysis.class);
 
@@ -104,6 +105,7 @@ public enum TestRunResultAnalysis {
         return runItemStatus.labelIn(testRunStatus);
     }
 
+    // Rule-EDITOR-PANEL-190
     public @NotNull String heading(final @NotNull TestRunSummary summary, final @NotNull TestRunStatus testRunStatus) {
         return labelIn(testRunStatus) + " (" + count.applyAsLong(summary) + ")";
     }

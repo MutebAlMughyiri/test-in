@@ -70,7 +70,7 @@ public class TestCaseAsJudgedTest {
         assertEquals(runItem.liveTestCase().getDescription(), "after", "actions still reach the test case as it is now");
     }
 
-    // Rule-EDITOR-PANEL-240
+    // Rule-EDITOR-PANEL-159
     @Test
     public void aCorrectionChangesOnlyTheRunItemStatusWhoAndWhen() {
         final UUID testCaseUuid = UUID.randomUUID();

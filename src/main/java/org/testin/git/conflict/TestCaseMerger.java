@@ -50,7 +50,7 @@ public final class TestCaseMerger {
         return FileKind.of(Path.of(relativePath)) == FileKind.TEST_CASE && slashed.contains(NodeType.TEST_CASES_FOLDER.getFolderName() + "/");
     }
 
-    // UC-SHARE-018, Rule-SHARE-080
+    // UC-SHARE-018, Rule-SHARE-080, Rule-SHARE-109, Rule-SHARE-078, Rule-SHARE-109, Rule-SHARE-078, Rule-SHARE-081
     public static @NotNull MergeOutcome of(final @NotNull JsonCodec mapper, final @NotNull String base, final @NotNull String mine, final @NotNull String theirs) {
         final @NotNull ThreeWayMerge merging = ThreeWayMerge.read(mapper, base, mine, theirs);
         final @NotNull ObjectNode merged = merging.merged();

@@ -23,6 +23,7 @@ import org.testin.util.Bundle;
 
 import java.util.ArrayList;
 
+// Rule-SHARE-052
 @Getter
 @AllArgsConstructor
 public enum ChangeType {

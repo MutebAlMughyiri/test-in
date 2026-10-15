@@ -44,6 +44,7 @@ public final class NameSanitizer {
         return word;
     }
 
+    // Rule-CODEGEN-008
     private static @NotNull String packageWord(final @NotNull String value) {
         final @NotNull String cleanName = INVALID_NAME.matcher(value.replace("-test-cases", ""))
                 .replaceAll("").trim();
@@ -113,6 +114,7 @@ public final class NameSanitizer {
         return SPACES.matcher(INVALID_NAME.matcher(rawDescription).replaceAll("")).replaceAll(" ").trim();
     }
 
+    // Rule-CODEGEN-012, Rule-CODEGEN-016
     public static @NotNull String methodName(final @NotNull String description) {
         final @NotNull StringBuilder result = new StringBuilder();
         for (final String word : description.split("[^a-zA-Z0-9]+", -1)) {

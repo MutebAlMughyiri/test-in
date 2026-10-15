@@ -38,7 +38,7 @@ public class CardSelectionListener implements ListSelectionListener {
 
     private final @NotNull List<String> treePath;
 
-    // UC-EDITOR-PANEL-025, Rule-EDITOR-PANEL-113, Rule-VIEW-PANEL-022
+    // UC-EDITOR-PANEL-025, Rule-EDITOR-PANEL-113, Rule-VIEW-PANEL-022, Rule-VIEW-PANEL-013
     @Override
     public void valueChanged(final ListSelectionEvent e) {
         if (!e.getValueIsAdjusting()) {

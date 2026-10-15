@@ -103,6 +103,7 @@ public final class Fonts {
         return dialog(OPTION, Font.PLAIN);
     }
 
+    // Rule-INTERNAL-087, UC-INTERNAL-007
     public static @NotNull Font caption() {
         return monospaced(dialogSize(), CAPTION);
     }

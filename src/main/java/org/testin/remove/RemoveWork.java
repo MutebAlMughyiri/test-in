@@ -53,7 +53,7 @@ record RemoveWork(@NotNull Project project, @NotNull Nodes nodes, @NotNull Testi
         this(project, Services.getInstance(project, Nodes.class), Services.getInstance(project, TestinEditors.class), Services.getInstance(project, Notifier.class), Services.getInstance(project, UndoHistories.class));
     }
 
-    // UC-TREE-PANEL-012, Rule-TREE-PANEL-038
+    // UC-TREE-PANEL-012, Rule-TREE-PANEL-038, Rule-TREE-PANEL-006
     void confirm(final @NotNull List<AbstractNode> nodesToRemove) {
         final @NotNull String holds = nodesToRemove.size() == 1
                 ? NodeCounter.childCounts(project, nodesToRemove.getFirst()).describe()
@@ -132,7 +132,7 @@ record RemoveWork(@NotNull Project project, @NotNull Nodes nodes, @NotNull Testi
         }
     }
 
-    // UC-TREE-PANEL-012, Rule-TREE-PANEL-040, Rule-INTERNAL-040
+    // UC-TREE-PANEL-012, Rule-TREE-PANEL-040, Rule-INTERNAL-040, Rule-TREE-PANEL-011
     private void recordRemoval(final @NotNull List<AbstractNode> asked, final @NotNull List<Kept> kept) {
         final @NotNull String what = asked.size() == 1
                 ? Bundle.message("remove.undo.one", asked.getFirst().getName())

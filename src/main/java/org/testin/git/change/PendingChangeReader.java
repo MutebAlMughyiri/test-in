@@ -91,6 +91,7 @@ public final class PendingChangeReader {
         return result;
     }
 
+    // Rule-SHARE-112
     private static boolean isListed(final @NotNull Path root, final @NotNull GitStatusEntry entry) {
         final @NotNull Path relativePath = Path.of(entry.path());
         if (FileKind.of(relativePath, folderKindOf(root, relativePath)) == FileKind.SCREENSHOT) return false;

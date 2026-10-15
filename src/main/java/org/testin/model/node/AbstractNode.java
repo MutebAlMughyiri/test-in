@@ -84,6 +84,7 @@ public abstract class AbstractNode {
         return getMarker().getOrder();
     }
 
+    // Rule-TREE-PANEL-058
     public boolean isOrderable() {
         return false;
     }
@@ -98,6 +99,7 @@ public abstract class AbstractNode {
         return List.of();
     }
 
+    // Rule-TREE-PANEL-025
     public boolean canCreateChildren() {
         return !childKinds().isEmpty();
     }
@@ -125,6 +127,7 @@ public abstract class AbstractNode {
         return Optional.empty();
     }
 
+    // Rule-TREE-PANEL-022, Rule-INTERNAL-002
     public boolean isOpenableInEditor() {
         return false;
     }

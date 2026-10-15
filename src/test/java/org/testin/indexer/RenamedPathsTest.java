@@ -42,7 +42,6 @@ public class RenamedPathsTest {
         return testSet;
     }
 
-    // Rule-TREE-PANEL-100
     @Test
     public void onlyWhatIsInsideTheRenamedFolderIsUnderIt() {
         assertTrue(ACCOUNTS.isUnder(TEST_CASES.resolve("Accounts").resolve("Login")));
@@ -51,7 +50,6 @@ public class RenamedPathsTest {
         assertEquals(ACCOUNTS.moved(TEST_CASES.resolve("Accounts").resolve("Login")), TEST_CASES.resolve("Users").resolve("Login"));
     }
 
-    // Rule-TREE-PANEL-100
     @Test
     public void aNodeUnderTheRenamedFolderMovesWithItAndKeepsItsIdentity() {
         final @NotNull TestSetNode login = aTestSetAt(TEST_CASES.resolve("Accounts").resolve("Login"));
@@ -67,7 +65,6 @@ public class RenamedPathsTest {
         assertEquals(payments.getPath(), TEST_CASES.resolve("Payments"), "a test set elsewhere moved");
     }
 
-    // Rule-TREE-PANEL-100
     @Test
     public void theRenamedEntryAndTheKeysUnderItMoveAndNothingElse() {
         final @NotNull Map<String, List<String>> held = new HashMap<>(Map.of(

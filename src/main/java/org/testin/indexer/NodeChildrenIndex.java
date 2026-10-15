@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
 final class NodeChildrenIndex {
-    // Rule-TREE-PANEL-010, Rule-TREE-PANEL-056, Rule-TREE-PANEL-057
+    // Rule-TREE-PANEL-010, Rule-TREE-PANEL-056, Rule-TREE-PANEL-057, Rule-TREE-PANEL-055
     private static final @NotNull Comparator<AbstractNode> BY_ARRANGEMENT = Comparator
             .comparing(AbstractNode::isRetired)
             .thenComparingInt(AbstractNode::getOrder)

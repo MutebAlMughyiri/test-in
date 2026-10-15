@@ -99,7 +99,7 @@ final class TestCaseStore {
         return TestCaseOrder.ordered(testCases);
     }
 
-    // UC-INTERNAL-004, Rule-INTERNAL-033, Rule-INTERNAL-034
+    // UC-INTERNAL-004, Rule-INTERNAL-033, Rule-INTERNAL-034, Rule-SETTING-018
     boolean put(final @NotNull Path testSetPath, final @NotNull TestCase testCase) {
         if (testDataFiles.alreadyHolds(named(testSetPath, testCase.getUuid()), testCase))
             return false;
@@ -134,7 +134,7 @@ final class TestCaseStore {
         return false;
     }
 
-    // UC-EDITOR-PANEL-017, Rule-INTERNAL-035
+    // UC-EDITOR-PANEL-017, Rule-INTERNAL-035, Rule-INTERNAL-112
     boolean move(final @NotNull Path fromSet, final @NotNull Path toSet, final @NotNull TestCase testCase) {
         final @NotNull UUID testCaseUuid = testCase.getUuid();
         final @NotNull Path from = named(fromSet, testCaseUuid);
@@ -159,6 +159,7 @@ final class TestCaseStore {
         return false;
     }
 
+    // Rule-INTERNAL-112
     boolean remove(final @NotNull Path testSetPath, final @NotNull UUID testCaseUuid) {
         if (!testDataFiles.delete(named(testSetPath, testCaseUuid))) return false;
 
@@ -168,7 +169,7 @@ final class TestCaseStore {
         return true;
     }
 
-    // UC-INTERNAL-004, Rule-INTERNAL-031, Rule-INTERNAL-117
+    // UC-INTERNAL-004, Rule-INTERNAL-031, Rule-INTERNAL-117, Rule-INTERNAL-029
     boolean updateSequence(final @NotNull Path testSetPath, final @NotNull List<TestCase> orderedList, final @NotNull List<TestCase> moved) {
         final @NotNull String path = testSetPath.toString();
         final @NotNull List<UUID> testCaseUuids = new ArrayList<>(orderedList.size());

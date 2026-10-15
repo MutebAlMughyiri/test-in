@@ -101,7 +101,7 @@ public abstract class AbstractIconButton extends JButton {
         });
     }
 
-    // Rule-INTERNAL-119
+    // Rule-INTERNAL-119, UC-INTERNAL-007
     public static @NotNull AbstractIconButton of(final @NotNull String tooltip, final @NotNull Icon icon, final @NotNull Runnable onClick) {
         final @NotNull AbstractIconButton button = new AbstractIconButton(tooltip, icon) {
         };

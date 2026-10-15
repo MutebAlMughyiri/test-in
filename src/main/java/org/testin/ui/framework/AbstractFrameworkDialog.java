@@ -330,6 +330,7 @@ public abstract class AbstractFrameworkDialog implements DialogHost {
         return built.orElseThrow();
     }
 
+    // Rule-INTERNAL-057
     private @NotNull DialogComponent primaryComponent() {
         for (final DialogComponent dialogComponent : builtComponents()) {
             if (dialogComponent.wantsFocus()) return dialogComponent;

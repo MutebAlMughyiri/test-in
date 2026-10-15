@@ -79,7 +79,7 @@ public final class JsonCodec {
         }
     }
 
-    // Rule-PRODUCT-003
+    // Rule-PRODUCT-003, Rule-EDITOR-PANEL-005, Rule-INTERNAL-070
     public byte @NotNull [] writeValueAsBytes(final @NotNull Object value) {
         try {
             return mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(value);

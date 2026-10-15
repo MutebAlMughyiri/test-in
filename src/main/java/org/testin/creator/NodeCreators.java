@@ -24,7 +24,7 @@ import org.testin.model.NodeType;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NodeCreators {
-    // UC-TREE-PANEL-002, Rule-TREE-PANEL-011
+    // UC-TREE-PANEL-002
     public static @NotNull NodeCreator of(final @NotNull Project project, final @NotNull NodeType type) {
         return switch (type) {
             case TEST_PROJECT, TEST_CASES_FOLDER, TEST_RUNS_FOLDER -> new NotCreatableFromTree(type.getDescription());

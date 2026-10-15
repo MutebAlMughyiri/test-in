@@ -29,7 +29,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BackgroundWorkIdeTest extends AbstractIdeTest {
 
-    // Rule-CODEGEN-089
     public void testTheEndIsReportedWhenTheTesterCancels() {
         final AtomicBoolean reported = new AtomicBoolean();
 

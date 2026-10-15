@@ -31,6 +31,7 @@ public record IssueCreation(@NotNull Optional<String> url, int notUploaded, @Not
         return new IssueCreation(Optional.empty(), 0, problem);
     }
 
+    // Rule-VIEW-PANEL-073
     static @NotNull IssueCreation of(final @NotNull ProcessOutput answer, final @NotNull String host, final int screenshots) {
         if (answer.isTimeout()) return failed(Bundle.message("bug.send.timed.out", GitHubCli.TIMEOUT.toSeconds()));
 

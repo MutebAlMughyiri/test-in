@@ -40,6 +40,7 @@ public final class NodeCode {
     // UC-CODEGEN-018, Rule-CODEGEN-096
     private final @NotNull CodeChange<AbstractNode> removed;
 
+    // Rule-CODEGEN-096
     public static @NotNull NodeCode of(final @NotNull NodeType type) {
         final @NotNull String nodeType = type.getDescription();
         return switch (type) {

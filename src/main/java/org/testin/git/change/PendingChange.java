@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 public record PendingChange(@NotNull ChangeSubject subject, @NotNull String name, @NotNull String testSet, @NotNull String testCaseUuid, @NotNull Path relativeFilePath, @NotNull GitStatusKind gitStatusKind, @NotNull TestCase committed, @NotNull List<FieldChange> fieldChanges) {
+    // Rule-SHARE-051
     public boolean isRevertible() {
         return subject == ChangeSubject.TEST_CASE && !testCaseUuid.isEmpty();
     }

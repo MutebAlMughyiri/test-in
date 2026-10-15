@@ -78,7 +78,7 @@ record EditTestRunWork(@NotNull Project project, @NotNull TestRuns testRuns, @No
         return saveEdit(testRun, form.getTestRunName(), TestRunFormOpener.checkedTestCases(selection), TestRunFormOpener.offeredTestCases(selection), TestRunConfiguration.answered(form.configuration()));
     }
 
-    // UC-TREE-PANEL-022, Rule-TREE-PANEL-060, Rule-TREE-PANEL-074, Rule-TREE-PANEL-076, Rule-TREE-PANEL-128
+    // UC-TREE-PANEL-022, Rule-TREE-PANEL-060, Rule-TREE-PANEL-074, Rule-TREE-PANEL-076, Rule-TREE-PANEL-128, Rule-TREE-PANEL-073, Rule-TREE-PANEL-073, Rule-TREE-PANEL-073
     boolean saveEdit(final @NotNull TestRunNode testRun, final @NotNull String name, final @NotNull Set<UUID> checked, final @NotNull Set<UUID> offered, final @NotNull Map<TestRunConfiguration, String> configuration) {
         if (name.isEmpty()) {
             notifier.softRefuse(project, Bundle.message("test.run.needs.a.name"));

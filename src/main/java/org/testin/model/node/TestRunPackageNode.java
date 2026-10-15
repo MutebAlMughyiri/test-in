@@ -51,6 +51,7 @@ public class TestRunPackageNode extends AbstractNode {
         return NodeType.UNDER_TEST_RUNS;
     }
 
+    // Rule-PRODUCT-023
     @Override
     public boolean isRetired() {
         return marker.getStatus() == PackageStatus.ARCHIVED;

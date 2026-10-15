@@ -92,6 +92,7 @@ public enum TestRunEditorFields implements ShowableField {
             FieldDefault.OFF,
             runItem -> runItem.shownTestCase().getPriority().getLabel()
     ) {
+        // Rule-EDITOR-PANEL-267
         @Override
         public void applyToUI(final @NotNull RunItem runItem, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
         }

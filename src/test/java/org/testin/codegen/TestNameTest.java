@@ -47,7 +47,7 @@ public class TestNameTest {
         assertTrue(TestName.testCaseUuid(TEST_CASE_UUID + " (one)").isEmpty());
     }
 
-    // Rule-CODEGEN-112
+    // Rule-CODEGEN-110
     @Test
     public void aDataProviderRowNamesTheSameTestCase() {
         assertEquals(TestName.testCaseUuid(TEST_CASE_UUID + "[1234]"), Optional.of(TEST_CASE_UUID));

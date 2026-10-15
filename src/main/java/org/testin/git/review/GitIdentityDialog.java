@@ -38,6 +38,7 @@ final class GitIdentityDialog extends AbstractFrameworkDialog {
 
     private final @NotNull Consumer<@NotNull Identity> onSet;
 
+    // Rule-SHARE-041
     GitIdentityDialog(final @NotNull Project project, final @NotNull Consumer<@NotNull Identity> onSet) {
         super(project);
         this.onSet = onSet;

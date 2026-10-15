@@ -157,6 +157,7 @@ public enum NodeType {
 
     private final @NotNull ImmutableList<NodeFigureRow> counts;
 
+    // Rule-TREE-PANEL-005
     public static boolean isOneFolderName(final @NotNull String name) {
         final @NotNull String trimmed = name.trim();
 

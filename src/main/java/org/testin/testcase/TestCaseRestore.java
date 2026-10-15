@@ -87,7 +87,7 @@ final class TestCaseRestore {
         return allWent;
     }
 
-    // UC-EDITOR-PANEL-017, Rule-EDITOR-PANEL-068
+    // UC-EDITOR-PANEL-017, Rule-EDITOR-PANEL-068, Rule-EDITOR-PANEL-039
     private static boolean restorePresent(final @NotNull Project project, final @NotNull TestCaseSnapshot snapshot, final @NotNull RestoredTestCases written) {
         final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
 

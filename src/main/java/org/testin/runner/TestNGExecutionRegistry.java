@@ -47,6 +47,7 @@ final class TestNGExecutionRegistry {
 
     private final @NotNull Set<UUID> executingNow = ConcurrentHashMap.newKeySet();
 
+    // Rule-CODEGEN-034
     void starting(final @NotNull UUID testCaseUuid) {
         pending.add(testCaseUuid);
         stopped.remove(testCaseUuid);
@@ -178,6 +179,7 @@ final class TestNGExecutionRegistry {
         return new Stop(testRuns, testCases);
     }
 
+    // Rule-CODEGEN-092
     @NotNull List<UUID> ended(final @NotNull String testRunName) {
         if (!launchedNames.remove(testRunName)) return List.of();
 

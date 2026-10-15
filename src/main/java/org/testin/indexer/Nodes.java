@@ -209,7 +209,7 @@ public final class Nodes {
         return false;
     }
 
-    // UC-TREE-PANEL-018, Rule-TREE-PANEL-062, Rule-INTERNAL-117, Rule-TREE-PANEL-066
+    // UC-TREE-PANEL-018, Rule-TREE-PANEL-062, Rule-INTERNAL-117, Rule-TREE-PANEL-066, Rule-TREE-PANEL-008
     public boolean mark(final @NotNull AbstractNode node, final @NotNull NodeStatus nodeStatus, final @NotNull String tester) {
         final @NotNull Marker marker = node.getMarker();
         final @NotNull NodeStatus nodeStatusBefore = marker.nodeStatus();

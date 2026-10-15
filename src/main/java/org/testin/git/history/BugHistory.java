@@ -93,6 +93,7 @@ public final class BugHistory {
                 .collect(Collectors.toMap(testRun -> testProjectPath.relativize(testRun.getKey().resolve(runItem)).toString().replace('\\', '/'), Map.Entry::getValue));
     }
 
+    // Rule-VIEW-PANEL-106
     static @NotNull List<BugCommit> commits(final @NotNull String log) {
         return Arrays.stream(log.split(TestCaseHistory.RECORD)).filter(record -> !record.isBlank()).map(BugHistory::commit).toList();
     }

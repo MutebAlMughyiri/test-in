@@ -234,7 +234,7 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
         assertFalse("closing the tab did not end the automation this editor started", execution.isRunning(testCases.get(2).getUuid()));
     }
 
-    // Rule-EDITOR-PANEL-184, Rule-EDITOR-PANEL-185
+    // Rule-EDITOR-PANEL-184
     public void testRunningTheWholeTestRunHandsEveryTestCaseOverJudgedOrNotAsOneExecution() {
         final @NotNull List<TestCase> testCases = automatedTestCases(4);
         final @NotNull TestRunNode testRun = aTestRun("Cycle-1", List.of(

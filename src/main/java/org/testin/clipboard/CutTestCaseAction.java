@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class CutTestCaseAction extends AbstractAnyProjectAction {
-    // UC-EDITOR-PANEL-016
+    // UC-EDITOR-PANEL-016, Rule-EDITOR-PANEL-079
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
         final @NotNull Optional<TestinEditor> found = TestinDataKeys.editor(e);

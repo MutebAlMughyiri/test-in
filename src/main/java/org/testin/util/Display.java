@@ -58,7 +58,7 @@ public final class Display {
         return DateFormats.DATE_TEXT.matcher(text).find() ? text : "";
     }
 
-    // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-006
+    // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-006, Rule-VIEW-PANEL-061
     public static @NotNull String whoAndWhen(final @NotNull String who, final @NotNull ZonedDateTime at) {
         final @NotNull String when = formatDate(at);
 
@@ -91,6 +91,7 @@ public final class Display {
         return duration.toHours() == 0 ? minutes : duration.toHours() + ":" + minutes;
     }
 
+    // Rule-EDITOR-PANEL-178
     public static @NotNull String formatTestRunClock(final @NotNull Duration duration) {
         return duration.isZero() ? "" : String.format(Locale.ROOT, "%02d:%02d:%02d", duration.toHours(), duration.toMinutesPart(), duration.toSecondsPart());
     }

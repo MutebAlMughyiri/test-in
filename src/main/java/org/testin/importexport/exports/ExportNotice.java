@@ -61,6 +61,7 @@ public final class ExportNotice {
                                 .error(project, Bundle.message("export.open.error.title"), Bundle.message("export.open.missing")));
     }
 
+    // Rule-SHARE-022
     private static void openWithAssociatedProgram(final @NotNull Project project, final @NotNull VirtualFile virtualFile) {
         final @NotNull Notifier notifier = Services.getInstance(project, Notifier.class);
 

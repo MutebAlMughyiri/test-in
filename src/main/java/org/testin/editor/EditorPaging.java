@@ -55,6 +55,7 @@ public final class EditorPaging {
         return window;
     }
 
+    // Rule-EDITOR-PANEL-101
     public <T> @NotNull List<T> onCurrentPage(final @NotNull List<T> all) {
         final @NotNull PageWindow window = window(all.size());
         return new ArrayList<>(all.subList(window.fromIndex(), window.toIndex()));

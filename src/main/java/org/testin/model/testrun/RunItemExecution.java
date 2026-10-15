@@ -82,7 +82,7 @@ public class RunItemExecution {
     // Rule-CODEGEN-112
     private int retry;
 
-    // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-136
+    // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-136, Rule-VIEW-PANEL-033
     public static @NotNull RunItemExecution pending() {
         return RunItemExecution.builder().build();
     }

@@ -78,7 +78,7 @@ public final class MultiLineField implements DialogComponent {
         this(project, field, caption, placeholder, 0, VISIBLE_LINES);
     }
 
-    // Rule-INTERNAL-058, Rule-INTERNAL-095, Rule-INTERNAL-096, Rule-INTERNAL-136
+    // Rule-INTERNAL-058, Rule-INTERNAL-095, Rule-INTERNAL-096, Rule-INTERNAL-136, UC-INTERNAL-007
     public MultiLineField(final @NotNull Project project, final @NotNull EditorTextField field, final @NotNull String caption, final @NotNull String placeholder, final int minimumLines, final int maximumLines) {
         this.project = project;
         this.field = field;
@@ -110,7 +110,7 @@ public final class MultiLineField implements DialogComponent {
             // Rule-INTERNAL-136
             if (maximumLines == NO_LIMIT && editor.getScrollPane() instanceof JBScrollPane pane)
                 pane.setOverlappingScrollBar(true);
-            // Rule-INTERNAL-103
+            // Rule-INTERNAL-103, UC-INTERNAL-007
             editor.getSettings().setShowIntentionBulb(false);
 
             final @NotNull EditorColorsScheme themed = editor.createBoundColorSchemeDelegate(EditorColorsManager.getInstance().getSchemeForCurrentUITheme());
@@ -123,7 +123,7 @@ public final class MultiLineField implements DialogComponent {
         if (minimumLines > 0) fitToLines();
     }
 
-    // Rule-INTERNAL-136
+    // Rule-INTERNAL-136, Rule-INTERNAL-137
     void capHeight(final @NotNull IntSupplier cap) {
         heightCap = cap;
         fitToLines();
@@ -144,7 +144,7 @@ public final class MultiLineField implements DialogComponent {
         });
     }
 
-    // Rule-INTERNAL-060, Rule-EDITOR-PANEL-048, Rule-EDITOR-PANEL-246
+    // Rule-INTERNAL-060, Rule-EDITOR-PANEL-048, Rule-EDITOR-PANEL-246, UC-INTERNAL-007
     public void enableMultiLine(final @NotNull DialogHost host, final @NotNull Runnable onSave) {
         insertsNewLine(host);
 
@@ -215,7 +215,7 @@ public final class MultiLineField implements DialogComponent {
         editor.getScrollingModel().scrollToCaret(ScrollType.RELATIVE);
     }
 
-    // Rule-INTERNAL-102, Rule-INTERNAL-136
+    // Rule-INTERNAL-102, Rule-INTERNAL-136, UC-INTERNAL-007
     private void fitToLines() {
         field.setPreferredSize(null);
 
@@ -230,7 +230,7 @@ public final class MultiLineField implements DialogComponent {
         field.revalidate();
     }
 
-    // Rule-INTERNAL-097
+    // Rule-INTERNAL-097, UC-INTERNAL-007
     private void grew() {
         final int height = field.getPreferredSize().height;
         if (height == packedHeight) return;

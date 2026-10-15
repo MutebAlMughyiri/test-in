@@ -130,7 +130,7 @@ public class KeysTheIdeHoldsIdeTest extends AbstractIdeTest {
         }
     }
 
-    // UC-INTERNAL-001, Rule-INTERNAL-069
+    // Rule-INTERNAL-069
     public void testADefaultKeyTheIdeAlreadyUsesIsTakenOnlyWhereThePluginDescriptorSaysWhichAndWhy() {
         final @NotNull Keymap defaults = Optional.ofNullable(KeymapManagerEx.getInstanceEx().getKeymap("$default")).orElseThrow(() -> new AssertionError("the IDE has no default keymap"));
         final @NotNull String xml = pluginXml();

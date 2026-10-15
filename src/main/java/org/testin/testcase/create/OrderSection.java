@@ -86,6 +86,7 @@ public class OrderSection implements TestCaseSection {
         return wrapper;
     }
 
+    // Rule-EDITOR-PANEL-054
     @Override
     public void fillData(final @NotNull TestCase testCase) {
         final @NotNull List<TestCase> inSet = ExecutionPosition.setOf(project, testCase);
@@ -100,7 +101,7 @@ public class OrderSection implements TestCaseSection {
         outOf.setText(Bundle.message("order.section.of", String.valueOf(size)));
     }
 
-    // UC-EDITOR-PANEL-009, Rule-EDITOR-PANEL-054
+    // UC-EDITOR-PANEL-009
     @Override
     public boolean accepts() {
         try {

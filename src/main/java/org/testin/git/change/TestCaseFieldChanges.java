@@ -36,6 +36,7 @@ import java.util.stream.IntStream;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestCaseFieldChanges {
+    // Rule-SHARE-045
     public static @NotNull List<FieldChange> compare(final @NotNull TestCase oldState, final @NotNull TestCase newState) {
         final @NotNull List<FieldChange> changes = new ArrayList<>();
         addIfChanged(changes, TestSetEditorFields.DESCRIPTION.getName(), oldState.getDescription(), newState.getDescription(), ChangeType.CHANGE_DESCRIPTION);

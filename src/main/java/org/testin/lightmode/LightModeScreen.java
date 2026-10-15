@@ -85,7 +85,6 @@ final class LightModeScreen {
 
     private static final @NotNull List<TestCaseQuickAction> KEYED = List.of(TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD, TestCaseQuickAction.RUN_TEST_METHOD);
 
-    // Rule-EDITOR-PANEL-128
     private final @NotNull TestRunEditor editor;
 
     private final @NotNull RunItemRecorder runItemStatusService;
@@ -156,6 +155,7 @@ final class LightModeScreen {
 
     private boolean detailsKeyHeld = false;
 
+    // Rule-EDITOR-PANEL-128
     LightModeScreen(final @NotNull TestRunEditor editor, final @NotNull Runnable onClosed) {
         this.editor = editor;
         this.runItemStatusService = Services.getInstance(editor.getProject(), RunItemRecorder.class);

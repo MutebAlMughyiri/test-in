@@ -117,7 +117,7 @@ record SyncWork(@NotNull Project project, @NotNull GitRepositoryService git, @No
                 () -> finishRebase(repoPath, RebaseEnd.ABORT));
     }
 
-    // UC-SHARE-017
+    // UC-SHARE-017, Rule-SHARE-079
     private void resolveConflicts(final @NotNull Path repoPath) {
         ApplicationManager.getApplication().executeOnPooledThread(() ->
                 ConflictResolution.resolveRebase(project, repoPath,

@@ -29,7 +29,7 @@ import org.testin.model.markers.TestCasesFolderMarker;
 
 import java.util.List;
 
-// Rule-PRODUCT-006
+// Rule-PRODUCT-006, Rule-TREE-PANEL-002
 @Setter
 @Getter
 @NoArgsConstructor
@@ -65,6 +65,7 @@ public class TestCasesFolderNode extends AbstractNode {
         return NodeType.TEST_CASES_FOLDER;
     }
 
+    // Rule-TREE-PANEL-024
     @Override
     public @NotNull List<NodeType> childKinds() {
         return NodeType.UNDER_TEST_CASES;

@@ -86,7 +86,7 @@ public final class DialogStyle {
         return panelIsLighter == JBColor.isBright();
     }
 
-    // Rule-INTERNAL-099
+    // Rule-INTERNAL-099, UC-INTERNAL-007
     public static @NotNull JBPanel<?> section(final @NotNull JComponent top, final @NotNull JComponent content) {
         final @NotNull JBPanel<?> panel = asSection(new JBPanel<>(new BorderLayout(0, JBUI.scale(Spacing.M))));
         panel.add(top, BorderLayout.NORTH);
@@ -137,7 +137,7 @@ public final class DialogStyle {
         component.setBorder(new FieldFrame());
     }
 
-    // Rule-INTERNAL-095, Rule-INTERNAL-096
+    // Rule-INTERNAL-095, Rule-INTERNAL-096, Rule-INTERNAL-121, UC-INTERNAL-007
     public static void asField(final @NotNull JComponent component) {
         component.setFont(Fonts.field());
         component.setBorder(JBUI.Borders.empty(Spacing.L, Spacing.XL));

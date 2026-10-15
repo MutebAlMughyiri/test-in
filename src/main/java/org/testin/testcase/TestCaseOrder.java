@@ -27,6 +27,7 @@ import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestCaseOrder {
+    // Rule-INTERNAL-030, Rule-INTERNAL-029, UC-INTERNAL-004
     private static final @NotNull Comparator<TestCase> BY_RANK = Comparator
             .comparing((TestCase testCase) -> testCase.getOrder().isEmpty())
             .thenComparing(TestCase::getOrder)
@@ -52,7 +53,7 @@ public final class TestCaseOrder {
         return place > 0 ? String.valueOf(place) : "";
     }
 
-    // UC-EDITOR-PANEL-010, Rule-EDITOR-PANEL-060
+    // UC-EDITOR-PANEL-010, Rule-EDITOR-PANEL-060, Rule-INTERNAL-031
     public static @NotNull List<TestCase> place(final @NotNull List<TestCase> arranged) {
         final @NotNull List<TestCase> moved = new ArrayList<>();
         String previous = "";

@@ -37,6 +37,7 @@ import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
+import org.testin.model.testrun.Failure;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
@@ -349,6 +350,22 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
         } finally {
             Disposer.dispose(editor);
         }
+    }
+
+    // Rule-EDITOR-PANEL-240
+    public void testExecutionsChangeOnlyWhileTheTestRunTakesRunItemStatuses() {
+        final @NotNull TestCase testCase = createdTestCases(1).getFirst();
+        final @NotNull RunItem twice = EditorFixtures.pending(testCase);
+        twice.recordRunItemStatus(RunItemStatus.FAILED, "Muteb", Duration.ZERO, Failure.NONE);
+        twice.recordRunItemStatus(RunItemStatus.PASSED, "Muteb", Duration.ZERO, Failure.NONE);
+        final @NotNull TestRunNode testRun = aTestRunOver(List.of(twice));
+
+        assertTrue("the default could not be chosen while the test run takes run item statuses", runItemStatuses().chooseExecution(testRun.getPath(), testCase.getUuid(), 0));
+
+        testRun.getMarker().changeStatus(TestRunStatus.COMMITTED);
+
+        assertFalse("an execution was removed from a committed test run", runItemStatuses().removeExecution(testRun.getPath(), testCase.getUuid(), 0));
+        assertEquals("a committed test run lost an execution", 2, runItemOf(testRun, testCase).getExecutions().size());
     }
 
     // Rule-EDITOR-PANEL-163, Rule-EDITOR-PANEL-164

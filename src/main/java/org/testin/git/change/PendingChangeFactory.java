@@ -71,6 +71,7 @@ final class PendingChangeFactory {
         }
     }
 
+    // Rule-SHARE-046
     private static @NotNull PendingChange testCase(final @NotNull GitStatusKind gitStatusKind, final @NotNull String beforeJson, final @NotNull String afterJson, final @NotNull Path relativePath, final @NotNull JsonCodec mapper) {
         final @NotNull String testSet = parentName(relativePath);
         // Rule-INTERNAL-012

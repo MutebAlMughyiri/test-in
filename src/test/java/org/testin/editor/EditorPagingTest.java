@@ -81,7 +81,6 @@ public class EditorPagingTest {
         assertEquals(paging.getPage(), 2, "a test case on no page moved the page");
     }
 
-    // Rule-EDITOR-PANEL-107
     @Test
     public void aPageSizeOfNothingStillPagesOneAtATime() {
         final @NotNull EditorPaging paging = new EditorPaging(0);

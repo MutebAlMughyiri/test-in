@@ -126,6 +126,7 @@ public enum TestSetEditorFields implements ShowableField {
             CodeChangeType.UPDATE_TEST_CASE_PRIORITY,
             Can.EDIT, Can.IMPORT, Can.COPY, Can.EXPORT
     ) {
+        // Rule-EDITOR-PANEL-267
         @Override
         public void applyToUI(final @NotNull TestCase testCase, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
         }
@@ -312,7 +313,7 @@ public enum TestSetEditorFields implements ShowableField {
                 : Bundle.message("field.value.many", String.valueOf(refused)));
     }
 
-    // UC-SHARE-002, Rule-SHARE-001
+    // UC-SHARE-002, Rule-SHARE-001, Rule-SHARE-034
     public static @NotNull List<TestSetEditorFields> all(final @NotNull Can capability) {
         return BY_CAPABILITY.getOrDefault(capability, List.of());
     }

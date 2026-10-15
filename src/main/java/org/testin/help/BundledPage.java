@@ -33,6 +33,7 @@ import java.util.Optional;
 public record BundledPage(@NotNull String path) {
     private static final @NotNull String ROOT = "/docs/";
 
+    // Rule-INTERNAL-130
     public static boolean isPage(final @NotNull String href) {
         return !href.contains(":") && URI.create(href).getPath().endsWith(".md");
     }

@@ -43,6 +43,7 @@ public class TestSetNode extends AbstractNode {
         return true;
     }
 
+    // Rule-INTERNAL-002
     @Override
     public boolean isOpenableInEditor() {
         return true;
@@ -58,6 +59,7 @@ public class TestSetNode extends AbstractNode {
         return NodeType.TEST_SET;
     }
 
+    // Rule-PRODUCT-022
     @Override
     public boolean isRetired() {
         return marker.getStatus() == TestSetStatus.DEPRECATED;

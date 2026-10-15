@@ -59,6 +59,7 @@ public final class CardPanelBuilder {
         list.getEmptyText().setText(Bundle.message("editor.loading"));
         // Rule-INTERNAL-122
         list.getAccessibleContext().setAccessibleName(Bundle.message("editor.test.cases"));
+        // Rule-EDITOR-PANEL-108
         list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         list.setExpandableItemsEnabled(false);
 

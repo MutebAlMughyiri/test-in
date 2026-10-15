@@ -47,6 +47,7 @@ public abstract class AbstractFieldsPopupButton<E extends Enum<E> & ShowableFiel
 
     private final @NotNull AtomicBoolean refreshQueued = new AtomicBoolean();
 
+    // Rule-EDITOR-PANEL-272
     protected AbstractFieldsPopupButton(final @NotNull String tooltip, final @NotNull String propertyKey, final @NotNull Class<E> fieldType, final @NotNull Runnable onToolBarDetailsSelectedChanged) {
         super(tooltip, AllIcons.Actions.Selectall);
 

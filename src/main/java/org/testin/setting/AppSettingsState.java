@@ -36,6 +36,7 @@ public final class AppSettingsState implements PersistentStateComponent<AppSetti
 
     public @NotNull String rootTestinPath = "";
 
+    // Rule-SETTING-025
     public @NotNull String logLevel = "INFO";
 
     public @NotNull String defaultDownloadFolder = "";

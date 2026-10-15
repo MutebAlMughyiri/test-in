@@ -41,7 +41,7 @@ public final class ReportFileName {
         return of(Services.getInstance(project, BoundTestProject.class).name(), testRun.getName(), at);
     }
 
-    // UC-REPORT-001, Rule-REPORT-007, Rule-REPORT-008
+    // UC-REPORT-001, Rule-REPORT-007, Rule-REPORT-008, Rule-REPORT-006
     static @NotNull String of(final @NotNull String testProjectName, final @NotNull String testRunName, final @NotNull ZonedDateTime at) {
         return Stream.of("TestRun", safe(testProjectName), safe(testRunName), STAMP.format(at))
                 .filter(part -> !part.isBlank())

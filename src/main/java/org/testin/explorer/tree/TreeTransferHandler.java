@@ -357,7 +357,7 @@ public class TreeTransferHandler extends TransferHandler {
         notifier.softShowCounted(project, cut ? Done.CUT : Done.COPIED, directories.size());
     }
 
-    // UC-TREE-PANEL-013, Rule-TREE-PANEL-050, Rule-TREE-PANEL-006
+    // UC-TREE-PANEL-013, Rule-TREE-PANEL-050, Rule-TREE-PANEL-006, Rule-TREE-PANEL-046
     public void pasteFromClipboard(final @NotNull AbstractNode target) {
         ClipboardContents.withFlavor(NODE_FLAVOR).ifPresent(contents -> {
             final boolean wasCut = isCut(contents);

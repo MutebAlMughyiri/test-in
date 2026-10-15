@@ -65,7 +65,7 @@ public final class SelectionTable implements DialogComponent {
         };
 
         table = new JBTable(model) {
-            // Rule-INTERNAL-102
+            // Rule-INTERNAL-102, UC-INTERNAL-007
             @Override
             public @NotNull Dimension getPreferredScrollableViewportSize() {
                 return new Dimension(super.getPreferredScrollableViewportSize().width, DialogSize.VISIBLE_ROWS * getRowHeight());

@@ -77,12 +77,14 @@ public final class GitHubCli {
         return IssueCreation.failed(Bundle.message("bug.send.not.written", FailureText.of(ex)));
     }
 
+    // Rule-VIEW-PANEL-078
     static @NotNull List<String> arguments(final @NotNull BugRepository repository, final @NotNull String title, final int screenshots) {
         final @NotNull List<String> arguments = new ArrayList<>(List.of("issue", "create", "--repo", repository.ghRepo(), "--title=" + title, "--body-file", BODY_FILE));
         IntStream.rangeClosed(1, screenshots).forEach(number -> arguments.addAll(List.of("--attach", "./" + BugTemplate.screenshotFile(number))));
         return arguments;
     }
 
+    // Rule-VIEW-PANEL-092, Rule-VIEW-PANEL-094
     static @NotNull List<String> stateArguments(final @NotNull BugRepository repository, final @NotNull Collection<Integer> numbers, final boolean boards) {
         final @NotNull String issues = numbers.stream()
                 .map(number -> "i%d: issue(number: %d) { %s }".formatted(number, number, boards ? STATE + " " + BOARD : STATE))

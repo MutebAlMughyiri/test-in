@@ -169,6 +169,7 @@ public enum FileFormat {
         return importHandler.execute(project, importFile);
     }
 
+    // Rule-REPORT-001
     public byte @NotNull [] generateReport(final @NotNull Project project, final @NotNull TestRunNode testRunNode, final @NotNull RunItems runItems) {
         if (!isReportable()) throw new IllegalStateException(label + " has no report generator");
         return reportHandler.execute(project, testRunNode, runItems);

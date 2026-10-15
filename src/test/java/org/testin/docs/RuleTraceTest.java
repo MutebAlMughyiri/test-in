@@ -86,6 +86,22 @@ public class RuleTraceTest {
         return LABEL.matcher(marker).results().map(MatchResult::group).toList();
     }
 
+    private static boolean isOnlyAnnotations(final @NotNull String line) {
+        @NotNull String rest = line.strip();
+        while (rest.startsWith("@")) {
+            int end = 1;
+            while (end < rest.length() && (Character.isJavaIdentifierPart(rest.charAt(end)) || rest.charAt(end) == '.'))
+                end++;
+            int depth = 0;
+            while (end < rest.length() && (depth > 0 || rest.charAt(end) == '(')) {
+                depth += rest.charAt(end) == '(' ? 1 : rest.charAt(end) == ')' ? -1 : 0;
+                end++;
+            }
+            rest = rest.substring(end).strip();
+        }
+        return rest.isEmpty();
+    }
+
     private static int count(final @NotNull String code, final char opening, final char closing) {
         return (int) (code.chars().filter(character -> character == opening).count() - code.chars().filter(character -> character == closing).count());
     }
@@ -96,7 +112,7 @@ public class RuleTraceTest {
 
     private static @NotNull Span spanAfter(final @NotNull String source, final @NotNull List<String> lines, final int marker) {
         int declaration = marker + 1;
-        while (declaration < lines.size() && lines.get(declaration).strip().startsWith("@")) declaration++;
+        while (declaration < lines.size() && isOnlyAnnotations(lines.get(declaration))) declaration++;
 
         int braces = 0;
         int parentheses = 0;

@@ -119,7 +119,7 @@ public class RunItem {
         return RunItem.builder().uuid(testCase.getUuid()).build().showing(Optional.of(testCase), Optional.empty(), Optional.empty(), false);
     }
 
-    // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-126, Rule-EDITOR-PANEL-239
+    // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-126, Rule-EDITOR-PANEL-239, Rule-EDITOR-PANEL-238
     public @NotNull RunItem showing(final @NotNull Optional<TestCase> now, final @NotNull Optional<TestCase> inCommit, final @NotNull Optional<TestCase> lastVersion, final boolean committed) {
         live = now;
         recorded = inCommit;
@@ -173,7 +173,7 @@ public class RunItem {
         return isJudged() ? Duration.ZERO : shownExecution().getDuration();
     }
 
-    // UC-EDITOR-PANEL-041, Rule-EDITOR-PANEL-172
+    // UC-EDITOR-PANEL-041, Rule-EDITOR-PANEL-172, Rule-EDITOR-PANEL-286
     public void recordActualResult(final @NotNull String actual) {
         shownExecution().setActualResult(actual);
     }
@@ -288,7 +288,7 @@ public class RunItem {
         return index + 1 < executions.size() && executions.get(index + 1).getRetry() > 0;
     }
 
-    // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-239, Rule-REPORT-021, Rule-VIEW-PANEL-083
+    // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-239, Rule-REPORT-021, Rule-VIEW-PANEL-083, Rule-EDITOR-PANEL-238
     public @NotNull TestCase shownTestCase() {
         return recorded.or(() -> live).or(() -> lastInGit).orElseGet(() -> TestCase.deleted(uuid));
     }

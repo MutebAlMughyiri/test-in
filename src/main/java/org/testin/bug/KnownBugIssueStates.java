@@ -65,6 +65,7 @@ public final class KnownBugIssueStates {
         this.gh = ApplicationManager.getApplication().isUnitTestMode() ? Optional.empty() : Optional.of(GitHubCli::onPath);
     }
 
+    // Rule-VIEW-PANEL-092
     static @NotNull Map<BugRepository, Set<Integer>> filedIn(final @NotNull Collection<RunItems> testRuns) {
         return testRuns.stream()
                 .flatMap(testRun -> testRun.getAll().stream())

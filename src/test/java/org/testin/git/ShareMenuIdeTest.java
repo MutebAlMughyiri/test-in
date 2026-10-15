@@ -49,7 +49,7 @@ public class ShareMenuIdeTest extends AbstractIdeTest {
         return event;
     }
 
-    // UC-SHARE-001, Rule-SHARE-006
+    // Rule-SHARE-006
     public void testNothingHereIsInTheKeymap() {
         for (final String actionId : SHARE_ACTIONS) {
             action(actionId);

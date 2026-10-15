@@ -163,7 +163,7 @@ public class TestRunMergeTest {
         assertEquals(merge.merged().path("commit").asText(), "ea9a501", "a Committed test run without its commit would read nothing");
     }
 
-    // Rule-SHARE-130
+    // Rule-SHARE-080
     @Test
     public void aCommitIsKeptWhenTheOtherSideIsBehind() {
         final MergeOutcome merge = TestRunMarkerMerger.of(RealJsonCodec.build(), BASE_MARKER, MINE_MARKER.replace("\"status\" : \"IN_PROGRESS\"", "\"status\" : \"COMMITTED\", \"commit\" : \"ea9a501\""), THEIRS_MARKER);

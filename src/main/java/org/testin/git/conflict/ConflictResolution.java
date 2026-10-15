@@ -104,7 +104,7 @@ public final class ConflictResolution {
         return Optional.empty();
     }
 
-    // UC-SHARE-017, Rule-SHARE-078
+    // UC-SHARE-017, Rule-SHARE-078, Rule-SHARE-079
     public static void resolve(final @NotNull Project project, final @NotNull Path repositoryPath, final @NotNull List<String> conflicting, final @NotNull Runnable onResolved, final @NotNull Consumer<List<String>> onLeftOver) {
         final @NotNull GitRepositoryService git = new GitRepositoryService(project);
         final @NotNull JsonCodec mapper = Services.getInstance(project, JsonCodec.class);

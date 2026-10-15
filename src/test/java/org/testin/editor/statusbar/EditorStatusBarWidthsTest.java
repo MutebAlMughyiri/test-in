@@ -45,7 +45,7 @@ public class EditorStatusBarWidthsTest {
         }
     }
 
-    // Rule-EDITOR-PANEL-251, Rule-EDITOR-PANEL-257
+    // Rule-EDITOR-PANEL-251
     @Test
     public void aBarJustWideEnoughPlacesEverythingSideBySide() {
         assertEquals(EditorStatusBar.arrowsAt(CONTENT, SENTENCE, ARROWS, FIGURES), SENTENCE, "nothing is cut short when the bar is exactly as wide as what it holds");

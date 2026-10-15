@@ -59,7 +59,7 @@ public class ExportExcel {
         }
     }
 
-    // UC-SHARE-002, Rule-SHARE-012
+    // UC-SHARE-002, Rule-SHARE-012, Rule-SHARE-007
     public void exportToFile(final @NotNull File destFile, final @NotNull Map<String, List<TestCase>> sheetsData) {
         try (SXSSFWorkbook workbook = new SXSSFWorkbook()) {
             final @NotNull CellStyle headerStyle = workbook.createCellStyle();

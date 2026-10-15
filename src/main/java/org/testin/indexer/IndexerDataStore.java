@@ -378,6 +378,7 @@ final class IndexerDataStore {
         TestinLogger.info("Removed test run package at: " + pathText);
     }
 
+    // Rule-TREE-PANEL-002
     boolean addTestProject(final @NotNull TestProjectNode testProject) {
         final boolean written = markers.write(testProject.getPath(), testProject.getMarkerFileName(), testProject.getMarker())
                 && markers.write(testProject.getTestCasesFolder().getPath(), NodeType.TEST_CASES_FOLDER.getMarker(), testProject.getTestCasesFolder().getMarker())

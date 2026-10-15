@@ -151,7 +151,7 @@ public class ViewPanel implements Disposable {
         return scrollPane;
     }
 
-    // UC-VIEW-PANEL-001, Rule-VIEW-PANEL-010, Rule-VIEW-PANEL-012
+    // UC-VIEW-PANEL-001, Rule-VIEW-PANEL-010, Rule-VIEW-PANEL-012, Rule-VIEW-PANEL-007
     public void show(final @NotNull List<TestCase> testCases, final @NotNull List<String> treePath) {
         if (testCases.isEmpty()) return;
 

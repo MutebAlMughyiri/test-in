@@ -54,6 +54,7 @@ public class RunItems {
     @Builder.Default
     private List<RunItem> all = new ArrayList<>();
 
+    // Rule-TREE-PANEL-031
     public @NotNull RunItems coverOnly(final @NotNull Set<UUID> wanted) {
         final @NotNull Map<UUID, RunItem> held = new LinkedHashMap<>();
         all.forEach(runItem -> held.put(runItem.getUuid(), runItem));

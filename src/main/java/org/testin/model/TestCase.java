@@ -153,6 +153,7 @@ public final class TestCase {
         updatedAt = ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS);
     }
 
+    // Rule-SHARE-052
     public void takeAuditOf(final @NotNull TestCase other) {
         createdBy = other.createdBy;
         createdAt = other.createdAt;

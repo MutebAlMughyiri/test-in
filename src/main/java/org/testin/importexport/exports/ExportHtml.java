@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ExportHtml {
-    // UC-SHARE-002, Rule-SHARE-022
+    // UC-SHARE-002
     public void exportToFile(final @NotNull File destFile, final @NotNull Map<String, List<TestCase>> sheetsData) {
         try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(destFile), StandardCharsets.UTF_8))) {
             writeHtmlDocument(writer, sheetsData);

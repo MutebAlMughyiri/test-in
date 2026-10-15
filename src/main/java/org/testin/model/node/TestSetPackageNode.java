@@ -56,6 +56,7 @@ public class TestSetPackageNode extends AbstractNode {
         return NodeType.UNDER_TEST_CASES;
     }
 
+    // Rule-PRODUCT-023
     @Override
     public boolean isRetired() {
         return marker.getStatus() == PackageStatus.ARCHIVED;

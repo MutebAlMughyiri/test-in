@@ -75,7 +75,7 @@ public abstract class AbstractJsonSplitBulkSectionDialog extends AbstractFramewo
 
     protected abstract @NotNull String getJsonFieldName();
 
-    // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-039
+    // UC-EDITOR-PANEL-007
     protected abstract @NotNull TestSetEditorFields attribute();
 
     // Rule-EDITOR-PANEL-005

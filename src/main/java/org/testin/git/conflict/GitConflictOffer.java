@@ -58,7 +58,7 @@ public final class GitConflictOffer {
                 notifier.action(Bundle.message("git.conflicts.abort.rebase"), onAbort));
     }
 
-    // UC-SHARE-017
+    // UC-SHARE-017, Rule-SHARE-079, Rule-SHARE-079
     static @NotNull String conflictMessage(final @NotNull List<String> unmergedPaths) {
         if (unmergedPaths.isEmpty()) {
             return Bundle.message("git.conflict.unnamed");

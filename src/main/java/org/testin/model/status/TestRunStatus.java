@@ -95,7 +95,7 @@ public enum TestRunStatus implements MenuItem {
     @Getter(AccessLevel.NONE)
     private final @NotNull SetBy setBy;
 
-    // UC-TREE-PANEL-020, Rule-TREE-PANEL-068, Rule-TREE-PANEL-092
+    // UC-TREE-PANEL-020, Rule-TREE-PANEL-068, Rule-TREE-PANEL-092, Rule-TREE-PANEL-135, Rule-TREE-PANEL-135
     public boolean canBeSetFrom(final @NotNull TestRunStatus currentTestRunStatus) {
         return setBy == SetBy.TESTER && stage > currentTestRunStatus.stage;
     }

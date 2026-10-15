@@ -31,7 +31,6 @@ public enum TestSetStatus implements NodeStatus {
             true
     ),
 
-    // Rule-PRODUCT-022
     DEPRECATED(
             Bundle.message("status.test.set.deprecated"),
             Bundle.message("status.test.set.deprecated.action"),

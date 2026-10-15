@@ -35,6 +35,7 @@ final class LightModeZoom {
     @Getter
     private float level;
 
+    // UC-EDITOR-PANEL-046
     LightModeZoom(final float level) {
         this.level = Math.clamp(level, MIN, MAX);
     }

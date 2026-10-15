@@ -24,14 +24,14 @@ import static org.testng.Assert.assertSame;
 
 public class FieldOrderTest {
 
-    // Rule-EDITOR-PANEL-272
+    // Rule-EDITOR-PANEL-020
     @Test
     public void theSequenceThenTheOrderLeadTheTestSetFields() {
         assertSame(TestSetEditorFields.atColumn(0), TestSetEditorFields.SEQUENCE);
         assertSame(TestSetEditorFields.atColumn(1), TestSetEditorFields.ORDER);
     }
 
-    // Rule-EDITOR-PANEL-272
+    // Rule-EDITOR-PANEL-020
     @Test
     public void theSequenceThenTheOrderLeadTheTestRunFields() {
         assertSame(TestRunEditorFields.atColumn(0), TestRunEditorFields.SEQUENCE);

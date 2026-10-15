@@ -27,7 +27,7 @@ import java.util.List;
 
 public class CopiedTestCasesIdeTest extends AbstractIdeTest {
 
-    // Rule-EDITOR-PANEL-262
+    // Rule-EDITOR-PANEL-085
     public void testOnlyTestCasesOnTheClipboardAreWaitingToBePasted() {
         CopyPasteManager.getInstance().setContents(new StringSelection("a line copied from a bug report"));
         assertTrue("text the tester copied elsewhere was read as test cases waiting to be pasted", CopiedTestCases.onTheClipboard(getProject()).isEmpty());
@@ -36,7 +36,7 @@ public class CopiedTestCasesIdeTest extends AbstractIdeTest {
         assertEquals("a copied test case was not seen waiting on the clipboard", List.of("Log in"), CopiedTestCases.onTheClipboard(getProject()).stream().map(TestCase::getDescription).toList());
     }
 
-    // Rule-INTERNAL-012, Rule-EDITOR-PANEL-262
+    // Rule-INTERNAL-012, Rule-EDITOR-PANEL-085
     public void testATestCaseOnTheClipboardKeepsItsUuidAndOneWithoutIsNotATestCase() {
         final TestCase copied = TestCase.builder().description("Log in").build();
         CopyPasteManager.getInstance().setContents(new StringSelection(CopiedTestCases.json(getProject(), List.of(copied))));

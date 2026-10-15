@@ -74,12 +74,13 @@ public class TestRunNode extends AbstractNode {
         return testRunPath.resolve(name);
     }
 
+    // Rule-INTERNAL-002
     @Override
     public boolean isOpenableInEditor() {
         return true;
     }
 
-    // Rule-TREE-PANEL-009
+    // Rule-TREE-PANEL-009, Rule-TREE-PANEL-135
     public boolean isOpen() {
         return !marker.getStatus().isTerminal();
     }

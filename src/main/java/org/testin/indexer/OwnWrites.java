@@ -86,7 +86,7 @@ public final class OwnWrites {
         return areOurs(path, project.getLocationHash());
     }
 
-    // UC-INTERNAL-003, Rule-INTERNAL-019
+    // UC-INTERNAL-003, Rule-INTERNAL-019, Rule-INTERNAL-064
     boolean areOurs(final @NotNull Path path, final @NotNull String window) {
         final @NotNull Optional<Claim> claim = Optional.ofNullable(written.get(key(path)))
                 .filter(one -> System.currentTimeMillis() - one.at() < SETTLES_IN_MILLIS)

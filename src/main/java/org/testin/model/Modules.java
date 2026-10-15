@@ -26,6 +26,7 @@ import java.util.Set;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Modules {
+    // Rule-EDITOR-PANEL-095
     public static @NotNull Set<String> in(final @NotNull List<TestCase> testCases) {
         final @NotNull Set<String> modules = new HashSet<>();
 

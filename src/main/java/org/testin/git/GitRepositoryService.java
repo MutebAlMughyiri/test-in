@@ -45,7 +45,7 @@ public final class GitRepositoryService {
         return refNames.lines().filter(name -> !name.isBlank()).distinct().sorted().toList();
     }
 
-    // UC-SHARE-009
+    // UC-SHARE-009, Rule-SHARE-043
     public void initialize(final @NotNull Path repositoryPath) {
         GitCommandRunner.execute(project, repositoryPath, GitCommand.INIT);
     }
