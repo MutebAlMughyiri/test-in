@@ -44,8 +44,6 @@ public final class FixedColors {
 
     public static final @NotNull JBColor ORANGE = new JBColor(Color.ORANGE, Color.ORANGE);
 
-    public static final @NotNull JBColor YELLOW = new JBColor(Color.YELLOW, Color.YELLOW);
-
     private static final @NotNull Color BLUISH_WHITE = ColorUtil.mix(WHITE, BLUE, 0.2);
 
     private static final @NotNull Color DARK_BLUE = ColorUtil.mix(BLUE, BLACK, 0.4);
