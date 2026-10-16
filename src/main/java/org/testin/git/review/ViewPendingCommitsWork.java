@@ -224,7 +224,7 @@ public record ViewPendingCommitsWork(@NotNull Project project, @NotNull GitRepos
                     final @NotNull String commit = commits.shortHeadHash(repoPath);
                     try {
                         recordCompletedTestRuns(repoPath);
-                    } catch (final GitFailed ex) {
+                    } catch (final GitFailed | IllegalStateException ex) {
                         GitFailureNotice.show(project, Bundle.message("git.record.failed.title"), Bundle.message("git.record.failed.message", commitLabel(commit)) + System.lineSeparator() + FailureText.of(ex));
                     }
 

@@ -199,7 +199,7 @@ final class RunItemWriter {
     void awaitWrites() {
         try {
             queue.submit(() -> {
-            }).get(10, TimeUnit.SECONDS);
+            }).get(60, TimeUnit.SECONDS);
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
             throw new IllegalStateException("Interrupted while the test run writer was writing", ex);

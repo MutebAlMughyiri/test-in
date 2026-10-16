@@ -84,6 +84,12 @@ cursor. Nothing is committed. The dialog stays open.
 and the commit follows it. That is
 [UC-SHARE-008](setGitIdentity.md).
 
+**If the commit is in but recording the Completed test runs fails** — because
+Git refused the second commit, or a test run's marker was not written in time —
+a message titled **Test Runs Not Recorded** says the tester's commit is in and
+the next commit takes them. With Commit & Push, the push still goes
+(Rule-SHARE-130).
+
 **If the commit fails for any other reason** — a message titled **Commit
 Failed** reads *Failed to commit changes:* and then the reason.
 
