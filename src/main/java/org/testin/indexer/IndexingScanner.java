@@ -31,6 +31,7 @@ import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestRunPackageNode;
 import org.testin.model.node.TestRunsFolderNode;
+import org.testin.model.node.TestRunsReading;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
 import org.testin.model.testrun.RunItem;
@@ -141,7 +142,7 @@ final class IndexingScanner {
             scanned.getTestCasesFolders().put(testCasesFolder.getPath().toString(), testCasesFolder);
             final @NotNull TestRunsFolderNode testRunsFolder = testProject.getTestRunsFolder();
             scanned.getTestRunsFolders().put(testRunsFolder.getPath().toString(), testRunsFolder);
-            testRunsFolder.setTestRunsRead(testRunsReadBefore(testProjectPath));
+            testRunsFolder.setTestRunsReading(testRunsReadingBefore(testProjectPath));
 
             final long testCasesStarted = System.nanoTime();
             scanTestSets(testCasesFolder.getPath(), testCasesFolder, indicator, unread, scanned);
@@ -158,7 +159,7 @@ final class IndexingScanner {
             if (canceled(indicator, testProjectPath)) return Optional.empty();
 
             store.swapInTestRuns(testProjectPath, scanned);
-            testRunsFolder.setTestRunsRead(true);
+            testRunsFolder.setTestRunsReading(TestRunsReading.READ);
 
             indicator.setFraction(1.0);
             indicator.setText(Bundle.message("indexer.progress.test.project.done", testProject.getName()));
@@ -172,22 +173,34 @@ final class IndexingScanner {
             return Optional.empty();
         } catch (final Exception ex) {
             TestinLogger.error("Failed to scan project: " + testProjectPath.getFileName() + " - " + FailureText.of(ex));
+            stopped(testProjectPath);
             return Optional.of(FailureText.of(ex));
         }
     }
 
     // Rule-INTERNAL-141, Rule-TREE-PANEL-142
-    private boolean testRunsReadBefore(final @NotNull Path testProjectPath) {
-        return Optional.ofNullable(store.getTestProjectsByPath().get(testProjectPath.toString()))
-                .map(previous -> previous.getTestRunsFolder().isTestRunsRead())
-                .orElse(false);
+    private @NotNull TestRunsReading testRunsReadingBefore(final @NotNull Path testProjectPath) {
+        return storedTestRunsFolder(testProjectPath)
+                .map(TestRunsFolderNode::getTestRunsReading)
+                .filter(TestRunsReading.READ::equals)
+                .orElse(TestRunsReading.READING);
     }
 
-    private static boolean canceled(final @NotNull ProgressIndicator indicator, final @NotNull Path testProjectPath) {
+    private boolean canceled(final @NotNull ProgressIndicator indicator, final @NotNull Path testProjectPath) {
         if (!indicator.isCanceled()) return false;
 
         TestinLogger.info("Reading " + testProjectPath.getFileName() + " was canceled, so the part not yet read was left as it was");
+        stopped(testProjectPath);
         return true;
+    }
+
+    // Rule-TREE-PANEL-142
+    private void stopped(final @NotNull Path testProjectPath) {
+        storedTestRunsFolder(testProjectPath).ifPresent(testRunsFolder -> testRunsFolder.setTestRunsReading(testRunsFolder.getTestRunsReading().stopped()));
+    }
+
+    private @NotNull Optional<TestRunsFolderNode> storedTestRunsFolder(final @NotNull Path testProjectPath) {
+        return Optional.ofNullable(store.getTestProjectsByPath().get(testProjectPath.toString())).map(TestProjectNode::getTestRunsFolder);
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-008, Rule-INTERNAL-015

@@ -16,6 +16,8 @@
 
 package org.testin.indexer;
 
+import com.intellij.openapi.progress.EmptyProgressIndicator;
+import com.intellij.openapi.progress.ProgressIndicator;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.NodeType;
 import org.testin.model.FileKind;
@@ -179,6 +181,30 @@ public class ReadTestProjectIdeTest extends AbstractReadTheRootIdeTest {
             }
         });
         return seen;
+    }
+
+    private static @NotNull String labelOfTheTestRunsFolderIn(final @NotNull IndexerDataStore store, final @NotNull Path testProjectPath) {
+        return Optional.ofNullable(store.getTestProjectsByPath().get(testProjectPath.toString()))
+                .map(testProject -> testProject.getTestRunsFolder().statusShownInTree())
+                .orElseThrow(() -> new AssertionError("the test project was not read"));
+    }
+
+    // UC-INTERNAL-002, Rule-TREE-PANEL-142
+    public void testAReadCanceledBeforeItsTestRunsLeavesTheFolderSayingNotReadUntilAReadGetsThemIn() {
+        final @NotNull Path testProjectPath = aTestProjectAt(root.resolve("Checkout"));
+        aTestCaseIn(marked(theTestCasesOf(testProjectPath).resolve("Login"), NodeType.TEST_SET));
+        marked(theTestRunsOf(testProjectPath).resolve("Cycle 1"), NodeType.TEST_RUN);
+        final @NotNull IndexerDataStore store = new IndexerDataStore(getProject());
+        final @NotNull ProgressIndicator canceledBetweenTheHalves = new EmptyProgressIndicator();
+
+        new IndexingScanner(getProject(), store, canceledBetweenTheHalves::cancel).scanTestProject(testProjectPath, canceledBetweenTheHalves);
+        assertEquals("a read canceled before its test runs left the folder saying it is still reading", Bundle.message("tree.test.runs.not.read"), labelOfTheTestRunsFolderIn(store, testProjectPath));
+
+        final @NotNull List<String> whileTheTestRunsAreRead = new ArrayList<>();
+        new IndexingScanner(getProject(), store, () -> whileTheTestRunsAreRead.add(labelOfTheTestRunsFolderIn(store, testProjectPath))).scanTestProject(testProjectPath, new EmptyProgressIndicator());
+
+        assertEquals("the next read did not say it is reading the test runs", List.of(Bundle.message("tree.test.runs.reading")), whileTheTestRunsAreRead);
+        assertEquals("the folder still says Not read after a read got its test runs in", "", labelOfTheTestRunsFolderIn(store, testProjectPath));
     }
 
     private @NotNull String labelOfTheTestRunsFolder(final @NotNull Path testProjectPath) {

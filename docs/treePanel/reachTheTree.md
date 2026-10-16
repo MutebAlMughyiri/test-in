@@ -99,7 +99,8 @@ prevent.
 - **Rule-TREE-PANEL-142** — The tree is drawn as soon as a test project's test
   cases are read, and again when its test runs are. Until its test runs are read
   for the first time - when the IDE starts, and on Refresh - the Test Runs
-  folder says Reading test runs in gray and holds nothing.
+  folder says Reading test runs in gray and holds nothing. A read canceled or
+  stopped before them leaves it saying Not read, until a read gets them in.
 
 Rule-TREE-PANEL-100 also holds here. It says a test project that is not **Active** is drawn in the tree and holds
 nothing. It is written on

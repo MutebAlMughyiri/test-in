@@ -26,7 +26,6 @@ import lombok.experimental.SuperBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.NodeType;
 import org.testin.model.markers.TestRunsFolderMarker;
-import org.testin.util.Bundle;
 
 import java.util.List;
 
@@ -43,12 +42,12 @@ public class TestRunsFolderNode extends AbstractNode {
 
     // Rule-TREE-PANEL-142
     @Builder.Default
-    private volatile boolean testRunsRead = true;
+    private volatile @NotNull TestRunsReading testRunsReading = TestRunsReading.READ;
 
     // Rule-TREE-PANEL-142
     @Override
     public @NotNull String statusShownInTree() {
-        return testRunsRead ? super.statusShownInTree() : Bundle.message("tree.test.runs.reading");
+        return testRunsReading == TestRunsReading.READ ? super.statusShownInTree() : testRunsReading.getLabel();
     }
 
     @Override
