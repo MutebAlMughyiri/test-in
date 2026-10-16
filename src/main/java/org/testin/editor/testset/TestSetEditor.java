@@ -17,6 +17,7 @@
 package org.testin.editor.testset;
 
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.StatusText;
@@ -129,7 +130,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorFields, Tes
                     loading = false;
                     refreshView();
                     onLoaded.run();
-                });
+                }, ModalityState.nonModal());
                 return;
             }
 
@@ -152,7 +153,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorFields, Tes
                 refreshView();
                 focusIfGoingTo();
                 onLoaded.run();
-            });
+            }, ModalityState.nonModal());
 
         } catch (final Exception ex) {
             TestinLogger.error("Failed to load test set data from disk: " + FailureText.of(ex));
@@ -162,7 +163,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorFields, Tes
                 list.setPaintBusy(false);
                 loading = false;
                 list.getEmptyText().setText(Bundle.message("editor.test.unreadable"));
-            });
+            }, ModalityState.nonModal());
         }
     }
 

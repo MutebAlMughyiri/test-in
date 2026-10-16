@@ -16,6 +16,9 @@
 
 package org.testin.editor;
 
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.application.TransactionGuard;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.testFramework.PlatformTestUtil;
 import com.intellij.ui.table.JBTable;
@@ -24,6 +27,7 @@ import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
 import org.testin.Said;
 import org.testin.editor.open.TestinEditors;
+import org.testin.editor.open.UnifiedVirtualFile;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.editor.toolbar.GridViewButton;
@@ -53,6 +57,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
 
@@ -118,6 +123,22 @@ public class RefreshEditorIdeTest extends AbstractTempRootIdeTest {
         } finally {
             Disposer.dispose(editor);
         }
+    }
+
+    // UC-EDITOR-PANEL-027
+    public void testALoadBegunInTheAnyModalityTheIdeCreatesEditorsInEndsWhereItMayWrite() {
+        final @NotNull TestSetNode testSet = aTestSet();
+        EditorFixtures.testCases(getProject(), testSet, 2);
+        final @NotNull List<Boolean> writingAllowed = new CopyOnWriteArrayList<>();
+
+        ApplicationManager.getApplication().invokeLater(() -> {
+            final @NotNull AbstractTestinEditor<?, ?> editor = new TestSetEditor(getProject(), new UnifiedVirtualFile(testSet));
+            Disposer.register(getTestRootDisposable(), editor);
+            editor.reloadData(() -> writingAllowed.add(TransactionGuard.getInstance().isWritingAllowed()));
+        }, ModalityState.any());
+        Await.until("the test set editor never loaded", () -> !writingAllowed.isEmpty());
+
+        assertEquals("the load came back in the any modality it began in, where nothing it starts may write", List.of(true), writingAllowed);
     }
 
     // Rule-EDITOR-PANEL-118

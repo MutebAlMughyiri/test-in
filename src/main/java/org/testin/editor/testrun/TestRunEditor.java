@@ -169,7 +169,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
                     list.getEmptyText().setText(Bundle.message("editor.test.run.unreadable"));
 
                     startWhenLoaded = false;
-                });
+                }, ModalityState.nonModal());
             }
         });
     }
