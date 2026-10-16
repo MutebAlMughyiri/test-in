@@ -44,8 +44,8 @@ between them.
   recycle bin. What the bin does not take, because the desktop has none or a
   file in it is open in another program, stays where it is, and Testin says so
   in a notification titled *Not Removed*. Only the files Testin makes for itself
-  are deleted outright: a write in progress, the copies it keeps for undo, and a
-  file it hands to git, gh or an agent.
+  are deleted outright: a file it is still writing, the copies it keeps for
+  undo, and a file it hands to git, gh or an agent.
 
 ## Where a removed node goes
 

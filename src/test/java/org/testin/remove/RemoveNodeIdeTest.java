@@ -24,6 +24,7 @@ import org.testin.AbstractCodegenIdeTest;
 import org.testin.Await;
 import org.testin.Said;
 import org.testin.TreeGesture;
+import org.testin.codegen.Fqcn;
 import org.testin.codegen.JavaSourceRoot;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.recyclebin.RecycleBin;
@@ -44,6 +45,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 
 public class RemoveNodeIdeTest extends AbstractCodegenIdeTest {
 
@@ -154,27 +156,28 @@ public class RemoveNodeIdeTest extends AbstractCodegenIdeTest {
         assertTrue("a removal that removed nothing said Removed", said.shown().stream().noneMatch(shown -> shown.startsWith(Done.REMOVED.getOutcome())));
     }
 
-    private @NotNull VirtualFile theTestSourceRoot() {
-        return JavaSourceRoot.find(getProject()).orElseThrow(() -> new AssertionError("the project has no test source folder"));
+    private @NotNull Optional<VirtualFile> classFileOf(final @NotNull TestSetNode testSet) {
+        final @NotNull VirtualFile testSourceRoot = JavaSourceRoot.find(getProject()).orElseThrow(() -> new AssertionError("the project has no test source folder"));
+        return Fqcn.classFileOf(testSet).flatMap(relativePath -> JavaSourceRoot.under(testSourceRoot, relativePath));
     }
 
-    private @NotNull String textOf(final @NotNull String relativePath) {
-        return JavaSourceRoot.under(theTestSourceRoot(), relativePath).map(file -> {
+    private @NotNull String codeOf(final @NotNull TestSetNode testSet) {
+        return classFileOf(testSet).map(file -> {
             try {
                 return VfsUtil.loadText(file);
             } catch (final IOException ex) {
-                throw new AssertionError("could not read " + relativePath, ex);
+                throw new AssertionError("could not read the class of " + testSet.getName(), ex);
             }
         }).orElse("");
     }
 
-    private void theTesterWrites(final @NotNull String relativePath, final @NotNull String line) {
-        final @NotNull VirtualFile file = JavaSourceRoot.under(theTestSourceRoot(), relativePath).orElseThrow(() -> new AssertionError(relativePath + " was never written"));
+    private void theTesterWrites(final @NotNull TestSetNode testSet, final @NotNull String line) {
+        final @NotNull VirtualFile file = classFileOf(testSet).orElseThrow(() -> new AssertionError(testSet.getName() + " was given no class"));
         WriteAction.run(() -> {
             try {
                 VfsUtil.saveText(file, VfsUtil.loadText(file) + line);
             } catch (final IOException ex) {
-                throw new AssertionError("could not write " + relativePath, ex);
+                throw new AssertionError("could not write the class of " + testSet.getName(), ex);
             }
         });
     }
@@ -182,16 +185,16 @@ public class RemoveNodeIdeTest extends AbstractCodegenIdeTest {
     // Rule-CODEGEN-113, Rule-TREE-PANEL-040
     public void testUndoingTheRemovalOfATestSetPutsItsClassBackWithWhatTheTesterWrote() {
         final @NotNull TestSetNode login = createdTestSet("Login");
-        theTesterWrites("nafath/LoginTest.java", "// what the tester wrote" + System.lineSeparator());
+        theTesterWrites(login, "// what the tester wrote" + System.lineSeparator());
 
         removeAsked(List.of(login));
         confirmed();
-        Await.until("removing the test set left its class behind", () -> textOf("nafath/LoginTest.java").isEmpty());
+        Await.until("removing the test set left its class behind", () -> codeOf(login).isEmpty());
         Await.until("the removal never went onto the tree's history", () -> undoHistories().canUndo(UndoScope.TREE));
 
         assertTrue("undoing the removal was refused", undoHistories().undo(UndoScope.TREE));
 
-        Await.until("undoing the removal did not put the class back with what the tester wrote", () -> textOf("nafath/LoginTest.java").contains("// what the tester wrote"));
+        Await.until("undoing the removal did not put the class back with what the tester wrote", () -> codeOf(login).contains("// what the tester wrote"));
     }
 
     // Rule-TREE-PANEL-039
