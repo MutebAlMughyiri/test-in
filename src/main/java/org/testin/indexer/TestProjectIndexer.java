@@ -233,7 +233,7 @@ public final class TestProjectIndexer {
     // UC-INTERNAL-002
     private void finishWithFailure() {
         indexing.set(false);
-        TestinLogger.warn("Indexing finished with errors; will retry on the next request.");
+        TestinLogger.info("Indexing ended before every test project was read, so they are read again on the next request.");
     }
 
     private void restoreOpenEditorsOnce() {

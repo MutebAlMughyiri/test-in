@@ -49,6 +49,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
@@ -172,7 +173,10 @@ final class IndexingScanner {
             problems.clashingTestCases(testProject.getName(), List.copyOf(scanned.getClashingTestCases()));
             return Optional.empty();
         } catch (final Exception ex) {
-            TestinLogger.error("Failed to scan project: " + testProjectPath.getFileName() + " - " + FailureText.of(ex));
+            if (ex instanceof CancellationException)
+                TestinLogger.info("Reading " + testProjectPath.getFileName() + " stopped before it finished: " + FailureText.of(ex));
+            else
+                TestinLogger.error("Failed to scan project: " + testProjectPath.getFileName() + " - " + FailureText.of(ex));
             stopped(testProjectPath);
             return Optional.of(FailureText.of(ex));
         }
@@ -363,16 +367,18 @@ final class IndexingScanner {
         scanned.getTestRunNodes().put(path.toString(), testRun);
 
         // Rule-INTERNAL-011
-        scanned.getRunItemsByPath().put(path.toString(), new RunItems().setAll(runItemsIn(path, scanned)));
+        scanned.getRunItemsByPath().put(path.toString(), new RunItems().setAll(runItemsIn(path, indicator, scanned)));
 
         indicator.setText(Bundle.message("indexer.progress.test.run", path.getFileName()));
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-011, Rule-INTERNAL-012
-    private @NotNull List<RunItem> runItemsIn(final @NotNull Path testRunPath, final @NotNull ScannedTestProject scanned) {
+    private @NotNull List<RunItem> runItemsIn(final @NotNull Path testRunPath, final @NotNull ProgressIndicator indicator, final @NotNull ScannedTestProject scanned) {
         final @NotNull List<RunItem> read = new ArrayList<>();
 
         for (final Path file : testDataFiles.runItemsIn(testRunPath)) {
+            if (indicator.isCanceled()) break;
+
             // Rule-INTERNAL-094
             final @NotNull Optional<UUID> testCaseUuid = FileKind.RUN_ITEM.uuidIn(file);
             if (testCaseUuid.isEmpty()) {
