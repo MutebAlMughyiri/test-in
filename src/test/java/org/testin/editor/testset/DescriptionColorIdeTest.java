@@ -47,8 +47,8 @@ public class DescriptionColorIdeTest extends AbstractTempRootIdeTest {
     }
 
     // Rule-EDITOR-PANEL-294
-    public void testAReviewedTestCaseIsWhiteWithALittleYellow() {
-        assertEquals(FixedColors.CREAM, descriptionOf(TestCaseStatus.REVIEWED));
+    public void testAReviewedTestCaseIsWhiteWithALittleBlue() {
+        assertEquals(FixedColors.PALE_BLUE, descriptionOf(TestCaseStatus.REVIEWED));
     }
 
     // Rule-EDITOR-PANEL-294

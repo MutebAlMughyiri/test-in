@@ -46,10 +46,10 @@ public final class FixedColors {
 
     public static final @NotNull JBColor YELLOW = new JBColor(Color.YELLOW, Color.YELLOW);
 
-    private static final @NotNull Color PALE_YELLOW = ColorUtil.mix(WHITE, YELLOW, 0.2);
+    private static final @NotNull Color BLUISH_WHITE = ColorUtil.mix(WHITE, BLUE, 0.2);
 
-    private static final @NotNull Color DARK_YELLOW = ColorUtil.mix(YELLOW, BLACK, 0.4);
+    private static final @NotNull Color DARK_BLUE = ColorUtil.mix(BLUE, BLACK, 0.4);
 
     // Rule-EDITOR-PANEL-294
-    public static final @NotNull JBColor CREAM = new JBColor(DARK_YELLOW, PALE_YELLOW);
+    public static final @NotNull JBColor PALE_BLUE = new JBColor(DARK_BLUE, BLUISH_WHITE);
 }

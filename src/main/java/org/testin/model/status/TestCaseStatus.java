@@ -32,7 +32,7 @@ public enum TestCaseStatus {
     REVIEWED(
             Bundle.message("status.test.case.reviewed"),
             true,
-            FixedColors.CREAM,
+            FixedColors.PALE_BLUE,
             false
     ),
 
