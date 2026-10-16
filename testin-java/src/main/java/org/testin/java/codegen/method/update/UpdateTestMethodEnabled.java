@@ -28,10 +28,7 @@ public class UpdateTestMethodEnabled extends BaseTestMethodChange implements Cod
     // UC-CODEGEN-013, Rule-CODEGEN-047, Rule-CODEGEN-048
     @Override
     public void execute(final @NotNull Project project, final @NotNull TestCase testCase) {
-        applyUpdate(project, testCase, CodeChangeType.UPDATE_TEST_CASE_STATUS.description(), testMethod -> {
-            writeEnabled(project, testMethod, testCase);
-            reformat(project, testMethod);
-        });
+        applyUpdate(project, testCase, CodeChangeType.UPDATE_TEST_CASE_STATUS.description(), testMethod -> writeEnabled(project, testMethod, testCase));
     }
 
     @Override

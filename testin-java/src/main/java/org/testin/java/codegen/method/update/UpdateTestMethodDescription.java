@@ -29,10 +29,7 @@ public class UpdateTestMethodDescription extends BaseTestMethodChange implements
     // UC-CODEGEN-010, Rule-CODEGEN-001, Rule-CODEGEN-040
     @Override
     public void execute(final @NotNull Project project, final @NotNull TestCase testCase) {
-        applyOrCreate(project, testCase, CodeChangeType.UPDATE_TEST_CASE_DESCRIPTION.description(), testMethod -> {
-            writeDescription(project, testMethod, testCase);
-            reformat(project, testMethod);
-        });
+        applyOrCreate(project, testCase, CodeChangeType.UPDATE_TEST_CASE_DESCRIPTION.description(), testMethod -> writeDescription(project, testMethod, testCase));
     }
 
     // UC-CODEGEN-010, UC-CODEGEN-003, Rule-CODEGEN-019

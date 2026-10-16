@@ -28,10 +28,7 @@ public class UpdateTestMethodGroups extends BaseTestMethodChange implements Code
     // UC-CODEGEN-012, Rule-CODEGEN-045
     @Override
     public void execute(final @NotNull Project project, final @NotNull TestCase testCase) {
-        applyUpdate(project, testCase, CodeChangeType.UPDATE_TEST_CASE_GROUP.description(), testMethod -> {
-            writeGroups(project, testMethod, testCase);
-            reformat(project, testMethod);
-        });
+        applyUpdate(project, testCase, CodeChangeType.UPDATE_TEST_CASE_GROUP.description(), testMethod -> writeGroups(project, testMethod, testCase));
     }
 
     @Override

@@ -275,12 +275,9 @@ public class CreateTestMethod implements CodeChange<TestCase> {
         TestinLogger.warn("Writing " + testCases.size() + " methods one at a time into "
                 + targetClass.getQualifiedName() + ": " + reason);
 
-        int written = 0;
         for (final TestCase testCase : testCases) {
-            if (injectMethod(project, targetClass, Fqcn.methodNameOf(testCase), testCase).isPresent()) written++;
+            injectMethod(project, targetClass, Fqcn.methodNameOf(testCase), testCase).ifPresent(added -> CodeStyleManager.getInstance(project).reformat(added));
         }
-
-        if (written > 0) CodeStyleManager.getInstance(project).reformat(targetClass);
     }
 
     private void retryInjectPhysically(final @NotNull Project project, final @NotNull List<String> packageList, final @NotNull String className, final @NotNull String methodName, final @NotNull TestCase testCase) {

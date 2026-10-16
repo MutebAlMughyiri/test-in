@@ -77,7 +77,7 @@ public class ReconcileTestMethod extends BaseTestMethodChange implements CodeCha
             writeDescription(project, testMethod, testCase);
             writeGroups(project, testMethod, testCase);
             writeEnabled(project, testMethod, testCase);
-            reformat(project, testMethod.getModifierList());
+            formatAnnotations(project, testMethod);
         }
     }
 }

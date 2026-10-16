@@ -55,10 +55,8 @@ public class CopyTestMethod extends BaseTestMethodChange implements CodeChange<C
             if (carryBody(project, target, copied)) carried++;
         }
 
-        if (carried > 0) {
-            reformat(project, target);
+        if (carried > 0)
             TestinLogger.info("Carried " + carried + " test method body(s) into " + target.getQualifiedName());
-        }
     }
 
     private boolean carryBody(final @NotNull Project project, final @NotNull PsiClass target, final @NotNull CopiedTestCase copied) {

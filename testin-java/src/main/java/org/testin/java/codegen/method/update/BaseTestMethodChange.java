@@ -139,8 +139,9 @@ public class BaseTestMethodChange {
         return updateAnnotationAttribute(JavaPsiFacade.getElementFactory(project), testAnnotation.orElseThrow(), attributeName, newValue);
     }
 
-    protected void reformat(final @NotNull Project project, final @NotNull PsiElement element) {
-        CodeStyleManager.getInstance(project).reformat(element);
+    // Rule-CODEGEN-003
+    protected void formatAnnotations(final @NotNull Project project, final @NotNull PsiMethod testMethod) {
+        CodeStyleManager.getInstance(project).reformat(testMethod.getModifierList());
     }
 
     protected void removeTestAnnotationAttribute(final @NotNull PsiMethod testMethod, final @NotNull String attributeName) {
@@ -155,12 +156,12 @@ public class BaseTestMethodChange {
     }
 
     protected void applyUpdate(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull String title, final @NotNull Consumer<PsiMethod> updater) {
-        applyToMethod(project, testCase, title, updater, detail -> noCodeToUpdate(project, testCase, detail));
+        applyToMethod(project, testCase, title, updater.andThen(testMethod -> formatAnnotations(project, testMethod)), detail -> noCodeToUpdate(project, testCase, detail));
     }
 
     // UC-CODEGEN-003, Rule-CODEGEN-019
     protected void applyOrCreate(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull String title, final @NotNull Consumer<PsiMethod> updater) {
-        applyToMethod(project, testCase, title, updater, detail -> {
+        applyToMethod(project, testCase, title, updater.andThen(testMethod -> formatAnnotations(project, testMethod)), detail -> {
             TestinLogger.info("Writing the method for '" + testCase.getDescription() + "' now that it has a name: " + detail);
             CodeChangeType.CREATE_TEST_CASE.execute(project, testCase);
         });
@@ -191,16 +192,13 @@ public class BaseTestMethodChange {
 
         final @NotNull Map<String, PsiMethod> methods = GeneratedMethod.byTestCaseUuid(testClass);
 
-        int written = 0;
         for (final TestCase testCase : testCases) {
             final @Nullable PsiMethod testMethod = methods.get(testCase.getUuid().toString());
             if (testMethod == null) continue;
 
             updater.accept(testMethod, testCase);
-            written++;
+            formatAnnotations(project, testMethod);
         }
-
-        if (written > 0) reformat(project, testClass);
     }
 
     // Rule-CODEGEN-021

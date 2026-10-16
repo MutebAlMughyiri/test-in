@@ -20,7 +20,6 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import org.jetbrains.annotations.NotNull;
@@ -35,10 +34,8 @@ import org.testin.java.codegen.method.update.UpdateTestMethodOrder;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCase;
 
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 // UC-CODEGEN-002, Rule-CODEGEN-077
 public class MoveTestMethod extends BaseTestMethodChange implements CodeChange<MovedTestCase> {
@@ -56,10 +53,7 @@ public class MoveTestMethod extends BaseTestMethodChange implements CodeChange<M
 
         final @NotNull Runnable inCommand = () ->
                 WriteCommandAction.runWriteCommandAction(project, CodeChangeType.MOVE_TEST_CASE.description(), null, () -> {
-                    final @NotNull Set<PsiClass> left = new LinkedHashSet<>();
-                    moves.forEach(moved -> move(project, moved).ifPresent(left::add));
-                    left.forEach(testClass -> reformat(project, testClass));
-
+                    moves.forEach(moved -> move(project, moved));
                     new UpdateTestMethodOrder().executeAll(project, moves.stream().map(MovedTestCase::testCase).toList());
                 });
 
@@ -67,19 +61,19 @@ public class MoveTestMethod extends BaseTestMethodChange implements CodeChange<M
         else ApplicationManager.getApplication().invokeLater(inCommand);
     }
 
-    private @NotNull Optional<PsiClass> move(final @NotNull Project project, final @NotNull MovedTestCase moved) {
+    private void move(final @NotNull Project project, final @NotNull MovedTestCase moved) {
         final @NotNull TestCase testCase = moved.testCase();
 
         final @NotNull Optional<PsiClass> from = GeneratedClass.find(project, Fqcn.ofClass(moved.from()));
         if (from.isEmpty()) {
             TestinLogger.debug("Nothing to move for '" + testCase.getDescription() + "': the test set it came from has no class");
-            return Optional.empty();
+            return;
         }
 
         final @NotNull Optional<PsiMethod> method = GeneratedMethod.forTestCase(from.orElseThrow(), testCase);
         if (method.isEmpty()) {
             TestinLogger.debug("Nothing to move for '" + testCase.getDescription() + "': no method with testName=" + testCase.getUuid());
-            return Optional.empty();
+            return;
         }
 
         final @NotNull List<String> destination = Fqcn.ofClass(testCase.getParent());
@@ -91,32 +85,28 @@ public class MoveTestMethod extends BaseTestMethodChange implements CodeChange<M
         if (into.isEmpty()) {
             TestinLogger.warn("Left the method for '" + testCase.getDescription() + "' where it was: "
                     + "the test set it moved into has no class to put it in");
-            return Optional.empty();
+            return;
         }
 
         final @NotNull PsiClass target = into.orElseThrow();
 
         if (target.equals(from.orElseThrow())) {
             TestinLogger.debug("The method for '" + testCase.getDescription() + "' is already in the right class");
-            return Optional.empty();
+            return;
         }
 
         if (GeneratedMethod.forTestCase(target, testCase).isPresent()) {
             TestinLogger.warn("Left the method for '" + testCase.getDescription() + "' in " + from.orElseThrow().getQualifiedName()
                     + ": " + target.getQualifiedName() + " already has a method for this test case");
-            return Optional.empty();
+            return;
         }
 
         GeneratedMethod.importTest(project, target.getContainingFile());
 
-        final @NotNull PsiMethod carried = JavaPsiFacade.getElementFactory(project)
-                .createMethodFromText(method.orElseThrow().getText(), target);
-
-        target.add(carried);
+        target.add(method.orElseThrow());
         method.orElseThrow().delete();
 
-        TestinLogger.info("Moved test method " + carried.getName() + " into " + target.getName());
-        return from;
+        TestinLogger.info("Moved the method for '" + testCase.getDescription() + "' into " + target.getName());
     }
 
 }

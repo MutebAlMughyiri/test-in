@@ -115,7 +115,6 @@ public class UpdateTestMethodOrder extends BaseTestMethodChange implements CodeC
 
         @NotNull Optional<PsiElement> after = Optional.empty();
         int position = 0;
-        boolean changed = false;
 
         for (final TestCase testCase : inSet) {
             position++;
@@ -123,12 +122,9 @@ public class UpdateTestMethodOrder extends BaseTestMethodChange implements CodeC
             final @Nullable PsiMethod testMethod = methods.get(testCase.getUuid().toString());
             if (testMethod == null) continue;
 
-            changed |= updateTestAnnotationAttribute(project, testMethod, "priority", String.valueOf(position));
-            final @NotNull PsiElement placed = place(testClass, testMethod, after);
-            changed |= !placed.equals(testMethod);
-            after = Optional.of(placed);
+            if (updateTestAnnotationAttribute(project, testMethod, "priority", String.valueOf(position)))
+                formatAnnotations(project, testMethod);
+            after = Optional.of(place(testClass, testMethod, after));
         }
-
-        if (changed) reformat(project, testClass);
     }
 }
