@@ -20,6 +20,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import org.jetbrains.annotations.NotNull;
+import org.testin.indexer.recyclebin.RecycleBin;
 import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
 import org.testin.model.FileKind;
@@ -58,16 +59,18 @@ final class NodeFiles {
         this.ownWrites = Services.getInstance(OwnWrites.class);
     }
 
-    // UC-INTERNAL-002, Rule-INTERNAL-112
+    // UC-INTERNAL-002, Rule-INTERNAL-112, Rule-INTERNAL-019, Rule-INTERNAL-143
     void remove(final @NotNull Path path, final @NotNull Runnable cacheUpdate, final @NotNull Consumer<@NotNull Boolean> onRemoved) {
         final @NotNull Path folder = Optional.ofNullable(path.getParent()).orElse(path);
+        ownWrites.record(project, path);
 
-        vfs.removeFile(indexer, path,
-                deleted -> ApplicationManager.getApplication().executeOnPooledThread(() ->
-                        LocalFileSystem.getInstance().refreshNioFiles(List.of(folder), true, false, () -> {
-                            if (deleted) cacheUpdate.run();
-                            onRemoved.accept(deleted);
-                        })));
+        ApplicationManager.getApplication().executeOnPooledThread(() -> {
+            final boolean removed = RecycleBin.took(project, path);
+            LocalFileSystem.getInstance().refreshNioFiles(List.of(folder), true, false, () -> {
+                if (removed) cacheUpdate.run();
+                onRemoved.accept(removed);
+            });
+        });
     }
 
     void move(final @NotNull Path oldPath, final @NotNull Path newPath, final @NotNull Consumer<@NotNull Boolean> onFinished) {

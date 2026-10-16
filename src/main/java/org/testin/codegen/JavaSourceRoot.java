@@ -31,6 +31,7 @@ import org.jetbrains.jps.model.java.JavaSourceRootType;
 import org.testin.help.SetupHint;
 import org.testin.help.Hints;
 import org.testin.help.SetupStep;
+import org.testin.indexer.recyclebin.RecycleBin;
 import org.testin.logger.TestinLogger;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
@@ -80,20 +81,14 @@ public final class JavaSourceRoot {
         return Optional.ofNullable(root.findFileByRelativePath(relativePath));
     }
 
-    // UC-CODEGEN-018, Rule-CODEGEN-060
+    // UC-CODEGEN-018, Rule-CODEGEN-059, Rule-CODEGEN-060, Rule-INTERNAL-143
     @FromContentModule
-    public static void deleteUnder(final @NotNull VirtualFile root, final @NotNull String relativePath, final @NotNull Object requestor) {
+    public static void removeUnder(final @NotNull Project project, final @NotNull VirtualFile root, final @NotNull String relativePath) {
         final @NotNull Optional<VirtualFile> found = under(root, relativePath).filter(VirtualFile::exists);
         if (found.isEmpty()) return;
 
         final @NotNull VirtualFile target = found.orElseThrow();
-
-        try {
-            target.delete(requestor);
-            TestinLogger.info("Removed generated code at: " + target.getPath());
-        } catch (final IOException ex) {
-            TestinLogger.error("Could not remove generated code at " + target.getPath() + ": " + FailureText.of(ex));
-        }
+        if (RecycleBin.took(project, target)) TestinLogger.info("Removed generated code at: " + target.getPath());
     }
 
     // UC-CODEGEN-001, Rule-CODEGEN-008

@@ -126,7 +126,7 @@ final class RunItemWriter {
             if (!Files.exists(file)) continue;
 
             TestinLogger.info("Removing the run item of a test case the test run no longer covers: " + file.getFileName());
-            files.delete(file);
+            files.remove(file);
         }
     }
 
@@ -134,7 +134,7 @@ final class RunItemWriter {
     private void sweepScreenshots(final @NotNull Path testRunPath, final @NotNull Set<String> named) {
         files.screenshotsIn(testRunPath).stream()
                 .filter(file -> !named.contains(file.getFileName().toString()))
-                .forEach(files::delete);
+                .forEach(files::remove);
     }
 
     // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-219

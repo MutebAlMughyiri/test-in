@@ -38,6 +38,14 @@ between them.
 - **Rule-INTERNAL-044** — Every kept copy is thrown away at the next IDE start.
 - **Rule-INTERNAL-045** — Undo history belongs to the surface it was made in.
   The tree keeps one, and each open editor keeps its own.
+- **Rule-INTERNAL-143** — Testin never deletes a tester's test data or
+  automation code for good. Whatever it removes - a node, a test case, a run
+  item, a screenshot, a class file or a package folder - goes to the desktop
+  recycle bin. What the bin does not take, because the desktop has none or a
+  file in it is open in another program, stays where it is, and Testin says so
+  in a notification titled *Not Removed*. Only the files Testin makes for itself
+  are deleted outright: a write in progress, the copies it keeps for undo, and a
+  file it hands to git, gh or an agent.
 
 ## Where a removed node goes
 
@@ -45,7 +53,7 @@ between them.
 |--------------------------------------------------|-------------------------------------------------------------------|
 | The desktop recycle bin                          | The tester's copy. Found and restored without Testin              |
 | A folder the IDE owns, outside the Testin folder | Testin's copy, so `Ctrl+Z` can reach it                           |
-| Nowhere                                          | When the desktop has no recycle bin, or the node was already gone |
+| Nowhere                                          | Only a node that was already gone (Rule-INTERNAL-143)             |
 
 ## The screen
 
@@ -91,6 +99,11 @@ copied aside. `Ctrl+Z` puts back the nodes whose copy was kept.
 **If nothing at all could be copied aside** — the removal is still on the undo
 history, so `Ctrl+Z` answers for it and says nothing was kept to put back. It
 never takes back the change before it instead (Rule-TREE-PANEL-041).
+
+**If the recycle bin does not take a node** — because the desktop has none, or
+a file in it is open in another program — the node stays where it is, in the
+tree and on disk. A notification titled *Not Removed* names it and stays in the
+notification log. Nothing is deleted instead (Rule-INTERNAL-143).
 
 **If something already occupies the place a node came from** — Testin refuses to
 put it back. Writing over it would destroy one thing to restore another. The

@@ -16,9 +16,21 @@
 
 package org.testin;
 
+import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
+import org.testin.indexer.recyclebin.RecycleBin;
 
 public abstract class AbstractIdeTest extends BasePlatformTestCase {
+
+    @Override
+    protected void setUp() {
+        try {
+            super.setUp();
+        } catch (final Exception ex) {
+            throw new AssertionError("Could not set up " + getName() + ": " + ex.getMessage(), ex);
+        }
+        RecycleBin.standIn(getTestRootDisposable(), FileUtil::delete);
+    }
 
     @Override
     protected void tearDown() {

@@ -97,8 +97,10 @@ titled **These test cases changed since**. It reads *Something else has written
 them - a sync, a pull, or another IDE - so taking this back would write over
 work that is not yours. Nothing was changed.*
 
-**If a test case cannot be written back, or its file cannot be deleted** — the
-others are still taken back, and a message reads *unable to write content:* or *unable to remove:* and the reason.
+**If a test case cannot be written back, or the recycle bin does not take its
+file** — the others are still taken back. A message reads *unable to write
+content:* and the reason, or a notification titled *Not Removed* names the file
+(Rule-INTERNAL-143).
 *Undone* is not shown, because not
 everything was.
 

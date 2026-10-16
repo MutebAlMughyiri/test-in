@@ -21,6 +21,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.progress.EmptyProgressIndicator;
 import com.intellij.openapi.util.Disposer;
+import com.intellij.openapi.util.EmptyRunnable;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
@@ -213,8 +214,8 @@ public class OutsideChangesIdeTest extends AbstractReadTheRootIdeTest {
         assertNotNull("a change to a test case under the Testin folder was not taken up, so this test proves nothing about testin.yml", new TestinFileWatcher().prepareChange(eventsOfWritingAgain(onDisk(testCase))));
     }
 
-    // UC-INTERNAL-003, Rule-INTERNAL-113
-    public void testAFileTestinDeletesIsClaimedBeforeTheDeleteStarts() {
+    // UC-INTERNAL-003, Rule-INTERNAL-113, Rule-INTERNAL-143
+    public void testAFileTestinRemovesIsClaimedBeforeTheFileSystemSeesItGo() {
         final @NotNull Path doomed = root.resolve("Checkout").resolve("notes.json");
         written(doomed, "{}");
         onDisk(doomed);
@@ -228,12 +229,12 @@ public class OutsideChangesIdeTest extends AbstractReadTheRootIdeTest {
             }
         });
 
-        final @NotNull CompletableFuture<Boolean> deleted = new CompletableFuture<>();
-        Services.getInstance(getProject(), VfsExecutor.class).removeFile(this, doomed, deleted::complete);
-        Await.until("the delete never finished", deleted::isDone);
+        final @NotNull CompletableFuture<Boolean> removed = new CompletableFuture<>();
+        Services.getInstance(getProject(), TestProjectIndexer.class).getNodeFiles().remove(doomed, EmptyRunnable.getInstance(), removed::complete);
+        Await.until("the removal never finished", removed::isDone);
 
-        assertTrue("the delete did not happen", deleted.join());
-        assertTrue("the file system reported the delete before Testin had claimed it as its own", claimedWhenItStarted.getNow(false));
+        assertTrue("the removal did not happen", removed.join());
+        assertTrue("the file system saw the file go before Testin had claimed it as its own", claimedWhenItStarted.getNow(false));
     }
 
     // UC-INTERNAL-003, Rule-INTERNAL-113

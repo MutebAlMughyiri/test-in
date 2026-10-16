@@ -31,11 +31,8 @@ import org.testin.services.Services;
 import org.testin.util.Bundle;
 import org.testin.util.FailureText;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Service(Service.Level.PROJECT)
@@ -103,31 +100,4 @@ final class VfsExecutor {
         });
     }
 
-    // UC-INTERNAL-005, Rule-INTERNAL-036
-    void removeFile(final @NotNull Object requester, final @NotNull Path path, final @NotNull Consumer<@NotNull Boolean> onDeleted) {
-        claim(path);
-        ApplicationManager.getApplication().executeOnPooledThread(() -> {
-            if (Trash.accepted(project, path)) {
-                ApplicationManager.getApplication().invokeLater(() -> onDeleted.accept(true));
-                return;
-            }
-
-            final @NotNull Optional<VirtualFile> file = find(path);
-
-            ApplicationManager.getApplication().invokeLater(() -> {
-                final @NotNull AtomicBoolean deleted = new AtomicBoolean(true);
-
-                WriteAction.run(() -> {
-                    try {
-                        if (file.isPresent()) file.get().delete(requester);
-                    } catch (final IOException ex) {
-                        deleted.set(false);
-                        Services.getInstance(project, Notifier.class).error(project, Bundle.message("vfs.delete.failed.title"), Bundle.message("vfs.delete.failed", FailureText.of(ex)));
-                    }
-                });
-
-                onDeleted.accept(deleted.get());
-            });
-        });
-    }
 }

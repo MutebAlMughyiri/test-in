@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.testin.indexer;
+package org.testin.indexer.recyclebin;
 
 import org.jetbrains.annotations.NotNull;
 import org.testng.annotations.Test;
@@ -28,7 +28,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-public class TrashTest {
+public class RecycleBinTest {
 
     private static final @NotNull Path REMOVED = Path.of("Checkout", "Test Cases", "Login", "1111.testcase");
 
@@ -37,15 +37,15 @@ public class TrashTest {
     public void aRemovedNodeIsHandedToTheRecycleBin() {
         final @NotNull List<File> binned = new ArrayList<>();
 
-        assertTrue(Trash.movedTo(REMOVED, binned::add), "a node the recycle bin took was reported as not moved");
+        assertTrue(RecycleBin.took(REMOVED, binned::add), "a node the recycle bin took was reported as not moved");
         assertEquals(binned, List.of(REMOVED.toFile()), "the removed node was not the one handed to the recycle bin");
     }
 
-    // UC-INTERNAL-005, Rule-INTERNAL-036
+    // UC-INTERNAL-005, Rule-INTERNAL-036, Rule-INTERNAL-143
     @Test
     public void aNodeTheRecycleBinRefusesIsReportedAsNotMoved() {
-        assertFalse(Trash.movedTo(REMOVED, _ -> false), "a node the recycle bin refused was reported as moved");
-        assertFalse(Trash.movedTo(REMOVED, _ -> {
+        assertFalse(RecycleBin.took(REMOVED, _ -> false), "a node the recycle bin refused was reported as moved");
+        assertFalse(RecycleBin.took(REMOVED, _ -> {
             throw new IllegalStateException("the recycle bin is unavailable");
         }), "a recycle bin that failed was reported as having taken the node");
     }

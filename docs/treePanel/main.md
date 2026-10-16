@@ -259,6 +259,7 @@ than feedback on what the tester just typed.
 | *Clone Failed*                          | The repository could not be cloned. The reason follows                 | [UC-TREE-PANEL-003](importTestProject.md) |
 | *Clone Error*                           | Something needed for the clone was missing                             | [UC-TREE-PANEL-003](importTestProject.md) |
 | *Rename Failed*                         | The folder could not be renamed on disk. The reason follows            | [UC-TREE-PANEL-011](renameNode.md)        |
+| *Not Removed*                           | The recycle bin did not take a node, so it was left where it is        | [UC-TREE-PANEL-012](removeNode.md)        |
 | *Undo Incomplete*                       | Some removed nodes could not be put back. It says how many of how many | [UC-TREE-PANEL-016](undoChange.md)        |
 | *Unable to update status to \<status\>* | A test project's status could not be written                           | [UC-TREE-PANEL-018](retireNode.md)        |
 | *Unable to mark test set \<status\>*    | A test set's status could not be written                               | [UC-TREE-PANEL-018](retireNode.md)        |

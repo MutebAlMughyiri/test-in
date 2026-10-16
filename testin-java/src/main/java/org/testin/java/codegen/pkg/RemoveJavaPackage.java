@@ -30,6 +30,6 @@ public class RemoveJavaPackage implements CodeChange<AbstractNode> {
         final @NotNull String packagePath = String.join("/", Fqcn.ofPackage(node));
 
         JavaSourceRoot.writeInRoot(project, testSourceRoot ->
-                JavaSourceRoot.deleteUnder(testSourceRoot, packagePath, this));
+                JavaSourceRoot.removeUnder(project, testSourceRoot, packagePath));
     }
 }

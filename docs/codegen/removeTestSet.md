@@ -6,7 +6,7 @@
 removed, **so that** the code does not keep tests for a test set nobody has
 anymore.
 
-Remove a test set or a package, and its code is deleted with it.
+Remove a test set or a package, and its code goes to the recycle bin with it.
 
 There is no key for this. It happens when the node is removed, which is
 [UC-TREE-PANEL-012](../treePanel/removeNode.md).
@@ -32,8 +32,8 @@ There is no key for this. It happens when the node is removed, which is
   renamed, moved or removed, **Automate Test Case**, **Navigate to Test Method**
   and **Run Tests** are gray and say why, and no gutter icon or automated mark
   is shown. **Save to testin.yml**, in the Testin panel, turns code on.
-- **Rule-CODEGEN-059** — Removing a test set deletes its class file. Removing a
-  package deletes its folder and everything under it.
+- **Rule-CODEGEN-059** — Removing a test set sends its class file to the recycle
+  bin. Removing a package sends its folder, with everything under it.
 - **Rule-CODEGEN-060** — A removal that finds no code to delete says nothing at
   all.
 
@@ -49,7 +49,7 @@ with everything under it.
 1. The tester selects a test set and presses `Delete`.
 2. The confirmation says what the test set holds.
 3. The tester confirms.
-4. Testin deletes the class file.
+4. Testin sends the class file to the recycle bin.
 5. Testin removes the test set.
 
 ## What Testin refuses
@@ -57,19 +57,21 @@ with everything under it.
 **If the code project has no Java test source folder** — nothing is deleted, and
 nothing is said. A removal that finds nothing to tidy up is not a failure.
 
-**If the folder cannot be deleted** — nothing is said, and only the log records
-it.
+**If the recycle bin does not take the class file or the folder** — it stays
+where it is, and a notification titled *Not Removed* names it
+(Rule-INTERNAL-143).
 
 **If the IDE has no Java plugin** — nothing is deleted.
 
 ## What the tester should expect
 
-Everything the tester wrote inside those methods goes with the class. The
-confirmation before the removal counts test sets, test cases and test runs. It
-does not mention the code.
+Everything the tester wrote inside those methods goes with the class, into the
+recycle bin. The confirmation before the removal counts test sets, test cases
+and test runs. It does not mention the code.
 
 Undoing the removal puts the test data back and writes the classes and methods
-again, empty. What was in the method bodies does not come back.
+again, empty. What was in the method bodies is in the class file in the recycle
+bin.
 
 ---
 

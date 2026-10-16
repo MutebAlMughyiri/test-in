@@ -139,7 +139,7 @@ and no place.
    on a removed node or under
    it - a removed package takes its test sets' editors with it (Rule-TREE-PANEL-116).
 6. The node goes to the desktop's recycle bin, and its automation code goes with
-   it. On a desktop with no recycle bin the node is deleted outright.
+   it. A node the bin does not take stays where it is (Rule-INTERNAL-143).
 7. The tree rebuilds. Testin shows *Removed*, or *Removed N* for several. The
    count is only what actually went.
 
@@ -164,12 +164,14 @@ removed. The container is left out, and not counted.
 is removed, and the node goes with it. The node is not counted on its own
 (Rule-TREE-PANEL-143).
 
-**If nothing could be removed** — the tree rebuilds and Testin says nothing at
-all. There is nothing on the tree's history for `Ctrl+Z` to take back.
+**If nothing could be removed** — the tree rebuilds and there is no *Removed*.
+There is nothing on the tree's history for `Ctrl+Z` to take back.
 
-**If a node cannot be deleted on disk** — an IDE notification titled *Delete
-Failed* stays in the notification log, reading *Could not delete file:* and the
-reason. `Ctrl+Z` puts back only the nodes that went.
+**If the recycle bin does not take a node** — because the desktop has none, or
+a file in it is open in another program — the node stays in the tree and on
+disk. An IDE notification titled *Not Removed* names it and stays in the
+notification log. Nothing is deleted instead. *Removed N* and `Ctrl+Z` count
+only the nodes that went (Rule-INTERNAL-143).
 
 **If a node's copy could not be kept aside** — the node is still removed, and a
 message titled *Cannot Be Undone* says so at that moment. It names how many

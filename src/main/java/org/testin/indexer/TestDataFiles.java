@@ -23,6 +23,7 @@ import com.intellij.util.TimeoutUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.testin.indexer.recyclebin.RecycleBin;
 import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
 import org.testin.model.FileKind;
@@ -187,18 +188,11 @@ final class TestDataFiles {
         return failure.filter(FileSystemException.class::isInstance).isPresent();
     }
 
-    // UC-INTERNAL-005, Rule-INTERNAL-036, Rule-INTERNAL-113
-    boolean delete(final @NotNull Path path) {
-        try {
-            ownWrites.record(project, path);
+    // UC-INTERNAL-005, Rule-INTERNAL-036, Rule-INTERNAL-113, Rule-INTERNAL-143
+    boolean remove(final @NotNull Path path) {
+        ownWrites.record(project, path);
 
-            if (!Trash.accepted(project, path)) Files.deleteIfExists(path);
-        } catch (final IOException ex) {
-            reportRemoveFailure(path, ex);
-            return false;
-        }
-
-        return true;
+        return RecycleBin.took(project, path);
     }
 
     // Rule-INTERNAL-113

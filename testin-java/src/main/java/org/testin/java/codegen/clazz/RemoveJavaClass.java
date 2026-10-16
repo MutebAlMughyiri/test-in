@@ -37,6 +37,6 @@ public class RemoveJavaClass implements CodeChange<AbstractNode> {
         final @NotNull String fileName = className + ".java";
 
         JavaSourceRoot.writeInRoot(project, testSourceRoot ->
-                JavaSourceRoot.deleteUnder(testSourceRoot, packagePath + "/" + fileName, this));
+                JavaSourceRoot.removeUnder(project, testSourceRoot, packagePath + "/" + fileName));
     }
 }

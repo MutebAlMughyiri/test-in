@@ -108,14 +108,16 @@ case in its test set.*
 
 **If the tester presses `Escape`** — nothing is removed and nothing is said.
 
-**If a test case's file cannot be deleted** — a locked file, for one — that test
-case stays, and the editor reads its test set again with it there. A message
-reads *unable to remove:* and the reason. *Removed* counts only the test cases
-that went, and says nothing when none did.
+**If the recycle bin does not take a test case's file** — because the desktop
+has none, or the file is open in another program — that test case stays, and
+the editor reads its test set again with it there. A notification titled *Not
+Removed* names the file (Rule-INTERNAL-143). *Removed* counts only the test
+cases that went, and says nothing when none did.
 
 ## What goes with them
 
-The test case's file, and its generated test method. Anything the tester wrote
+The test case's file, which goes to the recycle bin, and its generated test
+method. Anything the tester wrote
 inside that method goes with it, and the confirmation does not mention the code.
 
 Undoing the removal brings the test cases back. Their methods are written again,

@@ -22,6 +22,7 @@ import org.testin.Await;
 import org.testin.Said;
 import org.testin.TreeGesture;
 import org.testin.indexer.Nodes;
+import org.testin.indexer.recyclebin.RecycleBin;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
@@ -130,6 +131,22 @@ public class RemoveNodeIdeTest extends AbstractCodegenIdeTest {
         assertFalse("the test set inside the folder is still there", nodes().nodeExists(cards.getPath()));
         Await.until("removing them said nothing", () -> balloons.shown().stream().anyMatch(said -> said.startsWith(Done.REMOVED.getOutcome())));
         assertEquals("a node inside a removed folder was counted on its own", List.of(Done.counted(Done.REMOVED.getOutcome(), 2)), balloons.shown().stream().filter(said -> said.startsWith(Done.REMOVED.getOutcome())).toList());
+    }
+
+    // Rule-INTERNAL-143, Rule-TREE-PANEL-007
+    public void testANodeTheRecycleBinDoesNotTakeStaysInTheTreeAndOnTheDisk() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+        RecycleBin.standIn(getTestRootDisposable(), _ -> false);
+
+        removeAsked(List.of(login));
+        confirmed();
+
+        Await.until("Testin never said the node was not removed", () -> said.notifications().stream().anyMatch(notification -> notification.getTitle().equals(Bundle.message("recycle.bin.refused.title"))));
+        settled();
+        assertTrue("a node the recycle bin did not take left the tree", nodes().nodeExists(login.getPath()));
+        assertTrue("a node the recycle bin did not take was deleted instead", Files.isDirectory(login.getPath()));
+        assertTrue("a removal that removed nothing said Removed", said.shown().stream().noneMatch(shown -> shown.startsWith(Done.REMOVED.getOutcome())));
     }
 
     // Rule-TREE-PANEL-039

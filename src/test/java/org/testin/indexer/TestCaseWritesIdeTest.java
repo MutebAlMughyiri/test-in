@@ -19,6 +19,7 @@ package org.testin.indexer;
 import com.intellij.openapi.application.WriteAction;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
+import org.testin.indexer.recyclebin.RecycleBin;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
@@ -259,18 +260,19 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
                 login.getPath(), indexedTestCases().findTestCase(cut.getUuid()).orElseThrow().getParent().getPath());
     }
 
-    // Rule-INTERNAL-112
-    public void testARemovalWhoseDeleteIsRefusedKeepsTheTestCase() {
+    // Rule-INTERNAL-112, Rule-INTERNAL-143
+    public void testATestCaseTheRecycleBinDoesNotTakeStays() {
         final TestSetNode testSet = oneTestSet();
         final TestCase testCase = aTestCaseIn(testSet, "m");
         indexedTestCases().putTestCaseVerbatim(testSet.getPath(), testCase);
 
-        undeletable(fileOf(testSet, testCase));
+        RecycleBin.standIn(getTestRootDisposable(), _ -> false);
 
-        assertFalse("a refused delete was reported as a removal", indexedTestCases().removeTestCase(testSet.getPath(), testCase.getUuid()));
+        assertFalse("a test case the recycle bin did not take was reported as removed", indexedTestCases().removeTestCase(testSet.getPath(), testCase.getUuid()));
 
-        assertTrue("a refused delete took the test case out of the index", indexedTestCases().findTestCase(testCase.getUuid()).isPresent());
-        assertTrue("a refused delete took the test case out of its set",
+        assertTrue("its file was deleted instead", Files.isRegularFile(fileOf(testSet, testCase)));
+        assertTrue("a test case the recycle bin did not take left the index", indexedTestCases().findTestCase(testCase.getUuid()).isPresent());
+        assertTrue("a test case the recycle bin did not take left its set",
                 indexedTestCases().getTestCasesForTestSet(testSet.getPath()).stream().anyMatch(each -> each.getUuid().equals(testCase.getUuid())));
     }
 

@@ -161,7 +161,7 @@ final class TestCaseStore {
 
     // Rule-INTERNAL-112
     boolean remove(final @NotNull Path testSetPath, final @NotNull UUID testCaseUuid) {
-        if (!testDataFiles.delete(named(testSetPath, testCaseUuid))) return false;
+        if (!testDataFiles.remove(named(testSetPath, testCaseUuid))) return false;
 
         testCasesByUuid.remove(testCaseUuid);
         Optional.ofNullable(testCaseUuidsByTestSet.get(testSetPath.toString()))
