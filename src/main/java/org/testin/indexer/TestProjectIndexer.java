@@ -91,6 +91,8 @@ public final class TestProjectIndexer {
 
     private volatile @NotNull CountDownLatch indexingLatch = new CountDownLatch(1);
 
+    private volatile @NotNull CountDownLatch testCasesLatch = new CountDownLatch(1);
+
     public TestProjectIndexer(final @NotNull Project project) {
         this.project = project;
         this.testinRoot = Services.getInstance(project, TestinRoot.class);
@@ -100,7 +102,7 @@ public final class TestProjectIndexer {
         this.lastOpenEditors = Services.getInstance(project, LastOpenEditors.class);
         this.store = new IndexerDataStore(project);
         this.problems = new ReadProblems(project, store);
-        this.scanCoordinator = new TestProjectScanCoordinator(new IndexingScanner(project, store));
+        this.scanCoordinator = new TestProjectScanCoordinator(new IndexingScanner(project, store, this::testCasesRead));
         this.runItemWriter = new RunItemWriter(project, store);
         this.nodeFiles = new NodeFiles(project, this, store);
     }
@@ -141,6 +143,7 @@ public final class TestProjectIndexer {
             TestinLogger.error("indexWithProgress: " + FailureText.of(ex));
             indexing.set(false);
 
+            testCasesLatch.countDown();
             indexingLatch.countDown();
         }
     }
@@ -148,7 +151,14 @@ public final class TestProjectIndexer {
     private void finishWithNothingToIndex() {
         indexing.set(false);
         indexed.set(true);
+        testCasesLatch.countDown();
         indexingLatch.countDown();
+    }
+
+    // UC-INTERNAL-002, Rule-INTERNAL-141
+    private void testCasesRead() {
+        testCasesLatch.countDown();
+        if (!project.isDisposed()) project.getMessageBus().syncPublisher(IndexChanged.TOPIC).testCasesRead();
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-013, Rule-INTERNAL-124
@@ -200,7 +210,10 @@ public final class TestProjectIndexer {
         if (testProjectsLeft.decrementAndGet() != 0) return false;
 
         passLatch.countDown();
-        return passLatch.equals(indexingLatch);
+        if (!passLatch.equals(indexingLatch)) return false;
+
+        testCasesLatch.countDown();
+        return true;
     }
 
     private void finishSuccessfully() {
@@ -244,15 +257,27 @@ public final class TestProjectIndexer {
         if (indexed.get()) return;
 
         indexWithProgress();
+        waitFor(indexingLatch);
+    }
 
+    // UC-INTERNAL-002, Rule-INTERNAL-141
+    public void awaitTestCases() {
+        if (indexed.get()) return;
+
+        indexWithProgress();
+        waitFor(testCasesLatch);
+    }
+
+    // Rule-INTERNAL-111
+    private static void waitFor(final @NotNull CountDownLatch latch) {
         if (ApplicationManager.getApplication().isReadAccessAllowed()) {
-            TestinLogger.error("awaitIndexing() called while holding a read action - "
+            TestinLogger.error("Waiting for the index while holding a read action - "
                     + "this blocks every write action in the IDE. Returning without waiting.");
             return;
         }
 
         try {
-            indexingLatch.await();
+            latch.await();
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
@@ -264,6 +289,7 @@ public final class TestProjectIndexer {
             store.clearAll();
             indexed.set(false);
             indexing.set(false);
+            testCasesLatch = new CountDownLatch(1);
             indexingLatch = new CountDownLatch(1);
             TestinLogger.info("Indexer reset for re-indexing");
         });

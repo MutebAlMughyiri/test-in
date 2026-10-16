@@ -267,14 +267,17 @@ final class IndexerDataStore {
 
     // UC-INTERNAL-002, Rule-INTERNAL-021, Rule-INTERNAL-081
     void swapIn(final @NotNull Path testProjectPath, final @NotNull ScannedTestProject scanned) {
+        swapInTestCases(testProjectPath, scanned);
+        swapInTestRuns(testProjectPath, scanned);
+    }
+
+    // UC-INTERNAL-002, Rule-INTERNAL-141
+    void swapInTestCases(final @NotNull Path testProjectPath, final @NotNull ScannedTestProject scanned) {
         testProjectsByPath.putAll(scanned.getTestProjects());
         testCasesFoldersByPath.putAll(scanned.getTestCasesFolders());
         testRunsFoldersByPath.putAll(scanned.getTestRunsFolders());
         testSetPackagesByPath.putAll(scanned.getTestSetPackages());
-        testRunPackagesByPath.putAll(scanned.getTestRunPackages());
         testSetNodesByPath.putAll(scanned.getTestSets());
-        testRunNodesByPath.putAll(scanned.getTestRunNodes());
-        runItemsByPath.putAll(scanned.getRunItemsByPath());
 
         testCaseStore.swapIn(testProjectPath, scanned.getTestCasesByUuid(), scanned.getTestCaseUuidsByTestSet(), scanned.getUnreadableTestCases());
 
@@ -282,8 +285,18 @@ final class IndexerDataStore {
         dropUnseen(testCasesFoldersByPath, testProjectPath, scanned.getTestCasesFolders());
         dropUnseen(testRunsFoldersByPath, testProjectPath, scanned.getTestRunsFolders());
         dropUnseen(testSetPackagesByPath, testProjectPath, scanned.getTestSetPackages());
-        dropUnseen(testRunPackagesByPath, testProjectPath, scanned.getTestRunPackages());
         dropUnseen(testSetNodesByPath, testProjectPath, scanned.getTestSets());
+
+        childrenIndex.invalidate();
+    }
+
+    // UC-INTERNAL-002, Rule-INTERNAL-141
+    void swapInTestRuns(final @NotNull Path testProjectPath, final @NotNull ScannedTestProject scanned) {
+        testRunPackagesByPath.putAll(scanned.getTestRunPackages());
+        testRunNodesByPath.putAll(scanned.getTestRunNodes());
+        runItemsByPath.putAll(scanned.getRunItemsByPath());
+
+        dropUnseen(testRunPackagesByPath, testProjectPath, scanned.getTestRunPackages());
         dropUnseen(testRunNodesByPath, testProjectPath, scanned.getTestRunNodes());
         dropUnseen(runItemsByPath, testProjectPath, scanned.getRunItemsByPath());
 

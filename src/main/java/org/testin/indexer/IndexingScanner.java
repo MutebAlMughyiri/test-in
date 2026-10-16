@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 final class IndexingScanner {
@@ -62,8 +63,11 @@ final class IndexingScanner {
 
     private final @NotNull TestDataFiles testDataFiles;
 
-    IndexingScanner(final @NotNull Project project, final @NotNull IndexerDataStore store) {
+    private final @NotNull Runnable testCasesRead;
+
+    IndexingScanner(final @NotNull Project project, final @NotNull IndexerDataStore store, final @NotNull Runnable testCasesRead) {
         this.store = store;
+        this.testCasesRead = testCasesRead;
         this.directoryMapper = Services.getInstance(project, NodeMapper.class);
         this.mapper = Services.getInstance(project, JsonCodec.class);
         this.problems = new ReadProblems(project, store);
@@ -99,7 +103,7 @@ final class IndexingScanner {
         }
     }
 
-    // UC-INTERNAL-002, Rule-INTERNAL-005, Rule-INTERNAL-007, Rule-INTERNAL-091
+    // UC-INTERNAL-002, Rule-INTERNAL-005, Rule-INTERNAL-007, Rule-INTERNAL-091, Rule-INTERNAL-141
     private @NotNull Optional<String> scanTestProjectContents(final @NotNull Path testProjectPath, final @NotNull ProgressIndicator indicator) {
         try {
             final @NotNull TestProjectNode testProject = directoryMapper.getTestProjectNode(testProjectPath);
@@ -135,21 +139,26 @@ final class IndexingScanner {
 
             final @NotNull TestCasesFolderNode testCasesFolder = testProject.getTestCasesFolder();
             scanned.getTestCasesFolders().put(testCasesFolder.getPath().toString(), testCasesFolder);
+            final @NotNull TestRunsFolderNode testRunsFolder = testProject.getTestRunsFolder();
+            scanned.getTestRunsFolders().put(testRunsFolder.getPath().toString(), testRunsFolder);
+            testRunsFolder.setTestRunsRead(testRunsReadBefore(testProjectPath));
+
+            final long testCasesStarted = System.nanoTime();
             scanTestSets(testCasesFolder.getPath(), testCasesFolder, indicator, unread, scanned);
+            if (canceled(indicator, testProjectPath)) return Optional.empty();
+
+            store.swapInTestCases(testProjectPath, scanned);
+            TestinLogger.info("Reading the test cases of '" + testProject.getName() + "' took " + TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - testCasesStarted) + " ms");
+            testCasesRead.run();
 
             indicator.setFraction(0.5);
             indicator.setText(Bundle.message("indexer.progress.test.runs", testProject.getName()));
 
-            final @NotNull TestRunsFolderNode testRunsFolder = testProject.getTestRunsFolder();
-            scanned.getTestRunsFolders().put(testRunsFolder.getPath().toString(), testRunsFolder);
             scanTestRunNodes(testRunsFolder.getPath(), testRunsFolder, indicator, unread, scanned);
+            if (canceled(indicator, testProjectPath)) return Optional.empty();
 
-            if (indicator.isCanceled()) {
-                TestinLogger.info("Scan canceled, so the index was left as it was: " + testProjectPath.getFileName());
-                return Optional.empty();
-            }
-
-            store.swapIn(testProjectPath, scanned);
+            store.swapInTestRuns(testProjectPath, scanned);
+            testRunsFolder.setTestRunsRead(true);
 
             indicator.setFraction(1.0);
             indicator.setText(Bundle.message("indexer.progress.test.project.done", testProject.getName()));
@@ -165,6 +174,20 @@ final class IndexingScanner {
             TestinLogger.error("Failed to scan project: " + testProjectPath.getFileName() + " - " + FailureText.of(ex));
             return Optional.of(FailureText.of(ex));
         }
+    }
+
+    // Rule-INTERNAL-141, Rule-TREE-PANEL-142
+    private boolean testRunsReadBefore(final @NotNull Path testProjectPath) {
+        return Optional.ofNullable(store.getTestProjectsByPath().get(testProjectPath.toString()))
+                .map(previous -> previous.getTestRunsFolder().isTestRunsRead())
+                .orElse(false);
+    }
+
+    private static boolean canceled(final @NotNull ProgressIndicator indicator, final @NotNull Path testProjectPath) {
+        if (!indicator.isCanceled()) return false;
+
+        TestinLogger.info("Scan canceled, so the index was left as it was: " + testProjectPath.getFileName());
+        return true;
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-008, Rule-INTERNAL-015

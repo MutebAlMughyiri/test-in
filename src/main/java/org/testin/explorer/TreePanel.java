@@ -135,6 +135,18 @@ public final class TreePanel implements Disposable {
             public void readAgain() {
                 refresh();
             }
+
+            // Rule-TREE-PANEL-142
+            @Override
+            public void testCasesRead() {
+                refresh();
+            }
+
+            // Rule-TREE-PANEL-142
+            @Override
+            public void indexed() {
+                refresh();
+            }
         });
     }
 

@@ -34,6 +34,10 @@ public interface IndexChanged {
     default void readAgain() {
     }
 
+    // Rule-INTERNAL-141
+    default void testCasesRead() {
+    }
+
     default void indexed() {
     }
 }

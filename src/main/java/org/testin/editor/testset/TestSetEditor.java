@@ -116,7 +116,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorFields, Tes
 
     private void readTestCases(final int generation, final @NotNull Runnable onLoaded) {
         try {
-            indexer.awaitIndexing();
+            indexer.awaitTestCases();
 
             final @NotNull List<TestCase> testCasesInSet = testCases.getTestCasesForTestSet(parent.getPath());
 

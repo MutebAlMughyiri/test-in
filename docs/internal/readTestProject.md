@@ -135,6 +135,11 @@ There is no key for this. It starts on its own.
   fresh one holds the moment it was made. A run item's `default` and
   `executions` and each execution's `status` are always written too, so a run
   item says what it is in every case (#432).
+- **Rule-INTERNAL-141** — A test project is read in two halves on its one
+  background job: its test cases first, then its test runs. Each half replaces
+  only what it reads, so a read again after a Git step or an outside change
+  keeps the old test runs until the new ones are in. The time its test cases
+  took is written to the log, beside the time the whole read took.
 
 ## The budget
 

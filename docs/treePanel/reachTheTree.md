@@ -79,7 +79,7 @@ prevent.
   text is an address at all is asked once, at the point where something is
   about to act on it. A file holding an address Testin does not recognize keeps it, so the
   tester can see it and correct it, and is offered no clone.
-- **Rule-TREE-PANEL-118** — While the first index is still running the panel
+- **Rule-TREE-PANEL-118** — Until the first test cases are read the panel
   says it is reading, in gray, and nothing else. A test project is found in the
   index, so before the index exists no name resolves - and the screen for a name
   that resolves to nothing is a red line about a project that is merely not read
@@ -96,6 +96,10 @@ prevent.
 - **Rule-TREE-PANEL-127** — A test set and a test run show no expand arrow. They
   hold test cases and results rather than nodes, so the tree has nothing to open
   under them.
+- **Rule-TREE-PANEL-142** — The tree is drawn as soon as a test project's test
+  cases are read, and again when its test runs are. Until its test runs are read
+  for the first time - when the IDE starts, and on Refresh - the Test Runs
+  folder says Reading test runs in gray and holds nothing.
 
 Rule-TREE-PANEL-100 also holds here. It says a test project that is not **Active** is drawn in the tree and holds
 nothing. It is written on

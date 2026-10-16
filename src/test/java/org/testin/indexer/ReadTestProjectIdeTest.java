@@ -22,10 +22,13 @@ import org.testin.model.FileKind;
 import org.testin.model.node.AbstractNode;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
+import org.testin.util.Bundle;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -163,5 +166,51 @@ public class ReadTestProjectIdeTest extends AbstractReadTheRootIdeTest {
         readEverything();
 
         assertTrue("the test case was not read under the UUID its file name gives", indexedTestCases().findTestCase(byName).isPresent());
+    }
+
+    private @NotNull List<String> atTheTestCasesHalf(final @NotNull UUID testCase, final @NotNull Path testRun, final @NotNull Path testProjectPath) {
+        final @NotNull List<String> seen = new ArrayList<>();
+        getProject().getMessageBus().connect(getTestRootDisposable()).subscribe(IndexChanged.TOPIC, new IndexChanged() {
+            @Override
+            public void testCasesRead() {
+                seen.add("test case " + indexedTestCases().findTestCase(testCase).isPresent());
+                seen.add("test run " + nodes().nodeExists(testRun));
+                seen.add("label " + labelOfTheTestRunsFolder(testProjectPath));
+            }
+        });
+        return seen;
+    }
+
+    private @NotNull String labelOfTheTestRunsFolder(final @NotNull Path testProjectPath) {
+        return Optional.ofNullable(nodes().getTestProjectsByPath().get(testProjectPath.toString()))
+                .map(testProject -> testProject.getTestRunsFolder().statusShownInTree())
+                .orElseThrow(() -> new AssertionError("the test project was not read"));
+    }
+
+    // UC-INTERNAL-002, Rule-INTERNAL-141, Rule-TREE-PANEL-142
+    public void testTheTestCasesAreReadAndShownBeforeTheTestRuns() {
+        final @NotNull Path testProjectPath = aTestProjectAt(root.resolve("Checkout"));
+        final @NotNull UUID testCase = aTestCaseIn(marked(theTestCasesOf(testProjectPath).resolve("Login"), NodeType.TEST_SET));
+        final @NotNull Path testRun = marked(theTestRunsOf(testProjectPath).resolve("Cycle 1"), NodeType.TEST_RUN);
+        final @NotNull List<String> seen = atTheTestCasesHalf(testCase, testRun, testProjectPath);
+
+        readEverything();
+
+        assertEquals("the test cases were not read, and the Test Runs folder not marked as still reading, before the test runs", List.of("test case true", "test run false", "label " + Bundle.message("tree.test.runs.reading")), seen);
+        assertTrue("the test runs were never read", nodes().nodeExists(testRun));
+        assertEquals("the Test Runs folder still says it is reading after its test runs were read", "", labelOfTheTestRunsFolder(testProjectPath));
+    }
+
+    // UC-INTERNAL-003, Rule-INTERNAL-141
+    public void testAReadAgainKeepsTheTestRunsItHadUntilTheNewOnesAreIn() {
+        final @NotNull Path testProjectPath = aTestProjectAt(root.resolve("Checkout"));
+        final @NotNull UUID testCase = aTestCaseIn(marked(theTestCasesOf(testProjectPath).resolve("Login"), NodeType.TEST_SET));
+        final @NotNull Path testRun = marked(theTestRunsOf(testProjectPath).resolve("Cycle 1"), NodeType.TEST_RUN);
+        readEverything();
+        final @NotNull List<String> seen = atTheTestCasesHalf(testCase, testRun, testProjectPath);
+
+        indexer().scanSingleTestProject(testProjectPath);
+
+        assertEquals("a read again dropped the test runs, or said it was reading them, before the new ones were in", List.of("test case true", "test run true", "label "), seen);
     }
 }
