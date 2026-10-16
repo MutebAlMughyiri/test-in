@@ -17,6 +17,7 @@
 package org.testin.editor.testrun;
 
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.StatusText;
@@ -158,7 +159,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
                     startIfAsked();
                     onLoaded.run();
                     Services.getInstance(project, KnownBugIssueStates.class).readAll(() -> ViewToolWindowFactory.refreshShown(project));
-                });
+                }, ModalityState.nonModal());
             } catch (final Exception ex) {
                 TestinLogger.error("Failed to load Test Run data from disk: " + FailureText.of(ex));
                 ApplicationManager.getApplication().invokeLater(() -> {

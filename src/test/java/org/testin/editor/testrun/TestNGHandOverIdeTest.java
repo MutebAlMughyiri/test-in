@@ -20,6 +20,9 @@ import com.intellij.execution.configurations.RunProfile;
 import com.intellij.execution.configurations.RunnerSettings;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.runners.ProgramRunner;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.application.TransactionGuard;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.testFramework.ExtensionTestUtil;
 import com.theoryinpractice.testng.configuration.TestNGConfiguration;
@@ -28,11 +31,13 @@ import org.testin.AbstractCodegenIdeTest;
 import org.testin.Await;
 import org.testin.Said;
 import org.testin.editor.EditorFixtures;
+import org.testin.editor.open.UnifiedVirtualFile;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.notifications.Refused;
+import org.testin.runner.AutomationExecutor;
 
 import java.util.Collection;
 import java.util.List;
@@ -76,6 +81,30 @@ public class TestNGHandOverIdeTest extends AbstractCodegenIdeTest {
         editor.runWhenLoaded();
         Await.until("nothing was handed to TestNG", () -> !executed.isEmpty());
         return editor;
+    }
+
+    private @NotNull List<Boolean> writeSafeWhereEachRunIsHandedOver() {
+        final @NotNull List<Boolean> writeSafe = new CopyOnWriteArrayList<>();
+        ExtensionTestUtil.maskExtensions(AutomationExecutor.EP, List.of((_, _) -> ApplicationManager.getApplication().executeOnPooledThread(() -> writeSafe.add(TransactionGuard.getInstance().isWriteSafeModality(ModalityState.defaultModalityState())))), getTestRootDisposable());
+        return writeSafe;
+    }
+
+    // UC-EDITOR-PANEL-044
+    public void testRunTestsOnATestRunNotYetOpenStartsWhereTheIdeCanSaveBeforeItBuilds() {
+        final @NotNull TestSetNode testSet = createdTestSet("Checkout");
+        final @NotNull List<TestCase> testCases = List.of(createdTestCase(testSet, "Log in with a valid user", "m0001"));
+        settled();
+        final @NotNull TestRunNode testRun = EditorFixtures.testRun(getProject(), EditorFixtures.testProject(getProject(), root), testCases.stream().map(EditorFixtures::pending).toList());
+        final @NotNull List<Boolean> writeSafe = writeSafeWhereEachRunIsHandedOver();
+
+        ApplicationManager.getApplication().invokeLater(() -> {
+            final @NotNull TestRunEditor editor = new TestRunEditor(getProject(), new UnifiedVirtualFile(testRun));
+            Disposer.register(getTestRootDisposable(), editor);
+            editor.runWhenLoaded();
+        }, ModalityState.any());
+        Await.until("the run was never handed over", () -> !writeSafe.isEmpty());
+
+        assertEquals("the run kept the any modality the IDE creates an editor in, so the build before launch could not save the documents", List.of(true), writeSafe);
     }
 
     // Rule-EDITOR-PANEL-188
