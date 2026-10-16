@@ -78,16 +78,20 @@ public class BaseTestMethodChange {
         return GeneratedMethod.testAnnotationOf(testMethod);
     }
 
-    protected void updateAnnotationAttribute(final @NotNull PsiElementFactory factory, final @NotNull PsiAnnotation annotation, final @NotNull String attributeName, final @NotNull String newValue) {
+    protected boolean updateAnnotationAttribute(final @NotNull PsiElementFactory factory, final @NotNull PsiAnnotation annotation, final @NotNull String attributeName, final @NotNull String newValue) {
         final @NotNull PsiAnnotation parsed = factory.createAnnotationFromText("@A(v = " + newValue + ")", annotation);
 
         final PsiAnnotationMemberValue value = parsed.findDeclaredAttributeValue("v");
         if (value == null) {
             TestinLogger.warn("Could not read '" + newValue + "' as a value for " + attributeName);
-            return;
+            return false;
         }
 
+        if (Optional.ofNullable(annotation.findDeclaredAttributeValue(attributeName)).map(PsiElement::getText).filter(value.getText()::equals).isPresent())
+            return false;
+
         annotation.setDeclaredAttributeValue(attributeName, value);
+        return true;
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-012, Rule-CODEGEN-040
@@ -125,10 +129,14 @@ public class BaseTestMethodChange {
         else updateTestAnnotationAttribute(project, testMethod, "enabled", "false");
     }
 
-    protected void updateTestAnnotationAttribute(final @NotNull Project project, final @NotNull PsiMethod testMethod, final @NotNull String attributeName, final @NotNull String newValue) {
-        getTestAnnotation(testMethod).ifPresentOrElse(testAnnotation ->
-                        updateAnnotationAttribute(JavaPsiFacade.getElementFactory(project), testAnnotation, attributeName, newValue),
-                () -> TestinLogger.warn("Update: method has no @Test annotation"));
+    protected boolean updateTestAnnotationAttribute(final @NotNull Project project, final @NotNull PsiMethod testMethod, final @NotNull String attributeName, final @NotNull String newValue) {
+        final @NotNull Optional<PsiAnnotation> testAnnotation = getTestAnnotation(testMethod);
+        if (testAnnotation.isEmpty()) {
+            TestinLogger.warn("Update: method has no @Test annotation");
+            return false;
+        }
+
+        return updateAnnotationAttribute(JavaPsiFacade.getElementFactory(project), testAnnotation.orElseThrow(), attributeName, newValue);
     }
 
     protected void reformat(final @NotNull Project project, final @NotNull PsiElement element) {

@@ -70,7 +70,6 @@ public class ReconcileTestMethod extends BaseTestMethodChange implements CodeCha
         final @NotNull PsiClass testClass = target.orElseThrow();
         final @NotNull Map<String, PsiMethod> methods = GeneratedMethod.byTestCaseUuid(testClass);
 
-        int written = 0;
         for (final TestCase testCase : inClass) {
             final @Nullable PsiMethod testMethod = methods.get(testCase.getUuid().toString());
             if (testMethod == null) continue;
@@ -78,9 +77,7 @@ public class ReconcileTestMethod extends BaseTestMethodChange implements CodeCha
             writeDescription(project, testMethod, testCase);
             writeGroups(project, testMethod, testCase);
             writeEnabled(project, testMethod, testCase);
-            written++;
+            reformat(project, testMethod.getModifierList());
         }
-
-        if (written > 0) reformat(project, testClass);
     }
 }
