@@ -82,6 +82,10 @@ The node goes to the recycle bin, so nothing is lost for good.
   because a node half put back is worse than one not put back.
 - **Rule-TREE-PANEL-116** — A removal closes every editor open on a removed node
   or under it, light mode included, so none is left holding data that has gone.
+- **Rule-TREE-PANEL-143** — A node selected together with the folder it sits in
+  goes with that folder. It is not removed or counted on its own: the
+  confirmation and *Removed N* count only the selected nodes no other selected
+  node holds.
 
 ## The Confirm Removing dialog
 
@@ -155,6 +159,10 @@ those are different questions.
 
 **If a container is selected together with a test set** — only the test set is
 removed. The container is left out, and not counted.
+
+**If a node is selected together with the folder it sits in** — only the folder
+is removed, and the node goes with it. The node is not counted on its own
+(Rule-TREE-PANEL-143).
 
 **If nothing could be removed** — the tree rebuilds and Testin says nothing at
 all. There is nothing on the tree's history for `Ctrl+Z` to take back.

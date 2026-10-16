@@ -23,6 +23,7 @@ import org.testin.util.Shortcuts;
 import org.testin.view.Drawn;
 
 import javax.swing.JButton;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -67,6 +68,18 @@ public class ConfirmButtonsIdeTest extends AbstractTempRootIdeTest {
         assertEquals("Review Changes did not run its own action", 1, reviewed.get());
         assertEquals("Review Changes also switched", 0, switched.get());
         assertFalse("Review Changes left the dialog open", ShownDialog.isOpen(getProject(), ConfirmDialog.class));
+    }
+
+    // UC-INTERNAL-007, Rule-INTERNAL-142
+    public void testTheConfirmationHasClosedBeforeTheWorkItConfirmsBegins() {
+        final @NotNull List<Boolean> openWhileWorking = new ArrayList<>();
+        final @NotNull ConfirmDialog dialog = new ConfirmDialog(getProject(), "Confirm Removing", "Remove these 16 nodes?", "", "",
+                "Remove", () -> openWhileWorking.add(ShownDialog.isOpen(getProject(), ConfirmDialog.class)));
+        ShownDialog.open(getProject(), ConfirmDialog.class, dialog::show);
+
+        ShownDialog.press(getProject(), ConfirmDialog.class, Shortcuts.Enter);
+
+        assertEquals("the confirmation was still open, so a second Enter could answer it again, while the work it confirmed ran", List.of(false), openWhileWorking);
     }
 
     // Rule-INTERNAL-140, Rule-INTERNAL-060

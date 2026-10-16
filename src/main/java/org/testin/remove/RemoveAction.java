@@ -30,9 +30,14 @@ import java.util.List;
 
 // UC-TREE-PANEL-012
 public class RemoveAction extends AbstractAnyProjectAction {
+    // Rule-TREE-PANEL-042, Rule-TREE-PANEL-143
     private static @NotNull List<AbstractNode> removableNodes(final @NotNull AnActionEvent e) {
-        return TestinDataKeys.selectedNodes(e).stream()
+        final @NotNull List<AbstractNode> removable = TestinDataKeys.selectedNodes(e).stream()
                 .filter(AbstractNode::isRemovable)
+                .toList();
+
+        return removable.stream()
+                .filter(node -> removable.stream().noneMatch(folder -> !folder.equals(node) && node.getPath().startsWith(folder.getPath())))
                 .toList();
     }
 

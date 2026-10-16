@@ -19,16 +19,19 @@ package org.testin.remove;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.Await;
+import org.testin.Said;
 import org.testin.TreeGesture;
 import org.testin.indexer.Nodes;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
+import org.testin.notifications.Done;
 import org.testin.services.Services;
 import org.testin.ui.framework.ConfirmDialog;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.undo.UndoHistories;
 import org.testin.undo.UndoScope;
+import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
 import org.testin.view.Drawn;
 
@@ -110,6 +113,23 @@ public class RemoveNodeIdeTest extends AbstractCodegenIdeTest {
         final @NotNull List<String> words = confirmationWords();
 
         assertTrue("the confirmation for two nodes does not say how many: " + words, Drawn.holds(words, "2"));
+    }
+
+    // Rule-TREE-PANEL-143, Rule-TREE-PANEL-038, Rule-TREE-PANEL-007
+    public void testANodeSelectedWithTheFolderItSitsInGoesWithTheFolderAndIsNotCountedOnItsOwn() {
+        final @NotNull TestSetPackageNode payments = indexedPackage("Payments", theTestCasesDirectory());
+        final @NotNull TestSetNode cards = createdTestSet("Cards", payments);
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull Said balloons = Said.listening(getProject(), getTestRootDisposable());
+
+        removeAsked(List.of(payments, cards, login));
+        assertTrue("the confirmation counted a node its folder already takes: " + confirmationWords(), Drawn.holds(confirmationWords(), Bundle.message("remove.confirm.many", "2")));
+        confirmed();
+
+        Await.until("the folder and the test set beside it were not removed", () -> !nodes().nodeExists(payments.getPath()) && !nodes().nodeExists(login.getPath()));
+        assertFalse("the test set inside the folder is still there", nodes().nodeExists(cards.getPath()));
+        Await.until("removing them said nothing", () -> balloons.shown().stream().anyMatch(said -> said.startsWith(Done.REMOVED.getOutcome())));
+        assertEquals("a node inside a removed folder was counted on its own", List.of(Done.counted(Done.REMOVED.getOutcome(), 2)), balloons.shown().stream().filter(said -> said.startsWith(Done.REMOVED.getOutcome())).toList());
     }
 
     // Rule-TREE-PANEL-039

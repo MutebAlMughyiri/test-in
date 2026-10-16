@@ -61,10 +61,11 @@ public final class ConfirmDialog extends AbstractFrameworkDialog {
         shortcuts = List.copyOf(keys);
     }
 
+    // Rule-INTERNAL-142
     @Override
     protected void submit() {
-        onConfirm.run();
         closeOk();
+        onConfirm.run();
     }
 
     // UC-INTERNAL-007, Rule-INTERNAL-075

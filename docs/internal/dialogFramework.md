@@ -262,6 +262,9 @@ and which keys it answers, and the shell builds the rest.
   other actions first, then the one that confirms, drawn as the primary and
   answering Enter. Each other button does its own action and closes the dialog.
   An action with a key is also on the strip; one without is a button only.
+- **Rule-INTERNAL-142** — A confirmation closes the moment the tester answers
+  it, before the work it confirms begins. A second Enter pressed while that work
+  runs reaches no dialog, so nothing is done twice.
 
 These rules are about the shell every dialog is built on. What each dialog
 holds, and what its keys mean, is on the page for that dialog.
