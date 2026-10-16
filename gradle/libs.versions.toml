@@ -6,6 +6,7 @@ iText = "9.8.0"
 fastexcel = "0.20.2"
 poi = "5.5.1"
 log4j = "2.26.1"
+asm = "9.11"
 archunit = "1.5.1"
 # BasePlatformTestCase is a JUnit TestCase; the platform test framework brings no
 # JUnit of its own. Only the ideTest task uses it.
@@ -26,6 +27,8 @@ fastexcel = { module = "org.dhatim:fastexcel", version.ref = "fastexcel" }
 poi = { module = "org.apache.poi:poi", version.ref = "poi" }
 poi-ooxml = { module = "org.apache.poi:poi-ooxml", version.ref = "poi" }
 log4j-api = { module = "org.apache.logging.log4j:log4j-api", version.ref = "log4j" }
+asm = { module = "org.ow2.asm:asm", version.ref = "asm" }
+asm-commons = { module = "org.ow2.asm:asm-commons", version.ref = "asm" }
 archunit = { module = "com.tngtech.archunit:archunit", version.ref = "archunit" }
 junit = { module = "junit:junit", version.ref = "junit" }
 errorprone = { module = "com.google.errorprone:error_prone_core", version.ref = "errorprone" }

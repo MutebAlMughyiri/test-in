@@ -333,8 +333,13 @@ dependencies {
 
     // POI 5.5.1, the latest, brings log4j-api 2.24.3, which CVE-2026-49844 covers
     // (2.13.1 to 2.25.4): it ships in the plugin, so the fixed release is pinned.
+    // JaCoCo's core brings ASM 9.10.1, which CVE-2026-110260 and its siblings
+    // cover (3.0 before 9.11). Only RuleTraceTest reads it, so the fixed release
+    // is pinned for the tests.
     constraints {
         implementation(libs.log4j.api)
+        testImplementation(libs.asm)
+        testImplementation(libs.asm.commons)
     }
 
     // The architecture rules, read off the bytecode rather than off CLAUDE.md
