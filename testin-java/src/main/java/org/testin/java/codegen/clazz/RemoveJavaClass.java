@@ -23,20 +23,12 @@ import org.testin.codegen.CodeChange;
 import org.testin.codegen.JavaSourceRoot;
 import org.testin.model.node.AbstractNode;
 
-import java.util.List;
 
 public class RemoveJavaClass implements CodeChange<AbstractNode> {
     // UC-CODEGEN-018, Rule-CODEGEN-059
     @Override
     public void execute(final @NotNull Project project, final @NotNull AbstractNode node) {
-        final @NotNull List<String> fqcn = Fqcn.ofClass(node);
-        if (fqcn.isEmpty()) return;
-
-        final @NotNull String packagePath = String.join("/", fqcn.subList(0, fqcn.size() - 1));
-        final @NotNull String className = fqcn.getLast();
-        final @NotNull String fileName = className + ".java";
-
-        JavaSourceRoot.writeInRoot(project, testSourceRoot ->
-                JavaSourceRoot.removeUnder(project, testSourceRoot, packagePath + "/" + fileName));
+        Fqcn.classFileOf(node).ifPresent(classFile -> JavaSourceRoot.writeInRoot(project, testSourceRoot ->
+                JavaSourceRoot.removeUnder(project, testSourceRoot, classFile)));
     }
 }

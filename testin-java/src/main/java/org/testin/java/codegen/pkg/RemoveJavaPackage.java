@@ -27,9 +27,7 @@ public class RemoveJavaPackage implements CodeChange<AbstractNode> {
     // UC-CODEGEN-018, Rule-CODEGEN-059
     @Override
     public void execute(final @NotNull Project project, final @NotNull AbstractNode node) {
-        final @NotNull String packagePath = String.join("/", Fqcn.ofPackage(node));
-
-        JavaSourceRoot.writeInRoot(project, testSourceRoot ->
-                JavaSourceRoot.removeUnder(project, testSourceRoot, packagePath));
+        Fqcn.packageFolderOf(node).ifPresent(packageFolder -> JavaSourceRoot.writeInRoot(project, testSourceRoot ->
+                JavaSourceRoot.removeUnder(project, testSourceRoot, packageFolder)));
     }
 }

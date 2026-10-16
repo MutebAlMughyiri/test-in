@@ -17,10 +17,12 @@
 package org.testin.remove;
 
 import com.intellij.openapi.actionSystem.IdeActions;
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.Declared;
+import org.testin.codegen.JavaSourceRoot;
 import org.testin.codegen.NodeCode;
 import org.testin.codegen.WaitForIndexing;
 import org.testin.editor.open.TestinEditors;
@@ -82,7 +84,7 @@ record RemoveWork(@NotNull Project project, @NotNull Nodes nodes, @NotNull Testi
         final boolean copied = BackgroundWork.synchronously(project, Bundle.message("remove.progress"), true, () -> {
             for (final AbstractNode node : nodesToRemove) {
                 ProgressManager.checkCanceled();
-                nodes.keepAside(node.getPath()).ifPresent(copy -> kept.add(new Kept(node, node.getPath(), copy)));
+                nodes.keepAside(node.getPath()).ifPresent(copy -> kept.add(new Kept(node, node.getPath(), copy, codeOf(node))));
             }
         });
 
@@ -148,7 +150,14 @@ record RemoveWork(@NotNull Project project, @NotNull Nodes nodes, @NotNull Testi
                 () -> kept.forEach(one -> nodes.forgetKept(one.copy()))));
     }
 
-    // UC-TREE-PANEL-016, Rule-TREE-PANEL-040, Rule-INTERNAL-063
+    // UC-CODEGEN-018, Rule-CODEGEN-113
+    private @NotNull Map<String, byte[]> codeOf(final @NotNull AbstractNode node) {
+        return NodeCode.of(node.getType()).getCodeFile().apply(node)
+                .map(codeFile -> ReadAction.computeBlocking(() -> JavaSourceRoot.contentUnder(project, codeFile)))
+                .orElse(Map.of());
+    }
+
+    // UC-TREE-PANEL-016, Rule-TREE-PANEL-040, Rule-INTERNAL-063, Rule-CODEGEN-113
     private boolean restoreAll(final @NotNull List<Kept> kept) {
         if (kept.isEmpty()) {
             notifier.softRefuse(project, Bundle.message("remove.not.undoable.title"),
@@ -162,6 +171,7 @@ record RemoveWork(@NotNull Project project, @NotNull Nodes nodes, @NotNull Testi
 
         final @NotNull List<Path> lost = new ArrayList<>();
         BackgroundWork.synchronously(project, Bundle.message("remove.undo.progress"), false, () -> lost.addAll(nodes.restoreNodes(originalByKept)));
+        kept.stream().filter(one -> !lost.contains(one.original())).forEach(one -> JavaSourceRoot.putBack(project, one.code()));
 
         if (lost.isEmpty()) return true;
 

@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.model.node.AbstractNode;
 
 import java.nio.file.Path;
+import java.util.Map;
 
-record Kept(@NotNull AbstractNode node, @NotNull Path original, @NotNull Path copy) {
+record Kept(@NotNull AbstractNode node, @NotNull Path original, @NotNull Path copy, @NotNull Map<String, byte[]> code) {
 }

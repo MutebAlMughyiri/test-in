@@ -36,6 +36,10 @@ There is no key for this. It happens when the node is removed, which is
   bin. Removing a package sends its folder, with everything under it.
 - **Rule-CODEGEN-060** — A removal that finds no code to delete says nothing at
   all.
+- **Rule-CODEGEN-113** — Undoing the removal puts the code back as it was,
+  method bodies included. Testin keeps the class file or the package folder
+  while it removes it, and Ctrl+Z writes each file back where it stood. A file
+  already standing there is left as it is.
 
 ## What the tester sees
 
@@ -69,9 +73,8 @@ Everything the tester wrote inside those methods goes with the class, into the
 recycle bin. The confirmation before the removal counts test sets, test cases
 and test runs. It does not mention the code.
 
-Undoing the removal puts the test data back and writes the classes and methods
-again, empty. What was in the method bodies is in the class file in the recycle
-bin.
+Undoing the removal puts the test data back and the code as it was, method
+bodies included (Rule-CODEGEN-113). The recycle bin keeps its own copy as well.
 
 ---
 

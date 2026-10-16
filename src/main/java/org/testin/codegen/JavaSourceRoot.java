@@ -23,7 +23,9 @@ import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.vfs.VfsUtil;
+import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileFilter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +41,9 @@ import org.testin.util.FailureText;
 import org.testin.util.FromContentModule;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -89,6 +93,50 @@ public final class JavaSourceRoot {
 
         final @NotNull VirtualFile target = found.orElseThrow();
         if (RecycleBin.took(project, target)) TestinLogger.info("Removed generated code at: " + target.getPath());
+    }
+
+    // UC-CODEGEN-018, Rule-CODEGEN-113
+    public static @NotNull Map<String, byte[]> contentUnder(final @NotNull Project project, final @NotNull String relativePath) {
+        final @NotNull Map<String, byte[]> files = new LinkedHashMap<>();
+        find(project).ifPresent(root -> under(root, relativePath).ifPresent(found -> VfsUtilCore.iterateChildrenRecursively(found, VirtualFileFilter.ALL, file -> {
+            if (!file.isDirectory())
+                Optional.ofNullable(VfsUtilCore.getRelativePath(file, root, '/')).ifPresent(path -> read(file).ifPresent(content -> files.put(path, content)));
+            return true;
+        })));
+        return files;
+    }
+
+    // UC-CODEGEN-018, Rule-CODEGEN-113
+    public static void putBack(final @NotNull Project project, final @NotNull Map<String, byte[]> files) {
+        if (files.isEmpty()) return;
+
+        writeInRoot(project, root -> files.forEach((relativePath, content) -> putBack(root, relativePath, content)));
+    }
+
+    private static void putBack(final @NotNull VirtualFile root, final @NotNull String relativePath, final byte @NotNull [] content) {
+        if (under(root, relativePath).isPresent()) {
+            TestinLogger.info("Left the generated code at " + relativePath + " as it is: something is there already");
+            return;
+        }
+
+        final int slash = relativePath.lastIndexOf('/');
+        packageFolder(root, slash < 0 ? List.of() : List.of(relativePath.substring(0, slash))).ifPresent(folder -> {
+            try {
+                folder.createChildData(JavaSourceRoot.class, relativePath.substring(slash + 1)).setBinaryContent(content);
+                TestinLogger.info("Put the generated code back at: " + relativePath);
+            } catch (final IOException ex) {
+                TestinLogger.error("Could not put the generated code back at " + relativePath + ": " + FailureText.of(ex));
+            }
+        });
+    }
+
+    private static @NotNull Optional<byte[]> read(final @NotNull VirtualFile file) {
+        try {
+            return Optional.of(file.contentsToByteArray());
+        } catch (final IOException ex) {
+            TestinLogger.warn("Could not keep the generated code at " + file.getPath() + " for Ctrl+Z: " + FailureText.of(ex));
+            return Optional.empty();
+        }
     }
 
     // UC-CODEGEN-001, Rule-CODEGEN-008

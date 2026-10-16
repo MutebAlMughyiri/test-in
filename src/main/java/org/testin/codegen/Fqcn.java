@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Fqcn {
@@ -93,6 +94,19 @@ public final class Fqcn {
 
         sanitizeTail(generatedFqcn);
         return generatedFqcn;
+    }
+
+    // UC-CODEGEN-018, Rule-CODEGEN-059
+    @FromContentModule
+    public static @NotNull Optional<String> classFileOf(final @NotNull AbstractNode testSet) {
+        final @NotNull List<String> fqcn = ofClass(testSet);
+        return fqcn.isEmpty() ? Optional.empty() : Optional.of(String.join("/", fqcn) + ".java");
+    }
+
+    // UC-CODEGEN-018, Rule-CODEGEN-059
+    @FromContentModule
+    public static @NotNull Optional<String> packageFolderOf(final @NotNull AbstractNode node) {
+        return Optional.of(String.join("/", ofPackage(node)));
     }
 
     // UC-CODEGEN-001, Rule-CODEGEN-008

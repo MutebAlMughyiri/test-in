@@ -25,6 +25,9 @@ import org.testin.codegen.event.RenamedNode;
 import org.testin.model.NodeType;
 import org.testin.model.node.AbstractNode;
 
+import java.util.Optional;
+import java.util.function.Function;
+
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NodeCode {
@@ -40,6 +43,9 @@ public final class NodeCode {
     // UC-CODEGEN-018, Rule-CODEGEN-096
     private final @NotNull CodeChange<AbstractNode> removed;
 
+    // UC-CODEGEN-018, Rule-CODEGEN-059, Rule-CODEGEN-113
+    private final @NotNull Function<AbstractNode, Optional<String>> codeFile;
+
     // Rule-CODEGEN-096
     public static @NotNull NodeCode of(final @NotNull NodeType type) {
         final @NotNull String nodeType = type.getDescription();
@@ -48,28 +54,32 @@ public final class NodeCode {
                     new NoCodeChange<>(nodeType),
                     CodeChangeType.RENAME_TEST_PROJECT::execute,
                     new NoCodeChange<>(nodeType),
-                    CodeChangeType.REMOVE_TEST_PROJECT::execute
+                    CodeChangeType.REMOVE_TEST_PROJECT::execute,
+                    Fqcn::packageFolderOf
             );
 
             case TEST_CASES_FOLDER, TEST_RUNS_FOLDER, TEST_RUN_PACKAGE, TEST_RUN -> new NodeCode(
                     new NoCodeChange<>(nodeType),
                     new NoCodeChange<>(nodeType),
                     new NoCodeChange<>(nodeType),
-                    new NoCodeChange<>(nodeType)
+                    new NoCodeChange<>(nodeType),
+                    _ -> Optional.empty()
             );
 
             case TEST_SET_PACKAGE -> new NodeCode(
                     new NoCodeChange<>(nodeType),
                     CodeChangeType.RENAME_TEST_SET_PACKAGE::execute,
                     CodeChangeType.MOVE_TEST_SET_PACKAGE::execute,
-                    CodeChangeType.REMOVE_TEST_SET_PACKAGE::execute
+                    CodeChangeType.REMOVE_TEST_SET_PACKAGE::execute,
+                    Fqcn::packageFolderOf
             );
 
             case TEST_SET -> new NodeCode(
                     CodeChangeType.CREATE_TEST_SET::execute,
                     CodeChangeType.RENAME_TEST_SET::execute,
                     CodeChangeType.MOVE_TEST_SET::execute,
-                    CodeChangeType.REMOVE_TEST_SET::execute
+                    CodeChangeType.REMOVE_TEST_SET::execute,
+                    Fqcn::classFileOf
             );
         };
     }

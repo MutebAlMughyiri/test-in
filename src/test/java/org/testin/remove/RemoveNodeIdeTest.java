@@ -16,11 +16,15 @@
 
 package org.testin.remove;
 
+import com.intellij.openapi.application.WriteAction;
+import com.intellij.openapi.vfs.VfsUtil;
+import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.Await;
 import org.testin.Said;
 import org.testin.TreeGesture;
+import org.testin.codegen.JavaSourceRoot;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.recyclebin.RecycleBin;
 import org.testin.model.node.AbstractNode;
@@ -36,6 +40,7 @@ import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
 import org.testin.view.Drawn;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -147,6 +152,46 @@ public class RemoveNodeIdeTest extends AbstractCodegenIdeTest {
         assertTrue("a node the recycle bin did not take left the tree", nodes().nodeExists(login.getPath()));
         assertTrue("a node the recycle bin did not take was deleted instead", Files.isDirectory(login.getPath()));
         assertTrue("a removal that removed nothing said Removed", said.shown().stream().noneMatch(shown -> shown.startsWith(Done.REMOVED.getOutcome())));
+    }
+
+    private @NotNull VirtualFile theTestSourceRoot() {
+        return JavaSourceRoot.find(getProject()).orElseThrow(() -> new AssertionError("the project has no test source folder"));
+    }
+
+    private @NotNull String textOf(final @NotNull String relativePath) {
+        return JavaSourceRoot.under(theTestSourceRoot(), relativePath).map(file -> {
+            try {
+                return VfsUtil.loadText(file);
+            } catch (final IOException ex) {
+                throw new AssertionError("could not read " + relativePath, ex);
+            }
+        }).orElse("");
+    }
+
+    private void theTesterWrites(final @NotNull String relativePath, final @NotNull String line) {
+        final @NotNull VirtualFile file = JavaSourceRoot.under(theTestSourceRoot(), relativePath).orElseThrow(() -> new AssertionError(relativePath + " was never written"));
+        WriteAction.run(() -> {
+            try {
+                VfsUtil.saveText(file, VfsUtil.loadText(file) + line);
+            } catch (final IOException ex) {
+                throw new AssertionError("could not write " + relativePath, ex);
+            }
+        });
+    }
+
+    // Rule-CODEGEN-113, Rule-TREE-PANEL-040
+    public void testUndoingTheRemovalOfATestSetPutsItsClassBackWithWhatTheTesterWrote() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        theTesterWrites("nafath/LoginTest.java", "// what the tester wrote" + System.lineSeparator());
+
+        removeAsked(List.of(login));
+        confirmed();
+        Await.until("removing the test set left its class behind", () -> textOf("nafath/LoginTest.java").isEmpty());
+        Await.until("the removal never went onto the tree's history", () -> undoHistories().canUndo(UndoScope.TREE));
+
+        assertTrue("undoing the removal was refused", undoHistories().undo(UndoScope.TREE));
+
+        Await.until("undoing the removal did not put the class back with what the tester wrote", () -> textOf("nafath/LoginTest.java").contains("// what the tester wrote"));
     }
 
     // Rule-TREE-PANEL-039
