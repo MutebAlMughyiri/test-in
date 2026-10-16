@@ -186,7 +186,7 @@ final class IndexingScanner {
     private static boolean canceled(final @NotNull ProgressIndicator indicator, final @NotNull Path testProjectPath) {
         if (!indicator.isCanceled()) return false;
 
-        TestinLogger.info("Scan canceled, so the index was left as it was: " + testProjectPath.getFileName());
+        TestinLogger.info("Reading " + testProjectPath.getFileName() + " was canceled, so the part not yet read was left as it was");
         return true;
     }
 

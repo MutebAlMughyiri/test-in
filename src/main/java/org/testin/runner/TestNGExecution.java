@@ -209,7 +209,7 @@ public final class TestNGExecution implements Disposable {
         final @NotNull Map<ProcessHandler, String> theirs = running(stop.executions());
         stop.executions().stream().filter(testRunName -> !theirs.containsValue(testRunName)).forEach(stopWhenStarted::add);
         TestinLogger.info("Stopping " + stop.testCases().size() + " test case(s) in " + stop.executions().size()
-                + " execution(s): " + theirs.size() + " had reached a process, the rest end as theirs starts");
+                + " execution(s): " + theirs.size() + " had reached a process, and the rest are stopped as soon as theirs starts");
 
         theirs.forEach(this::kill);
         stop.testCases().forEach(testCaseUuid -> TestNGExecutionReported.broadcast(project, key(testCaseUuid), TestNGExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
