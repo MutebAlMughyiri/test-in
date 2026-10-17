@@ -48,8 +48,9 @@ public class PasteTestCaseCodeIdeTest extends AbstractCodegenIdeTest {
         testCase.setParent(testSet);
         Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase);
         CodeChangeType.CREATE_TEST_CASE.execute(getProject(), testCase);
+        Await.until("the test case to copy got no method", () -> methodOf(testCase).isPresent());
 
-        final @NotNull PsiCodeBlock body = methodOf(testCase).map(PsiMethod::getBody).orElseThrow(() -> new AssertionError("the test case to copy got no method"));
+        final @NotNull PsiCodeBlock body = methodOf(testCase).map(PsiMethod::getBody).orElseThrow(() -> new AssertionError("the test case to copy has a method with no body"));
         WriteCommandAction.runWriteCommandAction(getProject(), () -> {
             body.replace(JavaPsiFacade.getElementFactory(getProject()).createCodeBlockFromText("{ " + WRITTEN_BY_THE_TESTER + " }", body));
         });
@@ -57,7 +58,7 @@ public class PasteTestCaseCodeIdeTest extends AbstractCodegenIdeTest {
     }
 
     private @NotNull Optional<PsiMethod> methodOf(final @NotNull TestCase testCase) {
-        return Arrays.stream(generatedClass("nafath.LoginTest").orElseThrow().getMethods())
+        return generatedClass("nafath.LoginTest").stream().flatMap(testClass -> Arrays.stream(testClass.getMethods()))
                 .filter(method -> method.getModifierList().getText().contains(testCase.getUuid().toString()))
                 .findFirst();
     }

@@ -137,7 +137,8 @@ public class AutomatedStateIdeTest extends AbstractCodegenIdeTest {
         assertEquals("the count was not written from how many the answer covers", Bundle.message("statusbar.automated.count", Automated.WRITTEN.getLabel(), "0", "2"), Drawn.text(automatedCount(bar)));
 
         threeStatesOfAutomation();
-        assertTrue(TestinYml.save(getProject(), TestinYml.lines("SOMETHING_ELSE")));
+        assertTrue(TestinYml.save(getProject(), TestinYml.lines("")));
+        assertFalse("testin.yml still names the open test project, so the IDE can read the code", CodeOn.isOn(getProject()));
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         try {
             editor.refreshView();
