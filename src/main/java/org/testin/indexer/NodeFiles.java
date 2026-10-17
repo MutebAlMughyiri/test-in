@@ -100,7 +100,7 @@ final class NodeFiles {
     private void followOnDisk(final @NotNull Path oldPath, final @NotNull Path newPath, final @NotNull Runnable then) {
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             store.renameNode(oldPath, newPath);
-            ApplicationManager.getApplication().invokeLater(then);
+            ApplicationManager.getApplication().invokeLater(then, project.getDisposed());
         });
     }
 
@@ -122,7 +122,7 @@ final class NodeFiles {
                 arrived.forEach(this::reidentifyCopiedTestCases);
 
                 indexer.refreshIndexedTestProject(targetPath);
-                ApplicationManager.getApplication().invokeLater(() -> onComplete.accept(copied.get()));
+                ApplicationManager.getApplication().invokeLater(() -> onComplete.accept(copied.get()), project.getDisposed());
             });
         };
         final @NotNull Runnable operationSucceeded = () -> {
