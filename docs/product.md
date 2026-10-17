@@ -546,21 +546,21 @@ answered.
 
 ## Appendix B — Glossary
 
-| Term                | Definition                                                                                      |
-|---------------------|-------------------------------------------------------------------------------------------------|
-| **Test Project**    | The top of one tree. One folder, holding everything below it                                    |
-| **Test Set**        | A named group of test cases. A test run is built from one                                       |
-| **Test Case**       | One testable thing, with its steps and expected result. The question                            |
-| **Test Run**        | One execution of a chosen set of test cases at a point in time                                  |
-| **Run Item**        | What happened to one test case in one test run. The answer                                      |
-| **Run Item Status** | Passed, Failed or Blocked — the three a tester can give                                         |
-| **Pending**         | This test run holds the test case and has not reached it yet                                    |
-| **Untested**        | The test run ended without ever reaching the test case                                          |
-| **Removed**         | The test case has been deleted. The test run keeps what it recorded                             |
-| **Signed off**      | Committed. A signed-off test run records nothing further, apart from a bug issue link           |
-| **Deprecated**      | A test set kept for its history but no longer offered for new test runs                         |
-| **Archived**        | A package kept but moved out of the way                                                         |
-| **Automation**      | The generated test method that executes a test case without a person                            |
+| Term                | Definition                                                                            |
+|---------------------|---------------------------------------------------------------------------------------|
+| **Test Project**    | The top of one tree. One folder, holding everything below it                          |
+| **Test Set**        | A named group of test cases. A test run is built from one                             |
+| **Test Case**       | One testable thing, with its steps and expected result. The question                  |
+| **Test Run**        | One execution of a chosen set of test cases at a point in time                        |
+| **Run Item**        | What happened to one test case in one test run. The answer                            |
+| **Run Item Status** | Passed, Failed or Blocked — the three a tester can give                               |
+| **Pending**         | This test run holds the test case and has not reached it yet                          |
+| **Untested**        | The test run ended without ever reaching the test case                                |
+| **Removed**         | The test case has been deleted. The test run keeps what it recorded                   |
+| **Signed off**      | Committed. A signed-off test run records nothing further, apart from a bug issue link |
+| **Deprecated**      | A test set kept for its history but no longer offered for new test runs               |
+| **Archived**        | A package kept but moved out of the way                                               |
+| **Automation**      | The generated test method that executes a test case without a person                  |
 
 ---
 

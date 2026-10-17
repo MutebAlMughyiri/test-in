@@ -31,6 +31,11 @@ import java.util.List;
 
 public class SelectionFollowsTheAutomationIdeTest extends AbstractCodegenIdeTest {
 
+    private static void pressOnTheFirstCard(final @NotNull JList<TestCase> list) {
+        final @NotNull Rectangle cell = list.getCellBounds(0, 0);
+        list.dispatchEvent(new MouseEvent(list, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0, cell.x + 2, cell.y + cell.height - 2, 1, false, MouseEvent.BUTTON1));
+    }
+
     @Override
     protected void setUp() {
         super.setUp();
@@ -58,11 +63,6 @@ public class SelectionFollowsTheAutomationIdeTest extends AbstractCodegenIdeTest
     private void started(final @NotNull TestCase testCase) {
         CapturedRunner.startedByTestNg(getProject(), testCase);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
-    }
-
-    private static void pressOnTheFirstCard(final @NotNull JList<TestCase> list) {
-        final @NotNull Rectangle cell = list.getCellBounds(0, 0);
-        list.dispatchEvent(new MouseEvent(list, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0, cell.x + 2, cell.y + cell.height - 2, 1, false, MouseEvent.BUTTON1));
     }
 
     // Rule-EDITOR-PANEL-289

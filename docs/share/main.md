@@ -75,12 +75,12 @@ through Git, and where it is cloned from.
 
 ## Every key
 
-| Key           | What it does                                                                                                                                                                                               | The page that owns it                 |
-|---------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------|
-| `Enter`       | Presses the dialog's own button: **Export**, **Import**, **Commit & Push**, **Keep Selected** or **Export anyway**. The group picker and the Git identity have no button, and their line reads **Confirm** | The page that opens each              |
-| `Escape`      | Closes every dialog in this part. On a merge question it answers nothing and moves to the next file                                                                                                        | Everywhere                            |
-| `Ctrl+Click`  | Adds a group in the group picker                                                                                                                                                                           | [UC-SHARE-003](chooseWhatToExport.md) |
-| Right click   | Puts one change back, in the review                                                                                                                                                                        | [UC-SHARE-011](revertOneChange.md)    |
+| Key          | What it does                                                                                                                                                                                               | The page that owns it                 |
+|--------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------|
+| `Enter`      | Presses the dialog's own button: **Export**, **Import**, **Commit & Push**, **Keep Selected** or **Export anyway**. The group picker and the Git identity have no button, and their line reads **Confirm** | The page that opens each              |
+| `Escape`     | Closes every dialog in this part. On a merge question it answers nothing and moves to the next file                                                                                                        | Everywhere                            |
+| `Ctrl+Click` | Adds a group in the group picker                                                                                                                                                                           | [UC-SHARE-003](chooseWhatToExport.md) |
+| Right click  | Puts one change back, in the review                                                                                                                                                                        | [UC-SHARE-011](revertOneChange.md)    |
 
 **Nothing has a key** for the menu entries: **Export**, **Import**, **Sync With
 Remote** and **View Pending Commits**.

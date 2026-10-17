@@ -21,10 +21,10 @@ import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
 import org.testin.NodesOnDisk;
 import org.testin.model.NodeType;
-import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.status.TestRunStatus;
+import org.testin.model.testrun.RunItems;
 import org.testin.services.Services;
 
 import java.io.IOException;

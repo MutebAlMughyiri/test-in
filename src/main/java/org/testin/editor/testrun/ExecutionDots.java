@@ -18,8 +18,8 @@ package org.testin.editor.testrun;
 
 import com.intellij.util.ui.EmptyIcon;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
+import org.testin.model.testrun.RunItemExecution;
 
 import javax.swing.Icon;
 import java.awt.Color;
@@ -47,12 +47,12 @@ record ExecutionDots(@NotNull List<Color> colors, int ringed, int older, int old
                 (int) Math.ceil(font.getStringBounds(olderText(from), MEASURE).getWidth()), font);
     }
 
-    private int dot() {
-        return Math.max(2, font.getSize() / 2);
-    }
-
     private static @NotNull String olderText(final int older) {
         return older > 0 ? "+" + older + " " : "";
+    }
+
+    private int dot() {
+        return Math.max(2, font.getSize() / 2);
     }
 
     @Override

@@ -18,11 +18,11 @@ package org.testin.model;
 
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.testrun.RunItemExecution;
-import org.testin.model.testrun.RunItem;
-import org.testin.model.testrun.TestRunSummary;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.status.TestRunStatus;
+import org.testin.model.testrun.RunItem;
+import org.testin.model.testrun.RunItemExecution;
+import org.testin.model.testrun.TestRunSummary;
 import org.testng.annotations.Test;
 
 import java.util.List;

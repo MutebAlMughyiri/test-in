@@ -23,12 +23,12 @@ import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.ActionUiKind;
-import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.application.WriteAction;
@@ -91,15 +91,6 @@ public class ApiModelActionIdeTest extends AbstractCodegenIdeTest {
 
     private static final @NotNull String RESPONSE_BODY = "{\"token\":\"t-1\",\"expiresIn\":3600}";
 
-    @Override
-    protected void tearDown() {
-        try {
-            PropertiesComponent.getInstance().unsetValue(REMEMBERED_LAYOUT);
-        } finally {
-            super.tearDown();
-        }
-    }
-
     private static @NotNull List<EditorTextField> boxes(final @NotNull JComponent dialog) {
         return Drawn.components(dialog).stream().filter(EditorTextField.class::isInstance).map(EditorTextField.class::cast).toList();
     }
@@ -138,6 +129,15 @@ public class ApiModelActionIdeTest extends AbstractCodegenIdeTest {
 
     private static boolean showsIn(final @NotNull JComponent dialog, final @NotNull Component component) {
         return component.equals(dialog) || (component.isVisible() && showsIn(dialog, Objects.requireNonNull(component.getParent(), "the box is not in the dialog")));
+    }
+
+    @Override
+    protected void tearDown() {
+        try {
+            PropertiesComponent.getInstance().unsetValue(REMEMBERED_LAYOUT);
+        } finally {
+            super.tearDown();
+        }
     }
 
     private @NotNull PopupsBuilt.Built opened(final @NotNull PsiDirectory directory) {

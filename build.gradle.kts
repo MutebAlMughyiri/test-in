@@ -199,7 +199,12 @@ allprojects {
 subprojects {
     pluginManager.withPlugin("java") {
         dependencies {
-            "testRuntimeOnly"(files(rootProject.layout.buildDirectory.dir("classes/java/test"), rootProject.layout.buildDirectory.dir("resources/test")).builtBy(":testClasses"))
+            "testRuntimeOnly"(
+                files(
+                    rootProject.layout.buildDirectory.dir("classes/java/test"),
+                    rootProject.layout.buildDirectory.dir("resources/test")
+                ).builtBy(":testClasses")
+            )
         }
     }
 
@@ -415,7 +420,13 @@ intellijPlatform {
             val versions = providers.gradleProperty("verifyVersions").map { it.split(",") }
                 .orElse(providers.gradleProperty("intellij.version").map { listOf(it, oldestBranch) }).get()
             val products = providers.gradleProperty("verifyIde").map { listOf(IntelliJPlatformType.valueOf(it)) }
-                .getOrElse(listOf(IntelliJPlatformType.IntellijIdea, IntelliJPlatformType.PyCharm, IntelliJPlatformType.Rider))
+                .getOrElse(
+                    listOf(
+                        IntelliJPlatformType.IntellijIdea,
+                        IntelliJPlatformType.PyCharm,
+                        IntelliJPlatformType.Rider
+                    )
+                )
 
             products.forEach { ide -> versions.forEach { create(ide, it) } }
         }
@@ -558,7 +569,10 @@ tasks {
         // platform plugin's launcher: a separately registered Test task starts
         // on the daemon's JDK, which refuses the JVM flag every test task gets.
         useTestNG {
-            if (providers.gradleProperty("budget").isPresent) includeGroups("budget") else excludeGroups("budget", "trace")
+            if (providers.gradleProperty("budget").isPresent) includeGroups("budget") else excludeGroups(
+                "budget",
+                "trace"
+            )
         }
         exclude("**/*IdeTest.class")
     }
@@ -688,8 +702,15 @@ tasks.register<Test>("ruleTrace") {
     include("org/testin/docs/RuleTraceTest.class")
 
     mustRunAfter(listOf("test") + ideTestShares.keys + subprojects.map { "${it.path}:test" })
-    inputs.files(layout.buildDirectory.dir("jacoco/per-test")).withPropertyName("ranByEachTest").withPathSensitivity(PathSensitivity.RELATIVE)
-    inputs.files(listOf("src", "testin-java/src", "testin-testng/src", "testin-apimodel/src").map { layout.projectDirectory.dir(it) })
+    inputs.files(layout.buildDirectory.dir("jacoco/per-test")).withPropertyName("ranByEachTest")
+        .withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs.files(
+        listOf(
+            "src",
+            "testin-java/src",
+            "testin-testng/src",
+            "testin-apimodel/src"
+        ).map { layout.projectDirectory.dir(it) })
         .withPropertyName("labeledSources")
         .withPathSensitivity(PathSensitivity.RELATIVE)
     extensions.configure<JacocoTaskExtension> { isEnabled = false }

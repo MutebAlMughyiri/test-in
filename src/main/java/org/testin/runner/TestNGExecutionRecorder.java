@@ -26,9 +26,9 @@ import org.testin.codegen.TestName;
 import org.testin.indexer.TestCases;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCase;
-import org.testin.model.testrun.RunItemExecution;
-import org.testin.model.testrun.Failure;
 import org.testin.model.status.TestNGExecutionStatus;
+import org.testin.model.testrun.Failure;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.services.Services;
 
 import java.time.Duration;

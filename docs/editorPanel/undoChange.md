@@ -99,9 +99,8 @@ work that is not yours. Nothing was changed.*
 
 **If a test case cannot be written back, or the recycle bin does not take its
 file** — the others are still taken back. A message reads *unable to write
-content:* and the reason, or a notification titled *Not Removed* names the file
-(Rule-INTERNAL-143).
-*Undone* is not shown, because not
+content:* and the reason, or a notification titled *Not Removed* names the file (Rule-INTERNAL-143). *Undone* is not
+shown, because not
 everything was.
 
 ## What one press takes back

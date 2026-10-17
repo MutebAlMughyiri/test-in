@@ -17,8 +17,8 @@
 package org.testin.model;
 
 import org.testin.model.node.TestRunNode;
-import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.util.RealJsonCodec;
 import org.testng.annotations.Test;
 

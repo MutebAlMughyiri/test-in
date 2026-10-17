@@ -42,11 +42,11 @@ import java.awt.event.MouseEvent;
 import java.util.Optional;
 
 public abstract class AbstractIconButton extends JButton {
+    private final @NotNull Optional<String> shortcutText;
+
     private @NotNull Icon restIcon;
 
     private @NotNull Icon zoomedIcon;
-
-    private final @NotNull Optional<String> shortcutText;
 
     private boolean hovered;
 

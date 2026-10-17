@@ -27,8 +27,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jps.model.java.JavaSourceRootType;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.Said;
-import org.testin.help.SetupHint;
 import org.testin.help.Hints;
+import org.testin.help.SetupHint;
 import org.testin.help.SetupStep;
 import org.testin.services.Services;
 

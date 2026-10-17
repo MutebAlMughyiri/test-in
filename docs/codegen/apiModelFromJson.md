@@ -34,8 +34,7 @@ class to build, the response as a record to read.
   is shown. **Save to testin.yml**, in the Testin panel, turns code on.
 - **Rule-CODEGEN-098** — **Testin API Model from JSON** is on the New menu of a
   Java package in a source folder of the automation project. On any other
-  folder, and while `testin.yml` does not name the open test project
-  (Rule-CODEGEN-082), it is gray and says why.
+  folder, and while `testin.yml` does not name the open test project (Rule-CODEGEN-082), it is gray and says why.
 - **Rule-CODEGEN-099** — Nothing is checked until **Create** is pressed, or
   `Enter`. The Name field takes only English letters and digits, starting with a
   letter, and its first letter is made a capital, so `user` gives `UserRequest`.

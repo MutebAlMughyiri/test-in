@@ -17,9 +17,9 @@
 package org.testin.view.marker;
 
 import org.jetbrains.annotations.NotNull;
+import org.testin.model.DonutSlices;
 import org.testin.model.NodeFigureRow;
 import org.testin.model.NodeFigures;
-import org.testin.model.DonutSlices;
 import org.testin.model.status.TestRunStatus;
 import org.testin.model.testrun.TestRunSummary;
 import org.testng.annotations.Test;

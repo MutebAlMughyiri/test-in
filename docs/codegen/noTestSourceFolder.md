@@ -110,7 +110,8 @@ message before anything had been asked of the folder. So a tester who opened the
 IDE to read test cases was told about automation they were not doing, on every
 open, forever. Nothing about it was fixable from where they were standing.
 The check bought nothing either: reading test data is gated on the Testin folder,
-not on this one, and every generator already skips for itself ([#286](https://github.com/MutebAlMughyiri/test-in/issues/286)).
+not on this one, and every generator already skips for itself
+([#286](https://github.com/MutebAlMughyiri/test-in/issues/286)).
 
 ---
 

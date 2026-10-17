@@ -18,9 +18,9 @@ package org.testin.bug;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.TestRuns;
-import org.testin.model.testrun.RunItems;
-import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
+import org.testin.model.testrun.RunItem;
+import org.testin.model.testrun.RunItems;
 
 import java.nio.file.Path;
 import java.util.Optional;

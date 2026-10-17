@@ -20,10 +20,10 @@ import com.intellij.ui.components.JBList;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractIdeTest;
 import org.testin.editor.card.AbstractCard;
-import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.editor.card.CardTitle;
 import org.testin.editor.card.Offered;
 import org.testin.editor.card.Slot;
+import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.editor.card.TitleActionIcons;
 
 import java.util.Arrays;

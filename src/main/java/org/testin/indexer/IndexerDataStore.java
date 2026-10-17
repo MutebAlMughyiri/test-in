@@ -25,7 +25,6 @@ import org.jetbrains.annotations.Nullable;
 import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
 import org.testin.model.TestCase;
-import org.testin.model.testrun.RunItems;
 import org.testin.model.markers.AbstractMarker;
 import org.testin.model.markers.Marker;
 import org.testin.model.markers.TestRunMarker;
@@ -37,6 +36,7 @@ import org.testin.model.node.TestRunPackageNode;
 import org.testin.model.node.TestRunsFolderNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
+import org.testin.model.testrun.RunItems;
 
 import java.nio.file.Path;
 import java.util.ArrayList;

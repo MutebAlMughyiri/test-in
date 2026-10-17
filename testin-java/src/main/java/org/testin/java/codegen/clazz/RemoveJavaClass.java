@@ -18,8 +18,8 @@ package org.testin.java.codegen.clazz;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.codegen.Fqcn;
 import org.testin.codegen.CodeChange;
+import org.testin.codegen.Fqcn;
 import org.testin.codegen.JavaSourceRoot;
 import org.testin.model.node.AbstractNode;
 

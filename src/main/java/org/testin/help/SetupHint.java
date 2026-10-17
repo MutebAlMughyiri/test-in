@@ -36,12 +36,12 @@ public record SetupHint(@NotNull SetupStep step, @NotNull String text, @NotNull 
     }
 
     // UC-INTERNAL-009, Rule-INTERNAL-127
-    public @NotNull SetupHint about(final @NotNull Path subject) {
-        return new SetupHint(step, text, form, subject.toString());
+    public static @NotNull SetupHint of(final @NotNull SetupStep step, final @NotNull String text, final @NotNull String link, final @NotNull Runnable fix) {
+        return of(step, text, () -> PopupLink.of(link, fix));
     }
 
     // UC-INTERNAL-009, Rule-INTERNAL-127
-    public static @NotNull SetupHint of(final @NotNull SetupStep step, final @NotNull String text, final @NotNull String link, final @NotNull Runnable fix) {
-        return of(step, text, () -> PopupLink.of(link, fix));
+    public @NotNull SetupHint about(final @NotNull Path subject) {
+        return new SetupHint(step, text, form, subject.toString());
     }
 }

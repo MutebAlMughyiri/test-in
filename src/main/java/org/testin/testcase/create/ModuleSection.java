@@ -23,8 +23,8 @@ import org.testin.model.TestCase;
 import org.testin.services.Services;
 import org.testin.services.TestCaseCompletions;
 import org.testin.testcase.CreateTestCaseFields;
-import org.testin.util.Shortcuts;
 import org.testin.util.EditorFields;
+import org.testin.util.Shortcuts;
 
 public class ModuleSection extends AbstractOneLineSection {
     public ModuleSection(final @NotNull Project project) {

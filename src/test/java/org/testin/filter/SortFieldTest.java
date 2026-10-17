@@ -20,8 +20,8 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.model.Priority;
 import org.testin.model.TestCase;
 import org.testin.model.status.RunItemStatus;
-import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
+import org.testin.model.testrun.RunItemExecution;
 import org.testng.annotations.Test;
 
 import java.time.Duration;

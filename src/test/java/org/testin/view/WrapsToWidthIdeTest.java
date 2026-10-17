@@ -22,8 +22,8 @@ import org.testin.model.Priority;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.status.RunItemStatus;
-import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.util.Bundle;
 
 import javax.swing.JComponent;
@@ -60,6 +60,22 @@ public class WrapsToWidthIdeTest extends AbstractViewPanelIdeTest {
         return part.getWidth() > 0 && shown.width == part.getWidth() && shown.height == part.getHeight();
     }
 
+    private static boolean drawn(final @NotNull Component part, final @NotNull Component pane) {
+        for (Component at = part; at != null && !at.equals(pane); at = at.getParent()) {
+            if (!at.isVisible()) return false;
+        }
+        return true;
+    }
+
+    private static @NotNull List<String> cutOff(final @NotNull JComponent pane, final int width) {
+        layOut(pane, width);
+        return UIUtil.uiTraverser(pane).filter(JLabel.class).toList().stream()
+                .filter(label -> drawn(label, pane) && (label.getIcon() != null || !label.getText().isBlank()))
+                .filter(label -> !fullyVisibleIn(label, pane))
+                .map(label -> "'" + label.getText() + "' at " + width)
+                .toList();
+    }
+
     // Rule-VIEW-PANEL-124
     public void testANarrowerPanelWrapsTheValuesInsteadOfCuttingThemOff() {
         final @NotNull TestCase testCase = aTestCase(aTestSet("Login"), LONG, "1");
@@ -91,22 +107,6 @@ public class WrapsToWidthIdeTest extends AbstractViewPanelIdeTest {
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("the failed run item offers no Report Bug"));
         assertTrue("Report Bug was cut off when the panel narrowed", fullyVisibleIn(report, pane));
-    }
-
-    private static boolean drawn(final @NotNull Component part, final @NotNull Component pane) {
-        for (Component at = part; at != null && !at.equals(pane); at = at.getParent()) {
-            if (!at.isVisible()) return false;
-        }
-        return true;
-    }
-
-    private static @NotNull List<String> cutOff(final @NotNull JComponent pane, final int width) {
-        layOut(pane, width);
-        return UIUtil.uiTraverser(pane).filter(JLabel.class).toList().stream()
-                .filter(label -> drawn(label, pane) && (label.getIcon() != null || !label.getText().isBlank()))
-                .filter(label -> !fullyVisibleIn(label, pane))
-                .map(label -> "'" + label.getText() + "' at " + width)
-                .toList();
     }
 
     // Rule-VIEW-PANEL-124

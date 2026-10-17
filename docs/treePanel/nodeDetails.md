@@ -152,7 +152,7 @@ else.
    asks, and never saved. Which counts appear depends on the kind of node:
 
    | Node             | Counts                                                     |
-   |------------------|------------------------------------------------------------|
+      |------------------|------------------------------------------------------------|
    | Test project     | **Test sets**, **Packages**, **Test cases**, **Test runs** |
    | **Test Cases**   | **Test sets**, **Packages**, **Test cases**                |
    | **Test Runs**    | **Packages**, **Test runs**                                |

@@ -24,8 +24,8 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.logger.LogLevel;
 import org.testin.logger.TestinLogger;
-import org.testin.services.Services;
 import org.testin.model.NodeType;
+import org.testin.services.Services;
 import org.testin.util.Bundle;
 
 import java.io.IOException;

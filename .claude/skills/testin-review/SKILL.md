@@ -20,15 +20,15 @@ stays exactly as tested in the sandbox; only the shape of the code moves.
 
 Ask each of them of every file in the diff, in this order.
 
-| #   | Question                                                                                                                    | What a "no" looks like                                                                                                                                 | Read                        |
-| --- | --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------- |
-| 1   | **Is it simple?** The direct form, fewest parts, fewest lines for the same behavior.                                        | A helper, flag, parameter or class that exists only to carry something the caller already knows. A longer version of something shorter.                | `deliver-smallest-change`   |
-| 2   | **Is it clean?** Names, `final @NotNull`, one-line signatures, no null, no `throws`, no dead code, no comment but a marker. | A `@Nullable` meaning "not set", an `if (x != null)` at a call site, an unused parameter or import, a narrating comment.                               | CLAUDE.md, Code conventions |
-| 3   | **Is it well structured?** Each class has one job its name says; each method one job; logic at the level that owns it.      | A grab bag of static helpers, a method doing two jobs, a class named for one job doing another.                                                        | `a-class-does-one-job`      |
-| 4   | **Does every shared fact have one owner?** A look, a rule, a word, a lookup, a key.                                         | The same lookup, string, color or decision written in two places; two paths that draw the same thing.                                                  | `centralize-shared-design`  |
-| 5   | **No customization?** One surface holding every member, each disabling itself with its reason.                              | A per-screen variant of a menu, toolbar or dialog; a call site choosing members.                                                                       | `one-surface-many-states`   |
-| 6   | **Is everything named for the business?** Test case, test set, test run, run item, run item status, test set editor, card.  | `Case`, `Result`, `Run` alone, `TestEditor`, a near-twin class name, a name that claims the wrong job.                                                 | `names-say-the-business`    |
-| 7   | **Does every method and class a tester can reach name its rule or use case?**                                               | A behavior a tester could describe with no `UC-` or `Rule-` marker, a marker naming nothing in `docs/`, a rule that no longer says what the code does. | `code-cites-its-rule`       |
+| # | Question                                                                                                                    | What a "no" looks like                                                                                                                                 | Read                        |
+|---|-----------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------|
+| 1 | **Is it simple?** The direct form, fewest parts, fewest lines for the same behavior.                                        | A helper, flag, parameter or class that exists only to carry something the caller already knows. A longer version of something shorter.                | `deliver-smallest-change`   |
+| 2 | **Is it clean?** Names, `final @NotNull`, one-line signatures, no null, no `throws`, no dead code, no comment but a marker. | A `@Nullable` meaning "not set", an `if (x != null)` at a call site, an unused parameter or import, a narrating comment.                               | CLAUDE.md, Code conventions |
+| 3 | **Is it well structured?** Each class has one job its name says; each method one job; logic at the level that owns it.      | A grab bag of static helpers, a method doing two jobs, a class named for one job doing another.                                                        | `a-class-does-one-job`      |
+| 4 | **Does every shared fact have one owner?** A look, a rule, a word, a lookup, a key.                                         | The same lookup, string, color or decision written in two places; two paths that draw the same thing.                                                  | `centralize-shared-design`  |
+| 5 | **No customization?** One surface holding every member, each disabling itself with its reason.                              | A per-screen variant of a menu, toolbar or dialog; a call site choosing members.                                                                       | `one-surface-many-states`   |
+| 6 | **Is everything named for the business?** Test case, test set, test run, run item, run item status, test set editor, card.  | `Case`, `Result`, `Run` alone, `TestEditor`, a near-twin class name, a name that claims the wrong job.                                                 | `names-say-the-business`    |
+| 7 | **Does every method and class a tester can reach name its rule or use case?**                                               | A behavior a tester could describe with no `UC-` or `Rule-` marker, a marker naming nothing in `docs/`, a rule that no longer says what the code does. | `code-cites-its-rule`       |
 
 **No redundancy, unless it makes the code simpler.** A second copy is removed
 by giving the fact one owner. Keep a repetition only when removing it would
@@ -41,8 +41,7 @@ need more code or a less readable shape than the two copies, and say so.
   missing marker, reword a rule the code no longer matches.
 - **May not:** change behavior a tester sees, add a feature, or fix an
   unrelated defect inside the review. Those are findings: report them in a
-  table, and file each new one as an issue with `priority:` and `cost:` labels
-  (the `report-findings` skill).
+  table, and file each new one as an issue with `priority:` and `cost:` labels (the `report-findings` skill).
 - **If a feature is what makes the code complicated,** say so with its cost and
   ask whether to keep it, simplify it or remove it. Removing it is a fair answer.
 - **Fewer lines or the same** for the same behavior. A review that grows the

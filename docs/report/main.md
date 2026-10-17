@@ -85,8 +85,8 @@ The PDF, the Word document and the web page each hold these, in this order.
 3. **Execution Summary** — one sentence naming the test run and saying how many
    test cases it holds, how many were executed and what share passed. All four
    formats open it with the same sentence. Under it a row of
-   figures: **Total Test Cases**, **Passed**, **Failed**, **Blocked**, **Pending** or **Untested**, **Removed** and **Pass Rate**.
-   **Removed** appears only when
+   figures: **Total Test Cases**, **Passed**, **Failed**, **Blocked**, **Pending** or **Untested**, **Removed** and
+   **Pass Rate**. **Removed** appears only when
    the test run has any. A test case deleted before it was judged is counted
    only under **Removed**, so it is left out of **Pass Rate**; one deleted after
    its run item status is counted under that run item status, as the test run

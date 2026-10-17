@@ -92,6 +92,26 @@ public class FilterPopupButton extends AbstractIconButton implements ToolbarItem
         updateToolBarFilterState();
     }
 
+    // UC-EDITOR-PANEL-020, Rule-EDITOR-PANEL-094
+    private static @NotNull AnAction submenu(final @NotNull String name, final @NotNull BooleanSupplier works, final @NotNull String whyNot, final @NotNull Supplier<List<AnAction>> entries) {
+        return new ActionGroup(name, true) {
+            @Override
+            public AnAction @NotNull [] getChildren(final @Nullable AnActionEvent e) {
+                return entries.get().toArray(AnAction[]::new);
+            }
+
+            @Override
+            public void update(final @NotNull AnActionEvent e) {
+                GrayWithReason.unless(this, e, works.getAsBoolean(), whyNot);
+            }
+
+            @Override
+            public @NotNull ActionUpdateThread getActionUpdateThread() {
+                return ActionUpdateThread.BGT;
+            }
+        };
+    }
+
     private @NotNull List<Set<?>> filters() {
         return List.of(selectedPriority, selectedGroup, selectedModule, selectedTestCaseStatus, selectedRunItemStatuses, selectedAutomation, selectedTestSet);
     }
@@ -223,26 +243,6 @@ public class FilterPopupButton extends AbstractIconButton implements ToolbarItem
                 .toList()));
 
         return filterGroup;
-    }
-
-    // UC-EDITOR-PANEL-020, Rule-EDITOR-PANEL-094
-    private static @NotNull AnAction submenu(final @NotNull String name, final @NotNull BooleanSupplier works, final @NotNull String whyNot, final @NotNull Supplier<List<AnAction>> entries) {
-        return new ActionGroup(name, true) {
-            @Override
-            public AnAction @NotNull [] getChildren(final @Nullable AnActionEvent e) {
-                return entries.get().toArray(AnAction[]::new);
-            }
-
-            @Override
-            public void update(final @NotNull AnActionEvent e) {
-                GrayWithReason.unless(this, e, works.getAsBoolean(), whyNot);
-            }
-
-            @Override
-            public @NotNull ActionUpdateThread getActionUpdateThread() {
-                return ActionUpdateThread.BGT;
-            }
-        };
     }
 
     @TestOnly

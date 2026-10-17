@@ -40,13 +40,13 @@ import java.util.stream.StreamSupport;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class RunItemMerger {
+    static final @NotNull String STATUS = "status";
+
     private static final @NotNull String EXECUTIONS = "executions";
 
     private static final @NotNull String EXECUTED_AT = "executedAt";
 
     private static final @NotNull String DEFAULT = "default";
-
-    static final @NotNull String STATUS = "status";
 
     private static final @NotNull String BUG_ISSUE_URL = "bugIssueUrl";
 

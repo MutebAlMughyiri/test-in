@@ -24,8 +24,8 @@ import org.testin.model.testrun.TestRunSummary;
 import org.testin.ui.framework.AbstractFrameworkDialog;
 import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.DialogSize;
-import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.ui.framework.PlainTextArea;
+import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.util.Bundle;
 
 import java.util.ArrayList;

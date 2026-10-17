@@ -77,16 +77,6 @@ public class SelectionTreeIdeTest extends AbstractIdeTest {
                 .orElseThrow(() -> new AssertionError("the selection draws no tree"));
     }
 
-    // Rule-TREE-PANEL-130
-    public void testAFilterHidesATickedTestCaseWithoutUnticking() {
-        final @NotNull SelectionTree selection = selection(true);
-
-        selection.show(SelectionTreeIdeTest::inLogin);
-
-        assertEquals("a ticked test case the filter hides left the test run", List.of(REFUND), ticked(selection));
-        assertEquals("the hidden ticked test case is not counted as hidden", 1, selection.hiddenChecked());
-    }
-
     private static @NotNull CheckedTreeNode disabled(final @NotNull CheckedTreeNode leaf) {
         leaf.setEnabled(false);
         return leaf;
@@ -106,6 +96,16 @@ public class SelectionTreeIdeTest extends AbstractIdeTest {
                 .map(AbstractIconButton.class::cast)
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("the selection offers no select all"));
+    }
+
+    // Rule-TREE-PANEL-130
+    public void testAFilterHidesATickedTestCaseWithoutUnticking() {
+        final @NotNull SelectionTree selection = selection(true);
+
+        selection.show(SelectionTreeIdeTest::inLogin);
+
+        assertEquals("a ticked test case the filter hides left the test run", List.of(REFUND), ticked(selection));
+        assertEquals("the hidden ticked test case is not counted as hidden", 1, selection.hiddenChecked());
     }
 
     // Rule-TREE-PANEL-140, Rule-TREE-PANEL-131

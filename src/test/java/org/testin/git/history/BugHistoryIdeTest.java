@@ -21,11 +21,11 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.git.AbstractGitRemoteIdeTest;
 import org.testin.indexer.TestCaseFile;
 import org.testin.indexer.TestRuns;
-import org.testin.model.testrun.RunItems;
 import org.testin.model.bug.BugSeverity;
-import org.testin.model.testrun.RunItemExecution;
-import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
+import org.testin.model.testrun.RunItem;
+import org.testin.model.testrun.RunItemExecution;
+import org.testin.model.testrun.RunItems;
 import org.testin.services.Services;
 import org.testin.util.JsonCodec;
 

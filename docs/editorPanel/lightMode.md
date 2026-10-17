@@ -228,8 +228,7 @@ comes back here. When it does,
 the walk moves on exactly as after the tester's own run item status (Rule-EDITOR-PANEL-242).
 A result TestNG may follow with another is not one: a skipped attempt may be
 retried, and a method with an invocation count runs several times, so the window
-stays on the test case until TestNG moves on or the execution ends
-(Rule-CODEGEN-110).
+stays on the test case until TestNG moves on or the execution ends (Rule-CODEGEN-110).
 
 ### 7. The two clocks
 

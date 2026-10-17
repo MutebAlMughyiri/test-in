@@ -230,11 +230,13 @@ alone ran, over JMX, and saves it under `build/jacoco/per-test/<task>`.
 finds it through `META-INF/services/org.testng.ITestNGListener` in the root's
 test resources. For the IDE tests it is `AbstractIdeTest` and
 `AbstractOpenEditorsIdeTest`, which is why every IDE test extends one of them.
-The budget tests run alone after `ruleTrace`, so they are not traced. `RuleTraceTest` then reads every marker above a test method.
+The budget tests run alone after `ruleTrace`, so they are not traced. `RuleTraceTest` then reads every marker above a
+test method.
 A marker is traced when that test ran at least one line of a declaration that
 the production code marks the same way.
 
 It writes `build/reports/rule-trace/untraced.md`, listing:
+
 - each marker whose test runs none of its code;
 - each marked test that saved nothing it ran.
 
@@ -448,8 +450,8 @@ launcher, and JetBrains Client its thin front end, which is also Code With Me's
 guest. Neither holds a project, and neither ships the Git4Idea classes Testin's
 Git code calls, so the verifier found the Git code unresolved in both. In remote
 development Testin runs in the host IDE, beside the project (#419). `plugin.xml`
-declares Testin `<incompatible-with>` JetBrains Client
-(`com.intellij.jetbrains.client`), and leaves Gateway out by requiring
+declares Testin `<incompatible-with>` JetBrains Client (`com.intellij.jetbrains.client`), and leaves Gateway out by
+requiring
 `com.intellij.modules.lang`, which every IDE has and Gateway does not. It cannot
 name Gateway's id, `com.jetbrains.gateway`: IntelliJ IDEA bundles the Remote
 Development Gateway plugin under that id, so Testin would not load in IDEA

@@ -22,8 +22,8 @@ import com.intellij.execution.testframework.stacktrace.DiffHyperlink;
 import com.intellij.openapi.project.Project;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.testrun.Failure;
 import org.testin.model.status.TestNGExecutionStatus;
+import org.testin.model.testrun.Failure;
 import org.testin.runner.TestNGExecutionReported;
 import org.testin.util.Bundle;
 
@@ -35,19 +35,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public final class TestNGEventRelay extends SMTRunnerEventsAdapter {
     private final @NotNull Project project;
-
-    // UC-CODEGEN-008
-    @Override
-    public void onTestStarted(final @NotNull SMTestProxy test) {
-        TestNGExecutionReported.broadcast(project, test.getPresentableName(), TestNGExecutionStatus.RUNNING, Duration.ZERO, Failure.NONE);
-    }
-
-    // UC-CODEGEN-008, Rule-CODEGEN-075, Rule-CODEGEN-110
-    @Override
-    public void onTestFinished(final @NotNull SMTestProxy test) {
-        final @NotNull FinishedAttempt finished = finished(test);
-        TestNGExecutionReported.broadcast(project, test.getPresentableName(), finished.testNGExecutionStatus(), durationOf(test), finished.failure());
-    }
 
     // Rule-CODEGEN-075, Rule-CODEGEN-110
     static @NotNull FinishedAttempt finished(final @NotNull SMTestProxy test) {
@@ -76,5 +63,18 @@ public final class TestNGEventRelay extends SMTRunnerEventsAdapter {
         if (comparison == null) return message;
 
         return Bundle.message("runner.comparison", message, comparison.getLeft(), comparison.getRight());
+    }
+
+    // UC-CODEGEN-008
+    @Override
+    public void onTestStarted(final @NotNull SMTestProxy test) {
+        TestNGExecutionReported.broadcast(project, test.getPresentableName(), TestNGExecutionStatus.RUNNING, Duration.ZERO, Failure.NONE);
+    }
+
+    // UC-CODEGEN-008, Rule-CODEGEN-075, Rule-CODEGEN-110
+    @Override
+    public void onTestFinished(final @NotNull SMTestProxy test) {
+        final @NotNull FinishedAttempt finished = finished(test);
+        TestNGExecutionReported.broadcast(project, test.getPresentableName(), finished.testNGExecutionStatus(), durationOf(test), finished.failure());
     }
 }

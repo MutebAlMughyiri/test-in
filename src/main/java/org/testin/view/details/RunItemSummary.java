@@ -28,8 +28,8 @@ import org.testin.editor.card.HoverButton;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.status.RunItemStatus;
-import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.services.Services;
 import org.testin.testrun.ChangedSinceCommit;
 import org.testin.testrun.RunItemRecorder;
@@ -80,15 +80,6 @@ public final class RunItemSummary extends AbstractDetails {
         return label;
     }
 
-    // Rule-CODEGEN-112, Rule-VIEW-PANEL-086
-    private @NotNull String whatItWas(final int at) {
-        final @NotNull RunItemExecution execution = runItem.getExecutions().get(at);
-        final @NotNull String kind = execution.getRetry() > 0 ? Bundle.message("execution.retry", String.valueOf(execution.getRetry()))
-                : execution.getInvocation() > 0 ? Bundle.message("execution.invocation", String.valueOf(execution.getInvocation()))
-                : "";
-        return runItem.isRetried(at) ? (kind + " " + Bundle.message("execution.retried")).strip() : kind;
-    }
-
     // UC-VIEW-PANEL-005, Rule-VIEW-PANEL-086
     private static @NotNull List<JComponent> pills(final @NotNull RunItemStatus runItemStatus, final @NotNull String duration) {
         final @NotNull List<Badge> badges = new ArrayList<>();
@@ -121,6 +112,15 @@ public final class RunItemSummary extends AbstractDetails {
             }
         };
         UIUtil.uiTraverser(line).forEach(part -> part.addMouseListener(hover));
+    }
+
+    // Rule-CODEGEN-112, Rule-VIEW-PANEL-086
+    private @NotNull String whatItWas(final int at) {
+        final @NotNull RunItemExecution execution = runItem.getExecutions().get(at);
+        final @NotNull String kind = execution.getRetry() > 0 ? Bundle.message("execution.retry", String.valueOf(execution.getRetry()))
+                : execution.getInvocation() > 0 ? Bundle.message("execution.invocation", String.valueOf(execution.getInvocation()))
+                : "";
+        return runItem.isRetried(at) ? (kind + " " + Bundle.message("execution.retried")).strip() : kind;
     }
 
     // UC-VIEW-PANEL-005, Rule-VIEW-PANEL-086, Rule-VIEW-PANEL-123

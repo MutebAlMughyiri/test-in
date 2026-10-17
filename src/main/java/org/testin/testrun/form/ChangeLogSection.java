@@ -18,8 +18,8 @@ package org.testin.testrun.form;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.testrun.TestRunConfiguration;
-import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.DialogHost;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.MultiLineField;
 import org.testin.util.Bundle;
 

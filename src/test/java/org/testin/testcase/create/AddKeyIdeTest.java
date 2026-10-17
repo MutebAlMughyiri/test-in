@@ -33,6 +33,14 @@ import java.util.List;
 
 public class AddKeyIdeTest extends AbstractTempRootIdeTest {
 
+    private static @NotNull List<EditorTextField> steps(final @NotNull AbstractTestCaseDialog dialog) {
+        return dialog.getStepsSection().getFields();
+    }
+
+    private static @NotNull List<EditorTextField> groups(final @NotNull AbstractTestCaseDialog dialog) {
+        return dialog.getGroupSection().getFields();
+    }
+
     @Override
     protected void tearDown() {
         ShownDialog.close(getProject(), CreateTestCaseDialog.class);
@@ -53,14 +61,6 @@ public class AddKeyIdeTest extends AbstractTempRootIdeTest {
 
     private void press(final @NotNull CreateTestCaseFields field) {
         ShownDialog.press(getProject(), CreateTestCaseDialog.class, field.getShortcut().getKey());
-    }
-
-    private static @NotNull List<EditorTextField> steps(final @NotNull AbstractTestCaseDialog dialog) {
-        return dialog.getStepsSection().getFields();
-    }
-
-    private static @NotNull List<EditorTextField> groups(final @NotNull AbstractTestCaseDialog dialog) {
-        return dialog.getGroupSection().getFields();
     }
 
     // Rule-EDITOR-PANEL-293

@@ -19,8 +19,8 @@ package org.testin.git.conflict;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.testrun.TestRunResultAnalysis;
 import org.testin.model.testrun.TestRunConfiguration;
+import org.testin.model.testrun.TestRunResultAnalysis;
 import org.testin.testcase.TestSetEditorFields;
 
 import java.util.Locale;

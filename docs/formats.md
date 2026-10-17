@@ -249,10 +249,10 @@ and moves one that no run item of the test run names anymore to the recycle bin
 after the next write. Any PNG in a test run folder named that way is taken for a
 screenshot, so one put there by hand under such a name goes too.
 
-| Field         | Type             | Meaning                                                                                                                                                                                                                                                                |
-|---------------|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `default`     | number           | Which execution counts, from 1: its status is the run item status (Rule-VIEW-PANEL-119). Always written                                                                                                                                                                |
-| `executions`  | array of objects | Every execution of this test case in this test run, the oldest first (Rule-EDITOR-PANEL-136). Always one at least: before the first run item status, one open execution that says `PENDING`, or `UNTESTED` once the test run is signed off. Each is in the table below |
+| Field        | Type             | Meaning                                                                                                                                                                                                                                                                |
+|--------------|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `default`    | number           | Which execution counts, from 1: its status is the run item status (Rule-VIEW-PANEL-119). Always written                                                                                                                                                                |
+| `executions` | array of objects | Every execution of this test case in this test run, the oldest first (Rule-EDITOR-PANEL-136). Always one at least: before the first run item status, one open execution that says `PENDING`, or `UNTESTED` once the test run is signed off. Each is in the table below |
 
 An execution:
 
@@ -273,8 +273,8 @@ An execution:
 
 The run item status is the status of the execution `default` names. One whose
 test case was deleted since is shown as Removed while the test run is not
-Committed, and with the status its commit recorded once it is
-(Rule-EDITOR-PANEL-126). An attempt TestNG retried is the one the next
+Committed, and with the status its commit recorded once it is (Rule-EDITOR-PANEL-126). An attempt TestNG retried is the
+one the next
 execution's `retry` follows; nothing else records it.
 
 ```json

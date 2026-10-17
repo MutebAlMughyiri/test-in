@@ -117,6 +117,10 @@ final class ApiModelDialog extends AbstractFrameworkDialog {
         return name.isEmpty() ? "" : name.substring(0, 1).toUpperCase(Locale.ROOT) + name.substring(1);
     }
 
+    private static @NotNull String titleOf(final @NotNull String caption, final @NotNull String name, final @NotNull String suffix) {
+        return name.isEmpty() ? caption : caption + "   " + name + suffix + ".java";
+    }
+
     // Rule-CODEGEN-106, Rule-INTERNAL-138
     @Override
     protected @NotNull List<JComponent> titleButtons() {
@@ -128,10 +132,6 @@ final class ApiModelDialog extends AbstractFrameworkDialog {
         final @NotNull String name = className(nameInput.getText());
         requestTitle.setText(titleOf(Bundle.message("dialog.api.model.request.caption"), name, REQUEST));
         responseTitle.setText(titleOf(Bundle.message("dialog.api.model.response.caption"), name, RESPONSE));
-    }
-
-    private static @NotNull String titleOf(final @NotNull String caption, final @NotNull String name, final @NotNull String suffix) {
-        return name.isEmpty() ? caption : caption + "   " + name + suffix + ".java";
     }
 
     // UC-CODEGEN-022, Rule-CODEGEN-099, Rule-CODEGEN-100, Rule-CODEGEN-105, Rule-CODEGEN-108

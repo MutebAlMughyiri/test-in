@@ -26,8 +26,8 @@ import org.testin.editor.testrun.TestRunEditor;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.status.RunItemStatus;
-import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
+import org.testin.model.testrun.RunItemExecution;
 
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;

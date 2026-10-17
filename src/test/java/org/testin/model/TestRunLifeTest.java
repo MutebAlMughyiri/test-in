@@ -18,9 +18,9 @@ package org.testin.model;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.markers.TestRunMarker;
-import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.status.TestRunStatus;
+import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.RunItems;
 import org.testng.annotations.Test;
 

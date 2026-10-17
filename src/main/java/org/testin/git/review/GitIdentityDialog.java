@@ -72,19 +72,6 @@ final class GitIdentityDialog extends AbstractFrameworkDialog {
         scope = where.getComponent();
     }
 
-    // UC-SHARE-008, Rule-SHARE-108, Rule-INTERNAL-067
-    @Override
-    protected void submit() {
-        final @NotNull String name = accepted(nameField);
-        if (name.isEmpty()) return;
-
-        final @NotNull String email = accepted(emailField, GitIdentityDialog::isEmailAddress, Refused.NOT_AN_EMAIL_ADDRESS);
-        if (email.isEmpty()) return;
-
-        onSet.accept(new Identity(name, email, scope.getSelected()));
-        closeOk();
-    }
-
     // UC-SHARE-008, Rule-SHARE-108
     static boolean isEmailAddress(final @NotNull String text) {
         final @NotNull String value = text.trim();
@@ -96,5 +83,18 @@ final class GitIdentityDialog extends AbstractFrameworkDialog {
         final @NotNull String domain = value.substring(at + 1);
 
         return domain.length() >= 3 && domain.indexOf('.') > 0 && !domain.endsWith(".");
+    }
+
+    // UC-SHARE-008, Rule-SHARE-108, Rule-INTERNAL-067
+    @Override
+    protected void submit() {
+        final @NotNull String name = accepted(nameField);
+        if (name.isEmpty()) return;
+
+        final @NotNull String email = accepted(emailField, GitIdentityDialog::isEmailAddress, Refused.NOT_AN_EMAIL_ADDRESS);
+        if (email.isEmpty()) return;
+
+        onSet.accept(new Identity(name, email, scope.getSelected()));
+        closeOk();
     }
 }

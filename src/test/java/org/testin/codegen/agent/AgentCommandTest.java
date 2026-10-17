@@ -18,9 +18,9 @@ package org.testin.codegen.agent;
 
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.node.NodeChain;
 import org.testin.codegen.Fqcn;
 import org.testin.model.TestCase;
+import org.testin.model.node.NodeChain;
 import org.testin.model.node.TestSetNode;
 import org.testng.annotations.Test;
 

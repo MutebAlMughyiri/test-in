@@ -16,8 +16,8 @@
 
 package org.testin.git.conflict;
 
-import org.testin.model.testrun.TestRunResultAnalysis;
 import org.testin.model.testrun.TestRunConfiguration;
+import org.testin.model.testrun.TestRunResultAnalysis;
 import org.testin.testcase.TestSetEditorFields;
 import org.testng.annotations.Test;
 

@@ -251,7 +251,8 @@ one cache and one `IndexChanged` announcement per change.
 Test runs in particular are saved and read only through the indexer —
 `TestRuns.putRunItems` to create one, `changeRunItems` and `saveRunItems` to change
 its run items, `changeTestRunMarker`, and `Nodes.addTestRunNode` for its folder. The
-sequential run item writer lives inside the package. It writes one file per run item - `<test case UUID>.runitem` - so recording
+sequential run item writer lives inside the package. It writes one file per run item - `<test case UUID>.runitem` - so
+recording
 a run item status writes that one file, and two testers judging different test cases of a test run never touch the
 same one. A test run's screenshots are its files too:
 `TestRuns.storeScreenshots` writes them, `screenshot` reads one, and the test

@@ -17,9 +17,9 @@
 package org.testin.clipboard;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.node.NodeChain;
 import org.testin.model.Priority;
 import org.testin.model.TestCase;
+import org.testin.model.node.NodeChain;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.status.TestCaseStatus;
 import org.testin.testcase.TestSetEditorFields;

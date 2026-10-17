@@ -32,8 +32,8 @@ import com.intellij.icons.AllIcons;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.model.TestCase;
-import org.testin.model.testrun.Failure;
 import org.testin.model.status.TestNGExecutionStatus;
+import org.testin.model.testrun.Failure;
 import org.testin.services.Services;
 
 import javax.swing.Icon;

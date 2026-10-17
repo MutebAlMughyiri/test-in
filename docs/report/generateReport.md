@@ -8,8 +8,8 @@ to someone with no IDE.
 This turns one test run into a file: a PDF, a Word file, a web page or a
 spreadsheet.
 
-A test run can be reported on in five of its six statuses: **Created**, **Assigned**, **Completed**, **Closed** and **Committed**.
-**In Progress** is the one that
+A test run can be reported on in five of its six statuses: **Created**, **Assigned**, **Completed**, **Closed** and
+**Committed**. **In Progress** is the one that
 cannot.
 
 `Ctrl+P` on the selected test run, `Ctrl+Alt+P` on a Mac.
@@ -154,8 +154,7 @@ folder*.
 **If the folder is the Testin folder or inside it** — nothing is written and the
 dialog stays open. A message reads *'C:\Users\...\Testin' is inside the Testin
 folder, which holds only test data*. The Testin folder holds the test projects,
-and a report there would be read with them and shared with them
-(Rule-REPORT-004).
+and a report there would be read with them and shared with them (Rule-REPORT-004).
 
 **If the file cannot be written** — a message titled *Could not generate the*,
 the format, *report* gives the reason under it.

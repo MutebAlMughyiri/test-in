@@ -24,9 +24,9 @@ import org.testin.model.TestCase;
 import org.testin.services.Services;
 import org.testin.testcase.TestCaseDialogKey;
 import org.testin.testcase.UpdateTestCaseFields;
-import org.testin.testcase.create.TestCaseSection;
 import org.testin.testcase.create.AbstractTestCaseDialog;
 import org.testin.testcase.create.TestCaseForm;
+import org.testin.testcase.create.TestCaseSection;
 import org.testin.ui.framework.DialogPart;
 import org.testin.util.Bundle;
 

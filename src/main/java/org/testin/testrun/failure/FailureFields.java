@@ -20,8 +20,8 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.testrun.Failure;
 import org.testin.model.testrun.RunItem;
-import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.DialogComponent;
+import org.testin.ui.framework.DialogPart;
 
 import java.nio.file.Path;
 import java.util.List;

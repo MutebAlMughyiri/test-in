@@ -21,8 +21,8 @@ import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.Groups;
 import org.testin.model.TestCase;
-import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
+import org.testin.model.testrun.RunItem;
 import org.testin.testcase.TestSetEditorFields;
 
 import java.util.Collection;

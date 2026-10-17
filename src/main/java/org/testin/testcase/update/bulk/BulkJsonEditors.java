@@ -145,6 +145,61 @@ final class BulkJsonEditors implements DialogComponent {
         }.registerCustomShortcutSet(keys, target);
     }
 
+    // UC-EDITOR-PANEL-007
+    private static void setupEditorAppearance(final @NotNull Editor editor) {
+        final @NotNull EditorColorsScheme scheme = editor.getColorsScheme();
+        scheme.setEditorFontSize(15f);
+        scheme.setLineSpacing(1.4f);
+
+        final @NotNull EditorSettings settings = editor.getSettings();
+        settings.setLineNumbersShown(true);
+        settings.setLineMarkerAreaShown(false);
+        settings.setFoldingOutlineShown(true);
+        settings.setVirtualSpace(false);
+        settings.setUseSoftWraps(false);
+        settings.setAdditionalLinesCount(1);
+    }
+
+    // UC-EDITOR-PANEL-007
+    private static int nearestValidOffset(final int offset, final @NotNull List<RangeMarker> markers) {
+        int minDistance = Integer.MAX_VALUE;
+        int nearestOffset = offset;
+        for (final RangeMarker marker : markers) {
+            if (!marker.isValid()) continue;
+
+            if (Math.abs(offset - marker.getStartOffset()) < minDistance) {
+                minDistance = Math.abs(offset - marker.getStartOffset());
+                nearestOffset = marker.getStartOffset();
+            }
+            if (Math.abs(offset - marker.getEndOffset()) < minDistance) {
+                minDistance = Math.abs(offset - marker.getEndOffset());
+                nearestOffset = marker.getEndOffset();
+            }
+        }
+        return nearestOffset;
+    }
+
+    // UC-EDITOR-PANEL-007
+    private static void placeCaretOnAll(final @NotNull Editor editor, final @NotNull List<RangeMarker> markers) {
+        final @NotNull CaretModel caretModel = editor.getCaretModel();
+        caretModel.removeSecondaryCarets();
+
+        boolean isFirst = true;
+        for (final RangeMarker marker : markers) {
+            if (!marker.isValid()) continue;
+
+            final @NotNull LogicalPosition logicalPosition = editor.offsetToLogicalPosition(marker.getEndOffset());
+            final @NotNull VisualPosition visualPosition = editor.logicalToVisualPosition(logicalPosition);
+
+            if (isFirst) {
+                caretModel.moveToVisualPosition(visualPosition);
+                isFirst = false;
+            } else {
+                caretModel.addCaret(visualPosition, true);
+            }
+        }
+    }
+
     // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-040, Rule-EDITOR-PANEL-045
     void setContent(final @NotNull String leftText, final @NotNull String rightText, final @NotNull List<int[]> editableRanges) {
         WriteCommandAction.runWriteCommandAction(project, () -> {
@@ -401,60 +456,5 @@ final class BulkJsonEditors implements DialogComponent {
             refreshRowHighlights();
             refreshDiffHighlights();
         });
-    }
-
-    // UC-EDITOR-PANEL-007
-    private static void setupEditorAppearance(final @NotNull Editor editor) {
-        final @NotNull EditorColorsScheme scheme = editor.getColorsScheme();
-        scheme.setEditorFontSize(15f);
-        scheme.setLineSpacing(1.4f);
-
-        final @NotNull EditorSettings settings = editor.getSettings();
-        settings.setLineNumbersShown(true);
-        settings.setLineMarkerAreaShown(false);
-        settings.setFoldingOutlineShown(true);
-        settings.setVirtualSpace(false);
-        settings.setUseSoftWraps(false);
-        settings.setAdditionalLinesCount(1);
-    }
-
-    // UC-EDITOR-PANEL-007
-    private static int nearestValidOffset(final int offset, final @NotNull List<RangeMarker> markers) {
-        int minDistance = Integer.MAX_VALUE;
-        int nearestOffset = offset;
-        for (final RangeMarker marker : markers) {
-            if (!marker.isValid()) continue;
-
-            if (Math.abs(offset - marker.getStartOffset()) < minDistance) {
-                minDistance = Math.abs(offset - marker.getStartOffset());
-                nearestOffset = marker.getStartOffset();
-            }
-            if (Math.abs(offset - marker.getEndOffset()) < minDistance) {
-                minDistance = Math.abs(offset - marker.getEndOffset());
-                nearestOffset = marker.getEndOffset();
-            }
-        }
-        return nearestOffset;
-    }
-
-    // UC-EDITOR-PANEL-007
-    private static void placeCaretOnAll(final @NotNull Editor editor, final @NotNull List<RangeMarker> markers) {
-        final @NotNull CaretModel caretModel = editor.getCaretModel();
-        caretModel.removeSecondaryCarets();
-
-        boolean isFirst = true;
-        for (final RangeMarker marker : markers) {
-            if (!marker.isValid()) continue;
-
-            final @NotNull LogicalPosition logicalPosition = editor.offsetToLogicalPosition(marker.getEndOffset());
-            final @NotNull VisualPosition visualPosition = editor.logicalToVisualPosition(logicalPosition);
-
-            if (isFirst) {
-                caretModel.moveToVisualPosition(visualPosition);
-                isFirst = false;
-            } else {
-                caretModel.addCaret(visualPosition, true);
-            }
-        }
     }
 }

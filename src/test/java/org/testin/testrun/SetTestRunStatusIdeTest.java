@@ -21,14 +21,14 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.NodesOnDisk;
 import org.testin.indexer.TestRuns;
-import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
-import org.testin.model.testrun.RunItemExecution;
-import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.status.TestRunStatus;
+import org.testin.model.testrun.RunItem;
+import org.testin.model.testrun.RunItemExecution;
+import org.testin.model.testrun.RunItems;
 import org.testin.services.Services;
 
 import java.util.List;

@@ -122,8 +122,8 @@ Each result is one more execution of the run item, carrying its own actual
 result and error, so nothing an earlier execution recorded is cleared: what a
 tester wrote about a failure stays with that failure. A method TestNG retried or
 ran more than once records every attempt (Rule-CODEGEN-111). The bug severity,
-the bug priority and the reported issue belong to the failure they describe
-(Rule-EDITOR-PANEL-296), so an automated failure starts at Enhancement and Low,
+the bug priority and the reported issue belong to the failure they describe (Rule-EDITOR-PANEL-296), so an automated
+failure starts at Enhancement and Low,
 with no issue, until a tester triages it.
 
 ## What Testin refuses

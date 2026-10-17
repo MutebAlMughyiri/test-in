@@ -21,9 +21,9 @@ import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.testrun.TestRunConfiguration;
 import org.testin.ui.dialogs.CollapsiblePanel;
-import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.DialogComponent;
 import org.testin.ui.framework.DialogHost;
+import org.testin.ui.framework.DialogPart;
 import org.testin.util.Bundle;
 
 import javax.swing.BoxLayout;

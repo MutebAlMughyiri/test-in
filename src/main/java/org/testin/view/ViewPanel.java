@@ -56,8 +56,6 @@ import java.util.stream.Stream;
 
 public class ViewPanel implements Disposable {
 
-    private @NotNull OptionalInt shownLine = OptionalInt.empty();
-
     @Getter
     private final @NotNull JBPanel<?> detailsTab;
 
@@ -81,6 +79,8 @@ public class ViewPanel implements Disposable {
     private final @NotNull TestRuns testRuns;
 
     private final @NotNull TestinRoot testinRoot;
+
+    private @NotNull OptionalInt shownLine = OptionalInt.empty();
 
     public ViewPanel(final @NotNull Project project) {
         this.project = project;

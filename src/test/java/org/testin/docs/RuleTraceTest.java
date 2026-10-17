@@ -57,12 +57,6 @@ public class RuleTraceTest {
 
     private static final @NotNull Pattern LOADED_ONCE = Pattern.compile("^\\s*(?:(?:public|private|protected)\\s+)?static\\b|^\\s*[A-Z][A-Z0-9_]*\\s*[(,;]");
 
-    private record Span(@NotNull String source, int from, int to, boolean loadedOnce) {
-        @NotNull String where() {
-            return source + ":" + from;
-        }
-    }
-
     private static @NotNull List<Path> filesUnder(final @NotNull Path root, final @NotNull String extension) {
         if (!Files.isDirectory(root)) return List.of();
 
@@ -271,5 +265,11 @@ public class RuleTraceTest {
                 
                 %s
                 """.formatted(summary, untraced.size(), String.join("\n", untraced), unmeasured.size(), unmeasuredLabels, String.join("\n", unmeasured)));
+    }
+
+    private record Span(@NotNull String source, int from, int to, boolean loadedOnce) {
+        @NotNull String where() {
+            return source + ":" + from;
+        }
     }
 }

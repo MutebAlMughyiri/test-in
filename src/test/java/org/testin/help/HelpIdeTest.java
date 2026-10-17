@@ -41,13 +41,6 @@ import static org.junit.Assert.assertArrayEquals;
 
 public class HelpIdeTest extends AbstractIdeTest {
 
-    private @NotNull Hints nothingWaits() {
-        final @NotNull Hints hints = Services.getInstance(getProject(), Hints.class);
-        Arrays.stream(SetupStep.values()).forEach(hints::clear);
-        Services.getInstance(getProject(), Guides.class).forgetAll();
-        return hints;
-    }
-
     private static int @NotNull [] pixelsOf(final @NotNull Icon icon) {
         final @NotNull BufferedImage image = ImageUtil.createImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
         final @NotNull Graphics2D g2 = image.createGraphics();
@@ -57,6 +50,13 @@ public class HelpIdeTest extends AbstractIdeTest {
             g2.dispose();
         }
         return image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth());
+    }
+
+    private @NotNull Hints nothingWaits() {
+        final @NotNull Hints hints = Services.getInstance(getProject(), Hints.class);
+        Arrays.stream(SetupStep.values()).forEach(hints::clear);
+        Services.getInstance(getProject(), Guides.class).forgetAll();
+        return hints;
     }
 
     // Rule-INTERNAL-126

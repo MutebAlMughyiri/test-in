@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCase;
-import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestCasesFolderNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
@@ -29,6 +28,7 @@ import org.testin.model.node.TestRunPackageNode;
 import org.testin.model.node.TestRunsFolderNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
+import org.testin.model.testrun.RunItems;
 
 import java.util.List;
 import java.util.Map;

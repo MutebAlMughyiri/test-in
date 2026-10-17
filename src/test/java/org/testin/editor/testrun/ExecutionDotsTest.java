@@ -20,8 +20,8 @@ package org.testin.editor.testrun;
 import com.intellij.util.ui.EmptyIcon;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.status.RunItemStatus;
-import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
+import org.testin.model.testrun.RunItemExecution;
 import org.testng.annotations.Test;
 
 import javax.swing.Icon;

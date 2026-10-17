@@ -20,8 +20,8 @@ import com.google.common.collect.ImmutableList;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.StatusBarItem;
-import org.testin.testcase.create.TestCaseSection;
 import org.testin.testcase.create.AbstractTestCaseDialog;
+import org.testin.testcase.create.TestCaseSection;
 import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
 

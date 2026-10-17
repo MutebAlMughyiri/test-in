@@ -22,16 +22,16 @@ import org.testin.model.DateFormats;
 import java.time.ZonedDateTime;
 
 public record BugCard(@NotNull String hash, @NotNull String who, @NotNull ZonedDateTime when, @NotNull BugEvent event) implements HistoryCard {
-    // Rule-VIEW-PANEL-115
-    @Override
-    public @NotNull BugEventKind kind() {
-        return event.kind();
-    }
-
     // Rule-VIEW-PANEL-107
     static @NotNull BugCard notCommitted(final @NotNull BugEvent event) {
         if (event.kind() == BugEventKind.REMOVED) return new BugCard("", "", DateFormats.NOT_EXECUTED, event);
 
         return new BugCard("", event.runItem().shownExecution().getExecutedBy(), event.runItem().shownExecution().getExecutedAt(), event);
+    }
+
+    // Rule-VIEW-PANEL-115
+    @Override
+    public @NotNull BugEventKind kind() {
+        return event.kind();
     }
 }

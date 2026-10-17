@@ -18,9 +18,9 @@ package org.testin.git.history;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.bug.BugSeverity;
-import org.testin.model.testrun.RunItemExecution;
-import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
+import org.testin.model.testrun.RunItem;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.testrun.TestRunEditorFields;
 import org.testng.annotations.Test;
 

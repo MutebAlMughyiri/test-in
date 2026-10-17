@@ -18,9 +18,9 @@ package org.testin.model;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.node.TestSetNode;
-import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.testrun.Failure;
+import org.testin.model.testrun.RunItem;
 import org.testin.util.JsonCodec;
 import org.testin.util.RealJsonCodec;
 import org.testng.annotations.Test;

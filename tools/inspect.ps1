@@ -2006,14 +2006,24 @@ function Read-ComplexMethods
         seconds. A pmdMain that fails without naming a method is one finding,
         so a broken PMD run never reads as a clear gate.
     #>
-    $gradlew = Join-Path $repo $(if ($IsWindows) { 'gradlew.bat' } else { 'gradlew' })
+    $gradlew = Join-Path $repo $( if ($IsWindows)
+    {
+        'gradlew.bat'
+    }
+    else
+    {
+        'gradlew'
+    } )
     $output = @(& $gradlew -p $repo pmdMain --console=plain 2>&1 | ForEach-Object { "$_" })
     $failed = $LASTEXITCODE -ne 0
     $found = 0
 
     foreach ($line in $output)
     {
-        if ($line -notmatch '^(.+\.java):(\d+):\s+(\w+):\s+(.+)$') { continue }
+        if ($line -notmatch '^(.+\.java):(\d+):\s+(\w+):\s+(.+)$')
+        {
+            continue
+        }
         $found++
         [pscustomobject]@{
             Path = [System.IO.Path]::GetFullPath($Matches[1]).Substring($repo.Length + 1).Replace('\', '/')
@@ -2031,7 +2041,7 @@ function Read-ComplexMethods
             Line = 1
             Inspection = 'PmdDidNotRun'
             Severity = 'ERROR'
-            Message = "pmdMain failed without naming a method: $(($output | Select-Object -Last 5) -join ' / ')"
+            Message = "pmdMain failed without naming a method: $( ($output | Select-Object -Last 5) -join ' / ' )"
         }
     }
 }

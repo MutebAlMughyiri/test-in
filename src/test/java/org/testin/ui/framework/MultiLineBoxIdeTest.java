@@ -17,10 +17,10 @@
 package org.testin.ui.framework;
 
 import com.intellij.openapi.actionSystem.CustomShortcutSet;
-import com.intellij.openapi.fileTypes.PlainTextLanguage;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.actions.IncrementalFindAction;
 import com.intellij.openapi.editor.ex.EditorEx;
+import com.intellij.openapi.fileTypes.PlainTextLanguage;
 import com.intellij.testFramework.PlatformTestUtil;
 import com.intellij.ui.EditorTextField;
 import com.intellij.ui.components.JBScrollPane;

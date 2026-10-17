@@ -77,8 +77,8 @@ Press the key for the right run item status on the test case.
 4. **Passed** is recorded as one more execution and becomes the run item
    status. The failed execution keeps its actual result and its error.
 5. A message reads *Passed*.
-6. To drop the mistaken execution, the tester hovers its line under
-   **Execution result** in the view panel and clicks × (Rule-VIEW-PANEL-121).
+6. To drop the mistaken execution, the tester hovers its line under **Execution result** in the view panel and clicks ×
+   (Rule-VIEW-PANEL-121).
 
 ## What Testin refuses
 

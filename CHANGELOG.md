@@ -539,7 +539,8 @@ sharing a test project should update together.
 - **Steadier underneath:** a Refresh while a project is still being read no longer redraws over half of it, a clone is
   no longer scanned on the thread that draws the IDE, and the Testin folder setting is no longer written back on every
   project open.
-- **How Testin works, written down:** [mutebalmughyiri.github.io/test-in](https://mutebalmughyiri.github.io/test-in/) has a page for each
+- **How Testin works, written down:** [mutebalmughyiri.github.io/test-in](https://mutebalmughyiri.github.io/test-in/)
+  has a page for each
   thing a tester does — 154 of them, each with the rules it keeps — a page of every shortcut, the formats on disk, and
   ten minutes from installing Testin to sending a report.
 - Tested by **Mohammed AlZamil**.
@@ -596,7 +597,8 @@ sharing a test project should update together.
 - **Testin says what happened:** places that refused or acted in silence now say so, once; an automated execution
   reports one line at the end rather than one per test case; every action carries an icon; the two Testin tool windows
   have different names; and the settings page answers the search and refuses a Testin folder that does not exist.
-- **How Testin works, written down:** [mutebalmughyiri.github.io/test-in](https://mutebalmughyiri.github.io/test-in/) has a page for each
+- **How Testin works, written down:** [mutebalmughyiri.github.io/test-in](https://mutebalmughyiri.github.io/test-in/)
+  has a page for each
   thing a tester does — 153 of them, each with the rules it keeps — a page of every shortcut, and ten minutes from
   installing Testin to sending a report.
 - **French and Hindi:** every message Testin shows is translated. The IDE offers neither language in its settings, so

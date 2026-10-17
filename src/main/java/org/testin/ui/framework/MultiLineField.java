@@ -65,9 +65,9 @@ public final class MultiLineField implements DialogComponent {
 
     private final int maximumLines;
 
-    private @NotNull IntSupplier heightCap = () -> Integer.MAX_VALUE;
-
     private final @NotNull List<Runnable> onGrow = new ArrayList<>();
+
+    private @NotNull IntSupplier heightCap = () -> Integer.MAX_VALUE;
 
     private @NotNull Optional<JComponent> panel = Optional.empty();
 

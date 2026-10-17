@@ -27,8 +27,8 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.open.LastOpenEditors;
 import org.testin.logger.TestinLogger;
-import org.testin.model.NodeType;
 import org.testin.model.FileKind;
+import org.testin.model.NodeType;
 import org.testin.model.status.TestProjectStatus;
 import org.testin.services.BackgroundWork;
 import org.testin.services.Services;
@@ -110,6 +110,21 @@ public final class TestProjectIndexer {
     // UC-INTERNAL-002, Rule-INTERNAL-011, Rule-INTERNAL-012
     static boolean isTestCaseFile(final @NotNull Path file, final @NotNull Predicate<Path> isTestSet) {
         return FileKind.TEST_CASE.uuidIn(file).isPresent() && isTestSet.test(file.getParent());
+    }
+
+    // Rule-INTERNAL-111
+    private static void waitFor(final @NotNull CountDownLatch latch) {
+        if (ApplicationManager.getApplication().isReadAccessAllowed()) {
+            TestinLogger.error("Waiting for the index while holding a read action - "
+                    + "this blocks every write action in the IDE. Returning without waiting.");
+            return;
+        }
+
+        try {
+            latch.await();
+        } catch (final InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-013
@@ -266,21 +281,6 @@ public final class TestProjectIndexer {
 
         indexWithProgress();
         waitFor(testCasesLatch);
-    }
-
-    // Rule-INTERNAL-111
-    private static void waitFor(final @NotNull CountDownLatch latch) {
-        if (ApplicationManager.getApplication().isReadAccessAllowed()) {
-            TestinLogger.error("Waiting for the index while holding a read action - "
-                    + "this blocks every write action in the IDE. Returning without waiting.");
-            return;
-        }
-
-        try {
-            latch.await();
-        } catch (final InterruptedException ex) {
-            Thread.currentThread().interrupt();
-        }
     }
 
     public void resetForReindex() {

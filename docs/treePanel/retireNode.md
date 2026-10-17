@@ -85,7 +85,7 @@ shows above the status bar at the bottom right of the IDE. It reads *Inactive*, 
    kind. The status the node already has is gray.
 
    | Node         | Retire it with      | Statuses it can have |
-   |--------------|---------------------|----------------------|
+      |--------------|---------------------|----------------------|
    | Test project | **Deactivate**      | Active, Inactive     |
    | Test set     | **Mark Deprecated** | Active, Deprecated   |
    | Package      | **Archive**         | Active, Archived     |

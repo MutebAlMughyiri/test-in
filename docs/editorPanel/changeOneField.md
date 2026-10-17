@@ -105,8 +105,8 @@ One field, one small dialog. The rest of the test case is left alone.
    wherever it is offered.
 2. **The first row** — selected when the menu opens.
 3. **Reference** — `R`, one line of text. **Status** is the one row with no
-   letter and no icon, reached with the arrow keys. It is four radio buttons, as
-   **Priority** is, and `Enter` saves the dialog from either.
+   letter and no icon, reached with the arrow keys. It is four radio buttons, as **Priority** is, and `Enter` saves the
+   dialog from either.
 
 Pressing the letter on the card skips this menu and opens the field straight
 away.

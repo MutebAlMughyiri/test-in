@@ -19,8 +19,8 @@ package org.testin.importexport;
 import com.google.errorprone.annotations.Immutable;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestRunNode;
+import org.testin.model.testrun.RunItems;
 
 @FunctionalInterface
 @Immutable

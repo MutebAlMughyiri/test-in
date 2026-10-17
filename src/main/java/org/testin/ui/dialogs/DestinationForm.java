@@ -24,8 +24,8 @@ import org.testin.notifications.Notifier;
 import org.testin.notifications.Refused;
 import org.testin.services.Services;
 import org.testin.setting.TestinRoot;
-import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.DialogComponent;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.TextInput;
 import org.testin.util.Bundle;
 

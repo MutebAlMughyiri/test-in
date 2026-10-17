@@ -33,14 +33,14 @@ import org.testin.indexer.TestRuns;
 import org.testin.model.DateFormats;
 import org.testin.model.FileKind;
 import org.testin.model.TestCase;
-import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
-import org.testin.model.testrun.RunItemExecution;
-import org.testin.model.testrun.RunItem;
-import org.testin.model.status.TestNGExecutionStatus;
 import org.testin.model.status.RunItemStatus;
+import org.testin.model.status.TestNGExecutionStatus;
+import org.testin.model.testrun.RunItem;
+import org.testin.model.testrun.RunItemExecution;
+import org.testin.model.testrun.RunItems;
 import org.testin.runner.CapturedRunner;
 import org.testin.runner.TestNGExecution;
 import org.testin.services.Services;
@@ -59,6 +59,12 @@ import java.util.Set;
 public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
 
     private @NotNull CapturedRunner runner = new CapturedRunner();
+
+    private static @NotNull Set<Object> withoutDuration(final @NotNull Map<?, ?> written) {
+        final @NotNull Set<Object> keys = new HashSet<>(written.keySet());
+        keys.remove("duration");
+        return keys;
+    }
 
     @Override
     protected void setUp() {
@@ -154,12 +160,6 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
         } finally {
             Disposer.dispose(editor);
         }
-    }
-
-    private static @NotNull Set<Object> withoutDuration(final @NotNull Map<?, ?> written) {
-        final @NotNull Set<Object> keys = new HashSet<>(written.keySet());
-        keys.remove("duration");
-        return keys;
     }
 
     // Rule-EDITOR-PANEL-183

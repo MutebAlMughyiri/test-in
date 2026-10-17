@@ -36,15 +36,15 @@ import org.testin.git.history.TestCaseHistoryCard;
 import org.testin.git.history.TestCaseHistoryKind;
 import org.testin.indexer.TestRuns;
 import org.testin.model.TestCase;
-import org.testin.model.testrun.RunItems;
 import org.testin.model.bug.BugPriority;
 import org.testin.model.bug.BugSeverity;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
-import org.testin.model.testrun.RunItemExecution;
-import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
+import org.testin.model.testrun.RunItem;
+import org.testin.model.testrun.RunItemExecution;
+import org.testin.model.testrun.RunItems;
 import org.testin.services.Services;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.testcase.UpdateTestCaseFields;
@@ -66,6 +66,13 @@ public class HistoryTabIdeTest extends AbstractTempRootIdeTest {
 
     private static @NotNull RunItem failed(final @NotNull TestCase testCase) {
         return RunItem.builder().uuid(testCase.getUuid()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).bugSeverity(BugSeverity.MAJOR).bugPriority(BugPriority.HIGH).bugIssueUrl("https://github.com/mtb550/test-in/issues/412").actualResult("The basket was emptied").build())).build();
+    }
+
+    private static @NotNull TestCaseHistoryCard updated(final int fields, final @NotNull String newValue) {
+        final @NotNull List<FieldChange> changes = IntStream.range(0, fields)
+                .mapToObj(i -> new FieldChange("Field " + i, "was " + i, i == 0 ? newValue : "now " + i, ChangeType.CHANGE_DESCRIPTION))
+                .toList();
+        return new TestCaseHistoryCard(TestCaseHistoryKind.UPDATED, "", "Sara", ZonedDateTime.parse("2026-10-07T16:40:00+03:00"), "", "", changes, "before", "after");
     }
 
     private @NotNull TestCase aTestCase() {
@@ -102,13 +109,6 @@ public class HistoryTabIdeTest extends AbstractTempRootIdeTest {
         } finally {
             editors.closeAll();
         }
-    }
-
-    private static @NotNull TestCaseHistoryCard updated(final int fields, final @NotNull String newValue) {
-        final @NotNull List<FieldChange> changes = IntStream.range(0, fields)
-                .mapToObj(i -> new FieldChange("Field " + i, "was " + i, i == 0 ? newValue : "now " + i, ChangeType.CHANGE_DESCRIPTION))
-                .toList();
-        return new TestCaseHistoryCard(TestCaseHistoryKind.UPDATED, "", "Sara", ZonedDateTime.parse("2026-10-07T16:40:00+03:00"), "", "", changes, "before", "after");
     }
 
     // Rule-VIEW-PANEL-111

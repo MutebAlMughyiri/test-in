@@ -65,6 +65,10 @@ public class OrderCellIdeTest extends AbstractTempRootIdeTest {
         grid.setColumnSelectionInterval(order, order);
     }
 
+    private static @NotNull Component drawn(final @NotNull JBTable grid, final int viewColumn) {
+        return grid.prepareRenderer(grid.getCellRenderer(0, viewColumn), 0, viewColumn);
+    }
+
     @Override
     protected void tearDown() {
         ShownDialog.close(getProject(), UpdateTestCaseDialog.class);
@@ -131,10 +135,6 @@ public class OrderCellIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
         EditorFixtures.testCases(getProject(), testSet, 3);
         return EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
-    }
-
-    private static @NotNull Component drawn(final @NotNull JBTable grid, final int viewColumn) {
-        return grid.prepareRenderer(grid.getCellRenderer(0, viewColumn), 0, viewColumn);
     }
 
     // Rule-EDITOR-PANEL-273

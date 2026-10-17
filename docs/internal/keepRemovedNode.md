@@ -49,11 +49,11 @@ between them.
 
 ## Where a removed node goes
 
-| Where                                            | What it is for                                                    |
-|--------------------------------------------------|-------------------------------------------------------------------|
-| The desktop recycle bin                          | The tester's copy. Found and restored without Testin              |
-| A folder the IDE owns, outside the Testin folder | Testin's copy, so `Ctrl+Z` can reach it                           |
-| Nowhere                                          | Only a node that was already gone (Rule-INTERNAL-143)             |
+| Where                                            | What it is for                                        |
+|--------------------------------------------------|-------------------------------------------------------|
+| The desktop recycle bin                          | The tester's copy. Found and restored without Testin  |
+| A folder the IDE owns, outside the Testin folder | Testin's copy, so `Ctrl+Z` can reach it               |
+| Nowhere                                          | Only a node that was already gone (Rule-INTERNAL-143) |
 
 ## The screen
 

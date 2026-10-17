@@ -23,9 +23,9 @@ import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiWhiteSpace;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.testin.codegen.ExecutionPosition;
 import org.testin.codegen.CodeChange;
 import org.testin.codegen.CodeChangeType;
+import org.testin.codegen.ExecutionPosition;
 import org.testin.java.codegen.GeneratedMethod;
 import org.testin.model.TestCase;
 

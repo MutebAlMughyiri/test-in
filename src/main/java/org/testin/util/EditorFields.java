@@ -16,11 +16,11 @@
 
 package org.testin.util;
 
+import com.intellij.lang.Language;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.editor.SpellCheckingEditorCustomizationProvider;
 import com.intellij.openapi.editor.actions.IncrementalFindAction;
 import com.intellij.openapi.fileTypes.FileTypes;
-import com.intellij.lang.Language;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;

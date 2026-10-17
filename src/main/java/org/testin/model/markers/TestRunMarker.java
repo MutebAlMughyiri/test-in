@@ -24,10 +24,10 @@ import lombok.Setter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.DateFormats;
-import org.testin.model.testrun.TestRunResultAnalysis;
+import org.testin.model.status.TestRunStatus;
 import org.testin.model.testrun.TestRunConfiguration;
 import org.testin.model.testrun.TestRunExecution;
-import org.testin.model.status.TestRunStatus;
+import org.testin.model.testrun.TestRunResultAnalysis;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;

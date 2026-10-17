@@ -20,10 +20,10 @@ package org.testin.model;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.bug.BugPriority;
 import org.testin.model.bug.BugSeverity;
-import org.testin.model.testrun.RunItemExecution;
+import org.testin.model.status.RunItemStatus;
 import org.testin.model.testrun.Failure;
 import org.testin.model.testrun.RunItem;
-import org.testin.model.status.RunItemStatus;
+import org.testin.model.testrun.RunItemExecution;
 import org.testng.annotations.Test;
 
 import java.time.Duration;

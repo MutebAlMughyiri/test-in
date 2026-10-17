@@ -17,9 +17,9 @@
 package org.testin.model;
 
 import org.testin.model.markers.TestRunMarker;
-import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.testrun.Failure;
+import org.testin.model.testrun.RunItem;
 import org.testin.util.Display;
 import org.testng.annotations.Test;
 

@@ -17,8 +17,8 @@
 package org.testin.search;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.node.NodeChain;
 import org.testin.model.TestCase;
+import org.testin.model.node.NodeChain;
 import org.testin.model.node.TestCasesFolderNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;

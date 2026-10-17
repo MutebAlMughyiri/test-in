@@ -58,14 +58,14 @@ public final class Icons {
 
     public static final @NotNull Icon PLUGIN = IconLoader.getIcon("/icons/pluginIcon.svg", Icons.class);
 
-    // Rule-EDITOR-PANEL-291, Rule-VIEW-PANEL-125
-    public static final @NotNull Icon EXECUTING = blinking(dot(JBColor.GREEN));
-
     private static final float SCALE_FACTOR = 1.3f;
 
     private static final int DOT_SIZE = 10;
 
     private static final int BLINK_MILLIS = 500;
+
+    // Rule-EDITOR-PANEL-291, Rule-VIEW-PANEL-125
+    public static final @NotNull Icon EXECUTING = blinking(dot(JBColor.GREEN));
 
     public static @NotNull LetterIcon fieldLetter(final @NotNull String letter, final @NotNull Color color) {
         final @NotNull Font font = Fonts.iconLetter();

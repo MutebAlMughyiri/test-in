@@ -19,8 +19,8 @@ package org.testin.indexer;
 import com.intellij.openapi.progress.EmptyProgressIndicator;
 import com.intellij.openapi.progress.ProgressIndicator;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.NodeType;
 import org.testin.model.FileKind;
+import org.testin.model.NodeType;
 import org.testin.model.node.AbstractNode;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
@@ -36,6 +36,12 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 public class ReadTestProjectIdeTest extends AbstractReadTheRootIdeTest {
+
+    private static @NotNull String labelOfTheTestRunsFolderIn(final @NotNull IndexerDataStore store, final @NotNull Path testProjectPath) {
+        return Optional.ofNullable(store.getTestProjectsByPath().get(testProjectPath.toString()))
+                .map(testProject -> testProject.getTestRunsFolder().statusShownInTree())
+                .orElseThrow(() -> new AssertionError("the test project was not read"));
+    }
 
     private @NotNull Optional<NodeType> kindAt(final @NotNull Path folder) {
         return nodes().find(folder).map(AbstractNode::getType);
@@ -181,12 +187,6 @@ public class ReadTestProjectIdeTest extends AbstractReadTheRootIdeTest {
             }
         });
         return seen;
-    }
-
-    private static @NotNull String labelOfTheTestRunsFolderIn(final @NotNull IndexerDataStore store, final @NotNull Path testProjectPath) {
-        return Optional.ofNullable(store.getTestProjectsByPath().get(testProjectPath.toString()))
-                .map(testProject -> testProject.getTestRunsFolder().statusShownInTree())
-                .orElseThrow(() -> new AssertionError("the test project was not read"));
     }
 
     // UC-INTERNAL-002, Rule-TREE-PANEL-142

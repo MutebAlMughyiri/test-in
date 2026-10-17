@@ -57,6 +57,13 @@ public class TestCaseHistoryTest {
         return new HistoryCommit("%040d".formatted(at), "Sara", ZonedDateTime.parse("2026-10-0%dT16:40:00+03:00".formatted(at % 9 + 1)), message, PATH);
     }
 
+    private static @NotNull Map<String, String> versions(final @NotNull List<HistoryCommit> commits, final @NotNull List<TestCase> versions) {
+        final @NotNull Map<String, String> byObject = new HashMap<>();
+        for (int at = 0; at < commits.size(); at++)
+            byObject.put(commits.get(at).objectName(), MAPPER.writeValueAsString(versions.get(at)));
+        return byObject;
+    }
+
     // Rule-INTERNAL-132
     @Test
     public void aCommitsTimeIsReadInTheIdesOwnZone() {
@@ -64,13 +71,6 @@ public class TestCaseHistoryTest {
 
         assertEquals(at.getZone(), ZoneId.systemDefault(), "a zone name the way Testin stores its own dates, not Git's offset");
         assertEquals(at.toInstant(), ZonedDateTime.parse("2026-10-08T01:00:00+03:00").toInstant(), "the same moment");
-    }
-
-    private static @NotNull Map<String, String> versions(final @NotNull List<HistoryCommit> commits, final @NotNull List<TestCase> versions) {
-        final @NotNull Map<String, String> byObject = new HashMap<>();
-        for (int at = 0; at < commits.size(); at++)
-            byObject.put(commits.get(at).objectName(), MAPPER.writeValueAsString(versions.get(at)));
-        return byObject;
     }
 
     // Rule-VIEW-PANEL-096

@@ -46,16 +46,17 @@ a folder is a node because of the marker inside it:
 
 Inside those folders, each thing a tester works on is a record of its own:
 
-| Record                         | What it is                            |
-|--------------------------------|---------------------------------------|
-| `<uuid>.testcase`              | A test case, in its test set's folder |
-| `<test case uuid>.runitem`     | A run item, in its test run's folder  |
+| Record                     | What it is                            |
+|----------------------------|---------------------------------------|
+| `<uuid>.testcase`          | A test case, in its test set's folder |
+| `<test case uuid>.runitem` | A run item, in its test run's folder  |
 
 The records are JSON too, and **each one is named by what it is about**: a test
 case by its own UUID, a run item by the UUID of the test case it records. So
 renaming or moving anything leaves every file still valid, two testers recording
 run item statuses on different test cases of the same test run never touch the
-same file, and what a test run recorded about itself — its status, when it ran, how it was configured — lives in the test
+same file, and what a test run recorded about itself — its status, when it ran, how it was configured — lives in the
+test
 run's own `.tr`.
 
 **Stored values are byte-identical to what you typed** — Testin formats for

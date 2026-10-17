@@ -20,22 +20,22 @@ import com.intellij.ui.components.JBPanel;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractIdeTest;
 import org.testin.model.TestCase;
-import org.testin.model.testrun.RunItemExecution;
-import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
+import org.testin.model.testrun.RunItem;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.ui.dialogs.DialogStyle;
 import org.testin.util.Bundle;
 import org.testin.view.Drawn;
 
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import javax.swing.Icon;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
 
 import static org.testin.view.Drawn.holds;
 

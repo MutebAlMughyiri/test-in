@@ -250,10 +250,6 @@ public enum Shortcuts {
         this.keys = ImmutableList.<KeyStroke>builder().add(key).add(alternatives).build();
     }
 
-    public @NotNull KeyStroke getKey() {
-        return keys.getFirst();
-    }
-
     @MagicConstant(flagsFromClass = InputEvent.class)
     public static int menuMask() {
         try {
@@ -282,6 +278,10 @@ public enum Shortcuts {
 
     public static boolean matches(final @NotNull KeyEvent e, final @NotNull KeyStroke key) {
         return key.equals(KeyStroke.getKeyStrokeForEvent(e));
+    }
+
+    public @NotNull KeyStroke getKey() {
+        return keys.getFirst();
     }
 
     public @NotNull CustomShortcutSet getCustomShortcut() {

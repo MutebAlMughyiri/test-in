@@ -37,8 +37,8 @@ There is no key and no button in the editor. It starts from the tree, with **Run
 - **Rule-EDITOR-PANEL-010** — While a grid cell is open for editing, every key
   that would act on the row is refused.
 - **Rule-EDITOR-PANEL-184** — Every test case still waiting for a run item
-  status that has a generated method is run, the ones the walk lands on by hand
-  (Rule-EDITOR-PANEL-130). A test case already judged is passed over; its own
+  status that has a generated method is run, the ones the walk lands on by hand (Rule-EDITOR-PANEL-130). A test case
+  already judged is passed over; its own
   run button runs it again, as one more execution (Rule-EDITOR-PANEL-136). A
   test case without a method stays as it is.
 - **Rule-EDITOR-PANEL-185** — The whole set is one configuration and one
@@ -105,8 +105,8 @@ Failed 8*.
 **If Run Tests is already executing** — the tree entry is gray, and says *Run
 Tests is executing; stop it first*.
 
-**If the tester is executing it by hand** — the tree entry is gray, and says
-*Start Manual Execution is on; stop it first*.
+**If the tester is executing it by hand** — the tree entry is gray, and says *Start Manual Execution is on; stop it
+first*.
 
 **If nothing is left to run** — a message reads the test run's name, then *has
 no test cases to run*.

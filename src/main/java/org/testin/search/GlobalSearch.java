@@ -24,9 +24,9 @@ import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
 import org.testin.model.TestCase;
-import org.testin.model.testrun.RunItems;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestRunNode;
+import org.testin.model.testrun.RunItems;
 import org.testin.services.Services;
 import org.testin.testcase.TestSetEditorFields;
 

@@ -20,8 +20,8 @@ package org.testin.services;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractIdeTest;
 import org.testin.Said;
-import org.testin.help.SetupHint;
 import org.testin.help.Hints;
+import org.testin.help.SetupHint;
 import org.testin.help.SetupStep;
 import org.testin.util.Bundle;
 

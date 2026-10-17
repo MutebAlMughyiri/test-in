@@ -21,10 +21,10 @@ import org.testin.AbstractCodegenIdeTest;
 import org.testin.Await;
 import org.testin.Gestures;
 import org.testin.editor.EditorFixtures;
-import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.editor.card.CardTitle;
 import org.testin.editor.card.Offered;
 import org.testin.editor.card.Slot;
+import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.editor.open.TestinEditors;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
@@ -43,6 +43,10 @@ import java.util.Optional;
 
 public class ExecutingDotIdeTest extends AbstractCodegenIdeTest {
 
+    private static @NotNull List<Offered> runAndNavigate() {
+        return List.of(new Offered(TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD, Optional.empty()), new Offered(TestCaseQuickAction.RUN_TEST_METHOD, Optional.empty()));
+    }
+
     @Override
     protected void setUp() {
         super.setUp();
@@ -60,10 +64,6 @@ public class ExecutingDotIdeTest extends AbstractCodegenIdeTest {
 
     private boolean executingNow(final @NotNull TestCase testCase) {
         return ExecutingNow.is(getProject(), testCase.getUuid());
-    }
-
-    private static @NotNull List<Offered> runAndNavigate() {
-        return List.of(new Offered(TestCaseQuickAction.NAVIGATE_TO_TEST_METHOD, Optional.empty()), new Offered(TestCaseQuickAction.RUN_TEST_METHOD, Optional.empty()));
     }
 
     // Rule-EDITOR-PANEL-291

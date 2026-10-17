@@ -19,8 +19,8 @@ package org.testin.git;
 import org.jetbrains.annotations.NotNull;
 import org.testin.git.change.ChangeSubject;
 import org.testin.git.change.GitStatusKind;
-import org.testin.git.change.PendingChangeReader;
 import org.testin.git.change.PendingChange;
+import org.testin.git.change.PendingChangeReader;
 import org.testin.model.TestCase;
 import org.testin.util.RealJsonCodec;
 

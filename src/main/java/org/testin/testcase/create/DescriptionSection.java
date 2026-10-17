@@ -28,10 +28,10 @@ import org.testin.services.TestCaseCompletions;
 import org.testin.testcase.CreateTestCaseFields;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.util.Bundle;
+import org.testin.util.EditorFields;
 import org.testin.util.Icons;
 import org.testin.util.NameSanitizer;
 import org.testin.util.Shortcuts;
-import org.testin.util.EditorFields;
 
 import javax.swing.Icon;
 import java.util.List;

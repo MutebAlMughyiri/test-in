@@ -161,20 +161,6 @@ public class DragToReorderIdeTest extends AbstractTempRootIdeTest {
         assertFalse("a drop that changed nothing went on the undo history", undoHistories().canUndo(UndoScope.of(testSet.getPath())));
     }
 
-    private static final class DroppedAt extends TestCaseTransferHandler {
-        private final int index;
-
-        DroppedAt(final @NotNull Project project, final @NotNull TestinEditor editor, final int index) {
-            super(project, editor);
-            this.index = index;
-        }
-
-        @Override
-        int dropIndex(final @NotNull TransferSupport support) {
-            return index;
-        }
-    }
-
     // Rule-EDITOR-PANEL-282
     public void testUnderASortACardLandsAfterTheCardAboveTheDropInTheSet() {
         final @NotNull TestSetEditor editor = aTestSetOf("A", "B", "C", "D");
@@ -195,5 +181,19 @@ public class DragToReorderIdeTest extends AbstractTempRootIdeTest {
 
         awaitStoredOrder(List.of("B", "A", "C", "D"));
         Await.until("the sort was lost after the drop", () -> editor.getCurrentTestCases().stream().map(TestCase::getDescription).toList().equals(List.of("B", "D", "A", "C")));
+    }
+
+    private static final class DroppedAt extends TestCaseTransferHandler {
+        private final int index;
+
+        DroppedAt(final @NotNull Project project, final @NotNull TestinEditor editor, final int index) {
+            super(project, editor);
+            this.index = index;
+        }
+
+        @Override
+        int dropIndex(final @NotNull TransferSupport support) {
+            return index;
+        }
     }
 }

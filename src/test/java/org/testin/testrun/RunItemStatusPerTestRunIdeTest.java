@@ -22,12 +22,12 @@ import org.testin.AbstractTempRootIdeTest;
 import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestRuns;
-import org.testin.model.testrun.RunItems;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
-import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.testrun.Failure;
+import org.testin.model.testrun.RunItem;
+import org.testin.model.testrun.RunItems;
 import org.testin.services.Services;
 
 import java.nio.file.Path;

@@ -17,14 +17,14 @@
 package org.testin.filter;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.node.NodeChain;
 import org.testin.model.Priority;
 import org.testin.model.TestCase;
+import org.testin.model.node.NodeChain;
 import org.testin.model.node.TestSetNode;
-import org.testin.model.testrun.RunItemExecution;
-import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.status.TestCaseStatus;
+import org.testin.model.testrun.RunItem;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.testcase.TestSetEditorFields;
 import org.testng.annotations.Test;
 

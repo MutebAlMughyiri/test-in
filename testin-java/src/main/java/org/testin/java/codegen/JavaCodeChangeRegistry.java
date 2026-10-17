@@ -18,8 +18,8 @@ package org.testin.java.codegen;
 
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.codegen.CodeChangeRegistry;
 import org.testin.codegen.CodeChange;
+import org.testin.codegen.CodeChangeRegistry;
 import org.testin.codegen.CodeChangeType;
 import org.testin.codegen.NoCodeChange;
 import org.testin.java.codegen.clazz.CreateJavaClass;

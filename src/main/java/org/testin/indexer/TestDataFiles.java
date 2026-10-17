@@ -25,8 +25,8 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.recyclebin.RecycleBin;
 import org.testin.logger.TestinLogger;
-import org.testin.model.NodeType;
 import org.testin.model.FileKind;
+import org.testin.model.NodeType;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
@@ -66,6 +66,30 @@ final class TestDataFiles {
         } catch (final IOException ex) {
             TestinLogger.warn("Could not remove " + beside + " after a write that failed: " + FailureText.of(ex));
         }
+    }
+
+    private static @NotNull Optional<IOException> moveOnce(final @NotNull Path beside, final @NotNull Path path) {
+        try {
+            Files.move(beside, path, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+            return Optional.empty();
+        } catch (final AtomicMoveNotSupportedException notOnThisFileSystem) {
+            return movePlainly(beside, path);
+        } catch (final IOException ex) {
+            return Optional.of(ex);
+        }
+    }
+
+    private static @NotNull Optional<IOException> movePlainly(final @NotNull Path beside, final @NotNull Path path) {
+        try {
+            Files.move(beside, path, StandardCopyOption.REPLACE_EXISTING);
+            return Optional.empty();
+        } catch (final IOException ex) {
+            return Optional.of(ex);
+        }
+    }
+
+    private static boolean isHeldByAReader(final @NotNull Optional<IOException> failure) {
+        return failure.filter(FileSystemException.class::isInstance).isPresent();
     }
 
     // UC-INTERNAL-004, Rule-INTERNAL-033
@@ -162,30 +186,6 @@ final class TestDataFiles {
 
         failure.ifPresent(ex -> reportWriteFailure(path, ex));
         return failure.isEmpty();
-    }
-
-    private static @NotNull Optional<IOException> moveOnce(final @NotNull Path beside, final @NotNull Path path) {
-        try {
-            Files.move(beside, path, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-            return Optional.empty();
-        } catch (final AtomicMoveNotSupportedException notOnThisFileSystem) {
-            return movePlainly(beside, path);
-        } catch (final IOException ex) {
-            return Optional.of(ex);
-        }
-    }
-
-    private static @NotNull Optional<IOException> movePlainly(final @NotNull Path beside, final @NotNull Path path) {
-        try {
-            Files.move(beside, path, StandardCopyOption.REPLACE_EXISTING);
-            return Optional.empty();
-        } catch (final IOException ex) {
-            return Optional.of(ex);
-        }
-    }
-
-    private static boolean isHeldByAReader(final @NotNull Optional<IOException> failure) {
-        return failure.filter(FileSystemException.class::isInstance).isPresent();
     }
 
     // UC-INTERNAL-005, Rule-INTERNAL-036, Rule-INTERNAL-113, Rule-INTERNAL-143

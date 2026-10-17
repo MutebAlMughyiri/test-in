@@ -23,10 +23,10 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.TestRuns;
 import org.testin.services.Services;
 import org.testin.ui.framework.AbstractFrameworkDialog;
-import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.DialogButton;
-import org.testin.ui.framework.StatusBarShortcut;
+import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.PlainTextArea;
+import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.ui.framework.TextInput;
 import org.testin.util.Bundle;
 

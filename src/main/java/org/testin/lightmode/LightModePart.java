@@ -22,8 +22,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.card.TestCaseQuickAction;
-import org.testin.model.ShowableField;
 import org.testin.model.FieldDefault;
+import org.testin.model.ShowableField;
 import org.testin.util.Bundle;
 
 

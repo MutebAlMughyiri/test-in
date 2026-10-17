@@ -143,9 +143,8 @@ There is no key for this. The tab is called **History**.
 └────────────────────────────────────────────────────────────────────────────┘
 ```
 
-1. **The badges** — every card opens with what happened: **Created**,
-   **Updated** or **Removed** for a test case, **Bug** for a bug
-   (Rule-VIEW-PANEL-115). A committed card then shows the commit's short hash;
+1. **The badges** — every card opens with what happened: **Created**, **Updated** or **Removed** for a test case,
+   **Bug** for a bug (Rule-VIEW-PANEL-115). A committed card then shows the commit's short hash;
    edits saved but not committed head the list with no hash.
 2. **A committed entry** — the badges, who, when, and the commit's message. The
    full hash shows when the pointer rests on the short one. A commit whose
@@ -158,11 +157,10 @@ There is no key for this. The tab is called **History**.
    the panel ends in an ellipsis, whole on hover (Rule-VIEW-PANEL-116). A
    Steps row names only the steps that changed (Rule-VIEW-PANEL-118). The field
    is its icon, the letter the update menu shows (**D** Description, **E**
-   Expected Result, **S** Steps, **P** Priority, **G** Group, **M** Module,
-   **T** Test Data, **B** Pre Conditions, **R** Reference, **U** Status), with its
-   name on hover; the run item's fields have no icon and are named in words
-   (Rule-VIEW-PANEL-111). A commit that changed none of the fields reads
-   *No field changed*. Clicking a test case's card opens the IDE's diff
+   Expected Result, **S** Steps, **P** Priority, **G** Group, **M** Module, **T** Test Data, **B** Pre Conditions, **R**
+   Reference, **U** Status), with its
+   name on hover; the run item's fields have no icon and are named in words (Rule-VIEW-PANEL-111). A commit that changed
+   none of the fields reads *No field changed*. Clicking a test case's card opens the IDE's diff
    window with every change (Rule-VIEW-PANEL-117).
 5. **A bug card** — a card of its own, marked by a bar in the bug's severity
    color, or in red when its run item did not fail and only has a filed issue. It opens with **Bug** and the

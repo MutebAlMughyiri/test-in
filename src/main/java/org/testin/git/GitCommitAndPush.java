@@ -21,8 +21,8 @@ import git4idea.commands.GitCommand;
 import org.jetbrains.annotations.NotNull;
 import org.testin.git.change.PendingChange;
 import org.testin.logger.TestinLogger;
-import org.testin.model.NodeType;
 import org.testin.model.FileKind;
+import org.testin.model.NodeType;
 import org.testin.util.Bundle;
 import org.testin.util.FailureText;
 

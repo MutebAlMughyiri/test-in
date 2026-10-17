@@ -34,8 +34,8 @@ There is no key for this. It happens when a test set is created, which is
 - **Rule-CODEGEN-007** — The class is named after the test set, with everything
   but letters and digits removed, and always ends in `Test`.
 - **Rule-CODEGEN-008** — Each folder above the test set becomes a package in
-  Java's own style: every word in lowercase, joined with nothing between, so
-  *Checkout* is `checkout` and *Home Screen* is `homescreen`.
+  Java's own style: every word in lowercase, joined with nothing between, so *Checkout* is `checkout` and *Home Screen*
+  is `homescreen`.
 - **Rule-CODEGEN-009** — A class that is already there is never written over.
 - **Rule-CODEGEN-010** — The class is written empty. It holds no blank line
   inside its braces.

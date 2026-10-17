@@ -66,13 +66,15 @@ import java.util.Map;
 import java.util.Optional;
 
 public abstract class AbstractCard extends JBPanel<AbstractCard> {
+    private static final @NotNull Border SELECTED_BORDER = JBUI.Borders.customLine(EditorColors.SELECTION_BORDER, 1);
+
+    private static final @NotNull Border UNSELECTED_BORDER = JBUI.Borders.empty(1);
+
     protected final @NotNull JTextArea titleArea = Prose.of("");
 
     protected final @NotNull JBPanel<?> badgePanel = new JBPanel<>(new FlowLayout(FlowLayout.LEFT, JBUI.scale(10), 0));
 
     protected final @NotNull Map<String, JBLabel> fieldLabels = new HashMap<>();
-
-    private final @NotNull Map<String, String> lineTooltips = new HashMap<>();
 
     protected final @NotNull JBPanel<?> content = new JBPanel<>(new VerticalLayout(JBUI.scale(4)));
 
@@ -83,15 +85,13 @@ public abstract class AbstractCard extends JBPanel<AbstractCard> {
 
     protected final @NotNull AutomationState automationState;
 
+    private final @NotNull Map<String, String> lineTooltips = new HashMap<>();
+
     protected boolean isRowHovered;
 
     protected @NotNull String hoveredAction = "";
 
     protected @NotNull Automated automation = Automated.UNKNOWN;
-
-    private static final @NotNull Border SELECTED_BORDER = JBUI.Borders.customLine(EditorColors.SELECTION_BORDER, 1);
-
-    private static final @NotNull Border UNSELECTED_BORDER = JBUI.Borders.empty(1);
 
     protected @NotNull Priority priority = Priority.DEFAULT;
 
@@ -150,6 +150,13 @@ public abstract class AbstractCard extends JBPanel<AbstractCard> {
         label.setForeground(UIUtil.getContextHelpForeground());
         label.setAlignmentX(Component.LEFT_ALIGNMENT);
         return label;
+    }
+
+    private static void layOut(final @NotNull Component component) {
+        if (!(component instanceof Container container)) return;
+
+        container.doLayout();
+        for (final Component child : container.getComponents()) layOut(child);
     }
 
     // UC-EDITOR-PANEL-047, Rule-EDITOR-PANEL-235, Rule-EDITOR-PANEL-291
@@ -273,13 +280,6 @@ public abstract class AbstractCard extends JBPanel<AbstractCard> {
     public void layOutAs(final @NotNull Dimension cell) {
         setSize(cell);
         layOut(this);
-    }
-
-    private static void layOut(final @NotNull Component component) {
-        if (!(component instanceof Container container)) return;
-
-        container.doLayout();
-        for (final Component child : container.getComponents()) layOut(child);
     }
 
     private @NotNull Rectangle iconOf(final @NotNull JBLabel line) {

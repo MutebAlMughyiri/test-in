@@ -30,8 +30,8 @@ import com.intellij.psi.PsiMethod;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.testin.codegen.Fqcn;
 import org.testin.codegen.CodeChangeType;
+import org.testin.codegen.Fqcn;
 import org.testin.java.codegen.GeneratedClass;
 import org.testin.java.codegen.GeneratedMethod;
 import org.testin.java.codegen.JavaLiteral;
@@ -68,6 +68,13 @@ public class BaseTestMethodChange {
     // UC-CODEGEN-002, Rule-CODEGEN-014, Rule-CODEGEN-021
     protected static @NotNull Optional<PsiClass> classOf(final @NotNull Project project, final @NotNull TestCase testCase) {
         return GeneratedClass.find(project, Fqcn.ofClass(testCase.getParent()));
+    }
+
+    protected static void asOneCommand(final @NotNull Project project, final @NotNull String title, final @NotNull Runnable change) {
+        final @NotNull Runnable inCommand = () -> WriteCommandAction.runWriteCommandAction(project, title, null, change);
+
+        if (CommandProcessor.getInstance().getCurrentCommand() != null) inCommand.run();
+        else ApplicationManager.getApplication().invokeLater(inCommand);
     }
 
     protected @NotNull Optional<PsiMethod> findMethodByTestName(final @NotNull PsiClass testClass, final @NotNull TestCase testCase) {
@@ -206,12 +213,5 @@ public class BaseTestMethodChange {
                         targetClass -> findMethodByTestName(targetClass, testCase).ifPresentOrElse(updater,
                                 () -> onMissing.accept("no method with testName=" + testCase.getUuid())),
                         () -> onMissing.accept("class not found: " + String.join(".", classSegments))));
-    }
-
-    protected static void asOneCommand(final @NotNull Project project, final @NotNull String title, final @NotNull Runnable change) {
-        final @NotNull Runnable inCommand = () -> WriteCommandAction.runWriteCommandAction(project, title, null, change);
-
-        if (CommandProcessor.getInstance().getCurrentCommand() != null) inCommand.run();
-        else ApplicationManager.getApplication().invokeLater(inCommand);
     }
 }

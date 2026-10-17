@@ -45,6 +45,14 @@ public class ExecutionModeIdeTest extends AbstractCodegenIdeTest {
 
     private @NotNull CapturedRunner runner = new CapturedRunner();
 
+    private static @NotNull String tooltipOf(final @NotNull StartExecutionButton start) {
+        return Objects.requireNonNullElse(start.getAccessibleContext().getAccessibleName(), "");
+    }
+
+    private static @NotNull AnAction runTests() {
+        return Objects.requireNonNull(ActionManager.getInstance().getAction("Testin.RunTests"), "Run Tests is not registered");
+    }
+
     @Override
     protected void setUp() {
         super.setUp();
@@ -59,14 +67,6 @@ public class ExecutionModeIdeTest extends AbstractCodegenIdeTest {
                 createdTestCase(login, "Log out from the profile page", "logOutFromTheProfilePage"));
         settled();
         return made;
-    }
-
-    private static @NotNull String tooltipOf(final @NotNull StartExecutionButton start) {
-        return Objects.requireNonNullElse(start.getAccessibleContext().getAccessibleName(), "");
-    }
-
-    private static @NotNull AnAction runTests() {
-        return Objects.requireNonNull(ActionManager.getInstance().getAction("Testin.RunTests"), "Run Tests is not registered");
     }
 
     // Rule-EDITOR-PANEL-290

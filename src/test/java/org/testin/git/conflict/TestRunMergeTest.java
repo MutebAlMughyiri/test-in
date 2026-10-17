@@ -26,15 +26,6 @@ import static org.testng.Assert.assertTrue;
 
 public class TestRunMergeTest {
 
-    private static String runItem(final String... executions) {
-        return chosen(executions.length, executions);
-    }
-
-    private static String chosen(final int defaultNumber, final String... executions) {
-        return """
-                { "default" : %d, "executions" : [ %s ] }""".formatted(defaultNumber, String.join(", ", executions));
-    }
-
     private static final String EARLY = """
             { "status" : "PASSED", "actualResult" : "Signed in", "executedBy" : "Muteb", "executedAt" : "Monday 14-09-2026 At 10:00:00 [Asia/Riyadh]" }""";
 
@@ -88,6 +79,15 @@ public class TestRunMergeTest {
               "executionStartedAt" : "Monday 14-09-2026 At 09:30:00 [Asia/Riyadh]",
               "executionEndedAt" : "Monday 14-09-2026 At 11:35:00 [Asia/Riyadh]"
             }""";
+
+    private static String runItem(final String... executions) {
+        return chosen(executions.length, executions);
+    }
+
+    private static String chosen(final int defaultNumber, final String... executions) {
+        return """
+                { "default" : %d, "executions" : [ %s ] }""".formatted(defaultNumber, String.join(", ", executions));
+    }
 
     // Rule-SHARE-080, Rule-SHARE-081
     @Test

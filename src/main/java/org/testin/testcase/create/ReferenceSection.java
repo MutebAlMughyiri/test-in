@@ -20,8 +20,8 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCase;
 import org.testin.testcase.CreateTestCaseFields;
-import org.testin.util.Shortcuts;
 import org.testin.util.EditorFields;
+import org.testin.util.Shortcuts;
 
 // Rule-EDITOR-PANEL-194
 public class ReferenceSection extends AbstractOneLineSection {

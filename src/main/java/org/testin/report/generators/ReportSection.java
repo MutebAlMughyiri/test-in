@@ -22,10 +22,10 @@ import com.google.common.collect.Sets;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.ReportColor;
-import org.testin.model.testrun.RunItem;
-import org.testin.model.testrun.TestRunSummary;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.status.TestRunStatus;
+import org.testin.model.testrun.RunItem;
+import org.testin.model.testrun.TestRunSummary;
 import org.testin.testrun.TestRunEditorFields;
 import org.testin.util.Bundle;
 

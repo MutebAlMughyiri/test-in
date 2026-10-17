@@ -20,10 +20,10 @@ import org.testin.model.TestCase;
 import org.testin.model.bug.BugPriority;
 import org.testin.model.bug.BugSeverity;
 import org.testin.model.markers.TestRunMarker;
-import org.testin.model.testrun.TestRunConfiguration;
-import org.testin.model.testrun.RunItemExecution;
-import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
+import org.testin.model.testrun.RunItem;
+import org.testin.model.testrun.RunItemExecution;
+import org.testin.model.testrun.TestRunConfiguration;
 import org.testng.annotations.Test;
 
 import java.time.ZoneId;

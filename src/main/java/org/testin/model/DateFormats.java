@@ -40,10 +40,10 @@ public final class DateFormats {
 
     public static final @NotNull ZonedDateTime NOT_EXECUTED = Instant.EPOCH.atZone(ZoneOffset.UTC);
 
+    public static final @NotNull Pattern DATE_TEXT = Pattern.compile("\\p{L}+ (\\d{2}-\\d{2}-\\d{4}) At \\d{2}:\\d{2}:\\d{2} \\[[^]]+]");
+
     @Getter
     private static final @NotNull DateTimeFormatter dateFormatterPattern = DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN, Locale.US);
-
-    public static final @NotNull Pattern DATE_TEXT = Pattern.compile("\\p{L}+ (\\d{2}-\\d{2}-\\d{4}) At \\d{2}:\\d{2}:\\d{2} \\[[^]]+]");
 
     public static boolean isNotExecuted(final @NotNull ZonedDateTime at) {
         return at.toInstant().equals(NOT_EXECUTED.toInstant());

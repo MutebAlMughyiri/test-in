@@ -97,10 +97,9 @@ A test run is one round of testing, with a run item status for each test case.
 - **Rule-TREE-PANEL-140** — Beside the filter, one button ticks every test case
   the filter shows, or unticks them all once every one of them is ticked, and
   its picture and tooltip say which it will do. A Disabled test case keeps its
-  tick (Rule-TREE-PANEL-138), and a test case the filter hides keeps its own
-  (Rule-TREE-PANEL-131).
-- **Rule-TREE-PANEL-144** — While *Platform* is **Integration**, *Component* is
-  **Backend**: **Frontend** is gray, and resting the pointer on it says an
+  tick (Rule-TREE-PANEL-138), and a test case the filter hides keeps its own (Rule-TREE-PANEL-131).
+- **Rule-TREE-PANEL-144** — While *Platform* is **Integration**, *Component* is **Backend**: **Frontend** is gray, and
+  resting the pointer on it says an
   Integration test run covers the backend only. Picking **Web** or **Mobile**
   again lets **Frontend** be picked, and *Component* stays **Backend** until the
   tester changes it.
@@ -154,7 +153,8 @@ Runs**, and it is on [UC-TREE-PANEL-010](createTestRunPackage.md).
    nothing can be typed into one. Each row carries the icon of the field it asks
    about. **Browser** is on the form only while *Platform* is **Web** and *Component* is **Frontend**. **Device Type**
    takes its place only while *Platform* is **Mobile** and *Component* is **Frontend**. While *Platform* is
-   **Integration**, *Component* is **Backend** and **Frontend** cannot be picked (Rule-TREE-PANEL-144). A field that is not on
+   **Integration**, *Component* is **Backend** and **Frontend** cannot be picked (Rule-TREE-PANEL-144). A field that is
+   not on
    the form is not asked and is saved empty. So switching *Platform* from **Web**
    to **Mobile** drops the browser that was picked. **Browser** arrives with *Chrome* already picked, because a test run
    on the web is on Chrome until the
@@ -162,7 +162,7 @@ Runs**, and it is on [UC-TREE-PANEL-010](createTestRunPackage.md).
    answers are:
 
    | Field       | Offers                                |
-   |-------------|---------------------------------------|
+      |-------------|---------------------------------------|
    | Test Type   | *Functional Test*, *Performance Test* |
    | Platform    | *Web*, *Mobile*, *Integration*        |
    | Component   | *Frontend*, *Backend*                 |
