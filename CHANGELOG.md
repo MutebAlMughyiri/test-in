@@ -11,7 +11,7 @@ is [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 **Before you update:** wipe your test data. This build reads format 5 and converts nothing. Every file Testin stores is
 now named in full words - a test project holds `.testproject`, a test set `.testset`, a test run `.testrun`, a test case
 is `<uuid>.testcase` and a run item `<uuid>.runitem` - so a test project an earlier build wrote is not shown at all:
-delete its folder and create it again. Neither file holds its UUID inside any more, the folder files write `"uuid"`
+delete its folder and create it again. Neither file holds its UUID inside anymore, the folder files write `"uuid"`
 where they wrote `"id"`, and a test case file not named by a UUID is not read; a warning names it. A test run's
 configuration keys are camelCase too: `testType`, `platform`, `deviceType`. Format 5 also keeps every execution of a
 run item (#415). A team sharing a test project should update together.
@@ -20,9 +20,9 @@ run item (#415). A team sharing a test project should update together.
 
 - **A run item keeps every execution:** recording a run item status no longer writes over the one before, so Passed
   after Failed keeps the failure's actual result, error and screenshots, and the warning that they would be erased is
-  gone. The view panel's Execution Result lists one line per execution - its status, duration and Invocation n or
-  Retry n, a retried attempt dimmed - and hovering a line offers Set as default and Remove this execution, while
-  clicking it shows that execution's details. The default, starred, gives the run item its status: the one chosen, or
+  gone. The view panel's Execution Result lists one line per execution: its status, duration and Invocation n or
+  Retry n, a retried attempt dimmed. Hovering a line offers Set as default and Remove this execution, and clicking it
+  shows that execution's details. The default, starred, gives the run item its status: the one chosen, or
   else the last. A card shows a dot for each of the last eight executions, the default ringed. The test run clock adds
   every execution, the reports show the default with a line naming the other failed or blocked ones, and a Git merge
   joins both sides' executions (#415).
@@ -79,7 +79,7 @@ run item (#415). A team sharing a test project should update together.
   Closed, as the editor's status bar already did. The report no longer says such test cases carry forward to the next
   test run.
 - **Removing never deletes for good:** a removed node, test case, run item, screenshot, and a test set's class or
-  package go to the recycle bin. When the bin refuses one, a Not Removed notification names it and it stays where it
+  package go to the recycle bin. When the bin refuses one, a Not Removed notification names it, and it stays where it
   is; before, a refused folder was deleted outright, and generated code was always deleted. On Linux, where Java has
   no recycle bin, nothing can be removed yet: every removal says Not Removed and leaves the item where it is.
 - **The test sets show before the test runs are read:** on a first read or a Refresh, the tree and a test set editor
@@ -169,7 +169,7 @@ run item (#415). A team sharing a test project should update together.
 - **Run Tests on a test run not yet open no longer raises an IDE error:** IntelliJ's build before launch reported
   "Write-unsafe context!" twice.
 - **The plugin page's documentation link works again:** the documentation site moved with the GitHub account to
-  mutebalmughyiri.github.io, and the old address is gone.
+  `mutebalmughyiri.github.io`, and the old address is gone.
 - **Automate Test Case and Run Tests are gray while code is off:** while `testin.yml` did not name the open test
   project, both entries said they needed it but could still be clicked. They are gray with the reason, as every code
   action is.

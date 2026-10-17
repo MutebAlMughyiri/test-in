@@ -17,6 +17,7 @@
 package org.testin.editor.testset;
 
 import com.intellij.ui.CheckboxTree;
+import com.intellij.ui.CheckboxTreeBase;
 import com.intellij.ui.CheckedTreeNode;
 import com.intellij.ui.SimpleColoredComponent;
 import com.intellij.ui.SimpleTextAttributes;
@@ -100,7 +101,7 @@ public class DescriptionColorIdeTest extends AbstractTempRootIdeTest {
         assertEquals("the view panel does not draw a Reviewed description in its color", FixedColors.PALE_BLUE, Drawn.first(panel, JTextArea.class).getForeground());
 
         final @NotNull CheckboxTree.CheckboxTreeCellRenderer renderer = TestCaseSelectionRenderer.create();
-        renderer.getTreeCellRendererComponent(new CheckboxTree(renderer, new CheckedTreeNode("Test Cases")), new CheckedTreeNode(reviewed), false, false, true, 0, false);
+        renderer.getTreeCellRendererComponent(new CheckboxTree(renderer, new CheckedTreeNode("Test Cases"), new CheckboxTreeBase.CheckPolicy(true, true, true, true)), new CheckedTreeNode(reviewed), false, false, true, 0, false);
         final @NotNull SimpleColoredComponent.ColoredIterator fragments = renderer.getTextRenderer().iterator();
         fragments.next();
 
