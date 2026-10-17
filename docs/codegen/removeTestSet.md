@@ -62,7 +62,8 @@ with everything under it.
 nothing is said. A removal that finds nothing to tidy up is not a failure.
 
 **If the recycle bin does not take the class file or the folder** — it stays
-where it is, and a notification titled *Not Removed* names it (Rule-INTERNAL-143).
+where it is, and a notification titled *Not Removed* names it
+(Rule-INTERNAL-143).
 
 **If the IDE has no Java plugin** — nothing is deleted.
 

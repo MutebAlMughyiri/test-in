@@ -148,8 +148,8 @@ silently has no effect costs more than the setting it was meant to hold.
   `lombok-writes-the-boilerplate` skill under `.claude/skills/`.
 - **Names say the business word, in full.** A test case is a `TestCase`, never
   a `Case`: `TestCaseDetails`, `testCaseUuid`, `testCases`, `A_TEST_CASE`. The
-  same holds for the documentation and for issues - *test case UUID*, never *case id*. A test case's, a run item's or a
-  folder's identity is a UUID and is
+  same holds for the documentation and for issues - *test case UUID*, never
+  *case id*. A test case's, a run item's or a folder's identity is a UUID and is
   named `uuid`, never `id` (#434); `id` stays only in IntelliJ's own names, such
   as an action id. Nothing Testin names is abbreviated: `testCase`, never `tc`;
   `testProject`, never `tp`; `button`, never `btn`. **Abbreviations** below
@@ -158,8 +158,8 @@ silently has no effect costs more than the setting it was meant to hold.
   `Project`; `runItem`, never `item`; `testRun`, never `run` as a noun; and a
   status says which one - `testCaseStatus`, `runItemStatus`, `testRunStatus`,
   `runItemExecutionStatus` (one of a run item's executions),
-  `testNGExecutionStatus`, `nodeStatus`. A model field keeps its plain name (`TestCase.status`), because its class
-  already says whose it is and its name
+  `testNGExecutionStatus`, `nodeStatus`. A model field keeps its plain name
+  (`TestCase.status`), because its class already says whose it is and its name
   is the key on disk. `NamesSayTheBusinessWordTest` holds the type names to it. Read the
   `names-say-the-business` skill under `.claude/skills/` before naming or
   renaming anything.

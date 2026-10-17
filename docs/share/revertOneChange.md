@@ -88,8 +88,8 @@ test case is no longer in the project*.
 
 **If the file cannot be written, or the recycle bin does not take it** — the
 row stays, and nothing reads *Reverted*. A message reads *unable to write
-content:* and the reason, a notification titled *Not Removed* names the file (Rule-INTERNAL-143), or one titled **Revert
-Failed** carries it.
+content:* and the reason, a notification titled *Not Removed* names the file
+(Rule-INTERNAL-143), or one titled **Revert Failed** carries it.
 
 ## A new or removed test case
 

@@ -273,8 +273,8 @@ An execution:
 
 The run item status is the status of the execution `default` names. One whose
 test case was deleted since is shown as Removed while the test run is not
-Committed, and with the status its commit recorded once it is (Rule-EDITOR-PANEL-126). An attempt TestNG retried is the
-one the next
+Committed, and with the status its commit recorded once it is
+(Rule-EDITOR-PANEL-126). An attempt TestNG retried is the one the next
 execution's `retry` follows; nothing else records it.
 
 ```json

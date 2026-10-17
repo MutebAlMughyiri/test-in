@@ -119,12 +119,14 @@ Each execution is a line of its own, the oldest first (Rule-VIEW-PANEL-086).
    bug chip sits on its line (Rule-VIEW-PANEL-119). It is the last execution
    unless a tester chose another.
 2. **☆ and ×** — shown only while the pointer is on a line, over its right
-   end. ☆ makes that execution the default; × removes it at once and says *Removed* (Rule-VIEW-PANEL-120,
-   Rule-VIEW-PANEL-121). A Committed test run
+   end. ☆ makes that execution the default; × removes it at once and says
+   *Removed* (Rule-VIEW-PANEL-120, Rule-VIEW-PANEL-121). A Committed test run
    draws both gray, with the reason.
 3. **Clicking a line** — the rows below show that execution's actual result,
-   stacktrace and who ran it. The band opens on the default (Rule-VIEW-PANEL-122).
-4. **Executed once** — one line, no ★ and nothing to hover, as above (Rule-VIEW-PANEL-123).
+   stacktrace and who ran it. The band opens on the default
+   (Rule-VIEW-PANEL-122).
+4. **Executed once** — one line, no ★ and nothing to hover, as above
+   (Rule-VIEW-PANEL-123).
 
 ## The band, in order
 

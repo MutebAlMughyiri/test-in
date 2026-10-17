@@ -77,7 +77,8 @@ There is no key for this. It is what the **Details** tab shows.
   line, and hovering the chip names each half as a test run's card does. The
   duration carries a clock and a plain frame, so it reads as a measurement
   rather than a run item status. Who ran the execution shown below and when
-  close the band as a row of their own, in the words **Created** already uses (Rule-VIEW-PANEL-061).
+  close the band as a row of their own, in the words **Created** already uses
+  (Rule-VIEW-PANEL-061).
 - **Rule-VIEW-PANEL-087** — The test case's band folds only where a test run
   stands above it, and there it is folded when a tester first meets it: its name
   carries the arrow that opens it, and opening it shows every field the test
@@ -98,8 +99,8 @@ There is no key for this. It is what the **Details** tab shows.
   makes that execution the default, and the run item status follows at once.
 - **Rule-VIEW-PANEL-121** — × removes that execution at once, asks nothing, and
   says *Removed*. If it was the default, the last one left becomes the default.
-  ☆ and × are gray, and say why, once the test run is Committed (Rule-TREE-PANEL-009), and while the automation is still
-  running that test
+  ☆ and × are gray, and say why, once the test run is Committed
+  (Rule-TREE-PANEL-009), and while the automation is still running that test
   case, because its attempts are still being written (Rule-CODEGEN-111).
 - **Rule-VIEW-PANEL-122** — Clicking an execution's line shows that execution's
   actual result, error, screenshots and who ran it in the rows below, and
@@ -112,7 +113,8 @@ There is no key for this. It is what the **Details** tab shows.
   makes it scroll sideways. The History tab keeps each card's lines whole
   instead, and scrolls sideways when they are wider than the panel.
 - **Rule-VIEW-PANEL-125** — While the test case shown is executing, by hand or
-  by automation, a dot blinks right after its title, as on its card (Rule-EDITOR-PANEL-291).
+  by automation, a dot blinks right after its title, as on its card
+  (Rule-EDITOR-PANEL-291).
 
 ## The screen
 

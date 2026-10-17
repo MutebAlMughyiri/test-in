@@ -103,8 +103,8 @@ constant is renamed.
 The `Project` is `project` and one `TestCase` is `testCase`. Muteb retired
 the last two short names, `p` and `tc`, on 13 October 2026 (#426): *"[I] don't
 want to have abbreviations for my business"*, then *"don't use `p`"*. What may
-still be shortened is Java's own idioms and the known acronyms, and the **Abbreviations** table in CLAUDE.md is the one
-list of them.
+still be shortened is Java's own idioms and the known acronyms, and the
+**Abbreviations** table in CLAUDE.md is the one list of them.
 
 Anything else gets its full name. A local called `dto`, `obj`, `data` or `list`
 says nothing that the line above it did not already say.

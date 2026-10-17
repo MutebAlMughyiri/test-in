@@ -41,7 +41,8 @@ need more code or a less readable shape than the two copies, and say so.
   missing marker, reword a rule the code no longer matches.
 - **May not:** change behavior a tester sees, add a feature, or fix an
   unrelated defect inside the review. Those are findings: report them in a
-  table, and file each new one as an issue with `priority:` and `cost:` labels (the `report-findings` skill).
+  table, and file each new one as an issue with `priority:` and `cost:` labels
+  (the `report-findings` skill).
 - **If a feature is what makes the code complicated,** say so with its cost and
   ask whether to keep it, simplify it or remove it. Removing it is a fair answer.
 - **Fewer lines or the same** for the same behavior. A review that grows the

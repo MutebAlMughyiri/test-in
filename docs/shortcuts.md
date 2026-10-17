@@ -304,8 +304,7 @@ one again.
 `H` `M` `L` were drawn beside the priorities and `E` beside the empty bug
 priority, and nothing answered to any of them. They were removed rather than
 bound: at the time the letters matched no word a tester could see, and `E` named
-a choice the failure dialog does not offer at all. Choosing a priority is the mouse or the arrow keys, which is what the
-hint
+a choice the failure dialog does not offer at all. Choosing a priority is the mouse or the arrow keys, which is what the hint
 beside it now says. [#283](https://github.com/MutebAlMughyiri/test-in/issues/283).
 
 **A key is drawn only where pressing it does that thing.** Both directions of

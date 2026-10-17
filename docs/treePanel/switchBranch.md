@@ -99,7 +99,8 @@ repository.
    committed onto the wrong branch by mistake.
 2. **From** and **To** — the branch the tester is on, and the branch they
    picked.
-3. **Two buttons** — **Switch Anyway**, also `Enter`, switches anyway. **Review Changes** opens the review instead.
+3. **Two buttons** — **Switch Anyway**, also `Enter`, switches anyway.
+   **Review Changes** opens the review instead.
 
 ## Main flow
 

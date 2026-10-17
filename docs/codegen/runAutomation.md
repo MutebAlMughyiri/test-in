@@ -106,8 +106,7 @@ Running every automated test case in a test run is different, and is
 ## What the tester sees
 
 Every selected card's run button becomes a stop button at once, and a dot blinks
-after the description of the one TestNG is executing. That is the answer to the key; the message comes a moment later,
-once
+after the description of the one TestNG is executing. That is the answer to the key; the message comes a moment later, once
 Testin has found the methods. It appears near the bottom right of the IDE,
 reading *Running* and then how many actually started. The IDE's own run window
 opens underneath and shows what TestNG is doing.
@@ -120,7 +119,8 @@ opens underneath and shows what TestNG is doing.
 4. The three are handed to TestNG as one configuration.
 5. A message reads *Running 3* — the number that started, said once Testin
    knows it.
-6. While TestNG executes a test case, a dot blinks after its description (Rule-EDITOR-PANEL-291).
+6. While TestNG executes a test case, a dot blinks after its description
+   (Rule-EDITOR-PANEL-291).
 7. Each result comes back and is recorded against the test case, as one more
    execution of its run item.
 
@@ -152,8 +152,8 @@ way: the framework says the test did not pass and gives no run item status.
 A skip is recorded once TestNG has moved on, because TestNG skips an attempt
 it is about to retry the same way: a retry that passes is recorded **Passed**.
 Every attempt is kept as an execution of its own - the retried one too, as a
-failure marked *retried* - and the one that decided is the default (Rule-CODEGEN-111). Leaving it Pending would report
-the cycle as finished when
+failure marked *retried* - and the one that decided is the default
+(Rule-CODEGEN-111). Leaving it Pending would report the cycle as finished when
 part of it never ran.
 
 **If the IDE is indexing** — every test case is put back and a message reads *Tests cannot run while the IDE is

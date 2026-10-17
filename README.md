@@ -55,8 +55,7 @@ The records are JSON too, and **each one is named by what it is about**: a test
 case by its own UUID, a run item by the UUID of the test case it records. So
 renaming or moving anything leaves every file still valid, two testers recording
 run item statuses on different test cases of the same test run never touch the
-same file, and what a test run recorded about itself — its status, when it ran, how it was configured — lives in the
-test
+same file, and what a test run recorded about itself — its status, when it ran, how it was configured — lives in the test
 run's own `.tr`.
 
 **Stored values are byte-identical to what you typed** — Testin formats for

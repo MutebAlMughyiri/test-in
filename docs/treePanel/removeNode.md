@@ -161,7 +161,8 @@ those are different questions.
 removed. The container is left out, and not counted.
 
 **If a node is selected together with the folder it sits in** — only the folder
-is removed, and the node goes with it. The node is not counted on its own (Rule-TREE-PANEL-143).
+is removed, and the node goes with it. The node is not counted on its own
+(Rule-TREE-PANEL-143).
 
 **If nothing could be removed** — the tree rebuilds and there is no *Removed*.
 There is nothing on the tree's history for `Ctrl+Z` to take back.

@@ -70,7 +70,8 @@ Testin hands the test cases to the IDE's own test runner.
 - **Rule-TREE-PANEL-104** — A menu entry that cannot work on the selected row is
   gray, and says why when the pointer rests on it.
 - **Rule-TREE-PANEL-141** — Run Tests on a test run is gray, and says why, while
-  that test run's Start Manual Execution is on or its Run Tests is already executing (Rule-EDITOR-PANEL-290).
+  that test run's Start Manual Execution is on or its Run Tests is already executing
+  (Rule-EDITOR-PANEL-290).
 
 ## What the tester sees
 

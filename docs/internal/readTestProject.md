@@ -19,7 +19,8 @@ There is no key for this. It starts on its own.
   higher number is refused as written by a newer Testin, and one without the
   number or with a lower one as written by an older Testin. A refused project is
   not read and not written: no file inside it is opened. A folder written in
-  format 4 or earlier holds no `.testproject`, so it is not a test project (Rule-INTERNAL-003) and is not shown.
+  format 4 or earlier holds no `.testproject`, so it is not a test project
+  (Rule-INTERNAL-003) and is not shown.
 - **Rule-INTERNAL-004** — Only the folders directly inside the Testin folder are
   looked at. A test project one level deeper is not found.
 - **Rule-INTERNAL-005** — A test project that is not **Active** is read,
