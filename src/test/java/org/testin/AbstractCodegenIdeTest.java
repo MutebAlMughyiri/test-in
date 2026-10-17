@@ -157,12 +157,17 @@ public abstract class AbstractCodegenIdeTest extends AbstractTempRootIdeTest {
 
     protected @NotNull TestCase createdTestCase(final @NotNull TestSetNode testSet, final @NotNull String description, final @NotNull String order) {
         final @NotNull TestCase testCase = indexedTestCase(testSet, description, order);
+        whenIndexed();
         CodeChangeType.CREATE_TEST_CASE.execute(getProject(), testCase);
         return testCase;
     }
 
-    protected @NotNull Optional<PsiClass> generatedClass(final @NotNull String qualifiedName) {
+    protected void whenIndexed() {
         Await.until("the IDE never finished indexing", () -> !DumbService.isDumb(getProject()));
+    }
+
+    protected @NotNull Optional<PsiClass> generatedClass(final @NotNull String qualifiedName) {
+        whenIndexed();
         PsiDocumentManager.getInstance(getProject()).commitAllDocuments();
         return Optional.ofNullable(JavaPsiFacade.getInstance(getProject()).findClass(qualifiedName, GlobalSearchScope.projectScope(getProject())));
     }

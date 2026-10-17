@@ -47,6 +47,7 @@ public class PasteTestCaseCodeIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description("Log in with a valid user").order("m").build();
         testCase.setParent(testSet);
         Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase);
+        whenIndexed();
         CodeChangeType.CREATE_TEST_CASE.execute(getProject(), testCase);
         Await.until("the test case to copy got no method", () -> methodOf(testCase).isPresent());
 
