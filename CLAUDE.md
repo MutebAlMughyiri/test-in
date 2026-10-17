@@ -178,6 +178,15 @@ silently has no effect costs more than the setting it was meant to hold.
   twin of the `Done` enum that already owned the success words. Read the
   `a-class-does-one-job` skill under `.claude/skills/` before adding to a
   shared class.
+- **A button is a class.** Every button a tester clicks extends
+  `AbstractIconButton` in a class of its own, as the editor toolbar's do: it
+  takes what it needs in its constructor and owns its words, its picture, its
+  click and its `updateState()`, and the surface only lists it. Buttons with
+  the same or a similar purpose are one button, so one class that swaps its own
+  word and picture: `SelectUnselectAllButton`, `CollapseExpandButton`. #441 first put
+  both inside `SelectionTree`, which then did three jobs. Read the
+  `a-button-is-a-class` skill under `.claude/skills/` before adding a button
+  anywhere.
 
 - **Every state-changing action confirms itself** with one soft notification at
   the point it succeeded: `Services.getInstance(project, Notifier.class).softShow(project,

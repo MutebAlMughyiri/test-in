@@ -20,6 +20,7 @@ import com.intellij.ui.CheckboxTree;
 import com.intellij.ui.CheckedTreeNode;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractIdeTest;
+import org.testin.Await;
 import org.testin.util.Bundle;
 import org.testin.view.Drawn;
 
@@ -37,6 +38,8 @@ public class SelectionTreeIdeTest extends AbstractIdeTest {
     private static final @NotNull String REFUND = "Refund a paid order";
 
     private static final @NotNull Set<String> IN_LOGIN = Set.of(LOGIN_VALID, LOGIN_LOCKED);
+
+    private static final int ROWS_FULLY_OPEN = 5;
 
     private static @NotNull CheckedTreeNode aTestCase(final @NotNull String name, final boolean ticked) {
         final @NotNull CheckedTreeNode leaf = new CheckedTreeNode(name);
@@ -90,12 +93,98 @@ public class SelectionTreeIdeTest extends AbstractIdeTest {
         }, Optional.empty());
     }
 
-    private static @NotNull AbstractIconButton tickAll(final @NotNull SelectionTree selection) {
+    private static @NotNull SelectUnselectAllButton selectUnselectAll(final @NotNull SelectionTree selection) {
         return Drawn.components(selection.getPanel()).stream()
-                .filter(AbstractIconButton.class::isInstance)
-                .map(AbstractIconButton.class::cast)
+                .filter(SelectUnselectAllButton.class::isInstance)
+                .map(SelectUnselectAllButton.class::cast)
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("the selection offers no select all"));
+    }
+
+    private static @NotNull CollapseExpandButton collapseExpand(final @NotNull SelectionTree selection) {
+        return Drawn.components(selection.getPanel()).stream()
+                .filter(CollapseExpandButton.class::isInstance)
+                .map(CollapseExpandButton.class::cast)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("the selection offers no collapse all"));
+    }
+
+    private static @NotNull String said(final @NotNull AbstractIconButton button) {
+        return button.getAccessibleContext().getAccessibleName();
+    }
+
+    private static @NotNull List<Object> rowsShown(final @NotNull CheckboxTree tree) {
+        final @NotNull List<Object> rows = new ArrayList<>();
+        for (int i = 0; i < tree.getRowCount(); i++) {
+            rows.add(((CheckedTreeNode) tree.getPathForRow(i).getLastPathComponent()).getUserObject());
+        }
+        return rows;
+    }
+
+    private static @NotNull CheckboxTree fullyOpen(final @NotNull SelectionTree selection) {
+        final @NotNull CheckboxTree tree = drawnTree(selection);
+        Await.until("the tree never opened every folder", () -> tree.getRowCount() == ROWS_FULLY_OPEN);
+        return tree;
+    }
+
+    // Rule-TREE-PANEL-145
+    public void testTheButtonSaysCollapseAllOnlyWhileEveryFolderIsOpen() {
+        final @NotNull SelectionTree selection = selection(false);
+        final @NotNull CheckboxTree tree = fullyOpen(selection);
+        assertEquals("with every folder open, the button does not offer to collapse", Bundle.message("toolbar.collapse.all"), said(collapseExpand(selection)));
+
+        collapseExpand(selection).doClick();
+        assertEquals("with the folders closed, the button does not offer to expand", Bundle.message("toolbar.expand.all"), said(collapseExpand(selection)));
+
+        collapseExpand(selection).doClick();
+        Await.until("expand all did not open every folder again", () -> tree.getRowCount() == ROWS_FULLY_OPEN);
+        assertEquals("with every folder open again, the button does not offer to collapse", Bundle.message("toolbar.collapse.all"), said(collapseExpand(selection)));
+    }
+
+    // Rule-TREE-PANEL-145
+    public void testCollapseAllLeavesOnlyTheFoldersUnderTestCases() {
+        final @NotNull SelectionTree selection = selection(false);
+        final @NotNull CheckboxTree tree = fullyOpen(selection);
+
+        collapseExpand(selection).doClick();
+
+        assertEquals("collapse all did not leave only the test sets under Test Cases, closed", List.of("Login", "Payments"), rowsShown(tree));
+    }
+
+    // Rule-TREE-PANEL-145
+    public void testClosingOneFolderByHandOffersExpandAll() {
+        final @NotNull SelectionTree selection = selection(false);
+        final @NotNull CheckboxTree tree = fullyOpen(selection);
+
+        tree.collapseRow(0);
+        assertEquals("with one folder closed by its arrow, the button does not offer to expand", Bundle.message("toolbar.expand.all"), said(collapseExpand(selection)));
+
+        collapseExpand(selection).doClick();
+        Await.until("expand all did not open the folder closed by hand", () -> tree.getRowCount() == ROWS_FULLY_OPEN);
+    }
+
+    // Rule-TREE-PANEL-145
+    public void testOpeningAndClosingTicksNothing() {
+        final @NotNull SelectionTree selection = selection(true);
+        final @NotNull CheckboxTree tree = fullyOpen(selection);
+
+        collapseExpand(selection).doClick();
+        collapseExpand(selection).doClick();
+        Await.until("expand all did not open every folder again", () -> tree.getRowCount() == ROWS_FULLY_OPEN);
+
+        assertEquals("closing and opening the folders changed what is ticked", List.of(REFUND), ticked(selection));
+    }
+
+    // Rule-TREE-PANEL-145, Rule-TREE-PANEL-130
+    public void testAFilterOpensTheTreeAgain() {
+        final @NotNull SelectionTree selection = selection(false);
+        final @NotNull CheckboxTree tree = fullyOpen(selection);
+        collapseExpand(selection).doClick();
+
+        selection.show(SelectionTreeIdeTest::inLogin);
+
+        Await.until("the filter left the tree closed", () -> rowsShown(tree).equals(List.of("Login", LOGIN_VALID, LOGIN_LOCKED)));
+        assertEquals("with the filtered tree fully open, the button does not offer to collapse", Bundle.message("toolbar.collapse.all"), said(collapseExpand(selection)));
     }
 
     // Rule-TREE-PANEL-130
@@ -113,10 +202,10 @@ public class SelectionTreeIdeTest extends AbstractIdeTest {
         final @NotNull SelectionTree selection = selection(true);
         selection.show(SelectionTreeIdeTest::inLogin);
 
-        tickAll(selection).doClick();
+        selectUnselectAll(selection).doClick();
         assertEquals("select all ticked what the filter hides, or missed what it shows", List.of(LOGIN_VALID, LOGIN_LOCKED, REFUND), ticked(selection));
 
-        tickAll(selection).doClick();
+        selectUnselectAll(selection).doClick();
         assertEquals("unselect all touched a test case the filter hides", List.of(REFUND), ticked(selection));
     }
 
@@ -124,9 +213,9 @@ public class SelectionTreeIdeTest extends AbstractIdeTest {
     public void testSelectAllLeavesADisabledTestCaseAsItWas() {
         final @NotNull SelectionTree selection = withADisabledTestCase(false);
 
-        tickAll(selection).doClick();
+        selectUnselectAll(selection).doClick();
         assertEquals("select all ticked a disabled test case", List.of(LOGIN_VALID), ticked(selection));
-        assertEquals("with every test case it can tick ticked, the button does not offer to untick", Bundle.message("selection.untick.all"), tickAll(selection).getAccessibleContext().getAccessibleName());
+        assertEquals("with every test case it can tick ticked, the button does not offer to untick", Bundle.message("selection.untick.all"), selectUnselectAll(selection).getAccessibleContext().getAccessibleName());
     }
 
     // Rule-TREE-PANEL-138

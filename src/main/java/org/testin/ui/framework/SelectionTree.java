@@ -16,7 +16,6 @@
 
 package org.testin.ui.framework;
 
-import com.intellij.icons.AllIcons;
 import com.intellij.ui.CheckboxTree;
 import com.intellij.ui.CheckboxTreeBase;
 import com.intellij.ui.CheckboxTreeListener;
@@ -28,7 +27,6 @@ import com.intellij.util.ui.tree.TreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.ui.Caption;
 import org.testin.ui.dialogs.DialogStyle;
-import org.testin.util.Bundle;
 import org.testin.util.Fonts;
 
 import javax.swing.JComponent;
@@ -55,7 +53,7 @@ public final class SelectionTree implements DialogComponent {
 
     private final @NotNull JComponent panel;
 
-    private final @NotNull AbstractIconButton tickAll = AbstractIconButton.of(Bundle.message("selection.tick.all"), AllIcons.Actions.Selectall, this::flipTicks);
+    private final @NotNull SelectUnselectAllButton selectUnselectAll = new SelectUnselectAllButton(this::everyShownTicked, this::flipTicks);
 
     public SelectionTree(final @NotNull String caption, final @NotNull CheckedTreeNode root, final @NotNull CheckboxTree.CheckboxTreeCellRenderer renderer, final @NotNull Optional<JComponent> trailing) {
         this.full = root;
@@ -66,6 +64,7 @@ public final class SelectionTree implements DialogComponent {
         DialogStyle.asRow(tree);
         // Rule-INTERNAL-102
         tree.setVisibleRowCount(DialogSize.VISIBLE_ROWS);
+        // Rule-TREE-PANEL-145
         TreeUtil.expandAll(tree);
 
         tree.addCheckboxTreeListener(new CheckboxTreeListener() {
@@ -73,7 +72,7 @@ public final class SelectionTree implements DialogComponent {
             public void nodeStateChanged(final @NotNull CheckedTreeNode treeNode) {
                 keepTicks();
                 tree.repaint();
-                showTickAll();
+                selectUnselectAll.updateState();
                 changed.forEach(Runnable::run);
             }
         });
@@ -83,9 +82,10 @@ public final class SelectionTree implements DialogComponent {
         title.setLabelFor(tree);
 
         final @NotNull JBPanel<?> buttons = new JBPanel<>(new FlowLayout(FlowLayout.RIGHT, 0, 0)).andTransparent();
-        buttons.add(tickAll);
+        buttons.add(selectUnselectAll);
+        buttons.add(new CollapseExpandButton(tree));
         trailing.ifPresent(buttons::add);
-        showTickAll();
+        selectUnselectAll.updateState();
 
         // Rule-INTERNAL-087, Rule-INTERNAL-099
         panel = DialogStyle.section(Caption.header(title, Optional.of(buttons)), ScrollPaneFactory.createScrollPane(tree, true));
@@ -99,23 +99,17 @@ public final class SelectionTree implements DialogComponent {
         return true;
     }
 
-    // Rule-TREE-PANEL-130, Rule-TREE-PANEL-131
+    // Rule-TREE-PANEL-130, Rule-TREE-PANEL-131, Rule-TREE-PANEL-145
     public void show(final @NotNull Predicate<Object> leafShown) {
         tree.setModel(new DefaultTreeModel(copyShown(full, leafShown)));
         TreeUtil.expandAll(tree);
-        showTickAll();
+        selectUnselectAll.updateState();
         changed.forEach(Runnable::run);
     }
 
     // Rule-TREE-PANEL-140
     private void flipTicks() {
         tree.setNodeState(shownRoot(), !everyShownTicked());
-    }
-
-    // Rule-TREE-PANEL-140, Rule-INTERNAL-137
-    private void showTickAll() {
-        if (everyShownTicked()) tickAll.show(Bundle.message("selection.untick.all"), AllIcons.Actions.Unselectall);
-        else tickAll.show(Bundle.message("selection.tick.all"), AllIcons.Actions.Selectall);
     }
 
     // Rule-TREE-PANEL-140, Rule-TREE-PANEL-138

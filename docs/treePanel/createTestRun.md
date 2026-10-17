@@ -104,6 +104,14 @@ A test run is one round of testing, with a run item status for each test case.
   Integration test run covers the backend only. Picking **Web** or **Mobile**
   again lets **Frontend** be picked, and *Component* stays **Backend** until the
   tester changes it.
+- **Rule-TREE-PANEL-145** — Between the tick button and the filter, one button
+  opens and closes the tree's folders. While every folder is open it reads
+  *Collapse All*, and closes them all, so only the folders right under
+  **Test Cases** show; otherwise it reads *Expand All*, and opens them all. Its
+  picture and tooltip say which it will do, and opening or closing a folder by
+  hand changes it too. Opening and closing never tick or untick a test case. The
+  tree opens fully expanded, and opens fully again when a filter changes what it
+  shows.
 
 Rule-TREE-PANEL-032 holds here too. It says what can be created under **Test
 Runs**, and it is on [UC-TREE-PANEL-010](createTestRunPackage.md).
@@ -128,12 +136,11 @@ Runs**, and it is on [UC-TREE-PANEL-010](createTestRunPackage.md).
 │ │     ( ) Chrome (o) Firefox ( ) Safari ( ) Edge                        │ │
 │ └────────────────────────────────────────────────────────────────────────┘ │
 │ ┌────────────────────────────────────────────────────────────────────────┐ │
-│ │ Test Cases                                            [Filter]   (6)  │ │
-│ │ [x] v Test Cases                                                 (4)  │ │
-│ │ [x]   v Accounts                                                      │ │
-│ │ [x]       Login                                                       │ │
-│ │ [x]       Registration                                                │ │
-│ │ [ ]     Checkout                                                      │ │
+│ │ Test Cases                  [tick] (7)  [collapse] (8)  [Filter] (6)  │ │
+│ │ [x] v Accounts                                                   (4)  │ │
+│ │ [x]     Login                                                         │ │
+│ │ [x]     Registration                                                  │ │
+│ │ [ ]   Checkout                                                        │ │
 │ └────────────────────────────────────────────────────────────────────────┘ │
 │                                                     [ Create ]      (5)    │
 ├────────────────────────────────────────────────────────────────────────────┤
@@ -171,8 +178,10 @@ Runs**, and it is on [UC-TREE-PANEL-010](createTestRunPackage.md).
    | Device Type | *iPhone*, *Samsung*, *Huawei*         |
 
 4. **The test cases** — the whole folder tree, with a tick box on every row.
-   The **Test Cases** row is at the top. Under it come each package, each test
-   set, and each test case. The tree opens fully expanded. Ticking a folder
+   It starts with the packages and test sets right under **Test Cases**, and
+   under them come their packages, test sets and test cases. The tree opens
+   fully expanded, and **Collapse All** (8) closes it down to the folders right
+   under **Test Cases**. Ticking a folder
    ticks everything under it. An empty test set is left out, and so is a package
    that holds only empty test sets. While a filter is on, ticking a row ticks
    only the test cases it shows. (Rule-TREE-PANEL-131)
@@ -192,6 +201,12 @@ Runs**, and it is on [UC-TREE-PANEL-010](createTestRunPackage.md).
    named by its path
    under **Test Cases**, such as *pkg / Checkout*. Every opening starts with no
    filter. (Rule-TREE-PANEL-129)
+7. **Select All** — ticks every test case the filter shows, or unticks them all
+   once every one of them is ticked. Its picture and tooltip say which:
+   *Select All* or *Unselect All*. (Rule-TREE-PANEL-140)
+8. **Collapse All** — closes every folder, leaving only those right under
+   **Test Cases**, and reads *Expand All* while any folder is closed, opening
+   them all again. No tick changes either way. (Rule-TREE-PANEL-145)
 
 **Edit Test Run** is this same dialog with the button **Save**. It opens filled
 with the test run's own name, test cases and settings.
