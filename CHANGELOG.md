@@ -6,6 +6,8 @@ is [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## Unreleased
 
+## 2.15.0-alpha - 2026-10-17
+
 **Before you update:** wipe your test data. This build reads format 5 and converts nothing. Every file Testin stores is
 now named in full words - a test project holds `.testproject`, a test set `.testset`, a test run `.testrun`, a test case
 is `<uuid>.testcase` and a run item `<uuid>.runitem` - so a test project an earlier build wrote is not shown at all:
