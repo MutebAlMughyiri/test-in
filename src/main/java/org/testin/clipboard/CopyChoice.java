@@ -26,12 +26,12 @@ import org.testin.codegen.Fqcn;
 import org.testin.model.MenuItem;
 import org.testin.model.TestCase;
 import org.testin.testcase.Can;
-import org.testin.testcase.CreateTestCaseFields;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.util.Bundle;
 import org.testin.util.Icons;
 import org.testin.util.Shortcuts;
 
+import javax.swing.Icon;
 import javax.swing.JComponent;
 import java.util.Arrays;
 import java.util.List;
@@ -53,100 +53,87 @@ public enum CopyChoice implements MenuItem {
 
     DESCRIPTION(
             TestSetEditorFields.DESCRIPTION,
-            Shortcuts.FieldDescription,
-            CreateTestCaseFields.DESCRIPTION.getIcon()
+            Shortcuts.FieldDescription
     ),
 
     EXPECTED_RESULT(
             TestSetEditorFields.EXPECTED_RESULT,
-            Shortcuts.FieldExpectedResult,
-            CreateTestCaseFields.EXPECTED_RESULT.getIcon()
+            Shortcuts.FieldExpectedResult
     ),
 
     STEPS(
             TestSetEditorFields.STEPS,
-            Shortcuts.FieldSteps,
-            CreateTestCaseFields.STEPS.getIcon()
+            Shortcuts.FieldSteps
     ),
 
     PRE_CONDITIONS(
             TestSetEditorFields.PRE_CONDITIONS,
-            Shortcuts.FieldPreConditions,
-            CreateTestCaseFields.PRE_CONDITIONS.getIcon()
+            Shortcuts.FieldPreConditions
     ),
 
     TEST_DATA(
             TestSetEditorFields.TEST_DATA,
-            Shortcuts.FieldTestData,
-            CreateTestCaseFields.TEST_DATA.getIcon()
+            Shortcuts.FieldTestData
     ),
 
     PRIORITY(
             TestSetEditorFields.PRIORITY,
-            Shortcuts.FieldPriority,
-            CreateTestCaseFields.PRIORITY.getIcon()
+            Shortcuts.FieldPriority
     ),
 
     MODULE(
             TestSetEditorFields.MODULE,
-            Shortcuts.FieldModule,
-            CreateTestCaseFields.MODULE.getIcon()
+            Shortcuts.FieldModule
     ),
 
     GROUP(
             TestSetEditorFields.GROUP,
-            Shortcuts.FieldGroup,
-            CreateTestCaseFields.GROUP.getIcon()
+            Shortcuts.FieldGroup
     ),
 
     STATUS(
             TestSetEditorFields.STATUS,
-            Shortcuts.FieldStatus,
-            Icons.fieldLetter("Z", Icons.GRAY)
+            Shortcuts.FieldStatus
     ),
 
     REFERENCE(
             TestSetEditorFields.REFERENCE,
-            Shortcuts.FieldReference,
-            CreateTestCaseFields.REFERENCE.getIcon()
+            Shortcuts.FieldReference
     ),
 
     FQCN(
             TestSetEditorFields.FQCN,
             Shortcuts.CopyFqcn,
-            Icons.fieldLetter("F", Icons.GRAY),
             testCase -> String.join(".", Fqcn.ofMethod(testCase))
     ),
 
     UUID(
             TestSetEditorFields.UUID,
-            Shortcuts.CopyUuid,
-            Icons.fieldLetter("U", Icons.GRAY)
+            Shortcuts.CopyUuid
     ),
 
     PATH(
             TestSetEditorFields.PATH,
-            Shortcuts.CopyPath,
-            Icons.fieldLetter("H", Icons.GRAY)
+            Shortcuts.CopyPath
     );
 
     private final @NotNull String name;
 
     private final @NotNull Shortcuts shortcut;
 
-    private final Icons.@NotNull LetterIcon icon;
+    private final @NotNull Icon icon;
 
     private final @NotNull Optional<TestSetEditorFields> field;
 
     @Getter(AccessLevel.NONE)
     private final @NotNull Function<TestCase, String> copied;
 
-    CopyChoice(final @NotNull TestSetEditorFields field, final @NotNull Shortcuts shortcut, final Icons.@NotNull LetterIcon icon) {
-        this(field, shortcut, icon, field::gridValue);
+    CopyChoice(final @NotNull TestSetEditorFields field, final @NotNull Shortcuts shortcut) {
+        this(field, shortcut, field::gridValue);
     }
 
-    CopyChoice(final @NotNull TestSetEditorFields field, final @NotNull Shortcuts shortcut, final Icons.@NotNull LetterIcon icon, final @NotNull Function<TestCase, String> copied) {
-        this(field.getName(), shortcut, icon, Optional.of(field), copied);
+    CopyChoice(final @NotNull TestSetEditorFields field, final @NotNull Shortcuts shortcut, final @NotNull Function<TestCase, String> copied) {
+        this(field.getName(), shortcut, field.getIcon(), Optional.of(field), copied);
     }
 
     // Rule-EDITOR-PANEL-073

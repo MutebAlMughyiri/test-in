@@ -23,9 +23,9 @@ import org.testin.model.StatusBarItem;
 import org.testin.testcase.create.TestCaseSection;
 import org.testin.testcase.create.AbstractTestCaseDialog;
 import org.testin.util.Bundle;
-import org.testin.util.Icons;
 import org.testin.util.Shortcuts;
 
+import javax.swing.Icon;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -41,7 +41,7 @@ public enum CreateTestCaseFields implements StatusBarItem {
     DESCRIPTION(
             TestSetEditorFields.DESCRIPTION.getName(),
             Shortcuts.CreateTestCaseDescription,
-            Icons.fieldLetter("D", Icons.GRAY),
+            TestSetEditorFields.DESCRIPTION.getIcon(),
             AbstractTestCaseDialog::getDescriptionSection,
             Bundle.message("field.set.description"),
             CORRECTIONS, NAVIGATE_TAB
@@ -50,7 +50,7 @@ public enum CreateTestCaseFields implements StatusBarItem {
     EXPECTED_RESULT(
             TestSetEditorFields.EXPECTED_RESULT.getName(),
             Shortcuts.CreateTestCaseExpectedResult,
-            Icons.fieldLetter("E", Icons.GRAY),
+            TestSetEditorFields.EXPECTED_RESULT.getIcon(),
             AbstractTestCaseDialog::getExpectedResultSection,
             Bundle.message("field.set.expected.result"),
             CORRECTIONS, NAVIGATE_TAB
@@ -59,7 +59,7 @@ public enum CreateTestCaseFields implements StatusBarItem {
     MODULE(
             TestSetEditorFields.MODULE.getName(),
             Shortcuts.CreateTestCaseModule,
-            Icons.fieldLetter("M", Icons.GRAY),
+            TestSetEditorFields.MODULE.getIcon(),
             AbstractTestCaseDialog::getModuleSection,
             Bundle.message("field.set.module"),
             CORRECTIONS, NAVIGATE_TAB
@@ -68,7 +68,7 @@ public enum CreateTestCaseFields implements StatusBarItem {
     TEST_DATA(
             TestSetEditorFields.TEST_DATA.getName(),
             Shortcuts.CreateTestCaseTestData,
-            Icons.fieldLetter("T", Icons.GRAY),
+            TestSetEditorFields.TEST_DATA.getIcon(),
             AbstractTestCaseDialog::getTestDataSection,
             Bundle.message("field.set.test.data"),
             NAVIGATE_TAB
@@ -77,7 +77,7 @@ public enum CreateTestCaseFields implements StatusBarItem {
     PRE_CONDITIONS(
             TestSetEditorFields.PRE_CONDITIONS.getName(),
             Shortcuts.CreateTestCasePreConditions,
-            Icons.fieldLetter("B", Icons.GRAY),
+            TestSetEditorFields.PRE_CONDITIONS.getIcon(),
             AbstractTestCaseDialog::getPreConditionsSection,
             Bundle.message("field.set.pre.conditions"),
             CORRECTIONS, NAVIGATE_TAB
@@ -86,7 +86,7 @@ public enum CreateTestCaseFields implements StatusBarItem {
     STEPS(
             TestSetEditorFields.STEPS.getName(),
             Shortcuts.CreateTestCaseSteps,
-            Icons.fieldLetter("S", Icons.GRAY),
+            TestSetEditorFields.STEPS.getIcon(),
             AbstractTestCaseDialog::getStepsSection,
             Bundle.message("field.set.step"),
             CORRECTIONS, ADD, AUTO_COMPLETE, NAVIGATE_TAB
@@ -95,7 +95,7 @@ public enum CreateTestCaseFields implements StatusBarItem {
     PRIORITY(
             TestSetEditorFields.PRIORITY.getName(),
             Shortcuts.CreateTestCasePriority,
-            Icons.fieldLetter("P", Icons.GRAY),
+            TestSetEditorFields.PRIORITY.getIcon(),
             AbstractTestCaseDialog::getPrioritySection,
             "",
             NAVIGATE_ARROWS
@@ -104,7 +104,7 @@ public enum CreateTestCaseFields implements StatusBarItem {
     GROUP(
             TestSetEditorFields.GROUP.getName(),
             Shortcuts.CreateTestCaseGroup,
-            Icons.fieldLetter("G", Icons.GRAY),
+            TestSetEditorFields.GROUP.getIcon(),
             AbstractTestCaseDialog::getGroupSection,
             Bundle.message("field.set.group"),
             ADD, AUTO_COMPLETE, NAVIGATE_TAB
@@ -113,7 +113,7 @@ public enum CreateTestCaseFields implements StatusBarItem {
     REFERENCE(
             TestSetEditorFields.REFERENCE.getName(),
             Shortcuts.CreateTestCaseReference,
-            Icons.fieldLetter("R", Icons.GRAY),
+            TestSetEditorFields.REFERENCE.getIcon(),
             AbstractTestCaseDialog::getReferenceSection,
             Bundle.message("field.set.reference"),
             CORRECTIONS, NAVIGATE_TAB
@@ -126,7 +126,7 @@ public enum CreateTestCaseFields implements StatusBarItem {
 
     private final @NotNull Shortcuts shortcut;
 
-    private final Icons.@NotNull LetterIcon icon;
+    private final @NotNull Icon icon;
 
     private final @NotNull Function<AbstractTestCaseDialog, TestCaseSection> sectionExtractor;
 
@@ -134,7 +134,7 @@ public enum CreateTestCaseFields implements StatusBarItem {
 
     private final @NotNull ImmutableList<TestCaseDialogKey> ownKeys;
 
-    CreateTestCaseFields(final @NotNull String name, final @NotNull Shortcuts shortcut, final Icons.@NotNull LetterIcon icon, final @NotNull Function<AbstractTestCaseDialog, TestCaseSection> sectionExtractor, final @NotNull String placeholder, final TestCaseDialogKey @NotNull ... ownKeys) {
+    CreateTestCaseFields(final @NotNull String name, final @NotNull Shortcuts shortcut, final @NotNull Icon icon, final @NotNull Function<AbstractTestCaseDialog, TestCaseSection> sectionExtractor, final @NotNull String placeholder, final TestCaseDialogKey @NotNull ... ownKeys) {
         this.name = name;
         this.shortcut = shortcut;
         this.icon = icon;

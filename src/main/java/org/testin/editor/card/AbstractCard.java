@@ -34,7 +34,7 @@ import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.services.Services;
 import org.testin.testcase.TestCaseOrder;
-import org.testin.testcase.UpdateTestCaseFields;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.ui.Badge;
 import org.testin.ui.Badges;
 import org.testin.ui.framework.CardEdge;
@@ -208,7 +208,7 @@ public abstract class AbstractCard extends JBPanel<AbstractCard> {
                 return newLabel;
             });
 
-            final @NotNull Optional<Icon> icon = UpdateTestCaseFields.iconOf(fieldName);
+            final @NotNull Optional<Icon> icon = TestSetEditorFields.iconOf(fieldName);
             label.setIcon(icon.orElse(EmptyIcon.ICON_0));
             label.setText(Display.shortDates(icon.isPresent() ? value : fieldName + ": " + value));
             lineTooltips.put(fieldName, Display.dateTooltip(value));
@@ -266,7 +266,7 @@ public abstract class AbstractCard extends JBPanel<AbstractCard> {
     }
 
     private boolean isOnIcon(final @NotNull String fieldName, final @NotNull JBLabel line, final @NotNull Point at) {
-        return UpdateTestCaseFields.iconOf(fieldName).isPresent() && iconOf(line).contains(at);
+        return TestSetEditorFields.iconOf(fieldName).isPresent() && iconOf(line).contains(at);
     }
 
     // Rule-EDITOR-PANEL-269

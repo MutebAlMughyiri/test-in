@@ -16,9 +16,6 @@
 
 package org.testin.java.codegen.method;
 
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.command.CommandProcessor;
-import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
@@ -36,6 +33,7 @@ import org.testin.model.TestCase;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 // UC-CODEGEN-002, Rule-CODEGEN-077
 public class MoveTestMethod extends BaseTestMethodChange implements CodeChange<MovedTestCase> {
@@ -51,14 +49,10 @@ public class MoveTestMethod extends BaseTestMethodChange implements CodeChange<M
     public void executeAll(final @NotNull Project project, final @NotNull List<? extends MovedTestCase> moves) {
         if (moves.isEmpty()) return;
 
-        final @NotNull Runnable inCommand = () ->
-                WriteCommandAction.runWriteCommandAction(project, CodeChangeType.MOVE_TEST_CASE.description(), null, () -> {
-                    moves.forEach(moved -> move(project, moved));
-                    new UpdateTestMethodOrder().executeAll(project, moves.stream().map(MovedTestCase::testCase).toList());
-                });
-
-        if (CommandProcessor.getInstance().getCurrentCommand() != null) inCommand.run();
-        else ApplicationManager.getApplication().invokeLater(inCommand);
+        asOneCommand(project, CodeChangeType.MOVE_TEST_CASE.description(), () -> {
+            moves.forEach(moved -> move(project, moved));
+            new UpdateTestMethodOrder().arrangeSets(project, moves.stream().flatMap(moved -> Stream.of(moved.testCase().getParent().getPath(), moved.from().getPath())).toList());
+        });
     }
 
     private void move(final @NotNull Project project, final @NotNull MovedTestCase moved) {

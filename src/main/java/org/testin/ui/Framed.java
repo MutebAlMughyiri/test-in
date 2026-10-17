@@ -17,7 +17,6 @@
 package org.testin.ui;
 
 import com.intellij.ui.JBColor;
-import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.Icon;
@@ -25,14 +24,9 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.RoundRectangle2D;
 
-// Rule-VIEW-PANEL-086
-public record Framed(@NotNull String text, @NotNull Icon icon, @NotNull String tooltip) implements Badge {
+// Rule-VIEW-PANEL-086, Rule-EDITOR-PANEL-294
+public record Framed(@NotNull String text, @NotNull Icon icon, @NotNull Color ink, @NotNull String tooltip) implements Badge {
     private static final float HALF_LINE = 0.5f;
-
-    @Override
-    public @NotNull Color ink() {
-        return UIUtil.getLabelForeground();
-    }
 
     @Override
     public @NotNull Icon mark() {

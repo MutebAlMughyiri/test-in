@@ -5,7 +5,7 @@
 **As a** tester, **I want** to arrange the test cases I am looking at by one field, **so that** I can work through them
 in the order the job in front of me needs. The order the test set is run in does not change.
 
-A sort arranges the screen and writes nothing. Each card keeps it's number, the test case's place in its set, so a
+A sort arranges the screen and writes nothing. Each card keeps its number, the test case's place in its set, so a
 sorted list reads its numbers out of step. To keep an arrangement, change the order itself with **O** or by dragging.
 
 There is no key for this. **Sort** is its own button on the editor's toolbar, beside **Filter**.

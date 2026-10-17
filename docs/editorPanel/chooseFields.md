@@ -80,7 +80,7 @@ The list opens under the button. It has no title.
 
 ```
 ┌──────────────────────────────┐
-│ [x] Order            (gray)  │
+│ [x] Order                    │
 │ [x] Description      (gray)  │
 │ [ ] UUID                     │
 │ [x] Expected Result          │
@@ -95,8 +95,8 @@ The list opens under the button. It has no title.
 1. **The list** — every field, one to a line, each with a tick box. The order is
    always the same.
 2. **A ticked box** — that field is shown, on the cards and in the grid.
-3. **Order and Description** — drawn gray. Their boxes do not answer a click
-   or the space bar.
+3. **Description** — drawn gray. Its box does not answer a click or the space
+   bar.
 4. **Every tick** — acts at once. The list stays open, so the tester can tick
    several.
 
@@ -104,7 +104,7 @@ The list opens under the button. It has no title.
 
 | Field           | Shown to start with | Can be changed |
 |-----------------|---------------------|----------------|
-| Order           | Yes                 | **No**         |
+| Order           | Yes                 | Yes            |
 | Description     | Yes                 | **No**         |
 | UUID            | No                  | Yes            |
 | Expected Result | Yes                 | Yes            |
@@ -133,8 +133,8 @@ The list opens under the button. It has no title.
 
 ## What Testin refuses
 
-**If the tester tries to untick Order or Description** — the row is gray and
-does not answer. No message is shown.
+**If the tester tries to untick Description** — the row is gray and does not
+answer. No message is shown.
 
 **If a remembered choice cannot be read** — it is dropped, and only the log says
 so.

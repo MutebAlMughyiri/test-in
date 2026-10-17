@@ -84,7 +84,7 @@ public class TestRunConfigurationForm implements DialogComponent {
         wrapper.setOpaque(false);
         wrapper.add(CollapsiblePanel.build(Bundle.message("test.run.form.section"), stacked(), EXPANDED), BorderLayout.CENTER);
 
-        applyVisibility();
+        applyRules();
     }
 
     private static @NotNull JComponent laidOut(final @NotNull List<DialogPart<?>> row) {
@@ -131,12 +131,13 @@ public class TestRunConfigurationForm implements DialogComponent {
     }
 
     private void answerChanged() {
-        applyVisibility();
+        applyRules();
         answered.run();
     }
 
-    // Rule-TREE-PANEL-120
-    private void applyVisibility() {
+    // Rule-TREE-PANEL-120, Rule-TREE-PANEL-144
+    private void applyRules() {
+        choices.values().forEach(section -> section.offerFor(this::chosenIn));
         choices.values().forEach(section -> section.showIf(section.field().isShownFor(this::chosenIn)));
 
         wrapper.revalidate();

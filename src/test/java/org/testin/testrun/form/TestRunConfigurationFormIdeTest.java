@@ -19,6 +19,7 @@ package org.testin.testrun.form;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractIdeTest;
 import org.testin.model.testrun.TestRunConfiguration;
+import org.testin.util.Bundle;
 import org.testin.view.Drawn;
 
 import javax.swing.AbstractButton;
@@ -29,6 +30,10 @@ public class TestRunConfigurationFormIdeTest extends AbstractIdeTest {
 
     private static void choose(final @NotNull TestRunConfigurationForm form, final @NotNull String answer) {
         ((AbstractButton) Drawn.reading(form.getPanel(), answer)).doClick();
+    }
+
+    private static @NotNull AbstractButton frontend(final @NotNull TestRunConfigurationForm form) {
+        return (AbstractButton) Drawn.reading(form.getPanel(), "Frontend");
     }
 
     private static @NotNull String savedBrowser(final @NotNull TestRunConfigurationForm form) {
@@ -50,5 +55,22 @@ public class TestRunConfigurationFormIdeTest extends AbstractIdeTest {
 
         choose(form, "Backend");
         assertEquals("the browser row stayed when the answer above it changed back", "", savedBrowser(form));
+    }
+
+    // Rule-TREE-PANEL-144
+    public void testAnIntegrationTestRunIsOnTheBackendAndFrontendCannotBePicked() {
+        final @NotNull TestRunConfigurationForm form = new TestRunConfigurationForm(getProject(), "Cycle-1", new EnumMap<>(TestRunConfiguration.class));
+        choose(form, "Frontend");
+
+        choose(form, "Integration");
+
+        assertEquals("Integration did not make the component Backend", "Backend", form.configuration().get(TestRunConfiguration.COMPONENT));
+        assertFalse("Frontend can be picked for an Integration test run", frontend(form).isEnabled());
+        assertEquals("the gray Frontend does not say why", Bundle.message("config.component.backend.only"), Drawn.hovering(frontend(form)));
+
+        choose(form, "Web");
+
+        assertTrue("Frontend stayed gray once the platform was Web", frontend(form).isEnabled());
+        assertEquals("the component did not stay Backend", "Backend", form.configuration().get(TestRunConfiguration.COMPONENT));
     }
 }

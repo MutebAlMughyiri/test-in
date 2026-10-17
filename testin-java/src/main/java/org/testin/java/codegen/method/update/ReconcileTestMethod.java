@@ -16,9 +16,6 @@
 
 package org.testin.java.codegen.method.update;
 
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.command.CommandProcessor;
-import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
@@ -53,14 +50,10 @@ public class ReconcileTestMethod extends BaseTestMethodChange implements CodeCha
             byClass.computeIfAbsent(testCase.getParent().getPath(), _ -> new ArrayList<>()).add(testCase);
         }
 
-        final @NotNull Runnable inCommand = () ->
-                WriteCommandAction.runWriteCommandAction(project, CodeChangeType.RECONCILE_TEST_CASE.description(), null, () -> {
-                    byClass.values().forEach(inClass -> rewrite(project, inClass));
-                    new UpdateTestMethodOrder().executeAll(project, testCases);
-                });
-
-        if (CommandProcessor.getInstance().getCurrentCommand() != null) inCommand.run();
-        else ApplicationManager.getApplication().invokeLater(inCommand);
+        asOneCommand(project, CodeChangeType.RECONCILE_TEST_CASE.description(), () -> {
+            byClass.values().forEach(inClass -> rewrite(project, inClass));
+            new UpdateTestMethodOrder().executeAll(project, testCases);
+        });
     }
 
     private void rewrite(final @NotNull Project project, final @NotNull List<TestCase> inClass) {

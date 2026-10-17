@@ -50,7 +50,7 @@ public class RunItemCard extends AbstractCard {
         content.add(changedSince, 2);
     }
 
-    // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-267
+    // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-267, Rule-EDITOR-PANEL-294
     public void updateData(final @NotNull Integer index, final @NotNull Set<TestRunEditorFields> activeDetails, final @NotNull RunItem runItem, final @NotNull String title) {
         this.automation = automationState.of(runItem.getUuid());
         this.priority = activeDetails.contains(TestRunEditorFields.PRIORITY) ? runItem.shownTestCase().getPriority() : Priority.DEFAULT;
@@ -62,6 +62,7 @@ public class RunItemCard extends AbstractCard {
                 .filter(activeDetails::contains)
                 .forEach(field -> field.applyToUI(runItem, badges, details));
 
+        titleArea.setForeground(runItem.shownTestCase().getStatus().getDescriptionColor());
         updateUI(index, title, badges, details);
 
         // Rule-EDITOR-PANEL-263

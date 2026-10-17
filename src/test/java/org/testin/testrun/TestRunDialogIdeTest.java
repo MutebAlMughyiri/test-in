@@ -34,6 +34,7 @@ import org.testin.NodesOnDisk;
 import org.testin.creator.CreateTestRun;
 import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
+import org.testin.indexer.TestCases;
 import org.testin.indexer.TestProjectIndexer;
 import org.testin.indexer.TestRuns;
 import org.testin.model.TestCase;
@@ -49,6 +50,7 @@ import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.PackageStatus;
 import org.testin.model.status.RunItemStatus;
+import org.testin.model.status.TestCaseStatus;
 import org.testin.model.status.TestSetStatus;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
@@ -238,6 +240,25 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
         tree.setNodeState(rowOf(first), true);
 
         assertTrue("Create is gray with a test case checked", create.isEnabled());
+    }
+
+    // Rule-TREE-PANEL-138
+    public void testADisabledTestCaseOpensUntickedAndTheNewTestRunLeavesItOut() {
+        second.setStatus(TestCaseStatus.DISABLED);
+        assertTrue("the Disabled status was not stored", Services.getInstance(getProject(), TestCases.class).putTestCase(login.getPath(), second));
+
+        theCreateDialogOpened();
+
+        assertFalse("a Disabled test case opens ticked", rowOf(second).isChecked());
+        assertFalse("a Disabled test case can be ticked", rowOf(second).isEnabled());
+        assertTrue("a test case that can run opens unticked", rowOf(first).isChecked());
+
+        theButton(Bundle.message("test.run.create.button")).doClick();
+
+        Await.until("the test run was not created", () -> theTestRunsUnder(testProject.getTestRunsFolder()).size() == 1);
+        final @NotNull AbstractNode made = theTestRunsUnder(testProject.getTestRunsFolder()).getFirst();
+        Await.until("the new test run holds no test case", () -> !indexedTestRuns().getRunItems(made.getPath()).coveredUuids().isEmpty());
+        assertEquals("the new test run covers a Disabled test case", Set.of(first.getUuid()), indexedTestRuns().getRunItems(made.getPath()).coveredUuids());
     }
 
     // Rule-TREE-PANEL-122

@@ -19,6 +19,7 @@ package org.testin.testcase;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.intellij.openapi.project.Project;
+import com.intellij.util.ui.EmptyIcon;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -37,9 +38,11 @@ import org.testin.ui.Badge;
 import org.testin.ui.Badges;
 import org.testin.util.Bundle;
 import org.testin.util.Display;
+import org.testin.util.Icons;
 import org.testin.util.NameSanitizer;
 import org.testin.util.TestCaseFieldParser;
 
+import javax.swing.Icon;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
@@ -56,6 +59,7 @@ import static org.testin.importexport.imports.ImportSetter.always;
 public enum TestSetEditorFields implements ShowableField {
     SEQUENCE(
             Bundle.message("field.sequence"),
+            "",
             FieldDefault.STRUCTURE,
             _ -> "",
             (_, testCase, _) -> Optional.of(testCase),
@@ -68,6 +72,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     ORDER(
             Bundle.message("field.order"),
+            "O",
             FieldDefault.ON,
             _ -> "",
             (_, testCase, _) -> Optional.of(testCase),
@@ -80,6 +85,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     DESCRIPTION(
             Bundle.message("field.description"),
+            "D",
             FieldDefault.LOCKED_CHECKED,
             TestCase::getDescription,
             always((draft, value) -> draft.description(NameSanitizer.description(value))),
@@ -93,6 +99,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     UUID(
             Bundle.message("field.uuid"),
+            "U",
             FieldDefault.OFF,
             testCase -> String.valueOf(testCase.getUuid()),
             (_, testCase, _) -> Optional.of(testCase),
@@ -102,6 +109,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     EXPECTED_RESULT(
             Bundle.message("field.expected.result"),
+            "E",
             FieldDefault.ON,
             TestCase::getExpectedResult,
             always(TestCaseBuilder::expectedResult),
@@ -111,6 +119,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     STEPS(
             Bundle.message("field.steps"),
+            "S",
             FieldDefault.OFF,
             testCase -> String.join(", ", testCase.getSteps()),
             always((draft, value) -> draft.steps(TestCaseFieldParser.steps(value))),
@@ -120,6 +129,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     PRIORITY(
             Bundle.message("field.priority"),
+            "P",
             FieldDefault.ON,
             testCase -> testCase.getPriority().getLabel(),
             (_, testCase, value) -> TestCaseFieldParser.priority(value, testCase.getPriority()).map(priority -> testCase.edit().priority(priority).build()),
@@ -134,6 +144,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     FQCN(
             Bundle.message("field.fqcn"),
+            "F",
             FieldDefault.OFF,
             testCase -> String.join(" > ", Fqcn.ofMethod(testCase)),
             (_, testCase, _) -> Optional.of(testCase),
@@ -143,6 +154,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     REFERENCE(
             Bundle.message("field.reference"),
+            "R",
             FieldDefault.OFF,
             TestCase::getReference,
             always(TestCaseBuilder::reference),
@@ -152,6 +164,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     TEST_DATA(
             Bundle.message("field.test.data"),
+            "T",
             FieldDefault.OFF,
             TestCase::getTestData,
             always(TestCaseBuilder::testData),
@@ -161,6 +174,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     PRE_CONDITIONS(
             Bundle.message("field.pre.conditions"),
+            "B",
             FieldDefault.OFF,
             TestCase::getPreConditions,
             always(TestCaseBuilder::preConditions),
@@ -170,6 +184,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     GROUP(
             Bundle.message("field.group"),
+            "G",
             FieldDefault.ON,
             testCase -> Groups.text(testCase.getGroups()),
             (_, testCase, value) -> TestCaseFieldParser.groups(value).map(groups -> testCase.edit().groups(groups).build()),
@@ -184,6 +199,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     PATH(
             Bundle.message("field.path"),
+            "H",
             FieldDefault.OFF,
             testCase -> String.join(" > ", testCase.getParent().treePath()),
             (_, testCase, _) -> Optional.of(testCase),
@@ -193,6 +209,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     MODULE(
             Bundle.message("field.module"),
+            "M",
             FieldDefault.OFF,
             TestCase::getModule,
             always(TestCaseBuilder::module),
@@ -202,6 +219,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     STATUS(
             Bundle.message("field.test.case.status"),
+            "Z",
             FieldDefault.OFF,
             testCase -> testCase.getStatus().getLabel(),
             (_, testCase, value) -> TestCaseFieldParser.testCaseStatus(value, testCase.getStatus()).map(testCaseStatus -> testCase.edit().status(testCaseStatus).build()),
@@ -211,6 +229,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     CREATED_BY(
             Bundle.message("field.created.by"),
+            "",
             FieldDefault.OFF,
             TestCase::getCreatedBy,
             always(TestCaseBuilder::createdBy),
@@ -220,6 +239,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     UPDATED_BY(
             Bundle.message("field.updated.by"),
+            "",
             FieldDefault.OFF,
             TestCase::getUpdatedBy,
             always(TestCaseBuilder::updatedBy),
@@ -229,6 +249,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     CREATED_AT(
             Bundle.message("field.created.at"),
+            "",
             FieldDefault.OFF,
             testCase -> Display.formatDate(testCase.getCreatedAt()),
             (_, testCase, value) -> TestCaseFieldParser.date(value).map(at -> testCase.edit().createdAt(at).build()),
@@ -238,6 +259,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     UPDATED_AT(
             Bundle.message("field.updated.at"),
+            "",
             FieldDefault.OFF,
             testCase -> Display.formatDate(testCase.getUpdatedAt()),
             (_, testCase, value) -> TestCaseFieldParser.date(value).map(at -> testCase.edit().updatedAt(at).build()),
@@ -257,6 +279,10 @@ public enum TestSetEditorFields implements ShowableField {
 
     private final @NotNull String name;
 
+    private final @NotNull String letter;
+
+    private final @NotNull Icon icon;
+
     private final @NotNull FieldDefault toolBarDefault;
 
     private final @NotNull Function<TestCase, String> testValueExtractor;
@@ -268,13 +294,20 @@ public enum TestSetEditorFields implements ShowableField {
     @Getter(AccessLevel.NONE)
     private final @NotNull ImmutableSet<Can> can;
 
-    TestSetEditorFields(final @NotNull String name, final @NotNull FieldDefault toolBarDefault, final @NotNull Function<TestCase, String> testValueExtractor, final @NotNull ImportSetter importSetter, final @NotNull CodeChangeType<TestCase> codeChangeType, final @NotNull Can... can) {
+    TestSetEditorFields(final @NotNull String name, final @NotNull String letter, final @NotNull FieldDefault toolBarDefault, final @NotNull Function<TestCase, String> testValueExtractor, final @NotNull ImportSetter importSetter, final @NotNull CodeChangeType<TestCase> codeChangeType, final @NotNull Can... can) {
         this.name = name;
+        this.letter = letter;
+        this.icon = letter.isEmpty() ? EmptyIcon.ICON_0 : Icons.fieldLetter(letter, Icons.GRAY);
         this.toolBarDefault = toolBarDefault;
         this.testValueExtractor = testValueExtractor;
         this.importSetter = importSetter;
         this.codeChangeType = codeChangeType;
         this.can = Sets.immutableEnumSet(List.of(can));
+    }
+
+    // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-111, Rule-EDITOR-PANEL-269
+    public static @NotNull Optional<Icon> iconOf(final @NotNull String field) {
+        return Arrays.stream(values()).filter(each -> each.name.equals(field)).findFirst().map(TestSetEditorFields::getIcon).filter(Icons.LetterIcon.class::isInstance);
     }
 
     // UC-EDITOR-PANEL-019, UC-INTERNAL-001, Rule-EDITOR-PANEL-091

@@ -21,7 +21,9 @@ import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.util.IconUtil;
+import com.intellij.util.ui.EmptyIcon;
 import com.intellij.util.ui.JBUI;
+import com.intellij.util.ui.UIUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -88,7 +90,7 @@ public final class Badges {
 
     // Rule-EDITOR-PANEL-294
     public static @NotNull Badge createTestCaseStatusBadge(final @NotNull TestCaseStatus testCaseStatus) {
-        return new Pill(testCaseStatus.getLabel(), FixedColors.ORANGE);
+        return new Framed(testCaseStatus.getLabel(), EmptyIcon.ICON_0, FixedColors.CREAM, "");
     }
 
     public static @NotNull Badge createRunItemStatusBadge(final @NotNull RunItemStatus runItemStatus) {
@@ -118,7 +120,8 @@ public final class Badges {
     // Rule-VIEW-PANEL-086
     // Rule-EDITOR-PANEL-270, Rule-VIEW-PANEL-086
     public static void addDurationBadge(final @NotNull List<Badge> badges, final @NotNull String duration) {
-        if (!duration.isBlank()) badges.add(new Framed(duration, CLOCK, Bundle.message("field.run.item.duration")));
+        if (!duration.isBlank())
+            badges.add(new Framed(duration, CLOCK, UIUtil.getLabelForeground(), Bundle.message("field.run.item.duration")));
     }
 
     // Rule-VIEW-PANEL-085

@@ -146,7 +146,10 @@ public final class TestRunFormOpener {
     private @NotNull CheckedTreeNode convertToCheckedNodes(final @NotNull DefaultMutableTreeNode node) {
         final @NotNull Object userObject = node.getUserObject();
         final @NotNull CheckedTreeNode newNode = new CheckedTreeNode(userObject);
-        if (userObject instanceof TestCase testCase) newNode.setEnabled(testCase.getStatus().isEnabled());
+        if (userObject instanceof TestCase testCase) {
+            newNode.setEnabled(testCase.getStatus().isEnabled());
+            newNode.setChecked(testCase.getStatus().isEnabled());
+        }
         for (int i = 0; i < node.getChildCount(); i++) {
             newNode.add(convertToCheckedNodes((DefaultMutableTreeNode) node.getChildAt(i)));
         }

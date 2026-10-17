@@ -23,9 +23,11 @@ import org.testin.model.bug.BugSeverity;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
+import org.testin.model.status.TestCaseStatus;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.testrun.TestRunEditorFields;
 import org.testin.util.Display;
+import org.testin.util.FixedColors;
 import org.testng.annotations.Test;
 
 import java.awt.Color;
@@ -228,5 +230,14 @@ public class BadgesTest {
         TestRunEditorFields.DURATION.applyToUI(RunItem.builder().executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())).build(), badges, new HashMap<>());
 
         assertTrue(badges.isEmpty(), "a run item with no duration drew a badge");
+    }
+
+    // Rule-EDITOR-PANEL-294
+    @Test
+    public void aToBeUpdatedBadgeIsFramedLikeTheDurationInCream() {
+        final Badge badge = Badges.createTestCaseStatusBadge(TestCaseStatus.TO_BE_UPDATED);
+
+        assertTrue(badge instanceof Framed, "the To Be Updated badge is not framed like the duration");
+        assertEquals(badge.ink(), FixedColors.CREAM, "the To Be Updated badge's words are not cream");
     }
 }

@@ -16,18 +16,30 @@
 
 package org.testin.editor.testset;
 
+import com.intellij.ui.CheckboxTree;
+import com.intellij.ui.CheckedTreeNode;
+import com.intellij.ui.SimpleColoredComponent;
 import com.intellij.ui.SimpleTextAttributes;
+import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
+import org.testin.editor.testrun.RunItemCard;
 import org.testin.model.TestCase;
 import org.testin.model.status.TestCaseStatus;
+import org.testin.model.testrun.RunItem;
+import org.testin.testrun.form.TestCaseSelectionRenderer;
 import org.testin.util.FixedColors;
 import org.testin.view.Drawn;
+import org.testin.view.details.Title;
 
 import javax.swing.JTextArea;
 import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 public class DescriptionColorIdeTest extends AbstractTempRootIdeTest {
 
@@ -66,6 +78,33 @@ public class DescriptionColorIdeTest extends AbstractTempRootIdeTest {
     public void testOnlyAToBeUpdatedTestCaseCarriesTheBadgeWhateverTheFields() {
         assertTrue("a To Be Updated test case has no badge", saysToBeUpdated(TestCaseStatus.TO_BE_UPDATED));
         assertFalse("a Reviewed test case carries the To Be Updated badge", saysToBeUpdated(TestCaseStatus.REVIEWED));
+    }
+
+    // Rule-EDITOR-PANEL-294
+    public void testARunItemsCardDrawsItsTestCasesDescriptionInTheStatusColor() {
+        final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description("Log in with a locked user").status(TestCaseStatus.REVIEWED).build();
+        final @NotNull RunItem runItem = new RunItem().setUuid(testCase.getUuid()).showing(Optional.of(testCase), Optional.empty(), Optional.empty(), false);
+        final @NotNull RunItemCard card = new RunItemCard(getProject());
+
+        card.updateData(0, Set.of(), runItem, testCase.getDescription());
+
+        assertEquals("a test run's card does not draw a Reviewed description in its color", FixedColors.PALE_BLUE, Drawn.first(card, JTextArea.class).getForeground());
+    }
+
+    // Rule-EDITOR-PANEL-294
+    public void testTheViewPanelAndTheCreateTestRunTreeDrawADescriptionInItsStatusColor() {
+        final @NotNull TestCase reviewed = TestCase.builder().uuid(UUID.randomUUID()).description("Log in with a locked user").status(TestCaseStatus.REVIEWED).build();
+        final @NotNull JBPanel<?> panel = new JBPanel<>(new GridBagLayout());
+        new Title().render(getProject(), panel, new GridBagConstraints(), reviewed, 0);
+
+        assertEquals("the view panel does not draw a Reviewed description in its color", FixedColors.PALE_BLUE, Drawn.first(panel, JTextArea.class).getForeground());
+
+        final @NotNull CheckboxTree.CheckboxTreeCellRenderer renderer = TestCaseSelectionRenderer.create();
+        renderer.getTreeCellRendererComponent(new CheckboxTree(renderer, new CheckedTreeNode("Test Cases")), new CheckedTreeNode(reviewed), false, false, true, 0, false);
+        final @NotNull SimpleColoredComponent.ColoredIterator fragments = renderer.getTextRenderer().iterator();
+        fragments.next();
+
+        assertEquals("the Create Test Run tree does not draw a Reviewed description in its color", FixedColors.PALE_BLUE, fragments.getTextAttributes().getFgColor());
     }
 
     // Rule-EDITOR-PANEL-294

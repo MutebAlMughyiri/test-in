@@ -41,7 +41,7 @@ public class Title extends AbstractDetails {
 
     final int INSETS_RIGHT = 16;
 
-    // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-025, Rule-VIEW-PANEL-125
+    // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-025, Rule-VIEW-PANEL-125, Rule-EDITOR-PANEL-294
     @Override
     public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull TestCase testCase, final int currentRow) {
         final @NotNull String titleText = TestSetEditorFields.DESCRIPTION.displayValue(testCase);
@@ -53,6 +53,7 @@ public class Title extends AbstractDetails {
             mainTitleArea.getAccessibleContext().setAccessibleDescription(Bundle.message("execution.executing"));
 
         mainTitleArea.setFont(Fonts.title());
+        mainTitleArea.setForeground(testCase.getStatus().getDescriptionColor());
 
         constraints.gridx = 0;
         constraints.gridy = currentRow;

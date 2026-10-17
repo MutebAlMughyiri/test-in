@@ -172,12 +172,7 @@ public class BaseTestMethodChange {
         final @NotNull Map<String, List<TestCase>> byClass = Fqcn.byClassOfMethod(changedTestCases);
         if (byClass.isEmpty()) return;
 
-        final @NotNull Runnable inCommand = () ->
-                WriteCommandAction.runWriteCommandAction(project, title, null,
-                        () -> byClass.forEach((path, testCases) -> writeAll(project, path, testCases, updater)));
-
-        if (CommandProcessor.getInstance().getCurrentCommand() != null) inCommand.run();
-        else ApplicationManager.getApplication().invokeLater(inCommand);
+        asOneCommand(project, title, () -> byClass.forEach((path, testCases) -> writeAll(project, path, testCases, updater)));
     }
 
     private void writeAll(final @NotNull Project project, final @NotNull String path, final @NotNull List<TestCase> testCases, final @NotNull BiConsumer<PsiMethod, TestCase> updater) {
@@ -206,13 +201,15 @@ public class BaseTestMethodChange {
         final @NotNull List<String> classSegments = Fqcn.ofClass(testCase.getParent());
         if (classSegments.isEmpty()) return;
 
-        final @NotNull Runnable inCommand = () ->
-                WriteCommandAction.runWriteCommandAction(project, title, null, () ->
-                        GeneratedClass.find(project, classSegments)
-                                .ifPresentOrElse(
-                                        targetClass -> findMethodByTestName(targetClass, testCase).ifPresentOrElse(updater,
-                                                () -> onMissing.accept("no method with testName=" + testCase.getUuid())),
-                                        () -> onMissing.accept("class not found: " + String.join(".", classSegments))));
+        asOneCommand(project, title, () -> GeneratedClass.find(project, classSegments)
+                .ifPresentOrElse(
+                        targetClass -> findMethodByTestName(targetClass, testCase).ifPresentOrElse(updater,
+                                () -> onMissing.accept("no method with testName=" + testCase.getUuid())),
+                        () -> onMissing.accept("class not found: " + String.join(".", classSegments))));
+    }
+
+    protected static void asOneCommand(final @NotNull Project project, final @NotNull String title, final @NotNull Runnable change) {
+        final @NotNull Runnable inCommand = () -> WriteCommandAction.runWriteCommandAction(project, title, null, change);
 
         if (CommandProcessor.getInstance().getCurrentCommand() != null) inCommand.run();
         else ApplicationManager.getApplication().invokeLater(inCommand);

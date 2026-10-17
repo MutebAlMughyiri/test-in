@@ -24,6 +24,7 @@ import com.intellij.ui.RoundedLineBorder;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.util.TimeoutUtil;
 import com.intellij.util.ui.Animator;
+import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
@@ -45,12 +46,14 @@ import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.status.RunItemStatus;
+import org.testin.model.status.TestCaseStatus;
 import org.testin.services.Services;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.testrun.TestRunFixture;
 import org.testin.testrun.failure.FailureDetailDialog;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.util.Bundle;
+import org.testin.util.FixedColors;
 import org.testin.util.Icons;
 import org.testin.util.Shortcuts;
 import org.testin.view.Drawn;
@@ -75,6 +78,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.IntStream;
 
@@ -138,9 +142,13 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
         }
     }
 
-    private static @NotNull String describedIn(final @NotNull JFrame frame) {
+    private static @NotNull Optional<JTextArea> descriptionIn(final @NotNull JFrame frame) {
         return everythingIn(frame).stream().filter(JTextArea.class::isInstance).map(JTextArea.class::cast)
-                .map(JTextArea::getText).filter(text -> text.startsWith("Test case number")).findFirst().orElse("");
+                .filter(area -> area.getText().startsWith("Test case number")).findFirst();
+    }
+
+    private static @NotNull String describedIn(final @NotNull JFrame frame) {
+        return descriptionIn(frame).map(JTextArea::getText).orElse("");
     }
 
     private static @NotNull Color frameColorOf(final @NotNull JBLabel name) {
@@ -272,6 +280,27 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
             fixture.press(editor, RunItemStatus.BLOCKED);
             final @NotNull String third = TestSetEditorFields.DESCRIPTION.displayValue(fixture.testCases().get(2));
             Await.until("light mode did not follow the run item status the editor recorded: " + describedIn(frame), () -> describedIn(frame).equals(third));
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
+    // Rule-EDITOR-PANEL-294
+    public void testTheDescriptionIsDrawnInItsTestCasesStatusColorAsTheTestSetEditorDrawsIt() {
+        final @NotNull List<TestCase> testCases = aTestSetWithSteps(2, 1);
+        testCases.getFirst().setStatus(TestCaseStatus.REVIEWED);
+        assertTrue("the Reviewed status was not stored", Services.getInstance(getProject(), TestCases.class).putTestCase(testCases.getFirst().getParent().getPath(), testCases.getFirst()));
+        final @NotNull TestRunFixture fixture = aTestRunOf(testCases);
+        final @NotNull TestRunEditor editor = walking(fixture);
+        final @NotNull JFrame frame = lightModeOn(editor);
+        try {
+            assertEquals("a Reviewed description is not drawn in its color", FixedColors.PALE_BLUE, descriptionIn(frame).map(JTextArea::getForeground).orElseThrow());
+
+            press(frame, RunItemStatus.PASSED.getShortcut());
+            final @NotNull String second = TestSetEditorFields.DESCRIPTION.displayValue(testCases.get(1));
+            Await.until("light mode did not move on to the next test case: " + describedIn(frame), () -> describedIn(frame).equals(second));
+
+            assertEquals("a Pending description kept the Reviewed color", UIUtil.getLabelForeground(), descriptionIn(frame).map(JTextArea::getForeground).orElseThrow());
         } finally {
             Disposer.dispose(editor);
         }

@@ -52,7 +52,9 @@ There is no key for this. It happens when a test case is created, which is
   no method is passed over, and none is created.
 - **Rule-CODEGEN-077** — A test case cut from one test set and pasted into
   another takes its method with it, body and all: the method is carried into the
-  destination class as it is written and removed from the one it came from. Not
+  destination class as it is written, where the classes its body uses still
+  resolve, and removed from the one it came from, and the methods of both test
+  sets are numbered again (Rule-CODEGEN-014). Not
   written fresh - what makes the move worth making is the automation the tester
   wrote. A destination test set with no class gets one, written with every
   package folder on its path; a class that could not be written leaves the method

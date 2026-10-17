@@ -22,6 +22,7 @@ import org.testin.clipboard.CopyChoice;
 import org.testin.testcase.CreateTestCaseFields;
 import org.testin.testcase.UpdateTestCaseFields;
 
+import javax.swing.Icon;
 import java.awt.event.KeyEvent;
 
 public class FieldLetterMatchesItsKeyIdeTest extends AbstractIdeTest {
@@ -42,11 +43,13 @@ public class FieldLetterMatchesItsKeyIdeTest extends AbstractIdeTest {
         }
     }
 
-    private void assertLetter(final @NotNull String named, final Icons.@NotNull LetterIcon icon, final @NotNull Shortcuts shortcut) {
+    private void assertLetter(final @NotNull String named, final @NotNull Icon icon, final @NotNull Shortcuts shortcut) {
+        assertTrue(named + " draws no letter", icon instanceof Icons.LetterIcon);
+        final @NotNull String letter = ((Icons.LetterIcon) icon).letter();
         final @NotNull String key = KeyEvent.getKeyText(shortcut.getKey().getKeyCode());
 
-        assertEquals(named + " draws " + icon.letter() + " and its key is " + key
+        assertEquals(named + " draws " + letter + " and its key is " + key
                 + ". A field's letter is the letter of the key that opens it, so re-keying the field"
-                + " has to move the letter with it.", key, icon.letter());
+                + " has to move the letter with it.", key, letter);
     }
 }

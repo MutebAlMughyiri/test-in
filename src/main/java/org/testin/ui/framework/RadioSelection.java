@@ -20,15 +20,18 @@ import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.panels.HorizontalLayout;
 import org.jetbrains.annotations.NotNull;
 import org.testin.ui.Caption;
+import org.testin.ui.Tooltip;
 import org.testin.ui.dialogs.DialogStyle;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JRadioButton;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 public final class RadioSelection<T> implements DialogComponent {
     private final @NotNull JBPanel<?> panel;
@@ -89,6 +92,19 @@ public final class RadioSelection<T> implements DialogComponent {
             radio.setSelected(true);
             selected = value;
         });
+    }
+
+    // Rule-TREE-PANEL-144
+    public void refuse(final @NotNull Function<T, String> refusal) {
+        final @NotNull List<T> offered = new ArrayList<>();
+        buttons.forEach((value, radio) -> {
+            final @NotNull String reason = refusal.apply(value);
+            radio.setEnabled(reason.isEmpty());
+            Tooltip.set(radio, reason);
+            if (reason.isEmpty()) offered.add(value);
+        });
+
+        if (offered.size() == 1) select(offered.getFirst());
     }
 
     public void setEnabled(final boolean enabled) {

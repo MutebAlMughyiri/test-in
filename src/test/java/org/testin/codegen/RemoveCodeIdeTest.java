@@ -19,9 +19,13 @@ package org.testin.codegen;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
+import org.testin.indexer.TestCases;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
+import org.testin.services.Services;
+
+import java.util.List;
 
 public class RemoveCodeIdeTest extends AbstractCodegenIdeTest {
 
@@ -43,6 +47,19 @@ public class RemoveCodeIdeTest extends AbstractCodegenIdeTest {
         assertTrue("the removed test case's method is still in the class", methodOf(LOGIN_TEST, removed).isEmpty());
         assertTrue("the class went with the method", generatedClass(LOGIN_TEST).isPresent());
         assertTrue("another test case's method went with it", methodOf(LOGIN_TEST, kept).isPresent());
+    }
+
+    // Rule-CODEGEN-049, Rule-CODEGEN-014
+    public void testRemovingATestCaseNumbersTheTestCasesLeftAgain() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull TestCase removed = createdTestCase(login, "Log in with a valid user", "b");
+        final @NotNull TestCase kept = createdTestCase(login, "Log out", "c");
+        Services.getInstance(getProject(), TestCases.class).removeTestCase(login.getPath(), removed.getUuid());
+
+        CodeChangeType.REMOVE_TEST_CASE.executeAllNow(getProject(), List.of(removed));
+        settled();
+
+        assertEquals("the test case left kept the position it had before the removal", "1", attributeOf(writtenMethodOf(LOGIN_TEST, kept), "priority"));
     }
 
     // Rule-CODEGEN-059

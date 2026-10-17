@@ -16,9 +16,6 @@
 
 package org.testin.java.codegen.method.update;
 
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.command.CommandProcessor;
-import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
@@ -33,9 +30,7 @@ import org.testin.java.codegen.GeneratedMethod;
 import org.testin.model.TestCase;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -85,21 +80,15 @@ public class UpdateTestMethodOrder extends BaseTestMethodChange implements CodeC
     // UC-CODEGEN-011, Rule-CODEGEN-042, Rule-CODEGEN-067
     @Override
     public void executeAll(final @NotNull Project project, final @NotNull List<? extends TestCase> testCases) {
-        final @NotNull Map<Path, List<TestCase>> sets = new LinkedHashMap<>();
+        arrangeSets(project, testCases.stream().map(testCase -> testCase.getParent().getPath()).toList());
+    }
 
-        for (final TestCase testCase : testCases) {
-            sets.computeIfAbsent(testCase.getParent().getPath(), _ -> ExecutionPosition.setOf(project, testCase));
-        }
-        if (sets.isEmpty()) return;
+    // UC-CODEGEN-011, Rule-CODEGEN-014, Rule-CODEGEN-042, Rule-CODEGEN-067
+    public void arrangeSets(final @NotNull Project project, final @NotNull List<Path> testSetPaths) {
+        final @NotNull List<List<TestCase>> ordered = testSetPaths.stream().distinct().map(testSetPath -> ExecutionPosition.setAt(project, testSetPath)).toList();
+        if (ordered.isEmpty()) return;
 
-        final @NotNull List<List<TestCase>> ordered = new ArrayList<>(sets.values());
-
-        final @NotNull Runnable inCommand = () ->
-                WriteCommandAction.runWriteCommandAction(project, CodeChangeType.UPDATE_TEST_CASE_ORDER.description(), null,
-                        () -> ordered.forEach(inSet -> arrange(project, inSet)));
-
-        if (CommandProcessor.getInstance().getCurrentCommand() != null) inCommand.run();
-        else ApplicationManager.getApplication().invokeLater(inCommand);
+        asOneCommand(project, CodeChangeType.UPDATE_TEST_CASE_ORDER.description(), () -> ordered.forEach(inSet -> arrange(project, inSet)));
     }
 
     // UC-CODEGEN-011, Rule-CODEGEN-043, Rule-CODEGEN-067, Rule-CODEGEN-044

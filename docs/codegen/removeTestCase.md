@@ -32,7 +32,8 @@ There is no key for this. It happens when a test case is removed, which is
   renamed, moved or removed, **Automate Test Case**, **Navigate to Test Method**
   and **Run Tests** are gray and say why, and no gutter icon or automated mark
   is shown. **Save to testin.yml**, in the Testin panel, turns code on.
-- **Rule-CODEGEN-049** — Removing a test case deletes its method from the class.
+- **Rule-CODEGEN-049** — Removing a test case deletes its method from the class,
+  and the methods of the test cases left are numbered again (Rule-CODEGEN-014).
   The class itself stays.
 - **Rule-CODEGEN-050** — A test case with no method is skipped without a word.
 - **Rule-CODEGEN-096** — A removal that deletes automation code - a test case, a

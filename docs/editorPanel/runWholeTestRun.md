@@ -77,7 +77,7 @@ There is no key and no button in the editor. It starts from the tree, with **Run
 
 This opens no screen of Testin's own. The test run's editor opens or comes to
 the front, a dot blinks after the description of the test case TestNG is
-executing, and the IDE's own run window opens below it. Start Execution turns gray and says
+executing, and the IDE's own run window opens below it. Start Manual Execution turns gray and says
 Run Tests is executing.
 
 Results land one at a time, and nothing is said per test case. The selection
@@ -106,7 +106,7 @@ Failed 8*.
 Tests is executing; stop it first*.
 
 **If the tester is executing it by hand** — the tree entry is gray, and says
-*Start Execution is on; stop it first*.
+*Start Manual Execution is on; stop it first*.
 
 **If nothing is left to run** — a message reads the test run's name, then *has
 no test cases to run*.

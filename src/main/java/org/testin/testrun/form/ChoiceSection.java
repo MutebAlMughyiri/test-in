@@ -39,6 +39,11 @@ public record ChoiceSection(@NotNull TestRunConfiguration field, @NotNull Dialog
         return component.getComponent().getSelected().trim();
     }
 
+    // Rule-TREE-PANEL-144
+    public void offerFor(final @NotNull TestRunConfiguration.Chosen chosen) {
+        component.getComponent().refuse(option -> field.refusalOf(option, chosen));
+    }
+
     // Rule-TREE-PANEL-120
     public void showIf(final boolean shown) {
         component.getComponent().getPanel().setVisible(shown);

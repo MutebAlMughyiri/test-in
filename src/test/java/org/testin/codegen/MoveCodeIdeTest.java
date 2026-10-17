@@ -18,6 +18,13 @@ package org.testin.codegen;
 
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
+import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.psi.JavaPsiFacade;
+import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiJavaCodeReferenceElement;
+import com.intellij.psi.PsiJavaFile;
+import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.Said;
@@ -32,6 +39,7 @@ import org.testin.model.node.TestSetPackageNode;
 import org.testin.services.Services;
 
 import java.util.List;
+import java.util.Optional;
 
 public class MoveCodeIdeTest extends AbstractCodegenIdeTest {
 
@@ -101,5 +109,47 @@ public class MoveCodeIdeTest extends AbstractCodegenIdeTest {
 
         assertTrue("the method stayed in the class the test case was cut from", methodOf("nafath.LoginTest", testCase).isEmpty());
         assertTrue("the method did not arrive with the tester's body", writtenMethodOf("nafath.cards.VisaTest", testCase).getText().contains(WRITTEN_BY_THE_TESTER));
+    }
+
+    // Rule-CODEGEN-077
+    public void testACutTestCasesBodyStillResolvesWhatItUsesInTheClassItJoins() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull TestCase cut = createdTestCase(login, "Log in with a valid user", "b");
+        final @NotNull PsiClass loginTest = generatedClass("nafath.LoginTest").orElseThrow();
+        WriteCommandAction.runWriteCommandAction(getProject(), () -> {
+            final @NotNull PsiClass assertions = Optional.ofNullable(JavaPsiFacade.getInstance(getProject()).findClass("org.testng.Assert", GlobalSearchScope.allScope(getProject()))).orElseThrow(() -> new AssertionError("TestNG's Assert is not on the class path"));
+            Optional.ofNullable(((PsiJavaFile) loginTest.getContainingFile()).getImportList()).orElseThrow().add(JavaPsiFacade.getElementFactory(getProject()).createImportStatement(assertions));
+        });
+        writtenByTheTester(writtenMethodOf("nafath.LoginTest", cut), "Assert.assertTrue(true);");
+        final @NotNull TestSetNode visa = indexedTestSet("Visa", indexedPackage("Cards", theTestCasesDirectory()));
+
+        final @NotNull TestCases testCases = Services.getInstance(getProject(), TestCases.class);
+        testCases.removeTestCase(login.getPath(), cut.getUuid());
+        cut.setParent(visa);
+        testCases.putTestCaseVerbatim(visa.getPath(), cut);
+        CodeChangeType.MOVE_TEST_CASE.execute(getProject(), new MovedTestCase(cut, login));
+        settled();
+
+        final @NotNull PsiJavaCodeReferenceElement used = PsiTreeUtil.findChildrenOfType(writtenMethodOf("nafath.cards.VisaTest", cut), PsiJavaCodeReferenceElement.class).stream()
+                .filter(reference -> "Assert".equals(reference.getReferenceName())).findFirst().orElseThrow(() -> new AssertionError("the body lost its Assert"));
+        assertTrue("the body's Assert does not resolve in the class it joined", used.resolve() instanceof PsiClass);
+    }
+
+    // Rule-CODEGEN-077, Rule-CODEGEN-014
+    public void testACutNumbersBothTestSetsAgain() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull TestCase cut = createdTestCase(login, "Log in with a valid user", "b");
+        final @NotNull TestCase left = createdTestCase(login, "Log out", "c");
+        final @NotNull TestSetNode visa = indexedTestSet("Visa", indexedPackage("Cards", theTestCasesDirectory()));
+
+        final @NotNull TestCases testCases = Services.getInstance(getProject(), TestCases.class);
+        testCases.removeTestCase(login.getPath(), cut.getUuid());
+        cut.setParent(visa);
+        testCases.putTestCaseVerbatim(visa.getPath(), cut);
+        CodeChangeType.MOVE_TEST_CASE.executeAllNow(getProject(), List.of(new MovedTestCase(cut, login)));
+        settled();
+
+        assertEquals("the test case left behind kept the position it had before the cut", "1", attributeOf(writtenMethodOf("nafath.LoginTest", left), "priority"));
+        assertEquals("the cut test case is not first in the test set it joined", "1", attributeOf(writtenMethodOf("nafath.cards.VisaTest", cut), "priority"));
     }
 }

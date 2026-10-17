@@ -26,6 +26,7 @@ import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.services.TestCaseCompletions;
 import org.testin.testcase.CreateTestCaseFields;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.util.Bundle;
 import org.testin.util.Icons;
 import org.testin.util.NameSanitizer;
@@ -39,7 +40,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class DescriptionSection extends AbstractOneLineSection {
-    private static final @NotNull Icon REFUSED = Icons.fieldLetter(CreateTestCaseFields.DESCRIPTION.getIcon().letter(), Icons.RED);
+    private static final @NotNull Icon REFUSED = Icons.fieldLetter(TestSetEditorFields.DESCRIPTION.getLetter(), Icons.RED);
 
     private final @NotNull Project project;
 

@@ -99,6 +99,11 @@ A test run is one round of testing, with a run item status for each test case.
   its picture and tooltip say which it will do. A Disabled test case keeps its
   tick (Rule-TREE-PANEL-138), and a test case the filter hides keeps its own
   (Rule-TREE-PANEL-131).
+- **Rule-TREE-PANEL-144** — While *Platform* is **Integration**, *Component* is
+  **Backend**: **Frontend** is gray, and resting the pointer on it says an
+  Integration test run covers the backend only. Picking **Web** or **Mobile**
+  again lets **Frontend** be picked, and *Component* stays **Backend** until the
+  tester changes it.
 
 Rule-TREE-PANEL-032 holds here too. It says what can be created under **Test
 Runs**, and it is on [UC-TREE-PANEL-010](createTestRunPackage.md).
@@ -115,6 +120,7 @@ Runs**, and it is on [UC-TREE-PANEL-010](createTestRunPackage.md).
 │ │   CHANGE LOG      [ Story-002 (register new user), Story-003...     ] │ │
 │ │   TEST TYPE                             PLATFORM                      │ │
 │ │     (o) Functional Test ( ) Performance   (o) Web  ( ) Mobile          │ │
+│ │                                           ( ) Integration             │ │
 │ │   COMPONENT                             LANGUAGE                      │ │
 │ │     (o) Frontend  ( ) Backend             (o) English ( ) Arabic       │ │
 │ │                                           ( ) French                  │ │
@@ -147,7 +153,8 @@ Runs**, and it is on [UC-TREE-PANEL-010](createTestRunPackage.md).
    its answers and one of them has to be picked: no row offers a blank answer, and
    nothing can be typed into one. Each row carries the icon of the field it asks
    about. **Browser** is on the form only while *Platform* is **Web** and *Component* is **Frontend**. **Device Type**
-   takes its place only while *Platform* is **Mobile** and *Component* is **Frontend**. A field that is not on
+   takes its place only while *Platform* is **Mobile** and *Component* is **Frontend**. While *Platform* is
+   **Integration**, *Component* is **Backend** and **Frontend** cannot be picked (Rule-TREE-PANEL-144). A field that is not on
    the form is not asked and is saved empty. So switching *Platform* from **Web**
    to **Mobile** drops the browser that was picked. **Browser** arrives with *Chrome* already picked, because a test run
    on the web is on Chrome until the
@@ -157,7 +164,7 @@ Runs**, and it is on [UC-TREE-PANEL-010](createTestRunPackage.md).
    | Field       | Offers                                |
    |-------------|---------------------------------------|
    | Test Type   | *Functional Test*, *Performance Test* |
-   | Platform    | *Web*, *Mobile*                       |
+   | Platform    | *Web*, *Mobile*, *Integration*        |
    | Component   | *Frontend*, *Backend*                 |
    | Language    | *English*, *Arabic*, *French*         |
    | Browser     | *Chrome*, *Firefox*, *Safari*, *Edge* |
@@ -199,7 +206,8 @@ with the test run's own name, test cases and settings.
 4. The tester types a name and presses `Enter`.
 5. The **Create Test Run** dialog opens. It holds the typed name in *Test Run
    name*. It also holds the *Configuration details* form, and a tree of test
-   sets with every test case ticked. Three things are left out of that tree:
+   sets with every test case ticked but a Disabled one, which is unticked and
+   cannot be ticked (Rule-TREE-PANEL-138). Three things are left out of that tree:
    retired test sets, anything under an **Archived** package, and empty test
    sets.
 6. The tester ticks and unticks with `Space`, moves with `Tab`, and presses **Create**.

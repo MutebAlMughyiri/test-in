@@ -64,6 +64,11 @@ public final class ExecutionPosition {
 
     // UC-CODEGEN-011, Rule-CODEGEN-042
     public static @NotNull List<TestCase> setOf(final @NotNull Project project, final @NotNull TestCase testCase) {
-        return TestCaseOrder.ordered(Services.getInstance(project, TestCases.class).getTestCasesForTestSet(testCase.getParent().getPath()));
+        return setAt(project, testCase.getParent().getPath());
+    }
+
+    // UC-CODEGEN-011, Rule-CODEGEN-042
+    public static @NotNull List<TestCase> setAt(final @NotNull Project project, final @NotNull Path testSetPath) {
+        return TestCaseOrder.ordered(Services.getInstance(project, TestCases.class).getTestCasesForTestSet(testSetPath));
     }
 }

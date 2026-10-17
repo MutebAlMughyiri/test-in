@@ -32,6 +32,7 @@ import org.testin.notifications.Done;
 import org.testin.services.Services;
 import org.testin.testcase.CreateTestCaseAction;
 import org.testin.testcase.CreateTestCaseFields;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.testcase.UpdateTestCaseFields;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.util.Shortcuts;
@@ -99,7 +100,7 @@ public class CreateTestCaseDialogIdeTest extends AbstractTempRootIdeTest {
         press(CreateTestCaseFields.REFERENCE);
 
         assertTrue("Reference did not open on its key", dialog.getReferenceSection().isShown());
-        assertEquals("R", CreateTestCaseFields.REFERENCE.getIcon().letter());
+        assertEquals("R", TestSetEditorFields.REFERENCE.getLetter());
         assertSame("the update menu gives Reference another icon", CreateTestCaseFields.REFERENCE.getIcon(), UpdateTestCaseFields.REFERENCE.getIcon());
         assertSame("the copy menu gives Reference another icon", CreateTestCaseFields.REFERENCE.getIcon(), CopyChoice.REFERENCE.getIcon());
     }

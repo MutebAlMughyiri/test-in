@@ -70,7 +70,7 @@ Testin hands the test cases to the IDE's own test runner.
 - **Rule-TREE-PANEL-104** — A menu entry that cannot work on the selected row is
   gray, and says why when the pointer rests on it.
 - **Rule-TREE-PANEL-141** — Run Tests on a test run is gray, and says why, while
-  that test run's Start Execution is on or its Run Tests is already executing
+  that test run's Start Manual Execution is on or its Run Tests is already executing
   (Rule-EDITOR-PANEL-290).
 
 ## What the tester sees
@@ -105,8 +105,8 @@ opens at the bottom, on a test configuration named after the generated class.
 **If the node holds no test case that can run** — nothing runs, and *\<name\>
 has no test cases to run* is shown in red.
 
-**If the test run's Start Execution is on, or its Run Tests is executing** — the
-entry is gray, and says *Start Execution is on; stop it first* or *Run Tests is
+**If the test run's Start Manual Execution is on, or its Run Tests is executing** — the
+entry is gray, and says *Start Manual Execution is on; stop it first* or *Run Tests is
 executing; stop it first* (Rule-TREE-PANEL-141).
 
 **If a test case has no generated automation code** — it is dropped, and Testin

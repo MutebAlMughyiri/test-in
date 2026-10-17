@@ -8,47 +8,108 @@ is [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 **Before you update:** wipe your test data. This build reads format 5 and converts nothing. Every file Testin stores is
 now named in full words - a test project holds `.testproject`, a test set `.testset`, a test run `.testrun`, a test case
-is `<id>.testcase` and a run item `<id>.runitem` - so a test project an earlier build wrote is not shown at all: delete
-its folder and create it again. A test run's configuration keys are camelCase too: `testType`, `platform`,
-`deviceType`. Format 5 also keeps every execution of a run item (format 4, #415). A team sharing a test project should
-update together.
+is `<uuid>.testcase` and a run item `<uuid>.runitem` - so a test project an earlier build wrote is not shown at all:
+delete its folder and create it again. Neither file holds its UUID inside any more, the folder files write `"uuid"`
+where they wrote `"id"`, and a test case file not named by a UUID is not read; a warning names it. A test run's
+configuration keys are camelCase too: `testType`, `platform`, `deviceType`. Format 5 also keeps every execution of a
+run item (#415). A team sharing a test project should update together.
 
 ### Added
 
+- **A run item keeps every execution:** recording a run item status no longer writes over the one before, so Passed
+  after Failed keeps the failure's actual result, error and screenshots, and the warning that they would be erased is
+  gone. The view panel's Execution Result lists one line per execution - its status, duration and Invocation n or
+  Retry n, a retried attempt dimmed - and hovering a line offers Set as default and Remove this execution, while
+  clicking it shows that execution's details. The default, starred, gives the run item its status: the one chosen, or
+  else the last. A card shows a dot for each of the last eight executions, the default ringed. The test run clock adds
+  every execution, the reports show the default with a line naming the other failed or blocked ones, and a Git merge
+  joins both sides' executions (#415).
 - **Sort:** a new **Sort** button beside **Filter** arranges the test cases by one field - Order, Description, Priority,
   Status, Module, Created At, Updated At, Run Item Status, Executed At or Duration - Ascending or Descending. Ties keep
-  their order and empty values come last either way. Sorting writes nothing and every card keeps its number; the
-  button lights up and the status bar names the sort while one is on; Reset Sort puts it back. In a test set editor
-  the three run fields are gray.
-  O and dragging still change the order under a sort, and the execution walk and light mode follow the sorted list.
+  their order and empty values come last either way. Sorting writes nothing and every card keeps its number; the button
+  lights up and the status bar names the sort while one is on; Reset Sort puts it back. In a test set editor the three
+  run fields are gray. O and dragging still change the order under a sort, and the execution walk and light mode follow
+  the sorted list.
+- **A test case's status shows in its color:** on both editors' cards, in light mode, in the view panel and in the
+  Create Test Run form, a Reviewed test case's description is white with a little blue (dark blue in a light theme)
+  and a Disabled one's gray. In a test set editor a To Be Updated test case carries a To Be Updated badge whatever the
+  Fields list shows: a plain frame like a run item's duration, its words white with a little yellow (dark yellow in a
+  light theme).
+- **A green dot marks the test case executing now:** it blinks after the description of the test case TestNG is
+  executing, or the one the walk is on, on its card in every open editor and in the view panel, in place of the orange
+  Running badge. While Run Tests executes, the test run editor's selection moves to each test case as TestNG starts
+  it; the view panel follows it only while that editor is in front.
+- **Select All in the test run form:** a button beside the filter ticks every test case the filter shows, or unticks
+  them once all are ticked. A Disabled test case is gray, starts unticked and cannot be ticked, so a new or re-created
+  test run leaves it out, and Edit keeps one the test run already covers.
+- **Integration is a platform:** the test run form's Platform offers Web, Mobile and Integration. Picking Integration
+  makes Component Backend and grays Frontend out, and resting the pointer on Frontend says an Integration test run
+  covers the backend only. Picking Web or Mobile again lets Frontend be picked.
 - **Testin API Model from JSON:** right-click a package of the automation project, choose New, Testin API Model from
-  JSON, paste a call's request and response, and press Create: `UserRequest` arrives as a Lombok class with chained
-  setters and `UserResponse` as a record, one file each however deep the JSON nests, with `@JsonProperty` only where a
-  key is not already camelCase. The boxes start three lines high, grow with the paste and show it in JSON colors, and
-  each has a Format JSON button that lays the body out without changing it. The title bar switches them
-  between stacked and side by side, and nothing already in the package is replaced. Designed on the idea of
-  RoboPOJOGenerator by Vadim Shchenev.
-- **Status has a letter on the update menu:** **U** opens it after **F2**, or straight from a selected card as **D** does, with the U icon the copy menu already
-  shows, so every field on the menu has a letter. Status's detail line on a card and in History leads with that icon.
+  JSON, type a name such as User, paste a call's request and response, and press Create: `UserRequest` arrives as a
+  Lombok class with chained setters and `UserResponse` as a record, one file each however deep the JSON nests, with
+  `@JsonProperty` only where a key is not already camelCase. The boxes start three lines high, grow with the paste and
+  show it in JSON colors, and each has a Format JSON button that lays the body out without changing it. The title bar
+  switches them between stacked and side by side, and nothing already in the package is replaced. Designed on the idea
+  of RoboPOJOGenerator by Vadim Shchenev.
 
 ### Changed
 
+- **A test run executes one way at a time:** while Start Manual Execution is on, Run Tests in the tree is gray and says
+  "Start Manual Execution is on; stop it first"; while Run Tests executes, Start Manual Execution, in the toolbar and in
+  light mode, is gray and says "Run Tests is executing; stop it first", and Stop Execution ends it. A single method's
+  run button no longer grays Start Manual Execution.
+- **ID is UUID, and Status has the letter Z:** the column and the Fields list say UUID, the Excel report's caption says
+  Test Case UUID, and the bulk edit window shows uuid. On the copy menu U copies the UUID, where I copied the ID. Status
+  is Z on the copy menu and the update menu, so every field on the update menu has a letter: Z opens it after F2, or
+  straight from a selected card as D does, and Status's detail line on a card and in History leads with its Z icon. A
+  saved choice to show the ID column starts hidden once.
+- **Every field has one letter, wherever it shows:** a card's UUID, FQCN and Path lines lead with U, F and H, the
+  letters the copy menu shows, instead of their names.
+- **One add key for steps and groups:** Ctrl+=, Ctrl++ or Ctrl with the numpad + adds a Steps or Group box where the
+  cursor is, in Create, Update and bulk edit, and the strip says Add. Ctrl+S and Ctrl+G only open their field, adding
+  a box only when it has none, and Ctrl+Enter no longer adds an item in bulk edit.
+- **Bulk edit saves with Enter alone:** Shift+Enter no longer saves, and the strip names Save once.
+- **Review Changes is a button:** the Uncommitted Changes dialog shows it beside its main button, and Shift+Enter no
+  longer opens it. Write Over These Bodies? shows Leave them as they are as a button too, still on Escape.
+- **Pending until a test run is signed off:** the Details ring, the report tiles, the report tables and the analysis
+  headings call a test case nobody judged Pending while the test run is open, and Untested once it is Completed or
+  Closed, as the editor's status bar already did. The report no longer says such test cases carry forward to the next
+  test run.
+- **Removing never deletes for good:** a removed node, test case, run item, screenshot, and a test set's class or
+  package go to the recycle bin. When the bin refuses one, a Not Removed notification names it and it stays where it
+  is; before, a refused folder was deleted outright, and generated code was always deleted. On Linux, where Java has
+  no recycle bin, nothing can be removed yet: every removal says Not Removed and leaves the item where it is.
+- **The test sets show before the test runs are read:** on a first read or a Refresh, the tree and a test set editor
+  are ready once the test cases are in, and the Test Runs folder says Reading test runs until its test runs follow,
+  or Not read if the read is canceled first. A cancel now stops within a test run rather than after it.
+- **A Git step ends when Git does:** a push, a sync and an aborted rebase report as soon as Git has finished, and the
+  test project is read again on its own Testin indexing bar, which can be canceled, instead of leaving Pushing to Remote
+  on screen for minutes.
+- **The grid's Actual Result waits for a run item status:** on a Pending or Untested row it refuses and says to record
+  a run item status first, since an actual result describes what was recorded.
+- **Testin needs an IDE with language support:** every JetBrains IDE has it, so nothing changes there, but JetBrains
+  Gateway and JetBrains Client, Code With Me's guest, no longer offer Testin: neither has a project for it to work on,
+  and a Git step there would have failed.
+- **Screens say test project and node:** the new test project dialog is titled Create Test Project, the report
+  overview names the Test Project and the Test Run Status (it called the test run's status Run Item Status), and
+  copying, moving or removing several nodes says nodes, not items.
 - **The grid numbers its rows:** its first column, **#**, counts the rows as shown, 1 to n across pages, like a
   spreadsheet, in IntelliJ's own font as the tree is drawn rather than the editor font of the cells. It cannot be hidden
-  and Choose Fields does not list it; Enter or a double click on it opens the details panel, as the number column did.
-- **Order can be switched off:** the Order box in Choose Fields is on to start with and now hides the number on each card
-  and the grid's Order column. In a test set editor, Enter or a double click on an Order cell opens the O dialog for that
-  row.
+  and the Fields list leaves it out; Enter or a double click on it opens the details panel, as the number column did.
+- **Order can be switched off:** the Order box in the Fields list is on to start with, and unticking it now hides the
+  number on each card and the grid's Order column. In a test set editor, Enter or a double click on an Order cell opens
+  the O dialog for that row.
 - **The Details dialog closes on a click outside it:** the dialog the toolbar's Details button and the tree open about
   a node only reads, so a click anywhere else closes it, as Escape does.
-- **A gray menu entry says why on hover:** every entry Testin grays out - in menus and now in the Filter list too - shows
-  its reason when the pointer rests on it. The Filter menu is the same in every editor: Run Item Status is listed in a
-  test set editor too, gray, and Reset Filters no longer writes its reason into its label.
+- **A gray menu entry says why on hover:** every entry Testin grays out - in menus and now in the Filter list too -
+  shows its reason when the pointer rests on it. The Filter menu is the same in every editor: Run Item Status is listed
+  in a test set editor too, gray, and Reset Filters no longer writes its reason into its label.
 - **Refresh clears the filters and the sort:** it puts the list back to Order with no filter, as a freshly opened editor
   shows it, and keeps the search text.
-- **The Test Set filter works in a test run:** it lists the run's test sets in the tree's order, named by their place under
-  the test cases folder as the Create Test Run dialog names them, and narrows the run to the chosen ones. In a test set
-  editor it stays gray and its reason says why; the reason is no longer written into the menu label.
+- **The Test Set filter works in a test run:** it lists the run's test sets in the tree's order, named by their place
+  under the test cases folder as the Create Test Run dialog names them, and narrows the run to the chosen ones. In a
+  test set editor it stays gray and its reason says why; the reason is no longer written into the menu label.
 - **A test run is drawn test set by test set:** its test cases come in the order the Create Test Run form lists them,
   each set in its own order, and each card is numbered by its place in its own set, as the details panel and the
   generated test method already count it. The four reports list run items in the same order. A test case that was
@@ -63,11 +124,56 @@ update together.
 
 ### Fixed
 
-- **Automate and Execute are gray while code is off:** while `testin.yml` did not name the open test project, both
-  entries said they needed it but could still be clicked. They are gray with the reason, as every code action is.
-- **Moving a test case from the grid no longer freezes the editor:** after a move, the list and the grid could each
-  select the other's row by its old index and correct each other until the IDE reported a stack overflow. The grid now
-  follows the selected test case, not its row number.
+- **A retried or repeated TestNG method is judged on every attempt:** light mode moved on at the first attempt TestNG
+  was about to retry, recorded it as Failed "Skipped/Terminated", and lost a retry that passed. Each attempt is now its
+  own execution, light mode stays until TestNG moves on to the next test case, and with invocationCount any failed
+  invocation fails the run item.
+- **A test method's body stays as the tester typed it:** a new description, groups or Enabled, a reorder, a move, a
+  copy and the undo of an edit format only the annotations Testin writes, never the body or the whole class. Undoing a
+  description edit on a large class takes a fraction of a second instead of several.
+- **A test set's methods count from one again after a cut or a remove:** the methods left in the test set kept their
+  old priority, so removing the first of three left 2 and 3; they are numbered 1 and 2 again. TestNG ran them in the
+  same order either way.
+- **Undoing the removal of a test set brings its class back:** Ctrl+Z restored the test data but not the automation
+  class; the class now comes back as it was, method bodies included.
+- **Commit & Push of thousands of files no longer stalls:** Git's line-ending warning for each file reached the IDE one
+  line at a time, so adding 27,700 new files took about 90 seconds; it now takes a few. A repository set to
+  core.safecrlf=true no longer refuses Testin's commit over a line ending.
+- **A slow disk no longer fails a commit that went in:** when the test runs could not be recorded in time, Commit
+  Failed was shown although the commit was in, and Commit & Push skipped the push. Testin now waits up to a minute; if
+  that runs out, Test Runs Not Recorded says the commit is in, and the push still goes.
+- **A confirmation closes before its work:** a second Enter on a Remove confirmation still on screen ran the removal
+  twice. The dialog now closes first, and a node selected together with the folder it is in goes with the folder and
+  is not counted on its own.
+- **Stop works while the IDE is still building:** a Stop pressed before the automation's process started let it run
+  to the end; the process is now ended as it starts.
+- **Closed stops a running execution:** only Completed did, so a test run closed mid-execution kept taking run item
+  statuses from TestNG.
+- **A status key on a test case deleted under the walk moves the walk on:** the test run editor said the test case was
+  removed and stayed on it; it now moves to the next Pending test case, as light mode did.
+- **Reports and exports refuse the Testin folder:** a report or an export could be saved inside it; the dialog now
+  refuses and stays open.
+- **The view panel fits its width:** narrowing it re-wraps its text, a row wraps instead of hiding what does not fit,
+  the History tab scrolls sideways, and the panel no longer opens scrolled down. A run item status set by key, menu or
+  grid shows in its Details at once.
+- **Cards keep their lines when the title wraps:** a card whose title wrapped as the editor narrowed lost its Run Item
+  Status and Actual Result lines, and a slightly long title left an empty line under it in a wide editor.
+- **The duration badge's frame is whole under display scaling:** its top and bottom edges were clipped.
+- **The editor's status bar scrolls instead of hiding:** when it was too narrow, the page size field could disappear
+  with no way to reach it; the bar now scrolls sideways like the toolbar.
+- **Resizable dialogs open centered:** they widened to the right of their left edge and opened off-center.
+- **Testin starts completely in PhpStorm and RubyMine:** its startup loaded a test-runner class those IDEs do not ship
+  and stopped part way, before its clipboard watch started.
+- **Run Tests on a test run not yet open no longer raises an IDE error:** IntelliJ's build before launch reported
+  "Write-unsafe context!" twice.
+- **The plugin page's documentation link works again:** the documentation site moved with the GitHub account to
+  mutebalmughyiri.github.io, and the old address is gone.
+- **Automate Test Case and Run Tests are gray while code is off:** while `testin.yml` did not name the open test
+  project, both entries said they needed it but could still be clicked. They are gray with the reason, as every code
+  action is.
+- **Reordering a test case in the grid no longer overflows the stack:** after a reorder, the list and the grid could
+  each select the other's row by its old index and correct each other until the IDE reported a stack overflow. The
+  grid now follows the selected test case, not its row number.
 - **A test project's own folder is refused as the Testin folder:** choosing `...\Testin\test-02` instead of the folder
   that holds it left the Testin panel empty with no reason; Settings now refuses it on Apply and names the folder to
   choose.

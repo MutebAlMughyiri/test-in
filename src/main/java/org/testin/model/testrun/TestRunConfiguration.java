@@ -45,6 +45,7 @@ public enum TestRunConfiguration {
             AllIcons.Nodes.Type,
             ImmutableList.of("Functional Test", "Performance Test"),
             ShownWhen.ALWAYS,
+            Refusal.NONE,
             ""
     ),
 
@@ -53,6 +54,7 @@ public enum TestRunConfiguration {
             AllIcons.Nodes.Type,
             ImmutableList.of(),
             ShownWhen.ALWAYS,
+            Refusal.NONE,
             ""
     ),
 
@@ -61,14 +63,16 @@ public enum TestRunConfiguration {
             AllIcons.Nodes.Type,
             ImmutableList.of(),
             ShownWhen.ALWAYS,
+            Refusal.NONE,
             ""
     ),
 
     PLATFORM(
             Bundle.message("config.platform"),
             AllIcons.Nodes.PpLib,
-            ImmutableList.of(Answer.WEB, Answer.MOBILE),
+            ImmutableList.of(Answer.WEB, Answer.MOBILE, Answer.INTEGRATION),
             ShownWhen.ALWAYS,
+            Refusal.NONE,
             ""
     ),
 
@@ -77,6 +81,7 @@ public enum TestRunConfiguration {
             AllIcons.Nodes.PpLib,
             ImmutableList.of(Answer.FRONTEND, "Backend"),
             ShownWhen.ALWAYS,
+            (option, chosen) -> option.equals(Answer.FRONTEND) && chosen.is(PLATFORM, Answer.INTEGRATION) ? Bundle.message("config.component.backend.only") : "",
             ""
     ),
 
@@ -85,6 +90,7 @@ public enum TestRunConfiguration {
             AllIcons.Nodes.Lambda,
             ImmutableList.of("English", "Arabic", "French"),
             ShownWhen.ALWAYS,
+            Refusal.NONE,
             ""
     ),
 
@@ -93,6 +99,7 @@ public enum TestRunConfiguration {
             AllIcons.Nodes.WebFolder,
             ImmutableList.of("Chrome", "Firefox", "Safari", "Edge"),
             chosen -> chosen.is(PLATFORM, Answer.WEB) && chosen.is(COMPONENT, Answer.FRONTEND),
+            Refusal.NONE,
             "Chrome"
     ),
 
@@ -101,6 +108,7 @@ public enum TestRunConfiguration {
             AllIcons.Nodes.Include,
             ImmutableList.of("iPhone", "Samsung", "Huawei"),
             chosen -> chosen.is(PLATFORM, Answer.MOBILE) && chosen.is(COMPONENT, Answer.FRONTEND),
+            Refusal.NONE,
             ""
     );
 
@@ -112,6 +120,9 @@ public enum TestRunConfiguration {
 
     @Getter(AccessLevel.NONE)
     private final @NotNull ShownWhen shownWhen;
+
+    @Getter(AccessLevel.NONE)
+    private final @NotNull Refusal refusal;
 
     private final @NotNull String defaultAnswer;
 
@@ -144,12 +155,25 @@ public enum TestRunConfiguration {
         return shownWhen.holds(chosen);
     }
 
+    // Rule-TREE-PANEL-144
+    public @NotNull String refusalOf(final @NotNull String option, final @NotNull Chosen chosen) {
+        return refusal.of(option, chosen);
+    }
+
     @FunctionalInterface
     @Immutable
     public interface ShownWhen {
         @NotNull ShownWhen ALWAYS = _ -> true;
 
         boolean holds(final @NotNull Chosen chosen);
+    }
+
+    @FunctionalInterface
+    @Immutable
+    public interface Refusal {
+        @NotNull Refusal NONE = (_, _) -> "";
+
+        @NotNull String of(final @NotNull String option, final @NotNull Chosen chosen);
     }
 
     @FunctionalInterface
@@ -165,6 +189,8 @@ public enum TestRunConfiguration {
         private static final @NotNull String WEB = "Web";
 
         private static final @NotNull String MOBILE = "Mobile";
+
+        private static final @NotNull String INTEGRATION = "Integration";
 
         private static final @NotNull String FRONTEND = "Frontend";
     }

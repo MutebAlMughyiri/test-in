@@ -93,7 +93,7 @@ There is no key for this. The button's tooltip reads **Start Manual Execution**.
   At or Duration a judged test case moves to where the sort places it, and the
   walk goes on to the next one waiting.
 - **Rule-EDITOR-PANEL-290** — A test run executes in one mode at a time: the
-  walk Start Execution begins, or the automation Run Tests begins. While one is
+  walk Start Manual Execution begins, or the automation Run Tests begins. While one is
   on, the other is gray and says why, and Stop Execution ends whichever is on. A
   single test case's ▶ is neither: it runs alongside either and leaves both
   available.

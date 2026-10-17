@@ -18,6 +18,7 @@ package org.testin.editor.card;
 import com.intellij.ui.components.JBLabel;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractIdeTest;
+import org.testin.clipboard.CopyChoice;
 import org.testin.editor.testset.TestCaseCard;
 import org.testin.editor.testrun.RunItemCard;
 import org.testin.model.TestCase;
@@ -82,6 +83,17 @@ public class CardDetailIconsIdeTest extends AbstractIdeTest {
         final @NotNull JBLabel line = theLineSaying(card, REFERENCE);
         assertSame("the reference line does not lead with its R", UpdateTestCaseFields.REFERENCE.getIcon(), line.getIcon());
         assertEquals("the reference line shows the value alone, with no caption", REFERENCE, line.getText());
+    }
+
+    // Rule-EDITOR-PANEL-269
+    public void testAUuidLineLeadsWithTheUTheCopyMenuShows() {
+        final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description("Log in with a valid user").build();
+        final @NotNull TestCaseCard card = new TestCaseCard(getProject());
+        card.updateData(0, testCase, Set.of(TestSetEditorFields.UUID), AbstractCard.titleText(1, true, testCase.getDescription()));
+        card.layOutAs(CELL);
+
+        final @NotNull JBLabel line = theLineSaying(card, testCase.getUuid().toString());
+        assertSame("the UUID line does not lead with the U the copy menu shows", CopyChoice.UUID.getIcon(), line.getIcon());
     }
 
     // Rule-EDITOR-PANEL-269

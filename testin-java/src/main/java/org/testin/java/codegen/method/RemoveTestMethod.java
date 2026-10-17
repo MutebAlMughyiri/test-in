@@ -19,9 +19,13 @@ package org.testin.java.codegen.method;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.CodeChange;
+import org.testin.codegen.CodeChangeType;
 import org.testin.java.codegen.method.update.BaseTestMethodChange;
+import org.testin.java.codegen.method.update.UpdateTestMethodOrder;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCase;
+
+import java.util.List;
 
 public class RemoveTestMethod extends BaseTestMethodChange implements CodeChange<TestCase> {
     // UC-CODEGEN-014, Rule-CODEGEN-049, Rule-CODEGEN-050
@@ -32,5 +36,16 @@ public class RemoveTestMethod extends BaseTestMethodChange implements CodeChange
             testMethod.delete();
             TestinLogger.info("Removed test method: " + name);
         }, detail -> TestinLogger.debug("No generated method for '" + testCase.getDescription() + "': " + detail));
+    }
+
+    // UC-CODEGEN-014, Rule-CODEGEN-049, Rule-CODEGEN-014
+    @Override
+    public void executeAll(final @NotNull Project project, final @NotNull List<? extends TestCase> testCases) {
+        if (testCases.isEmpty()) return;
+
+        asOneCommand(project, CodeChangeType.REMOVE_TEST_CASE.description(), () -> {
+            testCases.forEach(testCase -> execute(project, testCase));
+            new UpdateTestMethodOrder().executeAll(project, testCases);
+        });
     }
 }

@@ -34,6 +34,8 @@ public class TestRunFieldVisibilityTest {
 
     private static final @NotNull String MOBILE = "Mobile";
 
+    private static final @NotNull String INTEGRATION = "Integration";
+
     private static final @NotNull String FRONTEND = "Frontend";
 
     private static final @NotNull String BACKEND = "Backend";
@@ -98,8 +100,8 @@ public class TestRunFieldVisibilityTest {
         final @NotNull List<String> platforms = TestRunConfiguration.PLATFORM.getOptions();
         final @NotNull List<String> components = TestRunConfiguration.COMPONENT.getOptions();
 
-        assertTrue(platforms.contains(WEB) && platforms.contains(MOBILE),
-                "the platform list must still offer " + WEB + " and " + MOBILE + ", it offers " + platforms);
+        assertTrue(platforms.contains(WEB) && platforms.contains(MOBILE) && platforms.contains(INTEGRATION),
+                "the platform list must still offer " + WEB + ", " + MOBILE + " and " + INTEGRATION + ", it offers " + platforms);
         assertTrue(components.contains(FRONTEND),
                 "the component list must still offer " + FRONTEND + ", it offers " + components);
     }

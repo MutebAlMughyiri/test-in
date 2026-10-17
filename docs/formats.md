@@ -124,7 +124,7 @@ own file:
 |----------------------|--------|----------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `configuration`      | map    | no, **omitted when empty** | What the test run was executed against. Keys are `testType` `changeLog` `commit` `platform` `component` `language` `browser` `deviceType`; values are free text                          |
 | `resultAnalysis`     | map    | no, **omitted when empty** | What the tester wrote about each group of run item statuses. Keys are `PASSED` `FAILED` `BLOCKED` `UNTESTED`; values are free text                                                       |
-| `executionStartedAt` | date   | no, defaults to the epoch  | When Start Execution was first pressed. Kept: a test run resumed next week still started when it started                                                                                 |
+| `executionStartedAt` | date   | no, defaults to the epoch  | When Start Manual Execution was first pressed. Kept: a test run resumed next week still started when it started                                                                          |
 | `executionEndedAt`   | date   | no, defaults to the epoch  | When execution last stopped                                                                                                                                                              |
 | `commit`             | string | no, **omitted when empty** | The commit that made the test run Committed, written by Testin straight after it (Rule-SHARE-130). Its run items show their test cases as that commit holds them (Rule-EDITOR-PANEL-239) |
 

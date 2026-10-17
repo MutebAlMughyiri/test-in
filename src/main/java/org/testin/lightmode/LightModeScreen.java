@@ -244,7 +244,7 @@ final class LightModeScreen {
         frame.fitHeight(details::setCutOff);
     }
 
-    // UC-EDITOR-PANEL-046, Rule-EDITOR-PANEL-201
+    // UC-EDITOR-PANEL-046, Rule-EDITOR-PANEL-201, Rule-EDITOR-PANEL-294
     private void showTestCase(final @NotNull TestCase testCase) {
         final boolean arrived = shownTestCase.map(previous -> !previous.equals(testCase.getUuid())).orElse(false);
         shownTestCase = Optional.of(testCase.getUuid());
@@ -253,6 +253,7 @@ final class LightModeScreen {
 
         set.setText(testCase.getParent().getName());
         description.setText(TestSetEditorFields.DESCRIPTION.displayValue(testCase));
+        description.setForeground(testCase.getStatus().getDescriptionColor());
         expected.setText(TestSetEditorFields.EXPECTED_RESULT.displayValue(testCase));
 
         details.show(testCase);

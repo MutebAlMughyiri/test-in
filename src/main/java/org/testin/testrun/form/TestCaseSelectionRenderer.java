@@ -42,7 +42,8 @@ public final class TestCaseSelectionRenderer {
                     getTextRenderer().append(node.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
                 } else if (treeNode.getUserObject() instanceof TestCase testCase) {
                     getTextRenderer().setIcon(Icons.TEST_CASE_LETTER);
-                    getTextRenderer().append(testCase.getDescription(), treeNode.isEnabled() ? SimpleTextAttributes.REGULAR_ATTRIBUTES : SimpleTextAttributes.GRAYED_ATTRIBUTES);
+                    // Rule-EDITOR-PANEL-294
+                    getTextRenderer().append(testCase.getDescription(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, testCase.getStatus().getDescriptionColor()));
                     // Rule-TREE-PANEL-138
                     if (!treeNode.isEnabled())
                         getTextRenderer().append("  " + testCase.getStatus().getLabel(), SimpleTextAttributes.GRAYED_ITALIC_ATTRIBUTES);

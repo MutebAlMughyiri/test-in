@@ -22,7 +22,6 @@ import com.intellij.openapi.project.DumbAwareAction;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import org.testin.clipboard.CopyChoice;
 import org.testin.codegen.CodeChangeType;
 import org.testin.model.MenuItem;
 import org.testin.model.StatusBarItem;
@@ -43,13 +42,10 @@ import org.testin.testcase.update.bulk.TestCaseStatusBulkSectionDialog;
 import org.testin.testcase.update.bulk.StepsBulkSectionDialog;
 import org.testin.testcase.update.bulk.TestDataBulkSectionDialog;
 import org.testin.util.Bundle;
-import org.testin.util.Icons;
 import org.testin.util.Shortcuts;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
-import java.util.Arrays;
-import java.util.Optional;
 import java.util.function.Function;
 
 import static org.testin.testcase.TestCaseDialogKey.ADD;
@@ -65,7 +61,7 @@ public enum UpdateTestCaseFields implements MenuItem {
     DESCRIPTION(
             TestSetEditorFields.DESCRIPTION.getName(),
             Shortcuts.FieldDescription,
-            CreateTestCaseFields.DESCRIPTION.getIcon(),
+            TestSetEditorFields.DESCRIPTION.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_DESCRIPTION,
             Done.UPDATED,
             (project, selectedTestCases, updatedTestCases) -> new DescriptionBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
@@ -76,7 +72,7 @@ public enum UpdateTestCaseFields implements MenuItem {
     EXPECTED_RESULT(
             TestSetEditorFields.EXPECTED_RESULT.getName(),
             Shortcuts.FieldExpectedResult,
-            CreateTestCaseFields.EXPECTED_RESULT.getIcon(),
+            TestSetEditorFields.EXPECTED_RESULT.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_EXPECTED_RESULT,
             Done.UPDATED,
             (project, selectedTestCases, updatedTestCases) -> new ExpectedResultBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
@@ -87,7 +83,7 @@ public enum UpdateTestCaseFields implements MenuItem {
     MODULE(
             TestSetEditorFields.MODULE.getName(),
             Shortcuts.FieldModule,
-            CreateTestCaseFields.MODULE.getIcon(),
+            TestSetEditorFields.MODULE.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_MODULE,
             Done.UPDATED,
             (project, selectedTestCases, updatedTestCases) -> new ModuleBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
@@ -98,7 +94,7 @@ public enum UpdateTestCaseFields implements MenuItem {
     TEST_DATA(
             TestSetEditorFields.TEST_DATA.getName(),
             Shortcuts.FieldTestData,
-            CreateTestCaseFields.TEST_DATA.getIcon(),
+            TestSetEditorFields.TEST_DATA.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_TEST_DATA,
             Done.UPDATED,
             (project, selectedTestCases, updatedTestCases) -> new TestDataBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
@@ -109,7 +105,7 @@ public enum UpdateTestCaseFields implements MenuItem {
     PRE_CONDITIONS(
             TestSetEditorFields.PRE_CONDITIONS.getName(),
             Shortcuts.FieldPreConditions,
-            CreateTestCaseFields.PRE_CONDITIONS.getIcon(),
+            TestSetEditorFields.PRE_CONDITIONS.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_PRE_CONDITIONS,
             Done.UPDATED,
             (project, selectedTestCases, updatedTestCases) -> new PreConditionsBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
@@ -120,7 +116,7 @@ public enum UpdateTestCaseFields implements MenuItem {
     STEPS(
             TestSetEditorFields.STEPS.getName(),
             Shortcuts.FieldSteps,
-            CreateTestCaseFields.STEPS.getIcon(),
+            TestSetEditorFields.STEPS.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_STEPS,
             Done.UPDATED,
             (project, selectedTestCases, updatedTestCases) -> new StepsBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
@@ -131,7 +127,7 @@ public enum UpdateTestCaseFields implements MenuItem {
     PRIORITY(
             TestSetEditorFields.PRIORITY.getName(),
             Shortcuts.FieldPriority,
-            CreateTestCaseFields.PRIORITY.getIcon(),
+            TestSetEditorFields.PRIORITY.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_PRIORITY,
             Done.UPDATED,
             (project, selectedTestCases, updatedTestCases) -> new PriorityBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
@@ -142,7 +138,7 @@ public enum UpdateTestCaseFields implements MenuItem {
     GROUP(
             TestSetEditorFields.GROUP.getName(),
             Shortcuts.FieldGroup,
-            CreateTestCaseFields.GROUP.getIcon(),
+            TestSetEditorFields.GROUP.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_GROUP,
             Done.UPDATED,
             (project, selectedTestCases, updatedTestCases) -> new GroupBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
@@ -153,7 +149,7 @@ public enum UpdateTestCaseFields implements MenuItem {
     ORDER(
             TestSetEditorFields.ORDER.getName(),
             Shortcuts.UpdateTestCaseOrder,
-            Icons.fieldLetter("O", Icons.GRAY),
+            TestSetEditorFields.ORDER.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_ORDER,
             Done.RE_SORTED,
             (project, _, _) -> Services.getInstance(project, Notifier.class).softRefuse(project, Bundle.message("update.order.one.at.a.time")),
@@ -165,7 +161,7 @@ public enum UpdateTestCaseFields implements MenuItem {
     REFERENCE(
             TestSetEditorFields.REFERENCE.getName(),
             Shortcuts.FieldReference,
-            CreateTestCaseFields.REFERENCE.getIcon(),
+            TestSetEditorFields.REFERENCE.getIcon(),
             CodeChangeType.NO_CODE_CHANGE,
             Done.UPDATED,
             (project, selectedTestCases, updatedTestCases) -> new ReferenceBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
@@ -177,7 +173,7 @@ public enum UpdateTestCaseFields implements MenuItem {
     STATUS(
             TestSetEditorFields.STATUS.getName(),
             Shortcuts.FieldStatus,
-            CopyChoice.STATUS.getIcon(),
+            TestSetEditorFields.STATUS.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_STATUS,
             Done.UPDATED,
             (project, selectedTestCases, updatedTestCases) -> new TestCaseStatusBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
@@ -200,11 +196,6 @@ public enum UpdateTestCaseFields implements MenuItem {
     private final @NotNull Function<AbstractTestCaseDialog, TestCaseSection> sectionExtractor;
 
     private final @NotNull ImmutableList<TestCaseDialogKey> ownKeys;
-
-    // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-111, Rule-EDITOR-PANEL-269
-    public static @NotNull Optional<Icon> iconOf(final @NotNull String field) {
-        return Arrays.stream(values()).filter(each -> each.name.equals(field)).findFirst().map(UpdateTestCaseFields::getIcon).filter(Icons.LetterIcon.class::isInstance);
-    }
 
     // Rule-EDITOR-PANEL-199
     public StatusBarItem @NotNull [] getStatusBarItems() {

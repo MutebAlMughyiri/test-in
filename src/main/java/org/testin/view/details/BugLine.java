@@ -28,7 +28,6 @@ import org.testin.bug.RunItemPath;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.testrun.RunItem;
-import org.testin.model.testrun.RunItemExecution;
 import org.testin.services.Services;
 import org.testin.testrun.TestRunEditorFields;
 import org.testin.ui.Badge;
@@ -38,6 +37,7 @@ import org.testin.util.Bundle;
 
 import javax.swing.JComponent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -83,10 +83,9 @@ public final class BugLine {
     private static @NotNull Optional<JComponent> chip(final @NotNull RunItem runItem) {
         if (!runItem.isFailed()) return Optional.empty();
 
-        final @NotNull RunItemExecution shown = runItem.shownExecution();
         final @NotNull List<Badge> bug = new ArrayList<>();
-        Badges.addBugBadge(bug, TestRunEditorFields.BUG_SEVERITY.getName(), shown.getBugSeverity().getLabel(), shown.getBugSeverity().getColor());
-        Badges.addBugBadge(bug, TestRunEditorFields.BUG_PRIORITY.getName(), shown.getBugPriority().getLabel(), shown.getBugSeverity().getColor());
+        TestRunEditorFields.BUG_SEVERITY.applyToUI(runItem, bug, new HashMap<>());
+        TestRunEditorFields.BUG_PRIORITY.applyToUI(runItem, bug, new HashMap<>());
 
         final @NotNull JBPanel<?> holder = AbstractDetails.row(0);
         Badges.showBadges(holder, bug);
