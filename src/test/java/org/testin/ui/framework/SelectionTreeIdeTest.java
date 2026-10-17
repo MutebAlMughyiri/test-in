@@ -16,6 +16,7 @@
 
 package org.testin.ui.framework;
 
+import com.intellij.testFramework.PlatformTestUtil;
 import com.intellij.ui.CheckboxTree;
 import com.intellij.ui.CheckedTreeNode;
 import org.jetbrains.annotations.NotNull;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class SelectionTreeIdeTest extends AbstractIdeTest {
 
@@ -215,7 +217,28 @@ public class SelectionTreeIdeTest extends AbstractIdeTest {
 
         selectUnselectAll(selection).doClick();
         assertEquals("select all ticked a disabled test case", List.of(LOGIN_VALID), ticked(selection));
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
         assertEquals("with every test case it can tick ticked, the button does not offer to untick", Bundle.message("selection.untick.all"), selectUnselectAll(selection).getAccessibleContext().getAccessibleName());
+    }
+
+    // Rule-TREE-PANEL-140
+    public void testSelectAllRefreshesTheDialogOnceNotOncePerRow() {
+        final @NotNull CheckedTreeNode root = new CheckedTreeNode("Test Cases");
+        for (int testSet = 0; testSet < 3; testSet++) {
+            final @NotNull CheckedTreeNode branch = new CheckedTreeNode("Test set " + testSet);
+            for (int testCase = 0; testCase < 50; testCase++) branch.add(aTestCase("Test case " + testSet + "." + testCase, false));
+            root.add(branch);
+        }
+        final @NotNull SelectionTree selection = new SelectionTree("Test cases", root, new CheckboxTree.CheckboxTreeCellRenderer() {
+        }, Optional.empty());
+        final @NotNull AtomicInteger refreshes = new AtomicInteger();
+        selection.onCheckChanged(refreshes::incrementAndGet);
+
+        selectUnselectAll(selection).doClick();
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+        assertEquals("select all did not tick all 150 test cases", 150, selection.checkedLeaves());
+        assertEquals("select all refreshed the dialog once per row it ticked, not once", 1, refreshes.get());
     }
 
     // Rule-TREE-PANEL-138

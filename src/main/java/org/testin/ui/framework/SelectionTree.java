@@ -16,6 +16,8 @@
 
 package org.testin.ui.framework;
 
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 import com.intellij.ui.CheckboxTree;
 import com.intellij.ui.CheckboxTreeBase;
 import com.intellij.ui.CheckboxTreeListener;
@@ -55,6 +57,8 @@ public final class SelectionTree implements DialogComponent {
 
     private final @NotNull SelectUnselectAllButton selectUnselectAll = new SelectUnselectAllButton(this::everyShownTicked, this::flipTicks);
 
+    private boolean refreshPending;
+
     public SelectionTree(final @NotNull String caption, final @NotNull CheckedTreeNode root, final @NotNull CheckboxTree.CheckboxTreeCellRenderer renderer, final @NotNull Optional<JComponent> trailing) {
         this.full = root;
         collectLeaves(root);
@@ -70,10 +74,8 @@ public final class SelectionTree implements DialogComponent {
         tree.addCheckboxTreeListener(new CheckboxTreeListener() {
             @Override
             public void nodeStateChanged(final @NotNull CheckedTreeNode treeNode) {
-                keepTicks();
-                tree.repaint();
-                selectUnselectAll.updateState();
-                changed.forEach(Runnable::run);
+                keepTick(treeNode);
+                refreshOnce();
             }
         });
 
@@ -153,12 +155,23 @@ public final class SelectionTree implements DialogComponent {
     }
 
     // Rule-TREE-PANEL-131, Rule-TREE-PANEL-138, Rule-TREE-PANEL-139
-    private void keepTicks() {
-        for (final CheckedTreeNode leaf : leafNodesOf(shownRoot())) {
-            if (!leaf.isEnabled()) leaf.setChecked(chosen.contains(leaf.getUserObject()));
-            else if (leaf.isChecked()) chosen.add(leaf.getUserObject());
-            else chosen.remove(leaf.getUserObject());
-        }
+    private void keepTick(final @NotNull CheckedTreeNode treeNode) {
+        if (!isLeaf(treeNode)) return;
+        if (!treeNode.isEnabled()) treeNode.setChecked(chosen.contains(treeNode.getUserObject()));
+        else if (treeNode.isChecked()) chosen.add(treeNode.getUserObject());
+        else chosen.remove(treeNode.getUserObject());
+    }
+
+    // Rule-TREE-PANEL-140, Rule-TREE-PANEL-130
+    private void refreshOnce() {
+        if (refreshPending) return;
+        refreshPending = true;
+        ApplicationManager.getApplication().invokeLater(() -> {
+            refreshPending = false;
+            tree.repaint();
+            selectUnselectAll.updateState();
+            changed.forEach(Runnable::run);
+        }, ModalityState.stateForComponent(tree));
     }
 
     private @NotNull CheckedTreeNode copyShown(final @NotNull CheckedTreeNode treeNode, final @NotNull Predicate<Object> leafShown) {

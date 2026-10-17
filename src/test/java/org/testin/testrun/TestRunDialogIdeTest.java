@@ -230,6 +230,7 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
         final @NotNull JButton create = theButton(Bundle.message("test.run.create.button"));
 
         tree.setNodeState((CheckedTreeNode) tree.getModel().getRoot(), false);
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
         assertFalse("Create works with no test case checked", create.isEnabled());
         assertEquals("hovering over the gray Create does not say why", Bundle.message("test.run.form.no.test.case"), Drawn.hovering(create));
@@ -238,6 +239,7 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
         assertTrue("an empty test run was created", theTestRunsUnder(testProject.getTestRunsFolder()).isEmpty());
 
         tree.setNodeState(rowOf(first), true);
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
         assertTrue("Create is gray with a test case checked", create.isEnabled());
     }
