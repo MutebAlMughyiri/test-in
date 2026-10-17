@@ -635,6 +635,14 @@ intellijPlatformTesting {
             type = IntelliJPlatformType.PyCharm
             version = "2026.2.1"
         }
+        register("runDataGrip") {
+            type = IntelliJPlatformType.DataGrip
+            version = "2026.2.1"
+        }
+        register("runRider") {
+            type = IntelliJPlatformType.Rider
+            version = "2026.2.1"
+        }
     }
 }
 
