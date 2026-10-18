@@ -22,7 +22,9 @@ A test set is the folder that holds test cases. This makes one.
   them. Test sets and test set packages live under **Test Cases**. Test runs and
   test run packages live under **Test Runs**.
 - **Rule-TREE-PANEL-004** — Two nodes under one parent cannot share a name. This
-  holds whether the node is created, renamed, pasted or dropped.
+  holds whether the node is created, renamed, pasted or dropped. A paste or a
+  drop counts a name that differs only in capitals as the same name, on every
+  system.
 - **Rule-TREE-PANEL-005** — A node name is never empty.
 - **Rule-TREE-PANEL-006** — Removing, moving or copying asks first. Nothing in
   the tree changes until the tester confirms.

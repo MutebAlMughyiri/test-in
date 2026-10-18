@@ -46,7 +46,7 @@ record CreateTreeNodeWork(@NotNull Project project, @NotNull Nodes nodes, @NotNu
             if (name.isEmpty()) return;
             final @NotNull Path newDirectoryPath = parentNode.getPath().resolve(name);
 
-            if (nodes.nodeExists(newDirectoryPath)) {
+            if (nodes.isTaken(newDirectoryPath, Optional.empty())) {
                 notifier.softRefuse(project, Refused.ALREADY_EXISTS, name);
                 return;
             }

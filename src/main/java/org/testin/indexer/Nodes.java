@@ -77,11 +77,17 @@ public final class Nodes {
         return store().getTestProjectsByPath();
     }
 
-    // UC-TREE-PANEL-002, UC-TREE-PANEL-003, UC-TREE-PANEL-011, Rule-TREE-PANEL-004
+    // UC-TREE-PANEL-002, UC-TREE-PANEL-003, UC-TREE-PANEL-007, UC-TREE-PANEL-008, UC-TREE-PANEL-009, UC-TREE-PANEL-011, Rule-TREE-PANEL-004
     public boolean isTaken(final @NotNull Path wanted, final @NotNull Optional<Path> renaming) {
         if (!Files.exists(wanted)) return false;
 
         return renaming.map(self -> !sameFile(self, wanted)).orElse(true);
+    }
+
+    // UC-TREE-PANEL-013, UC-TREE-PANEL-014, Rule-TREE-PANEL-004
+    public boolean holdsInAnyCapitals(final @NotNull Path wanted) {
+        final @NotNull String name = wanted.getFileName().toString();
+        return Optional.ofNullable(wanted.getParent()).stream().flatMap(parent -> store().getChildren(parent).stream()).anyMatch(child -> child.getPath().getFileName().toString().equalsIgnoreCase(name));
     }
 
     public @NotNull List<AbstractNode> getChildren(final @NotNull Path parentPath) {

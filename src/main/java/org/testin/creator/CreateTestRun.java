@@ -105,7 +105,7 @@ public class CreateTestRun implements NodeCreator {
         }
 
         final @NotNull Path savePath = parentNode.getPath().resolve(name);
-        if (nodes.nodeExists(savePath)) {
+        if (nodes.isTaken(savePath, Optional.empty())) {
             notifier.softRefuse(project, Refused.ALREADY_EXISTS, name);
             return false;
         }

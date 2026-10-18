@@ -67,6 +67,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
+import java.nio.file.Files;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -280,6 +281,18 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
 
         assertTrue("a path taken as the name closed the dialog", ShownDialog.isOpen(getProject(), TestRunConfigurationDialog.class));
         assertTrue("the test run left its own folder", nodes().nodeExists(testRun.getPath()));
+    }
+
+    // Rule-TREE-PANEL-004
+    public void testANameDifferingOnlyInCapitalsIsTakenWhereTheDiskIgnoresCapitals() {
+        final @NotNull TestRunNode existing = cycle1In(testProject.getTestRunsFolder(), List.of(new RunItem().setUuid(first.getUuid())));
+        final boolean capitalsIgnored = Files.exists(existing.getPath().resolveSibling("cycle-1"));
+
+        theCreateDialogOpenedNaming("cycle-1");
+        theButton(Bundle.message("test.run.create.button")).doClick();
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+        assertEquals("a name the disk already holds in other capitals was taken as free, so Create would write into that test run", capitalsIgnored, ShownDialog.isOpen(getProject(), TestRunConfigurationDialog.class));
     }
 
     // Rule-TREE-PANEL-138

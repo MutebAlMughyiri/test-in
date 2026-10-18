@@ -277,13 +277,13 @@ public class TreeTransferHandler extends TransferHandler {
     public boolean canTransferInto(final @NotNull AbstractNode source, final @NotNull AbstractNode target) {
         return target.acceptsTransferred(source)
                 && sameTestProject(source, target)
-                && isValidDestination(source, target, nodes::nodeExists);
+                && isValidDestination(source, target, nodes::holdsInAnyCapitals);
     }
 
     private boolean isNameCollision(final @NotNull AbstractNode source, final @NotNull AbstractNode target) {
         return target.acceptsTransferred(source)
                 && isValidDestination(source, target, _ -> false)
-                && nodes.nodeExists(target.getPath().resolve(source.getName()));
+                && nodes.holdsInAnyCapitals(target.getPath().resolve(source.getName()));
     }
 
     // UC-TREE-PANEL-013, UC-TREE-PANEL-014, Rule-TREE-PANEL-004

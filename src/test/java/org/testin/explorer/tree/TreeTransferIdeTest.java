@@ -128,6 +128,13 @@ public class TreeTransferIdeTest extends AbstractTempRootIdeTest {
         assertTrue("the test set came back without its folder", Files.isDirectory(wasAt));
     }
 
+    // Rule-TREE-PANEL-004
+    public void testANodeIsNotPastedBesideOneWhoseNameDiffersOnlyInCapitals() {
+        new NodesOnDisk(getProject()).testSet(payments, "LOGIN");
+
+        assertFalse("Login could be pasted beside LOGIN", handler.canTransferInto(login, payments));
+    }
+
     // Rule-TREE-PANEL-050
     public void testCancelingACutEmptiesTheClipboard() {
         onTheClipboard(TransferHandler.MOVE);
