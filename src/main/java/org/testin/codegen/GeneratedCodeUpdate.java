@@ -29,6 +29,7 @@ import org.testin.services.Services;
 import org.testin.util.Once;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public enum GeneratedCodeUpdate implements CodeUpdate {
     INSTANCE;
@@ -63,7 +64,9 @@ public enum GeneratedCodeUpdate implements CodeUpdate {
     public <T> void executeAll(final @NotNull CodeChangeType<T> type, final @NotNull Project project, final @NotNull List<? extends T> payloads, final @NotNull String undoGroup) {
         if (cannotGenerate(project, type.description()) || payloads.isEmpty()) return;
 
+        final long started = System.nanoTime();
         WriteCommandAction.runWriteCommandAction(project, type.description(), undoGroup,
                 () -> CodeChangeRegistry.find(type).executeAll(project, payloads));
+        TestinLogger.info(type.description() + " (" + payloads.size() + ") took " + TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - started) + " ms");
     }
 }

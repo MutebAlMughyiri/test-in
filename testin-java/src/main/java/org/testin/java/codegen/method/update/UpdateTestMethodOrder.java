@@ -16,11 +16,17 @@
 
 package org.testin.java.codegen.method.update;
 
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.TextRange;
+import com.intellij.psi.PsiAnnotationMemberValue;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiWhiteSpace;
+import com.intellij.util.DocumentUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.testin.codegen.CodeChange;
@@ -31,12 +37,16 @@ import org.testin.model.TestCase;
 
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 // Rule-CODEGEN-014
 public class UpdateTestMethodOrder extends BaseTestMethodChange implements CodeChange<TestCase> {
+    private static final @NotNull String PRIORITY = "priority";
+
     // UC-CODEGEN-011, Rule-CODEGEN-067
     private static @NotNull PsiElement place(final @NotNull PsiClass testClass, final @NotNull PsiMethod testMethod, final @NotNull Optional<PsiElement> after) {
         return after.map(previous -> placeAfter(testClass, testMethod, previous)).orElseGet(() -> placeFirst(testClass, testMethod));
@@ -103,6 +113,21 @@ public class UpdateTestMethodOrder extends BaseTestMethodChange implements CodeC
         final @NotNull Map<String, PsiMethod> methods = GeneratedMethod.byTestCaseUuid(testClass);
 
         @NotNull Optional<PsiElement> after = Optional.empty();
+
+        for (final TestCase testCase : inSet) {
+            final @Nullable PsiMethod testMethod = methods.get(testCase.getUuid().toString());
+            if (testMethod == null) continue;
+
+            after = Optional.of(place(testClass, testMethod, after));
+        }
+
+        number(project, testClass, inSet);
+    }
+
+    // UC-CODEGEN-011, Rule-CODEGEN-014
+    private void number(final @NotNull Project project, final @NotNull PsiClass testClass, final @NotNull List<TestCase> inSet) {
+        final @NotNull Map<String, PsiMethod> methods = GeneratedMethod.byTestCaseUuid(testClass);
+        final @NotNull Map<PsiMethod, String> renumbered = new LinkedHashMap<>();
         int position = 0;
 
         for (final TestCase testCase : inSet) {
@@ -111,9 +136,42 @@ public class UpdateTestMethodOrder extends BaseTestMethodChange implements CodeC
             final @Nullable PsiMethod testMethod = methods.get(testCase.getUuid().toString());
             if (testMethod == null) continue;
 
-            if (updateTestAnnotationAttribute(project, testMethod, "priority", String.valueOf(position)))
-                formatAnnotations(project, testMethod);
-            after = Optional.of(place(testClass, testMethod, after));
+            final @NotNull String number = String.valueOf(position);
+            final @NotNull Optional<PsiAnnotationMemberValue> priority = priorityOf(testMethod);
+
+            if (priority.isEmpty()) {
+                if (updateTestAnnotationAttribute(project, testMethod, PRIORITY, number))
+                    formatAnnotations(project, testMethod);
+            } else if (!priority.orElseThrow().getText().equals(number)) renumbered.put(testMethod, number);
         }
+
+        writeAsText(project, testClass.getContainingFile(), renumbered);
+    }
+
+    // UC-CODEGEN-011, Rule-CODEGEN-014
+    private void writeAsText(final @NotNull Project project, final @NotNull PsiFile file, final @NotNull Map<PsiMethod, String> renumbered) {
+        if (renumbered.isEmpty()) return;
+
+        final @NotNull PsiDocumentManager documents = PsiDocumentManager.getInstance(project);
+        final @NotNull Optional<Document> document = Optional.ofNullable(documents.getDocument(file));
+
+        if (document.isEmpty()) {
+            renumbered.forEach((testMethod, number) -> updateTestAnnotationAttribute(project, testMethod, PRIORITY, number));
+            return;
+        }
+
+        documents.doPostponedOperationsAndUnblockDocument(document.orElseThrow());
+
+        final @NotNull List<Map.Entry<TextRange, String>> edits = renumbered.entrySet().stream()
+                .flatMap(entry -> priorityOf(entry.getKey()).map(priority -> Map.entry(priority.getTextRange(), entry.getValue())).stream())
+                .sorted(Comparator.comparingInt((Map.Entry<TextRange, String> edit) -> edit.getKey().getStartOffset()).reversed())
+                .toList();
+
+        DocumentUtil.executeInBulk(document.orElseThrow(), () -> edits.forEach(edit -> document.orElseThrow().replaceString(edit.getKey().getStartOffset(), edit.getKey().getEndOffset(), edit.getValue())));
+        documents.commitDocument(document.orElseThrow());
+    }
+
+    private @NotNull Optional<PsiAnnotationMemberValue> priorityOf(final @NotNull PsiMethod testMethod) {
+        return getTestAnnotation(testMethod).flatMap(annotation -> Optional.ofNullable(annotation.findDeclaredAttributeValue(PRIORITY)));
     }
 }
