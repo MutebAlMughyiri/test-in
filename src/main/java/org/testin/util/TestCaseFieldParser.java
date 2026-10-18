@@ -29,34 +29,22 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Supplier;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestCaseFieldParser {
-    private static final @NotNull Pattern MULTI_STEP_LINE = Pattern.compile(".*\\s\\d+[-.].*");
-
-    private static final @NotNull Pattern STEP_SEPARATOR = Pattern.compile("(\\s)(?=\\d+[-.])");
-
-    private static final @NotNull Pattern STEP_PREFIX = Pattern.compile("^\\d+[-.]\\s*");
-
     private static final @NotNull DateTimeFormatter WITHOUT_WEEKDAY =
             DateTimeFormatter.ofPattern(DateFormats.DATE_WITHOUT_WEEKDAY_PATTERN, Locale.US);
 
+    // Rule-EDITOR-PANEL-005
     public static @NotNull List<String> steps(final @NotNull String rawSteps) {
-        if (rawSteps.isBlank()) return new ArrayList<>();
-        String text = rawSteps;
-        if (!text.contains("\n") && MULTI_STEP_LINE.matcher(text).matches()) {
-            text = STEP_SEPARATOR.matcher(text).replaceAll("\n");
-        }
-        return Arrays.stream(text.split("\n"))
-                .map(line -> STEP_PREFIX.matcher(line).replaceFirst("").trim())
+        return Arrays.stream(rawSteps.split("\n"))
+                .map(String::trim)
                 .filter(line -> !line.isEmpty())
                 .collect(Collectors.toList());
     }

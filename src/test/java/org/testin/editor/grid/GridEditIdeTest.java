@@ -91,13 +91,14 @@ public class GridEditIdeTest extends AbstractTempRootIdeTest {
     private @NotNull TestSetEditor aGridOver(final @NotNull String... descriptions) {
         testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
         for (int i = 0; i < descriptions.length; i++) {
-            final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description(descriptions[i]).order(String.format("m%04d", i)).groups(new ArrayList<>(List.of("Smoke"))).build();
+            final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description(descriptions[i]).order(String.format("m%04d", i)).groups(new ArrayList<>(List.of("Smoke"))).steps(new ArrayList<>(List.of("Enter the 2-digit code"))).build();
             testCase.setParent(testSet);
             theTestCases().putTestCaseVerbatim(testSet.getPath(), testCase);
         }
 
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         editor.getSelectedDetails().add(TestSetEditorFields.GROUP);
+        editor.getSelectedDetails().add(TestSetEditorFields.STEPS);
         editor.getToolBar().getToolbarItem(GridViewButton.class).doClick();
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
         return editor;
@@ -143,7 +144,7 @@ public class GridEditIdeTest extends AbstractTempRootIdeTest {
         assertEquals("a cell that ended up as it was wrote a file", before, everyFile());
     }
 
-    // Rule-EDITOR-PANEL-052
+    // Rule-EDITOR-PANEL-052, Rule-EDITOR-PANEL-005
     public void testACellThatEndsUpAsItStartedWritesNothingAndSaysNothing() {
         final @NotNull TestSetEditor editor = aGridOver("Log in");
         final @NotNull JBTable table = gridOf(editor);
@@ -152,6 +153,7 @@ public class GridEditIdeTest extends AbstractTempRootIdeTest {
 
         typeInto(table, 0, TestSetEditorFields.GROUP, "Smoke");
         typeInto(table, 0, TestSetEditorFields.DESCRIPTION, "Log in");
+        typeInto(table, 0, TestSetEditorFields.STEPS, "Enter the 2-digit code");
 
         assertEquals("a cell that ended up as it started said something", List.of(), balloons.shown());
         assertEquals("a cell that ended up as it started wrote a file", before, everyFile());
