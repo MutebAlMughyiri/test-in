@@ -41,7 +41,7 @@ touched.
 - **Rule-EDITOR-PANEL-068** — A test case is put back exactly, including who
   last changed it and when.
 - **Rule-EDITOR-PANEL-069** — A test case coming back from a removal gets its
-  test method written again.
+  test method back as the tester left it, body included (Rule-CODEGEN-114).
 - **Rule-EDITOR-PANEL-070** — A gesture that changed nothing is not on the
   history at all.
 - **Rule-EDITOR-PANEL-228** — A test case moved from one test set to another is

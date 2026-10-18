@@ -154,7 +154,7 @@ public class CreateTestMethod implements CodeChange<TestCase> {
                         Fqcn.methodNameOf(testCase), testCase)));
     }
 
-    // UC-CODEGEN-002, Rule-CODEGEN-016
+    // UC-CODEGEN-002, Rule-CODEGEN-016, Rule-CODEGEN-114
     private void injectAsText(final @NotNull Project project, final @NotNull PsiClass targetClass, final @NotNull List<TestCase> testCases) {
         final @NotNull PsiFile file = targetClass.getContainingFile();
         final @NotNull PsiDocumentManager documents = PsiDocumentManager.getInstance(project);
@@ -184,6 +184,7 @@ public class CreateTestMethod implements CodeChange<TestCase> {
         final int alreadyThere = testCases.size() - missing.size();
 
         final @NotNull StringBuilder methods = new StringBuilder();
+        final @NotNull StringBuilder keptMethods = new StringBuilder();
         final @NotNull List<TestCase> lostTheName = new ArrayList<>();
         int adopted = 0;
 
@@ -207,7 +208,9 @@ public class CreateTestMethod implements CodeChange<TestCase> {
             }
 
             owners.put(key, testCaseUuid);
-            methods.append('\n').append(methodText(methodName, testCase, positions.applyAsInt(testCase))).append('\n');
+            Services.getInstance(project, KeptTestMethods.class).take(testCase).ifPresentOrElse(
+                    keptMethod -> keptMethods.append('\n').append(keptMethod).append('\n'),
+                    () -> methods.append('\n').append(methodText(methodName, testCase, positions.applyAsInt(testCase))).append('\n'));
         }
 
         if (alreadyThere > 0) {
@@ -223,12 +226,12 @@ public class CreateTestMethod implements CodeChange<TestCase> {
         reportLostTheName(project, targetClass, lostTheName);
         reportCannotBeNamed(project, targetClass, cannotBeNamed);
 
-        if (!methods.isEmpty())
-            insertBeforeClosingBrace(project, targetClass, testCases, document.orElseThrow(), methods);
+        if (!methods.isEmpty() || !keptMethods.isEmpty())
+            insertBeforeClosingBrace(project, targetClass, testCases, document.orElseThrow(), methods, keptMethods);
     }
 
-    // UC-CODEGEN-002, Rule-CODEGEN-016
-    private void insertBeforeClosingBrace(final @NotNull Project project, final @NotNull PsiClass targetClass, final @NotNull List<TestCase> testCases, final @NotNull Document document, final @NotNull CharSequence methods) {
+    // UC-CODEGEN-002, Rule-CODEGEN-016, Rule-CODEGEN-114
+    private void insertBeforeClosingBrace(final @NotNull Project project, final @NotNull PsiClass targetClass, final @NotNull List<TestCase> testCases, final @NotNull Document document, final @NotNull CharSequence methods, final @NotNull CharSequence keptMethods) {
         final @NotNull PsiFile file = targetClass.getContainingFile();
         final @NotNull PsiDocumentManager documents = PsiDocumentManager.getInstance(project);
 
@@ -243,7 +246,7 @@ public class CreateTestMethod implements CodeChange<TestCase> {
         }
 
         final int insertAt = closingBrace.orElseThrow().getTextRange().getStartOffset();
-        document.insertString(insertAt, methods);
+        document.insertString(insertAt, methods.toString() + keptMethods);
         documents.commitDocument(document);
 
         CodeStyleManager.getInstance(project).reformatText(file, insertAt, insertAt + methods.length());
@@ -349,7 +352,9 @@ public class CreateTestMethod implements CodeChange<TestCase> {
                 return Optional.empty();
             }
 
-            final @NotNull PsiMethod newMethod = factory.createMethodFromText(methodText(methodName, testCase, ExecutionPosition.of(project, testCase)), targetClass);
+            // Rule-CODEGEN-114
+            final @NotNull String text = Services.getInstance(project, KeptTestMethods.class).take(testCase).map(String::strip).orElseGet(() -> methodText(methodName, testCase, ExecutionPosition.of(project, testCase)));
+            final @NotNull PsiMethod newMethod = factory.createMethodFromText(text, targetClass);
             final @NotNull PsiElement addedElement = targetClass.add(newMethod);
 
             TestinLogger.info("Injected method: " + methodName + " with Priority: " + testCase.getPriority().getLabel());

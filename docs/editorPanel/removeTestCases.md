@@ -120,8 +120,8 @@ The test case's file, which goes to the recycle bin, and its generated test
 method. Anything the tester wrote
 inside that method goes with it, and the confirmation does not mention the code.
 
-Undoing the removal brings the test cases back. Their methods are written again,
-empty. What was inside those methods does not come back.
+Undoing the removal brings the test cases back, and their methods with them, as
+the tester left them (Rule-CODEGEN-114).
 
 ---
 

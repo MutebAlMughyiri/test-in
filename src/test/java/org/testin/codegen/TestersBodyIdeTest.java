@@ -126,6 +126,23 @@ public class TestersBodyIdeTest extends AbstractCodegenIdeTest {
         assertAsTyped(LOGIN_TEST, typed);
     }
 
+    // Rule-CODEGEN-003, Rule-CODEGEN-114
+    public void testTakingARemovalBackPutsTheBodyBackAsTyped() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull TestCase typed = typedInto(login, "Log in with a valid user", "b");
+        final @NotNull TestCases testCases = Services.getInstance(getProject(), TestCases.class);
+
+        testCases.removeTestCase(login.getPath(), typed.getUuid());
+        CodeChangeType.REMOVE_TEST_CASE.executeAllNow(getProject(), List.of(typed));
+        settled();
+        assertTrue("the removal left the method in the class", methodOf(LOGIN_TEST, typed).isEmpty());
+
+        testCases.putTestCaseVerbatim(login.getPath(), typed);
+        CodeChangeType.CREATE_TEST_CASE.executeAllNow(getProject(), List.of(typed));
+
+        assertAsTyped(LOGIN_TEST, typed);
+    }
+
     // Rule-CODEGEN-003, Rule-CODEGEN-077
     public void testMovingATestCaseOutLeavesItsBodyAndTheOneLeftBehindAsTyped() {
         final @NotNull TestSetNode login = createdTestSet("Login");

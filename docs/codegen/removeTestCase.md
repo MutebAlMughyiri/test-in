@@ -40,6 +40,12 @@ There is no key for this. It happens when a test case is removed, which is
   test set, a package or a test project - waits for the IDE to finish indexing.
   It is refused while the IDE indexes, so no test case is removed with its
   method left behind.
+- **Rule-CODEGEN-114** — Undoing the removal puts the method back as the tester
+  left it, body included. Testin keeps the method's text while it deletes it,
+  and Ctrl+Z writes that text back into the class; what Testin owns in the
+  method is then written again (Rule-CODEGEN-068). Each removal keeps it again,
+  so a redo and a second undo bring it back too. The kept text lasts until the
+  project closes.
 
 ## What the tester sees
 
@@ -69,8 +75,9 @@ Anything the tester wrote inside the method goes with it. Testin owns the
 declaration, but deleting a method deletes the body too. Nothing warns about
 that. The confirmation before the removal names the test case, not the code.
 
-Undoing the removal writes the method again, empty. What was in its body does
-not come back.
+Undoing the removal puts the method back as the tester left it, body included.
+Once the project is closed the removal can no longer be undone, and the body is
+only in the IDE's Local History.
 
 ---
 
