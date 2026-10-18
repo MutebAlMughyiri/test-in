@@ -226,7 +226,9 @@ public class SelectionTreeIdeTest extends AbstractIdeTest {
         final @NotNull CheckedTreeNode root = new CheckedTreeNode("Test Cases");
         for (int testSet = 0; testSet < 3; testSet++) {
             final @NotNull CheckedTreeNode branch = new CheckedTreeNode("Test set " + testSet);
-            for (int testCase = 0; testCase < 50; testCase++) branch.add(aTestCase("Test case " + testSet + "." + testCase, false));
+            for (int testCase = 0; testCase < 50; testCase++) {
+                branch.add(aTestCase("Test case " + testSet + "." + testCase, false));
+            }
             root.add(branch);
         }
         final @NotNull SelectionTree selection = new SelectionTree("Test cases", root, new CheckboxTree.CheckboxTreeCellRenderer() {

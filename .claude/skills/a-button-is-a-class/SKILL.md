@@ -5,11 +5,11 @@ description: Every button a tester clicks is a class of its own, shaped like the
 
 # A button is a class
 
-> *"i notice you did not create new class for all of new actions. also, select
-> all is not in separate class. every class should has unieque responsibility.
-> i think it is better to make each button in separate class"* and *"look at
-> our editor toolbar, its structure is each button in separate class. i design
-> it like that by my hands"*
+> *"[I] notice you did not create new class for all of new actions. also, select
+> all is not in separate class. every class should [have a unique]
+> responsibility. [I] think it is better to make each button in separate class"*
+> and *"look at our editor toolbar, its structure is each button in separate
+> class. [I] design[ed] it like that by my hands"*
 >
 > - Muteb, 18 October 2026
 
@@ -23,10 +23,12 @@ class. The surface that shows the button lists it, and does nothing else for it.
 class, and the toolbar only lists them:
 
 ```java
-// TestRunToolbar.getCustomComponents()
-new StartExecutionButton(editor, getCallbacks()::onStartExecutionClicked),
-new LightModeButton(editor),
-new RefreshButton(getCallbacks()::onToolBarRefreshButtonClicked),
+public @NotNull List<ToolbarItem> getCustomComponents() {
+    return List.of(
+            new StartExecutionButton(editor, getCallbacks()::onStartExecutionClicked),
+            new LightModeButton(editor),
+            new RefreshButton(getCallbacks()::onToolBarRefreshButtonClicked));
+}
 ```
 
 ```java
@@ -50,13 +52,14 @@ word and picture it shows now - `LightModeButton.updateState()` is the model.
    the click, the editor, the tree. `super(...)` gives it its first word and
    picture, and the constructor wires its own click.
 3. **Buttons with the same or a similar purpose are one button, so one
-   class.** *"still button is a class but we have multi buttons do the same or
-   similar purpose so it will be dealed as one button"* - Muteb, 18 October
-   2026. Select All and Unselect All are one purpose, choosing what is ticked:
-   `SelectUnselectAllButton`. Collapse All and Expand All are one, choosing
-   what is open: `CollapseExpandButton`. The class is named for the purpose, one
-   `updateState()` with one `if/else` picks the word and picture, and the click
-   does the one that is showing - so it can never show both, or neither.
+   class.** *"still button is a class[,] but we have multi buttons do the same
+   or similar purpose so it will be [dealt with] as one button"* - Muteb, on 18
+   October 2026. Select All and Unselect All are one purpose, choosing what is
+   ticked: `SelectUnselectAllButton`. Collapse All and Expand All are one,
+   choosing what is open: `CollapseExpandButton`. The class is named for the
+   purpose, one `updateState()` with one `if/else` picks the word and picture,
+   and the click does the one that is showing - so it can never show both, or
+   neither.
 4. **A fact its owner holds comes in through the constructor, not by reaching
    in.** `SelectUnselectAllButton(this::everyShownTicked, this::flipTicks)`:
    what is ticked is `SelectionTree`'s fact (Disabled test cases, hidden ones),
