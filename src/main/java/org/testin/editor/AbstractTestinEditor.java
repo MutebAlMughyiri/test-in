@@ -258,12 +258,6 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
         return list.getSelectedValuesList();
     }
 
-    // UC-EDITOR-PANEL-020, Rule-EDITOR-PANEL-095
-    @Override
-    public @NotNull Set<String> getAvailableGroups() {
-        return testCaseValues.getGroups();
-    }
-
     // UC-EDITOR-PANEL-027, Rule-EDITOR-PANEL-119
     @Override
     public boolean isBusy() {

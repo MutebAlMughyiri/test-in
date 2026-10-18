@@ -40,8 +40,9 @@ There is no key for this. The button's tooltip reads **Filter**.
   editor, the test run editor and the Create Test Run dialog: the priority, the
   automation, the group, the module, the status, the run item status and the
   test set. An entry that cannot work there is gray, and hovering it says why.
-- **Rule-EDITOR-PANEL-095** — The module list is built from the test cases in
-  this test set, so it only ever offers modules that exist.
+- **Rule-EDITOR-PANEL-095** — The module and group lists are built from the
+  test cases in this test set, so they only ever offer modules and groups that
+  exist.
 - **Rule-EDITOR-PANEL-096** — Choosing nothing in a filter means every test case
   matches it.
 - **Rule-EDITOR-PANEL-097** — Filtering or sorting goes back to the first page.
@@ -96,9 +97,8 @@ There is no key for this. The button's tooltip reads **Filter**.
 2. **Priority** — **High**, **Medium** and **Low**, each with its own color.
 3. **Automation** — the three automation states, which is
    [UC-EDITOR-PANEL-047](seeWhatIsAutomated.md).
-4. **Group** — every group Testin knows, with **No Group** first.
-   [When that list changes](refreshEditor.md#what-completion-and-the-group-filter-offer)
-   is written on the refresh page.
+4. **Group** — the groups the test cases in this test set actually carry, with
+   **No Group** first.
 5. **Module** — the modules the test cases in this test set actually carry.
 6. **Status** — the test case's own status: **Reviewed**, **Pending**, **Disabled** and **To Be Updated**. It works in
    both editors and in the

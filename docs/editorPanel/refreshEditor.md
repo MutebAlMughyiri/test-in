@@ -37,7 +37,7 @@ There is no key for this. The button's tooltip reads **Refresh**.
 - **Rule-EDITOR-PANEL-117** — Refresh clears every filter, as Reset Filters
   does, puts the sort back to Order, Ascending, and keeps the search text. It
   reads the data again, rebuilds in the background the values the completion
-  fields and the group filter offer, and changes nothing else about the view.
+  fields offer, and changes nothing else about the view.
 - **Rule-EDITOR-PANEL-118** — Refresh remembers which test case was selected,
   and lands on the page holding it.
 - **Rule-EDITOR-PANEL-119** — The tester's own refresh always reloads, even with
@@ -84,9 +84,9 @@ A small message appears at the bottom of the IDE and fades. It reads *Refreshed*
 6. The page holding the remembered test case is drawn.
 7. A message reads *Refreshed*. In a test run editor where an execution was
    running, it reads *Refreshed, and the execution stopped*.
-8. In the background, Testin rebuilds the values the completion fields and the
-   group filter offer from every test case. A group no test case uses anymore,
-   such as one renamed with Update Test Case, is no longer offered.
+8. In the background, Testin rebuilds the values the completion fields offer
+   from every test case. A value no test case uses anymore, such as a group
+   renamed with Update Test Case, is no longer offered.
 
 ## What Testin refuses
 
@@ -99,11 +99,13 @@ toolbar button turns back into **Start Manual Execution**. The message says *Ref
 the tester is not left wondering why
 the button changed.
 
-## What completion and the group filter offer
+## What completion offers
 
 The fields that complete what has been typed before - Description, Expected
-Result, Module, Steps and Group - and the **Group** list in the filter all read
-one list of the values Testin knows. That list changes only at these moments.
+Result, Module, Steps and Group - all read one list of the values Testin knows.
+That list changes only at these moments. The **Group** list in the filter does
+not read it: it is built from the test cases in front of the filter, as the
+module list is (Rule-EDITOR-PANEL-095).
 
 | What the tester does                                                                                                               | What happens to the list                                                                                                                                |
 |------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|

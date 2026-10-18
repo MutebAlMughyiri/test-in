@@ -26,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.NodesOnDisk;
 import org.testin.indexer.TestCases;
+import org.testin.model.Groups;
 import org.testin.model.Priority;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
@@ -69,8 +70,8 @@ public class TestRunFormFilterIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestProjectNode testProject = made.testProject(root.resolve("NAFATH"));
         final @NotNull TestSetNode login = made.testSet(testProject.getTestCasesFolder(), "Login");
         final @NotNull TestSetNode card = made.testSet(testProject.getTestCasesFolder(), "Card");
-        urgent = aTestCase(login, Priority.HIGH, "a");
-        later = aTestCase(login, Priority.LOW, "b");
+        urgent = aTestCase(login, Priority.HIGH, "a", "SMOKE");
+        later = aTestCase(login, Priority.LOW, "b", "SMOKE", "REGRESSION");
         paid = aTestCase(card, Priority.LOW, "c");
 
         final @NotNull CheckedTreeNode top = new CheckedTreeNode(testProject.getTestCasesFolder());
@@ -79,8 +80,8 @@ public class TestRunFormFilterIdeTest extends AbstractTempRootIdeTest {
         filter = new TestRunFormFilter(getProject(), testProject.getTestCasesFolder().getPath(), top);
     }
 
-    private @NotNull TestCase aTestCase(final @NotNull TestSetNode testSet, final @NotNull Priority priority, final @NotNull String order) {
-        final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description("Pay with a " + priority + " card").order(order).priority(priority).build();
+    private @NotNull TestCase aTestCase(final @NotNull TestSetNode testSet, final @NotNull Priority priority, final @NotNull String order, final @NotNull String... groups) {
+        final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description("Pay with a " + priority + " card").order(order).priority(priority).groups(new ArrayList<>(List.of(groups))).build();
         testCase.setParent(testSet);
         assertTrue(Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testSet.getPath(), testCase));
         return testCase;
@@ -108,6 +109,11 @@ public class TestRunFormFilterIdeTest extends AbstractTempRootIdeTest {
             if (held instanceof TestCase) leaves.add(held);
         }
         return leaves;
+    }
+
+    // Rule-EDITOR-PANEL-095, Rule-TREE-PANEL-129
+    public void testTheGroupFilterOffersTheGroupsOfTheTreesTestCasesWithNoEditorOpen() {
+        assertEquals("the Group filter does not offer the groups the tree's test cases carry", List.of(Groups.NONE, "REGRESSION", "SMOKE"), entriesOf(TestSetEditorFields.GROUP.getName()).stream().map(TestRunFormFilterIdeTest::nameOf).toList());
     }
 
     // Rule-TREE-PANEL-129, Rule-EDITOR-PANEL-094

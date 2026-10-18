@@ -24,11 +24,11 @@ import org.testin.filter.FilterAndSortChoice;
 import org.testin.filter.FilterPopupButton;
 import org.testin.filter.FilterSource;
 import org.testin.filter.TestCaseFilter;
+import org.testin.model.Groups;
 import org.testin.model.Modules;
 import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.services.Services;
-import org.testin.services.TestCaseCompletions;
 import org.testin.ui.framework.SelectionTree;
 import org.testin.util.Bundle;
 
@@ -44,8 +44,6 @@ import java.util.stream.Collectors;
 
 // UC-TREE-PANEL-009, Rule-TREE-PANEL-129
 public final class TestRunFormFilter implements FilterSource {
-    private final @NotNull Project project;
-
     private final @NotNull AutomationState automation;
 
     private final @NotNull List<TestCase> offered = new ArrayList<>();
@@ -57,7 +55,6 @@ public final class TestRunFormFilter implements FilterSource {
     private final @NotNull SelectionTree selection;
 
     public TestRunFormFilter(final @NotNull Project project, final @NotNull Path testCasesRoot, final @NotNull CheckedTreeNode root) {
-        this.project = project;
         this.automation = Services.getInstance(project, AutomationState.class);
         collect(root, testCasesRoot);
 
@@ -85,14 +82,16 @@ public final class TestRunFormFilter implements FilterSource {
         return testSets;
     }
 
+    // Rule-EDITOR-PANEL-095
     @Override
     public @NotNull Set<String> getAvailableModules() {
         return Modules.in(offered);
     }
 
+    // Rule-EDITOR-PANEL-095
     @Override
     public @NotNull Set<String> getAvailableGroups() {
-        return Services.getInstance(project, TestCaseCompletions.class).getGroups();
+        return Groups.in(offered);
     }
 
     // Rule-TREE-PANEL-129, Rule-TREE-PANEL-130

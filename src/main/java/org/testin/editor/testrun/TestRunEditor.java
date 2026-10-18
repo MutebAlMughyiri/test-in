@@ -49,6 +49,7 @@ import org.testin.help.Guides;
 import org.testin.indexer.TestRuns;
 import org.testin.lightmode.LightMode;
 import org.testin.logger.TestinLogger;
+import org.testin.model.Groups;
 import org.testin.model.Modules;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestRunNode;
@@ -354,6 +355,12 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
     @Override
     public @NotNull Set<String> getAvailableModules() {
         return Modules.in(snapshotOfAll());
+    }
+
+    // UC-EDITOR-PANEL-020, Rule-EDITOR-PANEL-095
+    @Override
+    public @NotNull Set<String> getAvailableGroups() {
+        return Groups.in(snapshotOfAll());
     }
 
     // UC-EDITOR-PANEL-020, Rule-EDITOR-PANEL-094

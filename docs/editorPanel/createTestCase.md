@@ -136,7 +136,7 @@ Each field's icon is the letter of its key in a rounded frame, so Pre Conditions
 shows B. The same icon marks the field's values in its completion list.
 
 Description, Expected Result, Module, Steps and Group complete the values Testin
-knows. [When that list changes](refreshEditor.md#what-completion-and-the-group-filter-offer)
+knows. [When that list changes](refreshEditor.md#what-completion-offers)
 is written on the refresh page.
 
 **Expected Result, Test Data and Pre Conditions hold many lines.** They are the

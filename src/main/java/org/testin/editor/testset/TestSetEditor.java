@@ -41,6 +41,7 @@ import org.testin.filter.TestCaseFilter;
 import org.testin.help.Guide;
 import org.testin.help.Guides;
 import org.testin.logger.TestinLogger;
+import org.testin.model.Groups;
 import org.testin.model.Modules;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
@@ -356,6 +357,12 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorFields, Tes
     @Override
     public @NotNull Set<String> getAvailableModules() {
         return Modules.in(testCases.getTestCasesForTestSet(parent.getPath()));
+    }
+
+    // UC-EDITOR-PANEL-020, Rule-EDITOR-PANEL-095
+    @Override
+    public @NotNull Set<String> getAvailableGroups() {
+        return Groups.in(testCases.getTestCasesForTestSet(parent.getPath()));
     }
 
     // UC-EDITOR-PANEL-020

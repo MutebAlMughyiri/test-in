@@ -22,7 +22,9 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.util.Bundle;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Groups {
@@ -43,5 +45,16 @@ public final class Groups {
 
     public static @NotNull String text(final @NotNull List<String> groups) {
         return String.join(", ", groups);
+    }
+
+    // Rule-EDITOR-PANEL-095
+    public static @NotNull Set<String> in(final @NotNull List<TestCase> testCases) {
+        final @NotNull Set<String> groups = new HashSet<>();
+        for (final TestCase testCase : testCases) {
+            for (final String group : testCase.getGroups()) {
+                if (!group.isBlank()) groups.add(group.trim());
+            }
+        }
+        return groups;
     }
 }
