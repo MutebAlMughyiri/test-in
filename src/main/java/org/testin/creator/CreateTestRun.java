@@ -99,11 +99,6 @@ public class CreateTestRun implements NodeCreator {
     // UC-TREE-PANEL-009, Rule-TREE-PANEL-004
     private boolean create(final @NotNull TestRunConfigurationForm form, final @NotNull SelectionTree selection, final @NotNull AbstractNode parentNode) {
         final @NotNull String name = form.getTestRunName();
-        if (name.isEmpty()) {
-            notifier.softRefuse(project, Bundle.message("test.run.needs.a.name"));
-            return false;
-        }
-
         if (!nodes.nodeExists(parentNode.getPath())) {
             notifier.softRefuse(project, Bundle.message("test.run.parent.gone", parentNode.getName()));
             return false;

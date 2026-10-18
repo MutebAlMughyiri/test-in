@@ -165,7 +165,11 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
     }
 
     private void theCreateDialogOpened() {
-        new CreateTestRun(getProject()).configureTestRun(testProject.getTestCasesFolder(), "Cycle-1", testProject.getTestRunsFolder(), Set.of(), everyQuestionAnswered());
+        theCreateDialogOpenedNaming("Cycle-1");
+    }
+
+    private void theCreateDialogOpenedNaming(final @NotNull String name) {
+        new CreateTestRun(getProject()).configureTestRun(testProject.getTestCasesFolder(), name, testProject.getTestRunsFolder(), Set.of(), everyQuestionAnswered());
         Await.until("the test run dialog never opened", () -> ShownDialog.isOpen(getProject(), TestRunConfigurationDialog.class));
         ShownDialog.sized(getProject(), TestRunConfigurationDialog.class);
     }
@@ -197,6 +201,15 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
 
     private @NotNull CheckedTreeNode rowOf(final @NotNull Object held) {
         return rows().stream().filter(row -> row.getUserObject().equals(held)).findFirst().orElseThrow(() -> new AssertionError(held + " is not offered: " + offered()));
+    }
+
+    private @NotNull JTextField theNameBox() {
+        return Drawn.components(content()).stream()
+                .filter(JTextField.class::isInstance)
+                .map(JTextField.class::cast)
+                .filter(box -> "Cycle-1".equals(box.getText()))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("the dialog has no box holding the test run's name: " + Drawn.words(content())));
     }
 
     private @NotNull JButton theButton(final @NotNull String text) {
@@ -242,6 +255,31 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
         assertTrue("Create is gray with a test case checked", create.isEnabled());
+    }
+
+    // Rule-TREE-PANEL-095
+    public void testAPathTypedAsTheNameIsRefusedAndNothingIsCreated() {
+        theCreateDialogOpenedNaming("../Sprint 3");
+
+        theButton(Bundle.message("test.run.create.button")).doClick();
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+        assertTrue("a path taken as the name closed the dialog", ShownDialog.isOpen(getProject(), TestRunConfigurationDialog.class));
+        assertTrue("a path taken as the name created a test run", theTestRunsUnder(testProject.getTestRunsFolder()).isEmpty());
+        assertFalse("a path taken as the name created a test run beside the Test Runs folder", nodes().nodeExists(testProject.getPath().resolve("Sprint 3")));
+    }
+
+    // Rule-TREE-PANEL-095
+    public void testAPathTypedAsTheNewNameOnEditIsRefusedAndTheTestRunKeepsItsFolder() {
+        final @NotNull TestRunNode testRun = cycle1In(testProject.getTestRunsFolder(), List.of(new RunItem().setUuid(first.getUuid())));
+        theEditDialogOpenedOn(testRun);
+
+        theNameBox().setText("Cycle/1");
+        theButton(StatusBarShortcut.SAVE).doClick();
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+        assertTrue("a path taken as the name closed the dialog", ShownDialog.isOpen(getProject(), TestRunConfigurationDialog.class));
+        assertTrue("the test run left its own folder", nodes().nodeExists(testRun.getPath()));
     }
 
     // Rule-TREE-PANEL-138

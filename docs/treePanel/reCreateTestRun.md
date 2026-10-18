@@ -96,12 +96,20 @@ bar at the bottom right of the IDE.
 
 ## What Testin refuses
 
-The same four refusals apply as when a test run is created.
+These refusals apply as when a test run is created.
 
 **If no test case is ticked** — the **Create** button is disabled.
 
+**If a row on the form has no answer** — the **Create** button is disabled, and
+hovering over it reads *Pick a \<field\>*, naming the first row that has none. (Rule-TREE-PANEL-121)
+
 **If the name is empty** — *A test run needs a name* is shown, and the dialog
 stays open with everything typed still in it.
+
+**If the name is a path** — a name holding a slash, a backslash or `..` is
+refused, reading *'\<name\>' is a path, not a name - a node is one folder inside
+the one selected*. The dialog stays open with everything typed still in it.
+(Rule-TREE-PANEL-095)
 
 **If the name is already used** — *\<name\> Already Exists* is shown, and the
 dialog stays open with everything typed still in it.

@@ -133,6 +133,11 @@ longer exists - nothing saved* is shown in red.
 **If the name is emptied** — *A test run needs a name* is shown in red, and the
 dialog stays open.
 
+**If the name is a path** — a name holding a slash, a backslash or `..` is
+refused, reading *'\<name\>' is a path, not a name - a node is one folder inside
+the one selected*. The dialog stays open, and nothing is saved.
+(Rule-TREE-PANEL-095)
+
 **If the new name is already used by a sibling** — *\<name\> Already Exists* is
 shown in red, and the dialog stays open. Keeping the test run's own name is not
 a clash.

@@ -18,6 +18,8 @@ package org.testin.testrun.form;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
+import org.testin.model.NodeType;
+import org.testin.notifications.Refused;
 import org.testin.ui.framework.AbstractFrameworkDialog;
 import org.testin.ui.framework.DialogButton;
 import org.testin.ui.framework.DialogPart;
@@ -84,11 +86,24 @@ public final class TestRunConfigurationDialog extends AbstractFrameworkDialog {
         return form.unanswered();
     }
 
-    // UC-TREE-PANEL-009, Rule-TREE-PANEL-029, Rule-TREE-PANEL-121
+    // UC-TREE-PANEL-009, UC-TREE-PANEL-021, UC-TREE-PANEL-022, Rule-TREE-PANEL-029, Rule-TREE-PANEL-121
     @Override
     protected void submit() {
-        if (whyNot().isPresent()) return;
+        if (whyNot().isPresent() || refusesTheName()) return;
 
         if (action.submit().saved(form, selection)) closeOk();
+    }
+
+    // UC-TREE-PANEL-009, UC-TREE-PANEL-021, UC-TREE-PANEL-022, Rule-TREE-PANEL-095
+    private boolean refusesTheName() {
+        final @NotNull String name = form.getTestRunName();
+        if (name.isEmpty()) {
+            notifier.softRefuse(project, Bundle.message("test.run.needs.a.name"));
+            return true;
+        }
+
+        final @NotNull Optional<Refused> notAName = Refused.ofName(NodeType.TEST_RUN, name);
+        notAName.ifPresent(refusal -> notifier.softRefuse(project, refusal, name));
+        return notAName.isPresent();
     }
 }

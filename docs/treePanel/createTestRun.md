@@ -246,8 +246,9 @@ hovering over it reads *Pick a \<field\>*, naming the first row that has none. (
 a name* is shown in red.
 
 **If the name is a path** - a name holding a slash, a backslash or `..` is
-refused, reading *is a path, not a name - a node is one folder inside the one
-selected*. Nothing is created.
+refused, reading *'\<name\>' is a path, not a name - a node is one folder inside
+the one selected*. In the first dialog or in **Create Test Run**, nothing is
+created. (Rule-TREE-PANEL-095)
 
 **If a test run with that name already exists** — *\<name\> Already Exists* is
 shown in red. Typing it in the first dialog closes that dialog and the second
