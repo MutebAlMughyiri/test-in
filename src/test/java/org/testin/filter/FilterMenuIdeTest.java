@@ -179,13 +179,8 @@ public class FilterMenuIdeTest extends AbstractTempRootIdeTest {
             }
 
             @Override
-            public @NotNull Set<String> getAvailableModules() {
-                return Set.of();
-            }
-
-            @Override
-            public @NotNull Set<String> getAvailableGroups() {
-                return Set.of();
+            public @NotNull List<TestCase> getTestCasesToFilter() {
+                return List.of();
             }
         });
         tick(inCreateTestRun, Bundle.message("filter.test.set"), "Checkout");

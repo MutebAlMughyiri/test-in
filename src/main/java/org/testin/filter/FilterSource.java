@@ -17,10 +17,11 @@
 package org.testin.filter;
 
 import org.jetbrains.annotations.NotNull;
+import org.testin.model.TestCase;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public interface FilterSource {
     default boolean hasRunItemStatuses() {
@@ -41,7 +42,6 @@ public interface FilterSource {
 
     void onToolBarFilterResetButtonClicked();
 
-    @NotNull Set<String> getAvailableModules();
-
-    @NotNull Set<String> getAvailableGroups();
+    // Rule-EDITOR-PANEL-095
+    @NotNull List<TestCase> getTestCasesToFilter();
 }

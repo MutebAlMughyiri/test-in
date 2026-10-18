@@ -24,8 +24,6 @@ import org.testin.filter.FilterAndSortChoice;
 import org.testin.filter.FilterPopupButton;
 import org.testin.filter.FilterSource;
 import org.testin.filter.TestCaseFilter;
-import org.testin.model.Groups;
-import org.testin.model.Modules;
 import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.services.Services;
@@ -34,6 +32,7 @@ import org.testin.util.Bundle;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,14 +83,8 @@ public final class TestRunFormFilter implements FilterSource {
 
     // Rule-EDITOR-PANEL-095
     @Override
-    public @NotNull Set<String> getAvailableModules() {
-        return Modules.in(offered);
-    }
-
-    // Rule-EDITOR-PANEL-095
-    @Override
-    public @NotNull Set<String> getAvailableGroups() {
-        return Groups.in(offered);
+    public @NotNull List<TestCase> getTestCasesToFilter() {
+        return Collections.unmodifiableList(offered);
     }
 
     // Rule-TREE-PANEL-129, Rule-TREE-PANEL-130

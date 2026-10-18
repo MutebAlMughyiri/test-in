@@ -33,6 +33,7 @@ import org.testin.editor.EditorColors;
 import org.testin.editor.toolbar.ToolbarItem;
 import org.testin.model.Automated;
 import org.testin.model.Groups;
+import org.testin.model.Modules;
 import org.testin.model.Priority;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.status.TestCaseStatus;
@@ -201,7 +202,7 @@ public class FilterPopupButton extends AbstractIconButton implements ToolbarItem
                 actions.add(new ToggleFilterAction<>(Groups.NONE, null,
                         Groups.NONE, selectedGroup, FilterMembership.plain(), onChanged));
 
-                source.getAvailableGroups().stream().sorted().forEach(group ->
+                Groups.in(source.getTestCasesToFilter()).stream().sorted().forEach(group ->
                         actions.add(new ToggleFilterAction<>(group, null,
                                 group, selectedGroup, FilterMembership.plain(), onChanged)));
 
@@ -214,7 +215,7 @@ public class FilterPopupButton extends AbstractIconButton implements ToolbarItem
             // UC-EDITOR-PANEL-020, Rule-EDITOR-PANEL-095
             @Override
             public AnAction @NotNull [] getChildren(final @Nullable AnActionEvent e) {
-                final @NotNull List<String> orderedModules = new ArrayList<>(source.getAvailableModules());
+                final @NotNull List<String> orderedModules = new ArrayList<>(Modules.in(source.getTestCasesToFilter()));
                 Collections.sort(orderedModules);
 
                 final @NotNull List<AnAction> actions = new ArrayList<>();
