@@ -64,7 +64,7 @@ record RemoveTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor
     private void performDeletion(final @NotNull List<TestCase> selectedTestCases) {
         editor.getAllTestCases().removeAll(selectedTestCases);
 
-        cutState.clear();
+        cutState.callOffFor(selectedTestCases);
 
         ApplicationManager.getApplication().executeOnPooledThread(() -> removeFromDisk(selectedTestCases));
     }

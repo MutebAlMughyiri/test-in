@@ -28,7 +28,8 @@ panel.
 - **Rule-INTERNAL-031** — Moving one test case writes only the test cases that
   actually moved. Dropping one into a test set of 200 writes one file. A test
   case the test set has never held is always written, whether its place moved or
-  not.
+  not. Putting a test set in order never takes a test case out of it: one the new
+  order leaves out stays in the test set.
 - **Rule-INTERNAL-032** — A place between any two places always exists, so a
   test case can always be dropped between two others.
 - **Rule-INTERNAL-033** — A save that would leave the file exactly as it is

@@ -171,6 +171,20 @@ public class TestCaseWritesIdeTest extends AbstractTempRootIdeTest {
         assertEquals("the test set counts a test case that is not on disk", 0, indexedTestCases().testCaseCountOf(testSet.getPath()));
     }
 
+    // Rule-INTERNAL-031
+    public void testAnOrderWriteThatLeavesATestCaseOutKeepsItInTheIndex() {
+        final TestSetNode testSet = oneTestSet();
+        final TestCase ordered = aTestCaseIn(testSet, "m");
+        final TestCase leftOut = aTestCaseIn(testSet, "n");
+        indexedTestCases().putTestCaseVerbatim(testSet.getPath(), ordered);
+        indexedTestCases().putTestCaseVerbatim(testSet.getPath(), leftOut);
+
+        indexedTestCases().updateSequence(testSet.getPath(), List.of(ordered), List.of());
+
+        assertTrue("an order write dropped a test case whose file it never removed", indexedTestCases().findTestCase(leftOut.getUuid()).isPresent());
+        assertEquals("the test set stopped counting a test case still on disk", 2, indexedTestCases().testCaseCountOf(testSet.getPath()));
+    }
+
     // Rule-INTERNAL-035
     public void testATestCaseSavedAsItIsBeforeTheOrderKeepsItsCreator() {
         final TestSetNode testSet = oneTestSet();

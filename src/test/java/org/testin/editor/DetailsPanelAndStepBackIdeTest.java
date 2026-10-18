@@ -123,7 +123,7 @@ public class DetailsPanelAndStepBackIdeTest extends AbstractTempRootIdeTest {
         try {
             editor.getList().setSelectedIndex(1);
             pressEnterOn(editor);
-            cutState().cut(editor, List.of(createdTestCases.get(1)));
+            cutState().cut(editor.getParent(), List.of(createdTestCases.get(1)));
 
             pressEscapeOn(editor);
             assertFalse("the first press did not drop the cut", cutState().isCutting());
@@ -153,7 +153,7 @@ public class DetailsPanelAndStepBackIdeTest extends AbstractTempRootIdeTest {
         try {
             editor.getList().setSelectedIndex(0);
             pressEnterOn(editor);
-            cutState().cut(editor, List.of(createdTestCases.getFirst()));
+            cutState().cut(editor.getParent(), List.of(createdTestCases.getFirst()));
 
             editor.getToolBar().getToolbarItem(GridViewButton.class).doClick();
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();

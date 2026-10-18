@@ -20,9 +20,13 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.Project;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.TestinEditor;
+import org.testin.editor.open.TestinEditors;
 import org.testin.model.TestCase;
+import org.testin.model.node.AbstractNode;
 import org.testin.services.Services;
 
 import javax.swing.JComponent;
@@ -33,10 +37,13 @@ import java.util.Set;
 import java.util.UUID;
 
 @Service(Service.Level.PROJECT)
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public final class CutState implements Disposable {
+    private final @NotNull Project project;
+
     private final @NotNull Set<UUID> pending = new HashSet<>();
 
-    private @NotNull Optional<TestinEditor> source = Optional.empty();
+    private @NotNull Optional<AbstractNode> fromTestSet = Optional.empty();
 
     // UC-EDITOR-PANEL-017, Rule-EDITOR-PANEL-080, Rule-EDITOR-PANEL-076
     public static void startClipboardWatch(final @NotNull Project project) {
@@ -45,10 +52,10 @@ public final class CutState implements Disposable {
         CopyPasteManager.getInstance().addContentChangedListener((_, _) -> state.clear(), state);
     }
 
-    public void cut(final @NotNull TestinEditor editor, final @NotNull List<TestCase> testCases) {
+    public void cut(final @NotNull AbstractNode testSet, final @NotNull List<TestCase> testCases) {
         pending.clear();
         testCases.forEach(testCase -> pending.add(testCase.getUuid()));
-        source = Optional.of(editor);
+        fromTestSet = Optional.of(testSet);
     }
 
     public boolean isPending(final @NotNull UUID testCaseUuid) {
@@ -64,18 +71,23 @@ public final class CutState implements Disposable {
         return !pending.isEmpty();
     }
 
-    public @NotNull Optional<TestinEditor> source() {
-        return source;
+    public @NotNull Optional<AbstractNode> from() {
+        return fromTestSet;
+    }
+
+    // UC-EDITOR-PANEL-011, Rule-EDITOR-PANEL-065, Rule-EDITOR-PANEL-080
+    public void callOffFor(final @NotNull List<TestCase> removed) {
+        if (removed.stream().anyMatch(testCase -> isPending(testCase.getUuid()))) clear();
     }
 
     public void clear() {
         pending.clear();
-        source.map(TestinEditor::getPreferredFocusedComponent).ifPresent(JComponent::repaint);
-        source = Optional.empty();
+        fromTestSet.flatMap(Services.getInstance(project, TestinEditors.class)::editorFor).map(TestinEditor::getPreferredFocusedComponent).ifPresent(JComponent::repaint);
+        fromTestSet = Optional.empty();
     }
 
     @Override
     public void dispose() {
-        clear();
+        pending.clear();
     }
 }

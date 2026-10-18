@@ -171,7 +171,7 @@ public class RemoveTestCasesIdeTest extends AbstractTempRootIdeTest {
         editor.getList().setSelectedIndex(0);
         final @NotNull TestCase waiting = editor.getList().getSelectedValue();
         final @NotNull CutState cutState = Services.getInstance(getProject(), CutState.class);
-        cutState.cut(editor, List.of(waiting));
+        cutState.cut(editor.getParent(), List.of(waiting));
 
         final @NotNull List<String> asked = askedToRemove(editor);
         assertTrue("a test case waiting to be pasted was not asked about like any other: " + asked, Drawn.holds(asked, Bundle.message("remove.test.case.confirm.one", "Log in")));

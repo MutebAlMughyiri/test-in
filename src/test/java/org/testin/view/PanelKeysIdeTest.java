@@ -138,7 +138,7 @@ public class PanelKeysIdeTest extends AbstractViewPanelIdeTest {
         settled();
         view.getPanel().show(List.of(testCases.getFirst()), testSet.treePath());
         final @NotNull CutState cut = Services.getInstance(getProject(), CutState.class);
-        cut.cut(editor, List.of(testCases.get(1)));
+        cut.cut(editor.getParent(), List.of(testCases.get(1)));
 
         assertTrue(KeyPress.press(getProject(), list, key(Shortcuts.Escape)));
         assertFalse("the first Escape did not drop the cut", cut.isCutting());

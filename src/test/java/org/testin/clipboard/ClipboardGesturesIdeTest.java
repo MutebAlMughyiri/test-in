@@ -22,6 +22,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.KeyboardShortcut;
 import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import com.intellij.openapi.ide.CopyPasteManager;
+import com.intellij.openapi.util.Disposer;
 import com.intellij.testFramework.PlatformTestUtil;
 import com.intellij.testFramework.TestActionEvent;
 import com.intellij.ui.components.JBList;
@@ -152,7 +153,11 @@ public class ClipboardGesturesIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull List<TestCase> orderedIn(final @NotNull TestSetEditor editor) {
-        return TestCaseOrder.ordered(theTestCases().getTestCasesForTestSet(editor.getParent().getPath()));
+        return orderedAt(editor.getParent().getPath());
+    }
+
+    private @NotNull List<TestCase> orderedAt(final @NotNull Path testSetPath) {
+        return TestCaseOrder.ordered(theTestCases().getTestCasesForTestSet(testSetPath));
     }
 
     private @NotNull List<String> everyFile() {
@@ -314,6 +319,28 @@ public class ClipboardGesturesIdeTest extends AbstractTempRootIdeTest {
         } finally {
             settings.testerName = tester;
         }
+    }
+
+    // Rule-EDITOR-PANEL-082, Rule-EDITOR-PANEL-084
+    public void testACutWhoseEditorWasClosedStillMovesAndOneUndoPutsItBack() {
+        final @NotNull TestSetEditor login = aTestSetOf("Login", "Log in", "Log out");
+        final @NotNull TestSetEditor checkout = aTestSetOf("Checkout", "Pay");
+        final @NotNull Path loginPath = login.getParent().getPath();
+        final @NotNull UndoScope scope = UndoScope.of(checkout.getParent().getPath());
+        login.getList().setSelectedIndex(0);
+        choose(CUT, login.getList());
+        Disposer.dispose(login);
+
+        choose(PASTE, checkout.getList());
+
+        Await.until("the cut was never pasted", () -> orderedIn(checkout).size() == 2);
+        assertEquals("closing the editor the cut came from emptied its test set", List.of("Log out"), descriptionsOf(orderedAt(loginPath)));
+
+        Await.until("the cut and paste never reached the undo history", () -> Services.getInstance(getProject(), UndoHistories.class).canUndo(scope));
+        assertTrue(Services.getInstance(getProject(), UndoHistories.class).undo(scope));
+
+        assertEquals("undo did not put the cut test case back where it came from", List.of("Log in", "Log out"), descriptionsOf(orderedAt(loginPath)));
+        assertEquals(List.of("Pay"), descriptionsOf(orderedIn(checkout)));
     }
 
     // Rule-EDITOR-PANEL-085

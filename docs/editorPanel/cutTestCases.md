@@ -40,7 +40,9 @@ the **Cut Test Case** entry on the right-click menu. It has no key of its own.
 - **Rule-EDITOR-PANEL-079** — Nothing is removed until the paste. A cut on its
   own changes nothing.
 - **Rule-EDITOR-PANEL-080** — A cut is called off by a paste, by `Escape`, by
-  removing test cases, and by anything at all being written to the clipboard.
+  removing a test case that is waiting to be pasted, and by anything at all
+  being written to the clipboard. Closing the test set's editor does not call
+  it off.
   There is one clipboard, so a copy in the tree, a copied grid selection, a
   copied UUID, or a copy made in another application all take the cut with them:
   what the paste would put down is no longer the test cases that are faded.

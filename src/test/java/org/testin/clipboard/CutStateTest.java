@@ -16,10 +16,11 @@
 
 package org.testin.clipboard;
 
+import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.StandIn;
-import org.testin.editor.TestinEditor;
 import org.testin.model.TestCase;
+import org.testin.model.node.TestSetNode;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -30,8 +31,8 @@ import static org.testng.Assert.assertTrue;
 
 public class CutStateTest {
 
-    private static @NotNull TestinEditor anyEditor() {
-        return StandIn.of(TestinEditor.class);
+    private static @NotNull CutState aCutState() {
+        return new CutState(StandIn.of(Project.class));
     }
 
     private static @NotNull TestCase testCase() {
@@ -42,18 +43,18 @@ public class CutStateTest {
     public void theTestCasesThatWereCutArePastedAsAMove() {
         final @NotNull TestCase first = testCase();
         final @NotNull TestCase second = testCase();
-        final @NotNull CutState state = new CutState();
+        final @NotNull CutState state = aCutState();
 
-        state.cut(anyEditor(), List.of(first, second));
+        state.cut(new TestSetNode(), List.of(first, second));
 
         assertTrue(state.isCutOf(List.of(first, second)));
     }
 
     @Test
     public void otherTestCasesCopiedAfterTheCutArePastedAsACopy() {
-        final @NotNull CutState state = new CutState();
+        final @NotNull CutState state = aCutState();
 
-        state.cut(anyEditor(), List.of(testCase()));
+        state.cut(new TestSetNode(), List.of(testCase()));
 
         assertTrue(state.isCutting(), "the cut is still waiting");
         assertFalse(state.isCutOf(List.of(testCase())), "a different test case on the clipboard is not the cut, so pasting it moves nothing");
@@ -62,19 +63,31 @@ public class CutStateTest {
     @Test
     public void aClipboardHoldingTheCutAndMoreIsNotTheCut() {
         final @NotNull TestCase cut = testCase();
-        final @NotNull CutState state = new CutState();
+        final @NotNull CutState state = aCutState();
 
-        state.cut(anyEditor(), List.of(cut));
+        state.cut(new TestSetNode(), List.of(cut));
 
         assertFalse(state.isCutOf(List.of(cut, testCase())));
     }
 
     @Test
     public void nothingPastedIsNotAMove() {
-        final @NotNull CutState state = new CutState();
+        final @NotNull CutState state = aCutState();
 
-        state.cut(anyEditor(), List.of(testCase()));
+        state.cut(new TestSetNode(), List.of(testCase()));
 
         assertFalse(state.isCutOf(List.of()));
+    }
+
+    // UC-EDITOR-PANEL-011, Rule-EDITOR-PANEL-065
+    @Test
+    public void removingATestCaseThatIsNotWaitingLeavesTheCut() {
+        final @NotNull TestCase cut = testCase();
+        final @NotNull CutState state = aCutState();
+        state.cut(new TestSetNode(), List.of(cut));
+
+        state.callOffFor(List.of(testCase()));
+
+        assertTrue(state.isCutOf(List.of(cut)), "removing an unrelated test case called off the cut, so the paste copied instead of moving");
     }
 }

@@ -52,7 +52,7 @@ public class CutTestCaseAction extends AbstractAnyProjectAction {
                 final @NotNull String json = CopiedTestCases.json(project, selectedTestCases);
                 CopyPasteManager.getInstance().setContents(new StringSelection(json));
 
-                Services.getInstance(project, CutState.class).cut(editor, selectedTestCases);
+                Services.getInstance(project, CutState.class).cut(editor.getParent(), selectedTestCases);
 
                 editor.refreshView();
 

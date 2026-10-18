@@ -203,7 +203,7 @@ final class TestCaseStore {
 
         Optional.ofNullable(testCaseUuidsByTestSet.get(path)).ifPresent(oldUuids -> oldUuids.stream()
                 .filter(testCaseUuid -> !newUuids.contains(testCaseUuid))
-                .forEach(testCasesByUuid::remove));
+                .forEach(testCaseUuids::add));
         testCaseUuidsByTestSet.put(path, testCaseUuids(testCaseUuids));
         return allWritten;
     }
