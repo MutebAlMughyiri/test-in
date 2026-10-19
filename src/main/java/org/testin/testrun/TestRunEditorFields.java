@@ -16,13 +16,13 @@
 
 package org.testin.testrun;
 
-import lombok.AllArgsConstructor;
+import com.google.errorprone.annotations.Immutable;
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import org.testin.codegen.Fqcn;
 import org.testin.model.FieldDefault;
-import org.testin.model.Groups;
 import org.testin.model.ShowableField;
+import org.testin.model.TestCase;
 import org.testin.model.bug.BugIssueUrl;
 import org.testin.model.testrun.RunItem;
 import org.testin.testcase.TestSetEditorFields;
@@ -36,37 +36,24 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Getter
-@AllArgsConstructor
 public enum TestRunEditorFields implements ShowableField {
     SEQUENCE(
-            TestSetEditorFields.SEQUENCE.getName(),
+            TestSetEditorFields.SEQUENCE,
             FieldDefault.STRUCTURE,
-            _ -> ""
-    ) {
-        @Override
-        public void applyToUI(final @NotNull RunItem runItem, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
-        }
-    },
+            RunItem::shownTestCase
+    ),
 
     ORDER(
-            TestSetEditorFields.ORDER.getName(),
+            TestSetEditorFields.ORDER,
             FieldDefault.ON,
-            _ -> ""
-    ) {
-        @Override
-        public void applyToUI(final @NotNull RunItem runItem, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
-        }
-    },
+            RunItem::shownTestCase
+    ),
 
     DESCRIPTION(
-            TestSetEditorFields.DESCRIPTION.getName(),
+            TestSetEditorFields.DESCRIPTION,
             FieldDefault.ON,
-            runItem -> runItem.shownTestCase().getDescription()
+            RunItem::shownTestCase
     ) {
-        @Override
-        public void applyToUI(final @NotNull RunItem runItem, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
-        }
-
         // Rule-EDITOR-PANEL-263
         @Override
         public @NotNull String gridValue(final @NotNull RunItem runItem) {
@@ -76,38 +63,29 @@ public enum TestRunEditorFields implements ShowableField {
     },
 
     EXPECTED_RESULT(
-            TestSetEditorFields.EXPECTED_RESULT.getName(),
+            TestSetEditorFields.EXPECTED_RESULT,
             FieldDefault.ON,
-            runItem -> runItem.shownTestCase().getExpectedResult()
+            RunItem::shownTestCase
     ),
 
     STEPS(
-            TestSetEditorFields.STEPS.getName(),
+            TestSetEditorFields.STEPS,
             FieldDefault.OFF,
-            runItem -> String.join(", ", runItem.shownTestCase().getSteps())
+            RunItem::shownTestCase
     ),
 
+    // Rule-EDITOR-PANEL-267
     PRIORITY(
-            TestSetEditorFields.PRIORITY.getName(),
+            TestSetEditorFields.PRIORITY,
             FieldDefault.OFF,
-            runItem -> runItem.shownTestCase().getPriority().getLabel()
-    ) {
-        // Rule-EDITOR-PANEL-267
-        @Override
-        public void applyToUI(final @NotNull RunItem runItem, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
-        }
-    },
+            RunItem::shownTestCase
+    ),
 
     GROUP(
-            TestSetEditorFields.GROUP.getName(),
+            TestSetEditorFields.GROUP,
             FieldDefault.OFF,
-            runItem -> Groups.text(runItem.shownTestCase().getGroups())
-    ) {
-        @Override
-        public void applyToUI(final @NotNull RunItem runItem, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
-            runItem.shownTestCase().getGroups().stream().map(Badges::createGroupBadge).forEach(badges::add);
-        }
-    },
+            RunItem::shownTestCase
+    ),
 
     // Rule-EDITOR-PANEL-171
     ACTUAL_RESULT(
@@ -182,15 +160,15 @@ public enum TestRunEditorFields implements ShowableField {
     ),
 
     PATH(
-            TestSetEditorFields.PATH.getName(),
+            TestSetEditorFields.PATH,
             FieldDefault.OFF,
-            runItem -> String.join(" > ", runItem.liveTestCase().getParent().treePath())
+            RunItem::liveTestCase
     ),
 
     FQCN(
-            TestSetEditorFields.FQCN.getName(),
+            TestSetEditorFields.FQCN,
             FieldDefault.LOCKED_UNCHECKED,
-            runItem -> String.join(" > ", Fqcn.ofMethod(runItem.liveTestCase()))
+            RunItem::liveTestCase
     );
 
     // Rule-EDITOR-PANEL-020
@@ -204,8 +182,29 @@ public enum TestRunEditorFields implements ShowableField {
 
     private final @NotNull RunItemValueSetter runItemValueSetter;
 
+    @Getter(AccessLevel.NONE)
+    private final @NotNull CardLine cardLine;
+
     TestRunEditorFields(final @NotNull String name, final @NotNull FieldDefault toolBarDefault, final @NotNull Function<RunItem, String> runItemValueExtractor) {
         this(name, toolBarDefault, runItemValueExtractor, RunItemValueSetter.NONE);
+    }
+
+    TestRunEditorFields(final @NotNull String name, final @NotNull FieldDefault toolBarDefault, final @NotNull Function<RunItem, String> runItemValueExtractor, final @NotNull RunItemValueSetter runItemValueSetter) {
+        this(name, toolBarDefault, runItemValueExtractor, runItemValueSetter, (runItem, _, details) -> details.put(name, runItemValueExtractor.apply(runItem)));
+    }
+
+    // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-238
+    TestRunEditorFields(final @NotNull TestSetEditorFields testCaseField, final @NotNull FieldDefault toolBarDefault, final @NotNull Function<RunItem, TestCase> testCaseOf) {
+        this(testCaseField.getName(), toolBarDefault, runItem -> testCaseField.gridValue(testCaseOf.apply(runItem)), RunItemValueSetter.NONE,
+                (runItem, badges, details) -> testCaseField.applyToUI(testCaseOf.apply(runItem), badges, details));
+    }
+
+    TestRunEditorFields(final @NotNull String name, final @NotNull FieldDefault toolBarDefault, final @NotNull Function<RunItem, String> runItemValueExtractor, final @NotNull RunItemValueSetter runItemValueSetter, final @NotNull CardLine cardLine) {
+        this.name = name;
+        this.toolBarDefault = toolBarDefault;
+        this.runItemValueExtractor = runItemValueExtractor;
+        this.runItemValueSetter = runItemValueSetter;
+        this.cardLine = cardLine;
     }
 
     // Rule-EDITOR-PANEL-020
@@ -223,7 +222,13 @@ public enum TestRunEditorFields implements ShowableField {
     }
 
     public void applyToUI(final @NotNull RunItem runItem, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
-        details.put(name, runItemValueExtractor.apply(runItem));
+        cardLine.add(runItem, badges, details);
+    }
+
+    @FunctionalInterface
+    @Immutable
+    private interface CardLine {
+        void add(@NotNull RunItem runItem, @NotNull List<Badge> badges, @NotNull Map<String, String> details);
     }
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-020
