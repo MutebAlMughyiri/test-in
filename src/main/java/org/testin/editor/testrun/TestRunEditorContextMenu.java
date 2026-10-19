@@ -32,12 +32,9 @@ import org.testin.testrun.SetRunItemStatusGroup;
 public class TestRunEditorContextMenu extends AbstractEditorContextMenu {
     private final @NotNull Project project;
 
-    private final @NotNull TestinEditor editor;
-
     public TestRunEditorContextMenu(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull AbstractNode node, final @NotNull JBList<TestCase> list) {
         super();
         this.project = project;
-        this.editor = editor;
 
         add(Declared.forMenu("Testin.SetRunItemStatus"));
         addSeparator();
@@ -52,6 +49,9 @@ public class TestRunEditorContextMenu extends AbstractEditorContextMenu {
         addSeparator();
         add(Declared.forMenu("Testin.RunTestMethod"));
         add(Declared.forMenu("Testin.NavigateToTestMethod"));
+
+        addSeparator();
+        add(new GenerateReportAction(project, editor, list));
     }
 
     // UC-EDITOR-PANEL-026, UC-EDITOR-PANEL-029, Rule-PRODUCT-024
@@ -59,7 +59,6 @@ public class TestRunEditorContextMenu extends AbstractEditorContextMenu {
     public void registerShortcuts(final @NotNull JBList<TestCase> list) {
         new TestinEscapeAction(project, list);
         new OpenContextMenuAction(list, this);
-        new GenerateReportAction(project, editor, list);
 
         SetRunItemStatusGroup.bindLettersTo(list);
     }

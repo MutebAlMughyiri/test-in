@@ -43,21 +43,17 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
 import org.testin.model.ReportColor;
 import org.testin.model.bug.BugIssueUrl;
-import org.testin.model.bug.BugPriority;
-import org.testin.model.bug.BugSeverity;
 import org.testin.model.markers.DetailRow;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.status.TestRunStatus;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.RunItems;
-import org.testin.model.testrun.TestRunConfiguration;
 import org.testin.model.testrun.TestRunResultAnalysis;
 import org.testin.model.testrun.TestRunSummary;
 import org.testin.notifications.Notifier;
 import org.testin.report.ReportTile;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
-import org.testin.testrun.TestRunEditorFields;
 import org.testin.util.Bundle;
 import org.testin.util.ReportFont;
 
@@ -67,27 +63,29 @@ import java.io.UncheckedIOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.UnaryOperator;
 
 public final class TestRunPdfGenerator {
     private final @NotNull Set<String> leftOut = new LinkedHashSet<>();
 
-    private final @NotNull DeviceRgb DARK_NAVY = rgb(ReportColor.HEADING.hex());
+    private static final @NotNull DeviceRgb HEADING_COLOR = rgb(ReportColor.HEADING.hex());
 
-    private final @NotNull DeviceRgb MEDIUM_BLUE = rgb(ReportColor.ACCENT.hex());
+    private static final @NotNull DeviceRgb ACCENT_COLOR = rgb(ReportColor.ACCENT.hex());
 
-    private final @NotNull DeviceRgb DARK_GRAY = rgb(ReportColor.MUTED.hex());
+    private static final @NotNull DeviceRgb MUTED_COLOR = rgb(ReportColor.MUTED.hex());
 
-    private final @NotNull DeviceRgb LIGHT_BG = rgb(ReportColor.PANEL.hex());
+    private static final @NotNull DeviceRgb PANEL_COLOR = rgb(ReportColor.PANEL.hex());
 
-    private final @NotNull DeviceRgb BORDER_GRAY = rgb(ReportColor.LINE.hex());
+    private static final @NotNull DeviceRgb LINE_COLOR = rgb(ReportColor.LINE.hex());
 
-    private final @NotNull DeviceRgb WHITE = rgb(ReportColor.PAGE.hex());
+    private static final @NotNull DeviceRgb PAGE_COLOR = rgb(ReportColor.PAGE.hex());
 
-    private final @NotNull DeviceRgb BLACK = rgb(ReportColor.INK.hex());
+    private static final @NotNull DeviceRgb INK_COLOR = rgb(ReportColor.INK.hex());
 
-    private final @NotNull DeviceRgb LINK_BLUE = rgb(ReportColor.LINK.hex());
+    private static final @NotNull DeviceRgb LINK_COLOR = rgb(ReportColor.LINK.hex());
 
     private @NotNull Optional<PdfFont> printsWith = Optional.empty();
 
@@ -96,46 +94,39 @@ public final class TestRunPdfGenerator {
         try (ByteArrayOutputStream bytes = new ByteArrayOutputStream();
              PdfDocument pdf = new PdfDocument(new PdfWriter(bytes));
              Document document = new Document(pdf, pdf.getDefaultPageSize(), false)) {
-            PdfFont boldFont = PdfFontFactory.createFont(ReportFont.PDF_BOLD);
-            PdfFont regularFont = PdfFontFactory.createFont(ReportFont.PDF_REGULAR);
+            final @NotNull PdfFont boldFont = PdfFontFactory.createFont(ReportFont.PDF_BOLD);
+            final @NotNull PdfFont regularFont = PdfFontFactory.createFont(ReportFont.PDF_REGULAR);
 
             // Rule-REPORT-018
             printsWith = Optional.of(regularFont);
-            PdfFont italicFont = PdfFontFactory.createFont(ReportFont.PDF_ITALIC);
+            final @NotNull PdfFont italicFont = PdfFontFactory.createFont(ReportFont.PDF_ITALIC);
 
             final @NotNull String testProjectName = Services.getInstance(project, BoundTestProject.class).name();
 
             document.add(paragraph(Bundle.message("report.title"))
-                    .setFont(boldFont).setFontSize(ReportFont.TITLE.points()).setFontColor(DARK_NAVY)
+                    .setFont(boldFont).setFontSize(ReportFont.TITLE.points()).setFontColor(HEADING_COLOR)
                     .setMarginBottom(2));
 
-            document.add(paragraph(ReportText.joined("  |  ", testProjectName, ReportText.joined(", ", TestRunConfiguration.PLATFORM.valueIn(testRunNode.getMarker()), TestRunConfiguration.COMPONENT.valueIn(testRunNode.getMarker()))))
-                    .setFont(regularFont).setFontSize(ReportFont.SUBTITLE.points()).setFontColor(MEDIUM_BLUE)
+            document.add(paragraph(ReportText.subtitle(testProjectName, testRunNode.getMarker()))
+                    .setFont(regularFont).setFontSize(ReportFont.SUBTITLE.points()).setFontColor(ACCENT_COLOR)
                     .setMarginBottom(0));
 
             document.add(paragraph(testRunNode.getName())
-                    .setFont(regularFont).setFontSize(ReportFont.LEAD.points()).setFontColor(MEDIUM_BLUE)
+                    .setFont(regularFont).setFontSize(ReportFont.LEAD.points()).setFontColor(ACCENT_COLOR)
                     .setPaddingBottom(4)
-                    .setBorderBottom(new SolidBorder(DARK_NAVY, 2f))
+                    .setBorderBottom(new SolidBorder(HEADING_COLOR, 2f))
                     .setMarginBottom(1));
 
             document.add(paragraph(Bundle.message("report.confidential"))
-                    .setFont(italicFont).setFontSize(ReportFont.CAPTION.points()).setFontColor(DARK_GRAY)
+                    .setFont(italicFont).setFontSize(ReportFont.CAPTION.points()).setFontColor(MUTED_COLOR)
                     .setMarginBottom(20));
 
-            Paragraph overviewHeading = paragraph(Bundle.message("report.heading.overview"))
-                    .setFont(boldFont)
-                    .setFontSize(ReportFont.SECTION.points())
-                    .setFontColor(DARK_NAVY)
-                    .setPaddingBottom(3)
-                    .setBorderBottom(new SolidBorder(DARK_NAVY, 1f))
-                    .setMarginBottom(12);
-            document.add(overviewHeading);
+            document.add(sectionHeading(Bundle.message("report.heading.overview"), boldFont).setMarginBottom(12));
 
             final @NotNull TestRunSummary summary = TestRunSummary.of(runItems.getAll());
             final @NotNull TestRunStatus testRunStatus = testRunNode.getMarker().getStatus();
 
-            Table overviewTable = new Table(UnitValue.createPercentArray(new float[]{30, 70}))
+            final @NotNull Table overviewTable = new Table(UnitValue.createPercentArray(new float[]{30, 70}))
                     .useAllAvailableWidth()
                     .setBorder(Border.NO_BORDER);
 
@@ -145,28 +136,18 @@ public final class TestRunPdfGenerator {
 
             document.add(overviewTable);
 
-            Paragraph executionHeading = paragraph(Bundle.message("report.heading.execution"))
-                    .setFont(boldFont)
-                    .setFontSize(ReportFont.SECTION.points())
-                    .setFontColor(DARK_NAVY)
-                    .setPaddingBottom(3)
-                    .setBorderBottom(new SolidBorder(DARK_NAVY, 1f))
-                    .setMarginBottom(9)
-                    .setMarginTop(20);
-            document.add(executionHeading);
+            document.add(sectionHeading(Bundle.message("report.heading.execution"), boldFont).setMarginBottom(9).setMarginTop(20));
 
-            document.add(paragraph(
-                    Bundle.message("report.summary.named", testRunNode.getName(),
-                            String.valueOf(summary.total()), String.valueOf(summary.executed()), summary.passRate() + "%"))
-                    .setFont(regularFont).setFontSize(ReportFont.LEAD.points()).setFontColor(BLACK)
+            document.add(paragraph(ReportText.summary(testRunNode.getName(), summary, UnaryOperator.identity()))
+                    .setFont(regularFont).setFontSize(ReportFont.LEAD.points()).setFontColor(INK_COLOR)
                     .setMarginBottom(12));
 
             final @NotNull List<ReportTile> tiles = ReportTile.shownFor(summary);
 
-            final float[] tileWidths = new float[tiles.size()];
+            final float @NotNull [] tileWidths = new float[tiles.size()];
             Arrays.fill(tileWidths, 100f / tileWidths.length);
 
-            Table statsTable = new Table(UnitValue.createPercentArray(tileWidths))
+            final @NotNull Table statsTable = new Table(UnitValue.createPercentArray(tileWidths))
                     .useAllAvailableWidth()
                     .setBorder(Border.NO_BORDER);
 
@@ -176,39 +157,37 @@ public final class TestRunPdfGenerator {
 
             document.add(statsTable);
 
-            final boolean analyzed = TestRunResultAnalysis.anyWrittenIn(testRunNode.getMarker().getResultAnalysis());
+            final @NotNull Map<TestRunResultAnalysis, String> analysis = TestRunResultAnalysis.shown(testRunNode.getMarker().getResultAnalysis());
+            final boolean analyzed = !analysis.isEmpty();
 
-            if (analyzed) addAnalysis(document, testRunNode, summary, boldFont, regularFont);
+            if (analyzed) addAnalysis(document, testRunNode, analysis, summary, boldFont, regularFont);
 
-            int sectionNumber = analyzed ? 4 : 3;
-            for (final ReportSection section : ReportSection.values()) {
-                final long count = section.count(summary);
-                if (count == 0) continue;
-
-                buildTestCaseTable(document, String.valueOf(sectionNumber++), section, section.titleIn(testRunStatus), section.description(String.valueOf(count)), runItems, boldFont, regularFont);
+            for (final NumberedSection numbered : ReportText.numberedSections(summary, analyzed)) {
+                final @NotNull ReportSection section = numbered.section();
+                buildTestCaseTable(document, String.valueOf(numbered.number()), section, section.titleIn(testRunStatus), section.description(String.valueOf(numbered.count())), runItems, boldFont, regularFont);
             }
 
-            float pageWidth = pdf.getDefaultPageSize().getWidth();
-            float leftMargin = document.getLeftMargin();
-            float rightMargin = document.getRightMargin();
+            final float pageWidth = pdf.getDefaultPageSize().getWidth();
+            final float leftMargin = document.getLeftMargin();
+            final float rightMargin = document.getRightMargin();
 
             for (int page = 1; page <= pdf.getNumberOfPages(); page++) {
                 final @NotNull Canvas footerCanvas = new Canvas(pdf.getPage(page),
                         new Rectangle(leftMargin, 0, pageWidth - leftMargin - rightMargin, 28));
 
                 final @NotNull PdfCanvas pdfCanvas = footerCanvas.getPdfCanvas();
-                pdfCanvas.setStrokeColor(BORDER_GRAY);
+                pdfCanvas.setStrokeColor(LINE_COLOR);
                 pdfCanvas.setLineWidth(1.0f);
                 pdfCanvas.moveTo(leftMargin, 34);
                 pdfCanvas.lineTo(pageWidth - rightMargin, 34);
                 pdfCanvas.stroke();
 
                 footerCanvas.add(paragraph()
-                        .setFont(regularFont).setFontSize(ReportFont.CAPTION.points()).setFontColor(DARK_GRAY)
+                        .setFont(regularFont).setFontSize(ReportFont.CAPTION.points()).setFontColor(MUTED_COLOR)
                         .setTextAlignment(TextAlignment.CENTER)
                         .add(text(ReportText.footerLead()))
                         .add(new Link(ReportText.PLUGIN_NAME, PdfAction.createURI(ReportText.PLUGIN_URL))
-                                .setFontColor(LINK_BLUE))
+                                .setFontColor(LINK_COLOR))
                         .add(text(Bundle.message("report.footer.suffix"))));
 
                 footerCanvas.close();
@@ -224,32 +203,34 @@ public final class TestRunPdfGenerator {
     }
 
     // UC-REPORT-001
-    private void addAnalysis(final @NotNull Document document, final @NotNull TestRunNode testRunNode, final @NotNull TestRunSummary summary, final @NotNull PdfFont boldFont, final @NotNull PdfFont regularFont) {
-        document.add(paragraph(Bundle.message("report.heading.analysis"))
-                .setFont(boldFont)
-                .setFontSize(ReportFont.SECTION.points())
-                .setFontColor(DARK_NAVY)
-                .setPaddingBottom(3)
-                .setBorderBottom(new SolidBorder(DARK_NAVY, 1f))
-                .setMarginBottom(9)
-                .setMarginTop(20));
+    private void addAnalysis(final @NotNull Document document, final @NotNull TestRunNode testRunNode, final @NotNull Map<TestRunResultAnalysis, String> analysis, final @NotNull TestRunSummary summary, final @NotNull PdfFont boldFont, final @NotNull PdfFont regularFont) {
+        document.add(sectionHeading(Bundle.message("report.heading.analysis"), boldFont).setMarginBottom(9).setMarginTop(20));
 
-        for (final TestRunResultAnalysis section : TestRunResultAnalysis.values()) {
-            final @NotNull String written = section.writtenIn(testRunNode.getMarker().getResultAnalysis());
-            if (written.isEmpty()) continue;
+        for (final Map.Entry<TestRunResultAnalysis, String> written : analysis.entrySet()) {
+            final @NotNull TestRunResultAnalysis section = written.getKey();
 
             document.add(paragraph(section.heading(summary, testRunNode.getMarker().getStatus()))
                     .setFont(boldFont).setFontSize(ReportFont.LEAD.points())
                     .setFontColor(rgb(section.getHexColor()))
                     .setMarginBottom(2));
 
-            document.add(paragraph(written)
-                    .setFont(regularFont).setFontSize(ReportFont.BODY.points()).setFontColor(BLACK)
+            document.add(paragraph(written.getValue())
+                    .setFont(regularFont).setFontSize(ReportFont.BODY.points()).setFontColor(INK_COLOR)
                     .setMarginBottom(8));
         }
     }
 
-    private @NotNull DeviceRgb rgb(final @NotNull String hex) {
+    // UC-REPORT-001, Rule-REPORT-019
+    private @NotNull Paragraph sectionHeading(final @NotNull String text, final @NotNull PdfFont boldFont) {
+        return paragraph(text)
+                .setFont(boldFont)
+                .setFontSize(ReportFont.SECTION.points())
+                .setFontColor(HEADING_COLOR)
+                .setPaddingBottom(3)
+                .setBorderBottom(new SolidBorder(HEADING_COLOR, 1f));
+    }
+
+    private static @NotNull DeviceRgb rgb(final @NotNull String hex) {
         return new DeviceRgb(
                 Integer.parseInt(hex.substring(0, 2), 16),
                 Integer.parseInt(hex.substring(2, 4), 16),
@@ -258,21 +239,14 @@ public final class TestRunPdfGenerator {
 
     // UC-REPORT-001, Rule-REPORT-024
     private void buildTestCaseTable(final @NotNull Document document, final @NotNull String sectionNumber, final @NotNull ReportSection section, final @NotNull String title, final @NotNull String description, final @NotNull RunItems runItems, final @NotNull PdfFont boldFont, final @NotNull PdfFont regularFont) {
-        document.add(paragraph(sectionNumber + ". " + title)
-                .setFont(boldFont)
-                .setFontSize(ReportFont.SECTION.points())
-                .setFontColor(DARK_NAVY)
-                .setPaddingBottom(3)
-                .setBorderBottom(new SolidBorder(DARK_NAVY, 1f))
-                .setMarginBottom(9)
-                .setMarginTop(20));
+        document.add(sectionHeading(sectionNumber + ". " + title, boldFont).setMarginBottom(9).setMarginTop(20));
 
         document.add(paragraph(description)
-                .setFont(regularFont).setFontSize(ReportFont.LEAD.points()).setFontColor(BLACK)
+                .setFont(regularFont).setFontSize(ReportFont.LEAD.points()).setFontColor(INK_COLOR)
                 .setMarginBottom(12));
 
-        final @NotNull List<TestRunEditorFields> failureDetail = section.getFailureDetailColumns();
-        Table table = new Table(2 + failureDetail.size())
+        final @NotNull List<FailureColumn> failureDetail = section.getFailureDetailColumns();
+        final @NotNull Table table = new Table(2 + failureDetail.size())
                 .useAllAvailableWidth()
                 .setAutoLayout()
                 .setBorder(Border.NO_BORDER);
@@ -281,43 +255,43 @@ public final class TestRunPdfGenerator {
         final @NotNull DeviceRgb headerForeground = rgb(section.textHex());
         addTestCaseTableHeader(table, "#", headerBackground, headerForeground, boldFont);
         addTestCaseTableHeader(table, Bundle.message("caption.test.case"), headerBackground, headerForeground, boldFont);
-        for (final TestRunEditorFields detail : failureDetail) {
-            addTestCaseTableHeader(table, detail.getName(), headerBackground, headerForeground, boldFont);
+        for (final FailureColumn column : failureDetail) {
+            addTestCaseTableHeader(table, column.getField().getName(), headerBackground, headerForeground, boldFont);
         }
 
         int index = 1;
         boolean shadedRow = true;
-        for (RunItem runItem : runItems.getAll()) {
+        for (final RunItem runItem : runItems.getAll()) {
             if (!section.matches(runItem)) continue;
             ProgressManager.checkCanceled();
 
-            DeviceRgb rowBackground = shadedRow ? LIGHT_BG : WHITE;
+            final @NotNull DeviceRgb rowBackground = shadedRow ? PANEL_COLOR : PAGE_COLOR;
             shadedRow = !shadedRow;
 
             table.addCell(new Cell()
                     .setBackgroundColor(rowBackground)
-                    .setBorder(new SolidBorder(BORDER_GRAY, 1))
+                    .setBorder(new SolidBorder(LINE_COLOR, 1))
                     .setPaddingTop(4).setPaddingBottom(4).setPaddingLeft(6).setPaddingRight(6)
                     .add(paragraph(String.valueOf(index))
-                            .setFont(regularFont).setFontSize(ReportFont.BODY.points()).setFontColor(DARK_GRAY)
+                            .setFont(regularFont).setFontSize(ReportFont.BODY.points()).setFontColor(MUTED_COLOR)
                             .setTextAlignment(TextAlignment.CENTER)));
 
             final @NotNull String testCaseName = runItem.shownTestCase().getDescription();
-            final @NotNull String shownTestCaseName = testCaseName.isEmpty() ? "—" : testCaseName;
+            final @NotNull String shownTestCaseName = ReportText.orEmpty(testCaseName);
             final @NotNull Cell testCaseCell = new Cell()
                     .setBackgroundColor(rowBackground)
-                    .setBorder(new SolidBorder(BORDER_GRAY, 1))
+                    .setBorder(new SolidBorder(LINE_COLOR, 1))
                     .setPaddingTop(4).setPaddingBottom(4).setPaddingLeft(6).setPaddingRight(6);
             testCaseCell.add(paragraph(shownTestCaseName)
-                    .setFont(regularFont).setFontSize(ReportFont.BODY.points()).setFontColor(BLACK)
+                    .setFont(regularFont).setFontSize(ReportFont.BODY.points()).setFontColor(INK_COLOR)
                     .setMarginBottom(0));
 
             // Rule-REPORT-027
-            ReportText.otherExecutions(runItem).ifPresent(others -> testCaseCell.add(paragraph(others).setFont(regularFont).setFontSize(ReportFont.SMALL.points()).setFontColor(DARK_GRAY)));
+            ReportText.otherExecutions(runItem).ifPresent(others -> testCaseCell.add(paragraph(others).setFont(regularFont).setFontSize(ReportFont.SMALL.points()).setFontColor(MUTED_COLOR)));
             table.addCell(testCaseCell);
 
             if (section.isWithFailureDetail())
-                addFailureDetail(table, testCaseCell, runItem, rowBackground, boldFont, regularFont);
+                addFailureDetail(table, testCaseCell, section, runItem, rowBackground, boldFont, regularFont);
 
             index++;
         }
@@ -325,27 +299,25 @@ public final class TestRunPdfGenerator {
         document.add(table);
     }
 
-    private void addFailureDetail(final @NotNull Table table, final @NotNull Cell testCaseCell, final @NotNull RunItem runItem, final @NotNull DeviceRgb rowBackground, final @NotNull PdfFont boldFont, final @NotNull PdfFont regularFont) {
+    private void addFailureDetail(final @NotNull Table table, final @NotNull Cell testCaseCell, final @NotNull ReportSection section, final @NotNull RunItem runItem, final @NotNull DeviceRgb rowBackground, final @NotNull PdfFont boldFont, final @NotNull PdfFont regularFont) {
         final @NotNull String actualResult = runItem.shownExecution().getActualResult();
-        final @NotNull Paragraph actual = paragraph(Bundle.message("report.actual.result", actualResult.isEmpty() ? "—" : actualResult))
-                .setFont(regularFont).setFontSize(ReportFont.SMALL.points()).setFontColor(DARK_GRAY);
+        final @NotNull Paragraph actual = paragraph(Bundle.message("report.actual.result", ReportText.orEmpty(actualResult)))
+                .setFont(regularFont).setFontSize(ReportFont.SMALL.points()).setFontColor(MUTED_COLOR);
 
         runItem.shownExecution().bugIssue().ifPresent(url -> actual.add(text(" ("))
-                .add(new Link(BugIssueUrl.shortReference(url), PdfAction.createURI(url)).setFontColor(LINK_BLUE))
+                .add(new Link(BugIssueUrl.shortReference(url), PdfAction.createURI(url)).setFontColor(LINK_COLOR))
                 .add(text(")")));
         testCaseCell.add(actual);
 
-        final @NotNull BugPriority priority = runItem.shownExecution().getBugPriority();
-        table.addCell(runItemStatusCell(priority.getLabel(), rgb(priority.getEmphasis().getHexColor()), rowBackground, boldFont));
-
-        final @NotNull BugSeverity severity = runItem.shownExecution().getBugSeverity();
-        table.addCell(runItemStatusCell(severity.getLabel(), rgb(severity.getEmphasis().getHexColor()), rowBackground, boldFont));
+        for (final FailureColumn column : section.getFailureDetailColumns()) {
+            table.addCell(runItemStatusCell(column.textOf(runItem), rgb(column.emphasisOf(runItem).getHexColor()), rowBackground, boldFont));
+        }
     }
 
     private @NotNull Cell runItemStatusCell(final @NotNull String text, final @NotNull DeviceRgb color, final @NotNull DeviceRgb rowBackground, final @NotNull PdfFont boldFont) {
         return new Cell()
                 .setBackgroundColor(rowBackground)
-                .setBorder(new SolidBorder(BORDER_GRAY, 1))
+                .setBorder(new SolidBorder(LINE_COLOR, 1))
                 .setPaddingTop(4).setPaddingBottom(4).setPaddingLeft(6).setPaddingRight(6)
                 .setVerticalAlignment(VerticalAlignment.MIDDLE)
                 .add(paragraph(text)
@@ -356,7 +328,7 @@ public final class TestRunPdfGenerator {
     private void addTestCaseTableHeader(final @NotNull Table table, final @NotNull String text, final @NotNull DeviceRgb backgroundColor, final @NotNull DeviceRgb textColor, final @NotNull PdfFont boldFont) {
         table.addCell(new Cell()
                 .setBackgroundColor(backgroundColor)
-                .setBorder(new SolidBorder(BORDER_GRAY, 1))
+                .setBorder(new SolidBorder(LINE_COLOR, 1))
                 .setPaddingTop(5).setPaddingBottom(5).setPaddingLeft(6).setPaddingRight(6)
                 .add(paragraph(text)
                         .setFont(boldFont).setFontSize(ReportFont.HEADING.points()).setFontColor(textColor)
@@ -365,22 +337,22 @@ public final class TestRunPdfGenerator {
 
     private void addOverviewRow(final @NotNull Table table, final @NotNull String label, final @NotNull String value, final @NotNull PdfFont boldFont, final @NotNull PdfFont regularFont) {
         table.addCell(new Cell()
-                .setBackgroundColor(LIGHT_BG)
-                .setBorder(new SolidBorder(BORDER_GRAY, 1))
+                .setBackgroundColor(PANEL_COLOR)
+                .setBorder(new SolidBorder(LINE_COLOR, 1))
                 .setPaddingTop(4).setPaddingBottom(4).setPaddingLeft(8).setPaddingRight(8)
                 .add(paragraph(label)
-                        .setFont(boldFont).setFontSize(ReportFont.HEADING.points()).setFontColor(DARK_NAVY)));
+                        .setFont(boldFont).setFontSize(ReportFont.HEADING.points()).setFontColor(HEADING_COLOR)));
 
         table.addCell(new Cell()
-                .setBorder(new SolidBorder(BORDER_GRAY, 1))
+                .setBorder(new SolidBorder(LINE_COLOR, 1))
                 .setPaddingTop(4).setPaddingBottom(4).setPaddingLeft(8).setPaddingRight(8)
                 .add(paragraph(value)
-                        .setFont(regularFont).setFontSize(ReportFont.BODY.points()).setFontColor(BLACK)));
+                        .setFont(regularFont).setFontSize(ReportFont.BODY.points()).setFontColor(INK_COLOR)));
     }
 
     private void addStatisticCell(final @NotNull Table table, final @NotNull String number, final @NotNull String label, final @NotNull DeviceRgb numberColor, final @NotNull PdfFont boldFont) {
-        Cell cell = new Cell()
-                .setBackgroundColor(LIGHT_BG)
+        final @NotNull Cell cell = new Cell()
+                .setBackgroundColor(PANEL_COLOR)
                 .setBorder(Border.NO_BORDER)
                 .setPaddingTop(8).setPaddingBottom(8).setPaddingLeft(6).setPaddingRight(6);
 
@@ -390,7 +362,7 @@ public final class TestRunPdfGenerator {
                 .setMarginBottom(4));
 
         cell.add(paragraph(label)
-                .setFont(boldFont).setFontSize(ReportFont.SMALL.points()).setFontColor(DARK_GRAY)
+                .setFont(boldFont).setFontSize(ReportFont.SMALL.points()).setFontColor(MUTED_COLOR)
                 .setTextAlignment(TextAlignment.CENTER));
 
         table.addCell(cell);

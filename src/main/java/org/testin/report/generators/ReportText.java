@@ -19,11 +19,17 @@ package org.testin.report.generators;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.testin.model.markers.TestRunMarker;
 import org.testin.model.testrun.RunItem;
+import org.testin.model.testrun.TestRunConfiguration;
+import org.testin.model.testrun.TestRunSummary;
 import org.testin.util.Bundle;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -31,6 +37,36 @@ public final class ReportText {
     public static final @NotNull String PLUGIN_NAME = "Testin";
 
     public static final @NotNull String PLUGIN_URL = "https://plugins.jetbrains.com/plugin/31514-testin";
+
+    // Rule-REPORT-019
+    public static final @NotNull String EMPTY = "—";
+
+    // Rule-REPORT-019
+    public static @NotNull String orEmpty(final @NotNull String value) {
+        return value.isEmpty() ? EMPTY : value;
+    }
+
+    // Rule-REPORT-019
+    public static @NotNull String subtitle(final @NotNull String testProjectName, final @NotNull TestRunMarker marker) {
+        return joined("  |  ", testProjectName, joined(", ", TestRunConfiguration.PLATFORM.valueIn(marker), TestRunConfiguration.COMPONENT.valueIn(marker)));
+    }
+
+    // Rule-REPORT-019
+    public static @NotNull String summary(final @NotNull String testRunName, final @NotNull TestRunSummary summary, final @NotNull UnaryOperator<String> emphasized) {
+        return Bundle.message("report.summary.named", emphasized.apply(testRunName), emphasized.apply(String.valueOf(summary.total())),
+                emphasized.apply(String.valueOf(summary.executed())), emphasized.apply(summary.passRate() + "%"));
+    }
+
+    // Rule-REPORT-019, Rule-REPORT-020
+    static @NotNull List<NumberedSection> numberedSections(final @NotNull TestRunSummary summary, final boolean analyzed) {
+        final @NotNull List<NumberedSection> numbered = new ArrayList<>();
+        int number = analyzed ? 4 : 3;
+        for (final ReportSection section : ReportSection.values()) {
+            final long count = section.count(summary);
+            if (count > 0) numbered.add(new NumberedSection(number++, section, count));
+        }
+        return numbered;
+    }
 
     public static @NotNull String footerLead() {
         return Bundle.message("report.footer.prefix") + " ";

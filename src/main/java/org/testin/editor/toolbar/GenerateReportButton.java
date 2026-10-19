@@ -20,32 +20,31 @@ import com.intellij.icons.AllIcons;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.testrun.TestRunEditor;
-import org.testin.model.status.TestRunStatus;
 import org.testin.report.GenerateReportAction;
 import org.testin.ui.framework.AbstractIconButton;
 import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
 
+import java.util.Optional;
+
 public class GenerateReportButton extends AbstractIconButton implements ToolbarItem {
-    private final @NotNull TestRunEditor editor;
+    private final @NotNull GenerateReportAction report;
 
     // UC-REPORT-001
     public GenerateReportButton(final @NotNull Project project, final @NotNull TestRunEditor editor) {
         super(Bundle.message("toolbar.report"), AllIcons.ToolbarDecorator.Export, Shortcuts.GenerateReport);
-        this.editor = editor;
+        this.report = new GenerateReportAction(project, editor);
 
-        addActionListener(_ -> new GenerateReportAction(project, editor).execute());
+        addActionListener(_ -> report.execute());
 
         updateEnabledState();
     }
 
     // UC-REPORT-001, Rule-REPORT-016
     public void updateEnabledState() {
-        final @NotNull TestRunStatus testRunStatus = editor.getParent().getMarker().getStatus();
+        final @NotNull Optional<String> whyNot = report.whyNot();
 
-        setEnabled(testRunStatus.isReportable());
-        describe(testRunStatus.isReportable()
-                ? Bundle.message("toolbar.report")
-                : Bundle.message("toolbar.report.disabled", testRunStatus.getLabel()));
+        setEnabled(whyNot.isEmpty());
+        describe(whyNot.orElse(Bundle.message("toolbar.report")));
     }
 }

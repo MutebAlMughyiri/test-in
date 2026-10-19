@@ -33,7 +33,9 @@ cannot.
 - **Rule-REPORT-019** — Every format takes its words from one place. The
   headings, the column names and the Actual result label read the same in the
   web page, the PDF, the Word document and the spreadsheet, so no two formats
-  name one thing two ways.
+  name one thing two ways. A value that is not there reads — in every format,
+  and the failed test cases' columns stand in one order, bug priority then bug
+  severity.
 - **Rule-REPORT-006** — The file name is filled in already. It names the test
   project, the test run, the date and the time.
 - **Rule-REPORT-007** — Spaces and special characters are taken out of the

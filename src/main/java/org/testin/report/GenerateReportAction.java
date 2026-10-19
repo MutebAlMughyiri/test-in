@@ -91,14 +91,14 @@ public class GenerateReportAction extends AbstractBoundTestProjectAction {
     // UC-REPORT-001, Rule-REPORT-001
     @Override
     public void update(final @NotNull AnActionEvent e) {
-        GrayWithReason.unless(this, e, isAvailable(), selectedTestRun.get()
-                .map(testRun -> Bundle.message("toolbar.report.disabled", testRun.getMarker().getStatus().getLabel()))
-                .orElseGet(() -> Bundle.message("report.select.test.run.description")));
+        GrayWithReason.unless(this, e, whyNot());
     }
 
-    // UC-REPORT-001, Rule-REPORT-016
-    public boolean isAvailable() {
-        return selectedTestRun.get().map(testRun -> testRun.getMarker().getStatus().isReportable()).orElse(false);
+    // UC-REPORT-001, Rule-REPORT-001, Rule-REPORT-016
+    public @NotNull Optional<String> whyNot() {
+        return selectedTestRun.get()
+                .map(testRun -> testRun.getMarker().getStatus().isReportable() ? Optional.<String>empty() : Optional.of(Bundle.message("toolbar.report.disabled", testRun.getMarker().getStatus().getLabel())))
+                .orElseGet(() -> Optional.of(Bundle.message("report.select.test.run.description")));
     }
 
     // UC-REPORT-001

@@ -24,7 +24,9 @@ There is no key for this. The link is on the message.
 - **Rule-REPORT-019** — Every format takes its words from one place. The
   headings, the column names and the Actual result label read the same in the
   web page, the PDF, the Word document and the spreadsheet, so no two formats
-  name one thing two ways.
+  name one thing two ways. A value that is not there reads — in every format,
+  and the failed test cases' columns stand in one order, bug priority then bug
+  severity.
 - **Rule-REPORT-010** — The link is on the message that says the report was
   written, and the message stays in the IDE's notification list.
 - **Rule-REPORT-011** — Clicking the link makes the message go.

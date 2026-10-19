@@ -289,6 +289,18 @@ public class ReportFormatsIdeTest extends AbstractTempRootIdeTest {
             assertTrue("The spreadsheet names a column differently: " + column + " is not in " + header, header.contains(column));
     }
 
+    // Rule-REPORT-019
+    public void testTheSpreadsheetOrdersTheFailureColumnsAsEveryFormatDoesAndWritesNothingAsADash() {
+        final @NotNull TestRunNode testRun = theTestRun();
+        final @NotNull List<List<String>> testCases = sheets(testRun).get(1);
+        final @NotNull List<String> header = testCases.getFirst();
+
+        assertTrue("the spreadsheet puts the bug severity before the bug priority: " + header,
+                header.indexOf(TestRunEditorFields.BUG_PRIORITY.getName()) < header.indexOf(TestRunEditorFields.BUG_SEVERITY.getName()));
+        assertTrue("an empty expected result is not written as a dash in the spreadsheet: " + testCases,
+                testCases.stream().skip(1).allMatch(row -> row.get(header.indexOf(TestRunEditorFields.EXPECTED_RESULT.getName())).equals("—")));
+    }
+
     // Rule-REPORT-020
     public void testTheSpreadsheetHasAnOverviewSheetAndATestCasesSheet() {
         final @NotNull TestRunNode testRun = theTestRun();

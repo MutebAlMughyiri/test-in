@@ -95,6 +95,18 @@ public enum TestRunResultAnalysis {
         return kept;
     }
 
+    // UC-REPORT-001, Rule-EDITOR-PANEL-191
+    public static @NotNull Map<TestRunResultAnalysis, String> shown(final @NotNull Map<TestRunResultAnalysis, String> analysis) {
+        final @NotNull Map<TestRunResultAnalysis, String> shown = new EnumMap<>(TestRunResultAnalysis.class);
+
+        for (final TestRunResultAnalysis section : values()) {
+            final @NotNull String text = section.writtenIn(analysis);
+            if (!text.isEmpty()) shown.put(section, text);
+        }
+
+        return shown;
+    }
+
     // Rule-REPORT-025
     public @NotNull String getHexColor() {
         return runItemStatus.getReportHex();

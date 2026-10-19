@@ -332,7 +332,6 @@ dependencies {
     testImplementation("org.jacoco:org.jacoco.core:${project.the<JacocoPluginExtension>().toolVersion}")
     implementation(libs.iText.kernel)
     implementation(libs.iText.layout)
-    implementation(libs.fastexcel)
     implementation(libs.poi)
     implementation(libs.poi.ooxml)
 

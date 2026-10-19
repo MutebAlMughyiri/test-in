@@ -22,26 +22,23 @@ import com.intellij.openapi.util.text.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.ReportColor;
 import org.testin.model.bug.BugIssueUrl;
-import org.testin.model.bug.BugPriority;
-import org.testin.model.bug.BugSeverity;
 import org.testin.model.markers.DetailRow;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.status.TestRunStatus;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.RunItems;
-import org.testin.model.testrun.TestRunConfiguration;
 import org.testin.model.testrun.TestRunResultAnalysis;
 import org.testin.model.testrun.TestRunSummary;
 import org.testin.report.ReportTile;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
-import org.testin.testrun.TestRunEditorFields;
 import org.testin.util.Bundle;
 import org.testin.util.ReportFont;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
@@ -61,16 +58,14 @@ public final class TestRunHtmlGenerator {
     // UC-REPORT-001, Rule-REPORT-002, Rule-REPORT-005
     public @NotNull String generate(final @NotNull Project project, final @NotNull TestRunNode testRunNode, final @NotNull RunItems runItems) {
         final @NotNull List<RunItem> all = runItems.getAll();
-        final int total = all.size();
         final @NotNull TestRunSummary summary = TestRunSummary.of(all);
         final @NotNull TestRunStatus testRunStatus = testRunNode.getMarker().getStatus();
-        final int passRate = summary.passRate();
 
         final @NotNull String testRunName = testRunNode.getName();
 
         final @NotNull String testProjectName = Services.getInstance(project, BoundTestProject.class).name();
 
-        StringBuilder html = new StringBuilder();
+        final @NotNull StringBuilder html = new StringBuilder();
 
         html.append("<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'>")
                 .append("<meta name='viewport' content='width=device-width, initial-scale=1'>")
@@ -84,25 +79,21 @@ public final class TestRunHtmlGenerator {
 
         html.append("<div class='report-title'>").append(Bundle.message("report.title")).append("</div>")
                 .append("<div class='report-subtitle'>")
-                .append(StringUtil.escapeXmlEntities(ReportText.joined("  |  ", testProjectName, ReportText.joined(", ", TestRunConfiguration.PLATFORM.valueIn(testRunNode.getMarker()), TestRunConfiguration.COMPONENT.valueIn(testRunNode.getMarker()))))).append("</div>")
+                .append(StringUtil.escapeXmlEntities(ReportText.subtitle(testProjectName, testRunNode.getMarker()))).append("</div>")
                 .append("<div class='report-test-run-name'>").append(StringUtil.escapeXmlEntities(testRunName)).append("</div>")
                 .append("<div class='report-conf'>").append(Bundle.message("report.confidential")).append("</div>");
 
-        html.append("<div class='section-title-bar'><div class='section-title'>").append(Bundle.message("report.heading.overview")).append("</div></div>");
+        sectionTitle(html, Bundle.message("report.heading.overview"));
         html.append("<table class='overview-table'>");
         for (final DetailRow row : ReportOverview.rowsFor(testProjectName, testRunNode, summary)) {
             overviewRow(html, row.caption(), row.value());
         }
         html.append("</table>");
 
-        html.append("<div class='section-title-bar'><div class='section-title'>").append(Bundle.message("report.heading.execution")).append("</div></div>");
+        sectionTitle(html, Bundle.message("report.heading.execution"));
 
         html.append("<div class='summary-text'>")
-                .append(Bundle.message("report.summary.named",
-                        "<b>" + StringUtil.escapeXmlEntities(testRunName) + "</b>",
-                        "<b>" + total + "</b>",
-                        "<b>" + summary.executed() + "</b>",
-                        "<b>" + passRate + "%</b>"))
+                .append(ReportText.summary(testRunName, summary, value -> "<b>" + StringUtil.escapeXmlEntities(value) + "</b>"))
                 .append("</div>");
 
         html.append("<div class='summary-cards'>");
@@ -111,35 +102,32 @@ public final class TestRunHtmlGenerator {
         }
         html.append("</div>");
 
-        final boolean analyzed = TestRunResultAnalysis.anyWrittenIn(testRunNode.getMarker().getResultAnalysis());
+        final @NotNull Map<TestRunResultAnalysis, String> analysis = TestRunResultAnalysis.shown(testRunNode.getMarker().getResultAnalysis());
+        final boolean analyzed = !analysis.isEmpty();
 
         if (analyzed) {
-            html.append("<div class='section-title-bar'><div class='section-title'>").append(Bundle.message("report.heading.analysis")).append("</div></div>");
+            sectionTitle(html, Bundle.message("report.heading.analysis"));
 
-            for (final TestRunResultAnalysis section : TestRunResultAnalysis.values()) {
-                final @NotNull String written = section.writtenIn(testRunNode.getMarker().getResultAnalysis());
-                if (written.isEmpty()) continue;
+            for (final Map.Entry<TestRunResultAnalysis, String> written : analysis.entrySet()) {
+                final @NotNull TestRunResultAnalysis section = written.getKey();
 
                 html.append("<div class='analysis-heading' style='color: ")
                         .append(section.getRunItemStatus().getCssToken()).append("'>")
                         .append(section.heading(summary, testRunStatus)).append("</div>")
                         .append("<div class='analysis-text'>")
-                        .append(StringUtil.escapeXmlEntities(written))
+                        .append(StringUtil.escapeXmlEntities(written.getValue()))
                         .append("</div>");
             }
         }
 
-        int sectionNumber = analyzed ? 4 : 3;
-        for (final ReportSection section : ReportSection.values()) {
-            final long count = section.count(summary);
-            if (count == 0) continue;
-
-            appendTestCaseTable(html, sectionNumber++, section, section.titleIn(testRunStatus), section.description("<b>" + count + "</b>"), all);
+        for (final NumberedSection numbered : ReportText.numberedSections(summary, analyzed)) {
+            final @NotNull ReportSection section = numbered.section();
+            appendTestCaseTable(html, numbered.number(), section, section.titleIn(testRunStatus), section.description("<b>" + numbered.count() + "</b>"), all);
         }
 
         html.append("<div class='footer'>")
                 .append(ReportText.footerLead())
-                .append("<a href='").append(ReportText.PLUGIN_URL).append("' target='_blank'>Testin</a>")
+                .append("<a href='").append(ReportText.PLUGIN_URL).append("' target='_blank'>").append(ReportText.PLUGIN_NAME).append("</a>")
                 .append(Bundle.message("report.footer.suffix"))
                 .append("</div>");
 
@@ -151,15 +139,15 @@ public final class TestRunHtmlGenerator {
     // Rule-REPORT-019
     private void appendTestCaseTable(final @NotNull StringBuilder html, final int sectionNumber, final @NotNull ReportSection section, final @NotNull String title, final @NotNull String blurb, final @NotNull List<RunItem> runItems) {
         final @NotNull String name = section.name().toLowerCase(Locale.ROOT);
-        html.append("<div class='section-title-bar'><div class='section-title'>").append(sectionNumber).append(". ").append(title).append("</div></div>");
+        sectionTitle(html, sectionNumber + ". " + title);
         html.append("<div class='summary-text'>").append(blurb).append("</div>");
         html.append("<table class='detail-table'>")
                 .append("<tr style='background: var(--section-").append(name).append(")")
                 .append("; color: var(--section-").append(name).append("-ink)'>")
                 .append("<th class='seq'>#</th><th>").append(Bundle.message("caption.test.case")).append("</th>");
 
-        for (final TestRunEditorFields detail : section.getFailureDetailColumns()) {
-            html.append("<th class='run-item-status'>").append(detail.getName()).append("</th>");
+        for (final FailureColumn column : section.getFailureDetailColumns()) {
+            html.append("<th class='run-item-status'>").append(column.getField().getName()).append("</th>");
         }
 
         html.append("</tr>");
@@ -173,12 +161,12 @@ public final class TestRunHtmlGenerator {
 
                     html.append("<tr>")
                             .append("<td class='seq'>").append(sequence.getAndIncrement()).append("</td>")
-                            .append("<td>").append(StringUtil.escapeXmlEntities(description.isEmpty() ? "—" : description));
+                            .append("<td>").append(StringUtil.escapeXmlEntities(ReportText.orEmpty(description)));
 
                     // Rule-REPORT-027
                     ReportText.otherExecutions(runItem).ifPresent(others -> html.append("<div class='actual'>").append(StringUtil.escapeXmlEntities(others)).append("</div>"));
 
-                    if (section.isWithFailureDetail()) appendFailureDetail(html, runItem);
+                    if (section.isWithFailureDetail()) appendFailureDetail(html, section, runItem);
                     else html.append("</td>");
 
                     html.append("</tr>");
@@ -187,10 +175,10 @@ public final class TestRunHtmlGenerator {
     }
 
     // Rule-REPORT-017
-    private void appendFailureDetail(final @NotNull StringBuilder html, final @NotNull RunItem runItem) {
+    private void appendFailureDetail(final @NotNull StringBuilder html, final @NotNull ReportSection section, final @NotNull RunItem runItem) {
         final @NotNull String actual = runItem.shownExecution().getActualResult();
         html.append("<div class='actual'>")
-                .append(Bundle.message("report.actual.result", StringUtil.escapeXmlEntities(actual.isEmpty() ? "—" : actual)));
+                .append(Bundle.message("report.actual.result", StringUtil.escapeXmlEntities(ReportText.orEmpty(actual))));
 
         runItem.shownExecution().bugIssue().ifPresent(url -> html.append(" (<a href='").append(StringUtil.escapeXmlEntities(url)).append("' target='_blank'>")
                 .append(StringUtil.escapeXmlEntities(BugIssueUrl.shortReference(url)))
@@ -202,16 +190,12 @@ public final class TestRunHtmlGenerator {
             html.append("<div class='stacktrace'>").append(StringUtil.escapeXmlEntities(stacktrace)).append("</div>");
         }
 
-        final @NotNull BugPriority priority = runItem.shownExecution().getBugPriority();
-        final @NotNull BugSeverity severity = runItem.shownExecution().getBugSeverity();
-
-        html.append("</td>")
-                .append("<td class='run-item-status' style='color: ")
-                .append(priority.getEmphasis().getCssToken()).append("'>")
-                .append(StringUtil.escapeXmlEntities(priority.getLabel())).append("</td>")
-                .append("<td class='run-item-status' style='color: ")
-                .append(severity.getEmphasis().getCssToken()).append("'>")
-                .append(StringUtil.escapeXmlEntities(severity.getLabel())).append("</td>");
+        html.append("</td>");
+        for (final FailureColumn column : section.getFailureDetailColumns()) {
+            html.append("<td class='run-item-status' style='color: ")
+                    .append(column.emphasisOf(runItem).getCssToken()).append("'>")
+                    .append(StringUtil.escapeXmlEntities(column.textOf(runItem))).append("</td>");
+        }
     }
 
     // UC-REPORT-001, Rule-REPORT-023, Rule-REPORT-024
@@ -323,5 +307,10 @@ public final class TestRunHtmlGenerator {
                 .append(StringUtil.escapeXmlEntities(value)).append("</div>")
                 .append("<div class='card-label'>").append(StringUtil.escapeXmlEntities(label)).append("</div>")
                 .append("</div>");
+    }
+
+    // UC-REPORT-001, Rule-REPORT-019
+    private static void sectionTitle(final @NotNull StringBuilder html, final @NotNull String text) {
+        html.append("<div class='section-title-bar'><div class='section-title'>").append(text).append("</div></div>");
     }
 }

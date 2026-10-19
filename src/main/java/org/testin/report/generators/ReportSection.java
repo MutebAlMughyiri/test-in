@@ -26,7 +26,6 @@ import org.testin.model.status.RunItemStatus;
 import org.testin.model.status.TestRunStatus;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.TestRunSummary;
-import org.testin.testrun.TestRunEditorFields;
 import org.testin.util.Bundle;
 
 import java.util.Arrays;
@@ -36,7 +35,7 @@ enum ReportSection {
     FAILED(
             Bundle.message("report.section.failed.description"),
             TestRunSummary::failed,
-            ImmutableList.of(TestRunEditorFields.BUG_PRIORITY, TestRunEditorFields.BUG_SEVERITY),
+            ImmutableList.of(FailureColumn.PRIORITY, FailureColumn.SEVERITY),
             RunItemStatus.FAILED),
 
     PASSED(
@@ -74,11 +73,11 @@ enum ReportSection {
     private final @NotNull ToLongFunction<TestRunSummary> count;
 
     @Getter
-    private final @NotNull ImmutableList<TestRunEditorFields> failureDetailColumns;
+    private final @NotNull ImmutableList<FailureColumn> failureDetailColumns;
 
     private final @NotNull ImmutableSet<RunItemStatus> runItemStatuses;
 
-    ReportSection(final @NotNull String descriptionFormat, final @NotNull ToLongFunction<TestRunSummary> count, final @NotNull ImmutableList<TestRunEditorFields> failureDetailColumns, final @NotNull RunItemStatus... runItemStatuses) {
+    ReportSection(final @NotNull String descriptionFormat, final @NotNull ToLongFunction<TestRunSummary> count, final @NotNull ImmutableList<FailureColumn> failureDetailColumns, final @NotNull RunItemStatus... runItemStatuses) {
         this.runItemStatus = runItemStatuses[0];
         this.descriptionFormat = descriptionFormat;
         this.hexColor = runItemStatus.getReportHex();
