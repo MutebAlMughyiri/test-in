@@ -16,18 +16,20 @@
 
 package org.testin.java.codegen.clazz;
 
+import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.CodeChange;
 import org.testin.codegen.Fqcn;
 import org.testin.codegen.JavaSourceRoot;
+import org.testin.java.codegen.GeneratedSourceFiles;
 import org.testin.logger.TestinLogger;
 import org.testin.model.node.AbstractNode;
 
 import java.util.List;
 
 public class CreateJavaClass implements CodeChange<AbstractNode> {
-    // UC-CODEGEN-001
+    // UC-CODEGEN-001, UC-CODEGEN-020, Rule-CODEGEN-065
     @Override
     public void execute(final @NotNull Project project, final @NotNull AbstractNode node) {
         final @NotNull List<String> fqcn = Fqcn.ofClass(node);
@@ -38,7 +40,6 @@ public class CreateJavaClass implements CodeChange<AbstractNode> {
 
         TestinLogger.info("Ready to generate Test Class: " + className + " in package: " + fqcn);
 
-        JavaSourceRoot.writeInRootOrWarn(project, className,
-                root -> JavaSourceRoot.classFile(root, packageSegments, className));
+        WriteAction.run(() -> JavaSourceRoot.findOrWarn(project, className).ifPresent(root -> GeneratedSourceFiles.classFile(root, packageSegments, className)));
     }
 }

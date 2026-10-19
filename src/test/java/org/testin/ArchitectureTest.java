@@ -261,10 +261,11 @@ public class ArchitectureTest {
         final @NotNull ArchRule oneWriter = noClasses()
                 .that().doNotHaveFullyQualifiedName("org.testin.config.TestinYml")
                 .and().doNotHaveFullyQualifiedName("org.testin.codegen.JavaSourceRoot")
+                .and().doNotHaveFullyQualifiedName("org.testin.java.codegen.GeneratedSourceFiles")
                 .should().callMethodWhere(target(name("createChildData")))
-                .because("TestinYml holds the only write of testin.yml and JavaSourceRoot the only write of"
-                        + " generated code; everything else asks the indexer, whose cache is authoritative"
-                        + " (CLAUDE.md, Decision-013)");
+                .because("TestinYml holds the only write of testin.yml; generated code is written by the Java module's"
+                        + " GeneratedSourceFiles, and put back after an undone removal by JavaSourceRoot; everything"
+                        + " else asks the indexer, whose cache is authoritative (CLAUDE.md, Decision-013)");
 
         oneCaller.check(CLASSES);
         oneBugRepoUrlCaller.check(CLASSES);

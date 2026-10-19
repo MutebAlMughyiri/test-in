@@ -29,6 +29,7 @@ import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
 import org.testin.util.FailureText;
+import org.testin.util.FromContentModule;
 
 import java.awt.Desktop;
 import java.io.File;
@@ -54,6 +55,7 @@ public final class RecycleBin {
     }
 
     // UC-CODEGEN-018, Rule-CODEGEN-059, Rule-INTERNAL-143
+    @FromContentModule
     public static boolean took(final @NotNull Project project, final @NotNull VirtualFile file) {
         final @NotNull Optional<Path> onDisk = Optional.ofNullable(file.getFileSystem().getNioPath(file));
         if (onDisk.isEmpty()) return removedFromMemory(file);

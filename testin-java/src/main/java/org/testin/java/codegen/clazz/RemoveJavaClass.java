@@ -21,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.CodeChange;
 import org.testin.codegen.Fqcn;
 import org.testin.codegen.JavaSourceRoot;
+import org.testin.java.codegen.GeneratedSourceFiles;
 import org.testin.model.node.AbstractNode;
 
 
@@ -29,6 +30,6 @@ public class RemoveJavaClass implements CodeChange<AbstractNode> {
     @Override
     public void execute(final @NotNull Project project, final @NotNull AbstractNode node) {
         Fqcn.classFileOf(node).ifPresent(classFile -> JavaSourceRoot.writeInRoot(project, testSourceRoot ->
-                JavaSourceRoot.removeUnder(project, testSourceRoot, classFile)));
+                GeneratedSourceFiles.removeUnder(project, testSourceRoot, classFile)));
     }
 }

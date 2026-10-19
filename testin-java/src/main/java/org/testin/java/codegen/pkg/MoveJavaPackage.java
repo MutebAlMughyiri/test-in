@@ -25,6 +25,7 @@ import org.testin.codegen.CodeChangeType;
 import org.testin.codegen.Fqcn;
 import org.testin.codegen.JavaSourceRoot;
 import org.testin.codegen.event.MovedNode;
+import org.testin.java.codegen.GeneratedSourceFiles;
 import org.testin.java.codegen.PackageDeclarations;
 import org.testin.logger.TestinLogger;
 
@@ -45,7 +46,7 @@ public class MoveJavaPackage implements CodeChange<MovedNode> {
 
         final @NotNull List<String> destination = destinationFound.get();
 
-        JavaSourceRoot.commandInRoot(project, CodeChangeType.MOVE_TEST_SET_PACKAGE.description(), sourceRoot -> {
+        GeneratedSourceFiles.commandInRoot(project, CodeChangeType.MOVE_TEST_SET_PACKAGE.description(), sourceRoot -> {
             final @NotNull Optional<VirtualFile> found = Optional.ofNullable(sourceRoot.findFileByRelativePath(String.join("/", fqcn)))
                     .filter(VirtualFile::isDirectory);
 
@@ -61,7 +62,7 @@ public class MoveJavaPackage implements CodeChange<MovedNode> {
                     || target.get().equals(folder.getParent())
                     || VfsUtil.isAncestor(folder, target.get(), false)) return;
 
-            if (!JavaSourceRoot.move(folder, target.get(), this)) return;
+            if (!GeneratedSourceFiles.move(folder, target.get(), this)) return;
 
             PackageDeclarations.retarget(project, sourceRoot, folder);
 

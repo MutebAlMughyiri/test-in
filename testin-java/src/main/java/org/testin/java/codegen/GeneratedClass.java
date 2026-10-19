@@ -40,14 +40,14 @@ public final class GeneratedClass {
         return byName(project, String.join(".", classFqcn));
     }
 
-    // UC-CODEGEN-002, Rule-CODEGEN-010
+    // UC-CODEGEN-002, UC-CODEGEN-020, Rule-CODEGEN-010, Rule-CODEGEN-064
     public static @NotNull Optional<PsiClass> findOrWrite(final @NotNull Project project, final @NotNull List<String> packageList, final @NotNull String className) {
         final @NotNull String path = packageList.isEmpty() ? className : String.join(".", packageList) + "." + className;
 
         final @NotNull Optional<PsiClass> existing = byName(project, path);
         if (existing.isPresent()) return existing;
 
-        JavaSourceRoot.fileInRootOrWarn(project, className, root -> JavaSourceRoot.classFile(root, packageList, className))
+        JavaSourceRoot.findOrWarn(project, className).flatMap(root -> GeneratedSourceFiles.classFile(root, packageList, className))
                 .ifPresent(written -> commit(project, written));
 
         return byName(project, path);

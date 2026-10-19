@@ -24,6 +24,7 @@ import org.testin.codegen.CodeChangeType;
 import org.testin.codegen.Fqcn;
 import org.testin.codegen.JavaSourceRoot;
 import org.testin.codegen.event.MovedNode;
+import org.testin.java.codegen.GeneratedSourceFiles;
 import org.testin.java.codegen.PackageDeclarations;
 import org.testin.logger.TestinLogger;
 
@@ -46,7 +47,7 @@ public class MoveJavaClass implements CodeChange<MovedNode> {
         final @NotNull List<String> destination = found.get();
         final @NotNull String fileName = fqcn.getLast() + ".java";
 
-        JavaSourceRoot.commandInRoot(project, CodeChangeType.MOVE_TEST_SET.description(), sourceRoot -> {
+        GeneratedSourceFiles.commandInRoot(project, CodeChangeType.MOVE_TEST_SET.description(), sourceRoot -> {
             final @NotNull Optional<VirtualFile> file =
                     Optional.ofNullable(sourceRoot.findFileByRelativePath(String.join("/", fqcn) + ".java"));
 
@@ -59,11 +60,10 @@ public class MoveJavaClass implements CodeChange<MovedNode> {
 
             if (target.isEmpty() || target.get().equals(file.get().getParent())) return;
 
-            if (!JavaSourceRoot.move(file.get(), target.get(), this)) return;
-
-            PackageDeclarations.retarget(project, sourceRoot, file.get(), target.get());
-
-            TestinLogger.info("Moved " + fileName + " to package: " + String.join(".", destination));
+            if (GeneratedSourceFiles.move(file.get(), target.get(), this)) {
+                PackageDeclarations.retarget(project, sourceRoot, file.get(), target.get());
+                TestinLogger.info("Moved " + fileName + " to package: " + String.join(".", destination));
+            }
         });
     }
 }

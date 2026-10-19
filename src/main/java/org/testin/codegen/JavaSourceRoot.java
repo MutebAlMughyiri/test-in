@@ -17,7 +17,6 @@
 package org.testin.codegen;
 
 import com.intellij.openapi.application.WriteAction;
-import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
@@ -33,7 +32,6 @@ import org.jetbrains.jps.model.java.JavaSourceRootType;
 import org.testin.help.Hints;
 import org.testin.help.SetupHint;
 import org.testin.help.SetupStep;
-import org.testin.indexer.recyclebin.RecycleBin;
 import org.testin.logger.TestinLogger;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
@@ -72,6 +70,7 @@ public final class JavaSourceRoot {
     }
 
     // UC-CODEGEN-020, Rule-CODEGEN-065, Rule-CODEGEN-072, Rule-INTERNAL-127
+    @FromContentModule
     public static @NotNull Optional<VirtualFile> findOrWarn(final @NotNull Project project, final @NotNull String className) {
         final @NotNull Optional<VirtualFile> root = find(project);
         final @NotNull Hints hints = Services.getInstance(project, Hints.class);
@@ -85,15 +84,6 @@ public final class JavaSourceRoot {
         return Optional.ofNullable(root.findFileByRelativePath(relativePath));
     }
 
-    // UC-CODEGEN-018, Rule-CODEGEN-059, Rule-CODEGEN-060, Rule-INTERNAL-143
-    @FromContentModule
-    public static void removeUnder(final @NotNull Project project, final @NotNull VirtualFile root, final @NotNull String relativePath) {
-        final @NotNull Optional<VirtualFile> found = under(root, relativePath).filter(VirtualFile::exists);
-        if (found.isEmpty()) return;
-
-        final @NotNull VirtualFile target = found.orElseThrow();
-        if (RecycleBin.took(project, target)) TestinLogger.info("Removed generated code at: " + target.getPath());
-    }
 
     // UC-CODEGEN-018, Rule-CODEGEN-113
     public static @NotNull Map<String, byte[]> contentUnder(final @NotNull Project project, final @NotNull String relativePath) {
@@ -155,58 +145,6 @@ public final class JavaSourceRoot {
         return folder;
     }
 
-    // UC-CODEGEN-001, Rule-CODEGEN-009, Rule-CODEGEN-010
-    @FromContentModule
-    public static @NotNull Optional<VirtualFile> classFile(final @NotNull VirtualFile root, final @NotNull List<String> packageSegments, final @NotNull String className) {
-        final @NotNull Optional<VirtualFile> folder = packageFolder(root, packageSegments);
-        if (folder.isEmpty()) return Optional.empty();
-
-        final @NotNull String fileName = className + ".java";
-        final @NotNull Optional<VirtualFile> existing = Optional.ofNullable(folder.get().findChild(fileName));
-
-        if (existing.isPresent()) {
-            TestinLogger.info("Test class already exists: " + existing.get().getPath());
-            return existing;
-        }
-
-        final @NotNull String packageName = String.join(".", packageSegments);
-        final @NotNull String declaration = packageName.isEmpty() ? "" : """
-                package %s;
-                
-                """.formatted(packageName);
-
-        try {
-            final @NotNull VirtualFile file = folder.get().createChildData(JavaSourceRoot.class, fileName);
-            VfsUtil.saveText(file, declaration + """
-                    public class %s {
-                    }
-                    """.formatted(className));
-
-            TestinLogger.info("Test class created at: " + file.getPath());
-            return Optional.of(file);
-        } catch (final IOException ex) {
-            TestinLogger.error("Could not create the test class " + fileName + ": " + FailureText.of(ex));
-            return Optional.empty();
-        }
-    }
-
-    // UC-CODEGEN-016, Rule-CODEGEN-053
-    @FromContentModule
-    public static boolean move(final @NotNull VirtualFile file, final @NotNull VirtualFile target, final @NotNull Object requestor) {
-        try {
-            file.move(requestor, target);
-            return true;
-        } catch (final IOException ex) {
-            TestinLogger.error("Could not move generated code at " + file.getPath() + " to " + target.getPath() + ": " + FailureText.of(ex));
-            return false;
-        }
-    }
-
-    // UC-CODEGEN-020, Rule-CODEGEN-064
-    @FromContentModule
-    public static @NotNull Optional<VirtualFile> fileInRootOrWarn(final @NotNull Project project, final @NotNull String className, final @NotNull RootFile work) {
-        return findOrWarn(project, className).flatMap(work::from);
-    }
 
     // UC-CODEGEN-020, Rule-CODEGEN-065
     @FromContentModule
@@ -214,24 +152,10 @@ public final class JavaSourceRoot {
         WriteAction.run(() -> find(project).ifPresent(work::run));
     }
 
-    @FromContentModule
-    public static void commandInRoot(final @NotNull Project project, final @NotNull String title, final @NotNull RootWork work) {
-        WriteCommandAction.runWriteCommandAction(project, title, null, () -> find(project).ifPresent(work::run));
-    }
-
-    // UC-CODEGEN-020, Rule-CODEGEN-065
-    @FromContentModule
-    public static void writeInRootOrWarn(final @NotNull Project project, final @NotNull String className, final @NotNull RootWork work) {
-        WriteAction.run(() -> findOrWarn(project, className).ifPresent(work::run));
-    }
 
     @FunctionalInterface
     public interface RootWork {
         void run(final @NotNull VirtualFile root);
     }
 
-    @FunctionalInterface
-    public interface RootFile {
-        @NotNull Optional<VirtualFile> from(final @NotNull VirtualFile root);
-    }
 }
