@@ -21,7 +21,7 @@ import org.testin.AbstractOpenEditorsIdeTest;
 import org.testin.Await;
 import org.testin.NodesOnDisk;
 import org.testin.TreeGesture;
-import org.testin.creator.dialogs.CreateTestSetDialog;
+import org.testin.creator.dialogs.CreateNodeDialog;
 import org.testin.indexer.Nodes;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
@@ -29,14 +29,14 @@ import org.testin.services.Services;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.util.Shortcuts;
 
+import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
 
 public class CreateTestSetOpensIdeTest extends AbstractOpenEditorsIdeTest {
 
     @Override
     public void tearDown() {
-        ShownDialog.close(getProject(), CreateTestSetDialog.class);
+        ShownDialog.close(getProject(), CreateNodeDialog.class);
         super.tearDown();
     }
 
@@ -45,11 +45,12 @@ public class CreateTestSetOpensIdeTest extends AbstractOpenEditorsIdeTest {
         final @NotNull TestProjectNode testProject = new NodesOnDisk(getProject()).testProject(root.resolve("NAFATH"));
 
         TreeGesture.pressed(getProject(), new CreateTreeNodeAction(), List.of(testProject.getTestCasesFolder()));
-        ShownDialog.typed(getProject(), CreateTestSetDialog.class, "Login");
-        ShownDialog.press(getProject(), CreateTestSetDialog.class, Shortcuts.Enter);
+        ShownDialog.typed(getProject(), CreateNodeDialog.class, "Login");
+        ShownDialog.press(getProject(), CreateNodeDialog.class, Shortcuts.Enter);
 
-        final @NotNull Optional<AbstractNode> created = Services.getInstance(getProject(), Nodes.class).find(testProject.getTestCasesFolder().getPath().resolve("Login"));
-        assertTrue("the test set was not created", created.isPresent());
-        Await.until("the new test set did not open in its editor", () -> openOn(created.orElseThrow()).size() == 1);
+        final @NotNull Path wanted = testProject.getTestCasesFolder().getPath().resolve("Login");
+        Await.until("the test set was not created", () -> Services.getInstance(getProject(), Nodes.class).find(wanted).isPresent());
+        final @NotNull AbstractNode created = Services.getInstance(getProject(), Nodes.class).find(wanted).orElseThrow();
+        Await.until("the new test set did not open in its editor", () -> openOn(created).size() == 1);
     }
 }

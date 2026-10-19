@@ -19,7 +19,6 @@ package org.testin.creator;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.editor.open.TestinEditors;
 import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
@@ -29,7 +28,6 @@ import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.testrun.TestRunConfiguration;
-import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
 import org.testin.notifications.Refused;
 import org.testin.services.BackgroundWork;
@@ -59,30 +57,25 @@ public class CreateTestRun implements NodeCreator {
 
     private final @NotNull Notifier notifier;
 
-    private final @NotNull NodeMapper directoryMapper;
+    private final @NotNull NodeMapper nodeMapper;
 
     private final @NotNull TestRuns testRuns;
-
-    private final @NotNull TestinEditors editors;
 
     public CreateTestRun(final @NotNull Project project) {
         this.project = project;
         this.boundTestProject = Services.getInstance(project, BoundTestProject.class);
         this.nodes = Services.getInstance(project, Nodes.class);
         this.notifier = Services.getInstance(project, Notifier.class);
-        this.directoryMapper = Services.getInstance(project, NodeMapper.class);
+        this.nodeMapper = Services.getInstance(project, NodeMapper.class);
         this.testRuns = Services.getInstance(project, TestRuns.class);
-        this.editors = Services.getInstance(project, TestinEditors.class);
     }
 
     // UC-TREE-PANEL-009
     @Override
-    public @NotNull Optional<AbstractNode> execute(final @NotNull String name, final @NotNull AbstractNode parentNode, final @NotNull Path newDirectoryPath) {
+    public void create(final @NotNull AbstractNode parentNode, final @NotNull Path path) {
         boundTestProject.get().ifPresentOrElse(
-                testProject -> configureTestRun(testProject.getTestCasesFolder(), name, parentNode, Set.of(), Map.of()),
+                testProject -> configureTestRun(testProject.getTestCasesFolder(), path.getFileName().toString(), parentNode, Set.of(), Map.of()),
                 () -> TestinLogger.warn("Create test run: no test project is bound to " + project.getName()));
-
-        return Optional.empty();
     }
 
     // UC-TREE-PANEL-009, UC-TREE-PANEL-021, Rule-TREE-PANEL-138
@@ -110,7 +103,7 @@ public class CreateTestRun implements NodeCreator {
             return false;
         }
 
-        final @NotNull TestRunNode createdTestRun = directoryMapper.setTestRunNode(savePath, parentNode);
+        final @NotNull TestRunNode createdTestRun = nodeMapper.setTestRunNode(savePath, parentNode);
         write(form, selection, savePath, createdTestRun);
 
         return true;
@@ -130,11 +123,7 @@ public class CreateTestRun implements NodeCreator {
             testRuns.putRunItems(savePath, runItems);
             nodes.refreshDirectory(savePath);
 
-            ApplicationManager.getApplication().invokeLater(() -> {
-                editors.open(testRunNode);
-
-                notifier.softShow(project, Done.CREATED);
-            });
+            ApplicationManager.getApplication().invokeLater(() -> CreatedNode.announce(project, testRunNode), project.getDisposed());
 
         });
     }

@@ -221,10 +221,10 @@ public class TreeNodesIdeTest extends AbstractTempRootIdeTest {
 
         for (final String name : List.of("Payments", "Refunds", "Partial")) {
             final @NotNull Path wanted = parent.getPath().resolve(name);
-            final @NotNull Optional<AbstractNode> created = NodeCreators.of(getProject(), NodeType.TEST_SET_PACKAGE).execute(name, parent, wanted);
+            NodeCreators.of(getProject(), NodeType.TEST_SET_PACKAGE).create(parent, wanted);
 
-            assertTrue("a test set package was not created under " + parent.getName(), created.isPresent());
-            assertTrue(nodes().nodeExists(wanted));
+            Await.until("a test set package was not created under " + parent.getName(), () -> nodes().nodeExists(wanted));
+            final @NotNull Optional<AbstractNode> created = nodes().find(wanted);
             assertTrue("a new test set package is not empty", nodes().getChildren(wanted).isEmpty());
             assertFalse("a new test set package opens", created.orElseThrow().isOpenableInEditor());
             parent = created.orElseThrow();
@@ -237,10 +237,10 @@ public class TreeNodesIdeTest extends AbstractTempRootIdeTest {
 
         for (final String name : List.of("Release 4", "Sprint 12", "Smoke")) {
             final @NotNull Path wanted = parent.getPath().resolve(name);
-            final @NotNull Optional<AbstractNode> created = NodeCreators.of(getProject(), NodeType.TEST_RUN_PACKAGE).execute(name, parent, wanted);
+            NodeCreators.of(getProject(), NodeType.TEST_RUN_PACKAGE).create(parent, wanted);
 
-            assertTrue("a test run package was not created under " + parent.getName(), created.isPresent());
-            assertTrue(nodes().nodeExists(wanted));
+            Await.until("a test run package was not created under " + parent.getName(), () -> nodes().nodeExists(wanted));
+            final @NotNull Optional<AbstractNode> created = nodes().find(wanted);
             assertTrue("a new test run package is not empty", nodes().getChildren(wanted).isEmpty());
             assertFalse("a new test run package opens", created.orElseThrow().isOpenableInEditor());
             parent = created.orElseThrow();

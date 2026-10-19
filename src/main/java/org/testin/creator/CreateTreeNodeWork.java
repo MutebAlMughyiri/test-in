@@ -18,54 +18,32 @@ package org.testin.creator;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.codegen.NodeCode;
-import org.testin.creator.dialogs.CreateTestRunDialog;
-import org.testin.creator.dialogs.CreateTestSetDialog;
-import org.testin.editor.open.TestinEditors;
+import org.testin.creator.dialogs.CreateNodeDialog;
 import org.testin.indexer.Nodes;
-import org.testin.model.NodeType;
 import org.testin.model.node.AbstractNode;
-import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
 import org.testin.notifications.Refused;
 import org.testin.services.Services;
 
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 
-record CreateTreeNodeWork(@NotNull Project project, @NotNull Nodes nodes, @NotNull Notifier notifier, @NotNull TestinEditors editors) {
+record CreateTreeNodeWork(@NotNull Project project, @NotNull Nodes nodes, @NotNull Notifier notifier) {
     CreateTreeNodeWork(final @NotNull Project project) {
-        this(project, Services.getInstance(project, Nodes.class), Services.getInstance(project, Notifier.class), Services.getInstance(project, TestinEditors.class));
+        this(project, Services.getInstance(project, Nodes.class), Services.getInstance(project, Notifier.class));
     }
 
     // UC-TREE-PANEL-007, UC-TREE-PANEL-008, UC-TREE-PANEL-009, UC-TREE-PANEL-010, Rule-TREE-PANEL-004, Rule-TREE-PANEL-026
     void createUnder(final @NotNull AbstractNode parentNode) {
-        final @NotNull BiConsumer<String, NodeType> onCreate = (name, type) -> {
-            if (name.isEmpty()) return;
-            final @NotNull Path newDirectoryPath = parentNode.getPath().resolve(name);
+        new CreateNodeDialog(project, parentNode.childKinds(), (name, type) -> {
+            final @NotNull Path path = parentNode.getPath().resolve(name);
 
-            if (nodes.isTaken(newDirectoryPath, Optional.empty())) {
+            if (nodes.isTaken(path, Optional.empty())) {
                 notifier.softRefuse(project, Refused.ALREADY_EXISTS, name);
                 return;
             }
 
-            final @NotNull Optional<AbstractNode> created = NodeCreators.of(project, type).execute(name, parentNode, newDirectoryPath);
-
-            created.ifPresent(node -> {
-                notifier.softShow(project, Done.CREATED);
-
-                if (node.isOpenableInEditor())
-                    editors.open(node);
-
-                NodeCode.of(type).getCreated().execute(project, node);
-            });
-
-        };
-
-        final @NotNull List<NodeType> kinds = parentNode.childKinds();
-        if (kinds.equals(NodeType.UNDER_TEST_CASES)) new CreateTestSetDialog(project, onCreate).show();
-        else if (kinds.equals(NodeType.UNDER_TEST_RUNS)) new CreateTestRunDialog(project, onCreate).show();
+            NodeCreators.of(project, type).create(parentNode, path);
+        }).show();
     }
 }

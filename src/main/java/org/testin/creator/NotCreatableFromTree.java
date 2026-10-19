@@ -22,7 +22,6 @@ import org.testin.logger.TestinLogger;
 import org.testin.model.node.AbstractNode;
 
 import java.nio.file.Path;
-import java.util.Optional;
 
 @AllArgsConstructor
 public final class NotCreatableFromTree implements NodeCreator {
@@ -30,8 +29,7 @@ public final class NotCreatableFromTree implements NodeCreator {
 
     // Rule-TREE-PANEL-002
     @Override
-    public @NotNull Optional<AbstractNode> execute(final @NotNull String name, final @NotNull AbstractNode parentNode, final @NotNull Path newDirectoryPath) {
+    public void create(final @NotNull AbstractNode parentNode, final @NotNull Path path) {
         TestinLogger.info(nodeType + " is not created from the tree");
-        return Optional.empty();
     }
 }

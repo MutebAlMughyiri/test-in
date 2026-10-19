@@ -28,9 +28,9 @@ public final class NodeCreators {
     public static @NotNull NodeCreator of(final @NotNull Project project, final @NotNull NodeType type) {
         return switch (type) {
             case TEST_PROJECT, TEST_CASES_FOLDER, TEST_RUNS_FOLDER -> new NotCreatableFromTree(type.getDescription());
-            case TEST_SET_PACKAGE -> new CreateTestSetPackage(project);
-            case TEST_RUN_PACKAGE -> new CreateTestRunPackage(project);
-            case TEST_SET -> new CreateTestSet(project);
+            case TEST_SET_PACKAGE -> CreateFolderNode.testSetPackage(project);
+            case TEST_RUN_PACKAGE -> CreateFolderNode.testRunPackage(project);
+            case TEST_SET -> CreateFolderNode.testSet(project);
             case TEST_RUN -> new CreateTestRun(project);
         };
     }

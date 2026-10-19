@@ -20,10 +20,8 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.model.node.AbstractNode;
 
 import java.nio.file.Path;
-import java.util.Optional;
 
 @FunctionalInterface
 public interface NodeCreator {
-    @NotNull
-    Optional<AbstractNode> execute(final @NotNull String name, final @NotNull AbstractNode parentNode, final @NotNull Path newDirectoryPath);
+    void create(final @NotNull AbstractNode parentNode, final @NotNull Path path);
 }

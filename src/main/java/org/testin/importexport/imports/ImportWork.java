@@ -26,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.CodeChangeType;
 import org.testin.codegen.CodeOn;
 import org.testin.codegen.NodeCode;
-import org.testin.creator.CreateTestSet;
+import org.testin.creator.CreateFolderNode;
 import org.testin.editor.open.TestinEditors;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
@@ -203,8 +203,8 @@ record ImportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
             final @NotNull Path path = targetPath.resolve(name);
 
             sets.put(onEdtCompute(() -> {
-                final @NotNull TestSetNode made = (TestSetNode) new CreateTestSet(project)
-                        .execute(name, selectedNode, path)
+                final @NotNull TestSetNode made = CreateFolderNode.testSet(project)
+                        .added(selectedNode, path)
                         .orElseThrow(() -> new IllegalStateException(Bundle.message("import.set.not.made", name)));
 
                 try {

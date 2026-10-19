@@ -20,6 +20,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.StandIn;
 import org.testin.creator.NodeCreators;
+import org.testin.creator.NotCreatableFromTree;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestCasesFolderNode;
 import org.testin.model.node.TestProjectNode;
@@ -35,7 +36,6 @@ import org.testin.model.status.TestSetStatus;
 import org.testin.notifications.Refused;
 import org.testng.annotations.Test;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,10 +69,8 @@ public class TreeNodeKindsTest {
         }
 
         final @NotNull Project project = StandIn.of(Project.class);
-        final @NotNull AbstractNode parent = new TestProjectNode();
         for (final NodeType container : List.of(NodeType.TEST_CASES_FOLDER, NodeType.TEST_RUNS_FOLDER)) {
-            assertTrue(NodeCreators.of(project, container).execute("Extra", parent, Path.of("root", "Extra")).isEmpty(),
-                    container.getDescription() + " was created from the tree");
+            assertTrue(NodeCreators.of(project, container) instanceof NotCreatableFromTree, container.getDescription() + " can be created from the tree");
         }
 
         final @NotNull TestProjectNode testProject = new TestProjectNode();

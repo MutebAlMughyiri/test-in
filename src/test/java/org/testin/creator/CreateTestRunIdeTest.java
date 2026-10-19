@@ -18,11 +18,11 @@ package org.testin.creator;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractOpenEditorsIdeTest;
+import org.testin.Await;
 import org.testin.NodesOnDisk;
 import org.testin.TreeGesture;
-import org.testin.creator.dialogs.CreateTestRunDialog;
+import org.testin.creator.dialogs.CreateNodeDialog;
 import org.testin.indexer.Nodes;
-import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunPackageNode;
 import org.testin.services.Services;
@@ -31,14 +31,14 @@ import org.testin.util.Shortcuts;
 
 import javax.swing.KeyStroke;
 import java.awt.event.KeyEvent;
+import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
 
 public class CreateTestRunIdeTest extends AbstractOpenEditorsIdeTest {
 
     @Override
     public void tearDown() {
-        ShownDialog.close(getProject(), CreateTestRunDialog.class);
+        ShownDialog.close(getProject(), CreateNodeDialog.class);
         super.tearDown();
     }
 
@@ -47,12 +47,12 @@ public class CreateTestRunIdeTest extends AbstractOpenEditorsIdeTest {
         final @NotNull TestProjectNode testProject = new NodesOnDisk(getProject()).testProject(root.resolve("NAFATH"));
 
         TreeGesture.pressed(getProject(), new CreateTreeNodeAction(), List.of(testProject.getTestRunsFolder()));
-        ShownDialog.typed(getProject(), CreateTestRunDialog.class, "Sprint 7");
-        ShownDialog.press(getProject(), CreateTestRunDialog.class, KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0));
-        ShownDialog.press(getProject(), CreateTestRunDialog.class, Shortcuts.Enter);
+        ShownDialog.typed(getProject(), CreateNodeDialog.class, "Sprint 7");
+        ShownDialog.press(getProject(), CreateNodeDialog.class, KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0));
+        ShownDialog.press(getProject(), CreateNodeDialog.class, Shortcuts.Enter);
 
-        final @NotNull Optional<AbstractNode> created = Services.getInstance(getProject(), Nodes.class).find(testProject.getTestRunsFolder().getPath().resolve("Sprint 7"));
-        assertTrue("the second choice under Test Runs did not create a test run package", created.filter(TestRunPackageNode.class::isInstance).isPresent());
-        assertEquals("a new test run package opened something", List.of(), openOn(created.orElseThrow()));
+        final @NotNull Path wanted = testProject.getTestRunsFolder().getPath().resolve("Sprint 7");
+        Await.until("the second choice under Test Runs did not create a test run package", () -> Services.getInstance(getProject(), Nodes.class).find(wanted).filter(TestRunPackageNode.class::isInstance).isPresent());
+        assertEquals("a new test run package opened something", List.of(), openOn(Services.getInstance(getProject(), Nodes.class).find(wanted).orElseThrow()));
     }
 }

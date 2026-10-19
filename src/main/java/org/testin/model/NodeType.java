@@ -53,7 +53,10 @@ public enum NodeType {
             TestProjectMarker.class,
             SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES,
             DonutSlices.CHILDREN,
-            ImmutableList.of(NodeFigureRow.TEST_SETS, NodeFigureRow.PACKAGES, NodeFigureRow.TEST_CASES, NodeFigureRow.TEST_RUNS)
+            ImmutableList.of(NodeFigureRow.TEST_SETS, NodeFigureRow.PACKAGES, NodeFigureRow.TEST_CASES, NodeFigureRow.TEST_RUNS),
+            "",
+            "",
+            ""
     ),
 
     TEST_CASES_FOLDER(
@@ -64,7 +67,10 @@ public enum NodeType {
             TestCasesFolderMarker.class,
             SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES,
             DonutSlices.CHILDREN,
-            ImmutableList.of(NodeFigureRow.TEST_SETS, NodeFigureRow.PACKAGES, NodeFigureRow.TEST_CASES)
+            ImmutableList.of(NodeFigureRow.TEST_SETS, NodeFigureRow.PACKAGES, NodeFigureRow.TEST_CASES),
+            "",
+            "",
+            ""
     ),
 
     TEST_RUNS_FOLDER(
@@ -75,7 +81,10 @@ public enum NodeType {
             TestRunsFolderMarker.class,
             SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES,
             DonutSlices.CHILDREN,
-            ImmutableList.of(NodeFigureRow.PACKAGES, NodeFigureRow.TEST_RUNS)
+            ImmutableList.of(NodeFigureRow.PACKAGES, NodeFigureRow.TEST_RUNS),
+            "",
+            "",
+            ""
     ),
 
     TEST_SET_PACKAGE(
@@ -86,7 +95,10 @@ public enum NodeType {
             TestSetPackageMarker.class,
             SimpleTextAttributes.REGULAR_ATTRIBUTES,
             DonutSlices.CHILDREN,
-            ImmutableList.of(NodeFigureRow.TEST_SETS, NodeFigureRow.PACKAGES, NodeFigureRow.TEST_CASES)
+            ImmutableList.of(NodeFigureRow.TEST_SETS, NodeFigureRow.PACKAGES, NodeFigureRow.TEST_CASES),
+            Bundle.message("dialog.create.test.hint.test.set.package"),
+            "",
+            ""
     ),
 
     TEST_RUN_PACKAGE(
@@ -97,7 +109,10 @@ public enum NodeType {
             TestRunPackageMarker.class,
             SimpleTextAttributes.REGULAR_ATTRIBUTES,
             DonutSlices.CHILDREN,
-            ImmutableList.of(NodeFigureRow.PACKAGES, NodeFigureRow.TEST_RUNS)
+            ImmutableList.of(NodeFigureRow.PACKAGES, NodeFigureRow.TEST_RUNS),
+            Bundle.message("dialog.create.test.run.hint.test.run.package"),
+            "",
+            ""
     ),
 
     TEST_SET(
@@ -108,7 +123,10 @@ public enum NodeType {
             TestSetMarker.class,
             SimpleTextAttributes.REGULAR_ATTRIBUTES,
             DonutSlices.CHILDREN,
-            ImmutableList.of(NodeFigureRow.TEST_CASES)
+            ImmutableList.of(NodeFigureRow.TEST_CASES),
+            Bundle.message("dialog.create.test.hint.test.set"),
+            Bundle.message("dialog.create.test.title"),
+            Bundle.message("dialog.create.test.placeholder")
     ),
 
     TEST_RUN(
@@ -119,7 +137,10 @@ public enum NodeType {
             TestRunMarker.class,
             SimpleTextAttributes.REGULAR_ATTRIBUTES,
             DonutSlices.RUN_ITEM_STATUSES,
-            ImmutableList.of(NodeFigureRow.TOTAL)
+            ImmutableList.of(NodeFigureRow.TOTAL),
+            Bundle.message("dialog.create.test.run.hint.test.run"),
+            Bundle.message("dialog.create.test.run.title"),
+            Bundle.message("dialog.create.test.run.placeholder")
     );
 
     public static final @NotNull List<NodeType> UNDER_TEST_CASES = List.of(TEST_SET, TEST_SET_PACKAGE);
@@ -156,6 +177,15 @@ public enum NodeType {
     private final @NotNull DonutSlices statistics;
 
     private final @NotNull ImmutableList<NodeFigureRow> counts;
+
+    // UC-TREE-PANEL-007, UC-TREE-PANEL-009, Rule-TREE-PANEL-024, Rule-TREE-PANEL-032
+    private final @NotNull String purpose;
+
+    // UC-TREE-PANEL-007, UC-TREE-PANEL-009
+    private final @NotNull String createTitle;
+
+    // UC-TREE-PANEL-007, UC-TREE-PANEL-009
+    private final @NotNull String namePlaceholder;
 
     // Rule-TREE-PANEL-005
     public static boolean isOneFolderName(final @NotNull String name) {

@@ -24,29 +24,28 @@ import org.testin.ui.framework.AbstractFrameworkDialog;
 import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.ui.framework.TextFieldWithSelections;
-import org.testin.util.Bundle;
 
 import java.util.List;
 import java.util.function.BiConsumer;
 
-public final class CreateTestSetDialog extends AbstractFrameworkDialog {
+public final class CreateNodeDialog extends AbstractFrameworkDialog {
     private final @NotNull TextFieldWithSelections<NodeType> nameAndType;
 
     private final @NotNull BiConsumer<@NotNull String, @NotNull NodeType> onCreate;
 
-    // UC-TREE-PANEL-007, UC-TREE-PANEL-008, Rule-TREE-PANEL-024
-    public CreateTestSetDialog(final @NotNull Project project, final @NotNull BiConsumer<@NotNull String, @NotNull NodeType> onCreate) {
+    // UC-TREE-PANEL-007, UC-TREE-PANEL-008, UC-TREE-PANEL-009, UC-TREE-PANEL-010, Rule-TREE-PANEL-024, Rule-TREE-PANEL-032
+    public CreateNodeDialog(final @NotNull Project project, final @NotNull List<NodeType> kinds, final @NotNull BiConsumer<@NotNull String, @NotNull NodeType> onCreate) {
         super(project);
         this.onCreate = onCreate;
 
-        title = Bundle.message("dialog.create.test.title");
+        final @NotNull NodeType first = kinds.getFirst();
+        title = first.getCreateTitle();
 
-        final @NotNull DialogPart<TextFieldWithSelections<NodeType>> built = DialogPart.<NodeType>textFieldWithSelections()
-                .icon(NodeType.TEST_SET.getIcon())
-                .placeholder(Bundle.message("dialog.create.test.placeholder"))
-                .selection(NodeType.TEST_SET.getIcon(), NodeType.TEST_SET.getDescription(), Bundle.message("dialog.create.test.hint.test.set"), NodeType.TEST_SET)
-                .selection(NodeType.TEST_SET_PACKAGE.getIcon(), NodeType.TEST_SET_PACKAGE.getDescription(), Bundle.message("dialog.create.test.hint.test.set.package"), NodeType.TEST_SET_PACKAGE)
-                .build();
+        final @NotNull DialogPart.TextFieldBuilder<NodeType> offered = DialogPart.<NodeType>textFieldWithSelections()
+                .icon(first.getIcon())
+                .placeholder(first.getNamePlaceholder());
+        kinds.forEach(kind -> offered.selection(kind.getIcon(), kind.getDescription(), kind.getPurpose(), kind));
+        final @NotNull DialogPart<TextFieldWithSelections<NodeType>> built = offered.build();
         nameAndType = built.getComponent();
         components = List.of(built);
 
@@ -57,7 +56,7 @@ public final class CreateTestSetDialog extends AbstractFrameworkDialog {
         );
     }
 
-    // UC-TREE-PANEL-007, UC-TREE-PANEL-008, Rule-TREE-PANEL-005, Rule-TREE-PANEL-095
+    // UC-TREE-PANEL-007, UC-TREE-PANEL-008, UC-TREE-PANEL-009, UC-TREE-PANEL-010, Rule-TREE-PANEL-005, Rule-TREE-PANEL-095
     @Override
     protected void submit() {
         final @NotNull NodeType type = nameAndType.getSelectedValue();
