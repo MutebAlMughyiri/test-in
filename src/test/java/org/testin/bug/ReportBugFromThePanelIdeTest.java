@@ -23,6 +23,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.testFramework.PlatformTestUtil;
+import com.intellij.ui.EditorTextField;
 import com.intellij.ui.components.JBTextField;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
@@ -58,7 +59,6 @@ import javax.swing.Action;
 import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import java.awt.Component;
@@ -121,8 +121,8 @@ public class ReportBugFromThePanelIdeTest extends AbstractTempRootIdeTest {
         return theOne(dialog, JTextField.class);
     }
 
-    private static @NotNull JTextArea body(final @NotNull JComponent dialog) {
-        return theOne(dialog, JTextArea.class);
+    private static @NotNull EditorTextField body(final @NotNull JComponent dialog) {
+        return theOne(dialog, EditorTextField.class);
     }
 
     private static @NotNull JButton send(final @NotNull JComponent dialog) {
@@ -271,7 +271,7 @@ public class ReportBugFromThePanelIdeTest extends AbstractTempRootIdeTest {
     public void testTheTitleAndTheBodyCanBeEditedAndSendFilesExactlyWhatTheDialogHolds() {
         final @NotNull JComponent dialog = opened(aPreparedBug(Optional.empty()));
         assertTrue("the title cannot be edited", title(dialog).isEditable());
-        assertTrue("the body cannot be edited", body(dialog).isEditable());
+        assertFalse("the body cannot be edited", body(dialog).isViewer());
 
         title(dialog).setText("Log in drops the session");
         body(dialog).setText("What the tester wrote instead");

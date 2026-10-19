@@ -58,6 +58,14 @@ public final class DialogPart<C extends DialogComponent> {
     }
 
     // Rule-INTERNAL-136, Rule-INTERNAL-139
+    // Rule-INTERNAL-097, Rule-VIEW-PANEL-070, Rule-EDITOR-PANEL-192
+    public static @NotNull DialogPart<MultiLineField> paragraphField(final @NotNull Project project, final @NotNull String placeholder, final int minimumLines, final @NotNull String value) {
+        final @NotNull MultiLineField field = new MultiLineField(project, EditorFields.createField(project), "", placeholder, minimumLines, MultiLineField.NO_LIMIT);
+        field.setText(value);
+        field.enterAddsALine();
+        return new DialogPart<>(field);
+    }
+
     public static @NotNull DialogPart<MultiLineField> multiLineField(final @NotNull Project project, final @NotNull String caption, final @NotNull String placeholder, final int minimumLines, final int maximumLines, final @NotNull Language language, final boolean spellChecked) {
         return new DialogPart<>(new MultiLineField(project, EditorFields.createField(project, language, spellChecked), caption, placeholder, minimumLines, maximumLines));
     }
@@ -204,8 +212,6 @@ public final class DialogPart<C extends DialogComponent> {
 
         private int rows = 5;
 
-        private boolean readOnly = false;
-
         public @NotNull TextAreaBuilder placeholder(final @NotNull String placeholder) {
             this.placeholder = placeholder;
             return this;
@@ -221,14 +227,8 @@ public final class DialogPart<C extends DialogComponent> {
             return this;
         }
 
-        // Rule-VIEW-PANEL-036
-        public @NotNull TextAreaBuilder readOnly() {
-            this.readOnly = true;
-            return this;
-        }
-
         public @NotNull DialogPart<PlainTextArea> build() {
-            return new DialogPart<>(new PlainTextArea(placeholder, value, rows, readOnly));
+            return new DialogPart<>(new PlainTextArea(placeholder, value, rows));
         }
     }
 

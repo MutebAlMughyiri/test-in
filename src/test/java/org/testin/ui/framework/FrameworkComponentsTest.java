@@ -29,6 +29,7 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.plaf.basic.BasicComboBoxEditor;
 import java.awt.Component;
@@ -209,9 +210,9 @@ public class FrameworkComponentsTest {
                 .build()
                 .getComponent();
 
-        assertEquals(area.getText(), "java.lang.RuntimeException");
+        assertEquals(((JTextArea) area.getFocusComponent()).getText(), "java.lang.RuntimeException");
         assertTrue(area.fillsSpace(), "the area must claim the dialog's remaining space");
-        assertFalse(area.acceptsDialogKeys(), "Enter must stay a newline inside the area");
+        assertFalse(((JTextArea) area.getFocusComponent()).isEditable(), "a text area is for reading, and typing is done in a box of many lines");
     }
 
     @Test

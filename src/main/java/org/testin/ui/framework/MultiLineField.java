@@ -73,6 +73,8 @@ public final class MultiLineField implements DialogComponent {
 
     private int packedHeight;
 
+    private boolean enterAddsALine;
+
     // Rule-INTERNAL-058, Rule-INTERNAL-095, Rule-INTERNAL-096
     public MultiLineField(final @NotNull Project project, final @NotNull EditorTextField field, final @NotNull String caption, final @NotNull String placeholder) {
         this(project, field, caption, placeholder, 0, VISIBLE_LINES);
@@ -164,6 +166,11 @@ public final class MultiLineField implements DialogComponent {
         field.addSettingsProvider(editor -> host.registerShortcut(editor.getContentComponent(), Shortcuts.InsertNewLine.getCustomShortcut(), () -> insertNewLine(editor)));
     }
 
+    // Rule-INTERNAL-097, Rule-VIEW-PANEL-070, Rule-EDITOR-PANEL-192
+    public void enterAddsALine() {
+        enterAddsALine = true;
+    }
+
     // Rule-INTERNAL-097
     public void growsWith(final @NotNull Runnable refit) {
         onGrow.add(refit);
@@ -181,6 +188,15 @@ public final class MultiLineField implements DialogComponent {
         field.setEnabled(enabled);
     }
 
+    public void onTextChanged(final @NotNull Runnable changed) {
+        field.addDocumentListener(new BulkAwareDocumentListener.Simple() {
+            @Override
+            public void afterDocumentChange(final @NotNull Document document) {
+                changed.run();
+            }
+        });
+    }
+
     // Rule-INTERNAL-087
     @Override
     public @NotNull JComponent getPanel() {
@@ -194,10 +210,11 @@ public final class MultiLineField implements DialogComponent {
         return field;
     }
 
-    // Rule-EDITOR-PANEL-246
+    // Rule-EDITOR-PANEL-246, Rule-INTERNAL-097
     @Override
     public void hostedBy(final @NotNull DialogHost host, final @NotNull Runnable submit) {
-        enableMultiLine(host, submit);
+        if (enterAddsALine) insertsNewLine(host);
+        else enableMultiLine(host, submit);
     }
 
     @Override

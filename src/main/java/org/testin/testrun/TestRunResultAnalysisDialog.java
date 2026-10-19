@@ -24,7 +24,7 @@ import org.testin.model.testrun.TestRunSummary;
 import org.testin.ui.framework.AbstractFrameworkDialog;
 import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.DialogSize;
-import org.testin.ui.framework.PlainTextArea;
+import org.testin.ui.framework.MultiLineField;
 import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.util.Bundle;
 
@@ -36,7 +36,9 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public final class TestRunResultAnalysisDialog extends AbstractFrameworkDialog {
-    private final @NotNull Map<TestRunResultAnalysis, PlainTextArea> written = new EnumMap<>(TestRunResultAnalysis.class);
+    private static final int FIRST_LINES = 3;
+
+    private final @NotNull Map<TestRunResultAnalysis, MultiLineField> written = new EnumMap<>(TestRunResultAnalysis.class);
 
     private final @NotNull Consumer<@NotNull Map<TestRunResultAnalysis, String>> onSave;
 
@@ -53,16 +55,10 @@ public final class TestRunResultAnalysisDialog extends AbstractFrameworkDialog {
         final @NotNull List<DialogPart<?>> parts = new ArrayList<>();
 
         for (final TestRunResultAnalysis section : TestRunResultAnalysis.values()) {
-            final @NotNull DialogPart.TextAreaBuilder builder = DialogPart.textArea()
-                    .placeholder(Bundle.message("dialog.analysis.placeholder", section.labelIn(testRunStatus).toLowerCase(Locale.ROOT)))
-                    .value(section.writtenIn(current))
-                    .rows(3);
-            final @NotNull DialogPart<PlainTextArea> area = (readOnly ? builder.readOnly() : builder).build();
-
-            written.put(section, area.getComponent());
+            final @NotNull String placeholder = Bundle.message("dialog.analysis.placeholder", section.labelIn(testRunStatus).toLowerCase(Locale.ROOT));
 
             parts.add(DialogPart.message(section.heading(summary, testRunStatus)));
-            parts.add(area);
+            parts.add(readOnly ? DialogPart.textArea().placeholder(placeholder).value(section.writtenIn(current)).rows(FIRST_LINES).build() : box(section, placeholder, section.writtenIn(current)));
         }
 
         // Rule-EDITOR-PANEL-189
@@ -77,6 +73,13 @@ public final class TestRunResultAnalysisDialog extends AbstractFrameworkDialog {
         size = DialogSize.TALL;
     }
 
+    // Rule-EDITOR-PANEL-192, Rule-INTERNAL-097
+    private @NotNull DialogPart<MultiLineField> box(final @NotNull TestRunResultAnalysis section, final @NotNull String placeholder, final @NotNull String value) {
+        final @NotNull DialogPart<MultiLineField> box = DialogPart.paragraphField(project, placeholder, FIRST_LINES, value);
+        written.put(section, box.getComponent());
+        return box;
+    }
+
     // UC-EDITOR-PANEL-045
     @Override
     protected void submit() {
@@ -87,7 +90,7 @@ public final class TestRunResultAnalysisDialog extends AbstractFrameworkDialog {
 
         final @NotNull Map<TestRunResultAnalysis, String> analysis = new EnumMap<>(TestRunResultAnalysis.class);
 
-        written.forEach((section, area) -> analysis.put(section, area.getText().trim()));
+        written.forEach((section, box) -> analysis.put(section, box.getText().trim()));
 
         onSave.accept(analysis);
         closeOk();

@@ -42,7 +42,6 @@ public final class AgentTranscriptDialog extends AbstractFrameworkDialog {
         components = List.of(DialogPart.textArea()
                 .value(transcript)
                 .rows(VISIBLE_ROWS)
-                .readOnly()
                 .build());
 
         shortcuts = List.of(StatusBarShortcut.build(Shortcuts.Escape, Bundle.message("shortcut.close"), this::closeCancel));

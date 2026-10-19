@@ -25,7 +25,7 @@ import org.testin.services.Services;
 import org.testin.ui.framework.AbstractFrameworkDialog;
 import org.testin.ui.framework.DialogButton;
 import org.testin.ui.framework.DialogPart;
-import org.testin.ui.framework.PlainTextArea;
+import org.testin.ui.framework.MultiLineField;
 import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.ui.framework.TextInput;
 import org.testin.util.Bundle;
@@ -46,7 +46,7 @@ final class ReportBugDialog extends AbstractFrameworkDialog {
 
     private final @NotNull DialogPart<TextInput> titleField;
 
-    private final @NotNull DialogPart<PlainTextArea> bodyArea;
+    private final @NotNull DialogPart<MultiLineField> bodyBox;
 
     private final @NotNull DialogPart<DialogButton> sendButton;
 
@@ -65,17 +65,13 @@ final class ReportBugDialog extends AbstractFrameworkDialog {
                 .placeholder(Bundle.message("bug.dialog.title.placeholder"))
                 .value(opening.title())
                 .build();
-        bodyArea = DialogPart.textArea()
-                .placeholder(Bundle.message("bug.dialog.body.placeholder"))
-                .value(opening.body())
-                .rows(20)
-                .build();
+        bodyBox = DialogPart.paragraphField(project, Bundle.message("bug.dialog.body.placeholder"), 0, opening.body());
         sendButton = DialogPart.button(Bundle.message("bug.dialog.send"));
 
         title = Bundle.message("bug.dialog.title");
         components = List.of(
                 titleField,
-                bodyArea,
+                bodyBox,
                 DialogPart.details()
                         .row(Bundle.message("bug.dialog.screenshots"), String.valueOf(bug.facts().screenshots().size()))
                         .row(Bundle.message("bug.dialog.repository"), bug.repository().map(BugRepository::displayName).orElse(""))
@@ -84,7 +80,7 @@ final class ReportBugDialog extends AbstractFrameworkDialog {
         shortcuts = List.of(StatusBarShortcut.cancel(this::closeCancel));
 
         titleField.getComponent().onTextChanged(this::refreshSend);
-        bodyArea.getComponent().onTextChanged(this::refreshSend);
+        bodyBox.getComponent().onTextChanged(this::refreshSend);
         refreshSend();
     }
 
@@ -111,7 +107,7 @@ final class ReportBugDialog extends AbstractFrameworkDialog {
 
     // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-071
     private @NotNull Optional<String> whyNot() {
-        return bug.whyNotReady().or(() -> BugLimits.whyNot(titleField.getComponent().getText(), bodyArea.getComponent().getText(),
+        return bug.whyNotReady().or(() -> BugLimits.whyNot(titleField.getComponent().getText(), bodyBox.getComponent().getText(),
                 bug.facts().screenshots().size()));
     }
 
@@ -131,7 +127,7 @@ final class ReportBugDialog extends AbstractFrameworkDialog {
         if (whyNot.isPresent()) return;
 
         sent = true;
-        final @NotNull BugReportEdits edits = new BugReportEdits(titleField.getComponent().getText().strip(), bodyArea.getComponent().getText());
+        final @NotNull BugReportEdits edits = new BugReportEdits(titleField.getComponent().getText().strip(), bodyBox.getComponent().getText());
         BugFiling.send(project, runItemPath, bug.repository().orElseThrow(), edits, bug.facts().screenshots(), redraw);
         closeOk();
     }

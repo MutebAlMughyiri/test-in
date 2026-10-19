@@ -95,7 +95,8 @@ There is no key for this. The button's tooltip reads **Result Analysis**.
 ```
 
 1. **Each heading** — the run item status and how many test cases carry it.
-2. **Each box** — three lines tall, with its own gray hint.
+2. **Each box** — three lines tall to start, growing with what is written,
+   with its own gray hint.
 3. **Save** — a button, because `Enter` makes a paragraph here.
 
 ## Main flow

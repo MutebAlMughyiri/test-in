@@ -16,12 +16,15 @@
 
 package org.testin.testrun;
 
+import com.intellij.openapi.actionSystem.IdeActions;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.util.Disposer;
+import com.intellij.testFramework.EditorTestUtil;
 import com.intellij.testFramework.PlatformTestUtil;
-import com.intellij.ui.components.JBTextArea;
+import com.intellij.ui.EditorTextField;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
-import org.testin.OnScreen;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.editor.toolbar.TestRunResultAnalysisButton;
@@ -32,18 +35,17 @@ import org.testin.model.testrun.RunItemExecution;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.util.Shortcuts;
 import org.testin.view.Drawn;
+import org.testin.view.KeyPress;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.KeyStroke;
-import javax.swing.TransferHandler;
-import javax.swing.text.DefaultEditorKit;
 import java.awt.Color;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
-import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class TestRunResultAnalysisIdeTest extends AbstractTempRootIdeTest {
 
@@ -100,25 +102,30 @@ public class TestRunResultAnalysisIdeTest extends AbstractTempRootIdeTest {
         }
     }
 
-    // Rule-EDITOR-PANEL-192
+    // Rule-EDITOR-PANEL-192, Rule-INTERNAL-097
     public void testEnterMakesAParagraphAPictureIsNotPastedAndSaveIsAButton() {
         final @NotNull TestRunFixture fixture = aJudgedTestRunIn(TestRunStatus.COMPLETED);
         final @NotNull TestRunEditor editor = fixture.opened(getTestRootDisposable());
+        final @NotNull List<EditorTextField> realized = new ArrayList<>();
         try {
             editor.getToolBar().getToolbarItem(TestRunResultAnalysisButton.class).doClick();
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
             final @NotNull JComponent dialog = ShownDialog.content(getProject(), TestRunResultAnalysisDialog.class);
-            final @NotNull JBTextArea box = Drawn.components(dialog).stream().filter(JBTextArea.class::isInstance).map(JBTextArea.class::cast).findFirst().orElseThrow();
+            final @NotNull EditorTextField box = Drawn.first(dialog, EditorTextField.class);
+            box.addNotify();
+            realized.add(box);
+            final @NotNull Editor typing = Optional.ofNullable(box.getEditor(true)).orElseThrow(() -> new AssertionError("a box of the analysis has no editor"));
 
             box.setText("Most failures came from the payment gateway");
-            box.setCaretPosition(box.getText().length());
-            assertTrue("Enter is not bound in a box", OnScreen.pressKey(box, Shortcuts.Enter.getKey()));
+            typing.getCaretModel().moveToOffset(typing.getDocument().getTextLength());
+            assertTrue("the dialog took Enter from a box", KeyPress.answering(box, Shortcuts.Enter.getKey()).isEmpty());
+            EditorTestUtil.executeAction(typing, IdeActions.ACTION_EDITOR_ENTER);
             assertTrue("Enter in a box did not make a new paragraph: " + box.getText(), box.getText().contains("\n"));
             assertTrue("Enter in a box closed the dialog", ShownDialog.isOpen(getProject(), TestRunResultAnalysisDialog.class));
 
             final @NotNull String typed = box.getText();
-            assertEquals("Ctrl+V in a box is not the box's own paste", DefaultEditorKit.pasteAction, box.getInputMap(JComponent.WHEN_FOCUSED).get(KeyStroke.getKeyStroke(KeyEvent.VK_V, Shortcuts.menuMask())));
-            assertFalse("a box took a screenshot", box.getTransferHandler().importData(new TransferHandler.TransferSupport(box, aScreenshot())));
+            CopyPasteManager.getInstance().setContents(aScreenshot());
+            EditorTestUtil.executeAction(typing, IdeActions.ACTION_EDITOR_PASTE);
             assertEquals("a screenshot pasted something into a box", typed, box.getText());
             assertTrue("the analysis dialog keeps screenshots", Drawn.components(dialog).stream().noneMatch(component -> component.getClass().getSimpleName().startsWith("Screenshot")));
 
@@ -129,6 +136,7 @@ public class TestRunResultAnalysisIdeTest extends AbstractTempRootIdeTest {
 
             assertTrue("the Save button did not save the analysis", editor.getParent().getMarker().getResultAnalysis().values().stream().anyMatch(written -> written.startsWith("Most failures came from the payment gateway")));
         } finally {
+            realized.forEach(EditorTextField::removeNotify);
             Disposer.dispose(editor);
         }
     }

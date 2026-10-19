@@ -16,7 +16,6 @@
 
 package org.testin.ui.framework;
 
-import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextArea;
 import com.intellij.util.ui.JBUI;
@@ -25,19 +24,18 @@ import org.testin.ui.Caption;
 import org.testin.ui.dialogs.DialogStyle;
 
 import javax.swing.JComponent;
-import javax.swing.event.DocumentEvent;
 import java.awt.KeyboardFocusManager;
 
-// Rule-EDITOR-PANEL-192
+// Rule-VIEW-PANEL-036
 public final class PlainTextArea implements DialogComponent {
     private final @NotNull JBTextArea area;
 
     private final @NotNull JComponent panel;
 
-    PlainTextArea(final @NotNull String placeholder, final @NotNull String value, final int rows, final boolean readOnly) {
+    PlainTextArea(final @NotNull String placeholder, final @NotNull String value, final int rows) {
         area = new JBTextArea(value);
         DialogStyle.asField(area);
-        area.setEditable(!readOnly);
+        area.setEditable(false);
         area.setLineWrap(true);
         area.setWrapStyleWord(true);
         area.setRows(rows);
@@ -66,15 +64,6 @@ public final class PlainTextArea implements DialogComponent {
         return area.getText();
     }
 
-    public void onTextChanged(final @NotNull Runnable changed) {
-        area.getDocument().addDocumentListener(new DocumentAdapter() {
-            @Override
-            protected void textChanged(final @NotNull DocumentEvent event) {
-                changed.run();
-            }
-        });
-    }
-
     @Override
     public @NotNull JComponent getPanel() {
         return panel;
@@ -87,11 +76,6 @@ public final class PlainTextArea implements DialogComponent {
 
     @Override
     public void onSubmitRequest(final @NotNull Runnable submit) {
-    }
-
-    @Override
-    public boolean acceptsDialogKeys() {
-        return false;
     }
 
     @Override

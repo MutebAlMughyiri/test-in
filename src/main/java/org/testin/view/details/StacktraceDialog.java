@@ -50,7 +50,6 @@ public final class StacktraceDialog extends AbstractFrameworkDialog {
                 DialogPart.textArea()
                         .value(stacktrace)
                         .rows(VISIBLE_ROWS)
-                        .readOnly()
                         .build());
 
         shortcuts = List.of(StatusBarShortcut.build(Shortcuts.Escape, Bundle.message("shortcut.close"), this::closeCancel));

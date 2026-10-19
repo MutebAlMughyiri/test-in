@@ -113,6 +113,28 @@ public class MultiLineBoxIdeTest extends AbstractIdeTest {
         assertTrue("Tab does not leave the box", editor.getContentComponent().getFocusTraversalKeysEnabled());
     }
 
+    // UC-INTERNAL-007, Rule-INTERNAL-097, Rule-VIEW-PANEL-070, Rule-EDITOR-PANEL-192
+    public void testADialogWithOtherPlansForEnterKeepsItAndCtrlEnterStillAddsALine() {
+        final @NotNull MultiLineField box = aBox();
+        box.enterAddsALine();
+        final @NotNull Host host = new Host();
+        final @NotNull AtomicInteger saved = new AtomicInteger();
+        box.hostedBy(host, saved::incrementAndGet);
+        final @NotNull Editor editor = editorOf(box);
+
+        assertTrue("a box whose dialog keeps Enter asked the dialog to bind it", host.bound(box.getFocusComponent(), Shortcuts.Enter).isEmpty());
+
+        box.setText("Open the login page");
+        editor.getCaretModel().moveToOffset(editor.getDocument().getTextLength());
+        host.bound(editor.getContentComponent(), Shortcuts.InsertNewLine).orElseThrow(() -> new AssertionError("Ctrl+Enter is not bound in the box")).run();
+        assertEquals("Ctrl+Enter did not add a line", "Open the login page\n", box.getText());
+        assertEquals("a key in the box saved the dialog", 0, saved.get());
+
+        box.setText(lines(3));
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+        assertTrue("what draws the box was not asked to grow with it", host.refits.get() > 0);
+    }
+
     // UC-INTERNAL-007, Rule-INTERNAL-097
     public void testEveryBoxOfManyLinesIsTheSameBoxInTheFieldsFont() {
         final @NotNull MultiLineField steps = aBox();
