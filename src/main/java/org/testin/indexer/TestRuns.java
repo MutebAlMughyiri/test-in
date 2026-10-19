@@ -192,7 +192,7 @@ public final class TestRuns {
         store().rereadTestRunMarker(testRunPath);
         ApplicationManager.getApplication().invokeLater(() -> {
             indexer.announce(testRunPath);
-            Services.getInstance(project, Notifier.class).softRefuse(project, Bundle.message("test.run.marker.not.saved", testRunPath.getFileName()));
+            Services.getInstance(project, Notifier.class).softRefuse(project, Bundle.message("test.run.not.saved", testRunPath.getFileName()));
         });
     }
 

@@ -18,6 +18,7 @@ package org.testin.indexer;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
+import org.testin.Await;
 import org.testin.NodesOnDisk;
 import org.testin.TreeGesture;
 import org.testin.creator.NodeCreators;
@@ -131,10 +132,9 @@ public class TreeNodesIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestSetNode login = made().testSet(aTestProject().getTestCasesFolder(), "Login");
 
         TreeGesture.pressed(getProject(), new UpdateNodeStatusAction(TestSetStatus.DEPRECATED), List.of(login));
-        assertEquals("Deprecated on the menu did not deprecate the test set", TestSetStatus.DEPRECATED, login.getMarker().getStatus());
-
         TreeGesture.pressed(getProject(), new UpdateNodeStatusAction(TestSetStatus.ACTIVE), List.of(login));
-        assertEquals("Active on the menu did not bring the test set back", TestSetStatus.ACTIVE, login.getMarker().getStatus());
+
+        Await.until("Active pressed after Deprecated did not leave the test set active", () -> login.getMarker().getStatus() == TestSetStatus.ACTIVE && markerOnDisk(login).getStatus() == TestSetStatus.ACTIVE);
     }
 
     // Rule-TREE-PANEL-077

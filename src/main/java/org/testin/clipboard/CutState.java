@@ -21,6 +21,7 @@ import com.intellij.openapi.components.Service;
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.Project;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.TestinEditor;
@@ -43,7 +44,8 @@ public final class CutState implements Disposable {
 
     private final @NotNull Set<UUID> pending = new HashSet<>();
 
-    private @NotNull Optional<AbstractNode> fromTestSet = Optional.empty();
+    @Getter
+    private @NotNull Optional<AbstractNode> cutTestSet = Optional.empty();
 
     // UC-EDITOR-PANEL-017, Rule-EDITOR-PANEL-080, Rule-EDITOR-PANEL-076
     public static void startClipboardWatch(final @NotNull Project project) {
@@ -52,10 +54,11 @@ public final class CutState implements Disposable {
         CopyPasteManager.getInstance().addContentChangedListener((_, _) -> state.clear(), state);
     }
 
+    // UC-EDITOR-PANEL-016, Rule-EDITOR-PANEL-078, Rule-EDITOR-PANEL-079
     public void cut(final @NotNull AbstractNode testSet, final @NotNull List<TestCase> testCases) {
         pending.clear();
         testCases.forEach(testCase -> pending.add(testCase.getUuid()));
-        fromTestSet = Optional.of(testSet);
+        cutTestSet = Optional.of(testSet);
     }
 
     public boolean isPending(final @NotNull UUID testCaseUuid) {
@@ -71,19 +74,16 @@ public final class CutState implements Disposable {
         return !pending.isEmpty();
     }
 
-    public @NotNull Optional<AbstractNode> from() {
-        return fromTestSet;
-    }
-
     // UC-EDITOR-PANEL-011, Rule-EDITOR-PANEL-065, Rule-EDITOR-PANEL-080
     public void callOffFor(final @NotNull List<TestCase> removed) {
         if (removed.stream().anyMatch(testCase -> isPending(testCase.getUuid()))) clear();
     }
 
+    // Rule-EDITOR-PANEL-080
     public void clear() {
         pending.clear();
-        fromTestSet.flatMap(Services.getInstance(project, TestinEditors.class)::editorFor).map(TestinEditor::getPreferredFocusedComponent).ifPresent(JComponent::repaint);
-        fromTestSet = Optional.empty();
+        cutTestSet.flatMap(Services.getInstance(project, TestinEditors.class)::editorFor).map(TestinEditor::getPreferredFocusedComponent).ifPresent(JComponent::repaint);
+        cutTestSet = Optional.empty();
     }
 
     @Override

@@ -121,9 +121,11 @@ There is no key for this. It starts on its own.
   changed by asking the index, which saves it. Whatever shows one of them keeps
   showing the same one and sees the change, and nothing else can change it under
   a reader.
-- **Rule-INTERNAL-123** — A marker change that cannot be written does not stay
-  in memory. A test set's or a node's marker keeps its old values, and a test
-  run's marker is read again from disk and the tester is told it was not saved.
+- **Rule-INTERNAL-123** — A change that cannot be written does not stay in
+  memory. A test set's or a node's marker keeps its old values. A test run's
+  marker that was not written is read again from disk, and a test run whose run
+  item or screenshot was not written is read again with the test project that
+  holds it. Either way the tester is told it was not saved.
 - **Rule-INTERNAL-124** — A test project whose read fails part-way is never
   counted as read. Testin says it could not read it and why, keeps none of it as
   current, and reads it again on the next refresh.

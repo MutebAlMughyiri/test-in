@@ -19,6 +19,7 @@ package org.testin.indexer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;
+import com.intellij.util.concurrency.SequentialTaskExecutor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
 import org.testin.model.NodeType;
@@ -42,6 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
@@ -51,6 +53,8 @@ public final class Nodes {
     private final @NotNull Project project;
 
     private final @NotNull DeletedNodes deletedNodes;
+
+    private final @NotNull ExecutorService markerWrites = SequentialTaskExecutor.createSequentialApplicationPoolExecutor("Testin node markers");
 
     public Nodes(final @NotNull Project project) {
         this.project = project;
@@ -219,6 +223,11 @@ public final class Nodes {
 
         marker.setOrder(was);
         return false;
+    }
+
+    // UC-TREE-PANEL-015, UC-TREE-PANEL-018, Rule-TREE-PANEL-055, Rule-TREE-PANEL-062
+    public void writeInTurn(final @NotNull Runnable write) {
+        markerWrites.execute(write);
     }
 
     // UC-TREE-PANEL-018, Rule-TREE-PANEL-062, Rule-INTERNAL-117, Rule-TREE-PANEL-066, Rule-TREE-PANEL-008

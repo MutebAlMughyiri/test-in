@@ -110,11 +110,7 @@ final class TestDataFiles {
     }
 
     <T> boolean write(final @NotNull Path path, final @NotNull T content) {
-        return writeBytes(path, Services.getInstance(project, JsonCodec.class).writeValueAsBytes(content));
-    }
-
-    void write(final @NotNull Path path, final byte @NotNull [] jsonBytes) {
-        writeBytes(path, jsonBytes);
+        return write(path, Services.getInstance(project, JsonCodec.class).writeValueAsBytes(content));
     }
 
     byte @NotNull [] readBytes(final @NotNull Path path) {
@@ -146,7 +142,7 @@ final class TestDataFiles {
     }
 
     // UC-INTERNAL-003, Rule-INTERNAL-019, Rule-INTERNAL-113, Rule-INTERNAL-125
-    private boolean writeBytes(final @NotNull Path path, final byte @NotNull [] jsonBytes) {
+    boolean write(final @NotNull Path path, final byte @NotNull [] jsonBytes) {
         if (jsonBytes.length == 0) {
             TestinLogger.error("Refusing to write an empty file, which would erase it: " + path);
             Services.getInstance(project, Notifier.class).error(project, Bundle.message("files.nothing.written", path.getFileName()));

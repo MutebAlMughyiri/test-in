@@ -85,7 +85,7 @@ public class OrderNodeIdeTest extends AbstractTempRootIdeTest {
     // Rule-TREE-PANEL-103
     public void testANewPlaceIsOnTheTreesHistoryAndUndoGivesTheOldOneBack() {
         ordered("5");
-        assertEquals("Order did not give the node its new place", 5, orderOfLogin());
+        Await.until("Order did not give the node its new place", () -> orderOfLogin() == 5);
         Await.until("the new place never went onto the tree's history", () -> undoHistories().canUndo(UndoScope.TREE));
 
         assertTrue("undoing the new place was refused", undoHistories().undo(UndoScope.TREE));

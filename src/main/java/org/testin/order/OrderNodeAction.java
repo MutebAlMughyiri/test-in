@@ -18,6 +18,7 @@ package org.testin.order;
 
 import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
@@ -47,17 +48,21 @@ public class OrderNodeAction extends AbstractAnyProjectAction {
         if (node.getOrder() == order) return;
 
         final int before = node.getOrder();
-        if (!place(project, node, order)) return;
+        Services.getInstance(project, Nodes.class).writeInTurn(() -> {
+            if (!place(project, node, order)) return;
 
-        Services.getInstance(project, Notifier.class).softShow(project, Done.ORDERED);
+            ApplicationManager.getApplication().invokeLater(() -> {
+                Services.getInstance(project, Notifier.class).softShow(project, Done.ORDERED);
 
-        // Rule-TREE-PANEL-103
-        Services.getInstance(project, UndoHistories.class).push(UndoScope.TREE, new Operation(
-                Bundle.message("order.undo", node.getName()),
-                () -> place(project, node, before),
-                () -> place(project, node, order),
-                () -> {
-                }));
+                // Rule-TREE-PANEL-103
+                Services.getInstance(project, UndoHistories.class).push(UndoScope.TREE, new Operation(
+                        Bundle.message("order.undo", node.getName()),
+                        () -> place(project, node, before),
+                        () -> place(project, node, order),
+                        () -> {
+                        }));
+            });
+        });
     }
 
     // UC-TREE-PANEL-015, Rule-TREE-PANEL-055

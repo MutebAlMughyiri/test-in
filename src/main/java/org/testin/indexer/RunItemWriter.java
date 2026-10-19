@@ -16,6 +16,7 @@
 
 package org.testin.indexer;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import org.jetbrains.annotations.NotNull;
@@ -24,7 +25,9 @@ import org.testin.model.FileKind;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.RunItems;
+import org.testin.notifications.Notifier;
 import org.testin.services.Services;
+import org.testin.util.Bundle;
 import org.testin.util.FailureText;
 import org.testin.util.JsonCodec;
 
@@ -45,6 +48,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 final class RunItemWriter {
+    private final @NotNull Project project;
+
     private final @NotNull IndexerDataStore store;
 
     private final @NotNull TestDataFiles files;
@@ -57,6 +62,7 @@ final class RunItemWriter {
     private final @NotNull Map<Path, byte[]> unwritten = new ConcurrentHashMap<>();
 
     RunItemWriter(final @NotNull Project project, final @NotNull IndexerDataStore store) {
+        this.project = project;
         this.store = store;
         this.files = Services.getInstance(project, TestDataFiles.class);
         this.mapper = Services.getInstance(project, JsonCodec.class);
@@ -104,12 +110,7 @@ final class RunItemWriter {
                     return;
                 }
 
-                snapshots.forEach((file, bytes) -> {
-                    if (files.alreadyHolds(file, bytes)) return;
-
-                    files.write(file, bytes);
-                    TestinLogger.trace("Run item written for " + testRunPath.getFileName() + ": " + file.getFileName());
-                });
+                if (!wroteAll(testRunPath, snapshots)) notSaved(testRunPath);
 
                 removeRunItemsOf(testRunPath, gone);
                 sweepScreenshots(testRunPath, named);
@@ -117,6 +118,21 @@ final class RunItemWriter {
                 TestinLogger.error("Failed to persist test run data: " + FailureText.of(ex));
             }
         });
+    }
+
+    // Rule-INTERNAL-011, Rule-INTERNAL-123
+    private boolean wroteAll(final @NotNull Path testRunPath, final @NotNull Map<Path, byte[]> snapshots) {
+        boolean allWritten = true;
+        for (final Map.Entry<Path, byte[]> snapshot : snapshots.entrySet()) {
+            if (files.alreadyHolds(snapshot.getKey(), snapshot.getValue())) continue;
+
+            final boolean written = files.write(snapshot.getKey(), snapshot.getValue());
+            if (written)
+                TestinLogger.trace("Run item written for " + testRunPath.getFileName() + ": " + snapshot.getKey().getFileName());
+            allWritten &= written;
+        }
+
+        return allWritten;
     }
 
     // UC-TREE-PANEL-022, Rule-INTERNAL-011
@@ -156,7 +172,10 @@ final class RunItemWriter {
                     return;
                 }
 
-                byName.forEach((name, png) -> files.write(TestRunNode.screenshotFile(testRunPath, name), png));
+                boolean allWritten = true;
+                for (final Map.Entry<String, byte[]> screenshot : byName.entrySet())
+                    allWritten &= files.write(TestRunNode.screenshotFile(testRunPath, screenshot.getKey()), screenshot.getValue());
+                if (!allWritten) notSaved(testRunPath);
             } catch (final Exception ex) {
                 TestinLogger.error("Failed to write the screenshots of " + testRunPath.getFileName() + ": " + FailureText.of(ex));
             } finally {
@@ -165,6 +184,13 @@ final class RunItemWriter {
         });
 
         return List.copyOf(byName.keySet());
+    }
+
+    // Rule-INTERNAL-123
+    private void notSaved(final @NotNull Path testRunPath) {
+        Services.getInstance(project, TestProjectIndexer.class).refreshIndexedTestProject(testRunPath);
+        ApplicationManager.getApplication().invokeLater(() ->
+                Services.getInstance(project, Notifier.class).softRefuse(project, Bundle.message("test.run.not.saved", testRunPath.getFileName())));
     }
 
     byte @NotNull [] readScreenshot(final @NotNull Path testRunPath, final @NotNull String name) {

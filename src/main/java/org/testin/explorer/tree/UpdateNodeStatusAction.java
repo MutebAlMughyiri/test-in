@@ -54,16 +54,19 @@ public class UpdateNodeStatusAction extends AbstractAnyProjectAction {
 
     // UC-TREE-PANEL-018, Rule-TREE-PANEL-062
     private void mark(final @NotNull Project project, final @NotNull AbstractNode node) {
-        try {
-            if (!Services.getInstance(project, Nodes.class).mark(node, nodeStatus, Services.getInstance(project, AppSettingsState.class).testerName))
-                return;
+        final @NotNull String tester = Services.getInstance(project, AppSettingsState.class).testerName;
 
-            Services.getInstance(project, Notifier.class).softShow(project, nodeStatus.getLabel());
+        Services.getInstance(project, Nodes.class).writeInTurn(() -> {
+            try {
+                if (!Services.getInstance(project, Nodes.class).mark(node, nodeStatus, tester)) return;
 
-        } catch (final Exception ex) {
-            TestinLogger.error("Unable to mark '" + node.getName() + "' " + nodeStatus.getLabel() + ": " + FailureText.of(ex));
-            Services.getInstance(project, Notifier.class).error(project, Bundle.message("node.status.failed", nodeStatus.getLabel()));
-        }
+                Services.getInstance(project, Notifier.class).softShow(project, nodeStatus.getLabel());
+
+            } catch (final Exception ex) {
+                TestinLogger.error("Unable to mark '" + node.getName() + "' " + nodeStatus.getLabel() + ": " + FailureText.of(ex));
+                Services.getInstance(project, Notifier.class).error(project, Bundle.message("node.status.failed", nodeStatus.getLabel()));
+            }
+        });
     }
 
     private @NotNull Optional<AbstractNode> selected(final @NotNull AnActionEvent e) {
