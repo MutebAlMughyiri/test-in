@@ -36,10 +36,8 @@ final class FieldName {
     }
 
     private static @NotNull String ofTestCaseField(final @NotNull String jsonField) {
-        final @NotNull String constant = constantOf(jsonField);
-
         for (final TestSetEditorFields field : TestSetEditorFields.values()) {
-            if (field.name().equals(constant)) return field.getName();
+            if (field.getStoredKey().equals(jsonField)) return field.getName();
         }
 
         return jsonField;

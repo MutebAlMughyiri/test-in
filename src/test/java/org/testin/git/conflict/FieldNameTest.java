@@ -25,10 +25,14 @@ import static org.testng.Assert.assertEquals;
 
 public class FieldNameTest {
 
+    // Rule-SHARE-081
     @Test
-    public void aTestCaseFieldIsNamedByTheEditorsOwnEnum() {
-        assertEquals(FieldName.of("updatedAt"), TestSetEditorFields.UPDATED_AT.getName(),
-                "a camelCase JSON field is the enum constant with the underscore");
+    public void everyStoredTestCaseFieldIsNamedAsTheTesterKnowsIt() {
+        for (final TestSetEditorFields field : TestSetEditorFields.values()) {
+            if (field.getStoredKey().isEmpty()) continue;
+
+            assertEquals(FieldName.of(field.getStoredKey()), field.getName(), "the key " + field.getStoredKey() + " is not named " + field.getName());
+        }
     }
 
     @Test
