@@ -26,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.NodesOnDisk;
 import org.testin.indexer.TestCases;
+import org.testin.model.Automated;
 import org.testin.model.Groups;
 import org.testin.model.Priority;
 import org.testin.model.TestCase;
@@ -41,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 public class TestRunFormFilterIdeTest extends AbstractTempRootIdeTest {
@@ -140,7 +142,7 @@ public class TestRunFormFilterIdeTest extends AbstractTempRootIdeTest {
 
         high.setSelected(TestActionEvent.createTestEvent(high), true);
 
-        assertEquals("the priority filter did not pick the test cases an editor's would", TestCaseFilter.filter(List.of(urgent, later, paid), FilterAndSortChoice.of(button(), "")), shown());
+        assertEquals("the priority filter did not pick the test cases an editor's would", TestCaseFilter.filter(List.of(urgent, later, paid), FilterAndSortChoice.of(button(), ""), _ -> Optional.empty(), _ -> Automated.UNKNOWN), shown());
         assertEquals(List.of(urgent), shown());
     }
 }

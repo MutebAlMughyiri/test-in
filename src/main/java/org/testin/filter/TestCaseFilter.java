@@ -19,6 +19,7 @@ package org.testin.filter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.testin.model.Automated;
 import org.testin.model.Groups;
 import org.testin.model.TestCase;
 import org.testin.model.status.RunItemStatus;
@@ -36,25 +37,21 @@ import java.util.function.Function;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestCaseFilter {
-    public static @NotNull List<TestCase> filter(final @NotNull Collection<TestCase> source, final @NotNull FilterAndSortChoice wanted) {
-        return filter(source, wanted, _ -> Optional.empty());
-    }
-
     // UC-EDITOR-PANEL-019, UC-EDITOR-PANEL-020, UC-EDITOR-PANEL-049
-    public static @NotNull List<TestCase> filter(final @NotNull Collection<TestCase> source, final @NotNull FilterAndSortChoice wanted, final @NotNull Function<UUID, Optional<RunItem>> runItemProvider) {
+    public static @NotNull List<TestCase> filter(final @NotNull Collection<TestCase> source, final @NotNull FilterAndSortChoice wanted, final @NotNull Function<UUID, Optional<RunItem>> runItemProvider, final @NotNull Function<UUID, Automated> automated) {
         if (source.isEmpty()) {
             return Collections.emptyList();
         }
 
         final @NotNull String normalizedQuery = wanted.query().trim().toLowerCase(Locale.ROOT);
         final @NotNull List<TestCase> matched = source.stream()
-                .filter(testCase -> matches(testCase, normalizedQuery, wanted, runItemProvider))
+                .filter(testCase -> matches(testCase, normalizedQuery, wanted, runItemProvider, automated))
                 .toList();
         return wanted.sortBy().sorted(matched, wanted.direction(), runItemProvider);
     }
 
-    // UC-EDITOR-PANEL-019, Rule-EDITOR-PANEL-091, Rule-EDITOR-PANEL-239, Rule-EDITOR-PANEL-260, Rule-EDITOR-PANEL-261, Rule-EDITOR-PANEL-096
-    private static boolean matches(final @NotNull TestCase testCase, final @NotNull String query, final @NotNull FilterAndSortChoice wanted, final @NotNull Function<UUID, Optional<RunItem>> runItemProvider) {
+    // UC-EDITOR-PANEL-019, UC-EDITOR-PANEL-047, Rule-EDITOR-PANEL-091, Rule-EDITOR-PANEL-239, Rule-EDITOR-PANEL-260, Rule-EDITOR-PANEL-261, Rule-EDITOR-PANEL-096, Rule-EDITOR-PANEL-198
+    private static boolean matches(final @NotNull TestCase testCase, final @NotNull String query, final @NotNull FilterAndSortChoice wanted, final @NotNull Function<UUID, Optional<RunItem>> runItemProvider, final @NotNull Function<UUID, Automated> automated) {
         final @NotNull TestCase shown = runItemProvider.apply(testCase.getUuid()).map(RunItem::shownTestCase).orElse(testCase);
 
         final boolean matchesSearch = query.isEmpty() || TestSetEditorFields.anyContains(shown, query);
@@ -67,8 +64,9 @@ public final class TestCaseFilter {
         final boolean matchesRunItemStatus = wanted.runItemStatuses().isEmpty()
                 || matchesRunItemStatus(testCase.getUuid(), wanted.runItemStatuses(), runItemProvider);
         final boolean matchesTestSet = wanted.testSets().isEmpty() || wanted.testSets().contains(testCase.getParent().getPath());
+        final boolean matchesAutomation = wanted.automation().isEmpty() || wanted.automation().contains(automated.apply(testCase.getUuid()));
 
-        return matchesSearch && matchesPriority && matchesGroup && matchesModule && matchesTestCaseStatus && matchesRunItemStatus && matchesTestSet;
+        return matchesSearch && matchesPriority && matchesGroup && matchesModule && matchesTestCaseStatus && matchesRunItemStatus && matchesTestSet && matchesAutomation;
     }
 
     private static boolean matchesRunItemStatus(final @NotNull UUID testCaseUuid, final @NotNull Set<RunItemStatus> runItemStatuses, final @NotNull Function<UUID, Optional<RunItem>> runItemProvider) {

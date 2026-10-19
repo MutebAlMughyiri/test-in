@@ -41,8 +41,6 @@ import org.testin.editor.toolbar.TestRunFieldsPopupButton;
 import org.testin.editor.toolbar.TestRunResultAnalysisButton;
 import org.testin.editor.toolbar.TestRunToolbar;
 import org.testin.editor.toolbar.ToolbarCallbacks;
-import org.testin.filter.FilterAndSortChoice;
-import org.testin.filter.TestCaseFilter;
 import org.testin.git.history.TestRunFromGit;
 import org.testin.help.Guide;
 import org.testin.help.Guides;
@@ -209,6 +207,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
         runItemsByUuid.clear();
     }
 
+    @Override
     public @NotNull Optional<RunItem> runItem(final @NotNull UUID testCaseUuid) {
         return Optional.ofNullable(runItemsByUuid.get(testCaseUuid));
     }
@@ -350,12 +349,6 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
         onExecutionStateChanged();
     }
 
-    // UC-EDITOR-PANEL-020, Rule-EDITOR-PANEL-095
-    @Override
-    public @NotNull List<TestCase> getTestCasesToFilter() {
-        return snapshotOfAll();
-    }
-
     // UC-EDITOR-PANEL-020, Rule-EDITOR-PANEL-094
     @Override
     protected @NotNull List<String[]> gridRows(final @NotNull List<TestCase> pageTestCases) {
@@ -371,18 +364,6 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
     @Override
     protected void installEditListener(final @NotNull JBTable table, final @NotNull List<TestCase> pageTestCases) {
         table.getModel().addTableModelListener(new TestRunGridEditListener(project, this, pageTestCases, model::allContentsChanged));
-    }
-
-    @Override
-    protected @NotNull List<TestCase> getFilteredList() {
-        final @NotNull FilterAndSortChoice filters = FilterAndSortChoice.of(toolBar);
-
-        final @NotNull List<TestCase> matched;
-        synchronized (allTestCases) {
-            matched = TestCaseFilter.filter(allTestCases, filters, this::runItem);
-        }
-
-        return automationState.matching(matched, filters.automation());
     }
 
     @Override

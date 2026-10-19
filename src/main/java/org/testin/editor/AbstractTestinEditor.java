@@ -40,8 +40,10 @@ import org.testin.editor.statusbar.EditorStatusBar;
 import org.testin.editor.statusbar.PageAction;
 import org.testin.editor.toolbar.AbstractToolbarPanel;
 import org.testin.editor.toolbar.ToolbarCallbacks;
+import org.testin.filter.FilterAndSortChoice;
 import org.testin.filter.FilterPopupButton;
 import org.testin.filter.SortPopupButton;
+import org.testin.filter.TestCaseFilter;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestProjectIndexer;
@@ -183,7 +185,20 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
     @Override
     public abstract @NotNull Set<A> getSelectedDetails();
 
-    protected abstract @NotNull List<TestCase> getFilteredList();
+    // UC-EDITOR-PANEL-019, UC-EDITOR-PANEL-020
+    protected final @NotNull List<TestCase> getFilteredList() {
+        final @NotNull FilterAndSortChoice filters = FilterAndSortChoice.of(getToolBar());
+
+        synchronized (allTestCases) {
+            return TestCaseFilter.filter(allTestCases, filters, this::runItem, automationState::of);
+        }
+    }
+
+    // UC-EDITOR-PANEL-020, Rule-EDITOR-PANEL-095
+    @Override
+    public @NotNull List<TestCase> getTestCasesToFilter() {
+        return snapshotOfAll();
+    }
 
     protected abstract void loadDataAsync(final @NotNull Runnable onLoaded);
 

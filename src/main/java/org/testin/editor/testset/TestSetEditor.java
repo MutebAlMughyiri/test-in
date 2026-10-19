@@ -36,8 +36,6 @@ import org.testin.editor.statusbar.EditorStatusBarPaging;
 import org.testin.editor.toolbar.TestSetFieldsPopupButton;
 import org.testin.editor.toolbar.TestSetToolbar;
 import org.testin.editor.toolbar.ToolbarCallbacks;
-import org.testin.filter.FilterAndSortChoice;
-import org.testin.filter.TestCaseFilter;
 import org.testin.help.Guide;
 import org.testin.help.Guides;
 import org.testin.logger.TestinLogger;
@@ -351,12 +349,6 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorFields, Tes
         });
     }
 
-    // UC-EDITOR-PANEL-020, Rule-EDITOR-PANEL-095
-    @Override
-    public @NotNull List<TestCase> getTestCasesToFilter() {
-        return testCases.getTestCasesForTestSet(parent.getPath());
-    }
-
     // UC-EDITOR-PANEL-020
     @Override
     protected @NotNull List<String[]> gridRows(final @NotNull List<TestCase> pageTestCases) {
@@ -372,18 +364,6 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorFields, Tes
     @Override
     protected void installEditListener(final @NotNull JBTable table, final @NotNull List<TestCase> pageTestCases) {
         table.getModel().addTableModelListener(new TestSetGridEditListener(project, pageTestCases, model::allContentsChanged, parent.getPath()));
-    }
-
-    @Override
-    protected @NotNull List<TestCase> getFilteredList() {
-        final @NotNull FilterAndSortChoice filters = FilterAndSortChoice.of(toolBar);
-
-        final @NotNull List<TestCase> matched;
-        synchronized (allTestCases) {
-            matched = TestCaseFilter.filter(allTestCases, filters);
-        }
-
-        return automationState.matching(matched, filters.automation());
     }
 
     @Override

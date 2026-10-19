@@ -17,6 +17,7 @@
 package org.testin.filter;
 
 import org.jetbrains.annotations.NotNull;
+import org.testin.model.Automated;
 import org.testin.model.Priority;
 import org.testin.model.TestCase;
 import org.testin.model.node.NodeChain;
@@ -42,6 +43,10 @@ import static org.testng.Assert.assertEquals;
 
 public class TestCaseFilterTest {
 
+    private static @NotNull List<TestCase> filtered(final @NotNull List<TestCase> source, final @NotNull FilterAndSortChoice wanted) {
+        return TestCaseFilter.filter(source, wanted, _ -> Optional.empty(), _ -> Automated.UNKNOWN);
+    }
+
     @Test
     public void filtersSearchAndMetadataTogether() {
         final TestCase matching = TestCase.builder()
@@ -57,7 +62,7 @@ public class TestCaseFilterTest {
                 .module("accounts")
                 .build();
 
-        final List<TestCase> result = TestCaseFilter.filter(
+        final List<TestCase> result = filtered(
                 List.of(matching, other),
                 new FilterAndSortChoice("  LOGIN ", Set.of("Regression"), Set.of(Priority.HIGH), Set.of("accounts"), Set.of(), Set.of(), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING));
 
@@ -79,7 +84,7 @@ public class TestCaseFilterTest {
         final List<TestCase> result = TestCaseFilter.filter(
                 List.of(passed, missing),
                 new FilterAndSortChoice("", Set.of(), Set.of(), Set.of(), Set.of(), Set.of(RunItemStatus.PASSED), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING),
-                testCaseUuid -> Optional.ofNullable(recorded.get(testCaseUuid)));
+                testCaseUuid -> Optional.ofNullable(recorded.get(testCaseUuid)), _ -> Automated.UNKNOWN);
 
         assertEquals(result, List.of(passed));
     }
@@ -96,7 +101,7 @@ public class TestCaseFilterTest {
                 .build();
 
         for (final String wanted : List.of("accounts", "admin@example.com", "The account exists", "JIRA-123", "Regression")) {
-            final List<TestCase> result = TestCaseFilter.filter(List.of(testCase), new FilterAndSortChoice(wanted, Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING));
+            final List<TestCase> result = filtered(List.of(testCase), new FilterAndSortChoice(wanted, Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING));
 
             assertEquals(result, List.of(testCase), "the search did not read the field holding '" + wanted + "'");
         }
@@ -107,7 +112,7 @@ public class TestCaseFilterTest {
         final TestCase reviewed = TestCase.builder().description("reviewed").status(TestCaseStatus.REVIEWED).build();
         final TestCase pending = TestCase.builder().description("pending").status(TestCaseStatus.PENDING).build();
 
-        final List<TestCase> result = TestCaseFilter.filter(List.of(reviewed, pending), new FilterAndSortChoice("", Set.of(), Set.of(), Set.of(), Set.of(TestCaseStatus.REVIEWED), Set.of(), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING));
+        final List<TestCase> result = filtered(List.of(reviewed, pending), new FilterAndSortChoice("", Set.of(), Set.of(), Set.of(), Set.of(TestCaseStatus.REVIEWED), Set.of(), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING));
 
         assertEquals(result, List.of(reviewed));
     }
@@ -116,7 +121,7 @@ public class TestCaseFilterTest {
     public void aQueryNoFieldHoldsFindsNothing() {
         final TestCase testCase = TestCase.builder().description("Log in").build();
 
-        assertEquals(TestCaseFilter.filter(List.of(testCase), new FilterAndSortChoice("nothing holds this", Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING)), List.of());
+        assertEquals(filtered(List.of(testCase), new FilterAndSortChoice("nothing holds this", Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING)), List.of());
     }
 
     // Rule-EDITOR-PANEL-091
@@ -147,7 +152,7 @@ public class TestCaseFilterTest {
             final @NotNull String value = field.gridValue(testCase);
             if (value.isBlank()) continue;
 
-            if (TestCaseFilter.filter(List.of(testCase), new FilterAndSortChoice(value, Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING)).isEmpty())
+            if (filtered(List.of(testCase), new FilterAndSortChoice(value, Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING)).isEmpty())
                 notFound.add(field.getName() + " = " + value);
         }
 
@@ -161,7 +166,7 @@ public class TestCaseFilterTest {
         final @NotNull TestCase low = TestCase.builder().description("two").priority(Priority.LOW).module("payments").status(TestCaseStatus.DISABLED).build();
         final @NotNull TestCase bare = TestCase.builder().description("three").build();
 
-        final @NotNull List<TestCase> result = TestCaseFilter.filter(List.of(high, low, bare), new FilterAndSortChoice("", Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING), _ -> Optional.empty());
+        final @NotNull List<TestCase> result = filtered(List.of(high, low, bare), new FilterAndSortChoice("", Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING));
 
         assertEquals(result, List.of(high, low, bare));
     }
@@ -176,8 +181,21 @@ public class TestCaseFilterTest {
         inLogin.setParent(login);
         inCheckout.setParent(checkout);
 
-        final @NotNull List<TestCase> result = TestCaseFilter.filter(List.of(inLogin, inCheckout), new FilterAndSortChoice("", Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(checkout.getPath()), SortField.ORDER, SortDirection.ASCENDING));
+        final @NotNull List<TestCase> result = filtered(List.of(inLogin, inCheckout), new FilterAndSortChoice("", Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(checkout.getPath()), SortField.ORDER, SortDirection.ASCENDING));
 
         assertEquals(result, List.of(inCheckout), "a test case outside the chosen test set was kept");
+    }
+
+    // UC-EDITOR-PANEL-047, Rule-EDITOR-PANEL-198
+    @Test
+    public void theAutomationFilterIsAppliedWithTheOthers() {
+        final @NotNull TestCase written = TestCase.builder().description("Log in").build();
+        final @NotNull TestCase missing = TestCase.builder().description("Log out").build();
+
+        final @NotNull List<TestCase> result = TestCaseFilter.filter(List.of(written, missing),
+                new FilterAndSortChoice("log", Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(Automated.WRITTEN), Set.of(), SortField.ORDER, SortDirection.ASCENDING),
+                _ -> Optional.empty(), testCaseUuid -> testCaseUuid.equals(written.getUuid()) ? Automated.WRITTEN : Automated.MISSING);
+
+        assertEquals(result, List.of(written), "a caller had to apply the Automation filter itself, so one that did not showed every test case");
     }
 }

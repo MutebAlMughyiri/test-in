@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.editor.statusbar.EditorStatusBar;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCase;
+import org.testin.model.testrun.RunItem;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.testcase.TestCaseOrder;
@@ -98,6 +99,10 @@ public interface TestinEditor extends Disposable {
     }
 
     @NotNull String sortedBy();
+
+    default @NotNull Optional<RunItem> runItem(final @NotNull UUID testCaseUuid) {
+        return Optional.empty();
+    }
 
     default @NotNull List<TestCase> snapshotOfAll() {
         synchronized (getAllTestCases()) {

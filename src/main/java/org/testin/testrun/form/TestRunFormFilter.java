@@ -91,7 +91,7 @@ public final class TestRunFormFilter implements FilterSource {
     @Override
     public void onToolBarFilterSelectionChanged() {
         final @NotNull FilterAndSortChoice wanted = FilterAndSortChoice.of(button, "");
-        final @NotNull Set<UUID> shown = automation.matching(TestCaseFilter.filter(offered, wanted), wanted.automation()).stream()
+        final @NotNull Set<UUID> shown = TestCaseFilter.filter(offered, wanted, _ -> Optional.empty(), automation::of).stream()
                 .map(TestCase::getUuid)
                 .collect(Collectors.toSet());
 
