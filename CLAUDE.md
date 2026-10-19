@@ -258,10 +258,10 @@ silently has no effect costs more than the setting it was meant to hold.
 - **The rule is about methods, and the whole tree obeys it.** The `throws`
   that remain are declarations rather than work, and this list is the record of
   why - not a comment above each one, which the no-comment rule forbids and the
-  September sweep removed. Counted on 2 October 2026: three in `src/main`, none
+  September sweep removed. Counted on 19 October 2026: four in `src/main`, none
   in `src/test`, `testin-java` or `testin-testng`, and every one of them is
   below. `DeclaredContractsTest` scans the main and test trees for them, holds
-  the same three with their reasons and fails on a fourth, so this list can no
+  the same four with their reasons and fails on a fifth, so this list can no
   longer drift from the code unnoticed. Do not sweep them again:
   - `TreeTransferable.getTransferData`, and the one `TestCaseTransferHandler` builds
     for a drag of test cases — AWT's `Transferable` contract is that an
@@ -274,6 +274,11 @@ silently has no effect costs more than the setting it was meant to hold.
     dialog a success it did not have, and close it over a refused value. The
     check behind it, `refusalOfTheRoot`, returns the refusal rather than
     throwing it, so `apply` is the only method that declares it.
+  - `AgentPromptConfigurable.apply` — the same contract, for a timeout that is
+    not a whole number of seconds above 0 (Rule-CODEGEN-115). Muteb, 19 October
+    2026, chose to refuse it on Apply exactly as the main page refuses a bad
+    folder, so every settings page refuses the one way. `refusalOfTheTimeout`
+    returns the refusal and `apply` throws it.
 
   Every `*IdeTest` extends `AbstractIdeTest`, or `AbstractOpenEditorsIdeTest`
   when it opens editors. Each saves what the test alone ran, which `ruleTrace`

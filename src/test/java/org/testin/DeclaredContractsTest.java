@@ -46,7 +46,8 @@ public class DeclaredContractsTest {
     private static final @NotNull Map<String, String> MAY_THROW = Map.ofEntries(
             entry("TestCaseTransferHandler.getTransferData", "AWT's Transferable contract: a flavor the transferable does not carry throws"),
             entry("TreeTransferable.getTransferData", "AWT's Transferable contract: a flavor the transferable does not carry throws"),
-            entry("SettingsConfigurable.apply", "Configurable.apply declares ConfigurationException, and the settings dialog shows its message")
+            entry("SettingsConfigurable.apply", "Configurable.apply declares ConfigurationException, and the settings dialog shows its message"),
+            entry("AgentPromptConfigurable.apply", "Configurable.apply declares ConfigurationException, and the settings dialog shows its message")
     );
 
     private static final @NotNull Map<String, String> MAY_RETURN_NULL = Map.ofEntries(

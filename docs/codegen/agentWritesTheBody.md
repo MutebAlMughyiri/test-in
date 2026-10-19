@@ -90,6 +90,9 @@ Connecting an agent changes what that gesture produces, not where it lives.
   they are. Escape leaves them. Nothing is replaced without that answer,
   and what replaces it is one named write command, so Ctrl+Z takes the tester's
   own body back.
+- **Rule-CODEGEN-115** — The timeout is a whole number of seconds above 0.
+  Anything else is refused when the page is applied: the page stays open, the
+  reason is shown under the box, and the timeout saved before is kept.
 
 ## The screen
 

@@ -16,6 +16,7 @@
 
 package org.testin.setting;
 
+import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
@@ -23,6 +24,9 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextArea;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
+
+import java.util.Optional;
+
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.agent.AgentConnection;
 import org.testin.codegen.agent.BodyPrompt;
@@ -80,12 +84,20 @@ public final class AgentPromptConfigurable implements SearchableConfigurable {
                 .getPanel();
     }
 
+    // Rule-CODEGEN-115
     private int typedTimeout() {
         try {
             return Integer.parseInt(timeoutField.getText().trim());
         } catch (final NumberFormatException notANumber) {
-            return AppSettingsState.DEFAULT_TIMEOUT_SECONDS;
+            return 0;
         }
+    }
+
+    // Rule-CODEGEN-115
+    private @NotNull Optional<ConfigurationException> refusalOfTheTimeout() {
+        if (typedTimeout() > 0) return Optional.empty();
+
+        return Optional.of(new ConfigurationException(Bundle.message("agent.timeout.refused", timeoutField.getText().trim()), Bundle.message("agent.timeout.refused.title")));
     }
 
     @Override
@@ -100,11 +112,14 @@ public final class AgentPromptConfigurable implements SearchableConfigurable {
         return typed.equals(Bundle.message("agent.prompt.default")) ? "" : typed;
     }
 
-    // UC-CODEGEN-021, Rule-CODEGEN-086
+    // UC-CODEGEN-021, Rule-CODEGEN-086, Rule-CODEGEN-115
     @Override
-    public void apply() {
+    public void apply() throws ConfigurationException {
+        final @NotNull Optional<ConfigurationException> refusal = refusalOfTheTimeout();
+        if (refusal.isPresent()) throw refusal.get();
+
         settings.agentPrompt = typedPrompt();
-        settings.agentTimeoutSeconds = typedTimeout() > 0 ? typedTimeout() : AppSettingsState.DEFAULT_TIMEOUT_SECONDS;
+        settings.agentTimeoutSeconds = typedTimeout();
     }
 
     // UC-CODEGEN-021, Rule-CODEGEN-086
