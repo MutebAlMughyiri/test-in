@@ -16,27 +16,36 @@
 
 package org.testin.ui.framework;
 
+import com.intellij.ui.components.JBOptionButton;
 import org.jetbrains.annotations.NotNull;
 import org.testin.ui.dialogs.DialogStyle;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import java.awt.event.ActionEvent;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 public final class DialogButton implements DialogComponent {
+    private final @NotNull String face;
+
     private final @NotNull JButton button;
 
     private final @NotNull ButtonFooter footer;
 
+    private @NotNull String chosen;
+
     private @NotNull Runnable submitRequest = () -> {
     };
 
-    // Rule-INTERNAL-140
-    DialogButton(final @NotNull String text, final @NotNull List<Alternative> others) {
-        button = new JButton(text);
-        button.addActionListener(_ -> submitRequest.run());
+    // Rule-INTERNAL-105, Rule-INTERNAL-140
+    DialogButton(final @NotNull String text, final @NotNull List<String> choices, final @NotNull List<Alternative> others) {
+        this.face = text;
+        this.chosen = text;
+        button = choices.isEmpty() ? new JButton(action(text)) : new JBOptionButton(action(text), choices.stream().map(this::action).toArray(Action[]::new));
 
         DialogStyle.asPrimary(button);
 
@@ -47,6 +56,23 @@ public final class DialogButton implements DialogComponent {
         final @NotNull JButton other = new JButton(alternative.name());
         other.addActionListener(_ -> alternative.action().run());
         return other;
+    }
+
+    public @NotNull String getChosen() {
+        return chosen;
+    }
+
+    private @NotNull Action action(final @NotNull String label) {
+        return new AbstractAction(label) {
+            @Override
+            public void actionPerformed(final ActionEvent event) {
+                chosen = label;
+                submitRequest.run();
+
+                // Rule-INTERNAL-054
+                chosen = face;
+            }
+        };
     }
 
     // UC-INTERNAL-007, Rule-INTERNAL-080

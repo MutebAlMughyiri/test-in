@@ -39,7 +39,6 @@ import org.testin.testproject.BoundTestProject;
 import org.testin.util.Bundle;
 import org.testin.util.Once;
 
-import java.nio.file.Path;
 
 public final class TestinStartup implements ProjectActivity {
     private static final @NotNull Key<Boolean> STARTED = Key.create("testin.started");
@@ -65,10 +64,10 @@ public final class TestinStartup implements ProjectActivity {
 
     // UC-SETTING-002, Rule-SETTING-014, Rule-SETTING-046
     private static void readTheFolder(final @NotNull Project project) {
-        final @NotNull String stored = Services.getInstance(project, AppSettingsState.class).rootTestinPath;
-        final @NotNull Path testinPath = TestinRoot.stored(stored);
+        final @NotNull TestinRoot root = Services.getInstance(project, TestinRoot.class);
 
-        if (!TestinRoot.isConfigured(testinPath)) {
+        if (!root.isConfigured()) {
+            final @NotNull String stored = Services.getInstance(project, AppSettingsState.class).rootTestinPath;
             TestinLogger.info(stored.isBlank() ? "No Testin folder is set yet, so nothing is read until one is"
                     : "The stored Testin folder '" + stored + "' is not a full path, so it is read as not set");
             return;
@@ -76,14 +75,14 @@ public final class TestinStartup implements ProjectActivity {
 
         if (!Once.claim(project, READ)) return;
 
-        TestinLogger.info("testin Path: " + testinPath);
+        TestinLogger.info("testin Path: " + root.absolutePath());
         Services.getInstance(project, TestProjectIndexer.class).indexWithProgress();
     }
 
     // UC-SETTING-002, Rule-SETTING-014, Rule-INTERNAL-127, Rule-INTERNAL-129
     static void hintTestinFolder(final @NotNull Project project) {
         final @NotNull Hints hints = Services.getInstance(project, Hints.class);
-        if (TestinRoot.isConfigured(TestinRoot.stored(Services.getInstance(project, AppSettingsState.class).rootTestinPath))) {
+        if (Services.getInstance(project, TestinRoot.class).isConfigured()) {
             hints.clear(SetupStep.TESTIN_FOLDER);
             return;
         }

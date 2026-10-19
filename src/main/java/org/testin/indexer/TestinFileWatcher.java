@@ -38,7 +38,7 @@ public final class TestinFileWatcher implements AsyncFileListener {
     private static @NotNull Set<Path> changedTestProjects(final @NotNull List<? extends VFileEvent> events) {
         final @NotNull List<Project> watching = Arrays.stream(ProjectManager.getInstance().getOpenProjects())
                 .filter(project -> !project.isDisposed())
-                .filter(project -> TestinRoot.isConfigured(Services.getInstance(project, TestinRoot.class).absolutePath()))
+                .filter(project -> Services.getInstance(project, TestinRoot.class).isConfigured())
                 .toList();
         final @NotNull OwnWrites ours = Services.getInstance(OwnWrites.class);
         final @NotNull Set<Path> testProjects = new HashSet<>();

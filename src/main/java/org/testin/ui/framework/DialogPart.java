@@ -80,8 +80,9 @@ public final class DialogPart<C extends DialogComponent> {
         return new DialogPart<>(component);
     }
 
-    public static @NotNull DialogPart<DialogSplitButton> splitButton(final @NotNull String... labels) {
-        return new DialogPart<>(new DialogSplitButton(List.of(labels)));
+    // Rule-INTERNAL-140
+    public static @NotNull DialogPart<DialogButton> splitButton(final @NotNull String text, final @NotNull String... choices) {
+        return new DialogPart<>(new DialogButton(text, List.of(choices), List.of()));
     }
 
     public static @NotNull DialogPart<DialogButton> button(final @NotNull String text) {
@@ -90,7 +91,7 @@ public final class DialogPart<C extends DialogComponent> {
 
     // Rule-INTERNAL-140
     public static @NotNull DialogPart<DialogButton> button(final @NotNull String text, final @NotNull List<Alternative> others) {
-        return new DialogPart<>(new DialogButton(text, others));
+        return new DialogPart<>(new DialogButton(text, List.of(), others));
     }
 
     public static @NotNull DetailsBuilder details() {

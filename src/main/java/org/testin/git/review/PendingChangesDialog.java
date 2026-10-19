@@ -34,9 +34,9 @@ import org.testin.testcase.RestoredTestCases;
 import org.testin.testcase.TestCaseSnapshot;
 import org.testin.ui.framework.AbstractFrameworkDialog;
 import org.testin.ui.framework.ChoiceInput;
+import org.testin.ui.framework.DialogButton;
 import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.DialogSize;
-import org.testin.ui.framework.DialogSplitButton;
 import org.testin.ui.framework.SelectionTable;
 import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.ui.framework.TextInput;
@@ -68,7 +68,7 @@ public final class PendingChangesDialog extends AbstractFrameworkDialog {
 
     private final @NotNull TextInput message;
 
-    private final @NotNull DialogSplitButton commit;
+    private final @NotNull DialogButton commit;
 
     private final @NotNull Consumer<Request> onCommit;
 
@@ -95,7 +95,7 @@ public final class PendingChangesDialog extends AbstractFrameworkDialog {
         final @NotNull DialogPart<TextInput> messageField = DialogPart.textInput()
                 .placeholder(Bundle.message("dialog.pending.placeholder"))
                 .build();
-        final @NotNull DialogPart<DialogSplitButton> commitButton =
+        final @NotNull DialogPart<DialogButton> commitButton =
                 DialogPart.splitButton(PUSH, COMMIT);
 
         components = List.of(table, branchRow, messageField, commitButton);

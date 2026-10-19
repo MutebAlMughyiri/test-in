@@ -23,13 +23,11 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextArea;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
-import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.agent.AgentConnection;
 import org.testin.codegen.agent.BodyPrompt;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
-import org.testin.util.Fonts;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -45,15 +43,6 @@ public final class AgentPromptConfigurable implements SearchableConfigurable {
     private final @NotNull JBTextField timeoutField = new JBTextField();
 
     private final @NotNull AppSettingsState settings = Services.getInstance(AppSettingsState.class);
-
-    private static @NotNull JBLabel hint(final @NotNull String text) {
-        final @NotNull JBLabel note = new JBLabel(text);
-
-        note.setForeground(JBUI.CurrentTheme.ContextHelp.FOREGROUND);
-        note.setFont(Fonts.small());
-
-        return note;
-    }
 
     @Override
     public @NotNull String getId() {
@@ -79,14 +68,14 @@ public final class AgentPromptConfigurable implements SearchableConfigurable {
         buttons.add(resetPrompt);
 
         return FormBuilder.createFormBuilder()
-                .addComponent(hint(Bundle.message("agent.sent")))
+                .addComponent(SettingsNote.of(Bundle.message("agent.sent")))
                 .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(Bundle.message("agent.label.prompt")), new JBScrollPane(promptArea), 1, true)
-                .addComponentToRightColumn(hint(Bundle.message("agent.hint.prompt", String.join(" ", BodyPrompt.PLACEHOLDERS))))
+                .addComponentToRightColumn(SettingsNote.of(Bundle.message("agent.hint.prompt", String.join(" ", BodyPrompt.PLACEHOLDERS))))
                 .addComponentToRightColumn(buttons)
                 .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(Bundle.message("agent.label.timeout")), timeoutField, 1, false)
-                .addComponentToRightColumn(hint(Bundle.message("agent.hint.timeout")))
+                .addComponentToRightColumn(SettingsNote.of(Bundle.message("agent.hint.timeout")))
                 .addComponentFillVertically(new JBPanel<>(), 0)
                 .getPanel();
     }

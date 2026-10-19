@@ -20,6 +20,7 @@ import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
+import org.testin.util.Fonts;
 import org.testin.util.Html;
 
 import javax.swing.BoxLayout;
@@ -34,16 +35,21 @@ public final class DialogMessage implements DialogComponent {
         final @NotNull JBPanel<?> content = new JBPanel<>();
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
         content.setOpaque(false);
-
-        final @NotNull JBLabel message = new JBLabel("<html>" + Html.ofText(text) + "</html>");
-        message.setAlignmentX(Component.LEFT_ALIGNMENT);
-        content.add(message);
+        content.add(sentence(text));
 
         panel = new JBPanel<>(new BorderLayout());
         panel.setOpaque(false);
         panel.setBorder(JBUI.Borders.empty(Spacing.XL));
         panel.setFocusable(true);
         panel.add(content, BorderLayout.CENTER);
+    }
+
+    // Rule-INTERNAL-095
+    static @NotNull JBLabel sentence(final @NotNull String text) {
+        final @NotNull JBLabel sentence = new JBLabel("<html>" + Html.ofText(text) + "</html>");
+        sentence.setFont(Fonts.value());
+        sentence.setAlignmentX(Component.LEFT_ALIGNMENT);
+        return sentence;
     }
 
     @Override

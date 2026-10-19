@@ -16,21 +16,32 @@
 
 package org.testin.ui.framework;
 
+import com.intellij.ide.ui.laf.darcula.ui.DarculaButtonUI;
 import com.intellij.ui.components.JBOptionButton;
 import org.testng.annotations.Test;
 
 import javax.swing.Action;
+import javax.swing.JComponent;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.testng.Assert.assertEquals;
 
-public class DialogSplitButtonTest {
+public class DialogButtonTest {
+
+    @Test
+    public void aButtonWithChoicesIsDrawnAsTheButtonThatConfirms() {
+        final JComponent withChoices = DialogPart.splitButton("Commit & Push", "Commit").getComponent().getFocusComponent();
+        final JComponent plain = DialogPart.button("Generate").getComponent().getFocusComponent();
+
+        assertEquals(withChoices.getClientProperty(DarculaButtonUI.DEFAULT_STYLE_KEY), true, "a button with choices is not drawn as the one that confirms");
+        assertEquals(withChoices.getClientProperty(DarculaButtonUI.DEFAULT_STYLE_KEY), plain.getClientProperty(DarculaButtonUI.DEFAULT_STYLE_KEY), "a button with choices is drawn unlike a button without");
+    }
 
     @Test
     public void anAlternativePressedOnceDoesNotBecomeWhatEnterRuns() {
-        final DialogSplitButton split = DialogPart.splitButton("Commit & Push", "Commit").getComponent();
+        final DialogButton split = DialogPart.splitButton("Commit & Push", "Commit").getComponent();
         final List<String> readBySubmit = new ArrayList<>();
         split.onSubmitRequest(() -> readBySubmit.add(split.getChosen()));
 

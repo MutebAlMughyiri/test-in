@@ -105,19 +105,14 @@ public final class TestinRoot {
         }
     }
 
-    // UC-SETTING-002, Rule-SETTING-046
-    public @NotNull Path getPath() {
+    // UC-SETTING-002, Rule-SETTING-013, Rule-SETTING-046
+    public @NotNull Path absolutePath() {
         return stored(settings.rootTestinPath);
     }
 
     // UC-SETTING-002, Rule-SETTING-011
     public boolean isConfigured() {
-        return isConfigured(getPath());
-    }
-
-    // UC-SETTING-002, Rule-SETTING-013, Rule-SETTING-046
-    public @NotNull Path absolutePath() {
-        return getPath();
+        return isConfigured(absolutePath());
     }
 
     // Rule-REPORT-004, Rule-SHARE-010

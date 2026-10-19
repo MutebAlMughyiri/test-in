@@ -16,17 +16,13 @@
 
 package org.testin.ui.framework;
 
-import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
 import org.jetbrains.annotations.NotNull;
 import org.testin.ui.dialogs.DialogStyle;
-import org.testin.util.Fonts;
-import org.testin.util.Html;
 
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.util.List;
 
 // UC-INTERNAL-007, Rule-INTERNAL-099
@@ -39,10 +35,7 @@ public final class ConfirmCard implements DialogComponent {
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
         content.setOpaque(false);
 
-        final @NotNull JBLabel message = new JBLabel("<html>" + Html.ofText(text) + "</html>");
-        message.setFont(Fonts.value());
-        message.setAlignmentX(Component.LEFT_ALIGNMENT);
-        content.add(message);
+        content.add(DialogMessage.sentence(text));
 
         DialogPlace.row(from, to).ifPresent(content::add);
 

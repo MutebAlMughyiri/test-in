@@ -29,7 +29,6 @@ import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
-import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.testin.explorer.TreePanel;
 import org.testin.help.Guide;
@@ -41,7 +40,6 @@ import org.testin.services.Services;
 import org.testin.setting.dialogs.TestinPathPanel;
 import org.testin.util.Bundle;
 import org.testin.util.FailureText;
-import org.testin.util.Fonts;
 
 import javax.swing.JComponent;
 import java.nio.file.Files;
@@ -89,7 +87,7 @@ public final class SettingsConfigurable implements SearchableConfigurable {
         return "org.testin.setting.SettingsConfigurable";
     }
 
-    // UC-SETTING-001, Rule-SETTING-005, Rule-SETTING-006
+    // UC-SETTING-001, Rule-SETTING-005, Rule-SETTING-006, Rule-SETTING-041
     @Override
     public @NotNull JComponent createComponent() {
         downloadFolderField.addBrowseFolderListener(null, FileChooserDescriptorFactory.singleDir()
@@ -111,19 +109,9 @@ public final class SettingsConfigurable implements SearchableConfigurable {
                 .addVerticalGap(5)
                 .addComponent(showShortcutHintsBox)
                 .addVerticalGap(10)
-                .addComponent(whereSettingsLive())
+                .addComponent(SettingsNote.of(Bundle.message("settings.note")))
                 .addComponentFillVertically(new JBPanel<>(), 0)
                 .getPanel();
-    }
-
-    // UC-SETTING-001, Rule-SETTING-041
-    private @NotNull JBLabel whereSettingsLive() {
-        final @NotNull JBLabel note = new JBLabel(Bundle.message("settings.note"));
-
-        note.setForeground(JBUI.CurrentTheme.ContextHelp.FOREGROUND);
-        note.setFont(Fonts.small());
-
-        return note;
     }
 
     // UC-SETTING-001, Rule-SETTING-008

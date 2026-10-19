@@ -22,14 +22,12 @@ import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
-import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.agent.AgentCli;
 import org.testin.codegen.agent.AgentConnection;
 import org.testin.services.BackgroundWork;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
-import org.testin.util.Fonts;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -49,15 +47,6 @@ public final class AgentSettingsConfigurable implements SearchableConfigurable {
     private final @NotNull JBLabel said = new JBLabel("");
 
     private final @NotNull AppSettingsState settings = Services.getInstance(AppSettingsState.class);
-
-    private static @NotNull JBLabel hint(final @NotNull String text) {
-        final @NotNull JBLabel note = new JBLabel(text);
-
-        note.setForeground(JBUI.CurrentTheme.ContextHelp.FOREGROUND);
-        note.setFont(Fonts.small());
-
-        return note;
-    }
 
     @Override
     public @NotNull String getId() {
@@ -81,12 +70,12 @@ public final class AgentSettingsConfigurable implements SearchableConfigurable {
 
         return FormBuilder.createFormBuilder()
                 .addLabeledComponent(new JBLabel(Bundle.message("agent.label.command")), commandField, 1, false)
-                .addComponentToRightColumn(hint(Bundle.message("agent.hint.command")))
+                .addComponentToRightColumn(SettingsNote.of(Bundle.message("agent.hint.command")))
                 .addVerticalGap(5)
                 .addLabeledComponent(new JBLabel(Bundle.message("agent.label.arguments")), argumentsField, 1, false)
-                .addComponentToRightColumn(hint(Bundle.message("agent.hint.arguments")))
+                .addComponentToRightColumn(SettingsNote.of(Bundle.message("agent.hint.arguments")))
                 .addVerticalGap(10)
-                .addComponent(hint(Bundle.message("agent.keys")))
+                .addComponent(SettingsNote.of(Bundle.message("agent.keys")))
                 .addComponent(said)
                 .addComponent(buttons)
                 .addComponentFillVertically(new JBPanel<>(), 0)
