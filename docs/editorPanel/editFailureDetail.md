@@ -121,7 +121,7 @@ The same dialog the `F` key opens, with what was written already in it.
 6. The four fields are written onto the default execution and the run item,
    and no execution is added. The run item status stays **Failed**.
 7. The test run is written to disk.
-8. A message reads *Details updated*.
+8. A message reads *Updated*.
 
 ## What Testin refuses
 
@@ -143,7 +143,7 @@ nothing is said. Only the log records it.
 ## Why the message comes last
 
 The message is raised after the test run is written, not before. So an edit that
-was dropped never says *Details updated*. Nothing at all is said, which is the
+was dropped never says *Updated*. Nothing at all is said, which is the
 half of the trade worth keeping: a confirmation of a save that did not happen
 costs more than a silence.
 

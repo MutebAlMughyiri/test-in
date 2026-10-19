@@ -43,6 +43,7 @@ import org.testin.model.node.TestRunNode;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.RunItemExecution;
+import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.testrun.failure.FailureDetailDialog;
@@ -391,7 +392,7 @@ public class FailureDialogIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestRunEditor editor = fixture.opened(getTestRootDisposable());
         final @NotNull List<String> heldWhenSaid = new ArrayList<>();
         Services.getInstance(getProject(), Notifier.class).watchBalloons(getTestRootDisposable(), html -> {
-            if (html.contains(Bundle.message("run.item.updated")))
+            if (html.contains(Done.UPDATED.getOutcome()))
                 heldWhenSaid.add(fixture.runItemOf(testCases.getFirst()).shownExecution().getActualResult());
         });
         try {

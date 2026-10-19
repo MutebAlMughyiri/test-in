@@ -57,8 +57,8 @@ public class StopTest {
 
         final Stop stop = registry.stopping(List.of(ONE));
 
-        assertEquals(stop.executions(), Set.of("cycle 1"), "the stop killed the wrong executions");
-        assertEquals(Set.copyOf(stop.testCases()), Set.of(ONE, TWO), "a test case sharing the process was left running");
+        assertEquals(stop.executionNames(), Set.of("cycle 1"), "the stop killed the wrong executions");
+        assertEquals(Set.copyOf(stop.testCaseUuids()), Set.of(ONE, TWO), "a test case sharing the process was left running");
         assertTrue(registry.isRunning(THREE), "a test case in another execution was stopped too");
         assertFalse(registry.isStopped(THREE), "a test case in another execution was recorded as stopped");
     }
@@ -72,7 +72,7 @@ public class StopTest {
         final Stop stop = registry.stopping(List.of(TWO));
 
         assertEquals(registry.testNGExecutionStatusOf(ONE), TestNGExecutionStatus.PASSED, "a stop took back a run item status that had already landed");
-        assertFalse(stop.testCases().contains(ONE), "a finished test case was swept up with the other test case in its configuration");
+        assertFalse(stop.testCaseUuids().contains(ONE), "a finished test case was swept up with the other test case in its configuration");
         assertFalse(registry.isStopped(ONE), "a finished test case was recorded as stopped");
     }
 

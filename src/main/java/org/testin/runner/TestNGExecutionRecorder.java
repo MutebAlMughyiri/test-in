@@ -89,7 +89,7 @@ public final class TestNGExecutionRecorder implements Disposable {
 
     // Rule-CODEGEN-110, Rule-CODEGEN-111
     private void report(final @NotNull TestCase testCase, final @NotNull Attempts decided) {
-        final @NotNull TestNGExecutionStatus reportedTestNGExecutionStatus = runItemStatusFor(testCase, decided.testNGExecutionStatus());
+        final @NotNull TestNGExecutionStatus reportedTestNGExecutionStatus = reportedStatusFor(testCase, decided.testNGExecutionStatus());
         final @NotNull List<RunItemExecution> executions = reportedTestNGExecutionStatus == TestNGExecutionStatus.IDLE ? List.of() : decided.executions();
 
         TestinLogger.debug("  reporting on '" + testCase.getDescription() + "': " + reportedTestNGExecutionStatus + " from " + decided.all().size() + " attempt(s)");
@@ -105,7 +105,7 @@ public final class TestNGExecutionRecorder implements Disposable {
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-038, Rule-VIEW-PANEL-055
-    private @NotNull TestNGExecutionStatus runItemStatusFor(final @NotNull TestCase testCase, final @NotNull TestNGExecutionStatus testNGExecutionStatus) {
+    private @NotNull TestNGExecutionStatus reportedStatusFor(final @NotNull TestCase testCase, final @NotNull TestNGExecutionStatus testNGExecutionStatus) {
         final boolean stopped = testNGExecutionStatus == TestNGExecutionStatus.FAILED
                 && Services.getInstance(project, TestNGExecution.class).isStopped(testCase);
 

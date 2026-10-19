@@ -108,8 +108,8 @@ public class TestNGExecutionRegistryTest {
         assertTrue(registry.isRunning(afterReload.getUuid()), "the fresh instance is the same running test case");
 
         final Stop stop = registry.stopping(List.of(afterReload.getUuid()));
-        assertEquals(stop.testCases(), List.of(original.getUuid()), "and the stop reaches it");
-        assertEquals(stop.executions(), Set.of(CONFIGURATION_NAME), "naming the execution whose process has to be killed");
+        assertEquals(stop.testCaseUuids(), List.of(original.getUuid()), "and the stop reaches it");
+        assertEquals(stop.executionNames(), Set.of(CONFIGURATION_NAME), "naming the execution whose process has to be killed");
     }
 
     @Test
@@ -119,7 +119,7 @@ public class TestNGExecutionRegistryTest {
         final Stop stop = registry.stopping(List.of(UUID.randomUUID()));
 
         assertSame(stop, Stop.NOTHING, "nothing to kill and nothing to repaint");
-        assertTrue(stop.testCases().isEmpty(), "so no test case is put back");
+        assertTrue(stop.testCaseUuids().isEmpty(), "so no test case is put back");
     }
 
     // Rule-VIEW-PANEL-054
@@ -135,8 +135,8 @@ public class TestNGExecutionRegistryTest {
 
         final Stop stop = registry.stopping(List.of(first.getUuid()));
 
-        assertTrue(stop.testCases().contains(second.getUuid()), "one configuration is one process, so the other test case in it goes too");
-        assertFalse(stop.testCases().contains(alone.getUuid()), "but a test case in another execution is left alone");
+        assertTrue(stop.testCaseUuids().contains(second.getUuid()), "one configuration is one process, so the other test case in it goes too");
+        assertFalse(stop.testCaseUuids().contains(alone.getUuid()), "but a test case in another execution is left alone");
         assertTrue(registry.isStopped(second.getUuid()), "and a report arriving for it afterward is not a failure");
     }
 
@@ -151,7 +151,7 @@ public class TestNGExecutionRegistryTest {
 
         final Stop stop = registry.stopping(List.of(stillGoing.getUuid()));
 
-        assertFalse(stop.testCases().contains(finished.getUuid()), "its run item status is in, so the stop is not about it");
+        assertFalse(stop.testCaseUuids().contains(finished.getUuid()), "its run item status is in, so the stop is not about it");
         assertEquals(registry.testNGExecutionStatusOf(finished.getUuid()), TestNGExecutionStatus.PASSED, "and the run item status it gave still stands");
     }
 

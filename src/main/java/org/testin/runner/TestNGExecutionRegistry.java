@@ -37,7 +37,7 @@ final class TestNGExecutionRegistry {
 
     private final @NotNull Set<UUID> pending = ConcurrentHashMap.newKeySet();
 
-    private final @NotNull Map<UUID, String> configOf = new ConcurrentHashMap<>();
+    private final @NotNull Map<UUID, String> executionNameOf = new ConcurrentHashMap<>();
 
     private final @NotNull Set<UUID> stopped = ConcurrentHashMap.newKeySet();
 
@@ -57,13 +57,13 @@ final class TestNGExecutionRegistry {
         return pending.remove(testCaseUuid);
     }
 
-    void launched(final @NotNull Collection<UUID> testCaseUuids, final @NotNull String testRunName) {
-        testCaseUuids.forEach(testCaseUuid -> configOf.put(testCaseUuid, testRunName));
-        launchedNames.add(testRunName);
+    void launched(final @NotNull Collection<UUID> testCaseUuids, final @NotNull String executionName) {
+        testCaseUuids.forEach(testCaseUuid -> executionNameOf.put(testCaseUuid, executionName));
+        launchedNames.add(executionName);
     }
 
-    boolean launchedHere(final @NotNull String testRunName) {
-        return launchedNames.contains(testRunName);
+    boolean launchedHere(final @NotNull String executionName) {
+        return launchedNames.contains(executionName);
     }
 
     // UC-CODEGEN-008, Rule-CODEGEN-076, Rule-CODEGEN-094
@@ -80,7 +80,7 @@ final class TestNGExecutionRegistry {
 
     void notStarting(final @NotNull UUID testCaseUuid) {
         pending.remove(testCaseUuid);
-        configOf.remove(testCaseUuid);
+        executionNameOf.remove(testCaseUuid);
     }
 
     boolean isStopped(final @NotNull UUID testCaseUuid) {
@@ -88,7 +88,7 @@ final class TestNGExecutionRegistry {
     }
 
     boolean isRunning(final @NotNull UUID testCaseUuid) {
-        return pending.contains(testCaseUuid) || configOf.containsKey(testCaseUuid);
+        return pending.contains(testCaseUuid) || executionNameOf.containsKey(testCaseUuid);
     }
 
     // Rule-EDITOR-PANEL-291
@@ -104,7 +104,7 @@ final class TestNGExecutionRegistry {
     @NotNull Map<UUID, Attempts> attempted(final @NotNull UUID testCaseUuid, final @NotNull Attempt attempt) {
         if (attempt.testNGExecutionStatus() == TestNGExecutionStatus.IDLE && held.containsKey(testCaseUuid))
             return decide(List.of(testCaseUuid));
-        if (!configOf.containsKey(testCaseUuid)) return Map.of(testCaseUuid, Attempts.of(attempt));
+        if (!executionNameOf.containsKey(testCaseUuid)) return Map.of(testCaseUuid, Attempts.of(attempt));
         if (attempt.testNGExecutionStatus() == TestNGExecutionStatus.RUNNING) {
             executingNow.add(testCaseUuid);
             return decidedBefore(testCaseUuid, attempt);
@@ -123,9 +123,9 @@ final class TestNGExecutionRegistry {
     }
 
     private @NotNull Map<UUID, Attempts> decidedBefore(final @NotNull UUID testCaseUuid, final @NotNull Attempt running) {
-        final @NotNull String execution = configOf.getOrDefault(testCaseUuid, "");
+        final @NotNull String executionName = executionNameOf.getOrDefault(testCaseUuid, "");
         final @NotNull Map<UUID, Attempts> decided = decide(held.keySet().stream()
-                .filter(other -> !other.equals(testCaseUuid) && execution.equals(configOf.get(other)))
+                .filter(other -> !other.equals(testCaseUuid) && executionName.equals(executionNameOf.get(other)))
                 .toList());
 
         decided.put(testCaseUuid, Attempts.of(running));
@@ -144,7 +144,7 @@ final class TestNGExecutionRegistry {
         if (testNGExecutionStatus == TestNGExecutionStatus.RUNNING) return;
 
         pending.remove(testCaseUuid);
-        configOf.remove(testCaseUuid);
+        executionNameOf.remove(testCaseUuid);
         executingNow.remove(testCaseUuid);
 
         if (testNGExecutionStatus == TestNGExecutionStatus.IDLE && !stopped.contains(testCaseUuid)) return;
@@ -157,40 +157,40 @@ final class TestNGExecutionRegistry {
         final @NotNull List<UUID> running = asked.stream().filter(this::isRunning).toList();
         if (running.isEmpty()) return Stop.NOTHING;
 
-        final @NotNull Set<String> testRuns = running.stream()
-                .map(testCaseUuid -> configOf.getOrDefault(testCaseUuid, ""))
+        final @NotNull Set<String> executionNames = running.stream()
+                .map(testCaseUuid -> executionNameOf.getOrDefault(testCaseUuid, ""))
                 .filter(name -> !name.isEmpty())
                 .collect(Collectors.toSet());
 
-        final @NotNull List<UUID> testCases = Stream.concat(
+        final @NotNull List<UUID> testCaseUuids = Stream.concat(
                         running.stream(),
-                        configOf.entrySet().stream().filter(e -> testRuns.contains(e.getValue())).map(Map.Entry::getKey))
+                        executionNameOf.entrySet().stream().filter(entry -> executionNames.contains(entry.getValue())).map(Map.Entry::getKey))
                 .distinct()
                 .toList();
 
-        testCases.forEach(testCaseUuid -> {
+        testCaseUuids.forEach(testCaseUuid -> {
             pending.remove(testCaseUuid);
-            configOf.remove(testCaseUuid);
+            executionNameOf.remove(testCaseUuid);
             held.remove(testCaseUuid);
             executingNow.remove(testCaseUuid);
             stopped.add(testCaseUuid);
         });
 
-        return new Stop(testRuns, testCases);
+        return new Stop(executionNames, testCaseUuids);
     }
 
     // Rule-CODEGEN-092
-    @NotNull List<UUID> ended(final @NotNull String testRunName) {
-        if (!launchedNames.remove(testRunName)) return List.of();
+    @NotNull List<UUID> ended(final @NotNull String executionName) {
+        if (!launchedNames.remove(executionName)) return List.of();
 
-        final @NotNull List<UUID> abandoned = configOf.entrySet().stream()
-                .filter(e -> e.getValue().equals(testRunName))
+        final @NotNull List<UUID> abandoned = executionNameOf.entrySet().stream()
+                .filter(entry -> entry.getValue().equals(executionName))
                 .map(Map.Entry::getKey)
                 .toList();
 
         abandoned.forEach(testCaseUuid -> {
             pending.remove(testCaseUuid);
-            configOf.remove(testCaseUuid);
+            executionNameOf.remove(testCaseUuid);
             executingNow.remove(testCaseUuid);
         });
 

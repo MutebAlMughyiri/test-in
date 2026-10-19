@@ -70,11 +70,11 @@ public final class TestNGExecution implements Disposable {
             // UC-CODEGEN-009, Rule-CODEGEN-037
             @Override
             public void processStarted(final @NotNull String executorId, final @NotNull ExecutionEnvironment environment, final @NotNull ProcessHandler handler) {
-                final @NotNull String testRunName = environment.getRunProfile().getName();
-                if (!registry.launchedHere(testRunName)) return;
+                final @NotNull String executionName = environment.getRunProfile().getName();
+                if (!registry.launchedHere(executionName)) return;
 
-                live.put(handler, testRunName);
-                if (stopWhenStarted.remove(testRunName)) kill(handler, testRunName);
+                live.put(handler, executionName);
+                if (stopWhenStarted.remove(executionName)) kill(handler, executionName);
             }
 
             @Override
@@ -126,8 +126,8 @@ public final class TestNGExecution implements Disposable {
         ProgramRunnerUtil.executeConfiguration(settings, DefaultRunExecutor.getRunExecutorInstance());
     }
 
-    void launched(final @NotNull List<TestCase> testCases, final @NotNull String testRunName) {
-        registry.launched(testCases.stream().map(TestCase::getUuid).toList(), testRunName);
+    void launched(final @NotNull List<TestCase> testCases, final @NotNull String executionName) {
+        registry.launched(testCases.stream().map(TestCase::getUuid).toList(), executionName);
     }
 
     // UC-CODEGEN-008, Rule-CODEGEN-097
@@ -204,49 +204,49 @@ public final class TestNGExecution implements Disposable {
     // UC-CODEGEN-009, Rule-CODEGEN-037
     public int stopTestCases(final @NotNull Collection<UUID> testCaseUuids) {
         final @NotNull Stop stop = registry.stopping(List.copyOf(testCaseUuids));
-        if (stop.testCases().isEmpty()) return 0;
+        if (stop.testCaseUuids().isEmpty()) return 0;
 
-        final @NotNull Map<ProcessHandler, String> theirs = running(stop.executions());
-        stop.executions().stream().filter(testRunName -> !theirs.containsValue(testRunName)).forEach(stopWhenStarted::add);
-        TestinLogger.info("Stopping " + stop.testCases().size() + " test case(s) in " + stop.executions().size()
+        final @NotNull Map<ProcessHandler, String> theirs = running(stop.executionNames());
+        stop.executionNames().stream().filter(executionName -> !theirs.containsValue(executionName)).forEach(stopWhenStarted::add);
+        TestinLogger.info("Stopping " + stop.testCaseUuids().size() + " test case(s) in " + stop.executionNames().size()
                 + " execution(s): " + theirs.size() + " had reached a process, and the rest are stopped as soon as theirs starts");
 
         theirs.forEach(this::kill);
-        stop.testCases().forEach(testCaseUuid -> TestNGExecutionReported.broadcast(project, key(testCaseUuid), TestNGExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
+        stop.testCaseUuids().forEach(testCaseUuid -> TestNGExecutionReported.broadcast(project, key(testCaseUuid), TestNGExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
 
-        return stop.testCases().size();
+        return stop.testCaseUuids().size();
     }
 
     // UC-CODEGEN-008, Rule-CODEGEN-092, Rule-CODEGEN-110
     private void ended(final @NotNull ExecutionEnvironment environment) {
         stopWhenStarted.remove(environment.getRunProfile().getName());
         ApplicationManager.getApplication().invokeLater(() -> {
-            final @NotNull String testRunName = environment.getRunProfile().getName();
-            final @NotNull List<UUID> open = registry.ended(testRunName);
+            final @NotNull String executionName = environment.getRunProfile().getName();
+            final @NotNull List<UUID> open = registry.ended(executionName);
             if (open.isEmpty()) return;
 
-            TestinLogger.info("'" + testRunName + "' ended with " + open.size() + " test case(s) still open");
+            TestinLogger.info("'" + executionName + "' ended with " + open.size() + " test case(s) still open");
             open.forEach(testCaseUuid -> TestNGExecutionReported.broadcast(project, key(testCaseUuid), TestNGExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
         });
     }
 
-    private void kill(final @NotNull ProcessHandler handler, final @NotNull String testRunName) {
+    private void kill(final @NotNull ProcessHandler handler, final @NotNull String executionName) {
         handler.putUserData(ProcessHandler.TERMINATION_REQUESTED, Boolean.TRUE);
 
         if (handler instanceof KillableProcess killable && killable.canKillProcess()) {
-            TestinLogger.info("Killing '" + testRunName + "'");
+            TestinLogger.info("Killing '" + executionName + "'");
             killable.killProcess();
 
         } else {
-            TestinLogger.info("Destroying '" + testRunName + "', which cannot be killed");
+            TestinLogger.info("Destroying '" + executionName + "', which cannot be killed");
             handler.destroyProcess();
         }
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-094
-    private @NotNull Map<ProcessHandler, String> running(final @NotNull Set<String> names) {
+    private @NotNull Map<ProcessHandler, String> running(final @NotNull Set<String> executionNames) {
         return live.entrySet().stream()
-                .filter(one -> names.contains(one.getValue()) && !one.getKey().isProcessTerminated())
+                .filter(entry -> executionNames.contains(entry.getValue()) && !entry.getKey().isProcessTerminated())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 }

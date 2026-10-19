@@ -28,6 +28,7 @@ import org.testin.editor.testrun.TestRunEditor;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItem;
+import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.testrun.failure.FailureDetailDialog;
@@ -73,7 +74,7 @@ public class EditFailureDetailAction extends AbstractAnyProjectAction {
                 ViewToolWindowFactory.refreshIfShowing(project, List.of(testCase));
             });
 
-            Services.getInstance(project, Notifier.class).softShow(project, Bundle.message("run.item.updated"));
+            Services.getInstance(project, Notifier.class).softShow(project, Done.UPDATED);
         }).show();
     }
 
