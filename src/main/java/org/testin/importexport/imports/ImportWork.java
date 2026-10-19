@@ -44,7 +44,7 @@ import org.testin.testcase.Rank;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.util.Bundle;
 import org.testin.util.FailureText;
-import org.testin.util.NameSanitizer;
+import org.testin.util.SpecialCharacters;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -85,7 +85,7 @@ record ImportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
 
     // UC-SHARE-006, Rule-SHARE-031, Rule-SHARE-128
     private static @NotNull String testSetNameOf(final @NotNull String sheetName) {
-        final @NotNull String name = NameSanitizer.removeSpecialChars(sheetName).trim();
+        final @NotNull String name = SpecialCharacters.removedFrom(sheetName).trim();
         return name.isEmpty() ? Bundle.message("import.sheet.no.name") : name;
     }
 

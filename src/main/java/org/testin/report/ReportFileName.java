@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.model.node.TestRunNode;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
-import org.testin.util.NameSanitizer;
+import org.testin.util.SpecialCharacters;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -49,6 +49,6 @@ public final class ReportFileName {
     }
 
     private static @NotNull String safe(final @NotNull String name) {
-        return NameSanitizer.removeSpecialChars(name).replace(" ", "").trim();
+        return SpecialCharacters.removedFrom(name).replace(" ", "").trim();
     }
 }

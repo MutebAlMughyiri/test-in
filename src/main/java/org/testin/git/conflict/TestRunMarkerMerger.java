@@ -25,7 +25,6 @@ import org.testin.model.DateFormats;
 import org.testin.model.status.TestRunStatus;
 import org.testin.util.Bundle;
 import org.testin.util.JsonCodec;
-import org.testin.util.TestCaseFieldParser;
 
 import java.time.ZonedDateTime;
 import java.util.LinkedHashSet;
@@ -132,6 +131,6 @@ final class TestRunMarkerMerger {
     }
 
     private static @NotNull ZonedDateTime stamp(final @NotNull ObjectNode marker, final @NotNull String field) {
-        return TestCaseFieldParser.date(marker.path(field).asText("")).orElse(DateFormats.NOT_EXECUTED);
+        return DateFormats.stored(marker.path(field).asText("")).orElse(DateFormats.NOT_EXECUTED);
     }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.testin.util;
+package org.testin.testcase;
 
 import org.testin.model.Groups;
 import org.testin.model.Priority;

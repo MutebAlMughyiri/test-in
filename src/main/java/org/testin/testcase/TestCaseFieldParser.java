@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.testin.util;
+package org.testin.testcase;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -27,22 +27,27 @@ import org.testin.model.status.TestCaseStatus;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TestCaseFieldParser {
-    private static final @NotNull DateTimeFormatter WITHOUT_WEEKDAY =
-            DateTimeFormatter.ofPattern(DateFormats.DATE_WITHOUT_WEEKDAY_PATTERN, Locale.US);
+final class TestCaseFieldParser {
+    private static final @NotNull Pattern NOT_IN_A_DESCRIPTION = Pattern.compile("[^a-zA-Z0-9 _]");
+
+    private static final @NotNull Pattern SPACES = Pattern.compile("\\s{2,}");
+
+    // Rule-EDITOR-PANEL-050
+    static @NotNull String description(final @NotNull String rawDescription) {
+        return SPACES.matcher(NOT_IN_A_DESCRIPTION.matcher(rawDescription).replaceAll("")).replaceAll(" ").trim();
+    }
 
     // Rule-EDITOR-PANEL-005
-    public static @NotNull List<String> steps(final @NotNull String rawSteps) {
+    static @NotNull List<String> steps(final @NotNull String rawSteps) {
         return Arrays.stream(rawSteps.split("\n"))
                 .map(String::trim)
                 .filter(line -> !line.isEmpty())
@@ -50,14 +55,14 @@ public final class TestCaseFieldParser {
     }
 
     // UC-SHARE-005, Rule-SHARE-110
-    public static boolean namesConstant(final @NotNull Enum<?> constant, final @NotNull String text) {
+    static boolean namesConstant(final @NotNull Enum<?> constant, final @NotNull String text) {
         final @NotNull String wanted = text.trim();
 
         return constant.name().equalsIgnoreCase(wanted) || constant.name().replace('_', ' ').equalsIgnoreCase(wanted);
     }
 
     // UC-SHARE-006, Rule-SHARE-106
-    public static @NotNull Optional<Priority> priority(final @NotNull String value, final @NotNull Priority current) {
+    static @NotNull Optional<Priority> priority(final @NotNull String value, final @NotNull Priority current) {
         final @NotNull String wanted = value.trim();
         if (wanted.isEmpty()) return Optional.of(current);
 
@@ -70,7 +75,7 @@ public final class TestCaseFieldParser {
     }
 
     // Rule-SHARE-106
-    public static @NotNull Optional<TestCaseStatus> testCaseStatus(final @NotNull String value, final @NotNull TestCaseStatus currentTestCaseStatus) {
+    static @NotNull Optional<TestCaseStatus> testCaseStatus(final @NotNull String value, final @NotNull TestCaseStatus currentTestCaseStatus) {
         final @NotNull String wanted = value.trim();
         if (wanted.isEmpty()) return Optional.of(currentTestCaseStatus);
 
@@ -82,12 +87,12 @@ public final class TestCaseFieldParser {
         return Optional.empty();
     }
 
-    // UC-SHARE-005, Rule-SHARE-121, Rule-SHARE-106, Rule-SHARE-106
-    public static @NotNull Optional<ZonedDateTime> date(final @NotNull String value) {
+    // UC-SHARE-005, Rule-SHARE-121, Rule-SHARE-106
+    static @NotNull Optional<ZonedDateTime> date(final @NotNull String value) {
         if (value.isBlank()) return Optional.of(DateFormats.NOT_EXECUTED);
 
         final @NotNull String text = value.trim();
-        return parsed(() -> ZonedDateTime.parse(text.replaceFirst("^\\p{L}+\\s+", ""), WITHOUT_WEEKDAY))
+        return DateFormats.stored(text)
                 .or(() -> parsed(() -> LocalDateTime.parse(text, DateFormats.EXCEL_DATE_FORMATTER).atZone(ZoneId.systemDefault())));
     }
 
@@ -100,7 +105,7 @@ public final class TestCaseFieldParser {
     }
 
     // Rule-SHARE-106
-    public static @NotNull Optional<List<String>> groups(final @NotNull String rawGroups) {
+    static @NotNull Optional<List<String>> groups(final @NotNull String rawGroups) {
         return Optional.of(Groups.read(rawGroups));
     }
 }

@@ -39,8 +39,6 @@ import org.testin.ui.Badges;
 import org.testin.util.Bundle;
 import org.testin.util.Display;
 import org.testin.util.Icons;
-import org.testin.util.NameSanitizer;
-import org.testin.util.TestCaseFieldParser;
 
 import javax.swing.Icon;
 import java.util.Arrays;
@@ -92,7 +90,7 @@ public enum TestSetEditorFields implements ShowableField {
             "D",
             FieldDefault.LOCKED_CHECKED,
             TestCase::getDescription,
-            always((draft, value) -> draft.description(NameSanitizer.description(value))),
+            always((draft, value) -> draft.description(TestCaseFieldParser.description(value))),
             CodeChangeType.UPDATE_TEST_CASE_DESCRIPTION,
             Can.EDIT, Can.IMPORT, Can.COPY, Can.EXPORT
     ) {

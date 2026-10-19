@@ -26,7 +26,6 @@ import org.testin.model.FileKind;
 import org.testin.model.NodeType;
 import org.testin.util.Bundle;
 import org.testin.util.JsonCodec;
-import org.testin.util.TestCaseFieldParser;
 
 import java.nio.file.Path;
 import java.time.ZonedDateTime;
@@ -96,8 +95,8 @@ public final class TestCaseMerger {
     }
 
     private static void stampTheLaterEdit(final @NotNull ObjectNode merged, final @NotNull ObjectNode mine, final @NotNull ObjectNode theirs) {
-        final @NotNull ZonedDateTime mineAt = TestCaseFieldParser.date(text(mine.path(UPDATED_AT))).orElse(DateFormats.NOT_EXECUTED);
-        final @NotNull ZonedDateTime theirsAt = TestCaseFieldParser.date(text(theirs.path(UPDATED_AT))).orElse(DateFormats.NOT_EXECUTED);
+        final @NotNull ZonedDateTime mineAt = DateFormats.stored(text(mine.path(UPDATED_AT))).orElse(DateFormats.NOT_EXECUTED);
+        final @NotNull ZonedDateTime theirsAt = DateFormats.stored(text(theirs.path(UPDATED_AT))).orElse(DateFormats.NOT_EXECUTED);
 
         final @NotNull ObjectNode later = theirsAt.isAfter(mineAt) ? theirs : mine;
 

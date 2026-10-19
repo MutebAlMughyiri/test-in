@@ -26,7 +26,6 @@ import org.testin.model.DateFormats;
 import org.testin.model.status.RunItemStatus;
 import org.testin.util.Bundle;
 import org.testin.util.JsonCodec;
-import org.testin.util.TestCaseFieldParser;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -104,7 +103,7 @@ final class RunItemMerger {
     }
 
     static @NotNull ZonedDateTime executedAt(final @NotNull JsonNode execution) {
-        return TestCaseFieldParser.date(execution.path(EXECUTED_AT).asText("")).orElse(DateFormats.NOT_EXECUTED);
+        return DateFormats.stored(execution.path(EXECUTED_AT).asText("")).orElse(DateFormats.NOT_EXECUTED);
     }
 
     private static @NotNull ZonedDateTime lastRecorded(final @NotNull ObjectNode runItem) {

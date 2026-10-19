@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package org.testin.util;
+package org.testin.testcase;
 
 import org.testin.model.DateFormats;
+import org.testin.util.Display;
 import org.testng.annotations.Test;
 
 import java.time.ZoneId;

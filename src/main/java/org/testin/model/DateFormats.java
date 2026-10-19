@@ -25,14 +25,16 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DateFormats {
     public static final @NotNull DateTimeFormatter EXCEL_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.US);
 
-    public static final @NotNull String DATE_WITHOUT_WEEKDAY_PATTERN = "dd-MM-yyyy 'At' HH:mm:ss '['VV']'";
+    private static final @NotNull String DATE_WITHOUT_WEEKDAY_PATTERN = "dd-MM-yyyy 'At' HH:mm:ss '['VV']'";
 
     public static final @NotNull String DATE_FORMAT_PATTERN = "EEEE " + DATE_WITHOUT_WEEKDAY_PATTERN;
 
@@ -45,7 +47,17 @@ public final class DateFormats {
     @Getter
     private static final @NotNull DateTimeFormatter dateFormatterPattern = DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN, Locale.US);
 
+    private static final @NotNull DateTimeFormatter WITHOUT_WEEKDAY = DateTimeFormatter.ofPattern(DATE_WITHOUT_WEEKDAY_PATTERN, Locale.US);
+
     public static boolean isNotExecuted(final @NotNull ZonedDateTime at) {
         return at.toInstant().equals(NOT_EXECUTED.toInstant());
+    }
+
+    public static @NotNull Optional<ZonedDateTime> stored(final @NotNull String text) {
+        try {
+            return Optional.of(ZonedDateTime.parse(text.trim().replaceFirst("^\\p{L}+\\s+", ""), WITHOUT_WEEKDAY));
+        } catch (final DateTimeParseException notAStoredDate) {
+            return Optional.empty();
+        }
     }
 }

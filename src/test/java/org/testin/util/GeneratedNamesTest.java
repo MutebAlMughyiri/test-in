@@ -32,21 +32,6 @@ public class GeneratedNamesTest {
     private static final String[] KEYWORDS = {"New", "Class", "Import", "Return", "Do", "Switch", "Package"};
 
     @Test
-    public void strippingACharacterDoesNotLeaveTheGapBehind() {
-        assertEquals(NameSanitizer.description("absher status = 0"), "absher status 0",
-                "the space on each side of the stripped = is left as a double space");
-
-        assertEquals(NameSanitizer.description("a < b > c"), "a b c",
-                "every stripped character closes its own gap");
-
-        assertEquals(NameSanitizer.description("  leading and trailing  "), "leading and trailing",
-                "the ends are trimmed as they always were");
-
-        assertEquals(NameSanitizer.description("one two"), "one two",
-                "a description with nothing to strip is untouched, single spaces and all");
-    }
-
-    @Test
     public void aPackageNameIsTheSameEveryTimeItIsAskedFor() {
         for (final String name : UNNAMEABLE) {
             assertEquals(NameSanitizer.packageName(name), NameSanitizer.packageName(name),

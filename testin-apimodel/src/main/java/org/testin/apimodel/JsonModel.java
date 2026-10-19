@@ -33,7 +33,6 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
 import org.testin.notifications.Refused;
 import org.testin.util.FailureText;
-import org.testin.util.NameSanitizer;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -95,7 +94,7 @@ public final class JsonModel {
         final @NotNull List<ModelType> nested = new ArrayList<>();
         object.properties().forEach(entry -> {
             final @NotNull String type = javaType(entry.getKey(), entry.getValue(), around, nested);
-            fields.add(new ModelField(entry.getKey(), unique(NameSanitizer.modelFieldName(entry.getKey()), fieldNames), type));
+            fields.add(new ModelField(entry.getKey(), unique(ModelNames.fieldName(entry.getKey()), fieldNames), type));
         });
 
         return new ModelType(name, List.copyOf(fields), List.copyOf(nested));
@@ -109,7 +108,7 @@ public final class JsonModel {
         if (value.isLong()) return "Long";
         if (value.isBigInteger()) return "BigInteger";
         if (value.isNumber()) return "Double";
-        if (value.isObject()) return nestedType(NameSanitizer.modelTypeName(key), value, around, nested);
+        if (value.isObject()) return nestedType(ModelNames.typeName(key), value, around, nested);
         if (value.isArray()) return "List<" + elementType(key, value, around, nested) + ">";
         return "Object";
     }
@@ -117,7 +116,7 @@ public final class JsonModel {
     // Rule-CODEGEN-102
     private static @NotNull String elementType(final @NotNull String key, final @NotNull JsonNode list, final @NotNull Set<String> around, final @NotNull List<ModelType> nested) {
         final @NotNull JsonNode element = merged(elements(list));
-        if (element.isObject()) return nestedType(NameSanitizer.modelTypeName(key) + "Item", element, around, nested);
+        if (element.isObject()) return nestedType(ModelNames.typeName(key) + "Item", element, around, nested);
 
         return javaType(key, element, around, nested);
     }

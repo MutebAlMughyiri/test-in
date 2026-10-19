@@ -22,7 +22,6 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.lang.model.SourceVersion;
 import java.util.Locale;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -30,12 +29,6 @@ public final class NameSanitizer {
     private static final @NotNull String TEST_CASES_SUFFIX = "-test-cases";
 
     private static final @NotNull Pattern INVALID_NAME = Pattern.compile("[^a-zA-Z0-9 _]");
-
-    private static final @NotNull Pattern SPACES = Pattern.compile("\\s{2,}");
-
-    private static final @NotNull Pattern NOT_A_LETTER_OR_DIGIT = Pattern.compile("[^A-Za-z0-9]+");
-
-    private static final @NotNull Set<String> OBJECT_METHODS = Set.of("getClass", "hashCode", "equals", "toString", "notify", "notifyAll", "wait", "clone", "finalize");
 
     // UC-CODEGEN-002, Rule-CODEGEN-011, Rule-CODEGEN-073
     public static @NotNull String packageName(final @NotNull String value) {
@@ -60,35 +53,8 @@ public final class NameSanitizer {
         return name.toLowerCase(Locale.ROOT).endsWith(TEST_CASES_SUFFIX) ? name.substring(0, name.length() - TEST_CASES_SUFFIX.length()) : name;
     }
 
-    private static @NotNull String notStartingWithADigit(final @NotNull String word) {
+    public static @NotNull String notStartingWithADigit(final @NotNull String word) {
         return !word.isEmpty() && Character.isDigit(word.charAt(0)) ? "_" + word : word;
-    }
-
-    // UC-CODEGEN-022, Rule-CODEGEN-103
-    @FromContentModule
-    public static @NotNull String modelFieldName(final @NotNull String key) {
-        final @NotNull String name = modelName(key, false);
-        return SourceVersion.isKeyword(name) || OBJECT_METHODS.contains(name) ? name + "Value" : name;
-    }
-
-    // UC-CODEGEN-022, Rule-CODEGEN-103
-    @FromContentModule
-    public static @NotNull String modelTypeName(final @NotNull String key) {
-        return modelName(key, true);
-    }
-
-    // Rule-CODEGEN-103
-    private static @NotNull String modelName(final @NotNull String key, final boolean capitalFirst) {
-        final @NotNull StringBuilder name = new StringBuilder();
-        for (final String word : NOT_A_LETTER_OR_DIGIT.split(key, -1)) {
-            if (word.isEmpty()) continue;
-
-            final @NotNull String kept = word.equals(word.toUpperCase(Locale.ROOT)) ? word.toLowerCase(Locale.ROOT) : word;
-            final char first = name.isEmpty() && !capitalFirst ? Character.toLowerCase(kept.charAt(0)) : Character.toUpperCase(kept.charAt(0));
-            name.append(first).append(kept.substring(1));
-        }
-        if (name.isEmpty()) name.append(capitalFirst ? "Field" : "field");
-        return notStartingWithADigit(name.toString());
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-011
@@ -113,12 +79,7 @@ public final class NameSanitizer {
             }
         }
         if (result.isEmpty()) return "Generated" + tag(value) + "Test";
-        if (Character.isDigit(result.charAt(0))) result.insert(0, '_');
-        return result.append("Test").toString();
-    }
-
-    public static @NotNull String description(final @NotNull String rawDescription) {
-        return SPACES.matcher(INVALID_NAME.matcher(rawDescription).replaceAll("")).replaceAll(" ").trim();
+        return notStartingWithADigit(result.append("Test").toString());
     }
 
     // Rule-CODEGEN-012, Rule-CODEGEN-016
@@ -142,17 +103,5 @@ public final class NameSanitizer {
 
     public static boolean cannotMakeMethodName(final @NotNull String description) {
         return !SourceVersion.isName(methodName(description));
-    }
-
-    public static @NotNull String removeSpecialChars(final @NotNull String value) {
-        if (value.isEmpty()) return "";
-        return value.chars()
-                .mapToObj(character -> isSpecial((char) character) ? "" : String.valueOf((char) character))
-                .reduce(new StringBuilder(value.length()), StringBuilder::append, StringBuilder::append)
-                .toString();
-    }
-
-    private static boolean isSpecial(final char value) {
-        return "!\"#$%&'()*+,./:;<=>?@[\\]^_`{|}~".indexOf(value) >= 0;
     }
 }
