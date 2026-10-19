@@ -16,7 +16,6 @@
 
 package org.testin.indexer;
 
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import org.jetbrains.annotations.NotNull;
@@ -188,9 +187,8 @@ final class RunItemWriter {
 
     // Rule-INTERNAL-123
     private void notSaved(final @NotNull Path testRunPath) {
-        Services.getInstance(project, TestProjectIndexer.class).refreshIndexedTestProject(testRunPath);
-        ApplicationManager.getApplication().invokeLater(() ->
-                Services.getInstance(project, Notifier.class).softRefuse(project, Bundle.message("test.run.not.saved", testRunPath.getFileName())));
+        Services.getInstance(project, TestProjectIndexer.class).readAgainHolding(List.of(testRunPath));
+        Services.getInstance(project, Notifier.class).softRefuse(project, Bundle.message("test.run.not.saved", testRunPath.getFileName()));
     }
 
     byte @NotNull [] readScreenshot(final @NotNull Path testRunPath, final @NotNull String name) {
@@ -200,8 +198,7 @@ final class RunItemWriter {
         return Optional.ofNullable(unwritten.get(file)).orElseGet(() -> files.readBytes(file));
     }
 
-    // Rule-INTERNAL-090
-    // Rule-INTERNAL-123
+    // Rule-INTERNAL-090, Rule-INTERNAL-123
     void persistMarker(final @NotNull Path testRunPath, final @NotNull Runnable onFailed) {
         queue.execute(() -> {
             try {

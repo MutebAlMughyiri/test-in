@@ -43,6 +43,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -366,7 +367,8 @@ public final class TestProjectIndexer {
         return scoped;
     }
 
-    private boolean isBound(final @NotNull Path testProjectPath) {
+    // UC-INTERNAL-003, Rule-INTERNAL-016
+    boolean isBound(final @NotNull Path testProjectPath) {
         final @NotNull String bound = boundTestProject.name();
         return bound.isEmpty() || bound.equals(testProjectPath.getFileName().toString());
     }
@@ -420,8 +422,15 @@ public final class TestProjectIndexer {
                 store.getTestRunPackagesByPath().size() + " test run packages");
     }
 
-    void refreshIndexedTestProject(final @NotNull Path changedPath) {
-        testProjectHolding(changedPath).ifPresent(scanCoordinator::rescanExclusively);
+    // UC-INTERNAL-002, UC-INTERNAL-005, Rule-INTERNAL-114
+    void readAgainHolding(final @NotNull Collection<Path> changedPaths) {
+        changedPaths.stream()
+                .flatMap(changed -> testProjectHolding(changed).or(() -> Optional.of(changed).filter(this::isTestProjectFolder).filter(this::isBound)).stream())
+                .distinct()
+                .forEach(testProjectPath -> {
+                    scanCoordinator.rescanExclusively(testProjectPath);
+                    announceReadAgain(testProjectPath);
+                });
     }
 
     @NotNull Optional<Path> testProjectHolding(final @NotNull Path path) {
@@ -464,7 +473,7 @@ public final class TestProjectIndexer {
     // UC-INTERNAL-003, Rule-INTERNAL-021
     public void scanSingleTestProject(final @NotNull Path testProjectPath, final @NotNull ProgressIndicator indicator) {
         TestinLogger.info("Scanning single project: " + testProjectPath.getFileName());
-        rescan.coveredByAScan(testProjectPath);
+        rescan.coveredByAScan(project, testProjectPath);
         scanCoordinator.scan(testProjectPath, indicator).ifPresent(why -> problems.testProjectNotRead(testProjectPath.getFileName().toString(), why));
 
         announceReadAgain(testProjectPath);

@@ -21,7 +21,6 @@ import com.intellij.openapi.components.Service;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -34,8 +33,10 @@ import org.testin.services.Services;
 import org.testin.util.Bundle;
 
 import java.nio.file.Path;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -47,43 +48,41 @@ import java.util.concurrent.TimeUnit;
 public final class Rescan {
     private static final long QUIET_MILLIS = 400;
 
-    private final @NotNull Set<Path> waiting = ConcurrentHashMap.newKeySet();
+    private final @NotNull Map<Project, Set<Path>> waiting = new ConcurrentHashMap<>();
 
     private @NotNull Future<?> booked = CompletableFuture.completedFuture(null);
 
-    // UC-INTERNAL-003, Rule-INTERNAL-020
-    public synchronized void of(final @NotNull Collection<Path> testProjects) {
-        if (testProjects.isEmpty()) return;
+    // UC-INTERNAL-003, Rule-INTERNAL-016, Rule-INTERNAL-020
+    public synchronized void of(final @NotNull Map<Project, Set<Path>> changed) {
+        if (changed.isEmpty()) return;
 
-        waiting.addAll(testProjects);
+        changed.forEach((project, testProjects) -> waiting.computeIfAbsent(project, _ -> ConcurrentHashMap.newKeySet()).addAll(testProjects));
         booked.cancel(false);
         booked = AppExecutorUtil.getAppScheduledExecutorService().schedule(this::run, QUIET_MILLIS, TimeUnit.MILLISECONDS);
     }
 
     // UC-INTERNAL-003, Rule-INTERNAL-022
-    void coveredByAScan(final @NotNull Path testProjectPath) {
-        waiting.remove(testProjectPath);
+    void coveredByAScan(final @NotNull Project project, final @NotNull Path testProjectPath) {
+        Optional.ofNullable(waiting.get(project)).ifPresent(testProjects -> testProjects.remove(testProjectPath));
     }
 
     @TestOnly
     boolean isBooked(final @NotNull Path testProjectPath) {
-        return waiting.contains(testProjectPath);
+        return waiting.values().stream().anyMatch(testProjects -> testProjects.contains(testProjectPath));
     }
 
-    // UC-INTERNAL-003, Rule-INTERNAL-022
-    private void run() {
-        final @NotNull List<Path> testProjects = List.copyOf(waiting);
-        testProjects.forEach(waiting::remove);
-        if (testProjects.isEmpty()) return;
-
-        TestinLogger.info("Something changed on disk in " + testProjects.size()
-                + (testProjects.size() == 1 ? " test project" : " test projects") + ", reading them again");
-
-        ApplicationManager.getApplication().invokeLater(() -> {
-            for (final Project project : ProjectManager.getInstance().getOpenProjects()) {
-                refresh(project, testProjects);
-            }
+    // UC-INTERNAL-003, Rule-INTERNAL-016, Rule-INTERNAL-022
+    private synchronized void run() {
+        final @NotNull Map<Project, List<Path>> taken = new HashMap<>();
+        waiting.forEach((project, testProjects) -> {
+            if (!project.isDisposed() && !testProjects.isEmpty()) taken.put(project, List.copyOf(testProjects));
         });
+        waiting.clear();
+        if (taken.isEmpty()) return;
+
+        TestinLogger.info("Something changed on disk, so " + taken.size() + (taken.size() == 1 ? " window reads" : " windows read") + " its test projects again");
+
+        ApplicationManager.getApplication().invokeLater(() -> taken.forEach(this::refresh));
     }
 
     // UC-INTERNAL-003, Rule-INTERNAL-021, Rule-INTERNAL-023

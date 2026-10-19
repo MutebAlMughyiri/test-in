@@ -173,7 +173,7 @@ public final class Nodes {
 
         final @NotNull TestProjectIndexer indexer = indexer();
         back.forEach(this::refreshDirectory);
-        back.stream().flatMap(original -> indexer.testProjectHolding(original).stream()).distinct().forEach(indexer.getScanCoordinator()::rescanExclusively);
+        indexer.readAgainHolding(back);
         back.forEach(indexer::announce);
         return lost;
     }

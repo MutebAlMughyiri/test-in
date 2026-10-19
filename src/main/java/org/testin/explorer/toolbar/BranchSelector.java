@@ -87,13 +87,13 @@ public class BranchSelector {
     public void updateTestProject(final @NotNull Optional<TestProjectNode> testProjectNode) {
         final @NotNull Path path = testProjectNode.map(TestProjectNode::getPath).orElse(Path.of(""));
 
-        final boolean testProjectChanged = !path.equals(testProjectPath);
-        this.testProjectPath = path;
-
-        currentBranch = "";
-
         // Rule-TREE-PANEL-108
-        final boolean showable = !path.toString().isEmpty() && !git.isNotRepository(path);
+        final boolean showable = showsBranches(path);
+        final boolean testProjectChanged = !path.equals(testProjectPath);
+        if (!testProjectChanged && showable == comboBox.isVisible()) return;
+
+        this.testProjectPath = path;
+        currentBranch = "";
 
         comboBox.setVisible(showable);
 
@@ -106,11 +106,23 @@ public class BranchSelector {
         loadGitBranches(path, testProjectChanged);
     }
 
+    // UC-SHARE-014, Rule-SHARE-064
+    public void readBranches() {
+        if (!showsBranches(testProjectPath)) return;
+
+        loadGitBranches(testProjectPath, false);
+    }
+
     // UC-TREE-PANEL-026, Rule-TREE-PANEL-108
     public void fetchBranches() {
-        if (testProjectPath.toString().isEmpty() || git.isNotRepository(testProjectPath)) return;
+        if (!showsBranches(testProjectPath)) return;
 
         loadGitBranches(testProjectPath, true);
+    }
+
+    // Rule-TREE-PANEL-108
+    private boolean showsBranches(final @NotNull Path path) {
+        return !path.toString().isEmpty() && !git.isNotRepository(path);
     }
 
     // UC-TREE-PANEL-026

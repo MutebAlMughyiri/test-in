@@ -121,7 +121,7 @@ final class NodeFiles {
             ApplicationManager.getApplication().executeOnPooledThread(() -> {
                 arrived.forEach(this::reidentifyCopiedTestCases);
 
-                indexer.refreshIndexedTestProject(targetPath);
+                indexer.readAgainHolding(List.of(targetPath));
                 ApplicationManager.getApplication().invokeLater(() -> onComplete.accept(copied.get()), project.getDisposed());
             });
         };

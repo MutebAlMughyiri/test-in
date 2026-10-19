@@ -62,7 +62,7 @@ public record BranchSwitch(@NotNull Project project, @NotNull GitRepositoryServi
         }
 
         ApplicationManager.getApplication().invokeLater(() -> {
-            Services.getInstance(project, TreePanel.class).refresh();
+            Services.getInstance(project, TreePanel.class).readBranches();
             started.run();
         });
     }

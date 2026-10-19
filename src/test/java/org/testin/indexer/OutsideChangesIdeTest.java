@@ -131,9 +131,9 @@ public class OutsideChangesIdeTest extends AbstractReadTheRootIdeTest {
         final @NotNull Path first = root.resolve("Checkout");
         final @NotNull Path second = root.resolve("Payments");
 
-        rescan().of(Set.of(first));
+        rescan().of(Map.of(getProject(), Set.of(first)));
         TimeoutUtil.sleep(250);
-        rescan().of(Set.of(second));
+        rescan().of(Map.of(getProject(), Set.of(second)));
         TimeoutUtil.sleep(250);
 
         assertTrue("the first change was read four tenths of a second after it arrived, while more changes were still arriving", rescan().isBooked(first));
@@ -167,7 +167,7 @@ public class OutsideChangesIdeTest extends AbstractReadTheRootIdeTest {
             Await.until("the read of the test project did not wait for the read already running", () -> reading.getState() == Thread.State.WAITING);
             assertFalse("a test project was read while another read of it was running", read.get());
 
-            rescan().of(Set.of(checkout));
+            rescan().of(Map.of(getProject(), Set.of(checkout)));
         } finally {
             release.countDown();
         }
@@ -182,7 +182,7 @@ public class OutsideChangesIdeTest extends AbstractReadTheRootIdeTest {
         assertTrue("another test opened the Testin panel on this code project, so this one cannot prove the rule", Services.isNotCreated(getProject(), TreePanel.class));
         final @NotNull Path checkout = aTestProjectAt(root.resolve("Checkout"));
 
-        rescan().of(Set.of(checkout));
+        rescan().of(Map.of(getProject(), Set.of(checkout)));
         Await.until("the change was never taken up", () -> !rescan().isBooked(checkout));
         quietForASecondAndAHalf();
 

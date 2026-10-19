@@ -358,6 +358,11 @@ public final class TreePanel implements Disposable {
         branchSelector.fetchBranches();
     }
 
+    // UC-SHARE-014, Rule-SHARE-064
+    public void readBranches() {
+        branchSelector.readBranches();
+    }
+
     public void reindex(final @NotNull String outcome) {
         refreshAction.execute(outcome);
     }

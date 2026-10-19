@@ -28,33 +28,36 @@ import org.testin.setting.TestinRoot;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 public final class TestinFileWatcher implements AsyncFileListener {
     // UC-INTERNAL-003, Rule-INTERNAL-016, Rule-INTERNAL-019
-    private static @NotNull Set<Path> changedTestProjects(final @NotNull List<? extends VFileEvent> events) {
+    private static @NotNull Map<Project, Set<Path>> changedTestProjects(final @NotNull List<? extends VFileEvent> events) {
         final @NotNull List<Project> watching = Arrays.stream(ProjectManager.getInstance().getOpenProjects())
                 .filter(project -> !project.isDisposed())
                 .filter(project -> Services.getInstance(project, TestinRoot.class).isConfigured())
                 .toList();
         final @NotNull OwnWrites ours = Services.getInstance(OwnWrites.class);
-        final @NotNull Set<Path> testProjects = new HashSet<>();
+        final @NotNull Map<Project, Set<Path>> changed = new HashMap<>();
 
         for (final VFileEvent event : events) {
             changedFile(event).ifPresent(file -> {
                 for (final Project project : watching) {
-                    final @NotNull Optional<Path> testProject = WatchedPath.testProjectOf(file, Services.getInstance(project, TestinRoot.class).absolutePath());
+                    final @NotNull Optional<Path> testProject = WatchedPath.testProjectOf(file, Services.getInstance(project, TestinRoot.class).absolutePath())
+                            .filter(Services.getInstance(project, TestProjectIndexer.class)::isBound);
                     if (testProject.isEmpty() || ours.areOurs(file, project)) continue;
 
-                    testProjects.add(testProject.orElseThrow());
+                    changed.computeIfAbsent(project, _ -> new HashSet<>()).add(testProject.orElseThrow());
                 }
             });
         }
 
-        return testProjects;
+        return changed;
     }
 
     private static @NotNull Optional<Path> changedFile(final @NotNull VFileEvent event) {
@@ -68,13 +71,13 @@ public final class TestinFileWatcher implements AsyncFileListener {
     // UC-INTERNAL-003, Rule-INTERNAL-016
     @Override
     public @Nullable ChangeApplier prepareChange(final @NotNull List<? extends VFileEvent> events) {
-        final @NotNull Set<Path> testProjects = changedTestProjects(events);
-        if (testProjects.isEmpty()) return null;
+        final @NotNull Map<Project, Set<Path>> changed = changedTestProjects(events);
+        if (changed.isEmpty()) return null;
 
         return new ChangeApplier() {
             @Override
             public void afterVfsChange() {
-                Services.getInstance(Rescan.class).of(testProjects);
+                Services.getInstance(Rescan.class).of(changed);
             }
         };
     }

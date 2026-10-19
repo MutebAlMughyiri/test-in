@@ -226,6 +226,20 @@ public class RemoveNodeIdeTest extends AbstractCodegenIdeTest {
         assertTrue("the test set came back without its folder", Files.isDirectory(wasAt));
     }
 
+    // Rule-TREE-PANEL-040, UC-INTERNAL-005
+    public void testUndoingTheRemovalOfATestProjectReadsItBack() {
+        final @NotNull Path wasAt = root.resolve("NAFATH");
+        createdTestSet("Login");
+
+        removeAsked(List.of(nodes().find(wasAt).orElseThrow()));
+        confirmed();
+        Await.until("the test project was not removed", () -> !nodes().nodeExists(wasAt) && undoHistories().canUndo(UndoScope.TREE));
+
+        undoHistories().undo(UndoScope.TREE);
+
+        Await.until("undoing the removal of a test project did not read it back", () -> nodes().nodeExists(wasAt) && nodes().nodeExists(theTestCasesDirectory().getPath().resolve("Login")));
+    }
+
     // Rule-TREE-PANEL-040, UC-TREE-PANEL-017
     public void testARemovalRedoneIsTheSameRemovalSoItCanBeUndoneAgain() {
         final @NotNull TestSetNode login = createdTestSet("Login");
