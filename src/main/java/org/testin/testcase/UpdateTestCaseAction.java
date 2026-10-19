@@ -43,10 +43,8 @@ public class UpdateTestCaseAction extends AbstractAnyProjectAction {
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-194
     @Override
     protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
-        if (TestinDataKeys.editor(e).filter(editor -> !editor.getParent().isTestCaseContainer()).isPresent()) {
-            GrayWithReason.unless(this, e, false, Bundle.message("update.test.case.disabled.description"));
+        if (GrayWithReason.refusedOutsideATestSet(this, e, Bundle.message("update.test.case.disabled.description")))
             return;
-        }
 
         GrayWithReason.unlessTestCaseSelected(this, e, TestinDataKeys.editor(e).isPresent());
     }

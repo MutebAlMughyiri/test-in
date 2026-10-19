@@ -157,7 +157,7 @@ public class KeyboardMenuIdeTest extends AbstractTempRootIdeTest {
         }
     }
 
-    // Rule-EDITOR-PANEL-214
+    // Rule-EDITOR-PANEL-214, Rule-EDITOR-PANEL-230
     public void testATestRunEditorShowsTheSameSevenAndRefusesFourWithTheirReason() {
         final @NotNull TestSetEditor testSetEditor = aTestSetEditor();
         final @NotNull TestRunEditor testRunEditor = aTestRunEditor();
@@ -180,6 +180,7 @@ public class KeyboardMenuIdeTest extends AbstractTempRootIdeTest {
                 assertTrue(nameOf(entry) + " is left out of the test run editor's menu", inTheTestRun.isVisible());
                 assertFalse(nameOf(entry) + " works in a test run editor", inTheTestRun.isEnabled());
                 assertEquals(nameOf(entry) + " does not say why it is gray in a test run", refusedInATestRun.get(kind), said(inTheTestRun));
+                assertEquals(nameOf(entry) + " shows no reason when the pointer rests on it", refusedInATestRun.get(kind), inTheTestRun.getClientProperty(ActionUtil.TOOLTIP_TEXT));
             }
 
             for (final AnAction entry : childrenOf(actionsEntryOf(testSetEditor))) {

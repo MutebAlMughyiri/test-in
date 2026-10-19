@@ -41,11 +41,8 @@ public class RemoveTestCaseAction extends AbstractAnyProjectAction {
     @Override
     protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
         // Rule-EDITOR-PANEL-214
-        if (TestinDataKeys.editor(e).filter(editor -> !editor.getParent().isTestCaseContainer()).isPresent()) {
-            e.getPresentation().setEnabled(false);
-            e.getPresentation().setDescription(Bundle.message("remove.test.case.disabled.description"));
+        if (GrayWithReason.refusedOutsideATestSet(this, e, Bundle.message("remove.test.case.disabled.description")))
             return;
-        }
 
         GrayWithReason.unlessTestCaseSelected(this, e);
     }

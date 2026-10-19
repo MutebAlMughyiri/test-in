@@ -45,11 +45,8 @@ public class PasteTestCaseAction extends AbstractAnyProjectAction {
     @Override
     protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
         // Rule-EDITOR-PANEL-214
-        if (TestinDataKeys.editor(e).filter(editor -> !editor.getParent().isTestCaseContainer()).isPresent()) {
-            e.getPresentation().setEnabled(false);
-            e.getPresentation().setDescription(Bundle.message("paste.test.case.disabled.description"));
+        if (GrayWithReason.refusedOutsideATestSet(this, e, Bundle.message("paste.test.case.disabled.description")))
             return;
-        }
 
         GrayWithReason.unless(this, e, work(e, project).map(this::clipboardHoldsTestCases).orElse(false), Bundle.message("paste.test.case.nothing.description"));
     }

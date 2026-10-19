@@ -40,6 +40,14 @@ public final class GrayWithReason {
         e.getPresentation().putClientProperty(ActionUtil.TOOLTIP_TEXT, works ? null : reason);
     }
 
+    // Rule-EDITOR-PANEL-214, Rule-EDITOR-PANEL-230
+    public static boolean refusedOutsideATestSet(final @NotNull AnAction action, final @NotNull AnActionEvent e, final @NotNull String reason) {
+        final boolean outside = TestinDataKeys.editor(e).filter(editor -> !editor.getParent().isTestCaseContainer()).isPresent();
+        if (outside) unless(action, e, false, reason);
+
+        return outside;
+    }
+
     // Rule-EDITOR-PANEL-230
     public static void unlessTestCaseSelected(final @NotNull AnAction action, final @NotNull AnActionEvent e) {
         unlessTestCaseSelected(action, e, true);

@@ -26,6 +26,7 @@ import com.intellij.util.ui.UIUtil;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.TestOnly;
 import org.testin.actions.TestinDataKeys;
 import org.testin.indexer.Nodes;
 import org.testin.logger.TestinLogger;
@@ -249,15 +250,7 @@ public class TreeTransferHandler extends TransferHandler {
             if (sources.isEmpty()) return false;
 
             if (support.isDrop()) {
-                final @NotNull String verb = action == COPY ? Bundle.message("transfer.copy") : Bundle.message("transfer.move");
-                final @NotNull Path fromPath = sources.getFirst().getPath().getParent();
-                new ConfirmDialog(project, verb,
-                        Bundle.message("transfer.confirm", verb, NodeMoveOrCopy.describe(sources), target.getName()),
-                        Objects.toString(fromPath, ""),
-                        target.getPath().toString(),
-                        verb,
-                        () -> transfer.carryOut(action, sources, target)
-                ).show();
+                confirmThen(verbOf(action), action, sources, target, () -> transfer.carryOut(action, sources, target));
                 return true;
             }
 
@@ -269,7 +262,8 @@ public class TreeTransferHandler extends TransferHandler {
         }
     }
 
-    private @NotNull List<AbstractNode> transferableSources(final @NotNull List<AbstractNode> nodes, final @NotNull AbstractNode target) {
+    // UC-TREE-PANEL-013, UC-TREE-PANEL-014, Rule-TREE-PANEL-043, Rule-TREE-PANEL-044, Rule-TREE-PANEL-045
+    public @NotNull List<AbstractNode> transferableSources(final @NotNull List<AbstractNode> nodes, final @NotNull AbstractNode target) {
         return nodes.stream().filter(source -> canTransferInto(source, target)).toList();
     }
 
@@ -357,19 +351,39 @@ public class TreeTransferHandler extends TransferHandler {
         notifier.softShowCounted(project, cut ? Done.CUT : Done.COPIED, directories.size());
     }
 
-    // UC-TREE-PANEL-013, Rule-TREE-PANEL-050, Rule-TREE-PANEL-006, Rule-TREE-PANEL-046
+    @TestOnly
     public void pasteFromClipboard(final @NotNull AbstractNode target) {
         ClipboardContents.withFlavor(NODE_FLAVOR).ifPresent(contents -> {
-            final boolean wasCut = isCut(contents);
-
-            final @NotNull List<AbstractNode> sources = nodesOf(contents).stream()
-                    .filter(node -> canTransferInto(node, target))
-                    .toList();
-            if (sources.isEmpty()) return;
-
-            transfer.carryOut(wasCut ? MOVE : COPY, sources, target);
-            if (wasCut) clearClipboard();
+            final @NotNull List<AbstractNode> sources = transferableSources(nodesOf(contents), target);
+            if (!sources.isEmpty()) paste(sources, target, isCut(contents));
         });
+    }
+
+    // UC-TREE-PANEL-013, Rule-TREE-PANEL-006
+    public void confirmPaste(final @NotNull List<AbstractNode> sources, final @NotNull AbstractNode target, final boolean wasCut) {
+        confirmThen(Bundle.message("paste.title"), wasCut ? MOVE : COPY, sources, target, () -> paste(sources, target, wasCut));
+    }
+
+    // UC-TREE-PANEL-013, Rule-TREE-PANEL-050, Rule-TREE-PANEL-006, Rule-TREE-PANEL-046
+    private void paste(final @NotNull List<AbstractNode> sources, final @NotNull AbstractNode target, final boolean wasCut) {
+        transfer.carryOut(wasCut ? MOVE : COPY, sources, target);
+        if (wasCut) clearClipboard();
+    }
+
+    private static @NotNull String verbOf(final int action) {
+        return action == COPY ? Bundle.message("transfer.copy") : Bundle.message("transfer.move");
+    }
+
+    // UC-TREE-PANEL-013, UC-TREE-PANEL-014, Rule-TREE-PANEL-006
+    private void confirmThen(final @NotNull String title, final int action, final @NotNull List<AbstractNode> sources, final @NotNull AbstractNode target, final @NotNull Runnable carryOut) {
+        final @NotNull String verb = verbOf(action);
+        new ConfirmDialog(project, title,
+                Bundle.message("transfer.confirm", verb, NodeMoveOrCopy.describe(sources), target.getName()),
+                Objects.toString(sources.getFirst().getPath().getParent(), ""),
+                target.getPath().toString(),
+                verb,
+                carryOut
+        ).show();
     }
 
     // UC-TREE-PANEL-013, Rule-TREE-PANEL-050

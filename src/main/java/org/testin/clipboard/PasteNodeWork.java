@@ -24,15 +24,12 @@ import org.testin.logger.TestinLogger;
 import org.testin.model.node.AbstractNode;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
-import org.testin.ui.framework.ConfirmDialog;
 import org.testin.util.Bundle;
 import org.testin.util.FailureText;
 
 import javax.swing.TransferHandler;
 import java.awt.datatransfer.Transferable;
-import java.nio.file.Path;
 import java.util.List;
-import java.util.Objects;
 
 record PasteNodeWork(@NotNull Project project, @NotNull TreeTransferHandler transferHandler, @NotNull Notifier notifier) {
     PasteNodeWork(final @NotNull Project project, final @NotNull TreeTransferHandler transferHandler) {
@@ -44,9 +41,7 @@ record PasteNodeWork(@NotNull Project project, @NotNull TreeTransferHandler tran
         try {
             final @NotNull TreeTransferPayload payload = (TreeTransferPayload) contents.getTransferData(TreeTransferHandler.NODE_FLAVOR);
 
-            final @NotNull List<AbstractNode> nodes = payload.nodes().stream()
-                    .filter(node -> transferHandler.canTransferInto(node, target))
-                    .toList();
+            final @NotNull List<AbstractNode> nodes = transferHandler.transferableSources(payload.nodes(), target);
 
             final boolean collisionsReported = transferHandler.notifyNameCollisions(payload.nodes(), target);
 
@@ -58,20 +53,7 @@ record PasteNodeWork(@NotNull Project project, @NotNull TreeTransferHandler tran
                 return;
             }
 
-            final boolean move = payload.clipboardAction() == TransferHandler.MOVE;
-            final @NotNull String verb = move ? Bundle.message("transfer.move") : Bundle.message("transfer.copy");
-            final @NotNull String what = nodes.size() == 1
-                    ? "'" + nodes.getFirst().getName() + "'"
-                    : Bundle.message("transfer.nodes", String.valueOf(nodes.size()));
-            final @NotNull Path fromPath = nodes.getFirst().getPath().getParent();
-
-            new ConfirmDialog(project, Bundle.message("paste.title"),
-                    Bundle.message("transfer.confirm", verb, what, target.getName()),
-                    Objects.toString(fromPath, ""),
-                    target.getPath().toString(),
-                    verb,
-                    () -> transferHandler.pasteFromClipboard(target)
-            ).show();
+            transferHandler.confirmPaste(nodes, target, payload.clipboardAction() == TransferHandler.MOVE);
 
         } catch (final Exception ex) {
             TestinLogger.error("Paste Node failed: " + FailureText.of(ex));

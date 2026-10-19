@@ -110,4 +110,16 @@ public class PasteNodeAsksFirstIdeTest extends AbstractTempRootIdeTest {
 
         Await.until("confirming did not copy the test set", () -> nodes().nodeExists(copiedTo));
     }
+
+    // Rule-TREE-PANEL-006
+    public void testAConfirmedPastePastesWhatTheDialogNamedThoughTheClipboardChanged() {
+        final @NotNull Path copiedTo = payments.getPath().resolve("Login");
+
+        pastedFromTheClipboard(TransferHandler.COPY);
+        CopyPasteManager.getInstance().setContents(new StringSelection("copied while the dialog was open"));
+
+        ShownDialog.press(getProject(), ConfirmDialog.class, Shortcuts.Enter);
+
+        Await.until("confirming pasted what the clipboard held then, not what the dialog named", () -> nodes().nodeExists(copiedTo));
+    }
 }
