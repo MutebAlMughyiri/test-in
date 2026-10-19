@@ -86,7 +86,7 @@ public class RefreshTreeAction extends AbstractBoundTestProjectAction {
             try {
                 boundTestProject.reread();
 
-                indexer.resetForReindex();
+                indexer.readAgain();
                 indexer.indexWithProgress();
                 indexer.awaitIndexing();
 

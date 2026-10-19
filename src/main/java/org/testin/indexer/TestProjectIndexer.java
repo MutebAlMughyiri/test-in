@@ -25,6 +25,7 @@ import com.intellij.openapi.project.Project;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.TestOnly;
 import org.testin.editor.open.LastOpenEditors;
 import org.testin.logger.TestinLogger;
 import org.testin.model.FileKind;
@@ -140,7 +141,7 @@ public final class TestProjectIndexer {
                 return;
             }
 
-            final @NotNull List<Path> validTestProjects = boundOnly(collectValidTestProjects(absoluteRoot));
+            final @NotNull List<Path> validTestProjects = testProjectsToRead();
             if (validTestProjects.isEmpty()) {
                 finishWithNothingToIndex();
                 TestinLogger.warn("No valid test projects found at '" + absoluteRoot.toAbsolutePath() + "'");
@@ -283,16 +284,32 @@ public final class TestProjectIndexer {
         waitFor(testCasesLatch);
     }
 
-    public void resetForReindex() {
+    // UC-TREE-PANEL-025, Rule-INTERNAL-081
+    public void readAgain() {
         scanCoordinator.exclusively(() -> {
+            keepOnly(testProjectsToRead());
             restoreEditorsOnComplete.set(false);
-            store.clearAll();
             indexed.set(false);
             indexing.set(false);
             testCasesLatch = new CountDownLatch(1);
             indexingLatch = new CountDownLatch(1);
-            TestinLogger.info("Indexer reset for re-indexing");
+            TestinLogger.info("Indexer set to read every test project again");
         });
+    }
+
+    @TestOnly
+    public void resetForReindex() {
+        scanCoordinator.exclusively(store::clearAll);
+        readAgain();
+    }
+
+    // UC-TREE-PANEL-025, Rule-INTERNAL-081
+    private void keepOnly(final @NotNull List<Path> readThisPass) {
+        store.getTestProjectsByPath().keySet().stream()
+                .map(Path::of)
+                .filter(held -> !readThisPass.contains(held))
+                .toList()
+                .forEach(store::removeTestProject);
     }
 
     private @NotNull Path absoluteRoot() {
@@ -323,6 +340,12 @@ public final class TestProjectIndexer {
     // UC-INTERNAL-002, Rule-INTERNAL-114
     private void announceReadAgain() {
         if (!project.isDisposed()) project.getMessageBus().syncPublisher(IndexChanged.TOPIC).readAgain();
+    }
+
+    // UC-INTERNAL-002, Rule-INTERNAL-006
+    private @NotNull List<Path> testProjectsToRead() {
+        final @NotNull Path absoluteRoot = absoluteRoot();
+        return absoluteRoot.toString().isEmpty() ? List.of() : boundOnly(collectValidTestProjects(absoluteRoot));
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-006
