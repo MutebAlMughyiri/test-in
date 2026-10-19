@@ -470,6 +470,21 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
         }
     }
 
+    // UC-EDITOR-PANEL-046, Rule-EDITOR-PANEL-299
+    public void testLightModeOpensFortyTwoCharactersWideAndStopsAtTwentyEight() {
+        final @NotNull TestRunFixture fixture = aTestRunOf(aTestSetWithSteps(2, 1));
+        final @NotNull TestRunEditor editor = walking(fixture);
+        final @NotNull JFrame frame = lightModeOn(editor);
+        try {
+            final int character = frame.getFontMetrics(UIUtil.getLabelFont()).charWidth('m');
+
+            assertEquals("light mode can be made narrower than 28 characters of the IDE's font", 28 * character, frame.getMinimumSize().width);
+            assertTrue("light mode opened narrower than 42 characters of the IDE's font: " + frame.getWidth(), frame.getWidth() >= 42 * character);
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
     // Rule-EDITOR-PANEL-232
     public void testTheTestSetNameSitsInAQuietRoundedFrameThatGoesWithIt() {
         final @NotNull TestRunFixture fixture = aTestRunOf(aTestSetWithSteps(2, 1));

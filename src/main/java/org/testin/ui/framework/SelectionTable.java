@@ -55,7 +55,7 @@ public final class SelectionTable implements DialogComponent {
 
     private int menuRow = -1;
 
-    SelectionTable(final @NotNull List<String> columns, final @NotNull List<Integer> widths) {
+    SelectionTable(final @NotNull List<String> columns, final @NotNull List<Integer> characters) {
         model = new DefaultTableModel(columns.toArray(), 0) {
             @Override
             public boolean isCellEditable(final int row, final int column) {
@@ -94,8 +94,10 @@ public final class SelectionTable implements DialogComponent {
         // Rule-INTERNAL-122
         table.getAccessibleContext().setAccessibleName(String.join(", ", columns));
 
-        for (int column = 0; column < widths.size() && column < columns.size(); column++) {
-            table.getColumnModel().getColumn(column).setPreferredWidth(JBUI.scale(widths.get(column)));
+        // Rule-INTERNAL-144
+        final int character = table.getFontMetrics(table.getFont()).charWidth('m');
+        for (int column = 0; column < characters.size() && column < columns.size(); column++) {
+            table.getColumnModel().getColumn(column).setPreferredWidth(character * characters.get(column));
         }
 
         installRowMenu();

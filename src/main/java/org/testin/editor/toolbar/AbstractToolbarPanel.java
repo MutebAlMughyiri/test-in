@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public abstract class AbstractToolbarPanel extends JBPanel<AbstractToolbarPanel> implements Disposable {
-    public static final int BAR_HEIGHT = JBUI.scale(30);
+    private static final int BAR_HEIGHT = 30;
 
     @Getter
     protected final @NotNull SearchText searchText;
@@ -58,7 +58,7 @@ public abstract class AbstractToolbarPanel extends JBPanel<AbstractToolbarPanel>
     }
 
     public static int barHeight(final int naturalHeight) {
-        return Math.max(naturalHeight, BAR_HEIGHT);
+        return Math.max(naturalHeight, JBUI.scale(BAR_HEIGHT));
     }
 
     private void addItems(final @NotNull List<ToolbarItem> items, final @NotNull GridBagConstraints constraints) {

@@ -265,6 +265,9 @@ and which keys it answers, and the shell builds the rest.
 - **Rule-INTERNAL-142** — A confirmation closes the moment the tester answers
   it, before the work it confirms begins. A second Enter pressed while that work
   runs reaches no dialog, so nothing is done twice.
+- **Rule-INTERNAL-144** — A column of a table in a dialog is as wide as a count
+  of characters of the table's own font, so at a larger IDE font every heading
+  and value still shows in full.
 
 These rules are about the shell every dialog is built on. What each dialog
 holds, and what its keys mean, is on the page for that dialog.

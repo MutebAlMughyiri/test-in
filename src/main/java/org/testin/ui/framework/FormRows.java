@@ -35,7 +35,7 @@ public final class FormRows extends JBPanel<FormRows> {
         super(new GridBagLayout());
         setOpaque(false);
 
-        constraints.insets = JBUI.insets(4);
+        constraints.insets = JBUI.insets(Spacing.XS);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.anchor = GridBagConstraints.WEST;
         constraints.gridx = 0;
@@ -56,11 +56,16 @@ public final class FormRows extends JBPanel<FormRows> {
 
     // Rule-INTERNAL-087
     public @NotNull FormRows pair(final @NotNull JComponent left, final @NotNull JComponent right) {
+        return wideRow(sideBySide(left, right));
+    }
+
+    // Rule-INTERNAL-087, Rule-INTERNAL-121
+    public static @NotNull JComponent sideBySide(final @NotNull JComponent left, final @NotNull JComponent right) {
         final @NotNull JBPanel<?> line = new JBPanel<>(new GridLayout(1, 2, JBUI.scale(Spacing.XL), 0));
         line.setOpaque(false);
         line.add(left);
         line.add(right);
 
-        return wideRow(line);
+        return line;
     }
 }

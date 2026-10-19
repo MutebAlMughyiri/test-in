@@ -348,6 +348,16 @@ public class DialogShellIdeTest extends AbstractIdeTest {
         assertEquals("a table does not ask for eight rows", 8 * table.getRowHeight(), table.getPreferredScrollableViewportSize().height);
     }
 
+    // UC-INTERNAL-007, Rule-INTERNAL-144
+    public void testATableColumnIsACountOfCharactersOfTheTablesOwnFont() {
+        final @NotNull JBTable table = Drawn.components(DialogPart.table().column("Test project", 26).column("Status", 10).build().getComponent().getPanel()).stream()
+                .filter(JBTable.class::isInstance).map(JBTable.class::cast).findFirst().orElseThrow();
+        final int character = table.getFontMetrics(table.getFont()).charWidth('m');
+
+        assertEquals("the first column is not 26 characters of the table's font wide", 26 * character, table.getColumnModel().getColumn(0).getPreferredWidth());
+        assertEquals("the second column is not 10 characters of the table's font wide", 10 * character, table.getColumnModel().getColumn(1).getPreferredWidth());
+    }
+
     // UC-INTERNAL-007, Rule-INTERNAL-100
     public void testAResizableDialogIsSixTenthsOfTheFrameWideClampedBetweenItsContentAndTheFrame() {
         final @NotNull Rectangle frame = DialogSize.frameOn(getProject());

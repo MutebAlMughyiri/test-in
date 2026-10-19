@@ -36,6 +36,7 @@ import org.testin.help.SetupStep;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
+import org.testin.ui.framework.Spacing;
 import org.testin.util.Bundle;
 
 import javax.swing.JButton;
@@ -47,7 +48,6 @@ import java.util.Optional;
 public final class BugRepoUrlForm {
     private static final int COLUMNS = 30;
 
-    private static final int GAP = 8;
 
     // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-104
     public static @NotNull JComponent of(final @NotNull Project project) {
@@ -62,8 +62,8 @@ public final class BugRepoUrlForm {
             }
         });
 
-        final @NotNull JBPanel<?> row = new JBPanel<>(new HorizontalLayout(JBUI.scale(GAP)));
-        row.setBorder(JBUI.Borders.emptyTop(GAP));
+        final @NotNull JBPanel<?> row = new JBPanel<>(new HorizontalLayout(Spacing.M));
+        row.setBorder(JBUI.Borders.emptyTop(Spacing.M));
         row.add(new JBLabel(TestinYml.bugRepoUrlKey()));
         row.add(address);
         row.add(apply);

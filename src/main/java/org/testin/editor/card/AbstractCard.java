@@ -42,6 +42,7 @@ import org.testin.ui.Badges;
 import org.testin.ui.framework.CardEdge;
 import org.testin.ui.framework.Prose;
 import org.testin.ui.framework.RowStripe;
+import org.testin.ui.framework.Spacing;
 import org.testin.util.Bundle;
 import org.testin.util.Display;
 import org.testin.util.Fonts;
@@ -74,11 +75,11 @@ public abstract class AbstractCard extends JBPanel<AbstractCard> {
 
     protected final @NotNull JTextArea titleArea = Prose.of("");
 
-    protected final @NotNull JBPanel<?> badgePanel = new JBPanel<>(new FlowLayout(FlowLayout.LEFT, JBUI.scale(10), 0));
+    protected final @NotNull JBPanel<?> badgePanel = new JBPanel<>(new FlowLayout(FlowLayout.LEFT, JBUI.scale(Spacing.L), 0));
 
     protected final @NotNull Map<String, JBLabel> fieldLabels = new HashMap<>();
 
-    protected final @NotNull JBPanel<?> content = new JBPanel<>(new VerticalLayout(JBUI.scale(4)));
+    protected final @NotNull JBPanel<?> content = new JBPanel<>(new VerticalLayout(Spacing.XS));
 
     protected final @NotNull BorderLayoutPanel wrapper = new BorderLayoutPanel();
 

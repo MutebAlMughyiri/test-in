@@ -133,16 +133,17 @@ public final class DialogPart<C extends DialogComponent> {
     public static final class TableBuilder {
         private final @NotNull List<String> columns = new ArrayList<>();
 
-        private final @NotNull List<Integer> widths = new ArrayList<>();
+        private final @NotNull List<Integer> characters = new ArrayList<>();
 
-        public @NotNull TableBuilder column(final @NotNull String heading, final int width) {
+        // Rule-INTERNAL-144
+        public @NotNull TableBuilder column(final @NotNull String heading, final int characters) {
             columns.add(heading);
-            widths.add(width);
+            this.characters.add(characters);
             return this;
         }
 
         public @NotNull DialogPart<SelectionTable> build() {
-            return new DialogPart<>(new SelectionTable(List.copyOf(columns), List.copyOf(widths)));
+            return new DialogPart<>(new SelectionTable(List.copyOf(columns), List.copyOf(characters)));
         }
     }
 

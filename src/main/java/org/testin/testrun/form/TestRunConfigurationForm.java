@@ -17,19 +17,18 @@ package org.testin.testrun.form;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBPanel;
-import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.testrun.TestRunConfiguration;
 import org.testin.ui.framework.CollapsiblePanel;
 import org.testin.ui.framework.DialogComponent;
 import org.testin.ui.framework.DialogHost;
 import org.testin.ui.framework.DialogPart;
+import org.testin.ui.framework.FormRows;
 import org.testin.util.Bundle;
 
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -38,8 +37,6 @@ import java.util.Optional;
 
 public class TestRunConfigurationForm implements DialogComponent {
     private static final boolean EXPANDED = true;
-
-    private static final int COLUMN_GAP = 12;
 
     private final @NotNull JBPanel<?> wrapper;
 
@@ -90,11 +87,7 @@ public class TestRunConfigurationForm implements DialogComponent {
     private static @NotNull JComponent laidOut(final @NotNull List<DialogPart<?>> row) {
         if (row.size() == 1) return row.getFirst().getComponent().getPanel();
 
-        final @NotNull JBPanel<?> line = new JBPanel<>(new GridLayout(1, row.size(), JBUI.scale(COLUMN_GAP), 0));
-        line.setOpaque(false);
-        row.forEach(component -> line.add(component.getComponent().getPanel()));
-
-        return line;
+        return FormRows.sideBySide(row.getFirst().getComponent().getPanel(), row.getLast().getComponent().getPanel());
     }
 
     private @NotNull ChoiceSection choice(final @NotNull TestRunConfiguration field) {

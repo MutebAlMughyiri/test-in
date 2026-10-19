@@ -40,7 +40,8 @@ There is no key for this. Drag the divider in the header.
 - **Rule-EDITOR-PANEL-026** — Only a drag saves a width. A column Testin sized
   itself is not remembered.
 - **Rule-EDITOR-PANEL-027** — A column Testin sizes is made as wide as its
-  content needs, up to 500 points.
+  content needs, up to 50 characters of the grid's font, so a larger font
+  raises the limit rather than wrapping a value sooner.
 - **Rule-EDITOR-PANEL-248** — A button that turns gray while the pointer is on
   it loses its hover look at once, so a control that has stopped working never
   looks ready to press.

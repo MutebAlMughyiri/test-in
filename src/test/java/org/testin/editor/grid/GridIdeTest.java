@@ -216,15 +216,16 @@ public class GridIdeTest extends AbstractIdeTest {
     }
 
     // Rule-EDITOR-PANEL-027
-    public void testAColumnTestinSizesFitsItsContentUpToFiveHundredPoints() {
+    public void testAColumnTestinSizesFitsItsContentUpToFiftyCharactersOfTheGridsFont() {
         final @NotNull JBTable table = aGrid(aRow(1, "W".repeat(400), "Short", "uuid-1"));
+        final int widest = 50 * table.getFontMetrics(table.getFont()).charWidth('m');
 
-        assertEquals("a column of long text is not stopped at 500 points", 500, descriptionColumn(table).getPreferredWidth());
+        assertEquals("a column of long text is not stopped at 50 characters of the grid's font", widest, descriptionColumn(table).getPreferredWidth());
 
         final int needed = table.getFontMetrics(table.getFont()).stringWidth("Short");
         final int expected = table.getColumnModel().getColumn(EXPECTED).getPreferredWidth();
         assertTrue("a column is narrower than its content: " + expected + " against " + needed, expected >= needed);
-        assertTrue("a column of short text was made far wider than it needs: " + expected, expected < 500);
+        assertTrue("a column of short text was made far wider than it needs: " + expected, expected < widest);
     }
 
     // Rule-EDITOR-PANEL-025, Rule-EDITOR-PANEL-026

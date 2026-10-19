@@ -83,11 +83,11 @@ public final class PendingChangesDialog extends AbstractFrameworkDialog {
         title = Bundle.message("dialog.pending.title");
 
         final @NotNull DialogPart<SelectionTable> table = DialogPart.table()
-                .column(Bundle.message("dialog.pending.column.change.type"), 150)
-                .column(NodeType.TEST_SET.getDescription(), 150)
-                .column(Bundle.message("caption.name"), 240)
-                .column(Bundle.message("dialog.pending.column.before"), 180)
-                .column(Bundle.message("dialog.pending.column.after"), 180)
+                .column(Bundle.message("dialog.pending.column.change.type"), 15)
+                .column(NodeType.TEST_SET.getDescription(), 15)
+                .column(Bundle.message("caption.name"), 24)
+                .column(Bundle.message("dialog.pending.column.before"), 18)
+                .column(Bundle.message("dialog.pending.column.after"), 18)
                 .build();
         final @NotNull DialogPart<ChoiceInput> branchRow =
                 DialogPart.choice(Bundle.message("dialog.pending.caption.branch"), offered(branches, currentBranch), currentBranch);

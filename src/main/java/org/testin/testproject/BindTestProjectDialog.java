@@ -50,8 +50,8 @@ public final class BindTestProjectDialog extends AbstractFrameworkDialog {
         title = Bundle.message("dialog.bind.title");
 
         final @NotNull DialogPart<SelectionTable> table = DialogPart.table()
-                .column(NodeType.TEST_PROJECT.getDescription(), 260)
-                .column(Bundle.message("caption.test.project.status"), 100)
+                .column(NodeType.TEST_PROJECT.getDescription(), 26)
+                .column(Bundle.message("caption.test.project.status"), 10)
                 .build();
 
         components = List.of(table);

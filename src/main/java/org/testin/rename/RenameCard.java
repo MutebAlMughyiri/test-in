@@ -25,6 +25,7 @@ import org.testin.ui.framework.DialogComponent;
 import org.testin.ui.framework.DialogPlace;
 import org.testin.ui.framework.DialogStyle;
 import org.testin.ui.framework.FormRows;
+import org.testin.ui.framework.Spacing;
 import org.testin.ui.framework.TextInput;
 import org.testin.util.Bundle;
 import org.testin.util.Fonts;
@@ -37,7 +38,6 @@ import java.util.Optional;
 
 // UC-TREE-PANEL-011, Rule-INTERNAL-099, Rule-TREE-PANEL-123
 final class RenameCard implements DialogComponent {
-    private static final int ICON_GAP = 8;
 
     private final @NotNull TextInput field;
 
@@ -57,7 +57,7 @@ final class RenameCard implements DialogComponent {
     private static @NotNull JBLabel renamed(final @NotNull AbstractNode node) {
         final @NotNull JBLabel named = new JBLabel(node.getName(), Icons.gray(node.iconShownInTree()), SwingConstants.LEADING);
         named.setFont(Fonts.value());
-        named.setIconTextGap(JBUI.scale(ICON_GAP));
+        named.setIconTextGap(JBUI.scale(Spacing.M));
 
         return named;
     }

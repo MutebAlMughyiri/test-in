@@ -24,6 +24,7 @@ import com.intellij.ui.WindowMoveListener;
 import com.intellij.ui.WindowResizeListener;
 import com.intellij.util.ui.Animator;
 import com.intellij.util.ui.JBUI;
+import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 import org.testin.util.Bundle;
@@ -48,7 +49,7 @@ final class LightModeFrame {
 
     private static final @NotNull String PLACEMENT = "testin.lightMode.v1";
 
-    private static final int MIN_WIDTH = 280;
+    private static final int NARROWEST_CHARACTERS = 28;
 
     private final @NotNull JFrame frame = new JFrame();
 
@@ -81,13 +82,18 @@ final class LightModeFrame {
         frame.pack();
 
         Optional.ofNullable(WindowStateService.getInstance().getSize(PLACEMENT))
-                .map(size -> Math.max(size.width, JBUI.scale(MIN_WIDTH)))
+                .map(size -> Math.max(size.width, narrowest()))
                 .ifPresent(width -> frame.setSize(width, frame.getHeight()));
 
         lastWidth = frame.getWidth();
 
         Optional.ofNullable(WindowStateService.getInstance().getLocation(PLACEMENT))
                 .ifPresentOrElse(frame::setLocation, () -> frame.setLocationRelativeTo(null));
+    }
+
+    // Rule-EDITOR-PANEL-299
+    private int narrowest() {
+        return frame.getFontMetrics(UIUtil.getLabelFont()).charWidth('m') * NARROWEST_CHARACTERS;
     }
 
     void show() {
@@ -185,7 +191,7 @@ final class LightModeFrame {
 
     // UC-EDITOR-PANEL-046
     void resizable(final @NotNull Runnable onResized) {
-        frame.setMinimumSize(new Dimension(JBUI.scale(MIN_WIDTH), 0));
+        frame.setMinimumSize(new Dimension(narrowest(), 0));
 
         final @NotNull JComponent content = content();
         final @NotNull WindowResizeListener resize = new WindowResizeListener(content, JBUI.insets(0, GRAB), null);

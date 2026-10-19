@@ -41,6 +41,7 @@ import org.testin.testcase.TestSetEditorFields;
 import org.testin.testrun.TestRunEditorFields;
 import org.testin.ui.Tooltip;
 import org.testin.ui.framework.RowStripe;
+import org.testin.ui.framework.Spacing;
 import org.testin.util.Bundle;
 import org.testin.util.Display;
 
@@ -83,7 +84,9 @@ public class GridTables {
 
     static final @NotNull Color SELECTION_BACKGROUND = EditorColors.SELECTION_BACKGROUND;
 
-    private static final int MAX_COL_WIDTH = 500;
+    private static final int WIDEST_COLUMN_CHARACTERS = 50;
+
+    private static final int CELL_EXTRA = 2 * CELL_PADDING + 20;
 
     private static final @NotNull String GRID_KIND_KEY = "testin.grid.kind";
 
@@ -108,7 +111,7 @@ public class GridTables {
     // UC-SETTING-011, Rule-SETTING-039
     public static void resizeToFont(final @NotNull JBTable table) {
         final @NotNull FontMetrics metrics = table.getFontMetrics(table.getFont());
-        table.setRowHeight(Math.max(metrics.getHeight() + 4, 20));
+        table.setRowHeight(Math.max(metrics.getHeight() + JBUI.scale(Spacing.XS), JBUI.scale(20)));
         autoSizeColumns(table);
         updateRowHeights(table);
     }
@@ -276,6 +279,8 @@ public class GridTables {
     // UC-EDITOR-PANEL-004, Rule-EDITOR-PANEL-027
     public static void autoSizeColumns(final @NotNull JBTable table) {
         final @NotNull FontMetrics metrics = table.getFontMetrics(table.getFont());
+        final int widest = metrics.charWidth('m') * WIDEST_COLUMN_CHARACTERS;
+        final int extra = JBUI.scale(CELL_EXTRA);
         int tableTotalWidth = 0;
         for (int i = 0; i < table.getColumnCount(); i++) {
             final @NotNull TableColumn column = table.getColumnModel().getColumn(i);
@@ -296,15 +301,13 @@ public class GridTables {
                     table, column.getHeaderValue(), false, false, 0, i);
             int maxWidth = headerComponent.getPreferredSize().width;
 
-            final int capBeforePadding = MAX_COL_WIDTH - (2 * CELL_PADDING + 20);
-
-            for (int row = 0; row < table.getRowCount() && maxWidth < capBeforePadding; row++) {
+            for (int row = 0; row < table.getRowCount() && maxWidth < widest - extra; row++) {
                 maxWidth = Math.max(maxWidth, metrics.stringWidth(Objects.toString(table.getValueAt(row, i), "")));
             }
 
-            maxWidth += 2 * CELL_PADDING + 20;
-            column.setPreferredWidth(Math.min(maxWidth, MAX_COL_WIDTH));
-            tableTotalWidth += Math.min(maxWidth, MAX_COL_WIDTH);
+            final int width = Math.min(maxWidth + extra, widest);
+            column.setPreferredWidth(width);
+            tableTotalWidth += width;
         }
 
         final @NotNull Rectangle screen = ScreenUtil.getScreenRectangle(table);

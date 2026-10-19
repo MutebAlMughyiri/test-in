@@ -49,7 +49,7 @@ public final class RadioSelection<T> implements DialogComponent {
         this.selected = initial;
 
         final @NotNull ButtonGroup group = new ButtonGroup();
-        final @NotNull JBPanel<?> radioRow = new JBPanel<>(new HorizontalLayout(8));
+        final @NotNull JBPanel<?> radioRow = new JBPanel<>(new HorizontalLayout(Spacing.M));
         radioRow.setOpaque(false);
 
         Optional<JRadioButton> first = Optional.empty();

@@ -26,6 +26,7 @@ import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.Animator;
 import com.intellij.util.ui.JBUI;
+import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
 import org.testin.actions.ActionSystem;
@@ -77,7 +78,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 final class LightModeScreen {
-    private static final int START_WIDTH = 420;
+    private static final int START_CHARACTERS = 42;
 
     private static final int SET_FRAME_ARC = 20;
 
@@ -563,9 +564,10 @@ final class LightModeScreen {
         testCaseView.add(underTestCase, BorderLayout.SOUTH);
 
         final @NotNull JBPanel<?> panel = new JBPanel<>(new BorderLayout()) {
+            // Rule-EDITOR-PANEL-299
             @Override
             public @NotNull Dimension getPreferredSize() {
-                return new Dimension(JBUI.scale(START_WIDTH), super.getPreferredSize().height);
+                return new Dimension(getFontMetrics(UIUtil.getLabelFont()).charWidth('m') * START_CHARACTERS, super.getPreferredSize().height);
             }
         };
 

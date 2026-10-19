@@ -67,8 +67,9 @@ window if it is open.
 ## The window
 
 The sketches below are at the real size. The content is the sample project's
-Login test case, mid-way through Cycle 2. The window is about 420 pixels wide to
-start with.
+Login test case, mid-way through Cycle 2. The window is 42 characters of the
+IDE's font wide to start with, about 420 pixels at the default font
+(Rule-EDITOR-PANEL-299).
 
 ### Before the tester presses Start
 
@@ -667,6 +668,9 @@ as progress.
 - **Rule-EDITOR-PANEL-268** — The priority badge says High or Medium, and
   hovering it says Priority: High or Priority: Medium, so it is not read as the
   bug's priority, which uses the same words.
+- **Rule-EDITOR-PANEL-299** — Light mode opens 42 characters of the IDE's font
+  wide and cannot be made narrower than 28, so a larger IDE font opens a wider
+  window rather than one that cuts its lines short.
 
 **Why 200 milliseconds.** `P` is pressed once per test case, so a test run of a
 hundred test cases is a hundred of these, and the tester is watching the
