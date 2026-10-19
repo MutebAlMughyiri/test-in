@@ -19,7 +19,6 @@ package org.testin.editor.cardview;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.CollectionListModel;
-import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.UIUtil;
@@ -52,7 +51,7 @@ public final class CardPanelBuilder {
         final @NotNull CollectionListModel<TestCase> model = new CollectionListModel<>(new ArrayList<>());
 
         // UC-EDITOR-PANEL-001, UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-003
-        final @NotNull JBList<TestCase> list = new CardList(model, editor);
+        final @NotNull CardList list = new CardList(model, editor);
         list.setBackground(UIUtil.getPanelBackground());
         list.setOpaque(true);
         list.setPaintBusy(true);
@@ -89,7 +88,7 @@ public final class CardPanelBuilder {
     }
 
     public static void wireCommonListeners(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull CardView view, final @NotNull AbstractNode node, final @NotNull AbstractEditorContextMenu contextMenu, final @NotNull Supplier<Optional<JBTable>> gridTableSupplier, final @NotNull ToIntFunction<TestCase> rowOnGrid, final @NotNull BooleanSupplier gridActiveSupplier) {
-        final @NotNull JBList<TestCase> list = view.list();
+        final @NotNull CardList list = view.list();
 
         final @NotNull CardMouseListener mouseListener = new CardMouseListener(project, editor, list, view.model(), node, contextMenu);
         list.addMouseListener(mouseListener);

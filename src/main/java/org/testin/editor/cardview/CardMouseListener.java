@@ -20,16 +20,12 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.CollectionListModel;
-import com.intellij.ui.components.JBList;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.AbstractEditorContextMenu;
 import org.testin.editor.TestinEditor;
 import org.testin.editor.WheelForwarding;
 import org.testin.editor.card.AbstractCard;
-import org.testin.editor.card.CardTitle;
 import org.testin.editor.card.Offered;
-import org.testin.editor.card.TestCaseQuickAction;
-import org.testin.editor.testrun.ExecutingNow;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
@@ -53,7 +49,7 @@ import java.util.Optional;
 public class CardMouseListener extends MouseAdapter {
     private final @NotNull Project project;
 
-    private final @NotNull JBList<TestCase> list;
+    private final @NotNull CardList list;
 
     private final @NotNull CollectionListModel<TestCase> model;
 
@@ -67,7 +63,7 @@ public class CardMouseListener extends MouseAdapter {
 
     private @NotNull String shownTip = "";
 
-    public CardMouseListener(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull JBList<TestCase> list, final @NotNull CollectionListModel<TestCase> model, final @NotNull AbstractNode node, final @NotNull AbstractEditorContextMenu contextMenu) {
+    public CardMouseListener(final @NotNull Project project, final @NotNull TestinEditor editor, final @NotNull CardList list, final @NotNull CollectionListModel<TestCase> model, final @NotNull AbstractNode node, final @NotNull AbstractEditorContextMenu contextMenu) {
         this.project = project;
         this.editor = editor;
         this.list = list;
@@ -110,12 +106,8 @@ public class CardMouseListener extends MouseAdapter {
         if (!SwingUtilities.isLeftMouseButton(e)) return;
 
         final int index = list.locationToIndex(e.getPoint());
-        if (index == -1) return;
 
-        final @NotNull Rectangle bounds = list.getCellBounds(index, index);
-        if (!bounds.contains(e.getPoint())) return;
-
-        getActionAtPoint(index, e.getX() - bounds.x, e.getY() - bounds.y).ifPresent(button -> {
+        actionUnder(e, index).ifPresent(button -> {
             final @NotNull TestCase testCase = list.getModel().getElementAt(index);
 
             TestinLogger.trace(button.action().getTooltip() + ", tc: " + testCase.getDescription());
@@ -135,22 +127,22 @@ public class CardMouseListener extends MouseAdapter {
     @Override
     public void mouseMoved(final MouseEvent e) {
         final int index = list.locationToIndex(e.getPoint());
-        final int before = editor.getHoveredIndex();
+        final int before = list.getHoveredIndex();
         final @NotNull Optional<Offered> currentAction = actionUnder(e, index);
 
         list.setCursor(Cursor.getPredefinedCursor(currentAction.isPresent() ? Cursor.HAND_CURSOR : Cursor.DEFAULT_CURSOR));
 
         boolean needsRepaint = false;
 
-        if (index != editor.getHoveredIndex()) {
-            editor.setHoveredIndex(index);
+        if (index != list.getHoveredIndex()) {
+            list.setHoveredIndex(index);
             needsRepaint = true;
         }
 
         final @NotNull String actionName = currentAction.map(button -> button.action().name()).orElse("");
 
-        if (!actionName.equals(editor.getHoveredIconAction())) {
-            editor.setHoveredIconAction(actionName);
+        if (!actionName.equals(list.getHoveredIconAction())) {
+            list.setHoveredIconAction(actionName);
             needsRepaint = true;
         }
 
@@ -172,10 +164,10 @@ public class CardMouseListener extends MouseAdapter {
 
     @Override
     public void mouseExited(final MouseEvent e) {
-        if (editor.getHoveredIndex() != -1 || !editor.getHoveredIconAction().isEmpty()) {
-            final int before = editor.getHoveredIndex();
-            editor.setHoveredIndex(-1);
-            editor.setHoveredIconAction("");
+        if (list.getHoveredIndex() != -1 || !list.getHoveredIconAction().isEmpty()) {
+            final int before = list.getHoveredIndex();
+            list.setHoveredIndex(-1);
+            list.setHoveredIconAction("");
             shownTip = "";
             Tooltip.set(list, "");
             repaintRow(before);
@@ -193,18 +185,8 @@ public class CardMouseListener extends MouseAdapter {
         final @NotNull Rectangle bounds = list.getCellBounds(index, index);
         if (!bounds.contains(e.getPoint())) return Optional.empty();
 
-        return getActionAtPoint(index, e.getX() - bounds.x, e.getY() - bounds.y);
-    }
-
-    private @NotNull Optional<Offered> getActionAtPoint(final int index, final int xInCell, final int yInCell) {
-        if (index == -1) return Optional.empty();
-
-        final @NotNull TestCase testCase = list.getModel().getElementAt(index);
-        final @NotNull List<Offered> buttons = TestCaseQuickAction.onCard(project, editor.getParent(), testCase);
-        final boolean executing = ExecutingNow.is(project, testCase.getUuid());
-        final int titleWidth = CardTitle.titleWidth(list, editor.cardTitle(testCase), CardTitle.slotCount(buttons, executing));
-
-        return CardTitle.descriptionActionIcons(titleWidth, buttons, executing).at(xInCell, yInCell);
+        final @NotNull Point inCell = new Point(e.getX() - bounds.x, e.getY() - bounds.y);
+        return cardAt(index).flatMap(card -> card.actionAt(inCell));
     }
 
     // Rule-EDITOR-PANEL-267, Rule-EDITOR-PANEL-269, Rule-EDITOR-PANEL-270
@@ -213,7 +195,12 @@ public class CardMouseListener extends MouseAdapter {
 
         final @NotNull Rectangle bounds = list.getCellBounds(index, index);
         final @NotNull Point inCell = new Point(e.getX() - bounds.x, e.getY() - bounds.y);
-        final @NotNull Component card = list.getCellRenderer().getListCellRendererComponent(list, list.getModel().getElementAt(index), index, false, false);
-        return card instanceof AbstractCard drawn ? drawn.tooltipAt(inCell, bounds.getSize()) : "";
+        return cardAt(index).map(card -> card.tooltipAt(inCell, bounds.getSize())).orElse("");
+    }
+
+    // Rule-EDITOR-PANEL-181, Rule-EDITOR-PANEL-267
+    private @NotNull Optional<AbstractCard> cardAt(final int index) {
+        final @NotNull Component drawn = list.getCellRenderer().getListCellRendererComponent(list, list.getModel().getElementAt(index), index, false, false);
+        return drawn instanceof AbstractCard card ? Optional.of(card) : Optional.empty();
     }
 }

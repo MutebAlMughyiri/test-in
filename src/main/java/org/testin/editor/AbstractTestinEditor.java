@@ -22,17 +22,16 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.CollectionListModel;
-import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.StatusText;
 import com.intellij.util.ui.UIUtil;
 import lombok.Getter;
-import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.Declared;
 import org.testin.codegen.AutomationState;
+import org.testin.editor.cardview.CardList;
 import org.testin.editor.cardview.CardPanelBuilder;
 import org.testin.editor.cardview.CardView;
 import org.testin.editor.grid.GridTables;
@@ -101,7 +100,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
     protected final @NotNull EditorCenter center;
 
     @Getter
-    protected final @NotNull JBList<TestCase> list;
+    protected final @NotNull CardList list;
 
     protected final @NotNull CollectionListModel<TestCase> model;
 
@@ -125,14 +124,6 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
 
     @Getter
     protected volatile @NotNull N parent;
-
-    @Getter
-    @Setter
-    protected @NotNull String hoveredIconAction = "";
-
-    @Getter
-    @Setter
-    protected int hoveredIndex = -1;
 
     private boolean disposed;
 
@@ -182,7 +173,6 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
 
     protected abstract @NotNull Class<N> nodeType();
 
-    @Override
     public abstract @NotNull Set<A> getSelectedDetails();
 
     // UC-EDITOR-PANEL-019, UC-EDITOR-PANEL-020

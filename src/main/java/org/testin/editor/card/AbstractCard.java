@@ -253,6 +253,11 @@ public abstract class AbstractCard extends JBPanel<AbstractCard> {
         }
     }
 
+    // UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-181
+    public @NotNull Optional<Offered> actionAt(final @NotNull Point at) {
+        return CardTitle.descriptionActionIcons(titleWidth, hoverButtons, executing).at(at.x, at.y);
+    }
+
     // Rule-EDITOR-PANEL-267, Rule-EDITOR-PANEL-269, Rule-EDITOR-PANEL-270, Rule-INTERNAL-132
     public @NotNull String tooltipAt(final @NotNull Point at, final @NotNull Dimension cell) {
         if (CardTitle.priorityMargin(cell.height).contains(at))

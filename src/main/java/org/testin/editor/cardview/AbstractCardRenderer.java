@@ -18,7 +18,7 @@ package org.testin.editor.cardview;
 
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.editor.TestinEditor;
+import org.testin.editor.AbstractTestinEditor;
 import org.testin.editor.card.AbstractCard;
 import org.testin.model.TestCase;
 
@@ -26,14 +26,15 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
 @AllArgsConstructor
-public abstract class AbstractCardRenderer<U extends TestinEditor> implements ListCellRenderer<TestCase> {
+public abstract class AbstractCardRenderer<U extends AbstractTestinEditor<?, ?>> implements ListCellRenderer<TestCase> {
     protected final @NotNull U editor;
 
     // UC-EDITOR-PANEL-001, UC-EDITOR-PANEL-030
     @Override
     public @NotNull AbstractCard getListCellRendererComponent(final JList<? extends TestCase> list, final TestCase testCase, final int index, final boolean isSelected, final boolean cellHasFocus) {
-        final boolean isRowHovered = (index == editor.getHoveredIndex());
-        final @NotNull String hover = isRowHovered ? editor.getHoveredIconAction() : "";
+        final @NotNull CardList cards = editor.getList();
+        final boolean isRowHovered = index == cards.getHoveredIndex();
+        final @NotNull String hover = isRowHovered ? cards.getHoveredIconAction() : "";
 
         return bindDataAndGetCard(list, testCase, index, isSelected, isRowHovered, hover);
     }

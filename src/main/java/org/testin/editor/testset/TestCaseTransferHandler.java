@@ -20,7 +20,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.testin.editor.TestinEditor;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCase;
 import org.testin.notifications.Done;
@@ -49,11 +48,11 @@ public class TestCaseTransferHandler extends TransferHandler {
 
     private final @NotNull Project project;
 
-    private final @NotNull TestinEditor editor;
+    private final @NotNull TestSetEditor editor;
 
     private final @NotNull Notifier notifier;
 
-    public TestCaseTransferHandler(final @NotNull Project project, final @NotNull TestinEditor editor) {
+    public TestCaseTransferHandler(final @NotNull Project project, final @NotNull TestSetEditor editor) {
         this.project = project;
         this.editor = editor;
         this.notifier = Services.getInstance(project, Notifier.class);

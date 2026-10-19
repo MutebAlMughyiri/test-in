@@ -259,7 +259,6 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
     }
 
     // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-014, Rule-EDITOR-PANEL-239
-    @Override
     public @NotNull String cardTitle(final @NotNull TestCase testCase) {
         final @NotNull Set<TestRunEditorFields> selected = getSelectedDetails();
         final @NotNull TestCase shown = runItem(testCase.getUuid()).map(RunItem::shownTestCase).orElse(testCase);
@@ -364,11 +363,6 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
     @Override
     protected void installEditListener(final @NotNull JBTable table, final @NotNull List<TestCase> pageTestCases) {
         table.getModel().addTableModelListener(new TestRunGridEditListener(project, this, pageTestCases, model::allContentsChanged));
-    }
-
-    @Override
-    public void updateSequenceAndSaveAll(final @NotNull Runnable onPersisted) {
-        onPersisted.run();
     }
 
     @Override

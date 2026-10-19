@@ -32,7 +32,6 @@ import javax.swing.JComponent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 public interface TestinEditor extends Disposable {
@@ -164,10 +163,6 @@ public interface TestinEditor extends Disposable {
 
     @NotNull JComponent getPreferredFocusedComponent();
 
-    @NotNull Set<?> getSelectedDetails();
-
-    @NotNull String cardTitle(final @NotNull TestCase testCase);
-
     // UC-EDITOR-PANEL-009, Rule-EDITOR-PANEL-013
     default void refreshOrdered() {
         refreshView();
@@ -185,22 +180,12 @@ public interface TestinEditor extends Disposable {
 
     @NotNull List<TestCase> getAllTestCases();
 
-    void updateSequenceAndSaveAll(final @NotNull Runnable onPersisted);
-
     void selectTestCase(final @NotNull TestCase testCase);
 
     void selectWhenLoaded(final @NotNull UUID testCaseUuid);
 
     default void runWhenLoaded() {
     }
-
-    @NotNull String getHoveredIconAction();
-
-    void setHoveredIconAction(final @NotNull String action);
-
-    int getHoveredIndex();
-
-    void setHoveredIndex(final int index);
 
     @Override
     default void dispose() {

@@ -178,6 +178,21 @@ public class EditorViewsIdeTest extends AbstractTempRootIdeTest {
         }
     }
 
+    // Rule-EDITOR-PANEL-297
+    public void testAnEditorTabIsNeverMarkedAsHoldingUnsavedWork() {
+        final @NotNull TestProjectNode testProject = aTestProject();
+        final @NotNull UnifiedEditorProvider provider = new UnifiedEditorProvider();
+        final @NotNull FileEditor testSetTab = provider.createEditor(getProject(), new UnifiedVirtualFile(aTestSetHolding(testProject, 2)));
+        final @NotNull FileEditor testRunTab = provider.createEditor(getProject(), new UnifiedVirtualFile(EditorFixtures.testRun(getProject(), testProject, List.of())));
+        try {
+            assertFalse("a test set's tab says it holds unsaved work", testSetTab.isModified());
+            assertFalse("a test run's tab says it holds unsaved work", testRunTab.isModified());
+        } finally {
+            testSetTab.dispose();
+            testRunTab.dispose();
+        }
+    }
+
     // Rule-EDITOR-PANEL-002
     public void testBothEditorsOpenOnCardsAndBuildTheGridOnlyWhenAskedFor() {
         final @NotNull List<AbstractTestinEditor<?, ?>> editors = List.of(openedTestSet(3), openedTestRun());

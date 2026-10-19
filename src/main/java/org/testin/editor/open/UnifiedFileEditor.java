@@ -67,9 +67,10 @@ public class UnifiedFileEditor extends UserDataHolderBase implements FileEditor 
         return true;
     }
 
+    // Rule-EDITOR-PANEL-297
     @Override
     public boolean isModified() {
-        return true;
+        return false;
     }
 
     @Override

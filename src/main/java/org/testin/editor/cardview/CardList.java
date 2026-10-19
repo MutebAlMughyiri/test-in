@@ -22,6 +22,8 @@ import com.intellij.ui.AnimatedIcon;
 import com.intellij.ui.ClientProperty;
 import com.intellij.ui.CollectionListModel;
 import com.intellij.ui.components.JBList;
+import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.TestinDataKeys;
 import org.testin.editor.TestinEditor;
@@ -30,6 +32,14 @@ import org.testin.model.TestCase;
 // UC-EDITOR-PANEL-001, UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-003
 public class CardList extends JBList<TestCase> implements UiDataProvider {
     private final @NotNull TestinEditor editor;
+
+    @Getter
+    @Setter
+    private int hoveredIndex = -1;
+
+    @Getter
+    @Setter
+    private @NotNull String hoveredIconAction = "";
 
     public CardList(final @NotNull CollectionListModel<TestCase> model, final @NotNull TestinEditor editor) {
         super(model);

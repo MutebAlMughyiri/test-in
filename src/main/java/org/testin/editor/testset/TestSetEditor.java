@@ -60,8 +60,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TestSetEditor extends AbstractTestinEditor<TestSetEditorFields, TestSetNode> implements ToolbarCallbacks {
-    private final @NotNull CardModelListener modelChangeNotifier;
-
     @Getter
     private final @NotNull TestSetToolbar toolBar;
 
@@ -82,10 +80,6 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorFields, Tes
         this.toolBar = new TestSetToolbar(this);
         mainPanel.add(SideScroll.of(toolBar), BorderLayout.NORTH);
         toolBar.installSearchFocusShortcut(mainPanel);
-
-        this.modelChangeNotifier = new CardModelListener();
-        this.modelChangeNotifier.setOnUpdateCallback(this::onDataSynced);
-        this.model.addListDataListener(modelChangeNotifier);
 
         wireList();
 
@@ -164,12 +158,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorFields, Tes
         }
     }
 
-    private void onDataSynced() {
-        orderThen(this::refreshView);
-    }
-
     // UC-EDITOR-PANEL-010, Rule-EDITOR-PANEL-060
-    @Override
     public void updateSequenceAndSaveAll(final @NotNull Runnable onPersisted) {
         final List<TestCase> snapshot;
         synchronized (this.allTestCases) {
@@ -248,7 +237,6 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorFields, Tes
     }
 
     // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-014, Rule-EDITOR-PANEL-023
-    @Override
     public @NotNull String cardTitle(final @NotNull TestCase testCase) {
         final @NotNull Set<TestSetEditorFields> selected = getSelectedDetails();
 
@@ -275,13 +263,6 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorFields, Tes
     @Override
     public @NotNull Set<TestSetEditorFields> getSelectedDetails() {
         return getToolBar().getToolbarItem(TestSetFieldsPopupButton.class).getSelectedDetails();
-    }
-
-    @Override
-    protected void replaceModel(final @NotNull List<TestCase> pageTestCases) {
-        modelChangeNotifier.pause();
-        super.replaceModel(pageTestCases);
-        modelChangeNotifier.resume();
     }
 
     // UC-EDITOR-PANEL-022, Rule-EDITOR-PANEL-101
@@ -364,10 +345,5 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorFields, Tes
     @Override
     protected void installEditListener(final @NotNull JBTable table, final @NotNull List<TestCase> pageTestCases) {
         table.getModel().addTableModelListener(new TestSetGridEditListener(project, pageTestCases, model::allContentsChanged, parent.getPath()));
-    }
-
-    @Override
-    protected void disposeLoadedData() {
-        model.removeListDataListener(modelChangeNotifier);
     }
 }

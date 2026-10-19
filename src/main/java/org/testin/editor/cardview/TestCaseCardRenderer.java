@@ -18,14 +18,13 @@ package org.testin.editor.cardview;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.editor.TestinEditor;
 import org.testin.editor.testset.TestCaseCard;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.model.TestCase;
 
 import javax.swing.JList;
 
-public class TestCaseCardRenderer extends AbstractCardRenderer<TestinEditor> {
+public class TestCaseCardRenderer extends AbstractCardRenderer<TestSetEditor> {
     private final @NotNull TestCaseCard card;
 
     public TestCaseCardRenderer(final @NotNull Project project, final @NotNull TestSetEditor editor) {

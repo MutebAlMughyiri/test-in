@@ -23,7 +23,6 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
 import org.testin.editor.EditorFixtures;
-import org.testin.editor.TestinEditor;
 import org.testin.editor.toolbar.GridViewButton;
 import org.testin.filter.SortDirection;
 import org.testin.filter.SortField;
@@ -186,7 +185,7 @@ public class DragToReorderIdeTest extends AbstractTempRootIdeTest {
     private static final class DroppedAt extends TestCaseTransferHandler {
         private final int index;
 
-        DroppedAt(final @NotNull Project project, final @NotNull TestinEditor editor, final int index) {
+        DroppedAt(final @NotNull Project project, final @NotNull TestSetEditor editor, final int index) {
             super(project, editor);
             this.index = index;
         }
