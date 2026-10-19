@@ -32,8 +32,6 @@ import org.testin.model.Automated;
 import org.testin.model.markers.TestRunMarker;
 import org.testin.model.status.TestRunStatus;
 import org.testin.model.testrun.Segment;
-import org.testin.services.Services;
-import org.testin.setting.AppSettingsState;
 import org.testin.ui.Tooltip;
 import org.testin.util.Bundle;
 
@@ -167,10 +165,7 @@ public class EditorStatusBar extends JBPanel<EditorStatusBar> {
 
     // Rule-EDITOR-PANEL-265
     static @NotNull String besideTheIcon(final @NotNull TestRunMarker marker) {
-        if (marker.getStatus() == TestRunStatus.ASSIGNED)
-            return Services.getInstance(AppSettingsState.class).testerName;
-        if (marker.getStatus().isRecord()) return HistoryCard.shortOf(marker.getCommit());
-        return "";
+        return marker.getStatus().isRecord() ? HistoryCard.shortOf(marker.getCommit()) : "";
     }
 
     @Override

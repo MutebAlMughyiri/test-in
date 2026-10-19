@@ -20,8 +20,6 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractIdeTest;
 import org.testin.model.markers.TestRunMarker;
 import org.testin.model.status.TestRunStatus;
-import org.testin.services.Services;
-import org.testin.setting.AppSettingsState;
 
 import java.util.List;
 
@@ -30,18 +28,6 @@ public class TestRunStatusLabelIdeTest extends AbstractIdeTest {
         final @NotNull TestRunMarker marker = new TestRunMarker();
         marker.changeStatus(testRunStatus);
         return marker;
-    }
-
-    // Rule-EDITOR-PANEL-265
-    public void testAnAssignedTestRunShowsTheTesterBesideItsIcon() {
-        final @NotNull AppSettingsState settings = Services.getInstance(AppSettingsState.class);
-        final @NotNull String was = settings.testerName;
-        settings.testerName = "Sara";
-        try {
-            assertEquals("Sara", EditorStatusBar.besideTheIcon(aTestRunMarkerIn(TestRunStatus.ASSIGNED)));
-        } finally {
-            settings.testerName = was;
-        }
     }
 
     // Rule-EDITOR-PANEL-265
@@ -54,7 +40,7 @@ public class TestRunStatusLabelIdeTest extends AbstractIdeTest {
 
     // Rule-EDITOR-PANEL-265
     public void testEveryOtherTestRunStatusShowsTheIconAlone() {
-        for (final TestRunStatus testRunStatus : List.of(TestRunStatus.CREATED, TestRunStatus.IN_PROGRESS, TestRunStatus.COMPLETED, TestRunStatus.CLOSED)) {
+        for (final TestRunStatus testRunStatus : List.of(TestRunStatus.CREATED, TestRunStatus.ASSIGNED, TestRunStatus.IN_PROGRESS, TestRunStatus.COMPLETED, TestRunStatus.CLOSED)) {
             assertEquals("a " + testRunStatus + " test run showed text beside its icon", "", EditorStatusBar.besideTheIcon(aTestRunMarkerIn(testRunStatus)));
         }
     }

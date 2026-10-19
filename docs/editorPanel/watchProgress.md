@@ -66,8 +66,10 @@ There is no key for this. The figures are in the status bar.
   is cut off and the editor below does not move.
 - **Rule-EDITOR-PANEL-265** — The test run status in the status bar is its icon
   alone, with the status named when the pointer rests on it. Beside the icon it
-  shows the tester an Assigned test run is assigned to, and the commit a
-  Committed test run was recorded in; any other status shows the icon only.
+  shows the commit a Committed test run was recorded in; any other status shows
+  the icon only. An Assigned test run names no one, because Testin does not yet
+  keep who a test run is assigned to, and this machine's tester is not that
+  person on anyone else's machine.
 - **Rule-EDITOR-PANEL-288** — The clock adds up every execution of every run
   item, retries and re-runs included, and what the walk is counting on the test
   case it is on, so it says what the test run really cost. A card and the grid
