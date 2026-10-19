@@ -132,7 +132,7 @@ public final class TreePanel implements Disposable {
             }
 
             @Override
-            public void readAgain() {
+            public void readAgain(final @NotNull Path testProjectPath) {
                 refresh();
             }
 

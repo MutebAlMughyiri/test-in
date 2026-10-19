@@ -155,7 +155,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
 
     private @NotNull RunItem theRunItemOf(final @NotNull Path testRun, final @NotNull UUID testCaseUuid) {
         try {
-            ApplicationManager.getApplication().executeOnPooledThread(() -> TestRunFromGit.read(getProject(), testRun)).get();
+            ApplicationManager.getApplication().executeOnPooledThread(() -> Services.getInstance(getProject(), TestRunFromGit.class).read(testRun)).get();
         } catch (final InterruptedException | ExecutionException ex) {
             throw new AssertionError("the commit of " + testRun.getFileName() + " was never read", ex);
         }

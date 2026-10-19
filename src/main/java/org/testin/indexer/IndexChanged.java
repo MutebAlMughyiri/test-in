@@ -31,7 +31,7 @@ public interface IndexChanged {
     default void testProjectsChanged() {
     }
 
-    default void readAgain() {
+    default void readAgain(final @NotNull Path testProjectPath) {
     }
 
     // Rule-INTERNAL-141

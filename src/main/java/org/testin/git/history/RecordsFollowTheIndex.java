@@ -16,10 +16,13 @@
 
 package org.testin.git.history;
 
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.IndexChanged;
+import org.testin.services.Services;
+
+import java.nio.file.Path;
+import java.util.Set;
 
 public final class RecordsFollowTheIndex implements IndexChanged {
     private final @NotNull Project project;
@@ -31,18 +34,12 @@ public final class RecordsFollowTheIndex implements IndexChanged {
     // UC-INTERNAL-002, Rule-EDITOR-PANEL-126, Rule-EDITOR-PANEL-239
     @Override
     public void indexed() {
-        readInTheBackground();
+        Services.getInstance(project, TestRunFromGit.class).readAllInTheBackground();
     }
 
     // UC-INTERNAL-003, Rule-EDITOR-PANEL-126, Rule-EDITOR-PANEL-239
     @Override
-    public void readAgain() {
-        readInTheBackground();
-    }
-
-    private void readInTheBackground() {
-        ApplicationManager.getApplication().executeOnPooledThread(() -> {
-            if (!project.isDisposed()) TestRunFromGit.readAll(project);
-        });
+    public void readAgain(final @NotNull Path testProjectPath) {
+        Services.getInstance(project, TestRunFromGit.class).readInTheBackground(Set.of(testProjectPath));
     }
 }

@@ -123,7 +123,7 @@ public class GenerateReportAction extends AbstractBoundTestProjectAction {
         final @NotNull Path directory = testRun.getPath();
 
         // Rule-EDITOR-PANEL-239
-        TestRunFromGit.read(project, directory);
+        Services.getInstance(project, TestRunFromGit.class).read(directory);
         final @NotNull RunItems runItems = testRuns.getRunItems(directory);
 
         final byte[] fileBytes = format.generateReport(project, testRun, runItems);

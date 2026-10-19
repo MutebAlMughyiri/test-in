@@ -18,6 +18,9 @@ package org.testin.editor.open;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
+
+import java.nio.file.Path;
+
 import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.IndexChanged;
 import org.testin.services.Services;
@@ -34,7 +37,7 @@ public final class OpenEditorsFollowTheIndex implements IndexChanged {
 
     // UC-INTERNAL-002, Rule-INTERNAL-114
     @Override
-    public void readAgain() {
+    public void readAgain(final @NotNull Path testProjectPath) {
         ApplicationManager.getApplication().invokeLater(() -> {
             if (!project.isDisposed()) testinEditors.refreshOpen();
         });

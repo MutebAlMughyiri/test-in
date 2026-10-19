@@ -124,7 +124,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             try {
                 indexer.awaitIndexing();
-                TestRunFromGit.read(project, parent.getPath());
+                Services.getInstance(project, TestRunFromGit.class).read(parent.getPath());
                 final @NotNull RunItems fromDisk = loadedRunItems.orElseGet(() -> testRuns.getRunItems(parent.getPath()));
 
                 final @NotNull Map<UUID, RunItem> runItemsOnDisk = fromDisk.getAll().stream()

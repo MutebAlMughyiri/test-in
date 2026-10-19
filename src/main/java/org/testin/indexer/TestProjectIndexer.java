@@ -338,8 +338,8 @@ public final class TestProjectIndexer {
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-114
-    private void announceReadAgain() {
-        if (!project.isDisposed()) project.getMessageBus().syncPublisher(IndexChanged.TOPIC).readAgain();
+    private void announceReadAgain(final @NotNull Path testProjectPath) {
+        if (!project.isDisposed()) project.getMessageBus().syncPublisher(IndexChanged.TOPIC).readAgain(testProjectPath);
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-006
@@ -441,7 +441,7 @@ public final class TestProjectIndexer {
         TestinLogger.info("Not a test project Testin reads, so not scanned: " + testProjectPath);
         store.removeTestProject(testProjectPath);
         store.invalidateChildrenIndex();
-        announceReadAgain();
+        announceReadAgain(testProjectPath);
     }
 
     public void scanSingleTestProject(final @NotNull Path testProjectPath) {
@@ -467,7 +467,7 @@ public final class TestProjectIndexer {
         rescan.coveredByAScan(testProjectPath);
         scanCoordinator.scan(testProjectPath, indicator).ifPresent(why -> problems.testProjectNotRead(testProjectPath.getFileName().toString(), why));
 
-        announceReadAgain();
+        announceReadAgain(testProjectPath);
     }
 
     // Rule-INTERNAL-091
