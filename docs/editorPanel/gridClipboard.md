@@ -45,7 +45,9 @@ Inside the grid these three keys act on cells, not on whole test cases.
   both cut and paste.
 - **Rule-EDITOR-PANEL-226** — A cut or a paste over cells is one change, however
   many cells it touches. Each test case it changed is saved once, one message
-  counts those test cases, and Ctrl+Z takes the whole of it back in one press.
+  counts those test cases once they are written, and Ctrl+Z takes the whole of
+  it back in one press. What it refused is said once and what it adjusted is
+  said once, each with a count.
 - **Rule-EDITOR-PANEL-248** — A button that turns gray while the pointer is on
   it loses its hover look at once, so a control that has stopped working never
   looks ready to press.
@@ -102,6 +104,11 @@ for a paste.
 
 **If the block on the clipboard is bigger than the grid** — it is laid down as
 far as the last row and the last column. The rest is dropped.
+
+**If cells of the block are refused or adjusted** — the paste or the cut says so
+once, not once a cell. One cell reads as it does when typed. Several read the
+first one under a title that counts them: *Refused 3*, or *Adjusted 3*
+(Rule-EDITOR-PANEL-226).
 
 ## These keys are the grid's
 

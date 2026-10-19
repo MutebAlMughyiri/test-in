@@ -90,7 +90,7 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
 
         // Rule-EDITOR-PANEL-206
         if (took.isEmpty()) {
-            notifier.softRefuse(project, Refused.UNREADABLE, quoted(typed, field));
+            refuse(Refused.UNREADABLE.about(quoted(typed, field)));
             return GridEdit.REFUSED;
         }
 
@@ -98,7 +98,7 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
 
         persistAndGenerate(took.orElseThrow(), field, undoFrom);
 
-        return GridEdit.WROTE;
+        return GridEdit.QUEUED;
     }
 
     // UC-EDITOR-PANEL-008, Rule-EDITOR-PANEL-053
@@ -136,6 +136,7 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
             }
 
             ApplicationManager.getApplication().invokeLater(onEdited);
+            confirmWritten(written.size());
 
             if (written.isEmpty()) return;
 

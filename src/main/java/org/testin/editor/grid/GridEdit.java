@@ -24,20 +24,31 @@ import lombok.Getter;
 public enum GridEdit {
     WROTE(
             true,
+            false,
+            true
+    ),
+
+    QUEUED(
+            true,
+            false,
             false
     ),
 
     UNCHANGED(
+            false,
             false,
             false
     ),
 
     REFUSED(
             false,
-            true
+            true,
+            false
     );
 
     private final boolean written;
 
     private final boolean said;
+
+    private final boolean confirmedNow;
 }

@@ -247,14 +247,15 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
                 parent.getMarker().getResultAnalysis(),
                 parent.getMarker().getStatus(),
                 analysis -> {
-                    if (testRuns.findTestRunNode(parent.getPath()).map(testRun -> testRun.getMarker().getStatus().isRecord()).orElse(false)) {
-                        notifier.softRefuse(project, Bundle.message("run.item.status.test.run.signed.off", TestRunStatus.COMMITTED.getLabel()));
+                    final @NotNull Optional<String> signedOff = testRuns.findTestRunNode(parent.getPath()).flatMap(TestRunNode::whySignedOff);
+                    if (signedOff.isPresent()) {
+                        notifier.softRefuse(project, signedOff.orElseThrow());
                         return;
                     }
 
-                    testRuns.changeTestRunMarker(parent.getPath(),
-                            marker -> marker.recordAnalysis(TestRunResultAnalysis.written(analysis)));
-                    notifier.softShow(project, Done.SAVED);
+                    if (testRuns.changeTestRunMarker(parent.getPath(), marker -> marker.recordAnalysis(TestRunResultAnalysis.written(analysis))))
+                        notifier.softShow(project, Done.SAVED);
+                    else notifier.softRefuse(project, Bundle.message("test.run.gone", parent.getName()));
                 }).show());
     }
 

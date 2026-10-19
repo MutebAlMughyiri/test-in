@@ -56,7 +56,7 @@ public final class TestRunWalk {
 
     private final @NotNull TestRunStatusChange testRunStatusChange;
 
-    private final @NotNull RunItemRecorder runItemStatusService;
+    private final @NotNull RunItemRecorder runItemRecorder;
 
     private final @NotNull TestNGExecution testNGExecution;
 
@@ -75,7 +75,7 @@ public final class TestRunWalk {
         this.project = project;
         this.testRuns = Services.getInstance(project, TestRuns.class);
         this.testRunStatusChange = Services.getInstance(project, TestRunStatusChange.class);
-        this.runItemStatusService = Services.getInstance(project, RunItemRecorder.class);
+        this.runItemRecorder = Services.getInstance(project, RunItemRecorder.class);
         this.testNGExecution = Services.getInstance(project, TestNGExecution.class);
         this.notifier = Services.getInstance(project, Notifier.class);
     }
@@ -227,10 +227,10 @@ public final class TestRunWalk {
         if (!editor.getParent().takesRunItemStatuses()) return;
 
         if (testNGExecutionStatus.stillGoing() && !executions.isEmpty())
-            runItemStatusService.showAttempts(editor, testCase, executions, written, deciding);
+            runItemRecorder.showAttempts(editor, testCase, executions, written, deciding);
 
         testNGExecutionStatus.getRunItemStatus().ifPresent(runItemStatus -> {
-            runItemStatusService.recordReported(editor, testCase, runItemStatus, executions, written, deciding);
+            runItemRecorder.recordReported(editor, testCase, runItemStatus, executions, written, deciding);
 
             if (launchedHere.isEmpty()) sayWhatTheTestRunRecorded();
         });

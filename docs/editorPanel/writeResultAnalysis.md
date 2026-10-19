@@ -122,6 +122,9 @@ analysis is part of the record (Rule-EDITOR-PANEL-189).
 **If a section is left blank** — it is dropped, and the report leaves that
 heading out.
 
+**If the test run was removed while the dialog was open** — *'\<test run\>' no
+longer exists - nothing saved* is shown in red, and nothing reads *Saved*.
+
 ---
 
 [Documentation](../README.md) › [The editor panel](main.md)

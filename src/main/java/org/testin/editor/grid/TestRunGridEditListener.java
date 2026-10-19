@@ -25,6 +25,7 @@ import org.testin.model.testrun.RunItem;
 import org.testin.services.Services;
 import org.testin.testrun.RunItemRecorder;
 import org.testin.testrun.TestRunEditorFields;
+import org.testin.util.Bundle;
 
 import javax.swing.table.DefaultTableModel;
 import java.util.List;
@@ -36,7 +37,7 @@ public class TestRunGridEditListener extends AbstractGridEditListener {
 
     private final @NotNull Runnable onEdited;
 
-    private final @NotNull RunItemRecorder runItemStatusService;
+    private final @NotNull RunItemRecorder runItemRecorder;
 
     private final @NotNull TestRuns testRuns;
 
@@ -44,7 +45,7 @@ public class TestRunGridEditListener extends AbstractGridEditListener {
         super(project, pageTestCases);
         this.editor = editor;
         this.onEdited = onEdited;
-        this.runItemStatusService = Services.getInstance(project, RunItemRecorder.class);
+        this.runItemRecorder = Services.getInstance(project, RunItemRecorder.class);
         this.testRuns = Services.getInstance(project, TestRuns.class);
     }
 
@@ -68,25 +69,25 @@ public class TestRunGridEditListener extends AbstractGridEditListener {
 
         if (runItem.isRemoved()) {
             model.setValueAt(before, row, column);
-            runItemStatusService.refuseRemoved();
+            refuse(Bundle.message("run.item.status.test.case.removed"));
             return GridEdit.REFUSED;
         }
 
         // Rule-EDITOR-PANEL-295
         if (!runItem.isJudged()) {
             model.setValueAt(before, row, column);
-            runItemStatusService.refuseUnjudged();
+            refuse(Bundle.message("run.item.status.actual.result.not.recorded"));
             return GridEdit.REFUSED;
         }
 
-        // Rule-EDITOR-PANEL-174
-        if (runItemStatusService.heldTestRun(editor.getParent().getPath()).isEmpty()) {
+        // Rule-EDITOR-PANEL-174, Rule-EDITOR-PANEL-226
+        if (runItemRecorder.heldTestRun(editor.getParent().getPath(), this::refuse).isEmpty()) {
             model.setValueAt(before, row, column);
             return GridEdit.REFUSED;
         }
 
         final @NotNull String typed = String.valueOf(model.getValueAt(row, column));
-        testRuns.changeRunItem(editor.getParent().getPath(), onThisRow.getUuid(), result -> field.getRunItemValueSetter().execute(result, typed));
+        testRuns.changeRunItem(editor.getParent().getPath(), onThisRow.getUuid(), heldRunItem -> field.getRunItemValueSetter().execute(heldRunItem, typed));
         final @NotNull String after = field.getRunItemValueExtractor().apply(runItem);
 
         model.setValueAt(after, row, column);

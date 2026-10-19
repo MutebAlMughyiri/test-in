@@ -16,6 +16,7 @@
 
 package org.testin.editor.testrun;
 
+import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.testFramework.PlatformTestUtil;
 import com.intellij.ui.table.JBTable;
@@ -24,11 +25,14 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
 import org.testin.FilesUnder;
+import org.testin.OnScreen;
 import org.testin.Said;
 import org.testin.editor.EditorFixtures;
+import org.testin.editor.grid.GridKeys;
 import org.testin.editor.statusbar.EditorStatusBar;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.toolbar.GridViewButton;
+import org.testin.indexer.Nodes;
 import org.testin.indexer.TestRuns;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
@@ -36,6 +40,7 @@ import org.testin.model.node.TestSetNode;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.RunItemExecution;
+import org.testin.notifications.Done;
 import org.testin.services.Services;
 import org.testin.testrun.TestRunEditorFields;
 import org.testin.testrun.TestRunFixture;
@@ -44,6 +49,7 @@ import org.testin.view.Drawn;
 
 import javax.swing.JComponent;
 import java.awt.Container;
+import java.awt.datatransfer.StringSelection;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
@@ -90,6 +96,34 @@ public class TestRunProgressIdeTest extends AbstractTempRootIdeTest {
             assertEquals("typing changed a recorded run item status", RunItemStatus.PASSED, fixture.runItemStatusOf(testCases.getFirst()));
             assertEquals("typing recorded a run item status", RunItemStatus.PENDING, fixture.runItemStatusOf(testCases.get(1)));
         } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
+    // Rule-EDITOR-PANEL-226, Rule-EDITOR-PANEL-225
+    public void testAPasteOntoATestRunNoLongerIndexedSaysSoOnce() {
+        final @NotNull List<TestCase> testCases = TestRunFixture.testCasesIn(getProject(), root, 2);
+        final @NotNull TestRunFixture fixture = TestRunFixture.of(getProject(), root, testCases.stream().map(testCase -> EditorFixtures.pending(testCase).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()))).toList(), testCases);
+        final @NotNull TestRunEditor editor = fixture.opened(getTestRootDisposable());
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+        try {
+            theGridOf(editor);
+            Services.getInstance(getProject(), Nodes.class).removeTestRun(fixture.testRun().getPath(), _ -> {
+            });
+            Await.until("the test run was never taken out of the index", () -> Services.getInstance(getProject(), TestRuns.class).findRunItems(fixture.testRun().getPath()).isEmpty());
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+            final @NotNull JBTable grid = (JBTable) editor.getPreferredFocusedComponent();
+
+            CopyPasteManager.getInstance().setContents(new StringSelection("""
+                    Slow
+                    Slower"""));
+            grid.changeSelection(0, grid.convertColumnIndexToView(ACTUAL_RESULT), false, false);
+            OnScreen.pressKey(grid, GridKeys.PASTE.keyStroke());
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+            assertEquals("a paste over two cells of a test run that is gone was not one message counting them", List.of(Done.counted(Bundle.message("grid.refused.title"), 2) + "\n" + Bundle.message("run.item.status.test.run.gone")), said.shown());
+        } finally {
+            CopyPasteManager.getInstance().setContents(new StringSelection(""));
             Disposer.dispose(editor);
         }
     }

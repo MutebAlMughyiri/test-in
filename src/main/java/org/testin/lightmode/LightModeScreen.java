@@ -87,7 +87,7 @@ final class LightModeScreen {
 
     private final @NotNull TestRunEditor editor;
 
-    private final @NotNull RunItemRecorder runItemStatusService;
+    private final @NotNull RunItemRecorder runItemRecorder;
 
     private final @NotNull AutomationState automationState;
 
@@ -158,7 +158,7 @@ final class LightModeScreen {
     // Rule-EDITOR-PANEL-128
     LightModeScreen(final @NotNull TestRunEditor editor, final @NotNull Runnable onClosed) {
         this.editor = editor;
-        this.runItemStatusService = Services.getInstance(editor.getProject(), RunItemRecorder.class);
+        this.runItemRecorder = Services.getInstance(editor.getProject(), RunItemRecorder.class);
         this.automationState = Services.getInstance(editor.getProject(), AutomationState.class);
         this.details = new TestCaseDetails();
         this.onClosed = onClosed;
@@ -369,7 +369,7 @@ final class LightModeScreen {
     }
 
     private void record(final @NotNull RunItemStatus runItemStatus) {
-        runItemStatusService.executeNext(editor, runItemStatus);
+        runItemRecorder.executeNext(editor, runItemStatus);
     }
 
     private void openCapture() {
@@ -393,7 +393,7 @@ final class LightModeScreen {
     private void saveCapture() {
         capture.ifPresent(form -> {
             // Rule-EDITOR-PANEL-225, Rule-EDITOR-PANEL-285
-            if (!runItemStatusService.executeFailed(editor, form.fields())) return;
+            if (!runItemRecorder.executeFailed(editor, form.fields())) return;
 
             capture = Optional.empty();
             refresh();

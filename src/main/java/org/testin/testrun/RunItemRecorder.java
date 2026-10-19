@@ -203,21 +203,26 @@ public final class RunItemRecorder {
         return true;
     }
 
-    // UC-EDITOR-PANEL-040, Rule-EDITOR-PANEL-225, Rule-TREE-PANEL-009, Rule-PRODUCT-011
+    // UC-EDITOR-PANEL-040, Rule-EDITOR-PANEL-225
     public @NotNull Optional<RunItems> heldTestRun(final @NotNull Path testRunPath) {
+        return heldTestRun(testRunPath, sentence -> Services.getInstance(project, Notifier.class).softRefuse(project, sentence));
+    }
+
+    // UC-EDITOR-PANEL-040, Rule-EDITOR-PANEL-225, Rule-TREE-PANEL-009, Rule-PRODUCT-011, Rule-EDITOR-PANEL-226
+    public @NotNull Optional<RunItems> heldTestRun(final @NotNull Path testRunPath, final @NotNull Consumer<String> refuse) {
         final @NotNull TestRuns testRuns = Services.getInstance(project, TestRuns.class);
         final @NotNull Optional<RunItems> runItems = testRuns.findRunItems(testRunPath);
 
         if (runItems.isEmpty()) {
             TestinLogger.warn("[RunItemRecorder]: '" + testRunPath.getFileName() + "' is no longer indexed - nothing recorded");
-            Services.getInstance(project, Notifier.class).softRefuse(project, Bundle.message("run.item.status.test.run.gone"));
+            refuse.accept(Bundle.message("run.item.status.test.run.gone"));
             return runItems;
         }
 
         final @NotNull Optional<String> signedOff = testRuns.findTestRunNode(testRunPath).flatMap(TestRunNode::whySignedOff);
         if (signedOff.isPresent()) {
             TestinLogger.info("[RunItemRecorder]: '" + testRunPath.getFileName() + "' is signed off - nothing recorded");
-            Services.getInstance(project, Notifier.class).softRefuse(project, signedOff.orElseThrow());
+            refuse.accept(signedOff.orElseThrow());
             return Optional.empty();
         }
 
@@ -251,11 +256,6 @@ public final class RunItemRecorder {
 
     public void refuseRemoved() {
         Services.getInstance(project, Notifier.class).softRefuse(project, Bundle.message("run.item.status.test.case.removed"));
-    }
-
-    // UC-EDITOR-PANEL-041, Rule-EDITOR-PANEL-295
-    public void refuseUnjudged() {
-        Services.getInstance(project, Notifier.class).softRefuse(project, Bundle.message("run.item.status.actual.result.not.recorded"));
     }
 
     // UC-EDITOR-PANEL-032, UC-EDITOR-PANEL-038, UC-EDITOR-PANEL-039, Rule-EDITOR-PANEL-284, Rule-EDITOR-PANEL-156, Rule-EDITOR-PANEL-156

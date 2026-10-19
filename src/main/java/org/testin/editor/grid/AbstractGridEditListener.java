@@ -29,6 +29,7 @@ import org.testin.view.ViewToolWindowFactory;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -42,6 +43,12 @@ public abstract class AbstractGridEditListener implements TableModelListener {
     private final @NotNull List<TestCase> pageTestCases;
 
     private final @NotNull Set<UUID> writtenThisGesture = new HashSet<>();
+
+    private final @NotNull List<String> refusedThisGesture = new ArrayList<>();
+
+    private final @NotNull List<String> adjustedThisGesture = new ArrayList<>();
+
+    private boolean gestureOpen = false;
 
     private boolean updating = false;
 
@@ -84,7 +91,10 @@ public abstract class AbstractGridEditListener implements TableModelListener {
 
             if (!outcome.isWritten()) return;
 
-            confirmEdit(edited);
+            if (outcome.isConfirmedNow()) {
+                writtenThisGesture.add(edited.getUuid());
+                sayAtTheEndOfTheGesture();
+            }
 
             ViewToolWindowFactory.refreshIfShowing(project, List.of(edited));
         } finally {
@@ -97,24 +107,45 @@ public abstract class AbstractGridEditListener implements TableModelListener {
     protected abstract @NotNull GridEdit apply(final @NotNull DefaultTableModel model, final @NotNull TestCase onThisRow, final int row, final int column);
 
     // UC-EDITOR-PANEL-008, Rule-EDITOR-PANEL-008, Rule-EDITOR-PANEL-226
-    private void confirmEdit(final @NotNull TestCase edited) {
-        final boolean first = writtenThisGesture.isEmpty();
-        writtenThisGesture.add(edited.getUuid());
-        if (!first) return;
+    protected final void confirmWritten(final int written) {
+        notifier.softShowCounted(project, Done.UPDATED, written);
+    }
 
-        ApplicationManager.getApplication().invokeLater(() -> {
-            final int written = writtenThisGesture.size();
-            writtenThisGesture.clear();
-
-            notifier.softShowCounted(project, Done.UPDATED, written);
-        });
+    // Rule-EDITOR-PANEL-226
+    protected final void refuse(final @NotNull String sentence) {
+        refusedThisGesture.add(sentence);
+        sayAtTheEndOfTheGesture();
     }
 
     // UC-EDITOR-PANEL-008, Rule-EDITOR-PANEL-005, Rule-EDITOR-PANEL-051
     private void sayIfRewritten(final @NotNull String typed, final @NotNull String stored) {
         if (typed.equals(stored)) return;
 
-        notifier.softShow(project, Bundle.message("grid.adjusted.title"),
-                Bundle.message("grid.adjusted.message", shortened(stored), shortened(typed)));
+        adjustedThisGesture.add(Bundle.message("grid.adjusted.message", shortened(stored), shortened(typed)));
+        sayAtTheEndOfTheGesture();
+    }
+
+    private void sayAtTheEndOfTheGesture() {
+        if (gestureOpen) return;
+
+        gestureOpen = true;
+        ApplicationManager.getApplication().invokeLater(this::sayTheGesture);
+    }
+
+    // UC-EDITOR-PANEL-008, Rule-EDITOR-PANEL-008, Rule-EDITOR-PANEL-226
+    private void sayTheGesture() {
+        gestureOpen = false;
+
+        confirmWritten(writtenThisGesture.size());
+        writtenThisGesture.clear();
+
+        if (refusedThisGesture.size() == 1) notifier.softRefuse(project, refusedThisGesture.getFirst());
+        if (refusedThisGesture.size() > 1)
+            notifier.softRefuse(project, Done.counted(Bundle.message("grid.refused.title"), refusedThisGesture.size()), refusedThisGesture.getFirst());
+        refusedThisGesture.clear();
+
+        if (!adjustedThisGesture.isEmpty())
+            notifier.softShow(project, Done.counted(Bundle.message("grid.adjusted.title"), adjustedThisGesture.size()), adjustedThisGesture.getFirst());
+        adjustedThisGesture.clear();
     }
 }

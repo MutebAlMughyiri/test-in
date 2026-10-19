@@ -169,13 +169,16 @@ public final class TestRuns {
                 () -> TestinLogger.warn("Test run no longer indexed, so a change to it was dropped: " + testRunPath.getFileName()));
     }
 
-    public void changeTestRunMarker(final @NotNull Path testRunPath, final @NotNull Consumer<TestRunMarker> change) {
-        store().findTestRunNode(testRunPath).ifPresentOrElse(node -> {
+    public boolean changeTestRunMarker(final @NotNull Path testRunPath, final @NotNull Consumer<TestRunMarker> change) {
+        final @NotNull Optional<TestRunNode> held = store().findTestRunNode(testRunPath);
+        held.ifPresentOrElse(node -> {
             final @NotNull TestRunMarker marker = node.getMarker();
             change.accept(marker);
             runItemWriter().persistMarker(testRunPath, () -> notSaved(testRunPath));
             indexer.announce(testRunPath);
         }, () -> TestinLogger.warn("Test run no longer indexed, so a change to its marker was dropped: " + testRunPath.getFileName()));
+
+        return held.isPresent();
     }
 
     // Rule-INTERNAL-123

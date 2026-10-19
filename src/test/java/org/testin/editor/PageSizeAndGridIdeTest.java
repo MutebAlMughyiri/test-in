@@ -38,6 +38,7 @@ import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.notifications.Done;
+import org.testin.notifications.Refused;
 import org.testin.services.Services;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.undo.UndoHistories;
@@ -150,6 +151,32 @@ public class PageSizeAndGridIdeTest extends AbstractTempRootIdeTest {
             Await.until("one Ctrl+Z was refused", () -> Services.getInstance(getProject(), UndoHistories.class).undo(UndoScope.of(testSet.getPath())));
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
             assertEquals("one Ctrl+Z did not take the whole cut back", List.of("Login", "Login", "Payments"), testCases.stream().map(testCase -> stored(testCase).getModule()).toList());
+        } finally {
+            CopyPasteManager.getInstance().setContents(new StringSelection(""));
+            Disposer.dispose(editor);
+        }
+    }
+
+    // Rule-EDITOR-PANEL-226, Rule-EDITOR-PANEL-206
+    public void testAPasteRefusedInEveryCellSaysSoOnceWithACount() {
+        aTestSetOfThree();
+        final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
+        final @NotNull List<String> balloons = Said.listening(getProject(), getTestRootDisposable()).shown();
+        try {
+            editor.getToolBar().getToolbarItem(GridViewButton.class).doClick();
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+            final @NotNull JBTable grid = (JBTable) editor.getPreferredFocusedComponent();
+
+            CopyPasteManager.getInstance().setContents(new StringSelection("""
+                    Urgent
+                    Urgent
+                    Urgent"""));
+            grid.changeSelection(0, grid.convertColumnIndexToView(TestSetEditorFields.PRIORITY.column()), false, false);
+            OnScreen.pressKey(grid, GridKeys.PASTE.keyStroke());
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+            final @NotNull String first = Refused.UNREADABLE.about(Bundle.message("grid.refused.as", "Urgent", TestSetEditorFields.PRIORITY.getName()));
+            assertEquals("three refused cells were not one message counting them", List.of(Done.counted(Bundle.message("grid.refused.title"), 3) + "\n" + first), balloons);
         } finally {
             CopyPasteManager.getInstance().setContents(new StringSelection(""));
             Disposer.dispose(editor);
