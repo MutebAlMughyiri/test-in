@@ -101,7 +101,7 @@ public final class TreePanel implements Disposable {
         TestinLogger.info("TreePanel.TreePanel()");
 
         refreshAction = new RefreshTreeAction(project, this);
-        branchSelector = new BranchSelector(project, this, bound());
+        branchSelector = new BranchSelector(project, bound());
         testProjectTree = new TestProjectTree(project);
         Disposer.register(this, testProjectTree);
 

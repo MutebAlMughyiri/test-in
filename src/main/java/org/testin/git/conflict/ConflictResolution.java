@@ -22,7 +22,9 @@ import com.intellij.openapi.project.Project;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.testin.git.GitFailureNotice;
 import org.testin.git.GitRepositoryService;
+import org.testin.git.RepositoryRefresh;
 import org.testin.indexer.Nodes;
 import org.testin.logger.TestinLogger;
 import org.testin.model.FileKind;
@@ -61,7 +63,7 @@ public final class ConflictResolution {
                 onStuck);
     }
 
-    // UC-SHARE-017, Rule-SHARE-079
+    // UC-SHARE-017, Rule-SHARE-079, Rule-SHARE-127, Rule-SHARE-073
     private static void continueOn(final @NotNull Project project, final @NotNull GitRepositoryService git, final @NotNull Path repositoryPath, final int stepBefore, final @NotNull Runnable onFinished, final @NotNull Consumer<List<String>> onStuck) {
         if (!git.couldNotContinueRebase(repositoryPath)) {
             ApplicationManager.getApplication().invokeLater(onFinished);
@@ -71,9 +73,9 @@ public final class ConflictResolution {
         final @NotNull List<String> stillConflicting = git.conflictingPaths(repositoryPath);
         if (stillConflicting.isEmpty()) {
             TestinLogger.warn("The rebase could not continue, and nothing is left conflicting");
+            RepositoryRefresh.after(project, repositoryPath);
             ApplicationManager.getApplication().invokeLater(() ->
-                    Services.getInstance(project, Notifier.class).error(project, Bundle.message("git.conflict.operation.failed.title"),
-                            Bundle.message("git.error.continue.rebase")));
+                    GitFailureNotice.show(project, Bundle.message("git.conflict.operation.failed.title"), Bundle.message("git.error.continue.rebase")));
             return;
         }
 
@@ -190,7 +192,7 @@ public final class ConflictResolution {
         }, skipped).show();
     }
 
-    // UC-SHARE-017, Rule-SHARE-074
+    // UC-SHARE-017, Rule-SHARE-074, Rule-SHARE-127
     private static boolean keep(final @NotNull Project project, final @NotNull GitRepositoryService git, final @NotNull Path repositoryPath, final @NotNull String relativePath, final @NotNull ObjectNode merged) {
         if (!Services.getInstance(project, Nodes.class).writeMerged(repositoryPath.resolve(relativePath), merged))
             return false;
@@ -198,8 +200,7 @@ public final class ConflictResolution {
         if (git.stageResolved(repositoryPath, relativePath)) return true;
 
         TestinLogger.error("Merged but could not stage " + relativePath);
-        Services.getInstance(project, Notifier.class).error(project, Bundle.message("git.merge.not.accepted.title"),
-                Bundle.message("git.merge.not.accepted.message", relativePath));
+        GitFailureNotice.show(project, Bundle.message("git.merge.not.accepted.title"), Bundle.message("git.merge.not.accepted.message", relativePath));
         return false;
     }
 

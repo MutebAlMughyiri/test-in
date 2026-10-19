@@ -24,12 +24,12 @@ import java.util.List;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-public class GitConflictOfferTest {
+public class StoppedRebaseTest {
 
     // Rule-SHARE-079
     @Test
     public void theConflictMessageNamesTheFilesStillInTheWay() {
-        final @NotNull String said = GitConflictOffer.conflictMessage(List.of("notes.txt", "Test Cases/login/a.testcase"));
+        final @NotNull String said = StoppedRebase.conflictMessage(List.of("notes.txt", "Test Cases/login/a.testcase"));
 
         assertTrue(said.contains("notes.txt") && said.contains("Test Cases/login/a.testcase"), said);
     }
@@ -37,7 +37,7 @@ public class GitConflictOfferTest {
     // Rule-SHARE-079
     @Test
     public void aLongListNamesThreeFilesAndCountsTheRest() {
-        final @NotNull String said = GitConflictOffer.conflictMessage(List.of("a.testcase", "b.testcase", "c.testcase", "d.testcase", "e.testcase"));
+        final @NotNull String said = StoppedRebase.conflictMessage(List.of("a.testcase", "b.testcase", "c.testcase", "d.testcase", "e.testcase"));
 
         assertTrue(said.contains("a.testcase, b.testcase, c.testcase"), said);
         assertFalse(said.contains("d.testcase"), said);

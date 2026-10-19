@@ -203,7 +203,7 @@ public class CommitRulesIdeTest extends AbstractGitRemoteIdeTest {
         assertEquals(head(work, "HEAD"), head(remote, MAIN));
     }
 
-    // UC-SHARE-014, Rule-SHARE-065
+    // UC-SHARE-014, Rule-SHARE-065, Rule-SHARE-127
     public void testABranchThatCannotBeCheckedOutCommitsNothing() {
         mustGit(work, "checkout", "-b", "other");
         write(work, "first.testcase", "{\"on\":\"other\"}");
@@ -219,7 +219,9 @@ public class CommitRulesIdeTest extends AbstractGitRemoteIdeTest {
         ShareGestures.type(review, "the typed test case");
         ShareGestures.commitOnly(review);
 
-        titled(said, Bundle.message("git.branch.not.switched.title"));
+        final @NotNull Notification refused = titled(said, Bundle.message("git.branch.not.switched.title"));
+        assertTrue("the refusal did not say what Git said: " + refused.getContent(), refused.getContent().contains("first.testcase"));
+        assertTrue("the refusal offers no Show Git log", refused.getActions().stream().anyMatch(action -> Bundle.message("git.show.log").equals(action.getTemplateText())));
         assertEquals(mainBefore, head(work, MAIN));
         assertEquals(otherBefore, head(work, "other"));
         assertEquals(MAIN, mustGit(work, "branch", "--show-current").trim());

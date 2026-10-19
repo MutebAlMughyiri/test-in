@@ -19,9 +19,7 @@ package org.testin.git;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.git.conflict.ConflictResolution;
-import org.testin.git.conflict.GitConflictOffer;
-import org.testin.git.conflict.RebaseEnd;
+import org.testin.git.conflict.StoppedRebase;
 import org.testin.git.review.ViewPendingCommitsWork;
 import org.testin.help.Hints;
 import org.testin.help.SetupHint;
@@ -88,7 +86,7 @@ record SyncWork(@NotNull Project project, @NotNull GitRepositoryService git, @No
 
                     final @NotNull Optional<List<String>> unfinished = git.unfinished(repoPath);
                     if (unfinished.isPresent()) {
-                        ApplicationManager.getApplication().invokeLater(() -> showConflictActions(repoPath, unfinished.orElseThrow()));
+                        ApplicationManager.getApplication().invokeLater(() -> stopped(repoPath).offer(unfinished.orElseThrow()));
                         return;
                     }
 
@@ -104,53 +102,17 @@ record SyncWork(@NotNull Project project, @NotNull GitRepositoryService git, @No
                 },
                 ex -> {
                     TestinLogger.error(FailureText.of(ex));
-                    GitConflictOffer.showIfConflicting(project, git, repoPath,
-                            conflicting -> showConflictActions(repoPath, conflicting),
-                            () -> reportSyncFailure(FailureText.of(ex)));
+                    stopped(repoPath).offerIfConflicting(() -> reportSyncFailure(FailureText.of(ex)));
                 });
     }
 
-    private void showConflictActions(final @NotNull Path repoPath, final @NotNull List<String> conflicting) {
-        GitConflictOffer.show(project, conflicting,
-                () -> resolveConflicts(repoPath),
-                () -> finishRebase(repoPath, RebaseEnd.CONTINUE),
-                () -> finishRebase(repoPath, RebaseEnd.ABORT));
-    }
-
-    // UC-SHARE-017, Rule-SHARE-079
-    private void resolveConflicts(final @NotNull Path repoPath) {
-        ApplicationManager.getApplication().executeOnPooledThread(() ->
-                ConflictResolution.resolveRebase(project, repoPath,
-                        () -> finishSyncInBackground(repoPath),
-                        leftOver -> showConflictActions(repoPath, leftOver)));
+    // UC-SHARE-017, Rule-SHARE-077
+    private @NotNull StoppedRebase stopped(final @NotNull Path repoPath) {
+        return new StoppedRebase(project, git, repoPath, Bundle.message("git.rebase.aborted.pull.message"), () -> finishSyncInBackground(repoPath));
     }
 
     private void reportSyncFailure(final @NotNull String detail) {
         GitFailureNotice.show(project, Bundle.message("git.sync.failed.title"), detail);
-    }
-
-    // UC-SHARE-017, Rule-SHARE-077
-    private void reportAborted(final @NotNull Path repoPath) {
-        refreshRepository(repoPath);
-        ApplicationManager.getApplication().invokeLater(() ->
-                notifier.info(project, Bundle.message("git.rebase.aborted.title"), Bundle.message("git.rebase.aborted.pull.message")));
-    }
-
-    // UC-SHARE-017, Rule-SHARE-077
-    private void finishRebase(final @NotNull Path repoPath, final @NotNull RebaseEnd end) {
-        GitBackgroundTask.run(project, end.getTaskTitle(), false,
-                _ -> {
-                    end.runIn(git, repoPath);
-
-                    if (end == RebaseEnd.ABORT) reportAborted(repoPath);
-                    else finishSyncInBackground(repoPath);
-                },
-                ex -> {
-                    TestinLogger.error(FailureText.of(ex));
-                    GitConflictOffer.showIfConflicting(project, git, repoPath,
-                            conflicting -> showConflictActions(repoPath, conflicting),
-                            () -> notifier.error(project, Bundle.message("git.conflict.operation.failed.title"), end.getFailure()));
-                });
     }
 
     private void finishSyncInBackground(final @NotNull Path repoPath) {
@@ -168,7 +130,7 @@ record SyncWork(@NotNull Project project, @NotNull GitRepositoryService git, @No
                                         Bundle.message("git.push.failed.after.resolve", FailureText.of(ex))));
 
                         indicator.setText(Bundle.message("git.progress.refreshing"));
-                        refreshRepository(repoPath);
+                        RepositoryRefresh.after(project, repoPath);
                         return;
                     }
 
@@ -196,9 +158,5 @@ record SyncWork(@NotNull Project project, @NotNull GitRepositoryService git, @No
         RepositoryRefresh.after(project, repoPath);
         ApplicationManager.getApplication().invokeLater(() ->
                 notifier.info(project, Bundle.message("git.synced.title"), pushedMessage(pushed)));
-    }
-
-    private void refreshRepository(final @NotNull Path repoPath) {
-        RepositoryRefresh.after(project, repoPath);
     }
 }

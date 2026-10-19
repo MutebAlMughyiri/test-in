@@ -24,7 +24,8 @@ import org.testin.AbstractTempRootIdeTest;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.git.GitFailureNotice;
-import org.testin.git.conflict.GitConflictOffer;
+import org.testin.git.GitRepositoryService;
+import org.testin.git.conflict.StoppedRebase;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
@@ -33,6 +34,7 @@ import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.testrun.RunItemRecorder;
 
+import java.nio.file.Path;
 import java.util.List;
 
 public class GuidesOfferedIdeTest extends AbstractTempRootIdeTest {
@@ -57,10 +59,8 @@ public class GuidesOfferedIdeTest extends AbstractTempRootIdeTest {
         guides().forgetAll();
 
         GitFailureNotice.show(getProject(), "Sync Failed", "fatal: could not read from remote repository");
-        GitConflictOffer.show(getProject(), List.of("Test Cases/Login/a.testcase"), () -> {
-        }, () -> {
-        }, () -> {
-        });
+        new StoppedRebase(getProject(), new GitRepositoryService(getProject()), Path.of(""), "", () -> {
+        }).offer(List.of("Test Cases/Login/a.testcase"));
 
         assertEquals(List.of(Guide.SHARE_OVER_GIT, Guide.RESOLVE_GIT_CONFLICTS, Guide.COLLECT_LOGS), guides().offered());
     }

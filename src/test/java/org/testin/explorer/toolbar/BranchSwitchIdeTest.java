@@ -52,8 +52,6 @@ public class BranchSwitchIdeTest extends AbstractOpenEditorsIdeTest {
 
     private TestSetNode checkout;
 
-    private TreePanel panel;
-
     private static @NotNull AppSettingsState settings() {
         return Services.getInstance(AppSettingsState.class);
     }
@@ -118,7 +116,7 @@ public class BranchSwitchIdeTest extends AbstractOpenEditorsIdeTest {
         git(testProject.getPath(), "commit", "-m", "no login");
         git(testProject.getPath(), "checkout", "-q", "main");
 
-        panel = new TreePanel(getProject());
+        final @NotNull TreePanel panel = new TreePanel(getProject());
         Disposer.register(getTestRootDisposable(), panel);
     }
 
@@ -139,7 +137,7 @@ public class BranchSwitchIdeTest extends AbstractOpenEditorsIdeTest {
     }
 
     private @NotNull JComboBox<?> branchBox() {
-        final @NotNull BranchSelector selector = new BranchSelector(getProject(), panel, Optional.of(testProject));
+        final @NotNull BranchSelector selector = new BranchSelector(getProject(), Optional.of(testProject));
         final @NotNull JComboBox<?> box = (JComboBox<?>) selector.getComponent();
         Await.until("the branch box never listed the branches", () -> box.isEnabled() && box.getItemCount() == 2);
         return box;
@@ -150,7 +148,7 @@ public class BranchSwitchIdeTest extends AbstractOpenEditorsIdeTest {
         assertTrue("the branch box is hidden on a test project that is a Git repository", branchBox().isVisible());
 
         final @NotNull TestProjectNode notARepository = new NodesOnDisk(getProject()).testProject(root.resolve("Plain"));
-        final @NotNull BranchSelector selector = new BranchSelector(getProject(), panel, Optional.of(notARepository));
+        final @NotNull BranchSelector selector = new BranchSelector(getProject(), Optional.of(notARepository));
         assertFalse("the branch box shows on a test project that is not a Git repository", selector.getComponent().isVisible());
     }
 

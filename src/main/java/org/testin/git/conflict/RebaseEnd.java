@@ -16,7 +16,6 @@
 
 package org.testin.git.conflict;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +25,6 @@ import org.testin.util.Bundle;
 import java.nio.file.Path;
 import java.util.function.BiPredicate;
 
-@Getter
 @AllArgsConstructor
 public enum RebaseEnd {
     ABORT(
@@ -41,11 +39,11 @@ public enum RebaseEnd {
             GitRepositoryService::couldNotContinueRebase
     );
 
+    @Getter
     private final @NotNull String taskTitle;
 
     private final @NotNull String failure;
 
-    @Getter(AccessLevel.NONE)
     private final @NotNull BiPredicate<GitRepositoryService, Path> refused;
 
     // UC-SHARE-017, Rule-SHARE-077

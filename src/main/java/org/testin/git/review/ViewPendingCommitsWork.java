@@ -21,22 +21,19 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.config.TestinYml;
-import org.testin.explorer.TreePanel;
 import org.testin.git.GitBackgroundTask;
 import org.testin.git.GitCommitAndPush;
 import org.testin.git.GitFailed;
 import org.testin.git.GitFailureNotice;
+import org.testin.git.GitRemotes;
 import org.testin.git.GitRepositoryService;
 import org.testin.git.RepositoryRefresh;
 import org.testin.git.change.PendingChange;
 import org.testin.git.change.PendingChangeReader;
-import org.testin.git.conflict.ConflictResolution;
-import org.testin.git.conflict.GitConflictOffer;
-import org.testin.git.conflict.RebaseEnd;
+import org.testin.git.conflict.StoppedRebase;
 import org.testin.help.Hints;
 import org.testin.help.SetupHint;
 import org.testin.help.SetupStep;
-import org.testin.indexer.Nodes;
 import org.testin.indexer.TestRuns;
 import org.testin.model.FileKind;
 import org.testin.model.NodeType;
@@ -59,9 +56,9 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public record ViewPendingCommitsWork(@NotNull Project project, @NotNull GitRepositoryService git, @NotNull GitCommitAndPush commits, @NotNull Notifier notifier, @NotNull Nodes nodes) {
+public record ViewPendingCommitsWork(@NotNull Project project, @NotNull GitRepositoryService git, @NotNull GitCommitAndPush commits, @NotNull Notifier notifier) {
     public ViewPendingCommitsWork(final @NotNull Project project) {
-        this(project, new GitRepositoryService(project), new GitCommitAndPush(project), Services.getInstance(project, Notifier.class), Services.getInstance(project, Nodes.class));
+        this(project, new GitRepositoryService(project), new GitCommitAndPush(project), Services.getInstance(project, Notifier.class));
     }
 
     private static @NotNull String commitLabel(final @NotNull String commit) {
@@ -95,7 +92,7 @@ public record ViewPendingCommitsWork(@NotNull Project project, @NotNull GitRepos
                         final @NotNull String remote = git.getRemoteName(path);
                         final @NotNull String branch = git.syncBranch(path);
                         ApplicationManager.getApplication().invokeLater(() ->
-                                showConflictActions(path, remote, branch, unfinished.orElseThrow()), project.getDisposed());
+                                stopped(path, remote, branch).offer(unfinished.orElseThrow()), project.getDisposed());
                         return;
                     }
 
@@ -148,15 +145,7 @@ public record ViewPendingCommitsWork(@NotNull Project project, @NotNull GitRepos
         final @NotNull String target = request.branch();
         indicator.setText(Bundle.message("git.progress.starting.branch", target));
 
-        if (!git.startBranch(repoPath, target)) {
-            refuseBranchSwitch(repoPath, target);
-            return;
-        }
-
-        ApplicationManager.getApplication().invokeLater(() -> {
-            Services.getInstance(project, TreePanel.class).refresh();
-            performCommitWorkflow(repoPath, request, target);
-        });
+        new BranchSwitch(project, git).toNew(repoPath, target, () -> performCommitWorkflow(repoPath, request, target));
     }
 
     // UC-SHARE-014, Rule-SHARE-065
@@ -164,25 +153,7 @@ public record ViewPendingCommitsWork(@NotNull Project project, @NotNull GitRepos
         final @NotNull String target = request.branch();
         indicator.setText(Bundle.message("git.progress.checking.out", target));
 
-        if (git.checkout(repoPath, target).isEmpty()) {
-            refuseBranchSwitch(repoPath, target);
-            return;
-        }
-
-        nodes.refreshDirectory(repoPath);
-
-        ApplicationManager.getApplication().invokeLater(() -> {
-            Services.getInstance(project, TreePanel.class).reindex(Bundle.message("git.switched.to", target));
-            performCommitWorkflow(repoPath, request, target);
-        });
-    }
-
-    // Rule-SHARE-065
-    private void refuseBranchSwitch(final @NotNull Path repoPath, final @NotNull String target) {
-        ApplicationManager.getApplication().invokeLater(() ->
-                notifier.errorWithActions(project, Bundle.message("git.branch.not.switched.title"),
-                        Bundle.message("git.branch.not.switched.message", target),
-                        notifier.action(Bundle.message("branch.review.changes"), () -> openFor(repoPath))));
+        new BranchSwitch(project, git).to(repoPath, target, switched -> performCommitWorkflow(repoPath, request, switched));
     }
 
     // UC-SHARE-015, Rule-SHARE-067
@@ -310,9 +281,9 @@ public record ViewPendingCommitsWork(@NotNull Project project, @NotNull GitRepos
                 ex -> GitFailureNotice.show(project, Bundle.message("git.error.title"), Bundle.message("git.error.read.remote", FailureText.of(ex))));
     }
 
-    // UC-SHARE-013, Rule-SHARE-060
+    // UC-SHARE-013, Rule-SHARE-060, Rule-TREE-PANEL-117
     private void configureRemoteAndPush(final @NotNull Path repoPath, final @NotNull String remoteName, final @NotNull String branch, final @NotNull String commit) {
-        final @NotNull Optional<String> known = TestinYml.cloneAddress(project, String.valueOf(repoPath.getFileName()));
+        final @NotNull Optional<String> known = TestinYml.cloneAddress(project, String.valueOf(repoPath.getFileName())).filter(GitRemotes::isRepositoryUrl);
 
         if (known.isPresent()) {
             addRemoteAndPush(repoPath, remoteName, branch, commit, known.orElseThrow());
@@ -347,33 +318,23 @@ public record ViewPendingCommitsWork(@NotNull Project project, @NotNull GitRepos
                             notifier.info(project, Bundle.message("git.pushed.title"),
                                     Bundle.message("git.pushed.message", commitLabel(commit), remote, branch)));
                 },
-                ex -> GitConflictOffer.showIfConflicting(project, git, repoPath,
-                        conflicting -> showConflictActions(repoPath, remote, branch, conflicting),
-                        () -> notifier.errorWithActions(project, Bundle.message("git.push.failed.title"), FailureText.of(ex),
-                                notifier.action(Bundle.message("git.try.again"), () -> pushToRemote(repoPath, () -> commit, branch)))));
+                ex -> stopped(repoPath, remote, branch).offerIfConflicting(() -> GitFailureNotice.show(project, Bundle.message("git.push.failed.title"), FailureText.of(ex),
+                        notifier.action(Bundle.message("git.try.again"), () -> pushToRemote(repoPath, () -> commit, branch)))));
     }
 
-    // UC-SHARE-017
-    private void showConflictActions(final @NotNull Path repoPath, final @NotNull String remote, final @NotNull String branch, final @NotNull List<String> conflicting) {
-        GitConflictOffer.show(project, conflicting,
-                () -> resolveConflicts(repoPath, remote, branch),
-                () -> finishRebase(repoPath, remote, branch, RebaseEnd.CONTINUE),
-                () -> finishRebase(repoPath, remote, branch, RebaseEnd.ABORT));
+    // UC-SHARE-017, Rule-SHARE-077
+    private @NotNull StoppedRebase stopped(final @NotNull Path repoPath, final @NotNull String remote, final @NotNull String branch) {
+        return new StoppedRebase(project, git, repoPath, Bundle.message("git.rebase.aborted.message"), () -> pushAfterRebase(repoPath, remote, branch));
     }
 
-    // UC-SHARE-017
-    private void resolveConflicts(final @NotNull Path repoPath, final @NotNull String remote, final @NotNull String branch) {
-        ApplicationManager.getApplication().executeOnPooledThread(() ->
-                ConflictResolution.resolveRebase(project, repoPath,
-                        () -> pushAfterRebase(repoPath, remote, branch),
-                        leftOver -> showConflictActions(repoPath, remote, branch, leftOver)));
-    }
-
-    // UC-SHARE-017
+    // UC-SHARE-017, Rule-SHARE-073
     private void pushAfterRebase(final @NotNull Path repoPath, final @NotNull String remote, final @NotNull String branch) {
         GitBackgroundTask.run(project, Bundle.message("git.task.pushing.branch", branch), false,
                 _ -> pushRebased(repoPath, remote, branch),
-                ex -> GitFailureNotice.show(project, Bundle.message("git.push.failed.title"), FailureText.of(ex)));
+                ex -> {
+                    RepositoryRefresh.after(project, repoPath);
+                    GitFailureNotice.show(project, Bundle.message("git.push.failed.title"), FailureText.of(ex));
+                });
     }
 
     // UC-SHARE-017
@@ -384,28 +345,6 @@ public record ViewPendingCommitsWork(@NotNull Project project, @NotNull GitRepos
         ApplicationManager.getApplication().invokeLater(() ->
                 notifier.info(project, Bundle.message("git.rebase.continued.title"),
                         Bundle.message("git.rebase.continued.message")));
-    }
-
-    // UC-SHARE-017, Rule-SHARE-077
-    private void reportAborted(final @NotNull Path repoPath) {
-        RepositoryRefresh.after(project, repoPath);
-
-        ApplicationManager.getApplication().invokeLater(() ->
-                notifier.info(project, Bundle.message("git.rebase.aborted.title"), Bundle.message("git.rebase.aborted.message")));
-    }
-
-    // UC-SHARE-017, Rule-SHARE-077, Rule-SHARE-127
-    private void finishRebase(final @NotNull Path repoPath, final @NotNull String remote, final @NotNull String branch, final @NotNull RebaseEnd end) {
-        GitBackgroundTask.run(project, end.getTaskTitle(), false,
-                _ -> {
-                    end.runIn(git, repoPath);
-
-                    if (end == RebaseEnd.ABORT) reportAborted(repoPath);
-                    else pushRebased(repoPath, remote, branch);
-                },
-                ex -> GitConflictOffer.showIfConflicting(project, git, repoPath,
-                        conflicting -> showConflictActions(repoPath, remote, branch, conflicting),
-                        () -> GitFailureNotice.show(project, Bundle.message("git.conflict.operation.failed.title"), FailureText.of(ex))));
     }
 
     // UC-SHARE-008, Rule-SHARE-040, Rule-SHARE-127

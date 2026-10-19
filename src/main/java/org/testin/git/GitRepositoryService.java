@@ -155,21 +155,22 @@ public final class GitRepositoryService {
         return remoteName.isEmpty() ? "" : getRemoteUrl(path, remoteName);
     }
 
+    // UC-TREE-PANEL-026, Rule-SHARE-126
     public @NotNull String checkout(final @NotNull Path path, final @NotNull String branch) {
         final @NotNull List<String> localBranches = getLocalBranches(path);
         final boolean remoteBranch = GitRemotes.isRemoteBranch(branch, localBranches, run(path, GitCommand.REMOTE).orElse("").lines().toList());
         final @NotNull String target = remoteBranch ? GitRemotes.localNameOf(branch) : branch;
 
-        if (remoteBranch && !localBranches.contains(target)) {
-            return run(path, GitCommand.CHECKOUT, "-b", target, "--track", branch).isPresent() ? target : "";
-        }
+        if (remoteBranch && !localBranches.contains(target))
+            GitCommandRunner.execute(project, path, GitCommand.CHECKOUT, "-b", target, "--track", branch);
+        else GitCommandRunner.execute(project, path, GitCommand.CHECKOUT, target);
 
-        return run(path, GitCommand.CHECKOUT, target).isPresent() ? target : "";
+        return target;
     }
 
     // UC-SHARE-014, Rule-SHARE-064
-    public boolean startBranch(final @NotNull Path path, final @NotNull String branch) {
-        return run(path, GitCommand.CHECKOUT, "-b", branch).isPresent();
+    public void startBranch(final @NotNull Path path, final @NotNull String branch) {
+        GitCommandRunner.execute(project, path, GitCommand.CHECKOUT, "-b", branch);
     }
 
     // UC-SHARE-014, Rule-SHARE-063

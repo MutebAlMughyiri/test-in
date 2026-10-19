@@ -86,7 +86,7 @@ public class GitRepositoryServiceIdeTest extends AbstractGitRemoteIdeTest {
 
     // UC-SHARE-014, Rule-SHARE-064
     public void testANameThatIsNotABranchYetStartsOne() {
-        assertTrue(repositories().startBranch(work, "feature/new-test-cases"));
+        repositories().startBranch(work, "feature/new-test-cases");
 
         assertEquals("feature/new-test-cases", repositories().getCurrentBranch(work));
         assertTrue(repositories().getLocalBranches(work).contains("feature/new-test-cases"));

@@ -22,12 +22,11 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import org.jetbrains.annotations.NotNull;
-import org.testin.explorer.TreePanel;
 import org.testin.git.GitFailureNotice;
 import org.testin.git.GitRepositoryService;
 import org.testin.git.GitStatusLines;
+import org.testin.git.review.BranchSwitch;
 import org.testin.git.review.ViewPendingCommitsAction;
-import org.testin.indexer.Nodes;
 import org.testin.logger.TestinLogger;
 import org.testin.model.node.TestProjectNode;
 import org.testin.notifications.Notifier;
@@ -48,11 +47,7 @@ import java.util.Optional;
 public class BranchSelector {
     private final @NotNull Project project;
 
-    private final @NotNull TreePanel treePanel;
-
     private final @NotNull GitRepositoryService git;
-
-    private final @NotNull Nodes nodes;
 
     private final @NotNull Notifier notifier;
 
@@ -70,11 +65,9 @@ public class BranchSelector {
 
     private boolean showingPlaceholder = false;
 
-    public BranchSelector(final @NotNull Project project, final @NotNull TreePanel treePanel, final @NotNull Optional<TestProjectNode> testProjectNode) {
+    public BranchSelector(final @NotNull Project project, final @NotNull Optional<TestProjectNode> testProjectNode) {
         this.project = project;
-        this.treePanel = treePanel;
         this.git = new GitRepositoryService(project);
-        this.nodes = Services.getInstance(project, Nodes.class);
         this.notifier = Services.getInstance(project, Notifier.class);
         this.model = new DefaultComboBoxModel<>();
         this.comboBox = new ComboBox<>(model);
@@ -194,29 +187,10 @@ public class BranchSelector {
             public void run(final @NotNull ProgressIndicator indicator) {
                 indicator.setIndeterminate(true);
 
-                final @NotNull String checkedOut = git.checkout(repositoryPath, targetBranch);
-                if (checkedOut.isEmpty()) {
-                    ApplicationManager.getApplication().invokeLater(() -> refuseSwitch(repositoryPath, targetBranch));
-                    return;
-                }
-
-                currentBranch = checkedOut;
-
-                nodes.refreshDirectory(repositoryPath);
-
-                ApplicationManager.getApplication().invokeLater(() -> treePanel.reindex(Bundle.message("git.switched.to", checkedOut)));
+                if (!new BranchSwitch(project, git).to(repositoryPath, targetBranch, checkedOut -> currentBranch = checkedOut))
+                    ApplicationManager.getApplication().invokeLater(BranchSelector.this::restoreSelectedBranch);
             }
         });
-    }
-
-    // UC-TREE-PANEL-026
-    private void refuseSwitch(final @NotNull Path repositoryPath, final @NotNull String targetBranch) {
-        restoreSelectedBranch();
-
-        notifier.warnWithAction(project, Bundle.message("git.branch.not.switched.title"),
-                Bundle.message("branch.not.switched.message", targetBranch),
-                Bundle.message("branch.review.changes"),
-                () -> ViewPendingCommitsAction.reviewFor(project, repositoryPath));
     }
 
     private void restoreSelectedBranch() {

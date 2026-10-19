@@ -81,10 +81,10 @@ reads *The pull was rolled back*, or *Nothing was pushed*. Everything that was
 here before the pull is still here.
 
 **If rolling back fails** — a message titled **Git Conflict Operation Failed**
-reads *Could not abort the rebase.*
+reads *Could not abort the rebase.*, with a **Show Git log** link (Rule-SHARE-127).
 
 **If carrying on fails** — the same title, reading *Could not continue the
-rebase.*
+rebase.*, with a **Show Git log** link.
 
 **If conflicts remain after the merge** — the conflict offer opens again, naming
 what is still in the way, with the same three links: Resolve, Continue and
@@ -126,8 +126,9 @@ file is, so the message is the one any write that fails shows: *unable to write
 content:* and the reason. The file stays among those left for the tester.
 
 **If a merged file Git will not take** — a message titled **Merge Not
-Accepted** names the file and says what to do: resolve that file in Git, then
-sync again. The sync cannot go on without it.
+Accepted** names the file, says what to do: resolve that file in Git, then
+sync again, and carries a **Show Git log** link. The sync cannot go on without
+it.
 
 ## Some things are settled without asking, and the dialog says which
 

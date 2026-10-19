@@ -16,6 +16,7 @@
 
 package org.testin.git;
 
+import com.intellij.notification.NotificationAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindowId;
 import com.intellij.openapi.wm.ToolWindowManager;
@@ -28,15 +29,18 @@ import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
 
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GitFailureNotice {
     // UC-SHARE-016, Rule-SHARE-127, Rule-INTERNAL-129
-    public static void show(final @NotNull Project project, final @NotNull String title, final @NotNull String whatGitSaid) {
+    public static void show(final @NotNull Project project, final @NotNull String title, final @NotNull String whatGitSaid, final @NotNull NotificationAction... first) {
         Services.getInstance(project, Guides.class).add(Guide.SHARE_OVER_GIT);
         final @NotNull Notifier notifier = Services.getInstance(project, Notifier.class);
-        notifier.errorWithActions(project, title, whatGitSaid, notifier.action(Bundle.message("git.show.log"), () -> openGitWindow(project)));
+        final @NotNull NotificationAction showLog = notifier.action(Bundle.message("git.show.log"), () -> openGitWindow(project));
+        notifier.errorWithActions(project, title, whatGitSaid, Stream.concat(Arrays.stream(first), Stream.of(showLog)).toArray(NotificationAction[]::new));
     }
 
     private static void openGitWindow(final @NotNull Project project) {

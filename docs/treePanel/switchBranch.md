@@ -149,9 +149,10 @@ folder that is not a Git repository: without the plugin no folder is asked.
 
 **If Git refuses the checkout** — the box goes back to the branch the tester was
 on. An IDE notification titled *Branch Not Switched* opens. It says *\<branch\>
-was not checked out. There are uncommitted changes in this test project that
-switching would overwrite - commit them first.* It carries a **Review Changes**
-link.
+could not be checked out, so nothing changed: the changes are still here and
+still yours. Git said:*, then what Git said, whether that is uncommitted work in
+the way, a lock file or anything else. It carries a **Review Changes** link and a
+**Show Git log** link (Rule-SHARE-127).
 
 **If the branches cannot be read** — the box reads *Failed to load branches* and
 cannot be opened. An IDE notification titled *Git Error* gives the reason.

@@ -77,10 +77,11 @@ The box sits under the table in the review dialog.
 
 ## What Testin refuses
 
-**If the branch cannot be checked out** — a message titled **Branch Not
-Switched** reads the branch's name, then *could not be checked out, so nothing
-was committed. The changes are still here and still yours.* One link sits under
-it, reading **Review Changes**. It opens the dialog again.
+**If the branch cannot be checked out or started** — a message titled **Branch
+Not Switched** reads the branch's name, then *could not be checked out, so
+nothing changed: the changes are still here and still yours. Git said:*, then
+what Git said. Nothing is committed (Rule-SHARE-065). Two links sit under it:
+**Review Changes**, which opens the dialog again, and **Show Git log**.
 
 **If the branch cannot be prepared for any other reason** — a message titled **Git Error** reads *Could not prepare*,
 the branch, then the reason.
