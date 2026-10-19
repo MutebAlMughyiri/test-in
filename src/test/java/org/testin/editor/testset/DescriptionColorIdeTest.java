@@ -96,7 +96,7 @@ public class DescriptionColorIdeTest extends AbstractTempRootIdeTest {
     public void testTheViewPanelAndTheCreateTestRunTreeDrawADescriptionInItsStatusColor() {
         final @NotNull TestCase reviewed = TestCase.builder().uuid(UUID.randomUUID()).description("Log in with a locked user").status(TestCaseStatus.REVIEWED).build();
         final @NotNull JBPanel<?> panel = new JBPanel<>(new GridBagLayout());
-        new Title().render(getProject(), panel, new GridBagConstraints(), reviewed, 0);
+        new Title(Optional.empty()).render(getProject(), panel, new GridBagConstraints(), reviewed, 0);
 
         assertEquals("the view panel does not draw a Reviewed description in its color", FixedColors.PALE_BLUE, Drawn.first(panel, JTextArea.class).getForeground());
 

@@ -29,7 +29,6 @@ import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.ReportColor;
-import org.testin.model.TestCase;
 import org.testin.model.bug.BugIssueUrl;
 import org.testin.model.markers.DetailRow;
 import org.testin.model.node.TestRunNode;
@@ -144,12 +143,11 @@ public final class TestRunExcelGenerator {
         int row = 1;
         for (final RunItem runItem : runItems.getAll()) {
             ProgressManager.checkCanceled();
-            final @NotNull TestCase details = runItem.shownTestCase();
             final @NotNull ReportSection section = ReportSection.of(runItem);
             final @NotNull XSSFCellStyle shaded = style(workbook, false, 0, section.textHex(), section.getHexColor(), true);
 
             write(sheet, row, 0, runItem.getUuid().toString(), shaded);
-            write(sheet, row, 1, ReportText.orEmpty(details.getDescription()), shaded);
+            write(sheet, row, 1, ReportText.testCaseName(runItem), shaded);
             for (int column = 0; column < columns.size(); column++) {
                 write(sheet, row, 2 + column, valueOf(columns.get(column), runItem), shaded);
             }

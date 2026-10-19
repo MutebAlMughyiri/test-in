@@ -31,7 +31,6 @@ import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.status.TestCaseStatus;
-import org.testin.util.Bundle;
 import org.testin.util.JsonCodec;
 
 import java.time.ZoneId;
@@ -135,7 +134,6 @@ public final class TestCase {
     public static @NotNull TestCase deleted(final @NotNull UUID testCaseUuid) {
         return TestCase.builder()
                 .uuid(testCaseUuid)
-                .description(Bundle.message("testcase.deleted", testCaseUuid))
                 .build();
     }
 

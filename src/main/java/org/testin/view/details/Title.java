@@ -20,10 +20,13 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.EmptyIcon;
 import com.intellij.util.ui.JBUI;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.testrun.ExecutingNow;
 import org.testin.model.TestCase;
+import org.testin.model.testrun.RunItem;
 import org.testin.testcase.TestSetEditorFields;
+import org.testin.testrun.TestRunEditorFields;
 import org.testin.ui.framework.Prose;
 import org.testin.util.Bundle;
 import org.testin.util.Fonts;
@@ -31,7 +34,9 @@ import org.testin.util.Icons;
 
 import javax.swing.JTextArea;
 import java.awt.GridBagConstraints;
+import java.util.Optional;
 
+@RequiredArgsConstructor
 public class Title extends AbstractDetails {
     final int INSETS_TOP = 20;
 
@@ -41,10 +46,14 @@ public class Title extends AbstractDetails {
 
     final int INSETS_RIGHT = 16;
 
+    private final @NotNull Optional<RunItem> runItem;
+
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-025, Rule-VIEW-PANEL-125, Rule-EDITOR-PANEL-294
     @Override
     public int render(final @NotNull Project project, final @NotNull JBPanel<?> panel, final @NotNull GridBagConstraints constraints, final @NotNull TestCase testCase, final int currentRow) {
-        final @NotNull String titleText = TestSetEditorFields.DESCRIPTION.displayValue(testCase);
+        final @NotNull String titleText = runItem
+                .map(shown -> TestRunEditorFields.descriptionOf(shown, TestSetEditorFields.DESCRIPTION::displayValue))
+                .orElseGet(() -> TestSetEditorFields.DESCRIPTION.displayValue(testCase));
         final @NotNull String finalValue = titleText.trim().isEmpty() ? "-" : titleText;
 
         final boolean executing = ExecutingNow.is(project, testCase.getUuid());

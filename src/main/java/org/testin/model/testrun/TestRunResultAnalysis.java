@@ -74,14 +74,6 @@ public enum TestRunResultAnalysis {
         return segments;
     }
 
-    public static boolean anyWrittenIn(final @NotNull Map<TestRunResultAnalysis, String> analysis) {
-        for (final TestRunResultAnalysis section : values()) {
-            if (!section.writtenIn(analysis).isEmpty()) return true;
-        }
-
-        return false;
-    }
-
     // Rule-EDITOR-PANEL-191
     public static @NotNull Map<TestRunResultAnalysis, String> written(final @NotNull Map<TestRunResultAnalysis, String> analysis) {
         final @NotNull Map<TestRunResultAnalysis, String> kept = new EnumMap<>(TestRunResultAnalysis.class);

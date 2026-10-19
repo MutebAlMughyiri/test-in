@@ -18,6 +18,7 @@ package org.testin.testrun;
 
 import com.google.errorprone.annotations.Immutable;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.FieldDefault;
@@ -36,6 +37,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Getter
+@AllArgsConstructor
 public enum TestRunEditorFields implements ShowableField {
     SEQUENCE(
             TestSetEditorFields.SEQUENCE,
@@ -57,7 +59,7 @@ public enum TestRunEditorFields implements ShowableField {
         // Rule-EDITOR-PANEL-263
         @Override
         public @NotNull String gridValue(final @NotNull RunItem runItem) {
-            final @NotNull String description = super.gridValue(runItem);
+            final @NotNull String description = descriptionOf(runItem, TestSetEditorFields.DESCRIPTION::gridValue);
             return ChangedSinceCommit.of(runItem) ? description + " " + Bundle.message("test.run.changed.since.short") : description;
         }
     },
@@ -199,12 +201,9 @@ public enum TestRunEditorFields implements ShowableField {
                 (runItem, badges, details) -> testCaseField.applyToUI(testCaseOf.apply(runItem), badges, details));
     }
 
-    TestRunEditorFields(final @NotNull String name, final @NotNull FieldDefault toolBarDefault, final @NotNull Function<RunItem, String> runItemValueExtractor, final @NotNull RunItemValueSetter runItemValueSetter, final @NotNull CardLine cardLine) {
-        this.name = name;
-        this.toolBarDefault = toolBarDefault;
-        this.runItemValueExtractor = runItemValueExtractor;
-        this.runItemValueSetter = runItemValueSetter;
-        this.cardLine = cardLine;
+    // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-300, Rule-REPORT-021
+    public static @NotNull String descriptionOf(final @NotNull RunItem runItem, final @NotNull Function<TestCase, String> asShown) {
+        return runItem.versionToShow().map(asShown).orElseGet(() -> Bundle.message("testcase.deleted", runItem.getUuid()));
     }
 
     // Rule-EDITOR-PANEL-020

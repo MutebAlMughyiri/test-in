@@ -61,9 +61,12 @@ record EditTestRunWork(@NotNull Project project, @NotNull TestRuns testRuns, @No
         EditTestRunAction.selectedTestRun(TreeValues.directoryAt(path)).ifPresent(this::edit);
     }
 
+    // UC-TREE-PANEL-022, Rule-TREE-PANEL-134, Rule-EDITOR-PANEL-300
     private void edit(final @NotNull TestRunNode testRun) {
         final @NotNull RunItems held = testRuns.getRunItems(testRun.getPath());
-        final @NotNull List<TestCase> deleted = held.getAll().stream().filter(RunItem::isRemoved).map(RunItem::shownTestCase).toList();
+        final @NotNull List<TestCase> deleted = held.getAll().stream().filter(RunItem::isRemoved)
+                .map(runItem -> runItem.shownTestCase().edit().description(TestRunEditorFields.descriptionOf(runItem, TestCase::getDescription)).build())
+                .toList();
 
         boundTestProject.get().ifPresentOrElse(
                 testProject -> new TestRunFormOpener(project).open(testProject.getTestCasesFolder(), testRun.getName(), held.coveredUuids(), deleted, testRun.getMarker().getConfiguration(), saves(testRun)),

@@ -66,7 +66,7 @@ public class DetailsTab {
         return Band.of(Bundle.message("details.band.run.item"), List.of(
                 new RunItemSummary(runItem, treePath, showExecution),
                 new FieldRow(TestRunEditorFields.ACTUAL_RESULT.getName(), (_, _) -> shown.getActualResult()),
-                new StacktraceLine(shown, treePath),
+                new StacktraceLine(runItem, shown, treePath),
                 new FieldRow(TestRunEditorFields.EXECUTED_BY.getName(), (_, _) -> Display.whoAndWhen(shown.getExecutedBy(), shown.getExecutedAt()))));
     }
 
@@ -135,7 +135,7 @@ public class DetailsTab {
 
     // UC-VIEW-PANEL-004, UC-VIEW-PANEL-005, Rule-VIEW-PANEL-085, Rule-VIEW-PANEL-087
     private @NotNull List<AbstractDetails> detailRows(final @NotNull Optional<RunItem> runItem, final @NotNull List<String> treePath, final @NotNull OptionalInt shownLine, final @NotNull Consumer<OptionalInt> showExecution) {
-        final @NotNull List<AbstractDetails> rows = new ArrayList<>(List.of(new Breadcrumb(treePath), new Title(), new BadgesAndActions(treePath)));
+        final @NotNull List<AbstractDetails> rows = new ArrayList<>(List.of(new Breadcrumb(treePath), new Title(runItem), new BadgesAndActions(treePath)));
 
         runItem.ifPresentOrElse(shown -> {
             rows.add(testRunBand(shown, treePath, shownLine, showExecution));

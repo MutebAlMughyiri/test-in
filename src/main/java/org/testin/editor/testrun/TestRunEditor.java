@@ -261,11 +261,13 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
     // UC-EDITOR-PANEL-001, Rule-EDITOR-PANEL-014, Rule-EDITOR-PANEL-239
     public @NotNull String cardTitle(final @NotNull TestCase testCase) {
         final @NotNull Set<TestRunEditorFields> selected = getSelectedDetails();
-        final @NotNull TestCase shown = runItem(testCase.getUuid()).map(RunItem::shownTestCase).orElse(testCase);
+        final @NotNull String description = runItem(testCase.getUuid())
+                .map(runItem -> TestRunEditorFields.descriptionOf(runItem, TestSetEditorFields.DESCRIPTION::displayValue))
+                .orElseGet(() -> TestSetEditorFields.DESCRIPTION.displayValue(testCase));
 
         return AbstractCard.titleText(positionOf(testCase),
                 selected.contains(TestRunEditorFields.ORDER),
-                selected.contains(TestRunEditorFields.DESCRIPTION) ? TestSetEditorFields.DESCRIPTION.displayValue(shown) : "");
+                selected.contains(TestRunEditorFields.DESCRIPTION) ? description : "");
     }
 
     @Override

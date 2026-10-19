@@ -22,6 +22,8 @@ import org.testin.model.TestCase;
 import org.testin.model.bug.BugPriority;
 import org.testin.model.bug.BugSeverity;
 import org.testin.model.status.RunItemStatus;
+import org.testin.testrun.TestRunEditorFields;
+import org.testin.util.Bundle;
 import org.testin.util.RealJsonCodec;
 import org.testng.annotations.Test;
 
@@ -289,7 +291,7 @@ public class RunItemTest {
                 .showing(Optional.empty(), Optional.empty(), Optional.empty(), false);
 
         assertTrue(runItem.isRemoved(), "the live test case and the removed mark are set by one call, so they cannot disagree");
-        assertEquals(runItem.shownTestCase().getDescription(), TestCase.deleted(testCaseUuid).getDescription());
+        assertEquals(TestRunEditorFields.descriptionOf(runItem, TestCase::getDescription), Bundle.message("testcase.deleted", testCaseUuid));
     }
 
     @Test
@@ -297,8 +299,35 @@ public class RunItemTest {
         final UUID testCaseUuid = UUID.randomUUID();
         final RunItem runItem = RunItem.builder().uuid(testCaseUuid).build();
 
-        assertEquals(runItem.shownTestCase().getDescription(), TestCase.deleted(testCaseUuid).getDescription());
+        assertEquals(TestRunEditorFields.descriptionOf(runItem, TestCase::getDescription), Bundle.message("testcase.deleted", testCaseUuid));
         assertEquals(runItem.shownTestCase().getUuid(), testCaseUuid);
+    }
+
+    // Rule-EDITOR-PANEL-300
+    @Test
+    public void aRunItemWhoseTestCaseIsNowhereIsNamedByItsUuidAndHasNoPathOrFqcn() {
+        final UUID testCaseUuid = UUID.randomUUID();
+        final RunItem runItem = RunItem.builder().uuid(testCaseUuid).build()
+                .showing(Optional.empty(), Optional.empty(), Optional.empty(), false);
+        final String named = Bundle.message("testcase.deleted", testCaseUuid);
+
+        assertTrue(runItem.versionToShow().isEmpty());
+        assertEquals(runItem.shownTestCase().getDescription(), "", "the words are stored as the test case's description");
+        assertEquals(TestRunEditorFields.DESCRIPTION.gridValue(runItem), named, "the grid does not name the missing test case");
+        assertEquals(TestRunEditorFields.descriptionOf(runItem, TestCase::getDescription), named, "a report does not name the missing test case");
+        assertEquals(TestRunEditorFields.FQCN.gridValue(runItem), "", "a test case that is nowhere has a class and a method");
+        assertEquals(TestRunEditorFields.PATH.gridValue(runItem), "", "a test case that is nowhere has a path");
+    }
+
+    @Test
+    public void aRunItemShowingTheLastVersionGitHoldsIsNamedByThatVersion() {
+        final UUID testCaseUuid = UUID.randomUUID();
+        final RunItem runItem = RunItem.builder().uuid(testCaseUuid).build()
+                .showing(Optional.empty(), Optional.empty(), Optional.of(TestCase.builder().uuid(testCaseUuid).description("Log in").build()), false);
+
+        assertTrue(runItem.isRemoved(), "a test case gone from its set is removed");
+        assertTrue(runItem.versionToShow().isPresent(), "the version Git holds is a test case to show");
+        assertEquals(TestRunEditorFields.descriptionOf(runItem, TestCase::getDescription), "Log in");
     }
 
     @Test

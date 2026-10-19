@@ -26,6 +26,7 @@ import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.TestRuns;
 import org.testin.model.TestCase;
+import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.services.Services;
 import org.testin.setting.TestinRoot;
@@ -51,6 +52,8 @@ public final class StacktraceLine extends AbstractDetails {
 
     private static final int INSETS_SIDE = 16;
 
+    private final @NotNull RunItem runItem;
+
     private final @NotNull RunItemExecution shown;
 
     private final @NotNull List<String> treePath;
@@ -73,16 +76,16 @@ public final class StacktraceLine extends AbstractDetails {
 
         final @NotNull Path testRunPath = Services.getInstance(project, TestinRoot.class).resolve(treePath);
 
-        if (link) parts.add(stacktraceLink(project, testCase, stacktrace));
+        if (link) parts.add(stacktraceLink(project, stacktrace));
         screenshots.forEach(name -> parts.add(thumbnail(project, testRunPath, name)));
 
         return addFullWidthRow(panel, constraints, line(parts), JBUI.insets(INSETS_TOP, INSETS_SIDE, 0, INSETS_SIDE), currentRow);
     }
 
     // UC-VIEW-PANEL-006, Rule-VIEW-PANEL-034
-    private @NotNull ActionLink stacktraceLink(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull String stacktrace) {
+    private @NotNull ActionLink stacktraceLink(final @NotNull Project project, final @NotNull String stacktrace) {
         return link(Bundle.message("view.stacktrace.link"),
-                _ -> new StacktraceDialog(project, testCase, shown.getActualResult(), stacktrace).show());
+                _ -> new StacktraceDialog(project, runItem, shown.getActualResult(), stacktrace).show());
     }
 
     // UC-VIEW-PANEL-006, Rule-VIEW-PANEL-081

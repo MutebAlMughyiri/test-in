@@ -19,10 +19,12 @@ package org.testin.report.generators;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.testin.model.TestCase;
 import org.testin.model.markers.TestRunMarker;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.TestRunConfiguration;
 import org.testin.model.testrun.TestRunSummary;
+import org.testin.testrun.TestRunEditorFields;
 import org.testin.util.Bundle;
 
 import java.util.ArrayList;
@@ -40,6 +42,11 @@ public final class ReportText {
 
     // Rule-REPORT-019
     public static final @NotNull String EMPTY = "—";
+
+    // UC-REPORT-001, Rule-REPORT-021, Rule-EDITOR-PANEL-300
+    public static @NotNull String testCaseName(final @NotNull RunItem runItem) {
+        return orEmpty(TestRunEditorFields.descriptionOf(runItem, TestCase::getDescription));
+    }
 
     // Rule-REPORT-019
     public static @NotNull String orEmpty(final @NotNull String value) {

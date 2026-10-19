@@ -157,11 +157,11 @@ public final class TestRunHtmlGenerator {
                 .filter(section::matches)
                 .forEach(runItem -> {
                     ProgressManager.checkCanceled();
-                    final @NotNull String description = runItem.shownTestCase().getDescription();
+                    final @NotNull String testCaseName = ReportText.testCaseName(runItem);
 
                     html.append("<tr>")
                             .append("<td class='seq'>").append(sequence.getAndIncrement()).append("</td>")
-                            .append("<td>").append(StringUtil.escapeXmlEntities(ReportText.orEmpty(description)));
+                            .append("<td>").append(StringUtil.escapeXmlEntities(testCaseName));
 
                     // Rule-REPORT-027
                     ReportText.otherExecutions(runItem).ifPresent(others -> html.append("<div class='actual'>").append(StringUtil.escapeXmlEntities(others)).append("</div>"));

@@ -120,6 +120,12 @@ public class RunItem {
         return removed;
     }
 
+    // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-300, Rule-EDITOR-PANEL-239
+    @JsonIgnore
+    public @NotNull Optional<TestCase> versionToShow() {
+        return recorded.or(() -> live).or(() -> lastInGit);
+    }
+
     // Rule-EDITOR-PANEL-136
     public @NotNull RunItem setExecutions(final @NotNull List<RunItemExecution> recorded) {
         executions = recorded.isEmpty() ? List.of(RunItemExecution.pending()) : List.copyOf(recorded);
@@ -266,7 +272,7 @@ public class RunItem {
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-239, Rule-REPORT-021, Rule-VIEW-PANEL-083, Rule-EDITOR-PANEL-238
     public @NotNull TestCase shownTestCase() {
-        return recorded.or(() -> live).or(() -> lastInGit).orElseGet(() -> TestCase.deleted(uuid));
+        return versionToShow().orElseGet(() -> TestCase.deleted(uuid));
     }
 
     // Rule-EDITOR-PANEL-263

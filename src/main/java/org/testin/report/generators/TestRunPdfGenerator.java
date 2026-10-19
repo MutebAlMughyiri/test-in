@@ -276,8 +276,7 @@ public final class TestRunPdfGenerator {
                             .setFont(regularFont).setFontSize(ReportFont.BODY.points()).setFontColor(MUTED_COLOR)
                             .setTextAlignment(TextAlignment.CENTER)));
 
-            final @NotNull String testCaseName = runItem.shownTestCase().getDescription();
-            final @NotNull String shownTestCaseName = ReportText.orEmpty(testCaseName);
+            final @NotNull String shownTestCaseName = ReportText.testCaseName(runItem);
             final @NotNull Cell testCaseCell = new Cell()
                     .setBackgroundColor(rowBackground)
                     .setBorder(new SolidBorder(LINE_COLOR, 1))

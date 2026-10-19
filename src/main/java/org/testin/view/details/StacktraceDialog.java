@@ -19,6 +19,7 @@ package org.testin.view.details;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCase;
+import org.testin.model.testrun.RunItem;
 import org.testin.testcase.CreateTestCaseFields;
 import org.testin.testrun.TestRunEditorFields;
 import org.testin.ui.framework.AbstractFrameworkDialog;
@@ -34,7 +35,7 @@ public final class StacktraceDialog extends AbstractFrameworkDialog {
     private static final int VISIBLE_ROWS = 22;
 
     // UC-VIEW-PANEL-006, Rule-VIEW-PANEL-036, Rule-VIEW-PANEL-035
-    public StacktraceDialog(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull String actualResult, final @NotNull String stacktrace) {
+    public StacktraceDialog(final @NotNull Project project, final @NotNull RunItem runItem, final @NotNull String actualResult, final @NotNull String stacktrace) {
         super(project);
 
         title = Bundle.message("dialog.stacktrace.title");
@@ -43,8 +44,8 @@ public final class StacktraceDialog extends AbstractFrameworkDialog {
 
         components = List.of(
                 DialogPart.details()
-                        .row(CreateTestCaseFields.DESCRIPTION.getIcon(), testCase.getDescription())
-                        .row(CreateTestCaseFields.EXPECTED_RESULT.getIcon(), testCase.getExpectedResult())
+                        .row(CreateTestCaseFields.DESCRIPTION.getIcon(), TestRunEditorFields.descriptionOf(runItem, TestCase::getDescription))
+                        .row(CreateTestCaseFields.EXPECTED_RESULT.getIcon(), runItem.shownTestCase().getExpectedResult())
                         .row(TestRunEditorFields.ACTUAL_RESULT.getName(), actualResult)
                         .build(),
                 DialogPart.textArea()

@@ -21,6 +21,8 @@ import org.testin.model.node.TestSetNode;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.testrun.Failure;
 import org.testin.model.testrun.RunItem;
+import org.testin.testrun.TestRunEditorFields;
+import org.testin.util.Bundle;
 import org.testin.util.JsonCodec;
 import org.testin.util.RealJsonCodec;
 import org.testng.annotations.Test;
@@ -106,7 +108,7 @@ public class TestCaseAsJudgedTest {
 
         runItem.showing(Optional.empty(), Optional.empty(), Optional.empty(), false);
 
-        assertEquals(runItem.shownTestCase().getDescription(), TestCase.deleted(testCaseUuid).getDescription());
+        assertEquals(TestRunEditorFields.descriptionOf(runItem, TestCase::getDescription), Bundle.message("testcase.deleted", testCaseUuid));
     }
 
     // Rule-EDITOR-PANEL-239

@@ -21,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItem;
 import org.testin.testcase.CreateTestCaseFields;
+import org.testin.testrun.TestRunEditorFields;
 import org.testin.ui.framework.AbstractFrameworkDialog;
 import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.StatusBarShortcut;
@@ -41,8 +42,6 @@ public class FailureDetailDialog extends AbstractFrameworkDialog {
         super(project);
         this.onSave = onSave;
 
-        final @NotNull TestCase testCase = runItem.shownTestCase();
-
         fields = new FailureFields(project, testRunPath, runItem);
         fields.onResized(this::refit);
 
@@ -53,8 +52,8 @@ public class FailureDetailDialog extends AbstractFrameworkDialog {
 
         final @NotNull List<DialogPart<?>> all = new ArrayList<>();
         all.add(DialogPart.details()
-                .row(CreateTestCaseFields.DESCRIPTION.getIcon(), testCase.getDescription())
-                .row(CreateTestCaseFields.EXPECTED_RESULT.getIcon(), testCase.getExpectedResult())
+                .row(CreateTestCaseFields.DESCRIPTION.getIcon(), TestRunEditorFields.descriptionOf(runItem, TestCase::getDescription))
+                .row(CreateTestCaseFields.EXPECTED_RESULT.getIcon(), runItem.shownTestCase().getExpectedResult())
                 .build());
         all.addAll(fields.components());
 

@@ -22,6 +22,7 @@ import org.testin.model.status.RunItemStatus;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItems;
+import org.testin.testrun.TestRunEditorFields;
 import org.testin.util.RealJsonCodec;
 import org.testng.annotations.Test;
 
@@ -60,10 +61,10 @@ public class DeletedTestCaseInATestRunTest {
         final RunItem runItem = removedRunItem(testCaseUuid);
 
         final TestCase shown = runItem.shownTestCase();
+        final String named = TestRunEditorFields.descriptionOf(runItem, TestCase::getDescription);
 
         assertEquals(shown.getUuid(), testCaseUuid, "the UUID is the only identity a deleted test case has left");
-        assertTrue(shown.getDescription().contains(testCaseUuid.toString()),
-                "the row names itself rather than drawing blank: " + shown.getDescription());
+        assertTrue(named.contains(testCaseUuid.toString()), "the row names itself rather than drawing blank: " + named);
     }
 
     // Rule-EDITOR-PANEL-126
