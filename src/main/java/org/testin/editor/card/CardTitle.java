@@ -23,6 +23,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.Automated;
+import org.testin.quickaction.Offered;
 import org.testin.util.Fonts;
 import org.testin.util.Icons;
 

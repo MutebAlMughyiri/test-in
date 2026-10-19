@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.testin.editor.card;
+package org.testin.quickaction;
 
 import com.google.common.collect.ImmutableList;
 import com.intellij.icons.AllIcons;

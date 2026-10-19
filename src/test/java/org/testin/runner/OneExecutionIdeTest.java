@@ -38,11 +38,11 @@ import org.testin.Await;
 import org.testin.Said;
 import org.testin.actions.TestinDataKeys;
 import org.testin.codegen.CodeChangeType;
-import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.notifications.Done;
 import org.testin.notifications.Refused;
+import org.testin.quickaction.TestCaseQuickAction;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
 

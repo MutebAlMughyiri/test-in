@@ -17,6 +17,7 @@
 package org.testin.editor.card;
 
 import org.jetbrains.annotations.NotNull;
+import org.testin.quickaction.Offered;
 
 import java.awt.Rectangle;
 

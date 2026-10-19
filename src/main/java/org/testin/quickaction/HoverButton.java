@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.testin.editor.card;
+package org.testin.quickaction;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;

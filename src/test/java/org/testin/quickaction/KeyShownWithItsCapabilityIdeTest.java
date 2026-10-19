@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package org.testin.editor;
+package org.testin.quickaction;
 
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.keymap.KeymapUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
-import org.testin.editor.card.Offered;
-import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.model.TestCase;
 
 import java.util.List;

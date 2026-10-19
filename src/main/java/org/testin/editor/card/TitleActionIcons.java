@@ -18,6 +18,7 @@ package org.testin.editor.card;
 
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
+import org.testin.quickaction.Offered;
 
 import java.awt.Rectangle;
 import java.util.List;

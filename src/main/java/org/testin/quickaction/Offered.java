@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.testin.editor.card;
+package org.testin.quickaction;
 
 import org.jetbrains.annotations.NotNull;
 

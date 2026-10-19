@@ -23,8 +23,8 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.TestinDataKeys;
 import org.testin.editor.TestinEditor;
-import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.model.TestCase;
+import org.testin.quickaction.TestCaseQuickAction;
 
 import java.util.List;
 import java.util.Optional;

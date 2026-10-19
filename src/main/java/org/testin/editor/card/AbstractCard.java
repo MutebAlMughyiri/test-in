@@ -32,6 +32,8 @@ import org.testin.model.Automated;
 import org.testin.model.Priority;
 import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
+import org.testin.quickaction.Offered;
+import org.testin.quickaction.TestCaseQuickAction;
 import org.testin.services.Services;
 import org.testin.testcase.TestCaseOrder;
 import org.testin.testcase.TestSetEditorFields;

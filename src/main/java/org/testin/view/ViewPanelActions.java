@@ -19,8 +19,8 @@ package org.testin.view;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.editor.card.ShownTestCaseAction;
-import org.testin.editor.card.TestCaseQuickAction;
+import org.testin.quickaction.ShownTestCaseAction;
+import org.testin.quickaction.TestCaseQuickAction;
 
 import javax.swing.JComponent;
 import java.util.List;

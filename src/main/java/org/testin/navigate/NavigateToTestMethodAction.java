@@ -23,10 +23,10 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.TestinDataKeys;
 import org.testin.codegen.CodeOn;
-import org.testin.editor.card.TestCaseQuickAction;
 import org.testin.help.Guide;
 import org.testin.help.Guides;
 import org.testin.model.TestCase;
+import org.testin.quickaction.TestCaseQuickAction;
 import org.testin.services.Services;
 
 // UC-CODEGEN-006
