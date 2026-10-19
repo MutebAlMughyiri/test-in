@@ -26,19 +26,19 @@ public class CloneTestProjectTest {
 
     // Rule-TREE-PANEL-107
     @Test
-    public void everyFormOfAddressGivesTheRepositoryName() {
-        assertEquals(CloneTestProject.repositoryName("https://github.com/acme/nafath-test-cases.git"), "nafath-test-cases");
-        assertEquals(CloneTestProject.repositoryName("git@github.com:acme/nafath-test-cases.git"), "nafath-test-cases");
-        assertEquals(CloneTestProject.repositoryName("ssh://git@host:2222/acme/nafath-test-cases.git"), "nafath-test-cases");
-        assertEquals(CloneTestProject.repositoryName("https://host/acme/nafath-test-cases/"), "nafath-test-cases");
-        assertEquals(CloneTestProject.repositoryName("https://host/acme/nafath-test-cases"), "nafath-test-cases");
-        assertEquals(CloneTestProject.repositoryName("  https://host/acme/Checkout.GIT  "), "Checkout");
-        assertEquals(CloneTestProject.repositoryName("https://host/acme/checkout?ref=main#readme"), "checkout");
+    public void everyFormOfAddressGivesTheRepositoryNameInCapitalsWithoutTestCases() {
+        assertEquals(CloneTestProject.repositoryName("https://github.com/acme/nafath-test-cases.git"), "NAFATH");
+        assertEquals(CloneTestProject.repositoryName("git@github.com:acme/nafath-test-cases.git"), "NAFATH");
+        assertEquals(CloneTestProject.repositoryName("ssh://git@host:2222/acme/nafath-test-cases.git"), "NAFATH");
+        assertEquals(CloneTestProject.repositoryName("https://host/acme/nafath-test-cases/"), "NAFATH");
+        assertEquals(CloneTestProject.repositoryName("https://host/acme/nafath-test-cases"), "NAFATH");
+        assertEquals(CloneTestProject.repositoryName("  https://host/acme/Checkout.GIT  "), "CHECKOUT");
+        assertEquals(CloneTestProject.repositoryName("https://host/acme/checkout?ref=main#readme"), "CHECKOUT");
     }
 
     @Test
     public void anAccountInTheAddressIsNotPartOfTheName() {
-        assertEquals(CloneTestProject.repositoryName("https://muteb@bitbucket.org/acme/tests.git"), "tests");
+        assertEquals(CloneTestProject.repositoryName("https://muteb@bitbucket.org/acme/tests.git"), "TESTS");
     }
 
     // Rule-TREE-PANEL-107

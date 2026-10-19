@@ -164,4 +164,12 @@ public class GeneratedNamesTest {
         assertEquals(NameSanitizer.methodName("Log in!"), NameSanitizer.methodName("LOG-IN"),
                 "two descriptions a tester reads as one would write two methods for one test");
     }
+
+    // Rule-CODEGEN-008
+    @Test
+    public void aTestProjectNamedAfterItsTestCasesRepositoryGivesThePackageItsCloneWould() {
+        assertEquals(NameSanitizer.packageName("nafath-test-cases"), "nafath");
+        assertEquals(NameSanitizer.packageName("NAFATH"), "nafath");
+        assertEquals(NameSanitizer.withoutTestCases("nafath-test-cases-old"), "nafath-test-cases-old", "only a trailing -test-cases is dropped");
+    }
 }

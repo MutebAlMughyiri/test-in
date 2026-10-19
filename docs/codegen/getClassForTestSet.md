@@ -35,7 +35,10 @@ There is no key for this. It happens when a test set is created, which is
   but letters and digits removed, and always ends in `Test`.
 - **Rule-CODEGEN-008** — Each folder above the test set becomes a package in
   Java's own style: every word in lowercase, joined with nothing between, so
-  *Checkout* is `checkout` and *Home Screen* is `homescreen`.
+  *Checkout* is `checkout` and *Home Screen* is `homescreen`. Each folder's name
+  loses a trailing `-test-cases` first, so the test project *nafath-test-cases*
+  is `nafath`, the same as *NAFATH*, and the package *smoke-test-cases* is
+  `smoke`.
 - **Rule-CODEGEN-009** — A class that is already there is never written over.
 - **Rule-CODEGEN-010** — The class is written empty. It holds no blank line
   inside its braces.

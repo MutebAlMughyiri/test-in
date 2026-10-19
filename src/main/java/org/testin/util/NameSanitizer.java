@@ -27,6 +27,8 @@ import java.util.regex.Pattern;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NameSanitizer {
+    private static final @NotNull String TEST_CASES_SUFFIX = "-test-cases";
+
     private static final @NotNull Pattern INVALID_NAME = Pattern.compile("[^a-zA-Z0-9 _]");
 
     private static final @NotNull Pattern SPACES = Pattern.compile("\\s{2,}");
@@ -46,11 +48,16 @@ public final class NameSanitizer {
 
     // Rule-CODEGEN-008
     private static @NotNull String packageWord(final @NotNull String value) {
-        final @NotNull String cleanName = INVALID_NAME.matcher(value.replace("-test-cases", ""))
+        final @NotNull String cleanName = INVALID_NAME.matcher(withoutTestCases(value))
                 .replaceAll("").trim();
         final @NotNull String word = String.join("", cleanName.split("[\\s_]+", -1)).toLowerCase(Locale.ROOT);
 
         return notStartingWithADigit(word);
+    }
+
+    // Rule-CODEGEN-008, Rule-TREE-PANEL-107
+    public static @NotNull String withoutTestCases(final @NotNull String name) {
+        return name.toLowerCase(Locale.ROOT).endsWith(TEST_CASES_SUFFIX) ? name.substring(0, name.length() - TEST_CASES_SUFFIX.length()) : name;
     }
 
     private static @NotNull String notStartingWithADigit(final @NotNull String word) {

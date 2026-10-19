@@ -67,7 +67,8 @@ This copies a test project from Git onto this machine.
 - **Rule-TREE-PANEL-107** — Cloning needs the Git plugin, and nothing else: a
   code project clones a test project whether it has a `testin.yml` or not. The
   clone is named after its repository, the last part of the address without
-  `.git`. That name is kept as it is when Testin accepts it as a test project's
+  `.git` and without a trailing `-test-cases`, in capitals: *nafath-test-cases*
+  becomes *NAFATH*. That name is kept as it is when Testin accepts it as a test project's
   name, made into one otherwise, and numbered when the Testin folder already
   has it. The one exception is the address `testin.yml` gives: that clone takes
   the name the file gives beside it.
@@ -95,7 +96,7 @@ drawn under [UC-TREE-PANEL-001](reachTheTree.md), and it does the same thing.
    `Enter`.
 4. Testin copies the repository into the Testin folder. The new folder is
    named after the repository: `https://github.com/acme/nafath-test-cases.git`
-   becomes `nafath-test-cases`, and a second clone of it `nafath-test-cases2`.
+   becomes `NAFATH`, and a second clone of it `NAFATH2`.
    A progress bar reads *Cloning repository*, with the line *Cloning into
    \<name\>...*. It cannot be canceled.
 5. Testin chooses it for this code project on this machine, and the tree
