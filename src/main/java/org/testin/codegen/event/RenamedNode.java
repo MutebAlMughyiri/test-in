@@ -66,8 +66,8 @@ public record RenamedNode(@NotNull AbstractNode node, @NotNull List<String> from
         if (to.equals(from)) return false;
 
         return JavaSourceRoot.find(project)
-                .filter(root -> JavaSourceRoot.under(root, String.join("/", from)).isPresent())
-                .flatMap(root -> JavaSourceRoot.under(root, String.join("/", to)))
+                .filter(root -> JavaSourceRoot.under(root, Fqcn.folderOf(from)).isPresent())
+                .flatMap(root -> JavaSourceRoot.under(root, Fqcn.folderOf(to)))
                 .isPresent();
     }
 }

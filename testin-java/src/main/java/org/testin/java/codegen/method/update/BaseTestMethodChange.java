@@ -29,7 +29,6 @@ import com.intellij.psi.PsiElementFactory;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.testin.codegen.CodeChangeType;
 import org.testin.codegen.Fqcn;
 import org.testin.java.codegen.GeneratedClass;
@@ -49,6 +48,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class BaseTestMethodChange {
     private static boolean anotherMethodIsCalled(final @NotNull PsiMethod testMethod, final @NotNull String methodName) {
@@ -190,16 +190,13 @@ public class BaseTestMethodChange {
             return;
         }
 
-        final @NotNull PsiClass testClass = target.orElseThrow();
-
-        final @NotNull Map<String, PsiMethod> methods = GeneratedMethod.byTestCaseUuid(testClass);
+        final @NotNull Function<TestCase, Optional<PsiMethod>> methodOf = GeneratedMethod.methodsOf(target.orElseThrow());
 
         for (final TestCase testCase : testCases) {
-            final @Nullable PsiMethod testMethod = methods.get(testCase.getUuid().toString());
-            if (testMethod == null) continue;
-
-            updater.accept(testMethod, testCase);
-            formatAnnotations(project, testMethod);
+            methodOf.apply(testCase).ifPresent(testMethod -> {
+                updater.accept(testMethod, testCase);
+                formatAnnotations(project, testMethod);
+            });
         }
     }
 

@@ -34,6 +34,7 @@ import org.testin.model.TestCase;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GeneratedMethod {
@@ -59,7 +60,13 @@ public final class GeneratedMethod {
 
     // Rule-CODEGEN-001
     public static @NotNull Optional<PsiMethod> forTestCase(final @NotNull PsiClass testClass, final @NotNull TestCase testCase) {
-        return Optional.ofNullable(byTestCaseUuid(testClass).get(testCase.getUuid().toString()));
+        return methodsOf(testClass).apply(testCase);
+    }
+
+    // Rule-CODEGEN-001
+    public static @NotNull Function<TestCase, Optional<PsiMethod>> methodsOf(final @NotNull PsiClass testClass) {
+        final @NotNull Map<String, PsiMethod> byUuid = byTestCaseUuid(testClass);
+        return testCase -> Optional.ofNullable(byUuid.get(testCase.getUuid().toString()));
     }
 
     // Rule-CODEGEN-001

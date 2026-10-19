@@ -20,7 +20,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.testin.codegen.CodeChange;
 import org.testin.codegen.CodeChangeType;
 import org.testin.java.codegen.GeneratedMethod;
@@ -32,6 +31,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 // Rule-CODEGEN-044
 public class ReconcileTestMethod extends BaseTestMethodChange implements CodeChange<TestCase> {
@@ -60,17 +60,15 @@ public class ReconcileTestMethod extends BaseTestMethodChange implements CodeCha
         final @NotNull Optional<PsiClass> target = classOf(project, inClass.getFirst());
         if (target.isEmpty()) return;
 
-        final @NotNull PsiClass testClass = target.orElseThrow();
-        final @NotNull Map<String, PsiMethod> methods = GeneratedMethod.byTestCaseUuid(testClass);
+        final @NotNull Function<TestCase, Optional<PsiMethod>> methodOf = GeneratedMethod.methodsOf(target.orElseThrow());
 
         for (final TestCase testCase : inClass) {
-            final @Nullable PsiMethod testMethod = methods.get(testCase.getUuid().toString());
-            if (testMethod == null) continue;
-
-            writeDescription(project, testMethod, testCase);
-            writeGroups(project, testMethod, testCase);
-            writeEnabled(project, testMethod, testCase);
-            formatAnnotations(project, testMethod);
+            methodOf.apply(testCase).ifPresent(testMethod -> {
+                writeDescription(project, testMethod, testCase);
+                writeGroups(project, testMethod, testCase);
+                writeEnabled(project, testMethod, testCase);
+                formatAnnotations(project, testMethod);
+            });
         }
     }
 }

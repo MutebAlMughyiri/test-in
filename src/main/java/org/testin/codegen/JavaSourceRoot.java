@@ -131,7 +131,7 @@ public final class JavaSourceRoot {
 
     // UC-CODEGEN-001, Rule-CODEGEN-008
     public static @NotNull Optional<VirtualFile> packageFolder(final @NotNull VirtualFile root, final @NotNull List<String> packageSegments) {
-        final @NotNull String relative = String.join("/", packageSegments);
+        final @NotNull String relative = Fqcn.folderOf(packageSegments);
 
         final @NotNull Optional<VirtualFile> folder;
         try {

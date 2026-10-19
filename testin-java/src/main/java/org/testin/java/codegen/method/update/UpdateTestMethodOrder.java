@@ -42,6 +42,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 // Rule-CODEGEN-014
 public class UpdateTestMethodOrder extends BaseTestMethodChange implements CodeChange<TestCase> {
@@ -110,15 +111,15 @@ public class UpdateTestMethodOrder extends BaseTestMethodChange implements CodeC
 
         final @NotNull PsiClass testClass = target.get();
 
-        final @NotNull Map<String, PsiMethod> methods = GeneratedMethod.byTestCaseUuid(testClass);
+        final @NotNull Function<TestCase, Optional<PsiMethod>> methodOf = GeneratedMethod.methodsOf(testClass);
 
         @NotNull Optional<PsiElement> after = Optional.empty();
 
         for (final TestCase testCase : inSet) {
-            final @Nullable PsiMethod testMethod = methods.get(testCase.getUuid().toString());
-            if (testMethod == null) continue;
+            final @NotNull Optional<PsiMethod> testMethod = methodOf.apply(testCase);
+            if (testMethod.isEmpty()) continue;
 
-            after = Optional.of(place(testClass, testMethod, after));
+            after = Optional.of(place(testClass, testMethod.orElseThrow(), after));
         }
 
         number(project, testClass, inSet);
@@ -126,23 +127,21 @@ public class UpdateTestMethodOrder extends BaseTestMethodChange implements CodeC
 
     // UC-CODEGEN-011, Rule-CODEGEN-014
     private void number(final @NotNull Project project, final @NotNull PsiClass testClass, final @NotNull List<TestCase> inSet) {
-        final @NotNull Map<String, PsiMethod> methods = GeneratedMethod.byTestCaseUuid(testClass);
+        final @NotNull Function<TestCase, Optional<PsiMethod>> methodOf = GeneratedMethod.methodsOf(testClass);
         final @NotNull Map<PsiMethod, String> renumbered = new LinkedHashMap<>();
         int position = 0;
 
         for (final TestCase testCase : inSet) {
-            position++;
+            final @NotNull String number = String.valueOf(++position);
 
-            final @Nullable PsiMethod testMethod = methods.get(testCase.getUuid().toString());
-            if (testMethod == null) continue;
+            methodOf.apply(testCase).ifPresent(testMethod -> {
+                final @NotNull Optional<PsiAnnotationMemberValue> priority = priorityOf(testMethod);
 
-            final @NotNull String number = String.valueOf(position);
-            final @NotNull Optional<PsiAnnotationMemberValue> priority = priorityOf(testMethod);
-
-            if (priority.isEmpty()) {
-                if (updateTestAnnotationAttribute(project, testMethod, PRIORITY, number))
-                    formatAnnotations(project, testMethod);
-            } else if (!priority.orElseThrow().getText().equals(number)) renumbered.put(testMethod, number);
+                if (priority.isEmpty()) {
+                    if (updateTestAnnotationAttribute(project, testMethod, PRIORITY, number))
+                        formatAnnotations(project, testMethod);
+                } else if (!priority.orElseThrow().getText().equals(number)) renumbered.put(testMethod, number);
+            });
         }
 
         writeAsText(project, testClass.getContainingFile(), renumbered);

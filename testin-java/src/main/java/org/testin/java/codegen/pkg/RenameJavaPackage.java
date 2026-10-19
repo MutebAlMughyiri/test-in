@@ -45,7 +45,7 @@ public class RenameJavaPackage implements CodeChange<RenamedNode> {
     }
 
     private void renameUnder(final @NotNull Project project, final @NotNull VirtualFile testSourceRoot, final @NotNull List<String> fqcn, final @NotNull String newTop) {
-        final @NotNull Optional<VirtualFile> found = JavaSourceRoot.under(testSourceRoot, String.join("/", fqcn))
+        final @NotNull Optional<VirtualFile> found = JavaSourceRoot.under(testSourceRoot, Fqcn.folderOf(fqcn))
                 .filter(VirtualFile::isDirectory);
         if (found.isEmpty()) {
             TestinLogger.info("Package not found for rename: " + String.join(".", fqcn));

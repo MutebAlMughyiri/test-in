@@ -45,11 +45,9 @@ public class MoveJavaClass implements CodeChange<MovedNode> {
         }
 
         final @NotNull List<String> destination = found.get();
-        final @NotNull String fileName = fqcn.getLast() + ".java";
 
         GeneratedSourceFiles.commandInRoot(project, CodeChangeType.MOVE_TEST_SET.description(), sourceRoot -> {
-            final @NotNull Optional<VirtualFile> file =
-                    Optional.ofNullable(sourceRoot.findFileByRelativePath(String.join("/", fqcn) + ".java"));
+            final @NotNull Optional<VirtualFile> file = JavaSourceRoot.under(sourceRoot, Fqcn.classFileOf(fqcn));
 
             if (file.isEmpty()) {
                 TestinLogger.info("Class not found for move: " + String.join(".", fqcn));
@@ -62,7 +60,7 @@ public class MoveJavaClass implements CodeChange<MovedNode> {
 
             if (GeneratedSourceFiles.move(file.get(), target.get(), this)) {
                 PackageDeclarations.retarget(project, sourceRoot, file.get(), target.get());
-                TestinLogger.info("Moved " + fileName + " to package: " + String.join(".", destination));
+                TestinLogger.info("Moved " + file.get().getName() + " to package: " + String.join(".", destination));
             }
         });
     }

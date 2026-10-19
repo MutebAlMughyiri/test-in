@@ -48,13 +48,13 @@ import org.testin.util.FailureText;
 import org.testin.util.NameSanitizer;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.ToIntFunction;
+import java.util.stream.Stream;
 import java.util.stream.Collectors;
 
 public class CreateTestMethod implements CodeChange<TestCase> {
@@ -150,8 +150,7 @@ public class CreateTestMethod implements CodeChange<TestCase> {
 
         GeneratedClass.findOrWrite(project, target.packageList(), target.className()).ifPresentOrElse(
                 targetClass -> injectAsText(project, targetClass, testCases),
-                () -> testCases.forEach(testCase -> retryInjectPhysically(project, target.packageList(), target.className(),
-                        Fqcn.methodNameOf(testCase), testCase)));
+                () -> retryInjectPhysically(project, target.packageList(), target.className(), testCases));
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-016, Rule-CODEGEN-114
@@ -161,10 +160,27 @@ public class CreateTestMethod implements CodeChange<TestCase> {
         final @NotNull Optional<Document> document = Optional.ofNullable(documents.getDocument(file));
 
         if (document.isEmpty()) {
-            oneAtATime(project, targetClass, testCases, "it has no document to edit");
+            oneAtATime(project, targetClass, decide(project, targetClass, testCases), "it has no document to edit");
             return;
         }
 
+        final @NotNull List<TestCase> toWrite = decide(project, targetClass, testCases);
+        final @NotNull ToIntFunction<TestCase> positions = ExecutionPosition.ofEach(project);
+        final @NotNull StringBuilder methods = new StringBuilder();
+        final @NotNull StringBuilder keptMethods = new StringBuilder();
+
+        for (final TestCase testCase : toWrite) {
+            Services.getInstance(project, KeptTestMethods.class).take(testCase).ifPresentOrElse(
+                    keptMethod -> keptMethods.append('\n').append(keptMethod).append('\n'),
+                    () -> methods.append('\n').append(methodText(Fqcn.methodNameOf(testCase), testCase, positions.applyAsInt(testCase))).append('\n'));
+        }
+
+        if (!methods.isEmpty() || !keptMethods.isEmpty())
+            insertBeforeClosingBrace(project, targetClass, toWrite, document.orElseThrow(), methods, keptMethods);
+    }
+
+    // UC-CODEGEN-002, Rule-CODEGEN-001, Rule-CODEGEN-079, Rule-CODEGEN-095
+    private @NotNull List<TestCase> decide(final @NotNull Project project, final @NotNull PsiClass targetClass, final @NotNull List<TestCase> testCases) {
         final @NotNull Map<String, String> owners = new HashMap<>();
         final @NotNull Map<String, PsiMethod> byKey = new HashMap<>();
         for (final PsiMethod testMethod : targetClass.getMethods()) {
@@ -176,15 +192,13 @@ public class CreateTestMethod implements CodeChange<TestCase> {
 
         final @NotNull Map<String, PsiMethod> generated = GeneratedMethod.byTestCaseUuid(targetClass);
         final @NotNull Map<String, PsiMethod> describedByHand = GeneratedMethod.untaggedByDescription(targetClass);
-        final @NotNull ToIntFunction<TestCase> positions = ExecutionPosition.ofEach(project);
 
         final @NotNull List<TestCase> missing = testCases.stream().filter(testCase -> !generated.containsKey(testCase.getUuid().toString())).toList();
         final @NotNull List<TestCase> cannotBeNamed = missing.stream().filter(testCase -> NameSanitizer.cannotMakeMethodName(testCase.getDescription())).toList();
         final @NotNull List<TestCase> nameable = missing.stream().filter(testCase -> !NameSanitizer.cannotMakeMethodName(testCase.getDescription())).toList();
         final int alreadyThere = testCases.size() - missing.size();
 
-        final @NotNull StringBuilder methods = new StringBuilder();
-        final @NotNull StringBuilder keptMethods = new StringBuilder();
+        final @NotNull List<TestCase> toWrite = new ArrayList<>();
         final @NotNull List<TestCase> lostTheName = new ArrayList<>();
         int adopted = 0;
 
@@ -208,9 +222,7 @@ public class CreateTestMethod implements CodeChange<TestCase> {
             }
 
             owners.put(key, testCaseUuid);
-            Services.getInstance(project, KeptTestMethods.class).take(testCase).ifPresentOrElse(
-                    keptMethod -> keptMethods.append('\n').append(keptMethod).append('\n'),
-                    () -> methods.append('\n').append(methodText(methodName, testCase, positions.applyAsInt(testCase))).append('\n'));
+            toWrite.add(testCase);
         }
 
         if (alreadyThere > 0) {
@@ -226,12 +238,11 @@ public class CreateTestMethod implements CodeChange<TestCase> {
         reportLostTheName(project, targetClass, lostTheName);
         reportCannotBeNamed(project, targetClass, cannotBeNamed);
 
-        if (!methods.isEmpty() || !keptMethods.isEmpty())
-            insertBeforeClosingBrace(project, targetClass, testCases, document.orElseThrow(), methods, keptMethods);
+        return toWrite;
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-016, Rule-CODEGEN-114
-    private void insertBeforeClosingBrace(final @NotNull Project project, final @NotNull PsiClass targetClass, final @NotNull List<TestCase> testCases, final @NotNull Document document, final @NotNull CharSequence methods, final @NotNull CharSequence keptMethods) {
+    private void insertBeforeClosingBrace(final @NotNull Project project, final @NotNull PsiClass targetClass, final @NotNull List<TestCase> toWrite, final @NotNull Document document, final @NotNull CharSequence methods, final @NotNull CharSequence keptMethods) {
         final @NotNull PsiFile file = targetClass.getContainingFile();
         final @NotNull PsiDocumentManager documents = PsiDocumentManager.getInstance(project);
 
@@ -241,7 +252,7 @@ public class CreateTestMethod implements CodeChange<TestCase> {
 
         final @NotNull Optional<PsiElement> closingBrace = Optional.ofNullable(targetClass.getRBrace());
         if (closingBrace.isEmpty()) {
-            oneAtATime(project, targetClass, testCases, "it has no closing brace to write before");
+            oneAtATime(project, targetClass, toWrite, "it has no closing brace to write before");
             return;
         }
 
@@ -274,83 +285,56 @@ public class CreateTestMethod implements CodeChange<TestCase> {
                 Bundle.message("codegen.name.taken.message", named(lost)));
     }
 
-    private void oneAtATime(final @NotNull Project project, final @NotNull PsiClass targetClass, final @NotNull List<TestCase> testCases, final @NotNull String reason) {
-        TestinLogger.warn("Writing " + testCases.size() + " methods one at a time into "
+    private void oneAtATime(final @NotNull Project project, final @NotNull PsiClass targetClass, final @NotNull List<TestCase> toWrite, final @NotNull String reason) {
+        if (toWrite.isEmpty()) return;
+
+        TestinLogger.warn("Writing " + toWrite.size() + " methods one at a time into "
                 + targetClass.getQualifiedName() + ": " + reason);
 
-        for (final TestCase testCase : testCases) {
-            injectMethod(project, targetClass, Fqcn.methodNameOf(testCase), testCase).ifPresent(added -> CodeStyleManager.getInstance(project).reformat(added));
+        for (final TestCase testCase : toWrite) {
+            injectMethod(project, targetClass, testCase).ifPresent(added -> CodeStyleManager.getInstance(project).reformat(added));
         }
     }
 
-    private void retryInjectPhysically(final @NotNull Project project, final @NotNull List<String> packageList, final @NotNull String className, final @NotNull String methodName, final @NotNull TestCase testCase) {
+    private void retryInjectPhysically(final @NotNull Project project, final @NotNull List<String> packageList, final @NotNull String className, final @NotNull List<TestCase> testCases) {
         JavaSourceRoot.find(project).ifPresentOrElse(
-                sourceRoot -> injectIntoFile(project, sourceRoot, packageList, className, methodName, testCase),
-                () -> TestinLogger.error("retryInjectPhysically: no Java test source root, cannot inject method '"
-                        + methodName + "'"));
+                sourceRoot -> injectIntoFile(project, sourceRoot, packageList, className, testCases),
+                () -> TestinLogger.error("retryInjectPhysically: no Java test source root, cannot inject " + testMethods(testCases.size())));
     }
 
-    private void injectIntoFile(final @NotNull Project project, final @NotNull VirtualFile sourceRoot, final @NotNull List<String> packageList, final @NotNull String className, final @NotNull String methodName, final @NotNull TestCase testCase) {
+    private void injectIntoFile(final @NotNull Project project, final @NotNull VirtualFile sourceRoot, final @NotNull List<String> packageList, final @NotNull String className, final @NotNull List<TestCase> testCases) {
         try {
-            final @NotNull String relativePath = String.join("/", packageList) + "/" + className + ".java";
+            final @NotNull String relativePath = Fqcn.classFileOf(Stream.concat(packageList.stream(), Stream.of(className)).toList());
             final @NotNull Optional<VirtualFile> found = JavaSourceRoot.under(sourceRoot, relativePath);
             if (found.isEmpty()) {
-                TestinLogger.error("retryInjectPhysically: file not found at " + relativePath + " for method '" + methodName + "'");
+                TestinLogger.error("retryInjectPhysically: file not found at " + relativePath + " for " + testMethods(testCases.size()));
                 return;
             }
 
             if (!(PsiManager.getInstance(project).findFile(found.orElseThrow()) instanceof PsiJavaFile javaPsiFile)) {
-                TestinLogger.error("retryInjectPhysically: file " + className + ".java is not a valid Java file for method '" + methodName + "'");
+                TestinLogger.error("retryInjectPhysically: file " + className + ".java is not a valid Java file");
                 return;
             }
 
             final PsiClass @NotNull [] classes = javaPsiFile.getClasses();
             if (classes.length == 0) {
-                TestinLogger.error("retryInjectPhysically: no classes found in " + className + ".java for method '" + methodName + "'");
+                TestinLogger.error("retryInjectPhysically: no classes found in " + className + ".java");
                 return;
             }
 
-            injectMethod(project, classes[0], methodName, testCase)
-                    .ifPresent(added -> CodeStyleManager.getInstance(project).reformat(added));
+            oneAtATime(project, classes[0], decide(project, classes[0], testCases), "its class could not be found by name");
 
         } catch (final Exception ex) {
-            TestinLogger.error("retryInjectPhysically failed for method '" + methodName + "': " + FailureText.of(ex));
+            TestinLogger.error("retryInjectPhysically failed for " + className + ".java: " + FailureText.of(ex));
         }
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-016
-    private @NotNull Optional<PsiElement> injectMethod(final @NotNull Project project, final @NotNull PsiClass targetClass, final @NotNull String methodName, final @NotNull TestCase testCase) {
+    private @NotNull Optional<PsiElement> injectMethod(final @NotNull Project project, final @NotNull PsiClass targetClass, final @NotNull TestCase testCase) {
+        final @NotNull String methodName = Fqcn.methodNameOf(testCase);
         try {
             final @NotNull PsiElementFactory factory = JavaPsiFacade.getElementFactory(project);
-            final @NotNull PsiFile file = targetClass.getContainingFile();
-
-            GeneratedMethod.importTest(project, file);
-
-            if (GeneratedMethod.forTestCase(targetClass, testCase).isPresent()) {
-                TestinLogger.info("Method already exists: " + methodName);
-                return Optional.empty();
-            }
-
-            final @NotNull String key = NameSanitizer.methodKey(methodName);
-            final @NotNull Optional<PsiMethod> sameName = Arrays.stream(targetClass.getMethods())
-                    .filter(testMethod -> key.equals(NameSanitizer.methodKey(testMethod.getName())))
-                    .findFirst();
-
-            if (sameName.isPresent()) {
-                if (GeneratedMethod.testCaseUuidOf(sameName.orElseThrow()).isPresent() || GeneratedMethod.testAnnotationOf(sameName.orElseThrow()).isEmpty())
-                    reportLostTheName(project, targetClass, List.of(testCase));
-                else
-                    TestinLogger.info("Method already exists: " + methodName);
-
-                return Optional.empty();
-            }
-
-            // Rule-CODEGEN-095
-            final @NotNull Optional<PsiMethod> describedByTheTester = Optional.ofNullable(GeneratedMethod.untaggedByDescription(targetClass).get(testCase.getDescription()));
-            if (describedByTheTester.isPresent()) {
-                GeneratedMethod.adopt(project, describedByTheTester.orElseThrow(), testCase);
-                return Optional.empty();
-            }
+            GeneratedMethod.importTest(project, targetClass.getContainingFile());
 
             // Rule-CODEGEN-114
             final @NotNull String text = Services.getInstance(project, KeptTestMethods.class).take(testCase).map(String::strip).orElseGet(() -> methodText(methodName, testCase, ExecutionPosition.of(project, testCase)));

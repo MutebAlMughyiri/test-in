@@ -100,13 +100,25 @@ public final class Fqcn {
     @FromContentModule
     public static @NotNull Optional<String> classFileOf(final @NotNull AbstractNode testSet) {
         final @NotNull List<String> fqcn = ofClass(testSet);
-        return fqcn.isEmpty() ? Optional.empty() : Optional.of(String.join("/", fqcn) + ".java");
+        return fqcn.isEmpty() ? Optional.empty() : Optional.of(classFileOf(fqcn));
+    }
+
+    // UC-CODEGEN-018, Rule-CODEGEN-059
+    @FromContentModule
+    public static @NotNull String classFileOf(final @NotNull List<String> classFqcn) {
+        return folderOf(classFqcn) + ".java";
     }
 
     // UC-CODEGEN-018, Rule-CODEGEN-059
     @FromContentModule
     public static @NotNull Optional<String> packageFolderOf(final @NotNull AbstractNode node) {
-        return Optional.of(String.join("/", ofPackage(node)));
+        return Optional.of(folderOf(ofPackage(node)));
+    }
+
+    // UC-CODEGEN-018, Rule-CODEGEN-059
+    @FromContentModule
+    public static @NotNull String folderOf(final @NotNull List<String> packageSegments) {
+        return String.join("/", packageSegments);
     }
 
     // UC-CODEGEN-001, Rule-CODEGEN-008

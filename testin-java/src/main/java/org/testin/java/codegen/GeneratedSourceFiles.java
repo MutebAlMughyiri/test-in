@@ -23,6 +23,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.testin.codegen.Fqcn;
 import org.testin.codegen.JavaSourceRoot;
 import org.testin.indexer.recyclebin.RecycleBin;
 import org.testin.logger.TestinLogger;
@@ -48,7 +49,7 @@ public final class GeneratedSourceFiles {
         final @NotNull Optional<VirtualFile> folder = JavaSourceRoot.packageFolder(root, packageSegments);
         if (folder.isEmpty()) return Optional.empty();
 
-        final @NotNull String fileName = className + ".java";
+        final @NotNull String fileName = Fqcn.classFileOf(List.of(className));
         final @NotNull Optional<VirtualFile> existing = Optional.ofNullable(folder.get().findChild(fileName));
 
         if (existing.isPresent()) {

@@ -47,8 +47,7 @@ public class MoveJavaPackage implements CodeChange<MovedNode> {
         final @NotNull List<String> destination = destinationFound.get();
 
         GeneratedSourceFiles.commandInRoot(project, CodeChangeType.MOVE_TEST_SET_PACKAGE.description(), sourceRoot -> {
-            final @NotNull Optional<VirtualFile> found = Optional.ofNullable(sourceRoot.findFileByRelativePath(String.join("/", fqcn)))
-                    .filter(VirtualFile::isDirectory);
+            final @NotNull Optional<VirtualFile> found = JavaSourceRoot.under(sourceRoot, Fqcn.folderOf(fqcn)).filter(VirtualFile::isDirectory);
 
             if (found.isEmpty()) {
                 TestinLogger.info("Package not found for move: " + String.join(".", fqcn));
