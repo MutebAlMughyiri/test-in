@@ -102,8 +102,8 @@ public final class DialogPart<C extends DialogComponent> {
     }
 
     // Rule-EDITOR-PANEL-219
-    public static @NotNull DialogPart<Screenshots> screenshots(final @NotNull String caption, final @NotNull List<byte[]> stored) {
-        return new DialogPart<>(new Screenshots(caption, stored));
+    public static @NotNull DialogPart<Screenshots> screenshots(final @NotNull String caption) {
+        return new DialogPart<>(new Screenshots(caption));
     }
 
     public static @NotNull DialogPart<Picture> picture(final byte @NotNull [] png) {

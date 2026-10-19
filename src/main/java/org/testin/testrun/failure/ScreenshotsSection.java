@@ -16,6 +16,8 @@
 
 package org.testin.testrun.failure;
 
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.TestRuns;
@@ -26,22 +28,34 @@ import org.testin.ui.framework.Screenshots;
 import org.testin.util.Bundle;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public final class ScreenshotsSection implements FailureSection {
     private final @NotNull DialogPart<Screenshots> component;
 
     private final @NotNull IdentityHashMap<byte[], String> named = new IdentityHashMap<>();
 
+    private final @NotNull List<String> notShownYet;
+
     // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-219
     public ScreenshotsSection(final @NotNull Project project, final @NotNull Path testRunPath, final @NotNull RunItem runItem) {
-        final @NotNull List<byte[]> stored = Services.getInstance(project, TestRuns.class).screenshots(testRunPath, runItem);
-        IntStream.range(0, stored.size()).forEach(index -> named.put(stored.get(index), runItem.shownExecution().getScreenshots().get(index)));
+        notShownYet = new ArrayList<>(runItem.shownExecution().getScreenshots());
+        component = DialogPart.screenshots(Bundle.message("dialog.failure.caption.screenshots"));
 
-        component = DialogPart.screenshots(Bundle.message("dialog.failure.caption.screenshots"), stored);
+        ApplicationManager.getApplication().executeOnPooledThread(() -> {
+            final @NotNull List<byte[]> stored = Services.getInstance(project, TestRuns.class).screenshots(testRunPath, runItem);
+
+            ApplicationManager.getApplication().invokeLater(() -> {
+                IntStream.range(0, stored.size()).forEach(index -> named.put(stored.get(index), notShownYet.get(index)));
+                notShownYet.clear();
+                component.getComponent().putFirst(stored);
+            }, ModalityState.any());
+        });
     }
 
     @Override
@@ -51,7 +65,7 @@ public final class ScreenshotsSection implements FailureSection {
 
     // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-145, Rule-EDITOR-PANEL-219
     public @NotNull List<String> names() {
-        return screenshots().stream().map(named::get).toList();
+        return Stream.concat(notShownYet.stream(), screenshots().stream().map(named::get)).toList();
     }
 
     // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-219

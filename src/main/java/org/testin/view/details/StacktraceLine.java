@@ -95,7 +95,10 @@ public final class StacktraceLine extends AbstractDetails {
         square.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(final MouseEvent e) {
-                new ScreenshotDialog(project, name, testRuns.screenshot(testRunPath, name)).show();
+                ApplicationManager.getApplication().executeOnPooledThread(() -> {
+                    final byte @NotNull [] png = testRuns.screenshot(testRunPath, name);
+                    ApplicationManager.getApplication().invokeLater(() -> new ScreenshotDialog(project, name, png).show());
+                });
             }
         });
 

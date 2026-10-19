@@ -199,6 +199,7 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
         final @NotNull MouseEvent click = new MouseEvent(second, MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), 0, 5, 5, 1, false, MouseEvent.BUTTON1);
         for (final MouseListener listener : second.getMouseListeners()) listener.mouseClicked(click);
         try {
+            Await.until("clicking a thumbnail never opened its screenshot", () -> ShownDialog.isOpen(getProject(), ScreenshotDialog.class));
             final @NotNull JComponent shown = ShownDialog.content(getProject(), ScreenshotDialog.class);
             final @NotNull Icon picture = Drawn.components(shown).stream().filter(JBLabel.class::isInstance).map(JBLabel.class::cast).map(JBLabel::getIcon).filter(icon -> widthOf(icon) > 48).findFirst()
                     .orElseThrow(() -> new AssertionError("the screenshot's window shows no picture"));

@@ -217,11 +217,12 @@ public class FrameworkComponentsTest {
     @Test
     public void theScreenshotsRowHoldsThePicturesAndIsNotDrawnWithoutOne() {
         final byte[] screenshot = {1, 2, 3};
-        final Screenshots shown = DialogPart.screenshots(Bundle.message("dialog.failure.caption.screenshots"), List.of(screenshot)).getComponent();
+        final Screenshots shown = DialogPart.screenshots(Bundle.message("dialog.failure.caption.screenshots")).getComponent();
+        shown.putFirst(List.of(screenshot));
 
         assertEquals(shown.screenshots(), List.of(screenshot), "a picture comes back as it was given, even one that cannot be drawn");
         assertTrue(shown.getPanel().isVisible(), "a row holding a picture is drawn");
-        assertFalse(DialogPart.screenshots(Bundle.message("dialog.failure.caption.screenshots"), List.of()).getComponent().getPanel().isVisible(),
+        assertFalse(DialogPart.screenshots(Bundle.message("dialog.failure.caption.screenshots")).getComponent().getPanel().isVisible(),
                 "a failure with no screenshot draws no Screenshots row at all, and no gap where one would be");
     }
 

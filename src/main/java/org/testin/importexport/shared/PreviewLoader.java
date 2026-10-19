@@ -101,7 +101,7 @@ public class PreviewLoader {
 
     // UC-SHARE-005, Rule-SHARE-107
     private void loadFile(final @NotNull File importFile, final @NotNull FileFormat format, final @NotNull String typed) {
-        onMessage.accept(Bundle.message("import.reading", importFile.getName()));
+        ApplicationManager.getApplication().invokeLater(() -> onMessage.accept(Bundle.message("import.reading", importFile.getName())));
 
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             try {

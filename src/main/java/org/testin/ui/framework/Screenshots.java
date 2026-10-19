@@ -45,12 +45,12 @@ public final class Screenshots implements DialogComponent {
     };
 
     // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-219, Rule-INTERNAL-087
-    Screenshots(final @NotNull String caption, final @NotNull List<byte[]> stored) {
-        strip = new ScreenshotStrip(stored);
+    Screenshots(final @NotNull String caption) {
+        strip = new ScreenshotStrip();
         panel = Caption.above(caption, strip.getPanel());
 
         strip.onChange(this::redraw);
-        panel.setVisible(!strip.screenshots().isEmpty());
+        panel.setVisible(false);
     }
 
     private static boolean onClipboard() {
@@ -59,6 +59,12 @@ public final class Screenshots implements DialogComponent {
 
     public @NotNull List<byte[]> screenshots() {
         return strip.screenshots();
+    }
+
+    // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-219
+    public void putFirst(final @NotNull List<byte[]> stored) {
+        strip.putFirst(stored);
+        panel.setVisible(!strip.screenshots().isEmpty());
     }
 
     public void onChange(final @NotNull Runnable changed) {

@@ -22,7 +22,6 @@ import com.intellij.notification.Notification;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.testFramework.ServiceContainerUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -56,9 +55,7 @@ public class ExportNoticeIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull File aWebPageExport() {
         try {
-            final @NotNull Path page = Files.writeString(root.resolve("Login.html"), "<html><body>Login</body></html>");
-            LocalFileSystem.getInstance().refreshAndFindFileByNioFile(page);
-            return page.toFile();
+            return Files.writeString(root.resolve("Login.html"), "<html><body>Login</body></html>").toFile();
         } catch (final IOException ex) {
             throw new AssertionError("Could not write the export: " + ex.getMessage(), ex);
         }

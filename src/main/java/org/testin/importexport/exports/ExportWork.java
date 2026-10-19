@@ -18,8 +18,6 @@ package org.testin.importexport.exports;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
@@ -38,7 +36,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 record ExportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull TestCases testCases, @NotNull Nodes nodes) {
@@ -68,16 +65,8 @@ record ExportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
         return String.join(" - ", treePath) + " (" + (taken.size() + 1) + ")";
     }
 
-    private static @NotNull Optional<VirtualFile> resolveTargetDirectory(final @NotNull AbstractNode node) {
-        return Optional.ofNullable(LocalFileSystem.getInstance().findFileByPath(node.getPath().toString()))
-                .map(target -> target.isDirectory() ? target : target.getParent());
-    }
-
     // UC-SHARE-001, Rule-SHARE-015
     void exportFrom(final @NotNull AbstractNode node) {
-        final @NotNull Optional<VirtualFile> resolved = resolveTargetDirectory(node);
-        if (resolved.isEmpty()) return;
-        final @NotNull VirtualFile targetDirectory = resolved.orElseThrow();
 
         BackgroundWork.run(project, Bundle.message("export.task.reading", node.getName()), Bundle.message("export.failed.title"), _ -> {
             final @NotNull GatheredSheets gathered = gather(node);
@@ -90,18 +79,18 @@ record ExportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
 
             ApplicationManager.getApplication().invokeLater(() -> {
                 if (gathered.unreadable().isEmpty()) {
-                    chooseWhatToExport(sheets, targetDirectory);
+                    chooseWhatToExport(sheets, node.getName());
                     return;
                 }
 
                 new ConfirmDialog(project, Bundle.message("export.unreadable.title"), unreadableWarning(gathered.unreadable()),
-                        "", "", Bundle.message("export.anyway"), () -> chooseWhatToExport(sheets, targetDirectory)).show();
+                        "", "", Bundle.message("export.anyway"), () -> chooseWhatToExport(sheets, node.getName())).show();
             });
         });
     }
 
-    private void chooseWhatToExport(final @NotNull Map<String, List<TestCase>> sheets, final @NotNull VirtualFile targetDirectory) {
-        new ExportDialog(project, TestSetEditorFields.all(Can.EXPORT), sheets, targetDirectory, this::writeExport).show();
+    private void chooseWhatToExport(final @NotNull Map<String, List<TestCase>> sheets, final @NotNull String exportName) {
+        new ExportDialog(project, TestSetEditorFields.all(Can.EXPORT), sheets, exportName, this::writeExport).show();
     }
 
     // UC-SHARE-001, Rule-SHARE-005

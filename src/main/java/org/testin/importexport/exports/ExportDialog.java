@@ -17,7 +17,6 @@
 package org.testin.importexport.exports;
 
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.testin.importexport.FileFormat;
 import org.testin.importexport.shared.SheetPreview;
@@ -45,7 +44,7 @@ public final class ExportDialog extends AbstractFrameworkDialog {
     private final @NotNull BiConsumer<@NotNull Destination,
             @NotNull Map<String, List<TestCase>>> onExport;
 
-    public ExportDialog(final @NotNull Project project, final @NotNull List<TestSetEditorFields> exportFields, final @NotNull Map<String, List<TestCase>> sheetsData, final @NotNull VirtualFile exportTarget, final @NotNull BiConsumer<@NotNull Destination, @NotNull Map<String, List<TestCase>>> onExport) {
+    public ExportDialog(final @NotNull Project project, final @NotNull List<TestSetEditorFields> exportFields, final @NotNull Map<String, List<TestCase>> sheets, final @NotNull String exportName, final @NotNull BiConsumer<@NotNull Destination, @NotNull Map<String, List<TestCase>>> onExport) {
         super(project);
         this.onExport = onExport;
 
@@ -54,13 +53,13 @@ public final class ExportDialog extends AbstractFrameworkDialog {
         form = DestinationForm.inSection(project,
                 Arrays.stream(FileFormat.values()).filter(FileFormat::isExportable).toArray(FileFormat[]::new),
                 FileFormat.XLSX,
-                exportTarget.getName(),
+                exportName,
                 Bundle.message("dialog.export.folder.title"),
                 Bundle.message("dialog.export.folder.message"),
                 Bundle.message("destination.section"));
 
         preview = new SheetPreview(project, exportFields);
-        preview.show(sheetsData);
+        preview.show(sheets);
 
         components = List.of(
                 DialogPart.of(form),

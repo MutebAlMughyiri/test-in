@@ -22,8 +22,6 @@ import com.intellij.notification.NotificationAction;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VirtualFile;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -38,7 +36,6 @@ import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
-import java.util.Optional;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExportNotice {
@@ -51,22 +48,22 @@ public final class ExportNotice {
         });
     }
 
-    // UC-SHARE-004
-    // UC-REPORT-002, Rule-REPORT-012
+    // UC-SHARE-004, UC-REPORT-002, Rule-REPORT-012
     public static void open(final @NotNull Project project, final @NotNull File file) {
-        Optional.ofNullable(LocalFileSystem.getInstance().findFileByPath(file.getAbsolutePath()))
-                .filter(VirtualFile::exists)
-                .ifPresentOrElse(found -> openWithAssociatedProgram(project, found),
-                        () -> Services.getInstance(project, Notifier.class)
-                                .error(project, Bundle.message("export.open.error.title"), Bundle.message("export.open.missing")));
+        if (!file.isFile()) {
+            Services.getInstance(project, Notifier.class).error(project, Bundle.message("export.open.error.title"), Bundle.message("export.open.missing"));
+            return;
+        }
+
+        openWithAssociatedProgram(project, file);
     }
 
     // Rule-SHARE-022
-    private static void openWithAssociatedProgram(final @NotNull Project project, final @NotNull VirtualFile virtualFile) {
+    private static void openWithAssociatedProgram(final @NotNull Project project, final @NotNull File toOpen) {
         final @NotNull Notifier notifier = Services.getInstance(project, Notifier.class);
 
-        if (virtualFile.getName().toLowerCase(Locale.ROOT).endsWith(".html")) {
-            BrowserUtil.browse(new File(virtualFile.getPath()).toURI().toString());
+        if (toOpen.getName().toLowerCase(Locale.ROOT).endsWith(".html")) {
+            BrowserUtil.browse(toOpen.toURI().toString());
             return;
         }
 
@@ -75,7 +72,6 @@ public final class ExportNotice {
             return;
         }
 
-        final @NotNull File toOpen = new File(virtualFile.getPath());
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             try {
                 Desktop.getDesktop().open(toOpen);

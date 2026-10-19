@@ -37,22 +37,30 @@ final class ScreenshotStrip {
     private @NotNull Runnable changed = () -> {
     };
 
-    ScreenshotStrip(final @NotNull List<byte[]> stored) {
+    ScreenshotStrip() {
         panel.setOpaque(false);
-        stored.forEach(this::add);
     }
 
     // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-219, Rule-INTERNAL-119
     void add(final byte @NotNull [] png) {
+        insert(screenshots.size(), png);
+        changed.run();
+    }
+
+    // UC-EDITOR-PANEL-034, Rule-EDITOR-PANEL-219
+    void putFirst(final @NotNull List<byte[]> stored) {
+        for (int at = 0; at < stored.size(); at++) insert(at, stored.get(at));
+    }
+
+    private void insert(final int at, final byte @NotNull [] png) {
         final @NotNull JBPanel<?> thumbnail = new JBPanel<>(new BorderLayout());
         thumbnail.setOpaque(false);
         thumbnail.add(new JBLabel(ScreenshotImages.thumbnail(png)), BorderLayout.CENTER);
         thumbnail.add(AbstractIconButton.of(Bundle.message("dialog.failure.screenshot.remove"), AllIcons.Actions.Close, () -> remove(png, thumbnail)), BorderLayout.EAST);
 
-        screenshots.add(png);
-        panel.add(thumbnail);
+        screenshots.add(at, png);
+        panel.add(thumbnail, at);
         panel.revalidate();
-        changed.run();
     }
 
     void onChange(final @NotNull Runnable changed) {
