@@ -28,10 +28,12 @@ import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.status.TestCaseStatus;
+import org.testin.testcase.CreateTestCaseFields;
 import org.testin.testcase.TestCaseDialogKey;
 import org.testin.testcase.UpdateTestCaseFields;
 import org.testin.testcase.update.UpdateTestCaseDialog;
 import org.testin.ui.framework.ShownDialog;
+import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
 import org.testin.view.Drawn;
 
@@ -107,6 +109,18 @@ public class TestCaseFormIdeTest extends AbstractTempRootIdeTest {
             assertEquals("the field's own keys do not come first on the strip", own, strip.subList(0, own.size()));
             assertEquals("Save and Cancel are not the last two keys", shared, strip.subList(strip.size() - 2, strip.size()));
         }
+    }
+
+    // Rule-EDITOR-PANEL-199
+    public void testTheDescriptionsStripNamesTheFieldKeysOnceAsAddField() {
+        final @NotNull CreateTestCaseDialog dialog = aShownCreateDialog();
+        final @NotNull List<String> fieldNames = Arrays.stream(CreateTestCaseFields.values()).map(CreateTestCaseFields::getName).toList();
+        final @NotNull String addField = Bundle.message("dialog.key.add.field");
+
+        dialog.showSectionKeys(dialog.keysOf(dialog.getDescriptionSection()));
+
+        assertEquals("the description's strip lists the keys Add Field stands for", List.of(), theStrip(dialog, fieldNames));
+        assertEquals("the description's strip does not say Add Field", List.of(addField), theStrip(dialog, List.of(addField)));
     }
 
     // Rule-EDITOR-PANEL-200

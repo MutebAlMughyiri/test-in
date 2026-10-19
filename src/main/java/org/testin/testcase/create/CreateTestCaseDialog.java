@@ -26,7 +26,6 @@ import org.testin.model.StatusBarItem;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
-import org.testin.testcase.CreateTestCaseFields;
 import org.testin.testcase.TestCaseDialogKey;
 import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.StatusBarShortcut;
@@ -104,7 +103,6 @@ public class CreateTestCaseDialog extends AbstractTestCaseDialog {
     protected StatusBarItem @NotNull [] keysOf(final @NotNull TestCaseSection section) {
         final @NotNull List<StatusBarItem> keys = new ArrayList<>(section.keys());
         if (!keys.contains(TestCaseDialogKey.NAVIGATE_TAB)) keys.add(TestCaseDialogKey.NAVIGATE_TAB);
-        if (section.equals(descriptionSection)) keys.addAll(List.of(CreateTestCaseFields.values()));
         return keys.toArray(StatusBarItem[]::new);
     }
 
