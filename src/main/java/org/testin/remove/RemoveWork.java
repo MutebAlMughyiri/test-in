@@ -48,6 +48,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 record RemoveWork(@NotNull Project project, @NotNull Nodes nodes, @NotNull TestinEditors editors, @NotNull Notifier notifier, @NotNull UndoHistories undoHistories) {
@@ -70,17 +71,24 @@ record RemoveWork(@NotNull Project project, @NotNull Nodes nodes, @NotNull Testi
         new ConfirmDialog(project, Bundle.message("remove.confirm.title"), message, from, "", Bundle.message("remove.confirm.button"), () -> removeNodes(nodesToRemove)).show();
     }
 
-    // UC-TREE-PANEL-012, Rule-TREE-PANEL-041
+    // UC-TREE-PANEL-012
     private void removeNodes(final @NotNull List<AbstractNode> nodesToRemove) {
-        if (nodesToRemove.isEmpty()) return;
+        remove(nodesToRemove, (went, undoable) -> {
+            if (went.isEmpty()) return;
 
-        // Rule-CODEGEN-096
-        if (nodesToRemove.stream().anyMatch(node -> NodeCode.of(node.getType()).getRemoved().generates()) && WaitForIndexing.refuses(project, Bundle.message("remove.confirm.button")))
+            recordRemoval(went, undoable);
+            notifier.softShowCounted(project, Done.REMOVED, went.size());
+        });
+    }
+
+    // UC-TREE-PANEL-012, UC-TREE-PANEL-017, Rule-TREE-PANEL-041, Rule-TREE-PANEL-102, Rule-TREE-PANEL-116, Rule-CODEGEN-096
+    private void remove(final @NotNull List<AbstractNode> nodesToRemove, final @NotNull BiConsumer<List<AbstractNode>, List<Kept>> removed) {
+        if (nodesToRemove.isEmpty() || (nodesToRemove.stream().anyMatch(node -> NodeCode.of(node.getType()).getRemoved().generates()) && WaitForIndexing.refuses(project, Bundle.message("remove.confirm.button")))) {
+            removed.accept(List.of(), List.of());
             return;
+        }
 
         final @NotNull List<Kept> kept = new ArrayList<>(nodesToRemove.size());
-
-        // Rule-TREE-PANEL-102
         final boolean copied = BackgroundWork.synchronously(project, Bundle.message("remove.progress"), true, () -> {
             for (final AbstractNode node : nodesToRemove) {
                 ProgressManager.checkCanceled();
@@ -90,33 +98,30 @@ record RemoveWork(@NotNull Project project, @NotNull Nodes nodes, @NotNull Testi
 
         if (!copied) {
             kept.forEach(one -> nodes.forgetKept(one.copy()));
+            removed.accept(List.of(), List.of());
             return;
         }
 
-        // Rule-TREE-PANEL-116
-        for (final AbstractNode node : nodesToRemove) {
-            editors.close(node);
-        }
+        nodesToRemove.forEach(editors::close);
 
         removeEach(nodesToRemove, went -> {
             TestinLogger.info("Removed " + went.size() + " of " + nodesToRemove.size() + " node(s).");
 
-            final @NotNull List<Kept> undoable = kept.stream().filter(one -> went.contains(one.node())).toList();
             kept.stream().filter(one -> !went.contains(one.node())).forEach(one -> nodes.forgetKept(one.copy()));
-
-            if (went.isEmpty()) return;
-
-            recordRemoval(went, undoable);
-            notifier.softShowCounted(project, Done.REMOVED, went.size());
-
-            final int lost = went.size() - undoable.size();
-            if (lost > 0) {
-                notifier.softRefuse(project, Bundle.message("remove.not.undoable.title"),
-                        lost == 1
-                                ? Bundle.message("remove.not.undoable.one", Declared.shortcutText(IdeActions.ACTION_UNDO))
-                                : Bundle.message("remove.not.undoable.many", String.valueOf(lost), Declared.shortcutText(IdeActions.ACTION_UNDO)));
-            }
+            final @NotNull List<Kept> undoable = kept.stream().filter(one -> went.contains(one.node())).toList();
+            removed.accept(went, undoable);
+            sayWhatCannotBeUndone(went.size() - undoable.size());
         });
+    }
+
+    // Rule-TREE-PANEL-041
+    private void sayWhatCannotBeUndone(final int lost) {
+        if (lost == 0) return;
+
+        notifier.softRefuse(project, Bundle.message("remove.not.undoable.title"),
+                lost == 1
+                        ? Bundle.message("remove.not.undoable.one", Declared.shortcutText(IdeActions.ACTION_UNDO))
+                        : Bundle.message("remove.not.undoable.many", String.valueOf(lost), Declared.shortcutText(IdeActions.ACTION_UNDO)));
     }
 
     // UC-TREE-PANEL-012, Rule-TREE-PANEL-042
@@ -140,14 +145,12 @@ record RemoveWork(@NotNull Project project, @NotNull Nodes nodes, @NotNull Testi
                 ? Bundle.message("remove.undo.one", asked.getFirst().getName())
                 : Bundle.message("remove.undo.many", String.valueOf(asked.size()));
 
+        final @NotNull List<Kept> held = new ArrayList<>(kept);
         undoHistories.push(UndoScope.TREE, new Operation(
                 what,
-                () -> restoreAll(kept),
-                () -> {
-                    removeAll(kept);
-                    return true;
-                },
-                () -> kept.forEach(one -> nodes.forgetKept(one.copy()))));
+                finished -> finished.accept(restoreAll(held)),
+                finished -> removeAgain(held, finished),
+                () -> held.forEach(one -> nodes.forgetKept(one.copy()))));
     }
 
     // UC-CODEGEN-018, Rule-CODEGEN-113
@@ -180,7 +183,13 @@ record RemoveWork(@NotNull Project project, @NotNull Nodes nodes, @NotNull Testi
     }
 
     // UC-TREE-PANEL-017
-    private void removeAll(final @NotNull List<Kept> kept) {
-        removeEach(kept.stream().map(Kept::node).toList(), went -> TestinLogger.info("Removed " + went.size() + " node(s) again."));
+    private void removeAgain(final @NotNull List<Kept> held, final @NotNull Consumer<@NotNull Boolean> finished) {
+        remove(held.stream().flatMap(one -> nodes.find(one.original()).stream()).toList(), (went, undoable) -> {
+            if (!went.isEmpty()) {
+                held.clear();
+                held.addAll(undoable);
+            }
+            finished.accept(!went.isEmpty());
+        });
     }
 }

@@ -20,7 +20,10 @@ import org.jetbrains.annotations.NotNull;
 import org.testng.annotations.Test;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
@@ -54,6 +57,30 @@ public class UndoHistoriesTest {
         assertFalse(service.canUndo(TREE));
         assertTrue(service.canRedo(TREE));
         assertEquals(service.redoDescription(TREE), "Move 'pkg'");
+    }
+
+    // Rule-INTERNAL-063
+    @Test
+    public void aStepStillRunningHoldsItsEntryAndOnlyOneThatWorkedMovesItAndSaysSo() {
+        final UndoHistories service = new UndoHistories();
+        final List<Consumer<Boolean>> running = new ArrayList<>();
+        final AtomicInteger said = new AtomicInteger();
+        service.push(TREE, new Operation("Move 'pkg'", running::add, running::add, () -> {
+        }));
+
+        assertTrue(service.undo(TREE, said::incrementAndGet), "a step that has not answered yet was refused");
+        assertFalse(service.canUndo(TREE), "a second undo was offered while the first still runs");
+        assertFalse(service.undo(TREE, said::incrementAndGet), "a second undo ran while the first still runs");
+
+        running.getFirst().accept(false);
+        assertEquals(said.get(), 0, "a step that failed said it was undone");
+        assertTrue(service.canUndo(TREE), "a step that failed left the undo history");
+        assertFalse(service.canRedo(TREE), "a step that failed went onto the redo history");
+
+        service.undo(TREE, said::incrementAndGet);
+        running.getLast().accept(true);
+        assertEquals(said.get(), 1, "a step that worked did not say so once");
+        assertTrue(service.canRedo(TREE), "a step that worked did not go onto the redo history");
     }
 
     @Test

@@ -37,8 +37,8 @@ public enum UndoDirection {
         }
 
         @Override
-        public boolean apply(final @NotNull UndoHistories service, final @NotNull UndoScope scope) {
-            return service.undo(scope);
+        public void apply(final @NotNull UndoHistories service, final @NotNull UndoScope scope, final @NotNull Runnable succeeded) {
+            service.undo(scope, succeeded);
         }
 
         @Override
@@ -54,8 +54,8 @@ public enum UndoDirection {
         }
 
         @Override
-        public boolean apply(final @NotNull UndoHistories service, final @NotNull UndoScope scope) {
-            return service.redo(scope);
+        public void apply(final @NotNull UndoHistories service, final @NotNull UndoScope scope, final @NotNull Runnable succeeded) {
+            service.redo(scope, succeeded);
         }
 
         @Override
@@ -74,7 +74,7 @@ public enum UndoDirection {
 
     public abstract boolean can(final @NotNull UndoHistories service, final @NotNull UndoScope scope);
 
-    public abstract boolean apply(final @NotNull UndoHistories service, final @NotNull UndoScope scope);
+    public abstract void apply(final @NotNull UndoHistories service, final @NotNull UndoScope scope, final @NotNull Runnable succeeded);
 
     public abstract @NotNull String next(final @NotNull UndoHistories service, final @NotNull UndoScope scope);
 }

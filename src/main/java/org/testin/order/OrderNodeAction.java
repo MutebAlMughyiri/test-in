@@ -34,6 +34,7 @@ import org.testin.undo.UndoHistories;
 import org.testin.undo.UndoScope;
 import org.testin.util.Bundle;
 
+import java.nio.file.Path;
 import java.util.Optional;
 
 public class OrderNodeAction extends AbstractAnyProjectAction {
@@ -48,8 +49,9 @@ public class OrderNodeAction extends AbstractAnyProjectAction {
         if (node.getOrder() == order) return;
 
         final int before = node.getOrder();
+        final @NotNull Path path = node.getPath();
         Services.getInstance(project, Nodes.class).writeInTurn(() -> {
-            if (!place(project, node, order)) return;
+            if (!place(project, path, order)) return;
 
             ApplicationManager.getApplication().invokeLater(() -> {
                 Services.getInstance(project, Notifier.class).softShow(project, Done.ORDERED);
@@ -57,17 +59,18 @@ public class OrderNodeAction extends AbstractAnyProjectAction {
                 // Rule-TREE-PANEL-103
                 Services.getInstance(project, UndoHistories.class).push(UndoScope.TREE, new Operation(
                         Bundle.message("order.undo", node.getName()),
-                        () -> place(project, node, before),
-                        () -> place(project, node, order),
+                        () -> place(project, path, before),
+                        () -> place(project, path, order),
                         () -> {
                         }));
             });
         });
     }
 
-    // UC-TREE-PANEL-015, Rule-TREE-PANEL-055
-    private boolean place(final @NotNull Project project, final @NotNull AbstractNode node, final int order) {
-        return Services.getInstance(project, Nodes.class).reorder(node, order);
+    // UC-TREE-PANEL-015, Rule-TREE-PANEL-055, Rule-TREE-PANEL-103
+    private boolean place(final @NotNull Project project, final @NotNull Path path, final int order) {
+        final @NotNull Nodes nodes = Services.getInstance(project, Nodes.class);
+        return nodes.find(path).map(node -> nodes.reorder(node, order)).orElse(false);
     }
 
     private @NotNull Optional<AbstractNode> orderable(final @NotNull AnActionEvent e) {

@@ -27,7 +27,7 @@ public class RenameTestSetClassIdeTest extends AbstractCodegenIdeTest {
 
     private void renamedToSignIn(final @NotNull TestSetNode testSet) {
         final @NotNull AtomicBoolean done = new AtomicBoolean();
-        NodeRename.apply(getProject(), testSet, "Sign in", () -> done.set(true));
+        NodeRename.apply(getProject(), testSet, "Sign in", done::set);
 
         Await.until("the rename of the test set never finished", done::get);
     }

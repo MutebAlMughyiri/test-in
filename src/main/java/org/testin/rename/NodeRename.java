@@ -38,11 +38,12 @@ import org.testin.util.Bundle;
 
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NodeRename {
     // UC-TREE-PANEL-011, Rule-TREE-PANEL-036, Rule-TREE-PANEL-111
-    public static void apply(final @NotNull Project project, final @NotNull AbstractNode node, final @NotNull String newName, final @NotNull Runnable onDone) {
+    public static void apply(final @NotNull Project project, final @NotNull AbstractNode node, final @NotNull String newName, final @NotNull Consumer<@NotNull Boolean> finished) {
         Services.getInstance(project, TestinEditors.class).close(node);
 
         final @NotNull RenamedNode renamed = new RenamedNode(node, newName);
@@ -62,8 +63,11 @@ public final class NodeRename {
 
             TestinLogger.info("Success! Renamed to: " + newName);
 
-            onDone.run();
-        }, () -> putBack(project, renamed, followed));
+            finished.accept(true);
+        }, () -> {
+            putBack(project, renamed, followed);
+            finished.accept(false);
+        });
     }
 
     // UC-TREE-PANEL-011, Rule-TREE-PANEL-133

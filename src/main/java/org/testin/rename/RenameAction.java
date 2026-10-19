@@ -37,6 +37,7 @@ import org.testin.util.Bundle;
 
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 // UC-TREE-PANEL-011
 public class RenameAction extends AbstractAnyProjectAction {
@@ -72,32 +73,36 @@ public class RenameAction extends AbstractAnyProjectAction {
         final @NotNull Path oldPath = node.getPath();
         final @NotNull Path newPath = oldPath.resolveSibling(newName);
 
-        NodeRename.apply(project, node, newName, () -> {
+        NodeRename.apply(project, node, newName, renamed -> {
+            if (!renamed) return;
+
             Services.getInstance(project, Notifier.class).softShow(project, Done.RENAMED);
 
             Services.getInstance(project, UndoHistories.class).push(UndoScope.TREE, new Operation(
                     Bundle.message("rename.undo", oldName),
-                    () -> applyRename(project, newPath, oldName),
-                    () -> applyRename(project, oldPath, newName),
+                    finished -> applyRename(project, newPath, oldName, finished),
+                    finished -> applyRename(project, oldPath, newName, finished),
                     () -> {
                     }));
         });
     }
 
     // UC-TREE-PANEL-011, Rule-TREE-PANEL-037
-    private boolean applyRename(final @NotNull Project project, final @NotNull Path path, final @NotNull String newName) {
+    private void applyRename(final @NotNull Project project, final @NotNull Path path, final @NotNull String newName, final @NotNull Consumer<@NotNull Boolean> finished) {
         final @NotNull Optional<AbstractNode> node = Services.getInstance(project, Nodes.class).find(path);
         if (node.isEmpty()) {
             TestinLogger.warn("Nothing to rename at " + path + ", so the step is refused");
-            return false;
+            finished.accept(false);
+            return;
         }
 
         final @NotNull AbstractNode renamedNode = node.orElseThrow();
-        if (NodeRename.refused(project, renamedNode, newName)) return false;
+        if (NodeRename.refused(project, renamedNode, newName)) {
+            finished.accept(false);
+            return;
+        }
 
-        NodeRename.apply(project, renamedNode, newName, () -> {
-        });
-        return true;
+        NodeRename.apply(project, renamedNode, newName, finished);
     }
 
     // UC-TREE-PANEL-011, Rule-TREE-PANEL-104

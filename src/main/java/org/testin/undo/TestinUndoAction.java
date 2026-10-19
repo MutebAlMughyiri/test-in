@@ -49,7 +49,7 @@ public class TestinUndoAction extends AbstractBoundTestProjectAction {
     public void actionPerformed(final @NotNull AnActionEvent e) {
         if (!direction.can(undoHistories, scope)) return;
 
-        if (direction.apply(undoHistories, scope)) notifier.softShow(project, direction.getDone());
+        direction.apply(undoHistories, scope, () -> notifier.softShow(project, direction.getDone()));
     }
 
     // UC-EDITOR-PANEL-012, UC-EDITOR-PANEL-013, Rule-EDITOR-PANEL-067, Rule-EDITOR-PANEL-071

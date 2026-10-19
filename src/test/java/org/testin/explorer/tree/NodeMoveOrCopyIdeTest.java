@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
 import org.testin.NodesOnDisk;
+import org.testin.TempTree;
 import org.testin.indexer.Nodes;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
@@ -39,6 +40,8 @@ public class NodeMoveOrCopyIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull TestSetPackageNode payments = new TestSetPackageNode();
 
+    private @NotNull TestSetPackageNode checkout = new TestSetPackageNode();
+
     private @NotNull TestSetNode login = new TestSetNode();
 
     @Override
@@ -47,7 +50,8 @@ public class NodeMoveOrCopyIdeTest extends AbstractTempRootIdeTest {
         final @NotNull NodesOnDisk made = new NodesOnDisk(getProject());
         final @NotNull TestProjectNode testProject = made.testProject(root.resolve("NAFATH"));
         payments = made.testSetPackage(testProject.getTestCasesFolder(), "Payments");
-        login = made.testSet(made.testSetPackage(testProject.getTestCasesFolder(), "Checkout"), "Login");
+        checkout = made.testSetPackage(testProject.getTestCasesFolder(), "Checkout");
+        login = made.testSet(checkout, "Login");
         made.testCase(login);
         undoHistories().forget(UndoScope.TREE);
     }
@@ -84,6 +88,23 @@ public class NodeMoveOrCopyIdeTest extends AbstractTempRootIdeTest {
 
         assertTrue("undoing the move was refused", undoHistories().undo(UndoScope.TREE));
         Await.until("undoing the move did not put the test set back", () -> nodes().nodeExists(wasAt) && !nodes().nodeExists(movedTo));
+    }
+
+    // UC-TREE-PANEL-013, Rule-TREE-PANEL-047
+    public void testAMoveThatLandsSomeOfItsNodesIsUndoneForThoseAndLeavesTheHistory() {
+        final @NotNull TestSetNode refunds = new NodesOnDisk(getProject()).testSet(checkout, "Refunds");
+        final @NotNull Path wasAt = login.getPath();
+        TempTree.delete(refunds.getPath());
+
+        transfer().carryOut(TransferHandler.MOVE, List.of(login, refunds), payments);
+
+        Await.until("the move did not land the test set it could move", () -> nodes().nodeExists(payments.getPath().resolve("Login")));
+        Await.until("the move never went onto the tree's history", () -> undoHistories().canUndo(UndoScope.TREE));
+        assertTrue("the step on the tree's history names more than what moved: " + undoHistories().undoDescription(UndoScope.TREE), undoHistories().undoDescription(UndoScope.TREE).contains(NodeMoveOrCopy.describe(List.of(login))));
+
+        assertTrue("undoing the move was refused", undoHistories().undo(UndoScope.TREE));
+        Await.until("undoing the move did not put the test set back", () -> nodes().nodeExists(wasAt));
+        Await.until("the undone move stayed on the tree's history, so it can never be undone", () -> !undoHistories().canUndo(UndoScope.TREE) && undoHistories().canRedo(UndoScope.TREE));
     }
 
     // UC-TREE-PANEL-014, Rule-TREE-PANEL-006

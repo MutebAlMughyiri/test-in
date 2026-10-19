@@ -225,4 +225,22 @@ public class RemoveNodeIdeTest extends AbstractCodegenIdeTest {
         Await.until("undoing the removal did not put the test set back", () -> nodes().nodeExists(wasAt));
         assertTrue("the test set came back without its folder", Files.isDirectory(wasAt));
     }
+
+    // Rule-TREE-PANEL-040, UC-TREE-PANEL-017
+    public void testARemovalRedoneIsTheSameRemovalSoItCanBeUndoneAgain() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull Path wasAt = login.getPath();
+
+        removeAsked(List.of(login));
+        confirmed();
+        Await.until("the removal never went onto the tree's history", () -> undoHistories().canUndo(UndoScope.TREE));
+        undoHistories().undo(UndoScope.TREE);
+        Await.until("undoing the removal did not put the test set back", () -> nodes().nodeExists(wasAt) && undoHistories().canRedo(UndoScope.TREE));
+
+        assertTrue("redoing the removal was refused", undoHistories().redo(UndoScope.TREE));
+        Await.until("redoing the removal did not remove the test set", () -> !nodes().nodeExists(wasAt) && undoHistories().canUndo(UndoScope.TREE));
+
+        undoHistories().undo(UndoScope.TREE);
+        Await.until("a removal redone could not be undone again, so the redo did not keep it aside", () -> nodes().nodeExists(wasAt) && Files.isDirectory(wasAt));
+    }
 }

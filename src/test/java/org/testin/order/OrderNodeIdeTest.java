@@ -22,6 +22,7 @@ import org.testin.Await;
 import org.testin.NodesOnDisk;
 import org.testin.TreeGesture;
 import org.testin.indexer.Nodes;
+import org.testin.indexer.TestProjectIndexer;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
@@ -91,5 +92,16 @@ public class OrderNodeIdeTest extends AbstractTempRootIdeTest {
         assertTrue("undoing the new place was refused", undoHistories().undo(UndoScope.TREE));
 
         Await.until("Ctrl+Z did not give the node back the place it had", () -> orderOfLogin() == 3);
+    }
+
+    // Rule-TREE-PANEL-103
+    public void testUndoGivesThePlaceBackToTheNodeTheIndexHoldsNow() {
+        ordered("5");
+        Await.until("the new place never went onto the tree's history", () -> undoHistories().canUndo(UndoScope.TREE));
+        Services.getInstance(getProject(), TestProjectIndexer.class).scanSingleTestProject(root.resolve("NAFATH"));
+
+        assertTrue("undoing the new place was refused", undoHistories().undo(UndoScope.TREE));
+
+        Await.until("Ctrl+Z wrote the node it had before the re-read, not the one the index holds", () -> orderOfLogin() == 3);
     }
 }

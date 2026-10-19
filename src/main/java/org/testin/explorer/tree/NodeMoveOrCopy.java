@@ -37,9 +37,9 @@ import javax.swing.TransferHandler;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
-import java.util.function.IntConsumer;
 
 final class NodeMoveOrCopy {
     private final @NotNull Project project;
@@ -95,25 +95,24 @@ final class NodeMoveOrCopy {
                 .map(source -> target.getPath().resolve(source.getName()))
                 .toList();
 
-        moveBatch(oldPaths, newPaths, moved -> {
-            confirmLanded(Done.MOVED, moved);
-            if (moved == 0) return;
+        moveBatch(oldPaths, newPaths, landed -> {
+            confirmLanded(Done.MOVED, landed.size());
+            if (landed.isEmpty()) return;
 
+            final @NotNull List<AbstractNode> landedNodes = landed.stream().map(oldPath -> sources.get(oldPaths.indexOf(oldPath))).toList();
+            final @NotNull List<Path> landedAt = landed.stream().map(oldPath -> newPaths.get(oldPaths.indexOf(oldPath))).toList();
             undoHistories.push(UndoScope.TREE, new Operation(
-                    Bundle.message("transfer.undo.move", describe(sources)),
-                    () -> moveBatch(newPaths, oldPaths),
-                    () -> moveBatch(oldPaths, newPaths)));
+                    Bundle.message("transfer.undo.move", describe(landedNodes)),
+                    finished -> moveBatch(landedAt, landed, back -> finished.accept(back.size() == landed.size())),
+                    finished -> moveBatch(landed, landedAt, again -> finished.accept(again.size() == landed.size())),
+                    () -> {
+                    }));
         });
     }
 
-    private void moveBatch(final @NotNull List<Path> from, final @NotNull List<Path> to) {
-        moveBatch(from, to, _ -> {
-        });
-    }
-
-    private void moveBatch(final @NotNull List<Path> from, final @NotNull List<Path> to, final @NotNull IntConsumer onDone) {
+    private void moveBatch(final @NotNull List<Path> from, final @NotNull List<Path> to, final @NotNull Consumer<List<Path>> onDone) {
         final @NotNull AtomicInteger remaining = new AtomicInteger(from.size());
-        final @NotNull AtomicInteger moved = new AtomicInteger();
+        final @NotNull List<Path> moved = new CopyOnWriteArrayList<>();
 
         syncCode(from, to);
 
@@ -124,12 +123,12 @@ final class NodeMoveOrCopy {
             nodes.moveNode(source, destination, wasMoved -> {
                 if (project.isDisposed()) return;
 
-                if (wasMoved) moved.incrementAndGet();
+                if (wasMoved) moved.add(source);
                 else putCodeBack(source, destination);
 
                 if (remaining.decrementAndGet() != 0) return;
 
-                onDone.accept(moved.get());
+                onDone.accept(List.copyOf(moved));
             });
         }
     }

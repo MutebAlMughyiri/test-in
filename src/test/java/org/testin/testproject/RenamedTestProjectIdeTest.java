@@ -49,7 +49,7 @@ public class RenamedTestProjectIdeTest extends AbstractTempRootIdeTest {
 
         try {
             final @NotNull AtomicBoolean done = new AtomicBoolean();
-            NodeRename.apply(getProject(), testProject, "Nafath_App", () -> done.set(true));
+            NodeRename.apply(getProject(), testProject, "Nafath_App", done::set);
             Await.until("the rename never finished", done::get);
 
             assertEquals("the test project chosen for this code project did not follow the rename", "Nafath_App", bound().name());

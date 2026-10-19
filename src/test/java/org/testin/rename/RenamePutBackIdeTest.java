@@ -46,7 +46,7 @@ public class RenamePutBackIdeTest extends AbstractCodegenIdeTest {
         deleteFolder(login.getPath());
 
         final @NotNull AtomicBoolean done = new AtomicBoolean();
-        NodeRename.apply(getProject(), login, "Sign in", () -> done.set(true));
+        NodeRename.apply(getProject(), login, "Sign in", done::set);
         assertTrue("the code was not renamed before the folder", generatedClass(renamedClass).isPresent());
 
         Await.until("the code kept the new name after its folder could not be renamed", () -> generatedClass(renamedClass).isEmpty() && generatedClass("nafath.LoginTest").isPresent());

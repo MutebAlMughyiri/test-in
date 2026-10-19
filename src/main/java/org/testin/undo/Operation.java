@@ -20,11 +20,20 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BooleanSupplier;
 
-public record Operation(@NotNull String description, @NotNull BooleanSupplier undo, @NotNull BooleanSupplier redo, @NotNull Runnable forget) {
+public record Operation(@NotNull String description, @NotNull UndoStep undo, @NotNull UndoStep redo, @NotNull Runnable forget) {
+    // UC-INTERNAL-005, Rule-INTERNAL-063
+    public Operation(final @NotNull String description, final @NotNull BooleanSupplier undo, final @NotNull BooleanSupplier redo, final @NotNull Runnable forget) {
+        this(description, atOnce(undo), atOnce(redo), forget);
+    }
+
     // UC-INTERNAL-005, Rule-INTERNAL-063
     public Operation(final @NotNull String description, final @NotNull Runnable undo, final @NotNull Runnable redo) {
         this(description, always(undo), always(redo), () -> {
         });
+    }
+
+    private static @NotNull UndoStep atOnce(final @NotNull BooleanSupplier work) {
+        return finished -> finished.accept(work.getAsBoolean());
     }
 
     private static @NotNull BooleanSupplier always(final @NotNull Runnable work) {

@@ -117,7 +117,9 @@ record EditTestRunWork(@NotNull Project project, @NotNull TestRuns testRuns, @No
             return;
         }
 
-        NodeRename.apply(project, testRun, toName, () -> write(from.resolveSibling(toName), writeTo, onDone));
+        NodeRename.apply(project, testRun, toName, renamed -> {
+            if (renamed) write(from.resolveSibling(toName), writeTo, onDone);
+        });
     }
 
     private void write(final @NotNull Path testRunPath, final @NotNull Consumer<Path> writeTo, final @NotNull Runnable onDone) {

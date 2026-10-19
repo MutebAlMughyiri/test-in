@@ -19,12 +19,15 @@ package org.testin.undo;
 import com.intellij.openapi.components.Service;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.TestOnly;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 
 // Rule-TREE-PANEL-059
 @Service(Service.Level.PROJECT)
@@ -53,11 +56,13 @@ public final class UndoHistories {
     }
 
     public boolean canUndo(final @NotNull UndoScope scope) {
-        return !of(scope).undoStack.isEmpty();
+        final @NotNull History history = of(scope);
+        return !history.stepping && !history.undoStack.isEmpty();
     }
 
     public boolean canRedo(final @NotNull UndoScope scope) {
-        return !of(scope).redoStack.isEmpty();
+        final @NotNull History history = of(scope);
+        return !history.stepping && !history.redoStack.isEmpty();
     }
 
     public @NotNull String undoDescription(final @NotNull UndoScope scope) {
@@ -69,34 +74,27 @@ public final class UndoHistories {
     }
 
     // UC-INTERNAL-005, Rule-INTERNAL-063
-    public boolean undo(final @NotNull UndoScope scope) {
+    public boolean undo(final @NotNull UndoScope scope, final @NotNull Runnable succeeded) {
         final @NotNull History history = of(scope);
-        if (history.undoStack.isEmpty()) return false;
-
-        final @NotNull Operation operation = history.undoStack.pop();
-
-        if (!operation.undo().getAsBoolean()) {
-            history.undoStack.push(operation);
-            return false;
-        }
-
-        history.redoStack.push(operation);
-        return true;
+        return history.step(history.undoStack, history.redoStack, Operation::undo, succeeded);
     }
 
-    public boolean redo(final @NotNull UndoScope scope) {
+    // UC-INTERNAL-005, Rule-INTERNAL-063
+    public boolean redo(final @NotNull UndoScope scope, final @NotNull Runnable succeeded) {
         final @NotNull History history = of(scope);
-        if (history.redoStack.isEmpty()) return false;
+        return history.step(history.redoStack, history.undoStack, Operation::redo, succeeded);
+    }
 
-        final @NotNull Operation operation = history.redoStack.pop();
+    @TestOnly
+    public boolean undo(final @NotNull UndoScope scope) {
+        return undo(scope, () -> {
+        });
+    }
 
-        if (!operation.redo().getAsBoolean()) {
-            history.redoStack.push(operation);
-            return false;
-        }
-
-        history.undoStack.push(operation);
-        return true;
+    @TestOnly
+    public boolean redo(final @NotNull UndoScope scope) {
+        return redo(scope, () -> {
+        });
     }
 
     // UC-INTERNAL-005, Rule-INTERNAL-045
@@ -117,5 +115,29 @@ public final class UndoHistories {
         private final @NotNull Deque<Operation> undoStack = new ArrayDeque<>();
 
         private final @NotNull Deque<Operation> redoStack = new ArrayDeque<>();
+
+        private boolean stepping;
+
+        // UC-INTERNAL-005, Rule-INTERNAL-063
+        private boolean step(final @NotNull Deque<Operation> from, final @NotNull Deque<Operation> to, final @NotNull Function<Operation, UndoStep> which, final @NotNull Runnable succeeded) {
+            if (stepping || from.isEmpty()) return false;
+
+            final @NotNull Operation operation = from.getFirst();
+            final @NotNull AtomicBoolean refused = new AtomicBoolean();
+            stepping = true;
+            which.apply(operation).run(worked -> {
+                stepping = false;
+                if (!worked) {
+                    refused.set(true);
+                    return;
+                }
+
+                from.removeFirstOccurrence(operation);
+                to.push(operation);
+                succeeded.run();
+            });
+
+            return !refused.get();
+        }
     }
 }

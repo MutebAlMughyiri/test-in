@@ -153,4 +153,20 @@ public class RemoveWithEditorsOpenIdeTest extends AbstractOpenEditorsIdeTest {
 
         assertFalse("Ctrl+Z took back the removal before the one that cannot be undone", nodes().nodeExists(login.getPath()));
     }
+
+    // Rule-TREE-PANEL-041
+    public void testARedoneRemovalThatCouldNotKeepItsNodeSaysItCannotBeUndone() {
+        final @NotNull TestSetNode login = aTestSet(testProject.getTestCasesFolder(), "Login");
+        removedAndConfirmed(login);
+        Await.until("the test set was not removed", () -> !nodes().nodeExists(login.getPath()) && undoHistories().canUndo(UndoScope.TREE));
+        undoHistories().undo(UndoScope.TREE);
+        Await.until("Ctrl+Z did not put the test set back", () -> nodes().nodeExists(login.getPath()) && undoHistories().canRedo(UndoScope.TREE));
+        TempTree.delete(login.getPath());
+
+        final @NotNull Said balloons = Said.listening(getProject(), getTestRootDisposable());
+        undoHistories().redo(UndoScope.TREE);
+
+        Await.until("Ctrl+Y did not remove the test set again", () -> !nodes().nodeExists(login.getPath()));
+        Await.until("redoing a removal that cannot be put back did not say so", () -> balloons.shown().stream().anyMatch(one -> one.contains(Bundle.message("remove.not.undoable.title"))));
+    }
 }
