@@ -82,6 +82,24 @@ public class AutomatedStateIdeTest extends AbstractCodegenIdeTest {
         assertEquals("a test case that names no method is not reported not automated", Automated.NONE, state().of(nameless.getUuid()));
     }
 
+    // Rule-EDITOR-PANEL-195, Rule-CODEGEN-003
+    public void testABodyIsTheTestersAsSoonAsItIsAnythingButTheTodo() {
+        testSet = createdTestSet("Checkout");
+        final @NotNull TestCase commented = createdTestCase(testSet, "Log in with a valid user", "m0001");
+        final @NotNull TestCase emptied = createdTestCase(testSet, "Log in with a wrong password", "m0002");
+        final @NotNull TestCase untouched = createdTestCase(testSet, "Log in with a locked account", "m0003");
+        settled();
+        writtenByTheTester(writtenMethodOf(GENERATED_CLASS, commented), "\n// open the login page first\n");
+        writtenByTheTester(writtenMethodOf(GENERATED_CLASS, emptied), "");
+        settled();
+
+        readAndAwait(List.of(commented, emptied, untouched));
+
+        assertEquals("a body holding only the tester's comment is not the tester's", Automated.WRITTEN, state().of(commented.getUuid()));
+        assertEquals("a body whose TODO the tester deleted is not the tester's", Automated.WRITTEN, state().of(emptied.getUuid()));
+        assertEquals("the one TODO line Testin wrote counts as automation", Automated.NONE, state().of(untouched.getUuid()));
+    }
+
     // Rule-EDITOR-PANEL-196
     public void testTheStateIsReadAwayFromTheScreenAndNothingUnreadIsCalledNotAutomated() {
         final @NotNull List<TestCase> testCases = threeStatesOfAutomation();

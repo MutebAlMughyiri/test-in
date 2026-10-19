@@ -24,7 +24,6 @@ import org.testin.model.TestCase;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 public final class NoTestMethodCode implements TestMethodCode {
@@ -38,11 +37,6 @@ public final class NoTestMethodCode implements TestMethodCode {
         TestinLogger.debug("No code navigation in this IDE; no generated methods for " + testCases.size() + " test case(s)");
 
         return Map.of();
-    }
-
-    @Override
-    public @NotNull Set<UUID> withAWrittenBody(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
-        return Set.of();
     }
 
     @Override

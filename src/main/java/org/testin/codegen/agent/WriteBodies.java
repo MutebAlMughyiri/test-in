@@ -19,6 +19,7 @@ package org.testin.codegen.agent;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import lombok.AccessLevel;
@@ -38,8 +39,8 @@ import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -50,16 +51,16 @@ public final class WriteBodies {
         final @NotNull AgentConnection connection = AgentConnection.stored();
         if (!connection.isConnected() || testCases.isEmpty()) return;
 
-        BackgroundWork.logged(ReadAction.nonBlocking(() -> TestMethodCode.available().withAWrittenBody(project, testCases))
+        BackgroundWork.logged(ReadAction.nonBlocking(() -> DumbService.isDumb(project) ? Map.<UUID, Boolean>of() : TestMethodCode.available().methodsFor(project, testCases))
                 .expireWith(ProjectLifetime.of(project))
                 .finishOnUiThread(ModalityState.defaultModalityState(), written -> askOrConfirm(project, connection, testCases, written, editor))
                 .submit(AppExecutorUtil.getAppExecutorService()), "Reading which test methods have a written body");
     }
 
     // UC-CODEGEN-021, Rule-CODEGEN-084, Rule-CODEGEN-091
-    private static void askOrConfirm(final @NotNull Project project, final @NotNull AgentConnection connection, final @NotNull List<TestCase> testCases, final @NotNull Set<UUID> written, final @NotNull Optional<TestinEditor> editor) {
-        final @NotNull List<TestCase> theirs = testCases.stream().filter(testCase -> written.contains(testCase.getUuid())).toList();
-        final @NotNull List<TestCase> empty = testCases.stream().filter(testCase -> !written.contains(testCase.getUuid())).toList();
+    private static void askOrConfirm(final @NotNull Project project, final @NotNull AgentConnection connection, final @NotNull List<TestCase> testCases, final @NotNull Map<UUID, Boolean> written, final @NotNull Optional<TestinEditor> editor) {
+        final @NotNull List<TestCase> theirs = testCases.stream().filter(testCase -> written.getOrDefault(testCase.getUuid(), false)).toList();
+        final @NotNull List<TestCase> empty = testCases.stream().filter(testCase -> !written.getOrDefault(testCase.getUuid(), false)).toList();
 
         if (theirs.isEmpty()) {
             ask(project, connection, empty, List.of(), editor);

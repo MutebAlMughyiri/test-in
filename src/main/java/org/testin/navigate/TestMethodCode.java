@@ -25,7 +25,6 @@ import org.testin.util.FromContentModule;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 public interface TestMethodCode {
@@ -45,9 +44,6 @@ public interface TestMethodCode {
 
     @FromContentModule
     @NotNull Map<UUID, Boolean> methodsFor(final @NotNull Project project, final @NotNull List<TestCase> testCases);
-
-    @FromContentModule
-    @NotNull Set<UUID> withAWrittenBody(@NotNull Project project, @NotNull List<TestCase> testCases);
 
     @FromContentModule
     @NotNull Optional<String> fillBody(@NotNull Project project, @NotNull TestCase testCase, @NotNull String statements);

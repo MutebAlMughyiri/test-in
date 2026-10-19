@@ -41,21 +41,14 @@ import org.testin.util.Bundle;
 import org.testin.util.FailureText;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 
 public final class JavaTestMethodCode implements TestMethodCode {
-    private static boolean doesSomething(final @NotNull PsiMethod testMethod) {
-        return Optional.ofNullable(testMethod.getBody())
-                .filter(body -> body.getStatements().length > 0)
-                .isPresent();
-    }
-
     // UC-CODEGEN-006, Rule-CODEGEN-001
     private @NotNull Optional<PsiMethod> resolve(final @NotNull Project project, final @NotNull TestCase testCase) {
         final @NotNull String classFqcn = Fqcn.classOfMethod(testCase);
@@ -75,11 +68,11 @@ public final class JavaTestMethodCode implements TestMethodCode {
         return method;
     }
 
-    // UC-CODEGEN-006, Rule-CODEGEN-001
+    // UC-CODEGEN-006, UC-CODEGEN-021, Rule-CODEGEN-001, Rule-CODEGEN-003
     @Override
     public @NotNull Map<UUID, Boolean> methodsFor(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
         final @NotNull Map<UUID, Boolean> found = new LinkedHashMap<>();
-        generatedMethodsOf(project, testCases).forEach((testCaseUuid, testMethod) -> found.put(testCaseUuid, doesSomething(testMethod)));
+        generatedMethodsOf(project, testCases).forEach((testCaseUuid, testMethod) -> found.put(testCaseUuid, GeneratedMethod.holdsAWrittenBody(testMethod)));
 
         return found;
     }
@@ -93,28 +86,14 @@ public final class JavaTestMethodCode implements TestMethodCode {
 
             if (owner.isEmpty()) continue;
 
-            final @NotNull Map<String, PsiMethod> methods = GeneratedMethod.byTestCaseUuid(owner.orElseThrow());
+            final @NotNull Function<TestCase, Optional<PsiMethod>> methodOf = GeneratedMethod.ofEach(owner.orElseThrow());
 
             for (final TestCase testCase : group.getValue()) {
-                Optional.ofNullable(methods.get(testCase.getUuid().toString()))
-                        .ifPresent(testMethod -> found.put(testCase.getUuid(), testMethod));
+                methodOf.apply(testCase).ifPresent(testMethod -> found.put(testCase.getUuid(), testMethod));
             }
         }
 
         return found;
-    }
-
-    // UC-CODEGEN-021, Rule-CODEGEN-003
-    @Override
-    public @NotNull Set<UUID> withAWrittenBody(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
-        if (DumbService.isDumb(project)) return Set.of();
-
-        final @NotNull Set<UUID> written = new HashSet<>();
-        generatedMethodsOf(project, testCases).forEach((testCaseUuid, testMethod) -> {
-            if (GeneratedMethod.holdsAWrittenBody(testMethod)) written.add(testCaseUuid);
-        });
-
-        return written;
     }
 
     // UC-CODEGEN-021, Rule-CODEGEN-003, Rule-CODEGEN-089

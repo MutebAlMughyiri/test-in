@@ -51,20 +51,23 @@ public final class GeneratedMethod {
         return "{\n    " + TODO + methodName + "\n}";
     }
 
-    // UC-CODEGEN-021, Rule-CODEGEN-003
+    // UC-CODEGEN-021, Rule-CODEGEN-003, Rule-EDITOR-PANEL-195
     public static boolean holdsAWrittenBody(final @NotNull PsiMethod testMethod) {
-        return Optional.ofNullable(testMethod.getBody())
-                .map(body -> body.getStatements().length > 0 || !body.getText().contains(TODO))
-                .orElse(true);
+        return Optional.ofNullable(testMethod.getBody()).map(body -> !isOnlyTheTodo(body.getText())).orElse(true);
+    }
+
+    private static boolean isOnlyTheTodo(final @NotNull String body) {
+        final @NotNull String inside = body.substring(1, body.length() - 1).strip();
+        return inside.startsWith(TODO) && inside.lines().count() == 1;
     }
 
     // Rule-CODEGEN-001
     public static @NotNull Optional<PsiMethod> forTestCase(final @NotNull PsiClass testClass, final @NotNull TestCase testCase) {
-        return methodsOf(testClass).apply(testCase);
+        return ofEach(testClass).apply(testCase);
     }
 
     // Rule-CODEGEN-001
-    public static @NotNull Function<TestCase, Optional<PsiMethod>> methodsOf(final @NotNull PsiClass testClass) {
+    public static @NotNull Function<TestCase, Optional<PsiMethod>> ofEach(final @NotNull PsiClass testClass) {
         final @NotNull Map<String, PsiMethod> byUuid = byTestCaseUuid(testClass);
         return testCase -> Optional.ofNullable(byUuid.get(testCase.getUuid().toString()));
     }

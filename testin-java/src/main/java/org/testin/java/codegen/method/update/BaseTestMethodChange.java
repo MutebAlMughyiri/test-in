@@ -190,7 +190,7 @@ public class BaseTestMethodChange {
             return;
         }
 
-        final @NotNull Function<TestCase, Optional<PsiMethod>> methodOf = GeneratedMethod.methodsOf(target.orElseThrow());
+        final @NotNull Function<TestCase, Optional<PsiMethod>> methodOf = GeneratedMethod.ofEach(target.orElseThrow());
 
         for (final TestCase testCase : testCases) {
             methodOf.apply(testCase).ifPresent(testMethod -> {

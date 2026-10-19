@@ -111,7 +111,7 @@ public class UpdateTestMethodOrder extends BaseTestMethodChange implements CodeC
 
         final @NotNull PsiClass testClass = target.get();
 
-        final @NotNull Function<TestCase, Optional<PsiMethod>> methodOf = GeneratedMethod.methodsOf(testClass);
+        final @NotNull Function<TestCase, Optional<PsiMethod>> methodOf = GeneratedMethod.ofEach(testClass);
 
         @NotNull Optional<PsiElement> after = Optional.empty();
 
@@ -127,7 +127,7 @@ public class UpdateTestMethodOrder extends BaseTestMethodChange implements CodeC
 
     // UC-CODEGEN-011, Rule-CODEGEN-014
     private void number(final @NotNull Project project, final @NotNull PsiClass testClass, final @NotNull List<TestCase> inSet) {
-        final @NotNull Function<TestCase, Optional<PsiMethod>> methodOf = GeneratedMethod.methodsOf(testClass);
+        final @NotNull Function<TestCase, Optional<PsiMethod>> methodOf = GeneratedMethod.ofEach(testClass);
         final @NotNull Map<PsiMethod, String> renumbered = new LinkedHashMap<>();
         int position = 0;
 

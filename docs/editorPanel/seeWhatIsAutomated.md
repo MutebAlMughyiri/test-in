@@ -16,8 +16,10 @@ set at once, and the status bar says the same thing as a number.
 
 - **Rule-EDITOR-PANEL-195** — A test case is in one of three states. Its
   generated method has something in it, or it names a method and has none, or it
-  is not automated. A method Testin wrote and nobody has filled in is not
-  automation: every generated method starts as an empty one.
+  is not automated. A method is filled in as soon as its body is anything but
+  the one `// TODO` line Testin wrote: a statement, a comment, or the TODO
+  deleted. Until then, it is not automation: every generated method starts as
+  that one line.
 - **Rule-EDITOR-PANEL-196** — The state is read away from the screen. A test set
   opens at the speed it opened before, and the cards say what they know as the
   answers arrive. A test case nobody has read yet is never reported as not

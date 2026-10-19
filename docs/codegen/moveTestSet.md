@@ -18,8 +18,9 @@ There is no key for this. It happens when a test set is moved, which is
   description is what names a method.
 - **Rule-CODEGEN-003** — The body belongs to the tester. Testin writes the
   annotation, the declaration and one `// TODO` line, and never touches a body a
-  tester has written. An agent writes the body only where that `// TODO` still
-  stands, and only when the tester asked for it.
+  tester has written. A body is the tester's as soon as it is anything but that
+  one line: a statement, a comment, or the TODO deleted. An agent writes the
+  body only where it is still that line, and only when the tester asked for it.
 - **Rule-CODEGEN-004** — A rename or a move happens before the tree changes,
   while the old name still finds the code.
 - **Rule-CODEGEN-005** — Test management works without any of this. A missing

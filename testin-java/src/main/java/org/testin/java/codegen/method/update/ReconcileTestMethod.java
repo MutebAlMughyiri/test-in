@@ -60,7 +60,7 @@ public class ReconcileTestMethod extends BaseTestMethodChange implements CodeCha
         final @NotNull Optional<PsiClass> target = classOf(project, inClass.getFirst());
         if (target.isEmpty()) return;
 
-        final @NotNull Function<TestCase, Optional<PsiMethod>> methodOf = GeneratedMethod.methodsOf(target.orElseThrow());
+        final @NotNull Function<TestCase, Optional<PsiMethod>> methodOf = GeneratedMethod.ofEach(target.orElseThrow());
 
         for (final TestCase testCase : inClass) {
             methodOf.apply(testCase).ifPresent(testMethod -> {
