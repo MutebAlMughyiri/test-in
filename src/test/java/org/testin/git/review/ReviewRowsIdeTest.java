@@ -156,6 +156,17 @@ public class ReviewRowsIdeTest extends AbstractGitRemoteIdeTest {
         assertEquals("the revert made a commit", head, head(work, "HEAD"));
     }
 
+    // UC-SHARE-011, Rule-INTERNAL-035, Rule-EDITOR-PANEL-069
+    public void testARemovedTestCasePutBackBelongsToItsTestSet() {
+        assertTrue("the test case was not removed", indexedTestCases().removeTestCase(login.getPath(), second.getUuid()));
+        final @NotNull JBTable table = theReviewTable();
+
+        revertFromTheMenuOn(table, rowNamed(table, "A wrong password is refused"));
+
+        assertEquals("the removed test case did not come back", "A wrong password is refused", onDisk(second));
+        assertEquals("the test case put back belongs to no test set, so its test method has nowhere to go", login.getPath(), indexedTestCases().findTestCase(second.getUuid()).orElseThrow().getParent().getPath());
+    }
+
     // UC-SHARE-011, Rule-SHARE-119
     public void testARevertCanBeTakenBackInTheTestSetsHistory() {
         final @NotNull JBTable table = theReviewTable();

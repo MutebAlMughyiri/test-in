@@ -24,13 +24,13 @@ import org.testin.model.TestCase;
 import java.util.ArrayList;
 import java.util.List;
 
-record RestoredTestCases(@NotNull List<TestCase> removed, @NotNull List<TestCase> comingBack, @NotNull List<TestCase> landed) {
-    RestoredTestCases() {
+public record RestoredTestCases(@NotNull List<TestCase> removed, @NotNull List<TestCase> comingBack, @NotNull List<TestCase> landed) {
+    public RestoredTestCases() {
         this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
     }
 
     // Rule-EDITOR-PANEL-069
-    void generate(final @NotNull Project project) {
+    public void generate(final @NotNull Project project) {
         if (!removed.isEmpty()) CodeChangeType.REMOVE_TEST_CASE.executeAll(project, removed);
         if (!comingBack.isEmpty()) CodeChangeType.CREATE_TEST_CASE.executeAll(project, comingBack);
 

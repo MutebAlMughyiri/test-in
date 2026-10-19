@@ -69,9 +69,12 @@ Right-click the row in the review.
 3. The tester right-clicks that row.
 4. A menu offers **Revert this change**.
 5. The tester chooses it.
-6. The field goes back to what it was before.
-7. A message reads *Reverted*.
-8. The row leaves the table.
+6. A progress bar reads *Reverting* while the file is written.
+7. The field goes back to what it was before, and the test method follows it:
+   a description put back renames the method and its `@Test`, as an edit in the
+   editor does (Rule-CODEGEN-068).
+8. A message reads *Reverted*.
+9. The row leaves the table.
 
 ## What Testin refuses
 
@@ -94,15 +97,17 @@ content:* and the reason, a notification titled *Not Removed* names the file
 ## A new or removed test case
 
 Reverting a **Create Test Case** row removes that new test case, and the test
-method Testin generated for it (Rule-CODEGEN-049). Reverting a **Remove Test Case** row puts the removed test case back
-as it was committed,
-with who created it and when.
+method Testin generated for it (Rule-CODEGEN-049). Reverting a **Remove Test
+Case** row puts the removed test case back as it was committed, with who created
+it and when, and writes its test method again. The method keeps its body only if
+it was removed since the project was opened, while Testin still holds that text
+(Rule-CODEGEN-114); otherwise it is written as for a new test case.
 
 ## What cannot be put back this way
 
 A reordering or a restamp of a test case with no field changed. A change to a
-test run, a result, a marker, or anything Testin did not read as a test case.
-A result is a record of work rather than an edit, so putting one back would say
+test run, a run item, a marker, or anything Testin did not read as a test case.
+A run item is a record of work rather than an edit, so putting one back would say
 a test case was never executed. For those,
 use Git's own tools.
 

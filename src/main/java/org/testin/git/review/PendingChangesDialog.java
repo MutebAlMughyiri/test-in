@@ -18,7 +18,6 @@ package org.testin.git.review;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.codegen.CodeChangeType;
 import org.testin.git.change.ChangeSubject;
 import org.testin.git.change.ChangeType;
 import org.testin.git.change.FieldChange;
@@ -29,7 +28,9 @@ import org.testin.model.NodeType;
 import org.testin.model.TestCase;
 import org.testin.model.TestCase.TestCaseBuilder;
 import org.testin.notifications.Done;
+import org.testin.services.BackgroundWork;
 import org.testin.services.Services;
+import org.testin.testcase.RestoredTestCases;
 import org.testin.testcase.TestCaseSnapshot;
 import org.testin.ui.framework.AbstractFrameworkDialog;
 import org.testin.ui.framework.ChoiceInput;
@@ -168,15 +169,17 @@ public final class PendingChangesDialog extends AbstractFrameworkDialog {
             final @NotNull Path testSetPath = found.orElseThrow();
             final @NotNull UUID testCaseUuid = UUID.fromString(diff.testCaseUuid());
             final @NotNull TestCaseSnapshot before = TestCaseSnapshot.of(project, testSetPath, List.of(testCaseUuid));
+            final @NotNull RestoredTestCases written = new RestoredTestCases();
 
-            final boolean reverted = switch (diff.gitStatusKind()) {
-                case ADDED -> removeNewTestCase(testSetPath, testCaseUuid, before);
-                // Rule-INTERNAL-035
-                case DELETED -> testCases.putTestCaseVerbatim(testSetPath, diff.committed());
-                case MODIFIED -> revertField(testSetPath, changeType, diff);
-            };
+            final boolean reverted = BackgroundWork.synchronously(project, Bundle.message("dialog.pending.revert.progress"), false, () -> switch (diff.gitStatusKind()) {
+                case ADDED -> removeNewTestCase(testSetPath, testCaseUuid, before, written);
+                case DELETED -> putBackRemovedTestCase(testSetPath, diff.committed(), written);
+                case MODIFIED -> revertField(testSetPath, changeType, diff, written);
+            }, false);
 
             if (!reverted) return;
+
+            written.generate(project);
 
             final @NotNull TestCaseSnapshot after = TestCaseSnapshot.of(project, testSetPath, List.of(testCaseUuid));
             final @NotNull List<TestCase> named = before.present().isEmpty() ? after.present() : before.present();
@@ -191,15 +194,25 @@ public final class PendingChangesDialog extends AbstractFrameworkDialog {
     }
 
     // UC-SHARE-011, Rule-CODEGEN-049
-    private boolean removeNewTestCase(final @NotNull Path testSetPath, final @NotNull UUID testCaseUuid, final @NotNull TestCaseSnapshot before) {
+    private boolean removeNewTestCase(final @NotNull Path testSetPath, final @NotNull UUID testCaseUuid, final @NotNull TestCaseSnapshot before, final @NotNull RestoredTestCases written) {
         if (!testCases.removeTestCase(testSetPath, testCaseUuid)) return false;
 
-        CodeChangeType.REMOVE_TEST_CASE.executeAll(project, before.present());
+        written.removed().addAll(before.present());
         return true;
     }
 
-    // UC-SHARE-011, Rule-SHARE-052
-    private boolean revertField(final @NotNull Path testSetPath, final @NotNull ChangeType changeType, final @NotNull PendingChange diff) {
+    // UC-SHARE-011, Rule-INTERNAL-035, Rule-CODEGEN-114
+    private boolean putBackRemovedTestCase(final @NotNull Path testSetPath, final @NotNull TestCase committed, final @NotNull RestoredTestCases written) {
+        final @NotNull TestCase placed = committed.copy();
+        if (!testCases.putTestCaseVerbatim(testSetPath, placed)) return false;
+
+        written.comingBack().add(placed);
+        written.landed().add(placed);
+        return true;
+    }
+
+    // UC-SHARE-011, Rule-SHARE-052, Rule-CODEGEN-068
+    private boolean revertField(final @NotNull Path testSetPath, final @NotNull ChangeType changeType, final @NotNull PendingChange diff, final @NotNull RestoredTestCases written) {
         if (!changeType.isRevertible()) {
             notifier.softRefuse(project, Bundle.message("dialog.pending.revert.not.supported", changeType.getLabel()));
             return false;
@@ -216,12 +229,13 @@ public final class PendingChangesDialog extends AbstractFrameworkDialog {
         changeType.getRevertAction().apply(draft, committed);
         final @NotNull TestCase working = draft.build();
 
-        if (TestCaseFieldChanges.compare(committed, working).isEmpty()) {
-            working.takeAuditOf(committed);
-            return testCases.putTestCaseVerbatim(testSetPath, working);
-        }
+        final boolean lastChange = TestCaseFieldChanges.compare(committed, working).isEmpty();
+        if (lastChange) working.takeAuditOf(committed);
 
-        return testCases.putTestCase(testSetPath, working);
+        final boolean put = lastChange ? testCases.putTestCaseVerbatim(testSetPath, working) : testCases.putTestCase(testSetPath, working);
+        if (put) written.landed().add(working);
+
+        return put;
     }
 
     private void removeRow(final int row) {
