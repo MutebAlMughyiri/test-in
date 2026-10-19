@@ -48,6 +48,7 @@ public class OrderByNumberIdeTest extends AbstractTempRootIdeTest {
         order.getPosition().setValue(position);
         final @NotNull TestCase moved = order.applyTo(stored(testCase));
         theTestCases().putTestCase(testCase.getParent().getPath(), moved);
+        order.getRankedAlongside().forEach(ranked -> theTestCases().putTestCase(testCase.getParent().getPath(), ranked));
         return moved;
     }
 

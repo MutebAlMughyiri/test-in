@@ -85,6 +85,16 @@ public record TestCaseSnapshot(@NotNull Path testSetPath, @NotNull List<TestCase
         return true;
     }
 
+    // Rule-EDITOR-PANEL-038
+    public @NotNull TestCaseSnapshot with(final @NotNull TestCaseSnapshot more) {
+        final @NotNull List<TestCase> allPresent = new ArrayList<>(present);
+        allPresent.addAll(more.present);
+        final @NotNull List<UUID> allAbsent = new ArrayList<>(absent);
+        allAbsent.addAll(more.absent);
+
+        return new TestCaseSnapshot(testSetPath, List.copyOf(allPresent), List.copyOf(allAbsent));
+    }
+
     public @NotNull List<UUID> uuids() {
         final @NotNull List<UUID> testCaseUuids = new ArrayList<>(uuidsOf(present));
         testCaseUuids.addAll(absent);

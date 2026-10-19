@@ -20,13 +20,11 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.TestinEditor;
-import org.testin.indexer.TestCases;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCase;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.testcase.update.UpdateTestCaseMenu;
-import org.testin.util.Bundle;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -34,9 +32,9 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-record UpdateTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor, @NotNull TestCases testCases, @NotNull Notifier notifier) {
+record UpdateTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor, @NotNull Notifier notifier) {
     UpdateTestCaseWork(final @NotNull Project project, final @NotNull TestinEditor editor) {
-        this(project, editor, Services.getInstance(project, TestCases.class), Services.getInstance(project, Notifier.class));
+        this(project, editor, Services.getInstance(project, Notifier.class));
     }
 
     void overSelection(final @NotNull Consumer<UpdateTestCaseMenu> open) {
@@ -54,16 +52,10 @@ record UpdateTestCaseWork(@NotNull Project project, @NotNull TestinEditor editor
                 save(path, testCaseUuids, before, updatedTestCases, field))));
     }
 
-    // Rule-EDITOR-PANEL-006
+    // Rule-EDITOR-PANEL-006, Rule-EDITOR-PANEL-038, Rule-EDITOR-PANEL-039
     private void save(final @NotNull Path path, final @NotNull List<UUID> testCaseUuids, final @NotNull TestCaseSnapshot before, final @NotNull List<TestCase> updatedTestCases, final @NotNull UpdateTestCaseFields field) {
-        int counted = 0;
-        for (final TestCase testCase : updatedTestCases)
-            if (testCases.putTestCase(path, testCase)) counted++;
-        final int written = counted;
-
+        final int written = UpdatedTestCases.write(project, path, testCaseUuids, before, updatedTestCases);
         if (written == 0) return;
-
-        TestCaseSnapshot.record(project, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.update"), updatedTestCases), before, TestCaseSnapshot.of(project, path, testCaseUuids));
 
         ApplicationManager.getApplication().invokeLater(() -> {
             // Rule-EDITOR-PANEL-008

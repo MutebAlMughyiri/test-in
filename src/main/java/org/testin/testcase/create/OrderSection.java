@@ -16,7 +16,6 @@
 
 package org.testin.testcase.create;
 
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBLabel;
@@ -39,7 +38,6 @@ import org.testin.util.Bundle;
 
 import javax.swing.JComponent;
 import java.awt.BorderLayout;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -54,6 +52,9 @@ public class OrderSection implements TestCaseSection {
 
     @Getter
     private final @NotNull IntegerField position;
+
+    @Getter
+    private @NotNull List<TestCase> rankedAlongside = List.of();
 
     private final @NotNull JBLabel outOf;
 
@@ -116,7 +117,8 @@ public class OrderSection implements TestCaseSection {
     // UC-EDITOR-PANEL-009, Rule-EDITOR-PANEL-055, Rule-EDITOR-PANEL-282, Rule-EDITOR-PANEL-056
     @Override
     public @NotNull TestCase applyTo(final @NotNull TestCase ordered) {
-        final @NotNull List<TestCase> inSet = Services.getInstance(project, TestCases.class).getTestCasesForTestSet(ordered.getParent().getPath());
+        rankedAlongside = List.of();
+        final @NotNull List<TestCase> inSet = testCases.getTestCasesForTestSet(ordered.getParent().getPath());
         final int target = position.getValue();
 
         if (target == TestCaseOrder.positionOf(inSet, ordered)) return ordered;
@@ -141,13 +143,9 @@ public class OrderSection implements TestCaseSection {
                 .filter(moved -> !moved.getUuid().equals(ordered.getUuid()))
                 .toList();
 
-        if (!ranked.isEmpty()) {
+        if (!ranked.isEmpty())
             TestinLogger.info("Ranking " + ranked.size() + " test case(s) that had no place, so a typed position means something");
-
-            final @NotNull Path setPath = ordered.getParent().getPath();
-            ApplicationManager.getApplication().executeOnPooledThread(() ->
-                    ranked.forEach(moved -> testCases.putTestCase(setPath, moved)));
-        }
+        rankedAlongside = ranked;
 
         return inSet.stream().map(testCase -> placed.getOrDefault(testCase.getUuid(), testCase)).toList();
     }

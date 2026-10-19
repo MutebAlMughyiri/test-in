@@ -42,13 +42,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 // UC-EDITOR-PANEL-005, UC-EDITOR-PANEL-006
 @Getter
 public abstract class AbstractTestCaseDialog extends AbstractFrameworkDialog {
-    @Getter(AccessLevel.NONE)
     private static final @NotNull PropertyChangeListener NOTHING_ON_FOCUS = _ -> {
     };
 
@@ -80,9 +78,6 @@ public abstract class AbstractTestCaseDialog extends AbstractFrameworkDialog {
     private final @NotNull TestCase testCase;
 
     @Getter(AccessLevel.NONE)
-    private final @NotNull Consumer<@NotNull TestCase> onSave;
-
-    @Getter(AccessLevel.NONE)
     private final StatusBarItem @NotNull [] dialogKeys;
 
     private final @NotNull List<TestCaseSection> cachedSections;
@@ -91,10 +86,9 @@ public abstract class AbstractTestCaseDialog extends AbstractFrameworkDialog {
 
     private @NotNull Optional<TestCaseSection> editableSection = Optional.empty();
 
-    public AbstractTestCaseDialog(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull Consumer<@NotNull TestCase> onSave, final StatusBarItem @NotNull ... dialogKeys) {
+    public AbstractTestCaseDialog(final @NotNull Project project, final @NotNull TestCase testCase, final StatusBarItem @NotNull ... dialogKeys) {
         super(project);
         this.testCase = testCase;
-        this.onSave = onSave;
         this.dialogKeys = dialogKeys.clone();
         this.dialogDisposable = Disposer.newDisposable("testin.testCaseDialog");
         Disposer.register(ProjectLifetime.of(project), dialogDisposable);
@@ -135,7 +129,12 @@ public abstract class AbstractTestCaseDialog extends AbstractFrameworkDialog {
     }
 
     // UC-EDITOR-PANEL-005, UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-199
-    protected abstract StatusBarItem @NotNull [] keysOf(final @NotNull TestCaseSection section);
+    protected StatusBarItem @NotNull [] keysOf(final @NotNull TestCaseSection section) {
+        return section.keys().toArray(StatusBarItem[]::new);
+    }
+
+    // UC-EDITOR-PANEL-005, UC-EDITOR-PANEL-006
+    protected abstract void saved(final @NotNull TestCase edited);
 
     protected void installDynamicStatusBar(final @NotNull JComponent parentPanel) {
         focusListener = e -> Optional.ofNullable((Component) e.getNewValue())
@@ -225,7 +224,7 @@ public abstract class AbstractTestCaseDialog extends AbstractFrameworkDialog {
 
         TestCase edited = testCase;
         for (final TestCaseSection section : writers) edited = section.applyTo(edited);
-        onSave.accept(edited);
+        saved(edited);
 
         closeOk();
     }

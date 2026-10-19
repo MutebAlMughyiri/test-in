@@ -20,7 +20,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBPanel;
 import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.TestCases;
-import org.testin.model.StatusBarItem;
 import org.testin.model.TestCase;
 import org.testin.services.Services;
 import org.testin.testcase.TestCaseDialogKey;
@@ -34,13 +33,17 @@ import org.testin.util.Bundle;
 import javax.swing.JComponent;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class UpdateTestCaseDialog extends AbstractTestCaseDialog {
     private final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
 
+    private final @NotNull Consumer<@NotNull List<TestCase>> onSave;
+
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-036
-    public UpdateTestCaseDialog(final @NotNull Project project, final @NotNull TestCase existingTestCase, final @NotNull UpdateTestCaseFields selectedField, final @NotNull Consumer<@NotNull TestCase> onSave) {
-        super(project, existingTestCase, onSave, TestCaseDialogKey.SAVE, TestCaseDialogKey.CANCEL);
+    public UpdateTestCaseDialog(final @NotNull Project project, final @NotNull TestCase existingTestCase, final @NotNull UpdateTestCaseFields selectedField, final @NotNull Consumer<@NotNull List<TestCase>> onSave) {
+        super(project, existingTestCase, TestCaseDialogKey.SAVE, TestCaseDialogKey.CANCEL);
+        this.onSave = onSave;
 
         // Rule-CODEGEN-079
         descriptionSection.compareAgainst(() -> testCases
@@ -83,9 +86,9 @@ public class UpdateTestCaseDialog extends AbstractTestCaseDialog {
         registerDialogKeys(keys);
     }
 
-    // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-199
+    // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-038, Rule-EDITOR-PANEL-223
     @Override
-    protected StatusBarItem @NotNull [] keysOf(final @NotNull TestCaseSection section) {
-        return section.keys().toArray(StatusBarItem[]::new);
+    protected void saved(final @NotNull TestCase edited) {
+        onSave.accept(Stream.concat(Stream.of(edited), orderSection.getRankedAlongside().stream()).toList());
     }
 }

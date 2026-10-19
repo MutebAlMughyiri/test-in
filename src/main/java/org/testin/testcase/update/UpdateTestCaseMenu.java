@@ -80,7 +80,7 @@ public class UpdateTestCaseMenu {
         if (testCases.size() == 1) {
             new UpdateTestCaseDialog(project, testCases.getFirst(), field, edited -> {
                 TestinLogger.trace("Single Edit Save -> changeType = " + codeChangeType);
-                updatedTestCases.accept(List.of(edited), field);
+                updatedTestCases.accept(edited, field);
             }).show();
 
             return;

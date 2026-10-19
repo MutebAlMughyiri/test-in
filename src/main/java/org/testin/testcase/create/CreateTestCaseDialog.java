@@ -44,14 +44,17 @@ public class CreateTestCaseDialog extends AbstractTestCaseDialog {
 
     private final @NotNull TestSetNode testSet;
 
+    private final @NotNull Consumer<@NotNull TestCase> onSave;
+
     private final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
 
     private final @NotNull Nodes nodes = Services.getInstance(project, Nodes.class);
 
     // UC-EDITOR-PANEL-005, Rule-CODEGEN-079
     public CreateTestCaseDialog(final @NotNull Project project, final @NotNull TestSetNode testSet, final @NotNull Consumer<@NotNull TestCase> onSave) {
-        super(project, TestCase.builder().parent(testSet).build(), onSave, ADD_FIELD, TestCaseDialogKey.SAVE, TestCaseDialogKey.CANCEL);
+        super(project, TestCase.builder().parent(testSet).build(), ADD_FIELD, TestCaseDialogKey.SAVE, TestCaseDialogKey.CANCEL);
         this.testSet = testSet;
+        this.onSave = onSave;
 
         descriptionSection.compareAgainst(() -> testCases.getTestCasesForTestSet(testSet.getPath()));
 
@@ -103,5 +106,11 @@ public class CreateTestCaseDialog extends AbstractTestCaseDialog {
         if (!keys.contains(TestCaseDialogKey.NAVIGATE_TAB)) keys.add(TestCaseDialogKey.NAVIGATE_TAB);
         if (section.equals(descriptionSection)) keys.addAll(List.of(CreateTestCaseFields.values()));
         return keys.toArray(StatusBarItem[]::new);
+    }
+
+    // UC-EDITOR-PANEL-005
+    @Override
+    protected void saved(final @NotNull TestCase edited) {
+        onSave.accept(edited);
     }
 }

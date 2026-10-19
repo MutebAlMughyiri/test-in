@@ -82,7 +82,7 @@ public class UpdateOneFieldIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull UpdateTestCaseDialog shown(final @NotNull TestCase testCase, final @NotNull UpdateTestCaseFields field) {
-        final @NotNull UpdateTestCaseDialog dialog = new UpdateTestCaseDialog(getProject(), testCase, field, saved::add);
+        final @NotNull UpdateTestCaseDialog dialog = new UpdateTestCaseDialog(getProject(), testCase, field, saved::addAll);
         ShownDialog.open(getProject(), UpdateTestCaseDialog.class, dialog::show);
         return dialog;
     }

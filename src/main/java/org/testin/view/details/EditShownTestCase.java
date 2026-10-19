@@ -32,6 +32,7 @@ import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.testcase.TestCaseSnapshot;
 import org.testin.testcase.UpdateTestCaseFields;
+import org.testin.testcase.UpdatedTestCases;
 import org.testin.testcase.update.UpdateTestCaseMenu;
 import org.testin.util.Bundle;
 import org.testin.view.ViewToolWindowFactory;
@@ -93,15 +94,9 @@ public final class EditShownTestCase {
 
     // UC-VIEW-PANEL-011, Rule-VIEW-PANEL-007, Rule-VIEW-PANEL-046, Rule-VIEW-PANEL-047, Rule-VIEW-PANEL-048
     private static void save(final @NotNull Project project, final @NotNull TestCase shownTestCase, final @NotNull List<TestCase> updatedTestCases, final @NotNull UpdateTestCaseFields field, final @NotNull List<UUID> testCaseUuids, final @NotNull Optional<TestCaseSnapshot> before) {
-        final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
-
         testSetOf(project, shownTestCase).ifPresentOrElse(testSet -> {
-            boolean changed = false;
-            for (final TestCase testCase : updatedTestCases) changed |= testCases.putTestCase(testSet, testCase);
-
-            if (!changed) return;
-
-            before.ifPresent(taken -> TestCaseSnapshot.record(project, TestCaseSnapshot.describe(Bundle.message("snapshot.verb.update"), updatedTestCases), taken, TestCaseSnapshot.of(project, testSet, testCaseUuids)));
+            final @NotNull TestCaseSnapshot taken = before.orElseGet(() -> TestCaseSnapshot.of(project, testSet, testCaseUuids));
+            if (UpdatedTestCases.write(project, testSet, testCaseUuids, taken, updatedTestCases) == 0) return;
 
             Services.getInstance(project, Notifier.class).softShow(project, field.getDone());
 

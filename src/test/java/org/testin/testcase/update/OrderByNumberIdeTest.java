@@ -34,6 +34,8 @@ import org.testin.testcase.TestCaseOrder;
 import org.testin.testcase.UpdateTestCaseAction;
 import org.testin.testcase.UpdateTestCaseFields;
 import org.testin.ui.framework.ShownDialog;
+import org.testin.undo.UndoHistories;
+import org.testin.undo.UndoScope;
 import org.testin.util.Shortcuts;
 import org.testin.view.Drawn;
 
@@ -144,5 +146,24 @@ public class OrderByNumberIdeTest extends AbstractTempRootIdeTest {
         moveToThird(editor, "Test case number 6");
 
         Await.until("the place in the set was not what was written: " + storedOrder(), () -> storedOrder().equals(List.of("1", "2", "6", "3", "4", "5")));
+    }
+
+    // Rule-EDITOR-PANEL-038, Rule-EDITOR-PANEL-039, Rule-EDITOR-PANEL-223
+    public void testOneOrderChangeAmongUnplacedTestCasesIsOneUndoThatPutsTheWholeSetBack() {
+        testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Imported");
+        for (final String description : List.of("Test case number 1", "Test case number 2", "Test case number 3"))
+            EditorFixtures.testCase(getProject(), testSet, description, "");
+        final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
+
+        final @NotNull String first = storedOrder().getFirst();
+        moveToThird(editor, "Test case number " + first);
+        Await.until("the test case never moved to third: " + storedOrder(), () -> storedOrder().getLast().equals(first));
+        final @NotNull UndoScope scope = UndoScope.of(testSet.getPath());
+        Await.until("the Order change never became an undo entry", () -> Services.getInstance(getProject(), UndoHistories.class).canUndo(scope));
+
+        assertTrue("one Ctrl+Z was refused", Services.getInstance(getProject(), UndoHistories.class).undo(scope));
+
+        Await.until("Ctrl+Z left a test case it ranked with its new order", () -> Services.getInstance(getProject(), TestCases.class).getTestCasesForTestSet(testSet.getPath()).stream().allMatch(testCase -> testCase.getOrder().isEmpty()));
+        assertFalse("the Order change was more than one undo entry", Services.getInstance(getProject(), UndoHistories.class).canUndo(scope));
     }
 }
