@@ -160,23 +160,12 @@ public class CreateTestMethod implements CodeChange<TestCase> {
         final @NotNull Optional<Document> document = Optional.ofNullable(documents.getDocument(file));
 
         if (document.isEmpty()) {
-            oneAtATime(project, targetClass, decide(project, targetClass, testCases), "it has no document to edit");
+            oneAtATime(project, targetClass, decide(project, targetClass, testCases));
             return;
         }
 
         final @NotNull List<TestCase> toWrite = decide(project, targetClass, testCases);
-        final @NotNull ToIntFunction<TestCase> positions = ExecutionPosition.ofEach(project);
-        final @NotNull StringBuilder methods = new StringBuilder();
-        final @NotNull StringBuilder keptMethods = new StringBuilder();
-
-        for (final TestCase testCase : toWrite) {
-            Services.getInstance(project, KeptTestMethods.class).take(testCase).ifPresentOrElse(
-                    keptMethod -> keptMethods.append('\n').append(keptMethod).append('\n'),
-                    () -> methods.append('\n').append(methodText(Fqcn.methodNameOf(testCase), testCase, positions.applyAsInt(testCase))).append('\n'));
-        }
-
-        if (!methods.isEmpty() || !keptMethods.isEmpty())
-            insertBeforeClosingBrace(project, targetClass, toWrite, document.orElseThrow(), methods, keptMethods);
+        if (!toWrite.isEmpty()) insertAtClassEnd(project, targetClass, toWrite, document.orElseThrow());
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-001, Rule-CODEGEN-079, Rule-CODEGEN-095
@@ -241,8 +230,8 @@ public class CreateTestMethod implements CodeChange<TestCase> {
         return toWrite;
     }
 
-    // UC-CODEGEN-002, Rule-CODEGEN-016, Rule-CODEGEN-114
-    private void insertBeforeClosingBrace(final @NotNull Project project, final @NotNull PsiClass targetClass, final @NotNull List<TestCase> toWrite, final @NotNull Document document, final @NotNull CharSequence methods, final @NotNull CharSequence keptMethods) {
+    // UC-CODEGEN-002, Rule-CODEGEN-016, Rule-CODEGEN-114, Rule-CODEGEN-003
+    private void insertAtClassEnd(final @NotNull Project project, final @NotNull PsiClass targetClass, final @NotNull List<TestCase> toWrite, final @NotNull Document document) {
         final @NotNull PsiFile file = targetClass.getContainingFile();
         final @NotNull PsiDocumentManager documents = PsiDocumentManager.getInstance(project);
 
@@ -250,13 +239,17 @@ public class CreateTestMethod implements CodeChange<TestCase> {
 
         documents.doPostponedOperationsAndUnblockDocument(document);
 
-        final @NotNull Optional<PsiElement> closingBrace = Optional.ofNullable(targetClass.getRBrace());
-        if (closingBrace.isEmpty()) {
-            oneAtATime(project, targetClass, toWrite, "it has no closing brace to write before");
-            return;
+        final @NotNull ToIntFunction<TestCase> positions = ExecutionPosition.ofEach(project);
+        final @NotNull StringBuilder methods = new StringBuilder();
+        final @NotNull StringBuilder keptMethods = new StringBuilder();
+
+        for (final TestCase testCase : toWrite) {
+            Services.getInstance(project, KeptTestMethods.class).take(testCase).ifPresentOrElse(
+                    keptMethod -> keptMethods.append('\n').append(keptMethod).append('\n'),
+                    () -> methods.append('\n').append(methodText(Fqcn.methodNameOf(testCase), testCase, positions.applyAsInt(testCase))).append('\n'));
         }
 
-        final int insertAt = closingBrace.orElseThrow().getTextRange().getStartOffset();
+        final int insertAt = Optional.ofNullable(targetClass.getRBrace()).map(brace -> brace.getTextRange().getStartOffset()).orElseGet(() -> targetClass.getTextRange().getEndOffset());
         document.insertString(insertAt, methods.toString() + keptMethods);
         documents.commitDocument(document);
 
@@ -285,11 +278,11 @@ public class CreateTestMethod implements CodeChange<TestCase> {
                 Bundle.message("codegen.name.taken.message", named(lost)));
     }
 
-    private void oneAtATime(final @NotNull Project project, final @NotNull PsiClass targetClass, final @NotNull List<TestCase> toWrite, final @NotNull String reason) {
+    private void oneAtATime(final @NotNull Project project, final @NotNull PsiClass targetClass, final @NotNull List<TestCase> toWrite) {
         if (toWrite.isEmpty()) return;
 
         TestinLogger.warn("Writing " + toWrite.size() + " methods one at a time into "
-                + targetClass.getQualifiedName() + ": " + reason);
+                + targetClass.getQualifiedName() + ": it has no document to edit");
 
         for (final TestCase testCase : toWrite) {
             injectMethod(project, targetClass, testCase).ifPresent(added -> CodeStyleManager.getInstance(project).reformat(added));
@@ -322,7 +315,8 @@ public class CreateTestMethod implements CodeChange<TestCase> {
                 return;
             }
 
-            oneAtATime(project, classes[0], decide(project, classes[0], testCases), "its class could not be found by name");
+            TestinLogger.warn(className + " could not be found by name, so its file was read instead");
+            injectAsText(project, classes[0], testCases);
 
         } catch (final Exception ex) {
             TestinLogger.error("retryInjectPhysically failed for " + className + ".java: " + FailureText.of(ex));

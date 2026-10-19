@@ -99,7 +99,8 @@ public void logInWithAValidUser() {
 2. Testin groups the new test cases by the class they belong to.
 3. Testin finds the class, or writes it first.
 4. Testin adds the TestNG import if the class has not got it.
-5. Testin writes every method in one change, just before the closing brace.
+5. Testin writes every method in one change, just before the closing brace,
+   or at the end of the class while a half-typed class has none.
 6. Testin formats what it wrote, and nothing else.
 
 ## What Testin refuses

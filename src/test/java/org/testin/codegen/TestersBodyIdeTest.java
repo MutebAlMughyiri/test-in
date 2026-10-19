@@ -18,9 +18,12 @@ package org.testin.codegen;
 
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiCodeBlock;
 import com.intellij.psi.PsiDocumentManager;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiJavaToken;
 import com.intellij.psi.PsiMethod;
 import org.jetbrains.annotations.NotNull;
@@ -142,6 +145,28 @@ public class TestersBodyIdeTest extends AbstractCodegenIdeTest {
         CodeChangeType.REMOVE_TEST_CASE.executeAllNow(getProject(), List.of(typed));
         settled();
         assertTrue("the removal left the method in the class", methodOf(LOGIN_TEST, typed).isEmpty());
+
+        testCases.putTestCaseVerbatim(login.getPath(), typed);
+        CodeChangeType.CREATE_TEST_CASE.executeAllNow(getProject(), List.of(typed));
+
+        assertAsTyped(LOGIN_TEST, typed);
+    }
+
+    // Rule-CODEGEN-114
+    public void testTakingARemovalBackIntoAClassWithNoClosingBracePutsTheBodyBackAsTyped() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull TestCase typed = typedInto(login, "Log in with a valid user", "b");
+        final @NotNull TestCases testCases = Services.getInstance(getProject(), TestCases.class);
+
+        testCases.removeTestCase(login.getPath(), typed.getUuid());
+        CodeChangeType.REMOVE_TEST_CASE.executeAllNow(getProject(), List.of(typed));
+        settled();
+        final @NotNull PsiClass loginTest = generatedClass(LOGIN_TEST).orElseThrow(() -> new AssertionError(LOGIN_TEST + " was never written"));
+        final @NotNull PsiDocumentManager documents = PsiDocumentManager.getInstance(getProject());
+        final @NotNull Document document = Optional.ofNullable(documents.getDocument(loginTest.getContainingFile())).orElseThrow(() -> new AssertionError(LOGIN_TEST + " has no document to edit"));
+        final @NotNull TextRange closingBrace = Optional.ofNullable(loginTest.getRBrace()).map(PsiElement::getTextRange).orElseThrow(() -> new AssertionError(LOGIN_TEST + " has no closing brace to take away"));
+        WriteCommandAction.runWriteCommandAction(getProject(), () -> document.deleteString(closingBrace.getStartOffset(), closingBrace.getEndOffset()));
+        documents.commitDocument(document);
 
         testCases.putTestCaseVerbatim(login.getPath(), typed);
         CodeChangeType.CREATE_TEST_CASE.executeAllNow(getProject(), List.of(typed));
