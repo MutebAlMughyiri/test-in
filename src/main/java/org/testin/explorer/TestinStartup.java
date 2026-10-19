@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.testin.setting;
+package org.testin.explorer;
 
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
@@ -35,6 +35,9 @@ import org.testin.indexer.TestProjectIndexer;
 import org.testin.logger.TestinLogger;
 import org.testin.runner.TestNGExecutionRecorder;
 import org.testin.services.Services;
+import org.testin.setting.AppSettingsState;
+import org.testin.setting.SettingsConfigurable;
+import org.testin.setting.TestinRoot;
 import org.testin.testproject.BoundTestProject;
 import org.testin.util.Bundle;
 import org.testin.util.Once;
@@ -80,7 +83,7 @@ public final class TestinStartup implements ProjectActivity {
     }
 
     // UC-SETTING-002, Rule-SETTING-014, Rule-INTERNAL-127, Rule-INTERNAL-129
-    static void hintTestinFolder(final @NotNull Project project) {
+    public static void hintTestinFolder(final @NotNull Project project) {
         final @NotNull Hints hints = Services.getInstance(project, Hints.class);
         if (Services.getInstance(project, TestinRoot.class).isConfigured()) {
             hints.clear(SetupStep.TESTIN_FOLDER);
@@ -102,9 +105,9 @@ public final class TestinStartup implements ProjectActivity {
     public @NotNull Object execute(final @NotNull Project project, final @NotNull Continuation<? super Unit> continuation) {
         if (Once.claim(project, STARTED)) wire(project);
 
-        final @NotNull BoundTestProject bound = Services.getInstance(project, BoundTestProject.class);
-        if (bound.isNamed()) {
-            TestinLogger.info("Test project for this repository: '" + bound.name() + "'");
+        final @NotNull BoundTestProject boundTestProject = Services.getInstance(project, BoundTestProject.class);
+        if (boundTestProject.isNamed()) {
+            TestinLogger.info("Test project for this repository: '" + boundTestProject.name() + "'");
             readTheFolder(project);
         } else {
             TestinLogger.info("No test project chosen for " + project.getName() + ", so nothing is read until something needs it");

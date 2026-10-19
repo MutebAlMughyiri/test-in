@@ -18,9 +18,9 @@ package org.testin.indexer;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
+import org.testin.explorer.TestinStartup;
 import org.testin.services.Services;
 import org.testin.setting.AppSettingsState;
-import org.testin.setting.TestinStartup;
 
 import java.nio.file.Path;
 

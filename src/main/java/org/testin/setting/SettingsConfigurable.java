@@ -30,6 +30,7 @@ import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
 import org.jetbrains.annotations.NotNull;
+import org.testin.explorer.TestinStartup;
 import org.testin.explorer.TreePanel;
 import org.testin.help.Guide;
 import org.testin.help.Guides;

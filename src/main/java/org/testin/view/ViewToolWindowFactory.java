@@ -25,10 +25,10 @@ import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import org.jetbrains.annotations.NotNull;
+import org.testin.explorer.TestinStartup;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCase;
 import org.testin.services.Services;
-import org.testin.setting.TestinStartup;
 
 import java.util.Collection;
 import java.util.List;

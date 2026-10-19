@@ -26,6 +26,7 @@ import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
 import org.testin.Said;
 import org.testin.editor.EditorFixtures;
+import org.testin.explorer.TestinStartup;
 import org.testin.explorer.TreePanel;
 import org.testin.importexport.FileFormat;
 import org.testin.importexport.imports.SourceFileField;

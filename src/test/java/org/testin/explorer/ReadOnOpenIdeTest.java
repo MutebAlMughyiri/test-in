@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.testin.setting;
+package org.testin.explorer;
 
 import com.intellij.testFramework.PlatformTestUtil;
 import com.intellij.util.TimeoutUtil;

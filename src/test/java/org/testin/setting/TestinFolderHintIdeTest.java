@@ -21,6 +21,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Said;
+import org.testin.explorer.TestinStartup;
 import org.testin.help.Hints;
 import org.testin.help.SetupHint;
 import org.testin.help.SetupStep;

@@ -26,7 +26,6 @@ import com.intellij.ui.content.ContentFactory;
 import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
 import org.testin.services.Services;
-import org.testin.setting.TestinStartup;
 
 public class TreePanelToolWindowFactory implements ToolWindowFactory, DumbAware {
     // UC-TREE-PANEL-001, Rule-TREE-PANEL-097

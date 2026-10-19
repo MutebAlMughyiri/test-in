@@ -140,7 +140,7 @@
 
         <!-- First run activity -->
         <postStartupActivity
-                implementation="org.testin.setting.TestinStartup"
+                implementation="org.testin.explorer.TestinStartup"
         />
 
 
