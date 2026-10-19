@@ -18,7 +18,6 @@ package org.testin.bug;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.TestRuns;
-import org.testin.model.status.RunItemStatus;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.RunItems;
 
@@ -32,7 +31,7 @@ public record RunItemPath(@NotNull Path testRunPath, @NotNull UUID testCaseUuid)
     }
 
     public @NotNull Optional<RunItem> failedIn(final @NotNull RunItems runItems) {
-        return in(runItems).filter(runItem -> runItem.getStatus() == RunItemStatus.FAILED);
+        return in(runItems).filter(RunItem::isFailed);
     }
 
     public @NotNull Optional<RunItem> stillFailed(final @NotNull TestRuns testRuns) {

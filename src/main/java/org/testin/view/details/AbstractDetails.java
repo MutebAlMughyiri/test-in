@@ -24,8 +24,9 @@ import com.intellij.util.ui.WrapLayout;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.open.TestinEditors;
 import org.testin.editor.testrun.TestRunEditor;
-import org.testin.indexer.TestRuns;
+import org.testin.indexer.Nodes;
 import org.testin.model.TestCase;
+import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.services.Services;
 import org.testin.setting.TestinRoot;
@@ -72,8 +73,13 @@ public abstract class AbstractDetails {
     }
 
     // UC-VIEW-PANEL-005
+    static @NotNull Optional<AbstractNode> containerOf(final @NotNull Project project, final @NotNull List<String> treePath) {
+        return Services.getInstance(project, Nodes.class).find(Services.getInstance(project, TestinRoot.class).resolve(treePath));
+    }
+
+    // UC-VIEW-PANEL-005
     static @NotNull Optional<TestRunNode> testRunOf(final @NotNull Project project, final @NotNull List<String> treePath) {
-        return Services.getInstance(project, TestRuns.class).findTestRunNode(Services.getInstance(project, TestinRoot.class).resolve(treePath));
+        return containerOf(project, treePath).filter(TestRunNode.class::isInstance).map(TestRunNode.class::cast);
     }
 
     // UC-VIEW-PANEL-016, UC-VIEW-PANEL-004

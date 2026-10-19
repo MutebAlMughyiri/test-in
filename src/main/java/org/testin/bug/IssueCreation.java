@@ -25,8 +25,6 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 
 public record IssueCreation(@NotNull Optional<String> url, int notUploaded, @NotNull String problem) {
-    private static final int SIGNED_OUT = 4;
-
     static @NotNull IssueCreation failed(final @NotNull String problem) {
         return new IssueCreation(Optional.empty(), 0, problem);
     }
@@ -38,12 +36,10 @@ public record IssueCreation(@NotNull Optional<String> url, int notUploaded, @Not
         final @NotNull String said = answer.getStderr().strip();
         final @NotNull Optional<String> url = BugIssueUrl.firstIn(answer.getStdout());
         if (url.isPresent()) {
-            return answer.getExitCode() == 0 ? new IssueCreation(url, 0, "") : new IssueCreation(url, notUploaded(said, screenshots), said);
+            return GitHubCli.succeeded(answer) ? new IssueCreation(url, 0, "") : new IssueCreation(url, notUploaded(said, screenshots), said);
         }
 
-        if (answer.getExitCode() == SIGNED_OUT) return failed(Bundle.message("bug.reason.signed.out", host));
-
-        return failed(said.isEmpty() ? Bundle.message("bug.send.failed", answer.getExitCode()) : said);
+        return failed(GitHubCli.problemIn(answer, host));
     }
 
     private static int notUploaded(final @NotNull String said, final int screenshots) {

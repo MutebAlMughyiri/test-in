@@ -18,61 +18,40 @@ package org.testin.importexport.imports;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.TestinLogger;
 import org.testin.model.TestCase;
-import org.testin.testcase.Can;
 import org.testin.testcase.ImportedRow;
 import org.testin.testcase.TestSetEditorFields;
-import org.testin.util.FailureText;
 import org.testin.util.SeparatedValues;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
 public class ImportCsv {
     // UC-SHARE-006
     public @NotNull Map<String, List<TestCase>> processImport(final @NotNull Project project, final @NotNull File file) {
-        final @NotNull Map<String, List<TestCase>> result = new LinkedHashMap<>();
+        final @NotNull Map<String, List<TestCase>> sheets = new LinkedHashMap<>();
         final @NotNull List<TestCase> testCases = parseFile(project, file);
         if (!testCases.isEmpty()) {
             final @NotNull String name = file.getName().replaceAll("\\.csv$", "").replaceAll("[\\\\/*?\\[\\]]", "_");
-            result.put(name, testCases);
+            sheets.put(name, testCases);
         }
-        return result;
+        return sheets;
     }
 
     public @NotNull List<TestCase> parseFile(final @NotNull Project project, final @NotNull File file) {
-        return parseCsvFile(file, project);
-    }
-
-    private @NotNull Map<String, Integer> headerIndexes(final @NotNull List<String> headers) {
-        final @NotNull Map<String, Integer> byName = new HashMap<>();
-
-        for (int i = 0; i < headers.size(); i++) {
-            final @NotNull String headerName = headers.get(i).trim();
-            for (final TestSetEditorFields field : TestSetEditorFields.all(Can.IMPORT)) {
-                if (field.isColumn(headerName)) byName.put(field.getName().toLowerCase(Locale.ROOT), i);
-            }
-        }
-
-        return byName;
-    }
-
-    private @NotNull List<TestCase> parseCsvFile(final @NotNull File file, final @NotNull Project project) {
-        final @NotNull List<TestCase> result = new ArrayList<>();
+        final @NotNull List<TestCase> testCases = new ArrayList<>();
         final @NotNull List<List<String>> records = parseCsvRecords(file);
 
-        if (records.isEmpty()) return result;
+        if (records.isEmpty()) return testCases;
 
-        final @NotNull Map<String, Integer> headerIndexMap = headerIndexes(records.getFirst());
+        final @NotNull Map<TestSetEditorFields, Integer> columns = TestSetEditorFields.columnsOf(records.getFirst());
 
         int refused = 0;
 
@@ -81,18 +60,18 @@ public class ImportCsv {
 
             if (values.stream().allMatch(String::isBlank)) continue;
 
-            final @NotNull ImportedRow imported = TestSetEditorFields.importRow(project, field -> Optional.ofNullable(headerIndexMap.get(field.getName().toLowerCase(Locale.ROOT)))
+            final @NotNull ImportedRow imported = TestSetEditorFields.importRow(project, field -> Optional.ofNullable(columns.get(field))
                     .filter(columnIndex -> columnIndex < values.size())
                     .map(columnIndex -> values.get(columnIndex).trim())
                     .orElse(""));
 
             refused += imported.refused();
-            result.add(imported.testCase());
+            testCases.add(imported.testCase());
         }
 
         TestSetEditorFields.sayWhatWasRefused(project, refused);
 
-        return result;
+        return testCases;
     }
 
     // UC-SHARE-005, Rule-SHARE-124
@@ -103,8 +82,7 @@ public class ImportCsv {
                     .filter(fields -> !fields.stream().allMatch(String::isEmpty))
                     .toList();
         } catch (final IOException ex) {
-            TestinLogger.error("CSV parse failed: " + FailureText.of(ex));
-            throw new RuntimeException(ex);
+            throw new UncheckedIOException(ex);
         }
     }
 }

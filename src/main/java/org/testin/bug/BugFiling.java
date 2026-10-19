@@ -25,7 +25,6 @@ import org.jetbrains.annotations.VisibleForTesting;
 import org.testin.indexer.TestRuns;
 import org.testin.logger.TestinLogger;
 import org.testin.model.bug.BugIssueUrl;
-import org.testin.model.status.RunItemStatus;
 import org.testin.model.testrun.RunItem;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
@@ -81,7 +80,7 @@ public final class BugFiling {
         final @NotNull TestRuns testRuns = Services.getInstance(project, TestRuns.class);
         final @NotNull Optional<RunItem> found = testRuns.findRunItems(runItemPath.testRunPath()).flatMap(runItemPath::in);
         if (found.isEmpty()) return Optional.of(Bundle.message("bug.not.stored.moved"));
-        if (found.orElseThrow().getStatus() != RunItemStatus.FAILED)
+        if (!found.orElseThrow().isFailed())
             return Optional.of(Bundle.message("bug.not.stored.no.longer.failed"));
 
         testRuns.changeRunItems(runItemPath.testRunPath(), testRun -> runItemPath.failedIn(testRun).ifPresentOrElse(runItem -> runItem.linkBug(url),

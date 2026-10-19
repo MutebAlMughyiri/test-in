@@ -18,14 +18,12 @@ package org.testin.importexport.exports;
 
 import com.intellij.openapi.util.text.StringUtil;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.TestinLogger;
 import org.testin.model.ReportColor;
 import org.testin.model.TestCase;
 import org.testin.testcase.Can;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.util.Bundle;
 import org.testin.util.Display;
-import org.testin.util.FailureText;
 import org.testin.util.ReportFont;
 
 import java.io.BufferedWriter;
@@ -33,6 +31,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -41,16 +40,15 @@ import java.util.Map;
 
 public class ExportHtml {
     // UC-SHARE-002
-    public void exportToFile(final @NotNull File destFile, final @NotNull Map<String, List<TestCase>> sheetsData) {
-        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(destFile), StandardCharsets.UTF_8))) {
-            writeHtmlDocument(writer, sheetsData);
+    public void exportToFile(final @NotNull File destination, final @NotNull Map<String, List<TestCase>> sheets) {
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(destination), StandardCharsets.UTF_8))) {
+            writeHtmlDocument(writer, sheets);
         } catch (final IOException ex) {
-            TestinLogger.error(FailureText.of(ex));
-            throw new RuntimeException(ex);
+            throw new UncheckedIOException(ex);
         }
     }
 
-    private void writeHtmlDocument(final @NotNull BufferedWriter writer, final @NotNull Map<String, List<TestCase>> sheetsData) {
+    private void writeHtmlDocument(final @NotNull BufferedWriter writer, final @NotNull Map<String, List<TestCase>> sheets) {
         try {
             writer.write("<!DOCTYPE html>");
             writer.newLine();
@@ -92,7 +90,7 @@ public class ExportHtml {
 
             int totalExported = 0;
 
-            for (final Map.Entry<String, List<TestCase>> entry : sheetsData.entrySet()) {
+            for (final Map.Entry<String, List<TestCase>> entry : sheets.entrySet()) {
                 final @NotNull String sheetName = entry.getKey();
                 final @NotNull List<TestCase> testCases = entry.getValue();
 
@@ -137,8 +135,7 @@ public class ExportHtml {
             writer.write("</html>");
             writer.newLine();
         } catch (final IOException ex) {
-            TestinLogger.error(FailureText.of(ex));
-            throw new RuntimeException(ex);
+            throw new UncheckedIOException(ex);
         }
     }
 }

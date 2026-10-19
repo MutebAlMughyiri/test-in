@@ -28,8 +28,6 @@ import java.util.Map;
 import java.util.stream.StreamSupport;
 
 record GhIssueStatesAnswer(@NotNull Map<Integer, BugIssueState> states, boolean boardRefused, @NotNull String problem) {
-    private static final int SIGNED_OUT = 4;
-
     private static final @NotNull String NO_GITHUB_PROJECT_SCOPE = "INSUFFICIENT_SCOPES";
 
     private static final @NotNull Map<String, BugIssueState> BY_GITHUB = Map.of(
@@ -50,7 +48,7 @@ record GhIssueStatesAnswer(@NotNull Map<Integer, BugIssueState> states, boolean 
         if (StreamSupport.stream(said.path("errors").spliterator(), false).anyMatch(error -> NO_GITHUB_PROJECT_SCOPE.equals(error.path("type").asText()))) {
             return new GhIssueStatesAnswer(Map.of(), true, "");
         }
-        if (!said.has("data")) return failed(problem(answer, host));
+        if (!said.has("data")) return failed(GitHubCli.problemIn(answer, host));
 
         final @NotNull JsonNode repository = said.path("data").path("repository");
         final @NotNull Map<Integer, BugIssueState> states = new HashMap<>();
@@ -71,12 +69,6 @@ record GhIssueStatesAnswer(@NotNull Map<Integer, BugIssueState> states, boolean 
         return BY_GITHUB.getOrDefault(state.equals("CLOSED") ? issue.path("stateReason").asText("COMPLETED") : state, BugIssueState.NOT_READ);
     }
 
-    private static @NotNull String problem(final @NotNull ProcessOutput answer, final @NotNull String host) {
-        if (answer.getExitCode() == SIGNED_OUT) return Bundle.message("bug.reason.signed.out", host);
-
-        final @NotNull String said = answer.getStderr().strip();
-        return said.isEmpty() ? Bundle.message("bug.send.failed", answer.getExitCode()) : said;
-    }
 
     @NotNull BugIssueState stateOf(final int number) {
         return states.getOrDefault(number, BugIssueState.NOT_READ);

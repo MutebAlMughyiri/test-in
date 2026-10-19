@@ -46,6 +46,8 @@ import java.util.stream.IntStream;
 
 @AllArgsConstructor
 public final class GitHubCli {
+    private static final int SIGNED_OUT = 4;
+
     static final @NotNull Duration TIMEOUT = Duration.ofMinutes(2);
 
     private static final @NotNull List<Integer> OLDEST = List.of(2, 99, 0);
@@ -143,6 +145,19 @@ public final class GitHubCli {
                 .orElseGet(() -> Optional.of(Bundle.message("bug.reason.not.a.repository")));
     }
 
+    // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-073
+    static boolean succeeded(final @NotNull ProcessOutput answer) {
+        return answer.getExitCode() == 0 && !answer.isTimeout() && !answer.isCancelled();
+    }
+
+    // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-073, Rule-VIEW-PANEL-091
+    static @NotNull String problemIn(final @NotNull ProcessOutput answer, final @NotNull String host) {
+        if (answer.getExitCode() == SIGNED_OUT) return Bundle.message("bug.reason.signed.out", host);
+
+        final @NotNull String said = answer.getStderr().strip();
+        return said.isEmpty() ? Bundle.message("bug.send.failed", answer.getExitCode()) : said;
+    }
+
     private @NotNull Optional<String> whyGhCannotSend(final @NotNull BugRepository repository) {
         final @NotNull Optional<String> version = launcher.run(List.of("--version"), ANYWHERE).map(ProcessOutput::getStdout);
         if (version.isEmpty()) return Optional.of(Bundle.message("bug.reason.no.gh"));
@@ -151,7 +166,7 @@ public final class GitHubCli {
         if (!isNewEnough(said)) return Optional.of(Bundle.message("bug.reason.old.gh", versionIn(said), oldest()));
 
         final boolean signedIn = launcher.run(List.of("auth", "status", "--active", "--hostname", repository.host()), ANYWHERE)
-                .filter(answer -> answer.getExitCode() == 0 && !answer.isTimeout() && !answer.isCancelled())
+                .filter(GitHubCli::succeeded)
                 .isPresent();
         return signedIn ? Optional.empty() : Optional.of(Bundle.message("bug.reason.signed.out", repository.host()));
     }

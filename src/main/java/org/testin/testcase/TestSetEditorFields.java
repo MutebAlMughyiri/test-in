@@ -44,6 +44,7 @@ import org.testin.util.TestCaseFieldParser;
 
 import javax.swing.Icon;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
@@ -354,6 +355,18 @@ public enum TestSetEditorFields implements ShowableField {
     // Rule-EDITOR-PANEL-020
     public static @NotNull TestSetEditorFields atColumn(final int column) {
         return COLUMNS.get(column);
+    }
+
+    // UC-SHARE-005, UC-SHARE-006, Rule-SHARE-110
+    public static @NotNull Map<TestSetEditorFields, Integer> columnsOf(final @NotNull List<String> headers) {
+        final @NotNull Map<TestSetEditorFields, Integer> columns = new EnumMap<>(TestSetEditorFields.class);
+        for (int column = 0; column < headers.size(); column++) {
+            for (final TestSetEditorFields field : all(Can.IMPORT)) {
+                if (field.isColumn(headers.get(column))) columns.put(field, column);
+            }
+        }
+
+        return columns;
     }
 
     // UC-SHARE-005, UC-SHARE-006, Rule-SHARE-110

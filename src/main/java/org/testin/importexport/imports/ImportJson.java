@@ -19,10 +19,8 @@ package org.testin.importexport.imports;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.TestinLogger;
 import org.testin.model.TestCase;
 import org.testin.services.Services;
-import org.testin.util.FailureText;
 import org.testin.util.JsonCodec;
 
 import java.io.File;
@@ -51,7 +49,6 @@ public class ImportJson {
         try {
             return Files.readAllBytes(file.toPath());
         } catch (final IOException ex) {
-            TestinLogger.error("JSON import could not read " + file + ": " + FailureText.of(ex));
             throw new UncheckedIOException(ex);
         }
     }

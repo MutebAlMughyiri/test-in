@@ -19,28 +19,26 @@ package org.testin.importexport.exports;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtil;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.TestinLogger;
 import org.testin.model.TestCase;
 import org.testin.services.Services;
-import org.testin.util.FailureText;
 import org.testin.util.JsonCodec;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
 public class ExportJson {
     // UC-SHARE-001, Rule-SHARE-010
-    public void exportToFile(final @NotNull Project project, final @NotNull File destFile, final @NotNull Map<String, List<TestCase>> sheetsData) {
+    public void exportToFile(final @NotNull Project project, final @NotNull File destination, final @NotNull Map<String, List<TestCase>> sheets) {
         try {
-            FileUtil.createParentDirs(destFile);
+            FileUtil.createParentDirs(destination);
 
-            Files.write(destFile.toPath(), Services.getInstance(project, JsonCodec.class).writeValueAsBytes(sheetsData));
+            Files.write(destination.toPath(), Services.getInstance(project, JsonCodec.class).writeValueAsBytes(sheets));
         } catch (final IOException ex) {
-            TestinLogger.error("export failed: " + destFile + " - " + FailureText.of(ex));
-            throw new RuntimeException(ex);
+            throw new UncheckedIOException(ex);
         }
     }
 }

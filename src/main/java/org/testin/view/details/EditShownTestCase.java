@@ -27,11 +27,9 @@ import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.Declared;
 import org.testin.indexer.TestCases;
-import org.testin.indexer.TestRuns;
 import org.testin.model.TestCase;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
-import org.testin.setting.TestinRoot;
 import org.testin.testcase.TestCaseSnapshot;
 import org.testin.testcase.UpdateTestCaseFields;
 import org.testin.testcase.update.UpdateTestCaseMenu;
@@ -78,8 +76,7 @@ public final class EditShownTestCase {
         if (Services.getInstance(project, TestCases.class).findTestCase(testCase.getUuid()).isEmpty())
             return Optional.of(Bundle.message("details.deleted.no.edit"));
 
-        final boolean committed = !treePath.isEmpty() && Services.getInstance(project, TestRuns.class)
-                .findTestRunNode(Services.getInstance(project, TestinRoot.class).resolve(treePath))
+        final boolean committed = AbstractDetails.testRunOf(project, treePath)
                 .filter(testRun -> !testRun.takesRunItemStatuses())
                 .isPresent();
         return committed ? Optional.of(Bundle.message("details.committed.no.edit")) : Optional.empty();

@@ -17,7 +17,6 @@
 package org.testin.importexport.imports;
 
 import com.intellij.openapi.project.Project;
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -26,20 +25,18 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCase;
-import org.testin.testcase.Can;
 import org.testin.testcase.ImportedRow;
 import org.testin.testcase.TestSetEditorFields;
-import org.testin.util.FailureText;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 public class ImportExcel {
     private static boolean isEmpty(final @NotNull Row row, final @NotNull DataFormatter dataFormatter) {
@@ -51,27 +48,26 @@ public class ImportExcel {
 
     // UC-SHARE-006
     public @NotNull Map<String, List<TestCase>> processImport(final @NotNull Project project, final @NotNull File file) {
-        final @NotNull Map<String, List<TestCase>> result = new LinkedHashMap<>(parseFile(project, file));
+        final @NotNull Map<String, List<TestCase>> sheets = new LinkedHashMap<>(parseFile(project, file));
 
-        TestinLogger.info("Import: parsed " + result.values().stream().mapToInt(List::size).sum()
-                + " test cases from " + result.size() + " sheet(s) of " + file.getName());
-        return result;
+        TestinLogger.info("Import: parsed " + sheets.values().stream().mapToInt(List::size).sum()
+                + " test cases from " + sheets.size() + " sheet(s) of " + file.getName());
+        return sheets;
     }
 
     public @NotNull Map<String, List<TestCase>> parseFile(final @NotNull Project project, final @NotNull File file) {
-        final @NotNull Map<String, List<TestCase>> result = new LinkedHashMap<>();
+        final @NotNull Map<String, List<TestCase>> sheets = new LinkedHashMap<>();
         try (Workbook workbook = WorkbookFactory.create(file, null, true)) {
-            parseWorkbook(workbook, project, result);
+            parseWorkbook(workbook, project, sheets);
 
         } catch (final IOException ex) {
-            TestinLogger.error(FailureText.of(ex));
-            throw new RuntimeException(ex);
+            throw new UncheckedIOException(ex);
         }
-        return result;
+        return sheets;
     }
 
     // UC-SHARE-005, Rule-SHARE-106
-    private void parseWorkbook(final @NotNull Workbook workbook, final @NotNull Project project, final @NotNull Map<String, List<TestCase>> result) {
+    private void parseWorkbook(final @NotNull Workbook workbook, final @NotNull Project project, final @NotNull Map<String, List<TestCase>> sheets) {
         final @NotNull DataFormatter dataFormatter = new DataFormatter();
         int refused = 0;
 
@@ -83,7 +79,7 @@ public class ImportExcel {
             refused += parsed.refused();
 
             if (!parsed.testCases().isEmpty()) {
-                result.put(sheet.getSheetName(), parsed.testCases());
+                sheets.put(sheet.getSheetName(), parsed.testCases());
             }
         }
 
@@ -98,31 +94,25 @@ public class ImportExcel {
     }
 
     private @NotNull ParsedTestCases readRows(final @NotNull Project project, final @NotNull Sheet sheet, final @NotNull Row headerRow, final @NotNull DataFormatter dataFormatter) {
-        final @NotNull Map<String, Integer> headerIndexMap = new HashMap<>();
-        for (final Cell cell : headerRow) {
-            final @NotNull String headerName = dataFormatter.formatCellValue(cell).trim();
-            for (final TestSetEditorFields importedField : TestSetEditorFields.all(Can.IMPORT)) {
-                if (importedField.isColumn(headerName)) {
-                    headerIndexMap.put(importedField.getName().toLowerCase(Locale.ROOT), cell.getColumnIndex());
-                }
-            }
-        }
+        final @NotNull Map<TestSetEditorFields, Integer> columns = TestSetEditorFields.columnsOf(IntStream.range(0, Math.max(0, headerRow.getLastCellNum()))
+                .mapToObj(column -> dataFormatter.formatCellValue(headerRow.getCell(column)))
+                .toList());
 
-        final @NotNull List<TestCase> sheetList = new ArrayList<>();
+        final @NotNull List<TestCase> testCases = new ArrayList<>();
 
         int refused = 0;
 
         for (final Row row : sheet) {
             if (row.getRowNum() == headerRow.getRowNum() || isEmpty(row, dataFormatter)) continue;
 
-            final @NotNull ImportedRow imported = TestSetEditorFields.importRow(project, field -> Optional.ofNullable(headerIndexMap.get(field.getName().toLowerCase(Locale.ROOT)))
+            final @NotNull ImportedRow imported = TestSetEditorFields.importRow(project, field -> Optional.ofNullable(columns.get(field))
                     .map(columnIndex -> dataFormatter.formatCellValue(row.getCell(columnIndex)).trim())
                     .orElse(""));
 
             refused += imported.refused();
-            sheetList.add(imported.testCase());
+            testCases.add(imported.testCase());
         }
 
-        return new ParsedTestCases(sheetList, refused);
+        return new ParsedTestCases(testCases, refused);
     }
 }

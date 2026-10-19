@@ -25,16 +25,15 @@ import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.TestinLogger;
 import org.testin.model.TestCase;
 import org.testin.testcase.Can;
 import org.testin.testcase.TestSetEditorFields;
-import org.testin.util.FailureText;
 import org.testin.util.ReportFont;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.Map;
 
@@ -60,7 +59,7 @@ public class ExportExcel {
     }
 
     // UC-SHARE-002, Rule-SHARE-012, Rule-SHARE-007
-    public void exportToFile(final @NotNull File destFile, final @NotNull Map<String, List<TestCase>> sheetsData) {
+    public void exportToFile(final @NotNull File destination, final @NotNull Map<String, List<TestCase>> sheets) {
         try (SXSSFWorkbook workbook = new SXSSFWorkbook()) {
             final @NotNull CellStyle headerStyle = workbook.createCellStyle();
             final @NotNull Font headerFont = workbook.createFont();
@@ -68,7 +67,7 @@ public class ExportExcel {
             headerFont.setBold(true);
             headerStyle.setFont(headerFont);
 
-            for (final Map.Entry<String, List<TestCase>> entry : sheetsData.entrySet()) {
+            for (final Map.Entry<String, List<TestCase>> entry : sheets.entrySet()) {
                 final @NotNull SXSSFSheet sheet = workbook.createSheet(uniqueSheetName(workbook, entry.getKey()));
                 sheet.trackAllColumnsForAutoSizing();
 
@@ -93,12 +92,11 @@ public class ExportExcel {
                 }
             }
 
-            try (FileOutputStream output = new FileOutputStream(destFile)) {
+            try (FileOutputStream output = new FileOutputStream(destination)) {
                 workbook.write(output);
             }
         } catch (final IOException ex) {
-            TestinLogger.error(FailureText.of(ex));
-            throw new RuntimeException(ex);
+            throw new UncheckedIOException(ex);
         }
     }
 }

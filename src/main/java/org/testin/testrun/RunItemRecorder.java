@@ -250,7 +250,7 @@ public final class RunItemRecorder {
 
     // UC-INTERNAL-009, Rule-INTERNAL-129
     private void offerBugReports(final @NotNull RunItemStatus runItemStatus) {
-        if (runItemStatus == RunItemStatus.FAILED)
+        if (runItemStatus.collectsFailureDetails())
             Services.getInstance(project, Guides.class).add(Guide.RAISE_BUG_REPORTS);
     }
 

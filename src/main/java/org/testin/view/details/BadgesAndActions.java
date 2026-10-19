@@ -21,10 +21,7 @@ import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.JBUI;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.indexer.Nodes;
 import org.testin.model.TestCase;
-import org.testin.services.Services;
-import org.testin.setting.TestinRoot;
 
 import java.awt.GridBagConstraints;
 import java.util.List;
@@ -45,7 +42,7 @@ public final class BadgesAndActions extends AbstractDetails {
         final @NotNull JBPanel<?> line = line(GAP);
 
         TestCaseBadges.of(project, testCase).forEach(line::add);
-        TestCaseHoverButtons.of(project, testCase, Services.getInstance(project, Nodes.class).find(Services.getInstance(project, TestinRoot.class).resolve(treePath))).forEach(line::add);
+        TestCaseHoverButtons.of(project, testCase, containerOf(project, treePath)).forEach(line::add);
 
         return addFullWidthRow(panel, constraints, line, JBUI.insets(INSETS_TOP, INSETS_SIDE, 0, INSETS_SIDE), currentRow);
     }

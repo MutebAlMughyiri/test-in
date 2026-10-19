@@ -17,11 +17,9 @@
 package org.testin.importexport.exports;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.TestinLogger;
 import org.testin.model.TestCase;
 import org.testin.testcase.Can;
 import org.testin.testcase.TestSetEditorFields;
-import org.testin.util.FailureText;
 import org.testin.util.SeparatedValues;
 
 import java.io.BufferedWriter;
@@ -29,6 +27,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +35,8 @@ import java.util.Map;
 
 public class ExportCsv {
     // UC-SHARE-002
-    public void exportToFile(final @NotNull File destFile, final @NotNull Map<String, List<TestCase>> sheetsData) {
-        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(destFile), StandardCharsets.UTF_8))) {
+    public void exportToFile(final @NotNull File destination, final @NotNull Map<String, List<TestCase>> sheets) {
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(destination), StandardCharsets.UTF_8))) {
             final @NotNull List<String> headerNames = TestSetEditorFields.all(Can.EXPORT).stream()
                     .map(TestSetEditorFields::getName)
                     .toList();
@@ -45,7 +44,7 @@ public class ExportCsv {
             writer.write(String.join(",", headerNames));
             writer.newLine();
 
-            for (final Map.Entry<String, List<TestCase>> entry : sheetsData.entrySet()) {
+            for (final Map.Entry<String, List<TestCase>> entry : sheets.entrySet()) {
                 for (final TestCase testCase : entry.getValue()) {
                     final @NotNull List<String> rowValues = new ArrayList<>();
                     for (final TestSetEditorFields field : TestSetEditorFields.all(Can.EXPORT)) {
@@ -56,8 +55,7 @@ public class ExportCsv {
                 }
             }
         } catch (final IOException ex) {
-            TestinLogger.error(FailureText.of(ex));
-            throw new RuntimeException(ex);
+            throw new UncheckedIOException(ex);
         }
     }
 }

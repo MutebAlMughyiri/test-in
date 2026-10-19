@@ -59,7 +59,6 @@ import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
 import org.testin.testrun.TestRunEditorFields;
 import org.testin.util.Bundle;
-import org.testin.util.FailureText;
 import org.testin.util.ReportFont;
 
 import java.io.ByteArrayOutputStream;
@@ -220,7 +219,6 @@ public final class TestRunPdfGenerator {
             return bytes.toByteArray();
 
         } catch (final IOException ex) {
-            TestinLogger.error("PDF generation failed: " + FailureText.of(ex));
             throw new UncheckedIOException(ex);
         }
     }
