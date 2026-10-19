@@ -17,17 +17,9 @@
 package org.testin.testcase.update.bulk;
 
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.popup.JBPopupListener;
-import com.intellij.openapi.ui.popup.LightweightWindowEvent;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCase;
 import org.testin.testcase.TestSetEditorFields;
-import org.testin.ui.framework.AbstractFrameworkDialog;
-import org.testin.ui.framework.DialogPart;
-import org.testin.ui.framework.DialogSize;
-import org.testin.ui.framework.StatusBarShortcut;
-import org.testin.util.Bundle;
-import org.testin.util.Shortcuts;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,69 +27,27 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public abstract class AbstractJsonSplitBulkSectionDialog extends AbstractFrameworkDialog {
-    private final @NotNull List<TestCase> selectedTestCases;
-
-    private final @NotNull Consumer<List<TestCase>> updatedTestCases;
-
-    private final @NotNull BulkJsonEditors editors;
+public class BaseValueBulkDialog extends AbstractBulkDialog {
+    private final boolean acceptsBlank;
 
     private final @NotNull List<String> originalEscaped = new ArrayList<>();
 
-    protected AbstractJsonSplitBulkSectionDialog(final @NotNull Project project, final @NotNull List<TestCase> selectedTestCases, final @NotNull Consumer<List<TestCase>> updatedTestCases) {
-        super(project);
-        this.selectedTestCases = selectedTestCases;
-        this.updatedTestCases = updatedTestCases;
+    // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-040, Rule-EDITOR-PANEL-298
+    public BaseValueBulkDialog(final @NotNull Project project, final @NotNull TestSetEditorFields field, final @NotNull String title, final boolean acceptsBlank, final @NotNull List<TestCase> selectedTestCases, final @NotNull Consumer<List<TestCase>> updatedTestCases) {
+        super(project, field, title, selectedTestCases, updatedTestCases);
+        this.acceptsBlank = acceptsBlank;
 
-        title = getPopupTitle();
-
-        editors = new BulkJsonEditors(project);
         buildContent();
-
-        components = List.of(DialogPart.of(editors));
-
-        shortcuts = List.of(
-                StatusBarShortcut.save(this::submit),
-                StatusBarShortcut.build(Shortcuts.TabNext, Bundle.message("bulk.shortcut.next"), () -> editors.navigate(1, true)),
-                StatusBarShortcut.build(Shortcuts.TabPrevious, Bundle.message("bulk.shortcut.previous"), () -> editors.navigate(-1, true)),
-                StatusBarShortcut.build(Shortcuts.ArrowDown, Bundle.message("bulk.shortcut.next"), () -> editors.navigate(1, false)),
-                StatusBarShortcut.build(Shortcuts.ArrowUp, Bundle.message("bulk.shortcut.previous"), () -> editors.navigate(-1, false)),
-                StatusBarShortcut.build(Shortcuts.CaretOnEveryValue, Bundle.message("bulk.shortcut.all.carets"), editors::caretOnEveryValue),
-                StatusBarShortcut.hint("Ctrl+Click", Bundle.message("shortcut.multi.caret")),
-                StatusBarShortcut.cancel(this::closeCancel));
-
-        size = DialogSize.HALF;
-
-        editors.bindKeysToEditor(shortcuts);
-    }
-
-    protected abstract @NotNull String getPopupTitle();
-
-    protected abstract @NotNull String getJsonFieldName();
-
-    // UC-EDITOR-PANEL-007
-    protected abstract @NotNull TestSetEditorFields attribute();
-
-    // Rule-EDITOR-PANEL-005
-    protected @NotNull String getOriginalValue(final @NotNull TestCase testCase) {
-        return attribute().gridValue(testCase);
+        bindKeys(List.of(), editors::caretOnEveryValue);
     }
 
     protected @NotNull Optional<TestCase> withValue(final @NotNull TestCase testCase, final @NotNull String value) {
-        return attribute().getImportSetter().execute(project, testCase, value);
-    }
-
-    protected boolean acceptsBlank() {
-        return true;
+        return field.getImportSetter().execute(project, testCase, value);
     }
 
     // Rule-EDITOR-PANEL-224
     protected @NotNull Set<Integer> clashing(final @NotNull List<TestCase> testCases, final @NotNull List<EditedValue> newValues) {
         return Set.of();
-    }
-
-    protected boolean showsDescriptionContext() {
-        return true;
     }
 
     // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-041, Rule-EDITOR-PANEL-206
@@ -111,7 +61,7 @@ public abstract class AbstractJsonSplitBulkSectionDialog extends AbstractFramewo
             final @NotNull EditedValue edited = newValues.get(i);
             if (!edited.changed()) continue;
 
-            if (edited.value().isEmpty() && !acceptsBlank()) continue;
+            if (edited.value().isEmpty() && !acceptsBlank) continue;
 
             if (clashing.contains(i)) continue;
 
@@ -127,22 +77,6 @@ public abstract class AbstractJsonSplitBulkSectionDialog extends AbstractFramewo
         TestSetEditorFields.sayWhatWasRefused(project, refused);
 
         return written;
-    }
-
-    // UC-EDITOR-PANEL-007
-    public void open() {
-        if (!show()) {
-            editors.release();
-            return;
-        }
-
-        getPopup().addListener(new JBPopupListener() {
-            @Override
-            public void onClosed(final @NotNull LightweightWindowEvent event) {
-                editors.release();
-            }
-        });
-        editors.focusFirstValue();
     }
 
     // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-042
@@ -163,6 +97,7 @@ public abstract class AbstractJsonSplitBulkSectionDialog extends AbstractFramewo
         closeOk();
     }
 
+    // Rule-EDITOR-PANEL-005
     private void buildContent() {
         final @NotNull StringBuilder left = new StringBuilder("[\n");
         final @NotNull StringBuilder right = new StringBuilder("[\n");
@@ -170,17 +105,10 @@ public abstract class AbstractJsonSplitBulkSectionDialog extends AbstractFramewo
 
         for (int i = 0; i < selectedTestCases.size(); i++) {
             final @NotNull TestCase testCase = selectedTestCases.get(i);
-            final @NotNull String escapedValue = BulkValueText.escape(getOriginalValue(testCase));
+            final @NotNull String escapedValue = BulkValueText.escape(field.gridValue(testCase));
             originalEscaped.add(escapedValue);
 
-            final @NotNull StringBuilder prefixText = new StringBuilder("  {\n    \"uuid\": \"")
-                    .append(BulkValueText.escape(testCase.getUuid().toString())).append("\",\n");
-            if (showsDescriptionContext()) {
-                prefixText.append("    \"description\": \"").append(BulkValueText.escape(testCase.getDescription())).append("\",\n");
-            }
-            prefixText.append("    \"").append(getJsonFieldName()).append("\": \"");
-
-            final @NotNull String prefix = prefixText.toString();
+            final @NotNull String prefix = head(testCase) + "\"";
             final @NotNull String suffix = "\"\n  }";
             final @NotNull String comma = (i == selectedTestCases.size() - 1) ? "\n" : ",\n";
 

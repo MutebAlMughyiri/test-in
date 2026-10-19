@@ -61,6 +61,7 @@ public enum TestSetEditorFields implements ShowableField {
     SEQUENCE(
             Bundle.message("field.sequence"),
             "",
+            "",
             FieldDefault.STRUCTURE,
             _ -> "",
             (_, testCase, _) -> Optional.of(testCase),
@@ -73,6 +74,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     ORDER(
             Bundle.message("field.order"),
+            "order",
             "O",
             FieldDefault.ON,
             _ -> "",
@@ -86,6 +88,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     DESCRIPTION(
             Bundle.message("field.description"),
+            "description",
             "D",
             FieldDefault.LOCKED_CHECKED,
             TestCase::getDescription,
@@ -100,6 +103,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     UUID(
             Bundle.message("field.uuid"),
+            "",
             "U",
             FieldDefault.OFF,
             testCase -> String.valueOf(testCase.getUuid()),
@@ -110,6 +114,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     EXPECTED_RESULT(
             Bundle.message("field.expected.result"),
+            "expectedResult",
             "E",
             FieldDefault.ON,
             TestCase::getExpectedResult,
@@ -120,6 +125,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     STEPS(
             Bundle.message("field.steps"),
+            "steps",
             "S",
             FieldDefault.OFF,
             testCase -> String.join(", ", testCase.getSteps()),
@@ -130,6 +136,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     PRIORITY(
             Bundle.message("field.priority"),
+            "priority",
             "P",
             FieldDefault.ON,
             testCase -> testCase.getPriority().getLabel(),
@@ -145,6 +152,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     FQCN(
             Bundle.message("field.fqcn"),
+            "",
             "F",
             FieldDefault.OFF,
             testCase -> String.join(" > ", Fqcn.ofMethod(testCase)),
@@ -155,6 +163,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     REFERENCE(
             Bundle.message("field.reference"),
+            "reference",
             "R",
             FieldDefault.OFF,
             TestCase::getReference,
@@ -165,6 +174,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     TEST_DATA(
             Bundle.message("field.test.data"),
+            "testData",
             "T",
             FieldDefault.OFF,
             TestCase::getTestData,
@@ -175,6 +185,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     PRE_CONDITIONS(
             Bundle.message("field.pre.conditions"),
+            "preConditions",
             "B",
             FieldDefault.OFF,
             TestCase::getPreConditions,
@@ -185,6 +196,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     GROUP(
             Bundle.message("field.group"),
+            "groups",
             "G",
             FieldDefault.ON,
             testCase -> Groups.text(testCase.getGroups()),
@@ -200,6 +212,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     PATH(
             Bundle.message("field.path"),
+            "",
             "H",
             FieldDefault.OFF,
             testCase -> String.join(" > ", testCase.getParent().treePath()),
@@ -210,6 +223,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     MODULE(
             Bundle.message("field.module"),
+            "module",
             "M",
             FieldDefault.OFF,
             TestCase::getModule,
@@ -220,6 +234,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     STATUS(
             Bundle.message("field.test.case.status"),
+            "status",
             "Z",
             FieldDefault.OFF,
             testCase -> testCase.getStatus().getLabel(),
@@ -230,6 +245,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     CREATED_BY(
             Bundle.message("field.created.by"),
+            "createdBy",
             "",
             FieldDefault.OFF,
             TestCase::getCreatedBy,
@@ -240,6 +256,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     UPDATED_BY(
             Bundle.message("field.updated.by"),
+            "updatedBy",
             "",
             FieldDefault.OFF,
             TestCase::getUpdatedBy,
@@ -250,6 +267,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     CREATED_AT(
             Bundle.message("field.created.at"),
+            "createdAt",
             "",
             FieldDefault.OFF,
             testCase -> Display.formatDate(testCase.getCreatedAt()),
@@ -260,6 +278,7 @@ public enum TestSetEditorFields implements ShowableField {
 
     UPDATED_AT(
             Bundle.message("field.updated.at"),
+            "updatedAt",
             "",
             FieldDefault.OFF,
             testCase -> Display.formatDate(testCase.getUpdatedAt()),
@@ -280,6 +299,9 @@ public enum TestSetEditorFields implements ShowableField {
 
     private final @NotNull String name;
 
+    // Rule-EDITOR-PANEL-298
+    private final @NotNull String storedKey;
+
     private final @NotNull String letter;
 
     private final @NotNull Icon icon;
@@ -295,8 +317,9 @@ public enum TestSetEditorFields implements ShowableField {
     @Getter(AccessLevel.NONE)
     private final @NotNull ImmutableSet<Can> can;
 
-    TestSetEditorFields(final @NotNull String name, final @NotNull String letter, final @NotNull FieldDefault toolBarDefault, final @NotNull Function<TestCase, String> testValueExtractor, final @NotNull ImportSetter importSetter, final @NotNull CodeChangeType<TestCase> codeChangeType, final @NotNull Can... can) {
+    TestSetEditorFields(final @NotNull String name, final @NotNull String storedKey, final @NotNull String letter, final @NotNull FieldDefault toolBarDefault, final @NotNull Function<TestCase, String> testValueExtractor, final @NotNull ImportSetter importSetter, final @NotNull CodeChangeType<TestCase> codeChangeType, final @NotNull Can... can) {
         this.name = name;
+        this.storedKey = storedKey;
         this.letter = letter;
         this.icon = letter.isEmpty() ? EmptyIcon.ICON_0 : Icons.fieldLetter(letter, Icons.GRAY);
         this.toolBarDefault = toolBarDefault;

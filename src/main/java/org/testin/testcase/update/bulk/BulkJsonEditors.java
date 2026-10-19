@@ -263,19 +263,14 @@ final class BulkJsonEditors implements DialogComponent {
         if (marker.isValid()) rightEditor.getCaretModel().moveToOffset(marker.getEndOffset());
     }
 
-    // UC-EDITOR-PANEL-007
-    void navigate(final int direction, final boolean wrap) {
+    // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-298
+    void navigate(final int direction) {
         if (markers.isEmpty()) return;
 
         rightEditor.getCaretModel().removeSecondaryCarets();
 
         final int current = Math.max(0, indexAt(rightEditor.getCaretModel().getOffset()));
-        final int target = wrap
-                ? (current + direction + markers.size()) % markers.size()
-                : current + direction;
-        if (target < 0 || target >= markers.size()) return;
-
-        focusValue(target);
+        focusValue((current + direction + markers.size()) % markers.size());
     }
 
     // UC-EDITOR-PANEL-007

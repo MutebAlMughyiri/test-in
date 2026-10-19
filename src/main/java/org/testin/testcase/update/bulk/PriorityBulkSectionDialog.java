@@ -27,24 +27,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class PriorityBulkSectionDialog extends AbstractJsonSplitBulkSectionDialog {
+public class PriorityBulkSectionDialog extends BaseValueBulkDialog {
     public PriorityBulkSectionDialog(final @NotNull Project project, final @NotNull List<TestCase> selectedTestCases, final @NotNull Consumer<List<TestCase>> updatedTestCases) {
-        super(project, selectedTestCases, updatedTestCases);
-    }
-
-    @Override
-    protected @NotNull TestSetEditorFields attribute() {
-        return TestSetEditorFields.PRIORITY;
-    }
-
-    @Override
-    protected @NotNull String getPopupTitle() {
-        return Bundle.message("bulk.title.priority");
-    }
-
-    @Override
-    protected @NotNull String getJsonFieldName() {
-        return "priority";
+        super(project, TestSetEditorFields.PRIORITY, Bundle.message("bulk.title.priority"), true, selectedTestCases, updatedTestCases);
     }
 
     // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-206

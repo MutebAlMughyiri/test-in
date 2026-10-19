@@ -20,30 +20,21 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.Groups;
 import org.testin.model.TestCase;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.util.Bundle;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class GroupBulkSectionDialog extends AbstractJsonArraySplitBulkSectionDialog {
+public class GroupBulkSectionDialog extends AbstractListBulkDialog {
     public GroupBulkSectionDialog(final @NotNull Project project, final @NotNull List<TestCase> selectedTestCases, final @NotNull Consumer<List<TestCase>> updatedTestCases) {
-        super(project, selectedTestCases, updatedTestCases);
-    }
-
-    @Override
-    protected @NotNull String getPopupTitle() {
-        return Bundle.message("bulk.title.group");
-    }
-
-    @Override
-    protected @NotNull String getArrayFieldName() {
-        return "group";
+        super(project, TestSetEditorFields.GROUP, Bundle.message("bulk.title.group"), selectedTestCases, updatedTestCases);
     }
 
     @Override
     protected @NotNull List<List<String>> extractOriginalValues(final @NotNull List<TestCase> testCases) {
-        return testCases.stream().map(testCase -> (List<String>) new ArrayList<>(testCase.getGroups())).toList();
+        return testCases.stream().map(TestCase::getGroups).toList();
     }
 
     // UC-EDITOR-PANEL-007

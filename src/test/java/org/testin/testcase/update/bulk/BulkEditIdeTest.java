@@ -88,7 +88,7 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
 
     @Override
     protected void tearDown() {
-        ShownDialog.close(getProject(), ModuleBulkSectionDialog.class);
+        ShownDialog.close(getProject(), BaseValueBulkDialog.class);
         ShownDialog.close(getProject(), StepsBulkSectionDialog.class);
         super.tearDown();
     }
@@ -122,7 +122,7 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull List<Editor> editors() {
-        return editorsOf(ModuleBulkSectionDialog.class);
+        return editorsOf(BaseValueBulkDialog.class);
     }
 
     private @NotNull List<Editor> editorsOf(final @NotNull Class<?> kind) {
@@ -144,7 +144,7 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
     }
 
     private void save() {
-        ShownDialog.press(getProject(), ModuleBulkSectionDialog.class, Shortcuts.Enter.getKey());
+        ShownDialog.press(getProject(), BaseValueBulkDialog.class, Shortcuts.Enter.getKey());
     }
 
     private @NotNull List<String> whatTheSaveSaid() {
@@ -251,6 +251,22 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
         for (final Editor editor : editors()) {
             final @NotNull Language colored = editor.getHighlighter().createIterator(startOfValue(editor.getDocument(), 0)).getTokenType().getLanguage();
             assertEquals("a value is not colored as JSON", Json.language(), colored);
+        }
+    }
+
+    // Rule-EDITOR-PANEL-298
+    public void testTheGroupBulkEditorShowsTheKeyGroupsAreStoredUnder() {
+        aTestSetWithModules("Payments", "Cart");
+        final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
+        editor.getList().setSelectionInterval(0, editor.getList().getModel().getSize() - 1);
+        UpdateTestCaseAction.openField(getProject(), editor, UpdateTestCaseFields.GROUP);
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+        try {
+            final @NotNull String shown = editorsOf(GroupBulkSectionDialog.class).getFirst().getDocument().getText();
+
+            assertTrue("the Group bulk editor does not show the key groups are stored under: " + shown, shown.contains("\"groups\": ["));
+        } finally {
+            ShownDialog.close(getProject(), GroupBulkSectionDialog.class);
         }
     }
 

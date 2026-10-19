@@ -19,39 +19,24 @@ package org.testin.testcase.update.bulk;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCase;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.util.Bundle;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 
-public class StepsBulkSectionDialog extends AbstractJsonArraySplitBulkSectionDialog {
+public class StepsBulkSectionDialog extends AbstractListBulkDialog {
     public StepsBulkSectionDialog(final @NotNull Project project, final @NotNull List<TestCase> selectedTestCases, final @NotNull Consumer<List<TestCase>> updatedTestCases) {
-        super(project, selectedTestCases, updatedTestCases);
-    }
-
-    @Override
-    protected @NotNull String getPopupTitle() {
-        return Bundle.message("bulk.title.steps");
-    }
-
-    @Override
-    protected @NotNull String getArrayFieldName() {
-        return "steps";
+        super(project, TestSetEditorFields.STEPS, Bundle.message("bulk.title.steps"), selectedTestCases, updatedTestCases);
     }
 
     @Override
     protected @NotNull List<List<String>> extractOriginalValues(final @NotNull List<TestCase> testCases) {
-        final @NotNull List<List<String>> originalSteps = new ArrayList<>();
-
-        for (final TestCase testCase : testCases) {
-            originalSteps.add(new ArrayList<>(testCase.getSteps()));
-        }
-
-        return originalSteps;
+        return testCases.stream().map(TestCase::getSteps).toList();
     }
 
+    // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-042
     @Override
     protected @NotNull List<TestCase> applyValues(final @NotNull List<TestCase> testCases, final @NotNull List<List<String>> newValues) {
         final @NotNull List<TestCase> written = new ArrayList<>();
@@ -60,7 +45,7 @@ public class StepsBulkSectionDialog extends AbstractJsonArraySplitBulkSectionDia
             final @NotNull List<String> cleanSteps = new ArrayList<>();
 
             for (final String step : newValues.get(i)) {
-                final @NotNull String cleanText = Objects.toString(step, "").trim();
+                final @NotNull String cleanText = step.trim();
 
                 if (!cleanText.isEmpty()) {
                     cleanSteps.add(cleanText);

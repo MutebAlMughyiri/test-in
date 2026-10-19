@@ -84,6 +84,10 @@ Select several test cases, then `F2` or the field's own letter.
   IDE's editor colors JSON text: strings, numbers and punctuation each in their
   color. A key takes the string color, as its value does. In an IDE without
   JSON support it shows as plain text.
+- **Rule-EDITOR-PANEL-298** — Each value is shown under the key the test case
+  stores it under, so the list reads as the file does. Tab and Down move to the
+  next value and Shift+Tab and Up to the previous one, and all four wrap from
+  the last value to the first.
 
 ## The screen
 
@@ -115,11 +119,12 @@ Select several test cases, then `F2` or the field's own letter.
 4. **The line facing the cursor** — highlighted on the left, so the two sides
    line up.
 
-## The nine bulk editors
+## The ten bulk editors
 
 **Bulk Edit Descriptions**, **Bulk Edit Expected Results**, **Bulk Edit
 Modules**, **Bulk Edit Test Data**, **Bulk Edit Pre-Conditions**, **Bulk Edit
-Steps**, **Bulk Edit Priorities**, **Bulk Edit Statuses**, **Bulk Edit Groups**.
+References**, **Bulk Edit Steps**, **Bulk Edit Priorities**, **Bulk Edit
+Statuses**, **Bulk Edit Groups**.
 
 **Bulk Edit Steps** and **Bulk Edit Groups** hold lists, so their strip carries
 two keys more: `Ctrl+=`, `Ctrl++` or Ctrl with the numpad `+` **Add** to add an item and `Shift+Delete` **Remove**

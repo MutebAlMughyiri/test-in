@@ -17,31 +17,20 @@
 package org.testin.testcase.update.bulk;
 
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.popup.JBPopupListener;
-import com.intellij.openapi.ui.popup.LightweightWindowEvent;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCase;
-import org.testin.ui.framework.AbstractFrameworkDialog;
-import org.testin.ui.framework.DialogPart;
-import org.testin.ui.framework.DialogSize;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.ui.framework.StatusBarShortcut;
 import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 
-public abstract class AbstractJsonArraySplitBulkSectionDialog extends AbstractFrameworkDialog {
+public abstract class AbstractListBulkDialog extends AbstractBulkDialog {
     private static final @NotNull EntryRecorder RECORDS_NOTHING = (_, _, _, _) -> {
     };
-
-    private final @NotNull List<TestCase> selectedTestCases;
-
-    private final @NotNull Consumer<List<TestCase>> updatedTestCases;
-
-    private final @NotNull BulkJsonEditors editors;
 
     private final @NotNull List<List<String>> originalValues = new ArrayList<>();
 
@@ -50,67 +39,28 @@ public abstract class AbstractJsonArraySplitBulkSectionDialog extends AbstractFr
     private final @NotNull List<int[]> spanOwners = new ArrayList<>();
 
     // Rule-EDITOR-PANEL-045
-    protected AbstractJsonArraySplitBulkSectionDialog(final @NotNull Project project, final @NotNull List<TestCase> selectedTestCases, final @NotNull Consumer<List<TestCase>> updatedTestCases) {
-        super(project);
-        this.selectedTestCases = selectedTestCases;
-        this.updatedTestCases = updatedTestCases;
-
-        title = getPopupTitle();
+    protected AbstractListBulkDialog(final @NotNull Project project, final @NotNull TestSetEditorFields field, final @NotNull String title, final @NotNull List<TestCase> selectedTestCases, final @NotNull Consumer<List<TestCase>> updatedTestCases) {
+        super(project, field, title, selectedTestCases, updatedTestCases);
 
         for (final List<String> values : extractOriginalValues(selectedTestCases)) {
-            final @NotNull List<String> current = new ArrayList<>(Objects.requireNonNullElse(values, List.of()));
+            final @NotNull List<String> current = new ArrayList<>(values);
             if (current.isEmpty()) current.add("");
 
             originalValues.add(new ArrayList<>(current));
             activeValues.add(new ArrayList<>(current));
         }
 
-        editors = new BulkJsonEditors(project);
         editors.setOriginalTextSource(this::originalEscapedAt);
         render();
 
-        components = List.of(DialogPart.of(editors));
-
-        shortcuts = List.of(
-                StatusBarShortcut.save(this::submit),
+        bindKeys(List.of(
                 StatusBarShortcut.build(Shortcuts.AddItem, Bundle.message("shortcut.add"), this::addEntryAtCarets),
-                StatusBarShortcut.build(Shortcuts.RemoveArrayItem, Bundle.message("bulk.shortcut.remove"), this::removeEntryAtCarets),
-                StatusBarShortcut.build(Shortcuts.TabNext, Bundle.message("bulk.shortcut.next"), () -> editors.navigate(1, true)),
-                StatusBarShortcut.build(Shortcuts.TabPrevious, Bundle.message("bulk.shortcut.previous"), () -> editors.navigate(-1, true)),
-                StatusBarShortcut.build(Shortcuts.ArrowDown, Bundle.message("bulk.shortcut.next"), () -> editors.navigate(1, true)),
-                StatusBarShortcut.build(Shortcuts.ArrowUp, Bundle.message("bulk.shortcut.previous"), () -> editors.navigate(-1, true)),
-                StatusBarShortcut.build(Shortcuts.CaretOnEveryValue, Bundle.message("bulk.shortcut.all.carets"), this::caretOnEveryValue),
-                StatusBarShortcut.hint("Ctrl+Click", Bundle.message("shortcut.multi.caret")),
-                StatusBarShortcut.cancel(this::closeCancel));
-
-        size = DialogSize.HALF;
-
-        editors.bindKeysToEditor(shortcuts);
+                StatusBarShortcut.build(Shortcuts.RemoveArrayItem, Bundle.message("bulk.shortcut.remove"), this::removeEntryAtCarets)), this::caretOnEveryValue);
     }
 
     protected abstract @NotNull List<TestCase> applyValues(final @NotNull List<TestCase> testCases, final @NotNull List<List<String>> newValues);
 
-    protected abstract @NotNull String getPopupTitle();
-
-    protected abstract @NotNull String getArrayFieldName();
-
     protected abstract @NotNull List<List<String>> extractOriginalValues(final @NotNull List<TestCase> testCases);
-
-    // UC-EDITOR-PANEL-007
-    public void open() {
-        if (!show()) {
-            editors.release();
-            return;
-        }
-
-        getPopup().addListener(new JBPopupListener() {
-            @Override
-            public void onClosed(final @NotNull LightweightWindowEvent event) {
-                editors.release();
-            }
-        });
-        editors.focusFirstValue();
-    }
 
     // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-041
     @Override
@@ -198,9 +148,7 @@ public abstract class AbstractJsonArraySplitBulkSectionDialog extends AbstractFr
 
         for (int i = 0; i < selectedTestCases.size(); i++) {
             final @NotNull TestCase selectedTestCase = selectedTestCases.get(i);
-            final @NotNull String prefix = "  {\n    \"uuid\": \"" + BulkValueText.escape(selectedTestCase.getUuid().toString())
-                    + "\",\n    \"description\": \"" + BulkValueText.escape(selectedTestCase.getDescription())
-                    + "\",\n    \"" + getArrayFieldName() + "\": [\n";
+            final @NotNull String prefix = head(selectedTestCase) + "[\n";
             left.append(prefix);
             right.append(prefix);
 

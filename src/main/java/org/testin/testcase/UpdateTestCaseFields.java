@@ -31,16 +31,11 @@ import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.testcase.create.AbstractTestCaseDialog;
 import org.testin.testcase.create.TestCaseSection;
+import org.testin.testcase.update.bulk.BaseValueBulkDialog;
 import org.testin.testcase.update.bulk.DescriptionBulkSectionDialog;
-import org.testin.testcase.update.bulk.ExpectedResultBulkSectionDialog;
 import org.testin.testcase.update.bulk.GroupBulkSectionDialog;
-import org.testin.testcase.update.bulk.ModuleBulkSectionDialog;
-import org.testin.testcase.update.bulk.PreConditionsBulkSectionDialog;
 import org.testin.testcase.update.bulk.PriorityBulkSectionDialog;
-import org.testin.testcase.update.bulk.ReferenceBulkSectionDialog;
 import org.testin.testcase.update.bulk.StepsBulkSectionDialog;
-import org.testin.testcase.update.bulk.TestCaseStatusBulkSectionDialog;
-import org.testin.testcase.update.bulk.TestDataBulkSectionDialog;
 import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
 
@@ -75,7 +70,7 @@ public enum UpdateTestCaseFields implements MenuItem {
             TestSetEditorFields.EXPECTED_RESULT.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_EXPECTED_RESULT,
             Done.UPDATED,
-            (project, selectedTestCases, updatedTestCases) -> new ExpectedResultBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
+            (project, selectedTestCases, updatedTestCases) -> new BaseValueBulkDialog(project, TestSetEditorFields.EXPECTED_RESULT, Bundle.message("bulk.title.expected.result"), true, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getExpectedResultSection,
             ImmutableList.of(CORRECTIONS)
     ),
@@ -86,7 +81,7 @@ public enum UpdateTestCaseFields implements MenuItem {
             TestSetEditorFields.MODULE.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_MODULE,
             Done.UPDATED,
-            (project, selectedTestCases, updatedTestCases) -> new ModuleBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
+            (project, selectedTestCases, updatedTestCases) -> new BaseValueBulkDialog(project, TestSetEditorFields.MODULE, Bundle.message("bulk.title.module"), true, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getModuleSection,
             ImmutableList.of(CORRECTIONS)
     ),
@@ -97,7 +92,7 @@ public enum UpdateTestCaseFields implements MenuItem {
             TestSetEditorFields.TEST_DATA.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_TEST_DATA,
             Done.UPDATED,
-            (project, selectedTestCases, updatedTestCases) -> new TestDataBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
+            (project, selectedTestCases, updatedTestCases) -> new BaseValueBulkDialog(project, TestSetEditorFields.TEST_DATA, Bundle.message("bulk.title.test.data"), true, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getTestDataSection,
             ImmutableList.of()
     ),
@@ -108,7 +103,7 @@ public enum UpdateTestCaseFields implements MenuItem {
             TestSetEditorFields.PRE_CONDITIONS.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_PRE_CONDITIONS,
             Done.UPDATED,
-            (project, selectedTestCases, updatedTestCases) -> new PreConditionsBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
+            (project, selectedTestCases, updatedTestCases) -> new BaseValueBulkDialog(project, TestSetEditorFields.PRE_CONDITIONS, Bundle.message("bulk.title.pre.conditions"), true, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getPreConditionsSection,
             ImmutableList.of(CORRECTIONS)
     ),
@@ -164,7 +159,7 @@ public enum UpdateTestCaseFields implements MenuItem {
             TestSetEditorFields.REFERENCE.getIcon(),
             CodeChangeType.NO_CODE_CHANGE,
             Done.UPDATED,
-            (project, selectedTestCases, updatedTestCases) -> new ReferenceBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
+            (project, selectedTestCases, updatedTestCases) -> new BaseValueBulkDialog(project, TestSetEditorFields.REFERENCE, Bundle.message("bulk.title.reference"), true, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getReferenceSection,
             ImmutableList.of(CORRECTIONS)
     ),
@@ -176,7 +171,7 @@ public enum UpdateTestCaseFields implements MenuItem {
             TestSetEditorFields.STATUS.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_STATUS,
             Done.UPDATED,
-            (project, selectedTestCases, updatedTestCases) -> new TestCaseStatusBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
+            (project, selectedTestCases, updatedTestCases) -> new BaseValueBulkDialog(project, TestSetEditorFields.STATUS, Bundle.message("bulk.title.test.case.status"), false, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getTestCaseStatusSection,
             ImmutableList.of()
     );

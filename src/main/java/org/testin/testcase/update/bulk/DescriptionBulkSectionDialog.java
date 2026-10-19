@@ -39,42 +39,17 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class DescriptionBulkSectionDialog extends AbstractJsonSplitBulkSectionDialog {
+public class DescriptionBulkSectionDialog extends BaseValueBulkDialog {
     private final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
 
     public DescriptionBulkSectionDialog(final @NotNull Project project, final @NotNull List<TestCase> selectedTestCases, final @NotNull Consumer<List<TestCase>> updatedTestCases) {
-        super(project, selectedTestCases, updatedTestCases);
+        super(project, TestSetEditorFields.DESCRIPTION, Bundle.message("bulk.title.description"), false, selectedTestCases, updatedTestCases);
     }
 
     private static @NotNull Optional<String> keyOf(final @NotNull String description) {
         return Optional.of(NameSanitizer.methodName(description))
                 .filter(name -> !name.isEmpty())
                 .map(NameSanitizer::methodKey);
-    }
-
-    @Override
-    protected @NotNull TestSetEditorFields attribute() {
-        return TestSetEditorFields.DESCRIPTION;
-    }
-
-    @Override
-    protected @NotNull String getPopupTitle() {
-        return Bundle.message("bulk.title.description");
-    }
-
-    @Override
-    protected @NotNull String getJsonFieldName() {
-        return "description";
-    }
-
-    @Override
-    protected boolean showsDescriptionContext() {
-        return false;
-    }
-
-    @Override
-    protected boolean acceptsBlank() {
-        return false;
     }
 
     // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-224
