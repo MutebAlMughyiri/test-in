@@ -18,23 +18,29 @@ package org.testin.codegen;
 
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.psi.PsiCodeBlock;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiJavaToken;
 import com.intellij.psi.PsiMethod;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
+import org.testin.Await;
 import org.testin.codegen.event.CopiedTestCase;
 import org.testin.codegen.event.MovedTestCase;
 import org.testin.indexer.TestCases;
+import org.testin.indexer.recyclebin.RecycleBin;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.status.TestCaseStatus;
 import org.testin.services.Services;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class TestersBodyIdeTest extends AbstractCodegenIdeTest {
 
@@ -141,6 +147,27 @@ public class TestersBodyIdeTest extends AbstractCodegenIdeTest {
         CodeChangeType.CREATE_TEST_CASE.executeAllNow(getProject(), List.of(typed));
 
         assertAsTyped(LOGIN_TEST, typed);
+    }
+
+    // Rule-INTERNAL-143
+    public void testARemovedMethodGoesToTheRecycleBinAsAFileOfItsOwn() {
+        final @NotNull List<String> binned = new CopyOnWriteArrayList<>();
+        RecycleBin.standIn(getTestRootDisposable(), file -> {
+            try {
+                binned.add(file.getName() + "\n" + Files.readString(file.toPath()));
+            } catch (final IOException ex) {
+                throw new AssertionError("could not read what went to the bin: " + file, ex);
+            }
+            return FileUtil.delete(file);
+        });
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull TestCase typed = typedInto(login, "Log in with a valid user", "b");
+        final @NotNull String fileName = "LoginTest." + Fqcn.methodNameOf(typed) + ".java";
+
+        CodeChangeType.REMOVE_TEST_CASE.executeAllNow(getProject(), List.of(typed));
+
+        Await.until("the removed method never reached the recycle bin: " + binned, () -> binned.stream().anyMatch(entry -> entry.startsWith(fileName + "\n")));
+        assertTrue("the method went to the bin without the body the tester typed", binned.stream().filter(entry -> entry.startsWith(fileName + "\n")).allMatch(entry -> entry.contains(TYPED_BY_THE_TESTER)));
     }
 
     // Rule-CODEGEN-003, Rule-CODEGEN-077

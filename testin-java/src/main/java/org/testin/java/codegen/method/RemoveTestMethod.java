@@ -29,12 +29,13 @@ import org.testin.services.Services;
 import java.util.List;
 
 public class RemoveTestMethod extends BaseTestMethodChange implements CodeChange<TestCase> {
-    // UC-CODEGEN-014, Rule-CODEGEN-049, Rule-CODEGEN-050, Rule-CODEGEN-114
+    // UC-CODEGEN-014, Rule-CODEGEN-049, Rule-CODEGEN-050, Rule-CODEGEN-114, Rule-INTERNAL-143
     @Override
     public void execute(final @NotNull Project project, final @NotNull TestCase testCase) {
         applyToMethod(project, testCase, "Remove Test Method", testMethod -> {
             final @NotNull String name = testMethod.getName();
             Services.getInstance(project, KeptTestMethods.class).keep(testCase, testMethod);
+            RemovedTestMethodFile.toTheBin(project, testMethod);
             testMethod.delete();
             TestinLogger.info("Removed test method: " + name);
         }, detail -> TestinLogger.debug("No generated method for '" + testCase.getDescription() + "': " + detail));

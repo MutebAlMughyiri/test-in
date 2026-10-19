@@ -76,8 +76,9 @@ declaration, but deleting a method deletes the body too. Nothing warns about
 that. The confirmation before the removal names the test case, not the code.
 
 Undoing the removal puts the method back as the tester left it, body included.
-Once the project is closed the removal can no longer be undone, and the body is
-only in the IDE's Local History.
+Once the project is closed the removal can no longer be undone, but the method
+is in the desktop recycle bin as a file of its own, named after its class and
+itself, for example *LoginTest.logInWithAValidUser.java* (Rule-INTERNAL-143).
 
 ---
 

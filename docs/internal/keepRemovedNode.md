@@ -40,8 +40,9 @@ between them.
   The tree keeps one, and each open editor keeps its own.
 - **Rule-INTERNAL-143** — Testin never deletes a tester's test data or
   automation code for good. Whatever it removes - a node, a test case, a run
-  item, a screenshot, a class file or a package folder - goes to the desktop
-  recycle bin. What the bin does not take, because the desktop has none or a
+  item, a screenshot, a class file, a package folder or a test method - goes to
+  the desktop recycle bin. A test method is cut out of a class that stays, so it
+  goes as a file of its own, named after its class and itself. What the bin does not take, because the desktop has none or a
   file in it is open in another program, stays where it is, and Testin says so
   in a notification titled *Not Removed*. Only the files Testin makes for itself
   are deleted outright: a file it is still writing, the copies it keeps for
