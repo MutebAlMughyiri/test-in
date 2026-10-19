@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.importexport.FileFormat;
 import org.testin.testcase.Can;
 import org.testin.testcase.TestSetEditorFields;
-import org.testin.ui.dialogs.DialogStyle;
+import org.testin.ui.framework.DialogStyle;
 import org.testin.util.Html;
 
 import javax.swing.JComponent;

@@ -23,7 +23,6 @@ import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.NamedColorUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.testin.ui.dialogs.DialogStyle;
 
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JComponent;

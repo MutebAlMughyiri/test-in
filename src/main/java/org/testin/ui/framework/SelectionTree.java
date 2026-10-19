@@ -28,7 +28,6 @@ import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.tree.TreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.ui.Caption;
-import org.testin.ui.dialogs.DialogStyle;
 import org.testin.util.Fonts;
 
 import javax.swing.JComponent;

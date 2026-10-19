@@ -33,7 +33,7 @@ import org.testin.services.Services;
 import org.testin.testcase.Rank;
 import org.testin.testcase.TestCaseOrder;
 import org.testin.testcase.UpdateTestCaseFields;
-import org.testin.ui.dialogs.DialogStyle;
+import org.testin.ui.framework.DialogStyle;
 import org.testin.ui.framework.Spacing;
 import org.testin.util.Bundle;
 

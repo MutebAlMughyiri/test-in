@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.testin.ui.dialogs;
+package org.testin.ui.framework;
 
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
@@ -23,7 +23,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.ui.Caption;
-import org.testin.ui.framework.Spacing;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;

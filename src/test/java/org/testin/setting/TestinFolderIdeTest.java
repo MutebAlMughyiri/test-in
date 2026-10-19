@@ -29,6 +29,7 @@ import org.testin.editor.EditorFixtures;
 import org.testin.explorer.TreePanel;
 import org.testin.importexport.FileFormat;
 import org.testin.importexport.imports.SourceFileField;
+import org.testin.importexport.shared.DestinationForm;
 import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestProjectIndexer;
@@ -36,7 +37,6 @@ import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
-import org.testin.ui.dialogs.DestinationForm;
 import org.testin.view.Drawn;
 
 import javax.swing.JComponent;

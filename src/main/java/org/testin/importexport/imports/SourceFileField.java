@@ -21,7 +21,7 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.importexport.FileFormat;
-import org.testin.ui.dialogs.DownloadFolder;
+import org.testin.importexport.shared.DownloadFolder;
 import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.TextInput;
 import org.testin.util.Bundle;

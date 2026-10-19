@@ -22,7 +22,6 @@ import com.intellij.ui.components.TextComponentEmptyText;
 import com.intellij.ui.components.fields.ExtendableTextField;
 import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.NotNull;
-import org.testin.ui.dialogs.DialogStyle;
 import org.testin.util.Shortcuts;
 
 import javax.swing.Icon;

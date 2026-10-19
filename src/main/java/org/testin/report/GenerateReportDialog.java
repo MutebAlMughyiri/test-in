@@ -19,7 +19,7 @@ package org.testin.report;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.importexport.FileFormat;
-import org.testin.ui.dialogs.DestinationForm;
+import org.testin.importexport.shared.DestinationForm;
 import org.testin.ui.framework.AbstractFrameworkDialog;
 import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.StatusBarShortcut;

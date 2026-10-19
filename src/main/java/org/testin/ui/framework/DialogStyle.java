@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.testin.ui.dialogs;
+package org.testin.ui.framework;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.ui.laf.darcula.ui.DarculaButtonUI;
@@ -37,7 +37,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.ui.Tooltip;
-import org.testin.ui.framework.Spacing;
 import org.testin.util.Bundle;
 import org.testin.util.Fonts;
 import org.testin.util.Icons;

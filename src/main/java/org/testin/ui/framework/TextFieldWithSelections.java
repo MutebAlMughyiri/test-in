@@ -31,7 +31,6 @@ import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.util.ui.accessibility.AccessibleAnnouncerUtil;
 import org.jetbrains.annotations.NotNull;
-import org.testin.ui.dialogs.DialogStyle;
 import org.testin.util.ListValue;
 
 import javax.swing.AbstractAction;

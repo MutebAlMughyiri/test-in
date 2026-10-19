@@ -18,7 +18,6 @@ package org.testin.ui.framework;
 
 import com.intellij.ui.components.JBPanel;
 import org.jetbrains.annotations.NotNull;
-import org.testin.ui.dialogs.DialogStyle;
 
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;

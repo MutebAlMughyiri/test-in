@@ -32,7 +32,6 @@ import org.testin.AbstractIdeTest;
 import org.testin.model.StatusBarItem;
 import org.testin.testrun.form.TestCaseSelectionRenderer;
 import org.testin.ui.Caption;
-import org.testin.ui.dialogs.DialogStyle;
 import org.testin.util.Fonts;
 import org.testin.util.Icons;
 import org.testin.view.Drawn;

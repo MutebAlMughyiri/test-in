@@ -18,7 +18,6 @@ package org.testin.ui.framework;
 
 import com.intellij.ui.components.JBOptionButton;
 import org.jetbrains.annotations.NotNull;
-import org.testin.ui.dialogs.DialogStyle;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;

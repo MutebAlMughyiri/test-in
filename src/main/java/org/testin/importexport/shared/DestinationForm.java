@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.testin.ui.dialogs;
+package org.testin.importexport.shared;
 
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.project.Project;
@@ -24,8 +24,11 @@ import org.testin.notifications.Notifier;
 import org.testin.notifications.Refused;
 import org.testin.services.Services;
 import org.testin.setting.TestinRoot;
+import org.testin.ui.framework.CollapsiblePanel;
 import org.testin.ui.framework.DialogComponent;
 import org.testin.ui.framework.DialogPart;
+import org.testin.ui.framework.DialogStyle;
+import org.testin.ui.framework.FormRows;
 import org.testin.ui.framework.TextInput;
 import org.testin.util.Bundle;
 

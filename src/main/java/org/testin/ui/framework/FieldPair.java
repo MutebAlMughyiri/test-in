@@ -25,7 +25,6 @@ import com.intellij.util.ui.JBUI;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.TestOnly;
-import org.testin.ui.dialogs.CollapsiblePanel;
 import org.testin.util.Bundle;
 
 import javax.swing.Box;

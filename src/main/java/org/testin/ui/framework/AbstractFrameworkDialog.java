@@ -34,7 +34,6 @@ import org.testin.model.StatusBarItem;
 import org.testin.notifications.Notifier;
 import org.testin.notifications.Refused;
 import org.testin.services.Services;
-import org.testin.ui.dialogs.DialogStyle;
 import org.testin.util.Shortcuts;
 
 import javax.swing.BorderFactory;

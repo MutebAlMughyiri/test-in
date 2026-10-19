@@ -27,7 +27,6 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.MenuItem;
 import org.testin.model.StatusBarItem;
-import org.testin.ui.dialogs.DialogStyle;
 import org.testin.util.ListValue;
 
 import javax.swing.JComponent;

@@ -26,7 +26,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.ui.dialogs.DialogStyle;
 import org.testin.util.EditorFields;
 
 import javax.swing.Icon;

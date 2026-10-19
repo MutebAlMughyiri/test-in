@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.testin.ui.dialogs;
+package org.testin.importexport.shared;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.importexport.FileFormat;

@@ -22,9 +22,9 @@ import org.testin.importexport.FileFormat;
 import org.testin.importexport.shared.PreviewLoader;
 import org.testin.model.TestCase;
 import org.testin.testcase.TestSetEditorFields;
-import org.testin.ui.dialogs.CollapsiblePanel;
-import org.testin.ui.dialogs.FormRows;
+import org.testin.ui.framework.CollapsiblePanel;
 import org.testin.ui.framework.DialogComponent;
+import org.testin.ui.framework.FormRows;
 import org.testin.util.Bundle;
 
 import javax.swing.JComponent;

@@ -32,7 +32,6 @@ import org.testin.AbstractIdeTest;
 import org.testin.model.node.TestSetNode;
 import org.testin.search.GlobalSearchDialog;
 import org.testin.testrun.form.TestCaseSelectionRenderer;
-import org.testin.ui.dialogs.DialogStyle;
 import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
 import org.testin.view.Drawn;

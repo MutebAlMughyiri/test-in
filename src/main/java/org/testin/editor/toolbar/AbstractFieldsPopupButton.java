@@ -24,8 +24,8 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.ShownFields;
 import org.testin.model.ShowableField;
-import org.testin.ui.dialogs.DialogStyle;
 import org.testin.ui.framework.AbstractIconButton;
+import org.testin.ui.framework.DialogStyle;
 import org.testin.util.Bundle;
 
 import java.util.Arrays;

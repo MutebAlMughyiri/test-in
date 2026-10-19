@@ -28,7 +28,7 @@ import org.testin.model.TestCase;
 import org.testin.services.Services;
 import org.testin.services.TestCaseCompletions;
 import org.testin.testcase.CreateTestCaseFields;
-import org.testin.ui.dialogs.DialogStyle;
+import org.testin.ui.framework.DialogStyle;
 import org.testin.ui.framework.Spacing;
 import org.testin.util.EditorFields;
 

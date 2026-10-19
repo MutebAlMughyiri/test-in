@@ -23,7 +23,7 @@ import org.testin.model.TestCase;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.RunItemExecution;
-import org.testin.ui.dialogs.DialogStyle;
+import org.testin.ui.framework.DialogStyle;
 import org.testin.util.Bundle;
 import org.testin.view.Drawn;
 

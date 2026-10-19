@@ -18,7 +18,6 @@ package org.testin.ui.framework;
 
 import com.intellij.ui.components.fields.ExtendableTextField;
 import org.jetbrains.annotations.NotNull;
-import org.testin.ui.dialogs.DialogStyle;
 import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
 import org.testng.Assert;

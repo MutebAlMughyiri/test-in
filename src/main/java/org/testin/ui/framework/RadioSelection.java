@@ -21,7 +21,6 @@ import com.intellij.ui.components.panels.HorizontalLayout;
 import org.jetbrains.annotations.NotNull;
 import org.testin.ui.Caption;
 import org.testin.ui.Tooltip;
-import org.testin.ui.dialogs.DialogStyle;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JComponent;

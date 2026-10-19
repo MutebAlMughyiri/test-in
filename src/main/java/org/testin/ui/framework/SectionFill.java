@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package org.testin.ui.dialogs;
+package org.testin.ui.framework;
 
 import com.intellij.ui.JBColor;
 import com.intellij.ui.scale.JBUIScale;
 import com.intellij.util.ui.GraphicsUtil;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
-import org.testin.ui.framework.Spacing;
 
 import javax.swing.border.Border;
 import java.awt.BasicStroke;

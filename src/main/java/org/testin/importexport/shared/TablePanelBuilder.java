@@ -27,7 +27,7 @@ import org.testin.model.Priority;
 import org.testin.model.TestCase;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.ui.Tooltip;
-import org.testin.ui.dialogs.DialogStyle;
+import org.testin.ui.framework.DialogStyle;
 import org.testin.util.Bundle;
 import org.testin.util.FailureText;
 

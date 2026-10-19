@@ -21,7 +21,6 @@ import com.intellij.ui.components.JBTextArea;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.testin.ui.Caption;
-import org.testin.ui.dialogs.DialogStyle;
 
 import javax.swing.JComponent;
 import java.awt.KeyboardFocusManager;

@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import org.testin.model.Groups;
 import org.testin.services.Services;
 import org.testin.services.TestCaseCompletions;
-import org.testin.ui.dialogs.DialogStyle;
+import org.testin.ui.framework.DialogStyle;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.JButton;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.testin.ui.dialogs;
+package org.testin.importexport.shared;
 
 import org.testng.annotations.Test;
 

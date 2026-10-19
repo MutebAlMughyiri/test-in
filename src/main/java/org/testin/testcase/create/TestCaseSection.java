@@ -23,7 +23,7 @@ import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCase;
 import org.testin.testcase.TestCaseDialogKey;
-import org.testin.ui.dialogs.DialogStyle;
+import org.testin.ui.framework.DialogStyle;
 import org.testin.ui.framework.Spacing;
 
 import javax.swing.Icon;

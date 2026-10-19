@@ -19,6 +19,7 @@ package org.testin.importexport.exports;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
+import org.testin.importexport.shared.Destination;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCase;
@@ -28,7 +29,6 @@ import org.testin.services.BackgroundWork;
 import org.testin.services.Services;
 import org.testin.testcase.Can;
 import org.testin.testcase.TestSetEditorFields;
-import org.testin.ui.dialogs.Destination;
 import org.testin.ui.framework.ConfirmDialog;
 import org.testin.util.Bundle;
 
