@@ -21,10 +21,12 @@ import com.intellij.ui.EditorTextField;
 import com.intellij.ui.components.JBPanel;
 import org.jetbrains.annotations.NotNull;
 import org.testin.testcase.CreateTestCaseFields;
+import org.testin.testcase.TestCaseDialogKey;
 import org.testin.ui.framework.MultiLineField;
 import org.testin.util.Shortcuts;
 
 import javax.swing.JComponent;
+import java.util.List;
 
 // Rule-INTERNAL-097
 public abstract class AbstractMultiLineSection implements TestCaseSection {
@@ -69,5 +71,11 @@ public abstract class AbstractMultiLineSection implements TestCaseSection {
     @Override
     public void setEditable(final boolean editable) {
         field.setEnabled(editable);
+    }
+
+    // UC-EDITOR-PANEL-005, UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-199
+    @Override
+    public @NotNull List<TestCaseDialogKey> keys() {
+        return List.of(TestCaseDialogKey.CORRECTIONS);
     }
 }

@@ -40,9 +40,7 @@ import java.awt.KeyboardFocusManager;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -51,8 +49,6 @@ import java.util.stream.Stream;
 @Getter
 public abstract class AbstractTestCaseDialog extends AbstractFrameworkDialog {
     @Getter(AccessLevel.NONE)
-    private static final @NotNull StatusBarItem[] NO_ITEMS = new StatusBarItem[0];
-
     private static final @NotNull PropertyChangeListener NOTHING_ON_FOCUS = _ -> {
     };
 
@@ -79,8 +75,6 @@ public abstract class AbstractTestCaseDialog extends AbstractFrameworkDialog {
     protected final @NotNull ReferenceSection referenceSection;
 
     protected final @NotNull Disposable dialogDisposable;
-
-    protected final @NotNull Map<TestCaseSection, StatusBarItem[]> statusBarMapping;
 
     @Getter(AccessLevel.NONE)
     private final @NotNull TestCase testCase;
@@ -123,15 +117,6 @@ public abstract class AbstractTestCaseDialog extends AbstractFrameworkDialog {
                 .map(extractor -> extractor.apply(this))
                 .distinct()
                 .toList();
-
-        final @NotNull Map<TestCaseSection, StatusBarItem[]> bars = new LinkedHashMap<>();
-        for (final CreateTestCaseFields field : CreateTestCaseFields.values())
-            bars.put(field.getSectionExtractor().apply(this), field.getStatusBarItems());
-
-        for (final UpdateTestCaseFields field : UpdateTestCaseFields.values())
-            bars.putIfAbsent(field.getSectionExtractor().apply(this), field.getStatusBarItems());
-
-        this.statusBarMapping = Map.copyOf(bars);
     }
 
     // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-218
@@ -149,11 +134,14 @@ public abstract class AbstractTestCaseDialog extends AbstractFrameworkDialog {
                 .findFirst();
     }
 
+    // UC-EDITOR-PANEL-005, UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-199
+    protected abstract StatusBarItem @NotNull [] keysOf(final @NotNull TestCaseSection section);
+
     protected void installDynamicStatusBar(final @NotNull JComponent parentPanel) {
         focusListener = e -> Optional.ofNullable((Component) e.getNewValue())
                 .filter(focusOwner -> UIUtil.isDescendingFrom(focusOwner, parentPanel))
                 .flatMap(this::sectionHolding)
-                .ifPresent(section -> showSectionKeys(statusBarMapping.getOrDefault(section, NO_ITEMS)));
+                .ifPresent(section -> showSectionKeys(keysOf(section)));
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener("focusOwner", focusListener);
 
         Disposer.register(dialogDisposable, this::removeFocusListener);

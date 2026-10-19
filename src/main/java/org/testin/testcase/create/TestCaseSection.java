@@ -22,6 +22,7 @@ import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCase;
+import org.testin.testcase.TestCaseDialogKey;
 import org.testin.ui.dialogs.DialogStyle;
 import org.testin.ui.framework.Spacing;
 
@@ -29,6 +30,7 @@ import javax.swing.Icon;
 import javax.swing.JComponent;
 import java.awt.BorderLayout;
 import java.awt.GridBagLayout;
+import java.util.List;
 
 public interface TestCaseSection {
     @NotNull JBPanel<?> getWrapper();
@@ -64,6 +66,11 @@ public interface TestCaseSection {
     }
 
     @NotNull TestCase applyTo(final @NotNull TestCase testCase);
+
+    // UC-EDITOR-PANEL-005, UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-199
+    default @NotNull List<TestCaseDialogKey> keys() {
+        return List.of();
+    }
 
     void setupShortcut(final @NotNull JComponent mainPanel, final @NotNull JBPanel<?> slot, final @NotNull AbstractTestCaseDialog base, final @NotNull Runnable repackAction);
 

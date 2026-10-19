@@ -34,6 +34,7 @@ import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
 
 import javax.swing.JComponent;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -58,7 +59,7 @@ public class CreateTestCaseDialog extends AbstractTestCaseDialog {
         final @NotNull JComponent keys = form.getPanel();
 
         installDynamicStatusBar(keys);
-        showSectionKeys(CreateTestCaseFields.DESCRIPTION.getStatusBarItems());
+        showSectionKeys(keysOf(descriptionSection));
 
         for (final TestCaseSection section : getAllSections()) {
             final @NotNull JBPanel<?> slot = form.newSlot();
@@ -93,5 +94,14 @@ public class CreateTestCaseDialog extends AbstractTestCaseDialog {
         }
 
         super.submit();
+    }
+
+    // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-199
+    @Override
+    protected StatusBarItem @NotNull [] keysOf(final @NotNull TestCaseSection section) {
+        final @NotNull List<StatusBarItem> keys = new ArrayList<>(section.keys());
+        if (!keys.contains(TestCaseDialogKey.NAVIGATE_TAB)) keys.add(TestCaseDialogKey.NAVIGATE_TAB);
+        if (section.equals(descriptionSection)) keys.addAll(List.of(CreateTestCaseFields.values()));
+        return keys.toArray(StatusBarItem[]::new);
     }
 }

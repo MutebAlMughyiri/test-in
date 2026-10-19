@@ -44,7 +44,6 @@ import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -97,10 +96,10 @@ public class TestCaseFormIdeTest extends AbstractTempRootIdeTest {
     public void testTheFieldsKeysComeFirstAndSaveAndCancelAreAlwaysLast() {
         final @NotNull CreateTestCaseDialog dialog = aShownCreateDialog();
         final @NotNull List<String> shared = List.of(TestCaseDialogKey.SAVE.getName(), TestCaseDialogKey.CANCEL.getName());
-        for (final Map.Entry<TestCaseSection, StatusBarItem[]> field : dialog.statusBarMapping.entrySet()) {
-            dialog.showSectionKeys(field.getValue());
+        for (final TestCaseSection section : dialog.getAllSections()) {
+            dialog.showSectionKeys(dialog.keysOf(section));
 
-            final @NotNull List<String> own = namesOf(field.getValue());
+            final @NotNull List<String> own = namesOf(dialog.keysOf(section));
             final @NotNull List<String> known = new ArrayList<>(own);
             known.addAll(shared);
             final @NotNull List<String> strip = theStrip(dialog, known);

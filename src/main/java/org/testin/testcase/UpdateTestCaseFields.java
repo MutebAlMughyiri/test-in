@@ -16,13 +16,11 @@
 
 package org.testin.testcase;
 
-import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.CodeChangeType;
 import org.testin.model.MenuItem;
-import org.testin.model.StatusBarItem;
 import org.testin.model.TestCase;
 import org.testin.notifications.Done;
 import org.testin.testcase.create.AbstractTestCaseDialog;
@@ -39,11 +37,6 @@ import javax.swing.Icon;
 import javax.swing.KeyStroke;
 import java.util.function.Function;
 
-import static org.testin.testcase.TestCaseDialogKey.ADD;
-import static org.testin.testcase.TestCaseDialogKey.AUTO_COMPLETE;
-import static org.testin.testcase.TestCaseDialogKey.CORRECTIONS;
-import static org.testin.testcase.TestCaseDialogKey.NAVIGATE_ARROWS;
-import static org.testin.testcase.TestCaseDialogKey.NAVIGATE_TAB;
 
 // Rule-EDITOR-PANEL-259
 @Getter
@@ -56,7 +49,6 @@ public enum UpdateTestCaseFields implements MenuItem {
             Done.UPDATED,
             (project, selectedTestCases, updatedTestCases) -> new DescriptionBulkDialog(project, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getDescriptionSection,
-            ImmutableList.of(CORRECTIONS),
             false
     ),
 
@@ -67,7 +59,6 @@ public enum UpdateTestCaseFields implements MenuItem {
             Done.UPDATED,
             (project, selectedTestCases, updatedTestCases) -> new BaseValueBulkDialog(project, TestSetEditorFields.EXPECTED_RESULT, Bundle.message("bulk.title.expected.result"), true, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getExpectedResultSection,
-            ImmutableList.of(CORRECTIONS),
             false
     ),
 
@@ -78,7 +69,6 @@ public enum UpdateTestCaseFields implements MenuItem {
             Done.UPDATED,
             (project, selectedTestCases, updatedTestCases) -> new BaseValueBulkDialog(project, TestSetEditorFields.MODULE, Bundle.message("bulk.title.module"), true, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getModuleSection,
-            ImmutableList.of(CORRECTIONS),
             false
     ),
 
@@ -89,7 +79,6 @@ public enum UpdateTestCaseFields implements MenuItem {
             Done.UPDATED,
             (project, selectedTestCases, updatedTestCases) -> new BaseValueBulkDialog(project, TestSetEditorFields.TEST_DATA, Bundle.message("bulk.title.test.data"), true, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getTestDataSection,
-            ImmutableList.of(),
             false
     ),
 
@@ -100,7 +89,6 @@ public enum UpdateTestCaseFields implements MenuItem {
             Done.UPDATED,
             (project, selectedTestCases, updatedTestCases) -> new BaseValueBulkDialog(project, TestSetEditorFields.PRE_CONDITIONS, Bundle.message("bulk.title.pre.conditions"), true, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getPreConditionsSection,
-            ImmutableList.of(CORRECTIONS),
             false
     ),
 
@@ -111,7 +99,6 @@ public enum UpdateTestCaseFields implements MenuItem {
             Done.UPDATED,
             (project, selectedTestCases, updatedTestCases) -> new StepsBulkDialog(project, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getStepsSection,
-            ImmutableList.of(CORRECTIONS, ADD, NAVIGATE_TAB, AUTO_COMPLETE),
             false
     ),
 
@@ -122,7 +109,6 @@ public enum UpdateTestCaseFields implements MenuItem {
             Done.UPDATED,
             (project, selectedTestCases, updatedTestCases) -> new PriorityBulkDialog(project, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getPrioritySection,
-            ImmutableList.of(NAVIGATE_ARROWS),
             false
     ),
 
@@ -133,7 +119,6 @@ public enum UpdateTestCaseFields implements MenuItem {
             Done.UPDATED,
             (project, selectedTestCases, updatedTestCases) -> new GroupBulkDialog(project, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getGroupSection,
-            ImmutableList.of(ADD, AUTO_COMPLETE, NAVIGATE_TAB),
             false
     ),
 
@@ -145,7 +130,6 @@ public enum UpdateTestCaseFields implements MenuItem {
             (_, _, _) -> {
             },
             AbstractTestCaseDialog::getOrderSection,
-            ImmutableList.of(),
             true
     ),
 
@@ -157,7 +141,6 @@ public enum UpdateTestCaseFields implements MenuItem {
             Done.UPDATED,
             (project, selectedTestCases, updatedTestCases) -> new BaseValueBulkDialog(project, TestSetEditorFields.REFERENCE, Bundle.message("bulk.title.reference"), true, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getReferenceSection,
-            ImmutableList.of(CORRECTIONS),
             false
     ),
 
@@ -169,7 +152,6 @@ public enum UpdateTestCaseFields implements MenuItem {
             Done.UPDATED,
             (project, selectedTestCases, updatedTestCases) -> new BaseValueBulkDialog(project, TestSetEditorFields.STATUS, Bundle.message("bulk.title.test.case.status"), false, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getTestCaseStatusSection,
-            ImmutableList.of(),
             false
     );
 
@@ -185,15 +167,8 @@ public enum UpdateTestCaseFields implements MenuItem {
 
     private final @NotNull Function<AbstractTestCaseDialog, TestCaseSection> sectionExtractor;
 
-    private final @NotNull ImmutableList<TestCaseDialogKey> ownKeys;
-
     // UC-EDITOR-PANEL-006, UC-EDITOR-PANEL-009
     private final boolean oneAtATime;
-
-    // Rule-EDITOR-PANEL-199
-    public StatusBarItem @NotNull [] getStatusBarItems() {
-        return ownKeys.toArray(StatusBarItem[]::new);
-    }
 
     @Override
     public @NotNull String getName() {

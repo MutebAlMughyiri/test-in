@@ -20,6 +20,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBPanel;
 import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.TestCases;
+import org.testin.model.StatusBarItem;
 import org.testin.model.TestCase;
 import org.testin.services.Services;
 import org.testin.testcase.TestCaseDialogKey;
@@ -71,7 +72,7 @@ public class UpdateTestCaseDialog extends AbstractTestCaseDialog {
             }
         }
 
-        showSectionKeys(selectedField.getStatusBarItems());
+        showSectionKeys(keysOf(targetSection));
 
         title = Bundle.message("update.dialog.title.field", selectedField.getName());
 
@@ -80,5 +81,11 @@ public class UpdateTestCaseDialog extends AbstractTestCaseDialog {
         components = List.of(DialogPart.of(form));
 
         registerDialogKeys(keys);
+    }
+
+    // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-199
+    @Override
+    protected StatusBarItem @NotNull [] keysOf(final @NotNull TestCaseSection section) {
+        return section.keys().toArray(StatusBarItem[]::new);
     }
 }

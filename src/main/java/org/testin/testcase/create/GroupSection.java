@@ -22,6 +22,7 @@ import org.testin.model.Groups;
 import org.testin.model.TestCase;
 import org.testin.services.TestCaseCompletions;
 import org.testin.testcase.CreateTestCaseFields;
+import org.testin.testcase.TestCaseDialogKey;
 
 import java.util.List;
 import java.util.Set;
@@ -51,5 +52,11 @@ public class GroupSection extends AbstractMultiValueSection {
     @Override
     protected @NotNull TestCase write(final @NotNull TestCase testCase, final @NotNull List<String> values) {
         return testCase.edit().groups(Groups.read(String.join(",", values))).build();
+    }
+
+    // UC-EDITOR-PANEL-005, UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-199
+    @Override
+    public @NotNull List<TestCaseDialogKey> keys() {
+        return List.of(TestCaseDialogKey.ADD, TestCaseDialogKey.AUTO_COMPLETE, TestCaseDialogKey.NAVIGATE_TAB);
     }
 }

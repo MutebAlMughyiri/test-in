@@ -21,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCase;
 import org.testin.services.TestCaseCompletions;
 import org.testin.testcase.CreateTestCaseFields;
+import org.testin.testcase.TestCaseDialogKey;
 
 import java.util.List;
 import java.util.Set;
@@ -54,5 +55,11 @@ public class StepsSection extends AbstractMultiValueSection {
     @Override
     protected @NotNull String placeholderFor(final int index) {
         return CreateTestCaseFields.STEPS.getPlaceholder() + (index + 1);
+    }
+
+    // UC-EDITOR-PANEL-005, UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-199
+    @Override
+    public @NotNull List<TestCaseDialogKey> keys() {
+        return List.of(TestCaseDialogKey.CORRECTIONS, TestCaseDialogKey.ADD, TestCaseDialogKey.AUTO_COMPLETE, TestCaseDialogKey.NAVIGATE_TAB);
     }
 }

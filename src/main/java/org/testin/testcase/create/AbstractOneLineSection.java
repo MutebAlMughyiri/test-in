@@ -21,9 +21,11 @@ import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
 import org.jetbrains.annotations.NotNull;
 import org.testin.testcase.CreateTestCaseFields;
+import org.testin.testcase.TestCaseDialogKey;
 import org.testin.util.Shortcuts;
 
 import javax.swing.JComponent;
+import java.util.List;
 
 public abstract class AbstractOneLineSection implements TestCaseSection {
     protected final @NotNull EditorTextField field;
@@ -67,5 +69,11 @@ public abstract class AbstractOneLineSection implements TestCaseSection {
     @Override
     public void setEditable(final boolean editable) {
         field.setEnabled(editable);
+    }
+
+    // UC-EDITOR-PANEL-005, UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-199
+    @Override
+    public @NotNull List<TestCaseDialogKey> keys() {
+        return List.of(TestCaseDialogKey.CORRECTIONS);
     }
 }

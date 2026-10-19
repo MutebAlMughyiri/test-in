@@ -21,11 +21,13 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.model.Priority;
 import org.testin.model.TestCase;
 import org.testin.testcase.CreateTestCaseFields;
+import org.testin.testcase.TestCaseDialogKey;
 import org.testin.ui.framework.DialogPart;
 import org.testin.ui.framework.RadioSelection;
 import org.testin.util.Shortcuts;
 
 import javax.swing.JComponent;
+import java.util.List;
 
 // Rule-EDITOR-PANEL-247
 public class PrioritySection implements TestCaseSection {
@@ -75,5 +77,11 @@ public class PrioritySection implements TestCaseSection {
     @Override
     public void fillData(final @NotNull TestCase testCase) {
         priority.select(testCase.getPriority());
+    }
+
+    // UC-EDITOR-PANEL-005, UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-199
+    @Override
+    public @NotNull List<TestCaseDialogKey> keys() {
+        return List.of(TestCaseDialogKey.NAVIGATE_ARROWS);
     }
 }
