@@ -159,6 +159,17 @@ public class ArchitectureTest {
     }
 
     @Test
+    public void whatAQuickActionRunsNeverAsksTheButtonBack() {
+        final @NotNull ArchRule rule = noClasses()
+                .that().resideInAnyPackage("org.testin.navigate..", "org.testin.runner..")
+                .should().dependOnClassesThat().resideInAPackage("org.testin.quickaction..")
+                .because("a quick action and its declared action are one feature in one package, which reaches navigate and runner"
+                        + " for the work, so either reaching back is the loop #481 removed");
+
+        rule.check(CLASSES);
+    }
+
+    @Test
     public void utilImportsNoFeaturePackage() {
         final @NotNull ArchRule rule = noClasses()
                 .that().resideInAPackage("org.testin.util..")

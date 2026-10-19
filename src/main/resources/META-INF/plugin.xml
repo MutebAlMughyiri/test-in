@@ -363,7 +363,7 @@
 
         <action
                 id="Testin.RunTestMethod"
-                class="org.testin.runner.ExecuteOrStopTestMethodsAction"
+                class="org.testin.quickaction.ExecuteOrStopTestMethodsAction"
                 icon="AllIcons.RunConfigurations.TestState.Run"
         >
             <keyboard-shortcut keymap="$default" first-keystroke="F5"/>
@@ -371,7 +371,7 @@
 
         <action
                 id="Testin.NavigateToTestMethod"
-                class="org.testin.navigate.NavigateToTestMethodAction"
+                class="org.testin.quickaction.NavigateToTestMethodAction"
                 icon="AllIcons.General.ArrowRight"
         >
             <keyboard-shortcut keymap="$default" first-keystroke="shift F5"/>
@@ -379,7 +379,7 @@
 
         <action
                 id="Testin.NavigateToTestCase"
-                class="org.testin.navigate.NavigateToTestCaseAction"
+                class="org.testin.quickaction.NavigateToTestCaseAction"
         />
 
         <action

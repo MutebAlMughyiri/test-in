@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.testin.runner;
+package org.testin.quickaction;
 
 import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -24,7 +24,6 @@ import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.TestinDataKeys;
 import org.testin.editor.TestinEditor;
 import org.testin.model.TestCase;
-import org.testin.quickaction.TestCaseQuickAction;
 
 import java.util.List;
 import java.util.Optional;

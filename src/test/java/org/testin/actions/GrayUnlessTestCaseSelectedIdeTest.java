@@ -31,7 +31,7 @@ import org.testin.editor.EditorFixtures;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
-import org.testin.navigate.NavigateToTestCaseAction;
+import org.testin.quickaction.NavigateToTestCaseAction;
 import org.testin.testcase.RemoveTestCaseAction;
 import org.testin.testcase.UpdateTestCaseAction;
 import org.testin.util.Bundle;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.testin.navigate;
+package org.testin.quickaction;
 
 import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -26,7 +26,6 @@ import org.testin.actions.TestinDataKeys;
 import org.testin.editor.open.TestinEditors;
 import org.testin.model.TestCase;
 import org.testin.notifications.Notifier;
-import org.testin.quickaction.TestCaseQuickAction;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
 

@@ -30,8 +30,6 @@ import org.testin.editor.TestinEditor;
 import org.testin.model.Automated;
 import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
-import org.testin.navigate.NavigateToTestCaseAction;
-import org.testin.navigate.NavigateToTestMethodAction;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
 import org.testin.runner.ExecuteTestCases;

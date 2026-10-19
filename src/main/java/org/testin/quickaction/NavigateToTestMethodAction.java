@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.testin.navigate;
+package org.testin.quickaction;
 
 import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -26,7 +26,7 @@ import org.testin.codegen.CodeOn;
 import org.testin.help.Guide;
 import org.testin.help.Guides;
 import org.testin.model.TestCase;
-import org.testin.quickaction.TestCaseQuickAction;
+import org.testin.navigate.TestMethodCode;
 import org.testin.services.Services;
 
 // UC-CODEGEN-006
