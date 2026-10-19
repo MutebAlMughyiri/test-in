@@ -121,8 +121,9 @@ as conflicted, because a Testin folder is not a version control root.
 push is refused, reading *This repository has no remote, so there is nothing to
 push to*.
 
-**If a merged file cannot be written** — a message titled **Merge Failed** reads *Could not write*, the path, then the
-reason.
+**If a merged file cannot be written** — it is written the way every test data
+file is, so the message is the one any write that fails shows: *unable to write
+content:* and the reason. The file stays among those left for the tester.
 
 **If a merged file Git will not take** — a message titled **Merge Not
 Accepted** names the file and says what to do: resolve that file in Git, then

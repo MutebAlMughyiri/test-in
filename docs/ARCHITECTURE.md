@@ -271,7 +271,12 @@ at, and that is never test data.
 What they have in common is that none of them read or write **test data**. They
 handle generated source, the automation repository's own `testin.yml`, the Git
 working tree, files outside the tree, generated report output, the IDE settings
-path, the log, and the temporary folder a bug report is sent from. `config` in
+path, the log, and the temporary folder a bug report is sent from. `git` comes
+closest: it asks the working tree whether a path Git names is there and which
+marker a folder holds, because what it stages and lists is what Git sees, and
+the index can lag the tree after a pull or a branch switch. A file a merge
+resolves is the one it writes, and that goes through `Nodes.writeMerged`, the
+indexer's own writer, with its claim and its codec. `config` in
 particular reads a file that lives in the automation repository rather than
 under the Testin folder. It runs before the indexer exists. The name it reads is
 one of the two `BoundTestProject` weighs to tell the indexer which project to

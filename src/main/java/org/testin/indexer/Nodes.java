@@ -16,6 +16,7 @@
 
 package org.testin.indexer;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
@@ -201,6 +202,11 @@ public final class Nodes {
 
     public boolean persistMarker(final @NotNull AbstractNode node) {
         return indexer().announcedIf(store().persistMarker(node), node.getPath());
+    }
+
+    // UC-SHARE-017, Rule-INTERNAL-113, Rule-INTERNAL-125
+    public boolean writeMerged(final @NotNull Path file, final @NotNull JsonNode merged) {
+        return Services.getInstance(project, TestDataFiles.class).write(file, merged);
     }
 
     // UC-TREE-PANEL-015, Rule-TREE-PANEL-055, Rule-INTERNAL-117

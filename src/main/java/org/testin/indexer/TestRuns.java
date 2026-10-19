@@ -33,6 +33,7 @@ import org.testin.services.Services;
 import org.testin.util.Bundle;
 
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -158,6 +159,11 @@ public final class TestRuns {
 
             runItemWriter().persist(testRunPath, runItems, gone);
         }, () -> TestinLogger.warn("Test run no longer indexed, so a change to it was dropped: " + testRunPath.getFileName()));
+    }
+
+    // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-132, Rule-INTERNAL-117
+    public void clockRunItem(final @NotNull Path testRunPath, final @NotNull UUID testCaseUuid, final @NotNull Duration onTheClock) {
+        store().findRunItems(testRunPath).flatMap(runItems -> runItems.runItemOf(testCaseUuid)).ifPresent(runItem -> runItem.recordClock(onTheClock));
     }
 
     // Rule-INTERNAL-011, Rule-PRODUCT-008

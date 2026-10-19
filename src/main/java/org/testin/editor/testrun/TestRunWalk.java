@@ -62,7 +62,7 @@ public final class TestRunWalk {
 
     private final @NotNull Notifier notifier;
 
-    private final @NotNull RunItemClock executionTimer = new RunItemClock();
+    private final @NotNull RunItemClock runItemClock;
 
     private final @NotNull Set<UUID> launchedHere = ConcurrentHashMap.newKeySet();
 
@@ -74,6 +74,7 @@ public final class TestRunWalk {
         this.editor = editor;
         this.project = project;
         this.testRuns = Services.getInstance(project, TestRuns.class);
+        this.runItemClock = new RunItemClock(testRuns, editor.getParent().getPath());
         this.testRunStatusChange = Services.getInstance(project, TestRunStatusChange.class);
         this.runItemRecorder = Services.getInstance(project, RunItemRecorder.class);
         this.testNGExecution = Services.getInstance(project, TestNGExecution.class);
@@ -133,7 +134,7 @@ public final class TestRunWalk {
 
         editor.showExecuting(globalIndex);
 
-        editor.runItem(currentTestCase.getUuid()).ifPresent(runItem -> executionTimer.start(runItem, () -> {
+        editor.runItem(currentTestCase.getUuid()).ifPresent(runItem -> runItemClock.start(runItem, () -> {
             editor.repaint(currentTestCase.getUuid());
             editor.showElapsed();
         }));
@@ -159,12 +160,12 @@ public final class TestRunWalk {
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-132
     public boolean clockIsOn(final @NotNull UUID testCaseUuid) {
-        return executionTimer.isOn(testCaseUuid);
+        return runItemClock.isOn(testCaseUuid);
     }
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-137
     public void stopTheClock() {
-        executionTimer.stop();
+        runItemClock.stop();
     }
 
     void launching(final @NotNull UUID testCaseUuid) {
@@ -309,7 +310,7 @@ public final class TestRunWalk {
 
     // UC-EDITOR-PANEL-039, Rule-EDITOR-PANEL-164
     public void stopExecutionUntimed() {
-        executionTimer.discard();
+        runItemClock.discard();
         stopExecution();
     }
 
@@ -325,7 +326,7 @@ public final class TestRunWalk {
 
     // UC-EDITOR-PANEL-035, Rule-EDITOR-PANEL-150
     private void halt() {
-        executionTimer.stop();
+        runItemClock.stop();
         walkTo(Optional.empty());
         editor.onExecutionStateChanged();
     }
@@ -372,6 +373,6 @@ public final class TestRunWalk {
     }
 
     void dispose() {
-        executionTimer.dispose();
+        runItemClock.dispose();
     }
 }

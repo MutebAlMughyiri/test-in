@@ -29,6 +29,7 @@ import org.testng.annotations.Test;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static com.tngtech.archunit.core.domain.AccessTarget.Predicates.declaredIn;
@@ -69,6 +70,10 @@ public class ArchitectureTest {
     private static final @NotNull Set<String> UTIL_EXCEPTIONS = Set.of();
 
     private static final @NotNull Set<String> FILE_ACCESS_EXCEPTIONS = Set.of("org.testin.ui.framework.TextInput");
+
+    private static final @NotNull Map<String, String> ONLY_THE_INDEXER_CALLS = Map.of(
+            "org.testin.model.TestCase", "takeValuesOf",
+            "org.testin.model.testrun.RunItem", "recordClock");
 
     private static final @NotNull Set<String> FILE_APIS = Set.of(
             "java.nio.file.Files", "java.nio.channels.FileChannel", "java.io.RandomAccessFile",
@@ -276,15 +281,15 @@ public class ArchitectureTest {
                         + " threads alike; a feature changes one by asking the indexer, which writes the new values into"
                         + " the instance it holds, never by calling a setter on it (Rule-INTERNAL-117, #376)");
 
-        final @NotNull ArchRule oneWriter = methods()
-                .that().areDeclaredIn("org.testin.model.TestCase")
-                .and().haveName("takeValuesOf")
-                .should().onlyBeCalled().byClassesThat().resideInAPackage("org.testin.indexer..")
-                .because("an edited copy lands in the test case the index holds only once its file is written,"
-                        + " and the index is the one that knows when that is (Rule-INTERNAL-117)");
-
         noSetter.check(CLASSES);
-        oneWriter.check(CLASSES);
+        ONLY_THE_INDEXER_CALLS.forEach((owner, mutators) -> methods()
+                .that().areDeclaredIn(owner)
+                .and().haveNameMatching(mutators)
+                .should().onlyBeCalled().byClassesThat().resideInAPackage("org.testin.indexer..")
+                .because("it changes a value in the instance the index holds - an edited copy landing once its file is"
+                        + " written, a running clock - and only the index knows when that may happen; a feature asks"
+                        + " the indexer instead (Rule-INTERNAL-117, #451)")
+                .check(CLASSES));
     }
 
     @Test

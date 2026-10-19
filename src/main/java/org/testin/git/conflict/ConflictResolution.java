@@ -23,18 +23,15 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.git.GitRepositoryService;
+import org.testin.indexer.Nodes;
 import org.testin.logger.TestinLogger;
 import org.testin.model.FileKind;
 import org.testin.model.NodeType;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
-import org.testin.util.FailureText;
 import org.testin.util.JsonCodec;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -195,15 +192,8 @@ public final class ConflictResolution {
 
     // UC-SHARE-017, Rule-SHARE-074
     private static boolean keep(final @NotNull Project project, final @NotNull GitRepositoryService git, final @NotNull Path repositoryPath, final @NotNull String relativePath, final @NotNull ObjectNode merged) {
-        try {
-            Files.writeString(repositoryPath.resolve(relativePath), merged.toPrettyString(), StandardCharsets.UTF_8);
-
-        } catch (final IOException ex) {
-            TestinLogger.error("Could not write the merged test case " + relativePath + ": " + FailureText.of(ex));
-            Services.getInstance(project, Notifier.class).error(project, Bundle.message("git.merge.failed.title"),
-                    Bundle.message("git.merge.failed.message", relativePath, FailureText.of(ex)));
+        if (!Services.getInstance(project, Nodes.class).writeMerged(repositoryPath.resolve(relativePath), merged))
             return false;
-        }
 
         if (git.stageResolved(repositoryPath, relativePath)) return true;
 

@@ -17,22 +17,30 @@
 package org.testin.editor.testrun;
 
 import com.intellij.openapi.Disposable;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.testin.indexer.TestRuns;
 import org.testin.model.testrun.RunItem;
 
 import javax.swing.Timer;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
 
+@RequiredArgsConstructor
 final class RunItemClock implements Disposable {
     private static final int REDRAW_MS = 1000;
+
+    private final @NotNull TestRuns testRuns;
+
+    private final @NotNull Path testRunPath;
 
     private @NotNull Timer timer = notTicking();
 
     private long startedAt;
 
-    private @NotNull Optional<RunItem> counting = Optional.empty();
+    private @NotNull Optional<UUID> countedTestCaseUuid = Optional.empty();
 
     private @NotNull Duration alreadyCounted = Duration.ZERO;
 
@@ -43,7 +51,7 @@ final class RunItemClock implements Disposable {
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-132
     boolean isOn(final @NotNull UUID testCaseUuid) {
-        return counting.filter(runItem -> runItem.getUuid().equals(testCaseUuid)).isPresent();
+        return countedTestCaseUuid.filter(testCaseUuid::equals).isPresent();
     }
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-132, Rule-EDITOR-PANEL-154
@@ -51,7 +59,7 @@ final class RunItemClock implements Disposable {
         stop();
 
         alreadyCounted = runItem.shownExecution().getDuration();
-        counting = Optional.of(runItem);
+        countedTestCaseUuid = Optional.of(runItem.getUuid());
         startedAt = System.currentTimeMillis();
 
         timer = new Timer(REDRAW_MS, _ -> {
@@ -67,7 +75,7 @@ final class RunItemClock implements Disposable {
         timer = notTicking();
 
         elapse();
-        counting = Optional.empty();
+        countedTestCaseUuid = Optional.empty();
     }
 
     // UC-EDITOR-PANEL-039, Rule-EDITOR-PANEL-164
@@ -75,12 +83,12 @@ final class RunItemClock implements Disposable {
         timer.stop();
         timer = notTicking();
 
-        counting.ifPresent(runItem -> runItem.recordClock(alreadyCounted));
-        counting = Optional.empty();
+        countedTestCaseUuid.ifPresent(testCaseUuid -> testRuns.clockRunItem(testRunPath, testCaseUuid, alreadyCounted));
+        countedTestCaseUuid = Optional.empty();
     }
 
     private void elapse() {
-        counting.ifPresent(runItem -> runItem.recordClock(alreadyCounted.plusMillis(System.currentTimeMillis() - startedAt)));
+        countedTestCaseUuid.ifPresent(testCaseUuid -> testRuns.clockRunItem(testRunPath, testCaseUuid, alreadyCounted.plusMillis(System.currentTimeMillis() - startedAt)));
     }
 
     @Override
