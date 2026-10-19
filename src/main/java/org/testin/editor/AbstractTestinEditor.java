@@ -523,7 +523,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
         afterViewRefreshed();
     }
 
-    protected void replaceModel(final @NotNull List<TestCase> pageTestCases) {
+    private void replaceModel(final @NotNull List<TestCase> pageTestCases) {
         if (model.getItems().equals(pageTestCases)) refreshCards();
         else model.replaceAll(pageTestCases);
     }

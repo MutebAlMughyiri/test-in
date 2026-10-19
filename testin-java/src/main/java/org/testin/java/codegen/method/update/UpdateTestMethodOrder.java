@@ -31,9 +31,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.testin.codegen.CodeChange;
 import org.testin.codegen.CodeChangeType;
-import org.testin.codegen.ExecutionPosition;
+import org.testin.indexer.TestCases;
 import org.testin.java.codegen.GeneratedMethod;
 import org.testin.model.TestCase;
+import org.testin.services.Services;
 
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -96,7 +97,7 @@ public class UpdateTestMethodOrder extends BaseTestMethodChange implements CodeC
 
     // UC-CODEGEN-011, Rule-CODEGEN-014, Rule-CODEGEN-042, Rule-CODEGEN-067
     public void arrangeSets(final @NotNull Project project, final @NotNull List<Path> testSetPaths) {
-        final @NotNull List<List<TestCase>> ordered = testSetPaths.stream().distinct().map(testSetPath -> ExecutionPosition.setAt(project, testSetPath)).toList();
+        final @NotNull List<List<TestCase>> ordered = testSetPaths.stream().distinct().map(Services.getInstance(project, TestCases.class)::getTestCasesForTestSet).toList();
         if (ordered.isEmpty()) return;
 
         asOneCommand(project, CodeChangeType.UPDATE_TEST_CASE_ORDER.description(), () -> ordered.forEach(inSet -> arrange(project, inSet)));

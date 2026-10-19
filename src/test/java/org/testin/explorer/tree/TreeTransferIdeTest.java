@@ -42,6 +42,7 @@ import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -57,6 +58,8 @@ public class TreeTransferIdeTest extends AbstractTempRootIdeTest {
 
     private TreeTransferHandler handler;
 
+    private final @NotNull Set<Path> cutNodes = new HashSet<>();
+
     @Override
     protected void setUp() {
         super.setUp();
@@ -67,7 +70,7 @@ public class TreeTransferIdeTest extends AbstractTempRootIdeTest {
         payments = made.testSetPackage(testProject.getTestCasesFolder(), "Payments");
         login = made.testSet(checkout, "Login");
         loginTestCase = made.testCase(login);
-        handler = new TreeTransferHandler(getProject(), new SimpleTree(), new HashSet<>(), revealed::add);
+        handler = new TreeTransferHandler(getProject(), new SimpleTree(), cutNodes, revealed::add);
         undoHistories().forget(UndoScope.TREE);
     }
 
@@ -138,12 +141,12 @@ public class TreeTransferIdeTest extends AbstractTempRootIdeTest {
     // Rule-TREE-PANEL-050
     public void testCancelingACutEmptiesTheClipboard() {
         onTheClipboard(TransferHandler.MOVE);
-        handler.getSelectedNodes().add(login.getPath());
+        cutNodes.add(login.getPath());
 
         handler.clearClipboard();
 
         assertFalse("a canceled cut is still waiting to be pasted", holdsNodes());
-        assertTrue("a canceled cut still marks the node as cut", handler.getSelectedNodes().isEmpty());
+        assertTrue("a canceled cut still marks the node as cut", cutNodes.isEmpty());
     }
 
     // Rule-TREE-PANEL-050

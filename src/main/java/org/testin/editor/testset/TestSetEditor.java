@@ -127,14 +127,12 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorFields, Tes
 
             testCaseValues.load(testCasesInSet);
 
-            final @NotNull List<TestCase> ordered = TestCaseOrder.ordered(testCasesInSet);
-
             ApplicationManager.getApplication().invokeLater(() -> {
                 if (generation != modelGeneration.get()) return;
                 allTestCases.clear();
-                allTestCases.addAll(ordered);
+                allTestCases.addAll(testCasesInSet);
                 currentTestCases.clear();
-                currentTestCases.addAll(ordered);
+                currentTestCases.addAll(testCasesInSet);
 
                 jumpToPageOfPendingSelection();
 

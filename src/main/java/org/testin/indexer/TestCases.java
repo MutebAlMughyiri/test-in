@@ -23,10 +23,13 @@ import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.services.Services;
 import org.testin.services.TestCaseCompletions;
+import org.testin.testcase.TestCaseOrder;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -48,6 +51,20 @@ public final class TestCases {
 
     public @NotNull List<TestCase> getTestCasesForTestSet(final @NotNull Path testSetPath) {
         return store().getTestCasesForTestSet(testSetPath);
+    }
+
+    // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-014, Rule-VIEW-PANEL-062
+    public @NotNull Map<UUID, Integer> placesOf(final @NotNull List<TestCase> testCases) {
+        final @NotNull Map<Path, List<TestCase>> sets = new HashMap<>();
+        final @NotNull Map<UUID, Integer> places = new HashMap<>();
+
+        for (final TestCase testCase : testCases) {
+            final @NotNull List<TestCase> set = sets.computeIfAbsent(testCase.getParent().getPath(), this::getTestCasesForTestSet);
+            final int place = TestCaseOrder.positionOf(set, testCase);
+            if (place <= set.size()) places.put(testCase.getUuid(), place);
+        }
+
+        return places;
     }
 
     // UC-INTERNAL-006, Rule-INTERNAL-046

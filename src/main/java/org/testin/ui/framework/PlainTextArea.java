@@ -60,10 +60,6 @@ public final class PlainTextArea implements DialogComponent {
         panel = Caption.above("", scroll);
     }
 
-    public @NotNull String getText() {
-        return area.getText();
-    }
-
     @Override
     public @NotNull JComponent getPanel() {
         return panel;

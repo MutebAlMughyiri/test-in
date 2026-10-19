@@ -39,14 +39,16 @@ public enum RunItemStatus {
             JBColor.GREEN,
             FixedColors.GREEN.darker(),
             Bundle.message("status.run.item.passed"),
-            KeyStroke.getKeyStroke(KeyEvent.VK_P, 0)
+            KeyStroke.getKeyStroke(KeyEvent.VK_P, 0),
+            true
     ),
 
     FAILED(
             JBColor.RED.darker(),
             FixedColors.RED.darker(),
             Bundle.message("status.run.item.failed"),
-            KeyStroke.getKeyStroke(KeyEvent.VK_F, 0)
+            KeyStroke.getKeyStroke(KeyEvent.VK_F, 0),
+            true
     ),
 
     // Rule-EDITOR-PANEL-141
@@ -54,28 +56,32 @@ public enum RunItemStatus {
             JBColor.ORANGE,
             FixedColors.ORANGE.darker(),
             Bundle.message("status.run.item.blocked"),
-            KeyStroke.getKeyStroke(KeyEvent.VK_B, 0)
+            KeyStroke.getKeyStroke(KeyEvent.VK_B, 0),
+            true
     ),
 
     PENDING(
             JBColor.lazy(UIUtil::getContextHelpForeground),
             FixedColors.GRAY.darker(),
             Bundle.message("status.run.item.pending"),
-            Shortcuts.NO_KEY
+            Shortcuts.NO_KEY,
+            false
     ),
 
     REMOVED(
             JBColor.GRAY,
             FixedColors.GRAY.darker(),
             Bundle.message("status.run.item.removed"),
-            Shortcuts.NO_KEY
+            Shortcuts.NO_KEY,
+            false
     ),
 
     UNTESTED(
             JBColor.GRAY.brighter(),
             FixedColors.GRAY.darker(),
             Bundle.message("status.run.item.untested"),
-            Shortcuts.NO_KEY
+            Shortcuts.NO_KEY,
+            false
     );
 
     private final @NotNull Color rowColor;
@@ -85,6 +91,9 @@ public enum RunItemStatus {
     private final @NotNull String label;
 
     private final @NotNull KeyStroke shortcut;
+
+    // Rule-PRODUCT-012, Rule-PRODUCT-013
+    private final boolean judged;
 
     // Rule-REPORT-025
     public @NotNull String getReportHex() {
@@ -109,11 +118,6 @@ public enum RunItemStatus {
     // Rule-EDITOR-PANEL-176
     public @NotNull String labelIn(final @NotNull TestRunStatus testRunStatus) {
         return this == UNTESTED && !testRunStatus.isTerminal() ? PENDING.label : label;
-    }
-
-    // Rule-PRODUCT-012, Rule-PRODUCT-013
-    public boolean isJudged() {
-        return !Shortcuts.isNoKey(shortcut);
     }
 
     // UC-EDITOR-PANEL-034

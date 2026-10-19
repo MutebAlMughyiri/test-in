@@ -25,7 +25,6 @@ import com.intellij.ui.components.fields.IntegerField;
 import com.intellij.util.ui.JBUI;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import org.testin.codegen.ExecutionPosition;
 import org.testin.indexer.TestCases;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCase;
@@ -89,7 +88,7 @@ public class OrderSection implements TestCaseSection {
     // Rule-EDITOR-PANEL-054
     @Override
     public void fillData(final @NotNull TestCase testCase) {
-        final @NotNull List<TestCase> inSet = ExecutionPosition.setOf(project, testCase);
+        final @NotNull List<TestCase> inSet = testCases.getTestCasesForTestSet(testCase.getParent().getPath());
         final int size = Math.max(1, inSet.size());
         final int current = Math.min(TestCaseOrder.positionOf(inSet, testCase), size);
 
@@ -117,7 +116,7 @@ public class OrderSection implements TestCaseSection {
     // UC-EDITOR-PANEL-009, Rule-EDITOR-PANEL-055, Rule-EDITOR-PANEL-282, Rule-EDITOR-PANEL-056
     @Override
     public @NotNull TestCase applyTo(final @NotNull TestCase ordered) {
-        final @NotNull List<TestCase> inSet = ExecutionPosition.setOf(project, ordered);
+        final @NotNull List<TestCase> inSet = Services.getInstance(project, TestCases.class).getTestCasesForTestSet(ordered.getParent().getPath());
         final int target = position.getValue();
 
         if (target == TestCaseOrder.positionOf(inSet, ordered)) return ordered;

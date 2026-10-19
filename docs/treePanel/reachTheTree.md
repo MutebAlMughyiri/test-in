@@ -95,9 +95,10 @@ prevent.
 - **Rule-TREE-PANEL-124** — A `location` that is neither `local` nor `remote` is
   read as `local`, and `location: remote` with no `repoUrl` is read as it is
   written. Neither refuses the file, and each is noted in Testin's log.
-- **Rule-TREE-PANEL-127** — A test set and a test run show no expand arrow. They
-  hold test cases and results rather than nodes, so the tree has nothing to open
-  under them.
+- **Rule-TREE-PANEL-127** — A test set, a test run and a test project that is not
+  active show no expand arrow. A test set and a test run hold test cases and run
+  items rather than nodes, and an inactive test project holds nothing
+  (Rule-TREE-PANEL-100), so the tree has nothing to open under them.
 - **Rule-TREE-PANEL-142** — The tree is drawn as soon as a test project's test
   cases are read, and again when its test runs are. Until its test runs are read
   for the first time - when the IDE starts, and on Refresh - the Test Runs

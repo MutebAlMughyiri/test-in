@@ -32,7 +32,7 @@ import java.util.Objects;
 @State(name = "testin.settings.AppSettingsState", storages = @Storage("testinSettings.xml"))
 @Service(Service.Level.APP)
 public final class AppSettingsState implements PersistentStateComponent<AppSettingsState> {
-    public static final int DEFAULT_TIMEOUT_SECONDS = 180;
+    private static final int DEFAULT_TIMEOUT_SECONDS = 180;
 
     public @NotNull String rootTestinPath = "";
 

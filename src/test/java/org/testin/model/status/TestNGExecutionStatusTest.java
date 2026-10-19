@@ -58,7 +58,6 @@ public class TestNGExecutionStatusTest {
     public void everyTestNGExecutionStatusAnswersWithoutANull() {
         for (final TestNGExecutionStatus testNGExecutionStatus : TestNGExecutionStatus.values()) {
             assertNotNull(testNGExecutionStatus.getRunItemStatus(), testNGExecutionStatus + " must answer with a value of its own type");
-            assertNotNull(testNGExecutionStatus.getIcon(), testNGExecutionStatus + " needs an icon for the gutter");
         }
     }
 

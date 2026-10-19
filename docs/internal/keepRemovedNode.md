@@ -31,6 +31,8 @@ between them.
   It simply cannot be undone.
 - **Rule-INTERNAL-063** — One press raises one message. A `Ctrl+Z` that could
   not put everything back says only what went wrong; it does not also say *Undone*.
+  An undo or a redo is done only once its change has been made: until then Undo
+  and Redo are gray, and one that fails stays where it was on the history.
 - **Rule-INTERNAL-042** — Putting something back never writes over something
   that is there.
 - **Rule-INTERNAL-043** — Kept copies are thrown away when the removal falls off

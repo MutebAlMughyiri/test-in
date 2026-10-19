@@ -22,11 +22,12 @@ import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
-import org.testin.codegen.ExecutionPosition;
 import org.testin.editor.WheelForwarding;
+import org.testin.indexer.TestCases;
 import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.RunItemExecution;
+import org.testin.services.Services;
 import org.testin.testcase.TestCaseOrder;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.testrun.TestRunEditorFields;
@@ -78,7 +79,7 @@ public class DetailsTab {
                 new FieldRow(TestSetEditorFields.TEST_DATA.getName(), (_, testCase) -> TestSetEditorFields.TEST_DATA.displayValue(testCase)),
                 new FieldRow(TestSetEditorFields.REFERENCE.getName(), (_, testCase) -> TestSetEditorFields.REFERENCE.displayValue(testCase)),
                 new FieldRow(TestSetEditorFields.MODULE.getName(), (_, testCase) -> TestSetEditorFields.MODULE.displayValue(testCase)),
-                new FieldRow(TestSetEditorFields.ORDER.getName(), (project, testCase) -> TestCaseOrder.placeText(ExecutionPosition.placesOf(project, List.of(testCase)).getOrDefault(testCase.getUuid(), 0))),
+                new FieldRow(TestSetEditorFields.ORDER.getName(), (project, testCase) -> TestCaseOrder.placeText(Services.getInstance(project, TestCases.class).placesOf(List.of(testCase)).getOrDefault(testCase.getUuid(), 0))),
                 new FieldRow(Bundle.message("details.created"), (_, testCase) -> Display.whoAndWhen(testCase.getCreatedBy(), testCase.getCreatedAt())),
                 new FieldRow(Bundle.message("details.updated"), (_, testCase) -> Display.whoAndWhen(testCase.getUpdatedBy(), testCase.getUpdatedAt())));
     }

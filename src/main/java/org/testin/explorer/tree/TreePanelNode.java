@@ -27,8 +27,6 @@ import org.testin.indexer.Nodes;
 import org.testin.indexer.TestProjectIndexer;
 import org.testin.logger.TestinLogger;
 import org.testin.model.node.AbstractNode;
-import org.testin.model.node.TestProjectNode;
-import org.testin.model.status.TestProjectStatus;
 import org.testin.services.Services;
 import org.testin.util.FailureText;
 
@@ -70,15 +68,10 @@ public final class TreePanelNode extends AbstractTreeNode<Object> {
     // UC-TREE-PANEL-018, Rule-TREE-PANEL-063, Rule-TREE-PANEL-012
     @Override
     public @NotNull Collection<? extends AbstractTreeNode<?>> getChildren() {
-        final @NotNull Object value = getValue();
-        if (value instanceof TestProjectNode testProjectNode) {
-            if (testProjectNode.getMarker().getStatus() != TestProjectStatus.ACTIVE) return List.of();
-            return List.of(
-                    child(testProjectNode.getTestCasesFolder()),
-                    child(testProjectNode.getTestRunsFolder())
-            );
-        }
-        if (!(value instanceof AbstractNode directory)) return List.of();
+        if (!(getValue() instanceof AbstractNode directory) || !directory.mayHaveChildren()) return List.of();
+
+        final @NotNull List<AbstractNode> fixed = directory.fixedChildren();
+        if (!fixed.isEmpty()) return fixed.stream().map(this::child).toList();
 
         try {
             // Rule-INTERNAL-091

@@ -24,7 +24,6 @@ import com.intellij.util.ui.StatusText;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.testin.bug.KnownBugIssueStates;
-import org.testin.codegen.ExecutionPosition;
 import org.testin.editor.AbstractTestinEditor;
 import org.testin.editor.PageWindow;
 import org.testin.editor.card.AbstractCard;
@@ -44,6 +43,7 @@ import org.testin.editor.toolbar.ToolbarCallbacks;
 import org.testin.git.history.TestRunFromGit;
 import org.testin.help.Guide;
 import org.testin.help.Guides;
+import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
 import org.testin.lightmode.LightMode;
 import org.testin.logger.TestinLogger;
@@ -132,7 +132,7 @@ public class TestRunEditor extends AbstractTestinEditor<TestRunEditorFields, Tes
                                 (existingItem, _) -> existingItem));
 
                 final @NotNull List<TestCase> ordered = fromDisk.getAll().stream().map(RunItem::liveTestCase).toList();
-                final @NotNull Map<UUID, Integer> places = ExecutionPosition.placesOf(project, ordered);
+                final @NotNull Map<UUID, Integer> places = Services.getInstance(project, TestCases.class).placesOf(ordered);
                 testCaseValues.load(ordered);
 
                 ApplicationManager.getApplication().invokeLater(() -> {

@@ -23,7 +23,6 @@ import com.intellij.ui.treeStructure.SimpleTree;
 import com.intellij.util.ui.ImageUtil;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
-import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -50,7 +49,6 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
-import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
@@ -80,15 +78,12 @@ public class TreeTransferHandler extends TransferHandler {
 
     private final @NotNull NodeMoveOrCopy transfer;
 
-    @Getter
-    private final @NotNull Set<Path> selectedNodes;
+    private final @NotNull Set<Path> cutNodes;
 
-    private int clipboardAction = COPY;
-
-    public TreeTransferHandler(final @NotNull Project project, final @NotNull SimpleTree tree, final @NotNull Set<Path> selectedNodes, final @NotNull Consumer<Path> revealAfterRefresh) {
+    public TreeTransferHandler(final @NotNull Project project, final @NotNull SimpleTree tree, final @NotNull Set<Path> cutNodes, final @NotNull Consumer<Path> revealAfterRefresh) {
         this.project = project;
         this.tree = tree;
-        this.selectedNodes = selectedNodes;
+        this.cutNodes = cutNodes;
         this.nodes = Services.getInstance(project, Nodes.class);
         this.notifier = Services.getInstance(project, Notifier.class);
         this.transfer = new NodeMoveOrCopy(project, revealAfterRefresh);
@@ -150,7 +145,7 @@ public class TreeTransferHandler extends TransferHandler {
         setDragImageOffset(new Point(JBUI.scale(-14), JBUI.scale(-10)));
 
         return new TreeTransferable(new TreeTransferPayload(
-                List.copyOf(directories), clipboardAction));
+                List.copyOf(directories), COPY));
     }
 
     private @NotNull BufferedImage createDragImage(final @NotNull String text) {
@@ -306,9 +301,6 @@ public class TreeTransferHandler extends TransferHandler {
         if (support.getDropLocation() instanceof JTree.DropLocation dropLocation) {
             return Optional.ofNullable(dropLocation.getPath());
         }
-        if (support.getDropLocation() instanceof JTree.DropLocation dropLocation) {
-            return Optional.ofNullable(dropLocation.getPath());
-        }
         return Optional.empty();
     }
 
@@ -323,19 +315,8 @@ public class TreeTransferHandler extends TransferHandler {
     }
 
     private void resetLastAction() {
-        selectedNodes.clear();
+        cutNodes.clear();
         tree.repaint();
-    }
-
-    @Override
-    public void exportToClipboard(final @NotNull JComponent component, final @NotNull Clipboard clip, final int action) {
-        clipboardAction = action;
-        try {
-            super.exportToClipboard(component, clip, action);
-        } finally {
-            clipboardAction = COPY;
-        }
-        updateClipboardState(action, transferableSelection());
     }
 
     // UC-TREE-PANEL-013, UC-TREE-PANEL-014, Rule-TREE-PANEL-007
@@ -346,7 +327,9 @@ public class TreeTransferHandler extends TransferHandler {
         final int action = cut ? MOVE : COPY;
         CopyPasteManager.getInstance().setContents(new TreeTransferable(new TreeTransferPayload(
                 List.copyOf(directories), action)));
-        updateClipboardState(action, directories);
+        cutNodes.clear();
+        if (cut) directories.forEach(directory -> cutNodes.add(directory.getPath()));
+        tree.repaint();
 
         notifier.softShowCounted(project, cut ? Done.CUT : Done.COPIED, directories.size());
     }
@@ -398,11 +381,5 @@ public class TreeTransferHandler extends TransferHandler {
         }
 
         resetLastAction();
-    }
-
-    private void updateClipboardState(final int action, final @NotNull List<AbstractNode> directories) {
-        selectedNodes.clear();
-        if (action == MOVE) directories.forEach(directory -> selectedNodes.add(directory.getPath()));
-        tree.repaint();
     }
 }

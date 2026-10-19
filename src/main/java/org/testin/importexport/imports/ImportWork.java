@@ -41,7 +41,6 @@ import org.testin.services.BackgroundWork;
 import org.testin.services.Services;
 import org.testin.testcase.Can;
 import org.testin.testcase.Rank;
-import org.testin.testcase.TestCaseOrder;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.util.Bundle;
 import org.testin.util.FailureText;
@@ -270,8 +269,7 @@ record ImportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
     }
 
     private @NotNull Optional<TestCase> findExistingTail(final @NotNull Path directory) {
-        final @NotNull List<TestCase> existing =
-                TestCaseOrder.ordered(indexedTestCases.getTestCasesForTestSet(directory));
+        final @NotNull List<TestCase> existing = indexedTestCases.getTestCasesForTestSet(directory);
 
         return existing.isEmpty() ? Optional.empty() : Optional.of(existing.getLast());
     }

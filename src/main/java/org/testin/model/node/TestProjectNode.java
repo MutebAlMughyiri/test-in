@@ -25,6 +25,7 @@ import lombok.experimental.SuperBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.NodeType;
 import org.testin.model.markers.TestProjectMarker;
+import org.testin.model.status.TestProjectStatus;
 
 import java.util.List;
 
@@ -50,6 +51,12 @@ public class TestProjectNode extends AbstractNode {
     @Override
     public @NotNull List<AbstractNode> fixedChildren() {
         return List.of(testCasesFolder, testRunsFolder);
+    }
+
+    // Rule-TREE-PANEL-100
+    @Override
+    public boolean mayHaveChildren() {
+        return marker.getStatus() == TestProjectStatus.ACTIVE;
     }
 
     @Override

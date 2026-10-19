@@ -23,7 +23,6 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.util.Bundle;
 
 import java.awt.Color;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,24 +31,21 @@ import java.util.Optional;
 public enum Priority {
     HIGH(
             Bundle.message("priority.high"),
-            JBColor.RED.brighter().brighter(),
-            true
+            JBColor.RED.brighter().brighter()
     ),
 
     MEDIUM(
             Bundle.message("priority.medium"),
-            JBColor.BLUE.brighter(),
-            true
+            JBColor.BLUE.brighter()
     ),
 
     LOW(
             Bundle.message("priority.low"),
-            JBColor.GRAY.brighter(),
-            true
+            JBColor.GRAY.brighter()
     );
 
     // Rule-EDITOR-PANEL-031
-    public static final @NotNull List<Priority> CHOICES = Arrays.stream(values()).filter(Priority::isActive).toList();
+    public static final @NotNull List<Priority> CHOICES = List.of(values());
 
     // Rule-EDITOR-PANEL-031
     public static final @NotNull Priority DEFAULT = LOW;
@@ -57,8 +53,6 @@ public enum Priority {
     private final @NotNull String label;
 
     private final @NotNull Color color;
-
-    private final boolean active;
 
     // Rule-EDITOR-PANEL-267
     public @NotNull Optional<Color> barColor() {

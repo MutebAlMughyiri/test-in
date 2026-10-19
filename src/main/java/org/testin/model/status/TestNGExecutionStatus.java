@@ -16,44 +16,35 @@
 
 package org.testin.model.status;
 
-import com.intellij.icons.AllIcons;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.Icon;
 import java.util.Optional;
 
 @Getter
 @AllArgsConstructor
 public enum TestNGExecutionStatus {
     IDLE(
-            AllIcons.RunConfigurations.TestState.Run,
             Optional.empty()
     ),
 
     PASSED(
-            AllIcons.RunConfigurations.TestPassed,
             Optional.of(RunItemStatus.PASSED)
     ),
 
     FAILED(
-            AllIcons.RunConfigurations.TestFailed,
             Optional.of(RunItemStatus.FAILED)
     ),
 
     // Rule-EDITOR-PANEL-291
     RUNNING(
-            AllIcons.Actions.Suspend,
             Optional.empty()
     ),
 
     SKIPPED(
-            AllIcons.Actions.Suspend,
             Optional.empty()
     );
-
-    private final @NotNull Icon icon;
 
     private final @NotNull Optional<RunItemStatus> runItemStatus;
 
