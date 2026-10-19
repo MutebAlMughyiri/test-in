@@ -47,7 +47,7 @@ public class CreateTestCaseDialog extends AbstractTestCaseDialog {
 
     private final @NotNull Nodes nodes = Services.getInstance(project, Nodes.class);
 
-    // UC-EDITOR-PANEL-005, Rule-CODEGEN-001
+    // UC-EDITOR-PANEL-005, Rule-CODEGEN-079
     public CreateTestCaseDialog(final @NotNull Project project, final @NotNull TestSetNode testSet, final @NotNull Consumer<@NotNull TestCase> onSave) {
         super(project, TestCase.builder().parent(testSet).build(), onSave, ADD_FIELD, TestCaseDialogKey.SAVE, TestCaseDialogKey.CANCEL);
         this.testSet = testSet;

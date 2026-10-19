@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.Automated;
 import org.testin.model.Groups;
+import org.testin.model.Modules;
 import org.testin.model.TestCase;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.testrun.RunItem;
@@ -57,9 +58,9 @@ public final class TestCaseFilter {
         final boolean matchesSearch = query.isEmpty() || TestSetEditorFields.anyContains(shown, query);
         final boolean matchesPriority = wanted.priorities().isEmpty() || wanted.priorities().contains(shown.getPriority());
         final boolean matchesGroup = wanted.groups().isEmpty()
-                || (wanted.groups().contains(Groups.NONE) && shown.getGroups().isEmpty())
-                || shown.getGroups().stream().anyMatch(wanted.groups()::contains);
-        final boolean matchesModule = wanted.modules().isEmpty() || wanted.modules().contains(shown.getModule());
+                || (wanted.groups().contains(Groups.NONE) && Groups.of(shown).isEmpty())
+                || Groups.of(shown).stream().anyMatch(wanted.groups()::contains);
+        final boolean matchesModule = wanted.modules().isEmpty() || wanted.modules().contains(Modules.of(shown));
         final boolean matchesTestCaseStatus = wanted.testCaseStatuses().isEmpty() || wanted.testCaseStatuses().contains(shown.getStatus());
         final boolean matchesRunItemStatus = wanted.runItemStatuses().isEmpty()
                 || matchesRunItemStatus(testCase.getUuid(), wanted.runItemStatuses(), runItemProvider);

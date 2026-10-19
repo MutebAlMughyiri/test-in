@@ -18,10 +18,13 @@ package org.testin.testcase.update;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
+import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.CodeChangeType;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCase;
+import org.testin.notifications.Notifier;
+import org.testin.services.Services;
 import org.testin.testcase.UpdateTestCaseFields;
 import org.testin.ui.framework.ShortcutMenuPopup;
 import org.testin.util.Bundle;
@@ -31,18 +34,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
+@AllArgsConstructor
 public class UpdateTestCaseMenu {
     private final @NotNull Project project;
 
     private final @NotNull List<TestCase> testCases;
 
     private final @NotNull BiConsumer<@NotNull List<TestCase>, @NotNull UpdateTestCaseFields> updatedTestCases;
-
-    public UpdateTestCaseMenu(final @NotNull Project project, final @NotNull List<TestCase> testCases, final @NotNull BiConsumer<@NotNull List<TestCase>, @NotNull UpdateTestCaseFields> updatedTestCases) {
-        this.project = project;
-        this.testCases = testCases;
-        this.updatedTestCases = updatedTestCases;
-    }
 
     // Rule-VIEW-PANEL-049
     public static void applyAftermath(final @NotNull Project project, final @NotNull List<TestCase> updated, final @NotNull CodeChangeType<TestCase> codeChangeType) {
@@ -64,14 +62,18 @@ public class UpdateTestCaseMenu {
                 : Bundle.message("update.dialog.title.many", String.valueOf(testCases.size()));
 
         new ShortcutMenuPopup<>(project, title, UpdateTestCaseFields.values(), this::open)
-                .refusing(field -> field == UpdateTestCaseFields.ORDER && testCases.size() > 1
-                        ? Optional.of(Bundle.message("update.order.one.at.a.time"))
-                        : Optional.empty())
+                .refusing(this::refusalOf)
                 .show();
     }
 
-    // UC-EDITOR-PANEL-006, UC-EDITOR-PANEL-007
+    // UC-EDITOR-PANEL-006, UC-EDITOR-PANEL-007, UC-EDITOR-PANEL-009
     public void open(final @NotNull UpdateTestCaseFields field) {
+        final @NotNull Optional<String> refusal = refusalOf(field);
+        if (refusal.isPresent()) {
+            Services.getInstance(project, Notifier.class).softRefuse(project, refusal.orElseThrow());
+            return;
+        }
+
         final @NotNull CodeChangeType<TestCase> codeChangeType = field.getCodeChangeType();
         TestinLogger.trace("Update field -> " + field.getName() + " | changeType = " + codeChangeType);
 
@@ -88,5 +90,10 @@ public class UpdateTestCaseMenu {
             TestinLogger.trace("Bulk Edit Save -> changeType = " + codeChangeType);
             updatedTestCases.accept(list, field);
         });
+    }
+
+    // UC-EDITOR-PANEL-006, UC-EDITOR-PANEL-009
+    private @NotNull Optional<String> refusalOf(final @NotNull UpdateTestCaseFields field) {
+        return field.isOneAtATime() && testCases.size() > 1 ? Optional.of(Bundle.message("update.order.one.at.a.time")) : Optional.empty();
     }
 }

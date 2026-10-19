@@ -31,10 +31,15 @@ public final class Modules {
         final @NotNull Set<String> modules = new HashSet<>();
 
         for (final TestCase testCase : testCases) {
-            final @NotNull String module = testCase.getModule().trim();
+            final @NotNull String module = of(testCase);
             if (!module.isEmpty()) modules.add(module);
         }
 
         return modules;
+    }
+
+    // Rule-EDITOR-PANEL-095
+    public static @NotNull String of(final @NotNull TestCase testCase) {
+        return testCase.getModule().trim();
     }
 }

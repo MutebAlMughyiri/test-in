@@ -110,7 +110,7 @@ public class RefusedValuesIdeTest extends AbstractTempRootIdeTest {
     public void testABulkEditRefusesWhatItCannotReadSaysSoOnceWithACountAndDoesNotCountIt() {
         final @NotNull List<TestCase> testCases = aTestSetHolding("Log in", "Log out", "Pay by card");
         final @NotNull List<String> balloons = Said.listening(getProject(), getTestRootDisposable()).shown();
-        final @NotNull PriorityBulkSectionDialog dialog = new PriorityBulkSectionDialog(getProject(), testCases, _ -> {
+        final @NotNull PriorityBulkDialog dialog = new PriorityBulkDialog(getProject(), testCases, _ -> {
         });
 
         final @NotNull List<TestCase> written = dialog.applyValues(testCases, List.of(EditedValue.of("Urgent"), EditedValue.of("Soon"), EditedValue.of(Priority.HIGH.getLabel())));
@@ -136,7 +136,7 @@ public class RefusedValuesIdeTest extends AbstractTempRootIdeTest {
             assertTrue("a blank value was called unreadable: " + balloons, balloons.stream().noneMatch(said -> said.startsWith(unreadable("").substring(0, 14))));
 
             balloons.clear();
-            final @NotNull List<TestCase> written = new PriorityBulkSectionDialog(getProject(), testCases, _ -> {
+            final @NotNull List<TestCase> written = new PriorityBulkDialog(getProject(), testCases, _ -> {
             }).applyValues(testCases, List.of(EditedValue.of(""), EditedValue.UNCHANGED));
             assertEquals("a blank priority in a bulk edit did not set the default priority", List.of(Priority.LOW), written.stream().map(TestCase::getPriority).toList());
             assertTrue("a blank priority in a bulk edit was called unreadable: " + balloons, balloons.stream().noneMatch(said -> said.startsWith(unreadable("").substring(0, 14))));
@@ -150,7 +150,7 @@ public class RefusedValuesIdeTest extends AbstractTempRootIdeTest {
         final @NotNull List<TestCase> testCases = aTestSetHolding("Log in", "Log out", "Pay by card", "Check out");
         final @NotNull List<TestCase> inTheDialog = testCases.subList(0, 3);
         final @NotNull List<String> balloons = Said.listening(getProject(), getTestRootDisposable()).shown();
-        final @NotNull DescriptionBulkSectionDialog dialog = new DescriptionBulkSectionDialog(getProject(), inTheDialog, _ -> {
+        final @NotNull DescriptionBulkDialog dialog = new DescriptionBulkDialog(getProject(), inTheDialog, _ -> {
         });
 
         final @NotNull List<TestCase> written = dialog.applyValues(inTheDialog, List.of(EditedValue.of("123 go"), EditedValue.of("Check out!"), EditedValue.of("Pay by card again")));
@@ -163,7 +163,7 @@ public class RefusedValuesIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-224
     public void testTwoRowsGivenOneDescriptionClashButTwoThatSwapDoNot() {
         final @NotNull List<TestCase> testCases = aTestSetHolding("Log in", "Log out");
-        final @NotNull DescriptionBulkSectionDialog dialog = new DescriptionBulkSectionDialog(getProject(), testCases, _ -> {
+        final @NotNull DescriptionBulkDialog dialog = new DescriptionBulkDialog(getProject(), testCases, _ -> {
         });
 
         final @NotNull List<TestCase> swapped = dialog.applyValues(testCases, List.of(EditedValue.of("Log out"), EditedValue.of("Log in")));

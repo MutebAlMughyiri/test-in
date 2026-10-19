@@ -17,8 +17,6 @@
 package org.testin.model.status;
 
 import com.intellij.icons.AllIcons;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.project.DumbAwareAction;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,7 +26,6 @@ import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
 
 import javax.swing.Icon;
-import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 import java.awt.event.KeyEvent;
 
@@ -85,7 +82,7 @@ public enum TestRunStatus implements MenuItem {
 
     private final @NotNull String label;
 
-    private final @NotNull KeyStroke shortcut;
+    private final @NotNull KeyStroke key;
 
     private final @NotNull Icon icon;
 
@@ -122,24 +119,12 @@ public enum TestRunStatus implements MenuItem {
 
     @Override
     public @NotNull String getShortcutText() {
-        return Shortcuts.shortcutText(shortcut);
+        return Shortcuts.shortcutText(key);
     }
 
     @Override
     public @NotNull String getName() {
         return label;
-    }
-
-    @Override
-    public void bindShortcut(final @NotNull JComponent component, final @NotNull Runnable onAction) {
-        if (Shortcuts.isNoKey(shortcut)) return;
-
-        new DumbAwareAction() {
-            @Override
-            public void actionPerformed(final @NotNull AnActionEvent e) {
-                onAction.run();
-            }
-        }.registerCustomShortcutSet(Shortcuts.customShortcut(shortcut), component);
     }
 
     // UC-TREE-PANEL-020, Rule-TREE-PANEL-092

@@ -16,8 +16,6 @@
 
 package org.testin.clipboard;
 
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.project.DumbAwareAction;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,7 +30,7 @@ import org.testin.util.Icons;
 import org.testin.util.Shortcuts;
 
 import javax.swing.Icon;
-import javax.swing.JComponent;
+import javax.swing.KeyStroke;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -162,13 +160,8 @@ public enum CopyChoice implements MenuItem {
     }
 
     @Override
-    public void bindShortcut(final @NotNull JComponent component, final @NotNull Runnable onTrigger) {
-        new DumbAwareAction() {
-            @Override
-            public void actionPerformed(final @NotNull AnActionEvent e) {
-                onTrigger.run();
-            }
-        }.registerCustomShortcutSet(shortcut.getCustomShortcut(), component);
+    public @NotNull KeyStroke getKey() {
+        return shortcut.getKey();
     }
 
     // Rule-EDITOR-PANEL-074

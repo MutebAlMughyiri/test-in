@@ -22,19 +22,18 @@ import com.intellij.ui.TextFieldWithAutoCompletion;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCase;
-import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.services.TestCaseCompletions;
 import org.testin.testcase.CreateTestCaseFields;
+import org.testin.testcase.DescriptionAsMethod;
 import org.testin.testcase.TestSetEditorFields;
-import org.testin.util.Bundle;
 import org.testin.util.EditorFields;
 import org.testin.util.Icons;
-import org.testin.util.NameSanitizer;
 import org.testin.util.Shortcuts;
 
 import javax.swing.Icon;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -43,8 +42,6 @@ public class DescriptionSection extends AbstractOneLineSection {
     private static final @NotNull Icon REFUSED = Icons.fieldLetter(TestSetEditorFields.DESCRIPTION.getLetter(), Icons.RED);
 
     private final @NotNull Project project;
-
-    private final @NotNull Notifier notifier;
 
     private final @NotNull TextAttributes hint = new TextAttributes();
 
@@ -55,21 +52,17 @@ public class DescriptionSection extends AbstractOneLineSection {
                 CreateTestCaseFields.DESCRIPTION, Shortcuts.CreateTestCaseDescription);
 
         this.project = project;
-        this.notifier = Services.getInstance(project, Notifier.class);
         field.addSettingsProvider(editor -> editor.setPlaceholderAttributes(hint));
     }
 
-    // UC-EDITOR-PANEL-005, Rule-CODEGEN-001
+    // UC-EDITOR-PANEL-005, Rule-CODEGEN-079
     public void compareAgainst(final @NotNull Supplier<List<TestCase>> siblings) {
         this.siblings = siblings;
     }
 
     private @NotNull Set<String> takenMethodKeys() {
         return siblings.get().stream()
-                .map(TestCase::getDescription)
-                .map(NameSanitizer::methodName)
-                .filter(name -> !name.isEmpty())
-                .map(NameSanitizer::methodKey)
+                .flatMap(sibling -> DescriptionAsMethod.keyOf(sibling.getDescription()).stream())
                 .collect(Collectors.toSet());
     }
 
@@ -82,37 +75,15 @@ public class DescriptionSection extends AbstractOneLineSection {
         field.repaint();
     }
 
-    // UC-EDITOR-PANEL-005, Rule-CODEGEN-001
+    // UC-EDITOR-PANEL-005, Rule-CODEGEN-079
     @Override
     public boolean accepts() {
         final @NotNull String description = field.getText().trim();
-        if (description.isEmpty()) {
-            setError(false);
-            return true;
-        }
+        final @NotNull Optional<DescriptionAsMethod> refused = DescriptionAsMethod.refusalOf(description, takenMethodKeys());
 
-        final @NotNull String methodName = NameSanitizer.methodName(description);
-
-        if (NameSanitizer.cannotMakeMethodName(description)) {
-            setError(true);
-            notifier.softRefuse(project,
-                    Bundle.message("description.not.a.method.title"),
-                    Bundle.message("description.not.a.method.message", methodName));
-
-            return false;
-        }
-
-        if (takenMethodKeys().contains(NameSanitizer.methodKey(methodName))) {
-            setError(true);
-            notifier.softRefuse(project,
-                    Bundle.message("description.taken.title"),
-                    Bundle.message("description.taken.message", methodName));
-
-            return false;
-        }
-
-        setError(false);
-        return true;
+        setError(refused.isPresent());
+        refused.ifPresent(refusal -> refusal.say(project, description));
+        return refused.isEmpty();
     }
 
     // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-032

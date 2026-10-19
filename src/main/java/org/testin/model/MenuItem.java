@@ -16,13 +16,29 @@
 
 package org.testin.model;
 
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.project.DumbAwareAction;
 import org.jetbrains.annotations.NotNull;
+import org.testin.util.Shortcuts;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
+import javax.swing.KeyStroke;
 
 public interface MenuItem extends StatusBarItem {
     @NotNull Icon getIcon();
 
-    void bindShortcut(@NotNull JComponent component, @NotNull Runnable onTrigger);
+    @NotNull KeyStroke getKey();
+
+    // Rule-INTERNAL-054
+    default void bindShortcut(final @NotNull JComponent component, final @NotNull Runnable onTrigger) {
+        if (Shortcuts.isNoKey(getKey())) return;
+
+        new DumbAwareAction() {
+            @Override
+            public void actionPerformed(final @NotNull AnActionEvent e) {
+                onTrigger.run();
+            }
+        }.registerCustomShortcutSet(Shortcuts.customShortcut(getKey()), component);
+    }
 }

@@ -166,7 +166,7 @@ that run item's file carries the same name.
 | `steps`                   | array of strings | no                     | One step per element. A blank element is skipped when drawn and keeps its place in the file |
 | `status`                  | enum             | no, defaults `PENDING` | `REVIEWED` `PENDING` `DISABLED` `TO_BE_UPDATED`                                             |
 | `priority`                | enum             | no, defaults `LOW`     | `HIGH` `MEDIUM` `LOW`                                                                       |
-| `groups`                  | array of strings | no                     | The groups the test case is in, each as the tester typed it. Empty for none                 |
+| `groups`                  | array of strings | no                     | The groups the test case is in, split at commas and trimmed. Empty for none                 |
 | `reference`               | string           | no                     | A ticket, a requirement — an identifier, never formatted for display                        |
 | `module`                  | string           | no                     |                                                                                             |
 | `testData`                | string           | no                     | Used rather than read: never reformatted, on any surface                                    |

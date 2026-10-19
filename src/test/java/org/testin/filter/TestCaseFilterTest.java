@@ -69,6 +69,17 @@ public class TestCaseFilterTest {
         assertEquals(result, List.of(matching));
     }
 
+    // Rule-EDITOR-PANEL-095
+    @Test
+    public void aModuleOrAGroupStoredWithSpacesIsFoundUnderTheNameTheFilterOffers() {
+        final TestCase spaced = TestCase.builder().description("Login succeeds").module("Login ").groups(List.of(" smoke")).build();
+
+        assertEquals(filtered(List.of(spaced), new FilterAndSortChoice("", Set.of(), Set.of(), Set.of("Login"), Set.of(), Set.of(), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING)), List.of(spaced),
+                "a module stored as typed with a space was hidden by the module the filter offers");
+        assertEquals(filtered(List.of(spaced), new FilterAndSortChoice("", Set.of("smoke"), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), SortField.ORDER, SortDirection.ASCENDING)), List.of(spaced),
+                "a group stored as typed with a space was hidden by the group the filter offers");
+    }
+
     @Test
     public void filtersRunItemStatusOnlyWhenRunItemExists() {
         final TestCase passed = TestCase.builder().description("passed").build();

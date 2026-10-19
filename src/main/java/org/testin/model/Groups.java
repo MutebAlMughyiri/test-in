@@ -50,11 +50,12 @@ public final class Groups {
     // Rule-EDITOR-PANEL-095
     public static @NotNull Set<String> in(final @NotNull List<TestCase> testCases) {
         final @NotNull Set<String> groups = new HashSet<>();
-        for (final TestCase testCase : testCases) {
-            for (final String group : testCase.getGroups()) {
-                if (!group.isBlank()) groups.add(group.trim());
-            }
-        }
+        testCases.forEach(testCase -> groups.addAll(of(testCase)));
         return groups;
+    }
+
+    // Rule-EDITOR-PANEL-095
+    public static @NotNull List<String> of(final @NotNull TestCase testCase) {
+        return testCase.getGroups().stream().filter(group -> !group.isBlank()).map(String::trim).toList();
     }
 }

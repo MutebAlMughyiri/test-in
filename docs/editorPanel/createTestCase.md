@@ -43,7 +43,9 @@ This is how every test case in Testin begins.
 - **Rule-EDITOR-PANEL-031** — A new test case starts at the lowest priority.
 - **Rule-EDITOR-PANEL-032** — The description, the expected result, the module,
   the pre-conditions, the test data and each step have their spaces trimmed.
-- **Rule-EDITOR-PANEL-033** — A blank step is dropped.
+- **Rule-EDITOR-PANEL-033** — A blank step or group is dropped. A Group box's
+  text is split at commas, each name trimmed and a repeated one kept once, as a
+  Group cell's is.
 - **Rule-EDITOR-PANEL-034** — The dialog does not close when the tester clicks
   outside it, or when the IDE loses the focus.
 - **Rule-EDITOR-PANEL-199** — The keys sit on one strip: the keys of the field

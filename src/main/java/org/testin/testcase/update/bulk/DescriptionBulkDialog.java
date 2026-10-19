@@ -21,12 +21,12 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCase;
 import org.testin.services.Services;
+import org.testin.testcase.DescriptionAsMethod;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.util.Bundle;
-import org.testin.util.NameSanitizer;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -39,20 +39,14 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class DescriptionBulkSectionDialog extends BaseValueBulkDialog {
+public class DescriptionBulkDialog extends BaseValueBulkDialog {
     private final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
 
-    public DescriptionBulkSectionDialog(final @NotNull Project project, final @NotNull List<TestCase> selectedTestCases, final @NotNull Consumer<List<TestCase>> updatedTestCases) {
+    public DescriptionBulkDialog(final @NotNull Project project, final @NotNull List<TestCase> selectedTestCases, final @NotNull Consumer<List<TestCase>> updatedTestCases) {
         super(project, TestSetEditorFields.DESCRIPTION, Bundle.message("bulk.title.description"), false, selectedTestCases, updatedTestCases);
     }
 
-    private static @NotNull Optional<String> keyOf(final @NotNull String description) {
-        return Optional.of(NameSanitizer.methodName(description))
-                .filter(name -> !name.isEmpty())
-                .map(NameSanitizer::methodKey);
-    }
-
-    // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-224
+    // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-224, Rule-CODEGEN-079
     @Override
     protected @NotNull Set<Integer> clashing(final @NotNull List<TestCase> testCases, final @NotNull List<EditedValue> newValues) {
         final @NotNull Set<UUID> inThisDialog = testCases.stream().map(TestCase::getUuid).collect(Collectors.toSet());
@@ -62,38 +56,29 @@ public class DescriptionBulkSectionDialog extends BaseValueBulkDialog {
             final @NotNull TestCase testCase = testCases.get(i);
             final @NotNull Set<String> inItsSet = taken.computeIfAbsent(testCase.getParent().getPath(), path -> keysOutside(path, inThisDialog));
 
-            if (!newValues.get(i).changed()) keyOf(testCase.getDescription()).ifPresent(inItsSet::add);
+            if (!newValues.get(i).changed())
+                DescriptionAsMethod.keyOf(testCase.getDescription()).ifPresent(inItsSet::add);
         }
 
         final @NotNull Set<Integer> clashing = new LinkedHashSet<>();
-        final @NotNull List<String> notANameYet = new ArrayList<>();
-        final @NotNull List<String> takenYet = new ArrayList<>();
+        final @NotNull Map<DescriptionAsMethod, String> firstRefused = new EnumMap<>(DescriptionAsMethod.class);
 
         for (int i = 0; i < testCases.size(); i++) {
             final @NotNull EditedValue edited = newValues.get(i);
-            if (!edited.changed() || edited.value().isEmpty()) continue;
+            if (!edited.changed()) continue;
 
-            final @NotNull String methodName = NameSanitizer.methodName(edited.value());
-
-            if (NameSanitizer.cannotMakeMethodName(edited.value())) {
+            final @NotNull Set<String> inItsSet = Objects.requireNonNull(taken.get(testCases.get(i).getParent().getPath()));
+            final @NotNull Optional<DescriptionAsMethod> refused = DescriptionAsMethod.refusalOf(edited.value(), inItsSet);
+            if (refused.isPresent()) {
                 clashing.add(i);
-                notANameYet.add(methodName);
+                firstRefused.putIfAbsent(refused.orElseThrow(), edited.value());
                 continue;
             }
 
-            if (!Objects.requireNonNull(taken.get(testCases.get(i).getParent().getPath())).add(NameSanitizer.methodKey(methodName))) {
-                clashing.add(i);
-                takenYet.add(methodName);
-            }
+            DescriptionAsMethod.keyOf(edited.value()).ifPresent(inItsSet::add);
         }
 
-        if (!notANameYet.isEmpty()) {
-            notifier.softRefuse(project, Bundle.message("description.not.a.method.title"), Bundle.message("description.not.a.method.message", notANameYet.getFirst()));
-        }
-        if (!takenYet.isEmpty()) {
-            notifier.softRefuse(project, Bundle.message("description.taken.title"), Bundle.message("description.taken.message", takenYet.getFirst()));
-        }
-
+        firstRefused.forEach((refusal, description) -> refusal.say(project, description));
         return clashing;
     }
 
@@ -102,7 +87,7 @@ public class DescriptionBulkSectionDialog extends BaseValueBulkDialog {
 
         testCases.getTestCasesForTestSet(testSet).stream()
                 .filter(sibling -> !inThisDialog.contains(sibling.getUuid()))
-                .forEach(sibling -> keyOf(sibling.getDescription()).ifPresent(keys::add));
+                .forEach(sibling -> DescriptionAsMethod.keyOf(sibling.getDescription()).ifPresent(keys::add));
 
         return keys;
     }

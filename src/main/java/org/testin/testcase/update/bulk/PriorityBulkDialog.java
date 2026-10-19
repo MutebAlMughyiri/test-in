@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class PriorityBulkSectionDialog extends BaseValueBulkDialog {
-    public PriorityBulkSectionDialog(final @NotNull Project project, final @NotNull List<TestCase> selectedTestCases, final @NotNull Consumer<List<TestCase>> updatedTestCases) {
+public class PriorityBulkDialog extends BaseValueBulkDialog {
+    public PriorityBulkDialog(final @NotNull Project project, final @NotNull List<TestCase> selectedTestCases, final @NotNull Consumer<List<TestCase>> updatedTestCases) {
         super(project, TestSetEditorFields.PRIORITY, Bundle.message("bulk.title.priority"), true, selectedTestCases, updatedTestCases);
     }
 

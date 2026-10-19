@@ -89,7 +89,7 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
     @Override
     protected void tearDown() {
         ShownDialog.close(getProject(), BaseValueBulkDialog.class);
-        ShownDialog.close(getProject(), StepsBulkSectionDialog.class);
+        ShownDialog.close(getProject(), StepsBulkDialog.class);
         super.tearDown();
     }
 
@@ -262,11 +262,11 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
         UpdateTestCaseAction.openField(getProject(), editor, UpdateTestCaseFields.GROUP);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
         try {
-            final @NotNull String shown = editorsOf(GroupBulkSectionDialog.class).getFirst().getDocument().getText();
+            final @NotNull String shown = editorsOf(GroupBulkDialog.class).getFirst().getDocument().getText();
 
             assertTrue("the Group bulk editor does not show the key groups are stored under: " + shown, shown.contains("\"groups\": ["));
         } finally {
-            ShownDialog.close(getProject(), GroupBulkSectionDialog.class);
+            ShownDialog.close(getProject(), GroupBulkDialog.class);
         }
     }
 
@@ -277,11 +277,11 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
         editor.getList().setSelectionInterval(0, editor.getList().getModel().getSize() - 1);
         UpdateTestCaseAction.openField(getProject(), editor, UpdateTestCaseFields.STEPS);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
-        final @NotNull Document steps = editorsOf(StepsBulkSectionDialog.class).stream().filter(values -> !values.isViewer()).findFirst().orElseThrow().getDocument();
+        final @NotNull Document steps = editorsOf(StepsBulkDialog.class).stream().filter(values -> !values.isViewer()).findFirst().orElseThrow().getDocument();
         final int lines = steps.getLineCount();
 
         for (final KeyStroke stroke : Shortcuts.AddItem.getKeys())
-            ShownDialog.press(getProject(), StepsBulkSectionDialog.class, stroke);
+            ShownDialog.press(getProject(), StepsBulkDialog.class, stroke);
 
         assertEquals("not every add key added an item to the steps", lines + Shortcuts.AddItem.getKeys().size(), steps.getLineCount());
     }

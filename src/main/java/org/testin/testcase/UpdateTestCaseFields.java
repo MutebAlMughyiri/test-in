@@ -17,8 +17,6 @@
 package org.testin.testcase;
 
 import com.google.common.collect.ImmutableList;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.project.DumbAwareAction;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -27,20 +25,18 @@ import org.testin.model.MenuItem;
 import org.testin.model.StatusBarItem;
 import org.testin.model.TestCase;
 import org.testin.notifications.Done;
-import org.testin.notifications.Notifier;
-import org.testin.services.Services;
 import org.testin.testcase.create.AbstractTestCaseDialog;
 import org.testin.testcase.create.TestCaseSection;
 import org.testin.testcase.update.bulk.BaseValueBulkDialog;
-import org.testin.testcase.update.bulk.DescriptionBulkSectionDialog;
-import org.testin.testcase.update.bulk.GroupBulkSectionDialog;
-import org.testin.testcase.update.bulk.PriorityBulkSectionDialog;
-import org.testin.testcase.update.bulk.StepsBulkSectionDialog;
+import org.testin.testcase.update.bulk.DescriptionBulkDialog;
+import org.testin.testcase.update.bulk.GroupBulkDialog;
+import org.testin.testcase.update.bulk.PriorityBulkDialog;
+import org.testin.testcase.update.bulk.StepsBulkDialog;
 import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
 
 import javax.swing.Icon;
-import javax.swing.JComponent;
+import javax.swing.KeyStroke;
 import java.util.function.Function;
 
 import static org.testin.testcase.TestCaseDialogKey.ADD;
@@ -54,133 +50,132 @@ import static org.testin.testcase.TestCaseDialogKey.NAVIGATE_TAB;
 @AllArgsConstructor
 public enum UpdateTestCaseFields implements MenuItem {
     DESCRIPTION(
-            TestSetEditorFields.DESCRIPTION.getName(),
+            TestSetEditorFields.DESCRIPTION,
             Shortcuts.FieldDescription,
-            TestSetEditorFields.DESCRIPTION.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_DESCRIPTION,
             Done.UPDATED,
-            (project, selectedTestCases, updatedTestCases) -> new DescriptionBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
+            (project, selectedTestCases, updatedTestCases) -> new DescriptionBulkDialog(project, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getDescriptionSection,
-            ImmutableList.of(CORRECTIONS)
+            ImmutableList.of(CORRECTIONS),
+            false
     ),
 
     EXPECTED_RESULT(
-            TestSetEditorFields.EXPECTED_RESULT.getName(),
+            TestSetEditorFields.EXPECTED_RESULT,
             Shortcuts.FieldExpectedResult,
-            TestSetEditorFields.EXPECTED_RESULT.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_EXPECTED_RESULT,
             Done.UPDATED,
             (project, selectedTestCases, updatedTestCases) -> new BaseValueBulkDialog(project, TestSetEditorFields.EXPECTED_RESULT, Bundle.message("bulk.title.expected.result"), true, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getExpectedResultSection,
-            ImmutableList.of(CORRECTIONS)
+            ImmutableList.of(CORRECTIONS),
+            false
     ),
 
     MODULE(
-            TestSetEditorFields.MODULE.getName(),
+            TestSetEditorFields.MODULE,
             Shortcuts.FieldModule,
-            TestSetEditorFields.MODULE.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_MODULE,
             Done.UPDATED,
             (project, selectedTestCases, updatedTestCases) -> new BaseValueBulkDialog(project, TestSetEditorFields.MODULE, Bundle.message("bulk.title.module"), true, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getModuleSection,
-            ImmutableList.of(CORRECTIONS)
+            ImmutableList.of(CORRECTIONS),
+            false
     ),
 
     TEST_DATA(
-            TestSetEditorFields.TEST_DATA.getName(),
+            TestSetEditorFields.TEST_DATA,
             Shortcuts.FieldTestData,
-            TestSetEditorFields.TEST_DATA.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_TEST_DATA,
             Done.UPDATED,
             (project, selectedTestCases, updatedTestCases) -> new BaseValueBulkDialog(project, TestSetEditorFields.TEST_DATA, Bundle.message("bulk.title.test.data"), true, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getTestDataSection,
-            ImmutableList.of()
+            ImmutableList.of(),
+            false
     ),
 
     PRE_CONDITIONS(
-            TestSetEditorFields.PRE_CONDITIONS.getName(),
+            TestSetEditorFields.PRE_CONDITIONS,
             Shortcuts.FieldPreConditions,
-            TestSetEditorFields.PRE_CONDITIONS.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_PRE_CONDITIONS,
             Done.UPDATED,
             (project, selectedTestCases, updatedTestCases) -> new BaseValueBulkDialog(project, TestSetEditorFields.PRE_CONDITIONS, Bundle.message("bulk.title.pre.conditions"), true, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getPreConditionsSection,
-            ImmutableList.of(CORRECTIONS)
+            ImmutableList.of(CORRECTIONS),
+            false
     ),
 
     STEPS(
-            TestSetEditorFields.STEPS.getName(),
+            TestSetEditorFields.STEPS,
             Shortcuts.FieldSteps,
-            TestSetEditorFields.STEPS.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_STEPS,
             Done.UPDATED,
-            (project, selectedTestCases, updatedTestCases) -> new StepsBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
+            (project, selectedTestCases, updatedTestCases) -> new StepsBulkDialog(project, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getStepsSection,
-            ImmutableList.of(CORRECTIONS, ADD, NAVIGATE_TAB, AUTO_COMPLETE)
+            ImmutableList.of(CORRECTIONS, ADD, NAVIGATE_TAB, AUTO_COMPLETE),
+            false
     ),
 
     PRIORITY(
-            TestSetEditorFields.PRIORITY.getName(),
+            TestSetEditorFields.PRIORITY,
             Shortcuts.FieldPriority,
-            TestSetEditorFields.PRIORITY.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_PRIORITY,
             Done.UPDATED,
-            (project, selectedTestCases, updatedTestCases) -> new PriorityBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
+            (project, selectedTestCases, updatedTestCases) -> new PriorityBulkDialog(project, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getPrioritySection,
-            ImmutableList.of(NAVIGATE_ARROWS)
+            ImmutableList.of(NAVIGATE_ARROWS),
+            false
     ),
 
     GROUP(
-            TestSetEditorFields.GROUP.getName(),
+            TestSetEditorFields.GROUP,
             Shortcuts.FieldGroup,
-            TestSetEditorFields.GROUP.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_GROUP,
             Done.UPDATED,
-            (project, selectedTestCases, updatedTestCases) -> new GroupBulkSectionDialog(project, selectedTestCases, updatedTestCases).open(),
+            (project, selectedTestCases, updatedTestCases) -> new GroupBulkDialog(project, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getGroupSection,
-            ImmutableList.of(ADD, AUTO_COMPLETE, NAVIGATE_TAB)
+            ImmutableList.of(ADD, AUTO_COMPLETE, NAVIGATE_TAB),
+            false
     ),
 
     ORDER(
-            TestSetEditorFields.ORDER.getName(),
+            TestSetEditorFields.ORDER,
             Shortcuts.UpdateTestCaseOrder,
-            TestSetEditorFields.ORDER.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_ORDER,
             Done.RE_SORTED,
-            (project, _, _) -> Services.getInstance(project, Notifier.class).softRefuse(project, Bundle.message("update.order.one.at.a.time")),
+            (_, _, _) -> {
+            },
             AbstractTestCaseDialog::getOrderSection,
-            ImmutableList.of()
+            ImmutableList.of(),
+            true
     ),
 
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-194
     REFERENCE(
-            TestSetEditorFields.REFERENCE.getName(),
+            TestSetEditorFields.REFERENCE,
             Shortcuts.FieldReference,
-            TestSetEditorFields.REFERENCE.getIcon(),
             CodeChangeType.NO_CODE_CHANGE,
             Done.UPDATED,
             (project, selectedTestCases, updatedTestCases) -> new BaseValueBulkDialog(project, TestSetEditorFields.REFERENCE, Bundle.message("bulk.title.reference"), true, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getReferenceSection,
-            ImmutableList.of(CORRECTIONS)
+            ImmutableList.of(CORRECTIONS),
+            false
     ),
 
     // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-194
     STATUS(
-            TestSetEditorFields.STATUS.getName(),
+            TestSetEditorFields.STATUS,
             Shortcuts.FieldStatus,
-            TestSetEditorFields.STATUS.getIcon(),
             CodeChangeType.UPDATE_TEST_CASE_STATUS,
             Done.UPDATED,
             (project, selectedTestCases, updatedTestCases) -> new BaseValueBulkDialog(project, TestSetEditorFields.STATUS, Bundle.message("bulk.title.test.case.status"), false, selectedTestCases, updatedTestCases).open(),
             AbstractTestCaseDialog::getTestCaseStatusSection,
-            ImmutableList.of()
+            ImmutableList.of(),
+            false
     );
 
-    private final @NotNull String name;
+    private final @NotNull TestSetEditorFields field;
 
     private final @NotNull Shortcuts shortcut;
-
-    private final @NotNull Icon icon;
 
     private final @NotNull CodeChangeType<TestCase> codeChangeType;
 
@@ -192,9 +187,22 @@ public enum UpdateTestCaseFields implements MenuItem {
 
     private final @NotNull ImmutableList<TestCaseDialogKey> ownKeys;
 
+    // UC-EDITOR-PANEL-006, UC-EDITOR-PANEL-009
+    private final boolean oneAtATime;
+
     // Rule-EDITOR-PANEL-199
     public StatusBarItem @NotNull [] getStatusBarItems() {
         return ownKeys.toArray(StatusBarItem[]::new);
+    }
+
+    @Override
+    public @NotNull String getName() {
+        return field.getName();
+    }
+
+    @Override
+    public @NotNull Icon getIcon() {
+        return field.getIcon();
     }
 
     @Override
@@ -203,14 +211,7 @@ public enum UpdateTestCaseFields implements MenuItem {
     }
 
     @Override
-    public void bindShortcut(final @NotNull JComponent component, final @NotNull Runnable onTrigger) {
-        if (Shortcuts.isNoKey(shortcut.getKey())) return;
-
-        new DumbAwareAction() {
-            @Override
-            public void actionPerformed(final @NotNull AnActionEvent e) {
-                onTrigger.run();
-            }
-        }.registerCustomShortcutSet(shortcut.getCustomShortcut(), component);
+    public @NotNull KeyStroke getKey() {
+        return shortcut.getKey();
     }
 }

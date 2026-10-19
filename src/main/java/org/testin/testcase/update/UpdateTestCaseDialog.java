@@ -41,7 +41,7 @@ public class UpdateTestCaseDialog extends AbstractTestCaseDialog {
     public UpdateTestCaseDialog(final @NotNull Project project, final @NotNull TestCase existingTestCase, final @NotNull UpdateTestCaseFields selectedField, final @NotNull Consumer<@NotNull TestCase> onSave) {
         super(project, existingTestCase, onSave, TestCaseDialogKey.SAVE, TestCaseDialogKey.CANCEL);
 
-        // Rule-CODEGEN-001
+        // Rule-CODEGEN-079
         descriptionSection.compareAgainst(() -> testCases
                 .getTestCasesForTestSet(existingTestCase.getParent().getPath()).stream()
                 .filter(sibling -> !sibling.getUuid().equals(existingTestCase.getUuid()))
