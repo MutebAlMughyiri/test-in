@@ -2,7 +2,7 @@
 
 # How Testin is put together
 
-The plugin is 723 classes in 35 top-level packages. This page is the map: which
+The plugin is 724 classes in 35 top-level packages. This page is the map: which
 packages are layers and which are side modules, the four rules the whole thing
 is built on, and two operations traced class by class — because everything else
 is a variation on one of them.

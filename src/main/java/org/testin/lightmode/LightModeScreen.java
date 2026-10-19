@@ -294,23 +294,23 @@ final class LightModeScreen {
         frame.closeQuietly();
     }
 
+    // UC-EDITOR-PANEL-046, Rule-INTERNAL-054
     private void bindKeys() {
+        testCaseKeys().forEach(key -> key.bind().run());
+        commitKeys().forEach(key -> key.bind().run());
+
+        frame.onClosing(this::close);
+    }
+
+    private void bindEscape() {
         frame.bind(Shortcuts.Escape.getKey(), "testin.lightMode.escape", this::escape);
-        frame.bind(Shortcuts.Enter.getKey(), "testin.lightMode.commit", this::saveCapture);
+    }
+
+    private void bindDetails() {
         final @NotNull KeyStroke details = Shortcuts.ToggleDetails.getKey();
         frame.bind(details, "testin.lightMode.toggleDetails", this::toggleDetailsOnce);
         frame.bind(KeyStroke.getKeyStroke(details.getKeyCode(), details.getModifiers(), true), "testin.lightMode.releaseDetails", () -> detailsKeyHeld = false);
         frame.bind(KeyStroke.getKeyStroke(details.getKeyCode(), 0, true), "testin.lightMode.releaseDetailsAlone", () -> detailsKeyHeld = false);
-
-        for (final RunItemStatus runItemStatus : RunItemStatus.values()) {
-            if (!runItemStatus.isJudged()) continue;
-
-            frame.bind(runItemStatus.getShortcut(), "testin.lightMode." + runItemStatus.name(), () -> judge(runItemStatus));
-        }
-
-        KEYED.forEach(button -> ShownTestCaseAction.bind(editor.getProject(), button, this::testCaseForButtons, (action, testCase) -> action.executeFor(editor, testCase), frame.rootPane()));
-
-        frame.onClosing(this::close);
     }
 
     private void bindWheel() {
@@ -417,7 +417,7 @@ final class LightModeScreen {
 
         ActionSystem.perform(frame.rootPane(), ActionPlaces.UNKNOWN, ActionUiKind.NONE, () -> underTestCase.add(capture.map(form -> (JComponent) form).orElse(details), BorderLayout.CENTER));
 
-        statusBar.updateItems(capture.isPresent() ? commitKeys() : testCaseKeys());
+        statusBar.updateItems((capture.isPresent() ? commitKeys() : testCaseKeys()).stream().map(LightModeKey::shown).toArray(StatusBarItem[]::new));
 
         applyParts();
     }
@@ -610,19 +610,20 @@ final class LightModeScreen {
         return strip;
     }
 
-    private StatusBarItem @NotNull [] testCaseKeys() {
-        final @NotNull List<StatusBarItem> statusBarItems = new ArrayList<>();
-        statusBarItems.add(StatusBarShortcut.hint(Shortcuts.ToggleDetails.getShortcutText(), Bundle.message("shortcut.details")));
-        statusBarItems.add(StatusBarShortcut.hint(Shortcuts.Escape.getShortcutText(), Bundle.message("shortcut.close")));
+    // UC-EDITOR-PANEL-046, Rule-INTERNAL-054
+    private @NotNull List<LightModeKey> testCaseKeys() {
+        final @NotNull List<LightModeKey> keys = new ArrayList<>();
+        keys.add(new LightModeKey(StatusBarShortcut.hint(Shortcuts.ToggleDetails.getShortcutText(), Bundle.message("shortcut.details")), this::bindDetails));
+        keys.add(new LightModeKey(StatusBarShortcut.hint(Shortcuts.Escape.getShortcutText(), Bundle.message("shortcut.close")), this::bindEscape));
 
         for (final RunItemStatus runItemStatus : RunItemStatus.values()) {
             if (runItemStatus.isJudged())
-                statusBarItems.add(StatusBarShortcut.hint(keyOf(runItemStatus), runItemStatus.getLabel()));
+                keys.add(new LightModeKey(StatusBarShortcut.hint(keyOf(runItemStatus), runItemStatus.getLabel()), () -> frame.bind(runItemStatus.getShortcut(), "testin.lightMode." + runItemStatus.name(), () -> judge(runItemStatus))));
         }
 
-        KEYED.forEach(button -> statusBarItems.add(keyHint(button)));
+        KEYED.forEach(button -> keys.add(new LightModeKey(keyHint(button), () -> ShownTestCaseAction.bind(editor.getProject(), button, this::testCaseForButtons, (action, testCase) -> action.executeFor(editor, testCase), frame.rootPane()))));
 
-        return statusBarItems.toArray(new StatusBarItem[0]);
+        return keys;
     }
 
     // UC-EDITOR-PANEL-046, Rule-EDITOR-PANEL-245
@@ -634,11 +635,12 @@ final class LightModeScreen {
         return StatusBarShortcut.hint(Declared.shortcutText(button.getActionId()), now.getTooltip());
     }
 
-    private StatusBarItem @NotNull [] commitKeys() {
-        return new StatusBarItem[]{
-                StatusBarShortcut.hint(Shortcuts.Enter.getShortcutText(), Bundle.message("shortcut.save.and.next")),
-                StatusBarShortcut.hint(Shortcuts.Escape.getShortcutText(), Bundle.message("shortcut.cancel")),
-                StatusBarShortcut.corrections(),
-                StatusBarShortcut.pasteScreenshot()};
+    // UC-EDITOR-PANEL-046, Rule-INTERNAL-054
+    private @NotNull List<LightModeKey> commitKeys() {
+        return List.of(
+                new LightModeKey(StatusBarShortcut.hint(Shortcuts.Enter.getShortcutText(), Bundle.message("shortcut.save.and.next")), () -> frame.bind(Shortcuts.Enter.getKey(), "testin.lightMode.commit", this::saveCapture)),
+                new LightModeKey(StatusBarShortcut.hint(Shortcuts.Escape.getShortcutText(), Bundle.message("shortcut.cancel")), this::bindEscape),
+                LightModeKey.answeredByTheForm(StatusBarShortcut.corrections()),
+                LightModeKey.answeredByTheForm(StatusBarShortcut.pasteScreenshot()));
     }
 }
