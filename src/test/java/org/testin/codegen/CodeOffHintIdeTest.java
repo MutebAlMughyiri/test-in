@@ -40,7 +40,7 @@ public class CodeOffHintIdeTest extends AbstractIdeTest {
 
     // Rule-CODEGEN-082, Rule-INTERNAL-127
     public void testCodeOffIsAHintWithSaveToTestinYmlAndNoMessage() {
-        final @NotNull List<String> said = Said.during(getProject(), () -> assertFalse("code is on with no testin.yml", CodeOn.isOnOrHinted(getProject())));
+        final @NotNull List<String> said = Said.during(getProject(), () -> assertFalse("code is on with no testin.yml", CodeOn.isOnOrHinted(getProject(), CodeChangeRegistry.need(getProject()))));
 
         assertEquals("a message was raised while code updated", List.of(), said);
         assertEquals("code off did not wait as one hint", 1, waiting().size());
@@ -50,7 +50,7 @@ public class CodeOffHintIdeTest extends AbstractIdeTest {
 
     // Rule-CODEGEN-082, Rule-INTERNAL-127
     public void testAPressedKeyStillAnswersAndTheHintWaitsBesideIt() {
-        final @NotNull List<String> said = Said.during(getProject(), () -> assertTrue(CodeOn.isOffAndWarned(getProject())));
+        final @NotNull List<String> said = Said.during(getProject(), () -> assertTrue(CodeOn.isOffAndWarned(getProject(), CodeChangeRegistry.need(getProject()))));
 
         assertEquals("the key was not answered", 1, said.size());
         assertEquals("code off did not wait as one hint", 1, waiting().size());
@@ -69,7 +69,7 @@ public class CodeOffHintIdeTest extends AbstractIdeTest {
         final @NotNull BoundTestProject bound = Services.getInstance(getProject(), BoundTestProject.class);
         try {
             bound.choose("Shop");
-            assertFalse("code is on for a test project testin.yml does not name", CodeOn.isOnOrHinted(getProject()));
+            assertFalse("code is on for a test project testin.yml does not name", CodeOn.isOnOrHinted(getProject(), CodeChangeRegistry.need(getProject())));
             assertEquals(1, waiting().size());
 
             bound.choose("NAFATH");

@@ -26,7 +26,7 @@ import com.intellij.psi.search.GlobalSearchScope;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.codegen.JavaSourceRoot;
+import org.testin.codegen.TestSourceRoot;
 
 import java.util.List;
 import java.util.Optional;
@@ -47,7 +47,7 @@ public final class GeneratedClass {
         final @NotNull Optional<PsiClass> existing = byName(project, path);
         if (existing.isPresent()) return existing;
 
-        JavaSourceRoot.findOrWarn(project, className).flatMap(root -> GeneratedSourceFiles.classFile(root, packageList, className))
+        TestSourceRoot.findOrWarn(project, className + ".java").flatMap(root -> GeneratedSourceFiles.classFile(root, packageList, className))
                 .ifPresent(written -> commit(project, written));
 
         return byName(project, path);

@@ -24,6 +24,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.util.concurrency.ThreadingAssertions;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.CodeChangeType;
+import org.testin.codegen.CodeChangeRegistry;
 import org.testin.codegen.CodeOn;
 import org.testin.codegen.NodeCode;
 import org.testin.creator.CreateFolderNode;
@@ -99,7 +100,7 @@ record ImportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
 
     // UC-SHARE-005, UC-SHARE-006
     private void executeImportWriteAction(final @NotNull AbstractNode selectedNode, final @NotNull Map<String, List<TestCase>> selectedTestCasesBySheet) {
-        final boolean generateCode = CodeOn.isOnOrHinted(project);
+        final boolean generateCode = CodeOn.isOnOrHinted(project, CodeChangeRegistry.need(project));
 
         final int total = selectedTestCasesBySheet.values().stream().mapToInt(List::size).sum();
 

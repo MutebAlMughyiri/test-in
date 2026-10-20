@@ -48,7 +48,7 @@ public class AutomateTestCaseAction extends AbstractAnyProjectAction {
         if (DumbService.isDumb(project)) return 0;
 
         try {
-            return ApplicationManager.getApplication().runReadAction((Computable<Integer>) () -> TestMethodCode.available().methodsFor(project, asked).size());
+            return ApplicationManager.getApplication().runReadAction((Computable<Integer>) () -> TestMethodCode.available(project).methodsFor(project, asked).size());
         } catch (final Exception ex) {
             TestinLogger.warn("Could not count the methods Automate Test Case wrote: " + FailureText.of(ex));
             return 0;
@@ -101,7 +101,7 @@ public class AutomateTestCaseAction extends AbstractAnyProjectAction {
     // UC-CODEGEN-005, Rule-CODEGEN-071
     @Override
     protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
-        if (CodeOn.grayedWithReason(this, e, project)) return;
+        if (CodeOn.grayedWithReason(this, e, project, CodeChangeRegistry.need(project))) return;
 
         final @NotNull List<TestCase> selected = TestinDataKeys.selectedTestCases(e);
         if (selected.isEmpty()) {

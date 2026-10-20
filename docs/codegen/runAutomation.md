@@ -91,6 +91,12 @@ The code runs, and Testin writes down whether each test case passed.
   2*... under the same invocation. A start after a passed or failed result is
   the next invocation, numbered *Invocation 1*, *Invocation 2*... only when the
   method ran more than once; a data provider row is an invocation like any other.
+- **Rule-CODEGEN-120** — In a Robot Framework test project, Run Test Method and
+  Run Tests run Robot Framework with the code project's interpreter, choosing
+  each test by its test case UUID tag, and show it in the Run window. Each run
+  item is recorded from Robot's output when the run ends: PASS is Passed, FAIL
+  is Failed with Robot's message, and a skipped test is recorded as
+  Rule-CODEGEN-075 says. No Robot plugin is needed.
 
 ## The four ways in
 

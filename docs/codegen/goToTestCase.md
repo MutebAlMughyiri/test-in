@@ -36,10 +36,12 @@ There is no key for this. The mark is in the gutter beside the method.
   renamed, moved or removed, **Automate Test Case**, **Navigate to Test Method**
   and **Run Tests** are gray and say why, and no gutter icon or automated mark
   is shown. **Save to testin.yml**, in the Testin panel, turns code on.
-- **Rule-CODEGEN-028** — The mark is drawn beside the identity inside the
-  method's annotation, on the right of the gutter.
-- **Rule-CODEGEN-029** — The mark is drawn only for a TestNG test whose identity
-  Testin recognizes.
+- **Rule-CODEGEN-028** — The mark is drawn beside the identity, on the right
+  of the gutter: inside a Java method's annotation, or on a Robot test's
+  `[Tags]` line.
+- **Rule-CODEGEN-029** — The mark is drawn only for a test whose identity
+  Testin recognizes: a TestNG test's `testName`, or the first tag of a Robot
+  test (Rule-CODEGEN-118).
 - **Rule-CODEGEN-030** — The mark is drawn while the IDE is still indexing, and
   the jump waits for indexing to finish.
 - **Rule-CODEGEN-070** — The mark opens the view panel on the test case and
@@ -49,6 +51,10 @@ There is no key for this. The mark is in the gutter beside the method.
 - **Rule-CODEGEN-069** — Clicking the mark of a method whose test case is gone
   says so, naming the method. Generated code outlives the test case it was
   written from, so this is an ordinary answer rather than a failure.
+- **Rule-CODEGEN-118** — In a `.robot` file the mark is drawn on a test's
+  `[Tags]` when its first tag is a test case UUID, whether Testin wrote the tag
+  or a tester did. It needs no Robot plugin: it is drawn whether the file is
+  opened by RobotCode, by another Robot plugin, or as plain text.
 
 ## The screen
 
@@ -63,6 +69,20 @@ There is no key for this. The mark is in the gutter beside the method.
 
 1. **The mark** — on the line holding the identity, not the line holding the
    method name. Its tooltip reads **View Test Case Details**.
+
+In a Robot Framework suite file the mark sits on the test's `[Tags]` line, when
+its first tag is a test case UUID:
+
+```
+┌────────────────────────────────────────────────────────────────────────────┐
+│      2   Pay with a saved card                                             │
+│  [*] 3       [Tags]    3f2a05c1-8b44-4e2a-9f31-0c7d6b1a9c1b    smoke        │
+│      4       # TODO: Auto-generated test steps for Pay with a saved card   │
+└────────────────────────────────────────────────────────────────────────────┘
+```
+
+2. **The Robot mark** — on the `[Tags]` line, with the same tooltip and the same
+   click. A test the tester tagged by hand gets it too (Rule-CODEGEN-118).
 
 ## Main flow
 
@@ -82,6 +102,9 @@ still does not move (Rule-VIEW-PANEL-063).
 
 **If the method is not a TestNG test** — no mark is drawn.
 
+**If a Robot test's first tag is not a test case UUID** — no mark is drawn on
+its `[Tags]` (Rule-CODEGEN-118).
+
 **If the test case behind the identity no longer exists** — nothing opens, and
 the message names the method: *logInWithAValidUser was generated from a test
 case that is gone*. It fades (Rule-CODEGEN-069).
@@ -89,7 +112,7 @@ case that is gone*. It fades (Rule-CODEGEN-069).
 **If anything else fails** — a message titled **Test Case Not Opened** reads *Could not find test case:* and then the
 reason.
 
-**If the IDE has no Java plugin** — no mark is drawn anywhere.
+**If the IDE has no Java plugin** — no mark is drawn in Java code.
 
 **If testin.yml does not name the open test project** — no mark is drawn (Rule-CODEGEN-082). The marks come back when
 Testin reads the file again: after **Save to testin.yml**, after **Refresh** in the panel's title bar, and after

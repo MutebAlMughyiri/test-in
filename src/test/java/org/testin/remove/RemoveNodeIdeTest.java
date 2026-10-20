@@ -25,7 +25,7 @@ import org.testin.Await;
 import org.testin.Said;
 import org.testin.TreeGesture;
 import org.testin.codegen.Fqcn;
-import org.testin.codegen.JavaSourceRoot;
+import org.testin.codegen.TestSourceRoot;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.recyclebin.RecycleBin;
 import org.testin.model.node.AbstractNode;
@@ -157,8 +157,8 @@ public class RemoveNodeIdeTest extends AbstractCodegenIdeTest {
     }
 
     private @NotNull Optional<VirtualFile> classFileOf(final @NotNull TestSetNode testSet) {
-        final @NotNull VirtualFile testSourceRoot = JavaSourceRoot.find(getProject()).orElseThrow(() -> new AssertionError("the project has no test source folder"));
-        return Fqcn.classFileOf(testSet).flatMap(relativePath -> JavaSourceRoot.under(testSourceRoot, relativePath));
+        final @NotNull VirtualFile testSourceRoot = TestSourceRoot.find(getProject()).orElseThrow(() -> new AssertionError("the project has no test source folder"));
+        return Fqcn.classFileOf(testSet).flatMap(relativePath -> TestSourceRoot.under(testSourceRoot, relativePath));
     }
 
     private @NotNull String codeOf(final @NotNull TestSetNode testSet) {

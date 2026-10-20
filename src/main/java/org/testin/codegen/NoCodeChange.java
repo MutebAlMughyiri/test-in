@@ -28,7 +28,7 @@ public final class NoCodeChange<T> implements CodeChange<T> {
     // UC-CODEGEN-004
     @Override
     public void execute(final @NotNull Project project, final @NotNull T payload) {
-        TestinLogger.debug(nodeType + " generates no Java code");
+        TestinLogger.debug(nodeType + " generates no automation code");
     }
 
     @Override

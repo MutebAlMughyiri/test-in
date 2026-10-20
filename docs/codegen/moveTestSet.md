@@ -65,7 +65,7 @@ names the class and says what to do (Rule-CODEGEN-055).
 
 **If the class cannot be found** — nothing is moved, and only the log says so.
 
-**If the code project has no Java test source folder** — nothing is moved, and
+**If the code project has no test source folder** — nothing is moved, and
 nothing is said.
 
 **If the IDE has no Java plugin** — nothing is moved.

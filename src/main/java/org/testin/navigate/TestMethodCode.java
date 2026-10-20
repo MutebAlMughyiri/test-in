@@ -19,35 +19,34 @@ package org.testin.navigate;
 import com.intellij.openapi.extensions.ExtensionPointName;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
+import org.testin.util.Bundle;
+import org.testin.config.AutomationNeed;
+import org.testin.config.AutomationLanguage;
+import org.testin.config.LanguageContributor;
 import org.testin.model.TestCase;
 import org.testin.util.FromContentModule;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
-public interface TestMethodCode {
+public interface TestMethodCode extends LanguageContributor {
     @NotNull ExtensionPointName<TestMethodCode> EP = ExtensionPointName.create("org.testin.codeNavigation");
 
-    static @NotNull TestMethodCode available() {
-        return EP.getExtensionList().stream()
-                .findFirst()
-                .orElseGet(NoTestMethodCode::new);
+    // Rule-CODEGEN-005, Rule-CODEGEN-117
+    static @NotNull AutomationNeed need(final @NotNull Project project) {
+        return AutomationLanguage.of(project).toWorkOnCode(EP, Bundle.message("automation.work.navigate"));
+    }
+
+    // Rule-CODEGEN-116
+    static @NotNull TestMethodCode available(final @NotNull Project project) {
+        final @NotNull AutomationLanguage language = AutomationLanguage.of(project);
+        return language.contributor(EP).orElseGet(() -> new NoTestMethodCode(language));
     }
 
     @FromContentModule
     void toCode(final @NotNull Project project, final @NotNull TestCase testCase);
 
     @FromContentModule
-    @NotNull Map<UUID, List<String>> methodFqcnsOf(final @NotNull Project project, final @NotNull List<TestCase> testCases);
-
-    @FromContentModule
     @NotNull Map<UUID, Boolean> methodsFor(final @NotNull Project project, final @NotNull List<TestCase> testCases);
-
-    @FromContentModule
-    @NotNull Optional<String> fillBody(@NotNull Project project, @NotNull TestCase testCase, @NotNull String statements);
-
-    @FromContentModule
-    @NotNull Optional<String> replaceBody(@NotNull Project project, @NotNull TestCase testCase, @NotNull String statements);
 }

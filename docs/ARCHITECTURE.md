@@ -2,7 +2,7 @@
 
 # How Testin is put together
 
-The plugin is 724 classes in 35 top-level packages. This page is the map: which
+The plugin is 735 classes in 35 top-level packages. This page is the map: which
 packages are layers and which are side modules, the four rules the whole thing
 is built on, and two operations traced class by class — because everything else
 is a variation on one of them.
@@ -49,10 +49,13 @@ explorer          editor           view          lightmode      the surfaces
    codegen   git   report   importexport   runner
 ```
 
-Three content modules sit outside this entirely, loaded only where their
-platform plugin is: `testin-java` writes and reconciles the generated Java,
-`testin-testng` starts a TestNG execution, and `testin-apimodel` turns an API
-call's JSON into a request class and a response record. The core declares
+Four content modules sit outside this entirely. Three are loaded only where
+their platform plugin is: `testin-java` writes and reconciles the generated
+Java, `testin-testng` starts a TestNG execution, and `testin-apimodel` turns an
+API call's JSON into a request class and a response record. `testin-robot`
+needs no plugin and loads everywhere, since it reads a `.robot` file as text;
+its gutter mark is registered for every language and looks only at `.robot`
+files. The core declares
 extension points and never learns whether anything answered — see [The content
 modules](#the-content-modules).
 
@@ -264,8 +267,9 @@ package can reach the writer at all.
 
 **The exempt packages**, which may open files directly: `codegen`, `config`,
 `git`, `importexport`, `report`, `setting`, `logger`, `bug`. `codegen` includes
-the Java module's `org.testin.java.codegen`, which writes the generated classes.
-`ArchitectureTest` reads all three modules and allows one class besides:
+the Java module's `org.testin.java.codegen`, which writes the generated classes,
+and the Robot Framework module's `org.testin.robot`, which writes the suite
+files. `ArchitectureTest` reads every module and allows one class besides:
 `ui.framework.TextInput`, which asks the VFS which folder a file chooser opens
 at, and that is never test data.
 
@@ -337,18 +341,18 @@ A tester edits a cell in the grid and presses Enter. Ten steps later the JSON on
 disk is either changed or byte-identical, and which one it is decides whether
 anything else happens at all.
 
-| #  | Where                                                    | What happens                                                                                                                                 |
-|----|----------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
-| 1  | `editor/grid/TestSetGridEditListener`                    | Reads what was typed, parses it for the column's type, and compares it to what the test case already held. **Unchanged, and it stops here.** |
-| 2  | `editor/grid/TestSetGridEditListener.persistAndGenerate` | Moves off the EDT with `executeOnPooledThread`, because the codegen in step 10 schedules its own write commands.                             |
-| 3  | `indexer/TestCases.putTestCase`                          | The public door. Returns a boolean: did this have anything to save.                                                                          |
-| 4  | `indexer/IndexerDataStore.putTestCase`                   | Delegates the write, then stamps the **set's** marker as modified — but only if the write happened.                                          |
-| 5  | `indexer/TestCaseStore.put`                              | The funnel every save arrives at: the update dialog, a grid cell, the details panel, a paste.                                                |
-| 6  | `indexer/TestDataFiles.alreadyHolds`                     | Serializes the test case and compares the bytes to the file. **Identical, and nothing below runs.**                                          |
-| 7  | `indexer/TestCaseStore.put`                              | Stamps the audit — `touch` if the index already knows this UUID, `stampCreated` if it does not.                                              |
-| 8  | `indexer/TestCaseStore.store`                            | Updates the two maps, then writes.                                                                                                           |
-| 9  | `indexer/TestDataFiles.write`                            | Refuses a zero-byte write, claims the path in `OwnWrites` **before** `Files.write`, writes, then records what landed.                        |
-| 10 | back in `TestSetGridEditListener`                        | The field's `CodeChangeType` regenerates the test method, and `TestCaseSnapshot.record` files the undo entry.                                |
+| #   | Where                                                    | What happens                                                                                                                                 |
+|-----|----------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
+| 1   | `editor/grid/TestSetGridEditListener`                    | Reads what was typed, parses it for the column's type, and compares it to what the test case already held. **Unchanged, and it stops here.** |
+| 2   | `editor/grid/TestSetGridEditListener.persistAndGenerate` | Moves off the EDT with `executeOnPooledThread`, because the codegen in step 10 schedules its own write commands.                             |
+| 3   | `indexer/TestCases.putTestCase`                          | The public door. Returns a boolean: did this have anything to save.                                                                          |
+| 4   | `indexer/IndexerDataStore.putTestCase`                   | Delegates the write, then stamps the **set's** marker as modified — but only if the write happened.                                          |
+| 5   | `indexer/TestCaseStore.put`                              | The funnel every save arrives at: the update dialog, a grid cell, the details panel, a paste.                                                |
+| 6   | `indexer/TestDataFiles.alreadyHolds`                     | Serializes the test case and compares the bytes to the file. **Identical, and nothing below runs.**                                          |
+| 7   | `indexer/TestCaseStore.put`                              | Stamps the audit — `touch` if the index already knows this UUID, `stampCreated` if it does not.                                              |
+| 8   | `indexer/TestCaseStore.store`                            | Updates the two maps, then writes.                                                                                                           |
+| 9   | `indexer/TestDataFiles.write`                            | Refuses a zero-byte write, claims the path in `OwnWrites` **before** `Files.write`, writes, then records what landed.                        |
+| 10  | back in `TestSetGridEditListener`                        | The field's `CodeChangeType` regenerates the test method, and `TestCaseSnapshot.record` files the undo entry.                                |
 
 **Why the bytes are identical.** Step 6 puts the rule's question in the rule's
 own terms: would this write leave the file the same. It has to be asked as
@@ -383,28 +387,27 @@ it (#164, #165).
 The tester right-clicks a test set and picks Run Tests. The plugin does not know
 how to run anything; a content module does.
 
-| #  | Where                                                                            | What happens                                                                                                                                                                                                                                                         |
-|----|----------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 1  | `runner/ExecuteTestsAction`                                                      | Asks the selected node which gesture this is. A node that *holds* test cases hands them straight to the runner; a **test run** is opened in its editor first, because a run item status reaches a named test run only through the editor that claimed the test case. |
-| 2  | `runner/ExecuteTestCases.run`                                                    | Refuses if the TestNG plugin is absent, drops the test cases already running, and starts what is left **as one execution** — one compile and one JVM, not twelve. Notifies once, with a count.                                                                       |
-| 3  | `runner/AutomationExecutor.available()`                                          | The extension point `org.testin.testRunners`. Empty in an IDE where nothing can run — an answer, not a missing one.                                                                                                                                                  |
-| 4  | `testin-testng/TestNGRunner.run`                                                 | Finds each test case's generated method as a `PsiClass`, reports the ones with no generated code, and builds a `TestNGConfiguration` whose pattern set names class and method.                                                                                       |
-| 5  | `runner/AutomationExecution.launch`                                                  | Hands the configuration to the platform and remembers which test cases this environment covers, so a stop knows what to put back.                                                                                                                                    |
-| 6  | `runner/AutomationExecution.starting`                                                | Broadcasts each test case as running before the process exists, so the cards change at the click rather than at the first report.                                                                                                                                    |
-| 7  | the platform                                                                     | Compiles, starts a JVM, runs TestNG.                                                                                                                                                                                                                                 |
-| 8  | `testin-testng/TestNGEventRelay`                                                 | Declared in the TestNG module's descriptor as a listener on `SMTRunnerEventsListener`, so it exists only where TestNG does. Turns each started and finished event into a `AutomationExecutionReported.broadcast`.                                                        |
-| 9  | `runner/AutomationExecutionRecorder.record`                                          | On the EDT. The test name **is** the test case's UUID, because that is what Testin named the generated method — so there is nothing to look up. A name that is not a UUID is nobody's, and is logged.                                                                |
-| 10 | `runner/AutomationExecutionRecorder.report`                                          | Decides what the report means: a test case the tester stopped reports itself failed, and that is not a failure. Records the run item status against the **UUID**, then tells the surfaces.                                                                           |
-| 11 | `editor/testset/TestSetEditor`, `editor/testrun/TestRunEditor`, `view/ViewPanel` | Repaint.                                                                                                                                                                                                                                                             |
+| #   | Where                                                                            | What happens                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+|-----|----------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1   | `runner/ExecuteTestsAction`                                                      | Asks the selected node which gesture this is. A node that *holds* test cases hands them straight to the runner; a **test run** is opened in its editor first, because a run item status reaches a named test run only through the editor that claimed the test case.                                                                                                                                                                            |
+| 2   | `runner/ExecuteTestCases.run`                                                    | Refuses if the test project's language cannot run here (for Java, if the TestNG plugin is absent), drops the test cases already running, and marks the rest as running through `AutomationExecution.starting`, so the cards change at the click rather than at the first report. Hands them on **as one execution** - one compile and one JVM, not twelve.                                                                                      |
+| 3   | `runner/AutomationExecutor.available(project)`                                   | The extension point `org.testin.testRunners`, asked for the runner of the test project's language. Empty where nothing can run that language - an answer, not a missing one.                                                                                                                                                                                                                                                                    |
+| 4   | `testin-testng/TestNGRunner.run`                                                 | Finds each test case's generated method as a `PsiClass`, hands the ones with no generated code to `AutomationExecution.noGeneratedCode`, and fills the `TestNGConfiguration` that `AutomationExecution.configurationFor` names, with a pattern set naming class and method. `testin-robot/RobotRunner` does the same for a Robot test: its suite file is found by its first tag, and its configuration runs `robot --include <test case UUID>`. |
+| 5   | `runner/AutomationExecution.launch`                                              | Makes the configuration the selected one, notifies once with a count, hands it to the platform and remembers which test cases this environment covers, so a stop knows what to put back.                                                                                                                                                                                                                                                        |
+| 6   | the platform                                                                     | Compiles, starts a JVM and runs TestNG - or starts the project's interpreter and runs Robot Framework.                                                                                                                                                                                                                                                                                                                                          |
+| 7   | `testin-testng/TestNGEventRelay`                                                 | Declared in the TestNG module's descriptor as a listener on `SMTRunnerEventsListener`, so it exists only where TestNG does. Turns each started and finished event into an `AutomationExecutionReported.broadcast`. For Robot, `testin-robot/RobotOutput` reads `output.xml` as the process ends, before the platform says so, and broadcasts each test the same way.                                                                            |
+| 8   | `runner/AutomationExecutionRecorder.record`                                      | On the EDT. The test name **is** the test case's UUID, because that is what Testin named the generated method and what a Robot test carries as a tag - so there is nothing to look up. A name that is not a UUID is nobody's, and is logged.                                                                                                                                                                                                    |
+| 9   | `runner/AutomationExecutionRecorder.report`                                      | Decides what the report means: a test case the tester stopped reports itself failed, and that is not a failure. Records the run item status against the **UUID**, then tells the surfaces.                                                                                                                                                                                                                                                      |
+| 10  | `editor/testset/TestSetEditor`, `editor/testrun/TestRunEditor`, `view/ViewPanel` | Repaint.                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 
-**One recorder per project, not one per surface.** Step 10 runs even when
+**One recorder per project, not one per surface.** Step 9 runs even when
 nothing is open. Each surface used to subscribe and record for itself, so the
 model was updated once per open surface and not at all when none was open.
 Running a test set from the tree in a session where no editor had been opened
 stored no run item status at all. Every card afterward showed no result for an
 execution that had passed (#66).
 
-The order in step 10 is guaranteed rather than hoped for. A surface asked to
+The order in step 9 is guaranteed rather than hoped for. A surface asked to
 redraw reads what is running from `AutomationExecution`, so it must not be told before
 `AutomationExecution` has been. One subscriber that records and then calls the
 surfaces gives that; two independent subscriptions would have run in whichever
@@ -423,20 +426,49 @@ The core plugin runs in every IDE. Anything that needs another plugin's classes
 lives in a content module, which the platform loads only where that plugin is
 present.
 
-| Module            | Needs             | Contributes                                                                                                                                                                                                                                                 |
-|-------------------|-------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `testin-java`     | the Java plugin   | Writing, moving, renaming and reconciling the generated test classes and methods, and the gutter mark beside a generated method                                                                                                                             |
-| `testin-testng`   | the TestNG plugin | `TestNGRunner`, the one implementation of `runner/AutomationExecutor`                                                                                                                                                                                       |
-| `testin-apimodel` | the Java plugin   | **New → Testin API Model from JSON** on a package: the request as a Lombok class and the response as a record (UC-CODEGEN-022). It answers `codegen/ApiModelMaker`, and reaches the core otherwise only through its public classes and the dialog framework |
+| Module            | Needs                               | Contributes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+|-------------------|-------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `testin-java`     | the Java plugin                     | Writing, moving, renaming and reconciling the generated test classes and methods, and the gutter mark beside a generated method. `TestMethods` finds a test case's generated method, for navigation, the automated marks, an agent's body (`JavaTestBodyWriter`) and TestNG                                                                                                                                                                                                                                                                                                                          |
+| `testin-testng`   | the TestNG plugin and `testin-java` | `TestNGRunner`, Java's `runner/AutomationExecutor`. It runs the methods `testin-java`'s `TestMethods` names, so its descriptor declares that module                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `testin-apimodel` | the Java plugin                     | **New → Testin API Model from JSON** on a package: the request as a Lombok class and the response as a record (UC-CODEGEN-022). It answers `codegen/ApiModelMaker`, and reaches the core otherwise only through its public classes and the dialog framework                                                                                                                                                                                                                                                                                                                                          |
+| `testin-robot`    | nothing                             | Robot Framework's answer to every point: `RobotCodeChangeRegistry` writes and keeps a suite file per test set and a test per test case (Rule-CODEGEN-121 to 128), `RobotTestMethodCode` finds a test by its first tag in any `.robot` file (Rule-CODEGEN-119), `RobotRunner` runs it with the project's interpreter and records each run item from Robot's `output.xml` (Rule-CODEGEN-120), and its `TestMethodGutter` draws the mark beside `[Tags]` for every language, so it needs no Robot plugin (Rule-CODEGEN-118). It edits a `.robot` file as text through `RobotSuite` and `RobotSuiteText` |
 
 `testin-apimodel` answers `ApiModelMaker`, whose action `plugin.xml` declares with
 every other action. With no Java plugin the action is gray and says why, as
 every code action is (Rule-CODEGEN-082).
 
-The core declares the extension point and never learns whether anything answered:
-`AutomationExecutor.available()` returns a runner that logs and starts nothing when the
-list is empty. A module running a different framework on a different IDE
-contributes to the same point, and nothing in the core changes.
+The core declares one extension point for each kind of work on code, and never
+learns whether anything answered:
+
+| Point            | Interface                      | The work                                                               |
+|------------------|--------------------------------|------------------------------------------------------------------------|
+| `codeGenerators` | `codegen/CodeChangeRegistry`   | Writing the code as the tree changes                                   |
+| `codeNavigation` | `navigate/TestMethodCode`      | Finding it: Navigate to Test Method and the automated marks            |
+| `testBodies`     | `codegen/agent/TestBodyWriter` | Writing an agent's body, only for a language whose prompt it can write |
+| `testRunners`    | `runner/AutomationExecutor`    | Running it, through `runner/AutomationExecution`                       |
+| `apiModelMakers` | `codegen/ApiModelMaker`        | Testin API Model from JSON                                             |
+
+Each point is asked for the contributor of the test project's language, which
+`config/AutomationLanguage` reads from the code project's interpreter, its
+project SDK (Rule-CODEGEN-116). Every contributor says its language with
+`LanguageContributor.language()`; there is no default, so one language's work
+can never be taken for another's. Where a language has none, the finder answers
+a stand-in that finds nothing and the other points answer empty, and
+`config/AutomationNeed` grays the work and says why (Rule-CODEGEN-117). The
+gutter mark is the same shape: `navigate/AbstractTestCaseGutter` owns the mark
+and its click, and each language's `TestMethodGutter` says only where its test
+cases are.
+
+**Adding a language** - .NET is next - therefore changes nothing in the core but
+one constant in `AutomationLanguage`, its interpreter and its plugins. The rest
+is the new module: one `include` in `settings.gradle.kts`, one `<module>` line
+in `plugin.xml`, its folders in `.idea/scopes/Inspected.xml` so the inspection
+reads it, and the module's own descriptor contributing to the points it
+supports. A module's code writer is built from `codegen/writer`: `CodeChangeBinding`
+maps each change to a method, `CodeCommand` makes it one undoable command, and
+`KeptTestCode` with `RemovedTestCodeFile` keep a removed test for undo and for the
+recycle bin. Every structure test, the quick gate and the build read the modules
+from `settings.gradle.kts` (#483).
 
 ---
 

@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package org.testin.java.codegen.method;
+package org.testin.codegen.writer;
 
 import com.intellij.openapi.components.Service;
-import com.intellij.psi.PsiMethod;
-import com.intellij.psi.PsiWhiteSpace;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCase;
+import org.testin.util.FromContentModule;
 
 import java.util.Map;
 import java.util.Optional;
@@ -28,17 +27,18 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service(Service.Level.PROJECT)
-public final class KeptTestMethods {
+public final class KeptTestCode {
     private final @NotNull Map<UUID, String> byTestCaseUuid = new ConcurrentHashMap<>();
 
     // UC-CODEGEN-014, Rule-CODEGEN-114
-    void keep(final @NotNull TestCase testCase, final @NotNull PsiMethod testMethod) {
-        final @NotNull String before = testMethod.getPrevSibling() instanceof PsiWhiteSpace space ? space.getText() : "";
-        byTestCaseUuid.put(testCase.getUuid(), before.substring(before.lastIndexOf('\n') + 1) + testMethod.getText());
+    @FromContentModule
+    public void keep(final @NotNull TestCase testCase, final @NotNull String code) {
+        byTestCaseUuid.put(testCase.getUuid(), code);
     }
 
     // UC-CODEGEN-014, Rule-CODEGEN-114
-    @NotNull Optional<String> take(final @NotNull TestCase testCase) {
+    @FromContentModule
+    public @NotNull Optional<String> take(final @NotNull TestCase testCase) {
         return Optional.ofNullable(byTestCaseUuid.remove(testCase.getUuid()));
     }
 }

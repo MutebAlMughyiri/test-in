@@ -19,26 +19,27 @@ package org.testin.codegen;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
 import com.intellij.testFramework.ExtensionTestUtil;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.event.MovedNode;
 import org.testin.codegen.event.RenamedNode;
+import org.testin.config.AutomationLanguage;
 import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CodegenRecorder implements CodeChangeRegistry {
     private final @NotNull CodeChangeRegistry real;
 
     private final @NotNull List<String> asked = new ArrayList<>();
 
-    private CodegenRecorder(final @NotNull CodeChangeRegistry real) {
-        this.real = real;
-    }
-
     public static @NotNull CodegenRecorder installed(final @NotNull Disposable until) {
-        final @NotNull CodegenRecorder recorder = new CodegenRecorder(EP.getExtensionList().getFirst());
+        final @NotNull CodegenRecorder recorder = new CodegenRecorder(AutomationLanguage.JAVA.contributor(EP).orElseThrow());
         ExtensionTestUtil.maskExtensions(EP, List.of(recorder), until);
         return recorder;
     }
@@ -59,6 +60,21 @@ public final class CodegenRecorder implements CodeChangeRegistry {
 
     public @NotNull List<String> asked() {
         return List.copyOf(asked);
+    }
+
+    @Override
+    public @NotNull AutomationLanguage language() {
+        return real.language();
+    }
+
+    @Override
+    public @NotNull Optional<String> folderOf(final @NotNull AbstractNode node) {
+        return real.folderOf(node);
+    }
+
+    @Override
+    public @NotNull Optional<String> fileOf(final @NotNull AbstractNode testSet) {
+        return real.fileOf(testSet);
     }
 
     @Override

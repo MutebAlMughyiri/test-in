@@ -17,16 +17,25 @@
 package org.testin.navigate;
 
 import com.intellij.openapi.project.Project;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.testin.config.AutomationLanguage;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCase;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
+@RequiredArgsConstructor
 public final class NoTestMethodCode implements TestMethodCode {
+    private final @NotNull AutomationLanguage language;
+
+    @Override
+    public @NotNull AutomationLanguage language() {
+        return language;
+    }
+
     @Override
     public void toCode(final @NotNull Project project, final @NotNull TestCase testCase) {
         TestinLogger.debug("No code navigation in this IDE; nothing opened for '" + testCase.getDescription() + "'");
@@ -34,25 +43,6 @@ public final class NoTestMethodCode implements TestMethodCode {
 
     @Override
     public @NotNull Map<UUID, Boolean> methodsFor(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
-        TestinLogger.debug("No code navigation in this IDE; no generated methods for " + testCases.size() + " test case(s)");
-
-        return Map.of();
-    }
-
-    @Override
-    public @NotNull Optional<String> fillBody(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull String statements) {
-        TestinLogger.debug("No code navigation in this IDE; no body written for '" + testCase.getDescription() + "'");
-
-        return Optional.empty();
-    }
-
-    @Override
-    public @NotNull Optional<String> replaceBody(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull String statements) {
-        return fillBody(project, testCase, statements);
-    }
-
-    @Override
-    public @NotNull Map<UUID, List<String>> methodFqcnsOf(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
         TestinLogger.debug("No code navigation in this IDE; no generated methods for " + testCases.size() + " test case(s)");
 
         return Map.of();

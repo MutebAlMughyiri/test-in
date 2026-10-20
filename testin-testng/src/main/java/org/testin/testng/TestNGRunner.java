@@ -16,7 +16,6 @@
 
 package org.testin.testng;
 
-import com.intellij.execution.RunManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.application.ReadAction;
@@ -32,9 +31,10 @@ import com.theoryinpractice.testng.configuration.TestNGConfiguration;
 import com.theoryinpractice.testng.configuration.TestNGConfigurationType;
 import com.theoryinpractice.testng.model.TestType;
 import org.jetbrains.annotations.NotNull;
+import org.testin.config.AutomationLanguage;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCase;
-import org.testin.navigate.TestMethodCode;
+import org.testin.java.navigate.TestMethods;
 import org.testin.runner.AutomationExecutor;
 import org.testin.runner.AutomationExecution;
 import org.testin.services.BackgroundWork;
@@ -51,6 +51,11 @@ import java.util.Set;
 import java.util.UUID;
 
 public final class TestNGRunner implements AutomationExecutor {
+    @Override
+    public @NotNull AutomationLanguage language() {
+        return AutomationLanguage.JAVA;
+    }
+
     private static @NotNull Optional<Module> moduleOf(final @NotNull Project project, final @NotNull List<String> fqcn) {
         final @NotNull String classFqcn = String.join(".", fqcn.subList(0, fqcn.size() - 1));
 
@@ -58,13 +63,12 @@ public final class TestNGRunner implements AutomationExecutor {
                 .map(ModuleUtilCore::findModuleForPsiElement);
     }
 
-    private static @NotNull String configNameFor(final @NotNull List<Generated> generated) {
-        final @NotNull List<String> classes = generated.stream().map(Generated::simpleClassName).distinct().toList();
+    // Rule-CODEGEN-076
+    private static @NotNull List<String> namesOf(final @NotNull List<Generated> generated) {
+        if (generated.size() == 1)
+            return List.of(generated.getFirst().simpleClassName() + "." + generated.getFirst().fqcn().getLast());
 
-        if (generated.size() == 1) return classes.getFirst() + "." + generated.getFirst().fqcn().getLast();
-        if (classes.size() == 1) return classes.getFirst();
-
-        return Bundle.message("codegen.named.and.more", classes.getFirst(), String.valueOf(classes.size() - 1));
+        return generated.stream().map(Generated::simpleClassName).distinct().toList();
     }
 
     @Override
@@ -80,8 +84,6 @@ public final class TestNGRunner implements AutomationExecutor {
             return;
         }
 
-        testCases.forEach(execution::starting);
-
         BackgroundWork.logged(ReadAction.nonBlocking(() -> prepare(project, testCases))
                 .expireWith(execution)
                 .finishOnUiThread(ModalityState.nonModal(), prepared -> prepared.ifPresentOrElse(
@@ -92,7 +94,7 @@ public final class TestNGRunner implements AutomationExecutor {
 
     private @NotNull Optional<Prepared> prepare(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
         try {
-            final @NotNull Map<UUID, List<String>> methods = TestMethodCode.available().methodFqcnsOf(project, testCases);
+            final @NotNull Map<UUID, List<String>> methods = TestMethods.fqcnsOf(project, testCases);
 
             final @NotNull List<Generated> found = new ArrayList<>();
             final @NotNull List<TestCase> withoutCode = new ArrayList<>();
@@ -124,8 +126,7 @@ public final class TestNGRunner implements AutomationExecutor {
     private void start(final @NotNull Project project, final @NotNull Prepared prepared) {
         final @NotNull AutomationExecution execution = Services.getInstance(project, AutomationExecution.class);
 
-        prepared.withoutCode().forEach(execution::noGeneratedCode);
-        execution.started(List.of(), prepared.withoutCode());
+        execution.noGeneratedCode(prepared.withoutCode());
 
         if (prepared.found().isEmpty()) return;
 
@@ -152,22 +153,10 @@ public final class TestNGRunner implements AutomationExecutor {
         final @NotNull List<TestCase> testCases = generated.stream().map(Generated::testCase).toList();
 
         final @NotNull LinkedHashSet<String> patterns = new LinkedHashSet<>(generated.stream().map(Generated::pattern).toList());
-        final @NotNull String name = execution.freeConfigurationName(configNameFor(generated));
-
-        final @NotNull RunManager runManager = RunManager.getInstance(project);
-        final @NotNull TestNGConfigurationType configType = TestNGConfigurationType.getInstance();
-
-        final @NotNull RunnerAndConfigurationSettings settings = Optional.ofNullable(runManager.findConfigurationByName(name))
-                .filter(existing -> existing.getConfiguration() instanceof TestNGConfiguration)
-                .orElseGet(() -> {
-                    final @NotNull RunnerAndConfigurationSettings created =
-                            runManager.createConfiguration(name, configType.getConfigurationFactories()[0]);
-                    runManager.addConfiguration(created);
-                    return created;
-                });
+        final @NotNull RunnerAndConfigurationSettings settings = execution.configurationFor(namesOf(generated), TestNGConfigurationType.getInstance().getConfigurationFactories()[0]);
 
         if (!(settings.getConfiguration() instanceof TestNGConfiguration configuration)) {
-            TestinLogger.warn("'" + name + "' is not a TestNG configuration, so the execution was not started");
+            TestinLogger.warn("'" + settings.getName() + "' is not a TestNG configuration, so the execution was not started");
             return;
         }
 
@@ -177,13 +166,7 @@ public final class TestNGRunner implements AutomationExecutor {
 
         module.ifPresent(configuration::setModule);
 
-        runManager.setTemporaryConfiguration(settings);
-        runManager.setSelectedConfiguration(settings);
-
-        TestinLogger.info("Running as '" + name + "': " + patterns);
-
-        // Rule-CODEGEN-033
-        execution.started(testCases, List.of());
+        TestinLogger.info("Running as '" + settings.getName() + "': " + patterns);
         execution.launch(testCases, settings);
     }
 }

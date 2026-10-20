@@ -90,11 +90,7 @@ public class ArchitectureTest {
     private static final @NotNull Set<String> REFRESH_EXCEPTIONS = Set.of("org.testin.testproject.SaveTestinYml");
 
     private static @NotNull JavaClasses productionClasses() {
-        final @NotNull List<Path> compiled = List.of(
-                Path.of("build", "classes", "java", "main").toAbsolutePath(),
-                Path.of("testin-java", "build", "classes", "java", "main").toAbsolutePath(),
-                Path.of("testin-testng", "build", "classes", "java", "main").toAbsolutePath(),
-                Path.of("testin-apimodel", "build", "classes", "java", "main").toAbsolutePath());
+        final @NotNull List<Path> compiled = ContentModules.each("build", "classes", "java", "main").stream().map(Path::toAbsolutePath).toList();
 
         for (final Path module : compiled) {
             if (!Files.isDirectory(module)) {
@@ -187,7 +183,7 @@ public class ArchitectureTest {
                 .that().resideOutsideOfPackages("org.testin.indexer..", "org.testin.codegen..",
                         "org.testin.config..", "org.testin.git..", "org.testin.importexport..",
                         "org.testin.report..", "org.testin.setting..", "org.testin.logger..",
-                        "org.testin.bug..", "org.testin.java.codegen..")
+                        "org.testin.bug..", "org.testin.java.codegen..", "org.testin.robot..")
                 .and(notOneOf(FILE_ACCESS_EXCEPTIONS))
                 .should().dependOnClassesThat(DescribedPredicate.describe("a file API", javaClass -> FILE_APIS.contains(javaClass.getName())))
                 .orShould().callMethodWhere(target(declaredIn(assignableTo("com.intellij.openapi.vfs.VirtualFile")).and(nameMatching(VIRTUAL_FILE_OPERATIONS))))
@@ -196,7 +192,7 @@ public class ArchitectureTest {
                 .because("the indexer is the single owner of file access, so its cache stays authoritative over"
                         + " test data and every read is a fast in-memory lookup. The exempt packages are exempt"
                         + " because none of them touches test data (CLAUDE.md, #49); codegen includes the Java"
-                        + " module's org.testin.java.codegen. TextInput is the one exception: it asks the VFS for the"
+                        + " module's org.testin.java.codegen and the Robot Framework module's org.testin.robot. TextInput is the one exception: it asks the VFS for the"
                         + " folder a file chooser opens at, which is never test data");
 
         rule.check(CLASSES);
@@ -271,11 +267,12 @@ public class ArchitectureTest {
 
         final @NotNull ArchRule oneWriter = noClasses()
                 .that().doNotHaveFullyQualifiedName("org.testin.config.TestinYml")
-                .and().doNotHaveFullyQualifiedName("org.testin.codegen.JavaSourceRoot")
+                .and().doNotHaveFullyQualifiedName("org.testin.codegen.TestSourceRoot")
                 .and().doNotHaveFullyQualifiedName("org.testin.java.codegen.GeneratedSourceFiles")
+                .and().doNotHaveFullyQualifiedName("org.testin.robot.RobotSuiteFiles")
                 .should().callMethodWhere(target(name("createChildData")))
                 .because("TestinYml holds the only write of testin.yml; generated code is written by the Java module's"
-                        + " GeneratedSourceFiles, and put back after an undone removal by JavaSourceRoot; everything"
+                        + " GeneratedSourceFiles and the Robot Framework module's RobotSuiteFiles, and put back after an undone removal by TestSourceRoot; everything"
                         + " else asks the indexer, whose cache is authoritative (CLAUDE.md, Decision-013)");
 
         oneCaller.check(CLASSES);

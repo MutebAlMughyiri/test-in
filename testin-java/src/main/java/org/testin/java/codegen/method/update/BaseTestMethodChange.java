@@ -16,9 +16,6 @@
 
 package org.testin.java.codegen.method.update;
 
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.command.CommandProcessor;
-import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiAnnotation;
@@ -31,6 +28,7 @@ import com.intellij.psi.codeStyle.CodeStyleManager;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.CodeChangeType;
 import org.testin.codegen.Fqcn;
+import org.testin.codegen.writer.CodeCommand;
 import org.testin.java.codegen.GeneratedClass;
 import org.testin.java.codegen.GeneratedMethod;
 import org.testin.java.codegen.JavaLiteral;
@@ -68,13 +66,6 @@ public class BaseTestMethodChange {
     // UC-CODEGEN-002, Rule-CODEGEN-014, Rule-CODEGEN-021
     protected static @NotNull Optional<PsiClass> classOf(final @NotNull Project project, final @NotNull TestCase testCase) {
         return GeneratedClass.find(project, Fqcn.ofClass(testCase.getParent()));
-    }
-
-    protected static void asOneCommand(final @NotNull Project project, final @NotNull String title, final @NotNull Runnable change) {
-        final @NotNull Runnable inCommand = () -> WriteCommandAction.runWriteCommandAction(project, title, null, change);
-
-        if (CommandProcessor.getInstance().getCurrentCommand() != null) inCommand.run();
-        else ApplicationManager.getApplication().invokeLater(inCommand);
     }
 
     protected @NotNull Optional<PsiMethod> findMethodByTestName(final @NotNull PsiClass testClass, final @NotNull TestCase testCase) {
@@ -179,7 +170,7 @@ public class BaseTestMethodChange {
         final @NotNull Map<String, List<TestCase>> byClass = Fqcn.byClassOfMethod(changedTestCases);
         if (byClass.isEmpty()) return;
 
-        asOneCommand(project, title, () -> byClass.forEach((path, testCases) -> writeAll(project, path, testCases, updater)));
+        CodeCommand.inOne(project, title, () -> byClass.forEach((path, testCases) -> writeAll(project, path, testCases, updater)));
     }
 
     private void writeAll(final @NotNull Project project, final @NotNull String path, final @NotNull List<TestCase> testCases, final @NotNull BiConsumer<PsiMethod, TestCase> updater) {
@@ -205,7 +196,7 @@ public class BaseTestMethodChange {
         final @NotNull List<String> classSegments = Fqcn.ofClass(testCase.getParent());
         if (classSegments.isEmpty()) return;
 
-        asOneCommand(project, title, () -> GeneratedClass.find(project, classSegments)
+        CodeCommand.inOne(project, title, () -> GeneratedClass.find(project, classSegments)
                 .ifPresentOrElse(
                         targetClass -> findMethodByTestName(targetClass, testCase).ifPresentOrElse(updater,
                                 () -> onMissing.accept("no method with testName=" + testCase.getUuid())),

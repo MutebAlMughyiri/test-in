@@ -56,7 +56,7 @@ IDE.
 **If the class cannot be found** — nothing is renamed, and only the log says so.
 The test set is still renamed, so the tree and the code then disagree.
 
-**If the code project has no Java test source folder** — nothing is renamed, and
+**If the code project has no test source folder** — nothing is renamed, and
 nothing is said at all.
 
 **If the IDE has no Java plugin** — nothing is renamed.

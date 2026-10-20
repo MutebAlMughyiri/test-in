@@ -22,7 +22,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.CodeChange;
 import org.testin.codegen.Fqcn;
-import org.testin.codegen.JavaSourceRoot;
+import org.testin.codegen.TestSourceRoot;
 import org.testin.codegen.event.RenamedNode;
 import org.testin.java.codegen.PackageDeclarations;
 import org.testin.logger.TestinLogger;
@@ -39,13 +39,13 @@ public class RenameJavaPackage implements CodeChange<RenamedNode> {
     public void execute(final @NotNull Project project, final @NotNull RenamedNode renamed) {
         final @NotNull List<String> fqcn = Fqcn.ofPackage(renamed.from());
 
-        JavaSourceRoot.find(project).ifPresentOrElse(
+        TestSourceRoot.find(project).ifPresentOrElse(
                 testSourceRoot -> renameUnder(project, testSourceRoot, fqcn, renamed.newPackage()),
                 () -> TestinLogger.info("Could not find Test Source Root in the project modules."));
     }
 
     private void renameUnder(final @NotNull Project project, final @NotNull VirtualFile testSourceRoot, final @NotNull List<String> fqcn, final @NotNull String newTop) {
-        final @NotNull Optional<VirtualFile> found = JavaSourceRoot.under(testSourceRoot, Fqcn.folderOf(fqcn))
+        final @NotNull Optional<VirtualFile> found = TestSourceRoot.under(testSourceRoot, Fqcn.folderOf(fqcn))
                 .filter(VirtualFile::isDirectory);
         if (found.isEmpty()) {
             TestinLogger.info("Package not found for rename: " + String.join(".", fqcn));

@@ -25,8 +25,10 @@ import org.testin.codegen.event.RenamedNode;
 import org.testin.model.NodeType;
 import org.testin.model.node.AbstractNode;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -44,7 +46,14 @@ public final class NodeCode {
     private final @NotNull CodeChange<AbstractNode> removed;
 
     // UC-CODEGEN-018, Rule-CODEGEN-059, Rule-CODEGEN-113
-    private final @NotNull Function<AbstractNode, Optional<String>> codeFile;
+    private final @NotNull BiFunction<CodeChangeRegistry, AbstractNode, Optional<String>> codeFile;
+
+    // Rule-CODEGEN-008
+    public static @NotNull List<String> codePathOf(final @NotNull List<String> treePath) {
+        final @NotNull List<String> names = new ArrayList<>(treePath);
+        names.remove(NodeType.TEST_CASES_FOLDER.getFolderName());
+        return names;
+    }
 
     // Rule-CODEGEN-096
     public static @NotNull NodeCode of(final @NotNull NodeType type) {
@@ -55,7 +64,7 @@ public final class NodeCode {
                     CodeChangeType.RENAME_TEST_PROJECT::execute,
                     new NoCodeChange<>(nodeType),
                     CodeChangeType.REMOVE_TEST_PROJECT::execute,
-                    Fqcn::packageFolderOf
+                    CodeChangeRegistry::folderOf
             );
 
             case TEST_CASES_FOLDER, TEST_RUNS_FOLDER, TEST_RUN_PACKAGE, TEST_RUN -> new NodeCode(
@@ -63,7 +72,7 @@ public final class NodeCode {
                     new NoCodeChange<>(nodeType),
                     new NoCodeChange<>(nodeType),
                     new NoCodeChange<>(nodeType),
-                    _ -> Optional.empty()
+                    (_, _) -> Optional.empty()
             );
 
             case TEST_SET_PACKAGE -> new NodeCode(
@@ -71,7 +80,7 @@ public final class NodeCode {
                     CodeChangeType.RENAME_TEST_SET_PACKAGE::execute,
                     CodeChangeType.MOVE_TEST_SET_PACKAGE::execute,
                     CodeChangeType.REMOVE_TEST_SET_PACKAGE::execute,
-                    Fqcn::packageFolderOf
+                    CodeChangeRegistry::folderOf
             );
 
             case TEST_SET -> new NodeCode(
@@ -79,7 +88,7 @@ public final class NodeCode {
                     CodeChangeType.RENAME_TEST_SET::execute,
                     CodeChangeType.MOVE_TEST_SET::execute,
                     CodeChangeType.REMOVE_TEST_SET::execute,
-                    Fqcn::classFileOf
+                    CodeChangeRegistry::fileOf
             );
         };
     }

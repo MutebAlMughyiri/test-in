@@ -144,7 +144,9 @@ silently has no effect costs more than the setting it was meant to hold.
   `public` as a property of the class, not as a member a reader has to look at
   and dismiss. The same for getters, all-args constructors and enum fields.
   `Bundle` is the one exception in `src/main`, because its constructor calls
-  `super(...)` and Lombok writes an empty body. Read the
+  `super(...)` and Lombok writes an empty body; `testin-robot`'s
+  `RobotTestsConfigurationType` is the same case, since the platform's run
+  configuration types take their id, name and icon through `super(...)`. Read the
   `lombok-writes-the-boilerplate` skill under `.claude/skills/`.
 - **Names say the business word, in full.** A test case is a `TestCase`, never
   a `Case`: `TestCaseDetails`, `testCaseUuid`, `testCases`, `A_TEST_CASE`. The
@@ -258,11 +260,12 @@ silently has no effect costs more than the setting it was meant to hold.
 - **The rule is about methods, and the whole tree obeys it.** The `throws`
   that remain are declarations rather than work, and this list is the record of
   why - not a comment above each one, which the no-comment rule forbids and the
-  September sweep removed. Counted on 19 October 2026: four in `src/main`, none
-  in `src/test`, `testin-java` or `testin-testng`, and every one of them is
-  below. `DeclaredContractsTest` scans the main and test trees for them, holds
-  the same four with their reasons and fails on a fifth, so this list can no
-  longer drift from the code unnoticed. Do not sweep them again:
+  September sweep removed. Counted on 20 October 2026: four in `src/main`, one
+  in `testin-robot`, none in `src/test`, `testin-java` or `testin-testng`, and
+  every one of them is below. `DeclaredContractsTest` scans the main and test
+  trees for them, holds the same five with their reasons and fails on a sixth,
+  so this list can no longer drift from the code unnoticed. Do not sweep them
+  again:
   - `TreeTransferable.getTransferData`, and the one `TestCaseTransferHandler` builds
     for a drag of test cases — AWT's `Transferable` contract is that an
     unsupported flavor throws. Catching it hands the platform a wrong object
@@ -279,6 +282,11 @@ silently has no effect costs more than the setting it was meant to hold.
     2026, chose to refuse it on Apply exactly as the main page refuses a bad
     folder, so every settings page refuses the one way. `refusalOfTheTimeout`
     returns the refusal and `apply` throws it.
+  - `RobotTestsState.startProcess` — `CommandLineState.startProcess` declares
+    `ExecutionException`, and throwing is how the platform is told a Robot
+    Framework run could not start: the Run window shows the message, and the
+    execution tracker reports its test cases as not started. The one reason
+    Testin raises itself is a project with no interpreter (Rule-CODEGEN-120).
 
   Every `*IdeTest` extends `AbstractIdeTest`, or `AbstractOpenEditorsIdeTest`
   when it opens editors. Each saves what the test alone ran, which `ruleTrace`

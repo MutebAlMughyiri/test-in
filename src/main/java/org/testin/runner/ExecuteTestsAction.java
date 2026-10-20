@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
 import org.testin.actions.TestinDataKeys;
 import org.testin.codegen.CodeOn;
+import org.testin.navigate.TestMethodCode;
 import org.testin.editor.TestinEditor;
 import org.testin.editor.open.TestinEditors;
 import org.testin.editor.testrun.ExecutionMode;
@@ -33,7 +34,6 @@ import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.notifications.Notifier;
 import org.testin.notifications.Refused;
-import org.testin.services.OptionalPlugin;
 import org.testin.services.Services;
 
 import java.util.List;
@@ -43,8 +43,8 @@ public class ExecuteTestsAction extends AbstractAnyProjectAction {
     // Rule-TREE-PANEL-079, Rule-TREE-PANEL-141, Rule-TREE-PANEL-080
     @Override
     protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
-        if (CodeOn.grayedWithReason(this, e, project)) return;
-        if (OptionalPlugin.TESTNG.grayedWithReason(this, e.getPresentation())) return;
+        if (CodeOn.grayedWithReason(this, e, project, TestMethodCode.need(project))) return;
+        if (AutomationExecutor.need(project).grayedWithReason(this, e.getPresentation())) return;
 
         final @NotNull Optional<TestRunNode> testRun = selectedTestRun(e);
         final @NotNull ExecutionMode mode = testRun.map(selected -> modeOf(project, selected)).orElse(ExecutionMode.IDLE);

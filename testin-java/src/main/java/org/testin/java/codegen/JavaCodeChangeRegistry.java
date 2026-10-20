@@ -21,7 +21,9 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.CodeChange;
 import org.testin.codegen.CodeChangeRegistry;
 import org.testin.codegen.CodeChangeType;
-import org.testin.codegen.NoCodeChange;
+import org.testin.codegen.Fqcn;
+import org.testin.codegen.writer.CodeChangeBinding;
+import org.testin.config.AutomationLanguage;
 import org.testin.java.codegen.clazz.CreateJavaClass;
 import org.testin.java.codegen.clazz.MoveJavaClass;
 import org.testin.java.codegen.clazz.RemoveJavaClass;
@@ -38,6 +40,7 @@ import org.testin.java.codegen.method.update.UpdateTestMethodOrder;
 import org.testin.java.codegen.pkg.MoveJavaPackage;
 import org.testin.java.codegen.pkg.RemoveJavaPackage;
 import org.testin.java.codegen.pkg.RenameJavaPackage;
+import org.testin.model.node.AbstractNode;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,41 +48,53 @@ import java.util.Optional;
 
 @NoArgsConstructor
 public final class JavaCodeChangeRegistry implements CodeChangeRegistry {
+    @Override
+    public @NotNull AutomationLanguage language() {
+        return AutomationLanguage.JAVA;
+    }
+
     private final @NotNull Map<CodeChangeType<?>, CodeChangeBinding<?>> bindings = byType();
 
     private static @NotNull Map<CodeChangeType<?>, CodeChangeBinding<?>> byType() {
         final @NotNull Map<CodeChangeType<?>, CodeChangeBinding<?>> byType = new HashMap<>();
 
-        put(byType, CodeChangeType.RENAME_TEST_PROJECT, new RenameJavaPackage());
-        put(byType, CodeChangeType.REMOVE_TEST_PROJECT, new RemoveJavaPackage());
-        put(byType, CodeChangeType.REMOVE_TEST_SET_PACKAGE, new RemoveJavaPackage());
-        put(byType, CodeChangeType.RENAME_TEST_SET_PACKAGE, new RenameJavaPackage());
-        put(byType, CodeChangeType.MOVE_TEST_SET_PACKAGE, new MoveJavaPackage());
-        put(byType, CodeChangeType.CREATE_TEST_SET, new CreateJavaClass());
-        put(byType, CodeChangeType.REMOVE_TEST_SET, new RemoveJavaClass());
-        put(byType, CodeChangeType.RENAME_TEST_SET, new RenameJavaClass());
-        put(byType, CodeChangeType.MOVE_TEST_SET, new MoveJavaClass());
-        put(byType, CodeChangeType.CREATE_TEST_CASE, new CreateTestMethod());
-        put(byType, CodeChangeType.REMOVE_TEST_CASE, new RemoveTestMethod());
-        put(byType, CodeChangeType.MOVE_TEST_CASE, new MoveTestMethod());
-        put(byType, CodeChangeType.COPY_TEST_CASE, new CopyTestMethod());
-        put(byType, CodeChangeType.UPDATE_TEST_CASE_DESCRIPTION, new UpdateTestMethodDescription());
-        put(byType, CodeChangeType.UPDATE_TEST_CASE_GROUP, new UpdateTestMethodGroups());
-        put(byType, CodeChangeType.UPDATE_TEST_CASE_ORDER, new UpdateTestMethodOrder());
-        put(byType, CodeChangeType.UPDATE_TEST_CASE_STATUS, new UpdateTestMethodEnabled());
-        put(byType, CodeChangeType.RECONCILE_TEST_CASE, new ReconcileTestMethod());
+        CodeChangeBinding.bind(byType, CodeChangeType.RENAME_TEST_PROJECT, new RenameJavaPackage());
+        CodeChangeBinding.bind(byType, CodeChangeType.REMOVE_TEST_PROJECT, new RemoveJavaPackage());
+        CodeChangeBinding.bind(byType, CodeChangeType.REMOVE_TEST_SET_PACKAGE, new RemoveJavaPackage());
+        CodeChangeBinding.bind(byType, CodeChangeType.RENAME_TEST_SET_PACKAGE, new RenameJavaPackage());
+        CodeChangeBinding.bind(byType, CodeChangeType.MOVE_TEST_SET_PACKAGE, new MoveJavaPackage());
+        CodeChangeBinding.bind(byType, CodeChangeType.CREATE_TEST_SET, new CreateJavaClass());
+        CodeChangeBinding.bind(byType, CodeChangeType.REMOVE_TEST_SET, new RemoveJavaClass());
+        CodeChangeBinding.bind(byType, CodeChangeType.RENAME_TEST_SET, new RenameJavaClass());
+        CodeChangeBinding.bind(byType, CodeChangeType.MOVE_TEST_SET, new MoveJavaClass());
+        CodeChangeBinding.bind(byType, CodeChangeType.CREATE_TEST_CASE, new CreateTestMethod());
+        CodeChangeBinding.bind(byType, CodeChangeType.REMOVE_TEST_CASE, new RemoveTestMethod());
+        CodeChangeBinding.bind(byType, CodeChangeType.MOVE_TEST_CASE, new MoveTestMethod());
+        CodeChangeBinding.bind(byType, CodeChangeType.COPY_TEST_CASE, new CopyTestMethod());
+        CodeChangeBinding.bind(byType, CodeChangeType.UPDATE_TEST_CASE_DESCRIPTION, new UpdateTestMethodDescription());
+        CodeChangeBinding.bind(byType, CodeChangeType.UPDATE_TEST_CASE_GROUP, new UpdateTestMethodGroups());
+        CodeChangeBinding.bind(byType, CodeChangeType.UPDATE_TEST_CASE_ORDER, new UpdateTestMethodOrder());
+        CodeChangeBinding.bind(byType, CodeChangeType.UPDATE_TEST_CASE_STATUS, new UpdateTestMethodEnabled());
+        CodeChangeBinding.bind(byType, CodeChangeType.RECONCILE_TEST_CASE, new ReconcileTestMethod());
 
         return byType;
     }
 
-    private static <T> void put(final @NotNull Map<CodeChangeType<?>, CodeChangeBinding<?>> byType, final @NotNull CodeChangeType<T> type, final @NotNull CodeChange<T> action) {
-        byType.put(type, new CodeChangeBinding<>(type, action));
+
+    // UC-CODEGEN-018, Rule-CODEGEN-059
+    @Override
+    public @NotNull Optional<String> folderOf(final @NotNull AbstractNode node) {
+        return Fqcn.packageFolderOf(node);
+    }
+
+    // UC-CODEGEN-018, Rule-CODEGEN-059
+    @Override
+    public @NotNull Optional<String> fileOf(final @NotNull AbstractNode testSet) {
+        return Fqcn.classFileOf(testSet);
     }
 
     @Override
     public <T> @NotNull CodeChange<T> actionFor(final @NotNull CodeChangeType<T> type) {
-        return Optional.ofNullable(bindings.get(type))
-                .<CodeChange<T>>map(CodeChangeBinding::typed)
-                .orElseGet(() -> new NoCodeChange<>(type.description()));
+        return CodeChangeBinding.actionFor(bindings, type);
     }
 }

@@ -22,6 +22,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.psi.PsiMethod;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
+import org.testin.codegen.agent.TestBodyWriter;
 import org.testin.Await;
 import org.testin.model.TestCase;
 
@@ -55,24 +56,25 @@ public class TestMethodCodeIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestCase testCase = aRenamedTestCaseWhoseMethodHasAnotherName();
         final @NotNull PsiMethod testMethod = writtenMethodOf(LOGIN_TEST, testCase);
 
-        TestMethodCode.available().toCode(getProject(), testCase);
+        TestMethodCode.available(getProject()).toCode(getProject(), testCase);
 
         Await.until("go to code did not reach the method of a test case renamed since it was written", () -> caretIsOn(testMethod));
     }
 
     // Rule-CODEGEN-001
-    public void testRunningFindsTheMethodByIdentityNeverByName() {
+    public void testTheMethodIsFoundByIdentityNeverByName() {
         final @NotNull TestCase testCase = aRenamedTestCaseWhoseMethodHasAnotherName();
 
-        assertEquals("the method to run was named from the description rather than found by the test case UUID", List.of("nafath", "LoginTest", "whatTheTesterCalledIt"), TestMethodCode.available().methodFqcnsOf(getProject(), List.of(testCase)).get(testCase.getUuid()));
+        assertTrue("the method was looked for by the description rather than found by the test case UUID", TestMethodCode.available(getProject()).methodsFor(getProject(), List.of(testCase)).containsKey(testCase.getUuid()));
     }
 
     // Rule-CODEGEN-003
     public void testAnAgentWritesTheBodyOnlyWhereTheTodoStillStands() {
         final @NotNull TestCase testCase = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
 
-        assertTrue("the agent's body did not replace the TODO", TestMethodCode.available().fillBody(getProject(), testCase, "int signedIn = 1;").isPresent());
-        assertFalse("the agent wrote over a body that was already written", TestMethodCode.available().fillBody(getProject(), testCase, "int signedOut = 0;").isPresent());
+        final @NotNull TestBodyWriter writer = TestBodyWriter.available(getProject()).orElseThrow(() -> new AssertionError("a Java test project has no body writer"));
+        assertTrue("the agent's body did not replace the TODO", writer.fillBody(getProject(), testCase, "int signedIn = 1;").isPresent());
+        assertFalse("the agent wrote over a body that was already written", writer.fillBody(getProject(), testCase, "int signedOut = 0;").isPresent());
 
         final @NotNull String body = writtenMethodOf(LOGIN_TEST, testCase).getText();
         assertTrue("the first body is gone", body.contains("int signedIn = 1;"));

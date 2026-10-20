@@ -121,8 +121,7 @@ has. Typing such a description is refused before the test case is created, and
 so is editing one into it, so what reaches here comes from an import, a paste,
 a Git merge or a sync.
 
-**If the code project has no Java test source folder** — a message titled **No
-Java Test Source Root** appears, and the test case is still created.
+**If the code project has no test source folder** — the Testin Help hint says so, and the test case is still created.
 
 **If the IDE has no Java plugin** — nothing is generated, and a message appears
 once for the whole code project.

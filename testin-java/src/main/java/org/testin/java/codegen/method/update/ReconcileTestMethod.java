@@ -22,6 +22,7 @@ import com.intellij.psi.PsiMethod;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.CodeChange;
 import org.testin.codegen.CodeChangeType;
+import org.testin.codegen.writer.CodeCommand;
 import org.testin.java.codegen.GeneratedMethod;
 import org.testin.model.TestCase;
 
@@ -50,7 +51,7 @@ public class ReconcileTestMethod extends BaseTestMethodChange implements CodeCha
             byClass.computeIfAbsent(testCase.getParent().getPath(), _ -> new ArrayList<>()).add(testCase);
         }
 
-        asOneCommand(project, CodeChangeType.RECONCILE_TEST_CASE.description(), () -> {
+        CodeCommand.inOne(project, CodeChangeType.RECONCILE_TEST_CASE.description(), () -> {
             byClass.values().forEach(inClass -> rewrite(project, inClass));
             new UpdateTestMethodOrder().executeAll(project, testCases);
         });

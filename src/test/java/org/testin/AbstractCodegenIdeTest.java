@@ -20,8 +20,13 @@ import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.DumbService;
+import com.intellij.openapi.projectRoots.ProjectJdkTable;
+import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.projectRoots.impl.UnknownSdkType;
 import com.intellij.openapi.roots.ContentEntry;
 import com.intellij.openapi.roots.ModifiableRootModel;
+import com.intellij.openapi.roots.ProjectRootManager;
+import com.intellij.openapi.util.Disposer;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiCodeBlock;
@@ -187,6 +192,18 @@ public abstract class AbstractCodegenIdeTest extends AbstractTempRootIdeTest {
     protected void settled() {
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
         PsiDocumentManager.getInstance(getProject()).commitAllDocuments();
+    }
+
+    protected void interpreterIs(final @NotNull String sdkType) {
+        final @NotNull ProjectRootManager roots = ProjectRootManager.getInstance(getProject());
+        final @NotNull Optional<Sdk> before = Optional.ofNullable(roots.getProjectSdk());
+        final @NotNull Sdk interpreter = ProjectJdkTable.getInstance().createSdk(sdkType + " interpreter", UnknownSdkType.getInstance(sdkType));
+
+        WriteAction.runAndWait(() -> {
+            ProjectJdkTable.getInstance().addJdk(interpreter, getTestRootDisposable());
+            roots.setProjectSdk(interpreter);
+        });
+        Disposer.register(getTestRootDisposable(), () -> WriteAction.runAndWait(() -> roots.setProjectSdk(before.orElse(null))));
     }
 
     protected void writtenByTheTester(final @NotNull PsiMethod testMethod, final @NotNull String statements) {

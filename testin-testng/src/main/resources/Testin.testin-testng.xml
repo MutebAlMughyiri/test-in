@@ -11,6 +11,7 @@
     <dependencies>
         <plugin id="com.intellij.java"/>
         <plugin id="TestNG-J"/>
+        <module name="Testin.testin-java"/>
     </dependencies>
 
     <extensions defaultExtensionNs="org.testin">

@@ -40,18 +40,18 @@ public final class ApiModelAction extends AbstractAnyProjectAction {
                 .filter(maker::canMakeIn);
     }
 
-    // UC-CODEGEN-022, Rule-CODEGEN-082, Rule-CODEGEN-098
+    // UC-CODEGEN-022, Rule-CODEGEN-082, Rule-CODEGEN-098, Rule-CODEGEN-117
     @Override
     protected void update(final @NotNull AnActionEvent e, final @NotNull Project project) {
-        if (CodeOn.grayedWithReason(this, e, project)) return;
+        if (CodeOn.grayedWithReason(this, e, project, ApiModelMaker.need(project))) return;
 
-        GrayWithReason.unless(this, e, ApiModelMaker.available().flatMap(maker -> packageOf(e, maker)).isPresent(), Bundle.message("api.model.not.a.package"));
+        GrayWithReason.unless(this, e, ApiModelMaker.available(project).flatMap(maker -> packageOf(e, maker)).isPresent(), Bundle.message("api.model.not.a.package"));
     }
 
     // UC-CODEGEN-022
     @Override
     protected void perform(final @NotNull AnActionEvent e, final @NotNull Project project) {
-        ApiModelMaker.available().ifPresent(maker -> packageOf(e, maker).ifPresent(directory -> maker.open(project, directory)));
+        ApiModelMaker.available(project).ifPresent(maker -> packageOf(e, maker).ifPresent(directory -> maker.open(project, directory)));
     }
 
     @Override

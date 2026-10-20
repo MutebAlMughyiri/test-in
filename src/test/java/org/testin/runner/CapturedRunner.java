@@ -20,6 +20,7 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
 import com.intellij.testFramework.ExtensionTestUtil;
 import org.jetbrains.annotations.NotNull;
+import org.testin.config.AutomationLanguage;
 import org.testin.model.TestCase;
 import org.testin.model.status.AutomationExecutionStatus;
 import org.testin.model.testrun.Failure;
@@ -30,6 +31,11 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class CapturedRunner implements AutomationExecutor {
+    @Override
+    public @NotNull AutomationLanguage language() {
+        return AutomationLanguage.JAVA;
+    }
+
     private final @NotNull List<List<TestCase>> executions = new CopyOnWriteArrayList<>();
 
     public static @NotNull CapturedRunner installed(final @NotNull Disposable owner) {
@@ -54,6 +60,5 @@ public final class CapturedRunner implements AutomationExecutor {
     @Override
     public void run(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
         executions.add(List.copyOf(testCases));
-        testCases.forEach(Services.getInstance(project, AutomationExecution.class)::starting);
     }
 }

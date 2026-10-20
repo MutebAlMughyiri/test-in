@@ -35,7 +35,8 @@ import org.testin.codegen.CodeChange;
 import org.testin.codegen.CodeChangeType;
 import org.testin.codegen.ExecutionPosition;
 import org.testin.codegen.Fqcn;
-import org.testin.codegen.JavaSourceRoot;
+import org.testin.codegen.TestSourceRoot;
+import org.testin.codegen.writer.KeptTestCode;
 import org.testin.java.codegen.GeneratedClass;
 import org.testin.java.codegen.GeneratedMethod;
 import org.testin.java.codegen.JavaLiteral;
@@ -54,8 +55,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.ToIntFunction;
-import java.util.stream.Stream;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CreateTestMethod implements CodeChange<TestCase> {
 
@@ -244,7 +245,7 @@ public class CreateTestMethod implements CodeChange<TestCase> {
         final @NotNull StringBuilder keptMethods = new StringBuilder();
 
         for (final TestCase testCase : toWrite) {
-            Services.getInstance(project, KeptTestMethods.class).take(testCase).ifPresentOrElse(
+            Services.getInstance(project, KeptTestCode.class).take(testCase).ifPresentOrElse(
                     keptMethod -> keptMethods.append('\n').append(keptMethod).append('\n'),
                     () -> methods.append('\n').append(methodText(Fqcn.methodNameOf(testCase), testCase, positions.applyAsInt(testCase))).append('\n'));
         }
@@ -290,7 +291,7 @@ public class CreateTestMethod implements CodeChange<TestCase> {
     }
 
     private void retryInjectPhysically(final @NotNull Project project, final @NotNull List<String> packageList, final @NotNull String className, final @NotNull List<TestCase> testCases) {
-        JavaSourceRoot.find(project).ifPresentOrElse(
+        TestSourceRoot.find(project).ifPresentOrElse(
                 sourceRoot -> injectIntoFile(project, sourceRoot, packageList, className, testCases),
                 () -> TestinLogger.error("retryInjectPhysically: no Java test source root, cannot inject " + testMethods(testCases.size())));
     }
@@ -298,7 +299,7 @@ public class CreateTestMethod implements CodeChange<TestCase> {
     private void injectIntoFile(final @NotNull Project project, final @NotNull VirtualFile sourceRoot, final @NotNull List<String> packageList, final @NotNull String className, final @NotNull List<TestCase> testCases) {
         try {
             final @NotNull String relativePath = Fqcn.classFileOf(Stream.concat(packageList.stream(), Stream.of(className)).toList());
-            final @NotNull Optional<VirtualFile> found = JavaSourceRoot.under(sourceRoot, relativePath);
+            final @NotNull Optional<VirtualFile> found = TestSourceRoot.under(sourceRoot, relativePath);
             if (found.isEmpty()) {
                 TestinLogger.error("retryInjectPhysically: file not found at " + relativePath + " for " + testMethods(testCases.size()));
                 return;
@@ -331,7 +332,7 @@ public class CreateTestMethod implements CodeChange<TestCase> {
             GeneratedMethod.importTest(project, targetClass.getContainingFile());
 
             // Rule-CODEGEN-114
-            final @NotNull String text = Services.getInstance(project, KeptTestMethods.class).take(testCase).map(String::strip).orElseGet(() -> methodText(methodName, testCase, ExecutionPosition.of(project, testCase)));
+            final @NotNull String text = Services.getInstance(project, KeptTestCode.class).take(testCase).map(String::strip).orElseGet(() -> methodText(methodName, testCase, ExecutionPosition.of(project, testCase)));
             final @NotNull PsiMethod newMethod = factory.createMethodFromText(text, targetClass);
             final @NotNull PsiElement addedElement = targetClass.add(newMethod);
 

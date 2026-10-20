@@ -32,7 +32,7 @@ public class RemoveCodeIdeTest extends AbstractCodegenIdeTest {
     private static final @NotNull String LOGIN_TEST = "nafath.LoginTest";
 
     private @NotNull VirtualFile theTestSourceRoot() {
-        return JavaSourceRoot.find(getProject()).orElseThrow(() -> new AssertionError("the project has no test source folder"));
+        return TestSourceRoot.find(getProject()).orElseThrow(() -> new AssertionError("the project has no test source folder"));
     }
 
     // Rule-CODEGEN-049

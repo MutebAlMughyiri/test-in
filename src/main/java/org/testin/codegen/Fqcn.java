@@ -20,7 +20,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
-import org.testin.model.NodeType;
 import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.util.FromContentModule;
@@ -44,7 +43,7 @@ public final class Fqcn {
         final @NotNull String methodName = NameSanitizer.methodName(testCase.getDescription());
         if (methodName.isEmpty()) return new ArrayList<>();
 
-        final @NotNull List<String> generatedFqcn = withoutTestCasesFolder(testCase.getParent().treePath());
+        final @NotNull List<String> generatedFqcn = NodeCode.codePathOf(testCase.getParent().treePath());
 
         if (generatedFqcn.isEmpty()) {
             generatedFqcn.add("DefaultTest");
@@ -85,7 +84,7 @@ public final class Fqcn {
     // UC-CODEGEN-001, Rule-CODEGEN-007
     @FromContentModule
     public static @NotNull List<String> ofClass(final @NotNull List<String> treePath) {
-        final @NotNull List<String> generatedFqcn = withoutTestCasesFolder(treePath);
+        final @NotNull List<String> generatedFqcn = NodeCode.codePathOf(treePath);
 
         if (generatedFqcn.isEmpty()) {
             TestinLogger.info("No class name for '" + String.join("/", treePath) + "': it is the test cases directory itself");
@@ -129,7 +128,7 @@ public final class Fqcn {
     // UC-CODEGEN-001, Rule-CODEGEN-008
     @FromContentModule
     public static @NotNull List<String> ofPackage(final @NotNull List<String> treePath) {
-        final @NotNull List<String> generatedFqcn = withoutTestCasesFolder(treePath);
+        final @NotNull List<String> generatedFqcn = NodeCode.codePathOf(treePath);
 
         if (generatedFqcn.isEmpty()) {
             generatedFqcn.add("generated");
@@ -139,11 +138,6 @@ public final class Fqcn {
         return generatedFqcn;
     }
 
-    private static @NotNull List<String> withoutTestCasesFolder(final @NotNull List<String> treePath) {
-        final @NotNull List<String> names = new ArrayList<>(treePath);
-        names.remove(NodeType.TEST_CASES_FOLDER.getFolderName());
-        return names;
-    }
 
     private static void sanitizeTail(final @NotNull List<String> names) {
         final int lastIndex = names.size() - 1;

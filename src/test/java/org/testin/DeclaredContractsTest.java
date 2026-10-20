@@ -37,7 +37,7 @@ import static org.testng.Assert.assertTrue;
 
 public class DeclaredContractsTest {
 
-    private static final @NotNull List<Path> ROOTS = List.of(Path.of("src", "main", "java"), Path.of("src", "test", "java"), Path.of("testin-java", "src", "main", "java"), Path.of("testin-java", "src", "test", "java"), Path.of("testin-testng", "src", "main", "java"), Path.of("testin-apimodel", "src", "main", "java"), Path.of("testin-apimodel", "src", "test", "java"));
+    private static final @NotNull List<Path> ROOTS = Stream.concat(ContentModules.each("src", "main", "java").stream(), ContentModules.each("src", "test", "java").stream()).toList();
 
     private static final @NotNull Pattern THROWS = Pattern.compile("^\\s+(?!return\\b)[^=;]*?\\b(\\w+)\\s*\\(.*\\)\\s+throws\\s+[\\w., ]+\\s*[{;]\\s*$");
 
@@ -47,7 +47,8 @@ public class DeclaredContractsTest {
             entry("TestCaseTransferHandler.getTransferData", "AWT's Transferable contract: a flavor the transferable does not carry throws"),
             entry("TreeTransferable.getTransferData", "AWT's Transferable contract: a flavor the transferable does not carry throws"),
             entry("SettingsConfigurable.apply", "Configurable.apply declares ConfigurationException, and the settings dialog shows its message"),
-            entry("AgentPromptConfigurable.apply", "Configurable.apply declares ConfigurationException, and the settings dialog shows its message")
+            entry("AgentPromptConfigurable.apply", "Configurable.apply declares ConfigurationException, and the settings dialog shows its message"),
+            entry("RobotTestsState.startProcess", "CommandLineState.startProcess declares ExecutionException, and the Run window shows its message")
     );
 
     private static final @NotNull Map<String, String> MAY_RETURN_NULL = Map.ofEntries(

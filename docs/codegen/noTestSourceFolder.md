@@ -1,11 +1,11 @@
 [Documentation](../README.md) › [Automation code and the gutter](main.md) › UC-CODEGEN-020
 
-# UC-CODEGEN-020: Work in a project with no Java test folder
+# UC-CODEGEN-020: Work in a project with no test source folder
 
 **As a** tester, **I want** to know why no code is appearing, **so that** I can mark a folder as holding tests and have
 it start working.
 
-No folder in the code project is marked as holding Java tests, so no code is
+No folder in the code project is marked as holding tests, so no code is
 written. Everything else works: the tree, both editors, the view panel, reports,
 import and export all read and write test data without one.
 
@@ -55,11 +55,9 @@ stays in the Notifications log, because the work it interrupted was theirs.
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│  No Java Test Source Root                                    │
-│  This project has no Java test source folder, so creating    │
-│  the class for LoginTest was skipped. Test cases and test    │
-│  runs are read and written without one - only the automation │
-│  code needs it.                                              │
+│  This project has no test source folder, so LoginTest.java   │
+│  was not created. Test cases and test runs are read and      │
+│  written without one - only the automation code needs it.    │
 └──────────────────────────────────────────────────────────────┘
 ```
 
@@ -88,9 +86,9 @@ stays in the Notifications log, because the work it interrupted was theirs.
 ## What Testin refuses
 
 **The first creation** — the Testin Help mark turns red. Its hint reads *This
-project has no Java test source folder, so the class* and the class *was not
-created*, with the guide *How to generate and run automation code*. The test set
-or test case is still created.
+project has no test source folder, so* the file *was not created*, with the
+guide *How to generate and run automation code*. The test set or test case is
+still created.
 
 **Every creation after it** — the hint names the latest class skipped, and
 nothing else is said.

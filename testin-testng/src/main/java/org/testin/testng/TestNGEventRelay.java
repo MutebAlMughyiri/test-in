@@ -38,11 +38,15 @@ public final class TestNGEventRelay extends SMTRunnerEventsAdapter {
 
     // Rule-CODEGEN-075, Rule-CODEGEN-110
     static @NotNull FinishedAttempt finished(final @NotNull SMTestProxy test) {
-        if (test.isPassed()) return new FinishedAttempt(AutomationExecutionStatus.PASSED, Failure.NONE);
+        if (test.isPassed())
+            return new FinishedAttempt(AutomationExecutionStatus.PASSED, Failure.NONE);
+
         if (test.isDefect() && !test.isIgnored() && !test.wasTerminated())
             return new FinishedAttempt(AutomationExecutionStatus.FAILED, failureOf(test, ""));
+
         if (test.isIgnored() && !test.wasTerminated())
             return new FinishedAttempt(AutomationExecutionStatus.SKIPPED, failureOf(test, Bundle.message("runner.skipped")));
+
         return new FinishedAttempt(AutomationExecutionStatus.FAILED, failureOf(test, Bundle.message("runner.skipped")));
     }
 

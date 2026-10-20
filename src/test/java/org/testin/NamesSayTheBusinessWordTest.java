@@ -33,7 +33,7 @@ import static org.testng.Assert.assertTrue;
 
 public class NamesSayTheBusinessWordTest {
 
-    private static final @NotNull List<Path> ROOTS = List.of(Path.of("src"), Path.of("testin-java", "src"), Path.of("testin-testng", "src"), Path.of("testin-apimodel", "src"));
+    private static final @NotNull List<Path> ROOTS = ContentModules.each("src");
 
     private static final @NotNull Pattern BARE = Pattern.compile("(?<!Test)Run(?!Item|ner|ning|nable)|(?<!Test)(?<!Use)Cases?(?![a-z])|Verdict"
             + "|(?<!Run)(?<!Toolbar)(?<!StatusBar)(?<!Menu)Items?(?![a-z])"

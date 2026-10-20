@@ -69,7 +69,7 @@ public final class AutomationState implements Disposable {
         final @NotNull Set<UUID> found = new LinkedHashSet<>();
 
         try {
-            final @NotNull Map<UUID, Boolean> methods = TestMethodCode.available().methodsFor(project, testCases);
+            final @NotNull Map<UUID, Boolean> methods = TestMethodCode.available(project).methodsFor(project, testCases);
 
             for (final TestCase testCase : testCases) {
                 answers.put(testCase.getUuid(), stateOf(testCase, methods));
@@ -99,7 +99,7 @@ public final class AutomationState implements Disposable {
         if (testCases.isEmpty()) return;
 
         // Rule-CODEGEN-082
-        if (!CodeOn.isOn(project)) {
+        if (!CodeOn.isOn(project, TestMethodCode.need(project))) {
             readAtCodeVersion = NEVER_READ;
             if (known.isEmpty() && withAMethod.isEmpty()) return;
 
@@ -131,7 +131,7 @@ public final class AutomationState implements Disposable {
 
     // Rule-CODEGEN-082, Rule-EDITOR-PANEL-211
     private void keep(final @NotNull Project project, final @NotNull AutomationReading answer, final @NotNull List<TestCase> testCases, final @NotNull Map<UUID, Automated> asking, final @NotNull Runnable onAnswered) {
-        if (answer.states().isEmpty() || !CodeOn.isOn(project)) return;
+        if (answer.states().isEmpty() || !CodeOn.isOn(project, TestMethodCode.need(project))) return;
 
         known.putAll(answer.states());
         readAtCodeVersion = answer.codeVersion();

@@ -34,9 +34,9 @@ public class NavigateToTestMethodAction extends AbstractAnyProjectAction {
     // UC-CODEGEN-006, Rule-INTERNAL-129
     public static void execute(final @NotNull Project project, final @NotNull TestCase testCase) {
         Services.getInstance(project, Guides.class).add(Guide.AUTOMATION_CODE);
-        if (CodeOn.isOffAndWarned(project)) return;
+        if (CodeOn.isOffAndWarned(project, TestMethodCode.need(project))) return;
 
-        TestMethodCode.available().toCode(project, testCase);
+        TestMethodCode.available(project).toCode(project, testCase);
     }
 
     @Override

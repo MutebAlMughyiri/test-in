@@ -27,7 +27,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.Await;
-import org.testin.codegen.JavaSourceRoot;
+import org.testin.codegen.TestSourceRoot;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 
@@ -51,7 +51,7 @@ public class SheetCodeUndoIdeTest extends AbstractCodegenIdeTest {
         final @NotNull List<TestCase> sheet = IntStream.range(0, SHEET)
                 .mapToObj(i -> indexedTestCase(login, "Log in as user " + i, String.format(Locale.ROOT, "b%04d", i)))
                 .toList();
-        final @NotNull VirtualFile loginTest = Optional.ofNullable(JavaSourceRoot.find(getProject()).orElseThrow().findFileByRelativePath("nafath/LoginTest.java")).orElseThrow(() -> new AssertionError("the test set's class was never written"));
+        final @NotNull VirtualFile loginTest = Optional.ofNullable(TestSourceRoot.find(getProject()).orElseThrow().findFileByRelativePath("nafath/LoginTest.java")).orElseThrow(() -> new AssertionError("the test set's class was never written"));
         myFixture.openFileInEditor(loginTest);
 
         final @NotNull List<String> steps = new ArrayList<>();

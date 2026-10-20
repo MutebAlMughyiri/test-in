@@ -54,6 +54,10 @@ version = "2.15.0-alpha"
  */
 val oldestBranch = "2026.2"
 
+// The core's source tree and every content module's, in the one place a module is
+// named: settings.gradle.kts includes it, and everything here follows (#483).
+val moduleSources = listOf("src") + subprojects.map { "${it.name}/src" }
+
 repositories {
     mavenCentral()
     intellijPlatform {
@@ -301,9 +305,7 @@ dependencies {
         // in implementation() would put the module on the core's compile
         // classpath and make the two projects depend on each other, since the
         // module compiles against the core.
-        pluginModule(project(":testin-java"))
-        pluginModule(project(":testin-testng"))
-        pluginModule(project(":testin-apimodel"))
+        subprojects.forEach { module -> pluginModule(project(module.path)) }
     }
 
     // Lombok is a compile-time tool: annotations generate plain Java, nothing
@@ -536,12 +538,7 @@ tasks {
         // nothing, so an edit to one leaves the class files byte for byte the
         // same, and RuleNumbersTest would not run against the new marker.
         inputs.files(
-            listOf(
-                "src",
-                "testin-java/src",
-                "testin-testng/src",
-                "testin-apimodel/src"
-            ).map { layout.projectDirectory.dir("$it/main/java") })
+            moduleSources.map { layout.projectDirectory.dir("$it/main/java") })
             .withPropertyName("markedSources")
             .withPathSensitivity(PathSensitivity.RELATIVE)
 
@@ -630,9 +627,17 @@ intellijPlatformTesting {
     }
 
     runIde {
+        // The PyCharm sandbox has RobotCode, with the LSP4IJ it needs, as a Robot team
+        // has it. They are declared here because prepareSandbox deletes every plugin it
+        // did not put in the sandbox itself: one installed from the Marketplace inside
+        // the sandbox is gone after the next change to Testin.
         register("runPyCharm") {
             type = IntelliJPlatformType.PyCharm
             version = "2026.2.1"
+            plugins {
+                plugin("dev.robotcode.robotcode4ij", "2.7.0")
+                plugin("com.redhat.devtools.lsp4ij", "0.21.0")
+            }
         }
         register("runDataGrip") {
             type = IntelliJPlatformType.DataGrip
@@ -712,12 +717,7 @@ tasks.register<Test>("ruleTrace") {
     inputs.files(layout.buildDirectory.dir("jacoco/per-test")).withPropertyName("ranByEachTest")
         .withPathSensitivity(PathSensitivity.RELATIVE)
     inputs.files(
-        listOf(
-            "src",
-            "testin-java/src",
-            "testin-testng/src",
-            "testin-apimodel/src"
-        ).map { layout.projectDirectory.dir(it) })
+        moduleSources.map { layout.projectDirectory.dir(it) })
         .withPropertyName("labeledSources")
         .withPathSensitivity(PathSensitivity.RELATIVE)
     extensions.configure<JacocoTaskExtension> { isEnabled = false }
@@ -744,6 +744,12 @@ mapOf("runIde" to "config", "runPyCharm" to "config_runPyCharm").forEach { (runT
         val workingSample = layout.projectDirectory.dir(".sandbox/sample").asFile
         val sampleRoot = workingSample.resolve("testin-root").absolutePath
         val sampleProject = workingSample.resolve("automation").absolutePath
+
+        // A machine can name the project runPyCharm opens instead of the Java sample, as
+        // testin.pyCharmProject in its own ~/.gradle/gradle.properties - a Robot Framework
+        // project, so every launch lands on it with its plugins already installed. It is a
+        // path on one machine, so it never belongs in this file.
+        val openedProject = if (runTask == "runPyCharm") providers.gradleProperty("testin.pyCharmProject").getOrElse(sampleProject) else sampleProject
 
         doFirst {
             // The sandbox opens a COPY of the sample, never the committed one. Opening
@@ -808,7 +814,7 @@ mapOf("runIde" to "config", "runPyCharm" to "config_runPyCharm").forEach { (runT
                     // Every run, not only the first: the IDE reopens its last project on
                     // its own, and the argument is what makes that the sample copy rather
                     // than whatever was open before - the committed sample included.
-                    args(sampleProject)
+                    args(openedProject)
                 }
         }
     }

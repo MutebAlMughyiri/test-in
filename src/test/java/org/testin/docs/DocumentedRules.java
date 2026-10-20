@@ -43,8 +43,6 @@ final class DocumentedRules {
 
     static final @NotNull String PRODUCT = "product.md";
 
-    static final @NotNull List<String> MODULES = List.of("", "testin-java", "testin-testng", "testin-apimodel");
-
     private static final @NotNull Pattern USE_CASE_PAGE = Pattern.compile("^# (UC-[A-Z][A-Z-]*-\\d+):", Pattern.MULTILINE);
 
     private static final @NotNull Pattern DEFINITION = Pattern.compile(

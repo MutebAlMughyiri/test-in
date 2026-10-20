@@ -142,7 +142,7 @@ public class ApiModelActionIdeTest extends AbstractCodegenIdeTest {
 
     private @NotNull PopupsBuilt.Built opened(final @NotNull PsiDirectory directory) {
         final @NotNull PopupsBuilt popups = PopupsBuilt.recording(getTestRootDisposable());
-        ApiModelMaker.available().orElseThrow(() -> new AssertionError("no API model maker is loaded")).open(getProject(), directory);
+        ApiModelMaker.available(getProject()).orElseThrow(() -> new AssertionError("no API model maker is loaded")).open(getProject(), directory);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
         return popups.last();
     }

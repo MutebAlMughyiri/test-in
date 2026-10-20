@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.CodeChange;
 import org.testin.codegen.CodeChangeType;
 import org.testin.codegen.Fqcn;
-import org.testin.codegen.JavaSourceRoot;
+import org.testin.codegen.TestSourceRoot;
 import org.testin.codegen.event.MovedNode;
 import org.testin.java.codegen.GeneratedSourceFiles;
 import org.testin.java.codegen.PackageDeclarations;
@@ -47,14 +47,14 @@ public class MoveJavaClass implements CodeChange<MovedNode> {
         final @NotNull List<String> destination = found.get();
 
         GeneratedSourceFiles.commandInRoot(project, CodeChangeType.MOVE_TEST_SET.description(), sourceRoot -> {
-            final @NotNull Optional<VirtualFile> file = JavaSourceRoot.under(sourceRoot, Fqcn.classFileOf(fqcn));
+            final @NotNull Optional<VirtualFile> file = TestSourceRoot.under(sourceRoot, Fqcn.classFileOf(fqcn));
 
             if (file.isEmpty()) {
                 TestinLogger.info("Class not found for move: " + String.join(".", fqcn));
                 return;
             }
 
-            final @NotNull Optional<VirtualFile> target = JavaSourceRoot.packageFolder(sourceRoot, destination);
+            final @NotNull Optional<VirtualFile> target = TestSourceRoot.packageFolder(sourceRoot, destination);
 
             if (target.isEmpty() || target.get().equals(file.get().getParent())) return;
 

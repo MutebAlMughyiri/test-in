@@ -310,6 +310,17 @@ function Read-Problems([string] $outPath)
     }
 }
 
+function Get-ContentModules
+{
+    <#
+        The content modules settings.gradle.kts includes, read from it rather
+        than listed again here, so a new module is checked the day it is
+        included (#483).
+    #>
+    $settings = Get-Content (Join-Path $repo 'settings.gradle.kts') -Raw
+    return [regex]::Matches($settings, 'include\(":([^"]+)"\)') | ForEach-Object { $_.Groups[1].Value }
+}
+
 function Get-SourceRoots
 {
     <#
@@ -323,12 +334,12 @@ function Get-SourceRoots
         Only the ones that exist: a checkout mid-refactor, or a future module,
         should not fail the run.
     #>
-    return @('src/main', 'testin-java/src/main', 'testin-testng/src/main', 'testin-apimodel/src/main') |
+    return @('src/main') + @(Get-ContentModules | ForEach-Object { "$_/src/main" }) |
             ForEach-Object { Join-Path $repo $_ } |
             Where-Object { Test-Path $_ }
 }
 
-function Get-JavaSourceRoots
+function Get-TestSourceRoots
 {
     <#
         Every source tree, tests included.
@@ -341,7 +352,7 @@ function Get-JavaSourceRoots
 
         Only the ones that exist, for the same reason as above.
     #>
-    return @('src/main', 'src/test', 'testin-java/src', 'testin-testng/src', 'testin-apimodel/src') |
+    return @('src/main', 'src/test') + @(Get-ContentModules | ForEach-Object { "$_/src" }) |
             ForEach-Object { Join-Path $repo $_ } |
             Where-Object { Test-Path $_ }
 }
@@ -368,7 +379,7 @@ function Resolve-CrossModuleUsages([object[]] $problems)
         calls would be spared wrongly. That is the safe direction to be wrong
         in, and the finding is still in the list to read.
     #>
-    $moduleRoots = @('testin-java/src/main', 'testin-testng/src/main', 'testin-apimodel/src/main') |
+    $moduleRoots = @(Get-ContentModules | ForEach-Object { "$_/src/main" }) |
             ForEach-Object { Join-Path $repo $_ } |
             Where-Object { Test-Path $_ }
 
@@ -2250,7 +2261,7 @@ if (-not $narrowed -and -not $Quick) { $problems = @(Select-Inspected $problems)
 # A string duplicated between two test harnesses is read by nobody.
 #
 # An explicit -Subdirectory still wins over both, for the caller narrowing a run.
-$everyTree = if ($narrowed) { $scopes } else { Get-JavaSourceRoots }
+$everyTree = if ($narrowed) { $scopes } else { Get-TestSourceRoots }
 
 foreach ($scope in $everyTree) { $problems += @(Read-WrappedDeclarations $scope) }
 $problems += @(Read-HandWrittenPrivateConstructors $everyTree)

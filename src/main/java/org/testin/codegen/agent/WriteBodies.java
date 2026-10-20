@@ -49,9 +49,9 @@ public final class WriteBodies {
     // UC-CODEGEN-021, Rule-CODEGEN-084, Rule-CODEGEN-091
     public static void forAll(final @NotNull Project project, final @NotNull List<TestCase> testCases, final @NotNull Optional<TestinEditor> editor) {
         final @NotNull AgentConnection connection = AgentConnection.stored();
-        if (!connection.isConnected() || testCases.isEmpty()) return;
+        if (!connection.isConnected() || testCases.isEmpty() || TestBodyWriter.available(project).isEmpty()) return;
 
-        BackgroundWork.logged(ReadAction.nonBlocking(() -> DumbService.isDumb(project) ? Map.<UUID, Boolean>of() : TestMethodCode.available().methodsFor(project, testCases))
+        BackgroundWork.logged(ReadAction.nonBlocking(() -> DumbService.isDumb(project) ? Map.<UUID, Boolean>of() : TestMethodCode.available(project).methodsFor(project, testCases))
                 .expireWith(ProjectLifetime.of(project))
                 .finishOnUiThread(ModalityState.defaultModalityState(), written -> askOrConfirm(project, connection, testCases, written, editor))
                 .submit(AppExecutorUtil.getAppExecutorService()), "Reading which test methods have a written body");
@@ -115,9 +115,9 @@ public final class WriteBodies {
         final @NotNull Optional<String> said = agent.ask(connection, prompt);
         final @NotNull Optional<String> statements = said.flatMap(AgentAnswer::statementsIn);
 
-        final boolean landed = statements.flatMap(written -> overWhatIsThere
-                ? TestMethodCode.available().replaceBody(project, testCase, written)
-                : TestMethodCode.available().fillBody(project, testCase, written)).isPresent();
+        final boolean landed = TestBodyWriter.available(project).flatMap(writer -> statements.flatMap(written -> overWhatIsThere
+                ? writer.replaceBody(project, testCase, written)
+                : writer.fillBody(project, testCase, written))).isPresent();
 
         transcript.record(testCase, prompt, said.orElse(Bundle.message("agent.said.nothing")), landed, outcomeOf(landed, said, statements));
     }

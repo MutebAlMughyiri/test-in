@@ -24,6 +24,7 @@ import org.testin.codegen.CodeChange;
 import org.testin.codegen.CodeChangeType;
 import org.testin.codegen.Fqcn;
 import org.testin.codegen.event.MovedTestCase;
+import org.testin.codegen.writer.CodeCommand;
 import org.testin.java.codegen.GeneratedClass;
 import org.testin.java.codegen.GeneratedMethod;
 import org.testin.java.codegen.method.update.BaseTestMethodChange;
@@ -49,7 +50,7 @@ public class MoveTestMethod extends BaseTestMethodChange implements CodeChange<M
     public void executeAll(final @NotNull Project project, final @NotNull List<? extends MovedTestCase> moves) {
         if (moves.isEmpty()) return;
 
-        asOneCommand(project, CodeChangeType.MOVE_TEST_CASE.description(), () -> {
+        CodeCommand.inOne(project, CodeChangeType.MOVE_TEST_CASE.description(), () -> {
             moves.forEach(moved -> move(project, moved));
             new UpdateTestMethodOrder().arrangeSets(project, moves.stream().flatMap(moved -> Stream.of(moved.testCase().getParent().getPath(), moved.from().getPath())).toList());
         });

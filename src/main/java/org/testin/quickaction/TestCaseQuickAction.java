@@ -34,7 +34,6 @@ import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
 import org.testin.runner.ExecuteTestCases;
 import org.testin.runner.AutomationExecution;
-import org.testin.services.OptionalPlugin;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
 import org.testin.util.Icons;
@@ -52,7 +51,7 @@ public enum TestCaseQuickAction {
     NAVIGATE_TO_TEST_METHOD(
             Bundle.message("action.Testin.NavigateToTestMethod.text"),
             "Testin.NavigateToTestMethod",
-            ImmutableList.of(OptionalPlugin.JAVA),
+            ImmutableList.of(AutomationWork.NAVIGATION),
             Icons.TEST_CASE,
             (project, testCases) -> NavigateToTestMethodAction.execute(project, testCases.getFirst()),
             (_, _) -> Optional.empty()
@@ -61,7 +60,7 @@ public enum TestCaseQuickAction {
     RUN_TEST_METHOD(
             Bundle.message("action.Testin.RunTestMethod.text"),
             "Testin.RunTestMethod",
-            ImmutableList.of(OptionalPlugin.JAVA, OptionalPlugin.TESTNG),
+            ImmutableList.of(AutomationWork.NAVIGATION, AutomationWork.RUNNING),
             AllIcons.RunConfigurations.TestState.Run,
             ExecuteTestCases::run,
             (shownIn, _) -> shownIn.flatMap(AbstractNode::whySignedOff)
@@ -70,7 +69,7 @@ public enum TestCaseQuickAction {
     STOP_TEST_METHOD(
             Bundle.message("card.stop.test.method"),
             "",
-            ImmutableList.of(OptionalPlugin.TESTNG),
+            ImmutableList.of(AutomationWork.RUNNING),
             AllIcons.Actions.Suspend,
             TestCaseQuickAction::stopExecution,
             (_, _) -> Optional.empty()
@@ -90,7 +89,7 @@ public enum TestCaseQuickAction {
     private final @NotNull String actionId;
 
     @Getter(AccessLevel.NONE)
-    private final @NotNull ImmutableList<OptionalPlugin> requires;
+    private final @NotNull ImmutableList<AutomationWork> requires;
 
     private final @NotNull Icon icon;
 
@@ -163,7 +162,7 @@ public enum TestCaseQuickAction {
 
     // UC-CODEGEN-009, Rule-CODEGEN-005, Rule-CODEGEN-082
     public boolean enableOrExplain(final @NotNull Project project, final @NotNull Presentation presentation) {
-        if (!requires.stream().allMatch(plugin -> plugin.enableOrExplain(presentation, tooltip))) return false;
+        if (!requires.stream().allMatch(work -> work.of(project).enableOrExplain(presentation, tooltip))) return false;
 
         return whyNotOffered(project).map(reason -> {
             presentation.setEnabled(false);
@@ -192,15 +191,15 @@ public enum TestCaseQuickAction {
         return (tooltip + " " + Declared.shortcutText(actionId)).trim();
     }
 
-    // UC-EDITOR-PANEL-047, Rule-CODEGEN-082
+    // UC-EDITOR-PANEL-047, Rule-CODEGEN-082, Rule-CODEGEN-117
     public @NotNull Optional<String> whyNotOffered(final @NotNull Project project) {
         final @NotNull Optional<String> missing = requires.stream()
-                .filter(plugin -> !plugin.isAvailable())
-                .findFirst()
-                .map(plugin -> plugin.needs(tooltip));
+                .map(work -> work.of(project).whyNot(tooltip))
+                .flatMap(Optional::stream)
+                .findFirst();
 
         // Rule-CODEGEN-082
-        if (missing.isPresent() || !requires.contains(OptionalPlugin.JAVA)) return missing;
+        if (missing.isPresent() || requires.stream().noneMatch(AutomationWork::isOnlyWhereCodeIsOn)) return missing;
         return CodeOn.whyOff(project);
     }
 }

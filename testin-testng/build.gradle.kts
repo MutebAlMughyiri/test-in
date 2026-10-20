@@ -32,8 +32,10 @@ dependencies {
         bundledPlugin("TestNG-J")
     }
 
-    // Ships beside this module, not inside it.
+    // Ship beside this module, not inside it. The Java module finds the generated
+    // methods TestNG runs; this module only starts them.
     compileOnly(project(":"))
+    compileOnly(project(":testin-java"))
 
     listOf(
         "compileOnly",

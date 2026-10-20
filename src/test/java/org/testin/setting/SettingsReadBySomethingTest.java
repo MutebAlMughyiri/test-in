@@ -17,6 +17,7 @@
 package org.testin.setting;
 
 import org.jetbrains.annotations.NotNull;
+import org.testin.ContentModules;
 import org.testin.RepositoryRoot;
 import org.testng.annotations.Test;
 
@@ -38,7 +39,8 @@ public class SettingsReadBySomethingTest {
     private static final @NotNull List<String> THE_PAGES = List.of("AppSettingsState.java", "SettingsConfigurable.java", "AgentSettingsConfigurable.java", "AgentPromptConfigurable.java");
 
     private static @NotNull List<String> theSourcesThatAreNotThePages() {
-        try (Stream<Path> files = Stream.of("src", "testin-java/src", "testin-testng/src", "testin-apimodel/src")
+        try (Stream<Path> files = ContentModules.each("src").stream()
+                .map(Path::toString)
                 .map(RepositoryRoot::resolve)
                 .map(tree -> tree.resolve("main").resolve("java"))
                 .flatMap(tree -> walked(tree).stream())) {

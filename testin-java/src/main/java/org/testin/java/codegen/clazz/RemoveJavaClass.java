@@ -20,7 +20,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.CodeChange;
 import org.testin.codegen.Fqcn;
-import org.testin.codegen.JavaSourceRoot;
+import org.testin.codegen.TestSourceRoot;
 import org.testin.java.codegen.GeneratedSourceFiles;
 import org.testin.model.node.AbstractNode;
 
@@ -29,7 +29,7 @@ public class RemoveJavaClass implements CodeChange<AbstractNode> {
     // UC-CODEGEN-018, Rule-CODEGEN-059
     @Override
     public void execute(final @NotNull Project project, final @NotNull AbstractNode node) {
-        Fqcn.classFileOf(node).ifPresent(classFile -> JavaSourceRoot.writeInRoot(project, testSourceRoot ->
+        Fqcn.classFileOf(node).ifPresent(classFile -> TestSourceRoot.writeInRoot(project, testSourceRoot ->
                 GeneratedSourceFiles.removeUnder(project, testSourceRoot, classFile)));
     }
 }

@@ -89,7 +89,7 @@ so.
 it is. A notification that stays appears, titled *The automation code did not
 move with* and the package's name. It names the package and says what to do.
 
-**If the code project has no Java test source folder** — nothing happens, and
+**If the code project has no test source folder** — nothing happens, and
 nothing is said.
 
 **If the IDE has no Java plugin** — nothing happens.

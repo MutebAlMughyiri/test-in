@@ -22,7 +22,8 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.Declared;
-import org.testin.codegen.JavaSourceRoot;
+import org.testin.codegen.TestSourceRoot;
+import org.testin.codegen.CodeChangeRegistry;
 import org.testin.codegen.NodeCode;
 import org.testin.codegen.WaitForIndexing;
 import org.testin.editor.open.TestinEditors;
@@ -155,8 +156,8 @@ record RemoveWork(@NotNull Project project, @NotNull Nodes nodes, @NotNull Testi
 
     // UC-CODEGEN-018, Rule-CODEGEN-113
     private @NotNull Map<String, byte[]> codeOf(final @NotNull AbstractNode node) {
-        return NodeCode.of(node.getType()).getCodeFile().apply(node)
-                .map(codeFile -> ReadAction.computeBlocking(() -> JavaSourceRoot.contentUnder(project, codeFile)))
+        return CodeChangeRegistry.available(project).flatMap(registry -> NodeCode.of(node.getType()).getCodeFile().apply(registry, node))
+                .map(codeFile -> ReadAction.computeBlocking(() -> TestSourceRoot.contentUnder(project, codeFile)))
                 .orElse(Map.of());
     }
 
@@ -174,7 +175,7 @@ record RemoveWork(@NotNull Project project, @NotNull Nodes nodes, @NotNull Testi
 
         final @NotNull List<Path> lost = new ArrayList<>();
         BackgroundWork.synchronously(project, Bundle.message("remove.undo.progress"), false, () -> lost.addAll(nodes.restoreNodes(originalByKept)));
-        kept.stream().filter(one -> !lost.contains(one.original())).forEach(one -> JavaSourceRoot.putBack(project, one.code()));
+        kept.stream().filter(one -> !lost.contains(one.original())).forEach(one -> TestSourceRoot.putBack(project, one.code()));
 
         if (lost.isEmpty()) return true;
 

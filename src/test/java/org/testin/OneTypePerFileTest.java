@@ -34,7 +34,7 @@ import static org.testng.Assert.assertTrue;
 
 public class OneTypePerFileTest {
 
-    private static final @NotNull List<Path> ROOTS = List.of(Path.of("src", "main", "java"), Path.of("testin-java", "src", "main", "java"), Path.of("testin-testng", "src", "main", "java"), Path.of("testin-apimodel", "src", "main", "java"));
+    private static final @NotNull List<Path> ROOTS = ContentModules.each("src", "main", "java");
 
     private static final @NotNull Pattern NESTED = Pattern.compile("^\\s+(?:(?:public|protected|private|static|final|sealed|strictfp)\\s+)*(?:enum\\s+[A-Z]\\w*\\s*(?:\\{|implements\\b)|record\\s+[A-Z]\\w*\\s*[(<])");
 

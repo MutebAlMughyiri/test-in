@@ -18,13 +18,13 @@ package org.testin.codegen.event;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
+import org.testin.codegen.CodeChangeRegistry;
 import org.testin.codegen.CodeOn;
 import org.testin.codegen.Fqcn;
-import org.testin.codegen.JavaSourceRoot;
+import org.testin.codegen.TestSourceRoot;
 import org.testin.config.TestinYml;
 import org.testin.model.NodeType;
 import org.testin.model.node.AbstractNode;
-import org.testin.services.OptionalPlugin;
 import org.testin.util.NameSanitizer;
 
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ public record RenamedNode(@NotNull AbstractNode node, @NotNull List<String> from
 
     // Rule-CODEGEN-082
     public boolean movesCode(final @NotNull Project project) {
-        return CodeOn.isOn(project) || (OptionalPlugin.JAVA.isAvailable() && toTheFilesName(project));
+        return CodeOn.isOn(project, CodeChangeRegistry.need(project)) || (CodeChangeRegistry.need(project).isMet() && toTheFilesName(project));
     }
 
     // UC-CODEGEN-017, Rule-CODEGEN-080
@@ -65,9 +65,9 @@ public record RenamedNode(@NotNull AbstractNode node, @NotNull List<String> from
         to.set(to.size() - 1, newPackage());
         if (to.equals(from)) return false;
 
-        return JavaSourceRoot.find(project)
-                .filter(root -> JavaSourceRoot.under(root, Fqcn.folderOf(from)).isPresent())
-                .flatMap(root -> JavaSourceRoot.under(root, Fqcn.folderOf(to)))
+        return TestSourceRoot.find(project)
+                .filter(root -> TestSourceRoot.under(root, Fqcn.folderOf(from)).isPresent())
+                .flatMap(root -> TestSourceRoot.under(root, Fqcn.folderOf(to)))
                 .isPresent();
     }
 }

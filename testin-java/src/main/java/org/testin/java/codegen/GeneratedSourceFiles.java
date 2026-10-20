@@ -24,7 +24,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.Fqcn;
-import org.testin.codegen.JavaSourceRoot;
+import org.testin.codegen.TestSourceRoot;
 import org.testin.indexer.recyclebin.RecycleBin;
 import org.testin.logger.TestinLogger;
 import org.testin.util.FailureText;
@@ -37,7 +37,7 @@ import java.util.Optional;
 public final class GeneratedSourceFiles {
     // UC-CODEGEN-018, Rule-CODEGEN-059, Rule-CODEGEN-060, Rule-INTERNAL-143
     public static void removeUnder(final @NotNull Project project, final @NotNull VirtualFile root, final @NotNull String relativePath) {
-        final @NotNull Optional<VirtualFile> found = JavaSourceRoot.under(root, relativePath).filter(VirtualFile::exists);
+        final @NotNull Optional<VirtualFile> found = TestSourceRoot.under(root, relativePath).filter(VirtualFile::exists);
         if (found.isEmpty()) return;
 
         final @NotNull VirtualFile target = found.orElseThrow();
@@ -46,7 +46,7 @@ public final class GeneratedSourceFiles {
 
     // UC-CODEGEN-001, Rule-CODEGEN-009, Rule-CODEGEN-010
     public static @NotNull Optional<VirtualFile> classFile(final @NotNull VirtualFile root, final @NotNull List<String> packageSegments, final @NotNull String className) {
-        final @NotNull Optional<VirtualFile> folder = JavaSourceRoot.packageFolder(root, packageSegments);
+        final @NotNull Optional<VirtualFile> folder = TestSourceRoot.packageFolder(root, packageSegments);
         if (folder.isEmpty()) return Optional.empty();
 
         final @NotNull String fileName = Fqcn.classFileOf(List.of(className));
@@ -89,7 +89,7 @@ public final class GeneratedSourceFiles {
         }
     }
 
-    public static void commandInRoot(final @NotNull Project project, final @NotNull String title, final @NotNull JavaSourceRoot.RootWork work) {
-        WriteCommandAction.runWriteCommandAction(project, title, null, () -> JavaSourceRoot.find(project).ifPresent(work::run));
+    public static void commandInRoot(final @NotNull Project project, final @NotNull String title, final @NotNull TestSourceRoot.RootWork work) {
+        WriteCommandAction.runWriteCommandAction(project, title, null, () -> TestSourceRoot.find(project).ifPresent(work::run));
     }
 }

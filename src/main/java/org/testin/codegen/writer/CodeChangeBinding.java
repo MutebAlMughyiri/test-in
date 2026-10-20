@@ -14,16 +14,33 @@
  * limitations under the License.
  */
 
-package org.testin.java.codegen;
+package org.testin.codegen.writer;
 
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.CodeChange;
 import org.testin.codegen.CodeChangeType;
+import org.testin.codegen.NoCodeChange;
+import org.testin.util.FromContentModule;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-record CodeChangeBinding<X>(@NotNull CodeChangeType<X> type, @NotNull CodeChange<X> action) {
+public record CodeChangeBinding<X>(@NotNull CodeChangeType<X> type, @NotNull CodeChange<X> action) {
+    @FromContentModule
+    public static <T> void bind(final @NotNull Map<CodeChangeType<?>, CodeChangeBinding<?>> bindings, final @NotNull CodeChangeType<T> type, final @NotNull CodeChange<T> action) {
+        bindings.put(type, new CodeChangeBinding<>(type, action));
+    }
+
+    // UC-CODEGEN-019, Rule-CODEGEN-005
+    @FromContentModule
+    public static <T> @NotNull CodeChange<T> actionFor(final @NotNull Map<CodeChangeType<?>, CodeChangeBinding<?>> bindings, final @NotNull CodeChangeType<T> type) {
+        return Optional.ofNullable(bindings.get(type))
+                .<CodeChange<T>>map(CodeChangeBinding::typed)
+                .orElseGet(() -> new NoCodeChange<>(type.description()));
+    }
+
     <T> @NotNull CodeChange<T> typed() {
         return new CodeChange<>() {
             @Override

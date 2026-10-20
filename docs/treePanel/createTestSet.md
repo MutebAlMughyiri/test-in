@@ -136,8 +136,9 @@ the node that
 cannot take a child. A popup never shows a gray entry's description, so the
 reason is in the entry.
 
-**If the IDE project has no Java test folder** — *Java Test Source Not Found*
-says no automation code will be written. The test set is still created.
+**If the IDE project has no test source folder** — the Testin Help mark turns
+red: *This project has no test source folder, so* the file *was not created*.
+The test set is still created.
 
 **If the Java plugin is not installed** — *Java Plugin Not Available* says that
 automation code and navigation need it. Testin says this once per project. The

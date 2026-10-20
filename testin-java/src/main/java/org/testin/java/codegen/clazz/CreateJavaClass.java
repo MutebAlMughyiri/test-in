@@ -21,7 +21,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.CodeChange;
 import org.testin.codegen.Fqcn;
-import org.testin.codegen.JavaSourceRoot;
+import org.testin.codegen.TestSourceRoot;
 import org.testin.java.codegen.GeneratedSourceFiles;
 import org.testin.logger.TestinLogger;
 import org.testin.model.node.AbstractNode;
@@ -40,6 +40,6 @@ public class CreateJavaClass implements CodeChange<AbstractNode> {
 
         TestinLogger.info("Ready to generate Test Class: " + className + " in package: " + fqcn);
 
-        WriteAction.run(() -> JavaSourceRoot.findOrWarn(project, className).ifPresent(root -> GeneratedSourceFiles.classFile(root, packageSegments, className)));
+        WriteAction.run(() -> TestSourceRoot.findOrWarn(project, className + ".java").ifPresent(root -> GeneratedSourceFiles.classFile(root, packageSegments, className)));
     }
 }

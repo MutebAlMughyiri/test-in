@@ -45,7 +45,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JavaSourceRoot {
+public final class TestSourceRoot {
 
     // UC-CODEGEN-020, Rule-CODEGEN-064, Rule-CODEGEN-066
     public static @NotNull Optional<VirtualFile> find(final @NotNull Project project) {
@@ -71,12 +71,12 @@ public final class JavaSourceRoot {
 
     // UC-CODEGEN-020, Rule-CODEGEN-065, Rule-CODEGEN-072, Rule-INTERNAL-127
     @FromContentModule
-    public static @NotNull Optional<VirtualFile> findOrWarn(final @NotNull Project project, final @NotNull String className) {
+    public static @NotNull Optional<VirtualFile> findOrWarn(final @NotNull Project project, final @NotNull String codeFile) {
         final @NotNull Optional<VirtualFile> root = find(project);
         final @NotNull Hints hints = Services.getInstance(project, Hints.class);
 
         root.ifPresentOrElse(_ -> hints.clear(SetupStep.TEST_SOURCE_FOLDER),
-                () -> hints.fire(SetupHint.of(SetupStep.TEST_SOURCE_FOLDER, Bundle.message("codegen.no.source.root.message", className))));
+                () -> hints.fire(SetupHint.of(SetupStep.TEST_SOURCE_FOLDER, Bundle.message("codegen.no.source.root.message", codeFile))));
         return root;
     }
 
@@ -112,7 +112,7 @@ public final class JavaSourceRoot {
         final int slash = relativePath.lastIndexOf('/');
         packageFolder(root, slash < 0 ? List.of() : List.of(relativePath.substring(0, slash))).ifPresent(folder -> {
             try {
-                folder.createChildData(JavaSourceRoot.class, relativePath.substring(slash + 1)).setBinaryContent(content);
+                folder.createChildData(TestSourceRoot.class, relativePath.substring(slash + 1)).setBinaryContent(content);
                 TestinLogger.info("Put the generated code back at: " + relativePath);
             } catch (final IOException ex) {
                 TestinLogger.error("Could not put the generated code back at " + relativePath + ": " + FailureText.of(ex));

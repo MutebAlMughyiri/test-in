@@ -1,0 +1,24 @@
+<!--
+  The descriptor for this content module. Its file name is the module name, and
+  plugin.xml names it in <content>.
+
+  It depends on no plugin, so it loads in every IDE: what it writes and reads in
+  a .robot file it handles as text. The mark in the gutter is registered for
+  every language, as the platform's own Run marks are, because each Robot plugin
+  names its language differently and a .robot file with no plugin is plain text;
+  the mark itself looks only at .robot files.
+-->
+<idea-plugin>
+    <extensions defaultExtensionNs="org.testin">
+        <codeGenerators implementation="org.testin.robot.RobotCodeChangeRegistry"/>
+        <codeNavigation implementation="org.testin.robot.RobotTestMethodCode"/>
+        <testRunners implementation="org.testin.robot.RobotRunner"/>
+    </extensions>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <configurationType implementation="org.testin.robot.RobotTestsConfigurationType"/>
+        <codeInsight.lineMarkerProvider
+                language=""
+                implementationClass="org.testin.robot.TestMethodGutter"/>
+    </extensions>
+</idea-plugin>

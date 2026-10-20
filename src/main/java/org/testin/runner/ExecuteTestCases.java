@@ -20,11 +20,13 @@ import com.intellij.openapi.project.Project;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.testin.util.Bundle;
+import org.testin.logger.TestinLogger;
 import org.testin.codegen.CodeOn;
+import org.testin.navigate.TestMethodCode;
 import org.testin.help.Guide;
 import org.testin.help.Guides;
 import org.testin.model.TestCase;
-import org.testin.services.OptionalPlugin;
 import org.testin.services.Services;
 
 import java.util.List;
@@ -37,8 +39,8 @@ public final class ExecuteTestCases {
         Services.getInstance(project, Guides.class).add(Guide.AUTOMATION_CODE);
 
         // Rule-CODEGEN-082
-        if (CodeOn.isOffAndWarned(project)) return;
-        if (OptionalPlugin.TESTNG.isMissingAndWarned(project)) return;
+        if (CodeOn.isOffAndWarned(project, TestMethodCode.need(project))) return;
+        if (AutomationExecutor.need(project).isMissingAndWarned(project)) return;
 
         final @NotNull AutomationExecution execution = Services.getInstance(project, AutomationExecution.class);
 
@@ -48,6 +50,9 @@ public final class ExecuteTestCases {
 
         if (starting.isEmpty()) return;
 
-        AutomationExecutor.available().run(project, starting);
+        starting.forEach(execution::starting);
+        AutomationExecutor.available(project).ifPresentOrElse(
+                runner -> runner.run(project, starting),
+                () -> TestinLogger.debug(Bundle.message("runner.none", String.valueOf(starting.size()))));
     }
 }

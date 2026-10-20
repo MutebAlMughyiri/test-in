@@ -34,6 +34,10 @@ This opens the Java method that runs the selected test case.
 - **Rule-CODEGEN-027** — Without the Java plugin the class button on the card
   and on the view panel is drawn gray, and the menu entry stays, grayed, reading *(needs the Java plugin)*. Nothing is
   left out.
+- **Rule-CODEGEN-119** — In a Robot Framework test project, Navigate to Test
+  Method opens the test whose first tag is the test case UUID, at its name line.
+  Testin looks in every `.robot` file of the code project, so a test a tester
+  moved to another suite file by hand is still found.
 
 ## The three ways in
 

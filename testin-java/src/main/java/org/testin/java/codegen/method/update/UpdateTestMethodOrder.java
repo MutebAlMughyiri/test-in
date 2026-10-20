@@ -31,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.testin.codegen.CodeChange;
 import org.testin.codegen.CodeChangeType;
+import org.testin.codegen.writer.CodeCommand;
 import org.testin.indexer.TestCases;
 import org.testin.java.codegen.GeneratedMethod;
 import org.testin.model.TestCase;
@@ -100,7 +101,7 @@ public class UpdateTestMethodOrder extends BaseTestMethodChange implements CodeC
         final @NotNull List<List<TestCase>> ordered = testSetPaths.stream().distinct().map(Services.getInstance(project, TestCases.class)::getTestCasesForTestSet).toList();
         if (ordered.isEmpty()) return;
 
-        asOneCommand(project, CodeChangeType.UPDATE_TEST_CASE_ORDER.description(), () -> ordered.forEach(inSet -> arrange(project, inSet)));
+        CodeCommand.inOne(project, CodeChangeType.UPDATE_TEST_CASE_ORDER.description(), () -> ordered.forEach(inSet -> arrange(project, inSet)));
     }
 
     // UC-CODEGEN-011, Rule-CODEGEN-043, Rule-CODEGEN-067, Rule-CODEGEN-044

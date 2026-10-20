@@ -103,6 +103,7 @@
         <module name="Testin.testin-java" loading="optional"/>
         <module name="Testin.testin-testng" loading="optional"/>
         <module name="Testin.testin-apimodel" loading="optional"/>
+        <module name="Testin.testin-robot" loading="optional"/>
     </content>
 
     <!-- ================================================================== -->
@@ -120,6 +121,9 @@
                         dynamic="true"/>
         <extensionPoint name="codeNavigation"
                         interface="org.testin.navigate.TestMethodCode"
+                        dynamic="true"/>
+        <extensionPoint name="testBodies"
+                        interface="org.testin.codegen.agent.TestBodyWriter"
                         dynamic="true"/>
         <extensionPoint name="apiModelMakers"
                         interface="org.testin.codegen.ApiModelMaker"

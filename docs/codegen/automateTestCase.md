@@ -95,8 +95,7 @@ generate again.
 method. The same title appears, and the message says the name is taken and to
 reword the description by a word.
 
-**If the code project has no Java test source folder** — a message titled **No
-Java Test Source Root** appears, and nothing is written.
+**If the code project has no test source folder** — the Testin Help hint says so, and nothing is written.
 
 **If the IDE has no Java plugin** — the entry is still on the menu, grayed,
 reading *(needs the Java plugin)*.

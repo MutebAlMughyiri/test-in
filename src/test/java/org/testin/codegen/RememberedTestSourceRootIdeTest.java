@@ -72,14 +72,14 @@ public class RememberedTestSourceRootIdeTest extends AbstractCodegenIdeTest {
         aRememberedFolderThatWasDeleted();
 
         assertTrue("a deleted test source folder is still remembered", remembered().get().isEmpty());
-        assertEquals("the next look did not find the test source folder again", Optional.of(theTestSourceRoots().getFirst()), JavaSourceRoot.find(getProject()));
+        assertEquals("the next look did not find the test source folder again", Optional.of(theTestSourceRoots().getFirst()), TestSourceRoot.find(getProject()));
     }
 
     // Rule-CODEGEN-064
     public void testWhatTheLookFindsIsRemembered() {
         aRememberedFolderThatWasDeleted();
 
-        final @NotNull Optional<VirtualFile> found = JavaSourceRoot.find(getProject());
+        final @NotNull Optional<VirtualFile> found = TestSourceRoot.find(getProject());
 
         assertTrue("the project has no test source folder to find", found.isPresent());
         assertEquals("the folder found was not remembered, so every class written looks again", found, remembered().get());
@@ -100,7 +100,7 @@ public class RememberedTestSourceRootIdeTest extends AbstractCodegenIdeTest {
             aRememberedFolderThatWasDeleted();
 
             assertEquals("the module does not have two test source folders", 2, theTestSourceRoots().size());
-            assertEquals("a test source folder other than the first was used", Optional.of(theTestSourceRoots().getFirst()), JavaSourceRoot.find(getProject()));
+            assertEquals("a test source folder other than the first was used", Optional.of(theTestSourceRoots().getFirst()), TestSourceRoot.find(getProject()));
         } finally {
             PsiTestUtil.removeSourceRoot(getModule(), secondRoot);
             remembered().set(theTestSourceRoots().getFirst());

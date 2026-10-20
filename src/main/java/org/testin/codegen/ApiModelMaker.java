@@ -20,16 +20,26 @@ import com.intellij.openapi.extensions.ExtensionPointName;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDirectory;
 import org.jetbrains.annotations.NotNull;
+import org.testin.config.AutomationLanguage;
+import org.testin.config.AutomationNeed;
+import org.testin.config.LanguageContributor;
+import org.testin.util.Bundle;
 import org.testin.util.FromContentModule;
 
 import java.util.Optional;
 
 // UC-CODEGEN-022
-public interface ApiModelMaker {
+public interface ApiModelMaker extends LanguageContributor {
     @NotNull ExtensionPointName<ApiModelMaker> EP = ExtensionPointName.create("org.testin.apiModelMakers");
 
-    static @NotNull Optional<ApiModelMaker> available() {
-        return EP.getExtensionList().stream().findFirst();
+    // Rule-CODEGEN-116
+    static @NotNull Optional<ApiModelMaker> available(final @NotNull Project project) {
+        return AutomationLanguage.of(project).contributor(EP);
+    }
+
+    // Rule-CODEGEN-117
+    static @NotNull AutomationNeed need(final @NotNull Project project) {
+        return AutomationLanguage.of(project).toWorkOnCode(EP, Bundle.message("automation.work.api.model"));
     }
 
     // Rule-CODEGEN-098

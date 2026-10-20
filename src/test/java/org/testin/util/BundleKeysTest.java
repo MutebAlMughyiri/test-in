@@ -17,6 +17,7 @@
 package org.testin.util;
 
 import org.jetbrains.annotations.NotNull;
+import org.testin.ContentModules;
 import org.testin.notifications.Done;
 import org.testin.notifications.Refused;
 import org.testng.annotations.Test;
@@ -52,10 +53,7 @@ public class BundleKeysTest {
     }
 
     private static @NotNull List<Path> sources() {
-        return Stream.of(Path.of("src", "main", "java"),
-                        Path.of("testin-java", "src", "main", "java"),
-                        Path.of("testin-testng", "src", "main", "java"),
-                        Path.of("testin-apimodel", "src", "main", "java"))
+        return ContentModules.each("src", "main", "java").stream()
                 .filter(Files::isDirectory)
                 .flatMap(BundleKeysTest::javaFilesUnder)
                 .toList();

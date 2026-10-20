@@ -23,13 +23,13 @@ import com.intellij.openapi.project.Project;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.testin.config.AutomationNeed;
 import org.testin.config.TestinYml;
 import org.testin.help.Hints;
 import org.testin.help.SetupHint;
 import org.testin.help.SetupStep;
 import org.testin.logger.TestinLogger;
 import org.testin.notifications.Notifier;
-import org.testin.services.OptionalPlugin;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
 import org.testin.testproject.SaveTestinYml;
@@ -42,8 +42,8 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CodeOn {
     // Rule-CODEGEN-082
-    public static boolean isOn(final @NotNull Project project) {
-        return OptionalPlugin.JAVA.isAvailable() && TestinYml.names(project, openTestProject(project));
+    public static boolean isOn(final @NotNull Project project, final @NotNull AutomationNeed need) {
+        return need.isMet() && TestinYml.names(project, openTestProject(project));
     }
 
     // Rule-CODEGEN-082
@@ -60,8 +60,8 @@ public final class CodeOn {
     }
 
     // Rule-CODEGEN-082, Rule-INTERNAL-127
-    public static boolean isOffAndWarned(final @NotNull Project project) {
-        if (OptionalPlugin.JAVA.isMissingAndWarned(project)) return true;
+    public static boolean isOffAndWarned(final @NotNull Project project, final @NotNull AutomationNeed need) {
+        if (need.isMissingAndWarned(project)) return true;
 
         final @NotNull Optional<String> why = hinted(project);
         why.ifPresent(reason -> Services.getInstance(project, Notifier.class).softRefuse(project, reason));
@@ -69,8 +69,8 @@ public final class CodeOn {
     }
 
     // Rule-CODEGEN-082, Rule-CODEGEN-005, Rule-INTERNAL-127
-    public static boolean isOnOrHinted(final @NotNull Project project) {
-        if (!OptionalPlugin.JAVA.isAvailableOrHinted(project)) return false;
+    public static boolean isOnOrHinted(final @NotNull Project project, final @NotNull AutomationNeed need) {
+        if (!need.isAvailableOrHinted(project)) return false;
 
         final @NotNull Optional<String> why = hinted(project);
         why.ifPresent(reason -> TestinLogger.debug("Automation code left as it is: " + reason));
@@ -87,9 +87,9 @@ public final class CodeOn {
     }
 
     // Rule-CODEGEN-082, Rule-TREE-PANEL-104
-    public static boolean grayedWithReason(final @NotNull AnAction action, final @NotNull AnActionEvent e, final @NotNull Project project) {
+    public static boolean grayedWithReason(final @NotNull AnAction action, final @NotNull AnActionEvent e, final @NotNull Project project, final @NotNull AutomationNeed need) {
         final @NotNull Presentation presentation = e.getPresentation();
-        if (OptionalPlugin.JAVA.grayedWithReason(action, presentation)) return true;
+        if (need.grayedWithReason(action, presentation)) return true;
 
         final @NotNull Presentation own = action.getTemplatePresentation();
         final @NotNull Optional<String> why = whyOff(project);

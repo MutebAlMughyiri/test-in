@@ -14,38 +14,34 @@
  * limitations under the License.
  */
 
-package org.testin.java.codegen.method;
+package org.testin.codegen.writer;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiMethod;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.recyclebin.RecycleBin;
 import org.testin.logger.TestinLogger;
 import org.testin.util.FailureText;
+import org.testin.util.FromContentModule;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-final class RemovedTestMethodFile {
+public final class RemovedTestCodeFile {
     // UC-CODEGEN-014, Rule-INTERNAL-143
-    static void toTheBin(final @NotNull Project project, final @NotNull PsiMethod testMethod) {
-        final @NotNull String fileName = Optional.ofNullable(testMethod.getContainingClass()).map(PsiClass::getName).map(className -> className + ".").orElse("") + testMethod.getName() + ".java";
-        final @NotNull String text = testMethod.getText();
-
+    @FromContentModule
+    public static void toTheBin(final @NotNull Project project, final @NotNull String fileName, final @NotNull String code) {
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             try {
-                final @NotNull Path folder = Files.createTempDirectory("testin-removed-method");
-                if (RecycleBin.took(project, Files.writeString(folder.resolve(fileName), text)))
+                final @NotNull Path folder = Files.createTempDirectory("testin-removed-test");
+                if (RecycleBin.took(project, Files.writeString(folder.resolve(fileName), code)))
                     Files.deleteIfExists(folder);
             } catch (final IOException ex) {
-                TestinLogger.error("Could not keep the removed method " + fileName + " for the recycle bin: " + FailureText.of(ex));
+                TestinLogger.error("Could not keep the removed test " + fileName + " for the recycle bin: " + FailureText.of(ex));
             }
         });
     }

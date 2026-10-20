@@ -138,13 +138,12 @@ public class OneExecutionIdeTest extends AbstractCodegenIdeTest {
     public void testWhateverIsSelectedIsOneExecution() {
         final @NotNull TestSetNode login = createdTestSet("Login");
         final @NotNull List<TestCase> selected = theTestCases(List.of(createdTestCase(login, "Log in", "b"), createdTestCase(login, "Log out", "c"), createdTestCase(createdTestSet("Payment"), "Pay", "b")));
-        final @NotNull List<List<TestCase>> handedOver = new ArrayList<>();
-        ExtensionTestUtil.maskExtensions(AutomationExecutor.EP, List.of((_, testCases) -> handedOver.add(testCases)), getTestRootDisposable());
+        final @NotNull CapturedRunner runner = CapturedRunner.installed(getTestRootDisposable());
 
         ExecuteTestCases.run(getProject(), selected);
 
-        assertEquals("the selection was split into more than one execution: " + handedOver, 1, handedOver.size());
-        assertEquals("the one execution does not carry every selected test case", selected, handedOver.getFirst());
+        assertEquals("the selection was split into more than one execution: " + runner.executions(), 1, runner.executions().size());
+        assertEquals("the one execution does not carry every selected test case", selected, runner.executions().getFirst());
     }
 
     // Rule-CODEGEN-031, Rule-CODEGEN-033

@@ -38,7 +38,7 @@ public enum GeneratedCodeUpdate implements CodeUpdate {
 
     // UC-CODEGEN-019, Rule-CODEGEN-005, Rule-CODEGEN-006, Rule-CODEGEN-082
     private static boolean cannotGenerate(final @NotNull Project project, final @NotNull String description) {
-        if (!CodeOn.isOnOrHinted(project)) return true;
+        if (!CodeOn.isOnOrHinted(project, CodeChangeRegistry.need(project))) return true;
         if (!DumbService.isDumb(project)) return false;
 
         if (Once.claim(project, INDEXING_SAID)) {
@@ -56,7 +56,7 @@ public enum GeneratedCodeUpdate implements CodeUpdate {
     public <T> void execute(final @NotNull CodeChangeType<T> type, final @NotNull Project project, final @NotNull T payload) {
         if (cannotGenerate(project, type.description())) return;
 
-        CodeChangeRegistry.find(type).execute(project, payload);
+        CodeChangeRegistry.find(project, type).execute(project, payload);
     }
 
     // UC-CODEGEN-019, Rule-CODEGEN-005, Rule-EDITOR-PANEL-046
@@ -66,7 +66,7 @@ public enum GeneratedCodeUpdate implements CodeUpdate {
 
         final long started = System.nanoTime();
         WriteCommandAction.runWriteCommandAction(project, type.description(), undoGroup,
-                () -> CodeChangeRegistry.find(type).executeAll(project, payloads));
+                () -> CodeChangeRegistry.find(project, type).executeAll(project, payloads));
         TestinLogger.info(type.description() + " (" + payloads.size() + ") took " + TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - started) + " ms");
     }
 }

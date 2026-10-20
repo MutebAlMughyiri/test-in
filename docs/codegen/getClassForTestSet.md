@@ -68,7 +68,7 @@ public class LoginTest {
 
 No screen opens, and Testin says nothing at all. The new Java file appears in
 the Project tool window, inside the folder that holds the Java tests. Only a
-problem speaks. A missing Java test source folder is a notification that stays
+problem speaks. A missing test source folder is a notification that stays
 in the IDE's Notifications log, said once for the code project. A missing Java
 plugin is a small red message near the bottom right that fades after about five
 seconds. Everything else goes to the log alone.
@@ -82,10 +82,10 @@ seconds. Everything else goes to the log alone.
 
 ## What Testin refuses
 
-**If the code project has no Java test source folder** — a message titled **No
-Java Test Source Root** reads *This project has no Java test source folder, so
-creating test class was skipped. Test cases and test runs are read and written
-without one - only the automation code needs it.* It is said once for the code
+**If the code project has no test source folder** — the Testin Help hint
+reads *This project has no test source folder, so LoginTest.java was not
+created. Test cases and test runs are read and written without one - only the
+automation code needs it.* It is said once for the code
 project. The test set is still created.
 
 **If there is no name to build a class from** — nothing is written, and only the

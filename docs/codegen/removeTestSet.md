@@ -59,7 +59,7 @@ with everything under it.
 
 ## What Testin refuses
 
-**If the code project has no Java test source folder** — nothing is deleted, and
+**If the code project has no test source folder** — nothing is deleted, and
 nothing is said. A removal that finds nothing to tidy up is not a failure.
 
 **If the recycle bin does not take the class file or the folder** — it stays

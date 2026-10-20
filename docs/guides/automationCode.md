@@ -26,11 +26,11 @@
 
 ## If something goes wrong
 
-| What you see                                              | What to do                                                                                                                                        |
-|-----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
-| The red ? says the Java plugin is not available           | Turn it on in **Settings \| Plugins** and restart the IDE. ([Work in an IDE with no Java plugin](../codegen/noJavaPlugin.md))                     |
-| The red ? says the project has no Java test source folder | Mark a folder as **Test Sources Root** in **Project Structure**. ([Work in a project with no Java test folder](../codegen/noTestSourceFolder.md)) |
-| *TestNG Plugin Not Available*                             | Turn on TestNG in **Settings \| Plugins** and restart the IDE.                                                                                    |
-| The red ? says testin.yml does not name this test project | Press **Save to testin.yml** in its hint.                                                                                                         |
+| What you see                                              | What to do                                                                                                                                          |
+|-----------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| The red ? says the Java plugin is not available           | Turn it on in **Settings \| Plugins** and restart the IDE. ([Work in an IDE with no Java plugin](../codegen/noJavaPlugin.md))                       |
+| The red ? says the project has no test source folder      | Mark a folder as **Test Sources Root** in **Project Structure**. ([Work in a project with no test source folder](../codegen/noTestSourceFolder.md)) |
+| *TestNG Plugin Not Available*                             | Turn on TestNG in **Settings \| Plugins** and restart the IDE.                                                                                      |
+| The red ? says testin.yml does not name this test project | Press **Save to testin.yml** in its hint.                                                                                                           |
 
 [Documentation](../README.md) › Task guides

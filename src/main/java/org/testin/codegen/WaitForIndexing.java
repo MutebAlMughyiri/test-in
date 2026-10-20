@@ -29,7 +29,7 @@ import org.testin.services.Services;
 public final class WaitForIndexing {
     // Rule-CODEGEN-096
     public static boolean refuses(final @NotNull Project project, final @NotNull String what) {
-        if (!DumbService.isDumb(project) || !CodeOn.isOn(project)) return false;
+        if (!DumbService.isDumb(project) || !CodeOn.isOn(project, CodeChangeRegistry.need(project))) return false;
 
         Services.getInstance(project, Notifier.class).softRefuse(project, Refused.WHILE_INDEXING, what);
         return true;

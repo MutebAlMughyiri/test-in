@@ -17,6 +17,7 @@
 package org.testin.docs;
 
 import org.jetbrains.annotations.NotNull;
+import org.testin.ContentModules;
 import org.testin.logger.TestinLogger;
 import org.testng.annotations.Test;
 
@@ -38,7 +39,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
 public class RuleCoverageTest {
-    private static final @NotNull List<Path> TEST_ROOTS = DocumentedRules.MODULES.stream().map(module -> Paths.get(module, "src", "test", "java")).toList();
+    private static final @NotNull List<Path> TEST_ROOTS = ContentModules.ROOTS.stream().map(module -> Paths.get(module, "src", "test", "java")).toList();
 
     private static final @NotNull Path REPORT = Paths.get("build", "reports", "rule-coverage", "unproven.md");
 

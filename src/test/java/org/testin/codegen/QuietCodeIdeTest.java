@@ -64,7 +64,7 @@ public class QuietCodeIdeTest extends AbstractCodegenIdeTest {
     }
 
     private @NotNull VirtualFile theTestSourceRoot() {
-        return JavaSourceRoot.find(getProject()).orElseThrow(() -> new AssertionError("the project has no test source folder"));
+        return TestSourceRoot.find(getProject()).orElseThrow(() -> new AssertionError("the project has no test source folder"));
     }
 
     private @NotNull String stampOf(final @NotNull String relativePath) {

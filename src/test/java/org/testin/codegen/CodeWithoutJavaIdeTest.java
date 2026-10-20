@@ -71,7 +71,7 @@ public class CodeWithoutJavaIdeTest extends AbstractCodegenIdeTest {
     }
 
     private @NotNull VirtualFile theTestSourceRoot() {
-        return JavaSourceRoot.find(getProject()).orElseThrow(() -> new AssertionError("the project has no test source folder"));
+        return TestSourceRoot.find(getProject()).orElseThrow(() -> new AssertionError("the project has no test source folder"));
     }
 
     private @NotNull AnActionEvent theMenuEntryFor(final @NotNull TestCase testCase) {
@@ -166,7 +166,7 @@ public class CodeWithoutJavaIdeTest extends AbstractCodegenIdeTest {
 
         OptionalPlugin.JAVA.missingUntil(getTestRootDisposable());
         assertFalse("Testin noticed the Java plugin switched on without the IDE restarting", OptionalPlugin.JAVA.isAvailable());
-        assertFalse("automation code is on while Testin counts the Java plugin missing", CodeOn.isOn(getProject()));
+        assertFalse("automation code is on while Testin counts the Java plugin missing", CodeOn.isOn(getProject(), CodeChangeRegistry.need(getProject())));
 
         createdTestSet("Login");
         settled();

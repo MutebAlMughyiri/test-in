@@ -26,7 +26,9 @@ import com.intellij.openapi.application.TransactionGuard;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.testFramework.ExtensionTestUtil;
 import com.theoryinpractice.testng.configuration.TestNGConfiguration;
+import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
+import org.testin.config.AutomationLanguage;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.Await;
 import org.testin.Said;
@@ -85,7 +87,18 @@ public class TestNGHandOverIdeTest extends AbstractCodegenIdeTest {
 
     private @NotNull List<Boolean> writeSafeWhereEachRunIsHandedOver() {
         final @NotNull List<Boolean> writeSafe = new CopyOnWriteArrayList<>();
-        ExtensionTestUtil.maskExtensions(AutomationExecutor.EP, List.of((_, _) -> ApplicationManager.getApplication().executeOnPooledThread(() -> writeSafe.add(TransactionGuard.getInstance().isWriteSafeModality(ModalityState.defaultModalityState())))), getTestRootDisposable());
+        final @NotNull AutomationExecutor handOver = new AutomationExecutor() {
+            @Override
+            public @NotNull AutomationLanguage language() {
+                return AutomationLanguage.JAVA;
+            }
+
+            @Override
+            public void run(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
+                ApplicationManager.getApplication().executeOnPooledThread(() -> writeSafe.add(TransactionGuard.getInstance().isWriteSafeModality(ModalityState.defaultModalityState())));
+            }
+        };
+        ExtensionTestUtil.maskExtensions(AutomationExecutor.EP, List.of(handOver), getTestRootDisposable());
         return writeSafe;
     }
 

@@ -156,7 +156,7 @@ public class AutomatedStateIdeTest extends AbstractCodegenIdeTest {
 
         threeStatesOfAutomation();
         assertTrue(TestinYml.save(getProject(), TestinYml.lines("")));
-        assertFalse("testin.yml still names the open test project, so the IDE can read the code", CodeOn.isOn(getProject()));
+        assertFalse("testin.yml still names the open test project, so the IDE can read the code", CodeOn.isOn(getProject(), CodeChangeRegistry.need(getProject())));
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         try {
             editor.refreshView();

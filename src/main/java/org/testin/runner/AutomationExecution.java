@@ -20,7 +20,9 @@ import com.intellij.execution.ExecutionListener;
 import com.intellij.execution.ExecutionManager;
 import com.intellij.execution.KillableProcess;
 import com.intellij.execution.ProgramRunnerUtil;
+import com.intellij.execution.RunManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
+import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.executors.DefaultRunExecutor;
 import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.runners.ExecutionEnvironment;
@@ -112,14 +114,29 @@ public final class AutomationExecution implements Disposable {
     }
 
     // UC-CODEGEN-008, Rule-CODEGEN-076
-    @FromContentModule
-    public @NotNull String freeConfigurationName(final @NotNull String wanted) {
+    @NotNull String freeConfigurationName(final @NotNull String wanted) {
         return registry.freeName(wanted);
     }
 
-    // UC-CODEGEN-008, Rule-CODEGEN-031
+    // UC-CODEGEN-008, Rule-CODEGEN-076
+    @FromContentModule
+    public @NotNull RunnerAndConfigurationSettings configurationFor(final @NotNull List<String> names, final @NotNull ConfigurationFactory factory) {
+        final @NotNull String name = freeConfigurationName(names.size() == 1 ? names.getFirst() : Bundle.message("codegen.named.and.more", names.getFirst(), String.valueOf(names.size() - 1)));
+        final @NotNull RunManager runManager = RunManager.getInstance(project);
+
+        return Optional.ofNullable(runManager.findConfigurationByName(name))
+                .filter(existing -> existing.getType() == factory.getType())
+                .orElseGet(() -> runManager.createConfiguration(name, factory));
+    }
+
+    // UC-CODEGEN-008, Rule-CODEGEN-031, Rule-CODEGEN-033
     @FromContentModule
     public void launch(final @NotNull List<TestCase> testCases, final @NotNull RunnerAndConfigurationSettings settings) {
+        final @NotNull RunManager runManager = RunManager.getInstance(project);
+        runManager.setTemporaryConfiguration(settings);
+        runManager.setSelectedConfiguration(settings);
+
+        notifier.softShowCounted(project, Bundle.message("execution.status.running"), testCases.size());
         launched(testCases, settings.getName());
 
         TestinLogger.info("Starting " + settings.getName() + " with " + testCases.size() + " test case(s)");
@@ -144,18 +161,15 @@ public final class AutomationExecution implements Disposable {
         AutomationExecutionReported.broadcast(project, key(testCase.getUuid()), AutomationExecutionStatus.IDLE, Duration.ZERO, Failure.NONE);
     }
 
-    // UC-CODEGEN-008
+    // UC-CODEGEN-008, Rule-CODEGEN-034, Rule-CODEGEN-074
     @FromContentModule
-    public void noGeneratedCode(final @NotNull TestCase testCase) {
-        TestinLogger.warn("Not running '" + testCase.getDescription() + "': it has no generated code");
-        notStarting(testCase);
-    }
-
-    // UC-CODEGEN-008, Rule-CODEGEN-033, Rule-CODEGEN-074, Rule-CODEGEN-034
-    @FromContentModule
-    public void started(final @NotNull List<TestCase> running, final @NotNull List<TestCase> withoutCode) {
-        notifier.softShowCounted(project, Bundle.message("execution.status.running"), running.size());
+    public void noGeneratedCode(final @NotNull List<TestCase> withoutCode) {
         if (withoutCode.isEmpty()) return;
+
+        withoutCode.forEach(testCase -> {
+            TestinLogger.warn("Not running '" + testCase.getDescription() + "': it has no generated code");
+            notStarting(testCase);
+        });
 
         final boolean one = withoutCode.size() == 1;
         notifier.softRefuse(project, one ? Refused.NO_GENERATED_CODE : Refused.NO_GENERATED_CODE_COUNTED,

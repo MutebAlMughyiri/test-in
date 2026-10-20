@@ -20,9 +20,15 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.JavaDirectoryService;
 import com.intellij.psi.PsiDirectory;
 import org.jetbrains.annotations.NotNull;
+import org.testin.config.AutomationLanguage;
 import org.testin.codegen.ApiModelMaker;
 
 public final class JavaApiModelMaker implements ApiModelMaker {
+    @Override
+    public @NotNull AutomationLanguage language() {
+        return AutomationLanguage.JAVA;
+    }
+
     // Rule-CODEGEN-098
     @Override
     public boolean canMakeIn(final @NotNull PsiDirectory directory) {

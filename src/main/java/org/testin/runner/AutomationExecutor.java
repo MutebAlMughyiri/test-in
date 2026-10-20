@@ -19,20 +19,26 @@ package org.testin.runner;
 import com.intellij.openapi.extensions.ExtensionPointName;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.logger.TestinLogger;
+import org.testin.config.AutomationLanguage;
+import org.testin.config.AutomationNeed;
+import org.testin.config.LanguageContributor;
 import org.testin.model.TestCase;
 import org.testin.util.Bundle;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface AutomationExecutor {
+public interface AutomationExecutor extends LanguageContributor {
     @NotNull ExtensionPointName<AutomationExecutor> EP = ExtensionPointName.create("org.testin.testRunners");
 
-    static @NotNull AutomationExecutor available() {
-        return EP.getExtensionList().stream()
-                .findFirst()
-                .orElseGet(() -> (_, testCases) -> TestinLogger.debug(
-                        Bundle.message("runner.none", String.valueOf(testCases.size()))));
+    // Rule-CODEGEN-116
+    static @NotNull Optional<AutomationExecutor> available(final @NotNull Project project) {
+        return AutomationLanguage.of(project).contributor(EP);
+    }
+
+    // Rule-CODEGEN-005, Rule-CODEGEN-117
+    static @NotNull AutomationNeed need(final @NotNull Project project) {
+        return AutomationLanguage.of(project).toRun(EP, Bundle.message("automation.work.run"));
     }
 
     // UC-CODEGEN-008, Rule-CODEGEN-031

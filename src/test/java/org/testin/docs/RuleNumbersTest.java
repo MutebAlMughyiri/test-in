@@ -17,6 +17,7 @@
 package org.testin.docs;
 
 import org.jetbrains.annotations.NotNull;
+import org.testin.ContentModules;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -39,7 +40,7 @@ import static org.testng.Assert.fail;
 
 public class RuleNumbersTest {
 
-    private static final List<Path> PRODUCTION = DocumentedRules.MODULES.stream().map(module -> Paths.get(module, "src", "main")).toList();
+    private static final List<Path> PRODUCTION = ContentModules.ROOTS.stream().map(module -> Paths.get(module, "src", "main")).toList();
 
     private static final Pattern REFERENCE = Pattern.compile("Rule-([A-Z][A-Z-]*)-(\\d+)");
 

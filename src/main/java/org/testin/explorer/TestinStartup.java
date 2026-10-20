@@ -42,7 +42,6 @@ import org.testin.testproject.BoundTestProject;
 import org.testin.util.Bundle;
 import org.testin.util.Once;
 
-
 public final class TestinStartup implements ProjectActivity {
     private static final @NotNull Key<Boolean> STARTED = Key.create("testin.started");
 

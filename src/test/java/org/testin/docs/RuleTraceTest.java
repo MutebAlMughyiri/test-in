@@ -21,6 +21,7 @@ import org.jacoco.core.analysis.CoverageBuilder;
 import org.jacoco.core.analysis.ISourceFileCoverage;
 import org.jacoco.core.tools.ExecFileLoader;
 import org.jetbrains.annotations.NotNull;
+import org.testin.ContentModules;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -127,7 +128,7 @@ public class RuleTraceTest {
     private static @NotNull Map<String, List<Span>> labeledCode() {
         final @NotNull Map<String, List<Span>> labeled = new TreeMap<>();
 
-        for (final String module : DocumentedRules.MODULES) {
+        for (final String module : ContentModules.ROOTS) {
             final @NotNull Path sources = Paths.get(module, "src", "main", "java");
             for (final Path file : filesUnder(sources, ".java")) {
                 final @NotNull List<String> lines = linesOf(file);
@@ -156,7 +157,7 @@ public class RuleTraceTest {
     private static @NotNull Map<String, Set<String>> labeledTests() {
         final @NotNull Map<String, Set<String>> labeled = new TreeMap<>();
 
-        for (final String module : DocumentedRules.MODULES) {
+        for (final String module : ContentModules.ROOTS) {
             final @NotNull Path tests = Paths.get(module, "src", "test", "java");
             for (final Path file : filesUnder(tests, ".java")) {
                 final @NotNull String testClass = slashed(tests, file).replaceAll("\\.java$", "").replace('/', '.');
@@ -175,7 +176,7 @@ public class RuleTraceTest {
     }
 
     private static @NotNull Map<String, List<Path>> classesBySource() {
-        return DocumentedRules.MODULES.stream()
+        return ContentModules.ROOTS.stream()
                 .map(module -> Paths.get(module, "build", "instrumented", "instrumentCode"))
                 .flatMap(classes -> filesUnder(classes, ".class").stream().map(file -> Map.entry(slashed(classes, file).replaceAll("(\\$.*)?\\.class$", ".java"), file)))
                 .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
