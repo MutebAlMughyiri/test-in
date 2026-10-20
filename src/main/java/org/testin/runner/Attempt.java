@@ -17,11 +17,11 @@
 package org.testin.runner;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.status.TestNGExecutionStatus;
+import org.testin.model.status.AutomationExecutionStatus;
 import org.testin.model.testrun.Failure;
 
 import java.time.Duration;
 import java.time.ZonedDateTime;
 
-record Attempt(@NotNull TestNGExecutionStatus testNGExecutionStatus, @NotNull Duration duration, @NotNull Failure failure, @NotNull ZonedDateTime at) {
+record Attempt(@NotNull AutomationExecutionStatus automationExecutionStatus, @NotNull Duration duration, @NotNull Failure failure, @NotNull ZonedDateTime at) {
 }

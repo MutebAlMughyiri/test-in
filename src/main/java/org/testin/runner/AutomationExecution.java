@@ -31,7 +31,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCase;
-import org.testin.model.status.TestNGExecutionStatus;
+import org.testin.model.status.AutomationExecutionStatus;
 import org.testin.model.testrun.Failure;
 import org.testin.notifications.Notifier;
 import org.testin.notifications.Refused;
@@ -51,18 +51,18 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service(Service.Level.PROJECT)
-public final class TestNGExecution implements Disposable {
+public final class AutomationExecution implements Disposable {
     private final @NotNull Project project;
 
     private final @NotNull Notifier notifier;
 
-    private final @NotNull TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
+    private final @NotNull AutomationExecutionRegistry registry = new AutomationExecutionRegistry();
 
     private final @NotNull Map<ProcessHandler, String> live = new ConcurrentHashMap<>();
 
     private final @NotNull Set<String> stopWhenStarted = ConcurrentHashMap.newKeySet();
 
-    public TestNGExecution(final @NotNull Project project) {
+    public AutomationExecution(final @NotNull Project project) {
         this.project = project;
         this.notifier = Services.getInstance(project, Notifier.class);
 
@@ -103,7 +103,7 @@ public final class TestNGExecution implements Disposable {
     public void starting(final @NotNull TestCase testCase) {
         registry.starting(testCase.getUuid());
 
-        TestNGExecutionReported.broadcast(project, key(testCase.getUuid()), TestNGExecutionStatus.RUNNING, Duration.ZERO, Failure.NONE);
+        AutomationExecutionReported.broadcast(project, key(testCase.getUuid()), AutomationExecutionStatus.RUNNING, Duration.ZERO, Failure.NONE);
     }
 
     @FromContentModule
@@ -141,7 +141,7 @@ public final class TestNGExecution implements Disposable {
     public void notStarting(final @NotNull TestCase testCase) {
         registry.notStarting(testCase.getUuid());
 
-        TestNGExecutionReported.broadcast(project, key(testCase.getUuid()), TestNGExecutionStatus.IDLE, Duration.ZERO, Failure.NONE);
+        AutomationExecutionReported.broadcast(project, key(testCase.getUuid()), AutomationExecutionStatus.IDLE, Duration.ZERO, Failure.NONE);
     }
 
     // UC-CODEGEN-008
@@ -177,13 +177,13 @@ public final class TestNGExecution implements Disposable {
         return registry.isExecutingNow(testCaseUuid);
     }
 
-    public @NotNull TestNGExecutionStatus testNGExecutionStatusOf(final @NotNull TestCase testCase) {
-        return registry.testNGExecutionStatusOf(testCase.getUuid());
+    public @NotNull AutomationExecutionStatus automationExecutionStatusOf(final @NotNull TestCase testCase) {
+        return registry.automationExecutionStatusOf(testCase.getUuid());
     }
 
     // UC-CODEGEN-008
-    void reported(final @NotNull UUID testCaseUuid, final @NotNull TestNGExecutionStatus testNGExecutionStatus) {
-        registry.reported(testCaseUuid, testNGExecutionStatus);
+    void reported(final @NotNull UUID testCaseUuid, final @NotNull AutomationExecutionStatus automationExecutionStatus) {
+        registry.reported(testCaseUuid, automationExecutionStatus);
     }
 
     // Rule-CODEGEN-110
@@ -212,7 +212,7 @@ public final class TestNGExecution implements Disposable {
                 + " execution(s): " + theirs.size() + " had reached a process, and the rest are stopped as soon as theirs starts");
 
         theirs.forEach(this::kill);
-        stop.testCaseUuids().forEach(testCaseUuid -> TestNGExecutionReported.broadcast(project, key(testCaseUuid), TestNGExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
+        stop.testCaseUuids().forEach(testCaseUuid -> AutomationExecutionReported.broadcast(project, key(testCaseUuid), AutomationExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
 
         return stop.testCaseUuids().size();
     }
@@ -226,7 +226,7 @@ public final class TestNGExecution implements Disposable {
             if (open.isEmpty()) return;
 
             TestinLogger.info("'" + executionName + "' ended with " + open.size() + " test case(s) still open");
-            open.forEach(testCaseUuid -> TestNGExecutionReported.broadcast(project, key(testCaseUuid), TestNGExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
+            open.forEach(testCaseUuid -> AutomationExecutionReported.broadcast(project, key(testCaseUuid), AutomationExecutionStatus.IDLE, Duration.ZERO, Failure.NONE));
         });
     }
 

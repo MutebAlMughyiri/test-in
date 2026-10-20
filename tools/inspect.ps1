@@ -356,7 +356,7 @@ function Resolve-CrossModuleUsages([object[]] $problems)
         project is indexed, but the reference graph it builds for "is this ever
         used" covers the scope only. So every method the core exposes for
         testin-java or testin-testng to call reads as unused: four of them
-        today, all on TestNGExecution, all called from TestNGRunner.
+        today, all on AutomationExecution, all called from TestNGRunner.
 
         They are relabelled rather than dropped. Nothing should vanish out of a
         report silently - that is how the wildcard import in #61 turned 94

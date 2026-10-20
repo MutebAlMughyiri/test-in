@@ -36,10 +36,10 @@ import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.status.RunItemStatus;
-import org.testin.model.status.TestNGExecutionStatus;
+import org.testin.model.status.AutomationExecutionStatus;
 import org.testin.quickaction.ShownTestCaseAction;
 import org.testin.runner.CapturedRunner;
-import org.testin.runner.TestNGExecution;
+import org.testin.runner.AutomationExecution;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
 import org.testin.view.Drawn;
@@ -175,7 +175,7 @@ public class LightModeButtonsIdeTest extends AbstractCodegenIdeTest {
             click(button(frame, RUN_TEST_METHOD_TEXT));
 
             assertEquals("Run did not run the test case on screen", List.of(List.of(testCases.getFirst())), runner.executions());
-            CapturedRunner.reports(getProject(), testCases.getFirst(), TestNGExecutionStatus.PASSED, Duration.ofMillis(84));
+            CapturedRunner.reports(getProject(), testCases.getFirst(), AutomationExecutionStatus.PASSED, Duration.ofMillis(84));
             Await.until("Run did not claim the test case for this test run first", () -> editor.runItem(testCases.getFirst().getUuid()).filter(item -> item.getStatus() == RunItemStatus.PASSED).isPresent());
         } finally {
             Disposer.dispose(editor);
@@ -201,9 +201,9 @@ public class LightModeButtonsIdeTest extends AbstractCodegenIdeTest {
             final @NotNull AnAction runKey = runTestMethodKey(frame);
             Gestures.press(getProject(), runKey, frame.getRootPane());
             assertEquals("F5 did not run the test case on screen", List.of(List.of(testCases.getFirst())), runner.executions());
-            assertTrue(Services.getInstance(getProject(), TestNGExecution.class).isRunning(testCases.getFirst().getUuid()));
+            assertTrue(Services.getInstance(getProject(), AutomationExecution.class).isRunning(testCases.getFirst().getUuid()));
             Gestures.press(getProject(), runKey, frame.getRootPane());
-            assertFalse("F5 did not stop the test case while its automation ran", Services.getInstance(getProject(), TestNGExecution.class).isRunning(testCases.getFirst().getUuid()));
+            assertFalse("F5 did not stop the test case while its automation ran", Services.getInstance(getProject(), AutomationExecution.class).isRunning(testCases.getFirst().getUuid()));
 
             OnScreen.pressKey(frame.getRootPane(), RunItemStatus.FAILED.getShortcut());
             assertEquals("the buttons stayed while the failure form was open", List.of(), buttons(frame));

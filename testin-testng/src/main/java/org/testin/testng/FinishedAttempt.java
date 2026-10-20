@@ -17,9 +17,9 @@
 package org.testin.testng;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.status.TestNGExecutionStatus;
+import org.testin.model.status.AutomationExecutionStatus;
 import org.testin.model.testrun.Failure;
 
 // Rule-CODEGEN-075, Rule-CODEGEN-110
-record FinishedAttempt(@NotNull TestNGExecutionStatus testNGExecutionStatus, @NotNull Failure failure) {
+record FinishedAttempt(@NotNull AutomationExecutionStatus automationExecutionStatus, @NotNull Failure failure) {
 }

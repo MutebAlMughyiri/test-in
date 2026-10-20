@@ -33,13 +33,13 @@ import org.testin.model.Automated;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.status.RunItemStatus;
-import org.testin.model.status.TestNGExecutionStatus;
+import org.testin.model.status.AutomationExecutionStatus;
 import org.testin.model.testrun.Failure;
 import org.testin.notifications.Done;
 import org.testin.quickaction.TestCaseQuickAction;
-import org.testin.runner.TestNGExecution;
-import org.testin.runner.TestNGExecutionRecorder;
-import org.testin.runner.TestNGExecutionReported;
+import org.testin.runner.AutomationExecution;
+import org.testin.runner.AutomationExecutionRecorder;
+import org.testin.runner.AutomationExecutionReported;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
 import org.testin.view.Drawn;
@@ -154,7 +154,7 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
     // Rule-VIEW-PANEL-051, Rule-VIEW-PANEL-053
     public void testTheRunButtonAndTheStopButtonShareOnePlaceAndNeverShowTogether() {
         final @NotNull TestCase testCase = aTestCase();
-        final @NotNull TestNGExecution execution = Services.getInstance(getProject(), TestNGExecution.class);
+        final @NotNull AutomationExecution execution = Services.getInstance(getProject(), AutomationExecution.class);
 
         final @NotNull List<String> idle = buttonsOn(testCase).stream().map(PanelActionsIdeTest::nameOf).toList();
         assertEquals("the run button is not second of the three", TestCaseQuickAction.RUN_TEST_METHOD.getTooltip(), idle.get(1));
@@ -222,8 +222,8 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
     // Rule-VIEW-PANEL-084, Rule-VIEW-PANEL-055
     public void testF5StopsTheTestCaseOnDisplayAndItIsRecordedAsNotRun() {
         final @NotNull TestCase testCase = aTestCase();
-        final @NotNull TestNGExecution execution = Services.getInstance(getProject(), TestNGExecution.class);
-        TestNGExecutionRecorder.startRecording(getProject());
+        final @NotNull AutomationExecution execution = Services.getInstance(getProject(), AutomationExecution.class);
+        AutomationExecutionRecorder.startRecording(getProject());
         view.getPanel().show(List.of(testCase), testCase.getParent().treePath());
         execution.starting(testCase);
 
@@ -232,10 +232,10 @@ public class PanelActionsIdeTest extends AbstractCodegenIdeTest {
         assertFalse("F5 did not stop the running test case", execution.isRunning(testCase.getUuid()));
         assertTrue("stopping said nothing: " + said, said.stream().anyMatch(words -> words.contains(Done.STOPPED.getOutcome())));
 
-        TestNGExecutionReported.broadcast(getProject(), testCase.getUuid().toString(), TestNGExecutionStatus.FAILED, Duration.ZERO, Failure.NONE);
+        AutomationExecutionReported.broadcast(getProject(), testCase.getUuid().toString(), AutomationExecutionStatus.FAILED, Duration.ZERO, Failure.NONE);
         settled();
         view.getPanel().refreshCurrentView();
-        assertEquals("the test case the tester stopped was recorded as failed", TestNGExecutionStatus.IDLE, execution.testNGExecutionStatusOf(testCase));
+        assertEquals("the test case the tester stopped was recorded as failed", AutomationExecutionStatus.IDLE, execution.automationExecutionStatusOf(testCase));
         assertFalse("the panel shows the stopped test case as failed: " + view.words(ViewTab.DETAILS), view.words(ViewTab.DETAILS).contains(RunItemStatus.FAILED.getLabel()));
     }
 

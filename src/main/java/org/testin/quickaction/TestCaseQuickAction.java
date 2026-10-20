@@ -33,7 +33,7 @@ import org.testin.model.node.AbstractNode;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
 import org.testin.runner.ExecuteTestCases;
-import org.testin.runner.TestNGExecution;
+import org.testin.runner.AutomationExecution;
 import org.testin.services.OptionalPlugin;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
@@ -113,7 +113,7 @@ public enum TestCaseQuickAction {
 
     // UC-EDITOR-PANEL-043
     private static void stopExecution(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
-        final int stopped = Services.getInstance(project, TestNGExecution.class).stop(testCases);
+        final int stopped = Services.getInstance(project, AutomationExecution.class).stop(testCases);
 
         if (stopped > 0) Services.getInstance(project, Notifier.class).softShowCounted(project, Done.STOPPED, stopped);
     }
@@ -124,7 +124,7 @@ public enum TestCaseQuickAction {
 
     // UC-EDITOR-PANEL-043, Rule-VIEW-PANEL-051, Rule-VIEW-PANEL-053
     public static @NotNull TestCaseQuickAction executionSlot(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
-        final @NotNull TestNGExecution execution = Services.getInstance(project, TestNGExecution.class);
+        final @NotNull AutomationExecution execution = Services.getInstance(project, AutomationExecution.class);
 
         return testCases.stream().anyMatch(testCase -> execution.isRunning(testCase.getUuid()))
                 ? STOP_TEST_METHOD

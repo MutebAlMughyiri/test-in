@@ -36,7 +36,7 @@ import org.testin.logger.TestinLogger;
 import org.testin.model.TestCase;
 import org.testin.navigate.TestMethodCode;
 import org.testin.runner.AutomationExecutor;
-import org.testin.runner.TestNGExecution;
+import org.testin.runner.AutomationExecution;
 import org.testin.services.BackgroundWork;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
@@ -71,7 +71,7 @@ public final class TestNGRunner implements AutomationExecutor {
     public void run(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
         if (testCases.isEmpty()) return;
 
-        final @NotNull TestNGExecution execution = Services.getInstance(project, TestNGExecution.class);
+        final @NotNull AutomationExecution execution = Services.getInstance(project, AutomationExecution.class);
 
         if (DumbService.isDumb(project)) {
             testCases.forEach(execution::notStarting);
@@ -115,14 +115,14 @@ public final class TestNGRunner implements AutomationExecutor {
     }
 
     private void interrupted(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
-        testCases.forEach(Services.getInstance(project, TestNGExecution.class)::notStarting);
+        testCases.forEach(Services.getInstance(project, AutomationExecution.class)::notStarting);
 
         DumbService.getInstance(project).showDumbModeNotification(Bundle.message("testng.indexing.interrupted"));
     }
 
     // Rule-EDITOR-PANEL-188
     private void start(final @NotNull Project project, final @NotNull Prepared prepared) {
-        final @NotNull TestNGExecution execution = Services.getInstance(project, TestNGExecution.class);
+        final @NotNull AutomationExecution execution = Services.getInstance(project, AutomationExecution.class);
 
         prepared.withoutCode().forEach(execution::noGeneratedCode);
         execution.started(List.of(), prepared.withoutCode());
@@ -140,7 +140,7 @@ public final class TestNGRunner implements AutomationExecutor {
 
     // Rule-EDITOR-PANEL-185, Rule-EDITOR-PANEL-187
     private void launch(final @NotNull Project project, final @NotNull List<Generated> found, final @NotNull Optional<Module> module) {
-        final @NotNull TestNGExecution execution = Services.getInstance(project, TestNGExecution.class);
+        final @NotNull AutomationExecution execution = Services.getInstance(project, AutomationExecution.class);
 
         final @NotNull Set<TestCase> stillWanted = new HashSet<>(execution.stillWanted(found.stream().map(Generated::testCase).toList()));
         if (stillWanted.isEmpty()) {

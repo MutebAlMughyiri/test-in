@@ -36,13 +36,13 @@ import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.status.RunItemStatus;
-import org.testin.model.status.TestNGExecutionStatus;
+import org.testin.model.status.AutomationExecutionStatus;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItems;
 import org.testin.quickaction.TestCaseQuickAction;
 import org.testin.runner.CapturedRunner;
-import org.testin.runner.TestNGExecution;
+import org.testin.runner.AutomationExecution;
 import org.testin.services.Services;
 import org.testin.testrun.TestRunFixture;
 import org.testin.util.JsonCodec;
@@ -101,7 +101,7 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
     }
 
     private void reportedPassed(final @NotNull TestCase testCase) {
-        CapturedRunner.reports(getProject(), testCase, TestNGExecutionStatus.PASSED, Duration.ofMillis(84));
+        CapturedRunner.reports(getProject(), testCase, AutomationExecutionStatus.PASSED, Duration.ofMillis(84));
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
 
@@ -210,7 +210,7 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
         final @NotNull List<TestCase> testCases = automatedTestCases(3);
         final @NotNull TestRunNode testRun = aTestRun("Cycle-1", testCases.stream().map(EditorFixtures::pending).toList());
         final @NotNull TestRunEditor editor = opened(testRun);
-        final @NotNull TestNGExecution execution = Services.getInstance(getProject(), TestNGExecution.class);
+        final @NotNull AutomationExecution execution = Services.getInstance(getProject(), AutomationExecution.class);
         try {
             TestCaseQuickAction.RUN_TEST_METHOD.executeFor(editor, testCases.getFirst());
             assertTrue(execution.isRunning(testCases.getFirst().getUuid()));

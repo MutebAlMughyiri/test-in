@@ -21,7 +21,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.testFramework.ExtensionTestUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCase;
-import org.testin.model.status.TestNGExecutionStatus;
+import org.testin.model.status.AutomationExecutionStatus;
 import org.testin.model.testrun.Failure;
 import org.testin.services.Services;
 
@@ -38,13 +38,13 @@ public final class CapturedRunner implements AutomationExecutor {
         return runner;
     }
 
-    public static void reports(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull TestNGExecutionStatus testNGExecutionStatus, final @NotNull Duration duration) {
-        TestNGExecutionReported.broadcast(project, testCase.getUuid().toString(), testNGExecutionStatus, duration, Failure.NONE);
+    public static void reports(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull AutomationExecutionStatus automationExecutionStatus, final @NotNull Duration duration) {
+        AutomationExecutionReported.broadcast(project, testCase.getUuid().toString(), automationExecutionStatus, duration, Failure.NONE);
     }
 
     public static void startedByTestNg(final @NotNull Project project, final @NotNull TestCase testCase) {
-        Services.getInstance(project, TestNGExecution.class).launched(List.of(testCase), "Testin: captured");
-        reports(project, testCase, TestNGExecutionStatus.RUNNING, Duration.ZERO);
+        Services.getInstance(project, AutomationExecution.class).launched(List.of(testCase), "Testin: captured");
+        reports(project, testCase, AutomationExecutionStatus.RUNNING, Duration.ZERO);
     }
 
     public @NotNull List<List<TestCase>> executions() {
@@ -54,6 +54,6 @@ public final class CapturedRunner implements AutomationExecutor {
     @Override
     public void run(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
         executions.add(List.copyOf(testCases));
-        testCases.forEach(Services.getInstance(project, TestNGExecution.class)::starting);
+        testCases.forEach(Services.getInstance(project, AutomationExecution.class)::starting);
     }
 }

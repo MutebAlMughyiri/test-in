@@ -18,7 +18,7 @@ package org.testin.testng;
 
 import com.intellij.execution.testframework.sm.runner.SMTestProxy;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.status.TestNGExecutionStatus;
+import org.testin.model.status.AutomationExecutionStatus;
 import org.testin.util.Bundle;
 import org.testng.annotations.Test;
 
@@ -34,7 +34,7 @@ public class TestNGEventRelayTest {
 
     private static @NotNull String finished(final @NotNull SMTestProxy test) {
         final @NotNull FinishedAttempt finished = TestNGEventRelay.finished(test);
-        return finished.testNGExecutionStatus() + ": " + finished.failure().message();
+        return finished.automationExecutionStatus() + ": " + finished.failure().message();
     }
 
     // Rule-CODEGEN-075, Rule-CODEGEN-110
@@ -43,7 +43,7 @@ public class TestNGEventRelayTest {
         final @NotNull SMTestProxy test = started("skippedbyadependency");
         test.setTestIgnored("", "");
 
-        assertEquals(finished(test), TestNGExecutionStatus.SKIPPED + ": " + Bundle.message("runner.skipped"), "a skipped attempt was recorded before TestNG said whether it retries it");
+        assertEquals(finished(test), AutomationExecutionStatus.SKIPPED + ": " + Bundle.message("runner.skipped"), "a skipped attempt was recorded before TestNG said whether it retries it");
     }
 
     // Rule-CODEGEN-075
@@ -52,7 +52,7 @@ public class TestNGEventRelayTest {
         final @NotNull SMTestProxy test = started("endedbystop");
         test.setTerminated();
 
-        assertEquals(finished(test), TestNGExecutionStatus.FAILED + ": " + Bundle.message("runner.skipped"), "a terminated test was recorded with no actual result");
+        assertEquals(finished(test), AutomationExecutionStatus.FAILED + ": " + Bundle.message("runner.skipped"), "a terminated test was recorded with no actual result");
     }
 
     // Rule-CODEGEN-075
@@ -61,7 +61,7 @@ public class TestNGEventRelayTest {
         final @NotNull SMTestProxy test = started("failsanassertion");
         test.setTestFailed("expected true", "at LoginTest.logsIn", false);
 
-        assertEquals(finished(test), TestNGExecutionStatus.FAILED + ": expected true");
+        assertEquals(finished(test), AutomationExecutionStatus.FAILED + ": expected true");
     }
 
     // Rule-CODEGEN-075
@@ -70,6 +70,6 @@ public class TestNGEventRelayTest {
         final @NotNull SMTestProxy test = started("logsIn");
         test.setFinished();
 
-        assertEquals(finished(test), TestNGExecutionStatus.PASSED + ": ");
+        assertEquals(finished(test), AutomationExecutionStatus.PASSED + ": ");
     }
 }

@@ -19,7 +19,7 @@ package org.testin.runner;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.DateFormats;
 import org.testin.model.TestCase;
-import org.testin.model.status.TestNGExecutionStatus;
+import org.testin.model.status.AutomationExecutionStatus;
 import org.testin.model.testrun.Failure;
 import org.testng.annotations.Test;
 
@@ -38,7 +38,7 @@ import static org.testng.Assert.assertNotSame;
 import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
-public class TestNGExecutionRegistryTest {
+public class AutomationExecutionRegistryTest {
 
     private static final String CONFIGURATION_NAME = "Testin: three test cases";
 
@@ -50,16 +50,16 @@ public class TestNGExecutionRegistryTest {
         return TestCase.builder().description(description).build();
     }
 
-    private static @NotNull Attempt attempt(final TestNGExecutionStatus testNGExecutionStatus, final String message) {
-        return new Attempt(testNGExecutionStatus, Duration.ZERO, new Failure(message, "", List.of()), DateFormats.NOT_EXECUTED);
+    private static @NotNull Attempt attempt(final AutomationExecutionStatus automationExecutionStatus, final String message) {
+        return new Attempt(automationExecutionStatus, Duration.ZERO, new Failure(message, "", List.of()), DateFormats.NOT_EXECUTED);
     }
 
-    private static @NotNull TestNGExecutionStatus testNGExecutionStatusIn(final Map<UUID, Attempts> decided, final TestCase testCase) {
-        return Optional.ofNullable(decided.get(testCase.getUuid())).map(Attempts::testNGExecutionStatus).orElse(TestNGExecutionStatus.IDLE);
+    private static @NotNull AutomationExecutionStatus automationExecutionStatusIn(final Map<UUID, Attempts> decided, final TestCase testCase) {
+        return Optional.ofNullable(decided.get(testCase.getUuid())).map(Attempts::automationExecutionStatus).orElse(AutomationExecutionStatus.IDLE);
     }
 
-    private static @NotNull TestNGExecutionRegistry launchedWith(final TestCase... testCases) {
-        final TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
+    private static @NotNull AutomationExecutionRegistry launchedWith(final TestCase... testCases) {
+        final AutomationExecutionRegistry registry = new AutomationExecutionRegistry();
         registry.launched(Arrays.stream(testCases).map(TestCase::getUuid).toList(), CONFIGURATION_NAME);
         return registry;
     }
@@ -69,15 +69,15 @@ public class TestNGExecutionRegistryTest {
     public void onlyTheTestCaseTestNgHasStartedIsExecutingNow() {
         final TestCase first = aTestCase("Log in with Nafath");
         final TestCase waiting = aTestCase("Log out from the profile page");
-        final TestNGExecutionRegistry registry = launchedWith(first, waiting);
+        final AutomationExecutionRegistry registry = launchedWith(first, waiting);
 
         assertFalse(registry.isExecutingNow(first.getUuid()), "a test case handed over and waiting its turn is not executing");
 
-        registry.attempted(first.getUuid(), attempt(TestNGExecutionStatus.RUNNING, ""));
+        registry.attempted(first.getUuid(), attempt(AutomationExecutionStatus.RUNNING, ""));
         assertTrue(registry.isExecutingNow(first.getUuid()), "the test case TestNG started is executing");
         assertFalse(registry.isExecutingNow(waiting.getUuid()), "the one after it is still waiting");
 
-        registry.attempted(first.getUuid(), attempt(TestNGExecutionStatus.PASSED, ""));
+        registry.attempted(first.getUuid(), attempt(AutomationExecutionStatus.PASSED, ""));
         assertFalse(registry.isExecutingNow(first.getUuid()), "a finished test case is no longer executing");
     }
 
@@ -85,9 +85,9 @@ public class TestNGExecutionRegistryTest {
     @Test
     public void aStoppedTestCaseIsNoLongerExecuting() {
         final TestCase started = aTestCase("Pay with a saved card");
-        final TestNGExecutionRegistry registry = launchedWith(started);
+        final AutomationExecutionRegistry registry = launchedWith(started);
 
-        registry.attempted(started.getUuid(), attempt(TestNGExecutionStatus.RUNNING, ""));
+        registry.attempted(started.getUuid(), attempt(AutomationExecutionStatus.RUNNING, ""));
         registry.stopping(List.of(started.getUuid()));
 
         assertFalse(registry.isExecutingNow(started.getUuid()), "a stopped test case still shows as executing");
@@ -95,7 +95,7 @@ public class TestNGExecutionRegistryTest {
 
     @Test
     public void aStopReachesATestCaseThroughAnyNumberOfReloads() {
-        final TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
+        final AutomationExecutionRegistry registry = new AutomationExecutionRegistry();
         final TestCase original = aTestCase("logs in");
 
         registry.starting(original.getUuid());
@@ -114,7 +114,7 @@ public class TestNGExecutionRegistryTest {
 
     @Test
     public void aTestCaseThatWasNeverRunningIsNotStopped() {
-        final TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
+        final AutomationExecutionRegistry registry = new AutomationExecutionRegistry();
 
         final Stop stop = registry.stopping(List.of(UUID.randomUUID()));
 
@@ -125,7 +125,7 @@ public class TestNGExecutionRegistryTest {
     // Rule-VIEW-PANEL-054
     @Test
     public void stoppingOneTestCaseStopsTheOnesSharingItsProcess() {
-        final TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
+        final AutomationExecutionRegistry registry = new AutomationExecutionRegistry();
         final TestCase first = aTestCase("first");
         final TestCase second = aTestCase("second");
         final TestCase alone = aTestCase("in a run of its own");
@@ -142,22 +142,22 @@ public class TestNGExecutionRegistryTest {
 
     @Test
     public void aTestCaseThatAlreadyReportedIsNotSweptUpByALaterStop() {
-        final TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
+        final AutomationExecutionRegistry registry = new AutomationExecutionRegistry();
         final TestCase finished = aTestCase("finished early");
         final TestCase stillGoing = aTestCase("still going");
 
         registry.launched(List.of(finished.getUuid(), stillGoing.getUuid()), CONFIGURATION_NAME);
-        registry.reported(finished.getUuid(), TestNGExecutionStatus.PASSED);
+        registry.reported(finished.getUuid(), AutomationExecutionStatus.PASSED);
 
         final Stop stop = registry.stopping(List.of(stillGoing.getUuid()));
 
         assertFalse(stop.testCaseUuids().contains(finished.getUuid()), "its run item status is in, so the stop is not about it");
-        assertEquals(registry.testNGExecutionStatusOf(finished.getUuid()), TestNGExecutionStatus.PASSED, "and the run item status it gave still stands");
+        assertEquals(registry.automationExecutionStatusOf(finished.getUuid()), AutomationExecutionStatus.PASSED, "and the run item status it gave still stands");
     }
 
     @Test
     public void aTestCaseStoppedBeforeItsLaunchIsLeftOutOfTheExecution() {
-        final TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
+        final AutomationExecutionRegistry registry = new AutomationExecutionRegistry();
         final TestCase testCase = aTestCase("stopped in the second before the process");
 
         registry.starting(testCase.getUuid());
@@ -168,7 +168,7 @@ public class TestNGExecutionRegistryTest {
 
     @Test
     public void runningAgainClearsTheStopThatEndedTheLastExecution() {
-        final TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
+        final AutomationExecutionRegistry registry = new AutomationExecutionRegistry();
         final TestCase testCase = aTestCase("run, stopped, run again");
 
         registry.launched(List.of(testCase.getUuid()), CONFIGURATION_NAME);
@@ -181,72 +181,72 @@ public class TestNGExecutionRegistryTest {
 
     @Test
     public void aRunItemStatusSurvivesAReload() {
-        final TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
+        final AutomationExecutionRegistry registry = new AutomationExecutionRegistry();
         final TestCase original = aTestCase("passes");
 
         registry.launched(List.of(original.getUuid()), CONFIGURATION_NAME);
-        registry.reported(original.getUuid(), TestNGExecutionStatus.PASSED);
+        registry.reported(original.getUuid(), AutomationExecutionStatus.PASSED);
 
-        assertEquals(registry.testNGExecutionStatusOf(reloaded(original).getUuid()), TestNGExecutionStatus.PASSED,
+        assertEquals(registry.automationExecutionStatusOf(reloaded(original).getUuid()), AutomationExecutionStatus.PASSED,
                 "the green badge does not vanish at the tester's next keystroke");
     }
 
     @Test
     public void aTestCaseThatNeverStartedKeepsItsLastRunItemStatus() {
-        final TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
+        final AutomationExecutionRegistry registry = new AutomationExecutionRegistry();
         final TestCase testCase = aTestCase("passed earlier, run again during indexing");
 
-        registry.reported(testCase.getUuid(), TestNGExecutionStatus.PASSED);
+        registry.reported(testCase.getUuid(), AutomationExecutionStatus.PASSED);
         registry.notStarting(testCase.getUuid());
-        registry.reported(testCase.getUuid(), TestNGExecutionStatus.IDLE);
+        registry.reported(testCase.getUuid(), AutomationExecutionStatus.IDLE);
 
-        assertEquals(registry.testNGExecutionStatusOf(testCase.getUuid()), TestNGExecutionStatus.PASSED, "an execution that never started wiped the last run item status");
+        assertEquals(registry.automationExecutionStatusOf(testCase.getUuid()), AutomationExecutionStatus.PASSED, "an execution that never started wiped the last run item status");
     }
 
     @Test
     public void aStoppedTestCaseIsRecordedAsNotRun() {
-        final TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
+        final AutomationExecutionRegistry registry = new AutomationExecutionRegistry();
         final TestCase testCase = aTestCase("passed earlier, stopped this time");
 
-        registry.reported(testCase.getUuid(), TestNGExecutionStatus.PASSED);
+        registry.reported(testCase.getUuid(), AutomationExecutionStatus.PASSED);
         registry.starting(testCase.getUuid());
         registry.take(testCase.getUuid());
         registry.launched(List.of(testCase.getUuid()), CONFIGURATION_NAME);
         registry.stopping(List.of(testCase.getUuid()));
-        registry.reported(testCase.getUuid(), TestNGExecutionStatus.IDLE);
+        registry.reported(testCase.getUuid(), AutomationExecutionStatus.IDLE);
 
-        assertEquals(registry.testNGExecutionStatusOf(testCase.getUuid()), TestNGExecutionStatus.IDLE, "a stopped test case kept the run item status of the execution before");
+        assertEquals(registry.automationExecutionStatusOf(testCase.getUuid()), AutomationExecutionStatus.IDLE, "a stopped test case kept the run item status of the execution before");
     }
 
     @Test
     public void aTestCaseNobodyHasRunIsIdle() {
-        final TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
+        final AutomationExecutionRegistry registry = new AutomationExecutionRegistry();
 
-        final TestNGExecutionStatus testNGExecutionStatus = registry.testNGExecutionStatusOf(UUID.randomUUID());
+        final AutomationExecutionStatus automationExecutionStatus = registry.automationExecutionStatusOf(UUID.randomUUID());
 
-        assertEquals(testNGExecutionStatus, TestNGExecutionStatus.IDLE, "the empty answer is a status of its own, so no caller checks for one");
-        assertTrue(testNGExecutionStatus.getRunItemStatus().isEmpty(), "and it shows no run item status");
+        assertEquals(automationExecutionStatus, AutomationExecutionStatus.IDLE, "the empty answer is a status of its own, so no caller checks for one");
+        assertTrue(automationExecutionStatus.getRunItemStatus().isEmpty(), "and it shows no run item status");
     }
 
     // Rule-CODEGEN-034
     @Test
     public void runningBeatsWhateverTheLastExecutionSaid() {
-        final TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
+        final AutomationExecutionRegistry registry = new AutomationExecutionRegistry();
         final TestCase testCase = aTestCase("failed once, running again");
 
-        registry.reported(testCase.getUuid(), TestNGExecutionStatus.FAILED);
+        registry.reported(testCase.getUuid(), AutomationExecutionStatus.FAILED);
         registry.starting(testCase.getUuid());
 
-        assertEquals(registry.testNGExecutionStatusOf(testCase.getUuid()), TestNGExecutionStatus.RUNNING, "the card shows what it is doing now");
+        assertEquals(registry.automationExecutionStatusOf(testCase.getUuid()), AutomationExecutionStatus.RUNNING, "the card shows what it is doing now");
     }
 
     @Test
     public void aReportOfRunningIsNotARunItemStatus() {
-        final TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
+        final AutomationExecutionRegistry registry = new AutomationExecutionRegistry();
         final TestCase testCase = aTestCase("reports itself started");
 
         registry.launched(List.of(testCase.getUuid()), CONFIGURATION_NAME);
-        registry.reported(testCase.getUuid(), TestNGExecutionStatus.RUNNING);
+        registry.reported(testCase.getUuid(), AutomationExecutionStatus.RUNNING);
 
         assertTrue(registry.isRunning(testCase.getUuid()), "a test case does not stop running by saying that it is");
     }
@@ -256,15 +256,15 @@ public class TestNGExecutionRegistryTest {
     public void aResultIsHeldUntilTestNGMovesToAnotherTestCase() {
         final TestCase retried = aTestCase("fails once, passes on the retry");
         final TestCase next = aTestCase("runs after it");
-        final TestNGExecutionRegistry registry = launchedWith(retried, next);
+        final AutomationExecutionRegistry registry = launchedWith(retried, next);
 
-        assertTrue(registry.attempted(retried.getUuid(), attempt(TestNGExecutionStatus.SKIPPED, "expected true")).isEmpty(), "a skipped attempt may be retried");
-        registry.attempted(retried.getUuid(), attempt(TestNGExecutionStatus.RUNNING, ""));
-        assertTrue(registry.attempted(retried.getUuid(), attempt(TestNGExecutionStatus.PASSED, "")).isEmpty(), "and the pass may be followed by another invocation");
+        assertTrue(registry.attempted(retried.getUuid(), attempt(AutomationExecutionStatus.SKIPPED, "expected true")).isEmpty(), "a skipped attempt may be retried");
+        registry.attempted(retried.getUuid(), attempt(AutomationExecutionStatus.RUNNING, ""));
+        assertTrue(registry.attempted(retried.getUuid(), attempt(AutomationExecutionStatus.PASSED, "")).isEmpty(), "and the pass may be followed by another invocation");
 
-        final Map<UUID, Attempts> decided = registry.attempted(next.getUuid(), attempt(TestNGExecutionStatus.RUNNING, ""));
+        final Map<UUID, Attempts> decided = registry.attempted(next.getUuid(), attempt(AutomationExecutionStatus.RUNNING, ""));
 
-        assertEquals(testNGExecutionStatusIn(decided, retried), TestNGExecutionStatus.PASSED, "TestNG moved on, so the retry that passed is the result");
+        assertEquals(automationExecutionStatusIn(decided, retried), AutomationExecutionStatus.PASSED, "TestNG moved on, so the retry that passed is the result");
         assertEquals(Optional.ofNullable(decided.get(retried.getUuid())).map(attempts -> attempts.all().size()).orElse(0), 2, "and both attempts are kept");
         assertTrue(registry.isRunning(retried.getUuid()), "it stays running until the decided result is reported");
     }
@@ -274,20 +274,20 @@ public class TestNGExecutionRegistryTest {
     public void eachAttemptIsShownTheMomentItArrivesAndOnlyOnce() {
         final TestCase invoked = aTestCase("invocationCount = 2");
         final TestCase next = aTestCase("runs after it");
-        final TestNGExecutionRegistry registry = launchedWith(invoked, next);
+        final AutomationExecutionRegistry registry = launchedWith(invoked, next);
 
-        registry.attempted(invoked.getUuid(), attempt(TestNGExecutionStatus.PASSED, ""));
+        registry.attempted(invoked.getUuid(), attempt(AutomationExecutionStatus.PASSED, ""));
         final Attempts first = registry.takeUnwritten(invoked.getUuid()).orElseThrow();
         assertEquals(first.executions().size(), 1, "the first invocation is shown before TestNG moves on");
         assertEquals(first.written(), 0);
         assertTrue(registry.takeUnwritten(invoked.getUuid()).isEmpty(), "and it is not shown a second time");
 
-        registry.attempted(invoked.getUuid(), attempt(TestNGExecutionStatus.FAILED, "the second invocation failed"));
+        registry.attempted(invoked.getUuid(), attempt(AutomationExecutionStatus.FAILED, "the second invocation failed"));
         final Attempts second = registry.takeUnwritten(invoked.getUuid()).orElseThrow();
         assertEquals(second.executions().size(), 2);
         assertEquals(second.written(), 1, "it replaces the one already shown, whose label may have changed");
 
-        final Attempts decided = Optional.ofNullable(registry.attempted(next.getUuid(), attempt(TestNGExecutionStatus.RUNNING, "")).get(invoked.getUuid())).orElseThrow();
+        final Attempts decided = Optional.ofNullable(registry.attempted(next.getUuid(), attempt(AutomationExecutionStatus.RUNNING, "")).get(invoked.getUuid())).orElseThrow();
         assertEquals(decided.written(), 2, "the decision rewrites only what was shown, and picks the default");
         assertEquals(decided.deciding(), 1);
     }
@@ -296,13 +296,13 @@ public class TestNGExecutionRegistryTest {
     @Test
     public void anyFailedInvocationFailsTheTestCase() {
         final TestCase invoked = aTestCase("invocationCount = 4");
-        final TestNGExecutionRegistry registry = launchedWith(invoked);
+        final AutomationExecutionRegistry registry = launchedWith(invoked);
 
-        registry.attempted(invoked.getUuid(), attempt(TestNGExecutionStatus.PASSED, ""));
-        registry.attempted(invoked.getUuid(), attempt(TestNGExecutionStatus.FAILED, "the second invocation failed"));
-        registry.attempted(invoked.getUuid(), attempt(TestNGExecutionStatus.PASSED, ""));
+        registry.attempted(invoked.getUuid(), attempt(AutomationExecutionStatus.PASSED, ""));
+        registry.attempted(invoked.getUuid(), attempt(AutomationExecutionStatus.FAILED, "the second invocation failed"));
+        registry.attempted(invoked.getUuid(), attempt(AutomationExecutionStatus.PASSED, ""));
 
-        assertEquals(testNGExecutionStatusIn(registry.attempted(invoked.getUuid(), attempt(TestNGExecutionStatus.IDLE, "")), invoked), TestNGExecutionStatus.FAILED,
+        assertEquals(automationExecutionStatusIn(registry.attempted(invoked.getUuid(), attempt(AutomationExecutionStatus.IDLE, "")), invoked), AutomationExecutionStatus.FAILED,
                 "a later pass does not hide an earlier failure");
     }
 
@@ -310,12 +310,12 @@ public class TestNGExecutionRegistryTest {
     @Test
     public void aSkipNoAttemptFollowsIsAFailureWhenTheExecutionEnds() {
         final TestCase skipped = aTestCase("its dependency failed");
-        final TestNGExecutionRegistry registry = launchedWith(skipped);
+        final AutomationExecutionRegistry registry = launchedWith(skipped);
 
-        registry.attempted(skipped.getUuid(), attempt(TestNGExecutionStatus.SKIPPED, "Skipped/Terminated"));
+        registry.attempted(skipped.getUuid(), attempt(AutomationExecutionStatus.SKIPPED, "Skipped/Terminated"));
         registry.ended(CONFIGURATION_NAME);
 
-        assertEquals(testNGExecutionStatusIn(registry.attempted(skipped.getUuid(), attempt(TestNGExecutionStatus.IDLE, "")), skipped), TestNGExecutionStatus.FAILED);
+        assertEquals(automationExecutionStatusIn(registry.attempted(skipped.getUuid(), attempt(AutomationExecutionStatus.IDLE, "")), skipped), AutomationExecutionStatus.FAILED);
     }
 
     // Rule-CODEGEN-110
@@ -323,14 +323,14 @@ public class TestNGExecutionRegistryTest {
     public void aTestCaseThisPluginDidNotStartIsDecidedAtOnce() {
         final TestCase fromTheGutter = aTestCase("run from the class");
 
-        final Map<UUID, Attempts> decided = new TestNGExecutionRegistry().attempted(fromTheGutter.getUuid(), attempt(TestNGExecutionStatus.FAILED, "expected true"));
+        final Map<UUID, Attempts> decided = new AutomationExecutionRegistry().attempted(fromTheGutter.getUuid(), attempt(AutomationExecutionStatus.FAILED, "expected true"));
 
-        assertEquals(testNGExecutionStatusIn(decided, fromTheGutter), TestNGExecutionStatus.FAILED, "nothing groups its results, so the first one is its result, as before");
+        assertEquals(automationExecutionStatusIn(decided, fromTheGutter), AutomationExecutionStatus.FAILED, "nothing groups its results, so the first one is its result, as before");
     }
 
     @Test
     public void anExecutionThatEndsWithoutReportingPutsItsTestCasesBack() {
-        final TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
+        final AutomationExecutionRegistry registry = new AutomationExecutionRegistry();
         final TestCase first = aTestCase("never reached");
         final TestCase second = aTestCase("never reached either");
 
@@ -345,19 +345,19 @@ public class TestNGExecutionRegistryTest {
 
     @Test
     public void anExecutionThatEndedWithEveryRunItemInLeavesNothingBehind() {
-        final TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
+        final AutomationExecutionRegistry registry = new AutomationExecutionRegistry();
         final TestCase testCase = aTestCase("passes");
 
         registry.launched(List.of(testCase.getUuid()), CONFIGURATION_NAME);
-        registry.reported(testCase.getUuid(), TestNGExecutionStatus.PASSED);
+        registry.reported(testCase.getUuid(), AutomationExecutionStatus.PASSED);
 
         assertTrue(registry.ended(CONFIGURATION_NAME).isEmpty(), "nothing to put back, so no card is repainted");
-        assertEquals(registry.testNGExecutionStatusOf(testCase.getUuid()), TestNGExecutionStatus.PASSED, "and the run item status is untouched by the execution ending");
+        assertEquals(registry.automationExecutionStatusOf(testCase.getUuid()), AutomationExecutionStatus.PASSED, "and the run item status is untouched by the execution ending");
     }
 
     @Test
     public void anExecutionThisPluginDidNotStartIsIgnored() {
-        final TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
+        final AutomationExecutionRegistry registry = new AutomationExecutionRegistry();
 
         assertTrue(registry.ended("A build the tester left going").isEmpty(),
                 "a configuration of the tester's own is theirs, whatever it is called");
@@ -366,7 +366,7 @@ public class TestNGExecutionRegistryTest {
     // Rule-CODEGEN-094
     @Test
     public void anExecutionIsNeverNamedLikeOneTheTesterStarts() {
-        final TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
+        final AutomationExecutionRegistry registry = new AutomationExecutionRegistry();
         final String gutterName = "LoginTest.logsIn";
 
         final String name = registry.freeName(gutterName);
@@ -379,7 +379,7 @@ public class TestNGExecutionRegistryTest {
 
     @Test
     public void anExecutionStopsBeingHeldOnceItEnds() {
-        final TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
+        final AutomationExecutionRegistry registry = new AutomationExecutionRegistry();
         final TestCase testCase = aTestCase("one run");
 
         registry.launched(List.of(testCase.getUuid()), CONFIGURATION_NAME);
@@ -392,7 +392,7 @@ public class TestNGExecutionRegistryTest {
     // Rule-CODEGEN-076
     @Test
     public void aSecondExecutionStartedWhileTheFirstRunsGetsANameOfItsOwn() {
-        final @NotNull TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
+        final @NotNull AutomationExecutionRegistry registry = new AutomationExecutionRegistry();
         final @NotNull String first = registry.freeName("LoginTest");
 
         registry.launched(List.of(UUID.randomUUID()), first);

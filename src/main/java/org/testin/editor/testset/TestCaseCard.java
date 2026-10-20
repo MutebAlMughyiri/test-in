@@ -22,8 +22,8 @@ import org.testin.clipboard.CutState;
 import org.testin.editor.card.AbstractCard;
 import org.testin.model.Priority;
 import org.testin.model.TestCase;
-import org.testin.model.status.TestNGExecutionStatus;
-import org.testin.runner.TestNGExecution;
+import org.testin.model.status.AutomationExecutionStatus;
+import org.testin.runner.AutomationExecution;
 import org.testin.services.Services;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.ui.Badge;
@@ -46,7 +46,7 @@ public class TestCaseCard extends AbstractCard {
 
     private final @NotNull CutState cutState = Services.getInstance(project, CutState.class);
 
-    private final @NotNull TestNGExecution testNGExecution = Services.getInstance(project, TestNGExecution.class);
+    private final @NotNull AutomationExecution automationExecution = Services.getInstance(project, AutomationExecution.class);
 
     private boolean isPendingCut = false;
 
@@ -70,9 +70,9 @@ public class TestCaseCard extends AbstractCard {
 
         if (testCase.getStatus().isBadged()) badges.add(Badges.createTestCaseStatusBadge(testCase.getStatus()));
 
-        final @NotNull TestNGExecutionStatus testNGExecutionStatus = testNGExecution.testNGExecutionStatusOf(testCase);
+        final @NotNull AutomationExecutionStatus automationExecutionStatus = automationExecution.automationExecutionStatusOf(testCase);
 
-        testNGExecutionStatus.getRunItemStatus().map(Badges::createRunItemStatusBadge).ifPresent(badges::add);
+        automationExecutionStatus.getRunItemStatus().map(Badges::createRunItemStatusBadge).ifPresent(badges::add);
 
         titleArea.setForeground(testCase.getStatus().getDescriptionColor());
         updateUI(index, title, badges, details);

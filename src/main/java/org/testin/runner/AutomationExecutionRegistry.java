@@ -17,7 +17,7 @@
 package org.testin.runner;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.status.TestNGExecutionStatus;
+import org.testin.model.status.AutomationExecutionStatus;
 import org.testin.util.Bundle;
 
 import java.util.Collection;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-final class TestNGExecutionRegistry {
+final class AutomationExecutionRegistry {
     private final @NotNull Set<String> launchedNames = ConcurrentHashMap.newKeySet();
 
     private final @NotNull Set<UUID> pending = ConcurrentHashMap.newKeySet();
@@ -41,7 +41,7 @@ final class TestNGExecutionRegistry {
 
     private final @NotNull Set<UUID> stopped = ConcurrentHashMap.newKeySet();
 
-    private final @NotNull Map<UUID, TestNGExecutionStatus> testNGExecutionStatuses = new ConcurrentHashMap<>();
+    private final @NotNull Map<UUID, AutomationExecutionStatus> automationExecutionStatuses = new ConcurrentHashMap<>();
 
     private final @NotNull Map<UUID, Attempts> held = new ConcurrentHashMap<>();
 
@@ -96,16 +96,16 @@ final class TestNGExecutionRegistry {
         return executingNow.contains(testCaseUuid);
     }
 
-    @NotNull TestNGExecutionStatus testNGExecutionStatusOf(final @NotNull UUID testCaseUuid) {
-        return isRunning(testCaseUuid) ? TestNGExecutionStatus.RUNNING : testNGExecutionStatuses.getOrDefault(testCaseUuid, TestNGExecutionStatus.IDLE);
+    @NotNull AutomationExecutionStatus automationExecutionStatusOf(final @NotNull UUID testCaseUuid) {
+        return isRunning(testCaseUuid) ? AutomationExecutionStatus.RUNNING : automationExecutionStatuses.getOrDefault(testCaseUuid, AutomationExecutionStatus.IDLE);
     }
 
     // Rule-CODEGEN-110
     @NotNull Map<UUID, Attempts> attempted(final @NotNull UUID testCaseUuid, final @NotNull Attempt attempt) {
-        if (attempt.testNGExecutionStatus() == TestNGExecutionStatus.IDLE && held.containsKey(testCaseUuid))
+        if (attempt.automationExecutionStatus() == AutomationExecutionStatus.IDLE && held.containsKey(testCaseUuid))
             return decide(List.of(testCaseUuid));
         if (!executionNameOf.containsKey(testCaseUuid)) return Map.of(testCaseUuid, Attempts.of(attempt));
-        if (attempt.testNGExecutionStatus() == TestNGExecutionStatus.RUNNING) {
+        if (attempt.automationExecutionStatus() == AutomationExecutionStatus.RUNNING) {
             executingNow.add(testCaseUuid);
             return decidedBefore(testCaseUuid, attempt);
         }
@@ -140,16 +140,16 @@ final class TestNGExecutionRegistry {
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-038
-    void reported(final @NotNull UUID testCaseUuid, final @NotNull TestNGExecutionStatus testNGExecutionStatus) {
-        if (testNGExecutionStatus == TestNGExecutionStatus.RUNNING) return;
+    void reported(final @NotNull UUID testCaseUuid, final @NotNull AutomationExecutionStatus automationExecutionStatus) {
+        if (automationExecutionStatus == AutomationExecutionStatus.RUNNING) return;
 
         pending.remove(testCaseUuid);
         executionNameOf.remove(testCaseUuid);
         executingNow.remove(testCaseUuid);
 
-        if (testNGExecutionStatus == TestNGExecutionStatus.IDLE && !stopped.contains(testCaseUuid)) return;
+        if (automationExecutionStatus == AutomationExecutionStatus.IDLE && !stopped.contains(testCaseUuid)) return;
 
-        testNGExecutionStatuses.put(testCaseUuid, testNGExecutionStatus);
+        automationExecutionStatuses.put(testCaseUuid, automationExecutionStatus);
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-037, Rule-VIEW-PANEL-054

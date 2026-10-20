@@ -20,7 +20,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.open.TestinEditors;
-import org.testin.runner.TestNGExecution;
+import org.testin.runner.AutomationExecution;
 import org.testin.services.Services;
 import org.testin.view.ViewToolWindowFactory;
 
@@ -30,7 +30,7 @@ import java.util.UUID;
 public final class ExecutingNow {
     // Rule-EDITOR-PANEL-291, Rule-VIEW-PANEL-125
     public static boolean is(final @NotNull Project project, final @NotNull UUID testCaseUuid) {
-        return Services.getInstance(project, TestNGExecution.class).isExecutingNow(testCaseUuid)
+        return Services.getInstance(project, AutomationExecution.class).isExecutingNow(testCaseUuid)
                 || Services.getInstance(project, TestinEditors.class).walking(testCaseUuid);
     }
 

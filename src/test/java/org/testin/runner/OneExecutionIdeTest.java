@@ -78,8 +78,8 @@ public class OneExecutionIdeTest extends AbstractCodegenIdeTest {
         }
     }
 
-    private @NotNull TestNGExecution execution() {
-        return Services.getInstance(getProject(), TestNGExecution.class);
+    private @NotNull AutomationExecution execution() {
+        return Services.getInstance(getProject(), AutomationExecution.class);
     }
 
     private void nothingIsReallyStarted() {

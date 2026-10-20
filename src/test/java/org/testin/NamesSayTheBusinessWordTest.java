@@ -38,7 +38,7 @@ public class NamesSayTheBusinessWordTest {
     private static final @NotNull Pattern BARE = Pattern.compile("(?<!Test)Run(?!Item|ner|ning|nable)|(?<!Test)(?<!Use)Cases?(?![a-z])|Verdict"
             + "|(?<!Run)(?<!Toolbar)(?<!StatusBar)(?<!Menu)Items?(?![a-z])"
             + "|(?<!Test)(?<!Testin)Projects?(?![a-z])"
-            + "|(?<!TestCase)(?<!RunItem)(?<!TestRun)(?<!TestNGExecution)(?<!Node)(?<!TestSet)(?<!Package)(?<!TestProject)(?<!Git)Status(?!Bar)");
+            + "|(?<!TestCase)(?<!RunItem)(?<!TestRun)(?<!AutomationExecution)(?<!Node)(?<!TestSet)(?<!Package)(?<!TestProject)(?<!Git)Status(?!Bar)");
 
     private static final @NotNull Set<String> CODE_PROJECT = Set.of("AbstractAnyProjectAction", "ProjectLifetime", "SaveOnProjectClose", "SaveOnProjectCloseIdeTest");
 
@@ -67,7 +67,7 @@ public class NamesSayTheBusinessWordTest {
         assertEquals(bareTypeNames(), List.of(),
                 "A type name says the business word in full: Test Run or Run Item, never Run alone; Test Case, never Case;"
                         + " Run Item or Test Case, never Item; Test Project, never Project, unless it is IntelliJ's project;"
-                        + " which status it is, never Status alone; Run Item Status, never Verdict; TestNG Execution Status, never Execution Status.");
+                        + " which status it is, never Status alone; Run Item Status, never Verdict; Automation Execution Status, never Execution Status.");
     }
 
     @Test
@@ -87,7 +87,7 @@ public class NamesSayTheBusinessWordTest {
         assertFalse(BARE.matcher("TestinProjectConfig").find());
         assertFalse(BARE.matcher("UpdateNodeStatusAction").find());
         assertTrue(BARE.matcher("ExecutionStatus").find(), "an execution of a run item has a status too, so TestNG's says it is TestNG's");
-        assertFalse(BARE.matcher("TestNGExecutionStatus").find());
+        assertFalse(BARE.matcher("AutomationExecutionStatus").find());
         assertFalse(BARE.matcher("EditorStatusBar").find(), "the status bar is a place on screen, not a status");
     }
 }

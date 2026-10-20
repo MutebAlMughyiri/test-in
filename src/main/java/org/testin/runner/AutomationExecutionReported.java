@@ -19,19 +19,19 @@ package org.testin.runner;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.messages.Topic;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.status.TestNGExecutionStatus;
+import org.testin.model.status.AutomationExecutionStatus;
 import org.testin.model.testrun.Failure;
 
 import java.time.Duration;
 
-public interface TestNGExecutionReported {
-    Topic<TestNGExecutionReported> TOPIC = Topic.create("RunTestCaseNotification", TestNGExecutionReported.class);
+public interface AutomationExecutionReported {
+    Topic<AutomationExecutionReported> TOPIC = Topic.create("RunTestCaseNotification", AutomationExecutionReported.class);
 
-    static void broadcast(final @NotNull Project project, final @NotNull String testName, final @NotNull TestNGExecutionStatus testNGExecutionStatus, final @NotNull Duration duration, final @NotNull Failure failure) {
+    static void broadcast(final @NotNull Project project, final @NotNull String testName, final @NotNull AutomationExecutionStatus automationExecutionStatus, final @NotNull Duration duration, final @NotNull Failure failure) {
         if (project.isDisposed()) return;
 
-        project.getMessageBus().syncPublisher(TOPIC).onTestNGExecutionStatusChanged(testName, testNGExecutionStatus, duration, failure);
+        project.getMessageBus().syncPublisher(TOPIC).onAutomationExecutionStatusChanged(testName, automationExecutionStatus, duration, failure);
     }
 
-    void onTestNGExecutionStatusChanged(final @NotNull String testName, final @NotNull TestNGExecutionStatus testNGExecutionStatus, final @NotNull Duration duration, final @NotNull Failure failure);
+    void onAutomationExecutionStatusChanged(final @NotNull String testName, final @NotNull AutomationExecutionStatus automationExecutionStatus, final @NotNull Duration duration, final @NotNull Failure failure);
 }

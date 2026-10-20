@@ -24,7 +24,7 @@ import java.util.Optional;
 
 @Getter
 @AllArgsConstructor
-public enum TestNGExecutionStatus {
+public enum AutomationExecutionStatus {
     IDLE(
             Optional.empty()
     ),

@@ -40,7 +40,7 @@ public final class ExecuteTestCases {
         if (CodeOn.isOffAndWarned(project)) return;
         if (OptionalPlugin.TESTNG.isMissingAndWarned(project)) return;
 
-        final @NotNull TestNGExecution execution = Services.getInstance(project, TestNGExecution.class);
+        final @NotNull AutomationExecution execution = Services.getInstance(project, AutomationExecution.class);
 
         final @NotNull List<TestCase> starting = testCases.stream()
                 .filter(testCase -> !execution.isRunning(testCase.getUuid()))

@@ -31,8 +31,8 @@ name should match our correct names in business."*
 | `aCaseThatArrivesIsPending` | `aTestCaseThatArrivesIsPending`                    | A test's name is a sentence about the business                                                |
 | `RunEditor`, `runPath`      | `TestRunEditor`, `testRunPath`                     | Run alone is a verb. The thing is a test run                                                  |
 | `TestStatus`, `verdict`     | `RunItemStatus`, `runItemStatus`                   | Passed, Failed, Blocked is what a test run records for a run item                             |
-| `status` of one execution   | `runItemExecutionStatus`                           | A run item has many executions, each with its own status. `testNGExecutionStatus` is TestNG's |
-| `RunStatus`, `RunRegistry`  | `TestNGExecutionStatus`, `TestNGExecutionRegistry` | Executing TestNG methods is an execution, not a test run                                      |
+| `status` of one execution   | `runItemExecutionStatus`                           | A run item has many executions, each with its own status. `automationExecutionStatus` is TestNG's |
+| `RunStatus`, `RunRegistry`  | `AutomationExecutionStatus`, `AutomationExecutionRegistry` | Executing TestNG methods is an execution, not a test run                                      |
 | `TestEditor`, `TestToolbar` | `TestSetEditor`, `TestSetToolbar`                  | The editor of a test set's test cases                                                         |
 
 It holds for the documentation and for issues as well: *test case UUID*, never *case id*; *run item*, never *item*.

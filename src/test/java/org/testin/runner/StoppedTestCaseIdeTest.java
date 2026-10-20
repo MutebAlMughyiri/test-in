@@ -32,7 +32,7 @@ import com.intellij.icons.AllIcons;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.model.TestCase;
-import org.testin.model.status.TestNGExecutionStatus;
+import org.testin.model.status.AutomationExecutionStatus;
 import org.testin.model.testrun.Failure;
 import org.testin.services.Services;
 
@@ -45,21 +45,21 @@ public class StoppedTestCaseIdeTest extends AbstractCodegenIdeTest {
     // Rule-CODEGEN-038
     public void testATestCaseTheTesterStoppedIsRecordedAsNotRunNeverAsFailed() {
         final @NotNull TestCase testCase = indexedTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
-        TestNGExecutionRecorder.startRecording(getProject());
-        final @NotNull TestNGExecution execution = Services.getInstance(getProject(), TestNGExecution.class);
+        AutomationExecutionRecorder.startRecording(getProject());
+        final @NotNull AutomationExecution execution = Services.getInstance(getProject(), AutomationExecution.class);
 
         execution.starting(testCase);
         execution.stop(List.of(testCase));
-        TestNGExecutionReported.broadcast(getProject(), testCase.getUuid().toString(), TestNGExecutionStatus.FAILED, Duration.ZERO, Failure.NONE);
+        AutomationExecutionReported.broadcast(getProject(), testCase.getUuid().toString(), AutomationExecutionStatus.FAILED, Duration.ZERO, Failure.NONE);
         settled();
 
-        assertEquals("the killed process reported the stopped test case as failed, and it was recorded so", TestNGExecutionStatus.IDLE, execution.testNGExecutionStatusOf(testCase));
+        assertEquals("the killed process reported the stopped test case as failed, and it was recorded so", AutomationExecutionStatus.IDLE, execution.automationExecutionStatusOf(testCase));
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-037, Rule-CODEGEN-034
     public void testAStopPressedWhileTheIdeStillBuildsEndsTheProcessAsItStarts() {
         final @NotNull TestCase testCase = indexedTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
-        final @NotNull TestNGExecution execution = Services.getInstance(getProject(), TestNGExecution.class);
+        final @NotNull AutomationExecution execution = Services.getInstance(getProject(), AutomationExecution.class);
         final @NotNull String testRunName = execution.freeConfigurationName("LoginTest");
         execution.starting(testCase);
         execution.launched(List.of(testCase), testRunName);

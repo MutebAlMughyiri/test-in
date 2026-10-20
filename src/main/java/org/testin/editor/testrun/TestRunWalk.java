@@ -22,7 +22,7 @@ import org.testin.logger.TestinLogger;
 import org.testin.model.TestCase;
 import org.testin.model.markers.TestRunMarker;
 import org.testin.model.status.RunItemStatus;
-import org.testin.model.status.TestNGExecutionStatus;
+import org.testin.model.status.AutomationExecutionStatus;
 import org.testin.model.status.TestRunStatus;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.RunItemExecution;
@@ -34,7 +34,7 @@ import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
 import org.testin.notifications.Refused;
 import org.testin.runner.ExecuteTestCases;
-import org.testin.runner.TestNGExecution;
+import org.testin.runner.AutomationExecution;
 import org.testin.services.Services;
 import org.testin.testrun.RunItemRecorder;
 import org.testin.testrun.TestRunStatusChange;
@@ -58,7 +58,7 @@ public final class TestRunWalk {
 
     private final @NotNull RunItemRecorder runItemRecorder;
 
-    private final @NotNull TestNGExecution testNGExecution;
+    private final @NotNull AutomationExecution automationExecution;
 
     private final @NotNull Notifier notifier;
 
@@ -77,7 +77,7 @@ public final class TestRunWalk {
         this.runItemClock = new RunItemClock(testRuns, editor.getParent().getPath());
         this.testRunStatusChange = Services.getInstance(project, TestRunStatusChange.class);
         this.runItemRecorder = Services.getInstance(project, RunItemRecorder.class);
-        this.testNGExecution = Services.getInstance(project, TestNGExecution.class);
+        this.automationExecution = Services.getInstance(project, AutomationExecution.class);
         this.notifier = Services.getInstance(project, Notifier.class);
     }
 
@@ -196,7 +196,7 @@ public final class TestRunWalk {
 
         final @NotNull List<TestCase> automated = editor.snapshotOfAll().stream()
                 .filter(this::waitsForARunItemStatus)
-                .filter(testCase -> !testNGExecution.isRunning(testCase.getUuid()))
+                .filter(testCase -> !automationExecution.isRunning(testCase.getUuid()))
                 .toList();
 
         if (automated.isEmpty()) {
@@ -215,10 +215,10 @@ public final class TestRunWalk {
     }
 
     // UC-EDITOR-PANEL-043, UC-EDITOR-PANEL-044, Rule-EDITOR-PANEL-182, Rule-EDITOR-PANEL-289
-    void executionReported(final @NotNull TestCase testCase, final @NotNull TestNGExecutionStatus testNGExecutionStatus, final @NotNull List<RunItemExecution> executions, final int written, final int deciding) {
+    void executionReported(final @NotNull TestCase testCase, final @NotNull AutomationExecutionStatus automationExecutionStatus, final @NotNull List<RunItemExecution> executions, final int written, final int deciding) {
         if (!launchedHere.contains(testCase.getUuid())) return;
 
-        if (!testNGExecutionStatus.stillGoing()) {
+        if (!automationExecutionStatus.stillGoing()) {
             launchedHere.remove(testCase.getUuid());
             launchedByRunTests.remove(testCase.getUuid());
         }
@@ -227,16 +227,16 @@ public final class TestRunWalk {
 
         if (!editor.getParent().takesRunItemStatuses()) return;
 
-        if (testNGExecutionStatus.stillGoing() && !executions.isEmpty())
+        if (automationExecutionStatus.stillGoing() && !executions.isEmpty())
             runItemRecorder.showAttempts(editor, testCase, executions, written, deciding);
 
-        testNGExecutionStatus.getRunItemStatus().ifPresent(runItemStatus -> {
+        automationExecutionStatus.getRunItemStatus().ifPresent(runItemStatus -> {
             runItemRecorder.recordReported(editor, testCase, runItemStatus, executions, written, deciding);
 
             if (launchedHere.isEmpty()) sayWhatTheTestRunRecorded();
         });
 
-        if (launchedByRunTests.contains(testCase.getUuid()) && testNGExecution.isExecutingNow(testCase.getUuid()))
+        if (launchedByRunTests.contains(testCase.getUuid()) && automationExecution.isExecutingNow(testCase.getUuid()))
             editor.showRunItem(testCase);
 
         editor.repaint(testCase.getUuid());
@@ -273,7 +273,7 @@ public final class TestRunWalk {
     }
 
     public boolean isExecuting() {
-        return executingTestCase.isPresent() || launchedHere.stream().anyMatch(testNGExecution::isRunning);
+        return executingTestCase.isPresent() || launchedHere.stream().anyMatch(automationExecution::isRunning);
     }
 
     // Rule-EDITOR-PANEL-290
@@ -288,7 +288,7 @@ public final class TestRunWalk {
     public @NotNull ExecutionMode mode() {
         if (executingTestCase.isPresent()) return ExecutionMode.WALK;
 
-        return launchedByRunTests.stream().anyMatch(testNGExecution::isRunning) ? ExecutionMode.AUTOMATION : ExecutionMode.IDLE;
+        return launchedByRunTests.stream().anyMatch(automationExecution::isRunning) ? ExecutionMode.AUTOMATION : ExecutionMode.IDLE;
     }
 
     // UC-EDITOR-PANEL-031, Rule-EDITOR-PANEL-135
@@ -318,7 +318,7 @@ public final class TestRunWalk {
     private void stopAutomation() {
         if (launchedHere.isEmpty()) return;
 
-        final int stopped = testNGExecution.stopTestCases(launchedHere);
+        final int stopped = automationExecution.stopTestCases(launchedHere);
         if (stopped == 0) return;
 
         TestinLogger.info("Stopped " + stopped + " test case(s) running from '" + editor.getParent().getName() + "'");

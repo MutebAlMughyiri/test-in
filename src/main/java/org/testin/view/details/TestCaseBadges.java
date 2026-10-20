@@ -19,8 +19,8 @@ package org.testin.view.details;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCase;
-import org.testin.model.status.TestNGExecutionStatus;
-import org.testin.runner.TestNGExecution;
+import org.testin.model.status.AutomationExecutionStatus;
+import org.testin.runner.AutomationExecution;
 import org.testin.services.Services;
 import org.testin.ui.Badge;
 import org.testin.ui.Badges;
@@ -33,8 +33,8 @@ public final class TestCaseBadges {
     public static @NotNull List<JComponent> of(final @NotNull Project project, final @NotNull TestCase testCase) {
         final @NotNull List<Badge> badges = Badges.testCaseBadges(testCase);
 
-        final @NotNull TestNGExecutionStatus testNGExecutionStatus = Services.getInstance(project, TestNGExecution.class).testNGExecutionStatusOf(testCase);
-        testNGExecutionStatus.getRunItemStatus().map(Badges::createRunItemStatusBadge).ifPresent(badges::add);
+        final @NotNull AutomationExecutionStatus automationExecutionStatus = Services.getInstance(project, AutomationExecution.class).automationExecutionStatusOf(testCase);
+        automationExecutionStatus.getRunItemStatus().map(Badges::createRunItemStatusBadge).ifPresent(badges::add);
 
         return Badges.pills(badges);
     }

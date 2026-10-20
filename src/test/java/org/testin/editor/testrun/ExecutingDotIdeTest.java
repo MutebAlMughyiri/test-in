@@ -30,7 +30,7 @@ import org.testin.model.status.RunItemStatus;
 import org.testin.quickaction.Offered;
 import org.testin.quickaction.TestCaseQuickAction;
 import org.testin.runner.CapturedRunner;
-import org.testin.runner.TestNGExecution;
+import org.testin.runner.AutomationExecution;
 import org.testin.services.Services;
 import org.testin.testrun.TestRunFixture;
 import org.testin.util.Bundle;
@@ -95,7 +95,7 @@ public class ExecutingDotIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), EditorFixtures.testRunOver(getProject(), root, testCases), getTestRootDisposable());
         try {
             TestCaseQuickAction.RUN_TEST_METHOD.executeFor(editor, testCases.getFirst());
-            assertTrue("the run button did not hand the test case over", Services.getInstance(getProject(), TestNGExecution.class).isRunning(testCases.getFirst().getUuid()));
+            assertTrue("the run button did not hand the test case over", Services.getInstance(getProject(), AutomationExecution.class).isRunning(testCases.getFirst().getUuid()));
 
             assertFalse("a test case TestNG has not started yet shows as executing", executingNow(testCases.getFirst()));
         } finally {

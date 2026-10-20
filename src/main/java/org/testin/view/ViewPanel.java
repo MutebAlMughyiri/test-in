@@ -32,9 +32,9 @@ import org.testin.editor.WheelForwarding;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
 import org.testin.model.TestCase;
-import org.testin.model.status.TestNGExecutionStatus;
+import org.testin.model.status.AutomationExecutionStatus;
 import org.testin.model.testrun.RunItem;
-import org.testin.runner.TestNGExecutionRecorder;
+import org.testin.runner.AutomationExecutionRecorder;
 import org.testin.services.ProjectLifetime;
 import org.testin.services.Services;
 import org.testin.setting.TestinRoot;
@@ -114,7 +114,7 @@ public class ViewPanel implements Disposable {
 
         refreshCurrentView();
 
-        TestNGExecutionRecorder.onReported(project, this, (testCase, testNGExecutionStatus, _, _, _) -> executionReported(testCase, testNGExecutionStatus));
+        AutomationExecutionRecorder.onReported(project, this, (testCase, automationExecutionStatus, _, _, _) -> executionReported(testCase, automationExecutionStatus));
     }
 
     private @NotNull Stream<JPanel> tabs() {
@@ -223,8 +223,8 @@ public class ViewPanel implements Disposable {
     }
 
     // Rule-VIEW-PANEL-005, Rule-CODEGEN-111
-    private void executionReported(final @NotNull TestCase testCase, final @NotNull TestNGExecutionStatus testNGExecutionStatus) {
-        if (testNGExecutionStatus.stillGoing()) reloadDetailsIfShowing(testCase.getUuid());
+    private void executionReported(final @NotNull TestCase testCase, final @NotNull AutomationExecutionStatus automationExecutionStatus) {
+        if (automationExecutionStatus.stillGoing()) reloadDetailsIfShowing(testCase.getUuid());
         else if (shows(testCase.getUuid())) refreshCurrentView();
     }
 

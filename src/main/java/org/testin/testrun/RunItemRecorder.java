@@ -36,7 +36,7 @@ import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItems;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
-import org.testin.runner.TestNGExecution;
+import org.testin.runner.AutomationExecution;
 import org.testin.services.Services;
 import org.testin.setting.AppSettingsState;
 import org.testin.testrun.failure.FailureFields;
@@ -178,7 +178,7 @@ public final class RunItemRecorder {
     // Rule-VIEW-PANEL-121, Rule-TREE-PANEL-009, Rule-CODEGEN-111, Rule-EDITOR-PANEL-240
     public @NotNull Optional<String> whyExecutionsAreFixed(final @NotNull Path testRunPath, final @NotNull UUID testCaseUuid) {
         return Services.getInstance(project, TestRuns.class).findTestRunNode(testRunPath).flatMap(TestRunNode::whySignedOff)
-                .or(() -> Services.getInstance(project, TestNGExecution.class).isRunning(testCaseUuid) ? Optional.of(Bundle.message("execution.still.running")) : Optional.empty());
+                .or(() -> Services.getInstance(project, AutomationExecution.class).isRunning(testCaseUuid) ? Optional.of(Bundle.message("execution.still.running")) : Optional.empty());
     }
 
     // Rule-VIEW-PANEL-121, Rule-TREE-PANEL-009

@@ -26,7 +26,7 @@ import org.testin.codegen.TestName;
 import org.testin.indexer.TestCases;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCase;
-import org.testin.model.status.TestNGExecutionStatus;
+import org.testin.model.status.AutomationExecutionStatus;
 import org.testin.model.testrun.Failure;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.services.Services;
@@ -39,41 +39,41 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service(Service.Level.PROJECT)
-public final class TestNGExecutionRecorder implements Disposable {
+public final class AutomationExecutionRecorder implements Disposable {
     private final @NotNull Project project;
 
     private final @NotNull List<Reported> surfaces = new CopyOnWriteArrayList<>();
 
-    TestNGExecutionRecorder(final @NotNull Project project) {
+    AutomationExecutionRecorder(final @NotNull Project project) {
         this.project = project;
 
-        project.getMessageBus().connect(this).subscribe(TestNGExecutionReported.TOPIC,
-                (TestNGExecutionReported) (testName, testNGExecutionStatus, duration, failure) ->
+        project.getMessageBus().connect(this).subscribe(AutomationExecutionReported.TOPIC,
+                (AutomationExecutionReported) (testName, automationExecutionStatus, duration, failure) ->
                         ApplicationManager.getApplication().invokeLater(
-                                () -> record(testName, testNGExecutionStatus, duration, failure)));
+                                () -> record(testName, automationExecutionStatus, duration, failure)));
     }
 
     public static void startRecording(final @NotNull Project project) {
-        Services.getInstance(project, TestNGExecutionRecorder.class);
+        Services.getInstance(project, AutomationExecutionRecorder.class);
     }
 
     public static void onReported(final @NotNull Project project, final @NotNull Disposable parentDisposable, final @NotNull Reported onUpdated) {
-        final @NotNull TestNGExecutionRecorder recorder = Services.getInstance(project, TestNGExecutionRecorder.class);
+        final @NotNull AutomationExecutionRecorder recorder = Services.getInstance(project, AutomationExecutionRecorder.class);
 
         recorder.surfaces.add(onUpdated);
         Disposer.register(parentDisposable, () -> recorder.surfaces.remove(onUpdated));
     }
 
-    private void record(final @NotNull String testName, final @NotNull TestNGExecutionStatus testNGExecutionStatus, final @NotNull Duration duration, final @NotNull Failure failure) {
-        TestinLogger.debug("Execution report: testName='" + testName + "', status='" + testNGExecutionStatus + "'");
+    private void record(final @NotNull String testName, final @NotNull AutomationExecutionStatus automationExecutionStatus, final @NotNull Duration duration, final @NotNull Failure failure) {
+        TestinLogger.debug("Execution report: testName='" + testName + "', status='" + automationExecutionStatus + "'");
 
         final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
 
-        final @NotNull Attempt attempt = new Attempt(testNGExecutionStatus, duration, failure, ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS));
+        final @NotNull Attempt attempt = new Attempt(automationExecutionStatus, duration, failure, ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS));
 
         TestName.testCaseUuid(testName).flatMap(testCases::findTestCase).ifPresentOrElse(
                 testCase -> {
-                    final @NotNull TestNGExecution execution = Services.getInstance(project, TestNGExecution.class);
+                    final @NotNull AutomationExecution execution = Services.getInstance(project, AutomationExecution.class);
                     execution.attempted(testCase.getUuid(), attempt).forEach((testCaseUuid, decided) -> testCases.findTestCase(testCaseUuid).ifPresent(decidedTestCase -> report(decidedTestCase, decided)));
                     execution.takeUnwritten(testCase.getUuid()).ifPresent(live -> show(testCase, live));
                 },
@@ -84,19 +84,19 @@ public final class TestNGExecutionRecorder implements Disposable {
     private void show(final @NotNull TestCase testCase, final @NotNull Attempts live) {
         final @NotNull List<RunItemExecution> executions = live.executions();
 
-        surfaces.forEach(surface -> surface.accept(testCase, TestNGExecutionStatus.RUNNING, executions, live.written(), executions.size() - 1));
+        surfaces.forEach(surface -> surface.accept(testCase, AutomationExecutionStatus.RUNNING, executions, live.written(), executions.size() - 1));
     }
 
     // Rule-CODEGEN-110, Rule-CODEGEN-111
     private void report(final @NotNull TestCase testCase, final @NotNull Attempts decided) {
-        final @NotNull TestNGExecutionStatus reportedTestNGExecutionStatus = reportedStatusFor(testCase, decided.testNGExecutionStatus());
-        final @NotNull List<RunItemExecution> executions = reportedTestNGExecutionStatus == TestNGExecutionStatus.IDLE ? List.of() : decided.executions();
+        final @NotNull AutomationExecutionStatus reportedAutomationExecutionStatus = reportedStatusFor(testCase, decided.automationExecutionStatus());
+        final @NotNull List<RunItemExecution> executions = reportedAutomationExecutionStatus == AutomationExecutionStatus.IDLE ? List.of() : decided.executions();
 
-        TestinLogger.debug("  reporting on '" + testCase.getDescription() + "': " + reportedTestNGExecutionStatus + " from " + decided.all().size() + " attempt(s)");
+        TestinLogger.debug("  reporting on '" + testCase.getDescription() + "': " + reportedAutomationExecutionStatus + " from " + decided.all().size() + " attempt(s)");
 
-        Services.getInstance(project, TestNGExecution.class).reported(testCase.getUuid(), reportedTestNGExecutionStatus);
+        Services.getInstance(project, AutomationExecution.class).reported(testCase.getUuid(), reportedAutomationExecutionStatus);
 
-        surfaces.forEach(surface -> surface.accept(testCase, reportedTestNGExecutionStatus, executions, decided.written(), decided.decidingExecution()));
+        surfaces.forEach(surface -> surface.accept(testCase, reportedAutomationExecutionStatus, executions, decided.written(), decided.decidingExecution()));
     }
 
     @Override
@@ -105,15 +105,15 @@ public final class TestNGExecutionRecorder implements Disposable {
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-038, Rule-VIEW-PANEL-055
-    private @NotNull TestNGExecutionStatus reportedStatusFor(final @NotNull TestCase testCase, final @NotNull TestNGExecutionStatus testNGExecutionStatus) {
-        final boolean stopped = testNGExecutionStatus == TestNGExecutionStatus.FAILED
-                && Services.getInstance(project, TestNGExecution.class).isStopped(testCase);
+    private @NotNull AutomationExecutionStatus reportedStatusFor(final @NotNull TestCase testCase, final @NotNull AutomationExecutionStatus automationExecutionStatus) {
+        final boolean stopped = automationExecutionStatus == AutomationExecutionStatus.FAILED
+                && Services.getInstance(project, AutomationExecution.class).isStopped(testCase);
 
-        return stopped ? TestNGExecutionStatus.IDLE : testNGExecutionStatus;
+        return stopped ? AutomationExecutionStatus.IDLE : automationExecutionStatus;
     }
 
     @FunctionalInterface
     public interface Reported {
-        void accept(final @NotNull TestCase testCase, final @NotNull TestNGExecutionStatus testNGExecutionStatus, final @NotNull List<RunItemExecution> executions, final int written, final int deciding);
+        void accept(final @NotNull TestCase testCase, final @NotNull AutomationExecutionStatus automationExecutionStatus, final @NotNull List<RunItemExecution> executions, final int written, final int deciding);
     }
 }

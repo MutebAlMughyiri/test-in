@@ -22,9 +22,9 @@ import com.intellij.execution.testframework.stacktrace.DiffHyperlink;
 import com.intellij.openapi.project.Project;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.status.TestNGExecutionStatus;
+import org.testin.model.status.AutomationExecutionStatus;
 import org.testin.model.testrun.Failure;
-import org.testin.runner.TestNGExecutionReported;
+import org.testin.runner.AutomationExecutionReported;
 import org.testin.util.Bundle;
 
 import java.time.Duration;
@@ -38,12 +38,12 @@ public final class TestNGEventRelay extends SMTRunnerEventsAdapter {
 
     // Rule-CODEGEN-075, Rule-CODEGEN-110
     static @NotNull FinishedAttempt finished(final @NotNull SMTestProxy test) {
-        if (test.isPassed()) return new FinishedAttempt(TestNGExecutionStatus.PASSED, Failure.NONE);
+        if (test.isPassed()) return new FinishedAttempt(AutomationExecutionStatus.PASSED, Failure.NONE);
         if (test.isDefect() && !test.isIgnored() && !test.wasTerminated())
-            return new FinishedAttempt(TestNGExecutionStatus.FAILED, failureOf(test, ""));
+            return new FinishedAttempt(AutomationExecutionStatus.FAILED, failureOf(test, ""));
         if (test.isIgnored() && !test.wasTerminated())
-            return new FinishedAttempt(TestNGExecutionStatus.SKIPPED, failureOf(test, Bundle.message("runner.skipped")));
-        return new FinishedAttempt(TestNGExecutionStatus.FAILED, failureOf(test, Bundle.message("runner.skipped")));
+            return new FinishedAttempt(AutomationExecutionStatus.SKIPPED, failureOf(test, Bundle.message("runner.skipped")));
+        return new FinishedAttempt(AutomationExecutionStatus.FAILED, failureOf(test, Bundle.message("runner.skipped")));
     }
 
     private static @NotNull Duration durationOf(final @NotNull SMTestProxy test) {
@@ -68,13 +68,13 @@ public final class TestNGEventRelay extends SMTRunnerEventsAdapter {
     // UC-CODEGEN-008
     @Override
     public void onTestStarted(final @NotNull SMTestProxy test) {
-        TestNGExecutionReported.broadcast(project, test.getPresentableName(), TestNGExecutionStatus.RUNNING, Duration.ZERO, Failure.NONE);
+        AutomationExecutionReported.broadcast(project, test.getPresentableName(), AutomationExecutionStatus.RUNNING, Duration.ZERO, Failure.NONE);
     }
 
     // UC-CODEGEN-008, Rule-CODEGEN-075, Rule-CODEGEN-110
     @Override
     public void onTestFinished(final @NotNull SMTestProxy test) {
         final @NotNull FinishedAttempt finished = finished(test);
-        TestNGExecutionReported.broadcast(project, test.getPresentableName(), finished.testNGExecutionStatus(), durationOf(test), finished.failure());
+        AutomationExecutionReported.broadcast(project, test.getPresentableName(), finished.automationExecutionStatus(), durationOf(test), finished.failure());
     }
 }

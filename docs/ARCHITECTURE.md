@@ -161,7 +161,7 @@ are, and three pairs say otherwise:
 | `importexport` -> `codegen` | An import creates test cases, and a created test case gets its generated method like any other.                                            |
 
 **How the surfaces learn of a change.** The indexer announces each change on
-`IndexChanged`, the same shape as `TestNGExecutionReported`: a node changed, a
+`IndexChanged`, the same shape as `AutomationExecutionReported`: a node changed, a
 test project changed, or a project was read again from disk. It announces after
 the change is recorded and after the caller's own callback has run, so a rename
 has moved the binding before the panel redraws. The tree panel subscribes when it
@@ -389,12 +389,12 @@ how to run anything; a content module does.
 | 2  | `runner/ExecuteTestCases.run`                                                    | Refuses if the TestNG plugin is absent, drops the test cases already running, and starts what is left **as one execution** — one compile and one JVM, not twelve. Notifies once, with a count.                                                                       |
 | 3  | `runner/AutomationExecutor.available()`                                          | The extension point `org.testin.testRunners`. Empty in an IDE where nothing can run — an answer, not a missing one.                                                                                                                                                  |
 | 4  | `testin-testng/TestNGRunner.run`                                                 | Finds each test case's generated method as a `PsiClass`, reports the ones with no generated code, and builds a `TestNGConfiguration` whose pattern set names class and method.                                                                                       |
-| 5  | `runner/TestNGExecution.launch`                                                  | Hands the configuration to the platform and remembers which test cases this environment covers, so a stop knows what to put back.                                                                                                                                    |
-| 6  | `runner/TestNGExecution.starting`                                                | Broadcasts each test case as running before the process exists, so the cards change at the click rather than at the first report.                                                                                                                                    |
+| 5  | `runner/AutomationExecution.launch`                                                  | Hands the configuration to the platform and remembers which test cases this environment covers, so a stop knows what to put back.                                                                                                                                    |
+| 6  | `runner/AutomationExecution.starting`                                                | Broadcasts each test case as running before the process exists, so the cards change at the click rather than at the first report.                                                                                                                                    |
 | 7  | the platform                                                                     | Compiles, starts a JVM, runs TestNG.                                                                                                                                                                                                                                 |
-| 8  | `testin-testng/TestNGEventRelay`                                                 | Declared in the TestNG module's descriptor as a listener on `SMTRunnerEventsListener`, so it exists only where TestNG does. Turns each started and finished event into a `TestNGExecutionReported.broadcast`.                                                        |
-| 9  | `runner/TestNGExecutionRecorder.record`                                          | On the EDT. The test name **is** the test case's UUID, because that is what Testin named the generated method — so there is nothing to look up. A name that is not a UUID is nobody's, and is logged.                                                                |
-| 10 | `runner/TestNGExecutionRecorder.report`                                          | Decides what the report means: a test case the tester stopped reports itself failed, and that is not a failure. Records the run item status against the **UUID**, then tells the surfaces.                                                                           |
+| 8  | `testin-testng/TestNGEventRelay`                                                 | Declared in the TestNG module's descriptor as a listener on `SMTRunnerEventsListener`, so it exists only where TestNG does. Turns each started and finished event into a `AutomationExecutionReported.broadcast`.                                                        |
+| 9  | `runner/AutomationExecutionRecorder.record`                                          | On the EDT. The test name **is** the test case's UUID, because that is what Testin named the generated method — so there is nothing to look up. A name that is not a UUID is nobody's, and is logged.                                                                |
+| 10 | `runner/AutomationExecutionRecorder.report`                                          | Decides what the report means: a test case the tester stopped reports itself failed, and that is not a failure. Records the run item status against the **UUID**, then tells the surfaces.                                                                           |
 | 11 | `editor/testset/TestSetEditor`, `editor/testrun/TestRunEditor`, `view/ViewPanel` | Repaint.                                                                                                                                                                                                                                                             |
 
 **One recorder per project, not one per surface.** Step 10 runs even when
@@ -405,8 +405,8 @@ stored no run item status at all. Every card afterward showed no result for an
 execution that had passed (#66).
 
 The order in step 10 is guaranteed rather than hoped for. A surface asked to
-redraw reads what is running from `TestNGExecution`, so it must not be told before
-`TestNGExecution` has been. One subscriber that records and then calls the
+redraw reads what is running from `AutomationExecution`, so it must not be told before
+`AutomationExecution` has been. One subscriber that records and then calls the
 surfaces gives that; two independent subscriptions would have run in whichever
 order the message bus chose.
 

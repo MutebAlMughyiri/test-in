@@ -158,7 +158,7 @@ silently has no effect costs more than the setting it was meant to hold.
   `Project`; `runItem`, never `item`; `testRun`, never `run` as a noun; and a
   status says which one - `testCaseStatus`, `runItemStatus`, `testRunStatus`,
   `runItemExecutionStatus` (one of a run item's executions),
-  `testNGExecutionStatus`, `nodeStatus`. A model field keeps its plain name
+  `automationExecutionStatus`, `nodeStatus`. A model field keeps its plain name
   (`TestCase.status`), because its class already says whose it is and its name
   is the key on disk. `NamesSayTheBusinessWordTest` holds the type names to it. Read the
   `names-say-the-business` skill under `.claude/skills/` before naming or

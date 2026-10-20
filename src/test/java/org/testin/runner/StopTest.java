@@ -17,7 +17,7 @@
 package org.testin.runner;
 
 import org.jetbrains.annotations.NotNull;
-import org.testin.model.status.TestNGExecutionStatus;
+import org.testin.model.status.AutomationExecutionStatus;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -38,7 +38,7 @@ public class StopTest {
 
     @Test
     public void aTestCaseStoppedBeforeItsLaunchIsNeverTaken() {
-        final TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
+        final AutomationExecutionRegistry registry = new AutomationExecutionRegistry();
         registry.starting(ONE);
         registry.starting(TWO);
 
@@ -51,7 +51,7 @@ public class StopTest {
     // Rule-CODEGEN-037
     @Test
     public void aStopTakesItsOwnExecutionAndNoOther() {
-        final TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
+        final AutomationExecutionRegistry registry = new AutomationExecutionRegistry();
         registry.launched(List.of(ONE, TWO), "cycle 1");
         registry.launched(List.of(THREE), "cycle 2");
 
@@ -65,20 +65,20 @@ public class StopTest {
 
     @Test
     public void aPassedTestCaseKeepsItsRunItemStatusThroughAStop() {
-        final TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
+        final AutomationExecutionRegistry registry = new AutomationExecutionRegistry();
         registry.launched(List.of(ONE, TWO), "cycle 1");
-        registry.reported(ONE, TestNGExecutionStatus.PASSED);
+        registry.reported(ONE, AutomationExecutionStatus.PASSED);
 
         final Stop stop = registry.stopping(List.of(TWO));
 
-        assertEquals(registry.testNGExecutionStatusOf(ONE), TestNGExecutionStatus.PASSED, "a stop took back a run item status that had already landed");
+        assertEquals(registry.automationExecutionStatusOf(ONE), AutomationExecutionStatus.PASSED, "a stop took back a run item status that had already landed");
         assertFalse(stop.testCaseUuids().contains(ONE), "a finished test case was swept up with the other test case in its configuration");
         assertFalse(registry.isStopped(ONE), "a finished test case was recorded as stopped");
     }
 
     @Test
     public void stoppingNothingIsItsOwnAnswer() {
-        final TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
+        final AutomationExecutionRegistry registry = new AutomationExecutionRegistry();
 
         assertEquals(registry.stopping(List.of(ONE)), Stop.NOTHING);
     }
@@ -86,17 +86,17 @@ public class StopTest {
     // Rule-CODEGEN-092
     @Test
     public void anExecutionThatEndsQuietlyReleasesTheTestCasesItHeld() {
-        final TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
+        final AutomationExecutionRegistry registry = new AutomationExecutionRegistry();
         registry.launched(List.of(ONE, TWO), "cycle 1");
 
         assertEquals(Set.copyOf(registry.ended("cycle 1")), Set.of(ONE, TWO));
         assertFalse(registry.isRunning(ONE), "a test case was still running after its process ended");
-        assertEquals(registry.testNGExecutionStatusOf(ONE), TestNGExecutionStatus.IDLE, "a test case left behind by a dead process still showed a status");
+        assertEquals(registry.automationExecutionStatusOf(ONE), AutomationExecutionStatus.IDLE, "a test case left behind by a dead process still showed a status");
     }
 
     @Test
     public void anExecutionTestinDidNotStartIsLeftAlone() {
-        final TestNGExecutionRegistry registry = new TestNGExecutionRegistry();
+        final AutomationExecutionRegistry registry = new AutomationExecutionRegistry();
 
         assertEquals(registry.ended("someone else's run"), List.of());
     }
