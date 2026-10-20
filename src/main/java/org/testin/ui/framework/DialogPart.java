@@ -27,6 +27,7 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.util.EditorFields;
+import org.testin.util.FromContentModule;
 
 import javax.swing.Icon;
 import java.util.ArrayList;
@@ -70,6 +71,7 @@ public final class DialogPart<C extends DialogComponent> {
     }
 
     // Rule-INTERNAL-137
+    @FromContentModule
     public static @NotNull DialogPart<FieldPair> fieldPair(final @NotNull Project project, final @NotNull String rememberedAs, final @NotNull JBLabel firstTitle, final @NotNull MultiLineField first, final @NotNull JBLabel secondTitle, final @NotNull MultiLineField second) {
         return new DialogPart<>(new FieldPair(project, rememberedAs, firstTitle, first, secondTitle, second));
     }
