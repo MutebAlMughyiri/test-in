@@ -39,6 +39,7 @@ import org.testin.services.Services;
 import javax.swing.Icon;
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 
 public class StoppedTestCaseIdeTest extends AbstractCodegenIdeTest {
 
@@ -70,7 +71,7 @@ public class StoppedTestCaseIdeTest extends AbstractCodegenIdeTest {
         process.startNotify();
         getProject().getMessageBus().syncPublisher(ExecutionManager.EXECUTION_TOPIC).processStarted(DefaultRunExecutor.EXECUTOR_ID, launchOf(testRunName), process);
 
-        assertEquals("the process of an execution stopped while the IDE was still building was left running", Boolean.TRUE, process.getUserData(ProcessHandler.TERMINATION_REQUESTED));
+        assertTrue("the process of an execution stopped while the IDE was still building was left running", Optional.ofNullable(process.getUserData(ProcessHandler.TERMINATION_REQUESTED)).orElse(false));
         assertTrue("the process of an execution stopped while the IDE was still building is not ending", process.isProcessTerminating() || process.isProcessTerminated());
     }
 
