@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.testin.java.navigate;
+package org.testin.java.codegen.method;
 
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.project.DumbService;
@@ -27,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.agent.TestBodyWriter;
 import org.testin.config.AutomationLanguage;
 import org.testin.java.codegen.GeneratedMethod;
+import org.testin.java.navigate.TestMethods;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCase;
 import org.testin.util.Bundle;
