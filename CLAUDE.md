@@ -180,6 +180,13 @@ silently has no effect costs more than the setting it was meant to hold.
   twin of the `Done` enum that already owned the success words. Read the
   `a-class-does-one-job` skill under `.claude/skills/` before adding to a
   shared class.
+- **The IDE's own tool comes first.** Before building a window, a console, a
+  timer, a chooser or a service, use the IntelliJ tool that already does it,
+  through public API. The verifier refuses Internal and Experimental API, so
+  read the class's marks in the SDK before proposing it: the agent's live view
+  (#490) went to the Run tool window console because the Terminal tool window's
+  API is Experimental. Testin's own code is for what the IDE has no tool for.
+  Read the `use-what-the-ide-has` skill under `.claude/skills/`.
 - **A button is a class.** Every button a tester clicks extends
   `AbstractIconButton` in a class of its own, as the editor toolbar's do: it
   takes what it needs in its constructor and owns its words, its picture, its
