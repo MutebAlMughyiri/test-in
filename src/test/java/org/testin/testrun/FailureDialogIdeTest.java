@@ -209,6 +209,7 @@ public class FailureDialogIdeTest extends AbstractTempRootIdeTest {
             editor.getList().setSelectedIndex(0);
             editTheFailureOf(editor);
             final @NotNull JComponent again = fixture.openFailureDialog();
+            Await.until("the kept pictures did not come back into the dialog", () -> removeButtons(again).size() == 2);
             removeButtons(again).getFirst().doClick();
             assertEquals("the button on a picture did not take it out", 1, removeButtons(again).size());
             OnScreen.pressKey(again, Shortcuts.Enter.getKey());

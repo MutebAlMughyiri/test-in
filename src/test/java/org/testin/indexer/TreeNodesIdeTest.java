@@ -132,6 +132,7 @@ public class TreeNodesIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestSetNode login = made().testSet(aTestProject().getTestCasesFolder(), "Login");
 
         TreeGesture.pressed(getProject(), new UpdateNodeStatusAction(TestSetStatus.DEPRECATED), List.of(login));
+        Await.until("Deprecated did not reach the test set", () -> login.getMarker().getStatus() == TestSetStatus.DEPRECATED);
         TreeGesture.pressed(getProject(), new UpdateNodeStatusAction(TestSetStatus.ACTIVE), List.of(login));
 
         Await.until("Active pressed after Deprecated did not leave the test set active", () -> login.getMarker().getStatus() == TestSetStatus.ACTIVE && markerOnDisk(login).getStatus() == TestSetStatus.ACTIVE);
