@@ -45,7 +45,7 @@ public class RobotCodeIdeTest extends AbstractCodegenIdeTest {
         interpreterIs("Python SDK");
     }
 
-    private @NotNull Optional<Document> suite(final @NotNull String path) {
+    private @NotNull Optional<Document> suiteAt(final @NotNull String path) {
         settled();
         return TestSourceRoot.find(getProject())
                 .map(root -> root.findFileByRelativePath(path))
@@ -53,11 +53,11 @@ public class RobotCodeIdeTest extends AbstractCodegenIdeTest {
     }
 
     private @NotNull String suiteText(final @NotNull String path) {
-        return suite(path).map(Document::getText).orElse("");
+        return suiteAt(path).map(Document::getText).orElse("");
     }
 
-    private void writtenByTheTester(final @NotNull String path, final @NotNull String from, final @NotNull String to) {
-        final @NotNull Document document = suite(path).orElseThrow(() -> new AssertionError("no suite at " + path));
+    private void writtenByTheTester(final @NotNull String from, final @NotNull String to) {
+        final @NotNull Document document = suiteAt(LOGIN_SUITE).orElseThrow(() -> new AssertionError("no suite at " + LOGIN_SUITE));
         WriteCommandAction.runWriteCommandAction(getProject(), () -> document.setText(document.getText().replace(from, to)));
     }
 
@@ -80,7 +80,7 @@ public class RobotCodeIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestSetNode login = createdTestSet("Login page");
         final @NotNull TestCase signIn = createdTestCase(login, "Sign in", "a");
         createdTestCase(login, "Sign out", "b");
-        writtenByTheTester(LOGIN_SUITE, "steps for Sign in\n    No Operation", "steps for Sign in\n    Open Browser    https://example.com");
+        writtenByTheTester("steps for Sign in\n    No Operation", "steps for Sign in\n    Open Browser    https://example.com");
 
         signIn.setDescription("Log in with a valid user");
         CodeChangeType.UPDATE_TEST_CASE_DESCRIPTION.execute(getProject(), signIn);
@@ -110,8 +110,8 @@ public class RobotCodeIdeTest extends AbstractCodegenIdeTest {
     }
 
     private void assertMoved(final @NotNull String message, final @NotNull String to, final @NotNull String from) {
-        assertTrue(message + ": " + to + " is missing", suite(to).isPresent());
-        assertTrue(message + ": " + from + " is still there", suite(from).isEmpty());
+        assertTrue(message + ": " + to + " is missing", suiteAt(to).isPresent());
+        assertTrue(message + ": " + from + " is still there", suiteAt(from).isEmpty());
     }
 
     // UC-CODEGEN-015, UC-CODEGEN-016, UC-CODEGEN-017, UC-CODEGEN-018, Rule-CODEGEN-051, Rule-CODEGEN-053, Rule-CODEGEN-056, Rule-CODEGEN-059, Rule-CODEGEN-128
@@ -130,7 +130,7 @@ public class RobotCodeIdeTest extends AbstractCodegenIdeTest {
 
         final @NotNull TestSetNode refund = createdTestSet("Refund");
         CodeChangeType.REMOVE_TEST_SET.execute(getProject(), refund);
-        assertTrue("a removed test set's suite file is still there", suite("NAFATH/Refund.robot").isEmpty());
+        assertTrue("a removed test set's suite file is still there", suiteAt("NAFATH/Refund.robot").isEmpty());
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-077, Rule-CODEGEN-078
@@ -138,7 +138,7 @@ public class RobotCodeIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestSetNode login = createdTestSet("Login page");
         final @NotNull TestSetNode payment = createdTestSet("Payment");
         final @NotNull TestCase signIn = createdTestCase(login, "Sign in", "a");
-        writtenByTheTester(LOGIN_SUITE, "    No Operation", "    Open Browser    https://example.com");
+        writtenByTheTester("    No Operation", "    Open Browser    https://example.com");
 
         final @NotNull TestCase copy = indexedTestCase(login, "Sign in again", "b");
         CodeChangeType.COPY_TEST_CASE.execute(getProject(), new CopiedTestCase(copy, signIn));
@@ -156,7 +156,7 @@ public class RobotCodeIdeTest extends AbstractCodegenIdeTest {
     // UC-CODEGEN-014, Rule-CODEGEN-049, Rule-CODEGEN-114
     public void testUndoingARemovalPutsTheTestBackAsTheTesterLeftIt() {
         final @NotNull TestCase signIn = createdTestCase(createdTestSet("Login page"), "Sign in", "a");
-        writtenByTheTester(LOGIN_SUITE, "    No Operation", "    Open Browser    https://example.com");
+        writtenByTheTester("    No Operation", "    Open Browser    https://example.com");
 
         CodeChangeType.REMOVE_TEST_CASE.execute(getProject(), signIn);
         assertFalse("the removed test is still in the suite", suiteText(LOGIN_SUITE).contains(signIn.getUuid().toString()));

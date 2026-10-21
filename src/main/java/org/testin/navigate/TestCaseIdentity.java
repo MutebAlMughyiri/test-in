@@ -18,9 +18,13 @@ package org.testin.navigate;
 
 import com.intellij.openapi.util.TextRange;
 import org.jetbrains.annotations.NotNull;
+import org.testin.util.FromContentModule;
 
 import java.util.UUID;
 
 // UC-CODEGEN-007, Rule-CODEGEN-028
 public record TestCaseIdentity(@NotNull TextRange range, @NotNull UUID testCaseUuid) {
+    @FromContentModule
+    public TestCaseIdentity {
+    }
 }

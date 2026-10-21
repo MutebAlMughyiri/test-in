@@ -125,7 +125,7 @@ public final class AutomationExecution implements Disposable {
         final @NotNull RunManager runManager = RunManager.getInstance(project);
 
         return Optional.ofNullable(runManager.findConfigurationByName(name))
-                .filter(existing -> existing.getType() == factory.getType())
+                .filter(existing -> existing.getType().equals(factory.getType()))
                 .orElseGet(() -> runManager.createConfiguration(name, factory));
     }
 

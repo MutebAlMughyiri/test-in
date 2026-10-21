@@ -55,8 +55,8 @@ public class RobotSuiteTextTest {
                 No Operation
             """;
 
-    private static @NotNull RobotTestBlock test(final @NotNull String text, final @NotNull UUID testCaseUuid) {
-        return RobotSuite.blockOf(text, testCaseUuid).orElseThrow(() -> new AssertionError("no test for " + testCaseUuid));
+    private static @NotNull RobotTestBlock testInTheSuite(final @NotNull UUID testCaseUuid) {
+        return RobotSuite.blockOf(SUITE, testCaseUuid).orElseThrow(() -> new AssertionError("no test for " + testCaseUuid));
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-124
@@ -94,21 +94,21 @@ public class RobotSuiteTextTest {
     // UC-CODEGEN-010, UC-CODEGEN-012, UC-CODEGEN-014, Rule-CODEGEN-122, Rule-CODEGEN-123, Rule-CODEGEN-127
     @Test
     public void renamingRetaggingAndRemovingTouchOnlyTheLinesTestinOwns() {
-        assertTrue(RobotSuiteText.renamed(SUITE, test(SUITE, SAVED), "Pay with a stored card").contains("\nPay with a stored card\n    [Tags]    3f2a05c1"));
-        assertTrue(RobotSuiteText.retagged(SUITE, test(SUITE, NEW), List.of(NEW.toString(), "regression")).contains("    [Tags]    9b1d3c5e-2a4f-4b6d-8e0f-1a2b3c4d5e6f    regression\n    # TODO"));
+        assertTrue(RobotSuiteText.renamed(SUITE, testInTheSuite(SAVED), "Pay with a stored card").contains("\nPay with a stored card\n    [Tags]    3f2a05c1"));
+        assertTrue(RobotSuiteText.retagged(SUITE, testInTheSuite(NEW), List.of(NEW.toString(), "regression")).contains("    [Tags]    9b1d3c5e-2a4f-4b6d-8e0f-1a2b3c4d5e6f    regression\n    # TODO"));
 
         final @NotNull String withoutTags = "*** Test Cases ***\nHand made\n    Log    x\n";
         final @NotNull RobotTestBlock handMade = RobotSuite.blocksOf(withoutTags).getFirst();
         assertEquals(RobotSuiteText.retagged(withoutTags, handMade, List.of(SAVED.toString())), "*** Test Cases ***\nHand made\n    [Tags]    3f2a05c1-8b44-4e2a-9f31-0c7d6b1a9c1b\n    Log    x\n", "a test with no [Tags] line did not get one under its name");
 
-        final @NotNull String removed = RobotSuiteText.withoutTest(SUITE, test(SUITE, SAVED));
+        final @NotNull String removed = RobotSuiteText.withoutTest(SUITE, testInTheSuite(SAVED));
         assertTrue(!removed.contains("Pay with a saved card") && removed.contains("Written by hand") && removed.contains("Open Checkout\n    No Operation"), "removing a test removed more than it: " + removed);
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-078
     @Test
     public void aCopyCarriesTheOriginalsStepsUnderItsOwnNameAndTags() {
-        assertEquals(RobotSuiteText.copyOf(RobotSuiteText.testText(SUITE, test(SUITE, SAVED)), "Pay with a saved card (copy)", List.of(TRANSFER.toString())), """
+        assertEquals(RobotSuiteText.copyOf(RobotSuiteText.testText(SUITE, testInTheSuite(SAVED)), "Pay with a saved card (copy)", List.of(TRANSFER.toString())), """
                 Pay with a saved card (copy)
                     [Tags]    0c7d6b1a-9c1b-4e2a-9f31-3f2a05c18b44
                     Open Checkout

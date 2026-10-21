@@ -17,7 +17,6 @@
 package org.testin.navigate;
 
 import com.intellij.openapi.project.Project;
-import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.config.AutomationLanguage;
 import org.testin.logger.TestinLogger;
@@ -27,15 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-@RequiredArgsConstructor
-public final class NoTestMethodCode implements TestMethodCode {
-    private final @NotNull AutomationLanguage language;
-
-    @Override
-    public @NotNull AutomationLanguage language() {
-        return language;
-    }
-
+public record NoTestMethodCode(@NotNull AutomationLanguage language) implements TestMethodCode {
     @Override
     public void toCode(final @NotNull Project project, final @NotNull TestCase testCase) {
         TestinLogger.debug("No code navigation in this IDE; nothing opened for '" + testCase.getDescription() + "'");

@@ -24,6 +24,7 @@ import org.testin.config.AutomationNeed;
 import org.testin.config.LanguageContributor;
 import org.testin.model.TestCase;
 import org.testin.util.Bundle;
+import org.testin.util.FromContentModule;
 
 import java.util.List;
 import java.util.Optional;
@@ -42,5 +43,6 @@ public interface AutomationExecutor extends LanguageContributor {
     }
 
     // UC-CODEGEN-008, Rule-CODEGEN-031
+    @FromContentModule
     void run(final @NotNull Project project, final @NotNull List<TestCase> testCases);
 }

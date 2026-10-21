@@ -31,9 +31,11 @@ import java.util.Optional;
 
 public class RobotTestMethodCodeIdeTest extends AbstractCodegenIdeTest {
 
-    private boolean caretAt(final @NotNull String fileName, final int offset) {
+    private static final @NotNull String MOVED_SUITE = "moved/by/hand/Elsewhere.robot";
+
+    private boolean caretInTheMovedSuiteAt(final int offset) {
         final @NotNull FileEditorManager editors = FileEditorManager.getInstance(getProject());
-        return Arrays.stream(editors.getSelectedFiles()).anyMatch(file -> file.getName().equals(fileName))
+        return Arrays.stream(editors.getSelectedFiles()).anyMatch(file -> file.getPath().endsWith(MOVED_SUITE))
                 && Optional.ofNullable(editors.getSelectedTextEditor()).map(Editor::getCaretModel).filter(caret -> caret.getOffset() == offset).isPresent();
     }
 
@@ -55,13 +57,13 @@ public class RobotTestMethodCodeIdeTest extends AbstractCodegenIdeTest {
                     [Tags]    %s
                     Open Browser    https://example.com/login    chrome
                 """.formatted(untouched.getUuid(), written.getUuid());
-        myFixture.addFileToProject("moved/by/hand/Elsewhere.robot", suite);
+        myFixture.addFileToProject(MOVED_SUITE, suite);
 
         assertEquals("the Robot tests were not found by their first tag, or their bodies were misread",
                 Map.of(untouched.getUuid(), false, written.getUuid(), true),
                 TestMethodCode.available(getProject()).methodsFor(getProject(), List.of(untouched, written, withoutTest)));
 
         TestMethodCode.available(getProject()).toCode(getProject(), written);
-        Await.until("Navigate to Test Method did not open the Robot test at its name line", () -> caretAt("Elsewhere.robot", suite.indexOf("Refuse a wrong password")));
+        Await.until("Navigate to Test Method did not open the Robot test at its name line", () -> caretInTheMovedSuiteAt(suite.indexOf("Refuse a wrong password")));
     }
 }
