@@ -20,7 +20,7 @@
     <extensions defaultExtensionNs="org.testin">
         <codeGenerators implementation="org.testin.java.codegen.JavaCodeChangeRegistry"/>
         <codeNavigation implementation="org.testin.java.navigate.JavaTestMethodCode"/>
-        <testBodies implementation="org.testin.java.codegen.method.JavaTestBodyWriter"/>
+        <testMethodFiles implementation="org.testin.java.codegen.method.JavaTestMethodFile"/>
     </extensions>
 
     <!-- The gutter icon beside a generated @Test. It was declared in

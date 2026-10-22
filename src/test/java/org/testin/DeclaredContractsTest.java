@@ -47,7 +47,6 @@ public class DeclaredContractsTest {
             entry("TestCaseTransferHandler.getTransferData", "AWT's Transferable contract: a flavor the transferable does not carry throws"),
             entry("TreeTransferable.getTransferData", "AWT's Transferable contract: a flavor the transferable does not carry throws"),
             entry("SettingsConfigurable.apply", "Configurable.apply declares ConfigurationException, and the settings dialog shows its message"),
-            entry("AgentPromptConfigurable.apply", "Configurable.apply declares ConfigurationException, and the settings dialog shows its message"),
             entry("RobotTestsState.startProcess", "CommandLineState.startProcess declares ExecutionException, and the Run window shows its message")
     );
 

@@ -83,7 +83,7 @@ public class AutomateTestCaseAction extends AbstractAnyProjectAction {
 
         CodeChangeType.CREATE_TEST_CASE.executeAll(project, toWrite);
 
-        WriteBodies.forAll(project, nameable(e), editor);
+        WriteBodies.forAll(project, nameable(e));
 
         ApplicationManager.getApplication().invokeLater(() -> ApplicationManager.getApplication().executeOnPooledThread(() -> {
             final int written = writtenFor(project, toWrite);

@@ -57,6 +57,10 @@ public enum SetupStep {
             Guide.AUTOMATION_CODE
     ),
 
+    TERMINAL_PLUGIN(
+            Guide.AUTOMATION_CODE
+    ),
+
     GIT_PLUGIN(
             Guide.SHARE_OVER_GIT
     ),

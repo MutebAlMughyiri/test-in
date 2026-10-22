@@ -183,8 +183,9 @@ silently has no effect costs more than the setting it was meant to hold.
 - **The IDE's own tool comes first.** Before building a window, a console, a
   timer, a chooser or a service, use the IntelliJ tool that already does it,
   through public API. The verifier refuses Internal and Experimental API, so
-  read the class's marks in the SDK before proposing it: the agent's live view
-  (#490) went to the Run tool window console because the Terminal tool window's
+  read the marks of every class the tool exposes, old and new, before ruling it
+  out: the agent (#490) runs in the Terminal tool window through its unmarked
+  `TerminalToolWindowManager` calls, although the Terminal's newer `TerminalView`
   API is Experimental. Testin's own code is for what the IDE has no tool for.
   Read the `use-what-the-ide-has` skill under `.claude/skills/`.
 - **A button is a class.** Every button a tester clicks extends
@@ -267,10 +268,10 @@ silently has no effect costs more than the setting it was meant to hold.
 - **The rule is about methods, and the whole tree obeys it.** The `throws`
   that remain are declarations rather than work, and this list is the record of
   why - not a comment above each one, which the no-comment rule forbids and the
-  September sweep removed. Counted on 20 October 2026: four in `src/main`, one
+  September sweep removed. Counted on 23 October 2026: three in `src/main`, one
   in `testin-robot`, none in `src/test`, `testin-java` or `testin-testng`, and
   every one of them is below. `DeclaredContractsTest` scans the main and test
-  trees for them, holds the same five with their reasons and fails on a sixth,
+  trees for them, holds the same four with their reasons and fails on a fifth,
   so this list can no longer drift from the code unnoticed. Do not sweep them
   again:
   - `TreeTransferable.getTransferData`, and the one `TestCaseTransferHandler` builds
@@ -284,11 +285,6 @@ silently has no effect costs more than the setting it was meant to hold.
     dialog a success it did not have, and close it over a refused value. The
     check behind it, `refusalOfTheRoot`, returns the refusal rather than
     throwing it, so `apply` is the only method that declares it.
-  - `AgentPromptConfigurable.apply` — the same contract, for a timeout that is
-    not a whole number of seconds above 0 (Rule-CODEGEN-115). Muteb, 19 October
-    2026, chose to refuse it on Apply exactly as the main page refuses a bad
-    folder, so every settings page refuses the one way. `refusalOfTheTimeout`
-    returns the refusal and `apply` throws it.
   - `RobotTestsState.startProcess` — `CommandLineState.startProcess` declares
     `ExecutionException`, and throwing is how the platform is told a Robot
     Framework run could not start: the Run window shows the message, and the

@@ -32,8 +32,6 @@ import java.util.Objects;
 @State(name = "testin.settings.AppSettingsState", storages = @Storage("testinSettings.xml"))
 @Service(Service.Level.APP)
 public final class AppSettingsState implements PersistentStateComponent<AppSettingsState> {
-    private static final int DEFAULT_TIMEOUT_SECONDS = 180;
-
     public @NotNull String rootTestinPath = "";
 
     // Rule-SETTING-025
@@ -54,8 +52,6 @@ public final class AppSettingsState implements PersistentStateComponent<AppSetti
     public @NotNull String agentArguments = "";
 
     public @NotNull String agentPrompt = "";
-
-    public int agentTimeoutSeconds = DEFAULT_TIMEOUT_SECONDS;
 
     private static @NotNull String orEmpty(final @Nullable String value) {
         return Objects.requireNonNullElse(value, "").trim();
@@ -80,7 +76,6 @@ public final class AppSettingsState implements PersistentStateComponent<AppSetti
         agentCommand = orEmpty(agentCommand);
         agentArguments = orEmpty(agentArguments);
         agentPrompt = orEmpty(agentPrompt);
-        agentTimeoutSeconds = agentTimeoutSeconds > 0 ? agentTimeoutSeconds : DEFAULT_TIMEOUT_SECONDS;
 
         applyLogLevel();
     }

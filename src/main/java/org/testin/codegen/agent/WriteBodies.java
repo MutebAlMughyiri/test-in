@@ -18,7 +18,6 @@ package org.testin.codegen.agent;
 
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.application.ReadAction;
-import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.concurrency.AppExecutorUtil;
@@ -26,13 +25,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.Fqcn;
-import org.testin.editor.TestinEditor;
 import org.testin.model.TestCase;
 import org.testin.navigate.TestMethodCode;
-import org.testin.notifications.Notifier;
 import org.testin.services.BackgroundWork;
+import org.testin.services.OptionalPlugin;
 import org.testin.services.ProjectLifetime;
-import org.testin.services.Services;
 import org.testin.ui.framework.Alternative;
 import org.testin.ui.framework.ConfirmDialog;
 import org.testin.util.Bundle;
@@ -40,34 +37,37 @@ import org.testin.util.Shortcuts;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WriteBodies {
-    // UC-CODEGEN-021, Rule-CODEGEN-084, Rule-CODEGEN-091
-    public static void forAll(final @NotNull Project project, final @NotNull List<TestCase> testCases, final @NotNull Optional<TestinEditor> editor) {
+    private static final @NotNull String BETWEEN_TEST_CASES = "\n\n---\n\n";
+
+    // UC-CODEGEN-021, Rule-CODEGEN-084, Rule-CODEGEN-091, Rule-CODEGEN-129
+    public static void forAll(final @NotNull Project project, final @NotNull List<TestCase> testCases) {
         final @NotNull AgentConnection connection = AgentConnection.stored();
-        if (!connection.isConnected() || testCases.isEmpty() || TestBodyWriter.available(project).isEmpty()) return;
+        if (!connection.isConnected() || testCases.isEmpty() || TestMethodFile.available(project).isEmpty()) return;
+        if (OptionalPlugin.TERMINAL.isMissingAndWarned(project)) return;
 
         BackgroundWork.logged(ReadAction.nonBlocking(() -> DumbService.isDumb(project) ? Map.<UUID, Boolean>of() : TestMethodCode.available(project).methodsFor(project, testCases))
                 .expireWith(ProjectLifetime.of(project))
-                .finishOnUiThread(ModalityState.defaultModalityState(), written -> askOrConfirm(project, connection, testCases, written, editor))
+                .finishOnUiThread(ModalityState.defaultModalityState(), written -> askOrConfirm(project, connection, testCases, written))
                 .submit(AppExecutorUtil.getAppExecutorService()), "Reading which test methods have a written body");
     }
 
     // UC-CODEGEN-021, Rule-CODEGEN-084, Rule-CODEGEN-091
-    private static void askOrConfirm(final @NotNull Project project, final @NotNull AgentConnection connection, final @NotNull List<TestCase> testCases, final @NotNull Map<UUID, Boolean> written, final @NotNull Optional<TestinEditor> editor) {
+    private static void askOrConfirm(final @NotNull Project project, final @NotNull AgentConnection connection, final @NotNull List<TestCase> testCases, final @NotNull Map<UUID, Boolean> written) {
         final @NotNull List<TestCase> theirs = testCases.stream().filter(testCase -> written.getOrDefault(testCase.getUuid(), false)).toList();
         final @NotNull List<TestCase> empty = testCases.stream().filter(testCase -> !written.getOrDefault(testCase.getUuid(), false)).toList();
 
         if (theirs.isEmpty()) {
-            ask(project, connection, empty, List.of(), editor);
+            ask(project, connection, empty, List.of());
             return;
         }
 
-        writeOverOrLeave(project, theirs.size(), () -> ask(project, connection, empty, theirs, editor), () -> ask(project, connection, empty, List.of(), editor)).show();
+        writeOverOrLeave(project, theirs.size(), () -> ask(project, connection, empty, theirs), () -> ask(project, connection, empty, List.of())).show();
     }
 
     // UC-CODEGEN-021, Rule-CODEGEN-091
@@ -77,68 +77,27 @@ public final class WriteBodies {
                 List.of(new Alternative(Shortcuts.Escape, Bundle.message("agent.over.skip"), leave)));
     }
 
-    // UC-CODEGEN-021, Rule-CODEGEN-084, Rule-CODEGEN-089
-    private static void ask(final @NotNull Project project, final @NotNull AgentConnection connection, final @NotNull List<TestCase> empty, final @NotNull List<TestCase> theirs, final @NotNull Optional<TestinEditor> editor) {
+    // UC-CODEGEN-021, Rule-CODEGEN-084, Rule-CODEGEN-129
+    private static void ask(final @NotNull Project project, final @NotNull AgentConnection connection, final @NotNull List<TestCase> empty, final @NotNull List<TestCase> theirs) {
         if (empty.isEmpty() && theirs.isEmpty()) return;
 
-        final @NotNull AgentTranscript transcript = new AgentTranscript();
-        final int asked = empty.size() + theirs.size();
-
-        BackgroundWork.run(project, Bundle.message("agent.task.title"), Bundle.message("agent.task.failed"), true,
-                indicator -> write(project, connection, empty, theirs, transcript, indicator),
-                () -> {
-                    sayWhatTheAgentDid(project, asked, transcript);
-                    editor.ifPresent(TestinEditor::refreshView);
-                });
+        BackgroundWork.logged(ReadAction.nonBlocking(() -> requestFor(project, connection, empty, theirs))
+                .expireWith(ProjectLifetime.of(project))
+                .finishOnUiThread(ModalityState.defaultModalityState(), request -> AgentRequest.send(project, connection, request))
+                .submit(AppExecutorUtil.getAppExecutorService()), "Writing the request for the agent");
     }
 
-    // UC-CODEGEN-021, Rule-CODEGEN-084, Rule-CODEGEN-088
-    private static void write(final @NotNull Project project, final @NotNull AgentConnection connection, final @NotNull List<TestCase> empty, final @NotNull List<TestCase> theirs, final @NotNull AgentTranscript transcript, final @NotNull ProgressIndicator indicator) {
-        final @NotNull AgentCli agent = AgentCli.onPath(indicator);
-        final @NotNull List<TestCase> asked = Stream.concat(empty.stream(), theirs.stream()).toList();
-
-        indicator.setIndeterminate(false);
-        for (int next = 0; next < asked.size(); next++) {
-            if (indicator.isCanceled()) return;
-
-            final @NotNull TestCase testCase = asked.get(next);
-            indicator.setText2(testCase.getDescription());
-            indicator.setFraction((double) next / asked.size());
-
-            askFor(project, agent, connection, testCase, transcript, theirs.contains(testCase));
-        }
+    // UC-CODEGEN-021, Rule-CODEGEN-003, Rule-CODEGEN-086, Rule-CODEGEN-091
+    static @NotNull String requestFor(final @NotNull Project project, final @NotNull AgentConnection connection, final @NotNull List<TestCase> empty, final @NotNull List<TestCase> theirs) {
+        return Stream.concat(empty.stream(), theirs.stream())
+                .map(testCase -> promptFor(project, connection, testCase) + (theirs.contains(testCase) ? "\n\n" + Bundle.message("agent.request.write.over") : ""))
+                .collect(Collectors.joining(BETWEEN_TEST_CASES));
     }
 
-    // UC-CODEGEN-003, Rule-CODEGEN-090, Rule-CODEGEN-091
-    private static void askFor(final @NotNull Project project, final @NotNull AgentCli agent, final @NotNull AgentConnection connection, final @NotNull TestCase testCase, final @NotNull AgentTranscript transcript, final boolean overWhatIsThere) {
-        final @NotNull String prompt = BodyPrompt.of(connection.promptTemplate(), testCase, Fqcn.methodNameOf(testCase));
-        final @NotNull Optional<String> said = agent.ask(connection, prompt);
-        final @NotNull Optional<String> statements = said.flatMap(AgentAnswer::statementsIn);
+    // UC-CODEGEN-021, Rule-CODEGEN-086
+    private static @NotNull String promptFor(final @NotNull Project project, final @NotNull AgentConnection connection, final @NotNull TestCase testCase) {
+        final @NotNull String file = TestMethodFile.available(project).flatMap(language -> language.fileOf(project, testCase)).orElse("");
 
-        final boolean landed = TestBodyWriter.available(project).flatMap(writer -> statements.flatMap(written -> overWhatIsThere
-                ? writer.replaceBody(project, testCase, written)
-                : writer.fillBody(project, testCase, written))).isPresent();
-
-        transcript.record(testCase, prompt, said.orElse(Bundle.message("agent.said.nothing")), landed, outcomeOf(landed, said, statements));
-    }
-
-    // Rule-CODEGEN-090
-    private static @NotNull String outcomeOf(final boolean landed, final @NotNull Optional<String> said, final @NotNull Optional<String> statements) {
-        if (landed) return Bundle.message("agent.said.written");
-        if (said.isEmpty()) return Bundle.message("agent.said.no.answer");
-        if (statements.isEmpty()) return Bundle.message("agent.said.not.java");
-
-        return Bundle.message("agent.said.no.method");
-    }
-
-    // UC-CODEGEN-021, Rule-CODEGEN-089, Rule-CODEGEN-090
-    private static void sayWhatTheAgentDid(final @NotNull Project project, final int asked, final @NotNull AgentTranscript transcript) {
-        if (transcript.isEmpty()) return;
-
-        final @NotNull Notifier notifier = Services.getInstance(project, Notifier.class);
-
-        notifier.infoWithActions(project, Bundle.message("agent.done.written"),
-                Bundle.message("agent.done.detail", String.valueOf(transcript.landed()), String.valueOf(asked)),
-                notifier.lastingAction(Bundle.message("agent.said.show"), () -> new AgentTranscriptDialog(project, transcript.read()).show()));
+        return BodyPrompt.of(connection.promptTemplate(), testCase, Fqcn.methodNameOf(testCase), file);
     }
 }

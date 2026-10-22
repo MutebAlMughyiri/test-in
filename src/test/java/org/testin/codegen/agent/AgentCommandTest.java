@@ -24,7 +24,6 @@ import org.testin.model.node.NodeChain;
 import org.testin.model.node.TestSetNode;
 import org.testng.annotations.Test;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,34 +45,19 @@ public class AgentCommandTest {
     }
 
     private static @NotNull AgentConnection connection(final String command) {
-        return new AgentConnection(command, "-p", "", Duration.ofSeconds(1));
+        return new AgentConnection(command, "-p", "");
     }
 
-    // Rule-CODEGEN-084
+    // Rule-CODEGEN-083
     @Test
-    public void thePromptGoesOnStandardInputWhenNothingSaysOtherwise() {
-        assertEquals(AgentCli.arguments("-p --no-tools", "write it"), List.of("-p", "--no-tools"),
-                "a prompt of several lines handed to a .cmd shim is cut at the first newline, and nothing says so");
-        assertFalse(AgentCli.wantsThePromptAsAnArgument("-p --no-tools"));
+    public void theArgumentsAreTakenAsTyped() {
+        assertEquals(AgentCli.arguments("  --model   sonnet "), List.of("--model", "sonnet"));
     }
 
-    // Rule-CODEGEN-084
+    // Rule-CODEGEN-083
     @Test
-    public void thePromptGoesWhereThePlaceholderIs() {
-        assertEquals(AgentCli.arguments("run {prompt} --quiet", "write it"), List.of("run", "write it", "--quiet"),
-                "an agent that wants the prompt in the middle is connected by typing it, not by a release");
-    }
-
-    // Rule-CODEGEN-084
-    @Test
-    public void anAgentWithNoArgumentsIsAskedWithNoneOfThem() {
-        assertEquals(AgentCli.arguments("", "write it"), List.of());
-    }
-
-    // Rule-CODEGEN-084
-    @Test
-    public void anAgentThatWantsItAsAnArgumentSaysSo() {
-        assertTrue(AgentCli.wantsThePromptAsAnArgument("run {prompt} --quiet"));
+    public void anAgentWithNoArgumentsIsStartedWithNoneOfThem() {
+        assertEquals(AgentCli.arguments(""), List.of());
     }
 
     // Rule-CODEGEN-083
@@ -87,7 +71,7 @@ public class AgentCommandTest {
     @Test
     public void thePromptCarriesTheTestCaseAndNothingElse() {
         final TestCase testCase = aTestCase();
-        final String written = BodyPrompt.of("{method}: {description} / {expectedResult} / {testData} / {preConditions} / {module} / {steps}", testCase, "signInWithAValidAccount");
+        final String written = BodyPrompt.of("{method}: {description} / {expectedResult} / {testData} / {preConditions} / {module} / {steps}", testCase, "signInWithAValidAccount", "");
 
         assertEquals(written, "signInWithAValidAccount: Sign in with a valid account / The dashboard opens"
                 + " / 1098765432 / Passw0rd! / The account is active / Accounts / ");
@@ -101,14 +85,33 @@ public class AgentCommandTest {
         final TestCase testCase = aTestCase();
         testCase.setParent(login);
 
-        assertEquals(BodyPrompt.of("{testSetPath} | {class}", testCase, "signInWithAValidAccount"), "NAFATH > Test Cases > Accounts > Login | " + Fqcn.classOfMethod(testCase));
+        assertEquals(BodyPrompt.of("{testSetPath} | {class}", testCase, "signInWithAValidAccount", ""), "NAFATH > Test Cases > Accounts > Login | " + Fqcn.classOfMethod(testCase));
         assertFalse(Fqcn.classOfMethod(testCase).isEmpty(), "a class that does not exist yet is still named");
     }
 
     // Rule-CODEGEN-086
     @Test
+    public void thePromptNamesTheFileTheMethodIsIn() {
+        assertEquals(BodyPrompt.of("Edit {method} in {file}", aTestCase(), "signInWithAValidAccount", "LoginPageTest.java"), "Edit signInWithAValidAccount in LoginPageTest.java");
+    }
+
+    // Rule-CODEGEN-084
+    @Test
+    public void aNewTabRunsExactlyTheCommandAndArgumentsInSettings() {
+        assertEquals(AgentRequest.commandLine(new AgentConnection("no-such-agent", "--model sonnet", "")), List.of("no-such-agent", "--model", "sonnet"));
+    }
+
+    // Rule-CODEGEN-084
+    @Test
+    public void theRequestIsTypedWithItsLinesKeptAndSentOnce() {
+        assertEquals(AgentRequest.typedAs("Test case: Sign in\r\nSteps: Open the page\n"), "Test case: Sign in\nSteps: Open the page\r",
+                "a line break is a new line in the agent's chat and only the last Enter sends, as Shift+Enter in Anthropic's plugin");
+    }
+
+    // Rule-CODEGEN-086
+    @Test
     public void aTemplateNobodyEditedIsTheOneTestinShips() {
-        final AgentConnection typed = new AgentConnection("pi", "-p", "   ", Duration.ofSeconds(1));
+        final AgentConnection typed = new AgentConnection("pi", "-p", "   ");
 
         assertTrue(typed.promptTemplate().contains("{description}"),
                 "a blank prompt means the shipped one, so a later release's better wording reaches a tester who never edited it");

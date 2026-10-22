@@ -16,17 +16,12 @@
 
 package org.testin.setting;
 
-import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextArea;
-import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
-
-import java.util.Optional;
-
 import org.jetbrains.annotations.NotNull;
 import org.testin.codegen.agent.AgentConnection;
 import org.testin.codegen.agent.BodyPrompt;
@@ -43,8 +38,6 @@ public final class AgentPromptConfigurable implements SearchableConfigurable {
     private static final int PROMPT_COLUMNS = 60;
 
     private final @NotNull JBTextArea promptArea = new JBTextArea(PROMPT_ROWS, PROMPT_COLUMNS);
-
-    private final @NotNull JBTextField timeoutField = new JBTextField();
 
     private final @NotNull AppSettingsState settings = Services.getInstance(AppSettingsState.class);
 
@@ -77,32 +70,13 @@ public final class AgentPromptConfigurable implements SearchableConfigurable {
                 .addLabeledComponent(new JBLabel(Bundle.message("agent.label.prompt")), new JBScrollPane(promptArea), 1, true)
                 .addComponentToRightColumn(SettingsNote.of(Bundle.message("agent.hint.prompt", String.join(" ", BodyPrompt.PLACEHOLDERS))))
                 .addComponentToRightColumn(buttons)
-                .addVerticalGap(10)
-                .addLabeledComponent(new JBLabel(Bundle.message("agent.label.timeout")), timeoutField, 1, false)
-                .addComponentToRightColumn(SettingsNote.of(Bundle.message("agent.hint.timeout")))
                 .addComponentFillVertically(new JBPanel<>(), 0)
                 .getPanel();
     }
 
-    // Rule-CODEGEN-115
-    private int typedTimeout() {
-        try {
-            return Integer.parseInt(timeoutField.getText().trim());
-        } catch (final NumberFormatException notANumber) {
-            return 0;
-        }
-    }
-
-    // Rule-CODEGEN-115
-    private @NotNull Optional<ConfigurationException> refusalOfTheTimeout() {
-        if (typedTimeout() > 0) return Optional.empty();
-
-        return Optional.of(new ConfigurationException(Bundle.message("agent.timeout.refused", timeoutField.getText().trim()), Bundle.message("agent.timeout.refused.title")));
-    }
-
     @Override
     public boolean isModified() {
-        return !settings.agentPrompt.equals(typedPrompt()) || settings.agentTimeoutSeconds != typedTimeout();
+        return !settings.agentPrompt.equals(typedPrompt());
     }
 
     // Rule-CODEGEN-086
@@ -112,20 +86,15 @@ public final class AgentPromptConfigurable implements SearchableConfigurable {
         return typed.equals(Bundle.message("agent.prompt.default")) ? "" : typed;
     }
 
-    // UC-CODEGEN-021, Rule-CODEGEN-086, Rule-CODEGEN-115
+    // UC-CODEGEN-021, Rule-CODEGEN-086
     @Override
-    public void apply() throws ConfigurationException {
-        final @NotNull Optional<ConfigurationException> refusal = refusalOfTheTimeout();
-        if (refusal.isPresent()) throw refusal.get();
-
+    public void apply() {
         settings.agentPrompt = typedPrompt();
-        settings.agentTimeoutSeconds = typedTimeout();
     }
 
     // UC-CODEGEN-021, Rule-CODEGEN-086
     @Override
     public void reset() {
         promptArea.setText(AgentConnection.stored().promptTemplate());
-        timeoutField.setText(String.valueOf(settings.agentTimeoutSeconds));
     }
 }

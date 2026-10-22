@@ -120,6 +120,11 @@ public enum Done {
 
     STOPPED(
             Bundle.message("done.stopped")
+    ),
+
+    // Rule-CODEGEN-089
+    SENT(
+            Bundle.message("done.sent")
     );
 
     private final @NotNull String outcome;

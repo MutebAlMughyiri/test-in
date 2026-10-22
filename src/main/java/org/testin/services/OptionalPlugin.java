@@ -58,6 +58,14 @@ public enum OptionalPlugin {
             "Git",
             Bundle.message("plugin.git.requirement"),
             SetupStep.GIT_PLUGIN
+    ),
+
+    // Rule-CODEGEN-129
+    TERMINAL(
+            "org.jetbrains.plugins.terminal",
+            "Terminal",
+            Bundle.message("plugin.terminal.requirement"),
+            SetupStep.TERMINAL_PLUGIN
     );
 
     private static final @NotNull Map<OptionalPlugin, Boolean> AVAILABLE = new ConcurrentHashMap<>();

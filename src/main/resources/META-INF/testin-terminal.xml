@@ -1,0 +1,10 @@
+<!-- Loaded only when the Terminal plugin is present. The automation agent's
+     tab is the one class that calls the Terminal's API, so it is registered
+     here: an IDE without the Terminal never loads it, and
+     OptionalPlugin.TERMINAL says why the agent was not asked. -->
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <projectService serviceInterface="org.testin.codegen.agent.AgentTab"
+                        serviceImplementation="org.testin.codegen.agent.TerminalAgentTab"/>
+    </extensions>
+</idea-plugin>

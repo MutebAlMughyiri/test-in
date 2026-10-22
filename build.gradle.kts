@@ -287,7 +287,8 @@ dependencies {
                 "com.intellij.java",
                 "TestNG-J",
                 "Git4Idea",
-                "com.intellij.modules.json"
+                "com.intellij.modules.json",
+                "org.jetbrains.plugins.terminal"
             )
         )
 

@@ -5,7 +5,7 @@ description: Before building any surface or service of a feature - a window, a c
 
 # Use what the IDE has
 
-> *"this is what i mean. use exist idea tools is better that customize new
+> *"this is what [I] mean. use exist idea tools is better that customize new
 > thing."* - Muteb, 22 October 2026
 
 A tester already knows the IDE: its Run window, its notifications, its file
@@ -47,22 +47,27 @@ javap -v org/jetbrains/plugins/terminal/TerminalToolWindowManager.class | grep -
 ```
 
 A class marked at the top applies to every member; a method can carry its own
-mark too. If the only route is marked, the tool is not available to Testin,
-however well it fits. Say that, with the class name and the mark.
+mark too, so read every member the job needs, in the old classes as well as the
+new ones. If the only route is marked, the tool is not available to Testin,
+however well it fits. Say that, with the class name and the mark, and ask
+Muteb before moving to another tool.
 
 ## What it cost to learn
 
 Muteb asked for the AI agent's prompt and answer to be visible while it works
-(#490). The first idea was a real command window. Measured against the SDK:
+(#490), in the IDE's Terminal. Measured against the SDK the first time:
 
-| Route                                                | What the SDK says                                                                                                                                                           | Verdict                                                         |
-|------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------|
-| A cmd window on Windows, Terminal on macOS and Linux | The platform's one call for it, `ExecUtil.getTerminalCommand`, is `@ApiStatus.Internal`; Linux has no single terminal (gnome-terminal, konsole, xterm)                      | Three launch commands of Testin's own                           |
-| The IDE's Terminal tool window                       | `TerminalToolWindowTabsManager`, `TerminalView`, `TerminalSendTextBuilder` are `@ApiStatus.Experimental`; `TerminalToolWindowManager` is partly `Internal` and `Deprecated` | The build fails                                                 |
-| The Run tool window console                          | Public                                                                                                                                                                      | **Chosen**: the same on every OS, Testin still reads the answer |
+| Route                                                       | What the SDK says                                                                                                                                                        | Verdict                                                                        |
+|-------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
+| A cmd window on Windows, Terminal on macOS and Linux        | The platform's one call for it, `ExecUtil.getTerminalCommand`, is `@ApiStatus.Internal`; Linux has no single terminal (gnome-terminal, konsole, xterm)                   | Three launch commands of Testin's own                                          |
+| The IDE's Terminal tool window, newer classes               | `TerminalToolWindowTabsManager`, `TerminalView`, `TerminalSendTextBuilder` are `@ApiStatus.Experimental`                                                                 | Wrongly taken to rule out the whole Terminal                                   |
+| The Run tool window console                                 | Public                                                                                                                                                                   | Built twice, then set aside                                                    |
+| The IDE's Terminal tool window, `TerminalToolWindowManager` | `createNewSession(AbstractTerminalRunner, TerminalTabState)`, `findWidgetByContent`, `TerminalWidget.getTtyConnector` carry no mark; only its other overloads are marked | **Chosen**: what Muteb asked for, and what Anthropic's Claude Code plugin does |
 
-The IDE tool that fit was not the first one named, and the one that looked
-closest was not public. Both are found only by reading the SDK.
+The Terminal was usable all along: one old class had an unmarked route that the
+newer classes' marks hid. Reading how a shipped plugin does the same job would
+have found it on the first day - Anthropic's plugin types `claude` into a
+Terminal tab and lets it edit the files.
 
 ## Tools Testin already uses, and their owners
 
@@ -77,7 +82,7 @@ Reach for these; do not build beside them.
 | Run a command                                   | `GeneralCommandLine`, `OSProcessHandler`                        | `codegen/agent/AgentCli` for the agent                           |
 | Compare two versions                            | `DiffManager`                                                   | `view/history/HistoryCardPanel`                                  |
 | The clipboard                                   | `CopyPasteManager`                                              | called where needed (9 files); `util/ClipboardContents` reads it |
-| Show a run's output                             | Run tool window console                                         | #490, for the agent                                              |
+| Run an agent the tester talks to                | Terminal tool window (`TerminalToolWindowManager`)              | `codegen/agent/TerminalAgentTab`                                 |
 
 Dialogs are the deliberate exception: Testin's dialogs are built on its own
 `ui.framework`, which is the house design system and a decision of its own. Do

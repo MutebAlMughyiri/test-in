@@ -29,12 +29,9 @@ import org.testin.logger.TestinLogger;
 import org.testin.util.FailureText;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -45,27 +42,17 @@ public final class AgentCli {
 
     private static final @NotNull String VERSION = "--version";
 
-    private static final @NotNull String PROMPT_PLACEHOLDER = "{prompt}";
+    private static final @NotNull Duration CHECK_TIMEOUT = Duration.ofSeconds(20);
 
     private final @NotNull Launcher launcher;
 
     public static @NotNull AgentCli onPath(final @NotNull ProgressIndicator indicator) {
-        return new AgentCli((command, arguments, input, timeout) -> start(command, arguments, input, timeout, indicator));
+        return new AgentCli((command, arguments) -> start(command, arguments, indicator));
     }
 
-    // UC-CODEGEN-021, Rule-CODEGEN-084
-    static @NotNull List<String> arguments(final @NotNull String arguments, final @NotNull String prompt) {
-        final @NotNull List<String> written = new ArrayList<>(arguments.isBlank() ? List.of() : List.of(arguments.trim().split("\\s+")));
-
-        final int placeholder = written.indexOf(PROMPT_PLACEHOLDER);
-        if (placeholder != -1) written.set(placeholder, prompt);
-
-        return List.copyOf(written);
-    }
-
-    // UC-CODEGEN-021, Rule-CODEGEN-084
-    static boolean wantsThePromptAsAnArgument(final @NotNull String arguments) {
-        return arguments.contains(PROMPT_PLACEHOLDER);
+    // UC-CODEGEN-021, Rule-CODEGEN-083
+    static @NotNull List<String> arguments(final @NotNull String arguments) {
+        return arguments.isBlank() ? List.of() : List.of(arguments.trim().split("\\s+"));
     }
 
     // UC-CODEGEN-021, Rule-CODEGEN-085
@@ -82,71 +69,29 @@ public final class AgentCli {
         return Optional.ofNullable(PathEnvironmentVariableUtil.findExecutableInPathOnAnyOS(command)).map(File::getAbsolutePath).orElse(command);
     }
 
-    private static @NotNull Optional<ProcessOutput> start(final @NotNull String command, final @NotNull List<String> arguments, final @NotNull Optional<Path> input, final @NotNull Duration timeout, final @NotNull ProgressIndicator indicator) {
+    private static @NotNull Optional<ProcessOutput> start(final @NotNull String command, final @NotNull List<String> arguments, final @NotNull ProgressIndicator indicator) {
         final @NotNull GeneralCommandLine line = new GeneralCommandLine(executable(command))
                 .withParameters(arguments)
                 .withWorkingDirectory(ANYWHERE)
-                .withCharset(StandardCharsets.UTF_8)
-                .withInput(input.map(Path::toFile).orElse(null));
+                .withCharset(StandardCharsets.UTF_8);
 
-        TestinLogger.debug("Asking the agent: " + line.getCommandLineString());
+        TestinLogger.debug("Checking the agent: " + line.getCommandLineString());
 
         try {
-            return Optional.of(new CapturingProcessHandler(line).runProcessWithProgressIndicator(indicator, (int) timeout.toMillis()));
+            return Optional.of(new CapturingProcessHandler(line).runProcessWithProgressIndicator(indicator, (int) CHECK_TIMEOUT.toMillis()));
         } catch (final ExecutionException ex) {
             TestinLogger.warn("The agent '" + command + "' could not be started: " + FailureText.of(ex));
             return Optional.empty();
         }
     }
 
-    // UC-CODEGEN-021, Rule-CODEGEN-084
-    private static @NotNull Optional<Path> promptFile(final @NotNull String prompt) {
-        try {
-            final @NotNull Path written = Files.createTempFile("testin-prompt", ".txt");
-            Files.writeString(written, prompt, StandardCharsets.UTF_8);
-
-            return Optional.of(written);
-        } catch (final IOException ex) {
-            TestinLogger.warn("The prompt could not be written for the agent: " + FailureText.of(ex));
-            return Optional.empty();
-        }
-    }
-
-    private static void forget(final @NotNull Path written) {
-        try {
-            Files.deleteIfExists(written);
-        } catch (final IOException ex) {
-            TestinLogger.warn("The prompt file stayed behind at " + written + ": " + FailureText.of(ex));
-        }
-    }
-
-    // UC-CODEGEN-021, Rule-CODEGEN-084
-    public @NotNull Optional<String> ask(final @NotNull AgentConnection connection, final @NotNull String prompt) {
-        if (!connection.isConnected()) return Optional.empty();
-
-        final @NotNull List<String> arguments = arguments(connection.arguments(), prompt);
-        if (wantsThePromptAsAnArgument(connection.arguments()))
-            return said(connection.command(), arguments, Optional.empty(), connection.timeout());
-
-        final @NotNull Optional<Path> written = promptFile(prompt);
-        try {
-            return said(connection.command(), arguments, written, connection.timeout());
-        } finally {
-            written.ifPresent(AgentCli::forget);
-        }
-    }
-
-    // UC-CODEGEN-021, Rule-CODEGEN-084
+    // UC-CODEGEN-021, Rule-CODEGEN-085
     public @NotNull Optional<String> check(final @NotNull AgentConnection connection) {
         if (!connection.isConnected()) return Optional.empty();
 
-        return said(connection.command(), List.of(VERSION), Optional.empty(), connection.timeout());
-    }
-
-    private @NotNull Optional<String> said(final @NotNull String command, final @NotNull List<String> arguments, final @NotNull Optional<Path> input, final @NotNull Duration timeout) {
-        return launcher.run(command, arguments, input, timeout).map(output -> {
+        return launcher.run(connection.command(), List.of(VERSION)).map(output -> {
             if (output.getExitCode() != 0)
-                TestinLogger.warn("The agent '" + command + "' ended with " + output.getExitCode() + ": " + output.getStderr().strip());
+                TestinLogger.warn("The agent '" + connection.command() + "' ended with " + output.getExitCode() + ": " + output.getStderr().strip());
 
             return output.getStdout().strip();
         });
@@ -154,6 +99,6 @@ public final class AgentCli {
 
     @FunctionalInterface
     interface Launcher {
-        @NotNull Optional<ProcessOutput> run(@NotNull String command, @NotNull List<String> arguments, @NotNull Optional<Path> input, @NotNull Duration timeout);
+        @NotNull Optional<ProcessOutput> run(@NotNull String command, @NotNull List<String> arguments);
     }
 }

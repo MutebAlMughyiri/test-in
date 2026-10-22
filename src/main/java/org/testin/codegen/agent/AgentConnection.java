@@ -21,21 +21,25 @@ import org.testin.services.Services;
 import org.testin.setting.AppSettingsState;
 import org.testin.util.Bundle;
 
-import java.time.Duration;
+import java.io.File;
 
 // UC-CODEGEN-021, Rule-CODEGEN-083, Rule-CODEGEN-087
-public record AgentConnection(@NotNull String command, @NotNull String arguments, @NotNull String prompt, @NotNull Duration timeout) {
+public record AgentConnection(@NotNull String command, @NotNull String arguments, @NotNull String prompt) {
     // UC-CODEGEN-021, Rule-CODEGEN-083
     public static @NotNull AgentConnection stored() {
         final @NotNull AppSettingsState settings = Services.getInstance(AppSettingsState.class);
 
-        return new AgentConnection(settings.agentCommand, settings.agentArguments, settings.agentPrompt,
-                Duration.ofSeconds(settings.agentTimeoutSeconds));
+        return new AgentConnection(settings.agentCommand, settings.agentArguments, settings.agentPrompt);
     }
 
     // UC-CODEGEN-021, Rule-CODEGEN-083
     public boolean isConnected() {
         return !command.isBlank();
+    }
+
+    // Rule-CODEGEN-129
+    public @NotNull String name() {
+        return new File(command.strip()).getName();
     }
 
     // UC-CODEGEN-021, Rule-CODEGEN-086

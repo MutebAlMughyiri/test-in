@@ -27,17 +27,15 @@ import org.testin.util.FromContentModule;
 import java.util.Optional;
 
 // UC-CODEGEN-021
-public interface TestBodyWriter extends LanguageContributor {
-    @NotNull ExtensionPointName<TestBodyWriter> EP = ExtensionPointName.create("org.testin.testBodies");
+public interface TestMethodFile extends LanguageContributor {
+    @NotNull ExtensionPointName<TestMethodFile> EP = ExtensionPointName.create("org.testin.testMethodFiles");
 
     // Rule-CODEGEN-116
-    static @NotNull Optional<TestBodyWriter> available(final @NotNull Project project) {
+    static @NotNull Optional<TestMethodFile> available(final @NotNull Project project) {
         return AutomationLanguage.of(project).contributor(EP);
     }
 
+    // UC-CODEGEN-021, Rule-CODEGEN-086
     @FromContentModule
-    @NotNull Optional<String> fillBody(@NotNull Project project, @NotNull TestCase testCase, @NotNull String statements);
-
-    @FromContentModule
-    @NotNull Optional<String> replaceBody(@NotNull Project project, @NotNull TestCase testCase, @NotNull String statements);
+    @NotNull Optional<String> fileOf(@NotNull Project project, @NotNull TestCase testCase);
 }

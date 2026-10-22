@@ -28,10 +28,10 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BodyPrompt {
     public static final @NotNull List<String> PLACEHOLDERS =
-            List.of("{description}", "{expectedResult}", "{steps}", "{testData}", "{preConditions}", "{module}", "{testSetPath}", "{class}", "{method}");
+            List.of("{description}", "{expectedResult}", "{steps}", "{testData}", "{preConditions}", "{module}", "{testSetPath}", "{class}", "{method}", "{file}");
 
     // UC-CODEGEN-021, Rule-CODEGEN-086
-    public static @NotNull String of(final @NotNull String template, final @NotNull TestCase testCase, final @NotNull String methodName) {
+    public static @NotNull String of(final @NotNull String template, final @NotNull TestCase testCase, final @NotNull String methodName, final @NotNull String file) {
         final @NotNull Map<String, String> values = Map.of(
                 "{description}", testCase.getDescription(),
                 "{expectedResult}", testCase.getExpectedResult(),
@@ -41,7 +41,8 @@ public final class BodyPrompt {
                 "{module}", testCase.getModule(),
                 "{testSetPath}", String.join(" > ", testCase.getParent().treePath()),
                 "{class}", Fqcn.classOfMethod(testCase),
-                "{method}", methodName);
+                "{method}", methodName,
+                "{file}", file);
 
         @NotNull String written = template;
         for (final Map.Entry<String, String> value : values.entrySet()) {

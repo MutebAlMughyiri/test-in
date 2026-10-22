@@ -31,14 +31,11 @@ import org.testin.util.Bundle;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import java.time.Duration;
 import java.util.Optional;
 
 // UC-CODEGEN-021, Rule-CODEGEN-083
 public final class AgentSettingsConfigurable implements SearchableConfigurable {
     static final @NotNull String ID = "org.testin.setting.AgentSettingsConfigurable";
-
-    private static final @NotNull Duration CHECK_TIMEOUT = Duration.ofSeconds(20);
 
     private final @NotNull JBTextField commandField = new JBTextField();
 
@@ -101,7 +98,7 @@ public final class AgentSettingsConfigurable implements SearchableConfigurable {
     }
 
     private @NotNull AgentConnection typedConnection() {
-        return new AgentConnection(commandField.getText().trim(), argumentsField.getText().trim(), "", CHECK_TIMEOUT);
+        return new AgentConnection(commandField.getText().trim(), argumentsField.getText().trim(), "");
     }
 
     @Override

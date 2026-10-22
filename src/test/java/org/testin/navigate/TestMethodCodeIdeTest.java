@@ -22,7 +22,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.psi.PsiMethod;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
-import org.testin.codegen.agent.TestBodyWriter;
+import org.testin.codegen.agent.TestMethodFile;
 import org.testin.Await;
 import org.testin.model.TestCase;
 
@@ -68,16 +68,11 @@ public class TestMethodCodeIdeTest extends AbstractCodegenIdeTest {
         assertTrue("the method was looked for by the description rather than found by the test case UUID", TestMethodCode.available(getProject()).methodsFor(getProject(), List.of(testCase)).containsKey(testCase.getUuid()));
     }
 
-    // Rule-CODEGEN-003
-    public void testAnAgentWritesTheBodyOnlyWhereTheTodoStillStands() {
-        final @NotNull TestCase testCase = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
+    // Rule-CODEGEN-086
+    public void testTheAgentIsToldTheFileThatHoldsTheMethodOfARenamedTestCase() {
+        final @NotNull TestCase testCase = aRenamedTestCaseWhoseMethodHasAnotherName();
 
-        final @NotNull TestBodyWriter writer = TestBodyWriter.available(getProject()).orElseThrow(() -> new AssertionError("a Java test project has no body writer"));
-        assertTrue("the agent's body did not replace the TODO", writer.fillBody(getProject(), testCase, "int signedIn = 1;").isPresent());
-        assertFalse("the agent wrote over a body that was already written", writer.fillBody(getProject(), testCase, "int signedOut = 0;").isPresent());
-
-        final @NotNull String body = writtenMethodOf(LOGIN_TEST, testCase).getText();
-        assertTrue("the first body is gone", body.contains("int signedIn = 1;"));
-        assertFalse("the second body went over the first", body.contains("int signedOut = 0;"));
+        final @NotNull TestMethodFile files = TestMethodFile.available(getProject()).orElseThrow(() -> new AssertionError("a Java test project cannot say which file holds a method"));
+        assertEquals(Optional.of(writtenMethodOf(LOGIN_TEST, testCase).getContainingFile().getVirtualFile().getPresentableUrl()), files.fileOf(getProject(), testCase));
     }
 }

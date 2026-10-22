@@ -80,6 +80,7 @@
     <depends optional="true" config-file="testin-testng.xml">TestNG-J</depends>
     <depends optional="true" config-file="testin-git.xml">Git4Idea</depends>
     <depends optional="true" config-file="testin-json.xml">com.intellij.modules.json</depends>
+    <depends optional="true" config-file="testin-terminal.xml">org.jetbrains.plugins.terminal</depends>
 
     <!-- JetBrains Client, remote development's thin front end and Code     -->
     <!-- With Me's guest, holds no project and ships none of the Git4Idea   -->
@@ -122,8 +123,8 @@
         <extensionPoint name="codeNavigation"
                         interface="org.testin.navigate.TestMethodCode"
                         dynamic="true"/>
-        <extensionPoint name="testBodies"
-                        interface="org.testin.codegen.agent.TestBodyWriter"
+        <extensionPoint name="testMethodFiles"
+                        interface="org.testin.codegen.agent.TestMethodFile"
                         dynamic="true"/>
         <extensionPoint name="apiModelMakers"
                         interface="org.testin.codegen.ApiModelMaker"
