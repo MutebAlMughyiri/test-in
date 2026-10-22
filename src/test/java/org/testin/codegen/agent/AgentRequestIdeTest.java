@@ -61,7 +61,7 @@ public class AgentRequestIdeTest extends AbstractCodegenIdeTest {
         assertEquals("the tab is not named after the command in settings", List.of("no-such-agent"), tab.getNames());
         final @NotNull List<String> commandLine = tab.getOpenedWith().getFirst();
         assertEquals("the tab does not run exactly the command and arguments in settings", List.of("no-such-agent", "--model", "sonnet"), commandLine);
-        assertEquals("the request was not typed whole, its lines kept and sent once", List.of("Write the body of signIn.\nTest case: تسجيل الدخول\nSteps: Open the page\r"), tab.getTypedLines());
+        assertEquals("the request was not pasted whole and sent once", List.of(AgentRequest.pastedAs(request)), tab.getTypedLines());
         assertTrue("handing the request over did not say Sent: " + said.shown(), said.shown().contains(Done.SENT.getOutcome()));
     }
 
@@ -74,7 +74,7 @@ public class AgentRequestIdeTest extends AbstractCodegenIdeTest {
         AgentRequest.send(getProject(), connection, "the second request");
 
         assertEquals("a second tab was opened beside the running one", 1, tab.getOpenedWith().size());
-        assertEquals("the running tab did not get the second request typed into it", List.of("the first request\r", "the second request\r"), tab.getTypedLines());
+        assertEquals("the running tab did not get the second request typed into it", List.of(AgentRequest.pastedAs("the first request"), AgentRequest.pastedAs("the second request")), tab.getTypedLines());
     }
 
     // Rule-CODEGEN-129

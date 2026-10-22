@@ -103,9 +103,10 @@ public class AgentCommandTest {
 
     // Rule-CODEGEN-084
     @Test
-    public void theRequestIsTypedWithItsLinesKeptAndSentOnce() {
-        assertEquals(AgentRequest.typedAs("Test case: Sign in\r\nSteps: Open the page\n"), "Test case: Sign in\nSteps: Open the page\r",
-                "a line break is a new line in the agent's chat and only the last Enter sends, as Shift+Enter in Anthropic's plugin");
+    public void theRequestIsPastedAsTheTerminalPastesAndSentOnce() {
+        final String escape = Character.toString(0x1b);
+        assertEquals(AgentRequest.pastedAs("Test case: Sign in\r\nSteps: Open the page\n"), escape + "[200~Test case: Sign in\rSteps: Open the page" + escape + "[201~\r",
+                "the request goes as the IDE's Terminal sends a Ctrl+V paste, so every agent keeps its lines together, and one Enter sends it");
     }
 
     // Rule-CODEGEN-086

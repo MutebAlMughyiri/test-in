@@ -31,24 +31,28 @@ import java.util.stream.Stream;
 // UC-CODEGEN-021, Rule-CODEGEN-084, Rule-CODEGEN-089
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AgentRequest {
-    private static final @NotNull String NEXT_LINE = "\n";
+    private static final @NotNull String ESCAPE = Character.toString(0x1b);
 
-    private static final @NotNull String SEND = "\r";
+    private static final @NotNull String PASTE_START = ESCAPE + "[200~";
+
+    private static final @NotNull String PASTE_END = ESCAPE + "[201~";
+
+    private static final @NotNull String ENTER = "\r";
 
     // UC-CODEGEN-021, Rule-CODEGEN-084, Rule-CODEGEN-089, Rule-CODEGEN-090, Rule-CODEGEN-129
     public static void send(final @NotNull Project project, final @NotNull AgentConnection connection, final @NotNull String request) {
-        final @NotNull String typed = typedAs(request);
+        final @NotNull String pasted = pastedAs(request);
         TestinLogger.debug("The agent's request:\n" + request);
 
         final @NotNull AgentTab tab = Services.getInstance(project, AgentTab.class);
-        if (!tab.typed(connection.name(), typed)) tab.opened(connection.name(), commandLine(connection), typed);
+        if (!tab.typed(connection.name(), pasted)) tab.opened(connection.name(), commandLine(connection), pasted);
 
         Services.getInstance(project, Notifier.class).softShow(project, Done.SENT);
     }
 
     // Rule-CODEGEN-084
-    static @NotNull String typedAs(final @NotNull String request) {
-        return request.strip().replace("\r\n", NEXT_LINE).replace("\r", NEXT_LINE) + SEND;
+    static @NotNull String pastedAs(final @NotNull String request) {
+        return PASTE_START + request.strip().replace("\r\n", "\n").replace('\n', '\r') + PASTE_END + ENTER;
     }
 
     // UC-CODEGEN-021, Rule-CODEGEN-083

@@ -46,10 +46,10 @@ Connecting an agent changes what that gesture produces, not where it lives.
   nothing about what Automate Test Case already did.
 - **Rule-CODEGEN-084** — The agent is asked once per Automate Test Case, never
   while a method is being written, in the agent's tab of the IDE's Terminal
-  tool window, named after its command: claude, pi. The request is typed into
-  the tab as the tester's own message would be: each line break as a new line,
-  the way Shift+Enter makes one, and one Enter at the end, so a request of
-  several lines goes as one message. A new tab is typed into once its
+  tool window, named after its command: claude, pi. The request is pasted into
+  the tab the way the Terminal pastes Ctrl+V, so every agent keeps its lines
+  together, then sent with one Enter: typed line by line, an Enter would send a
+  request of several lines at its first line. A new tab gets it once its
   connection is ready; a running one at once.
 - **Rule-CODEGEN-085** — Check runs the command with `--version` and prints the
   first line it answered. Every agent answers that one, so it is not a field a
