@@ -112,7 +112,7 @@ entry is gray, and says *Start Manual Execution is on; stop it first* or *Run Te
 executing; stop it first* (Rule-TREE-PANEL-141).
 
 **If a test case has no generated automation code** — it is dropped, and Testin
-names it: *\<test case\> has no generated code yet*. The rest still run. If none
+says *Not automated*, or how many for several. The rest still run. If none
 of them can run, nothing starts.
 
 **If the IDE is indexing** — nothing runs, and the IDE says *Tests cannot run

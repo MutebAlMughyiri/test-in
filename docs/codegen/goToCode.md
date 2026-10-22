@@ -75,8 +75,8 @@ that runs this test case.
 
 ## What Testin refuses
 
-**If the test case has no method** — nothing opens, and Testin says *\<test
-case\> has no generated code yet*, the same sentence running it gives.
+**If the test case has no method** — nothing opens, and Testin says *Not
+automated*, the same message running it gives.
 
 **If the IDE is still indexing** — a message reads *Waiting for indexing*, and
 the jump happens when indexing finishes.

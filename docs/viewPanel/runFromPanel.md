@@ -78,8 +78,7 @@ code, and the code is off until the file names the project (Rule-CODEGEN-082).
 **If the test case is already running** — the place shows the stop button
 instead. Stopping is [UC-VIEW-PANEL-013](stopFromPanel.md).
 
-**If the test case has no automation code** — a message reads the test case's
-description, then *has no generated code yet*.
+**If the test case has no automation code** — a message reads *Not automated*.
 
 ---
 

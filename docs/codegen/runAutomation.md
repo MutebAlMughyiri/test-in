@@ -42,7 +42,7 @@ The code runs, and Testin writes down whether each test case passed.
 - **Rule-CODEGEN-035** — The order the methods run in is the order of the test
   cases in their test set.
 - **Rule-CODEGEN-074** — A test case that cannot run is reported once. One says
-  its description; several say how many, because the descriptions are on the
+  *Not automated*; several say how many, because the test cases are on the
   cards in front of the tester.
 - **Rule-CODEGEN-075** — A test the framework does not run to a run item status
   is recorded as Failed, with Skipped/Terminated as its actual result. TestNG
@@ -137,9 +137,8 @@ opens underneath and shows what TestNG is doing.
 
 **If a test case has no method** — that test case is dropped. Its card goes
 back to how it was, and the other test cases still run. One message says so: for
-a single test case it reads its description and then *has no generated code
-yet*; for several it reads how many *test cases have no generated code yet*.
-There is never one message per test case.
+a single test case it reads *Not automated*; for several it reads how many, as
+in *3 not automated*. There is never one message per test case.
 
 **If none of them has a method** — nothing starts, and no running message
 appears. The message saying how many have no generated code still does.

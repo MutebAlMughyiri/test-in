@@ -130,7 +130,7 @@ public class TestNGHandOverIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestRunEditor editor = runningTheWholeTestRunOf(testCases);
         try {
             assertEquals("the test cases with a method did not still run", List.of("nafath.CheckoutTest,logInWithAValidUser", "nafath.CheckoutTest,logOut"), List.copyOf(patternsOf(executed.getFirst())));
-            assertTrue("the test case with no method was not said to be dropped: " + balloons, balloons.contains(Refused.NO_GENERATED_CODE.about(withoutCode.getDescription())));
+            assertTrue("the test case with no method was not said to be dropped: " + balloons, balloons.contains(Refused.NO_GENERATED_CODE.getSentence()));
         } finally {
             Disposer.dispose(editor);
         }

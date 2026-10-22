@@ -171,9 +171,7 @@ public final class AutomationExecution implements Disposable {
             notStarting(testCase);
         });
 
-        final boolean one = withoutCode.size() == 1;
-        notifier.softRefuse(project, one ? Refused.NO_GENERATED_CODE : Refused.NO_GENERATED_CODE_COUNTED,
-                one ? withoutCode.getFirst().getDescription() : String.valueOf(withoutCode.size()));
+        notifier.softRefuse(project, withoutCode.size() == 1 ? Refused.NO_GENERATED_CODE.getSentence() : Refused.NO_GENERATED_CODE_COUNTED.about(String.valueOf(withoutCode.size())));
     }
 
     // UC-CODEGEN-009, Rule-CODEGEN-038

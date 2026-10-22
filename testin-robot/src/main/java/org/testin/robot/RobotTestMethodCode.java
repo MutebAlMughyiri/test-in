@@ -49,7 +49,7 @@ public final class RobotTestMethodCode implements TestMethodCode {
                 .inSmartMode(project)
                 .finishOnUiThread(ModalityState.defaultModalityState(), found -> found.ifPresentOrElse(
                         test -> new OpenFileDescriptor(project, test.suite(), test.start()).navigate(true),
-                        () -> Services.getInstance(project, Notifier.class).softRefuse(project, Refused.NO_GENERATED_CODE, testCase.getDescription())))
+                        () -> Services.getInstance(project, Notifier.class).softRefuse(project, Refused.NO_GENERATED_CODE.getSentence())))
                 .submit(AppExecutorUtil.getAppExecutorService()), "Finding the Robot test of '" + testCase.getDescription() + "'");
     }
 

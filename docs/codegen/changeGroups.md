@@ -61,8 +61,8 @@ public void logInWithAValidUser() {
 
 ## What Testin refuses
 
-**If the test case has no method** — a message reads the test case's
-description, then *has no generated code yet*. Nothing is written.
+**If the test case has no method** — a message reads *Not automated*. Nothing
+is written.
 
 **If the method has no annotation** — nothing is written, and only the log says
 so.

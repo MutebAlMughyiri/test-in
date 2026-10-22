@@ -197,13 +197,13 @@ public class OneExecutionIdeTest extends AbstractCodegenIdeTest {
     }
 
     // Rule-CODEGEN-074
-    public void testATestCaseThatCannotRunIsReportedOnceByDescriptionAndSeveralByCount() {
+    public void testATestCaseThatCannotRunIsReportedOnceAndSeveralByCount() {
         final @NotNull TestSetNode login = createdTestSet("Login");
         final @NotNull TestCase alone = indexedTestCase(login, "Lock the account", "b");
         settled();
 
         ExecuteTestCases.run(getProject(), theTestCases(List.of(alone)));
-        Await.until("a test case with no method was never reported", () -> balloons.contains(Refused.NO_GENERATED_CODE.about(alone.getDescription())));
+        Await.until("a test case with no method was never reported", () -> balloons.contains(Refused.NO_GENERATED_CODE.getSentence()));
 
         final @NotNull List<TestCase> several = theTestCases(List.of(indexedTestCase(login, "Unlock the account", "c"), indexedTestCase(login, "Reset the password", "d"), indexedTestCase(login, "Change the password", "e")));
         ExecuteTestCases.run(getProject(), several);
@@ -211,8 +211,8 @@ public class OneExecutionIdeTest extends AbstractCodegenIdeTest {
         settled();
 
         final @NotNull List<String> shown = balloons;
-        assertEquals("one test case with no method was not reported exactly once: " + shown, 1, shown.stream().filter(said -> said.equals(Refused.NO_GENERATED_CODE.about(alone.getDescription()))).count());
-        assertEquals("several test cases with no method were reported more than once, or one by one: " + shown, 1, shown.stream().filter(said -> said.contains("no generated code")).count() - 1);
+        assertEquals("one test case with no method was not reported exactly once, or several were reported one by one: " + shown, 1, shown.stream().filter(said -> said.equals(Refused.NO_GENERATED_CODE.getSentence())).count());
+        assertEquals("several test cases with no method were reported more than once: " + shown, 1, shown.stream().filter(said -> said.equals(Refused.NO_GENERATED_CODE_COUNTED.about("3"))).count());
         assertTrue("an execution with nothing to run still said it was running: " + shown, shown.stream().noneMatch(said -> said.startsWith(running(1))));
     }
 

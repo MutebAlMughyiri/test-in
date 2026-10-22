@@ -147,14 +147,14 @@ public class BaseTestMethodChange {
                 () -> TestinLogger.warn("Update: method has no @Test annotation"));
     }
 
-    private void noCodeToUpdate(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull String detail) {
+    private void noCodeToUpdate(final @NotNull Project project, final @NotNull String detail) {
         TestinLogger.warn("Update: " + detail);
 
-        Services.getInstance(project, Notifier.class).softRefuse(project, Refused.NO_GENERATED_CODE, testCase.getDescription());
+        Services.getInstance(project, Notifier.class).softRefuse(project, Refused.NO_GENERATED_CODE.getSentence());
     }
 
     protected void applyUpdate(final @NotNull Project project, final @NotNull TestCase testCase, final @NotNull String title, final @NotNull Consumer<PsiMethod> updater) {
-        applyToMethod(project, testCase, title, updater.andThen(testMethod -> formatAnnotations(project, testMethod)), detail -> noCodeToUpdate(project, testCase, detail));
+        applyToMethod(project, testCase, title, updater.andThen(testMethod -> formatAnnotations(project, testMethod)), detail -> noCodeToUpdate(project, detail));
     }
 
     // UC-CODEGEN-003, Rule-CODEGEN-019

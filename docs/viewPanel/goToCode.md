@@ -90,9 +90,9 @@ Rule-CODEGEN-082.
 titled **Java Plugin Not Available** reads *Automation code generation and
 navigation require the Java plugin, which is not available in this IDE.*
 
-**If the test case has no automation code** — a message reads the test case's
-description, then *has no generated code yet*. It is the same sentence running
-the test case gives, because it is the same state.
+**If the test case has no automation code** — a message reads *Not automated*.
+It is the same message running the test case gives, because it is the same
+state.
 
 **If the IDE is still indexing** — a message reads *Waiting for indexing*, and
 the code opens once the IDE has finished.

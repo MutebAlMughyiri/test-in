@@ -72,7 +72,7 @@ public final class JavaTestMethodCode implements TestMethodCode {
 
                         if (found.isEmpty()) {
                             ApplicationManager.getApplication().invokeLater(() -> Services.getInstance(project, Notifier.class)
-                                    .softRefuse(project, Refused.NO_GENERATED_CODE, testCase.getDescription()));
+                                    .softRefuse(project, Refused.NO_GENERATED_CODE.getSentence()));
                             return;
                         }
 
