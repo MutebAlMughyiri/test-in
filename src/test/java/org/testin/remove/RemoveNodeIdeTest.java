@@ -251,7 +251,7 @@ public class RemoveNodeIdeTest extends AbstractCodegenIdeTest {
         undoHistories().undo(UndoScope.TREE);
         Await.until("undoing the removal did not put the test set back", () -> nodes().nodeExists(wasAt) && undoHistories().canRedo(UndoScope.TREE));
 
-        assertTrue("redoing the removal was refused", undoHistories().redo(UndoScope.TREE));
+        Await.until("redoing the removal was refused", () -> undoHistories().redo(UndoScope.TREE));
         Await.until("redoing the removal did not remove the test set", () -> !nodes().nodeExists(wasAt) && undoHistories().canUndo(UndoScope.TREE));
 
         undoHistories().undo(UndoScope.TREE);

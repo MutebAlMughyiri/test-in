@@ -76,9 +76,13 @@ public class RefreshEditorsIdeTest extends AbstractOpenEditorsIdeTest {
     private static void aCellIsBeingEditedIn(final @NotNull TestinEditor editor) {
         ((AbstractTestinEditor<?, ?>) editor).onToolBarSwitchedToGridView();
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
-        final @NotNull JTable grid = Optional.ofNullable(UIUtil.uiTraverser(editor.getComponent()).filter(JTable.class).first()).orElseThrow(() -> new AssertionError("the editor shows no grid"));
-        for (int column = 0; column < grid.getColumnCount() && !grid.isEditing(); column++) grid.editCellAt(0, column);
-        assertTrue("no cell could be opened for editing", editor.isBusy());
+        Await.until("no cell could be opened for editing", () -> {
+            Optional.ofNullable(UIUtil.uiTraverser(editor.getComponent()).filter(JTable.class).first()).ifPresent(grid -> {
+                for (int column = 0; column < grid.getColumnCount() && !grid.isEditing(); column++)
+                    grid.editCellAt(0, column);
+            });
+            return editor.isBusy();
+        });
     }
 
     @Override

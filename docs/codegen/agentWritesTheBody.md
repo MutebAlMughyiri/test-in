@@ -46,7 +46,7 @@ Connecting an agent changes what that gesture produces, not where it lives.
   nothing about what Automate Test Case already did.
 - **Rule-CODEGEN-084** — The agent is asked once per Automate Test Case, never
   while a method is being written, in the agent's tab of the IDE's Terminal
-  tool window, named after its command: claude, pi. The request is pasted into
+  tool window, named after its command: `claude`, `pi`. The request is pasted into
   the tab the way the Terminal pastes Ctrl+V, so every agent keeps its lines
   together, then sent with one Enter: typed line by line, an Enter would send a
   request of several lines at its first line. A new tab gets it once its
@@ -88,7 +88,7 @@ Connecting an agent changes what that gesture produces, not where it lives.
   the tester's own.
 - **Rule-CODEGEN-129** — The agent's tab is the agent itself, started in the
   IDE's Terminal from the command and arguments in settings, and named after
-  the command: claude, pi. While it runs, every Automate Test Case hands its
+  the command: `claude`, `pi`. While it runs, every Automate Test Case hands its
   request to it; once it has ended or its tab is closed, the next opens a new
   one, and another command opens a tab of its own. Without the Terminal plugin,
   Automate Test Case writes the methods and says the Terminal plugin is not
@@ -169,7 +169,7 @@ talk to and nothing to type the next request into.
 3. Testin fills the tester's prompt from each test case asked for, in order,
    into one request.
 4. If the Terminal tool window holds a running tab named after the command,
-   such as **claude**, Testin types the request into it. Otherwise it opens one
+   such as `claude`, Testin pastes the request into it. Otherwise, it opens one
    whose process is the agent, started from the command and arguments, and
    types the request once it is ready.
 5. The balloon reads **Sent**.
