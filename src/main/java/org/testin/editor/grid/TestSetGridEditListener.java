@@ -104,7 +104,7 @@ public class TestSetGridEditListener extends AbstractGridEditListener {
     // UC-EDITOR-PANEL-008, Rule-EDITOR-PANEL-053
     private void persistAndGenerate(final @NotNull TestCase edited, final @NotNull TestSetEditorFields field, final @NotNull TestCaseSnapshot undoFrom) {
         if (testSetPath.toString().isEmpty()) {
-            TestinLogger.warn("[grid] edit not persisted - the editor has no test set path");
+            TestinLogger.warn("Grid edit not persisted - the editor has no test set path");
             return;
         }
 

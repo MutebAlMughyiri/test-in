@@ -159,7 +159,7 @@ public final class RunItemRecorder {
         Services.getInstance(project, TestRuns.class).changeRunItem(testRunPath, testCaseUuid, recording);
         offerBugReports(runItemStatus);
 
-        TestinLogger.trace("[RunItemRecorder]: Status updated -> " + testCaseUuid + " = " + runItemStatus);
+        TestinLogger.trace("Status updated -> " + testCaseUuid + " = " + runItemStatus);
 
         showRecorded(editor, List.of(testCaseUuid));
         return true;
@@ -214,14 +214,14 @@ public final class RunItemRecorder {
         final @NotNull Optional<RunItems> runItems = testRuns.findRunItems(testRunPath);
 
         if (runItems.isEmpty()) {
-            TestinLogger.warn("[RunItemRecorder]: '" + testRunPath.getFileName() + "' is no longer indexed - nothing recorded");
+            TestinLogger.warn("'" + testRunPath.getFileName() + "' is no longer indexed - nothing recorded");
             refuse.accept(Bundle.message("run.item.status.test.run.gone"));
             return runItems;
         }
 
         final @NotNull Optional<String> signedOff = testRuns.findTestRunNode(testRunPath).flatMap(TestRunNode::whySignedOff);
         if (signedOff.isPresent()) {
-            TestinLogger.info("[RunItemRecorder]: '" + testRunPath.getFileName() + "' is signed off - nothing recorded");
+            TestinLogger.info("'" + testRunPath.getFileName() + "' is signed off - nothing recorded");
             refuse.accept(signedOff.orElseThrow());
             return Optional.empty();
         }
@@ -233,7 +233,7 @@ public final class RunItemRecorder {
         final @NotNull Optional<RunItem> found = runItems.runItemOf(testCaseUuid);
 
         if (found.isEmpty()) {
-            TestinLogger.warn("[RunItemRecorder]: '" + testRunPath.getFileName() + "' does not cover " + testCaseUuid + " - nothing recorded");
+            TestinLogger.warn("'" + testRunPath.getFileName() + "' does not cover " + testCaseUuid + " - nothing recorded");
 
             // Rule-EDITOR-PANEL-225
             Services.getInstance(project, Notifier.class).softRefuse(project, Bundle.message("run.item.status.test.case.not.covered"));

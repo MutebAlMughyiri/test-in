@@ -61,7 +61,7 @@ public final class CopiedTestCases {
 
             return parsed.stream().filter(Objects::nonNull).map(clipped -> clipped.read(mapper)).toList();
         } catch (final UnsupportedFlavorException | IOException | UncheckedIOException ex) {
-            TestinLogger.warn("[WARNING] Failed to parse clipboard JSON: " + FailureText.of(ex));
+            TestinLogger.warn("Failed to parse clipboard JSON: " + FailureText.of(ex));
             return List.of();
         }
     }

@@ -340,7 +340,7 @@ public class GridTables {
 
     // UC-EDITOR-PANEL-030, Rule-EDITOR-PANEL-020, Rule-TREE-PANEL-009
     public @NotNull JBTable buildTestRunTable(final @NotNull List<String[]> rows, final @NotNull Set<TestRunEditorFields> fields, final @NotNull BooleanSupplier stillOpen) {
-        TestinLogger.debug("[GridTables] buildRunTable: rows=" + rows.size() + ", fields=" + fields);
+        TestinLogger.debug("buildRunTable: rows=" + rows.size() + ", fields=" + fields);
         final @NotNull List<TestRunEditorFields> ordered = TestRunEditorFields.COLUMNS;
 
         final @NotNull JBTable table = buildTable(buildColumns(ordered), rows, column -> stillOpen.getAsBoolean() && ordered.get(column).isEdited(), EditorKind.TEST_RUN);
@@ -350,7 +350,7 @@ public class GridTables {
 
     // UC-EDITOR-PANEL-002, Rule-EDITOR-PANEL-020
     public @NotNull JBTable buildTestTable(final @NotNull List<String[]> rows, final @NotNull Set<TestSetEditorFields> fields) {
-        TestinLogger.debug("[GridTables] buildTestTable: rows=" + rows.size() + ", fields=" + fields);
+        TestinLogger.debug("buildTestTable: rows=" + rows.size() + ", fields=" + fields);
         final @NotNull List<TestSetEditorFields> ordered = TestSetEditorFields.COLUMNS;
 
         final @NotNull JBTable table = buildTable(buildColumns(ordered), rows, column -> ordered.get(column).can(Can.EDIT), EditorKind.TEST_SET);

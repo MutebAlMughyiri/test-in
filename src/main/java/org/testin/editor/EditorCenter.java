@@ -32,7 +32,7 @@ public final class EditorCenter {
     private @NotNull Optional<JComponent> current = Optional.empty();
 
     public void set(final @NotNull JComponent component) {
-        TestinLogger.debug("[center] setCenter -> " + component.getClass().getSimpleName()
+        TestinLogger.debug("setCenter -> " + component.getClass().getSimpleName()
                 + " (had center=" + current.isPresent() + ")");
 
         current.ifPresent(panel::remove);

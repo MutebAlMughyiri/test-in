@@ -312,10 +312,10 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
     // UC-EDITOR-PANEL-003, Rule-EDITOR-PANEL-021
     @Override
     public void onToolBarDetailsSelectionChanged() {
-        TestinLogger.debug("[details] selectedDetails changed -> " + getSelectedDetails());
+        TestinLogger.debug("selectedDetails changed -> " + getSelectedDetails());
 
         if (getToolBar().getCurrentView() == ViewMode.GRID_VIEW) {
-            TestinLogger.debug("[details] grid active -> toggling column visibility");
+            TestinLogger.debug("Details changed with the grid active -> toggling column visibility");
             grid.updateColumns();
         } else {
             refreshCards();
@@ -325,7 +325,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
     // UC-EDITOR-PANEL-002, Rule-EDITOR-PANEL-018
     @Override
     public void onToolBarSwitchedToCardView() {
-        TestinLogger.debug("[switch] -> LIST view, currentView=" + getToolBar().getCurrentView());
+        TestinLogger.debug("Switching to the LIST view, currentView=" + getToolBar().getCurrentView());
         center.set(scrollPane);
 
         refreshCards();
@@ -334,7 +334,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
     // UC-EDITOR-PANEL-002, Rule-EDITOR-PANEL-002
     @Override
     public void onToolBarSwitchedToGridView() {
-        TestinLogger.debug("[switch] -> GRID view, currentView=" + getToolBar().getCurrentView());
+        TestinLogger.debug("Switching to the GRID view, currentView=" + getToolBar().getCurrentView());
         grid.rebuild();
         grid.view().ifPresent(view -> {
             center.set(view.scrollPane());
@@ -393,7 +393,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
     // UC-EDITOR-PANEL-027, Rule-EDITOR-PANEL-117
     @Override
     public void onToolBarRefreshButtonClicked() {
-        TestinLogger.debug("[refresh] clicked, currentView=" + getToolBar().getCurrentView());
+        TestinLogger.debug("Refresh clicked, currentView=" + getToolBar().getCurrentView());
         getToolBar().getToolbarItem(FilterPopupButton.class).clearFilters();
         getToolBar().getToolbarItem(SortPopupButton.class).reset();
 
@@ -515,7 +515,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
         afterSelectionShown();
 
         if (getToolBar().getCurrentView() == ViewMode.GRID_VIEW) {
-            TestinLogger.debug("[refreshView] grid active -> redrawing grid");
+            TestinLogger.debug("refreshView with the grid active -> redrawing grid");
             grid.redraw();
             grid.view().ifPresent(view -> center.set(view.scrollPane()));
         }

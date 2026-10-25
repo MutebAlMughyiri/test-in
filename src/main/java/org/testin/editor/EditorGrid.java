@@ -87,7 +87,7 @@ final class EditorGrid<A extends Enum<A> & ShowableField> {
 
         final @NotNull List<TestCase> pageTestCases = showOnGrid(editor.getCurrentPageTestCases());
         final @NotNull Set<A> fields = editor.getSelectedDetails();
-        TestinLogger.debug("[grid] rebuildGrid start, pageItems=" + pageTestCases.size() + ", details=" + fields);
+        TestinLogger.debug("rebuildGrid start, pageItems=" + pageTestCases.size() + ", details=" + fields);
         final @NotNull Disposable fontSync = Disposer.newDisposable(editor.projectDisposable, "testin." + editor.getClass().getSimpleName() + ".gridFontSync");
         try {
             final @NotNull JBTable table = editor.buildTable(editor.gridRows(pageTestCases), fields);
@@ -107,9 +107,9 @@ final class EditorGrid<A extends Enum<A> & ShowableField> {
 
             previous.ifPresent(old -> Disposer.dispose(old.fontSync()));
 
-            TestinLogger.debug("[grid] rebuildGrid done, rows=" + table.getRowCount() + ", cols=" + table.getColumnCount());
+            TestinLogger.debug("rebuildGrid done, rows=" + table.getRowCount() + ", cols=" + table.getColumnCount());
         } catch (final Exception ex) {
-            TestinLogger.error("[grid] rebuildGrid FAILED: " + ex);
+            TestinLogger.error("rebuildGrid FAILED: " + ex);
             Disposer.dispose(fontSync);
 
             // Rule-EDITOR-PANEL-229
