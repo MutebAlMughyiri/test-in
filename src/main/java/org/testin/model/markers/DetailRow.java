@@ -18,5 +18,11 @@ package org.testin.model.markers;
 
 import org.jetbrains.annotations.NotNull;
 
-public record DetailRow(@NotNull String caption, @NotNull String value) {
+import javax.swing.Icon;
+import java.util.Optional;
+
+public record DetailRow(@NotNull String caption, @NotNull Optional<Icon> icon, @NotNull String value) {
+    public DetailRow(final @NotNull String caption, final @NotNull String value) {
+        this(caption, Optional.empty(), value);
+    }
 }

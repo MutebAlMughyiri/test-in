@@ -21,6 +21,7 @@ import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
+import org.testin.model.markers.DetailRow;
 import org.testin.ui.Caption;
 import org.testin.ui.Tooltip;
 import org.testin.util.Display;
@@ -36,13 +37,13 @@ public final class DialogDetails implements DialogComponent {
 
     private final @NotNull JBPanel<?> panel;
 
-    DialogDetails(final @NotNull List<DialogDetailRow> rows) {
+    DialogDetails(final @NotNull List<DetailRow> rows) {
         final @NotNull JBPanel<?> stack = new JBPanel<>();
         stack.setLayout(new BoxLayout(stack, BoxLayout.Y_AXIS));
         stack.setOpaque(false);
         stack.setBorder(JBUI.Borders.empty(Spacing.XS, 0));
 
-        for (final DialogDetailRow row : rows) {
+        for (final DetailRow row : rows) {
             // Rule-INTERNAL-087
             final @NotNull JBLabel value = wrappingValue(row.value());
             row.icon().ifPresent(icon -> {

@@ -26,6 +26,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.testin.model.markers.DetailRow;
 import org.testin.util.EditorFields;
 import org.testin.util.FromContentModule;
 
@@ -151,18 +152,18 @@ public final class DialogPart<C extends DialogComponent> {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class DetailsBuilder {
-        private final @NotNull List<DialogDetailRow> rows = new ArrayList<>();
+        private final @NotNull List<DetailRow> rows = new ArrayList<>();
 
         public @NotNull DetailsBuilder row(final @NotNull String caption, final @NotNull String value) {
             if (!value.isBlank()) {
-                rows.add(new DialogDetailRow(caption, Optional.empty(), value));
+                rows.add(new DetailRow(caption, value));
             }
             return this;
         }
 
         public @NotNull DetailsBuilder row(final @NotNull Icon icon, final @NotNull String value) {
             if (!value.isBlank()) {
-                rows.add(new DialogDetailRow("", Optional.of(icon), value));
+                rows.add(new DetailRow("", Optional.of(icon), value));
             }
             return this;
         }
