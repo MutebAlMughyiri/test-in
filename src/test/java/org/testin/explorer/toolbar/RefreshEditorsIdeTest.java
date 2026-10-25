@@ -27,6 +27,7 @@ import org.testin.TempTree;
 import org.testin.editor.AbstractTestinEditor;
 import org.testin.editor.TestinEditor;
 import org.testin.editor.open.TestinEditors;
+import org.testin.editor.toolbar.GridViewButton;
 import org.testin.explorer.TreePanel;
 import org.testin.model.FileKind;
 import org.testin.model.TestCase;
@@ -74,7 +75,7 @@ public class RefreshEditorsIdeTest extends AbstractOpenEditorsIdeTest {
     }
 
     private static void aCellIsBeingEditedIn(final @NotNull TestinEditor editor) {
-        ((AbstractTestinEditor<?, ?>) editor).onToolBarSwitchedToGridView();
+        ((AbstractTestinEditor<?, ?>) editor).getToolBar().getToolbarItem(GridViewButton.class).doClick();
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
         Await.until("no cell could be opened for editing", () -> {
             Optional.ofNullable(UIUtil.uiTraverser(editor.getComponent()).filter(JTable.class).first()).ifPresent(grid -> {
