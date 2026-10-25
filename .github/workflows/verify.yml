@@ -99,9 +99,13 @@ jobs:
           distribution: temurin
           java-version: 25
 
+      # Reads the cache and never writes it: fifteen jobs writing on every push
+      # pushed the Build's entries out of the repository's 10 GB (#430).
       - name: Gradle
         if: ${{ !matrix.unreleased }}
         uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-read-only: true
 
       # No cache for the IDEs: fifteen products at about 3 GB each is far past
       # the repository's 10 GB, and filling it would push out the Gradle cache

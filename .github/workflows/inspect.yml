@@ -58,8 +58,12 @@ jobs:
           distribution: temurin
           java-version: 25
 
+      # Reads the cache and never writes it, so the Build's entries keep their
+      # place in the repository's 10 GB (#430).
       - name: Gradle
         uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-read-only: true
 
       # The inspector is the IDE the Gradle plugin downloads, pinned by
       # intellij.version - so this step is what puts it on disk. inspect.ps1

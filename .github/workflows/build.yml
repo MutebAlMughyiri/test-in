@@ -163,8 +163,13 @@ jobs:
           distribution: temurin
           java-version: 25
 
+      # Reads the cache and never writes it. The repository holds 10 GB, and
+      # this job's entries filled most of it on every push, so the Build's own
+      # Gradle state and verifier IDE were gone before the next push (#430).
       - name: Gradle
         uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-read-only: true
 
       # The two content modules compile against the core jar, so the scan
       # resolves them to a jar that nothing had built. Their classes came out
@@ -194,6 +199,7 @@ jobs:
         with:
           pr-mode: ${{ github.event_name == 'pull_request' }}
           upload-result: true
+          use-caches: false
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
           QODANA_ENDPOINT: 'https://qodana.cloud'
