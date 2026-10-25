@@ -34,7 +34,6 @@ import com.intellij.openapi.editor.RangeMarker;
 import com.intellij.openapi.editor.VisualPosition;
 import com.intellij.openapi.editor.actionSystem.EditorActionManager;
 import com.intellij.openapi.editor.colors.EditorColors;
-import com.intellij.openapi.editor.colors.EditorColorsScheme;
 import com.intellij.openapi.editor.event.CaretEvent;
 import com.intellij.openapi.editor.event.CaretListener;
 import com.intellij.openapi.editor.event.DocumentEvent;
@@ -145,12 +144,8 @@ final class BulkJsonEditors implements DialogComponent {
         }.registerCustomShortcutSet(keys, target);
     }
 
-    // UC-EDITOR-PANEL-007
+    // UC-EDITOR-PANEL-007, Rule-SETTING-037
     private static void setupEditorAppearance(final @NotNull Editor editor) {
-        final @NotNull EditorColorsScheme scheme = editor.getColorsScheme();
-        scheme.setEditorFontSize(15f);
-        scheme.setLineSpacing(1.4f);
-
         final @NotNull EditorSettings settings = editor.getSettings();
         settings.setLineNumbersShown(true);
         settings.setLineMarkerAreaShown(false);
