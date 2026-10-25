@@ -16,13 +16,17 @@
 
 package org.testin.git;
 
+import com.intellij.ide.trustedProjects.TrustedProjects;
 import com.intellij.openapi.project.Project;
 import git4idea.GitUtil;
 import git4idea.commands.GitCommand;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.logger.TestinLogger;
+import org.testin.notifications.Notifier;
 import org.testin.services.OptionalPlugin;
+import org.testin.services.Services;
+import org.testin.util.Bundle;
 import org.testin.util.FailureText;
 
 import java.io.IOException;
@@ -43,6 +47,15 @@ public final class GitRepositoryService {
 
     private static @NotNull List<String> branchNames(final @NotNull String refNames) {
         return refNames.lines().filter(name -> !name.isBlank()).distinct().sorted().toList();
+    }
+
+    // Rule-SHARE-132
+    public boolean refusedInSafeMode() {
+        if (TrustedProjects.isProjectTrusted(project)) return false;
+
+        TestinLogger.info("No Git step started: the project is in safe mode");
+        Services.getInstance(project, Notifier.class).softRefuse(project, Bundle.message("git.safe.mode"));
+        return true;
     }
 
     // UC-SHARE-009, Rule-SHARE-043

@@ -36,8 +36,10 @@ public final class GitBackgroundTask extends Task.Backgroundable {
         this.onError = onError;
     }
 
-    // Rule-SHARE-005
+    // Rule-SHARE-005, Rule-SHARE-132
     public static void run(final @NotNull Project project, final @NotNull String title, final boolean cancellable, final @NotNull GitTaskWork work, final @NotNull Consumer<Exception> onError) {
+        if (new GitRepositoryService(project).refusedInSafeMode()) return;
+
         BackgroundWork.start(new GitBackgroundTask(project, title, cancellable, work, onError));
     }
 

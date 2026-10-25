@@ -152,10 +152,14 @@ public class BranchSelector {
         checkoutBranchAndRefreshTree(selectedBranch);
     }
 
-    // UC-TREE-PANEL-026, Rule-TREE-PANEL-085
+    // UC-TREE-PANEL-026, Rule-TREE-PANEL-085, Rule-SHARE-132
     private void checkoutBranchAndRefreshTree(final @NotNull String targetBranch) {
         final @NotNull Path repositoryPath = testProjectPath;
         if (repositoryPath.toString().isEmpty()) return;
+        if (git.refusedInSafeMode()) {
+            restoreSelectedBranch();
+            return;
+        }
 
         BackgroundWork.start(new Task.Backgroundable(project, Bundle.message("branch.task.checking", targetBranch), false) {
             @Override

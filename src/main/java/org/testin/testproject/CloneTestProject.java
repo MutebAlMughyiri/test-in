@@ -114,12 +114,13 @@ public final class CloneTestProject {
         git.changeRemoteUrl(testProjectPath, git.getRemoteName(testProjectPath), address);
     }
 
-    // UC-TREE-PANEL-003, Rule-TREE-PANEL-107
+    // UC-TREE-PANEL-003, Rule-TREE-PANEL-107, Rule-SHARE-132
     public void execute() {
         if (gitUrl.trim().isEmpty() || testProjectName.trim().isEmpty()) {
             notifier.error(project, Bundle.message("clone.error.title"), Bundle.message("clone.error.missing"));
             return;
         }
+        if (new GitRepositoryService(project).refusedInSafeMode()) return;
 
         BackgroundWork.start(new Task.Backgroundable(project, Bundle.message("clone.task"), false) {
             @Override
