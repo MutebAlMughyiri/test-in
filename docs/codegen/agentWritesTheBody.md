@@ -108,7 +108,8 @@ the agent; the second is what it asks for.
 │  Arguments    [                                         ]           │
 │               What follows the command when the agent starts,       │
 │               such as --model sonnet. The request is typed into     │
-│               its tab.                                              │
+│               its tab, so leave out print mode such as -p: it       │
+│               answers one request and reads nothing after it.       │
 │                                                                     │
 │  Keys live in your system environment. Testin never reads one.      │
 │  2.1.308 (Claude Code)                                              │
