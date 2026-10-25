@@ -334,9 +334,9 @@ public class ClipboardGesturesIdeTest extends AbstractTempRootIdeTest {
         choose(PASTE, checkout.getList());
 
         Await.until("the cut was never pasted", () -> orderedIn(checkout).size() == 2);
+        Await.until("the cut and paste never reached the undo history", () -> Services.getInstance(getProject(), UndoHistories.class).canUndo(scope));
         assertEquals("closing the editor the cut came from emptied its test set", List.of("Log out"), descriptionsOf(orderedAt(loginPath)));
 
-        Await.until("the cut and paste never reached the undo history", () -> Services.getInstance(getProject(), UndoHistories.class).canUndo(scope));
         assertTrue(Services.getInstance(getProject(), UndoHistories.class).undo(scope));
 
         assertEquals("undo did not put the cut test case back where it came from", List.of("Log in", "Log out"), descriptionsOf(orderedAt(loginPath)));
