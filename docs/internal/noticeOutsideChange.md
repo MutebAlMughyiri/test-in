@@ -51,6 +51,11 @@ panel does the same job by hand, and is on
   It is written beside itself first and moved into place, so a write cut off
   part-way leaves the file as it was, and the file written beside it is claimed
   as Testin's own as well.
+- **Rule-INTERNAL-145** — A test case, a test set, a package or a test run that
+  Testin creates while a read of its test project is running is kept when the
+  read lands, although the read never saw it, and a test case stays in its test
+  set. The read forgets only what it did not find and Testin did not create
+  after it began.
 
 ## What is picked up, and what is not
 

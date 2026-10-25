@@ -92,6 +92,9 @@ final class IndexerDataStore {
     // Rule-INTERNAL-091
     private final @NotNull Map<String, String> refusedTestProjects = new ConcurrentHashMap<>();
 
+    // Rule-INTERNAL-145
+    private final @NotNull Set<String> createdSinceReadBegan = ConcurrentHashMap.newKeySet();
+
     IndexerDataStore(final @NotNull Project project) {
         this.testCaseStore = new TestCaseStore(project);
         this.markers = new MarkerFiles(project);
@@ -104,8 +107,15 @@ final class IndexerDataStore {
         throw new IllegalStateException("No test run indexed at " + path);
     }
 
-    private static void dropUnseen(final @NotNull Map<String, ?> held, final @NotNull Path testProjectPath, final @NotNull Map<String, ?> found) {
-        held.keySet().removeIf(key -> Path.of(key).startsWith(testProjectPath) && !found.containsKey(key));
+    // Rule-INTERNAL-081, Rule-INTERNAL-145
+    private void dropUnseen(final @NotNull Map<String, ?> held, final @NotNull Path testProjectPath, final @NotNull Map<String, ?> found) {
+        held.keySet().removeIf(key -> Path.of(key).startsWith(testProjectPath) && !found.containsKey(key) && !createdSinceReadBegan.contains(key));
+    }
+
+    // Rule-INTERNAL-145
+    void readBegins(final @NotNull Path testProjectPath) {
+        createdSinceReadBegan.removeIf(key -> Path.of(key).startsWith(testProjectPath));
+        testCaseStore.readBegins(testProjectPath);
     }
 
     @NotNull Map<UUID, TestCase> getTestCasesByUuid() {
@@ -193,8 +203,10 @@ final class IndexerDataStore {
                 .ifPresent(testSet -> markers.touched(testSetPath, NodeType.TEST_SET.getMarker(), testSet.getMarker()));
     }
 
+    // Rule-INTERNAL-145
     void registerRunItems(final @NotNull Path testRunPath, final @NotNull RunItems runItems) {
         runItemsByPath.put(testRunPath.toString(), runItems);
+        createdSinceReadBegan.add(testRunPath.toString());
     }
 
     boolean addTestSet(final @NotNull TestSetNode testSet) {
@@ -213,10 +225,12 @@ final class IndexerDataStore {
         return addNode(testRunPackagesByPath, testRunPackage, NodeType.TEST_RUN_PACKAGE.getMarker(), testRunPackage.getMarker());
     }
 
+    // Rule-INTERNAL-145
     private <V extends AbstractNode> boolean addNode(final @NotNull Map<String, V> map, final @NotNull V node, final @NotNull String markerFileName, final @NotNull Marker marker) {
         if (!markers.write(node.getPath(), markerFileName, marker)) return false;
 
         map.put(node.getPath().toString(), node);
+        createdSinceReadBegan.add(node.getPath().toString());
         childrenIndex.invalidate();
         refreshDirectory(node.getPath());
         return true;

@@ -21,7 +21,9 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.FileKind;
 import org.testin.model.NodeType;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
+import org.testin.model.node.TestRunNode;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
 import org.testin.util.Bundle;
@@ -238,5 +240,51 @@ public class ReadTestProjectIdeTest extends AbstractReadTheRootIdeTest {
         indexer().scanSingleTestProject(testProjectPath);
 
         assertEquals("a read again dropped the test runs, or said it was reading them, before the new ones were in", List.of("test case true", "test run true", "label "), seen);
+    }
+
+    // UC-INTERNAL-003, Rule-INTERNAL-145, Rule-INTERNAL-081
+    public void testATestRunCreatedWhileTheTestProjectIsReadIsKeptWhenTheReadLands() {
+        final @NotNull Path testProjectPath = aTestProjectAt(root.resolve("Checkout"));
+        readEverything();
+        final @NotNull IndexerDataStore store = indexer().getStore();
+        final @NotNull Path created = theTestRunsOf(testProjectPath).resolve("Cycle 2");
+        final @NotNull ScannedTestProject listedBeforeItWasCreated = new ScannedTestProject();
+
+        store.readBegins(testProjectPath);
+        assertTrue("the test run could not be created", store.addTestRunNode(TestRunNode.builder().name("Cycle 2").path(created).build()));
+        store.swapInTestRuns(testProjectPath, listedBeforeItWasCreated);
+
+        assertTrue("a test run created while the test project was read was dropped when the read landed", store.getTestRunNodesByPath().containsKey(created.toString()));
+
+        store.readBegins(testProjectPath);
+        store.swapInTestRuns(testProjectPath, listedBeforeItWasCreated);
+
+        assertFalse("a read that did not find a test run Testin created before it began still kept it", store.getTestRunNodesByPath().containsKey(created.toString()));
+    }
+
+    // UC-INTERNAL-003, Rule-INTERNAL-145, Rule-INTERNAL-081
+    public void testATestCaseCreatedWhileItsTestSetIsReadStaysInItWhenTheReadLands() {
+        final @NotNull Path testProjectPath = aTestProjectAt(root.resolve("Checkout"));
+        final @NotNull Path testSetPath = marked(theTestCasesOf(testProjectPath).resolve("Login"), NodeType.TEST_SET);
+        readEverything();
+        final @NotNull IndexerDataStore store = indexer().getStore();
+        final @NotNull ScannedTestProject listedBeforeItWasCreated = new ScannedTestProject();
+        listedBeforeItWasCreated.getTestProjects().putAll(store.getTestProjectsByPath());
+        listedBeforeItWasCreated.getTestCasesFolders().putAll(store.getTestCasesFoldersByPath());
+        listedBeforeItWasCreated.getTestRunsFolders().putAll(store.getTestRunsFoldersByPath());
+        listedBeforeItWasCreated.getTestSets().putAll(store.getTestSetNodesByPath());
+        listedBeforeItWasCreated.getTestCaseUuidsByTestSet().put(testSetPath.toString(), TestCaseStore.testCaseUuids(List.of()));
+        final @NotNull TestCase created = TestCase.builder().uuid(UUID.randomUUID()).description("Log in with a valid user").order("m").build();
+
+        store.readBegins(testProjectPath);
+        assertTrue("the test case could not be written", store.putTestCaseVerbatim(testSetPath, created));
+        store.swapInTestCases(testProjectPath, listedBeforeItWasCreated);
+
+        assertTrue("a test case created while its test set was read dropped out of it when the read landed", store.getTestCasesForTestSet(testSetPath).stream().anyMatch(testCase -> testCase.getUuid().equals(created.getUuid())));
+
+        store.readBegins(testProjectPath);
+        store.swapInTestCases(testProjectPath, listedBeforeItWasCreated);
+
+        assertTrue("a read that did not find a test case Testin created before it began still kept it", store.getTestCasesForTestSet(testSetPath).isEmpty());
     }
 }
