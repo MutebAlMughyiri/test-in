@@ -31,6 +31,7 @@ import org.testin.editor.testset.TestSetEditor;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
+import org.testin.model.status.TestCaseStatus;
 import org.testin.services.Services;
 
 import java.awt.datatransfer.StringSelection;
@@ -80,6 +81,29 @@ public class PasteTestCaseCodeIdeTest extends AbstractCodegenIdeTest {
 
             Await.until("the pasted copy never got a method of its own", () -> methodOf(copy).isPresent());
             assertTrue("the copy's method did not carry the original's body", methodOf(copy).orElseThrow().getText().contains(WRITTEN_BY_THE_TESTER));
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
+    // Rule-CODEGEN-047, Rule-CODEGEN-078
+    public void testACopyOfADisabledTestCaseGetsAMethodTestNgSkips() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull TestCase original = automatedTestCase(login);
+        original.setStatus(TestCaseStatus.DISABLED);
+        CopyPasteManager.getInstance().setContents(new StringSelection(CopiedTestCases.json(getProject(), List.of(original))));
+
+        final @NotNull TestSetEditor editor = new TestSetEditor(getProject(), new UnifiedVirtualFile(login));
+        try {
+            Await.until("the test set editor never loaded", () -> !editor.isLoading());
+            new PasteTestCaseWork(getProject(), editor).paste();
+
+            Await.until("the copy was never pasted", () -> editor.getAllTestCases().size() == 2);
+            final @NotNull TestCase copy = editor.getAllTestCases().stream().filter(testCase -> !testCase.getUuid().equals(original.getUuid())).findFirst().orElseThrow();
+
+            Await.until("the pasted copy never got a method of its own", () -> methodOf(copy).isPresent());
+            assertTrue("the disabled copy's method runs", methodOf(copy).orElseThrow().getModifierList().getText().contains("enabled = false"));
+            assertFalse("a method written for an enabled test case carries enabled", methodOf(original).orElseThrow().getModifierList().getText().contains("enabled"));
         } finally {
             Disposer.dispose(editor);
         }

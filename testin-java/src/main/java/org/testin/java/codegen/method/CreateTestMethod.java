@@ -87,7 +87,7 @@ public class CreateTestMethod implements CodeChange<TestCase> {
         return howMany + " test method" + (howMany == 1 ? "" : "s");
     }
 
-    // UC-CODEGEN-002, Rule-CODEGEN-014, Rule-CODEGEN-046, Rule-CODEGEN-013
+    // UC-CODEGEN-002, Rule-CODEGEN-014, Rule-CODEGEN-046, Rule-CODEGEN-013, Rule-CODEGEN-047
     private static @NotNull String methodText(final @NotNull String methodName, final @NotNull TestCase testCase, final int position) {
         final @NotNull StringBuilder attributes = new StringBuilder();
 
@@ -98,6 +98,8 @@ public class CreateTestMethod implements CodeChange<TestCase> {
         }
 
         attributes.append(", priority = ").append(position);
+
+        if (!testCase.getStatus().isEnabled()) attributes.append(", enabled = false");
 
         final @NotNull String annotation = String.format("@Test(description = %s, testName = \"%s\"%s)",
                 JavaLiteral.of(testCase.getDescription()),

@@ -97,9 +97,11 @@ public void logInWithAValidUser() {
    one. It is the method's priority, which is what TestNG runs methods in the
    order of. The test case's own High, Medium or Low is a different thing and
    writes nothing here (Rule-CODEGEN-014).
-5. **The method name** — the description with everything but letters and digits
+5. **enabled** — `enabled = false`, written only when the test case is
+   disabled, so TestNG skips the method (Rule-CODEGEN-047).
+6. **The method name** — the description with everything but letters and digits
    removed, the first word lowercase and later words capitalized.
-6. **The body** — one comment, and nothing else. The tester writes the rest.
+7. **The body** — one comment, and nothing else. The tester writes the rest.
 
 For a test set, one class holding those methods. For a package, a folder.
 

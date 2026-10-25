@@ -33,7 +33,9 @@ disabled.
   and **Run Tests** are gray and say why, and no gutter icon or automated mark
   is shown. **Save to testin.yml**, in the Testin panel, turns code on.
 - **Rule-CODEGEN-047** — Turning a test case off writes `enabled = false` into
-  its method's annotation.
+  its method's annotation. A method Testin writes for a test case that is
+  already off carries it from the start, whether the test case was created,
+  copied, imported or automated.
 - **Rule-CODEGEN-048** — Turning it back on takes the attribute off again,
   rather than writing `enabled = true`.
 
