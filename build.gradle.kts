@@ -743,7 +743,11 @@ mapOf("runIde" to "config", "runPyCharm" to "config_runPyCharm").forEach { (runT
 
         val sandboxes = layout.projectDirectory.dir(".sandbox/Testin").asFile
         val committedSample = layout.projectDirectory.dir("samples").asFile
-        val workingSample = layout.projectDirectory.dir(".sandbox/sample").asFile
+
+        // Each task keeps a copy of its own. PyCharm, opening the Java sample, writes a
+        // Python module into its .idea, and the Java IDE's build reads that file as part
+        // of the Maven module: every test class then compiles without TestNG (#494).
+        val workingSample = layout.projectDirectory.dir(if (runTask == "runPyCharm") ".sandbox/sample-pycharm" else ".sandbox/sample").asFile
         val sampleRoot = workingSample.resolve("testin-root").absolutePath
         val sampleProject = workingSample.resolve("automation").absolutePath
 
