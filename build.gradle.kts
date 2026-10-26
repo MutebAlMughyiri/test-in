@@ -140,10 +140,12 @@ allprojects {
 
 // #378: pmdMain, part of check, fails on a production method over the cognitive
 // complexity or if-nesting limit in .gitHub/complexity-rules.xml, which exempts
-// no method (#382). Both rules read the syntax tree only, so PMD is given no
-// compiled classes and does not wait for compileJava. The core gets its library
-// jars so PMD can resolve platform types; the two modules' jars would include
-// the core's own, which would wait for it.
+// no method (#382). It also fails on an unused private field, private method,
+// local or parameter, in .github/unused-code-rules.xml (#445). The rules read
+// the syntax tree only, so PMD is given no compiled classes and does not wait
+// for compileJava. The core gets its library jars so PMD can resolve platform
+// types; the two modules' jars would include the core's own, which would wait
+// for it.
 val pmdVersion = libs.versions.pmd.get()
 
 allprojects {
@@ -152,7 +154,7 @@ allprojects {
     pmd {
         toolVersion = pmdVersion
         ruleSets = listOf()
-        ruleSetFiles = rootProject.files(".github/complexity-rules.xml")
+        ruleSetFiles = rootProject.files(".github/complexity-rules.xml", ".github/unused-code-rules.xml")
         isConsoleOutput = true
     }
 

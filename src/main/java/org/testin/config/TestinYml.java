@@ -153,7 +153,7 @@ public final class TestinYml {
     // UC-TREE-PANEL-029, Rule-TREE-PANEL-113, Rule-SHARE-004
     public static @NotNull Map<String, String> lines(final @NotNull String testProjectName, final @NotNull String remote) {
         final @NotNull Map<String, String> lines = lines(testProjectName);
-        // Rule-TREE-PANEL-117: an address this file's reader would drop is not written as one
+        // Rule-TREE-PANEL-117
         final @NotNull String address = GitRemotes.isRepositoryUrl(remote) ? TestinProjectConfig.withoutCredentials(remote) : "";
 
         lines.put(TestinProjectConfig.LOCATION_KEY, (address.isEmpty() ? TestinLocation.LOCAL : TestinLocation.REMOTE).written());

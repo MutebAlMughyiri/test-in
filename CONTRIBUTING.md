@@ -87,7 +87,7 @@ work had it not been noticed immediately.
 | `pwsh tools/inspect.ps1 -Quick`                          | The rules that read the source as text, and `pmdMain`; not what an IDE indexes                                             | Every change, before you hand it over. About a minute, no IDE: the text rules, then fifteen seconds of PMD                                                                                                            |
 | `./gradlew check`                                        | The unit tests, the IDE tests, the complexity gate and the coverage gate, with the coverage report                         | Before you hand over a change that reaches the indexer or the tree. About four minutes: the IDE tests run as three shares at once                                                                                     |
 | `./gradlew ideTestGitAndCode --tests "org.testin.git.*"` | The IDE tests of one package, in the share that holds it                                                                   | While working on a change that needs the IDE. `ideTest` runs three shares at once, each in its own sandbox, and `--tests` filters only the share it follows; `build.gradle.kts` lists which packages each share holds |
-| `./gradlew pmdMain`                                      | No production method is over the cognitive complexity or nesting limit                                                     | Run by `-Quick`, and part of `check` and of `build.yml`; fifteen seconds, and it does not wait for a compile                                                                                                          |
+| `./gradlew pmdMain`                                      | No production method is over the cognitive complexity or nesting limit, and no private field, private method, local or parameter goes unused | Run by `-Quick`, and part of `check` and of `build.yml`; fifteen seconds, and it does not wait for a compile                                                                                                          |
 | `git worktree add ../testin-<what> <branch>`             | A second branch, checked out at once                                                                                       | Whenever two pieces of work run at the same time — see below                                                                                                                                                          |
 | `./gradlew verifyDistribution`                           | No test classes and no compile-only dependencies reached the jar                                                           | Runs in CI; run it if you touched packaging                                                                                                                                                                           |
 | `pwsh tools/warnings.ps1`                                | Every warning from every source in one table, the gated ones first: inspections, Plugin Verifier, Qodana, compiler, Gradle | Whenever you want the whole picture. It prints to the console and names where each source's full list lives. It reads last results; `-Full` runs the slow ones, about twenty minutes                                  |
@@ -181,6 +181,22 @@ were brought under it in #382, so the file lists none, and none is added: a new
 method over the limit is split, not listed. The report is in
 `build/reports/pmd/main.html` of each module, and the console names the method
 and its score.
+
+### The unused-code gate
+
+`pmdMain` also fails on code nothing reads (#445), so the quick gate finds it
+before a push instead of the IDE or CI finding it after:
+
+| Rule                    | Fails on                                         |
+|-------------------------|--------------------------------------------------|
+| `UnusedPrivateField`    | A private field that is assigned and never read  |
+| `UnusedPrivateMethod`   | A private method nothing calls                   |
+| `UnusedLocalVariable`   | A local variable nothing reads                   |
+| `UnusedFormalParameter` | A private method's parameter that it never reads |
+
+`.github/unused-code-rules.xml` holds the four, and nothing is exempt: an
+unused one is deleted, not listed. PMD skips a local whose name starts with
+`unused` or `ignored`, so do not name one that way to get past it.
 
 ### Which rules a test proves
 
@@ -339,7 +355,7 @@ fails the gate when it leaves out a rule the script reports, or names one it no 
 | `WrappedMethodDeclaration`      | A method declaration written over more than one line                                                                                                                                                                                                                      |
 | `StaticMutableState`            | A static that is not final in the packages that model the data                                                                                                                                                                                                            |
 | `HandWrittenPrivateConstructor` | An empty private constructor where `@NoArgsConstructor(access = PRIVATE)` says it                                                                                                                                                                                         |
-| `NonMarkerComment`              | A comment in a `.java` file that is not a `UC-` or `Rule-` marker, in the tests as well as in `src/main`. The copyright header and the comments a machine reads, such as `//noinspection`, stay                                                                           |
+| `NonMarkerComment`              | A comment in a `.java` file that is not a `UC-` or `Rule-` marker, or that goes on in words after one, in the tests as well as in `src/main`. The copyright header and the comments a machine reads, such as `//noinspection`, stay                                                                           |
 | `DriftedCaption`                | One concept spelled two ways in front of the same tester                                                                                                                                                                                                                  |
 | `OrphanedJavadoc`               | A doc block followed by a second one, which javac throws away                                                                                                                                                                                                             |
 | `MissingCopyright`              | A `.java` file that does not open with the Apache 2.0 notice                                                                                                                                                                                                              |

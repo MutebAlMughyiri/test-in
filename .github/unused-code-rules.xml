@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="Unused code">
+    <description>
+        Code nothing reads (#445). pmdMain runs these beside the complexity rules, so
+        tools/inspect.ps1 -Quick reports an unused private field, private method, local
+        variable or parameter before a push, where until now only the IDE and CI did. An
+        unused one is deleted, not listed here.
+    </description>
+    <rule ref="category/java/bestpractices.xml/UnusedPrivateField"/>
+    <rule ref="category/java/bestpractices.xml/UnusedPrivateMethod"/>
+    <rule ref="category/java/bestpractices.xml/UnusedLocalVariable"/>
+    <rule ref="category/java/bestpractices.xml/UnusedFormalParameter"/>
+</ruleset>

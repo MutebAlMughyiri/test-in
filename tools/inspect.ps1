@@ -2074,10 +2074,12 @@ function Read-NonMarkerComments([string[]] $scopes)
         Three kinds stay. The Apache notice every file opens with, which
         MissingCopyright checks instead. The ones a machine reads - //noinspection,
         // @formatter:off - because they are part of the build rather than prose.
-        And the markers themselves. A // inside a text block or a string is not
-        a comment and is left alone.
+        And the markers themselves, and only them: a line that names a marker and
+        then goes on in words is prose behind a marker (#445). A // inside a
+        text block or a string is not a comment and is left alone.
     #>
-    $keep = '^//\s*(UC-|Rule-|noinspection|@formatter)'
+    $marker = '(UC|Rule)-[A-Z]+(-[A-Z]+)*-\d+'
+    $keep = "^//\s*($marker(\s*,\s*$marker)*\s*$|noinspection|@formatter)"
 
     foreach ($scope in $scopes) {
         foreach ($file in Get-ChildItem -Path $scope -Filter *.java -Recurse -File) {
@@ -2108,7 +2110,7 @@ function Read-NonMarkerComments([string[]] $scopes)
                 $at = -1
 
                 if ($trimmed.StartsWith('//')) {
-                    if ($trimmed -match $keep) { continue }
+                    if ($trimmed -cmatch $keep) { continue }
                     $at = $text.IndexOf('//')
                 } elseif ($trimmed.StartsWith('/*')) {
                     $at = $text.IndexOf('/*')

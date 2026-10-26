@@ -35,17 +35,20 @@ import org.testin.editor.testrun.TestRunEditor;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.indexer.TestCases;
 import org.testin.model.Automated;
+import org.testin.model.Groups;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.status.TestCaseStatus;
 import org.testin.services.Services;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.testrun.form.TestRunFormFilter;
 import org.testin.util.Bundle;
 import org.testin.view.Drawn;
 
 import javax.swing.tree.TreeModel;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -76,7 +79,7 @@ public class FilterMenuEntriesIdeTest extends AbstractCodegenIdeTest {
     }
 
     private static @NotNull List<String> namesUnder(final @NotNull FilterPopupButton filter, final @NotNull String name) {
-        return childrenOf((DefaultActionGroup) entry(filter, name)).stream().map(FilterMenuEntriesIdeTest::nameOf).toList();
+        return childrenOf((ActionGroup) entry(filter, name)).stream().map(FilterMenuEntriesIdeTest::nameOf).toList();
     }
 
     private static @NotNull List<String> shown(final @NotNull AbstractTestinEditor<?, ?> editor) {
@@ -93,6 +96,13 @@ public class FilterMenuEntriesIdeTest extends AbstractCodegenIdeTest {
         writtenByTheTester(method, "System.out.println(1);");
         settled();
         testCases = List.of(written, empty, missing);
+    }
+
+    private @NotNull TestCase grouped(final @NotNull TestCase testCase, final @NotNull String... groups) {
+        final @NotNull TestCase grouped = testCase.edit().groups(new ArrayList<>(List.of(groups))).build();
+        grouped.setParent(testCase.getParent());
+        Services.getInstance(getProject(), TestCases.class).putTestCaseVerbatim(testCase.getParent().getPath(), grouped);
+        return grouped;
     }
 
     private @NotNull TestRunEditor aTestRunEditorOver(final @NotNull List<TestCase> covered) {
@@ -135,6 +145,24 @@ public class FilterMenuEntriesIdeTest extends AbstractCodegenIdeTest {
                 filterOf(editor).resetToolBarFilter();
                 assertEquals("clearing the Automation filter did not show everything", 3, shown(editor).size());
             }
+        } finally {
+            Disposer.dispose(testSetEditor);
+            Disposer.dispose(testRunEditor);
+        }
+    }
+
+    // Rule-EDITOR-PANEL-095
+    public void testTheGroupFilterOffersOnlyTheGroupsOfTheTestCasesEachEditorHolds() {
+        testSet = createdTestSet("Checkout");
+        final @NotNull TestCase byCard = grouped(createdTestCase(testSet, "Pay by card", "m0001"), "smoke");
+        grouped(createdTestCase(testSet, "Pay by transfer", "m0002"), "regression", "smoke");
+        grouped(createdTestCase(createdTestSet("Refund"), "Refund a payment", "m0003"), "payments");
+        settled();
+        final @NotNull TestSetEditor testSetEditor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
+        final @NotNull TestRunEditor testRunEditor = aTestRunEditorOver(List.of(byCard));
+        try {
+            assertEquals("the test set editor's Group menu is not its own test cases' groups", List.of(Groups.NONE, "regression", "smoke"), namesUnder(filterOf(testSetEditor), TestSetEditorFields.GROUP.getName()));
+            assertEquals("the test run editor's Group menu is not its own run items' groups", List.of(Groups.NONE, "smoke"), namesUnder(filterOf(testRunEditor), TestSetEditorFields.GROUP.getName()));
         } finally {
             Disposer.dispose(testSetEditor);
             Disposer.dispose(testRunEditor);
