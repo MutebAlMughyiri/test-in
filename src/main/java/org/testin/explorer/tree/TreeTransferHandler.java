@@ -42,7 +42,6 @@ import org.testin.util.FailureText;
 import javax.swing.JComponent;
 import javax.swing.JTree;
 import javax.swing.TransferHandler;
-import javax.swing.tree.TreePath;
 import java.awt.AlphaComposite;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -206,19 +205,15 @@ public class TreeTransferHandler extends TransferHandler {
     // UC-TREE-PANEL-013, UC-TREE-PANEL-014, Rule-TREE-PANEL-046
     @Override
     public boolean canImport(final @NotNull TransferSupport support) {
-        if (!support.isDataFlavorSupported(NODE_FLAVOR)) return false;
-        final boolean valid = targetDirectory(support)
+        if (!support.isDrop() || !support.isDataFlavorSupported(NODE_FLAVOR)) return false;
+        final boolean valid = dropTarget(support)
                 .filter(AbstractNode::isTransferTarget)
                 .filter(target -> anySourceLands(support, target))
                 .isPresent();
 
-        if (support.isDrop()) support.setShowDropLocation(valid);
-        if (!valid) return false;
-
-        if (support.isDrop() && support.getDropAction() == NONE) {
-            support.setDropAction(MOVE);
-        }
-        return true;
+        support.setShowDropLocation(valid);
+        if (valid && support.getDropAction() == NONE) support.setDropAction(MOVE);
+        return valid;
     }
 
     private boolean anySourceLands(final @NotNull TransferSupport support, final @NotNull AbstractNode target) {
@@ -232,29 +227,21 @@ public class TreeTransferHandler extends TransferHandler {
     public boolean importData(final @NotNull TransferSupport support) {
         if (!canImport(support)) return false;
 
-        try {
-            final @NotNull TreeTransferPayload payload = (TreeTransferPayload) support.getTransferable().getTransferData(NODE_FLAVOR);
-            final @NotNull Optional<AbstractNode> landing = targetDirectory(support);
-            if (landing.isEmpty()) return false;
-            final @NotNull AbstractNode target = landing.get();
+        final int action = support.getUserDropAction() == COPY ? COPY : MOVE;
+        if (action == MOVE) support.setDropAction(MOVE);
+        return payloadOf(support.getTransferable())
+                .flatMap(payload -> dropTarget(support).map(target -> dropped(payload.nodes(), target, action)))
+                .orElse(false);
+    }
 
-            final int action = resolveAction(support, payload);
-            final @NotNull List<AbstractNode> sources = transferableSources(payload.nodes(), target);
+    // UC-TREE-PANEL-013, UC-TREE-PANEL-014, Rule-TREE-PANEL-004, Rule-TREE-PANEL-006, Rule-TREE-PANEL-046
+    boolean dropped(final @NotNull List<AbstractNode> nodes, final @NotNull AbstractNode target, final int action) {
+        notifyNameCollisions(nodes, target);
+        final @NotNull List<AbstractNode> sources = transferableSources(nodes, target);
+        if (sources.isEmpty()) return false;
 
-            if (support.isDrop()) notifyNameCollisions(payload.nodes(), target);
-            if (sources.isEmpty()) return false;
-
-            if (support.isDrop()) {
-                confirmThen(verbOf(action), action, sources, target, () -> transfer.carryOut(action, sources, target));
-                return true;
-            }
-
-            transfer.carryOut(action, sources, target);
-            return true;
-        } catch (final Exception ex) {
-            TestinLogger.error("Tree transfer failed: " + FailureText.of(ex));
-            return false;
-        }
+        confirmThen(verbOf(action), action, sources, target, () -> transfer.carryOut(action, sources, target));
+        return true;
     }
 
     // UC-TREE-PANEL-013, UC-TREE-PANEL-014, Rule-TREE-PANEL-043, Rule-TREE-PANEL-044, Rule-TREE-PANEL-045
@@ -291,27 +278,10 @@ public class TreeTransferHandler extends TransferHandler {
         return true;
     }
 
-    private @NotNull Optional<AbstractNode> targetDirectory(final @NotNull TransferSupport support) {
-        return support.isDrop()
-                ? dropPath(support).flatMap(TreeValues::directoryAt)
-                : TreeValues.selectedNode(tree);
-    }
-
-    private @NotNull Optional<TreePath> dropPath(final @NotNull TransferSupport support) {
-        if (support.getDropLocation() instanceof JTree.DropLocation dropLocation) {
-            return Optional.ofNullable(dropLocation.getPath());
-        }
-        return Optional.empty();
-    }
-
-    private int resolveAction(final @NotNull TransferSupport support, final @NotNull TreeTransferPayload payload) {
-        if (!support.isDrop()) {
-            return payload.clipboardAction() == MOVE ? MOVE : COPY;
-        }
-
-        if (support.getUserDropAction() == COPY) return COPY;
-        support.setDropAction(MOVE);
-        return MOVE;
+    private @NotNull Optional<AbstractNode> dropTarget(final @NotNull TransferSupport support) {
+        return support.getDropLocation() instanceof JTree.DropLocation dropLocation
+                ? TreeValues.directoryAt(dropLocation.getPath())
+                : Optional.empty();
     }
 
     private void resetLastAction() {
