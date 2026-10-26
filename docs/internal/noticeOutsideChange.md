@@ -56,6 +56,11 @@ panel does the same job by hand, and is on
   read lands, though the read never saw it. A test case kept this way stays in
   its test set. The read forgets only what it did not find and Testin did not
   create after it began.
+- **Rule-INTERNAL-146** — A test case, a test set, a package or a test run that
+  Testin deletes while a read of its test project is running stays deleted when
+  the read lands, though the read listed it. A test case that Testin moves to
+  another test set stays where it was moved to. The read puts back nothing that
+  Testin removed or moved after it began.
 
 ## What is picked up, and what is not
 

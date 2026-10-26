@@ -287,4 +287,58 @@ public class ReadTestProjectIdeTest extends AbstractReadTheRootIdeTest {
 
         assertTrue("a read that did not find a test case Testin created before it began still kept it", store.getTestCasesForTestSet(testSetPath).isEmpty());
     }
+
+    // UC-INTERNAL-003, Rule-INTERNAL-146, Rule-INTERNAL-081
+    public void testATestRunRemovedWhileTheTestProjectIsReadStaysRemovedWhenTheReadLands() {
+        final @NotNull Path testProjectPath = aTestProjectAt(root.resolve("Checkout"));
+        final @NotNull Path removed = marked(theTestRunsOf(testProjectPath).resolve("Cycle 1"), NodeType.TEST_RUN);
+        readEverything();
+        final @NotNull IndexerDataStore store = indexer().getStore();
+        final @NotNull ScannedTestProject listedBeforeItWasRemoved = new ScannedTestProject();
+        listedBeforeItWasRemoved.getTestRunNodes().putAll(store.getTestRunNodesByPath());
+        assertTrue("the test run was not read", listedBeforeItWasRemoved.getTestRunNodes().containsKey(removed.toString()));
+
+        store.readBegins(testProjectPath);
+        store.removeTestRun(removed);
+        store.swapInTestRuns(testProjectPath, listedBeforeItWasRemoved);
+
+        assertFalse("a test run removed while the test project was read came back when the read landed", store.getTestRunNodesByPath().containsKey(removed.toString()));
+
+        store.readBegins(testProjectPath);
+        store.swapInTestRuns(testProjectPath, listedBeforeItWasRemoved);
+
+        assertTrue("a read that began after the removal and found the test run did not show it", store.getTestRunNodesByPath().containsKey(removed.toString()));
+    }
+
+    // UC-INTERNAL-003, Rule-INTERNAL-146, Rule-INTERNAL-081
+    public void testATestCaseMovedOrRemovedWhileItsTestProjectIsReadStaysSoWhenTheReadLands() {
+        final @NotNull Path testProjectPath = aTestProjectAt(root.resolve("Checkout"));
+        final @NotNull Path login = marked(theTestCasesOf(testProjectPath).resolve("Login"), NodeType.TEST_SET);
+        final @NotNull Path logout = marked(theTestCasesOf(testProjectPath).resolve("Logout"), NodeType.TEST_SET);
+        readEverything();
+        final @NotNull IndexerDataStore store = indexer().getStore();
+        final @NotNull TestCase moved = TestCase.builder().uuid(UUID.randomUUID()).description("Log out after a session").order("m").build();
+        final @NotNull TestCase removed = TestCase.builder().uuid(UUID.randomUUID()).description("Log in with an old password").order("n").build();
+        assertTrue("the test cases could not be written", store.putTestCaseVerbatim(login, moved) && store.putTestCaseVerbatim(login, removed));
+
+        final @NotNull ScannedTestProject listedBeforeTheChange = new ScannedTestProject();
+        listedBeforeTheChange.getTestProjects().putAll(store.getTestProjectsByPath());
+        listedBeforeTheChange.getTestCasesFolders().putAll(store.getTestCasesFoldersByPath());
+        listedBeforeTheChange.getTestRunsFolders().putAll(store.getTestRunsFoldersByPath());
+        listedBeforeTheChange.getTestSets().putAll(store.getTestSetNodesByPath());
+        listedBeforeTheChange.getTestCaseUuidsByTestSet().put(login.toString(), TestCaseStore.testCaseUuids(List.of(moved.getUuid(), removed.getUuid())));
+        listedBeforeTheChange.getTestCaseUuidsByTestSet().put(logout.toString(), TestCaseStore.testCaseUuids(List.of()));
+        listedBeforeTheChange.getTestCasesByUuid().put(moved.getUuid(), moved);
+        listedBeforeTheChange.getTestCasesByUuid().put(removed.getUuid(), removed);
+
+        store.readBegins(testProjectPath);
+        assertTrue("the test case could not be moved", store.moveTestCase(login, logout, moved.edit().build()));
+        assertTrue("the test case could not be removed", store.removeTestCase(login, removed.getUuid()));
+        store.swapInTestCases(testProjectPath, listedBeforeTheChange);
+
+        assertEquals("a test case moved while its test project was read is not in the test set it was moved to, and only there",
+                List.of(moved.getUuid()), store.getTestCasesForTestSet(logout).stream().map(TestCase::getUuid).toList());
+        assertTrue("a test case moved or removed while its test project was read came back in its old test set when the read landed", store.getTestCasesForTestSet(login).isEmpty());
+        assertTrue("a test case removed while its test project was read came back when the read landed", store.findTestCase(removed.getUuid()).isEmpty());
+    }
 }

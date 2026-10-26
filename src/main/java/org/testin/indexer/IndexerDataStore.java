@@ -41,6 +41,7 @@ import org.testin.model.testrun.RunItems;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -48,6 +49,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 final class IndexerDataStore {
     private final @NotNull NodeChildrenIndex childrenIndex = new NodeChildrenIndex();
@@ -95,6 +97,9 @@ final class IndexerDataStore {
     // Rule-INTERNAL-145
     private final @NotNull Set<String> createdSinceReadBegan = ConcurrentHashMap.newKeySet();
 
+    // Rule-INTERNAL-146
+    private final @NotNull Set<String> removedSinceReadBegan = ConcurrentHashMap.newKeySet();
+
     IndexerDataStore(final @NotNull Project project) {
         this.testCaseStore = new TestCaseStore(project);
         this.markers = new MarkerFiles(project);
@@ -112,9 +117,28 @@ final class IndexerDataStore {
         held.keySet().removeIf(key -> Path.of(key).startsWith(testProjectPath) && !found.containsKey(key) && !createdSinceReadBegan.contains(key));
     }
 
-    // Rule-INTERNAL-145
+    // Rule-INTERNAL-146
+    private boolean removedDuringTheRead(final @NotNull String key) {
+        final @NotNull Path path = Path.of(key);
+        return removedSinceReadBegan.stream().anyMatch(removed -> path.startsWith(Path.of(removed)));
+    }
+
+    // Rule-INTERNAL-146
+    private <V> void putFound(final @NotNull Map<String, V> held, final @NotNull Map<String, ? extends V> found) {
+        found.entrySet().stream().filter(entry -> !removedDuringTheRead(entry.getKey())).forEach(entry -> held.put(entry.getKey(), entry.getValue()));
+    }
+
+    // Rule-INTERNAL-146
+    private <V> @NotNull Map<String, V> notRemoved(final @NotNull Map<String, V> found) {
+        final @NotNull Map<String, V> kept = new HashMap<>();
+        putFound(kept, found);
+        return kept;
+    }
+
+    // Rule-INTERNAL-145, Rule-INTERNAL-146
     void readBegins(final @NotNull Path testProjectPath) {
         createdSinceReadBegan.removeIf(key -> Path.of(key).startsWith(testProjectPath));
+        removedSinceReadBegan.removeIf(key -> Path.of(key).startsWith(testProjectPath));
         testCaseStore.readBegins(testProjectPath);
     }
 
@@ -285,15 +309,21 @@ final class IndexerDataStore {
         swapInTestRuns(testProjectPath, scanned);
     }
 
-    // UC-INTERNAL-002, Rule-INTERNAL-141
+    // UC-INTERNAL-002, Rule-INTERNAL-141, Rule-INTERNAL-146
     void swapInTestCases(final @NotNull Path testProjectPath, final @NotNull ScannedTestProject scanned) {
-        testProjectsByPath.putAll(scanned.getTestProjects());
-        testCasesFoldersByPath.putAll(scanned.getTestCasesFolders());
-        testRunsFoldersByPath.putAll(scanned.getTestRunsFolders());
-        testSetPackagesByPath.putAll(scanned.getTestSetPackages());
-        testSetNodesByPath.putAll(scanned.getTestSets());
+        putFound(testProjectsByPath, scanned.getTestProjects());
+        putFound(testCasesFoldersByPath, scanned.getTestCasesFolders());
+        putFound(testRunsFoldersByPath, scanned.getTestRunsFolders());
+        putFound(testSetPackagesByPath, scanned.getTestSetPackages());
+        putFound(testSetNodesByPath, scanned.getTestSets());
 
-        testCaseStore.swapIn(testProjectPath, scanned.getTestCasesByUuid(), scanned.getTestCaseUuidsByTestSet(), scanned.getUnreadableTestCases());
+        final @NotNull Map<String, List<UUID>> testCaseUuidsByTestSet = notRemoved(scanned.getTestCaseUuidsByTestSet());
+        final @NotNull Set<UUID> listed = testCaseUuidsByTestSet.values().stream().flatMap(List::stream).collect(Collectors.toSet());
+        final @NotNull Map<UUID, TestCase> testCases = scanned.getTestCasesByUuid().entrySet().stream()
+                .filter(entry -> listed.contains(entry.getKey()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        testCaseStore.swapIn(testProjectPath, testCases, testCaseUuidsByTestSet, notRemoved(scanned.getUnreadableTestCases()));
 
         dropUnseen(testProjectsByPath, testProjectPath, scanned.getTestProjects());
         dropUnseen(testCasesFoldersByPath, testProjectPath, scanned.getTestCasesFolders());
@@ -304,11 +334,11 @@ final class IndexerDataStore {
         childrenIndex.invalidate();
     }
 
-    // UC-INTERNAL-002, Rule-INTERNAL-141
+    // UC-INTERNAL-002, Rule-INTERNAL-141, Rule-INTERNAL-146
     void swapInTestRuns(final @NotNull Path testProjectPath, final @NotNull ScannedTestProject scanned) {
-        testRunPackagesByPath.putAll(scanned.getTestRunPackages());
-        testRunNodesByPath.putAll(scanned.getTestRunNodes());
-        runItemsByPath.putAll(scanned.getRunItemsByPath());
+        putFound(testRunPackagesByPath, scanned.getTestRunPackages());
+        putFound(testRunNodesByPath, scanned.getTestRunNodes());
+        putFound(runItemsByPath, scanned.getRunItemsByPath());
 
         dropUnseen(testRunPackagesByPath, testProjectPath, scanned.getTestRunPackages());
         dropUnseen(testRunNodesByPath, testProjectPath, scanned.getTestRunNodes());
@@ -317,8 +347,10 @@ final class IndexerDataStore {
         childrenIndex.invalidate();
     }
 
+    // Rule-INTERNAL-146
     void removeTestProject(final @NotNull Path path) {
         final @NotNull String pathText = path.toString();
+        removedSinceReadBegan.add(pathText);
         testProjectsByPath.remove(pathText);
         testCasesFoldersByPath.entrySet().removeIf(entry -> entry.getValue().getPath().startsWith(path));
         testRunsFoldersByPath.entrySet().removeIf(entry -> entry.getValue().getPath().startsWith(path));
@@ -367,24 +399,30 @@ final class IndexerDataStore {
         }
     }
 
+    // Rule-INTERNAL-146
     void removeTestSet(final @NotNull Path path) {
         final @NotNull String pathText = path.toString();
+        removedSinceReadBegan.add(pathText);
         testSetNodesByPath.remove(pathText);
         testCaseStore.removeForTestSet(pathText);
         childrenIndex.invalidate();
         TestinLogger.info("Removed test set at: " + pathText);
     }
 
+    // Rule-INTERNAL-146
     void removeTestRun(final @NotNull Path path) {
         final @NotNull String pathText = path.toString();
+        removedSinceReadBegan.add(pathText);
         testRunNodesByPath.remove(pathText);
         runItemsByPath.remove(pathText);
         childrenIndex.invalidate();
         TestinLogger.info("Removed test run at: " + pathText);
     }
 
+    // Rule-INTERNAL-146
     void removeTestSetPackage(final @NotNull Path path) {
         final @NotNull String pathText = path.toString();
+        removedSinceReadBegan.add(pathText);
         testSetPackagesByPath.remove(pathText);
 
         removeTestSetPackagesUnder(path);
@@ -394,8 +432,10 @@ final class IndexerDataStore {
         TestinLogger.info("Removed test set package at: " + pathText);
     }
 
+    // Rule-INTERNAL-146
     void removeTestRunPackage(final @NotNull Path path) {
         final @NotNull String pathText = path.toString();
+        removedSinceReadBegan.add(pathText);
         testRunPackagesByPath.remove(pathText);
 
         removeTestRunPackagesUnder(path);

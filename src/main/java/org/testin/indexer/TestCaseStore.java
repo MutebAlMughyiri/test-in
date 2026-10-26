@@ -54,8 +54,11 @@ final class TestCaseStore {
     // UC-SHARE-002, Rule-SHARE-001
     private final @NotNull Map<String, Set<String>> unreadable = new ConcurrentHashMap<>();
 
-    // Rule-INTERNAL-145
-    private final @NotNull Map<UUID, String> createdSinceReadBegan = new ConcurrentHashMap<>();
+    // Rule-INTERNAL-145, Rule-INTERNAL-146
+    private final @NotNull Map<UUID, String> placedSinceReadBegan = new ConcurrentHashMap<>();
+
+    // Rule-INTERNAL-146
+    private final @NotNull Map<UUID, String> removedSinceReadBegan = new ConcurrentHashMap<>();
 
     TestCaseStore(final @NotNull Project project) {
         this.testDataFiles = Services.getInstance(project, TestDataFiles.class);
@@ -125,7 +128,7 @@ final class TestCaseStore {
         if (failedToWrite(testSetPath, testCase)) return false;
 
         testCasesByUuid.merge(testCase.getUuid(), testCase, TestCase::takeValuesOf);
-        if (firstSight) createdSinceReadBegan.put(testCase.getUuid(), testSetPath.toString());
+        if (firstSight) placedSinceReadBegan.put(testCase.getUuid(), testSetPath.toString());
         return true;
     }
 
@@ -139,7 +142,7 @@ final class TestCaseStore {
         return false;
     }
 
-    // UC-EDITOR-PANEL-017, Rule-INTERNAL-035, Rule-INTERNAL-112, Rule-INTERNAL-145
+    // UC-EDITOR-PANEL-017, Rule-INTERNAL-035, Rule-INTERNAL-112, Rule-INTERNAL-145, Rule-INTERNAL-146
     boolean move(final @NotNull Path fromSet, final @NotNull Path toSet, final @NotNull TestCase testCase) {
         final @NotNull UUID testCaseUuid = testCase.getUuid();
         final @NotNull Path from = named(fromSet, testCaseUuid);
@@ -154,7 +157,7 @@ final class TestCaseStore {
         if (testDataFiles.discard(from)) {
             if (!fromSet.equals(toSet))
                 Optional.ofNullable(testCaseUuidsByTestSet.get(fromSet.toString())).ifPresent(testCaseUuids -> testCaseUuids.remove(testCaseUuid));
-            createdSinceReadBegan.computeIfPresent(testCaseUuid, (_, _) -> toSet.toString());
+            placedSinceReadBegan.put(testCaseUuid, toSet.toString());
             return true;
         }
 
@@ -165,12 +168,13 @@ final class TestCaseStore {
         return false;
     }
 
-    // Rule-INTERNAL-112, Rule-INTERNAL-145
+    // Rule-INTERNAL-112, Rule-INTERNAL-145, Rule-INTERNAL-146
     boolean remove(final @NotNull Path testSetPath, final @NotNull UUID testCaseUuid) {
         if (!testDataFiles.remove(named(testSetPath, testCaseUuid))) return false;
 
         testCasesByUuid.remove(testCaseUuid);
-        createdSinceReadBegan.remove(testCaseUuid);
+        placedSinceReadBegan.remove(testCaseUuid);
+        removedSinceReadBegan.put(testCaseUuid, testSetPath.toString());
         Optional.ofNullable(testCaseUuidsByTestSet.get(testSetPath.toString()))
                 .ifPresent(testCaseUuids -> testCaseUuids.remove(testCaseUuid));
         return true;
@@ -200,7 +204,7 @@ final class TestCaseStore {
                 }
 
                 testCasesByUuid.put(testCase.getUuid(), testCase.takeValuesOf(written));
-                createdSinceReadBegan.put(testCase.getUuid(), path);
+                placedSinceReadBegan.put(testCase.getUuid(), path);
             } else if (placed.containsKey(testCase.getUuid())) {
                 allWritten &= store(testSetPath, written);
             }
@@ -230,29 +234,39 @@ final class TestCaseStore {
         return testCaseUuids;
     }
 
-    // Rule-INTERNAL-145
+    // Rule-INTERNAL-145, Rule-INTERNAL-146
     void readBegins(final @NotNull Path testProjectPath) {
-        createdSinceReadBegan.values().removeIf(testSetPath -> Path.of(testSetPath).startsWith(testProjectPath));
+        placedSinceReadBegan.values().removeIf(testSetPath -> Path.of(testSetPath).startsWith(testProjectPath));
+        removedSinceReadBegan.values().removeIf(testSetPath -> Path.of(testSetPath).startsWith(testProjectPath));
     }
 
-    // UC-INTERNAL-002, Rule-INTERNAL-021, Rule-INTERNAL-145
+    // UC-INTERNAL-002, Rule-INTERNAL-021, Rule-INTERNAL-145, Rule-INTERNAL-146
     void swapIn(final @NotNull Path testProjectPath, final @NotNull Map<UUID, TestCase> testCases, final @NotNull Map<String, List<UUID>> setTestCaseUuids, final @NotNull Map<String, Set<String>> unreadableTestCases) {
         final @NotNull Set<UUID> held = testCaseUuidsByTestSet.entrySet().stream()
                 .filter(entry -> Path.of(entry.getKey()).startsWith(testProjectPath))
                 .flatMap(entry -> entry.getValue().stream())
                 .collect(Collectors.toCollection(HashSet::new));
-        final @NotNull Map<UUID, String> created = createdSinceReadBegan.entrySet().stream()
+        final @NotNull Map<UUID, String> placed = placedSinceReadBegan.entrySet().stream()
                 .filter(entry -> Path.of(entry.getValue()).startsWith(testProjectPath) && testCasesByUuid.containsKey(entry.getKey()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        final @NotNull Set<UUID> removed = removedSinceReadBegan.entrySet().stream()
+                .filter(entry -> Path.of(entry.getValue()).startsWith(testProjectPath) && !placed.containsKey(entry.getKey()))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
 
-        testCasesByUuid.putAll(testCases);
+        testCases.entrySet().stream()
+                .filter(entry -> !placed.containsKey(entry.getKey()) && !removed.contains(entry.getKey()))
+                .forEach(entry -> testCasesByUuid.put(entry.getKey(), entry.getValue()));
         testCaseUuidsByTestSet.putAll(setTestCaseUuids);
 
         testCaseUuidsByTestSet.keySet().removeIf(path -> Path.of(path).startsWith(testProjectPath) && !setTestCaseUuids.containsKey(path));
-        created.forEach((testCaseUuid, testSetPath) -> testCaseUuidsByTestSet.merge(testSetPath, testCaseUuids(List.of(testCaseUuid)), (listed, _) -> withTestCase(listed, testCaseUuid)));
+        testCaseUuidsByTestSet.replaceAll((path, listed) -> Path.of(path).startsWith(testProjectPath)
+                ? testCaseUuids(listed.stream().filter(testCaseUuid -> !placed.containsKey(testCaseUuid) && !removed.contains(testCaseUuid)).toList())
+                : listed);
+        placed.forEach((testCaseUuid, testSetPath) -> testCaseUuidsByTestSet.merge(testSetPath, testCaseUuids(List.of(testCaseUuid)), (listed, _) -> withTestCase(listed, testCaseUuid)));
 
         held.removeAll(testCases.keySet());
-        held.removeAll(created.keySet());
+        held.removeAll(placed.keySet());
         held.forEach(testCasesByUuid::remove);
 
         unreadable.putAll(unreadableTestCases);
