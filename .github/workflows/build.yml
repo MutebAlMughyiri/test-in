@@ -71,8 +71,13 @@ jobs:
 
       # Caches ~/.gradle, which is where the platform artifacts and every
       # dependency land. Without it each run downloads the whole IDE again.
+      # The transforms are left out. They came to 10.3 GB on dff06a9ac, more
+      # than the repository's 10 GB alone, so saving them pushed out every
+      # other entry (#430). They are rebuilt from the cached dependencies.
       - name: Gradle
         uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-home-cache-excludes: caches/transforms-4
 
       # The verifier downloads the IDE it runs against. It changes only when
       # build.gradle.kts or gradle.properties names a different version, so the
