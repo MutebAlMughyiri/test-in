@@ -104,11 +104,6 @@ allprojects {
             enabled.set(name == "compileJava" || name == "compileTestJava")
             allErrorsAsWarnings.set(false)
             check("NullAway", CheckSeverity.ERROR)
-            // Error Prone 2.50.0, the newest, crashes in this check itself
-            // (NoSuchElementException in StringConcatToTextBlock.matchLiteral) on
-            // ScreenshotsSection's Bundle.message call, which fails compilation.
-            // On again once a release fixes it.
-            check("StringConcatToTextBlock", CheckSeverity.OFF)
             // Types an enum constant holds that Testin cannot annotate @Immutable:
             // the platform's Icon, KeyStroke, Font and SimpleTextAttributes, and
             // the JDK's function interfaces and Comparator, every one of which Testin
