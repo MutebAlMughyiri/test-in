@@ -69,21 +69,27 @@ jobs:
           distribution: temurin
           java-version: 25
 
-      # Caches ~/.gradle, which is where the platform artifacts and every
-      # dependency land. Without it each run downloads the whole IDE again.
-      # The transforms are left out. They came to 10.3 GB on dff06a9ac, more
-      # than the repository's 10 GB alone, so saving them pushed out every
-      # other entry (#430). They are rebuilt from the cached dependencies.
+      # Caches ~/.gradle without its downloads. On a79ccf0c5 the downloaded
+      # dependencies came to 11.3 GB and their transforms to 10.3 GB, almost
+      # all of it the six IDEs verifyPlugin reads. Either one is more than the
+      # repository's 10 GB, so each save pushed out every other entry, and
+      # saving them took 22 of the run's 49 minutes (#430). Every run downloads
+      # its dependencies, as it already did, since nothing was left to restore.
+      # The wrapper, the build cache and the script caches are what stays.
       - name: Gradle
         uses: gradle/actions/setup-gradle@v6
         with:
-          gradle-home-cache-excludes: caches/transforms-4
+          gradle-home-cache-excludes: |
+            caches/modules-2
+            caches/*/transforms
 
       # The verifier downloads the IDE it runs against. It changes only when
       # build.gradle.kts or gradle.properties names a different version, so the
-      # key is those files rather than the commit.
-      - name: Cache the IDE the verifier runs against
-        uses: actions/cache@v6
+      # key is those files rather than the commit. Every run reads it, and only
+      # main saves it (see the save step below).
+      - name: Restore the IDE the verifier runs against
+        id: verifier-ide
+        uses: actions/cache/restore@v6
         with:
           path: ~/.pluginVerifier
           key: plugin-verifier-${{ hashFiles('build.gradle.kts', 'gradle.properties') }}
@@ -120,6 +126,16 @@ jobs:
         run: |
           ./gradlew compileJava test pmdMain ideTest ruleTrace jacocoTestCoverageVerification verifyPlugin verifyDistribution --continue
           ./gradlew test -Pbudget
+
+      # Only main saves the verifier's IDE. Four Dependabot pull requests each
+      # saved a 3 GB copy under their own ref on 26 October 2026, which no other
+      # ref can restore, and together they pushed main's entries out (#430).
+      - name: Save the IDE the verifier runs against
+        if: github.ref == 'refs/heads/main' && steps.verifier-ide.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: ~/.pluginVerifier
+          key: ${{ steps.verifier-ide.outputs.cache-primary-key }}
 
       - name: Keep the reports
         if: always()
