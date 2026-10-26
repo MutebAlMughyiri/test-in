@@ -10,7 +10,7 @@ archunit = "1.5.1"
 # BasePlatformTestCase is a JUnit TestCase; the platform test framework brings no
 # JUnit of its own. Only the ideTest task uses it.
 junit = "4.13.2"
-errorprone = "2.50.0"
+errorprone = "2.51.0"
 nullaway = "0.14.2"
 pmd = "7.28.0"
 
