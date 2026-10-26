@@ -27,6 +27,7 @@ import org.testin.editor.EditorFixtures;
 import org.testin.editor.grid.GridKeys;
 import org.testin.editor.grid.GridTables;
 import org.testin.editor.testset.TestSetEditor;
+import org.testin.editor.toolbar.GridViewButton;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 
@@ -116,7 +117,7 @@ public class WaysInIdeTest extends AbstractViewPanelIdeTest {
     // Rule-VIEW-PANEL-010, Rule-VIEW-PANEL-011, Rule-VIEW-PANEL-022
     public void testEnterOnTheGridNumberHandsThatOneTestCase() {
         final @NotNull TestSetEditor editor = anEditor();
-        editor.onToolBarSwitchedToGridView();
+        editor.getToolBar().getToolbarItem(GridViewButton.class).doClick();
         settled();
         final @NotNull JBTable grid = Drawn.components(editor.getComponent()).stream()
                 .filter(JBTable.class::isInstance)

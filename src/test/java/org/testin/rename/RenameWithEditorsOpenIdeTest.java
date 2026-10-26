@@ -26,6 +26,7 @@ import org.testin.TreeGesture;
 import org.testin.editor.AbstractTestinEditor;
 import org.testin.editor.TestinEditor;
 import org.testin.editor.open.TestinEditors;
+import org.testin.editor.toolbar.GridViewButton;
 import org.testin.indexer.Nodes;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
@@ -73,7 +74,7 @@ public class RenameWithEditorsOpenIdeTest extends AbstractOpenEditorsIdeTest {
     private void aCellIsBeingEditedIn(final @NotNull TestSetNode testSet) {
         final @NotNull TestinEditor editor = editorOn(testSet);
         Await.until("the editor never loaded", () -> !editor.isLoading());
-        ((AbstractTestinEditor<?, ?>) editor).onToolBarSwitchedToGridView();
+        ((AbstractTestinEditor<?, ?>) editor).getToolBar().getToolbarItem(GridViewButton.class).doClick();
         final @NotNull JTable grid = Optional.ofNullable(UIUtil.uiTraverser(editor.getComponent()).filter(JTable.class).first()).orElseThrow(() -> new AssertionError("the editor shows no grid"));
 
         for (int column = 0; column < grid.getColumnCount() && !grid.isEditing(); column++) grid.editCellAt(0, column);

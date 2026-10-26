@@ -26,6 +26,7 @@ import org.testin.Await;
 import org.testin.editor.AbstractTestinEditor;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.testset.TestSetEditor;
+import org.testin.editor.toolbar.GridViewButton;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
@@ -47,7 +48,7 @@ import java.util.stream.IntStream;
 public class OrderCellIdeTest extends AbstractTempRootIdeTest {
 
     private static @NotNull JBTable gridOf(final @NotNull AbstractTestinEditor<?, ?> editor) {
-        editor.onToolBarSwitchedToGridView();
+        editor.getToolBar().getToolbarItem(GridViewButton.class).doClick();
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
         return Drawn.components(editor.getComponent()).stream()
                 .filter(JBTable.class::isInstance)

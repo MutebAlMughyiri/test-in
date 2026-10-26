@@ -24,6 +24,7 @@ import org.testin.Await;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.ShownFields;
 import org.testin.editor.testset.TestSetEditor;
+import org.testin.editor.toolbar.GridViewButton;
 import org.testin.model.FileKind;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
@@ -60,7 +61,7 @@ public class TestCaseNumberIdeTest extends AbstractCodegenIdeTest {
     }
 
     private static int numberInTheGrid(final @NotNull TestSetEditor editor, final @NotNull TestCase testCase) {
-        editor.onToolBarSwitchedToGridView();
+        editor.getToolBar().getToolbarItem(GridViewButton.class).doClick();
         final @NotNull JBTable grid = Drawn.components(editor.getComponent()).stream().filter(JBTable.class::isInstance).map(JBTable.class::cast).findFirst()
                 .orElseThrow(() -> new AssertionError("the editor draws no grid"));
         for (int row = 0; row < grid.getModel().getRowCount(); row++) {
