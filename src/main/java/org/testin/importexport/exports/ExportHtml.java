@@ -26,13 +26,11 @@ import org.testin.util.Bundle;
 import org.testin.util.Display;
 import org.testin.util.ReportFont;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -41,101 +39,63 @@ import java.util.Map;
 public class ExportHtml {
     // UC-SHARE-002
     public void exportToFile(final @NotNull File destination, final @NotNull Map<String, List<TestCase>> sheets) {
-        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(destination), StandardCharsets.UTF_8))) {
-            writeHtmlDocument(writer, sheets);
+        try {
+            Files.writeString(destination.toPath(), htmlOf(sheets), StandardCharsets.UTF_8);
         } catch (final IOException ex) {
             throw new UncheckedIOException(ex);
         }
     }
 
-    private void writeHtmlDocument(final @NotNull BufferedWriter writer, final @NotNull Map<String, List<TestCase>> sheets) {
-        try {
-            writer.write("<!DOCTYPE html>");
-            writer.newLine();
-            writer.write("<html lang=\"en\">");
-            writer.newLine();
-            writer.write("<head>");
-            writer.newLine();
-            writer.write("<meta charset=\"UTF-8\">");
-            writer.newLine();
-            writer.write("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
-            writer.newLine();
-            writer.write("<title>" + Bundle.message("export.html.title") + "</title>");
-            writer.newLine();
-            writer.write("<style>");
-            writer.newLine();
-            writer.write("  body { font-family: " + ReportFont.CSS_FAMILY + "; margin: 20px; }");
-            writer.newLine();
-            writer.write("  h2 { color: #" + ReportColor.MUTED.hex() + "; margin-top: 30px; }");
-            writer.newLine();
-            writer.write("  table { border-collapse: collapse; width: 100%; margin-bottom: 30px; }");
-            writer.newLine();
-            writer.write("  th, td { border: 1px solid #" + ReportColor.LINE.hex() + "; padding: 8px 12px; text-align: left; vertical-align: top; }");
-            writer.newLine();
-            writer.write("  th { background-color: #" + ReportColor.PANEL.hex() + "; font-weight: bold; }");
-            writer.newLine();
-            writer.write("  tr:nth-child(even) { background-color: #" + ReportColor.PANEL.hex() + "; }");
-            writer.newLine();
-            writer.write("  .section-title { margin-top: 20px; }");
-            writer.newLine();
-            writer.write("</style>");
-            writer.newLine();
-            writer.write("</head>");
-            writer.newLine();
-            writer.write("<body>");
-            writer.newLine();
+    private static void line(final @NotNull StringBuilder sb, final @NotNull String text) {
+        sb.append(text).append(System.lineSeparator());
+    }
 
-            writer.write("<h1>" + Bundle.message("export.html.title") + "</h1>");
-            writer.newLine();
+    // UC-SHARE-002, Rule-SHARE-014
+    static @NotNull String htmlOf(final @NotNull Map<String, List<TestCase>> sheets) {
+        final @NotNull StringBuilder sb = new StringBuilder();
+        line(sb, "<!DOCTYPE html>");
+        line(sb, "<html lang=\"en\">");
+        line(sb, "<head>");
+        line(sb, "<meta charset=\"UTF-8\">");
+        line(sb, "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
+        line(sb, "<title>" + Bundle.message("export.html.title") + "</title>");
+        line(sb, "<style>");
+        line(sb, "  body { font-family: " + ReportFont.CSS_FAMILY + "; margin: 20px; }");
+        line(sb, "  h2 { color: #" + ReportColor.MUTED.hex() + "; margin-top: 30px; }");
+        line(sb, "  table { border-collapse: collapse; width: 100%; margin-bottom: 30px; }");
+        line(sb, "  th, td { border: 1px solid #" + ReportColor.LINE.hex() + "; padding: 8px 12px; text-align: left; vertical-align: top; }");
+        line(sb, "  th { background-color: #" + ReportColor.PANEL.hex() + "; font-weight: bold; }");
+        line(sb, "  tr:nth-child(even) { background-color: #" + ReportColor.PANEL.hex() + "; }");
+        line(sb, "  .section-title { margin-top: 20px; }");
+        line(sb, "</style>");
+        line(sb, "</head>");
+        line(sb, "<body>");
+        line(sb, "<h1>" + Bundle.message("export.html.title") + "</h1>");
 
-            int totalExported = 0;
+        int totalExported = 0;
+        for (final Map.Entry<String, List<TestCase>> sheet : sheets.entrySet()) {
+            if (sheet.getValue().isEmpty()) continue;
 
-            for (final Map.Entry<String, List<TestCase>> entry : sheets.entrySet()) {
-                final @NotNull String sheetName = entry.getKey();
-                final @NotNull List<TestCase> testCases = entry.getValue();
-
-                if (testCases.isEmpty()) continue;
-
-                writer.write("<h2>" + StringUtil.escapeXmlEntities(sheetName) + "</h2>");
-                writer.newLine();
-
-                writer.write("<table>");
-                writer.newLine();
-
-                writer.write("<tr>");
-                for (final TestSetEditorFields field : TestSetEditorFields.all(Can.EXPORT)) {
-                    writer.write("<th>" + StringUtil.escapeXmlEntities(field.getName()) + "</th>");
-                }
-                writer.write("</tr>");
-                writer.newLine();
-
-                for (final TestCase testCase : testCases) {
-                    writer.write("<tr>");
-                    for (final TestSetEditorFields field : TestSetEditorFields.all(Can.EXPORT)) {
-                        writer.write("<td>" + StringUtil.escapeXmlEntities(field.gridValue(testCase)) + "</td>");
-                    }
-                    writer.write("</tr>");
-                    writer.newLine();
-                    totalExported++;
-                }
-
-                writer.write("</table>");
-                writer.newLine();
+            line(sb, "<h2>" + StringUtil.escapeXmlEntities(sheet.getKey()) + "</h2>");
+            line(sb, "<table>");
+            line(sb, "<tr>" + cells("th", TestSetEditorFields.all(Can.EXPORT).stream().map(TestSetEditorFields::getName).toList()) + "</tr>");
+            for (final TestCase testCase : sheet.getValue()) {
+                line(sb, "<tr>" + cells("td", TestSetEditorFields.all(Can.EXPORT).stream().map(field -> field.gridValue(testCase)).toList()) + "</tr>");
+                totalExported++;
             }
-
-            writer.write("<p><em>" + Bundle.message("export.html.total", String.valueOf(totalExported)) + "</em></p>");
-            writer.newLine();
-
-            final @NotNull String exportDate = Display.formatDate(ZonedDateTime.now(ZoneId.systemDefault()));
-            writer.write("<p><em>" + Bundle.message("export.html.on", StringUtil.escapeXmlEntities(exportDate)) + "</em></p>");
-            writer.newLine();
-
-            writer.write("</body>");
-            writer.newLine();
-            writer.write("</html>");
-            writer.newLine();
-        } catch (final IOException ex) {
-            throw new UncheckedIOException(ex);
+            line(sb, "</table>");
         }
+
+        line(sb, "<p><em>" + Bundle.message("export.html.total", String.valueOf(totalExported)) + "</em></p>");
+        line(sb, "<p><em>" + Bundle.message("export.html.on", StringUtil.escapeXmlEntities(Display.formatDate(ZonedDateTime.now(ZoneId.systemDefault())))) + "</em></p>");
+        line(sb, "</body>");
+        line(sb, "</html>");
+        return sb.toString();
+    }
+
+    private static @NotNull String cells(final @NotNull String tag, final @NotNull List<String> values) {
+        final @NotNull StringBuilder row = new StringBuilder();
+        values.forEach(value -> row.append('<').append(tag).append('>').append(StringUtil.escapeXmlEntities(value)).append("</").append(tag).append('>'));
+        return row.toString();
     }
 }
