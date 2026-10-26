@@ -76,6 +76,10 @@ press `P` or `F`.
 - **Rule-EDITOR-PANEL-266** — Run on a test case of a Committed test run is gray
   and says why, on its card, in the context menu and in the view panel: a
   Committed test run records no result.
+- **Rule-EDITOR-PANEL-301** — Run on a Disabled test case is gray and says why,
+  on its card, in the context menu and in the view panel. Its test method is
+  switched off (Rule-CODEGEN-047), so the framework would run nothing and no run
+  item status would come back.
 
 ## What the tester sees
 
@@ -135,6 +139,10 @@ test run still records it (Rule-TREE-PANEL-009).
 
 **If a test case has no generated method** — it is dropped and a message says
 so. The others still run.
+
+**If the test case is Disabled** — Run is gray and reads *This test case is
+Disabled, so its test method never runs.* Pressing it says the same and starts
+nothing (Rule-EDITOR-PANEL-301).
 
 ## Where the plugin breaks its own rules
 

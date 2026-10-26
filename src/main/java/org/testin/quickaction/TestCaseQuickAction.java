@@ -63,7 +63,7 @@ public enum TestCaseQuickAction {
             ImmutableList.of(AutomationWork.NAVIGATION, AutomationWork.RUNNING),
             AllIcons.RunConfigurations.TestState.Run,
             ExecuteTestCases::run,
-            (shownIn, _) -> shownIn.flatMap(AbstractNode::whySignedOff)
+            TestCaseQuickAction::whyNotRun
     ),
 
     STOP_TEST_METHOD(
@@ -108,6 +108,12 @@ public enum TestCaseQuickAction {
         return buttons.stream()
                 .map(button -> button.offer(project, Optional.of(openOn), testCase))
                 .toList();
+    }
+
+    // Rule-EDITOR-PANEL-266, Rule-EDITOR-PANEL-301
+    private static @NotNull Optional<String> whyNotRun(final @NotNull Optional<AbstractNode> shownIn, final @NotNull TestCase testCase) {
+        return shownIn.flatMap(AbstractNode::whySignedOff)
+                .or(() -> testCase.getStatus().isEnabled() ? Optional.empty() : Optional.of(Bundle.message("run.test.method.disabled", testCase.getStatus().getLabel())));
     }
 
     // UC-EDITOR-PANEL-043

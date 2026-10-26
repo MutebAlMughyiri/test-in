@@ -37,14 +37,17 @@ import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.status.AutomationExecutionStatus;
+import org.testin.model.status.TestCaseStatus;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItems;
+import org.testin.quickaction.Offered;
 import org.testin.quickaction.TestCaseQuickAction;
 import org.testin.runner.CapturedRunner;
 import org.testin.runner.AutomationExecution;
 import org.testin.services.Services;
 import org.testin.testrun.TestRunFixture;
+import org.testin.util.Bundle;
 import org.testin.util.JsonCodec;
 
 import java.io.IOException;
@@ -114,6 +117,13 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
         }
     }
 
+    private @NotNull Offered runOnTheCardOf(final @NotNull TestRunNode testRun, final @NotNull TestCase testCase) {
+        return TestCaseQuickAction.onCard(getProject(), testRun, testCase).stream()
+                .filter(offered -> offered.action() == TestCaseQuickAction.RUN_TEST_METHOD)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("the card of '" + testCase.getDescription() + "' offers no Run"));
+    }
+
     // Rule-EDITOR-PANEL-180
     public void testTheEditorClaimsTheTestCaseSoTheRunItemStatusComesBackToItsOwnTestRun() {
         final @NotNull TestCase testCase = automatedTestCases(1).getFirst();
@@ -133,6 +143,19 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
             Disposer.dispose(claiming);
             Disposer.dispose(other);
         }
+    }
+
+    // Rule-EDITOR-PANEL-301
+    public void testRunIsGrayOnADisabledTestCasesCardAndSaysWhy() {
+        final @NotNull List<TestCase> testCases = automatedTestCases(2);
+        final @NotNull TestCase disabled = testCases.getFirst();
+        disabled.setStatus(TestCaseStatus.DISABLED);
+        final @NotNull TestRunNode testRun = aTestRun("Cycle-1", testCases.stream().map(EditorFixtures::pending).toList());
+
+        final @NotNull Offered refused = runOnTheCardOf(testRun, disabled);
+        assertFalse("Run works on a Disabled test case's card", refused.works());
+        assertEquals("Run on a Disabled test case does not say why", Bundle.message("run.test.method.disabled", TestCaseStatus.DISABLED.getLabel()), refused.hintText());
+        assertTrue("Run is gray on an active test case's card", runOnTheCardOf(testRun, testCases.getLast()).works());
     }
 
     // Rule-EDITOR-PANEL-182
