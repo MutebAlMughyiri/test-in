@@ -37,7 +37,7 @@ public class SetRunItemStatusGroup extends DefaultActionGroup {
         setRunItemStatusActions().forEach(action -> action.registerCustomShortcutSet(action.getShortcutSet(), list));
     }
 
-    // UC-EDITOR-PANEL-032, Rule-EDITOR-PANEL-213
+    // UC-EDITOR-PANEL-032, Rule-EDITOR-PANEL-213, Rule-PRODUCT-012, Rule-PRODUCT-013
     private static @NotNull List<SetRunItemStatusAction> setRunItemStatusActions() {
         return Arrays.stream(RunItemStatus.values())
                 .filter(RunItemStatus::isJudged)

@@ -64,6 +64,9 @@ public class SettingsTest {
                 "renaming the storage file loses every existing tester's settings");
         assertEquals(state.name(), "testin.settings.AppSettingsState",
                 "renaming the state loses every existing tester's settings");
+
+        final @NotNull AppSettingsState settings = new AppSettingsState();
+        assertSame(settings.getState(), settings, "the settings save a copy of themselves, so a value set after the save is not the one written");
     }
 
     // Rule-SETTING-011

@@ -74,6 +74,7 @@ public class TestinConfigTest {
         assertTrue(config.hasRepoUrl());
     }
 
+    // Rule-INTERNAL-089
     @Test
     public void absentKeysAreEmpty() {
         final TestinProjectConfig config = TestinYml.parse("# nothing but a comment\n", "partial");

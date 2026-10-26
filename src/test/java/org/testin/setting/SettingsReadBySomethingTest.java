@@ -91,5 +91,12 @@ public class SettingsReadBySomethingTest {
                 .toList();
 
         assertEquals(readByNothing, List.of(), "the settings page stores values nothing reads: " + readByNothing);
+
+        final @NotNull AppSettingsState stored = new AppSettingsState();
+        stored.testerName = "Sara";
+        stored.defaultDownloadFolder = "C:/Reports";
+        final @NotNull AppSettingsState loaded = new AppSettingsState();
+        loaded.loadState(stored);
+        assertEquals(List.of(loaded.testerName, loaded.defaultDownloadFolder), List.of("Sara", "C:/Reports"), "a value the page stored is not the value its readers get back");
     }
 }

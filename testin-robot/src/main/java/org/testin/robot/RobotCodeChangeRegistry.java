@@ -62,6 +62,7 @@ public final class RobotCodeChangeRegistry implements CodeChangeRegistry {
         return AutomationLanguage.ROBOT_FRAMEWORK;
     }
 
+    // Rule-CODEGEN-128
     @Override
     public <T> @NotNull CodeChange<T> actionFor(final @NotNull CodeChangeType<T> type) {
         return CodeChangeBinding.actionFor(bindings, type);

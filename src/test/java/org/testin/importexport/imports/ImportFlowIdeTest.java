@@ -199,6 +199,21 @@ public class ImportFlowIdeTest extends AbstractTempRootIdeTest {
         assertEquals(2, indexedTestCasesIn(login.getPath()).stream().map(TestCase::getUuid).distinct().count());
     }
 
+    // UC-SHARE-005, Rule-SHARE-025
+    public void testImportedTestCasesLandAfterEverythingAlreadyInTheTestSetAndTouchNothingThere() {
+        final @NotNull TestSetNode login = new NodesOnDisk(getProject()).testSet(testProject.getTestCasesFolder(), "Login");
+        final @NotNull List<Path> existingFiles = Stream.of(new NodesOnDisk(getProject()).testCase(login), new NodesOnDisk(getProject()).testCase(login))
+                .map(existing -> login.getPath().resolve(existing.getUuid() + ".testcase"))
+                .toList();
+        final @NotNull List<String> before = existingFiles.stream().map(file -> Arrays.toString(bytesOf(file))).toList();
+
+        imported(login, read(aFile("Login.json", sheets("Login", aTestCase("Pay by card"), aTestCase("Pay by transfer")))));
+
+        final @NotNull List<String> inOrder = indexedTestCasesIn(login.getPath()).stream().map(TestCase::getDescription).toList();
+        assertEquals("the imported test cases did not land after everything already in the test set", List.of("Pay by card", "Pay by transfer"), inOrder.subList(inOrder.size() - 2, inOrder.size()));
+        assertEquals("a test case already in the test set was written", before, existingFiles.stream().map(file -> Arrays.toString(bytesOf(file))).toList());
+    }
+
     // UC-SHARE-005, Rule-SHARE-026
     public void testAnImportedTestCaseKeepsTheAuditTheFileCarried() {
         final @NotNull TestSetNode login = new NodesOnDisk(getProject()).testSet(testProject.getTestCasesFolder(), "Login");

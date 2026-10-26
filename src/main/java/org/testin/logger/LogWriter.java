@@ -86,6 +86,7 @@ public final class LogWriter implements Disposable {
         writerThread = Optional.of(thread);
     }
 
+    // Rule-SETTING-026
     private void writeLoop() {
         try {
             long written;

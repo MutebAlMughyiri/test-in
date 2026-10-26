@@ -46,5 +46,8 @@ public class AgentKeyTest {
 
         assertEquals(settings, List.of(), "the settings file has a field for a key, which is the agent's to hold, never Testin's");
         assertEquals(connection, List.of(), "the agent connection carries a key onto the command line");
+
+        final @NotNull AgentConnection stored = new AgentConnection("claude", "-p", "Write the steps of this test case");
+        assertEquals(List.of(stored.command(), stored.arguments(), stored.prompt()), List.of("claude", "-p", "Write the steps of this test case"), "the agent connection holds something besides the command, its arguments and the prompt");
     }
 }

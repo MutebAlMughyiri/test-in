@@ -24,11 +24,19 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.Said;
 import org.testin.TreeGesture;
+import org.testin.model.node.AbstractNode;
+import org.testin.model.node.TestCasesFolderNode;
+import org.testin.model.node.TestProjectNode;
+import org.testin.model.node.TestRunNode;
+import org.testin.model.node.TestRunPackageNode;
+import org.testin.model.node.TestRunsFolderNode;
 import org.testin.model.node.TestSetNode;
+import org.testin.model.node.TestSetPackageNode;
 import org.testin.notifications.Refused;
 import org.testin.services.OptionalPlugin;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class ExecuteTestsFromTheTreeIdeTest extends AbstractCodegenIdeTest {
@@ -46,6 +54,20 @@ public class ExecuteTestsFromTheTreeIdeTest extends AbstractCodegenIdeTest {
         final @NotNull List<String> said = balloons.shown();
         assertTrue("running a node with no test cases did not say so: " + said, said.contains(Refused.NOTHING_TO_RUN.about("Empty")));
         assertEquals("running a node with no test cases started something", 0, ExecutionManager.getInstance(getProject()).getRunningProcesses().length);
+    }
+
+    // Rule-TREE-PANEL-080
+    public void testRunTestsIsOfferedOnTheTestCasesSideAndOnATestRunAndNowhereElse() {
+        final @NotNull List<Map.Entry<AbstractNode, Boolean>> offered = List.of(
+                Map.entry(new TestProjectNode(), false),
+                Map.entry(new TestCasesFolderNode(), true),
+                Map.entry(new TestSetPackageNode(), true),
+                Map.entry(new TestSetNode(), true),
+                Map.entry(new TestRunsFolderNode(), false),
+                Map.entry(new TestRunPackageNode(), false),
+                Map.entry(new TestRunNode(), true));
+
+        offered.forEach(nodeAndOffered -> assertEquals("Run Tests on " + nodeAndOffered.getKey().getType().getDescription(), (boolean) nodeAndOffered.getValue(), TreeGesture.updated(getProject(), runTests(), List.of(nodeAndOffered.getKey())).isEnabled()));
     }
 
     // Rule-TREE-PANEL-079

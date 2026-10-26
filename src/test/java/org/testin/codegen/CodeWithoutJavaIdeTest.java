@@ -159,7 +159,7 @@ public class CodeWithoutJavaIdeTest extends AbstractCodegenIdeTest {
         assertTrue("the gray menu entry does not read (needs the Java plugin): " + menu.getPresentation().getText(), String.valueOf(menu.getPresentation().getText()).endsWith(NEEDS_JAVA));
     }
 
-    // Rule-CODEGEN-063
+    // Rule-CODEGEN-063, Rule-PRODUCT-020
     public void testAPluginTestinFoundMissingStaysMissingUntilTheIdeRestarts() {
         final @NotNull PluginId java = PluginId.getId("com.intellij.java");
         assertTrue("the Java plugin is not installed and switched on here, so this proves nothing", PluginManagerCore.isPluginInstalled(java) && !PluginManagerCore.isDisabled(java));

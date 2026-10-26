@@ -371,6 +371,24 @@ public class ReportDeliveryIdeTest extends AbstractTempRootIdeTest {
         }
     }
 
+    // Rule-SETTING-022, Rule-SETTING-023
+    public void testAReportWrittenToAnotherFolderLeavesTheDownloadFolderAsTheSettingsPageSetIt() {
+        final @NotNull String downloadFolder = folder("reports").toString();
+        final @NotNull Path elsewhere = folder("elsewhere");
+        settings().defaultDownloadFolder = downloadFolder;
+        final @NotNull List<File> written = new ArrayList<>();
+        try {
+            ShownDialog.open(getProject(), GenerateReportDialog.class, () -> new GenerateReportDialog(getProject(), "Cycle-1", (_, file) -> written.add(file)).show());
+            ShownDialog.typed(getProject(), GenerateReportDialog.class, elsewhere.toString());
+            ShownDialog.press(getProject(), GenerateReportDialog.class, Shortcuts.Enter);
+        } finally {
+            ShownDialog.close(getProject(), GenerateReportDialog.class);
+        }
+
+        assertEquals("the report was not written into the folder the tester typed", List.of(elsewhere), written.stream().map(file -> file.toPath().getParent()).toList());
+        assertEquals("writing a report to another folder changed the download folder the settings page owns", downloadFolder, settings().defaultDownloadFolder);
+    }
+
     // Rule-REPORT-009
     public void testTheDialogClosesBeforeTheWorkStarts() {
         settings().defaultDownloadFolder = folder("reports").toString();

@@ -61,7 +61,7 @@ public class UpdateMenuLettersTest {
 
             Arrays.stream(CopyChoice.values())
                     .filter(choice -> choice.getName().equals(field.getName()))
-                    .forEach(choice -> assertEquals(choice.getShortcut().getKey(), field.getShortcut().getKey(), field.getName() + " is a different letter on the copy menu than on the update menu"));
+                    .forEach(choice -> assertEquals(choice.getKey(), field.getShortcut().getKey(), field.getName() + " is a different letter on the copy menu than on the update menu"));
         }
     }
 }

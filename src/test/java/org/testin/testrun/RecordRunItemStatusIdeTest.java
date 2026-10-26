@@ -47,9 +47,12 @@ import org.testin.util.Shortcuts;
 
 import javax.swing.JComponent;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertNotEquals;
 
@@ -88,6 +91,15 @@ public class RecordRunItemStatusIdeTest extends AbstractTempRootIdeTest {
 
     private void awaitWrites() {
         Services.getInstance(getProject(), TestRuns.class).awaitWrites();
+    }
+
+    // Rule-PRODUCT-012, Rule-PRODUCT-013
+    public void testTheMenuOffersExactlyPassedFailedAndBlockedAndNeverPendingOrUntested() {
+        final @NotNull List<String> offered = Arrays.stream(new SetRunItemStatusGroup().getChildActionsOrStubs())
+                .map(action -> Objects.requireNonNullElse(action.getTemplatePresentation().getText(), ""))
+                .toList();
+
+        assertEquals("the run item status menu does not offer exactly Passed, Failed and Blocked", Stream.of(RunItemStatus.PASSED, RunItemStatus.FAILED, RunItemStatus.BLOCKED).map(RunItemStatus::getLabel).toList(), offered);
     }
 
     // Rule-EDITOR-PANEL-137

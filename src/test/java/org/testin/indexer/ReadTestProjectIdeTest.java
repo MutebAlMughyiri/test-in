@@ -19,6 +19,7 @@ package org.testin.indexer;
 import com.intellij.openapi.progress.EmptyProgressIndicator;
 import com.intellij.openapi.progress.ProgressIndicator;
 import org.jetbrains.annotations.NotNull;
+import org.testin.Await;
 import org.testin.model.FileKind;
 import org.testin.model.NodeType;
 import org.testin.model.TestCase;
@@ -240,6 +241,17 @@ public class ReadTestProjectIdeTest extends AbstractReadTheRootIdeTest {
         indexer().scanSingleTestProject(testProjectPath);
 
         assertEquals("a read again dropped the test runs, or said it was reading them, before the new ones were in", List.of("test case true", "test run true", "label "), seen);
+    }
+
+    // UC-INTERNAL-003, Rule-INTERNAL-013
+    public void testATestProjectIsReadAgainByABackgroundJobOfItsOwn() {
+        final @NotNull Path testProjectPath = aTestProjectAt(root.resolve("Checkout"));
+        readEverything();
+        final @NotNull Path added = marked(theTestCasesOf(testProjectPath).resolve("Payments"), NodeType.TEST_SET);
+
+        indexer().readAgainInBackground(testProjectPath);
+
+        Await.until("the background read of the test project never landed", () -> nodes().nodeExists(added));
     }
 
     // UC-INTERNAL-003, Rule-INTERNAL-145, Rule-INTERNAL-081

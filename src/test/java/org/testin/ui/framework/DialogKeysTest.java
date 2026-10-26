@@ -42,7 +42,7 @@ public class DialogKeysTest {
         expectThrows(IllegalStateException.class, () -> DialogKeys.install(new JPanel(), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, twice));
     }
 
-    // UC-INTERNAL-007, Rule-INTERNAL-056
+    // UC-INTERNAL-007, Rule-INTERNAL-056, Rule-SHARE-006
     @Test
     public void keysWithOneMeaningEachAreAllBound() {
         final @NotNull JPanel content = new JPanel();

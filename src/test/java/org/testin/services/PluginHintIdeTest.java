@@ -44,7 +44,7 @@ public class PluginHintIdeTest extends AbstractIdeTest {
         Services.getInstance(getProject(), Hints.class).clear(SetupStep.TESTNG_PLUGIN);
     }
 
-    // Rule-CODEGEN-062, Rule-INTERNAL-127
+    // Rule-CODEGEN-062, Rule-INTERNAL-127, Rule-PRODUCT-019
     public void testAPressedKeyNeedingAMissingPluginStillAnswersAndTheHintWaits() {
         OptionalPlugin.GIT.missingUntil(getTestRootDisposable());
 

@@ -58,6 +58,8 @@ public class RuleTraceTest {
 
     private static final @NotNull Pattern LOADED_ONCE = Pattern.compile("^\\s*(?:(?:public|private|protected)\\s+)?static\\b|^\\s*[A-Z][A-Z0-9_]*\\s*[(,;]");
 
+    private static final @NotNull Pattern PLAIN_FIELD = Pattern.compile("^[^(=]*;\\s*$");
+
     private static @NotNull List<Path> filesUnder(final @NotNull Path root, final @NotNull String extension) {
         if (!Files.isDirectory(root)) return List.of();
 
@@ -120,7 +122,7 @@ public class RuleTraceTest {
 
             final boolean ended = opened ? braces <= 0 : parentheses <= 0 && (code.endsWith(";") || code.endsWith(","));
             if (ended)
-                return new Span(source, declaration + 1, i + 1, !opened && LOADED_ONCE.matcher(lines.get(declaration)).find());
+                return new Span(source, declaration + 1, i + 1, !opened && (LOADED_ONCE.matcher(lines.get(declaration)).find() || PLAIN_FIELD.matcher(withoutLiterals(lines.get(declaration))).find()));
         }
         return new Span(source, declaration + 1, lines.size(), false);
     }
@@ -208,7 +210,7 @@ public class RuleTraceTest {
 
     private static boolean ran(final @NotNull Map<String, ISourceFileCoverage> ran, final @NotNull Span span) {
         return Optional.ofNullable(ran.get(span.source()))
-                .map(file -> span.loadedOnce() ? file.getLineCounter().getCoveredCount() > 0 : IntStream.rangeClosed(span.from(), span.to()).anyMatch(line -> file.getLine(line).getInstructionCounter().getCoveredCount() > 0))
+                .map(file -> span.wholeFile() ? file.getLineCounter().getCoveredCount() > 0 : IntStream.rangeClosed(span.from(), span.to()).anyMatch(line -> file.getLine(line).getInstructionCounter().getCoveredCount() > 0))
                 .orElse(false);
     }
 
@@ -230,6 +232,8 @@ public class RuleTraceTest {
 
         final @NotNull List<String> untraced = new ArrayList<>();
         final @NotNull List<String> unmeasured = new ArrayList<>();
+        final @NotNull Set<String> carried = new TreeSet<>();
+        final @NotNull Set<String> traced = new TreeSet<>();
         int labels = 0;
         int unmeasuredLabels = 0;
         for (final Map.Entry<String, Set<String>> test : labeledTests().entrySet()) {
@@ -245,18 +249,27 @@ public class RuleTraceTest {
             }
 
             final @NotNull Map<String, ISourceFileCoverage> ran = ranIn(saved, traceable.stream().flatMap(label -> code.getOrDefault(label, List.of()).stream()).map(Span::source).collect(Collectors.toSet()), classes);
+            carried.addAll(traceable);
             for (final String label : traceable) {
                 final @NotNull List<Span> labeledSpans = code.getOrDefault(label, List.of());
-                if (labeledSpans.stream().noneMatch(span -> ran(ran, span)))
-                    untraced.add("- `" + test.getKey() + "` carries **" + label + "** and runs none of " + labeledSpans.stream().map(Span::where).toList());
+                if (labeledSpans.stream().anyMatch(span -> ran(ran, span))) traced.add(label);
+                else untraced.add("- `" + test.getKey() + "` carries **" + label + "** and runs none of " + labeledSpans.stream().map(Span::where).toList());
             }
         }
+
+        final @NotNull List<String> tracedByNoTest = carried.stream().filter(label -> !traced.contains(label)).map(label -> "- **" + label + "**").toList();
 
         final @NotNull String summary = "Labels on tests traced to the code labeled with them: " + (labels - untraced.size() - unmeasuredLabels) + " of " + labels;
         writeReport("""
                 # %s
                 
-                A test carries a label - `// Rule-PART-NNN` or `// UC-PART-NNN` above the test method. It is traced when that test, run on its own, runs at least one line of a declaration the production code labels the same way. A static field or an enum constant runs once, when its class loads, so it counts as run when the test runs any line of its file.
+                A test carries a label - `// Rule-PART-NNN` or `// UC-PART-NNN` above the test method. It is traced when that test, run on its own, runs at least one line of a declaration the production code labels the same way. A static field or an enum constant runs once, when its class loads, so it counts as run when the test runs any line of its file. So does a field with no initializer: it has no line of its own to run, and the getter Lombok writes for it has none either.
+                
+                # Rules and use cases no test traces (%d of %d)
+                
+                A rule or a use case is traced when at least one test that carries it runs its code. One proven only by a test that reads the code, rather than running it, is listed here until a test runs it too.
+                
+                %s
                 
                 # Labels whose test runs none of the code labeled with them (%d)
                 
@@ -265,10 +278,10 @@ public class RuleTraceTest {
                 # Tests that carry a label and saved nothing they ran (%d, carrying %d labels)
                 
                 %s
-                """.formatted(summary, untraced.size(), String.join("\n", untraced), unmeasured.size(), unmeasuredLabels, String.join("\n", unmeasured)));
+                """.formatted(summary, tracedByNoTest.size(), carried.size(), String.join("\n", tracedByNoTest), untraced.size(), String.join("\n", untraced), unmeasured.size(), unmeasuredLabels, String.join("\n", unmeasured)));
     }
 
-    private record Span(@NotNull String source, int from, int to, boolean loadedOnce) {
+    private record Span(@NotNull String source, int from, int to, boolean wholeFile) {
         @NotNull String where() {
             return source + ":" + from;
         }

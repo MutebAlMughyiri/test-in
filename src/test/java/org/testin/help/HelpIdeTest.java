@@ -28,10 +28,16 @@ import com.intellij.util.IconUtil;
 import com.intellij.util.ui.ImageUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractIdeTest;
+import org.testin.Said;
 import org.testin.services.Services;
+import org.testin.ui.framework.ShownDialog;
+import org.testin.util.Bundle;
+import org.testin.view.Drawn;
 
 import javax.swing.Icon;
+import javax.swing.JComponent;
 import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.List;
@@ -109,6 +115,36 @@ public class HelpIdeTest extends AbstractIdeTest {
 
         assertEquals(List.of(Guide.SET_UP_THIS_MACHINE), Services.getInstance(getProject(), Guides.class).offered());
         hints.clear(SetupStep.TESTIN_FOLDER);
+    }
+
+    // Rule-INTERNAL-130, Rule-INTERNAL-131
+    public void testEveryGuideOpensOnItsOwnBundledPage() {
+        for (final Guide guide : Guide.values()) {
+            try {
+                ShownDialog.open(getProject(), GuideDialog.class, () -> guide.open(getProject()));
+                final @NotNull String shown = String.join(" ", Drawn.words(ShownDialog.content(getProject(), GuideDialog.class)));
+
+                assertFalse(guide + " opened on the text for a page that is missing: " + shown, shown.contains(Bundle.message("guide.page.missing", guide.getPage())));
+            } finally {
+                ShownDialog.close(getProject(), GuideDialog.class);
+            }
+        }
+    }
+
+    // Rule-INTERNAL-128
+    public void testAClickOnTheMarkWithNothingWaitingSaysNothingToShow() {
+        nothingWaits();
+        final @NotNull StatusBarWidget mark = StatusBarWidgetFactory.EP_NAME.getExtensionList().getLast().createWidget(getProject());
+        try {
+            final @NotNull JComponent entry = ((CustomStatusBarWidget) mark).getComponent();
+            final @NotNull MouseEvent click = new MouseEvent(entry, MouseEvent.MOUSE_CLICKED, 0, 0, 1, 1, 1, false);
+
+            final @NotNull List<String> said = Said.during(getProject(), () -> Arrays.stream(entry.getMouseListeners()).forEach(listener -> listener.mouseClicked(click)));
+
+            assertEquals("a click on the mark with no hint and no guide did not say there is nothing to show", List.of(Bundle.message("help.nothing")), said);
+        } finally {
+            Disposer.dispose(mark);
+        }
     }
 
     // Rule-INTERNAL-127
