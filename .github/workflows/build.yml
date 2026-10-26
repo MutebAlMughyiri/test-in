@@ -127,6 +127,17 @@ jobs:
           ./gradlew compileJava test pmdMain ideTest ruleTrace jacocoTestCoverageVerification verifyPlugin verifyDistribution --continue
           ./gradlew test -Pbudget
 
+      # A failed test names itself on the run page, the way Inspect lists its
+      # findings, so the failure email's link shows the cause (#439).
+      - name: List the failed tests on the run page
+        if: failure()
+        shell: pwsh
+        run: |
+          $failed = @(Get-ChildItem -Path build/test-results, */build/test-results -Recurse -Filter *.xml -ErrorAction SilentlyContinue |
+              ForEach-Object { ([xml](Get-Content -Raw $_.FullName)).SelectNodes('//testcase[failure or error]') } |
+              ForEach-Object { '- `{0}` {1}: {2}' -f $_.GetAttribute('classname'), $_.GetAttribute('name'), ($_.SelectSingleNode('failure|error').GetAttribute('message') -split "`n")[0] })
+          if ($failed.Count -gt 0) { (@("**$($failed.Count) failed test(s):**", '') + $failed) | Add-Content -Path $env:GITHUB_STEP_SUMMARY -Encoding utf8 }
+
       # Only main saves the verifier's IDE. Four Dependabot pull requests each
       # saved a 3 GB copy under their own ref on 26 October 2026, which no other
       # ref can restore, and together they pushed main's entries out (#430).
@@ -224,6 +235,25 @@ jobs:
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
           QODANA_ENDPOINT: 'https://qodana.cloud'
+
+      # Qodana's problems name themselves on the run page too, the highest
+      # severity first, in the shape Inspect's findings take (#439).
+      - name: List Qodana's problems on the run page
+        if: failure()
+        shell: bash
+        run: |
+          sarif="${{ runner.temp }}/qodana/results/qodana.sarif.json"
+          [ -f "$sarif" ] || exit 0
+          jq -r '
+            def rank: {"Critical": 0, "High": 1, "Moderate": 2, "Low": 3, "Info": 4}[.] // 5;
+            [.runs[0].results[] | {
+              severity: (.properties.qodanaSeverity // .level // ""),
+              place: ((.locations[0].physicalLocation.artifactLocation.uri // "") + ":" + ((.locations[0].physicalLocation.region.startLine // 0) | tostring)),
+              rule: (.ruleId // ""),
+              message: ((.message.text // "") | split("\n") | .[0] // "")
+            }] | sort_by(.severity | rank) as $problems
+            | "**\($problems | length) Qodana problem(s):**", "", ($problems[] | "- `\(.place)` [\(.rule)] \(.severity): \(.message)")
+          ' "$sarif" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Show the findings in GitHub Code scanning
         if: ${{ !cancelled() }}
