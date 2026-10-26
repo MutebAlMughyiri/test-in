@@ -15,7 +15,7 @@
 
       Inspections      tools/inspect.ps1, gated, runs in CI on every push
       Plugin Verifier  gradlew verifyPlugin, gated: any problem fails it
-      Qodana           the cloud scan, gated: any finding fails it, CI only
+      Qodana           the free Community linter, run on this machine when asked
       Compiler         gradlew compileJava, -Xlint:deprecation,removal,cast
       Gradle           --warning-mode all
 
@@ -126,15 +126,15 @@ else
 Add-Row 'Plugin Verifier' '-' 'yes' $said
 
 # --- Qodana ----------------------------------------------------------------
-$run = Get-LastRun 'build.yml'
-if ($run)
+$sarif = Join-Path $repoRoot 'build/qodana/qodana.sarif.json'
+if (Test-Path $sarif)
 {
-    $said = "Qodana job of Build run $( $run.databaseId ) on $($run.headSha.Substring(0, 8) ): $( $run.conclusion )"
-    Add-Row 'Qodana' 'see run summary' 'yes' $said
+    $found = @((Get-Content $sarif -Raw | ConvertFrom-Json).runs[0].results).Count
+    Add-Row 'Qodana' "$found" 'no' "build/qodana, the local run of $( (Get-Item $sarif).LastWriteTime.ToString('yyyy-MM-dd HH:mm') )"
 }
 else
 {
-    Add-Row 'Qodana' '-' 'no' 'CI only; no answer without gh'
+    Add-Row 'Qodana' '-' 'no' 'not run on this machine yet: see CONTRIBUTING.md'
 }
 
 # --- Compiler --------------------------------------------------------------

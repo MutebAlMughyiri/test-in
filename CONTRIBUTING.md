@@ -79,18 +79,18 @@ work had it not been noticed immediately.
 
 ## The checks
 
-| Command                                                  | What it settles                                                                                                            | When                                                                                                                                                                                                                  |
-|----------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `./gradlew compileJava test`                             | It compiles, and the unit tests and the documentation guards pass                                                          | Every change, before you offer it                                                                                                                                                                                     |
-| `./gradlew runIde`                                       | It actually works                                                                                                          | Anything a tester can see — see below                                                                                                                                                                                 |
-| `./gradlew inspect`                                      | Every finding in the Inspected scope, apart from the exceptions `qodana.yaml` lists                                        | Never by hand. CI runs it on every push, on every branch, and the run is where it is read                                                                                                                             |
-| `pwsh tools/inspect.ps1 -Quick`                          | The rules that read the source as text, and `pmdMain`; not what an IDE indexes                                             | Every change, before you hand it over. About a minute, no IDE: the text rules, then fifteen seconds of PMD                                                                                                            |
-| `./gradlew check`                                        | The unit tests, the IDE tests, the complexity gate and the coverage gate, with the coverage report                         | Before you hand over a change that reaches the indexer or the tree. About four minutes: the IDE tests run as three shares at once                                                                                     |
-| `./gradlew ideTestGitAndCode --tests "org.testin.git.*"` | The IDE tests of one package, in the share that holds it                                                                   | While working on a change that needs the IDE. `ideTest` runs three shares at once, each in its own sandbox, and `--tests` filters only the share it follows; `build.gradle.kts` lists which packages each share holds |
+| Command                                                  | What it settles                                                                                                                              | When                                                                                                                                                                                                                  |
+|----------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `./gradlew compileJava test`                             | It compiles, and the unit tests and the documentation guards pass                                                                            | Every change, before you offer it                                                                                                                                                                                     |
+| `./gradlew runIde`                                       | It actually works                                                                                                                            | Anything a tester can see — see below                                                                                                                                                                                 |
+| `./gradlew inspect`                                      | Every finding in the Inspected scope, apart from the exceptions `qodana.yaml` lists                                                          | Never by hand. CI runs it on every push, on every branch, and the run is where it is read                                                                                                                             |
+| `pwsh tools/inspect.ps1 -Quick`                          | The rules that read the source as text, and `pmdMain`; not what an IDE indexes                                                               | Every change, before you hand it over. About a minute, no IDE: the text rules, then fifteen seconds of PMD                                                                                                            |
+| `./gradlew check`                                        | The unit tests, the IDE tests, the complexity gate and the coverage gate, with the coverage report                                           | Before you hand over a change that reaches the indexer or the tree. About four minutes: the IDE tests run as three shares at once                                                                                     |
+| `./gradlew ideTestGitAndCode --tests "org.testin.git.*"` | The IDE tests of one package, in the share that holds it                                                                                     | While working on a change that needs the IDE. `ideTest` runs three shares at once, each in its own sandbox, and `--tests` filters only the share it follows; `build.gradle.kts` lists which packages each share holds |
 | `./gradlew pmdMain`                                      | No production method is over the cognitive complexity or nesting limit, and no private field, private method, local or parameter goes unused | Run by `-Quick`, and part of `check` and of `build.yml`; fifteen seconds, and it does not wait for a compile                                                                                                          |
-| `git worktree add ../testin-<what> <branch>`             | A second branch, checked out at once                                                                                       | Whenever two pieces of work run at the same time — see below                                                                                                                                                          |
-| `./gradlew verifyDistribution`                           | No test classes and no compile-only dependencies reached the jar                                                           | Runs in CI; run it if you touched packaging                                                                                                                                                                           |
-| `pwsh tools/warnings.ps1`                                | Every warning from every source in one table, the gated ones first: inspections, Plugin Verifier, Qodana, compiler, Gradle | Whenever you want the whole picture. It prints to the console and names where each source's full list lives. It reads last results; `-Full` runs the slow ones, about twenty minutes                                  |
+| `git worktree add ../testin-<what> <branch>`             | A second branch, checked out at once                                                                                                         | Whenever two pieces of work run at the same time — see below                                                                                                                                                          |
+| `./gradlew verifyDistribution`                           | No test classes and no compile-only dependencies reached the jar                                                                             | Runs in CI; run it if you touched packaging                                                                                                                                                                           |
+| `pwsh tools/warnings.ps1`                                | Every warning from every source in one table, the gated ones first: inspections, Plugin Verifier, Qodana, compiler, Gradle                   | Whenever you want the whole picture. It prints to the console and names where each source's full list lives. It reads last results; `-Full` runs the slow ones, about twenty minutes                                  |
 
 ### One build at a time in one checkout
 
@@ -287,8 +287,9 @@ beside it.
 Coverage has this one gate. Qodana's `JvmCoverageInspection` is off in the
 profile: it judges each method against its own 50% from whatever coverage the
 machine running it last recorded, so the same code passes in CI and fails on a
-laptop. `qodana.yaml` turns it on in CI only, at Information level, where it
-lists the methods no test reaches and fails nothing.
+laptop. `qodana.yaml` turns it on for a Qodana run, at Information level, where
+it lists the methods no test reaches and fails nothing. The free linter Qodana
+now runs with computes no coverage, so for now it lists nothing.
 
 ### The inspection gate
 
@@ -313,7 +314,7 @@ It exits non-zero for any finding in the files the repository writes: the scope
 IDE as *Inspected*. A warning the IDE shows there is a warning CI fails on.
 
 **The only exceptions are the ones `qodana.yaml` lists under `exclude`, each
-with its reason.** Qodana reads that list in CI and `tools/inspect.ps1` reads the
+with its reason.** Qodana reads that list when it runs and `tools/inspect.ps1` reads the
 same entries, so the two gates cannot disagree, and there is no second list to
 fall behind. Each entry names the narrowest path it can:
 
@@ -355,7 +356,7 @@ fails the gate when it leaves out a rule the script reports, or names one it no 
 | `WrappedMethodDeclaration`      | A method declaration written over more than one line                                                                                                                                                                                                                      |
 | `StaticMutableState`            | A static that is not final in the packages that model the data                                                                                                                                                                                                            |
 | `HandWrittenPrivateConstructor` | An empty private constructor where `@NoArgsConstructor(access = PRIVATE)` says it                                                                                                                                                                                         |
-| `NonMarkerComment`              | A comment in a `.java` file that is not a `UC-` or `Rule-` marker, or that goes on in words after one, in the tests as well as in `src/main`. The copyright header and the comments a machine reads, such as `//noinspection`, stay                                                                           |
+| `NonMarkerComment`              | A comment in a `.java` file that is not a `UC-` or `Rule-` marker, or that goes on in words after one, in the tests as well as in `src/main`. The copyright header and the comments a machine reads, such as `//noinspection`, stay                                       |
 | `DriftedCaption`                | One concept spelled two ways in front of the same tester                                                                                                                                                                                                                  |
 | `OrphanedJavadoc`               | A doc block followed by a second one, which javac throws away                                                                                                                                                                                                             |
 | `MissingCopyright`              | A `.java` file that does not open with the Apache 2.0 notice                                                                                                                                                                                                              |
@@ -410,14 +411,47 @@ and re-run before reporting a count.
 user-facing string written in a second file, and the gate fails on it like any
 other finding.
 
+### Qodana, on this machine, when asked
+
+Qodana runs here rather than in CI. Its Cloud license was not renewed in
+October 2026, so it runs with the free Community linter, in native mode: no
+Docker, no token and no account.
+
+```
+qodana scan --linter qodana-jvm-community --within-docker=false --results-dir build/qodana
+```
+
+The CLI is installed with `winget install JetBrains.QodanaCLI`. The first run
+downloads the linter, 887 MB; after that a run takes about five minutes. It
+reads `qodana.yaml`, so it asks the same profile the same questions as the
+inspection gate, with the same exceptions, and it fails on any finding above
+Information. The report is in `build/qodana/report` (`-w` serves it in a
+browser), and `tools/warnings.ps1` counts what the last run found.
+
+The paid parts of Qodana do not run: no license audit, no vulnerable-library
+check, no duplicate code and no coverage. `qodana.yaml` still names them, so a
+paid run would pick them up again.
+
+If the first run says *IDE to run is not found*, the CLI's own unpack failed,
+as it did here on 27 October 2026, and a second run sees the empty folder and
+does not download again. Run once with `--log-level debug` to get the
+linter's address, download that zip yourself, and unzip it into the empty
+`qodana-QDJVMC-*` folder under `%LOCALAPPDATA%\JetBrains\Qodana`, so that
+its `bin` folder sits directly inside it.
+
+After a change to `.idea`, run once with `--clear-cache`. The linter keeps the
+project's settings in its cache and writes them back over `.idea/misc.xml`
+when it opens the project, so without it a new entry point disappears and its
+finding comes back.
+
 ## What CI runs
 
-| Workflow           | When                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-|--------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `build.yml`        | Every push to `main` and every pull request. Compiles, runs the unit tests, the complexity gate, the IDE tests and the coverage gate, and verifies against **IntelliJ IDEA** - the one result that turns a pull request red Then **Qodana**, as a second job: the whole project on `main` and only the changed files on a pull request (with a comment on it), the build's test coverage included, against the profile and the exceptions `qodana.yaml` lists. Any finding above Information fails it, and every finding shows in Qodana Cloud and in GitHub's Code scanning |
-| `verify.yml`       | Every push to `main`, plus every second day and on demand. The same verifier against **all six targets** - IntelliJ IDEA, PyCharm and Rider at both ends of the 262 branch - and any problem on any of them fails the run                                                                                                                                                                                                                                                                                                                                                    |
-| `inspect.yml`      | Every push, on every branch, and on demand                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `dependencies.yml` | Every push to `main`. Submits the libraries the plugin ships - its `runtimeClasspath`, transitive ones included - to GitHub's dependency graph, so an advisory against any of them raises a Dependabot alert in the Security tab the day it is published                                                                                                                                                                                                                                                                                                                     |
+| Workflow           | When                                                                                                                                                                                                                                                     |
+|--------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `build.yml`        | Every push to `main` and every pull request. Compiles, runs the unit tests, the complexity gate, the IDE tests and the coverage gate, and verifies against **IntelliJ IDEA** - the one result that turns a pull request red                              |
+| `verify.yml`       | Every push to `main`, plus every second day and on demand. The same verifier against **all six targets** - IntelliJ IDEA, PyCharm and Rider at both ends of the 262 branch - and any problem on any of them fails the run                                |
+| `inspect.yml`      | Every push, on every branch, and on demand                                                                                                                                                                                                               |
+| `dependencies.yml` | Every push to `main`. Submits the libraries the plugin ships - its `runtimeClasspath`, transitive ones included - to GitHub's dependency graph, so an advisory against any of them raises a Dependabot alert in the Security tab the day it is published |
 
 No workflow publishes a release. It is published from a maintainer's machine
 with `./gradlew publishPlugin`, which reads the Marketplace token from

@@ -3,7 +3,7 @@
 ####################################################################################################################
 
 version: "1.0"
-linter: qodana-jvm
+linter: qodana-jvm-community
 
 # The project's own profile, the one the IDE selects through
 # .idea/inspectionProfiles/profiles_settings.xml and the one tools/inspect.ps1

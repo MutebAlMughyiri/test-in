@@ -7,6 +7,10 @@
 # inspection gate. tools/inspect.ps1 costs a full indexing pass, so it runs in
 # its own workflow, inspect.yml, on every push rather than inside this build.
 #
+# Not here either: Qodana. Its Cloud license was not renewed in October 2026,
+# so it runs on a developer's machine when asked, with the free Community
+# linter. CONTRIBUTING.md has the command.
+#
 # Coverage is here (#325). JaCoCo measures test and ideTest together across the
 # three modules, the report is kept below, and jacocoTestCoverageVerification
 # fails the build under the minimum build.gradle.kts sets.
@@ -161,103 +165,3 @@ jobs:
             build/reports/rule-trace
             build/reports/jacoco/test
             build/reports/pluginVerifier
-
-  # Qodana runs after the build so it can read the build's test coverage: the
-  # JaCoCo report the build uploads goes into .qodana/code-coverage, where
-  # Qodana shows it per file in Qodana Cloud. It runs even when the build
-  # failed, because its findings are news either way. On a pull request it
-  # scans only the changed files and comments its findings on the pull
-  # request; on main it scans everything. Every finding also goes to GitHub's
-  # Code scanning, so it shows in the Security tab and on the line it is
-  # about. qodana.yaml holds the profile, the gate and the exclusions.
-  qodana:
-    name: Qodana
-    needs: build
-    if: ${{ !cancelled() }}
-    runs-on: ubuntu-24.04
-    timeout-minutes: 60
-    permissions:
-      contents: write
-      pull-requests: write
-      checks: write
-      security-events: write
-
-    steps:
-      - name: Check out the commit
-        uses: actions/checkout@v7
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 0
-
-      - name: Java 25
-        uses: actions/setup-java@v6
-        with:
-          distribution: temurin
-          java-version: 25
-
-      # Reads the cache and never writes it. The repository holds 10 GB, and
-      # this job's entries filled most of it on every push, so the Build's own
-      # Gradle state and verifier IDE were gone before the next push (#430).
-      - name: Gradle
-        uses: gradle/actions/setup-gradle@v6
-        with:
-          cache-read-only: true
-
-      # The two content modules compile against the core jar, so the scan
-      # resolves them to a jar that nothing had built. Their classes came out
-      # unresolved, which is where the unchecked warnings and the Java sanity
-      # errors in the first report came from. This is the same command
-      # inspect.yml runs, and it builds that jar on the way.
-      - name: Build the jar the content modules compile against
-        run: ./gradlew compileJava
-
-      # Into the runner's temp folder, not the checkout: Qodana inspects the
-      # whole checkout, and the build's HTML reports in it came back as 24,943
-      # findings in pages nobody writes.
-      - name: Take the build's test coverage
-        uses: actions/download-artifact@v7
-        continue-on-error: true
-        with:
-          name: reports
-          path: ${{ runner.temp }}/build-reports
-
-      - name: Hand the coverage to Qodana
-        run: |
-          mkdir -p .qodana/code-coverage
-          cp "${{ runner.temp }}/build-reports/jacoco/test/jacocoTestReport.xml" .qodana/code-coverage/ || echo "No coverage report from the build"
-
-      - name: Qodana Scan
-        uses: JetBrains/qodana-action@v2026.2.2
-        with:
-          pr-mode: ${{ github.event_name == 'pull_request' }}
-          upload-result: true
-          use-caches: false
-        env:
-          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
-          QODANA_ENDPOINT: 'https://qodana.cloud'
-
-      # Qodana's problems name themselves on the run page too, the highest
-      # severity first, in the shape Inspect's findings take (#439).
-      - name: List Qodana's problems on the run page
-        if: failure()
-        shell: bash
-        run: |
-          sarif="${{ runner.temp }}/qodana/results/qodana.sarif.json"
-          [ -f "$sarif" ] || exit 0
-          jq -r '
-            def rank: {"Critical": 0, "High": 1, "Moderate": 2, "Low": 3, "Info": 4}[.] // 5;
-            [.runs[0].results[] | {
-              severity: (.properties.qodanaSeverity // .level // ""),
-              place: ((.locations[0].physicalLocation.artifactLocation.uri // "") + ":" + ((.locations[0].physicalLocation.region.startLine // 0) | tostring)),
-              rule: (.ruleId // ""),
-              message: ((.message.text // "") | split("\n") | .[0] // "")
-            }] | sort_by(.severity | rank) as $problems
-            | "**\($problems | length) Qodana problem(s):**", "", ($problems[] | "- `\(.place)` [\(.rule)] \(.severity): \(.message)")
-          ' "$sarif" >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Show the findings in GitHub Code scanning
-        if: ${{ !cancelled() }}
-        uses: github/codeql-action/upload-sarif@v4
-        with:
-          sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
-
