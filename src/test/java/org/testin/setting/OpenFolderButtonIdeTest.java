@@ -80,6 +80,12 @@ public class OpenFolderButtonIdeTest extends AbstractTempRootIdeTest {
 
         path.setPathText(file.toString());
         Await.until("Open was offered on a file", () -> !open.isEnabled());
+
+        path.setPathText(root.toString());
+        Await.until("Open stayed gray on a folder that exists", open::isEnabled);
+
+        path.setPathText(root + "\0Testin");
+        Await.until("Open was offered on text no file system takes as a path", () -> !open.isEnabled());
     }
 
     // Rule-SETTING-016
