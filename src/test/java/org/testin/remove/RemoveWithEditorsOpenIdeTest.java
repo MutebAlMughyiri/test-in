@@ -16,6 +16,7 @@
 
 package org.testin.remove;
 
+import com.intellij.openapi.actionSystem.IdeActions;
 import com.intellij.testFramework.PlatformTestUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractOpenEditorsIdeTest;
@@ -24,6 +25,7 @@ import org.testin.NodesOnDisk;
 import org.testin.Said;
 import org.testin.TempTree;
 import org.testin.TreeGesture;
+import org.testin.actions.Declared;
 import org.testin.indexer.Nodes;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
@@ -85,8 +87,8 @@ public class RemoveWithEditorsOpenIdeTest extends AbstractOpenEditorsIdeTest {
         return new NodesOnDisk(getProject()).testSet(parent, name);
     }
 
-    private void removedAndConfirmed(final @NotNull AbstractNode node) {
-        TreeGesture.pressed(getProject(), new RemoveAction(), List.of(node));
+    private void removedAndConfirmed(final @NotNull AbstractNode... nodes) {
+        TreeGesture.pressed(getProject(), new RemoveAction(), List.of(nodes));
         ShownDialog.press(getProject(), ConfirmDialog.class, Shortcuts.Enter);
     }
 
@@ -152,6 +154,21 @@ public class RemoveWithEditorsOpenIdeTest extends AbstractOpenEditorsIdeTest {
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
         assertFalse("Ctrl+Z took back the removal before the one that cannot be undone", nodes().nodeExists(login.getPath()));
+    }
+
+    // Rule-TREE-PANEL-041
+    public void testTwoNodesThatCouldNotBeKeptAreCountedInOneMessage() {
+        final @NotNull TestSetNode login = aTestSet(testProject.getTestCasesFolder(), "Login");
+        final @NotNull TestSetNode checkout = aTestSet(testProject.getTestCasesFolder(), "Checkout");
+        TempTree.delete(login.getPath());
+        TempTree.delete(checkout.getPath());
+        final @NotNull Said balloons = Said.listening(getProject(), getTestRootDisposable());
+
+        removedAndConfirmed(login, checkout);
+
+        Await.until("the two nodes whose copies could not be kept were not removed", () -> !nodes().nodeExists(login.getPath()) && !nodes().nodeExists(checkout.getPath()));
+        final @NotNull String counted = Bundle.message("remove.not.undoable.many", "2", Declared.shortcutText(IdeActions.ACTION_UNDO));
+        Await.until("the two that cannot be put back were not counted in one message: " + balloons.shown(), () -> balloons.shown().stream().anyMatch(one -> one.contains(counted)));
     }
 
     // Rule-TREE-PANEL-041
