@@ -56,6 +56,19 @@ public class AutomateTestCaseIdeTest extends AbstractCodegenIdeTest {
         return e;
     }
 
+    // Rule-EDITOR-PANEL-230
+    public void testWithNothingSelectedTheEntryIsGrayAndSaysSo() {
+        final @NotNull AnActionEvent nothing = TestActionEvent.createTestEvent(automate(), SimpleDataContext.builder()
+                .add(CommonDataKeys.PROJECT, getProject())
+                .add(TestinDataKeys.SELECTED_TEST_CASES, List.of())
+                .build());
+
+        ActionUtil.updateAction(automate(), nothing);
+
+        assertFalse("Automate works with nothing selected", nothing.getPresentation().isEnabled());
+        assertEquals("the gray entry does not say why", Bundle.message("action.select.test.case.description"), nothing.getPresentation().getDescription());
+    }
+
     // Rule-CODEGEN-071
     public void testTheEntryIsGrayWithTheReasonWhereThereIsNoMethodToWrite() {
         final @NotNull TestSetNode login = indexedTestSet("Login", theTestCasesDirectory());

@@ -24,6 +24,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Computable;
 import org.jetbrains.annotations.NotNull;
 import org.testin.actions.AbstractAnyProjectAction;
+import org.testin.actions.GrayWithReason;
 import org.testin.actions.TestinDataKeys;
 import org.testin.codegen.agent.AgentConnection;
 import org.testin.codegen.agent.WriteBodies;
@@ -105,7 +106,7 @@ public class AutomateTestCaseAction extends AbstractAnyProjectAction {
 
         final @NotNull List<TestCase> selected = TestinDataKeys.selectedTestCases(e);
         if (selected.isEmpty()) {
-            e.getPresentation().setEnabled(false);
+            GrayWithReason.unlessTestCaseSelected(this, e);
             return;
         }
 

@@ -70,7 +70,8 @@ all.
 
 ## What Testin refuses
 
-**If nothing is selected** — the entry is gray.
+**If nothing is selected** — the entry is gray, and says *Select a test case
+first.* (Rule-EDITOR-PANEL-230).
 
 **If every selected test case already has its method** — the entry is gray, and
 says so: *Every one of these test cases already has its method. Automate writes
