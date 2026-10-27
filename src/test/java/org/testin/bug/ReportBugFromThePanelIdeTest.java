@@ -35,12 +35,14 @@ import org.testin.editor.EditorFixtures;
 import org.testin.help.Hints;
 import org.testin.help.SetupHint;
 import org.testin.help.SetupStep;
+import org.testin.indexer.TestRuns;
 import org.testin.model.TestCase;
 import org.testin.model.bug.BugPriority;
 import org.testin.model.bug.BugSeverity;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.status.RunItemStatus;
+import org.testin.model.testrun.Failure;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.notifications.Done;
@@ -69,6 +71,7 @@ import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -308,6 +311,19 @@ public class ReportBugFromThePanelIdeTest extends AbstractTempRootIdeTest {
         assertFalse("Escape did not close the dialog", ShownDialog.isOpen(getProject(), ReportBugDialog.class));
         assertFalse("Escape asked before closing", ShownDialog.isOpen(getProject(), ConfirmDialog.class));
         assertEquals("Escape sent the bug", 1, issuesCreated().size());
+    }
+
+    // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-070
+    public void testSendOnATestCaseNoLongerFailedSendsNothingAndSaysWhy() {
+        final @NotNull JComponent dialog = opened(aPreparedBug(Optional.empty()));
+        Services.getInstance(getProject(), TestRuns.class).changeRunItem(testRun.getPath(), testCase.getUuid(), runItem -> runItem.recordRunItemStatus(RunItemStatus.PASSED, "Sara", Duration.ZERO, Failure.NONE));
+        final @NotNull JButton send = send(dialog);
+
+        send.doClick();
+
+        assertEquals("a bug was filed for a test case no longer failed", List.of(), issuesCreated());
+        assertFalse("Send stayed live on a test case no longer failed", send.isEnabled());
+        assertEquals("hovering over the gray Send does not say the test case is no longer failed", Bundle.message("bug.no.longer.failed"), Drawn.hovering(send));
     }
 
     // Rule-VIEW-PANEL-071
