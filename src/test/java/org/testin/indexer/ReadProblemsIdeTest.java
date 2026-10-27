@@ -25,10 +25,13 @@ import org.testin.model.TestCase;
 import org.testin.model.testrun.RunItem;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
+import org.testin.util.Html;
 
 import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class ReadProblemsIdeTest extends AbstractReadTheRootIdeTest {
 
@@ -147,5 +150,58 @@ public class ReadProblemsIdeTest extends AbstractReadTheRootIdeTest {
 
         final @NotNull List<String> warned = said(Bundle.message("indexer.run.items.unnamed.title", TEST_PROJECT));
         assertTrue("the run item file not named by a test case UUID was not named in a warning: " + warned, names(warned, "by hand.runitem"));
+    }
+
+    // UC-INTERNAL-002, Rule-INTERNAL-011
+    public void testOneRunItemThatCannotBeReadIsLeftOutAndNamed() {
+        final @NotNull Path testRun = marked(theTestRunsOf(theTestProject()).resolve("Cycle 1"), NodeType.TEST_RUN);
+        final @NotNull UUID read = UUID.randomUUID();
+        runItemIn(testRun, FileKind.RUN_ITEM.fileName(read));
+        final @NotNull String broken = FileKind.RUN_ITEM.fileName(UUID.randomUUID());
+        SyntheticTree.write(testRun.resolve(broken), "{ this is not a run item");
+
+        readEverything();
+
+        assertEquals("the run item beside one that could not be read was not read", List.of(read), Services.getInstance(getProject(), TestRuns.class).getRunItems(testRun).getAll().stream().map(RunItem::getUuid).toList());
+        assertEquals("the run item that could not be read was not named", List.of(Html.ofText(Bundle.message("indexer.run.items.unread.one", "Cycle 1/" + broken))), said(Bundle.message("indexer.run.items.unread.title", TEST_PROJECT)));
+    }
+
+    // UC-INTERNAL-002, Rule-INTERNAL-011
+    public void testSevenRunItemsThatCannotBeReadAreSaidOnceNamingFiveThenCountingTheRest() {
+        final @NotNull Path testRun = marked(theTestRunsOf(theTestProject()).resolve("Cycle 1"), NodeType.TEST_RUN);
+        final @NotNull List<String> broken = IntStream.range(0, 7).mapToObj(_ -> FileKind.RUN_ITEM.fileName(UUID.randomUUID())).toList();
+        broken.forEach(fileName -> SyntheticTree.write(testRun.resolve(fileName), "{ this is not a run item"));
+
+        readEverything();
+
+        final @NotNull String named = broken.stream().map(fileName -> "Cycle 1/" + fileName).sorted().limit(5).collect(Collectors.joining(", "));
+        assertEquals("seven run items that could not be read were not said once, naming five and counting the rest", List.of(Html.ofText(Bundle.message("indexer.run.items.unread.many", "7", named, Bundle.message("indexer.more", "2")))), said(Bundle.message("indexer.run.items.unread.title", TEST_PROJECT)));
+    }
+
+    // UC-INTERNAL-002, Rule-INTERNAL-012, Rule-INTERNAL-014, Rule-INTERNAL-015, Rule-INTERNAL-082, Rule-INTERNAL-094
+    public void testTwoReadProblemsOfOneKindAreSaidInOneWarningThatCountsThem() {
+        final @NotNull Path testCases = theTestCasesOf(theTestProject());
+        aTestCaseIn(testCases.resolve("Loose"));
+        aTestCaseIn(testCases.resolve("Stray"));
+        final @NotNull Path login = marked(testCases.resolve("Login"), NodeType.TEST_SET);
+        SyntheticTree.write(login.resolve("login.testcase"), SyntheticTree.testCase("m"));
+        SyntheticTree.write(login.resolve("logout.testcase"), SyntheticTree.testCase("m"));
+        final @NotNull Path signUp = marked(testCases.resolve("Sign up"), NodeType.TEST_SET);
+        for (int i = 0; i < 2; i++) SyntheticTree.write(signUp.resolve(FileKind.TEST_CASE.fileName(aTestCaseIn(login))), SyntheticTree.testCase("m"));
+        for (final String damaged : List.of("Cart", "Payment")) {
+            SyntheticTree.write(testCases.resolve(damaged).resolve(NodeType.TEST_SET.getMarker()), "{ this is not a marker");
+            aTestCaseIn(testCases.resolve(damaged));
+        }
+        final @NotNull Path testRun = marked(theTestRunsOf(theTestProject()).resolve("Cycle 1"), NodeType.TEST_RUN);
+        runItemIn(testRun, "by hand.runitem");
+        runItemIn(testRun, "by another hand.runitem");
+
+        readEverything();
+
+        for (final String title : List.of(Bundle.message("indexer.unread.title", TEST_PROJECT), Bundle.message("indexer.test.cases.unnamed.title", TEST_PROJECT), Bundle.message("indexer.clash.title", TEST_PROJECT), Bundle.message("indexer.damaged.title", TEST_PROJECT), Bundle.message("indexer.run.items.unnamed.title", TEST_PROJECT))) {
+            final @NotNull List<String> warned = said(title);
+            assertEquals("two problems were not said in one warning under " + title + ": " + warned, 1, warned.size());
+            assertTrue("the one warning under " + title + " does not count two: " + warned, warned.getFirst().startsWith("2 "));
+        }
     }
 }
