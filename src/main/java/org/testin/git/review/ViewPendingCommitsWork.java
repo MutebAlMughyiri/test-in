@@ -90,9 +90,8 @@ public record ViewPendingCommitsWork(@NotNull Project project, @NotNull GitRepos
                     final @NotNull Optional<List<String>> unfinished = git.unfinished(path);
                     if (unfinished.isPresent()) {
                         final @NotNull String remote = git.getRemoteName(path);
-                        final @NotNull String branch = git.syncBranch(path);
                         ApplicationManager.getApplication().invokeLater(() ->
-                                stopped(path, remote, branch).offer(unfinished.orElseThrow()), project.getDisposed());
+                                stopped(path, remote).offer(unfinished.orElseThrow()), project.getDisposed());
                         return;
                     }
 
@@ -318,19 +317,19 @@ public record ViewPendingCommitsWork(@NotNull Project project, @NotNull GitRepos
                             notifier.info(project, Bundle.message("git.pushed.title"),
                                     Bundle.message("git.pushed.message", commitLabel(commit), remote, branch)));
                 },
-                ex -> stopped(repoPath, remote, branch).offerIfConflicting(() -> GitFailureNotice.show(project, Bundle.message("git.push.failed.title"), FailureText.of(ex),
+                ex -> stopped(repoPath, remote).offerIfConflicting(() -> GitFailureNotice.show(project, Bundle.message("git.push.failed.title"), FailureText.of(ex),
                         notifier.action(Bundle.message("git.try.again"), () -> pushToRemote(repoPath, () -> commit, branch)))));
     }
 
     // UC-SHARE-017, Rule-SHARE-077
-    private @NotNull StoppedRebase stopped(final @NotNull Path repoPath, final @NotNull String remote, final @NotNull String branch) {
-        return new StoppedRebase(project, git, repoPath, Bundle.message("git.rebase.aborted.message"), () -> pushAfterRebase(repoPath, remote, branch));
+    private @NotNull StoppedRebase stopped(final @NotNull Path repoPath, final @NotNull String remote) {
+        return new StoppedRebase(project, git, repoPath, Bundle.message("git.rebase.aborted.message"), () -> pushAfterRebase(repoPath, remote));
     }
 
     // UC-SHARE-017, Rule-SHARE-073
-    private void pushAfterRebase(final @NotNull Path repoPath, final @NotNull String remote, final @NotNull String branch) {
-        GitBackgroundTask.run(project, Bundle.message("git.task.pushing.branch", branch), false,
-                _ -> pushRebased(repoPath, remote, branch),
+    private void pushAfterRebase(final @NotNull Path repoPath, final @NotNull String remote) {
+        GitBackgroundTask.run(project, Bundle.message("git.task.pushing.remote"), false,
+                _ -> pushRebased(repoPath, remote),
                 ex -> {
                     RepositoryRefresh.after(project, repoPath);
                     GitFailureNotice.show(project, Bundle.message("git.push.failed.title"), FailureText.of(ex));
@@ -338,8 +337,8 @@ public record ViewPendingCommitsWork(@NotNull Project project, @NotNull GitRepos
     }
 
     // UC-SHARE-017
-    private void pushRebased(final @NotNull Path repoPath, final @NotNull String remote, final @NotNull String branch) {
-        commits.push(repoPath, remote, branch);
+    private void pushRebased(final @NotNull Path repoPath, final @NotNull String remote) {
+        commits.push(repoPath, remote, git.syncBranch(repoPath));
         RepositoryRefresh.after(project, repoPath);
 
         ApplicationManager.getApplication().invokeLater(() ->
