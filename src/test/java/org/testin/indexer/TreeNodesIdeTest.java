@@ -140,6 +140,18 @@ public class TreeNodesIdeTest extends AbstractTempRootIdeTest {
     }
 
     // UC-TREE-PANEL-018, UC-TREE-PANEL-019
+    public void testTheMenuArchivesAPackageAndBringsItBack() {
+        final @NotNull TestSetPackageNode payments = made().testSetPackage(aTestProject().getTestCasesFolder(), "Payments");
+        assertTrue("the menu does not offer a package its statuses", payments.getMarker().nodeStatuses().containsAll(List.of(PackageStatus.values())));
+
+        TreeGesture.pressed(getProject(), new UpdateNodeStatusAction(PackageStatus.ARCHIVED), List.of(payments));
+        Await.until("Archived did not reach the package", () -> payments.getMarker().getStatus() == PackageStatus.ARCHIVED);
+        TreeGesture.pressed(getProject(), new UpdateNodeStatusAction(PackageStatus.ACTIVE), List.of(payments));
+
+        Await.until("Active pressed after Archived did not leave the package active", () -> payments.getMarker().getStatus() == PackageStatus.ACTIVE);
+    }
+
+    // UC-TREE-PANEL-018, UC-TREE-PANEL-019
     public void testTheMenuMarksATestProjectInactiveAndBringsItBack() {
         final @NotNull TestProjectNode testProject = aTestProject();
         assertTrue("the menu does not offer a test project its statuses", testProject.getMarker().nodeStatuses().containsAll(List.of(TestProjectStatus.values())));
