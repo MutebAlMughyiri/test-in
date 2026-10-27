@@ -22,7 +22,9 @@ import org.testin.model.NodeType;
 import org.testin.model.markers.TestProjectMarker;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
+import org.testin.model.status.NodeStatus;
 import org.testin.model.status.TestProjectStatus;
+import org.testin.model.status.TestSetStatus;
 import org.testin.services.Services;
 
 import java.io.IOException;
@@ -56,6 +58,26 @@ public class MarkerWritesIdeTest extends AbstractReadTheRootIdeTest {
         WriteAction.runAndWait(() -> nodes().persistMarker(drawn));
 
         assertEquals("the marker that would not parse was written over with defaults", DAMAGED, read(testSet.resolve(NodeType.TEST_SET.getMarker())));
+    }
+
+    // UC-TREE-PANEL-015, UC-TREE-PANEL-018, Rule-INTERNAL-117, Rule-INTERNAL-083
+    public void testANodeWhoseMarkerWillNotParseKeepsItsStatusAndOrderWhenTheWriteIsRefused() {
+        final @NotNull Path testProjectPath = aTestProjectAt(root.resolve("Checkout"));
+        final @NotNull Path testSet = theTestCasesOf(testProjectPath).resolve("Login");
+        SyntheticTree.write(testSet.resolve(NodeType.TEST_SET.getMarker()), DAMAGED);
+        indexer().scanSingleTestProject(testProjectPath);
+        final @NotNull AbstractNode drawn = nodes().find(testSet).orElseThrow();
+        final @NotNull NodeStatus statusBefore = drawn.getMarker().nodeStatus();
+        final @NotNull String updatedByBefore = drawn.getMarker().getUpdatedBy();
+        final int orderBefore = drawn.getMarker().getOrder();
+
+        assertFalse("retiring a node whose marker will not parse said it was written", WriteAction.computeAndWait(() -> nodes().mark(drawn, TestSetStatus.DEPRECATED, "Hind")));
+        assertEquals("the refused retirement still changed the status the tree shows", statusBefore, drawn.getMarker().nodeStatus());
+        assertEquals("the refused retirement still named who changed it", updatedByBefore, drawn.getMarker().getUpdatedBy());
+
+        assertFalse("moving a node whose marker will not parse said it was written", WriteAction.computeAndWait(() -> nodes().reorder(drawn, orderBefore + 3)));
+        assertEquals("the refused move still changed the order the tree shows", orderBefore, drawn.getMarker().getOrder());
+        assertEquals("the marker that would not parse was written over", DAMAGED, read(testSet.resolve(NodeType.TEST_SET.getMarker())));
     }
 
     // UC-INTERNAL-002, Rule-INTERNAL-083
