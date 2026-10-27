@@ -38,13 +38,13 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 public class Title extends AbstractDetails {
-    final int INSETS_TOP = 20;
+    private static final int INSETS_TOP = 20;
 
-    final int INSETS_LEFT = 16;
+    private static final int INSETS_LEFT = 16;
 
-    final int INSETS_BOTTOM = 0;
+    private static final int INSETS_BOTTOM = 0;
 
-    final int INSETS_RIGHT = 16;
+    private static final int INSETS_RIGHT = 16;
 
     private final @NotNull Optional<RunItem> runItem;
 

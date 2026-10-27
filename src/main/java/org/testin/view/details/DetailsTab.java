@@ -52,7 +52,7 @@ public class DetailsTab {
 
     final @NotNull String PLACEHOLDER_TEXT = Bundle.message("details.placeholder");
 
-    final int INSETS_DEFAULT = 5;
+    private static final int INSETS_DEFAULT = 5;
 
     final double WEIGHT_X = 1.0;
 

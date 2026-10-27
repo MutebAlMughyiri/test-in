@@ -45,19 +45,19 @@ import java.util.Map;
 
 @AllArgsConstructor
 public class Breadcrumb extends AbstractDetails {
-    final @NotNull Color DEFAULT_TEXT_COLOR = JBUI.CurrentTheme.ContextHelp.FOREGROUND;
+    private static final @NotNull Color DEFAULT_TEXT_COLOR = JBUI.CurrentTheme.ContextHelp.FOREGROUND;
 
-    final int SEPARATOR_BORDER_V = 0;
+    private static final int SEPARATOR_BORDER_V = 0;
 
-    final int SEPARATOR_BORDER_H = 6;
+    private static final int SEPARATOR_BORDER_H = 6;
 
-    final int INSETS_TOP = 22;
+    private static final int INSETS_TOP = 22;
 
-    final int INSETS_LEFT = 32;
+    private static final int INSETS_LEFT = 32;
 
-    final int INSETS_BOTTOM = 5;
+    private static final int INSETS_BOTTOM = 5;
 
-    final int INSETS_RIGHT = 16;
+    private static final int INSETS_RIGHT = 16;
 
     private final @NotNull List<String> treePath;
 
