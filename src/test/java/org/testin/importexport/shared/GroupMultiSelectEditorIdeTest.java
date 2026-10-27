@@ -30,6 +30,8 @@ import org.testin.services.TestCaseCompletions;
 import org.testin.view.Drawn;
 
 import javax.swing.AbstractButton;
+import javax.swing.event.CellEditorListener;
+import javax.swing.event.ChangeEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
@@ -95,5 +97,23 @@ public class GroupMultiSelectEditorIdeTest extends AbstractIdeTest {
 
         assertEquals("a tick did not add the group to the cell", "smoke, payments", editor.getCellEditorValue());
         assertEquals("the cell does not show the group ticked", "smoke, payments", cell.getText());
+
+        groups.setSelectedIndex(2);
+        for (final KeyListener listener : groups.getKeyListeners()) listener.keyTyped(space);
+        assertEquals("taking the tick off did not take the group out of the cell", "payments", editor.getCellEditorValue());
+
+        final @NotNull List<ChangeEvent> stopped = new ArrayList<>();
+        editor.addCellEditorListener(new CellEditorListener() {
+            @Override
+            public void editingStopped(final ChangeEvent e) {
+                stopped.add(e);
+            }
+
+            @Override
+            public void editingCanceled(final ChangeEvent e) {
+            }
+        });
+        shown.getFirst().cancel();
+        assertEquals("closing the list did not end the edit of the cell", 1, stopped.size());
     }
 }
