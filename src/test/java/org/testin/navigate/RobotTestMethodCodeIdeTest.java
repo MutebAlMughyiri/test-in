@@ -21,8 +21,10 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.Await;
+import org.testin.Said;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
+import org.testin.notifications.Refused;
 
 import java.util.Arrays;
 import java.util.List;
@@ -65,5 +67,16 @@ public class RobotTestMethodCodeIdeTest extends AbstractCodegenIdeTest {
 
         TestMethodCode.available(getProject()).toCode(getProject(), written);
         Await.until("Navigate to Test Method did not open the Robot test at its name line", () -> caretInTheMovedSuiteAt(suite.indexOf("Refuse a wrong password")));
+    }
+
+    // UC-CODEGEN-006, Rule-CODEGEN-119
+    public void testGoToCodeOnATestCaseWithNoRobotTestSaysNotAutomated() {
+        interpreterIs("Python SDK");
+        final @NotNull TestCase withoutTest = indexedTestCase(createdTestSet("Login"), "Lock the account", "c");
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        TestMethodCode.available(getProject()).toCode(getProject(), withoutTest);
+
+        Await.until("a test case with no Robot test was not said to be not automated: " + said.shown(), () -> said.shown().contains(Refused.NO_GENERATED_CODE.getSentence()));
     }
 }
