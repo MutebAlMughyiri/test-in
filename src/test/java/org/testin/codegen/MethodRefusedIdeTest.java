@@ -17,11 +17,13 @@
 package org.testin.codegen;
 
 import com.intellij.notification.Notification;
+import com.intellij.testFramework.DumbModeTestUtils;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.Said;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
+import org.testin.notifications.Refused;
 import org.testin.util.Bundle;
 
 import java.util.ArrayList;
@@ -38,6 +40,27 @@ public class MethodRefusedIdeTest extends AbstractCodegenIdeTest {
         CodeChangeType.CREATE_TEST_CASE.executeAllNow(getProject(), testCases);
         settled();
         return listening.notifications();
+    }
+
+    // UC-CODEGEN-005
+    public void testWhileTheIdeIndexesNothingIsWrittenAndItIsSaidOnceEachTimeItIndexes() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull TestCase first = indexedTestCase(login, "Log in", "a");
+        final @NotNull TestCase second = indexedTestCase(login, "Log out", "b");
+        whenIndexed();
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+        final @NotNull String refused = Refused.WHILE_INDEXING.about(CodeChangeType.CREATE_TEST_CASE.description());
+
+        DumbModeTestUtils.runInDumbModeSynchronously(getProject(), () -> {
+            CodeChangeType.CREATE_TEST_CASE.execute(getProject(), first);
+            CodeChangeType.CREATE_TEST_CASE.execute(getProject(), second);
+        });
+        settled();
+        DumbModeTestUtils.runInDumbModeSynchronously(getProject(), () -> CodeChangeType.CREATE_TEST_CASE.execute(getProject(), first));
+        settled();
+
+        assertEquals("the refusal was not said once for each time the IDE indexed: " + said.shown(), 2, said.shown().stream().filter(refused::equals).count());
+        assertTrue("a method was written while the IDE indexed", methodOf(LOGIN_CLASS, first).isEmpty() && methodOf(LOGIN_CLASS, second).isEmpty());
     }
 
     // UC-CODEGEN-005
