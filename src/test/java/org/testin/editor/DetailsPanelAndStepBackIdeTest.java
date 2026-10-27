@@ -33,6 +33,8 @@ import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
+import org.testin.ui.framework.ShownDialog;
+import org.testin.util.Shortcuts;
 import org.testin.view.ViewDetailsAction;
 import org.testin.view.ViewOnScreen;
 
@@ -180,8 +182,8 @@ public class DetailsPanelAndStepBackIdeTest extends AbstractTempRootIdeTest {
         }
     }
 
-    // Rule-EDITOR-PANEL-116
-    public void testInTheSearchBoxThePressReturnsTheKeyboardToTheListAndLeavesTheText() {
+    // UC-EDITOR-PANEL-019, Rule-EDITOR-PANEL-116
+    public void testCtrlFTakesTheSearchBoxAndThePressThereReturnsTheKeyboardToTheListAndLeavesTheText() {
         final @NotNull TestSetEditor editor = openedTestSet();
         final @NotNull JFrame frame = new JFrame();
         try {
@@ -190,8 +192,9 @@ public class DetailsPanelAndStepBackIdeTest extends AbstractTempRootIdeTest {
             frame.setVisible(true);
             final @NotNull JTextField search = editor.getToolBar().getSearchText().getTextEditor();
             search.setText("number 2");
-            search.requestFocus();
-            Await.until("the search box never took the keyboard", search::isFocusOwner);
+            ShownDialog.press(editor.getComponent(), Shortcuts.FocusSearch.getKey());
+            Await.until("Ctrl+F did not give the search box the keyboard", search::isFocusOwner);
+            assertEquals("Ctrl+F did not select what the search box holds", "number 2", search.getSelectedText());
 
             final @NotNull KeyEvent escape = new KeyEvent(search, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_ESCAPE, KeyEvent.CHAR_UNDEFINED);
             search.dispatchEvent(escape);
