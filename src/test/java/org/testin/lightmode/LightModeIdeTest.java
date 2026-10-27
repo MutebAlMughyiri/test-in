@@ -72,6 +72,9 @@ import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.Toolkit;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -80,6 +83,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
 public class LightModeIdeTest extends AbstractTempRootIdeTest {
@@ -149,6 +153,16 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
 
     private static @NotNull String describedIn(final @NotNull JFrame frame) {
         return descriptionIn(frame).map(JTextArea::getText).orElse("");
+    }
+
+    private static float describedSize(final @NotNull JFrame frame) {
+        return descriptionIn(frame).orElseThrow(() -> new AssertionError("light mode shows no description")).getFont().getSize2D();
+    }
+
+    private static void wheel(final @NotNull JComponent content, final int rotation) {
+        final @NotNull MouseWheelEvent turned = new MouseWheelEvent(content, MouseEvent.MOUSE_WHEEL, System.currentTimeMillis(), 0, 10, 10, 0, false, MouseWheelEvent.WHEEL_UNIT_SCROLL, 1, rotation);
+        for (final MouseWheelListener listener : content.getMouseWheelListeners()) listener.mouseWheelMoved(turned);
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
 
     private static @NotNull Color frameColorOf(final @NotNull JBLabel name) {
@@ -512,6 +526,103 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
     }
 
     // Rule-EDITOR-PANEL-225
+    // UC-EDITOR-PANEL-046
+    public void testEscapeClosesLightModeAndLeavesTheTestRunAsItWas() {
+        final @NotNull TestRunFixture fixture = aTestRunOf(aTestSetWithSteps(2, 1));
+        final @NotNull TestRunEditor editor = walking(fixture);
+        final @NotNull AtomicInteger closed = new AtomicInteger();
+        final @NotNull LightModeScreen window = new LightModeScreen(editor, closed::incrementAndGet);
+        opened.add(window);
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+        try {
+            final @NotNull JFrame frame = frameOf(window);
+
+            press(frame, Shortcuts.Escape.getKey());
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+            assertFalse("Escape did not close light mode", frame.isShowing());
+            assertEquals("the editor was not told light mode closed", 1, closed.get());
+            assertTrue("closing light mode judged a test case", fixture.testCases().stream().allMatch(testCase -> editor.runItem(testCase.getUuid()).filter(runItem -> runItem.getStatus() == RunItemStatus.PENDING).isPresent()));
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
+    // UC-EDITOR-PANEL-046
+    public void testEscapeOnTheFailureFormPutsTheTestCaseBackUnjudgedAndLightModeStaysOpen() {
+        final @NotNull TestRunFixture fixture = aTestRunOf(aTestSetWithSteps(2, 1));
+        final @NotNull TestRunEditor editor = walking(fixture);
+        final @NotNull JFrame frame = lightModeOn(editor);
+        try {
+            press(frame, RunItemStatus.FAILED.getShortcut());
+            final @NotNull FailureForm form = theOne(frame, FailureForm.class);
+
+            press(frame, Shortcuts.Escape.getKey());
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+            assertFalse("Escape left the failure form open", everythingIn(frame).contains(form));
+            assertTrue("Escape on the failure form closed light mode", frame.isShowing());
+            assertEquals("Escape on the failure form judged the test case", Optional.of(RunItemStatus.PENDING), editor.runItem(fixture.testCases().getFirst().getUuid()).map(RunItem::getStatus));
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
+    // UC-EDITOR-PANEL-046, Rule-EDITOR-PANEL-256
+    public void testSavingTheFailureFormRecordsFailedWithWhatWasTypedAndClosesTheForm() {
+        final @NotNull TestRunFixture fixture = aTestRunOf(aTestSetWithSteps(2, 1));
+        final @NotNull TestRunEditor editor = walking(fixture);
+        final @NotNull JFrame frame = lightModeOn(editor);
+        try {
+            press(frame, RunItemStatus.FAILED.getShortcut());
+            final @NotNull FailureForm form = theOne(frame, FailureForm.class);
+            Drawn.components(form).stream().filter(EditorTextField.class::isInstance).map(EditorTextField.class::cast).findFirst().orElseThrow().setText("The dashboard stayed blank");
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+            press(frame, Shortcuts.Enter.getKey());
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+            final @NotNull RunItem failed = editor.runItem(fixture.testCases().getFirst().getUuid()).orElseThrow();
+            assertEquals("saving the failure form did not record Failed", RunItemStatus.FAILED, failed.getStatus());
+            assertTrue("the actual result typed was not recorded: " + failed.shownExecution().getActualResult(), failed.shownExecution().getActualResult().contains("The dashboard stayed blank"));
+            assertFalse("the failure form stayed open after it was saved", everythingIn(frame).contains(form));
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
+    // UC-EDITOR-PANEL-046
+    public void testTheWheelMakesTheTextBiggerAndSmallerAndRemembersIt() {
+        final @NotNull TestRunEditor editor = walking(aTestRunOf(aTestSetWithSteps(2, 1)));
+        final @NotNull LightModeScreen window = openedOn(editor);
+        try {
+            final @NotNull JComponent content = window.frame().content();
+            final float before = describedSize(frameOf(window));
+
+            wheel(content, -1);
+            final float zoomedIn = describedSize(frameOf(window));
+            wheel(content, 1);
+
+            assertTrue("the wheel did not make the description bigger: " + before + " to " + zoomedIn, zoomedIn > before);
+            assertEquals("the wheel back did not bring the description back", before, describedSize(frameOf(window)), 0.01f);
+            assertEquals("the zoom the window remembers is not where the wheel left it", 1.0f, LightModeZoom.remembered().getLevel(), 0.001f);
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
+    // UC-EDITOR-PANEL-046
+    public void testBeforeTheWalkStartsTheCounterCountsTheTestCases() {
+        final @NotNull TestRunEditor editor = aTestRunOf(aTestSetWithSteps(3, 1)).opened(getTestRootDisposable());
+        try {
+            final @NotNull JFrame frame = frameOf(openedOn(editor));
+
+            assertTrue("the counter does not count the test cases before the walk: " + Drawn.words(frame.getRootPane()), Drawn.words(frame.getRootPane()).contains(Bundle.message("light.counter.test.cases", "3")));
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
     public void testTheFailureFormStaysOpenWithWhatWasTypedWhenNothingCouldBeWritten() {
         final @NotNull TestRunFixture fixture = aTestRunOf(aTestSetWithSteps(2, 1));
         final @NotNull TestRunEditor editor = walking(fixture);
