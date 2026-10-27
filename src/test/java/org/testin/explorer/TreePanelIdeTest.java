@@ -24,6 +24,7 @@ import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.JDOMUtil;
 import com.intellij.testFramework.PlatformTestUtil;
 import com.intellij.ui.SimpleColoredComponent;
+import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
@@ -39,9 +40,11 @@ import org.testin.creator.CreateTestProjectAction;
 import org.testin.explorer.toolbar.CollapseTreeAction;
 import org.testin.explorer.toolbar.ExpandTreeAction;
 import org.testin.explorer.toolbar.SaveTestinYmlAction;
+import org.testin.explorer.tree.TreeLoadError;
 import org.testin.explorer.tree.TreeValues;
 import org.testin.indexer.AbstractReadTheRootIdeTest;
 import org.testin.model.NodeType;
+import org.testin.model.markers.TestProjectMarker;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.status.TestProjectStatus;
@@ -58,6 +61,7 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
@@ -232,6 +236,29 @@ public class TreePanelIdeTest extends AbstractReadTheRootIdeTest {
 
         TreeGesture.pressed(getProject(), new CollapseTreeAction(panel), List.of());
         Await.until("Collapse All did not close every row under the test project's two folders: " + rowsShownIn(tree), () -> rowsShownIn(tree).size() == 3);
+    }
+
+    // Rule-INTERNAL-091
+    public void testATestProjectInAnotherFormatShowsWhyItWasNotReadInRed() {
+        final @NotNull Path legacy = root.resolve("Legacy");
+        try {
+            Files.createDirectories(legacy);
+            Files.writeString(legacy.resolve(NodeType.TEST_PROJECT.getMarker()), "{ \"status\" : \"ACTIVE\", \"format\" : " + (TestProjectMarker.FORMAT - 1) + " }");
+        } catch (final IOException ex) {
+            throw new AssertionError("could not write a test project in an older format: " + ex.getMessage(), ex);
+        }
+        readEverything();
+        bound().choose("Legacy");
+        final @NotNull SimpleTree tree = aPanelShowingTheTree().getTestProjectTree().getMainTree();
+
+        final @NotNull List<Object> rows = rowsOf(tree);
+        final int refusal = IntStream.range(0, rows.size()).filter(row -> rows.get(row) instanceof TreeLoadError).findFirst().orElseThrow(() -> new AssertionError("the tree does not say why the test project was not read: " + rows));
+        final @NotNull SimpleColoredComponent drawn = (SimpleColoredComponent) tree.getCellRenderer().getTreeCellRendererComponent(tree, tree.getPathForRow(refusal).getLastPathComponent(), false, false, true, refusal, false);
+
+        assertEquals("the row does not read the refusal", Bundle.message("scan.older.format"), drawn.getCharSequence(false).toString());
+        final @NotNull SimpleColoredComponent.ColoredIterator first = drawn.iterator();
+        first.next();
+        assertEquals("the refusal is not drawn as an error", SimpleTextAttributes.ERROR_ATTRIBUTES, first.getTextAttributes());
     }
 
     // Rule-TREE-PANEL-090

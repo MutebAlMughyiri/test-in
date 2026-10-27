@@ -240,6 +240,12 @@ the bottom of the IDE, beside the other background jobs.
 **If no Testin folder is set** — nothing is read, and nothing is said. The panel
 shows its empty state instead.
 
+**If a test project's `.testproject` names another format** — the test project
+is shown in the tree with one row under it, in red, where its folders would have
+been: *Written by an older Testin, which this one does not read. Remove the test
+project and create it again.*, or *Written by a newer Testin. Update the plugin
+to read it.* Nothing inside it is read or written (Rule-INTERNAL-091).
+
 **If a folder under the Testin folder holds no `.testproject` file** — it is not a test
 project, and it is skipped without a word. This is the ordinary situation. The
 Testin folder usually holds other things.

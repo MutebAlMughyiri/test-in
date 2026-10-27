@@ -70,13 +70,13 @@ public final class TreePanelNode extends AbstractTreeNode<Object> {
     public @NotNull Collection<? extends AbstractTreeNode<?>> getChildren() {
         if (!(getValue() instanceof AbstractNode directory) || !directory.mayHaveChildren()) return List.of();
 
-        final @NotNull List<AbstractNode> fixed = directory.fixedChildren();
-        if (!fixed.isEmpty()) return fixed.stream().map(this::child).toList();
-
         try {
             // Rule-INTERNAL-091
             final @NotNull Optional<String> refused = indexer.whyNotRead(directory.getPath());
             if (refused.isPresent()) return List.of(child(new TreeLoadError(refused.orElseThrow())));
+
+            final @NotNull List<AbstractNode> fixed = directory.fixedChildren();
+            if (!fixed.isEmpty()) return fixed.stream().map(this::child).toList();
 
             final @NotNull List<TreePanelNode> children = new ArrayList<>();
             for (final AbstractNode child : nodes.getChildren(directory.getPath())) {
