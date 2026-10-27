@@ -18,8 +18,12 @@ package org.testin.importexport.imports;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
+import org.testin.Said;
 import org.testin.importexport.exports.ExportCsv;
+import org.testin.model.Priority;
 import org.testin.model.TestCase;
+import org.testin.notifications.Refused;
+import org.testin.util.Bundle;
 
 import java.io.File;
 import java.io.IOException;
@@ -65,6 +69,21 @@ public class ImportCsvIdeTest extends AbstractTempRootIdeTest {
         assertEquals("a quote at the start opens a quoted value", "the dashboard opens, and \"Welcome\" shows", testCases.getFirst().getExpectedResult());
         assertEquals("a quote anywhere else is kept as typed", "the 5\" login page opens", testCases.getLast().getExpectedResult());
         assertEquals("accounts", testCases.getLast().getModule());
+    }
+
+    // UC-SHARE-006, Rule-SHARE-106
+    public void testValuesTestinCannotReadAreRefusedAndSaidOnceWithTheirCount() {
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        final @NotNull List<TestCase> testCases = imported("""
+                Description,Priority
+                log in with a valid user,Urgent
+                log out,Soon
+                """);
+
+        assertEquals("a row with a value Testin cannot read was dropped", 2, testCases.size());
+        assertEquals("a refused priority did not leave the test case at the lowest priority", Priority.LOW, testCases.getFirst().getPriority());
+        assertEquals("the refused values were not said once with their count", List.of(Refused.UNREADABLE.about(Bundle.message("field.value.many", "2"))), said.shown());
     }
 
     // UC-SHARE-005, Rule-SHARE-110
