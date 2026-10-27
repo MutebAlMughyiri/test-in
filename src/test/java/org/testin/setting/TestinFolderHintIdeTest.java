@@ -78,8 +78,20 @@ public class TestinFolderHintIdeTest extends AbstractTempRootIdeTest {
         settings().rootTestinPath = "Testin";
 
         TestinStartup.execute(getProject());
+        TestinStartup.hintTestinFolder(getProject());
 
         assertEquals("a folder that is not a full path was not asked for again", List.of(Bundle.message("startup.setup.message")), waiting());
         assertTrue("a folder that is not a full path was read inside the open project", Services.getInstance(getProject(), TestProjectIndexer.class).testProjects().isEmpty());
+    }
+
+    // UC-SETTING-002, Rule-SETTING-046
+    public void testAStoredFolderThatIsNotAPathAtAllIsReadAsNotSetAndAskedFor() {
+        settings().rootTestinPath = root + Character.toString(0) + "Testin";
+
+        TestinStartup.execute(getProject());
+        TestinStartup.hintTestinFolder(getProject());
+
+        assertFalse("a stored folder that is not a path was read as set", Services.getInstance(getProject(), TestinRoot.class).isConfigured());
+        assertEquals("a folder that is not a path was not asked for again", List.of(Bundle.message("startup.setup.message")), waiting());
     }
 }
