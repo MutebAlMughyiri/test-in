@@ -90,6 +90,25 @@ public class NodeMoveOrCopyIdeTest extends AbstractTempRootIdeTest {
         Await.until("undoing the move did not put the test set back", () -> nodes().nodeExists(wasAt) && !nodes().nodeExists(movedTo));
     }
 
+    // UC-TREE-PANEL-013, UC-TREE-PANEL-017, Rule-TREE-PANEL-047
+    public void testAMoveOfTwoNodesIsNamedByItsCountAndCtrlYMovesThemAgain() {
+        final @NotNull TestSetNode refunds = new NodesOnDisk(getProject()).testSet(checkout, "Refunds");
+        final @NotNull Path loginMovedTo = payments.getPath().resolve("Login");
+        final @NotNull Path refundsMovedTo = payments.getPath().resolve("Refunds");
+
+        transfer().carryOut(TransferHandler.MOVE, List.of(login, refunds), payments);
+
+        Await.until("the move did not land both test sets", () -> nodes().nodeExists(loginMovedTo) && nodes().nodeExists(refundsMovedTo));
+        Await.until("the move never went onto the tree's history", () -> undoHistories().canUndo(UndoScope.TREE));
+        assertTrue("the step on the tree's history does not count the two nodes: " + undoHistories().undoDescription(UndoScope.TREE), undoHistories().undoDescription(UndoScope.TREE).contains(NodeMoveOrCopy.describe(List.of(login, refunds))));
+        assertTrue("undoing the move was refused", undoHistories().undo(UndoScope.TREE));
+        Await.until("undoing the move did not put both test sets back", () -> !nodes().nodeExists(loginMovedTo) && !nodes().nodeExists(refundsMovedTo) && undoHistories().canRedo(UndoScope.TREE));
+
+        assertTrue("redoing the move was refused", undoHistories().redo(UndoScope.TREE));
+
+        Await.until("Ctrl+Y did not move both test sets again", () -> nodes().nodeExists(loginMovedTo) && nodes().nodeExists(refundsMovedTo));
+    }
+
     // UC-TREE-PANEL-013, Rule-TREE-PANEL-047
     public void testAMoveThatLandsSomeOfItsNodesIsUndoneForThoseAndLeavesTheHistory() {
         final @NotNull TestSetNode refunds = new NodesOnDisk(getProject()).testSet(checkout, "Refunds");
