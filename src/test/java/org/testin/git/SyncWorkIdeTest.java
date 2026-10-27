@@ -85,6 +85,34 @@ public class SyncWorkIdeTest extends AbstractGitRemoteIdeTest {
         assertTrue(git(work, "rebase", "--abort").isPresent());
     }
 
+    // UC-SHARE-017, Rule-SHARE-076, Rule-SHARE-077
+    public void testRollingBackAStoppedPullPutsTheRepositoryBackAndSaysSo() {
+        bothChangeTheNotes();
+        final @NotNull String mine = head(work, "HEAD");
+        final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
+
+        new SyncWork(getProject()).syncRepository(work);
+        final @NotNull Notification stopped = titled(said, Bundle.message("git.conflicts.title"));
+        Notified.press(getProject(), stopped, stopped.getActions().getLast());
+
+        assertEquals("rolling back did not say what it did", Bundle.message("git.rebase.aborted.pull.message"), titled(said, Bundle.message("git.rebase.aborted.title")).getContent());
+        assertEquals("rolling back did not keep what was here before the pull", mine, head(work, "HEAD"));
+        assertFalse("rolling back left the pull part way", new GitRepositoryService(getProject()).unfinished(work).isPresent());
+    }
+
+    // UC-SHARE-017, Rule-SHARE-076, Rule-SHARE-079
+    public void testCarryingOnWithAConflictStillInTheWayOffersThePullAgain() {
+        bothChangeTheNotes();
+        final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
+
+        new SyncWork(getProject()).syncRepository(work);
+        final @NotNull Notification first = titled(said, Bundle.message("git.conflicts.title"));
+        Notified.press(getProject(), first, first.getActions().get(1));
+
+        Await.until("carrying on with a conflict in the way did not offer the pull again", () -> said.stream().filter(notification -> notification.getTitle().equals(first.getTitle())).count() == 2);
+        assertTrue(git(work, "rebase", "--abort").isPresent());
+    }
+
     // UC-SHARE-017, Rule-SHARE-079
     public void testAPullThatWillNotMoveOnIsSaidAgain() {
         bothChangeTheNotes();
