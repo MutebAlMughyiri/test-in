@@ -25,6 +25,7 @@ import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.colors.EditorColorsScheme;
 import com.intellij.openapi.editor.impl.EditorComponentImpl;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
+import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.testFramework.PlatformTestUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
@@ -201,6 +202,20 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
                 ShownDialog.close(getProject(), bulkEditor);
             }
         });
+    }
+
+    // UC-EDITOR-PANEL-007, Rule-INTERNAL-075
+    public void testASecondBulkEditOfTheSameKindBringsTheFirstForwardRatherThanOpeningAnother() {
+        aTestSetWithModules("Cart", "Billing");
+        bulkEdit(UpdateTestCaseFields.MODULE);
+        final @NotNull JBPopup first = ShownDialog.popup(getProject(), BaseValueBulkDialog.class);
+        type(0, "Basket");
+
+        bulkEdit(UpdateTestCaseFields.MODULE);
+
+        assertFalse("the bulk editor on screen was closed by a second one", first.isDisposed());
+        assertSame("a second bulk editor of the same kind was opened", first, ShownDialog.popup(getProject(), BaseValueBulkDialog.class));
+        assertTrue("what the tester had typed was lost", values().getDocument().getText().contains("Basket"));
     }
 
     // Rule-EDITOR-PANEL-040, Rule-EDITOR-PANEL-045
