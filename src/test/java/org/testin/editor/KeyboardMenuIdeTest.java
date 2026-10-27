@@ -27,9 +27,11 @@ import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.testFramework.PlatformTestUtil;
+import com.intellij.testFramework.TestActionEvent;
 import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
+import org.testin.Await;
 import org.testin.Gestures;
 import org.testin.clipboard.CopyTestCaseAction;
 import org.testin.clipboard.CutTestCaseAction;
@@ -43,6 +45,8 @@ import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.testcase.RemoveTestCaseAction;
+import org.testin.testcase.create.CreateTestCaseDialog;
+import org.testin.ui.framework.ShownDialog;
 import org.testin.undo.TestinUndoAction;
 import org.testin.util.Bundle;
 
@@ -190,6 +194,27 @@ public class KeyboardMenuIdeTest extends AbstractTempRootIdeTest {
                 assertTrue(nameOf(entry) + " is gray in a test set editor with a test case selected", updated(testSetEditor, entry).isEnabled());
             }
         } finally {
+            Disposer.dispose(testSetEditor);
+            Disposer.dispose(testRunEditor);
+        }
+    }
+
+    // UC-EDITOR-PANEL-005
+    public void testCtrlMCreatesInATestSetEditorAndIsGrayInATestRunSayingWhy() {
+        final @NotNull TestSetEditor testSetEditor = aTestSetEditor();
+        final @NotNull TestRunEditor testRunEditor = aTestRunEditor();
+        final @NotNull AnAction create = Objects.requireNonNull(ActionManager.getInstance().getAction("Testin.CreateTestCase"), "Create Test Case is not registered");
+        try {
+            final @NotNull Presentation inTheTestRun = updated(testRunEditor, create);
+            assertFalse("Create Test Case works in a test run editor", inTheTestRun.isEnabled());
+            assertEquals("Create Test Case does not say why it is gray in a test run", Bundle.message("create.test.case.disabled.description"), said(inTheTestRun));
+            assertTrue("Create Test Case is gray in a test set editor", updated(testSetEditor, create).isEnabled());
+
+            ActionUtil.performAction(create, TestActionEvent.createTestEvent(create, Gestures.dataOf(getProject(), testSetEditor.getList())));
+
+            Await.until("Create Test Case did not open its dialog", () -> ShownDialog.isOpen(getProject(), CreateTestCaseDialog.class));
+        } finally {
+            ShownDialog.close(getProject(), CreateTestCaseDialog.class);
             Disposer.dispose(testSetEditor);
             Disposer.dispose(testRunEditor);
         }
