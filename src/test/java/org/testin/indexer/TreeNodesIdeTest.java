@@ -31,6 +31,7 @@ import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
 import org.testin.model.status.PackageStatus;
+import org.testin.model.status.TestProjectStatus;
 import org.testin.model.status.TestSetStatus;
 import org.testin.remove.RemoveHandlers;
 import org.testin.services.Services;
@@ -136,6 +137,18 @@ public class TreeNodesIdeTest extends AbstractTempRootIdeTest {
         TreeGesture.pressed(getProject(), new UpdateNodeStatusAction(TestSetStatus.ACTIVE), List.of(login));
 
         Await.until("Active pressed after Deprecated did not leave the test set active", () -> login.getMarker().getStatus() == TestSetStatus.ACTIVE && markerOnDisk(login).getStatus() == TestSetStatus.ACTIVE);
+    }
+
+    // UC-TREE-PANEL-018, UC-TREE-PANEL-019
+    public void testTheMenuMarksATestProjectInactiveAndBringsItBack() {
+        final @NotNull TestProjectNode testProject = aTestProject();
+        assertTrue("the menu does not offer a test project its statuses", testProject.getMarker().nodeStatuses().containsAll(List.of(TestProjectStatus.values())));
+
+        TreeGesture.pressed(getProject(), new UpdateNodeStatusAction(TestProjectStatus.INACTIVE), List.of(testProject));
+        Await.until("Inactive did not reach the test project", () -> testProject.getMarker().getStatus() == TestProjectStatus.INACTIVE);
+        TreeGesture.pressed(getProject(), new UpdateNodeStatusAction(TestProjectStatus.ACTIVE), List.of(testProject));
+
+        Await.until("Active pressed after Inactive did not leave the test project active", () -> testProject.getMarker().getStatus() == TestProjectStatus.ACTIVE);
     }
 
     // Rule-TREE-PANEL-077
