@@ -28,6 +28,9 @@ There is no key for this. It is the **Log level** row.
   there.
 - **Rule-SETTING-026** — The log sits beside the IDE's own log, so collecting
   the IDE's logs collects Testin's too.
+- **Rule-SETTING-047** — The log holds up to 5 MB. A full log moves to
+  `testin.log.1`, replacing the one there, and a new `testin.log` begins. A log
+  that cannot be moved stops where it is, and the IDE's own log says so.
 
 ## The screen
 

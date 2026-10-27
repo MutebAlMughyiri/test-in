@@ -9,7 +9,7 @@ where the test data lives, and who is using it.
 |---------------------|--------------------------------------------------------------------------------------------------------|
 | **Part of Testin**  | The settings page                                                                                      |
 | **Answers**         | What every setting does, where each one is kept, and what happens when one is wrong                    |
-| **Numbering**       | Use cases are `UC-SETTING-001` to `UC-SETTING-012`. Rules are `Rule-SETTING-001` to `Rule-SETTING-046` |
+| **Numbering**       | Use cases are `UC-SETTING-001` to `UC-SETTING-012`. Rules are `Rule-SETTING-001` to `Rule-SETTING-047` |
 | **State**           | **Written** — [#181](https://github.com/MutebAlMughyiri/test-in/issues/181)                            |
 | **Checked against** | `main` at `1270e599`, 20 September 2026. Every page in this part was read against the code             |
 | **Written to**      | [How a document is written](../standard.md)                                                            |

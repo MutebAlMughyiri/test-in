@@ -53,8 +53,7 @@ public final class LogWriter implements Disposable {
 
     private final @NotNull DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
 
-    // Rule-SETTING-026
-    private final @NotNull Path logFile = Path.of(PathManager.getLogPath(), "testin.log");
+    private final @NotNull Path logFile;
 
     private final @NotNull AtomicBoolean dropping = new AtomicBoolean();
 
@@ -64,7 +63,13 @@ public final class LogWriter implements Disposable {
 
     private @NotNull Optional<Thread> writerThread = Optional.empty();
 
+    // Rule-SETTING-026
     public LogWriter() {
+        this(Path.of(PathManager.getLogPath(), "testin.log"));
+    }
+
+    LogWriter(final @NotNull Path logFile) {
+        this.logFile = logFile;
         startWriterThread();
     }
 
@@ -129,6 +134,7 @@ public final class LogWriter implements Disposable {
         }
     }
 
+    // Rule-SETTING-047
     private @NotNull Optional<BufferedWriter> rollOver(final @NotNull BufferedWriter writer) {
         try {
             writer.close();
