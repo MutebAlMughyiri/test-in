@@ -17,6 +17,8 @@
 
 package org.testin.view.details;
 
+import com.intellij.ui.components.JBLabel;
+import com.intellij.ui.components.JBPanel;
 import org.jetbrains.annotations.NotNull;
 import org.testin.indexer.TestRuns;
 import org.testin.model.TestCase;
@@ -31,6 +33,11 @@ import org.testin.util.Bundle;
 import org.testin.view.AbstractViewPanelIdeTest;
 import org.testin.view.Drawn;
 
+import javax.swing.JComponent;
+import java.awt.Component;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
@@ -57,6 +64,31 @@ public class ExecutionLinesIdeTest extends AbstractViewPanelIdeTest {
 
     private @NotNull RunItemRecorder runItemStatuses() {
         return Services.getInstance(getProject(), RunItemRecorder.class);
+    }
+
+    private @NotNull JBPanel<?> detailsOf(final @NotNull TestRunNode testRun, final @NotNull RunItem runItem, final @NotNull List<OptionalInt> shown) {
+        final @NotNull JBPanel<?> tab = new JBPanel<>();
+        new DetailsTab().load(getProject(), tab, Optional.of(testCase), Optional.of(runItem), testRun.treePath(), OptionalInt.empty(), shown::add);
+        return tab;
+    }
+
+    private static @NotNull List<JComponent> named(final @NotNull JComponent tab, final @NotNull String name) {
+        return Drawn.components(tab).stream().filter(JBLabel.class::isInstance).map(JComponent.class::cast)
+                .filter(part -> name.equals(part.getAccessibleContext().getAccessibleName())).toList();
+    }
+
+    private static void clicked(final @NotNull Component part) {
+        final @NotNull MouseEvent click = new MouseEvent(part, MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), 0, 1, 1, 1, false, MouseEvent.BUTTON1);
+        for (final MouseListener listener : part.getMouseListeners()) listener.mouseClicked(click);
+    }
+
+    private static void entered(final @NotNull Component part) {
+        final @NotNull MouseEvent over = new MouseEvent(part, MouseEvent.MOUSE_ENTERED, System.currentTimeMillis(), 0, 1, 1, 0, false, MouseEvent.NOBUTTON);
+        for (final MouseListener listener : part.getMouseListeners()) listener.mouseEntered(over);
+    }
+
+    private @NotNull RunItem heldIn(final @NotNull TestRunNode testRun) {
+        return theTestRuns().getRunItems(testRun.getPath()).runItemOf(testCase.getUuid()).orElseThrow();
     }
 
     @Override
@@ -121,5 +153,46 @@ public class ExecutionLinesIdeTest extends AbstractViewPanelIdeTest {
         assertFalse("a committed test run changed its default", runItemStatuses().chooseExecution(testRun.getPath(), testCase.getUuid(), 1));
         assertFalse("a committed test run lost an execution", runItemStatuses().removeExecution(testRun.getPath(), testCase.getUuid(), 0));
         assertEquals(4, theTestRuns().getRunItems(testRun.getPath()).runItemOf(testCase.getUuid()).orElseThrow().getExecutions().size());
+    }
+
+    // Rule-VIEW-PANEL-120
+    public void testTheStarOnAnExecutionsLineMakesItTheDefault() {
+        final @NotNull TestRunNode testRun = aTestRun(List.of(invokedThreeTimes()));
+        final @NotNull JBPanel<?> details = detailsOf(testRun, heldIn(testRun), new ArrayList<>());
+
+        final @NotNull List<JComponent> stars = named(details, Bundle.message("execution.set.default"));
+        assertEquals("every execution but the default does not carry a star", 3, stars.size());
+        clicked(stars.get(1));
+
+        assertEquals("the star did not make the failed execution the default", RunItemStatus.FAILED, heldIn(testRun).getStatus());
+    }
+
+    // Rule-VIEW-PANEL-121
+    public void testTheCrossOnAnExecutionsLineRemovesItAndShowsTheDefaultAgain() {
+        final @NotNull TestRunNode testRun = aTestRun(List.of(invokedThreeTimes()));
+        final @NotNull List<OptionalInt> shown = new ArrayList<>();
+        final @NotNull JBPanel<?> details = detailsOf(testRun, heldIn(testRun), shown);
+
+        clicked(named(details, Bundle.message("execution.remove")).getFirst());
+
+        assertEquals("the cross did not remove the execution", 3, heldIn(testRun).getExecutions().size());
+        assertEquals("the rows below did not go back to the default", List.of(OptionalInt.empty()), shown);
+    }
+
+    // Rule-VIEW-PANEL-120, Rule-VIEW-PANEL-122
+    public void testHoveringALineShowsItsActionsAndClickingItShowsThatExecution() {
+        final @NotNull TestRunNode testRun = aTestRun(List.of(invokedThreeTimes()));
+        final @NotNull List<OptionalInt> shown = new ArrayList<>();
+        final @NotNull JBPanel<?> details = detailsOf(testRun, heldIn(testRun), shown);
+        final @NotNull Component third = Drawn.components(details).stream().filter(part -> Drawn.text(part).startsWith(Bundle.message("execution.invocation", "3"))).findFirst()
+                .orElseThrow(() -> new AssertionError("no line names the third invocation: " + Drawn.words(details)));
+        final @NotNull JComponent itsCross = named(details, Bundle.message("execution.remove")).getLast();
+        assertFalse("a line's actions show before the pointer is on it", itsCross.getParent().isVisible());
+
+        entered(third);
+        assertTrue("hovering a line did not show its actions", itsCross.getParent().isVisible());
+
+        clicked(third);
+        assertEquals("clicking a line did not show that execution", List.of(OptionalInt.of(3)), shown);
     }
 }
