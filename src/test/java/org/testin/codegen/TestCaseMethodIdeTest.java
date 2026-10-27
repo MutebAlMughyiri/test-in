@@ -16,6 +16,8 @@
 
 package org.testin.codegen;
 
+import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiCodeBlock;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiMethod;
@@ -76,6 +78,24 @@ public class TestCaseMethodIdeTest extends AbstractCodegenIdeTest {
         assertEquals("1", attributeOf(writtenMethodOf(LOGIN_TEST, first), "priority"));
         assertEquals("2", attributeOf(writtenMethodOf(LOGIN_TEST, second), "priority"));
         assertEquals("3", attributeOf(writtenMethodOf(LOGIN_TEST, third), "priority"));
+    }
+
+    // Rule-CODEGEN-014
+    public void testAMethodWhosePriorityTheTesterRemovedTakesItsPositionAgainOnTheNextReorder() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        createdTestCase(login, "Open the login page", "b");
+        final @NotNull TestCase second = createdTestCase(login, "Log out", "c");
+        final @NotNull PsiAnnotation test = Optional.ofNullable(writtenMethodOf(LOGIN_TEST, second).getModifierList().findAnnotation("org.testng.annotations.Test"))
+                .orElseThrow(() -> new AssertionError("the method has no @Test"));
+        WriteCommandAction.runWriteCommandAction(getProject(), () -> {
+            test.setDeclaredAttributeValue("priority", null);
+        });
+        assertEquals("the tester's edit did not take the priority away", "", attributeOf(writtenMethodOf(LOGIN_TEST, second), "priority"));
+
+        CodeChangeType.UPDATE_TEST_CASE_ORDER.execute(getProject(), second);
+        settled();
+
+        assertEquals("a method with no priority was not given its position again", "2", attributeOf(writtenMethodOf(LOGIN_TEST, second), "priority"));
     }
 
     // Rule-CODEGEN-014
