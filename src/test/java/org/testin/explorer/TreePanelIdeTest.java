@@ -19,6 +19,7 @@ package org.testin.explorer;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.application.WriteAction;
+import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.JDOMUtil;
 import com.intellij.testFramework.PlatformTestUtil;
@@ -46,6 +47,12 @@ import org.testin.testproject.BoundTestProject;
 import org.testin.testproject.SelectTestProjectAction;
 import org.testin.util.Bundle;
 
+import javax.swing.Action;
+import javax.swing.JTree;
+import javax.swing.TransferHandler;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -257,6 +264,23 @@ public class TreePanelIdeTest extends AbstractReadTheRootIdeTest {
         final @NotNull List<String> heard = balloons.shown();
 
         assertEquals("refreshes did not run one at a time, the waiting two as one reporting the last: " + heard, List.of("First refresh", "Third refresh"), heard.stream().filter(said -> said.endsWith("refresh")).toList());
+    }
+
+    // Rule-TREE-PANEL-006
+    public void testSwingsOwnCutCopyAndPasteOnTheTreeDoNothing() {
+        final @NotNull JTree tree = aPanel().getTestProjectTree().getMainTree();
+        CopyPasteManager.getInstance().setContents(new StringSelection("left alone"));
+        try {
+            for (final Action swingOwn : List.of(TransferHandler.getCutAction(), TransferHandler.getCopyAction(), TransferHandler.getPasteAction())) {
+                final @NotNull Action answered = Objects.requireNonNull(tree.getActionMap().get(swingOwn.getValue(Action.NAME)), "the tree has no " + swingOwn.getValue(Action.NAME));
+                assertNotSame("the tree still answers Swing's own " + swingOwn.getValue(Action.NAME), swingOwn, answered);
+                answered.actionPerformed(new ActionEvent(tree, ActionEvent.ACTION_PERFORMED, String.valueOf(swingOwn.getValue(Action.NAME))));
+            }
+
+            assertEquals("Swing's own clipboard keys on the tree changed the clipboard", "left alone", CopyPasteManager.getInstance().getContents(DataFlavor.stringFlavor));
+        } finally {
+            CopyPasteManager.getInstance().setContents(new StringSelection(""));
+        }
     }
 
     // Rule-TREE-PANEL-014
