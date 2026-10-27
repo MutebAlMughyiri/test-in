@@ -151,6 +151,18 @@ public class CreateTestCaseDialogIdeTest extends AbstractTempRootIdeTest {
         assertEquals("a blank step was kept, or a step was not trimmed", List.of("Open the cart", "Pay"), testCase.getSteps());
     }
 
+    // UC-EDITOR-PANEL-005
+    public void testAnEmptyDescriptionKeepsTheDialogOpenSavesNothingAndSaysNothing() {
+        shown();
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        save();
+
+        assertTrue("a test case with no description was saved", saved.isEmpty());
+        assertTrue("an empty description closed the dialog", ShownDialog.isOpen(getProject(), CreateTestCaseDialog.class));
+        assertEquals("an empty description raised a message", List.of(), said.shown());
+    }
+
     // Rule-EDITOR-PANEL-034
     public void testTheDialogStaysOpenWhenTheTesterClicksOutsideOrTheIdeLosesTheFocus() {
         final @NotNull PopupsBuilt popups = PopupsBuilt.recording(getTestRootDisposable());
