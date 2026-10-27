@@ -151,4 +151,18 @@ public class RunItemFilesIdeTest extends AbstractTempRootIdeTest {
         Await.until("the run item status never reached its result file", () -> read(runItemOf(testRun, JUDGED_TEST_CASE)).contains("FAILED"));
         assertEquals("a run item status on one test case rewrote the result of another", untouched, read(runItemOf(testRun, UNTICKED_TEST_CASE)));
     }
+
+    public void testARunItemStatusArrivingForATestRunThatWasRemovedIsDroppedAndWritesNothing() {
+        final Path testRun = aTestRun();
+        awaitFile(runItemOf(testRun, JUDGED_TEST_CASE), "the test run's results never reached disk");
+        nodes().removeTestRun(testRun, _ -> {
+        });
+        Await.until("the test run was never removed", () -> !nodes().nodeExists(testRun));
+        final List<RunItem> changed = new ArrayList<>();
+
+        indexedTestRuns().changeRunItem(testRun, JUDGED_TEST_CASE, changed::add);
+
+        assertTrue("a run item status was recorded on a test run that was removed", changed.isEmpty());
+        assertFalse("a run item status brought a removed test run's folder back", Files.exists(testRun));
+    }
 }
