@@ -19,6 +19,7 @@ package org.testin.explorer.toolbar;
 import com.intellij.openapi.util.Disposer;
 import org.jetbrains.annotations.NotNull;
 import org.testin.Await;
+import org.testin.TreeGesture;
 import org.testin.config.TestinYml;
 import org.testin.explorer.TreePanel;
 import org.testin.indexer.AbstractReadTheRootIdeTest;
@@ -28,6 +29,7 @@ import org.testin.testproject.BoundTestProject;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Optional;
 
 public class RefreshRereadsTheBindingIdeTest extends AbstractReadTheRootIdeTest {
@@ -88,7 +90,7 @@ public class RefreshRereadsTheBindingIdeTest extends AbstractReadTheRootIdeTest 
         editedByHand("Payments");
         assertEquals("the hand edit was read before Refresh", "Checkout", bound().name());
 
-        panel.getRefreshAction().execute();
+        TreeGesture.pressed(getProject(), panel.getRefreshAction(), List.of());
 
         Await.until("Refresh did not pick up the test project changed by hand", () -> bound().name().equals("Payments") && bound().get().isPresent());
     }
