@@ -21,7 +21,12 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext;
+import com.intellij.openapi.ui.popup.JBPopup;
+import com.intellij.openapi.util.Disposer;
+import com.intellij.testFramework.PlatformTestUtil;
 import com.intellij.testFramework.TestActionEvent;
+import com.intellij.ui.UiInterceptors;
+import com.intellij.ui.components.JBList;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.clipboard.CopyTestCaseAction;
@@ -37,9 +42,15 @@ import org.testin.model.node.TestSetNode;
 import org.testin.quickaction.NavigateToTestCaseAction;
 import org.testin.testcase.RemoveTestCaseAction;
 import org.testin.testcase.UpdateTestCaseAction;
+import org.testin.testcase.UpdateTestCaseFields;
 import org.testin.util.Bundle;
+import org.testin.view.Drawn;
 import org.testin.view.ViewDetailsAction;
 
+import javax.swing.JComponent;
+
+import java.awt.Component;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GrayUnlessTestCaseSelectedIdeTest extends AbstractTempRootIdeTest {
@@ -56,6 +67,40 @@ public class GrayUnlessTestCaseSelectedIdeTest extends AbstractTempRootIdeTest {
                 .build());
         ActionUtil.updateAction(action, e);
         return e;
+    }
+
+    // UC-EDITOR-PANEL-006
+    public void testUpdateOnOneTestCaseOpensTheMenuOfEveryFieldItCanChange() {
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Login");
+        final @NotNull TestCase testCase = EditorFixtures.testCase(getProject(), testSet, "Log in with a valid user", "a");
+        final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
+        final @NotNull List<JBPopup> shown = new ArrayList<>();
+        UiInterceptors.register(new UiInterceptors.UiInterceptor<>(JBPopup.class) {
+            @Override
+            protected void doIntercept(final @NotNull JBPopup popup) {
+                shown.add(popup);
+            }
+        });
+        editor.getList().setSelectedIndex(0);
+        final @NotNull UpdateTestCaseAction update = new UpdateTestCaseAction();
+        final @NotNull AnActionEvent e = updated(update, editor, List.of(testCase));
+
+        ActionUtil.performAction(update, e);
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+        try {
+            assertEquals("Update did not open one menu", 1, shown.size());
+            final @NotNull JBList<?> menu = Drawn.first(shown.getFirst().getContent(), JBList.class);
+            assertEquals("the menu does not offer every field Update changes", UpdateTestCaseFields.values().length, menu.getModel().getSize());
+            for (int row = 0; row < menu.getModel().getSize(); row++)
+                assertTrue("a row of the menu is drawn empty", drawn(menu, row) instanceof JComponent);
+        } finally {
+            shown.forEach(Disposer::dispose);
+        }
+    }
+
+    private static <T> @NotNull Component drawn(final @NotNull JBList<T> list, final int row) {
+        return list.getCellRenderer().getListCellRendererComponent(list, list.getModel().getElementAt(row), row, false, false);
     }
 
     // Rule-EDITOR-PANEL-230
