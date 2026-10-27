@@ -31,6 +31,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
@@ -74,9 +75,14 @@ public final class SelectionTable implements DialogComponent {
             @Override
             public @NotNull Component prepareRenderer(final @NotNull TableCellRenderer renderer, final int row, final int column) {
                 final @NotNull Component cell = super.prepareRenderer(renderer, row, column);
-                if (fixed.containsKey(convertRowIndexToModel(row)))
-                    cell.setForeground(NamedColorUtil.getInactiveTextColor());
+                cell.setForeground(foregroundOf(row));
                 return cell;
+            }
+
+            // Rule-SHARE-129
+            private @NotNull Color foregroundOf(final int row) {
+                if (fixed.containsKey(convertRowIndexToModel(row))) return NamedColorUtil.getInactiveTextColor();
+                return isRowSelected(row) ? getSelectionForeground() : getForeground();
             }
 
             // Rule-SHARE-129
