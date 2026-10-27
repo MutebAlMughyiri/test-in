@@ -214,6 +214,26 @@ public class TreePanelIdeTest extends AbstractReadTheRootIdeTest {
         }
     }
 
+    private static @NotNull List<String> rowsShownIn(final @NotNull SimpleTree tree) {
+        return IntStream.range(0, tree.getRowCount()).mapToObj(row -> TreeValues.directoryAt(tree.getPathForRow(row)).map(AbstractNode::getName).orElse("")).toList();
+    }
+
+    // UC-TREE-PANEL-028
+    public void testExpandAllOpensEveryNodeAndCollapseAllLeavesTheTestProjectAndItsTwoFolders() {
+        final @NotNull Path checkout = aTestProjectAt(root.resolve("Checkout"));
+        marked(marked(theTestCasesOf(checkout).resolve("Payments"), NodeType.TEST_SET_PACKAGE).resolve("Visa"), NodeType.TEST_SET);
+        readEverything();
+        bound().choose("Checkout");
+        final @NotNull TreePanel panel = aPanelShowingTheTree();
+        final @NotNull SimpleTree tree = panel.getTestProjectTree().getMainTree();
+
+        TreeGesture.pressed(getProject(), new ExpandTreeAction(panel), List.of());
+        Await.until("Expand All did not open the package down to its test set: " + rowsShownIn(tree), () -> rowsShownIn(tree).contains("Visa"));
+
+        TreeGesture.pressed(getProject(), new CollapseTreeAction(panel), List.of());
+        Await.until("Collapse All did not close every row under the test project's two folders: " + rowsShownIn(tree), () -> rowsShownIn(tree).size() == 3);
+    }
+
     // Rule-TREE-PANEL-090
     public void testEveryTitleBarButtonSaysWhatItDoes() {
         final @NotNull TreePanel panel = aPanel();
