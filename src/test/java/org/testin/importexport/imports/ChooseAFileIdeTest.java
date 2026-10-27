@@ -53,6 +53,7 @@ import org.testin.util.Shortcuts;
 import org.testin.view.Drawn;
 
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JTextField;
 import java.awt.Component;
 import java.io.File;
@@ -81,8 +82,12 @@ public class ChooseAFileIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull VirtualFile aPlan(final @NotNull Map<String, List<TestCase>> sheets) {
-        final @NotNull File plan = root.resolve("Plan.json").toFile();
-        FileFormat.JSON.exportToFile(getProject(), plan, sheets);
+        return aPlan(FileFormat.JSON, "Plan.json", sheets);
+    }
+
+    private @NotNull VirtualFile aPlan(final @NotNull FileFormat format, final @NotNull String name, final @NotNull Map<String, List<TestCase>> sheets) {
+        final @NotNull File plan = root.resolve(name).toFile();
+        format.exportToFile(getProject(), plan, sheets);
         return Optional.ofNullable(LocalFileSystem.getInstance().refreshAndFindFileByIoFile(plan)).orElseThrow(() -> new AssertionError("the plan was not written: " + plan));
     }
 
@@ -142,6 +147,28 @@ public class ChooseAFileIdeTest extends AbstractTempRootIdeTest {
 
         assertEquals("a file with nothing in it did not say so", List.of(Bundle.message("notification.import.empty.title") + "\n" + Bundle.message("notification.import.empty.nothing.loaded")), said.shown());
         assertTrue("the dialog closed over a file with nothing in it", ShownDialog.isOpen(getProject(), ImportDialog.class));
+    }
+
+    // UC-SHARE-005
+    public void testAChosenFileWithNothingToReadSaysNoData() {
+        final @NotNull JComponent dialog = openedOn(theLoginTestSet());
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        asked.getFirst().consume(List.of(aPlan(Map.of())));
+
+        Await.until("a file with nothing to read did not say No Data: " + said.shown(), () -> said.shown().contains(Bundle.message("import.no.data.title") + "\n" + Bundle.message("import.no.data.message")));
+        assertEquals("a file with nothing to read filled the preview", 0, tabsIn(dialog).getTabCount());
+    }
+
+    // UC-SHARE-005
+    public void testAChosenCsvFileNamesTheColumnsTestinReads() {
+        final @NotNull VirtualFile csv = aPlan(FileFormat.CSV, "Plan.csv", Map.of("Login", List.of(TestCase.builder().description("log in with a valid user").build())));
+        final @NotNull JComponent dialog = openedOn(theLoginTestSet());
+
+        chosen(dialog, csv, 1);
+
+        final @NotNull String note = Bundle.message("import.hint.csv", "").lines().findFirst().orElseThrow();
+        assertTrue("the CSV note naming the columns Testin reads is not shown", UIUtil.uiTraverser(dialog).filter(JLabel.class).toList().stream().anyMatch(label -> label.isVisible() && label.getText().contains(note)));
     }
 
     // UC-SHARE-005
