@@ -29,6 +29,7 @@ import org.testin.actions.Declared;
 import org.testin.indexer.Nodes;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
+import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
 import org.testin.services.BackgroundWork;
@@ -154,6 +155,17 @@ public class RemoveWithEditorsOpenIdeTest extends AbstractOpenEditorsIdeTest {
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
         assertFalse("Ctrl+Z took back the removal before the one that cannot be undone", nodes().nodeExists(login.getPath()));
+    }
+
+    // UC-TREE-PANEL-012, Rule-TREE-PANEL-040
+    public void testATestRunIsRemovedAndPutBack() {
+        final @NotNull TestRunNode cycle = new NodesOnDisk(getProject()).testRun(testProject.getTestRunsFolder(), "Cycle-1");
+
+        removedAndConfirmed(cycle);
+
+        Await.until("the test run was not removed", () -> !nodes().nodeExists(cycle.getPath()) && undoHistories().canUndo(UndoScope.TREE));
+        assertTrue("undoing the removal of the test run was refused", undoHistories().undo(UndoScope.TREE));
+        Await.until("undoing the removal did not put the test run back", () -> nodes().nodeExists(cycle.getPath()));
     }
 
     // Rule-TREE-PANEL-041
