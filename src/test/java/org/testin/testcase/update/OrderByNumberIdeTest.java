@@ -37,6 +37,7 @@ import org.testin.testcase.UpdateTestCaseFields;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.undo.UndoHistories;
 import org.testin.undo.UndoScope;
+import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
 import org.testin.view.Drawn;
 
@@ -137,6 +138,18 @@ public class OrderByNumberIdeTest extends AbstractTempRootIdeTest {
         assertFalse("a number past the last test case was not refused in words", said.shown().isEmpty());
         assertTrue("a number past the last test case closed the dialog", ShownDialog.isOpen(getProject(), UpdateTestCaseDialog.class));
         assertEquals("a number past the last test case moved something", before, storedOrder());
+    }
+
+    // UC-EDITOR-PANEL-009
+    public void testTheOrderKeyOnSeveralSelectedCardsIsRefusedInWords() {
+        final @NotNull TestSetEditor editor = sixTestCases();
+        editor.getList().setSelectionInterval(0, 1);
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        ShownDialog.press(editor.getList(), UpdateTestCaseFields.ORDER.getShortcut().getKey());
+
+        assertTrue("the order key on two cards was not refused in words: " + said.shown(), said.shown().contains(Bundle.message("update.order.one.at.a.time")));
+        assertFalse("the order key on two cards opened the order dialog", ShownDialog.isOpen(getProject(), UpdateTestCaseDialog.class));
     }
 
     // Rule-EDITOR-PANEL-055
