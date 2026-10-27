@@ -455,4 +455,29 @@ public class ReportBugFromThePanelIdeTest extends AbstractTempRootIdeTest {
         assertEquals("Apply on a testin.yml that cannot be read did not say so", List.of(Bundle.message("yml.save.disabled.unreadable")), said.shown());
         assertEquals("Apply wrote into a testin.yml that cannot be read", before, read(file));
     }
+
+    // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-104
+    public void testApplyOnATestinYmlThatCannotBeWrittenWritesNothingAndSaysSo() {
+        final @NotNull Path file = TestinYml.savePath(getProject()).orElseThrow();
+        final @NotNull String before = "testinProject: NAFATH\n";
+        try {
+            Files.createDirectories(file.getParent());
+            Files.writeString(file, before, StandardCharsets.UTF_8);
+        } catch (final IOException ex) {
+            throw new AssertionError("Could not write testin.yml: " + ex.getMessage(), ex);
+        }
+        TestinYml.reload(getProject());
+        final @NotNull JComponent form = BugRepoUrlForm.of(getProject());
+        Drawn.first(form, JBTextField.class).setText(REPOSITORY);
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+        assertTrue("could not make testin.yml read-only", file.toFile().setWritable(false));
+        try {
+            Drawn.first(form, JButton.class, button -> Bundle.message("bug.repo.url.apply").equals(button.getText())).doClick();
+
+            assertEquals("Apply on a testin.yml that cannot be written did not say so", List.of(Bundle.message("yml.save.failed")), said.shown());
+            assertEquals("Apply changed a testin.yml that cannot be written", before, read(file));
+        } finally {
+            assertTrue("could not make testin.yml writable again", file.toFile().setWritable(true));
+        }
+    }
 }
