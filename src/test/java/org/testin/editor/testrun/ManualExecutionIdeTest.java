@@ -163,6 +163,29 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
         }
     }
 
+    // UC-EDITOR-PANEL-039, Rule-EDITOR-PANEL-164
+    public void testRecordingSeveralWhileTheWalkIsOnOneOfThemStopsTheWalkAndTimesNone() {
+        final @NotNull List<TestCase> testCases = createdTestCases(3);
+        final @NotNull TestRunNode testRun = aPendingTestRunOver(testCases);
+        final @NotNull TestRunEditor editor = opened(testRun);
+        try {
+            editor.onStartExecutionClicked();
+            awaitWalkOn(editor, testCases.getFirst());
+            TimeoutUtil.sleep(1100);
+
+            runItemStatuses().applyRunItemStatus(editor, testCases.subList(0, 2), RunItemStatus.PASSED);
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+            assertFalse("recording several while the walk was on one of them left the walk going", editor.getWalk().isExecuting());
+            for (final TestCase recorded : testCases.subList(0, 2)) {
+                assertEquals(RunItemStatus.PASSED, runItemStatusOf(testRun, recorded));
+                assertEquals("a run item recorded among several carries a duration", Duration.ZERO, runItemOf(testRun, recorded).shownExecution().getDuration());
+            }
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
     // UC-EDITOR-PANEL-030
     public void testATestRunThatHoldsNoTestCasesSaysSo() {
         final @NotNull TestRunEditor editor = opened(aTestRunOver(List.of()));
