@@ -17,7 +17,11 @@
 package org.testin.search;
 
 import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.ex.ActionUtil;
+import com.intellij.openapi.actionSystem.impl.SimpleDataContext;
 import com.intellij.openapi.wm.ToolWindowManager;
+import com.intellij.testFramework.TestActionEvent;
 import kotlin.Unit;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
@@ -32,6 +36,7 @@ import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
 import org.testin.setting.AppSettingsState;
 import org.testin.testproject.BoundTestProject;
+import org.testin.ui.framework.ShownDialog;
 import org.testin.util.Icons;
 
 import java.util.List;
@@ -52,6 +57,7 @@ public class GoToIdeTest extends AbstractTempRootIdeTest {
 
     @Override
     protected void tearDown() {
+        ShownDialog.close(getProject(), GlobalSearchDialog.class);
         editors().closeAll();
         super.tearDown();
     }
@@ -67,6 +73,17 @@ public class GoToIdeTest extends AbstractTempRootIdeTest {
         GoTo.the(getProject(), Hit.of(second));
 
         Await.until("choosing a test case did not open its test set with it selected", () -> editors().editorFor(checkout).map(editor -> editor.getSelectedTestCases().stream().map(TestCase::getUuid).toList()).equals(Optional.of(List.of(second.getUuid()))));
+    }
+
+    // UC-INTERNAL-001
+    public void testSearchOpensTheSearch() {
+        final @NotNull AnActionEvent e = TestActionEvent.createTestEvent(GlobalSearchAction.registered(), SimpleDataContext.getProjectContext(getProject()));
+        ActionUtil.updateAction(GlobalSearchAction.registered(), e);
+        assertTrue("Search is gray: " + e.getPresentation().getDescription(), e.getPresentation().isEnabled());
+
+        ActionUtil.performAction(GlobalSearchAction.registered(), e);
+
+        ShownDialog.waitedFor(getProject(), GlobalSearchDialog.class);
     }
 
     // UC-INTERNAL-001, Rule-INTERNAL-002
