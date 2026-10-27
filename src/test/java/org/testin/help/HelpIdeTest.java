@@ -40,6 +40,8 @@ import org.testin.view.Drawn;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
+import javax.swing.JEditorPane;
+import javax.swing.event.HyperlinkEvent;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -135,6 +137,22 @@ public class HelpIdeTest extends AbstractIdeTest {
             } finally {
                 ShownDialog.close(getProject(), GuideDialog.class);
             }
+        }
+    }
+
+    // UC-INTERNAL-009, Rule-INTERNAL-130
+    public void testALinkToAnotherPageOpensItInTheSameGuide() {
+        try {
+            ShownDialog.open(getProject(), GuideDialog.class, () -> Guide.SET_UP_THIS_MACHINE.open(getProject()));
+            final @NotNull JEditorPane page = Drawn.first(ShownDialog.content(getProject(), GuideDialog.class), JEditorPane.class);
+
+            assertFalse("the guide already shows the page it links to", Drawn.text(page).contains("UC-SETTING-002"));
+
+            page.fireHyperlinkUpdate(new HyperlinkEvent(page, HyperlinkEvent.EventType.ACTIVATED, null, "../setting/setTestinFolder.md"));
+
+            assertTrue("the page linked to did not open in the guide: " + Drawn.text(page), Drawn.text(page).contains("UC-SETTING-002"));
+        } finally {
+            ShownDialog.close(getProject(), GuideDialog.class);
         }
     }
 
