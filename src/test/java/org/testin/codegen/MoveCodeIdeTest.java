@@ -132,6 +132,21 @@ public class MoveCodeIdeTest extends AbstractCodegenIdeTest {
         assertTrue("the class was left in the package it was moved out of", generatedClass("nafath.checkout.cards.VisaTest").isEmpty());
     }
 
+    // Rule-CODEGEN-053, Rule-CODEGEN-056, Rule-CODEGEN-057
+    public void testMovingOrRenamingATestSetOrAPackageThatHasNoCodeWritesNone() {
+        final @NotNull TestSetPackageNode checkout = indexedPackage("Checkout", theTestCasesDirectory());
+        final @NotNull TestSetPackageNode payment = indexedPackage("Payment", theTestCasesDirectory());
+        final @NotNull TestSetNode login = indexedTestSet("Login", theTestCasesDirectory());
+
+        NodeCode.of(NodeType.TEST_SET).getRenamed().execute(getProject(), new RenamedNode(login, "Sign in"));
+        NodeCode.of(NodeType.TEST_SET).getMoved().execute(getProject(), new MovedNode(login, checkout.getPath()));
+        NodeCode.of(NodeType.TEST_SET_PACKAGE).getRenamed().execute(getProject(), new RenamedNode(checkout, "Basket"));
+        NodeCode.of(NodeType.TEST_SET_PACKAGE).getMoved().execute(getProject(), new MovedNode(checkout, payment.getPath()));
+
+        for (final String written : List.of("nafath.SignInTest", "nafath.LoginTest", "nafath.checkout.LoginTest", "nafath.basket.LoginTest", "nafath.payment.checkout.LoginTest"))
+            assertTrue("a move or a rename of nodes that had no code wrote " + written, generatedClass(written).isEmpty());
+    }
+
     // Rule-CODEGEN-077
     public void testACutAndPastedTestCaseTakesItsMethodBodyAndAllIntoAClassWrittenForIt() {
         final @NotNull TestSetNode login = createdTestSet("Login");
