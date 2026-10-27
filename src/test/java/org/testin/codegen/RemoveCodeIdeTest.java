@@ -17,13 +17,23 @@
 package org.testin.codegen;
 
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.testFramework.DumbModeTestUtils;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
+import org.testin.Said;
+import org.testin.TreeGesture;
+import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
+import org.testin.notifications.Refused;
+import org.testin.remove.RemoveAction;
 import org.testin.services.Services;
+import org.testin.ui.framework.ConfirmDialog;
+import org.testin.ui.framework.ShownDialog;
+import org.testin.util.Bundle;
+import org.testin.util.Shortcuts;
 
 import java.util.List;
 
@@ -60,6 +70,22 @@ public class RemoveCodeIdeTest extends AbstractCodegenIdeTest {
         settled();
 
         assertEquals("the test case left kept the position it had before the removal", "1", attributeOf(writtenMethodOf(LOGIN_TEST, kept), "priority"));
+    }
+
+    // UC-TREE-PANEL-012, Rule-CODEGEN-096
+    public void testATestSetWithCodeIsNotRemovedWhileTheIdeIndexesAndItSaysWhy() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        DumbModeTestUtils.runInDumbModeSynchronously(getProject(), () -> {
+            TreeGesture.pressed(getProject(), new RemoveAction(), List.of(login));
+            ShownDialog.press(getProject(), ConfirmDialog.class, Shortcuts.Enter);
+        });
+        settled();
+
+        assertTrue("a removal while the IDE indexes was not refused: " + said.shown(), said.shown().contains(Refused.WHILE_INDEXING.about(Bundle.message("remove.confirm.button"))));
+        assertTrue("a test set was removed while the IDE indexes", Services.getInstance(getProject(), Nodes.class).nodeExists(login.getPath()));
+        assertTrue("the class went while the IDE indexes", generatedClass(LOGIN_TEST).isPresent());
     }
 
     // Rule-CODEGEN-059
