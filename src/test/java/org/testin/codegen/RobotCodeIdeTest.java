@@ -115,6 +115,19 @@ public class RobotCodeIdeTest extends AbstractCodegenIdeTest {
         assertTrue("the second test was not retagged: " + text, text.contains("Sign out\n    [Tags]    " + signOut.getUuid() + "    smoke\n"));
     }
 
+    // UC-CODEGEN-012, Rule-CODEGEN-127
+    public void testASuiteInThePipeSeparatedFormIsLeftAsTheTesterWroteIt() {
+        final @NotNull TestCase signIn = createdTestCase(createdTestSet("Login page"), "Sign in", "a");
+        final @NotNull String piped = "| *** Test Cases *** |\n| Sign in | [Tags] | " + signIn.getUuid() + " |\n|         | No Operation |\n";
+        final @NotNull Document document = suiteAt(LOGIN_SUITE).orElseThrow(() -> new AssertionError("no suite at " + LOGIN_SUITE));
+        WriteCommandAction.runWriteCommandAction(getProject(), () -> document.setText(piped));
+
+        signIn.setDescription("Log in with a valid user");
+        CodeChangeType.UPDATE_TEST_CASE_DESCRIPTION.execute(getProject(), signIn);
+
+        assertEquals("a pipe-separated suite was rewritten", piped, suiteText(LOGIN_SUITE));
+    }
+
     // UC-CODEGEN-011, Rule-CODEGEN-126
     public void testReorderingTheTestSetMovesItsTestsInTheSuite() {
         final @NotNull TestSetNode login = createdTestSet("Login page");
