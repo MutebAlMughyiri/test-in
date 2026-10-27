@@ -16,12 +16,11 @@
 
 package org.testin.explorer;
 
-import com.intellij.openapi.wm.RegisterToolWindowTask;
 import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.testFramework.PlatformTestUtil;
 import com.intellij.ui.content.Content;
+import kotlin.Unit;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractIdeTest;
 import org.testin.services.Services;
@@ -35,7 +34,7 @@ public class TreePanelToolWindowIdeTest extends AbstractIdeTest {
 
     // UC-TREE-PANEL-001, Rule-TREE-PANEL-097
     public void testTheToolWindowHoldsTheProjectsOneTreePanel() {
-        final @NotNull ToolWindow window = ToolWindowManager.getInstance(getProject()).registerToolWindow(RegisterToolWindowTask.notClosable(WINDOW, ToolWindowAnchor.LEFT));
+        final @NotNull ToolWindow window = ToolWindowManager.getInstance(getProject()).registerToolWindow(WINDOW, _ -> Unit.INSTANCE);
         try {
             new TreePanelToolWindowFactory().createToolWindowContent(getProject(), window);
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
