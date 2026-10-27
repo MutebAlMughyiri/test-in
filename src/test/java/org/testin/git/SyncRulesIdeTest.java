@@ -74,6 +74,19 @@ public class SyncRulesIdeTest extends AbstractGitRemoteIdeTest {
         assertEquals("{}", mustGit(remote, "show", MAIN + ":mine.testcase").trim());
     }
 
+    // UC-SHARE-016
+    public void testASyncThatPushesSeveralCommitsSaysHowMany() {
+        write(work, "mine.testcase", "{}");
+        commitAll(work, "my test case");
+        write(work, "another.testcase", "{}");
+        commitAll(work, "another test case");
+
+        final @NotNull Notification done = synced(Said.listening(getProject(), getTestRootDisposable()).notifications());
+
+        assertEquals("the sync did not say how many commits it pushed", Bundle.message("git.synced.pushed.many", "2"), done.getContent());
+        assertEquals("the two commits did not reach the remote", head(work, "HEAD"), head(remote, MAIN));
+    }
+
     // UC-SHARE-016, Rule-SHARE-070
     public void testThePushIsSkippedWhenNothingIsWaiting() {
         theColleagueAdds("theirs.testcase", "{}");
