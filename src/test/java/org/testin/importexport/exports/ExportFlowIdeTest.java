@@ -48,6 +48,7 @@ import org.testin.view.Drawn;
 import javax.swing.AbstractButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JRadioButton;
 import javax.swing.text.JTextComponent;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -227,6 +228,20 @@ public class ExportFlowIdeTest extends AbstractTempRootIdeTest {
         assertTrue("the export is not in the folder the tester chose", Files.isRegularFile(written));
         assertEquals("something was written under the Testin folder", testinBefore, everythingUnder(root.resolve("testin")));
         assertEquals("the export holds what was chosen", Set.of("Login"), FileFormat.XLSX.importToFile(getProject(), written.toFile()).keySet());
+    }
+
+    // UC-SHARE-001, Rule-INTERNAL-107
+    public void testHtmlChosenAsTheFormatWritesAnHtmlFile() {
+        final @NotNull TestSetNode login = new NodesOnDisk(getProject()).testSet(testProject.getTestCasesFolder(), "Login");
+        aTestCase(login, "log in with a valid user");
+        final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
+
+        final @NotNull JComponent dialog = theExportDialogFor(login);
+        Drawn.first(dialog, JRadioButton.class, radio -> radio.getText().equals(FileFormat.HTML.getLabel())).doClick();
+        button(dialog, ExportAction.NAME).doClick();
+        exported(said, 1);
+
+        assertTrue("choosing HTML did not write an HTML file", Files.isRegularFile(downloads.resolve("Login" + FileFormat.HTML.getExtension())));
     }
 
     // UC-SHARE-001, Rule-SHARE-005
