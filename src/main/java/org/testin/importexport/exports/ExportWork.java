@@ -56,6 +56,7 @@ record ExportWork(@NotNull Project project, @NotNull Notifier notifier, @NotNull
         return Bundle.message("export.unreadable.message", count, named, rest);
     }
 
+    // UC-SHARE-002, Rule-SHARE-013, Rule-SHARE-016
     private static @NotNull String uniqueKey(final @NotNull Map<String, ?> taken, final @NotNull List<String> treePath) {
         for (int from = treePath.size() - 1; from >= 0; from--) {
             final @NotNull String key = String.join(" - ", treePath.subList(from, treePath.size()));

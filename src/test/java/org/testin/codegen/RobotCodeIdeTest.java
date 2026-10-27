@@ -115,7 +115,7 @@ public class RobotCodeIdeTest extends AbstractCodegenIdeTest {
         assertTrue("the second test was not retagged: " + text, text.contains("Sign out\n    [Tags]    " + signOut.getUuid() + "    smoke\n"));
     }
 
-    // UC-CODEGEN-012, Rule-CODEGEN-127
+    // UC-CODEGEN-010, Rule-CODEGEN-127
     public void testASuiteInThePipeSeparatedFormIsLeftAsTheTesterWroteIt() {
         final @NotNull TestCase signIn = createdTestCase(createdTestSet("Login page"), "Sign in", "a");
         final @NotNull String piped = "| *** Test Cases *** |\n| Sign in | [Tags] | " + signIn.getUuid() + " |\n|         | No Operation |\n";
