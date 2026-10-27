@@ -25,7 +25,6 @@ import com.intellij.openapi.wm.StatusBarWidgetFactory;
 import com.intellij.ui.components.ActionLink;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.util.IconUtil;
-import com.intellij.util.ui.ImageUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractIdeTest;
 import org.testin.Said;
@@ -36,27 +35,12 @@ import org.testin.view.Drawn;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
-import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.Assert.assertArrayEquals;
-
 public class HelpIdeTest extends AbstractIdeTest {
-
-    private static int @NotNull [] pixelsOf(final @NotNull Icon icon) {
-        final @NotNull BufferedImage image = ImageUtil.createImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
-        final @NotNull Graphics2D g2 = image.createGraphics();
-        try {
-            icon.paintIcon(null, g2, 0, 0);
-        } finally {
-            g2.dispose();
-        }
-        return image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth());
-    }
 
     private @NotNull Hints nothingWaits() {
         final @NotNull Hints hints = Services.getInstance(getProject(), Hints.class);
@@ -76,8 +60,7 @@ public class HelpIdeTest extends AbstractIdeTest {
         final @NotNull StatusBarWidget mark = last.createWidget(getProject());
         try {
             final @NotNull Icon drawn = ((JBLabel) ((CustomStatusBarWidget) mark).getComponent()).getIcon();
-            final @NotNull Icon questionMark = IconUtil.resizeSquared(AllIcons.General.QuestionDialog, drawn.getIconWidth());
-            assertArrayEquals("the mark is not the IDE's question mark", pixelsOf(questionMark), pixelsOf(drawn));
+            assertEquals("the mark is not the IDE's question mark", IconUtil.resizeSquared(AllIcons.General.QuestionDialog, drawn.getIconWidth()).toString(), drawn.toString());
         } finally {
             Disposer.dispose(mark);
         }
