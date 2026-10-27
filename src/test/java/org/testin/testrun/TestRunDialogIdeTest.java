@@ -31,8 +31,8 @@ import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractOpenEditorsIdeTest;
 import org.testin.Await;
-import org.testin.Said;
 import org.testin.NodesOnDisk;
+import org.testin.Said;
 import org.testin.TreeGesture;
 import org.testin.creator.CreateTestRun;
 import org.testin.creator.NodeCreators;
@@ -57,6 +57,7 @@ import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItems;
 import org.testin.model.testrun.TestRunConfiguration;
+import org.testin.notifications.Refused;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
 import org.testin.testrun.form.TestRunConfigurationDialog;
@@ -331,13 +332,31 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
     // Rule-TREE-PANEL-095
     public void testAPathTypedAsTheNewNameOnEditIsRefusedAndTheTestRunKeepsItsFolder() {
         final @NotNull TestRunNode testRun = cycle1In(testProject.getTestRunsFolder(), List.of(new RunItem().setUuid(first.getUuid())));
+        indexedTestRuns().changeTestRunMarker(testRun.getPath(), marker -> marker.configure(everyQuestionAnswered()));
         theEditDialogOpenedOn(testRun);
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
 
         theNameBox().setText("Cycle/1");
         theButton(StatusBarShortcut.SAVE).doClick();
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
+        assertTrue("a path taken as the name was not refused: " + said.shown(), said.shown().contains(Refused.NOT_ONE_FOLDER.about("Cycle/1")));
         assertTrue("a path taken as the name closed the dialog", ShownDialog.isOpen(getProject(), TestRunConfigurationDialog.class));
+        assertTrue("the test run left its own folder", nodes().nodeExists(testRun.getPath()));
+    }
+
+    // UC-TREE-PANEL-022
+    public void testANameEmptiedOnEditIsRefusedAndTheDialogStaysOpen() {
+        final @NotNull TestRunNode testRun = cycle1In(testProject.getTestRunsFolder(), List.of(new RunItem().setUuid(first.getUuid())));
+        indexedTestRuns().changeTestRunMarker(testRun.getPath(), marker -> marker.configure(everyQuestionAnswered()));
+        theEditDialogOpenedOn(testRun);
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        theNameBox().setText("");
+        theButton(StatusBarShortcut.SAVE).doClick();
+
+        assertTrue("an emptied name was not refused: " + said.shown(), said.shown().contains(Bundle.message("test.run.needs.a.name")));
+        assertTrue("an emptied name closed the dialog", ShownDialog.isOpen(getProject(), TestRunConfigurationDialog.class));
         assertTrue("the test run left its own folder", nodes().nodeExists(testRun.getPath()));
     }
 
