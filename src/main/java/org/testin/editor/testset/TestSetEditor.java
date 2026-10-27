@@ -93,7 +93,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorFields, Tes
         loadDataAsync();
     }
 
-    // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-119
+    // UC-EDITOR-PANEL-005
     @Override
     public boolean isLoading() {
         return loading;
@@ -223,7 +223,7 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorFields, Tes
         }
     }
 
-    // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-119
+    // UC-EDITOR-PANEL-005
     @Override
     public void onToolBarCreateTestCaseClicked() {
         if (loading) {

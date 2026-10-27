@@ -147,7 +147,7 @@ public interface TestinEditor extends Disposable {
         return false;
     }
 
-    // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-119
+    // UC-EDITOR-PANEL-005
     default boolean isLoading() {
         return false;
     }
