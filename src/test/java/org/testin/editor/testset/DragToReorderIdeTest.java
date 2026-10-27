@@ -40,6 +40,7 @@ import org.testin.util.Bundle;
 import org.testin.view.Drawn;
 
 import javax.swing.TransferHandler;
+import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -109,6 +110,20 @@ public class DragToReorderIdeTest extends AbstractTempRootIdeTest {
 
         assertFalse("the grid can be dragged", grid.getDragEnabled());
         assertFalse("the grid takes a dropped card", grid.getTransferHandler() instanceof TestCaseTransferHandler);
+    }
+
+    // UC-EDITOR-PANEL-010, Rule-EDITOR-PANEL-057
+    public void testTheCardsTakeADraggedCardAndRefuseAnythingElse() {
+        final @NotNull TestSetEditor editor = aTestSetOf("Log in", "Log out");
+        editor.getList().setSelectedIndex(0);
+        final @NotNull TestCaseTransferHandler handler = new TestCaseTransferHandler(getProject(), editor);
+        final @NotNull Transferable dragged = Objects.requireNonNull(handler.createTransferable(editor.getList()), "nothing was picked up");
+        final @NotNull Transferable text = new StringSelection("Log out");
+
+        assertTrue("the cards do not take a dragged card", handler.canImport(new TransferHandler.TransferSupport(editor.getList(), dragged)));
+        assertFalse("the cards take dropped text", handler.canImport(new TransferHandler.TransferSupport(editor.getList(), text)));
+        assertFalse("dropped text was taken as a move", handler.importData(new TransferHandler.TransferSupport(editor.getList(), text)));
+        assertEquals("dropped text changed the order", List.of("Log in", "Log out"), storedOrder());
     }
 
     // Rule-EDITOR-PANEL-058
