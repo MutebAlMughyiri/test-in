@@ -32,6 +32,7 @@ import org.testin.testrun.RunItemRecorder;
 import org.testin.util.Bundle;
 import org.testin.view.AbstractViewPanelIdeTest;
 import org.testin.view.Drawn;
+import org.testin.view.ViewTab;
 
 import javax.swing.JComponent;
 import java.awt.Component;
@@ -177,6 +178,22 @@ public class ExecutionLinesIdeTest extends AbstractViewPanelIdeTest {
 
         assertEquals("the cross did not remove the execution", 3, heldIn(testRun).getExecutions().size());
         assertEquals("the rows below did not go back to the default", List.of(OptionalInt.empty()), shown);
+    }
+
+    // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-122
+    public void testClickingALineInTheViewPanelShowsThatExecutionInTheRowsBelow() {
+        final @NotNull TestRunNode testRun = aTestRun(List.of(invokedThreeTimes()));
+        view.getPanel().show(List.of(testCase), testRun.treePath());
+        settled();
+        assertTrue("the view panel does not open on the default: " + details(), Drawn.holds(details(), "Stayed signed in"));
+        final @NotNull Component second = Drawn.components(view.keyboardTarget(ViewTab.DETAILS)).stream().filter(part -> Drawn.text(part).startsWith(Bundle.message("execution.invocation", "2"))).findFirst()
+                .orElseThrow(() -> new AssertionError("no line names the second invocation: " + details()));
+
+        clicked(second);
+        settled();
+
+        assertTrue("clicking a line did not show that execution's actual result: " + details(), Drawn.holds(details(), "The session ended early"));
+        assertFalse("the default's actual result is still shown: " + details(), Drawn.holds(details(), "Stayed signed in"));
     }
 
     // Rule-VIEW-PANEL-120, Rule-VIEW-PANEL-122
