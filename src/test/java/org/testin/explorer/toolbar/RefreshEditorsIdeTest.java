@@ -79,6 +79,7 @@ public class RefreshEditorsIdeTest extends AbstractOpenEditorsIdeTest {
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
         Await.until("no cell could be opened for editing", () -> {
             Optional.ofNullable(UIUtil.uiTraverser(editor.getComponent()).filter(JTable.class).first()).ifPresent(grid -> {
+                grid.putClientProperty("terminateEditOnFocusLost", false);
                 for (int column = 0; column < grid.getColumnCount() && !grid.isEditing(); column++)
                     grid.editCellAt(0, column);
             });
