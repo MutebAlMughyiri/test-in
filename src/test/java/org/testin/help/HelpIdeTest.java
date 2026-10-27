@@ -18,16 +18,21 @@
 package org.testin.help;
 
 import com.intellij.icons.AllIcons;
+import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.wm.CustomStatusBarWidget;
+import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.StatusBarWidget;
 import com.intellij.openapi.wm.StatusBarWidgetFactory;
+import com.intellij.ui.UiInterceptors;
 import com.intellij.ui.components.ActionLink;
 import com.intellij.ui.components.JBLabel;
+import com.intellij.ui.components.JBTabbedPane;
 import com.intellij.util.IconUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractIdeTest;
 import org.testin.Said;
+import org.testin.StandIn;
 import org.testin.services.Services;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.util.Bundle;
@@ -37,10 +42,29 @@ import javax.swing.Icon;
 import javax.swing.JComponent;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 
 public class HelpIdeTest extends AbstractIdeTest {
+
+    private @NotNull StatusBarWidget aMark() {
+        return StatusBarWidgetFactory.EP_NAME.getExtensionList().getLast().createWidget(getProject());
+    }
+
+    private static @NotNull JBLabel entryOf(final @NotNull StatusBarWidget mark) {
+        return (JBLabel) ((CustomStatusBarWidget) mark).getComponent();
+    }
+
+    private static void click(final @NotNull JComponent entry) {
+        final @NotNull MouseEvent click = new MouseEvent(entry, MouseEvent.MOUSE_CLICKED, 0, 0, 1, 1, 1, false);
+        Arrays.stream(entry.getMouseListeners()).forEach(listener -> listener.mouseClicked(click));
+    }
+
+    private static void redrawn(final @NotNull StatusBarWidget mark) {
+        ((CustomStatusBarWidget) mark).install(StandIn.of(StatusBar.class));
+    }
 
     private @NotNull Hints nothingWaits() {
         final @NotNull Hints hints = Services.getInstance(getProject(), Hints.class);
@@ -117,12 +141,9 @@ public class HelpIdeTest extends AbstractIdeTest {
     // Rule-INTERNAL-128
     public void testAClickOnTheMarkWithNothingWaitingSaysNothingToShow() {
         nothingWaits();
-        final @NotNull StatusBarWidget mark = StatusBarWidgetFactory.EP_NAME.getExtensionList().getLast().createWidget(getProject());
+        final @NotNull StatusBarWidget mark = aMark();
         try {
-            final @NotNull JComponent entry = ((CustomStatusBarWidget) mark).getComponent();
-            final @NotNull MouseEvent click = new MouseEvent(entry, MouseEvent.MOUSE_CLICKED, 0, 0, 1, 1, 1, false);
-
-            final @NotNull List<String> said = Said.during(getProject(), () -> Arrays.stream(entry.getMouseListeners()).forEach(listener -> listener.mouseClicked(click)));
+            final @NotNull List<String> said = Said.during(getProject(), () -> click(entryOf(mark)));
 
             assertEquals("a click on the mark with no hint and no guide did not say there is nothing to show", List.of(Bundle.message("help.nothing")), said);
         } finally {
@@ -140,6 +161,59 @@ public class HelpIdeTest extends AbstractIdeTest {
 
         assertEquals("Save to testin.yml", link.getText());
         assertEquals("the link did not run its fix", 1, fixed.get());
+    }
+
+    // Rule-INTERNAL-127
+    public void testTheMarkChangesWhileAHintWaitsAndItsTooltipIsTheHint() {
+        final @NotNull Hints hints = nothingWaits();
+        final @NotNull StatusBarWidget mark = aMark();
+        try {
+            final @NotNull JBLabel entry = entryOf(mark);
+            final @NotNull Icon quiet = entry.getIcon();
+
+            hints.fire(SetupHint.of(SetupStep.BUG_FILING, "Add bugRepoUrl to testin.yml"));
+            redrawn(mark);
+            assertNotSame("the mark did not change while a hint waits", quiet, entry.getIcon());
+            assertEquals("the mark's tooltip is not the hint that waits", "Add bugRepoUrl to testin.yml", Drawn.hovering(entry));
+
+            hints.clear(SetupStep.BUG_FILING);
+            redrawn(mark);
+            assertSame("the mark did not go back once nothing waits", quiet, entry.getIcon());
+            assertEquals("the mark's tooltip is not its title once nothing waits", Bundle.message("help.title"), Drawn.hovering(entry));
+        } finally {
+            Disposer.dispose(mark);
+        }
+    }
+
+    // Rule-INTERNAL-128
+    public void testAClickOpensTheHintPageFirstThenTheGuidesAndEachHintEndsWithItsGuide() {
+        final @NotNull Hints hints = nothingWaits();
+        hints.fire(SetupHint.of(SetupStep.TESTIN_FOLDER, "Please set the Testin folder"));
+        hints.fire(SetupHint.of(SetupStep.TEST_PROJECT_LINK, "testin.yml does not name this test project", "Save to testin.yml", () -> {
+        }));
+        final @NotNull List<JBPopup> shown = new ArrayList<>();
+        UiInterceptors.register(new UiInterceptors.UiInterceptor<>(JBPopup.class) {
+            @Override
+            protected void doIntercept(final @NotNull JBPopup popup) {
+                shown.add(popup);
+            }
+        });
+        final @NotNull StatusBarWidget mark = aMark();
+        try {
+            click(entryOf(mark));
+            assertEquals("a click on the mark with hints waiting did not open one popup", 1, shown.size());
+
+            final @NotNull JBTabbedPane pages = Drawn.first(shown.getFirst().getContent(), JBTabbedPane.class);
+            assertEquals("the popup's pages are not the hints then the guides", List.of(Bundle.message("guide.hint.page"), Bundle.message("guide.list.title")), IntStream.range(0, pages.getTabCount()).mapToObj(pages::getTitleAt).toList());
+            assertEquals("a hint does not end with the guide that walks through it",
+                    List.of("Please set the Testin folder", Guide.SET_UP_THIS_MACHINE.getTitle(), "testin.yml does not name this test project", "Save to testin.yml", Guide.LINK_THIS_REPOSITORY.getTitle()),
+                    Drawn.words((JComponent) pages.getComponentAt(0)));
+            assertEquals("the guides page does not list the guides offered", List.of(Guide.SET_UP_THIS_MACHINE.getTitle(), Guide.LINK_THIS_REPOSITORY.getTitle()), Drawn.words((JComponent) pages.getComponentAt(1)));
+        } finally {
+            shown.forEach(Disposer::dispose);
+            Disposer.dispose(mark);
+            nothingWaits();
+        }
     }
 
     // Rule-INTERNAL-129
