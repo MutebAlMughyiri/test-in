@@ -31,6 +31,9 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.actions.TestinDataKeys;
 import org.testin.model.node.AbstractNode;
 
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import java.util.List;
 import java.util.Objects;
 
@@ -54,7 +57,18 @@ public final class TreeGesture {
         pressed(action, on(project, action, selected), selected);
     }
 
-    public static void pressedOn(final @NotNull Project project, final @NotNull AnAction action, final @NotNull SimpleTree tree, final @NotNull List<AbstractNode> selected) {
+    public static void pressedAt(final @NotNull Project project, final @NotNull AnAction action, final @NotNull List<AbstractNode> rows) {
+        final @NotNull DefaultMutableTreeNode top = new DefaultMutableTreeNode(rows.getFirst());
+        @NotNull DefaultMutableTreeNode row = top;
+        for (final AbstractNode below : rows.subList(1, rows.size())) {
+            final @NotNull DefaultMutableTreeNode child = new DefaultMutableTreeNode(below);
+            row.add(child);
+            row = child;
+        }
+        final @NotNull SimpleTree tree = new SimpleTree(new DefaultTreeModel(top));
+        tree.setSelectionPath(new TreePath(row.getPath()));
+
+        final @NotNull List<AbstractNode> selected = List.of(rows.getLast());
         pressed(action, TestActionEvent.createTestEvent(action, SimpleDataContext.builder()
                 .add(CommonDataKeys.PROJECT, project)
                 .add(TestinDataKeys.SELECTED_NODES, selected)
