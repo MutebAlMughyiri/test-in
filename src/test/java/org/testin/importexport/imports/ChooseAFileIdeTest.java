@@ -31,6 +31,7 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.ServiceContainerUtil;
 import com.intellij.ui.components.JBTabbedPane;
+import com.intellij.ui.table.JBTable;
 import com.intellij.util.Consumer;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
@@ -141,6 +142,24 @@ public class ChooseAFileIdeTest extends AbstractTempRootIdeTest {
 
         assertEquals("a file with nothing in it did not say so", List.of(Bundle.message("notification.import.empty.title") + "\n" + Bundle.message("notification.import.empty.nothing.loaded")), said.shown());
         assertTrue("the dialog closed over a file with nothing in it", ShownDialog.isOpen(getProject(), ImportDialog.class));
+    }
+
+    // UC-SHARE-005
+    public void testUntickingEveryTestCaseImportsNothingAndSaysSo() {
+        final @NotNull VirtualFile plan = aPlan(Map.of("Login", List.of(TestCase.builder().description("log in with a valid user").build())));
+        final @NotNull TestSetNode login = theLoginTestSet();
+        final @NotNull JComponent dialog = openedOn(login);
+        chosen(dialog, plan, 1);
+        final @NotNull JBTable table = Drawn.first(dialog, JBTable.class);
+        for (int row = 0; row < table.getRowCount(); row++)
+            table.getModel().setValueAt(false, row, 0);
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        ShownDialog.press(getProject(), ImportDialog.class, Shortcuts.Enter);
+
+        assertEquals("an import with nothing ticked did not say so", List.of(Bundle.message("notification.import.empty.title") + "\n" + Bundle.message("notification.import.empty.none.selected")), said.shown());
+        assertTrue("an import with nothing ticked closed the dialog", ShownDialog.isOpen(getProject(), ImportDialog.class));
+        assertTrue("an import with nothing ticked wrote a test case", Services.getInstance(getProject(), TestCases.class).getTestCasesForTestSet(login.getPath()).isEmpty());
     }
 
     private static final class WaitingChooser extends FileChooserFactory {
