@@ -138,6 +138,36 @@ public class UpdateTestMethodIdeTest extends AbstractCodegenIdeTest {
         assertEquals("{\"smoke\", \"Log in & out\"}", attributeOf(writtenMethodOf(LOGIN_TEST, testCase), "groups"));
     }
 
+    // UC-CODEGEN-012, Rule-CODEGEN-045
+    public void testGroupsChangedOnSeveralTestCasesAtOnceAreWrittenIntoEachMethod() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull TestCase first = createdTestCase(login, "Log in", "a");
+        final @NotNull TestCase second = createdTestCase(login, "Log out", "b");
+        first.setGroups(List.of("smoke"));
+        second.setGroups(List.of("smoke"));
+
+        CodeChangeType.UPDATE_TEST_CASE_GROUP.executeAllNow(getProject(), List.of(first, second));
+        settled();
+
+        assertEquals("the first test case's method did not take the group", "{\"smoke\"}", attributeOf(writtenMethodOf(LOGIN_TEST, first), "groups"));
+        assertEquals("the second test case's method did not take the group", "{\"smoke\"}", attributeOf(writtenMethodOf(LOGIN_TEST, second), "groups"));
+    }
+
+    // UC-CODEGEN-013, Rule-CODEGEN-047
+    public void testTurningSeveralTestCasesOffAtOnceWritesEnabledFalseIntoEachMethod() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull TestCase first = createdTestCase(login, "Log in", "a");
+        final @NotNull TestCase second = createdTestCase(login, "Log out", "b");
+        first.setStatus(TestCaseStatus.DISABLED);
+        second.setStatus(TestCaseStatus.DISABLED);
+
+        CodeChangeType.UPDATE_TEST_CASE_STATUS.executeAllNow(getProject(), List.of(first, second));
+        settled();
+
+        assertEquals("the first test case's method was not turned off", "false", attributeOf(writtenMethodOf(LOGIN_TEST, first), "enabled"));
+        assertEquals("the second test case's method was not turned off", "false", attributeOf(writtenMethodOf(LOGIN_TEST, second), "enabled"));
+    }
+
     // Rule-CODEGEN-046
     public void testATestCaseInNoGroupHasNoGroupsAttribute() {
         final @NotNull TestCase testCase = aTestCaseWithAMethod();
