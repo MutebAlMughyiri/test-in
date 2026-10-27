@@ -22,8 +22,10 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.Presentation;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
+import org.testin.Await;
 import org.testin.Said;
 import org.testin.TreeGesture;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestCasesFolderNode;
 import org.testin.model.node.TestProjectNode;
@@ -54,6 +56,19 @@ public class ExecuteTestsFromTheTreeIdeTest extends AbstractCodegenIdeTest {
         final @NotNull List<String> said = balloons.shown();
         assertTrue("running a node with no test cases did not say so: " + said, said.contains(Refused.NOTHING_TO_RUN.about("Empty")));
         assertEquals("running a node with no test cases started something", 0, ExecutionManager.getInstance(getProject()).getRunningProcesses().length);
+    }
+
+    // UC-CODEGEN-008, Rule-CODEGEN-031
+    public void testRunTestsOnATestSetRunsItsTestCasesAsOneExecution() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull TestCase first = indexedTestCase(login, "Log in with a valid user", "a");
+        final @NotNull TestCase second = indexedTestCase(login, "Log out", "b");
+        final @NotNull CapturedRunner runner = CapturedRunner.installed(getTestRootDisposable());
+
+        TreeGesture.pressed(getProject(), runTests(), List.of(login));
+
+        Await.until("Run Tests on the test set ran nothing", () -> !runner.executions().isEmpty());
+        assertEquals("the test set's test cases were not one execution", List.of(List.of(first.getUuid(), second.getUuid())), runner.executions().stream().map(execution -> execution.stream().map(TestCase::getUuid).toList()).toList());
     }
 
     // Rule-TREE-PANEL-080
