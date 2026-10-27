@@ -18,6 +18,7 @@ package org.testin.git.review;
 
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationGroupManager;
+import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import org.jetbrains.annotations.NotNull;
@@ -201,6 +202,28 @@ public class CommitRulesIdeTest extends AbstractGitRemoteIdeTest {
         final @NotNull Notification pushed = titled(said, Bundle.message("git.pushed.title"));
         assertTrue("the push message is not kept in the notification list", NotificationGroupManager.getInstance().getNotificationGroup(pushed.getGroupId()).isLogByDefault());
         assertEquals(head(work, "HEAD"), head(remote, MAIN));
+    }
+
+    // UC-SHARE-013, Rule-SHARE-127
+    public void testAPushTheRemoteRefusesSaysWhyAndTriesAgainWhenAsked() {
+        write(remote, "hooks/pre-receive", """
+                #!/bin/sh
+                echo "pushes are closed today" >&2
+                exit 1
+                """);
+        write(work, "second.testcase", "{}");
+        commitAll(work, "second");
+        final @NotNull String before = head(remote, MAIN);
+        final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
+
+        pressPushOnTheWaitingCommits(work, said);
+
+        final @NotNull Notification failed = titled(said, Bundle.message("git.push.failed.title"));
+        assertTrue("the refusal did not say what the remote said: " + failed.getContent(), failed.getContent().contains("pushes are closed today"));
+        final @NotNull AnAction tryAgain = failed.getActions().stream().filter(action -> Bundle.message("git.try.again").equals(action.getTemplateText())).findFirst().orElseThrow(() -> new AssertionError("the refusal offers no Try Again: " + answers(failed)));
+        Notified.press(getProject(), failed, tryAgain);
+        Await.until("Try Again did not push again", () -> count(said, Bundle.message("git.push.failed.title")) == 2);
+        assertEquals("a refused push moved the remote", before, head(remote, MAIN));
     }
 
     // UC-SHARE-013, Rule-SHARE-068
