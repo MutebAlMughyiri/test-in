@@ -94,6 +94,18 @@ public class MoveCodeIdeTest extends AbstractCodegenIdeTest {
         assertTrue("the tester was not told the code stayed behind, naming the class: " + said, said.stream().anyMatch(notification -> notification.getType() == NotificationType.WARNING && notification.getContent().contains("nafath.LoginTest")));
     }
 
+    // Rule-CODEGEN-055
+    public void testAPackageMovedIntoAPlaceTestinHasNotReadLeavesItsClassesAndSaysSo() {
+        final @NotNull TestSetPackageNode checkout = indexedPackage("Checkout", theTestCasesDirectory());
+        createdTestSet("Login", checkout);
+        final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
+
+        NodeCode.of(NodeType.TEST_SET_PACKAGE).getMoved().execute(getProject(), new MovedNode(checkout, root.resolve("Never read")));
+
+        assertTrue("the package's class moved into a place the tree does not know", generatedClass("nafath.checkout.LoginTest").isPresent());
+        assertTrue("the tester was not told the package stayed behind, naming it: " + said, said.stream().anyMatch(notification -> notification.getType() == NotificationType.WARNING && notification.getContent().contains("nafath.checkout")));
+    }
+
     // Rule-CODEGEN-056
     public void testRenamingAPackageRewritesThePackageLineOfEveryClassBeneathIt() {
         final @NotNull TestSetPackageNode checkout = indexedPackage("Checkout", theTestCasesDirectory());
