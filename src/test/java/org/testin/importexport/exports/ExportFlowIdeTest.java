@@ -307,6 +307,21 @@ public class ExportFlowIdeTest extends AbstractTempRootIdeTest {
         assertTrue("the second Checkout does not take its package's name: " + titles, titles.contains("Web - Checkout") || titles.contains("Mobile - Checkout"));
     }
 
+    // UC-SHARE-002, Rule-SHARE-016
+    public void testASheetWhoseEveryNameIsTakenIsNumbered() {
+        final @NotNull NodesOnDisk disk = new NodesOnDisk(getProject());
+        final @NotNull TestSetPackageNode payments = disk.testSetPackage(testProject.getTestCasesFolder(), "Payments");
+        aTestCase(disk.testSet(payments, "Checkout"), "pay with a saved card");
+        aTestCase(disk.testSet(payments, "Web - Checkout"), "pay in the browser");
+        aTestCase(disk.testSet(payments, "Payments - Web - Checkout"), "pay on the phone");
+        aTestCase(disk.testSet(disk.testSetPackage(payments, "Web"), "Checkout"), "pay with a wallet");
+
+        final @NotNull List<String> titles = tabTitles(theExportDialogFor(payments));
+
+        assertEquals("four test sets did not make four sheets with four names: " + titles, 4, Set.copyOf(titles).size());
+        assertTrue("the sheet whose every name was taken is not numbered: " + titles, titles.stream().anyMatch(title -> title.matches(".* \\(\\d+\\)")));
+    }
+
     // UC-SHARE-002, Rule-SHARE-014
     public void testATestSetHoldingNoTestCasesProducesNoSheet() {
         final @NotNull NodesOnDisk disk = new NodesOnDisk(getProject());
