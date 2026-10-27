@@ -35,6 +35,7 @@ import org.testin.undo.UndoHistories;
 import org.testin.undo.UndoScope;
 import org.testin.util.Bundle;
 import org.testin.view.Drawn;
+import org.testin.view.KeyPress;
 
 import javax.swing.text.JTextComponent;
 import java.awt.Rectangle;
@@ -114,6 +115,20 @@ public class GridEditIdeTest extends AbstractTempRootIdeTest {
         } catch (final IOException ex) {
             throw new AssertionError("the test set could not be read", ex);
         }
+    }
+
+    // UC-EDITOR-PANEL-008
+    public void testEnterOnACellThatCanBeTypedIntoOpensThatCell() {
+        final @NotNull JBTable grid = gridOf(aGridOver("Log in with a valid user"));
+        final int description = column(grid, TestSetEditorFields.DESCRIPTION);
+        grid.setRowSelectionInterval(0, 0);
+        grid.setColumnSelectionInterval(description, description);
+
+        KeyPress.press(getProject(), grid, GridKeys.enter());
+
+        assertTrue("Enter on a cell that can be typed into did not open it", grid.isEditing());
+        assertEquals("Enter opened another cell than the one the cursor was on", description, grid.getEditingColumn());
+        grid.getCellEditor().cancelCellEditing();
     }
 
     // Rule-EDITOR-PANEL-050, Rule-EDITOR-PANEL-051
