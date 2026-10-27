@@ -119,6 +119,19 @@ public class ChooseAFileIdeTest extends AbstractTempRootIdeTest {
         assertTrue(UIUtil.uiTraverser(dialog).filter(JTextField.class).toList().stream().anyMatch(field -> field.getText().endsWith("Plan.json")));
     }
 
+    // UC-SHARE-007, Rule-SHARE-036
+    public void testEmptyingTheSourceBoxEmptiesThePreview() {
+        final @NotNull VirtualFile plan = aPlan(Map.of("Login", List.of(TestCase.builder().description("log in with a valid user").build())));
+        final @NotNull JComponent dialog = openedOn(theLoginTestSet());
+        chosen(dialog, plan, 1);
+        final @NotNull JTextField source = UIUtil.uiTraverser(dialog).filter(JTextField.class).toList().stream().filter(field -> field.getText().endsWith("Plan.json")).findFirst()
+                .orElseThrow(() -> new AssertionError("the source box does not hold the chosen file"));
+
+        source.setText("");
+
+        Await.until("emptying the source box left the preview", () -> tabsIn(dialog).getTabCount() == 0);
+    }
+
     // UC-SHARE-005, UC-SHARE-007
     public void testEnterImportsTheChosenFileIntoTheTestSetAndClosesTheDialog() {
         final @NotNull VirtualFile plan = aPlan(Map.of("Login", List.of(TestCase.builder().description("log in with a valid user").build())));
