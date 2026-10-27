@@ -37,11 +37,9 @@ public interface ToolbarCallbacks extends FilterSource {
 
     @NotNull AbstractNode getEditedNode();
 
-    default void onToolBarSwitchedToCardView() {
-    }
+    void onToolBarSwitchedToCardView();
 
-    default void onToolBarSwitchedToGridView() {
-    }
+    void onToolBarSwitchedToGridView();
 
     default void onToolBarCreateTestCaseClicked() {
     }
