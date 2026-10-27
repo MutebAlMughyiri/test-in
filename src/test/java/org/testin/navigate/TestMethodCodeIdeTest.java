@@ -26,13 +26,17 @@ import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.psi.PsiMethod;
+import com.intellij.testFramework.DumbModeTestUtils;
 import com.intellij.testFramework.TestActionEvent;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
+import org.testin.Await;
+import org.testin.Said;
 import org.testin.actions.TestinDataKeys;
 import org.testin.codegen.agent.TestMethodFile;
-import org.testin.Await;
 import org.testin.model.TestCase;
+import org.testin.notifications.Refused;
+import org.testin.util.Bundle;
 
 import java.util.List;
 import java.util.Objects;
@@ -68,6 +72,28 @@ public class TestMethodCodeIdeTest extends AbstractCodegenIdeTest {
         TestMethodCode.available(getProject()).toCode(getProject(), testCase);
 
         Await.until("go to code did not reach the method of a test case renamed since it was written", () -> caretIsOn(testMethod));
+    }
+
+    // UC-CODEGEN-006
+    public void testGoToCodeOnATestCaseWithNoMethodOpensNothingAndSaysNotAutomated() {
+        final @NotNull TestCase testCase = indexedTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        TestMethodCode.available(getProject()).toCode(getProject(), testCase);
+
+        Await.until("a test case with no method was not said to be not automated: " + said.shown(), () -> said.shown().contains(Refused.NO_GENERATED_CODE.getSentence()));
+    }
+
+    // UC-CODEGEN-006
+    public void testGoToCodeWhileTheIdeIndexesSaysItWaitsAndJumpsWhenIndexingEnds() {
+        final @NotNull TestCase testCase = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
+        final @NotNull PsiMethod testMethod = writtenMethodOf(LOGIN_TEST, testCase);
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        DumbModeTestUtils.runInDumbModeSynchronously(getProject(), () -> TestMethodCode.available(getProject()).toCode(getProject(), testCase));
+
+        Await.until("going to code while the IDE indexed did not say it waits: " + said.shown(), () -> said.shown().contains(Bundle.message("navigate.waiting.for.indexing")));
+        Await.until("the jump did not happen once indexing ended", () -> caretIsOn(testMethod));
     }
 
     // UC-CODEGEN-006, Rule-CODEGEN-001

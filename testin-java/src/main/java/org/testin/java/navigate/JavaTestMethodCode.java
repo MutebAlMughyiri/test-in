@@ -60,8 +60,7 @@ public final class JavaTestMethodCode implements TestMethodCode {
         TestinLogger.trace("navigate to the method of '" + testCase.getDescription() + "'");
 
         if (DumbService.isDumb(project)) {
-            TestinLogger.trace("dumb mode detected, deferring navigation");
-            DumbService.getInstance(project).runWhenSmart(() -> toCode(project, testCase));
+            waitForIndexingThenGo(project, testCase);
             return;
         }
 
@@ -82,12 +81,16 @@ public final class JavaTestMethodCode implements TestMethodCode {
                         });
 
                     } catch (final IndexNotReadyException ex) {
-                        TestinLogger.trace("index not ready, deferring navigation");
-                        ApplicationManager.getApplication().invokeLater(() ->
-                                Services.getInstance(project, Notifier.class).softShow(project, Bundle.message("navigate.waiting.for.indexing")));
-                        DumbService.getInstance(project).runWhenSmart(() -> toCode(project, testCase));
+                        waitForIndexingThenGo(project, testCase);
                     }
                 })
         );
+    }
+
+    // UC-CODEGEN-006
+    private void waitForIndexingThenGo(final @NotNull Project project, final @NotNull TestCase testCase) {
+        TestinLogger.trace("the IDE is indexing, so the jump to '" + testCase.getDescription() + "' waits for it");
+        ApplicationManager.getApplication().invokeLater(() -> Services.getInstance(project, Notifier.class).softShow(project, Bundle.message("navigate.waiting.for.indexing")));
+        DumbService.getInstance(project).runWhenSmart(() -> toCode(project, testCase));
     }
 }
