@@ -173,6 +173,22 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
         assertFalse("a test case its test set no longer holds was given a place in it: " + words, words.contains(ORDER));
     }
 
+    // UC-VIEW-PANEL-006, Rule-VIEW-PANEL-034
+    public void testTheStacktraceLinkOpensTheStacktrace() {
+        final @NotNull TestSetNode testSet = aTestSet("Login");
+        final @NotNull TestCase testCase = aTestCase(testSet, "Log in with a valid user", "a");
+        final @NotNull TestRunNode testRun = aTestRun(List.of(RunItem.builder().uuid(testCase.getUuid()).build()));
+        final @NotNull JBPanel<?> tab = Drawn.detailsTab(getProject(), testCase, Optional.of(failedWith(testCase, List.of())), testRun.treePath());
+
+        ((ActionLink) Drawn.reading(tab, Bundle.message("view.stacktrace.link"))).doClick();
+
+        try {
+            Await.until("the Stacktrace link never opened the stacktrace", () -> ShownDialog.isOpen(getProject(), StacktraceDialog.class));
+        } finally {
+            ShownDialog.close(getProject(), StacktraceDialog.class);
+        }
+    }
+
     // Rule-VIEW-PANEL-081
     public void testTheStacktraceLinkComesFirstThenOneThumbnailForEachScreenshot() {
         final @NotNull TestSetNode testSet = aTestSet("Login");

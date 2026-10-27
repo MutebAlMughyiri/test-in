@@ -24,6 +24,7 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.testFramework.PlatformTestUtil;
 import com.intellij.ui.EditorTextField;
+import com.intellij.ui.components.ActionLink;
 import com.intellij.ui.components.JBTextField;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
@@ -256,6 +257,22 @@ public class ReportBugFromThePanelIdeTest extends AbstractTempRootIdeTest {
         assertTrue("the bug was not prepared under the IDE's progress bar: " + underProgress, underProgress.contains(Bundle.message("bug.preparing")));
         final @NotNull List<String> words = Drawn.words(ShownDialog.content(getProject(), ReportBugDialog.class));
         assertTrue("the repository is not the one bugRepoUrl in testin.yml names now: " + words, Drawn.holds(words, "acme/shop"));
+    }
+
+    // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-066
+    public void testReportBugOnTheDetailsPanelOpensTheBug() {
+        final @NotNull AppSettingsState settings = Services.getInstance(AppSettingsState.class);
+        final @NotNull String rootWas = settings.rootTestinPath;
+        settings.rootTestinPath = root.toString();
+        try {
+            final @NotNull JComponent tab = Drawn.detailsTab(getProject(), testCase, Optional.of(failed), testRun.treePath());
+
+            ((ActionLink) Drawn.reading(tab, Bundle.message("bug.dialog.title"))).doClick();
+
+            Await.until("Report Bug on the details panel never opened the bug", () -> ShownDialog.isOpen(getProject(), ReportBugDialog.class));
+        } finally {
+            settings.rootTestinPath = rootWas;
+        }
     }
 
     // Rule-VIEW-PANEL-067
