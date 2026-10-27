@@ -62,6 +62,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -360,11 +361,11 @@ public class ExportFlowIdeTest extends AbstractTempRootIdeTest {
         Services.getInstance(getProject(), TestProjectIndexer.class).scanSingleTestProject(testProject.getPath());
         final @NotNull Nodes nodes = Services.getInstance(getProject(), Nodes.class);
         final @NotNull Path renamed = login.getPath().resolveSibling("Sign in");
-        nodes.renameNode(login.getPath(), renamed, () -> {
-        }, () -> {
+        final @NotNull AtomicBoolean finished = new AtomicBoolean();
+        nodes.renameNode(login.getPath(), renamed, () -> finished.set(true), () -> {
             throw new AssertionError("the test set was not renamed");
         });
-        Await.until("the test set was not renamed", () -> nodes.find(renamed).isPresent());
+        Await.until("the rename never finished", finished::get);
 
         exportPressedOn(nodes.find(renamed).orElseThrow());
         final @NotNull JComponent warning = ShownDialog.waitedFor(getProject(), ConfirmDialog.class);
