@@ -136,6 +136,13 @@ public class SearchFindsTestRunsIdeTest extends AbstractTempRootIdeTest {
                 forTheUuid().stream().anyMatch(hit -> hit.node().getPath().equals(ranSomethingElse)));
     }
 
+    // UC-INTERNAL-001
+    public void testWithNothingTypedTheSearchListsTheTestSetsAndTestRunsInTreeOrder() {
+        final List<Path> listed = GlobalSearch.forQuery(getProject(), "").hits().stream().map(hit -> hit.node().getPath()).toList();
+
+        assertEquals("with nothing typed, the search does not list the test sets and test runs, in tree order, and nothing else", List.of(testCase.getParent().getPath(), ranIt, ranSomethingElse), listed);
+    }
+
     // UC-INTERNAL-001, Rule-INTERNAL-001
     public void testTheTestCaseItselfIsStillTheFirstRowForItsUuid() {
         final List<Hit> hits = forTheUuid();
