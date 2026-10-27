@@ -126,6 +126,8 @@ public class CreateTestCaseDialogIdeTest extends AbstractTempRootIdeTest {
         press(CreateTestCaseFields.PRE_CONDITIONS);
         press(CreateTestCaseFields.TEST_DATA);
         press(CreateTestCaseFields.STEPS);
+        press(CreateTestCaseFields.GROUP);
+        press(CreateTestCaseFields.REFERENCE);
         dialog.addBoxAt(dialog.getStepsSection().getFields().getFirst());
         dialog.addBoxAt(dialog.getStepsSection().getFields().getFirst());
 
@@ -134,6 +136,8 @@ public class CreateTestCaseDialogIdeTest extends AbstractTempRootIdeTest {
         dialog.getModuleSection().field.setText("  Payments  ");
         dialog.getPreConditionsSection().field.setText("  A card is saved  ");
         dialog.getTestDataSection().field.setText("  4111 1111 1111 1111  ");
+        dialog.getGroupSection().getFields().getFirst().setText("  smoke  ");
+        dialog.getReferenceSection().field.setText("  PAY-12  ");
         final @NotNull List<EditorTextField> steps = dialog.getStepsSection().getFields();
         assertEquals("Ctrl+S and two Ctrl+= did not give three steps", 3, steps.size());
         steps.getFirst().setText("  Open the cart  ");
@@ -148,6 +152,8 @@ public class CreateTestCaseDialogIdeTest extends AbstractTempRootIdeTest {
         assertEquals("Payments", testCase.getModule());
         assertEquals("A card is saved", testCase.getPreConditions());
         assertEquals("4111 1111 1111 1111", testCase.getTestData());
+        assertEquals(List.of("smoke"), testCase.getGroups());
+        assertEquals("PAY-12", testCase.getReference());
         assertEquals("a blank step was kept, or a step was not trimmed", List.of("Open the cart", "Pay"), testCase.getSteps());
     }
 
