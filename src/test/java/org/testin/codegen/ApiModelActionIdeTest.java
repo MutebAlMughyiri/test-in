@@ -253,6 +253,19 @@ public class ApiModelActionIdeTest extends AbstractCodegenIdeTest {
         assertEquals("one Undo did not take both files back", List.of(Optional.empty(), Optional.empty()), List.of(textOf(api, "LoginRequest.java"), textOf(api, "LoginResponse.java")));
     }
 
+    // UC-CODEGEN-022
+    public void testCreateWithNeitherBodyPastedWritesNothingAndSaysWhatItNeeds() {
+        final @NotNull PsiDirectory api = aPackage();
+        final @NotNull List<String> balloons = Said.listening(getProject(), getTestRootDisposable()).shown();
+        final @NotNull JComponent dialog = opened(api).getContent();
+        Drawn.first(dialog, JTextComponent.class, JTextComponent::isEditable).setText("Login");
+
+        created(dialog);
+
+        assertEquals("Create with neither body pasted did not say what it needs", List.of(Refused.NOTHING_PASTED.getSentence()), balloons);
+        assertEquals("Create with neither body pasted wrote a file", List.of(Optional.empty(), Optional.empty()), List.of(textOf(api, "LoginRequest.java"), textOf(api, "LoginResponse.java")));
+    }
+
     // Rule-CODEGEN-105
     public void testAFileAlreadyInThePackageIsNeverReplaced() {
         final @NotNull PsiDirectory api = aPackage();
