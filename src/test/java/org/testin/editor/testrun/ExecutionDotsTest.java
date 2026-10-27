@@ -25,7 +25,10 @@ import org.testin.model.testrun.RunItemExecution;
 import org.testng.annotations.Test;
 
 import javax.swing.Icon;
+import javax.swing.JLabel;
 import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.IntStream;
@@ -73,5 +76,38 @@ public class ExecutionDotsTest {
                 RunItemExecution.builder().status(RunItemStatus.PASSED).build())).build();
 
         assertEquals(((ExecutionDots) ExecutionDots.of(mixed, FONT)).colors(), List.of(RunItemStatus.FAILED.getRowColor(), RunItemStatus.PASSED.getRowColor()));
+    }
+
+    private static @NotNull BufferedImage painted(final @NotNull Icon dots) {
+        final @NotNull BufferedImage image = new BufferedImage(dots.getIconWidth() + 2, dots.getIconHeight() + 2, BufferedImage.TYPE_INT_ARGB);
+        final @NotNull Graphics2D g2 = image.createGraphics();
+        try {
+            dots.paintIcon(new JLabel(), g2, 0, 0);
+        } finally {
+            g2.dispose();
+        }
+        return image;
+    }
+
+    private static boolean anyPaintedIn(final @NotNull BufferedImage image, final int fromX, final int toX) {
+        return IntStream.range(fromX, toX).anyMatch(x -> IntStream.range(0, image.getHeight()).anyMatch(y -> (image.getRGB(x, y) >>> 24) != 0));
+    }
+
+    // Rule-EDITOR-PANEL-287
+    @Test
+    public void eachExecutionIsADotInItsColorTheDefaultRingedAndTheOlderOnesCountedBeforeThem() {
+        final @NotNull RunItem failedThenPassed = RunItem.builder().uuid(UUID.randomUUID()).executions(List.of(
+                RunItemExecution.builder().status(RunItemStatus.FAILED).build(),
+                RunItemExecution.builder().status(RunItemStatus.PASSED).build())).defaultNumber(2).build();
+        final @NotNull BufferedImage two = painted(ExecutionDots.of(failedThenPassed, FONT));
+        final int dot = FONT.getSize() / 2;
+        final int top = (FONT.getSize() - dot) / 2;
+
+        assertEquals(two.getRGB(dot / 2, top + dot / 2), RunItemStatus.FAILED.getRowColor().getRGB(), "the first execution is not a dot in its color");
+        assertEquals(two.getRGB(dot * 3 / 2 + dot / 2, top + dot / 2) >>> 24, 0, "the default execution is filled rather than ringed");
+        assertTrue(anyPaintedIn(two, dot * 3 / 2, dot * 3), "the default execution is not drawn at all");
+
+        final @NotNull ExecutionDots ten = (ExecutionDots) ExecutionDots.of(executed(10), FONT);
+        assertTrue(anyPaintedIn(painted(ten), 0, ten.olderWidth()), "the older executions are not counted before the dots");
     }
 }
