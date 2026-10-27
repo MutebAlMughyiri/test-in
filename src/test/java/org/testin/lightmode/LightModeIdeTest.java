@@ -40,6 +40,7 @@ import org.testin.filter.SortPopupButton;
 import org.testin.filter.Sorting;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
+import org.testin.model.Priority;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
@@ -459,6 +460,26 @@ public class LightModeIdeTest extends AbstractTempRootIdeTest {
             passAndShowTheNext(window);
             assertTrue("the next test case moved in with Animate windows off", window.slideMotion().isEmpty());
             assertFalse("the next test case slid in with Animate windows off", theOne(frame, SlidingPanel.class).isSliding());
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
+    // UC-EDITOR-PANEL-046
+    public void testTheDetailsShowThePriorityAndEachGroupAsABadge() {
+        animateWindows(false);
+        final @NotNull List<TestCase> testCases = aTestSetWithSteps(1, 1);
+        testCases.getFirst().setPriority(Priority.HIGH);
+        testCases.getFirst().setGroups(List.of("smoke"));
+        final @NotNull TestRunEditor editor = walking(aTestRunOf(testCases));
+        final @NotNull JFrame frame = frameOf(openedOn(editor));
+        try {
+            press(frame, DETAILS);
+            pumpForATenthOfASecond();
+
+            final @NotNull List<String> shown = Drawn.words(theOne(frame, TestCaseDetails.class));
+            assertTrue("the details show no priority badge: " + shown, shown.contains(Priority.HIGH.getLabel()));
+            assertTrue("the details show no badge for the group: " + shown, shown.contains("smoke"));
         } finally {
             Disposer.dispose(editor);
         }
