@@ -94,6 +94,16 @@ public class CreateTestCaseDialogIdeTest extends AbstractTempRootIdeTest {
         assertFalse("another field appeared on the expected result's key", dialog.getModuleSection().isShown());
     }
 
+    // Rule-EDITOR-PANEL-028
+    public void testThePriorityAppearsOnItsKey() {
+        final @NotNull CreateTestCaseDialog dialog = shown();
+        assertFalse("the priority is shown before its key was pressed", dialog.getPrioritySection().isShown());
+
+        press(CreateTestCaseFields.PRIORITY);
+
+        assertTrue("the priority did not appear on its key", dialog.getPrioritySection().isShown());
+    }
+
     // Rule-EDITOR-PANEL-271
     public void testReferenceOpensOnCtrlRAndCarriesTheLetterTheUpdateAndCopyMenusGiveIt() {
         final @NotNull CreateTestCaseDialog dialog = shown();
