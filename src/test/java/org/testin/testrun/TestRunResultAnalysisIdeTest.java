@@ -25,6 +25,7 @@ import com.intellij.testFramework.PlatformTestUtil;
 import com.intellij.ui.EditorTextField;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
+import org.testin.Said;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.editor.toolbar.TestRunResultAnalysisButton;
@@ -137,6 +138,30 @@ public class TestRunResultAnalysisIdeTest extends AbstractTempRootIdeTest {
             assertTrue("the Save button did not save the analysis", editor.getParent().getMarker().getResultAnalysis().values().stream().anyMatch(written -> written.startsWith("Most failures came from the payment gateway")));
         } finally {
             realized.forEach(EditorTextField::removeNotify);
+            Disposer.dispose(editor);
+        }
+    }
+
+    // UC-EDITOR-PANEL-045, Rule-TREE-PANEL-135
+    public void testAnAnalysisSavedAfterTheTestRunWasCommittedIsRefusedAndNotWritten() {
+        final @NotNull TestRunFixture fixture = aJudgedTestRunIn(TestRunStatus.COMPLETED);
+        final @NotNull TestRunEditor editor = fixture.opened(getTestRootDisposable());
+        try {
+            editor.getToolBar().getToolbarItem(TestRunResultAnalysisButton.class).doClick();
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+            final @NotNull JComponent dialog = ShownDialog.content(getProject(), TestRunResultAnalysisDialog.class);
+            Drawn.first(dialog, EditorTextField.class).setText("Most failures came from the payment gateway");
+            fixture.testRun().getMarker().changeStatus(TestRunStatus.COMMITTED);
+            final @NotNull String why = fixture.testRun().whySignedOff().orElseThrow(() -> new AssertionError("a Committed test run gives no reason it is signed off"));
+            final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+            Drawn.components(dialog).stream().filter(JButton.class::isInstance).map(JButton.class::cast)
+                    .filter(button -> "Save".equals(button.getText())).findFirst().orElseThrow(() -> new AssertionError("Save is not a button: " + Drawn.words(dialog))).doClick();
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+            assertEquals("an analysis saved on a Committed test run was not refused with its reason", List.of(why), said.shown());
+            assertTrue("an analysis was written onto a Committed test run", fixture.testRun().getMarker().getResultAnalysis().isEmpty());
+        } finally {
             Disposer.dispose(editor);
         }
     }
