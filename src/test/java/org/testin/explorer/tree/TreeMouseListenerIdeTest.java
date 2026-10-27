@@ -34,6 +34,7 @@ import java.awt.Rectangle;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import java.util.Optional;
 
 public class TreeMouseListenerIdeTest extends AbstractTempRootIdeTest {
 
@@ -69,14 +70,14 @@ public class TreeMouseListenerIdeTest extends AbstractTempRootIdeTest {
         super.tearDown();
     }
 
-    private @NotNull MouseEvent clicked(final int row, final int clickCount) {
-        final @NotNull Rectangle bounds = tree.getRowBounds(row);
-        return new MouseEvent(tree, MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), InputEvent.BUTTON1_DOWN_MASK, bounds.x + 2, bounds.y + bounds.height / 2, clickCount, false, MouseEvent.BUTTON1);
+    private @NotNull MouseEvent aDoubleClickOnLogin() {
+        final @NotNull Rectangle bounds = tree.getRowBounds(1);
+        return new MouseEvent(tree, MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), InputEvent.BUTTON1_DOWN_MASK, bounds.x + 2, bounds.y + bounds.height / 2, 2, false, MouseEvent.BUTTON1);
     }
 
     // UC-TREE-PANEL-005
     public void testADoubleClickOnATestSetOpensItsEditor() {
-        final @NotNull MouseEvent doubleClick = clicked(1, 2);
+        final @NotNull MouseEvent doubleClick = aDoubleClickOnLogin();
 
         listener.mouseClicked(doubleClick);
 
@@ -101,6 +102,6 @@ public class TreeMouseListenerIdeTest extends AbstractTempRootIdeTest {
 
         listener.invokePopup(tree, paymentsRow.x + 2, paymentsRow.y + paymentsRow.height / 2);
 
-        assertEquals("a right click outside the selection did not select the row clicked", payments, ((DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent()).getUserObject());
+        assertEquals("a right click outside the selection did not select the row clicked", Optional.of(payments), TreeValues.directoryAt(tree.getSelectionPath()));
     }
 }

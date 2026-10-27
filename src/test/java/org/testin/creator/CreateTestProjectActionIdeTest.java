@@ -106,7 +106,7 @@ public class CreateTestProjectActionIdeTest extends AbstractReadTheRootIdeTest {
     }
 
     // UC-TREE-PANEL-003, Rule-TREE-PANEL-107
-    public void testARepositoryAddressTypedIsClonedUnderItsRepositorysName() {
+    public void testARepositoryAddressTypedIsClonedUnderTheRepositoryName() {
         readEverything();
 
         typedAndConfirmed(aBareRepositoryHoldingATestProject());
