@@ -18,6 +18,7 @@ package org.testin.editor;
 
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.testFramework.PlatformTestUtil;
+import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
@@ -26,6 +27,7 @@ import org.testin.editor.statusbar.EditorStatusBar;
 import org.testin.editor.statusbar.PageStep;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.editor.testset.TestSetEditor;
+import org.testin.editor.toolbar.GridViewButton;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
@@ -33,6 +35,7 @@ import org.testin.model.node.TestSetNode;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
+import org.testin.view.Drawn;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -148,6 +151,17 @@ public class PagingIdeTest extends AbstractTempRootIdeTest {
         assertTrue("Previous is gray on the last page", bar.button(PageStep.PREVIOUS).isEnabled());
         assertFalse("Next is not gray on the last page", bar.button(PageStep.NEXT).isEnabled());
         assertFalse("Last is not gray on the last page", bar.button(PageStep.LAST).isEnabled());
+    }
+
+    // UC-EDITOR-PANEL-022, Rule-EDITOR-PANEL-103
+    public void testTheNextKeyTurnsThePageInTheGridToo() {
+        final @NotNull TestSetEditor editor = opened(aLongTestSet());
+        editor.getToolBar().getToolbarItem(GridViewButton.class).doClick();
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+        ShownDialog.press(Drawn.first(editor.getComponent(), JBTable.class), Shortcuts.Next.getKey());
+
+        assertEquals("the Next key did not turn the page in the grid", 2, editor.getCurrentPage());
     }
 
     // Rule-EDITOR-PANEL-103, Rule-EDITOR-PANEL-009

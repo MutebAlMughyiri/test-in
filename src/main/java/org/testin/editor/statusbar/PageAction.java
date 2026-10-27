@@ -35,13 +35,14 @@ public class PageAction extends DumbAwareAction {
         super(step.getTooltip(), step.getDescription(), step.getIcon());
         this.editor = editor;
         this.step = step;
+        setShortcutSet(step.getShortcut().getCustomShortcut());
     }
 
     // UC-EDITOR-PANEL-022, Rule-EDITOR-PANEL-103
     public static void bindTo(final @NotNull TestinEditor editor, final @NotNull JComponent component) {
         for (final PageStep step : PageStep.values()) {
             final @NotNull PageAction action = new PageAction(editor, step);
-            action.registerCustomShortcutSet(step.getShortcut().getCustomShortcut(), component);
+            action.registerCustomShortcutSet(action.getShortcutSet(), component);
         }
     }
 
