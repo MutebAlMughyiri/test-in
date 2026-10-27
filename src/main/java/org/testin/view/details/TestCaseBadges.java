@@ -17,6 +17,8 @@
 package org.testin.view.details;
 
 import com.intellij.openapi.project.Project;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.model.TestCase;
 import org.testin.model.status.AutomationExecutionStatus;
@@ -28,6 +30,7 @@ import org.testin.ui.Badges;
 import javax.swing.JComponent;
 import java.util.List;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestCaseBadges {
     // UC-VIEW-PANEL-004, Rule-VIEW-PANEL-085
     public static @NotNull List<JComponent> of(final @NotNull Project project, final @NotNull TestCase testCase) {

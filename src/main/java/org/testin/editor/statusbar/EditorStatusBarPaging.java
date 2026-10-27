@@ -16,13 +16,16 @@
 
 package org.testin.editor.statusbar;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.testin.editor.TestinEditor;
 import org.testin.notifications.Notifier;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
 
-public class EditorStatusBarPaging {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class EditorStatusBarPaging {
     // UC-EDITOR-PANEL-022, UC-EDITOR-PANEL-023, Rule-EDITOR-PANEL-222
     public static void attach(final @NotNull TestinEditor editor) {
         editor.getStatusBar().getPageSizeField().setText(String.valueOf(editor.getPageSize()));
