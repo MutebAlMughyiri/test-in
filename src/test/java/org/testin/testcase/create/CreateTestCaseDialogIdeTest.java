@@ -24,6 +24,7 @@ import org.testin.Said;
 import org.testin.clipboard.CopyChoice;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.testset.TestSetEditor;
+import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
 import org.testin.model.Priority;
 import org.testin.model.TestCase;
@@ -35,6 +36,7 @@ import org.testin.testcase.CreateTestCaseFields;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.testcase.UpdateTestCaseFields;
 import org.testin.ui.framework.ShownDialog;
+import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
 import org.testin.view.Drawn;
 import org.testin.view.PopupsBuilt;
@@ -155,6 +157,26 @@ public class CreateTestCaseDialogIdeTest extends AbstractTempRootIdeTest {
         assertEquals(List.of("smoke"), testCase.getGroups());
         assertEquals("PAY-12", testCase.getReference());
         assertEquals("a blank step was kept, or a step was not trimmed", List.of("Open the cart", "Pay"), testCase.getSteps());
+    }
+
+    // UC-EDITOR-PANEL-005
+    public void testATestSetRemovedWhileTheDialogIsOpenSavesNothingAndKeepsWhatWasTyped() {
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
+        final @NotNull CreateTestCaseDialog dialog = new CreateTestCaseDialog(getProject(), testSet, saved::add);
+        ShownDialog.open(getProject(), CreateTestCaseDialog.class, dialog::show);
+        dialog.getDescriptionSection().field.setText("Pay with a saved card");
+        final @NotNull Nodes nodes = Services.getInstance(getProject(), Nodes.class);
+        nodes.removeTestSet(testSet.getPath(), _ -> {
+        });
+        Await.until("the test set was never removed", () -> !nodes.nodeExists(testSet.getPath()));
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        save();
+
+        assertTrue("a test case was saved into a test set that is gone", saved.isEmpty());
+        assertTrue("the tester was not told the test set is gone: " + said.shown(), said.shown().contains(Bundle.message("create.test.case.set.gone", "Checkout")));
+        assertTrue("the dialog closed over what was typed", ShownDialog.isOpen(getProject(), CreateTestCaseDialog.class));
+        assertEquals("what was typed was lost", "Pay with a saved card", dialog.getDescriptionSection().field.getText());
     }
 
     // UC-EDITOR-PANEL-005
