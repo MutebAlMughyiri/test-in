@@ -25,6 +25,7 @@ import org.testin.model.NodeType;
 import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestRunNode;
+import org.testin.services.BackgroundWork;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
 import org.testin.util.Bundle;
@@ -36,6 +37,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 public class ReadTestProjectIdeTest extends AbstractReadTheRootIdeTest {
@@ -352,5 +355,33 @@ public class ReadTestProjectIdeTest extends AbstractReadTheRootIdeTest {
                 List.of(moved.getUuid()), store.getTestCasesForTestSet(logout).stream().map(TestCase::getUuid).toList());
         assertTrue("a test case moved or removed while its test project was read came back in its old test set when the read landed", store.getTestCasesForTestSet(login).isEmpty());
         assertTrue("a test case removed while its test project was read came back when the read landed", store.findTestCase(removed.getUuid()).isEmpty());
+    }
+
+    // UC-INTERNAL-002, Rule-INTERNAL-013
+    public void testAReadTheTesterCancelsIsNotCountedAndIsReadAgainOnTheNextRequest() {
+        final @NotNull Path testProjectPath = aTestProjectAt(root.resolve("Checkout"));
+        final @NotNull UUID testCase = aTestCaseIn(marked(theTestCasesOf(testProjectPath).resolve("Login"), NodeType.TEST_SET));
+        final @NotNull String reading = Bundle.message("indexer.task.title", "Checkout");
+        final @NotNull AtomicBoolean canceling = new AtomicBoolean(true);
+        final @NotNull List<Boolean> cancelable = new CopyOnWriteArrayList<>();
+        BackgroundWork.watch(getTestRootDisposable(), task -> {
+            if (!task.getTitle().equals(reading)) return false;
+            cancelable.add(task.isCancellable());
+            return canceling.get();
+        });
+
+        indexer().resetForReindex();
+        indexer().indexWithProgress();
+        Await.until("the read of the test project never started", () -> !cancelable.isEmpty());
+        assertEquals("the tester cannot cancel the read of a test project", List.of(true), cancelable);
+        assertFalse("a canceled read was counted as read", indexer().isIndexed());
+        assertTrue("a canceled read still read the test case", indexedTestCases().findTestCase(testCase).isEmpty());
+
+        canceling.set(false);
+        Await.until("a canceled read was not read again on the next request", () -> {
+            indexer().indexWithProgress();
+            return indexer().isIndexed();
+        });
+        assertTrue("the read after the canceled one is missing the test case", indexedTestCases().findTestCase(testCase).isPresent());
     }
 }
