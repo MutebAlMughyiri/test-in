@@ -88,6 +88,17 @@ public class TestCaseHistoryIdeTest extends AbstractGitRemoteIdeTest {
         assertEquals("reading the history changed the file", onDisk, read(work, "Test Cases/Sign in/" + FILE));
     }
 
+    // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-096
+    public void testATestCaseGitHasNeverCommittedHasOnlyItsUncommittedEntry() {
+        final @NotNull TestCase now = version("The dashboard opens");
+        save("Test Cases/Login/" + FILE, now);
+
+        final @NotNull List<TestCaseHistoryCard> entries = historyOf(work, "Test Cases/Login/" + FILE, now).entries();
+
+        assertEquals("a test case Git never committed has more than its uncommitted entry: " + entries, 1, entries.size());
+        assertFalse("the one entry of a test case Git never committed reads as committed", entries.getFirst().isCommitted());
+    }
+
     // Rule-VIEW-PANEL-100
     public void testAFolderNotUnderGitHasNoHistory() {
         final @NotNull Path alone = directory("alone");

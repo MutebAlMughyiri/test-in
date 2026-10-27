@@ -98,6 +98,13 @@ public class BugHistoryIdeTest extends AbstractGitRemoteIdeTest {
         assertEquals(work.resolve("Test Runs").resolve("Cycle 3"), bugs.get(1).event().testRun());
     }
 
+    // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-105
+    public void testAGitRepositoryThatNeverCommittedTheTestCasesRunItemsShowsOnlyTheBugItHoldsNow() {
+        holdsNow(work, "Cycle 1", runItem(RunItemStatus.FAILED, BugSeverity.MAJOR));
+
+        assertEquals("a bug Git has no record of was not shown as not committed", List.of("not committed RECORDED in Cycle 1"), told(bugsOf(work)));
+    }
+
     // Rule-VIEW-PANEL-100
     public void testAFolderNotUnderGitShowsTheBugsItsTestRunsHoldNow() {
         final @NotNull Path alone = directory("alone");
