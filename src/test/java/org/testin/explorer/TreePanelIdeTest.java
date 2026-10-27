@@ -23,9 +23,12 @@ import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.JDOMUtil;
 import com.intellij.testFramework.PlatformTestUtil;
+import com.intellij.ui.SimpleColoredComponent;
+import com.intellij.ui.components.JBList;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.treeStructure.SimpleTree;
+import com.intellij.util.ui.StatusText;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
@@ -59,7 +62,9 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.StreamSupport;
 
 public class TreePanelIdeTest extends AbstractReadTheRootIdeTest {
 
@@ -264,6 +269,24 @@ public class TreePanelIdeTest extends AbstractReadTheRootIdeTest {
         final @NotNull List<String> heard = balloons.shown();
 
         assertEquals("refreshes did not run one at a time, the waiting two as one reporting the last: " + heard, List.of("First refresh", "Third refresh"), heard.stream().filter(said -> said.endsWith("refresh")).toList());
+    }
+
+    // UC-TREE-PANEL-001
+    public void testATestProjectChosenHereThatIsNotInTheTestinFolderIsNamedAboveTheChoices() {
+        aTestProjectAt(root.resolve("Checkout"));
+        aTestProjectAt(root.resolve("Payments"));
+        readEverything();
+        bound().choose("Missing");
+        final @NotNull TreePanel panel = aPanelShowingTheWelcome();
+        final @NotNull StatusText offered = new JBList<String>().getEmptyText();
+
+        panel.offerChoice(offered);
+
+        final @NotNull String lines = StreamSupport.stream(offered.getWrappedFragmentsIterable().spliterator(), false)
+                .filter(SimpleColoredComponent.class::isInstance)
+                .map(line -> ((SimpleColoredComponent) line).getCharSequence(false).toString())
+                .collect(Collectors.joining("\n"));
+        assertTrue("the choices do not say the test project chosen here is not in the Testin folder: " + lines, lines.contains(Bundle.message("chosen.not.under.root", "Missing")));
     }
 
     // Rule-TREE-PANEL-006
