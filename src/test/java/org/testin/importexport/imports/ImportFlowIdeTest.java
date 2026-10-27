@@ -121,6 +121,11 @@ public class ImportFlowIdeTest extends AbstractTempRootIdeTest {
         });
     }
 
+    private static @NotNull ProgressIndicator canceledAfterTheFirstSheet(final @NotNull AtomicInteger asked) {
+        return (ProgressIndicator) Proxy.newProxyInstance(ProgressIndicator.class.getClassLoader(), new Class<?>[]{ProgressIndicator.class}, (_, method, _) ->
+                method.getName().equals("isCanceled") ? asked.incrementAndGet() >= 2 : nothingOf(method.getReturnType()));
+    }
+
     private static @NotNull Object nothingOf(final @NotNull Class<?> type) {
         if (type == boolean.class) return false;
         if (type == double.class) return 0.0;
@@ -299,6 +304,24 @@ public class ImportFlowIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestSetNode signup = new NodesOnDisk(getProject()).testSet(testProject.getTestCasesFolder(), "Signup");
         imported(signup, read(aFile("Signup.json", sheets("Signup", aTestCase("sign up with a new address")))));
         Await.until("an import into a test set opens its editor again, so the package's would have been seen", () -> standIn.opened.get() == 2);
+    }
+
+    // UC-SHARE-007, Rule-SHARE-037
+    public void testAnImportCanceledAfterItsFirstSheetNamesTheTestSetsItLeftEmpty() {
+        final @NotNull TestSetPackageNode web = new NodesOnDisk(getProject()).testSetPackage(testProject.getTestCasesFolder(), "Web");
+        final @NotNull Map<String, List<TestCase>> sevenSheets = sheets("Login", aTestCase("log in with a valid user"));
+        for (final String sheet : List.of("Cart", "Checkout", "Delivery", "Orders", "Profile", "Search"))
+            sevenSheets.put(sheet, new ArrayList<>(List.of(aTestCase("open " + sheet))));
+        final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
+
+        imported(web, sevenSheets, canceledAfterTheFirstSheet(new AtomicInteger()));
+
+        final @NotNull String leftEmpty = Bundle.message("import.empty.title");
+        Await.until("the test sets left empty were not named", () -> said.stream().anyMatch(notification -> notification.getTitle().equals(leftEmpty)));
+        assertEquals("the six left empty are not counted, five named and the rest counted",
+                Bundle.message("import.empty.message", Bundle.message("import.empty.many", "6"), "Cart, Checkout, Delivery, Orders, Profile", Bundle.message("indexer.more", "1")),
+                said.stream().filter(notification -> notification.getTitle().equals(leftEmpty)).findFirst().orElseThrow().getContent());
+        assertEquals("the first sheet's test case was not kept", 1, filesOfTestCasesIn(web.getPath().resolve("Login")).size());
     }
 
     // UC-SHARE-007, Rule-SHARE-037
