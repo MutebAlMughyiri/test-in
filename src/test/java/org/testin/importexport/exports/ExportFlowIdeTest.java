@@ -29,6 +29,7 @@ import org.testin.NodesOnDisk;
 import org.testin.Said;
 import org.testin.TreeGesture;
 import org.testin.importexport.FileFormat;
+import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestProjectIndexer;
 import org.testin.model.TestCase;
@@ -333,6 +334,27 @@ public class ExportFlowIdeTest extends AbstractTempRootIdeTest {
         button(warning, Bundle.message("export.anyway")).doClick();
 
         assertEquals("the readable test case is still offered", 1, firstTable(ShownDialog.waitedFor(getProject(), ExportDialog.class)).getRowCount());
+    }
+
+    // UC-SHARE-002, Rule-SHARE-015, UC-TREE-PANEL-011
+    public void testAnUnreadableTestCaseIsStillNamedAfterItsTestSetIsRenamed() {
+        final @NotNull TestSetNode login = new NodesOnDisk(getProject()).testSet(testProject.getTestCasesFolder(), "Login");
+        aTestCase(login, "log in with a valid user");
+        final @NotNull String broken = UUID.randomUUID() + ".testcase";
+        write(login.getPath().resolve(broken), "{ this is not a test case");
+        Services.getInstance(getProject(), TestProjectIndexer.class).scanSingleTestProject(testProject.getPath());
+        final @NotNull Nodes nodes = Services.getInstance(getProject(), Nodes.class);
+        final @NotNull Path renamed = login.getPath().resolveSibling("Sign in");
+        nodes.renameNode(login.getPath(), renamed, () -> {
+        }, () -> {
+            throw new AssertionError("the test set was not renamed");
+        });
+        Await.until("the test set was not renamed", () -> nodes.find(renamed).isPresent());
+
+        exportPressedOn(nodes.find(renamed).orElseThrow());
+        final @NotNull JComponent warning = ShownDialog.waitedFor(getProject(), ConfirmDialog.class);
+
+        assertTrue("the unreadable file was lost when its test set was renamed: " + wordsIn(warning), wordsIn(warning).contains(broken));
     }
 
     // UC-SHARE-001
