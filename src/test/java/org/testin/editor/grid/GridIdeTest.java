@@ -257,4 +257,18 @@ public class GridIdeTest extends AbstractIdeTest {
         assertEquals("separate runs of rows could not be taken together", List.of(0, 2, 4), Arrays.stream(table.getSelectedRows()).boxed().toList());
         assertEquals("a click on the order did not take the whole row", table.getColumnCount(), table.getSelectedColumnCount());
     }
+
+    // Rule-EDITOR-PANEL-108
+    public void testOnTheOrderColumnControlTakesARowBackOutAndShiftTakesTheRunFromTheLastClicked() {
+        final @NotNull JBTable table = aGrid(aRow(1, "a", "", "1"), aRow(2, "b", "", "2"), aRow(3, "c", "", "3"), aRow(4, "d", "", "4"), aRow(5, "e", "", "5"));
+        table.setSize(800, 600);
+
+        clickTheSequenceOf(table, 0, 0);
+        clickTheSequenceOf(table, 2, InputEvent.CTRL_DOWN_MASK);
+        clickTheSequenceOf(table, 2, InputEvent.CTRL_DOWN_MASK);
+        assertEquals("Ctrl on a selected row did not take it back out", List.of(0), Arrays.stream(table.getSelectedRows()).boxed().toList());
+
+        clickTheSequenceOf(table, 3, InputEvent.SHIFT_DOWN_MASK);
+        assertEquals("Shift did not take the run from the row last clicked", List.of(2, 3), Arrays.stream(table.getSelectedRows()).boxed().toList());
+    }
 }
