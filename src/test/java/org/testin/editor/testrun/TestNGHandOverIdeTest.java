@@ -24,6 +24,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.application.TransactionGuard;
 import com.intellij.openapi.util.Disposer;
+import com.intellij.testFramework.DumbModeTestUtils;
 import com.intellij.testFramework.ExtensionTestUtil;
 import com.intellij.testFramework.VfsTestUtil;
 import com.theoryinpractice.testng.configuration.TestNGConfiguration;
@@ -41,6 +42,7 @@ import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.notifications.Refused;
+import org.testin.runner.AutomationExecution;
 import org.testin.runner.AutomationExecutor;
 import org.testin.services.Services;
 
@@ -123,6 +125,19 @@ public class TestNGHandOverIdeTest extends AbstractCodegenIdeTest {
         Await.until("the run was never handed over", () -> !writeSafe.isEmpty());
 
         assertEquals("the run kept the any modality the IDE creates an editor in, so the build before launch could not save the documents", List.of(true), writeSafe);
+    }
+
+    // UC-CODEGEN-008
+    public void testRunningWhileTheIdeIndexesPutsEveryTestCaseBack() {
+        final @NotNull TestCase testCase = createdTestCase(createdTestSet("Checkout"), "Log in with a valid user", "m0001");
+        settled();
+        final @NotNull AutomationExecution execution = Services.getInstance(getProject(), AutomationExecution.class);
+        execution.starting(testCase);
+
+        DumbModeTestUtils.runInDumbModeSynchronously(getProject(), () -> AutomationExecutor.available(getProject()).orElseThrow(() -> new AssertionError("no runner for Java")).run(getProject(), List.of(testCase)));
+
+        assertFalse("a test case run while the IDE indexes was not put back", execution.isRunning(testCase.getUuid()));
+        assertTrue("something was handed to TestNG while the IDE indexes", executed.isEmpty());
     }
 
     // Rule-EDITOR-PANEL-188
