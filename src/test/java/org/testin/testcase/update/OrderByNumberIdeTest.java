@@ -20,6 +20,7 @@ import com.intellij.ui.components.fields.IntegerField;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
+import org.testin.Said;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.filter.SortDirection;
@@ -120,6 +121,22 @@ public class OrderByNumberIdeTest extends AbstractTempRootIdeTest {
 
         Await.until("the test case never moved up to third: " + storedOrder(), () -> storedOrder().equals(List.of("1", "2", "6", "3", "4", "5")));
         assertEquals("a test case around the moved one was written", others, everyFileButNumber6());
+    }
+
+    // UC-EDITOR-PANEL-009
+    public void testANumberAboveHowManyTestCasesThereAreIsRefusedAndNothingIsSaved() {
+        final @NotNull TestSetEditor editor = sixTestCases();
+        final @NotNull List<String> before = storedOrder();
+        select(editor, "Test case number 6");
+        final @NotNull IntegerField box = theOrderBox(editor);
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        box.setText("9");
+        ShownDialog.press(getProject(), UpdateTestCaseDialog.class, Shortcuts.Enter.getKey());
+
+        assertFalse("a number past the last test case was not refused in words", said.shown().isEmpty());
+        assertTrue("a number past the last test case closed the dialog", ShownDialog.isOpen(getProject(), UpdateTestCaseDialog.class));
+        assertEquals("a number past the last test case moved something", before, storedOrder());
     }
 
     // Rule-EDITOR-PANEL-055
