@@ -296,4 +296,31 @@ public class ExportFlowIdeTest extends AbstractTempRootIdeTest {
 
         assertEquals("the readable test case is still offered", 1, firstTable(ShownDialog.waitedFor(getProject(), ExportDialog.class)).getRowCount());
     }
+
+    // UC-SHARE-001
+    public void testAFolderHoldingNoTestCasesSaysSoAndOpensNoExport() {
+        final @NotNull NodesOnDisk disk = new NodesOnDisk(getProject());
+        final @NotNull TestSetPackageNode payments = disk.testSetPackage(testProject.getTestCasesFolder(), "Payments");
+        disk.testSet(payments, "Empty");
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        new ExportWork(getProject()).exportFrom(payments);
+
+        Await.until("an export of a folder holding no test cases did not say so", () -> said.shown().stream().anyMatch(shown -> shown.contains(Bundle.message("export.none.found"))));
+        assertFalse("an export opened for a folder holding no test cases", ShownDialog.isOpen(getProject(), ExportDialog.class));
+    }
+
+    // UC-SHARE-002, Rule-SHARE-015
+    public void testPastFiveUnreadableTestCasesTheRestAreCounted() {
+        final @NotNull TestSetNode login = new NodesOnDisk(getProject()).testSet(testProject.getTestCasesFolder(), "Login");
+        aTestCase(login, "log in with a valid user");
+        for (int i = 0; i < 7; i++)
+            write(login.getPath().resolve(UUID.randomUUID() + ".testcase"), "{ this is not a test case");
+        Services.getInstance(getProject(), TestProjectIndexer.class).scanSingleTestProject(testProject.getPath());
+
+        new ExportWork(getProject()).exportFrom(login);
+        final @NotNull JComponent warning = ShownDialog.waitedFor(getProject(), ConfirmDialog.class);
+
+        assertTrue("the unreadable files past the fifth are not counted: " + wordsIn(warning), wordsIn(warning).contains(Bundle.message("export.unreadable.more", "2")));
+    }
 }
