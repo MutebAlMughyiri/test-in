@@ -16,6 +16,7 @@
 
 package org.testin.config;
 
+import com.intellij.ide.GeneralSettings;
 import com.intellij.notification.Notification;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
@@ -39,6 +40,8 @@ public class TestinYmlIdeTest extends AbstractReadTheRootIdeTest {
 
     private @NotNull Optional<String> ymlWas = Optional.empty();
 
+    private boolean safeWriteWas = true;
+
     @Override
     protected void setUp() {
         super.setUp();
@@ -49,6 +52,7 @@ public class TestinYmlIdeTest extends AbstractReadTheRootIdeTest {
         } catch (final IOException ex) {
             throw new AssertionError("could not keep " + TestinYml.fileName() + " aside: " + ex.getMessage(), ex);
         }
+        safeWriteWas = GeneralSettings.getInstance().isUseSafeWrite();
         TestinYml.reload(getProject());
     }
 
@@ -60,6 +64,7 @@ public class TestinYmlIdeTest extends AbstractReadTheRootIdeTest {
         } catch (final IOException ex) {
             throw new AssertionError("could not put " + TestinYml.fileName() + " back: " + ex.getMessage(), ex);
         }
+        GeneralSettings.getInstance().setUseSafeWrite(safeWriteWas);
         TestinYml.reload(getProject());
         super.tearDown();
     }
@@ -106,13 +111,18 @@ public class TestinYmlIdeTest extends AbstractReadTheRootIdeTest {
 
     // UC-TREE-PANEL-029, Rule-TREE-PANEL-114
     public void testSavingIntoAnOpenTestinYmlKeepsWhatWasTypedInIt() {
+        GeneralSettings.getInstance().setUseSafeWrite(false);
         final @NotNull Document document = Optional.ofNullable(FileDocumentManager.getInstance().getDocument(written("testinProject: Checkout\n"))).orElseThrow(() -> new AssertionError("testin.yml has no document"));
         final @NotNull Runnable typed = () -> document.setText("# the team's test project\ntestinProject: Checkout\n");
         WriteCommandAction.runWriteCommandAction(getProject(), typed);
 
-        assertTrue("testin.yml was not saved", TestinYml.save(getProject(), TestinYml.lines("Payments")));
+        try {
+            assertTrue("testin.yml was not saved", TestinYml.save(getProject(), TestinYml.lines("Payments")));
 
-        assertEquals("saving into an open testin.yml lost what was typed in it", "# the team's test project\ntestinProject: Payments\n", document.getText());
+            assertEquals("saving into an open testin.yml lost what was typed in it", "# the team's test project\ntestinProject: Payments\n", document.getText());
+        } finally {
+            FileDocumentManager.getInstance().reloadFromDisk(document);
+        }
     }
 
     // UC-TREE-PANEL-011, Rule-TREE-PANEL-110
