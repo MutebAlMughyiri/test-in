@@ -85,6 +85,16 @@ public class TestMethodCodeIdeTest extends AbstractCodegenIdeTest {
     }
 
     // UC-CODEGEN-006
+    public void testGoToCodeOnATestCaseWhoseTestSetHasNoClassOpensNothingAndSaysNotAutomated() {
+        final @NotNull TestCase testCase = indexedTestCase(indexedTestSet("Login", theTestCasesDirectory()), "Log in with a valid user", "b");
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        TestMethodCode.available(getProject()).toCode(getProject(), testCase);
+
+        Await.until("a test case whose test set has no class was not said to be not automated: " + said.shown(), () -> said.shown().contains(Refused.NO_GENERATED_CODE.getSentence()));
+    }
+
+    // UC-CODEGEN-006
     public void testGoToCodeWhileTheIdeIndexesSaysItWaitsAndJumpsWhenIndexingEnds() {
         final @NotNull TestCase testCase = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
         final @NotNull PsiMethod testMethod = writtenMethodOf(LOGIN_TEST, testCase);
