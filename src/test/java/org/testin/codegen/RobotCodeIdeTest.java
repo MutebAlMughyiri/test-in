@@ -26,10 +26,12 @@ import org.testin.codegen.event.CopiedTestCase;
 import org.testin.codegen.event.MovedNode;
 import org.testin.codegen.event.MovedTestCase;
 import org.testin.codegen.event.RenamedNode;
+import org.testin.indexer.TestCases;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
 import org.testin.model.status.TestCaseStatus;
+import org.testin.services.Services;
 
 import java.util.List;
 import java.util.Optional;
@@ -93,6 +95,33 @@ public class RobotCodeIdeTest extends AbstractCodegenIdeTest {
         assertTrue("the test was not renamed, retagged and excluded: " + text, text.contains("Log in with a valid user\n    [Tags]    " + signIn.getUuid() + "    smoke    robot:exclude\n"));
         assertTrue("the tester's step was touched: " + text, text.contains("    Open Browser    https://example.com\n"));
         assertTrue("the other test was touched: " + text, text.contains("Sign out\n"));
+    }
+
+    // UC-CODEGEN-011, Rule-CODEGEN-126
+    public void testReorderingTheTestSetMovesItsTestsInTheSuite() {
+        final @NotNull TestSetNode login = createdTestSet("Login page");
+        final @NotNull TestCase signIn = createdTestCase(login, "Sign in", "a");
+        createdTestCase(login, "Sign out", "b");
+        final @NotNull TestCase last = signIn.edit().order("c").build();
+        assertTrue(Services.getInstance(getProject(), TestCases.class).putTestCase(login.getPath(), last));
+
+        CodeChangeType.UPDATE_TEST_CASE_ORDER.execute(getProject(), last);
+
+        final @NotNull String text = suiteText(LOGIN_SUITE);
+        assertTrue("the test moved last in its test set was not moved last in the suite: " + text, text.indexOf("Sign out\n") < text.indexOf("Sign in\n"));
+    }
+
+    // UC-CODEGEN-002, Rule-CODEGEN-068
+    public void testUndoingAChangeWritesTheTestAgainFromTheTestCase() {
+        final @NotNull TestSetNode login = createdTestSet("Login page");
+        final @NotNull TestCase signIn = createdTestCase(login, "Sign in", "a");
+        final @NotNull TestCase changed = signIn.edit().description("Log in with a valid user").groups(List.of("smoke")).build();
+        assertTrue(Services.getInstance(getProject(), TestCases.class).putTestCase(login.getPath(), changed));
+
+        CodeChangeType.RECONCILE_TEST_CASE.execute(getProject(), changed);
+
+        final @NotNull String text = suiteText(LOGIN_SUITE);
+        assertTrue("the test was not written again under the test case's name and groups: " + text, text.contains("Log in with a valid user\n    [Tags]    " + signIn.getUuid() + "    smoke\n"));
     }
 
     // UC-CODEGEN-012, Rule-CODEGEN-123
