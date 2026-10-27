@@ -21,6 +21,7 @@ import org.testin.AbstractIdeTest;
 import org.testin.clipboard.CopyChoice;
 import org.testin.editor.testrun.RunItemCard;
 import org.testin.editor.testset.TestCaseCard;
+import org.testin.model.Priority;
 import org.testin.model.TestCase;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.testrun.RunItem;
@@ -62,6 +63,14 @@ public class CardDetailIconsIdeTest extends AbstractIdeTest {
         return card;
     }
 
+    private @NotNull TestCaseCard aCardWithItsPriority(final @NotNull Priority priority) {
+        final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description("Log in with a valid user").priority(priority).build();
+        final @NotNull TestCaseCard card = new TestCaseCard(getProject());
+        card.updateData(0, testCase, Set.of(TestSetEditorFields.PRIORITY), AbstractCard.titleText(1, true, testCase.getDescription()));
+        card.layOutAs(CELL);
+        return card;
+    }
+
     // Rule-EDITOR-PANEL-269
     public void testADetailLineLeadsWithItsFieldsIconAndTheScreenReaderStillHearsTheName() {
         final @NotNull TestCaseCard card = aCardWithItsExpectedResult();
@@ -94,6 +103,14 @@ public class CardDetailIconsIdeTest extends AbstractIdeTest {
 
         final @NotNull JBLabel line = theLineSaying(card, testCase.getUuid().toString());
         assertSame("the UUID line does not lead with the U the copy menu shows", CopyChoice.UUID.getIcon(), line.getIcon());
+    }
+
+    // Rule-EDITOR-PANEL-267
+    public void testHoveringTheLeftMarginNamesAPriorityAndSaysNothingForLow() {
+        final @NotNull Point margin = new Point(2, CELL.height / 2);
+
+        assertEquals("the margin of a High test case does not name its priority", Priority.HIGH.tooltip(), aCardWithItsPriority(Priority.HIGH).tooltipAt(margin, CELL));
+        assertEquals("the margin of a Low test case, which draws no bar, says something", "", aCardWithItsPriority(Priority.LOW).tooltipAt(margin, CELL));
     }
 
     // Rule-EDITOR-PANEL-269
