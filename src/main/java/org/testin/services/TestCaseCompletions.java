@@ -122,7 +122,7 @@ public final class TestCaseCompletions implements Disposable {
                 addTo(newExpectedResults, testCase.getExpectedResult());
                 addTo(newModules, testCase.getModule());
                 testCase.getSteps().forEach(step -> addTo(newSteps, step));
-                testCase.getGroups().forEach(g -> addTo(newGroups, g));
+                testCase.getGroups().forEach(group -> addTo(newGroups, group));
             }
 
             replace(descriptions, newDescriptions);
