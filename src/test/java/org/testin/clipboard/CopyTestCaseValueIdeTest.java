@@ -50,11 +50,7 @@ public class CopyTestCaseValueIdeTest extends AbstractTempRootIdeTest {
         super.tearDown();
     }
 
-    // UC-EDITOR-PANEL-014, Rule-EDITOR-PANEL-207
-    public void testCopyTestCaseValueOffersItsMenuAndEnterCopiesAllDetails() {
-        final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
-        final @NotNull TestCase testCase = EditorFixtures.testCases(getProject(), testSet, 2).getFirst();
-        final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
+    private @NotNull List<String> copiedWithEnter(final @NotNull TestSetEditor editor) {
         final @NotNull List<JBPopup> shown = new ArrayList<>();
         UiInterceptors.register(new UiInterceptors.UiInterceptor<>(JBPopup.class) {
             @Override
@@ -64,16 +60,43 @@ public class CopyTestCaseValueIdeTest extends AbstractTempRootIdeTest {
         });
         final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
         final @NotNull AnAction copy = Objects.requireNonNull(ActionManager.getInstance().getAction("Testin.CopyTestCase"), "Copy Test Case Value is not registered");
+
+        ActionUtil.performAction(copy, TestActionEvent.createTestEvent(copy, Gestures.dataOf(getProject(), editor.getList())));
+        assertEquals("Copy Test Case Value did not offer its menu", 1, shown.size());
+        ShownDialog.press(shown.getFirst().getContent(), Shortcuts.Enter.getKey());
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+        return said.shown();
+    }
+
+    // UC-EDITOR-PANEL-014, Rule-EDITOR-PANEL-207
+    public void testCopyTestCaseValueOffersItsMenuAndEnterCopiesAllDetails() {
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
+        final @NotNull TestCase testCase = EditorFixtures.testCases(getProject(), testSet, 2).getFirst();
+        final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         try {
             editor.getList().setSelectedIndex(0);
-            ActionUtil.performAction(copy, TestActionEvent.createTestEvent(copy, Gestures.dataOf(getProject(), editor.getList())));
-            assertEquals("Copy Test Case Value did not offer its menu", 1, shown.size());
 
-            ShownDialog.press(shown.getFirst().getContent(), Shortcuts.Enter.getKey());
-            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+            final @NotNull List<String> said = copiedWithEnter(editor);
 
             assertEquals("Enter did not copy every detail of the selected test case", CopyChoice.ALL_DETAILS.from(List.of(testCase)), CopyPasteManager.getInstance().getContents(DataFlavor.stringFlavor));
-            assertEquals("the copy was not confirmed once, naming what was copied", List.of(CopyChoice.ALL_DETAILS.copiedMessage(1)), said.shown());
+            assertEquals("the copy was not confirmed once, naming what was copied", List.of(CopyChoice.ALL_DETAILS.copiedMessage(1)), said);
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
+    // UC-EDITOR-PANEL-014, Rule-EDITOR-PANEL-008
+    public void testCopyingTheValuesOfSeveralTestCasesConfirmsOnceWithTheCount() {
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
+        final @NotNull List<TestCase> testCases = EditorFixtures.testCases(getProject(), testSet, 2);
+        final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
+        try {
+            editor.getList().setSelectionInterval(0, 1);
+
+            final @NotNull List<String> said = copiedWithEnter(editor);
+
+            assertEquals("Enter did not copy every detail of both test cases", CopyChoice.ALL_DETAILS.from(testCases), CopyPasteManager.getInstance().getContents(DataFlavor.stringFlavor));
+            assertEquals("the copy of two was not confirmed once with the count", List.of(CopyChoice.ALL_DETAILS.copiedMessage(2)), said);
         } finally {
             Disposer.dispose(editor);
         }
