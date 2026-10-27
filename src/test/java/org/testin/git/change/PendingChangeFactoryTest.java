@@ -147,6 +147,25 @@ public class PendingChangeFactoryTest {
         assertEquals(change.fieldChanges().getFirst().newValue(), "Passed");
     }
 
+    // UC-SHARE-010, Rule-SHARE-047
+    @Test
+    public void aRunItemAddedOrRemovedIsOneRowNamingItsTestRun() {
+        final UUID testCaseUuid = UUID.randomUUID();
+        final Path runItem = Path.of("Test Runs", "cycle 4", testCaseUuid + ".runitem");
+        final String recorded = """
+                {"default":1,"executions":[{"status":"PASSED"}]}""";
+
+        final PendingChange added = PendingChangeFactory.fromFile(GitStatusKind.ADDED, "", recorded, runItem, RealJsonCodec.build(), _ -> Optional.empty());
+        final PendingChange removed = PendingChangeFactory.fromFile(GitStatusKind.DELETED, recorded, "", runItem, RealJsonCodec.build(), _ -> Optional.empty());
+
+        assertEquals(added.fieldChanges().size(), 1, "an added run item is not one row");
+        assertEquals(added.fieldChanges().getFirst().changeType(), ChangeType.CREATE_RUN_ITEM);
+        assertEquals(added.fieldChanges().getFirst().fieldName(), "cycle 4", "the row does not name the test run");
+        assertEquals(removed.fieldChanges().size(), 1, "a removed run item is not one row");
+        assertEquals(removed.fieldChanges().getFirst().changeType(), ChangeType.REMOVE_RUN_ITEM);
+        assertEquals(removed.fieldChanges().getFirst().newValue(), "", "a removed run item still reads as having a value");
+    }
+
     @Test
     public void aTestRunsMarkerSaysWhichOfItsFactsChanged() {
         final PendingChange change = PendingChangeFactory.fromFile(
