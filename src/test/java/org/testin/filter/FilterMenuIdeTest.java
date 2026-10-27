@@ -207,6 +207,11 @@ public class FilterMenuIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestRunEditor editor = openedTestRun(120);
         final @NotNull FilterPopupButton filter = filterOf(editor);
         searchForNumberOne(editor);
+        final @NotNull AnAction resetEntry = childrenOf(filter.menu()).getFirst();
+        final @NotNull AnActionEvent nothingOn = TestActionEvent.createTestEvent(resetEntry);
+        ActionUtil.updateAction(resetEntry, nothingOn);
+        assertFalse("Reset Filters is live with nothing filtered", nothingOn.getPresentation().isEnabled());
+        assertEquals("Reset Filters does not say nothing is filtered", Bundle.message("filter.reset.nothing"), nothingOn.getPresentation().getDescription());
 
         tick(filter, TestSetEditorFields.PRIORITY.getName(), Priority.LOW.getLabel());
         tick(filter, Bundle.message("filter.automation"), Automated.NONE.getLabel());
