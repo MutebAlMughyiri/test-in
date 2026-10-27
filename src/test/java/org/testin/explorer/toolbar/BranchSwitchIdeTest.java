@@ -18,6 +18,7 @@ package org.testin.explorer.toolbar;
 
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.testFramework.PlatformTestUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractOpenEditorsIdeTest;
 import org.testin.Await;
@@ -175,6 +176,19 @@ public class BranchSwitchIdeTest extends AbstractOpenEditorsIdeTest {
         final @NotNull TestProjectNode notARepository = new NodesOnDisk(getProject()).testProject(root.resolve("Plain"));
         final @NotNull BranchSelector selector = new BranchSelector(getProject(), Optional.of(notARepository));
         assertFalse("the branch box shows on a test project that is not a Git repository", selector.getComponent().isVisible());
+    }
+
+    // UC-TREE-PANEL-026
+    public void testChoosingTheBranchAlreadyCheckedOutChangesNothingAndSaysNothing() {
+        final @NotNull String current = branchOnDisk();
+        final @NotNull JComboBox<?> box = branchBox();
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        box.setSelectedItem(current);
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+        assertEquals("choosing the branch already checked out switched", current, branchOnDisk());
+        assertEquals("choosing the branch already checked out said something", List.of(), said.shown());
     }
 
     // Rule-TREE-PANEL-086
