@@ -17,8 +17,9 @@
 
 package org.testin.editor;
 
-import com.intellij.ui.CollectionListModel;
+import com.intellij.testFramework.PlatformTestUtil;
 import com.intellij.ui.components.JBList;
+import com.intellij.util.TimeoutUtil;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
@@ -45,7 +46,11 @@ public class CardWrapIdeTest extends AbstractTempRootIdeTest {
 
     private static int heightAt(final @NotNull JBList<TestCase> list, final int width) {
         list.setSize(width, 4000);
-        ((CollectionListModel<TestCase>) list.getModel()).allContentsChanged();
+        final long settled = System.currentTimeMillis() + 500;
+        while (System.currentTimeMillis() < settled) {
+            PlatformTestUtil.dispatchAllEventsInIdeEventQueue();
+            TimeoutUtil.sleep(10);
+        }
         return list.getCellBounds(1, 1).height;
     }
 
