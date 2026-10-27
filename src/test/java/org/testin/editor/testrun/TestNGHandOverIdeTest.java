@@ -30,10 +30,10 @@ import com.intellij.testFramework.VfsTestUtil;
 import com.theoryinpractice.testng.configuration.TestNGConfiguration;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.testin.config.AutomationLanguage;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.Await;
 import org.testin.Said;
+import org.testin.config.AutomationLanguage;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.open.UnifiedVirtualFile;
 import org.testin.indexer.TestRuns;
@@ -41,6 +41,9 @@ import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
+import org.testin.model.status.RunItemStatus;
+import org.testin.model.testrun.RunItem;
+import org.testin.model.testrun.RunItemExecution;
 import org.testin.notifications.Refused;
 import org.testin.runner.AutomationExecution;
 import org.testin.runner.AutomationExecutor;
@@ -138,6 +141,24 @@ public class TestNGHandOverIdeTest extends AbstractCodegenIdeTest {
 
         assertFalse("a test case run while the IDE indexes was not put back", execution.isRunning(testCase.getUuid()));
         assertTrue("something was handed to TestNG while the IDE indexes", executed.isEmpty());
+    }
+
+    // UC-EDITOR-PANEL-044
+    public void testRunningATestRunWithNothingLeftToRunSaysSoAndHandsNothingOver() {
+        final @NotNull TestCase testCase = createdTestCase(createdTestSet("Checkout"), "Log in with a valid user", "m0001");
+        settled();
+        final @NotNull RunItem passed = RunItem.builder().uuid(testCase.getUuid()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())).build();
+        final @NotNull TestRunNode testRun = EditorFixtures.testRun(getProject(), EditorFixtures.testProject(getProject(), root), List.of(passed));
+        final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());
+        final @NotNull List<String> balloons = Said.listening(getProject(), getTestRootDisposable()).shown();
+        try {
+            editor.runWhenLoaded();
+
+            Await.until("a test run with nothing left to run did not say so: " + balloons, () -> balloons.contains(Refused.NOTHING_TO_RUN.about(testRun.getName())));
+            assertTrue("something was handed to TestNG though nothing was left to run", executed.isEmpty());
+        } finally {
+            Disposer.dispose(editor);
+        }
     }
 
     // Rule-EDITOR-PANEL-188
