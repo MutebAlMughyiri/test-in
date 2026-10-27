@@ -18,11 +18,13 @@ package org.testin.codegen;
 
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
+import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiJavaCodeReferenceElement;
 import com.intellij.psi.PsiJavaFile;
+import com.intellij.psi.PsiMethod;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
@@ -38,12 +40,37 @@ import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
 import org.testin.services.Services;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 public class MoveCodeIdeTest extends AbstractCodegenIdeTest {
 
     private static final @NotNull String WRITTEN_BY_THE_TESTER = "int signedIn = 1;";
+
+    private void cutInto(final @NotNull TestCase testCase, final @NotNull TestSetNode from, final @NotNull TestSetNode into) {
+        final @NotNull TestCases testCases = Services.getInstance(getProject(), TestCases.class);
+        testCases.removeTestCase(from.getPath(), testCase.getUuid());
+        testCase.setParent(into);
+        testCases.putTestCaseVerbatim(into.getPath(), testCase);
+        CodeChangeType.MOVE_TEST_CASE.execute(getProject(), new MovedTestCase(testCase, from));
+        settled();
+    }
+
+    private void aFileWhereThePackageFolderGoes(final @NotNull String folder) {
+        WriteAction.runAndWait(() -> {
+            try {
+                TestSourceRoot.find(getProject()).map(root -> root.findChild("nafath")).orElseThrow(() -> new AssertionError("the test project has no package folder")).createChildData(this, folder);
+            } catch (final IOException ex) {
+                throw new AssertionError("could not put a file where " + folder + " goes: " + ex.getMessage(), ex);
+            }
+        });
+    }
+
+    private long methodsFor(final @NotNull String qualifiedName, final @NotNull TestCase testCase) {
+        return generatedClass(qualifiedName).stream().flatMap(testClass -> Arrays.stream(testClass.getMethods())).filter(testMethod -> attributeOf(testMethod, "testName").equals("\"" + testCase.getUuid() + "\"")).count();
+    }
 
     // Rule-CODEGEN-053
     public void testAMovedTestSetTakesItsClassAndItsPackageLineWithIt() {
@@ -98,14 +125,8 @@ public class MoveCodeIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestSetNode login = createdTestSet("Login");
         final @NotNull TestCase testCase = createdTestCase(login, "Log in with a valid user", "b");
         writtenByTheTester(writtenMethodOf("nafath.LoginTest", testCase), WRITTEN_BY_THE_TESTER);
-        final @NotNull TestSetNode visa = indexedTestSet("Visa", indexedPackage("Cards", theTestCasesDirectory()));
 
-        final @NotNull TestCases testCases = Services.getInstance(getProject(), TestCases.class);
-        testCases.removeTestCase(login.getPath(), testCase.getUuid());
-        testCase.setParent(visa);
-        testCases.putTestCaseVerbatim(visa.getPath(), testCase);
-        CodeChangeType.MOVE_TEST_CASE.execute(getProject(), new MovedTestCase(testCase, login));
-        settled();
+        cutInto(testCase, login, indexedTestSet("Visa", indexedPackage("Cards", theTestCasesDirectory())));
 
         assertTrue("the method stayed in the class the test case was cut from", methodOf("nafath.LoginTest", testCase).isEmpty());
         assertTrue("the method did not arrive with the tester's body", writtenMethodOf("nafath.cards.VisaTest", testCase).getText().contains(WRITTEN_BY_THE_TESTER));
@@ -121,18 +142,51 @@ public class MoveCodeIdeTest extends AbstractCodegenIdeTest {
             Optional.ofNullable(((PsiJavaFile) loginTest.getContainingFile()).getImportList()).orElseThrow().add(JavaPsiFacade.getElementFactory(getProject()).createImportStatement(assertions));
         });
         writtenByTheTester(writtenMethodOf("nafath.LoginTest", cut), "Assert.assertTrue(true);");
-        final @NotNull TestSetNode visa = indexedTestSet("Visa", indexedPackage("Cards", theTestCasesDirectory()));
 
-        final @NotNull TestCases testCases = Services.getInstance(getProject(), TestCases.class);
-        testCases.removeTestCase(login.getPath(), cut.getUuid());
-        cut.setParent(visa);
-        testCases.putTestCaseVerbatim(visa.getPath(), cut);
-        CodeChangeType.MOVE_TEST_CASE.execute(getProject(), new MovedTestCase(cut, login));
-        settled();
+        cutInto(cut, login, indexedTestSet("Visa", indexedPackage("Cards", theTestCasesDirectory())));
 
         final @NotNull PsiJavaCodeReferenceElement used = PsiTreeUtil.findChildrenOfType(writtenMethodOf("nafath.cards.VisaTest", cut), PsiJavaCodeReferenceElement.class).stream()
                 .filter(reference -> "Assert".equals(reference.getReferenceName())).findFirst().orElseThrow(() -> new AssertionError("the body lost its Assert"));
         assertTrue("the body's Assert does not resolve in the class it joined", used.resolve() instanceof PsiClass);
+    }
+
+    // Rule-CODEGEN-077
+    public void testACutWhoseNewClassCannotBeWrittenLeavesTheMethodWhereItWas() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull TestCase testCase = createdTestCase(login, "Log in with a valid user", "b");
+        writtenByTheTester(writtenMethodOf("nafath.LoginTest", testCase), WRITTEN_BY_THE_TESTER);
+        aFileWhereThePackageFolderGoes("cards");
+
+        cutInto(testCase, login, indexedTestSet("Visa", indexedPackage("Cards", theTestCasesDirectory())));
+
+        assertTrue("the method left a class although no class could take it", writtenMethodOf("nafath.LoginTest", testCase).getText().contains(WRITTEN_BY_THE_TESTER));
+    }
+
+    // Rule-CODEGEN-077
+    public void testACutIntoAClassThatAlreadyHoldsItsMethodLeavesTheMethodWhereItWas() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull TestCase testCase = createdTestCase(login, "Log in with a valid user", "b");
+        final @NotNull TestSetNode visa = createdTestSet("Visa");
+        final @NotNull PsiMethod copied = writtenMethodOf("nafath.LoginTest", testCase);
+        final @NotNull PsiClass visaTest = generatedClass("nafath.VisaTest").orElseThrow();
+        WriteCommandAction.runWriteCommandAction(getProject(), () -> {
+            visaTest.add(copied.copy());
+        });
+
+        cutInto(testCase, login, visa);
+
+        assertEquals("the method left its class for one that already holds it", 1, methodsFor("nafath.LoginTest", testCase));
+        assertEquals("the class already holding the method got a second", 1, methodsFor("nafath.VisaTest", testCase));
+    }
+
+    // Rule-CODEGEN-077
+    public void testACutFromATestSetWithNoClassWritesNoCode() {
+        final @NotNull TestSetNode login = indexedTestSet("Login", theTestCasesDirectory());
+        final @NotNull TestCase testCase = indexedTestCase(login, "Log in with a valid user", "b");
+
+        cutInto(testCase, login, indexedTestSet("Visa", theTestCasesDirectory()));
+
+        assertTrue("a class was written although there was no method to carry", generatedClass("nafath.VisaTest").isEmpty());
     }
 
     // Rule-CODEGEN-077, Rule-CODEGEN-014
