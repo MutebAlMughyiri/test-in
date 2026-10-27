@@ -24,6 +24,7 @@ import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext;
 import com.intellij.openapi.project.Project;
 import com.intellij.testFramework.TestActionEvent;
+import com.intellij.ui.treeStructure.SimpleTree;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -50,7 +51,18 @@ public final class TreeGesture {
     }
 
     public static void pressed(final @NotNull Project project, final @NotNull AnAction action, final @NotNull List<AbstractNode> selected) {
-        final @NotNull AnActionEvent e = on(project, action, selected);
+        pressed(action, on(project, action, selected), selected);
+    }
+
+    public static void pressedOn(final @NotNull Project project, final @NotNull AnAction action, final @NotNull SimpleTree tree, final @NotNull List<AbstractNode> selected) {
+        pressed(action, TestActionEvent.createTestEvent(action, SimpleDataContext.builder()
+                .add(CommonDataKeys.PROJECT, project)
+                .add(TestinDataKeys.SELECTED_NODES, selected)
+                .add(TestinDataKeys.TREE, tree)
+                .build()), selected);
+    }
+
+    private static void pressed(final @NotNull AnAction action, final @NotNull AnActionEvent e, final @NotNull List<AbstractNode> selected) {
         ActionUtil.updateAction(action, e);
         if (!e.getPresentation().isEnabled())
             throw new AssertionError(action.getClass().getSimpleName() + " is gray on " + selected + ": " + Objects.requireNonNullElse(e.getPresentation().getDescription(), ""));

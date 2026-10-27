@@ -16,6 +16,7 @@
 
 package org.testin.testrun;
 
+import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.KeyboardShortcut;
 import com.intellij.openapi.actionSystem.Shortcut;
@@ -26,12 +27,14 @@ import com.intellij.testFramework.TestActionEvent;
 import com.intellij.ui.CheckboxTree;
 import com.intellij.ui.CheckedTreeNode;
 import com.intellij.ui.EditorTextField;
+import com.intellij.ui.treeStructure.SimpleTree;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractOpenEditorsIdeTest;
 import org.testin.Await;
 import org.testin.Said;
 import org.testin.NodesOnDisk;
+import org.testin.TreeGesture;
 import org.testin.creator.CreateTestRun;
 import org.testin.creator.NodeCreators;
 import org.testin.indexer.NodeMapper;
@@ -69,6 +72,7 @@ import javax.swing.JComponent;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -455,7 +459,12 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
         configuration.put(TestRunConfiguration.TEST_TYPE, TestRunConfiguration.TEST_TYPE.getOptions().get(1));
         indexedTestRuns().changeTestRunMarker(source.getPath(), marker -> marker.configure(configuration));
 
-        new ReCreateTestRunWork(getProject()).reCreateAt(new TreePath(new Object[]{new DefaultMutableTreeNode(sprint), new DefaultMutableTreeNode(source)}));
+        final @NotNull DefaultMutableTreeNode sprintRow = new DefaultMutableTreeNode(sprint);
+        final @NotNull DefaultMutableTreeNode sourceRow = new DefaultMutableTreeNode(source);
+        sprintRow.add(sourceRow);
+        final @NotNull SimpleTree tree = new SimpleTree(new DefaultTreeModel(sprintRow));
+        tree.setSelectionPath(new TreePath(sourceRow.getPath()));
+        TreeGesture.pressedOn(getProject(), ActionManager.getInstance().getAction("Testin.ReCreateTestRun"), tree, List.of(source));
         Await.until("the re-create dialog never opened", () -> ShownDialog.isOpen(getProject(), TestRunConfigurationDialog.class));
         ShownDialog.sized(getProject(), TestRunConfigurationDialog.class);
         theButton(Bundle.message("test.run.create.button")).doClick();
