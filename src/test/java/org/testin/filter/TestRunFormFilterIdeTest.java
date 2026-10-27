@@ -166,6 +166,17 @@ public class TestRunFormFilterIdeTest extends AbstractTempRootIdeTest {
         }
     }
 
+    // UC-EDITOR-PANEL-020, Rule-TREE-PANEL-129
+    public void testUntickingTheOnlyPickShowsEveryTestCaseAgain() {
+        Filtering.choose(button(), TestSetEditorFields.PRIORITY.getName(), Priority.HIGH.getLabel());
+        assertEquals(List.of(urgent), shown());
+
+        Filtering.untick(button(), TestSetEditorFields.PRIORITY.getName(), Priority.HIGH.getLabel());
+
+        assertEquals("unticking the only pick did not show every test case again", List.of(urgent, later, paid), shown());
+        assertEquals("the unticked pick is still counted as a filter", 0, button().activeFilterCount());
+    }
+
     // Rule-TREE-PANEL-129, Rule-EDITOR-PANEL-099
     public void testResettingTheFiltersShowsEveryTestCaseAgain() {
         Filtering.choose(button(), TestSetEditorFields.PRIORITY.getName(), Priority.HIGH.getLabel());

@@ -31,8 +31,16 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Filtering {
     public static void choose(final @NotNull FilterPopupButton filter, final @NotNull String submenu, final @NotNull String label) {
+        ticked(filter, submenu, label, true);
+    }
+
+    public static void untick(final @NotNull FilterPopupButton filter, final @NotNull String submenu, final @NotNull String label) {
+        ticked(filter, submenu, label, false);
+    }
+
+    private static void ticked(final @NotNull FilterPopupButton filter, final @NotNull String submenu, final @NotNull String label, final boolean ticked) {
         final @NotNull AnAction entry = named(MenuChildren.of((ActionGroup) named(MenuChildren.of(filter.menu()), submenu)), label);
-        ((ToggleAction) entry).setSelected(TestActionEvent.createTestEvent(entry), true);
+        ((ToggleAction) entry).setSelected(TestActionEvent.createTestEvent(entry), ticked);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
 
