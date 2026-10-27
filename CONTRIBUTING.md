@@ -275,7 +275,7 @@ nothing on their own.
 |            |                                                                                                                                                 |
 |------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
 | **Report** | `build/reports/jacoco/test/html/index.html`, one row per package, and `jacocoTestReport.xml` beside it. CI keeps it with the other test reports |
-| **Gate**   | `jacocoTestCoverageVerification`, part of `check`. Fails under 92% of lines or 57% of branches, from 92.98% and 57.05% on 27 October 2026       |
+| **Gate**   | `jacocoTestCoverageVerification`, part of `check`. Fails under 93% of lines or 57% of branches, from 93.92% and 57.58% on 27 October 2026       |
 
 The gate stops coverage falling and asks for nothing more. **Raise a minimum in
 the commit that lifts its figure past the next whole percent**, so the floor
