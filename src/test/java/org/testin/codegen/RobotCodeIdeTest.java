@@ -16,12 +16,15 @@
 
 package org.testin.codegen;
 
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
+import org.testin.Said;
 import org.testin.codegen.event.CopiedTestCase;
 import org.testin.codegen.event.MovedNode;
 import org.testin.codegen.event.MovedTestCase;
@@ -160,6 +163,25 @@ public class RobotCodeIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestSetNode refund = createdTestSet("Refund");
         CodeChangeType.REMOVE_TEST_SET.execute(getProject(), refund);
         assertTrue("a removed test set's suite file is still there", suiteAt("NAFATH/Refund.robot").isEmpty());
+    }
+
+    // UC-CODEGEN-017, UC-CODEGEN-018, Rule-CODEGEN-055, Rule-CODEGEN-057, Rule-CODEGEN-128
+    public void testAPackagesFolderMovesWithItAndGoesWithItAndAMoveIntoAnUnreadPlaceLeavesTheSuite() {
+        final @NotNull TestSetPackageNode payments = indexedPackage("Payments", theTestCasesDirectory());
+        createdTestSet("Card", payments);
+        final @NotNull TestSetPackageNode shop = indexedPackage("Shop", theTestCasesDirectory());
+
+        CodeChangeType.MOVE_TEST_SET_PACKAGE.execute(getProject(), new MovedNode(payments, shop.getPath()));
+        assertMoved("a moved package's folder did not move into the package it went to", "NAFATH/Shop/Payments/Card.robot", "NAFATH/Payments/Card.robot");
+
+        CodeChangeType.REMOVE_TEST_SET_PACKAGE.execute(getProject(), shop);
+        assertTrue("a removed package's folder is still there", suiteAt("NAFATH/Shop/Payments/Card.robot").isEmpty());
+
+        final @NotNull TestSetNode login = createdTestSet("Login page");
+        final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
+        CodeChangeType.MOVE_TEST_SET.execute(getProject(), new MovedNode(login, root.resolve("Never read")));
+        assertTrue("a suite moved into a place Testin has not read did not stay", suiteAt(LOGIN_SUITE).isPresent());
+        assertTrue("the tester was not told the suite stayed behind: " + said, said.stream().anyMatch(notification -> notification.getType() == NotificationType.WARNING));
     }
 
     // UC-CODEGEN-002, Rule-CODEGEN-077, Rule-CODEGEN-078
