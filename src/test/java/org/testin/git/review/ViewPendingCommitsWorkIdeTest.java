@@ -60,6 +60,26 @@ public class ViewPendingCommitsWorkIdeTest extends AbstractGitRemoteIdeTest {
         assertTrue("the pushed test case lost a side's change: " + merged, merged.contains("Sign in") && merged.contains("The account page opens"));
     }
 
+    // UC-SHARE-017, Rule-SHARE-127
+    public void testAPushTheRemoteRefusesAfterAStoppedPullIsResolvedSaysWhy() {
+        aPullStoppedOnTheLoginTestCase();
+        write(remote, "hooks/pre-receive", """
+                #!/bin/sh
+                echo "pushes are closed today" >&2
+                exit 1
+                """);
+        final @NotNull String before = head(remote, MAIN);
+        final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
+        new ViewPendingCommitsWork(getProject()).openFor(work);
+        final @NotNull Notification stopped = titled(said, Bundle.message("git.conflicts.title"));
+
+        Notified.press(getProject(), stopped, resolveOn(stopped));
+
+        final @NotNull Notification failed = titled(said, Bundle.message("git.push.failed.title"));
+        assertTrue("the refusal did not say what the remote said: " + failed.getContent(), failed.getContent().contains("pushes are closed today"));
+        assertEquals("a refused push moved the remote", before, head(remote, MAIN));
+    }
+
     // UC-SHARE-015, Rule-SHARE-066, Rule-SHARE-067
     public void testCommitsNotOnTheRemoteAreCountedRatherThanReportedAsNoChanges() {
         write(work, "a.testcase", "{}");
