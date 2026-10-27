@@ -16,9 +16,14 @@
 
 package org.testin.codegen.agent;
 
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.util.Disposer;
+import com.intellij.psi.JavaPsiFacade;
+import com.intellij.psi.PsiCodeBlock;
+import com.intellij.psi.PsiMethod;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
+import org.testin.Await;
 import org.testin.Said;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
@@ -26,12 +31,91 @@ import org.testin.notifications.Done;
 import org.testin.services.OptionalPlugin;
 import org.testin.services.Services;
 import org.testin.setting.AppSettingsState;
+import org.testin.ui.framework.ConfirmDialog;
+import org.testin.ui.framework.ShownDialog;
 import org.testin.util.Bundle;
+import org.testin.util.Shortcuts;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 
 public class AgentRequestIdeTest extends AbstractCodegenIdeTest {
+
+    private static final @NotNull String LOGIN_CLASS = "nafath.LoginTest";
+
+    private void anAgentIsChosen() {
+        final @NotNull AppSettingsState settings = Services.getInstance(AppSettingsState.class);
+        final @NotNull String before = settings.agentCommand;
+        settings.agentCommand = "no-such-agent";
+        Disposer.register(getTestRootDisposable(), () -> settings.agentCommand = before);
+    }
+
+    private void aBodyWrittenInto(final @NotNull TestCase testCase) {
+        final @NotNull PsiMethod testMethod = writtenMethodOf(LOGIN_CLASS, testCase);
+        final @NotNull PsiCodeBlock body = Optional.ofNullable(testMethod.getBody()).orElseThrow(() -> new AssertionError("the generated method has no body"));
+        final @NotNull Runnable writeTheBody = () -> body.replace(JavaPsiFacade.getElementFactory(getProject()).createCodeBlockFromText("{ System.out.println(\"signed in\"); }", testMethod));
+        WriteCommandAction.runWriteCommandAction(getProject(), writeTheBody);
+    }
+
+    private @NotNull String theRequestSentTo(final @NotNull RecordedAgentTab tab) {
+        Await.until("no request reached the agent", () -> !tab.getTypedLines().isEmpty());
+        assertEquals("the agent was not sent one request", 1, tab.getTypedLines().size());
+        return tab.getTypedLines().getFirst();
+    }
+
+    // UC-CODEGEN-021, Rule-CODEGEN-084
+    public void testWritingBodiesSendsOneRequestHoldingEveryTestCaseWhoseMethodIsEmpty() {
+        final @NotNull RecordedAgentTab tab = RecordedAgentTab.installed(getProject(), getTestRootDisposable());
+        anAgentIsChosen();
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull List<TestCase> both = List.of(createdTestCase(login, "Sign in", "a"), createdTestCase(login, "Sign out", "b"));
+        settled();
+
+        WriteBodies.forAll(getProject(), both);
+
+        final @NotNull String request = theRequestSentTo(tab);
+        assertTrue("the request does not hold both test cases: " + request, request.contains("Sign in") && request.contains("Sign out"));
+        assertFalse("the request asks to write over a body no one wrote", request.contains(Bundle.message("agent.request.write.over")));
+    }
+
+    // UC-CODEGEN-021, Rule-CODEGEN-091
+    public void testABodyTheTesterWroteIsWrittenOverOnlyOnceTheyConfirm() {
+        final @NotNull RecordedAgentTab tab = RecordedAgentTab.installed(getProject(), getTestRootDisposable());
+        anAgentIsChosen();
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull TestCase signIn = createdTestCase(login, "Sign in", "a");
+        final @NotNull TestCase signOut = createdTestCase(login, "Sign out", "b");
+        settled();
+        aBodyWrittenInto(signIn);
+
+        WriteBodies.forAll(getProject(), List.of(signIn, signOut));
+        ShownDialog.waitedFor(getProject(), ConfirmDialog.class);
+        assertTrue("a body was asked for before the tester said to write over", tab.getTypedLines().isEmpty());
+        ShownDialog.press(getProject(), ConfirmDialog.class, Shortcuts.Enter);
+
+        final @NotNull String request = theRequestSentTo(tab);
+        assertTrue("the request does not ask to write over the body the tester wrote: " + request, request.contains(Bundle.message("agent.request.write.over")));
+    }
+
+    // UC-CODEGEN-021, Rule-CODEGEN-091
+    public void testLeavingABodyTheTesterWroteAsksOnlyForTheEmptyOnes() {
+        final @NotNull RecordedAgentTab tab = RecordedAgentTab.installed(getProject(), getTestRootDisposable());
+        anAgentIsChosen();
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull TestCase signIn = createdTestCase(login, "Sign in", "a");
+        final @NotNull TestCase signOut = createdTestCase(login, "Sign out", "b");
+        settled();
+        aBodyWrittenInto(signIn);
+
+        WriteBodies.forAll(getProject(), List.of(signIn, signOut));
+        ShownDialog.waitedFor(getProject(), ConfirmDialog.class);
+        ShownDialog.press(getProject(), ConfirmDialog.class, Shortcuts.Escape);
+
+        final @NotNull String request = theRequestSentTo(tab);
+        assertTrue("the request does not ask for the empty one: " + request, request.contains("Sign out"));
+        assertFalse("the request asks for the body the tester left: " + request, request.contains("Sign in"));
+    }
 
     // UC-CODEGEN-021, Rule-CODEGEN-086, Rule-CODEGEN-091
     public void testTheRequestHoldsEachTestCaseInOrderWithItsFileAndSaysWhichBodyToWriteOver() {
