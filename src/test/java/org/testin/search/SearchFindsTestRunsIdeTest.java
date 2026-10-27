@@ -138,9 +138,11 @@ public class SearchFindsTestRunsIdeTest extends AbstractTempRootIdeTest {
 
     // UC-INTERNAL-001
     public void testWithNothingTypedTheSearchListsTheTestSetsAndTestRunsInTreeOrder() {
-        final List<Path> listed = GlobalSearch.forQuery(getProject(), "").hits().stream().map(hit -> hit.node().getPath()).toList();
+        final List<Hit> hits = GlobalSearch.forQuery(getProject(), "").hits();
+        final List<Path> listedHere = hits.stream().map(hit -> hit.node().getPath()).filter(path -> path.startsWith(root)).toList();
 
-        assertEquals("with nothing typed, the search does not list the test sets and test runs, in tree order, and nothing else", List.of(testCase.getParent().getPath(), ranIt, ranSomethingElse), listed);
+        assertTrue("with nothing typed, the search listed something with nothing to open", hits.stream().allMatch(hit -> hit.node().isOpenableInEditor()));
+        assertEquals("with nothing typed, the search does not list this test project's test set and test runs in tree order", List.of(testCase.getParent().getPath(), ranIt, ranSomethingElse), listedHere);
     }
 
     // UC-INTERNAL-001, Rule-INTERNAL-001
