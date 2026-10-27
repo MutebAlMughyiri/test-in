@@ -153,6 +153,20 @@ public class UpdateTestMethodIdeTest extends AbstractCodegenIdeTest {
         assertEquals("the second test case's method did not take the group", "{\"smoke\"}", attributeOf(writtenMethodOf(LOGIN_TEST, second), "groups"));
     }
 
+    // UC-CODEGEN-012
+    public void testGroupsChangedOnSeveralTestCasesWhoseTestSetHasNoClassWriteNoClass() {
+        final @NotNull TestSetNode login = indexedTestSet("Login", theTestCasesDirectory());
+        final @NotNull TestCase first = indexedTestCase(login, "Log in", "a");
+        final @NotNull TestCase second = indexedTestCase(login, "Log out", "b");
+        first.setGroups(List.of("smoke"));
+        second.setGroups(List.of("smoke"));
+
+        CodeChangeType.UPDATE_TEST_CASE_GROUP.executeAllNow(getProject(), List.of(first, second));
+        settled();
+
+        assertTrue("a groups change on test cases whose test set has no class wrote a class", generatedClass(LOGIN_TEST).isEmpty());
+    }
+
     // UC-CODEGEN-013, Rule-CODEGEN-047
     public void testTurningSeveralTestCasesOffAtOnceWritesEnabledFalseIntoEachMethod() {
         final @NotNull TestSetNode login = createdTestSet("Login");
