@@ -16,6 +16,7 @@
 package org.testin.view.details;
 
 import com.intellij.ide.util.PropertiesComponent;
+import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.ui.components.ActionLink;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
@@ -205,6 +206,21 @@ public class DetailsValuesIdeTest extends AbstractViewPanelIdeTest {
                     .orElseThrow(() -> new AssertionError("the screenshot's window shows no picture"));
             assertEquals("the screenshot did not open at its real width", 640, picture.getIconWidth());
             assertEquals("the screenshot did not open at its real height", 400, picture.getIconHeight());
+        } finally {
+            ShownDialog.close(getProject(), ScreenshotDialog.class);
+        }
+    }
+
+    // UC-VIEW-PANEL-006, Rule-INTERNAL-075
+    public void testASecondScreenshotReplacesTheOneOnScreen() {
+        try {
+            ShownDialog.open(getProject(), ScreenshotDialog.class, () -> new ScreenshotDialog(getProject(), "first.png", aScreenshot(320, 200)).show());
+            final @NotNull JBPopup first = ShownDialog.popup(getProject(), ScreenshotDialog.class);
+
+            ShownDialog.open(getProject(), ScreenshotDialog.class, () -> new ScreenshotDialog(getProject(), "second.png", aScreenshot(640, 400)).show());
+
+            assertTrue("the screenshot on screen was not closed when another opened", first.isDisposed());
+            assertNotSame("the second screenshot did not take the first one's place", first, ShownDialog.popup(getProject(), ScreenshotDialog.class));
         } finally {
             ShownDialog.close(getProject(), ScreenshotDialog.class);
         }
