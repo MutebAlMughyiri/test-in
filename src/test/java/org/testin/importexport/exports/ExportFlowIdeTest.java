@@ -17,6 +17,7 @@
 package org.testin.importexport.exports;
 
 import com.intellij.notification.Notification;
+import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.ui.components.JBTabbedPane;
 import com.intellij.ui.table.JBTable;
@@ -26,6 +27,7 @@ import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
 import org.testin.NodesOnDisk;
 import org.testin.Said;
+import org.testin.TreeGesture;
 import org.testin.importexport.FileFormat;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestProjectIndexer;
@@ -171,8 +173,12 @@ public class ExportFlowIdeTest extends AbstractTempRootIdeTest {
         return testCase;
     }
 
+    private void exportPressedOn(final @NotNull AbstractNode node) {
+        TreeGesture.pressed(getProject(), ActionManager.getInstance().getAction("Testin.Export"), List.of(node));
+    }
+
     private @NotNull JComponent theExportDialogFor(final @NotNull AbstractNode node) {
-        new ExportWork(getProject()).exportFrom(node);
+        exportPressedOn(node);
         return ShownDialog.waitedFor(getProject(), ExportDialog.class);
     }
 
@@ -318,7 +324,7 @@ public class ExportFlowIdeTest extends AbstractTempRootIdeTest {
         write(login.getPath().resolve(broken), "{ this is not a test case");
         Services.getInstance(getProject(), TestProjectIndexer.class).scanSingleTestProject(testProject.getPath());
 
-        new ExportWork(getProject()).exportFrom(login);
+        exportPressedOn(login);
         final @NotNull JComponent warning = ShownDialog.waitedFor(getProject(), ConfirmDialog.class);
 
         assertTrue("the unreadable file is not named: " + wordsIn(warning), wordsIn(warning).contains(broken));
@@ -336,7 +342,7 @@ public class ExportFlowIdeTest extends AbstractTempRootIdeTest {
         disk.testSet(payments, "Empty");
         final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
 
-        new ExportWork(getProject()).exportFrom(payments);
+        exportPressedOn(payments);
 
         Await.until("an export of a folder holding no test cases did not say so", () -> said.shown().stream().anyMatch(shown -> shown.contains(Bundle.message("export.none.found"))));
         assertFalse("an export opened for a folder holding no test cases", ShownDialog.isOpen(getProject(), ExportDialog.class));
@@ -350,7 +356,7 @@ public class ExportFlowIdeTest extends AbstractTempRootIdeTest {
             write(login.getPath().resolve(UUID.randomUUID() + ".testcase"), "{ this is not a test case");
         Services.getInstance(getProject(), TestProjectIndexer.class).scanSingleTestProject(testProject.getPath());
 
-        new ExportWork(getProject()).exportFrom(login);
+        exportPressedOn(login);
         final @NotNull JComponent warning = ShownDialog.waitedFor(getProject(), ConfirmDialog.class);
 
         assertTrue("the unreadable files past the fifth are not counted: " + wordsIn(warning), wordsIn(warning).contains(Bundle.message("export.unreadable.more", "2")));
