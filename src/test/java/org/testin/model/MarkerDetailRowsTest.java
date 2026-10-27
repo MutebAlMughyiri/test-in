@@ -22,8 +22,10 @@ import org.testin.model.markers.TestRunMarker;
 import org.testin.model.markers.TestSetMarker;
 import org.testin.model.testrun.TestRunConfiguration;
 import org.testin.model.testrun.TestRunExecution;
+import org.testin.util.Bundle;
 import org.testng.annotations.Test;
 
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
@@ -50,6 +52,17 @@ public class MarkerDetailRowsTest {
         assertEquals(rows.size(), TestRunExecution.values().length + 1 + TestRunConfiguration.values().length,
                 "every execution row, how long it took, and every question: " + rows);
         assertTrue(rows.contains(new DetailRow("Platform", "Web")));
+    }
+
+    @Test
+    public void aTestRunStartedAndEndedSaysHowLongItTook() {
+        final @NotNull TestRunMarker testRun = new TestRunMarker();
+        final @NotNull ZonedDateTime started = ZonedDateTime.parse("2026-10-27T09:00:00+03:00");
+        testRun.setExecutionStartedAt(started);
+        testRun.setExecutionEndedAt(started.plusMinutes(90).plusSeconds(5));
+
+        assertTrue(TestRunExecution.rowsOf(testRun).contains(new DetailRow(Bundle.message("execution.time"), "01:30:05")),
+                "a test run that started and ended does not say how long it took: " + TestRunExecution.rowsOf(testRun));
     }
 
     @Test
