@@ -185,6 +185,19 @@ public class ReviewRowsIdeTest extends AbstractGitRemoteIdeTest {
         assertTrue("the new test case reverted is still read", indexedTestCases().findTestCase(added.getUuid()).isEmpty());
     }
 
+    // UC-SHARE-011
+    public void testRevertingAChangeToATestCaseThatIsGoneSaysSo() {
+        final @NotNull JBTable table = theReviewTable();
+        final int row = rowNamed(table, "typed over the first");
+        assertTrue("the test case was not removed", indexedTestCases().removeTestCase(login.getPath(), first.getUuid()));
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        revertFromTheMenuOn(table, row);
+
+        assertEquals("reverting a change to a test case that is gone did not say so", List.of(Bundle.message("dialog.pending.revert.gone")), said.shown());
+        assertTrue("reverting a test case that is gone brought it back", indexedTestCases().findTestCase(first.getUuid()).isEmpty());
+    }
+
     // UC-SHARE-011, Rule-SHARE-051
     public void testAMarkerChangeCannotBeRevertedAndSaysOnlyATestCaseCan() {
         assertTrue("the test set was not deprecated", Services.getInstance(getProject(), Nodes.class).mark(login, TestSetStatus.DEPRECATED, "Sara"));
