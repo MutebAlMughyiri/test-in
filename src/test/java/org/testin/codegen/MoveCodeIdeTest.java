@@ -58,12 +58,12 @@ public class MoveCodeIdeTest extends AbstractCodegenIdeTest {
         settled();
     }
 
-    private void aFileWhereThePackageFolderGoes(final @NotNull String folder) {
+    private void aFileWhereTheCardsFolderGoes() {
         WriteAction.runAndWait(() -> {
             try {
-                TestSourceRoot.find(getProject()).map(root -> root.findChild("nafath")).orElseThrow(() -> new AssertionError("the test project has no package folder")).createChildData(this, folder);
+                TestSourceRoot.find(getProject()).map(root -> root.findChild("nafath")).orElseThrow(() -> new AssertionError("the test project has no package folder")).createChildData(this, "cards");
             } catch (final IOException ex) {
-                throw new AssertionError("could not put a file where " + folder + " goes: " + ex.getMessage(), ex);
+                throw new AssertionError("could not put a file where the cards folder goes: " + ex.getMessage(), ex);
             }
         });
     }
@@ -155,7 +155,7 @@ public class MoveCodeIdeTest extends AbstractCodegenIdeTest {
         final @NotNull TestSetNode login = createdTestSet("Login");
         final @NotNull TestCase testCase = createdTestCase(login, "Log in with a valid user", "b");
         writtenByTheTester(writtenMethodOf("nafath.LoginTest", testCase), WRITTEN_BY_THE_TESTER);
-        aFileWhereThePackageFolderGoes("cards");
+        aFileWhereTheCardsFolderGoes();
 
         cutInto(testCase, login, indexedTestSet("Visa", indexedPackage("Cards", theTestCasesDirectory())));
 
