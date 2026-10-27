@@ -25,37 +25,12 @@ import org.testin.Said;
 import org.testin.git.AbstractGitRemoteIdeTest;
 import org.testin.util.Bundle;
 
-import java.nio.file.Path;
 import java.util.List;
 
-import static org.testin.git.LocalGit.git;
-import static org.testin.git.LocalGit.mustGit;
-
 public class ViewPendingCommitsWorkIdeTest extends AbstractGitRemoteIdeTest {
-    private static final @NotNull String TEST_CASE = "Test Cases/Login/login.testcase";
-
-    private static @NotNull String aTestCase(final @NotNull String description, final @NotNull String expected) {
-        return "{\"description\":\"" + description + "\",\"expectedResult\":\"" + expected + "\"}";
-    }
-
     private static @NotNull AnAction resolveOn(final @NotNull Notification notification) {
         return notification.getActions().stream().filter(action -> Bundle.message("git.conflicts.resolve").equals(action.getTemplateText())).findFirst()
                 .orElseThrow(() -> new AssertionError("the message does not offer Resolve: " + answers(notification)));
-    }
-
-    private void aPullStoppedOnATestCaseEachSideChangedInAnotherField() {
-        write(work, TEST_CASE, aTestCase("Log in", "The dashboard opens"));
-        commitAll(work, "the test case");
-        mustGit(work, "push", "origin", MAIN);
-
-        final @NotNull Path colleague = colleague();
-        write(colleague, TEST_CASE, aTestCase("Sign in", "The dashboard opens"));
-        commitAll(colleague, "their wording");
-        mustGit(colleague, "push", "origin", MAIN);
-
-        write(work, TEST_CASE, aTestCase("Log in", "The account page opens"));
-        commitAll(work, "my expected result");
-        assertTrue("the pull did not stop on the test case", git(work, "pull", "--rebase", "origin", MAIN).isEmpty());
     }
 
     // UC-SHARE-015, Rule-SHARE-067
@@ -69,7 +44,7 @@ public class ViewPendingCommitsWorkIdeTest extends AbstractGitRemoteIdeTest {
 
     // UC-SHARE-017, Rule-SHARE-076, Rule-SHARE-078
     public void testAPullStoppedPartWayIsOfferedBackAndResolvingItMergesContinuesAndPushes() {
-        aPullStoppedOnATestCaseEachSideChangedInAnotherField();
+        aPullStoppedOnTheLoginTestCase();
         final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
 
         new ViewPendingCommitsWork(getProject()).openFor(work);
@@ -81,7 +56,7 @@ public class ViewPendingCommitsWorkIdeTest extends AbstractGitRemoteIdeTest {
 
         titled(said, Bundle.message("git.rebase.continued.title"));
         assertEquals("the rebased commit did not reach the remote", head(work, "HEAD"), head(remote, MAIN));
-        final @NotNull String merged = read(work, TEST_CASE);
+        final @NotNull String merged = read(work, LOGIN_TEST_CASE);
         assertTrue("the pushed test case lost a side's change: " + merged, merged.contains("Sign in") && merged.contains("The account page opens"));
     }
 

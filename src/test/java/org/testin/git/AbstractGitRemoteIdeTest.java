@@ -28,10 +28,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+import static org.testin.git.LocalGit.git;
 import static org.testin.git.LocalGit.mustGit;
 
 public abstract class AbstractGitRemoteIdeTest extends AbstractTempRootIdeTest {
     protected static final @NotNull String MAIN = "main";
+
+    protected static final @NotNull String LOGIN_TEST_CASE = "Test Cases/Login/login.testcase";
 
     protected Path remote;
 
@@ -58,6 +61,10 @@ public abstract class AbstractGitRemoteIdeTest extends AbstractTempRootIdeTest {
         } catch (final IOException ex) {
             throw new AssertionError("Could not read " + relativePath + ": " + ex.getMessage(), ex);
         }
+    }
+
+    protected static @NotNull String aTestCase(final @NotNull String description, final @NotNull String expected) {
+        return "{\"description\":\"" + description + "\",\"expectedResult\":\"" + expected + "\"}";
     }
 
     protected static void commitAll(final @NotNull Path repository, final @NotNull String message) {
@@ -107,6 +114,25 @@ public abstract class AbstractGitRemoteIdeTest extends AbstractTempRootIdeTest {
         } catch (final IOException ex) {
             throw new AssertionError("Could not make " + name + ": " + ex.getMessage(), ex);
         }
+    }
+
+    protected void bothChangeTheLoginTestCaseInAnotherField() {
+        write(work, LOGIN_TEST_CASE, aTestCase("Log in", "The dashboard opens"));
+        commitAll(work, "the test case");
+        mustGit(work, "push", "origin", MAIN);
+
+        final @NotNull Path colleague = colleague();
+        write(colleague, LOGIN_TEST_CASE, aTestCase("Sign in", "The dashboard opens"));
+        commitAll(colleague, "their wording");
+        mustGit(colleague, "push", "origin", MAIN);
+
+        write(work, LOGIN_TEST_CASE, aTestCase("Log in", "The account page opens"));
+        commitAll(work, "my expected result");
+    }
+
+    protected void aPullStoppedOnTheLoginTestCase() {
+        bothChangeTheLoginTestCaseInAnotherField();
+        assertTrue("the pull did not stop on the test case", git(work, "pull", "--rebase", "origin", MAIN).isEmpty());
     }
 
     protected @NotNull Path colleague() {

@@ -46,6 +46,30 @@ public class SyncWorkIdeTest extends AbstractGitRemoteIdeTest {
         commitAll(work, "my notes");
     }
 
+    // UC-SHARE-016, UC-SHARE-017, Rule-SHARE-076, Rule-SHARE-078
+    public void testResolvingThePullASyncStoppedOnFinishesTheSyncAndPushes() {
+        bothChangeTheLoginTestCaseInAnotherField();
+        final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
+
+        new SyncWork(getProject()).syncRepository(work);
+        final @NotNull Notification stopped = titled(said, Bundle.message("git.conflicts.title"));
+        Notified.press(getProject(), stopped, stopped.getActions().getFirst());
+
+        titled(said, Bundle.message("git.synced.title"));
+        assertEquals("the resolved commit did not reach the remote", head(work, "HEAD"), head(remote, MAIN));
+        assertTrue("the synced test case lost a side's change: " + read(work, LOGIN_TEST_CASE), read(work, LOGIN_TEST_CASE).contains("Sign in") && read(work, LOGIN_TEST_CASE).contains("The account page opens"));
+    }
+
+    // UC-SHARE-016, Rule-SHARE-042
+    public void testAFolderNotUnderGitHasNothingToSyncAndSaysSo() {
+        final @NotNull Path notARepository = directory("not-a-repository");
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        new SyncWork(getProject()).syncRepository(notARepository);
+
+        assertEquals("a folder not under Git did not say there is nothing to sync", List.of(Bundle.message("git.sync.nothing.title") + "\n" + Bundle.message("git.sync.nothing.message", "not-a-repository")), said.shown());
+    }
+
     // UC-SHARE-017, Rule-SHARE-075, Rule-SHARE-076
     public void testAPullThatStopsSaysSoAndOffersThreeAnswers() {
         bothChangeTheNotes();
