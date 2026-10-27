@@ -82,7 +82,8 @@ There is no key that opens this. It opens during a merge.
    thing: a test case's description, and for a test run's marker the test run
    itself, which is the folder it sits in. Neither is ever the file's name:
    every test run holds a marker called `.testrun`, so three test run conflicts in a
-   row would all be titled the same.
+   row would all be titled the same. A test case left without a description is
+   the one exception: it is named by its file, the only name it has.
 2. **Each row** — the field, then the two values. **Mine** is chosen to start
    with. A test run's key is named as the tester already knows it: the question
    they answered when the test run was created, or the heading they wrote their

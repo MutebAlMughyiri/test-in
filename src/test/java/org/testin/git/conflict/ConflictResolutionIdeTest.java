@@ -181,6 +181,19 @@ public class ConflictResolutionIdeTest extends AbstractGitRemoteIdeTest {
         assertTrue("the tester's own value was not kept: " + read(work, MARKER), read(work, MARKER).contains("Desktop"));
     }
 
+    // UC-SHARE-018, Rule-SHARE-081
+    public void testATestCaseLeftWithoutADescriptionIsAskedAboutUnderItsFile() {
+        resolving(pulledIntoAConflict(
+                repository -> write(repository, TEST_CASE, aTestCase("", "The dashboard opens", "Muteb", "Sunday 13-09-2026 At 09:00:00 [Asia/Riyadh]")),
+                repository -> write(repository, TEST_CASE, aTestCase("", "The account page opens", "Muteb", "Sunday 13-09-2026 At 09:00:00 [Asia/Riyadh]")),
+                repository -> write(repository, TEST_CASE, aTestCase("", "The profile page opens", "Muteb", "Sunday 13-09-2026 At 09:00:00 [Asia/Riyadh]"))));
+
+        ShownDialog.waitedFor(getProject(), ResolveConflictDialog.class);
+        assertEquals("a test case without a description is not asked about under its file", Bundle.message("dialog.conflict.title", "login.testcase"), titleOf(ShownDialog.popup(getProject(), ResolveConflictDialog.class)));
+        ShownDialog.press(getProject(), ResolveConflictDialog.class, Shortcuts.Escape);
+        ended();
+    }
+
     // UC-SHARE-018, Rule-SHARE-084
     public void testEscapeOnTheQuestionLeavesTheTestCaseOverAndNamesIt() {
         resolving(bothChangedTheDescription());
