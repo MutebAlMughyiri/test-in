@@ -24,6 +24,7 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.ui.TextComponentAccessor;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.concurrency.AppExecutorUtil;
@@ -32,7 +33,6 @@ import org.testin.util.Bundle;
 
 import javax.swing.JButton;
 import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.BorderLayout;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
@@ -87,19 +87,9 @@ public final class TestinPathPanel {
     }
 
     private void setupValidationListener() {
-        pathField.getTextField().getDocument().addDocumentListener(new DocumentListener() {
+        pathField.getTextField().getDocument().addDocumentListener(new DocumentAdapter() {
             @Override
-            public void insertUpdate(final @NotNull DocumentEvent e) {
-                updateOpenButtonState();
-            }
-
-            @Override
-            public void removeUpdate(final @NotNull DocumentEvent e) {
-                updateOpenButtonState();
-            }
-
-            @Override
-            public void changedUpdate(final @NotNull DocumentEvent e) {
+            protected void textChanged(final @NotNull DocumentEvent e) {
                 updateOpenButtonState();
             }
         });
