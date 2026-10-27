@@ -140,6 +140,21 @@ public class HelpIdeTest extends AbstractIdeTest {
         }
     }
 
+    // UC-INTERNAL-009, Rule-INTERNAL-075
+    public void testASecondGuideReplacesTheOneOnScreen() {
+        try {
+            ShownDialog.open(getProject(), GuideDialog.class, () -> Guide.SET_UP_THIS_MACHINE.open(getProject()));
+            final @NotNull JBPopup first = ShownDialog.popup(getProject(), GuideDialog.class);
+
+            ShownDialog.open(getProject(), GuideDialog.class, () -> Guide.AUTOMATION_CODE.open(getProject()));
+
+            assertTrue("the guide on screen was not closed when another opened", first.isDisposed());
+            assertNotSame("the second guide did not take the first one's place", first, ShownDialog.popup(getProject(), GuideDialog.class));
+        } finally {
+            ShownDialog.close(getProject(), GuideDialog.class);
+        }
+    }
+
     // UC-INTERNAL-009, Rule-INTERNAL-130
     public void testALinkToAnotherPageOpensItInTheSameGuide() {
         try {
