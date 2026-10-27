@@ -32,6 +32,7 @@ import org.testin.util.FailureText;
 import java.awt.datatransfer.Transferable;
 
 public class TreeDropHandler implements FileDropHandler {
+    // UC-TREE-PANEL-005, UC-TREE-PANEL-006, Rule-TREE-PANEL-022, Rule-TREE-PANEL-146
     @Override
     public @Nullable Object handleDrop(final @NotNull FileDropEvent event, final @NotNull Continuation<? super Boolean> continuation) {
         final @NotNull Project project = event.getProject();
