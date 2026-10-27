@@ -172,7 +172,7 @@ allprojects {
 // instrumentCode output: JaCoCo matches a class by a checksum of its bytes, and
 // those are the bytes the tests load, not the ones in build/classes. Each
 // minimum is the whole percent under what was measured on 27 October 2026 -
-// 94.74% of lines, 58.10% of branches - so it stops coverage falling, and
+// 95.08% of lines, 58.35% of branches - so it stops coverage falling, and
 // raising it is a decision rather than a side effect. #425 raises it toward
 // 100% of both as the tests it asks for land. The agent measures only Testin's
 // own classes, and answers over JMX, so each test can save what it alone ran:
@@ -244,7 +244,7 @@ tasks.jacocoTestCoverageVerification {
         rule {
             limit {
                 counter = "LINE"
-                minimum = "0.94".toBigDecimal()
+                minimum = "0.95".toBigDecimal()
             }
             limit {
                 counter = "BRANCH"
