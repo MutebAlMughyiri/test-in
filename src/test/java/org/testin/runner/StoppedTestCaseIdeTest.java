@@ -31,6 +31,7 @@ import com.intellij.execution.runners.ProgramRunner;
 import com.intellij.icons.AllIcons;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
+import org.testin.Await;
 import org.testin.model.TestCase;
 import org.testin.model.status.AutomationExecutionStatus;
 import org.testin.model.testrun.Failure;
@@ -73,6 +74,24 @@ public class StoppedTestCaseIdeTest extends AbstractCodegenIdeTest {
 
         assertTrue("the process of an execution stopped while the IDE was still building was left running", Optional.ofNullable(process.getUserData(ProcessHandler.TERMINATION_REQUESTED)).orElse(false));
         assertTrue("the process of an execution stopped while the IDE was still building is not ending", process.isProcessTerminating() || process.isProcessTerminated());
+    }
+
+    // UC-CODEGEN-008, Rule-CODEGEN-092
+    public void testAProcessThatEndsWithoutReportingATestCaseTakesItOutOfRunning() {
+        final @NotNull TestCase testCase = indexedTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
+        final @NotNull AutomationExecution execution = Services.getInstance(getProject(), AutomationExecution.class);
+        final @NotNull String testRunName = execution.freeConfigurationName("LoginTest");
+        execution.starting(testCase);
+        execution.launched(List.of(testCase), testRunName);
+        final @NotNull ExecutionEnvironment launch = launchOf(testRunName);
+        final @NotNull ProcessHandler process = new NopProcessHandler();
+        process.startNotify();
+        getProject().getMessageBus().syncPublisher(ExecutionManager.EXECUTION_TOPIC).processStarted(DefaultRunExecutor.EXECUTOR_ID, launch, process);
+        assertTrue("the test case is not running while its process runs", execution.isRunning(testCase.getUuid()));
+
+        getProject().getMessageBus().syncPublisher(ExecutionManager.EXECUTION_TOPIC).processTerminated(DefaultRunExecutor.EXECUTOR_ID, launch, process, 1);
+
+        Await.until("a test case its ended process never reported was left running", () -> !execution.isRunning(testCase.getUuid()));
     }
 
     private @NotNull ExecutionEnvironment launchOf(final @NotNull String testRunName) {
