@@ -91,7 +91,9 @@ init)** until the repository exists.
 project. Push a commit first to configure
 the remote.* Testin Help holds the same until the first push sets a remote.
 
-**If Git cannot name a branch** — the sync fails, and the message says so.
+**If no branch is checked out** — nothing is pulled or pushed. A message titled
+**Sync Failed** reads *Could not determine which branch to sync.* A commit made
+there stays on this machine until a branch holds it.
 
 **If the pull stops on a conflict** — the conflict offer appears instead of
 anything else. That is [UC-SHARE-017](resolveConflicts.md).

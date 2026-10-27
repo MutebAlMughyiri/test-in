@@ -41,8 +41,6 @@ import java.util.OptionalInt;
 public final class GitRepositoryService {
     static final @NotNull String BRANCH_NAMES = "--format=%(if)%(symref)%(then)%(else)%(refname:short)%(end)";
 
-    static final @NotNull String REMOTE_HEAD_BRANCH = "--format=%(symref:lstrip=3)";
-
     private final @NotNull Project project;
 
     private static @NotNull List<String> branchNames(final @NotNull String refNames) {
@@ -113,19 +111,9 @@ public final class GitRepositoryService {
         return run(path, GitCommand.BRANCH, "--show-current").orElse("").trim();
     }
 
-    public @NotNull String getDefaultBranch(final @NotNull Path path) {
-        final @NotNull String remoteName = getRemoteName(path);
-        final @NotNull String headBranch = remoteName.isEmpty() ? ""
-                : run(path, GitCommand.FOR_EACH_REF, REMOTE_HEAD_BRANCH, "refs/remotes/" + remoteName + "/HEAD").orElse("").trim();
-
-        return headBranch.isEmpty() ? getCurrentBranch(path) : headBranch;
-    }
-
     // UC-SHARE-016, Rule-SHARE-068
     public @NotNull String syncBranch(final @NotNull Path path) {
-        final @NotNull String current = getCurrentBranch(path);
-
-        return current.isEmpty() ? getDefaultBranch(path) : current;
+        return getCurrentBranch(path);
     }
 
     public int rebaseStep(final @NotNull Path path) {

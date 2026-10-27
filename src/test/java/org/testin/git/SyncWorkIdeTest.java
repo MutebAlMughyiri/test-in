@@ -146,6 +146,22 @@ public class SyncWorkIdeTest extends AbstractGitRemoteIdeTest {
         assertTrue(git(work, "rebase", "--abort").isPresent());
     }
 
+    // UC-SHARE-016, Rule-SHARE-068, Rule-SHARE-069
+    public void testASyncWithNoBranchCheckedOutFailsAndSaysSo() {
+        final @NotNull Path colleague = colleague();
+        mustGit(colleague, "checkout", "--detach");
+        write(colleague, "theirs.testcase", "{}");
+        commitAll(colleague, "a test case on no branch");
+        final @NotNull String before = head(remote, MAIN);
+        final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
+
+        new SyncWork(getProject()).syncRepository(colleague);
+
+        final @NotNull Notification failed = titled(said, Bundle.message("git.sync.failed.title"));
+        assertTrue(failed.getContent(), failed.getContent().contains(Bundle.message("git.error.no.sync.branch")));
+        assertEquals("a sync with no branch checked out moved the remote", before, head(remote, MAIN));
+    }
+
     // UC-SHARE-016, Rule-SHARE-125
     public void testARemoteThatCannotBeAskedStopsTheSyncAndSaysWhy() {
         final @NotNull String before = head(remote, MAIN);

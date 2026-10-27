@@ -203,6 +203,22 @@ public class CommitRulesIdeTest extends AbstractGitRemoteIdeTest {
         assertEquals(head(work, "HEAD"), head(remote, MAIN));
     }
 
+    // UC-SHARE-013, Rule-SHARE-068
+    public void testAPushWithNoBranchCheckedOutPushesNothingAndSaysSo() {
+        final @NotNull Path colleague = colleague();
+        mustGit(colleague, "checkout", "--detach");
+        write(colleague, "theirs.testcase", "{}");
+        commitAll(colleague, "a test case on no branch");
+        final @NotNull String before = head(remote, MAIN);
+        final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
+
+        pressPushOnTheWaitingCommits(colleague, said);
+
+        final @NotNull Notification refused = titled(said, Bundle.message("git.error.title"));
+        assertTrue(refused.getContent(), refused.getContent().contains(Bundle.message("git.error.no.push.branch")));
+        assertEquals("a push with no branch checked out moved the remote", before, head(remote, MAIN));
+    }
+
     // UC-SHARE-014, Rule-SHARE-064
     public void testANameThatIsNotABranchYetStartsOneAndTheCommitLandsOnIt() {
         write(work, "first.testcase", "{\"on\":\"the release\"}");

@@ -494,20 +494,13 @@ public class GitWorkflowTest {
     }
 
     @Test
-    public void anEmptyRemoteNamesNoHeadBranch() {
-        assertEquals(mustGit(work, "for-each-ref", GitRepositoryService.REMOTE_HEAD_BRANCH, "refs/remotes/origin/HEAD").trim(), "",
-                "an empty remote names no branch, so the push falls back to the local one");
-    }
-
-    @Test
-    public void aCloneNamesItsRemotesDefaultBranchWithoutAskingTheServer() {
+    public void aClonesRemoteHeadIsNotABranchToOffer() {
         mustGit(work, "commit", "--allow-empty", "-m", "root");
         mustGit(work, "push", "-u", "origin", "main");
 
         final Path colleague = cloneAsColleague();
         mustGit(colleague, "branch", "feature/login");
 
-        assertEquals(mustGit(colleague, "for-each-ref", GitRepositoryService.REMOTE_HEAD_BRANCH, "refs/remotes/origin/HEAD").trim(), "main");
         assertEquals(mustGit(colleague, "for-each-ref", GitRepositoryService.BRANCH_NAMES, "refs/heads", "refs/remotes").lines()
                         .filter(name -> !name.isBlank()).sorted().toList(),
                 List.of("feature/login", "main", "origin/main"),

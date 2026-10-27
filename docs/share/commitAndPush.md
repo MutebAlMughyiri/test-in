@@ -89,6 +89,10 @@ already made.
 **If the remote cannot be read** — a message titled **Git Error** reads *Could
 not read the Git remote:* and then the reason.
 
+**If no branch is checked out and none is chosen** — the commit is made and
+nothing is pushed. A message titled **Git Error** reads *Could not read the Git
+remote: Could not determine which branch to push.*
+
 **If the remote cannot be asked for its branches** — nothing is pulled or
 pushed. A message titled **Push Failed** reads *Could not ask* the remote *whether it has the branch*, the branch, *so
 nothing was pulled or pushed:*,
