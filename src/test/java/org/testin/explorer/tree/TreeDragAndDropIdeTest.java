@@ -98,7 +98,7 @@ public class TreeDragAndDropIdeTest extends AbstractTempRootIdeTest {
         final @NotNull DefaultMutableTreeNode top = (DefaultMutableTreeNode) tree.getModel().getRoot();
         for (int i = 0; i < top.getChildCount(); i++) {
             final @NotNull DefaultMutableTreeNode child = (DefaultMutableTreeNode) top.getChildAt(i);
-            if (child.getUserObject() == node) tree.setSelectionPath(new TreePath(child.getPath()));
+            if (node.equals(child.getUserObject())) tree.setSelectionPath(new TreePath(child.getPath()));
         }
     }
 
