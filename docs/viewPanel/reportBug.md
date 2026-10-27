@@ -205,6 +205,10 @@ reads *Add bugRepoUrl to testin.yml to say which repository bugs are filed in*.
 **If `bugRepoUrl` is not a repository address** — **Send** is gray. Hovering
 over it reads *bugRepoUrl is not a GitHub repository address*.
 
+**If `testin.yml` cannot be read when Apply is pressed** — nothing is written,
+and a message reads *testin.yml cannot be read - correct it by hand first.* A
+line written into a broken file could leave it broken (Rule-VIEW-PANEL-104).
+
 **If `gh` is missing, or the IDE cannot find it** — **Send** is gray. Hovering
 over it reads *GitHub CLI (gh) is not installed, or the IDE cannot see it.
 Install gh, then restart the IDE (and JetBrains Toolbox)*.

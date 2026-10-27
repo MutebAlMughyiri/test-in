@@ -418,4 +418,25 @@ public class ReportBugFromThePanelIdeTest extends AbstractTempRootIdeTest {
         assertTrue("testin.yml did not open", Optional.ofNullable(LocalFileSystem.getInstance().refreshAndFindFileByNioFile(file)).map(FileEditorManager.getInstance(getProject())::isFileOpen).orElse(false));
         assertTrue("the hint still waits after Apply", hints.waiting().stream().noneMatch(waiting -> waiting.step() == SetupStep.BUG_FILING));
     }
+
+    // UC-VIEW-PANEL-016, Rule-VIEW-PANEL-104
+    public void testApplyOnATestinYmlThatCannotBeReadWritesNothingAndSaysSo() {
+        final @NotNull Path file = TestinYml.savePath(getProject()).orElseThrow();
+        final @NotNull String before = "testinProject: [NAFATH\n";
+        try {
+            Files.createDirectories(file.getParent());
+            Files.writeString(file, before, StandardCharsets.UTF_8);
+        } catch (final IOException ex) {
+            throw new AssertionError("Could not write testin.yml: " + ex.getMessage(), ex);
+        }
+        TestinYml.reload(getProject());
+        final @NotNull JComponent form = BugRepoUrlForm.of(getProject());
+        Drawn.first(form, JBTextField.class).setText(REPOSITORY);
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        Drawn.first(form, JButton.class, button -> Bundle.message("bug.repo.url.apply").equals(button.getText())).doClick();
+
+        assertEquals("Apply on a testin.yml that cannot be read did not say so", List.of(Bundle.message("yml.save.disabled.unreadable")), said.shown());
+        assertEquals("Apply wrote into a testin.yml that cannot be read", before, read(file));
+    }
 }
