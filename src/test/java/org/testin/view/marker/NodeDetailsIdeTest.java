@@ -16,6 +16,7 @@
 
 package org.testin.view.marker;
 
+import com.intellij.openapi.ui.popup.JBPopup;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.NodesOnDisk;
@@ -37,6 +38,8 @@ public class NodeDetailsIdeTest extends AbstractTempRootIdeTest {
 
     private TestSetNode login;
 
+    private TestSetNode checkout;
+
     private static @NotNull String bytesOf(final @NotNull Path file) {
         try {
             return Files.readString(file);
@@ -51,6 +54,7 @@ public class NodeDetailsIdeTest extends AbstractTempRootIdeTest {
         final @NotNull NodesOnDisk made = new NodesOnDisk(getProject());
         final @NotNull TestProjectNode testProject = made.testProject(root.resolve("NAFATH"));
         login = made.testSet(testProject.getTestCasesFolder(), "Login");
+        checkout = made.testSet(testProject.getTestCasesFolder(), "Checkout");
         made.testCase(login);
         made.testCase(login);
     }
@@ -85,6 +89,17 @@ public class NodeDetailsIdeTest extends AbstractTempRootIdeTest {
     public void testDetailsAreOfferedForOneNodeAtATime() {
         assertFalse("Details was offered with nothing selected", TreeGesture.updated(getProject(), new ShowNodeDetailsAction(), List.of()).isEnabled());
         assertFalse("Details was offered for two nodes at once", TreeGesture.updated(getProject(), new ShowNodeDetailsAction(), List.of(login, new TestSetNode())).isEnabled());
+    }
+
+    // UC-INTERNAL-007, Rule-INTERNAL-075
+    public void testDetailsOfAnotherNodeReplaceTheOnesOnScreen() {
+        ShownDialog.open(getProject(), NodeDetailsDialog.class, () -> new NodeDetailsDialog(getProject(), login).show());
+        final @NotNull JBPopup first = ShownDialog.popup(getProject(), NodeDetailsDialog.class);
+
+        ShownDialog.open(getProject(), NodeDetailsDialog.class, () -> new NodeDetailsDialog(getProject(), checkout).show());
+
+        assertTrue("the details on screen were not closed when another node's opened", first.isDisposed());
+        assertNotSame("the second details did not take the first one's place", first, ShownDialog.popup(getProject(), NodeDetailsDialog.class));
     }
 
     // Rule-TREE-PANEL-137, Rule-EDITOR-PANEL-281
