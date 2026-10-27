@@ -17,6 +17,7 @@
 package org.testin.testproject;
 
 import com.intellij.openapi.util.Disposer;
+import com.sun.net.httpserver.HttpServer;
 import com.intellij.openapi.util.io.FileUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.Await;
@@ -28,6 +29,8 @@ import org.testin.services.Services;
 import org.testin.util.Bundle;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -66,6 +69,26 @@ public class CloneTestProjectIdeTest extends AbstractReadTheRootIdeTest {
         return repository.toUri().toString();
     }
 
+    private @NotNull String servedOverHttpWithAPassword(final @NotNull String repository) {
+        mustGit(elsewhere, "clone", "--bare", repository, elsewhere.resolve("served.git").toString());
+        mustGit(elsewhere.resolve("served.git"), "update-server-info");
+        try {
+            final @NotNull HttpServer server = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 0);
+            server.createContext("/", exchange -> {
+                final @NotNull Path file = elsewhere.resolve(exchange.getRequestURI().getPath().substring(1));
+                final byte @NotNull [] body = Files.isRegularFile(file) ? Files.readAllBytes(file) : new byte[0];
+                exchange.sendResponseHeaders(body.length == 0 ? 404 : 200, body.length == 0 ? -1 : body.length);
+                exchange.getResponseBody().write(body);
+                exchange.close();
+            });
+            server.start();
+            Disposer.register(getTestRootDisposable(), () -> server.stop(0));
+            return "http://tester:secret@127.0.0.1:" + server.getAddress().getPort() + "/served.git";
+        } catch (final IOException ex) {
+            throw new AssertionError("could not serve the repository over HTTP: " + ex.getMessage(), ex);
+        }
+    }
+
     private @NotNull TreePanel aTreePanel() {
         final @NotNull TreePanel panel = new TreePanel(getProject());
         Disposer.register(getTestRootDisposable(), panel);
@@ -84,6 +107,18 @@ public class CloneTestProjectIdeTest extends AbstractReadTheRootIdeTest {
         assertTrue("the clone did not land in the Testin folder", Files.isDirectory(root.resolve("CHECKOUT").resolve(".git")));
         assertTrue("the cloned test project was not read", nodes().isTaken(root.resolve("CHECKOUT"), Optional.empty()));
         assertEquals("the cloned test project is not the chosen one", "CHECKOUT", bound.name());
+    }
+
+    // UC-TREE-PANEL-003, Rule-SHARE-062
+    public void testAPasswordInTheAddressIsNotKeptInTheClonesRemote() {
+        readEverything();
+        final @NotNull Said told = Said.listening(getProject(), getTestRootDisposable());
+        final @NotNull String address = servedOverHttpWithAPassword(aRepositoryHoldingATestProject());
+
+        new CloneTestProject(getProject(), address, "CHECKOUT", aTreePanel()).execute();
+
+        Await.until("the clone never said it was done", () -> told.shown().contains(Done.CLONED.getOutcome()));
+        assertEquals("the clone kept the password in its remote", address.replace("tester:secret@", ""), mustGit(root.resolve("CHECKOUT"), "remote", "get-url", "origin").trim());
     }
 
     // UC-TREE-PANEL-003
