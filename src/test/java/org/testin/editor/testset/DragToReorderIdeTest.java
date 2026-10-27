@@ -22,6 +22,7 @@ import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
+import org.testin.Said;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.toolbar.GridViewButton;
 import org.testin.filter.SortDirection;
@@ -29,6 +30,7 @@ import org.testin.filter.SortField;
 import org.testin.filter.SortPopupButton;
 import org.testin.filter.Sorting;
 import org.testin.indexer.TestCases;
+import org.testin.model.FileKind;
 import org.testin.model.Priority;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
@@ -124,6 +126,26 @@ public class DragToReorderIdeTest extends AbstractTempRootIdeTest {
         assertFalse("the cards take dropped text", handler.canImport(new TransferHandler.TransferSupport(editor.getList(), text)));
         assertFalse("dropped text was taken as a move", handler.importData(new TransferHandler.TransferSupport(editor.getList(), text)));
         assertEquals("dropped text changed the order", List.of("Log in", "Log out"), storedOrder());
+    }
+
+    // UC-EDITOR-PANEL-010
+    public void testADragWhoseOrderCannotBeWrittenPutsTheCardsBackAndSaysSo() {
+        final @NotNull TestSetEditor editor = aTestSetOf("Log in", "Log out", "Reset the password");
+        final @NotNull TestCase logIn = theTestCases().getTestCasesForTestSet(testSet.getPath()).stream().filter(testCase -> "Log in".equals(testCase.getDescription())).findFirst().orElseThrow();
+        final @NotNull Path file = testSet.getPath().resolve(FileKind.TEST_CASE.fileName(logIn.getUuid()));
+        try {
+            Files.delete(file);
+            Files.createDirectory(file);
+            Files.writeString(file.resolve("kept"), "");
+        } catch (final IOException ex) {
+            throw new AssertionError("Could not put a folder where the test case was: " + ex.getMessage(), ex);
+        }
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        assertTrue("the drop was refused", drag(editor, new int[]{0}, 3));
+
+        Await.until("an order that could not be written was not said: " + said.shown(), () -> said.shown().contains(Bundle.message("save.failed")));
+        assertEquals("the order no file holds was kept", List.of("Log in", "Log out", "Reset the password"), storedOrder());
     }
 
     // Rule-EDITOR-PANEL-058
