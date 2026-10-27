@@ -17,6 +17,7 @@
 package org.testin.explorer.toolbar;
 
 import com.intellij.openapi.util.Disposer;
+import com.intellij.openapi.util.io.FileUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractOpenEditorsIdeTest;
 import org.testin.Await;
@@ -45,6 +46,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 public class BranchSwitchIdeTest extends AbstractOpenEditorsIdeTest {
 
@@ -93,6 +95,14 @@ public class BranchSwitchIdeTest extends AbstractOpenEditorsIdeTest {
             Files.writeString(file, "not committed");
         } catch (final IOException ex) {
             throw new AssertionError("could not write " + file + ": " + ex.getMessage(), ex);
+        }
+    }
+
+    private static @NotNull Path aFolderElsewhere() {
+        try {
+            return Files.createTempDirectory("testin-remote");
+        } catch (final IOException ex) {
+            throw new AssertionError("could not make a folder for the remote: " + ex.getMessage(), ex);
         }
     }
 
@@ -270,6 +280,26 @@ public class BranchSwitchIdeTest extends AbstractOpenEditorsIdeTest {
             assertEquals("a refused checkout lost the uncommitted change", "not committed", Files.readString(login.getPath().resolve(login.getMarkerFileName())));
         } catch (final IOException ex) {
             throw new AssertionError("could not read the changed marker: " + ex.getMessage(), ex);
+        }
+    }
+
+    // UC-TREE-PANEL-026, Rule-SHARE-126
+    public void testARemoteBranchWithNoLocalOneIsCheckedOutAsALocalBranchThatFollowsIt() {
+        final @NotNull Path elsewhere = aFolderElsewhere();
+        try {
+            final @NotNull Path remote = elsewhere.resolve("remote.git");
+            git(elsewhere, "init", "-q", "--bare", remote.toString());
+            git(testProject.getPath(), "remote", "add", "origin", remote.toString());
+            git(testProject.getPath(), "push", "-q", "origin", "main:release");
+            final @NotNull JComboBox<?> box = boxOf(new BranchSelector(getProject(), Optional.of(testProject)));
+            Await.until("the branch box never listed the remote branch", () -> box.isEnabled() && IntStream.range(0, box.getItemCount()).mapToObj(box::getItemAt).anyMatch("origin/release"::equals));
+
+            box.setSelectedItem("origin/release");
+
+            Await.until("the remote branch was not checked out as a local branch of its own name", () -> branchOnDisk().equals("release"));
+            assertEquals("the local branch does not follow the remote one", "origin/release", git(testProject.getPath(), "rev-parse", "--abbrev-ref", "release@{upstream}"));
+        } finally {
+            FileUtil.delete(elsewhere.toFile());
         }
     }
 
