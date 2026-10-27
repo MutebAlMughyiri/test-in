@@ -258,7 +258,7 @@ public final class RunItemRecorder {
         Services.getInstance(project, Notifier.class).softRefuse(project, Bundle.message("run.item.status.test.case.removed"));
     }
 
-    // UC-EDITOR-PANEL-032, UC-EDITOR-PANEL-038, UC-EDITOR-PANEL-039, Rule-EDITOR-PANEL-284, Rule-EDITOR-PANEL-156, Rule-EDITOR-PANEL-156
+    // UC-EDITOR-PANEL-032, UC-EDITOR-PANEL-038, UC-EDITOR-PANEL-039, Rule-EDITOR-PANEL-284, Rule-EDITOR-PANEL-156
     public void applyRunItemStatus(final @NotNull TestRunEditor editor, final @NotNull List<TestCase> selectedTestCases, final @NotNull RunItemStatus runItemStatus) {
         if (selectedTestCases.isEmpty()) return;
 

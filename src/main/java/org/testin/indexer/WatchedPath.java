@@ -26,7 +26,7 @@ import java.util.Optional;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WatchedPath {
-    // UC-INTERNAL-003, Rule-INTERNAL-016, Rule-INTERNAL-017, Rule-INTERNAL-018, Rule-INTERNAL-021, Rule-INTERNAL-021
+    // UC-INTERNAL-003, Rule-INTERNAL-016, Rule-INTERNAL-017, Rule-INTERNAL-018, Rule-INTERNAL-021
     public static @NotNull Optional<Path> testProjectOf(final @NotNull Path changed, final @NotNull Path root) {
         if (!TestinRoot.isConfigured(root)) return Optional.empty();
         if (!changed.startsWith(root)) return Optional.empty();

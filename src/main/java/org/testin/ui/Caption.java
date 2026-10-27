@@ -36,7 +36,7 @@ import java.awt.GridBagLayout;
 import java.util.Locale;
 import java.util.Optional;
 
-// Rule-INTERNAL-087, UC-INTERNAL-007, UC-INTERNAL-007
+// Rule-INTERNAL-087, UC-INTERNAL-007
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Caption {
 
