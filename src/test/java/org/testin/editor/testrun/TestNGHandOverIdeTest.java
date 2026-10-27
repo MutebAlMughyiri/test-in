@@ -143,6 +143,23 @@ public class TestNGHandOverIdeTest extends AbstractCodegenIdeTest {
         assertTrue("something was handed to TestNG while the IDE indexes", executed.isEmpty());
     }
 
+    // UC-CODEGEN-009, Rule-CODEGEN-037
+    public void testATestCaseStoppedBeforeItsExecutionBeganIsNotHandedOver() {
+        final @NotNull TestSetNode testSet = createdTestSet("Checkout");
+        final @NotNull TestCase stopped = createdTestCase(testSet, "Log in with a valid user", "m0001");
+        final @NotNull TestCase withoutCode = indexedTestCase(testSet, "Log in with a wrong password", "m0002");
+        settled();
+        final @NotNull AutomationExecution execution = Services.getInstance(getProject(), AutomationExecution.class);
+        final @NotNull List<String> balloons = Said.listening(getProject(), getTestRootDisposable()).shown();
+        execution.starting(stopped);
+        execution.stop(List.of(stopped));
+
+        AutomationExecutor.available(getProject()).orElseThrow(() -> new AssertionError("no runner for Java")).run(getProject(), List.of(stopped, withoutCode));
+
+        Await.until("the execution was never prepared", () -> balloons.contains(Refused.NO_GENERATED_CODE.getSentence()));
+        assertTrue("a test case stopped before its execution began was handed to TestNG", executed.isEmpty());
+    }
+
     // UC-EDITOR-PANEL-044
     public void testRunningATestRunWithNothingLeftToRunSaysSoAndHandsNothingOver() {
         final @NotNull TestCase testCase = createdTestCase(createdTestSet("Checkout"), "Log in with a valid user", "m0001");
