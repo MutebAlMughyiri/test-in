@@ -16,17 +16,26 @@
 
 package org.testin.navigate;
 
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.actionSystem.ex.ActionUtil;
+import com.intellij.openapi.actionSystem.impl.SimpleDataContext;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.psi.PsiMethod;
+import com.intellij.testFramework.TestActionEvent;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
+import org.testin.actions.TestinDataKeys;
 import org.testin.codegen.agent.TestMethodFile;
 import org.testin.Await;
 import org.testin.model.TestCase;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class TestMethodCodeIdeTest extends AbstractCodegenIdeTest {
@@ -59,6 +68,23 @@ public class TestMethodCodeIdeTest extends AbstractCodegenIdeTest {
         TestMethodCode.available(getProject()).toCode(getProject(), testCase);
 
         Await.until("go to code did not reach the method of a test case renamed since it was written", () -> caretIsOn(testMethod));
+    }
+
+    // UC-CODEGEN-006, Rule-CODEGEN-001
+    public void testNavigateToTestMethodTakesTheCaretToTheSelectedTestCasesMethod() {
+        final @NotNull TestCase testCase = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
+        final @NotNull PsiMethod testMethod = writtenMethodOf(LOGIN_TEST, testCase);
+        final @NotNull AnAction navigate = Objects.requireNonNull(ActionManager.getInstance().getAction("Testin.NavigateToTestMethod"), "Navigate to Test Method is not registered");
+        final @NotNull AnActionEvent e = TestActionEvent.createTestEvent(navigate, SimpleDataContext.builder()
+                .add(CommonDataKeys.PROJECT, getProject())
+                .add(TestinDataKeys.SELECTED_TEST_CASES, List.of(testCase))
+                .build());
+        ActionUtil.updateAction(navigate, e);
+        assertTrue("Navigate to Test Method is gray on a test case that has a method", e.getPresentation().isEnabled());
+
+        ActionUtil.performAction(navigate, e);
+
+        Await.until("Navigate to Test Method did not take the caret to the test case's method", () -> caretIsOn(testMethod));
     }
 
     // Rule-CODEGEN-001
