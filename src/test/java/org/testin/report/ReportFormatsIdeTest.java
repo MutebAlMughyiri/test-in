@@ -238,7 +238,7 @@ public class ReportFormatsIdeTest extends AbstractTempRootIdeTest {
     }
 
     // UC-REPORT-001, Rule-REPORT-025
-    public void testTheWordDocumentPrintsTheAnalysisWrittenTheIssueAFailureReportedAndAnEmptyDescription() {
+    public void testEveryFormatPrintsTheAnalysisWrittenTheIssueAFailureReportedAndAnEmptyDescription() {
         final @NotNull UUID blank = UUID.randomUUID();
         aTestCase(blank, "");
         final @NotNull String issue = "https://github.com/mtb550/test-in/issues/412";
@@ -247,11 +247,12 @@ public class ReportFormatsIdeTest extends AbstractTempRootIdeTest {
                 new RunItem().setUuid(blank).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()))));
         testRun.getMarker().getResultAnalysis().put(TestRunResultAnalysis.FAILED, "The lockout counter is the one to chase");
 
-        final @NotNull String document = word(testRun);
-
-        assertPrints("The Word document", document, Bundle.message("report.heading.analysis"));
-        assertPrints("The Word document", document, "The lockout counter is the one to chase");
-        assertPrints("The Word document", document, BugIssueUrl.shortReference(issue));
+        for (final String expected : List.of(Bundle.message("report.heading.analysis"), "The lockout counter is the one to chase", BugIssueUrl.shortReference(issue))) {
+            assertPrints("The web page", withoutTags(html(testRun)), expected);
+            assertPrints("The PDF", pdf(testRun), expected);
+            assertPrints("The Word document", word(testRun), expected);
+            assertPrints("The spreadsheet", excel(testRun), expected);
+        }
     }
 
     // Rule-REPORT-005
