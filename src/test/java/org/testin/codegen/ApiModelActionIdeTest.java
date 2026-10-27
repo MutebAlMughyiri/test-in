@@ -266,6 +266,20 @@ public class ApiModelActionIdeTest extends AbstractCodegenIdeTest {
         assertEquals("Create with neither body pasted wrote a file", List.of(Optional.empty(), Optional.empty()), List.of(textOf(api, "LoginRequest.java"), textOf(api, "LoginResponse.java")));
     }
 
+    // UC-CODEGEN-022
+    public void testAResponseThatIsNotJsonWritesNeitherFileAndSaysWhichBody() {
+        final @NotNull PsiDirectory api = aPackage();
+        final @NotNull List<String> balloons = Said.listening(getProject(), getTestRootDisposable()).shown();
+        final @NotNull JComponent dialog = opened(api).getContent();
+        filledIn(dialog, "Login", REQUEST_BODY);
+        boxes(dialog).getLast().setText("expires in an hour");
+
+        created(dialog);
+
+        assertEquals("a response that is not JSON was not refused naming it", List.of(Refused.NOT_JSON.about(Bundle.message("dialog.api.model.response"))), balloons);
+        assertEquals("a file was written although the response was refused", List.of(Optional.empty(), Optional.empty()), List.of(textOf(api, "LoginRequest.java"), textOf(api, "LoginResponse.java")));
+    }
+
     // Rule-CODEGEN-105
     public void testAFileAlreadyInThePackageIsNeverReplaced() {
         final @NotNull PsiDirectory api = aPackage();
