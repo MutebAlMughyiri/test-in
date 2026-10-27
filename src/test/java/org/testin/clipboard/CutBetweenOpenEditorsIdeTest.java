@@ -63,7 +63,8 @@ public class CutBetweenOpenEditorsIdeTest extends AbstractOpenEditorsIdeTest {
 
     private @NotNull TestSetEditor openedWith(final @NotNull TestProjectNode testProject, final @NotNull String name, final @NotNull List<String> descriptions) {
         final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), testProject, name);
-        for (int i = 0; i < descriptions.size(); i++) EditorFixtures.testCase(getProject(), testSet, descriptions.get(i), String.format("m%04d", i));
+        for (int i = 0; i < descriptions.size(); i++)
+            EditorFixtures.testCase(getProject(), testSet, descriptions.get(i), String.format("m%04d", i));
         opened(testSet);
 
         final @NotNull TestSetEditor editor = Services.getInstance(getProject(), TestinEditors.class).editorFor(testSet).filter(TestSetEditor.class::isInstance).map(TestSetEditor.class::cast).orElseThrow(() -> new AssertionError(name + " did not open in a test set editor"));
