@@ -25,6 +25,8 @@ import org.testin.AbstractCodegenIdeTest;
 import org.testin.Await;
 import org.testin.Said;
 import org.testin.TreeGesture;
+import org.testin.editor.EditorFixtures;
+import org.testin.editor.open.TestinEditors;
 import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestCasesFolderNode;
@@ -36,6 +38,7 @@ import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
 import org.testin.notifications.Refused;
 import org.testin.services.OptionalPlugin;
+import org.testin.services.Services;
 
 import java.util.List;
 import java.util.Map;
@@ -69,6 +72,24 @@ public class ExecuteTestsFromTheTreeIdeTest extends AbstractCodegenIdeTest {
 
         Await.until("Run Tests on the test set ran nothing", () -> !runner.executions().isEmpty());
         assertEquals("the test set's test cases were not one execution", List.of(List.of(first.getUuid(), second.getUuid())), runner.executions().stream().map(execution -> execution.stream().map(TestCase::getUuid).toList()).toList());
+    }
+
+    // UC-TREE-PANEL-023, UC-CODEGEN-008
+    public void testRunTestsOnATestRunOpensItAndRunsWhatItCovers() {
+        final @NotNull TestCase covered = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "a");
+        settled();
+        final @NotNull TestRunNode testRun = EditorFixtures.testRun(getProject(), EditorFixtures.testProject(getProject(), root), List.of(EditorFixtures.pending(covered)));
+        final @NotNull CapturedRunner runner = CapturedRunner.installed(getTestRootDisposable());
+        final @NotNull TestinEditors editors = Services.getInstance(getProject(), TestinEditors.class);
+        try {
+            TreeGesture.pressed(getProject(), runTests(), List.of(testRun));
+
+            Await.until("Run Tests on the test run ran nothing", () -> !runner.executions().isEmpty());
+            assertTrue("Run Tests on the test run did not open it", editors.testRunEditorFor(testRun).isPresent());
+            assertEquals("the test run's test cases were not one execution", List.of(List.of(covered.getUuid())), runner.executions().stream().map(execution -> execution.stream().map(TestCase::getUuid).toList()).toList());
+        } finally {
+            editors.closeAll();
+        }
     }
 
     // Rule-TREE-PANEL-080
