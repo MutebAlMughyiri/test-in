@@ -34,6 +34,7 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
 import org.testin.Await;
+import org.testin.NodesOnDisk;
 import org.testin.Said;
 import org.testin.TreeGesture;
 import org.testin.creator.CreateTestProjectAction;
@@ -43,6 +44,7 @@ import org.testin.explorer.toolbar.SaveTestinYmlAction;
 import org.testin.explorer.tree.TreeLoadError;
 import org.testin.explorer.tree.TreeValues;
 import org.testin.indexer.AbstractReadTheRootIdeTest;
+import org.testin.indexer.Nodes;
 import org.testin.model.NodeType;
 import org.testin.model.markers.TestProjectMarker;
 import org.testin.model.node.AbstractNode;
@@ -136,6 +138,20 @@ public class TreePanelIdeTest extends AbstractReadTheRootIdeTest {
         assertTrue("the tree lists a test project it is not bound to: " + rows, rows.stream().noneMatch(row -> row instanceof final AbstractNode node && node.getName().equals("Payments")));
         assertTrue("a test case is a node in the tree: " + rows, rows.stream().allMatch(AbstractNode.class::isInstance));
         assertTrue("the test set holding the test case is not in the tree: " + rows, rows.stream().anyMatch(row -> row instanceof final AbstractNode node && node.getName().equals("Login")));
+    }
+
+    // UC-INTERNAL-002, Rule-INTERNAL-114
+    public void testATestSetAddedWhileTheTreeIsShownIsDrawnInItsFolder() {
+        final @NotNull Path checkout = aTestProjectAt(root.resolve("Checkout"));
+        readEverything();
+        bound().choose("Checkout");
+        final @NotNull TreePanel panel = aPanelShowingTheTree();
+        settledRowsOf(panel);
+        final @NotNull AbstractNode testCases = Services.getInstance(getProject(), Nodes.class).find(theTestCasesOf(checkout)).orElseThrow(() -> new AssertionError("the test cases folder was not read"));
+
+        new NodesOnDisk(getProject()).testSet(testCases, "Billing");
+
+        Await.until("a test set added while the tree was shown was never drawn", () -> rowsOf(panel.getTestProjectTree().getMainTree()).stream().anyMatch(row -> row instanceof final AbstractNode node && node.getName().equals("Billing")));
     }
 
     // Rule-TREE-PANEL-015
