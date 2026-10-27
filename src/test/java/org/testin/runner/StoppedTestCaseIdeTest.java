@@ -19,16 +19,19 @@ package org.testin.runner;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.ExecutionManager;
 import com.intellij.execution.Executor;
+import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.configurations.RunProfile;
 import com.intellij.execution.configurations.RunProfileState;
 import com.intellij.execution.configurations.RunnerSettings;
 import com.intellij.execution.executors.DefaultRunExecutor;
+import com.intellij.execution.process.KillableProcessHandler;
 import com.intellij.execution.process.NopProcessHandler;
 import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.runners.ExecutionEnvironmentBuilder;
 import com.intellij.execution.runners.ProgramRunner;
 import com.intellij.icons.AllIcons;
+import com.intellij.openapi.util.SystemInfo;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.Await;
@@ -74,6 +77,28 @@ public class StoppedTestCaseIdeTest extends AbstractCodegenIdeTest {
 
         assertTrue("the process of an execution stopped while the IDE was still building was left running", Optional.ofNullable(process.getUserData(ProcessHandler.TERMINATION_REQUESTED)).orElse(false));
         assertTrue("the process of an execution stopped while the IDE was still building is not ending", process.isProcessTerminating() || process.isProcessTerminated());
+    }
+
+    // UC-CODEGEN-009, Rule-CODEGEN-037
+    public void testAStopPressedWhileTheIdeStillBuildsKillsAProcessThatCanBeKilled() {
+        final @NotNull TestCase testCase = indexedTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
+        final @NotNull AutomationExecution execution = Services.getInstance(getProject(), AutomationExecution.class);
+        final @NotNull String testRunName = execution.freeConfigurationName("LoginTest");
+        execution.starting(testCase);
+        execution.launched(List.of(testCase), testRunName);
+        execution.stop(List.of(testCase));
+        final @NotNull GeneralCommandLine waiting = SystemInfo.isWindows ? new GeneralCommandLine("ping", "-n", "60", "127.0.0.1") : new GeneralCommandLine("sleep", "60");
+        final @NotNull KillableProcessHandler process;
+        try {
+            process = new KillableProcessHandler(waiting);
+        } catch (final ExecutionException ex) {
+            throw new AssertionError("could not start a process to stop: " + ex.getMessage(), ex);
+        }
+        process.startNotify();
+
+        getProject().getMessageBus().syncPublisher(ExecutionManager.EXECUTION_TOPIC).processStarted(DefaultRunExecutor.EXECUTOR_ID, launchOf(testRunName), process);
+
+        Await.until("the process of an execution stopped while the IDE was still building was not killed", process::isProcessTerminated);
     }
 
     // UC-CODEGEN-008, Rule-CODEGEN-092
