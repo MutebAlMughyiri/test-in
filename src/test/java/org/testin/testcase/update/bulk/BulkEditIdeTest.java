@@ -54,7 +54,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -169,6 +172,31 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull List<RangeHighlighter> greenIn(final @NotNull Editor editor) {
         return Stream.of(editor.getMarkupModel().getAllHighlighters()).filter(highlighter -> DiffColors.DIFF_INSERTED.equals(highlighter.getTextAttributesKey())).toList();
+    }
+
+    // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-040
+    public void testEveryFieldThatCanBeEditedInBulkOpensItsOwnBulkEditor() {
+        aTestSetWithModules("Login", "Payments");
+        final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
+        editor.getList().setSelectionInterval(0, 1);
+        final @NotNull Map<UpdateTestCaseFields, Class<?>> bulkEditorOf = new EnumMap<>(UpdateTestCaseFields.class);
+        bulkEditorOf.put(UpdateTestCaseFields.DESCRIPTION, DescriptionBulkDialog.class);
+        bulkEditorOf.put(UpdateTestCaseFields.STEPS, StepsBulkDialog.class);
+        bulkEditorOf.put(UpdateTestCaseFields.PRIORITY, PriorityBulkDialog.class);
+        bulkEditorOf.put(UpdateTestCaseFields.GROUP, GroupBulkDialog.class);
+        for (final UpdateTestCaseFields field : List.of(UpdateTestCaseFields.EXPECTED_RESULT, UpdateTestCaseFields.MODULE, UpdateTestCaseFields.TEST_DATA, UpdateTestCaseFields.PRE_CONDITIONS, UpdateTestCaseFields.REFERENCE, UpdateTestCaseFields.STATUS))
+            bulkEditorOf.put(field, BaseValueBulkDialog.class);
+        assertEquals("a field the Update menu edits in bulk has no bulk editor named here", EnumSet.complementOf(EnumSet.of(UpdateTestCaseFields.ORDER)), bulkEditorOf.keySet());
+
+        bulkEditorOf.forEach((field, bulkEditor) -> {
+            UpdateTestCaseAction.openField(getProject(), editor, field);
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+            try {
+                assertTrue(field.getName() + " on two test cases did not open its bulk editor", ShownDialog.isOpen(getProject(), bulkEditor));
+            } finally {
+                ShownDialog.close(getProject(), bulkEditor);
+            }
+        });
     }
 
     // Rule-EDITOR-PANEL-040, Rule-EDITOR-PANEL-045
