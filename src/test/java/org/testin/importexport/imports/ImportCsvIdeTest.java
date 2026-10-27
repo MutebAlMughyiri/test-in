@@ -18,13 +18,18 @@ package org.testin.importexport.imports;
 
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
+import org.testin.importexport.exports.ExportCsv;
 import org.testin.model.TestCase;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class ImportCsvIdeTest extends AbstractTempRootIdeTest {
     private static final @NotNull String BOM = Character.toString(0xFEFF);
@@ -39,6 +44,10 @@ public class ImportCsvIdeTest extends AbstractTempRootIdeTest {
         } catch (final IOException ex) {
             throw new AssertionError("Could not write the file to import: " + ex.getMessage(), ex);
         }
+    }
+
+    private static @NotNull TestCase aTestCase(final @NotNull String description) {
+        return TestCase.builder().uuid(UUID.randomUUID()).description(description).order("m").build();
     }
 
     // UC-SHARE-005, Rule-SHARE-124
@@ -70,5 +79,31 @@ public class ImportCsvIdeTest extends AbstractTempRootIdeTest {
         assertEquals("the dashboard opens", testCases.getFirst().getExpectedResult());
         assertEquals("a user exists", testCases.getFirst().getPreConditions());
         assertEquals("user = muteb", testCases.getFirst().getTestData());
+    }
+
+    // UC-SHARE-006
+    public void testACsvBecomesOneSheetNamedAfterItsFile() {
+        final @NotNull File csv = root.resolve("Login [web].csv").toFile();
+        new ExportCsv().exportToFile(csv, Map.of("Login", List.of(aTestCase("Log in with a valid user"), aTestCase("Log out"))));
+
+        final @NotNull Map<String, List<TestCase>> sheets = new ImportCsv().processImport(getProject(), csv);
+
+        assertEquals("the sheet is not named after its file, its brackets made safe", List.of("Login _web_"), List.copyOf(sheets.keySet()));
+        assertEquals("the sheet does not hold the file's test cases", List.of("Log in with a valid user", "Log out"), sheets.getOrDefault("Login _web_", List.of()).stream().map(TestCase::getDescription).toList());
+    }
+
+    // UC-SHARE-006
+    public void testACsvOfOnlyItsHeaderGivesNoSheet() {
+        final @NotNull File csv = root.resolve("Empty.csv").toFile();
+        new ExportCsv().exportToFile(csv, Map.of());
+
+        assertEquals("a CSV with no test cases gave a sheet", Map.of(), new ImportCsv().processImport(getProject(), csv));
+    }
+
+    // UC-SHARE-005, Rule-SHARE-124
+    public void testACsvThatCannotBeReadFailsTheImport() {
+        final @NotNull File missing = root.resolve("Missing.csv").toFile();
+
+        assertThrows(UncheckedIOException.class, () -> new ImportCsv().processImport(getProject(), missing));
     }
 }
