@@ -33,6 +33,8 @@ import org.testin.util.Bundle;
 
 import java.util.List;
 
+import static org.testin.git.LocalGit.mustGit;
+
 public class ViewPendingCommitsWorkIdeTest extends AbstractGitRemoteIdeTest {
     private static @NotNull AnAction resolveOn(final @NotNull Notification notification) {
         return notification.getActions().stream().filter(action -> Bundle.message("git.conflicts.resolve").equals(action.getTemplateText())).findFirst()
@@ -74,6 +76,23 @@ public class ViewPendingCommitsWorkIdeTest extends AbstractGitRemoteIdeTest {
         assertEquals("the rebased commit did not reach the remote", head(work, "HEAD"), head(remote, MAIN));
         final @NotNull String merged = read(work, LOGIN_TEST_CASE);
         assertTrue("the pushed test case lost a side's change: " + merged, merged.contains("Sign in") && merged.contains("The account page opens"));
+    }
+
+    // UC-SHARE-017, Rule-SHARE-076
+    public void testContinuingAPullTheTesterResolvedByHandFinishesItAndPushes() {
+        aPullStoppedOnTheLoginTestCase();
+        mustGit(work, "checkout", "--theirs", "--", LOGIN_TEST_CASE);
+        mustGit(work, "add", "--", LOGIN_TEST_CASE);
+        final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
+        new ViewPendingCommitsWork(getProject()).openFor(work);
+        final @NotNull Notification stopped = titled(said, Bundle.message("git.conflicts.title"));
+        final @NotNull AnAction continueRebase = stopped.getActions().stream().filter(action -> Bundle.message("git.conflicts.continue.rebase").equals(action.getTemplateText())).findFirst()
+                .orElseThrow(() -> new AssertionError("the message does not offer Continue rebase: " + answers(stopped)));
+
+        Notified.press(getProject(), stopped, continueRebase);
+
+        titled(said, Bundle.message("git.rebase.continued.title"));
+        assertEquals("the continued rebase did not reach the remote", head(work, "HEAD"), head(remote, MAIN));
     }
 
     // UC-SHARE-017, Rule-SHARE-127
