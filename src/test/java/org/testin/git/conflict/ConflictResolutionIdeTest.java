@@ -79,6 +79,14 @@ public class ConflictResolutionIdeTest extends AbstractGitRemoteIdeTest {
         return "{ \"createdBy\" : \"Muteb\", \"createdAt\" : \"Sunday 13-09-2026 At 09:00:00 [Asia/Riyadh]\", \"updatedBy\" : \"" + updatedBy + "\", \"status\" : \"" + status + "\" }";
     }
 
+    private static @NotNull String configuredMarker(final @NotNull String platform) {
+        return "{ \"status\" : \"CREATED\", \"configuration\" : { \"platform\" : \"" + platform + "\" } }";
+    }
+
+    private static @NotNull String titleOf(final @NotNull JBPopup question) {
+        return ((TitlePanel) ((AbstractPopup) question).getTitle()).getLabel().getText();
+    }
+
     private static void removeTheTestCase(final @NotNull Path repository) {
         try {
             Files.delete(repository.resolve(TEST_CASE));
@@ -147,13 +155,30 @@ public class ConflictResolutionIdeTest extends AbstractGitRemoteIdeTest {
 
         ShownDialog.waitedFor(getProject(), ResolveConflictDialog.class);
         final @NotNull JBPopup question = ShownDialog.popup(getProject(), ResolveConflictDialog.class);
-        assertEquals("the question is not titled with the test case's own name", Bundle.message("dialog.conflict.title", "Log in with a password"), ((TitlePanel) ((AbstractPopup) question).getTitle()).getLabel().getText());
+        assertEquals("the question is not titled with the test case's own name", Bundle.message("dialog.conflict.title", "Log in with a password"), titleOf(question));
         ShownDialog.press(getProject(), ResolveConflictDialog.class, Shortcuts.Enter);
         ended();
 
         assertEquals("answering the question did not resolve the test case", List.of("resolved"), finished);
         assertTrue("the tester's own value was not kept: " + read(work, TEST_CASE), read(work, TEST_CASE).contains("Log in with a password"));
         assertEquals("the answered test case was not staged", List.of(), stillConflicting());
+    }
+
+    // UC-SHARE-018, Rule-SHARE-081, Rule-SHARE-082
+    public void testAKeyBothSidesWroteIntoATestRunIsAskedAboutUnderTheTestRunsFolder() {
+        resolving(pulledIntoAConflict(
+                repository -> write(repository, MARKER, configuredMarker("Web")),
+                repository -> write(repository, MARKER, configuredMarker("Mobile")),
+                repository -> write(repository, MARKER, configuredMarker("Desktop"))));
+
+        ShownDialog.waitedFor(getProject(), ResolveConflictDialog.class);
+        final @NotNull JBPopup question = ShownDialog.popup(getProject(), ResolveConflictDialog.class);
+        assertEquals("the question is not titled with the test run's folder", Bundle.message("dialog.conflict.title", "Cycle-1"), titleOf(question));
+        ShownDialog.press(getProject(), ResolveConflictDialog.class, Shortcuts.Enter);
+        ended();
+
+        assertEquals("answering the question did not resolve the test run", List.of("resolved"), finished);
+        assertTrue("the tester's own value was not kept: " + read(work, MARKER), read(work, MARKER).contains("Desktop"));
     }
 
     // UC-SHARE-018, Rule-SHARE-084
