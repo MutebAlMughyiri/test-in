@@ -253,7 +253,8 @@ public class RuleTraceTest {
             for (final String label : traceable) {
                 final @NotNull List<Span> labeledSpans = code.getOrDefault(label, List.of());
                 if (labeledSpans.stream().anyMatch(span -> ran(ran, span))) traced.add(label);
-                else untraced.add("- `" + test.getKey() + "` carries **" + label + "** and runs none of " + labeledSpans.stream().map(Span::where).toList());
+                else
+                    untraced.add("- `" + test.getKey() + "` carries **" + label + "** and runs none of " + labeledSpans.stream().map(Span::where).toList());
             }
         }
 

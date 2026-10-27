@@ -64,10 +64,6 @@ public final class TreeValues {
         return Optional.ofNullable(path).flatMap(at -> directoryOf(at.getLastPathComponent()));
     }
 
-    public static @NotNull Optional<AbstractNode> selectedNode(final @NotNull SimpleTree tree) {
-        return directoryAt(tree.getSelectionPath());
-    }
-
     public static <T> @NotNull Optional<T> selected(final @NotNull SimpleTree tree, final @NotNull Class<T> type) {
         return Optional.ofNullable(tree.getSelectionPath())
                 .flatMap(path -> valueOf(path.getLastPathComponent(), type));
