@@ -17,6 +17,7 @@
 package org.testin.remove;
 
 import com.intellij.openapi.actionSystem.IdeActions;
+import com.intellij.openapi.application.WriteAction;
 import com.intellij.testFramework.PlatformTestUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractOpenEditorsIdeTest;
@@ -26,12 +27,16 @@ import org.testin.Said;
 import org.testin.TempTree;
 import org.testin.TreeGesture;
 import org.testin.actions.Declared;
+import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
+import org.testin.indexer.TestRuns;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
+import org.testin.model.node.TestRunPackageNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.node.TestSetPackageNode;
+import org.testin.model.testrun.RunItems;
 import org.testin.services.BackgroundWork;
 import org.testin.services.Services;
 import org.testin.ui.framework.ConfirmDialog;
@@ -41,6 +46,9 @@ import org.testin.undo.UndoScope;
 import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -166,6 +174,30 @@ public class RemoveWithEditorsOpenIdeTest extends AbstractOpenEditorsIdeTest {
         Await.until("the test run was not removed", () -> !nodes().nodeExists(cycle.getPath()) && undoHistories().canUndo(UndoScope.TREE));
         assertTrue("undoing the removal of the test run was refused", undoHistories().undo(UndoScope.TREE));
         Await.until("undoing the removal did not put the test run back", () -> nodes().nodeExists(cycle.getPath()));
+    }
+
+    // UC-TREE-PANEL-012
+    public void testARemovedTestRunPackageTakesItsTestRunsRunItemsWithIt() {
+        final @NotNull Path releasePath = testProject.getTestRunsFolder().getPath().resolve("Release 4");
+        try {
+            Files.createDirectories(releasePath);
+        } catch (final IOException ex) {
+            throw new AssertionError("could not make the test run package's folder: " + ex.getMessage(), ex);
+        }
+        final @NotNull TestRunPackageNode release = WriteAction.computeAndWait(() -> {
+            final @NotNull TestRunPackageNode made = Services.getInstance(getProject(), NodeMapper.class).getTestRunPackageNode(releasePath, testProject.getTestRunsFolder());
+            nodes().addTestRunPackage(made);
+            return made;
+        });
+        final @NotNull TestRunNode cycle = new NodesOnDisk(getProject()).testRun(release, "Cycle-1");
+        final @NotNull TestRuns testRuns = Services.getInstance(getProject(), TestRuns.class);
+        testRuns.putRunItems(cycle.getPath(), new RunItems());
+        assertTrue("the test run's run items were not indexed", testRuns.findRunItems(cycle.getPath()).isPresent());
+
+        removedAndConfirmed(release);
+
+        Await.until("the test run package was not removed", () -> !nodes().nodeExists(release.getPath()));
+        assertTrue("the run items of a test run inside the removed package stayed in the index", testRuns.findRunItems(cycle.getPath()).isEmpty());
     }
 
     // Rule-TREE-PANEL-041
