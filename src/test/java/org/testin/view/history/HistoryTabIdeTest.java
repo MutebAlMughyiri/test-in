@@ -32,6 +32,9 @@ import org.testin.editor.open.TestinEditors;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.git.change.ChangeType;
 import org.testin.git.change.FieldChange;
+import org.testin.git.history.BugCard;
+import org.testin.git.history.BugEvent;
+import org.testin.git.history.BugEventKind;
 import org.testin.git.history.TestCaseHistoryCard;
 import org.testin.git.history.TestCaseHistoryKind;
 import org.testin.indexer.TestRuns;
@@ -54,6 +57,7 @@ import org.testin.view.Drawn;
 
 import javax.swing.JComponent;
 import java.awt.BorderLayout;
+import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -109,6 +113,22 @@ public class HistoryTabIdeTest extends AbstractTempRootIdeTest {
         } finally {
             editors.closeAll();
         }
+    }
+
+    // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-108
+    public void testAClearedBugSaysWhyAndAChangedOneNamesWhatChanged() {
+        final @NotNull TestCase testCase = aTestCase();
+        final @NotNull Path cycle = root.resolve("Cycle-1");
+        final @NotNull ZonedDateTime when = ZonedDateTime.parse("2026-10-07T16:40:00+03:00");
+        final @NotNull RunItem passedNow = RunItem.builder().uuid(testCase.getUuid()).executions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build())).build();
+
+        final @NotNull List<String> cleared = Drawn.words(HistoryCardPanel.of(getProject(), new BugCard("a1b2c3d", "Sara", when, new BugEvent(BugEventKind.CLEARED, cycle, passedNow, List.of())), testCase, 0));
+        final @NotNull List<String> removed = Drawn.words(HistoryCardPanel.of(getProject(), new BugCard("a1b2c3d", "Sara", when, new BugEvent(BugEventKind.REMOVED, cycle, failed(testCase), List.of())), testCase, 0));
+        final @NotNull List<String> changed = Drawn.words(HistoryCardPanel.of(getProject(), new BugCard("a1b2c3d", "Sara", when, new BugEvent(BugEventKind.CHANGED, cycle, failed(testCase), List.of(new FieldChange("Bug Severity", BugSeverity.MAJOR.getLabel(), BugSeverity.BLOCKER.getLabel(), ChangeType.CHANGE_RUN_ITEM)))), testCase, 0));
+
+        assertTrue("a bug cleared because its run item passed does not say so: " + cleared, Drawn.holds(cleared, Bundle.message("view.history.bug.cleared.why", RunItemStatus.PASSED.getLabel())));
+        assertTrue("a bug cleared because its run item was removed does not say so: " + removed, Drawn.holds(removed, Bundle.message("view.history.bug.removed")));
+        assertTrue("a changed bug does not name its new severity: " + changed, Drawn.holds(changed, BugSeverity.BLOCKER.getLabel()));
     }
 
     // Rule-VIEW-PANEL-111
