@@ -230,6 +230,23 @@ public class ExportFlowIdeTest extends AbstractTempRootIdeTest {
         assertEquals("the export holds what was chosen", Set.of("Login"), FileFormat.XLSX.importToFile(getProject(), written.toFile()).keySet());
     }
 
+    // UC-SHARE-001
+    public void testUntickingEveryTestCaseRefusesTheExportAndKeepsTheDialogOpen() {
+        final @NotNull TestSetNode login = new NodesOnDisk(getProject()).testSet(testProject.getTestCasesFolder(), "Login");
+        aTestCase(login, "log in with a valid user");
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        final @NotNull JComponent dialog = theExportDialogFor(login);
+        final @NotNull JBTable table = firstTable(dialog);
+        for (int row = 0; row < table.getRowCount(); row++)
+            table.getModel().setValueAt(false, row, 0);
+        button(dialog, ExportAction.NAME).doClick();
+
+        assertTrue("an export with nothing ticked was not refused: " + said.shown(), said.shown().stream().anyMatch(shown -> shown.contains(Bundle.message("notification.export.empty.message"))));
+        assertTrue("an export with nothing ticked closed the dialog", ShownDialog.isOpen(getProject(), ExportDialog.class));
+        assertFalse("an export with nothing ticked wrote a file", Files.exists(downloads.resolve("Login" + FileFormat.XLSX.getExtension())));
+    }
+
     // UC-SHARE-001, Rule-INTERNAL-107
     public void testHtmlChosenAsTheFormatWritesAnHtmlFile() {
         final @NotNull TestSetNode login = new NodesOnDisk(getProject()).testSet(testProject.getTestCasesFolder(), "Login");
