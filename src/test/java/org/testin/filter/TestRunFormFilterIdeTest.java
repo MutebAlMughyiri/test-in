@@ -18,8 +18,13 @@ package org.testin.filter;
 
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionHolder;
+import com.intellij.openapi.ui.popup.JBPopup;
+import com.intellij.openapi.ui.popup.ListPopup;
+import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.CheckboxTree;
 import com.intellij.ui.CheckedTreeNode;
+import com.intellij.ui.UiInterceptors;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.NodesOnDisk;
@@ -137,6 +142,28 @@ public class TestRunFormFilterIdeTest extends AbstractTempRootIdeTest {
 
         assertEquals("the priority filter did not pick the test cases an editor's would", TestCaseFilter.filter(List.of(urgent, later, paid), FilterAndSortChoice.of(button(), ""), _ -> Optional.empty(), _ -> Automated.UNKNOWN), shown());
         assertEquals(List.of(urgent), shown());
+    }
+
+    // UC-EDITOR-PANEL-020, Rule-TREE-PANEL-129
+    public void testClickingFilterOpensItsMenuUnderTheButton() {
+        final @NotNull List<JBPopup> shown = new ArrayList<>();
+        UiInterceptors.register(new UiInterceptors.UiInterceptor<>(JBPopup.class) {
+            @Override
+            protected void doIntercept(final @NotNull JBPopup popup) {
+                shown.add(popup);
+            }
+        });
+
+        button().doClick();
+
+        try {
+            assertEquals("clicking Filter did not open one menu", 1, shown.size());
+            final @NotNull List<?> items = ((ListPopup) shown.getFirst()).getListStep().getValues();
+            final @NotNull List<String> entries = items.stream().map(AnActionHolder.class::cast).map(AnActionHolder::getAction).map(TestRunFormFilterIdeTest::nameOf).toList();
+            assertTrue("the menu Filter opened is not the filter menu: " + entries, entries.contains(TestSetEditorFields.PRIORITY.getName()));
+        } finally {
+            shown.forEach(Disposer::dispose);
+        }
     }
 
     // Rule-TREE-PANEL-129, Rule-EDITOR-PANEL-099
