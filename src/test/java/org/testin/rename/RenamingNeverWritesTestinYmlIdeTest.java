@@ -22,11 +22,11 @@ import org.testin.Await;
 import org.testin.NodesOnDisk;
 import org.testin.TreeGesture;
 import org.testin.config.TestinYml;
+import org.testin.explorer.toolbar.SaveTestinYmlAction;
 import org.testin.indexer.Nodes;
 import org.testin.model.node.TestProjectNode;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
-import org.testin.testproject.SaveTestinYml;
 import org.testin.ui.framework.ConfirmDialog;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.util.Shortcuts;
@@ -98,7 +98,7 @@ public class RenamingNeverWritesTestinYmlIdeTest extends AbstractTempRootIdeTest
 
         assertEquals("renaming or choosing a test project wrote " + TestinYml.fileName(), before, bytesOf(yml()));
 
-        SaveTestinYml.start(getProject());
+        TreeGesture.pressed(getProject(), new SaveTestinYmlAction(getProject()), List.of(testProject));
         Await.until("Save to " + TestinYml.fileName() + " asked nothing", () -> ShownDialog.isOpen(getProject(), ConfirmDialog.class));
         ShownDialog.press(getProject(), ConfirmDialog.class, Shortcuts.Enter);
 
