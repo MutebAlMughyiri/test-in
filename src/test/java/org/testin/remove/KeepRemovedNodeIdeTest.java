@@ -25,10 +25,14 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.Await;
 import org.testin.NodesOnDisk;
 import org.testin.TestinLog;
+import org.testin.creator.NodeCreators;
 import org.testin.indexer.AbstractReadTheRootIdeTest;
+import org.testin.indexer.TestRuns;
 import org.testin.model.FileKind;
+import org.testin.model.NodeType;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
+import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
 import org.testin.ui.framework.ConfirmDialog;
@@ -45,6 +49,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public class KeepRemovedNodeIdeTest extends AbstractReadTheRootIdeTest {
@@ -138,6 +143,25 @@ public class KeepRemovedNodeIdeTest extends AbstractReadTheRootIdeTest {
         assertTrue("Ctrl+Z had no copy of the removed test set to put back", Files.exists(testCase));
         assertEquals("what Ctrl+Z put back is not what was removed", content, read(testCase));
         Await.until("the test set put back is not in the tree", () -> nodes().nodeExists(login.getPath()));
+    }
+
+    // UC-TREE-PANEL-012, Rule-TREE-PANEL-040
+    public void testRemovingATestRunPackageTakesItsTestRunsAndCtrlZPutsThemBack() {
+        final @NotNull Path release = nafath.getTestRunsFolder().getPath().resolve("Release 4");
+        NodeCreators.of(getProject(), NodeType.TEST_RUN_PACKAGE).create(nafath.getTestRunsFolder(), release);
+        Await.until("the test run package was not created", () -> nodes().nodeExists(release));
+        final @NotNull AbstractNode testRunPackage = nodes().find(release).orElseThrow();
+        final @NotNull TestRunNode cycle = new NodesOnDisk(getProject()).testRun(testRunPackage, "Cycle 1");
+        final @NotNull TestRuns testRuns = Services.getInstance(getProject(), TestRuns.class);
+
+        removedByTheTester(List.of(testRunPackage));
+        assertEquals("a test run in the removed package is still read", Optional.empty(), testRuns.findTestRunNode(cycle.getPath()));
+        assertEquals("the run items of a test run in the removed package are still held", Optional.empty(), testRuns.findRunItems(cycle.getPath()));
+
+        pressedCtrlZ();
+
+        Await.until("Ctrl+Z did not put the test run package and its test run back", () -> nodes().nodeExists(release) && testRuns.findTestRunNode(cycle.getPath()).isPresent());
+        assertTrue("the test run put back is not on the disk", Files.exists(cycle.getPath()));
     }
 
     // UC-INTERNAL-005, Rule-INTERNAL-040
