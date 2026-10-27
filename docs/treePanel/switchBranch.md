@@ -157,6 +157,10 @@ the way, a lock file or anything else. It carries a **Review Changes** link and 
 **If the branches cannot be read** — the box reads *Failed to load branches* and
 cannot be opened. An IDE notification titled *Git Error* gives the reason.
 
+**If the remote cannot be reached** — the box keeps the branches it read from the
+machine. An IDE notification titled *Git Fetch Warning* says *Could not refresh
+remote branches:*, then what Git said.
+
 **If the repository has no branches** — the box reads *No branches found* and
 cannot be opened.
 

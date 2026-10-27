@@ -21,7 +21,9 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractOpenEditorsIdeTest;
 import org.testin.Await;
 import org.testin.NodesOnDisk;
+import org.testin.Said;
 import org.testin.explorer.TreePanel;
+import org.testin.git.review.PendingChangesDialog;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
@@ -31,7 +33,9 @@ import org.testin.ui.framework.ConfirmDialog;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
+import org.testin.view.Drawn;
 
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -137,10 +141,21 @@ public class BranchSwitchIdeTest extends AbstractOpenEditorsIdeTest {
     }
 
     private @NotNull JComboBox<?> branchBox() {
+        return boxOf(listingBoth());
+    }
+
+    private @NotNull BranchSelector listingBoth() {
         final @NotNull BranchSelector selector = new BranchSelector(getProject(), Optional.of(testProject));
-        final @NotNull JComboBox<?> box = (JComboBox<?>) selector.getComponent();
-        Await.until("the branch box never listed the branches", () -> box.isEnabled() && box.getItemCount() == 2);
-        return box;
+        Await.until("the branch box never listed the branches", () -> boxOf(selector).isEnabled() && boxOf(selector).getItemCount() == 2);
+        return selector;
+    }
+
+    private static @NotNull JComboBox<?> boxOf(final @NotNull BranchSelector selector) {
+        return (JComboBox<?>) selector.getComponent();
+    }
+
+    private void changedTheLoginMarker() {
+        writeUncommitted(login.getPath().resolve(login.getMarkerFileName()));
     }
 
     // Rule-TREE-PANEL-108
@@ -191,5 +206,82 @@ public class BranchSwitchIdeTest extends AbstractOpenEditorsIdeTest {
         box.setSelectedItem("feature");
 
         Await.until("choosing a branch in the box did not switch to it", () -> branchOnDisk().equals("feature"));
+    }
+
+    // UC-TREE-PANEL-026
+    public void testARepositoryWithNoBranchesSaysSoAndCannotBeOpened() {
+        final @NotNull TestProjectNode empty = new NodesOnDisk(getProject()).testProject(root.resolve("Empty"));
+        git(empty.getPath(), "init", "--initial-branch=main");
+
+        final @NotNull JComboBox<?> box = boxOf(new BranchSelector(getProject(), Optional.of(empty)));
+
+        Await.until("a repository with no branches does not say so", () -> Bundle.message("branch.none").equals(Objects.toString(box.getSelectedItem(), "")));
+        assertFalse("the box of a repository with no branches can be opened", box.isEnabled());
+    }
+
+    // UC-TREE-PANEL-026
+    public void testOnNoBranchAtAllTheBoxListsTheBranchesWithNoneSelected() {
+        git(testProject.getPath(), "checkout", "-q", "--detach");
+
+        final @NotNull JComboBox<?> box = branchBox();
+
+        assertEquals("a repository on no branch shows a branch selected", -1, box.getSelectedIndex());
+    }
+
+    // UC-SHARE-014, Rule-SHARE-064
+    public void testABranchStartedElsewhereIsListedWhenTheBranchesAreReadAgain() {
+        final @NotNull BranchSelector selector = listingBoth();
+        git(testProject.getPath(), "branch", "release");
+
+        selector.readBranches();
+
+        Await.until("a branch started since the box was filled is not listed after the branches are read again", () -> boxOf(selector).getItemCount() == 3);
+    }
+
+    // UC-TREE-PANEL-026, Rule-TREE-PANEL-085
+    public void testReviewChangesOpensTheReviewInsteadOfSwitching() {
+        changedTheLoginMarker();
+        branchBox().setSelectedItem("feature");
+        Await.until("switching with uncommitted changes did not ask first", () -> ShownDialog.isOpen(getProject(), ConfirmDialog.class));
+
+        Drawn.first(ShownDialog.content(getProject(), ConfirmDialog.class), JButton.class, button -> button.getText().equals(Bundle.message("branch.review.changes"))).doClick();
+        try {
+            Await.until("Review Changes did not open the review", () -> ShownDialog.isOpen(getProject(), PendingChangesDialog.class));
+            assertEquals("Review Changes switched the branch", "main", branchOnDisk());
+        } finally {
+            ShownDialog.close(getProject(), PendingChangesDialog.class);
+        }
+    }
+
+    // UC-TREE-PANEL-026, Rule-TREE-PANEL-085, Rule-SHARE-127
+    public void testACheckoutGitRefusesPutsTheBoxBackAndKeepsTheChange() {
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+        changedTheLoginMarker();
+        final @NotNull JComboBox<?> box = branchBox();
+        box.setSelectedItem("feature");
+        Await.until("switching with uncommitted changes did not ask first", () -> ShownDialog.isOpen(getProject(), ConfirmDialog.class));
+
+        ShownDialog.press(getProject(), ConfirmDialog.class, Shortcuts.Enter);
+
+        Await.until("a checkout Git refused was not said", () -> said.notifications().stream().anyMatch(notification -> notification.getTitle().equals(Bundle.message("git.branch.not.switched.title"))));
+        Await.until("the box did not go back to the branch the tester was on", () -> "main".equals(Objects.toString(box.getSelectedItem(), "")));
+        assertEquals("a refused checkout moved the branch", "main", branchOnDisk());
+        try {
+            assertEquals("a refused checkout lost the uncommitted change", "not committed", Files.readString(login.getPath().resolve(login.getMarkerFileName())));
+        } catch (final IOException ex) {
+            throw new AssertionError("could not read the changed marker: " + ex.getMessage(), ex);
+        }
+    }
+
+    // UC-TREE-PANEL-026
+    public void testARemoteThatCannotBeReachedKeepsTheBranchesReadAndSaysWhy() {
+        git(testProject.getPath(), "remote", "add", "origin", root.resolve("nowhere").toString());
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+        final @NotNull BranchSelector selector = listingBoth();
+
+        selector.fetchBranches();
+
+        Await.until("a remote that cannot be reached was not said", () -> said.notifications().stream().anyMatch(notification -> notification.getTitle().equals(Bundle.message("branch.fetch.warning.title"))));
+        assertEquals("a remote that cannot be reached lost the branches read from the machine", 2, boxOf(selector).getItemCount());
     }
 }
