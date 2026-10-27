@@ -17,14 +17,18 @@
 package org.testin.filter;
 
 import org.jetbrains.annotations.NotNull;
+import org.testin.model.DateFormats;
 import org.testin.model.Priority;
 import org.testin.model.TestCase;
 import org.testin.model.status.RunItemStatus;
+import org.testin.model.status.TestCaseStatus;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.RunItemExecution;
 import org.testng.annotations.Test;
 
 import java.time.Duration;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -106,5 +110,19 @@ public class SortFieldTest {
         final @NotNull List<TestCase> inTheSet = List.of(aTestCase("a", Priority.LOW, ""), aTestCase("b", Priority.LOW, ""));
 
         assertEquals(sorted(SortField.EXECUTED_AT, SortDirection.DESCENDING, inTheSet), List.of("a", "b"));
+    }
+
+    // Rule-EDITOR-PANEL-274, Rule-EDITOR-PANEL-275
+    @Test
+    public void statusAndTheDatesSortAndATestCaseNeverUpdatedComesLast() {
+        final @NotNull ZonedDateTime monday = ZonedDateTime.of(2026, 10, 26, 9, 0, 0, 0, ZoneId.of("Asia/Riyadh"));
+        final @NotNull TestCase early = TestCase.builder().uuid(UUID.randomUUID()).description("early").status(TestCaseStatus.REVIEWED).createdAt(monday).updatedAt(monday).build();
+        final @NotNull TestCase late = TestCase.builder().uuid(UUID.randomUUID()).description("late").status(TestCaseStatus.PENDING).createdAt(monday.plusDays(1)).updatedAt(monday.plusDays(1)).build();
+        final @NotNull TestCase never = TestCase.builder().uuid(UUID.randomUUID()).description("never").status(TestCaseStatus.DISABLED).createdAt(monday.plusDays(2)).updatedAt(DateFormats.NOT_EXECUTED).build();
+
+        assertEquals(sorted(SortField.STATUS, SortDirection.ASCENDING, List.of(never, late, early)), List.of("early", "late", "never"));
+        assertEquals(sorted(SortField.CREATED_AT, SortDirection.DESCENDING, List.of(early, never, late)), List.of("never", "late", "early"));
+        assertEquals(sorted(SortField.UPDATED_AT, SortDirection.DESCENDING, List.of(never, early, late)), List.of("late", "early", "never"),
+                "a test case never updated has nothing in the field, so it comes last");
     }
 }
