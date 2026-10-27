@@ -228,6 +228,34 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
         }
     }
 
+    // UC-EDITOR-PANEL-043, Rule-CODEGEN-110, Rule-CODEGEN-111, Rule-CODEGEN-112
+    public void testARetriedTestCaseShowsEachAttemptAsItIsReportedAndPassesOnTheRetry() {
+        final @NotNull TestCase testCase = automatedTestCases(1).getFirst();
+        final @NotNull TestRunNode testRun = aTestRun("Cycle-1", List.of(EditorFixtures.pending(testCase)));
+        final @NotNull TestRunEditor editor = opened(testRun);
+        try {
+            TestCaseQuickAction.RUN_TEST_METHOD.executeFor(editor, testCase);
+            CapturedRunner.startedByTestNg(getProject(), testCase);
+            CapturedRunner.reports(getProject(), testCase, AutomationExecutionStatus.SKIPPED, Duration.ofMillis(40));
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+            Await.until("the attempt TestNG retries was not shown while the method still ran", () -> runItemOf(testRun, testCase).getExecutions().size() == 1);
+            assertEquals("the attempt TestNG retries is not shown failed", RunItemStatus.FAILED, runItemOf(testRun, testCase).shownExecution().getStatus());
+
+            reportedPassed(testCase);
+            Await.until("the retry was not shown as a second execution", () -> runItemOf(testRun, testCase).getExecutions().size() == 2);
+            assertEquals("the last attempt so far is not the one shown", RunItemStatus.PASSED, runItemOf(testRun, testCase).shownExecution().getStatus());
+
+            CapturedRunner.reports(getProject(), testCase, AutomationExecutionStatus.IDLE, Duration.ZERO);
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+            Await.until("the test case that passed on its retry was not recorded passed", () -> runItemOf(testRun, testCase).getStatus() == RunItemStatus.PASSED);
+            final @NotNull List<RunItemExecution> executions = runItemOf(testRun, testCase).getExecutions();
+            assertEquals("the end recorded an attempt already shown again", List.of(RunItemStatus.FAILED, RunItemStatus.PASSED), executions.stream().map(RunItemExecution::getStatus).toList());
+            assertEquals("the passing attempt is not named the first retry", 1, executions.getLast().getRetry());
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
     // Rule-EDITOR-PANEL-152
     public void testOnlyTheTestersStopOrClosingTheTabEndsTheAutomationThisEditorStarted() {
         final @NotNull List<TestCase> testCases = automatedTestCases(3);
