@@ -38,6 +38,12 @@ public class SeparatedValuesTest {
 
     // Rule-SHARE-124, Rule-EDITOR-PANEL-254
     @Test
+    public void aQuotedValueNeverClosedRunsToTheEndOfTheText() {
+        assertEquals(SeparatedValues.split("\"a,b\nc", ','), List.of(List.of("a,b\nc")), "a quote left open took less than the rest of the text");
+    }
+
+    // Rule-SHARE-124, Rule-EDITOR-PANEL-254
+    @Test
     public void aByteOrderMarkAtTheStartIsIgnored() {
         assertEquals(SeparatedValues.split("﻿a\tb", '\t'), List.of(List.of("a", "b")));
     }
