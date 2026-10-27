@@ -20,9 +20,12 @@ import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.psi.PsiMethod;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
+import org.testin.Await;
+import org.testin.Said;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.model.status.TestCaseStatus;
+import org.testin.util.Bundle;
 
 import java.util.List;
 
@@ -87,6 +90,41 @@ public class UpdateTestMethodIdeTest extends AbstractCodegenIdeTest {
         final @NotNull PsiMethod testMethod = writtenMethodOf(LOGIN_TEST, logIn);
         assertEquals("two methods now share one name, and the class no longer compiles", "logIn", testMethod.getName());
         assertEquals("\"log out!\"", attributeOf(testMethod, "description"));
+    }
+
+    // UC-CODEGEN-003, Rule-CODEGEN-019
+    public void testFillingInTheDescriptionOfATestCaseWithNoMethodWritesIt() {
+        final @NotNull TestCase testCase = indexedTestCase(createdTestSet("Login"), "", "b");
+
+        described(testCase, "Log in with a valid user");
+
+        assertEquals("the method written once the test case has a name is not named for it", "logInWithAValidUser", writtenMethodOf(LOGIN_TEST, testCase).getName());
+    }
+
+    // UC-CODEGEN-012
+    public void testChangingTheGroupsOfATestCaseWithNoMethodSaysNotAutomated() {
+        final @NotNull TestCase testCase = indexedTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        testCase.setGroups(List.of("smoke"));
+        CodeChangeType.UPDATE_TEST_CASE_GROUP.execute(getProject(), testCase);
+        settled();
+
+        Await.until("a groups change on a test case with no method was not said to be not automated", () -> said.shown().contains(Bundle.message("refused.no.generated.code")));
+        assertTrue("a groups change wrote a method", methodOf(LOGIN_TEST, testCase).isEmpty());
+    }
+
+    // UC-CODEGEN-013
+    public void testTurningOffATestCaseWhoseTestSetHasNoClassSaysNotAutomated() {
+        final @NotNull TestCase testCase = indexedTestCase(indexedTestSet("Login", theTestCasesDirectory()), "Log in with a valid user", "b");
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        testCase.setStatus(TestCaseStatus.DISABLED);
+        CodeChangeType.UPDATE_TEST_CASE_STATUS.execute(getProject(), testCase);
+        settled();
+
+        Await.until("turning off a test case whose test set has no class was not said to be not automated", () -> said.shown().contains(Bundle.message("refused.no.generated.code")));
+        assertTrue("turning a test case off wrote a class", generatedClass(LOGIN_TEST).isEmpty());
     }
 
     // Rule-CODEGEN-045
