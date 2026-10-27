@@ -63,7 +63,7 @@ public class HelpIdeTest extends AbstractIdeTest {
     }
 
     private static void redrawn(final @NotNull StatusBarWidget mark) {
-        ((CustomStatusBarWidget) mark).install(StandIn.of(StatusBar.class));
+        mark.install(StandIn.of(StatusBar.class));
     }
 
     private @NotNull Hints nothingWaits() {

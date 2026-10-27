@@ -79,11 +79,11 @@ public class ConflictResolutionIdeTest extends AbstractGitRemoteIdeTest {
         return "{ \"createdBy\" : \"Muteb\", \"createdAt\" : \"Sunday 13-09-2026 At 09:00:00 [Asia/Riyadh]\", \"updatedBy\" : \"" + updatedBy + "\", \"status\" : \"" + status + "\" }";
     }
 
-    private static void removed(final @NotNull Path repository, final @NotNull String relativePath) {
+    private static void removeTheTestCase(final @NotNull Path repository) {
         try {
-            Files.delete(repository.resolve(relativePath));
+            Files.delete(repository.resolve(TEST_CASE));
         } catch (final IOException ex) {
-            throw new AssertionError("Could not remove " + relativePath + ": " + ex.getMessage(), ex);
+            throw new AssertionError("Could not remove " + TEST_CASE + ": " + ex.getMessage(), ex);
         }
     }
 
@@ -208,7 +208,7 @@ public class ConflictResolutionIdeTest extends AbstractGitRemoteIdeTest {
                     write(repository, NOTES, "their notes");
                 },
                 repository -> {
-                    removed(repository, TEST_CASE);
+                    removeTheTestCase(repository);
                     write(repository, NOTES, "my notes");
                 });
         assertEquals("the pull did not stop on both files", Set.of(TEST_CASE, NOTES), Set.copyOf(conflicting));
