@@ -21,7 +21,9 @@ import com.intellij.ui.treeStructure.SimpleTree;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
+import org.testin.Gestures;
 import org.testin.NodesOnDisk;
+import org.testin.actions.TestinEscapeAction;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCase;
@@ -138,12 +140,14 @@ public class TreeTransferIdeTest extends AbstractTempRootIdeTest {
         assertFalse("Login could be pasted beside LOGIN", handler.canTransferInto(login, payments));
     }
 
-    // Rule-TREE-PANEL-050
-    public void testCancelingACutEmptiesTheClipboard() {
+    // UC-TREE-PANEL-013, Rule-TREE-PANEL-050
+    public void testEscapeOnTheTreeEmptiesTheClipboardOfACut() {
+        final @NotNull SimpleTree tree = new SimpleTree();
+        new TreeContextMenu(getProject(), tree).registerShortcuts(tree, handler);
         onTheClipboard(TransferHandler.MOVE);
         cutNodes.add(login.getPath());
 
-        handler.clearClipboard();
+        Gestures.press(getProject(), tree, TestinEscapeAction.class);
 
         assertFalse("a canceled cut is still waiting to be pasted", holdsNodes());
         assertTrue("a canceled cut still marks the node as cut", cutNodes.isEmpty());

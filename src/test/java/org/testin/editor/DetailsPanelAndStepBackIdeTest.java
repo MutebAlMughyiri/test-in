@@ -146,7 +146,7 @@ public class DetailsPanelAndStepBackIdeTest extends AbstractTempRootIdeTest {
         }
     }
 
-    // Rule-EDITOR-PANEL-115
+    // Rule-EDITOR-PANEL-114, Rule-EDITOR-PANEL-115
     public void testInTheGridAnOpenCellTakesThePressFirstAndOnlyCancelsTheEdit() {
         final @NotNull ViewOnScreen window = ViewOnScreen.closed(getProject(), getTestRootDisposable());
         final @NotNull TestSetEditor editor = openedTestSet();
@@ -171,6 +171,9 @@ public class DetailsPanelAndStepBackIdeTest extends AbstractTempRootIdeTest {
             assertTrue("the press that cancelled the edit also dropped the cut", cutState().isCutting());
             assertTrue("the press that cancelled the edit also closed the details panel", window.isOpen());
             assertEquals("the press that cancelled the edit also cleared the selection", 0, table.getSelectedRow());
+
+            Gestures.press(getProject(), table, TestinEscapeAction.class);
+            assertFalse("the next press in the grid did not drop the cut", cutState().isCutting());
         } finally {
             cutState().clear();
             Disposer.dispose(editor);
