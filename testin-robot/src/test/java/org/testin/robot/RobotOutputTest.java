@@ -58,9 +58,9 @@ public class RobotOutputTest {
             </robot>
             """;
 
-    private static @NotNull List<RobotTestExecution> executionsOf(final @NotNull List<UUID> wanted) {
+    private static @NotNull List<RobotTestExecution> executionsOf(final @NotNull String output, final @NotNull List<UUID> wanted) {
         try {
-            final @NotNull Element robot = JDOMUtil.load(OUTPUT);
+            final @NotNull Element robot = JDOMUtil.load(output);
             return RobotOutput.executionsIn(robot, wanted);
         } catch (final Exception ex) {
             throw new AssertionError("the sample output.xml did not parse: " + ex.getMessage(), ex);
@@ -70,7 +70,7 @@ public class RobotOutputTest {
     // Rule-CODEGEN-075, Rule-CODEGEN-120
     @Test
     public void eachTestIsAnExecutionOfTheTestCaseItsUuidTagNames() {
-        final @NotNull List<RobotTestExecution> executions = executionsOf(List.of(SIGN_IN, WRONG_PASSWORD, LOCKED));
+        final @NotNull List<RobotTestExecution> executions = executionsOf(OUTPUT, List.of(SIGN_IN, WRONG_PASSWORD, LOCKED));
 
         assertEquals(executions.stream().map(RobotTestExecution::testCaseUuid).toList(), List.of(SIGN_IN, WRONG_PASSWORD, LOCKED), "Robot sorts tags, so the UUID is found among them, not by place");
         assertEquals(executions.stream().map(RobotTestExecution::automationExecutionStatus).toList(), List.of(AutomationExecutionStatus.PASSED, AutomationExecutionStatus.FAILED, AutomationExecutionStatus.SKIPPED));
@@ -82,6 +82,14 @@ public class RobotOutputTest {
     // Rule-CODEGEN-120
     @Test
     public void aTestNobodyAskedForIsNoExecution() {
-        assertEquals(executionsOf(List.of(WRONG_PASSWORD)).stream().map(RobotTestExecution::testCaseUuid).toList(), List.of(WRONG_PASSWORD));
+        assertEquals(executionsOf(OUTPUT, List.of(WRONG_PASSWORD)).stream().map(RobotTestExecution::testCaseUuid).toList(), List.of(WRONG_PASSWORD));
+    }
+
+    // Rule-CODEGEN-120
+    @Test
+    public void aTestWhoseTimeRobotDidNotWriteLastsNothing() {
+        final @NotNull String noTime = "<robot><suite name=\"Login\"><test name=\"Sign in\"><tag>" + SIGN_IN + "</tag><status status=\"PASS\"/></test></suite></robot>";
+
+        assertEquals(executionsOf(noTime, List.of(SIGN_IN)).getFirst().duration(), Duration.ZERO, "a test with no elapsed time Robot wrote was given one");
     }
 }
