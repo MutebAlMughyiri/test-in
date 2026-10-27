@@ -142,7 +142,9 @@ public class ApiModelActionIdeTest extends AbstractCodegenIdeTest {
 
     private @NotNull PopupsBuilt.Built opened(final @NotNull PsiDirectory directory) {
         final @NotNull PopupsBuilt popups = PopupsBuilt.recording(getTestRootDisposable());
-        ApiModelMaker.available(getProject()).orElseThrow(() -> new AssertionError("no API model maker is loaded")).open(getProject(), directory);
+        final @NotNull AnActionEvent e = eventOn(directory);
+        assertTrue("the entry is gray on the package: " + e.getPresentation().getDescription(), e.getPresentation().isEnabled());
+        ActionUtil.performAction(action(), e);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
         return popups.last();
     }
@@ -176,6 +178,10 @@ public class ApiModelActionIdeTest extends AbstractCodegenIdeTest {
     }
 
     private @NotNull Presentation shownOn(final @NotNull PsiDirectory directory) {
+        return eventOn(directory).getPresentation();
+    }
+
+    private @NotNull AnActionEvent eventOn(final @NotNull PsiDirectory directory) {
         final @NotNull AnAction action = action();
         final @NotNull IdeView view = new IdeView() {
             @Override
@@ -192,7 +198,7 @@ public class ApiModelActionIdeTest extends AbstractCodegenIdeTest {
                 SimpleDataContext.builder().add(CommonDataKeys.PROJECT, getProject()).add(LangDataKeys.IDE_VIEW, view).build(),
                 action.getTemplatePresentation().clone(), ActionPlaces.PROJECT_VIEW_POPUP, ActionUiKind.POPUP, null);
         ActionUtil.updateAction(action, e);
-        return e.getPresentation();
+        return e;
     }
 
     // UC-CODEGEN-022, Rule-CODEGEN-098
