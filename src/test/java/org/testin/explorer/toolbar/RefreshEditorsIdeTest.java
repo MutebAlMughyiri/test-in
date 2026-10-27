@@ -138,6 +138,6 @@ public class RefreshEditorsIdeTest extends AbstractOpenEditorsIdeTest {
         Await.until("the editor on a node that no longer exists is still open", () -> openOn(login).isEmpty());
         Await.until("the editor on a node that still exists was not reloaded", () -> checkoutEditor.getTotalTestCaseCount() == 2);
         assertEquals("the editor on a node that still exists was closed", 1, openOn(checkout).size());
-        assertTrue("an editor the tester is in the middle of was reloaded under them", cardEditor.isBusy());
+        assertEquals("an editor the tester is in the middle of was reloaded under them", 1, cardEditor.getTotalTestCaseCount());
     }
 }
