@@ -60,6 +60,26 @@ public class SyncWorkIdeTest extends AbstractGitRemoteIdeTest {
         assertTrue("the synced test case lost a side's change: " + read(work, LOGIN_TEST_CASE), read(work, LOGIN_TEST_CASE).contains("Sign in") && read(work, LOGIN_TEST_CASE).contains("The account page opens"));
     }
 
+    // UC-SHARE-017, Rule-SHARE-127
+    public void testAPushTheRemoteRefusesAfterTheSyncsPullIsResolvedSaysWhy() {
+        bothChangeTheLoginTestCaseInAnotherField();
+        write(remote, "hooks/pre-receive", """
+                #!/bin/sh
+                echo "pushes are closed today" >&2
+                exit 1
+                """);
+        final @NotNull String before = head(remote, MAIN);
+        final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
+        new SyncWork(getProject()).syncRepository(work);
+        final @NotNull Notification stopped = titled(said, Bundle.message("git.conflicts.title"));
+
+        Notified.press(getProject(), stopped, stopped.getActions().getFirst());
+
+        final @NotNull Notification failed = titled(said, Bundle.message("git.push.failed.title"));
+        assertTrue("the refusal did not say what the remote said: " + failed.getContent(), failed.getContent().contains("pushes are closed today"));
+        assertEquals("a refused push moved the remote", before, head(remote, MAIN));
+    }
+
     // UC-SHARE-016, Rule-SHARE-042
     public void testAFolderNotUnderGitHasNothingToSyncAndSaysSo() {
         final @NotNull Path notARepository = directory("not-a-repository");
