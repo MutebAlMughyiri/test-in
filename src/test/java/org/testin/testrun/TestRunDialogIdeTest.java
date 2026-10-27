@@ -71,6 +71,7 @@ import javax.swing.KeyStroke;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -258,6 +259,29 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
         assertEquals("a test run whose folder went away was not refused naming the folder", List.of(Bundle.message("test.run.parent.gone", "Release 4")), said.shown());
         assertTrue("the dialog closed although nothing was created", ShownDialog.isOpen(getProject(), TestRunConfigurationDialog.class));
         assertFalse("a test run was written where its folder had gone", Files.exists(release.getPath().resolve("Cycle-1")));
+    }
+
+    // UC-TREE-PANEL-022
+    public void testSavingTheEditOfATestRunThatWentAwayIsRefusedNamingIt() {
+        final @NotNull TestRunNode testRun = cycle1In(testProject.getTestRunsFolder(), List.of(new RunItem().setUuid(first.getUuid())));
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+        nodes().removeTestRun(testRun.getPath(), _ -> {
+        });
+        Await.until("the test run was never removed", () -> !nodes().nodeExists(testRun.getPath()));
+
+        assertFalse("the edit of a test run that went away was saved", new EditTestRunWork(getProject()).saveEdit(testRun, "Cycle-1", Set.of(first.getUuid()), Set.of(first.getUuid()), everyQuestionAnswered()));
+        assertEquals("the edit of a test run that went away was not refused naming it", List.of(Bundle.message("test.run.gone", "Cycle-1")), said.shown());
+    }
+
+    // UC-TREE-PANEL-022
+    public void testAnEditThatChangesTheNameRenamesTheFolderAndThenSavesTheTestRunThere() {
+        final @NotNull TestRunNode testRun = cycle1In(testProject.getTestRunsFolder(), List.of(new RunItem().setUuid(first.getUuid())));
+        final @NotNull Path renamed = testRun.getPath().resolveSibling("Cycle-2");
+
+        assertTrue("the edit was refused", new EditTestRunWork(getProject()).saveEdit(testRun, "Cycle-2", Set.of(first.getUuid(), second.getUuid()), Set.of(first.getUuid(), second.getUuid()), everyQuestionAnswered()));
+
+        Await.until("the edit did not rename the test run's folder", () -> nodes().nodeExists(renamed));
+        Await.until("the test case added in the edit was not saved into the renamed test run", () -> indexedTestRuns().findRunItems(renamed).map(RunItems::coveredUuids).filter(covered -> covered.contains(second.getUuid())).isPresent());
     }
 
     // Rule-TREE-PANEL-030
