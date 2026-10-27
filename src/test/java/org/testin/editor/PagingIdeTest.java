@@ -31,6 +31,7 @@ import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
 import org.testin.ui.framework.ShownDialog;
+import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
 
 import java.io.IOException;
@@ -192,6 +193,19 @@ public class PagingIdeTest extends AbstractTempRootIdeTest {
         final @NotNull TestRunEditor editor = EditorFixtures.openTestRunEditor(getProject(), testRun, getTestRootDisposable());
 
         reloadsOntoTheSelectedPage(editor, () -> editor.loadedRunItems().isPresent() && editor.getList().getModel().getSize() > 0);
+    }
+
+    // UC-EDITOR-PANEL-023, Rule-EDITOR-PANEL-004
+    public void testAPageSizeAboveTheMostAPageHoldsIsCutToItAndSaysSo() {
+        final @NotNull TestSetEditor editor = opened(aLongTestSet());
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        editor.getStatusBar().getPageSizeField().setText("5000");
+        editor.getStatusBar().getPageSizeField().postActionEvent();
+
+        assertEquals("the box does not show the size Testin used", String.valueOf(TestinEditor.MAX_PAGE_SIZE), editor.getStatusBar().getPageSizeField().getText());
+        assertEquals("a page was given more than the most it holds", TestinEditor.MAX_PAGE_SIZE, editor.getPageSize());
+        assertEquals("the cut was not said", List.of(Bundle.message("statusbar.page.size.refused", String.valueOf(TestinEditor.MAX_PAGE_SIZE))), said.shown());
     }
 
     // Rule-EDITOR-PANEL-107
