@@ -32,7 +32,7 @@ public class TestNGEventsIdeTest extends AbstractIdeTest {
         return reported;
     }
 
-    private @NotNull SMTRunnerEventsListener testNG() {
+    private @NotNull SMTRunnerEventsListener theTestRunner() {
         return getProject().getMessageBus().syncPublisher(SMTRunnerEventsListener.TEST_STATUS);
     }
 
@@ -46,10 +46,10 @@ public class TestNGEventsIdeTest extends AbstractIdeTest {
         final @NotNull SMTestProxy test = aTest();
 
         test.setStarted();
-        testNG().onTestStarted(test);
+        theTestRunner().onTestStarted(test);
         test.setDuration(1500);
         test.setFinished();
-        testNG().onTestFinished(test);
+        theTestRunner().onTestFinished(test);
 
         assertEquals("TestNG's start and pass were not reported as they happened", List.of("logsIn RUNNING PT0S", "logsIn PASSED PT1.5S"), reported);
     }
@@ -61,7 +61,7 @@ public class TestNGEventsIdeTest extends AbstractIdeTest {
 
         test.setStarted();
         test.setFinished();
-        testNG().onTestFinished(test);
+        theTestRunner().onTestFinished(test);
 
         assertEquals("a test with no duration was not reported as taking no time", List.of("logsIn PASSED PT0S"), reported);
     }
