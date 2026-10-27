@@ -196,6 +196,18 @@ public class OneExecutionIdeTest extends AbstractCodegenIdeTest {
         assertEquals("the menu entry still shows the run icon", TestCaseQuickAction.STOP_TEST_METHOD.getIcon(), menu.getPresentation().getIcon());
     }
 
+    // UC-CODEGEN-008, Rule-CODEGEN-094
+    public void testAnExecutionOfOneTestCaseIsNamedAfterItsClassAndMethod() {
+        nothingIsReallyStarted();
+        final @NotNull TestCase testCase = theTestCases(List.of(createdTestCase(createdTestSet("Login"), "Log in", "b"))).getFirst();
+        settled();
+
+        ExecuteTestCases.run(getProject(), List.of(testCase));
+        Await.until("the execution never started", () -> !launched.isEmpty());
+
+        assertEquals("an execution of one test case is not named Testin: then its class, a dot and its method", Bundle.message("runner.execution.name", "LoginTest." + writtenMethodOf(LOGIN_TEST, testCase).getName()), launched.getFirst().getRunProfile().getName());
+    }
+
     // Rule-CODEGEN-074
     public void testATestCaseThatCannotRunIsReportedOnceAndSeveralByCount() {
         final @NotNull TestSetNode login = createdTestSet("Login");
