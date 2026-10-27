@@ -52,6 +52,7 @@ import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.notifications.Done;
 import org.testin.notifications.Notifier;
+import org.testin.notifications.Refused;
 import org.testin.services.ProjectLifetime;
 import org.testin.services.Services;
 import org.testin.services.TestCaseCompletions;
@@ -435,7 +436,7 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
     public void selectTestCase(final @NotNull TestCase testCase) {
         final int index = currentTestCases.indexOf(testCase);
         if (index < 0) {
-            notOnAnyPage(testCase);
+            notifier.softRefuse(project, Refused.HIDDEN_BY_THE_FILTER, testCase.getDescription());
             return;
         }
 
@@ -448,9 +449,6 @@ public abstract class AbstractTestinEditor<A extends Enum<A> & ShowableField, N 
         refreshView();
 
         ApplicationManager.getApplication().invokeLater(() -> selectVisibleIndex(placeOnPage));
-    }
-
-    protected void notOnAnyPage(final @NotNull TestCase testCase) {
     }
 
     protected void selectVisibleIndex(final int index) {

@@ -41,7 +41,6 @@ import org.testin.help.Guides;
 import org.testin.logger.TestinLogger;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
-import org.testin.notifications.Refused;
 import org.testin.runner.AutomationExecutionRecorder;
 import org.testin.services.Services;
 import org.testin.testcase.CreateTestCaseAction;
@@ -192,12 +191,6 @@ public class TestSetEditor extends AbstractTestinEditor<TestSetEditorFields, Tes
     private void refuseSequence() {
         notifier.softRefuse(project, Bundle.message("save.failed"));
         loadDataAsync();
-    }
-
-    // UC-EDITOR-PANEL-025, Rule-EDITOR-PANEL-009
-    @Override
-    protected void notOnAnyPage(final @NotNull TestCase testCase) {
-        notifier.softRefuse(project, Refused.HIDDEN_BY_THE_FILTER, testCase.getDescription());
     }
 
     // UC-EDITOR-PANEL-005, Rule-EDITOR-PANEL-030

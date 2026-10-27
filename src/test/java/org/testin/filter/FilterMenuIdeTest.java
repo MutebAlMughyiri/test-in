@@ -250,6 +250,20 @@ public class FilterMenuIdeTest extends AbstractTempRootIdeTest {
         assertFalse("a test case the filter hides was brought into view", editor.getCurrentTestCases().contains(hidden));
     }
 
+    // Rule-EDITOR-PANEL-009
+    public void testATestCaseTheTestRunEditorsFilterHidesIsReportedRatherThanShown() {
+        final @NotNull TestRunEditor editor = openedTestRun(6);
+        final @NotNull FilterPopupButton filter = filterOf(editor);
+        final @NotNull TestCase hidden = editor.getAllTestCases().stream().filter(testCase -> testCase.getPriority() == Priority.LOW).findFirst().orElseThrow();
+        tick(filter, TestSetEditorFields.PRIORITY.getName(), Priority.HIGH.getLabel());
+        final @NotNull Said balloons = Said.listening(getProject(), getTestRootDisposable());
+
+        editor.selectTestCase(hidden);
+
+        assertEquals("the test case the test run editor's filter hides was not reported", List.of(Refused.HIDDEN_BY_THE_FILTER.about(hidden.getDescription())), balloons.shown());
+        assertFalse("a test case the filter hides was brought into view", editor.getCurrentTestCases().contains(hidden));
+    }
+
     // Rule-EDITOR-PANEL-260
     public void testTheTestSetFilterNarrowsATestRunToTheChosenTestSet() {
         final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
