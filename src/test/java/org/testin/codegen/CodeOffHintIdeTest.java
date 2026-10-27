@@ -17,6 +17,7 @@
 
 package org.testin.codegen;
 
+import com.intellij.ui.components.ActionLink;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractIdeTest;
 import org.testin.Said;
@@ -26,6 +27,7 @@ import org.testin.help.SetupHint;
 import org.testin.help.SetupStep;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
+import org.testin.util.Bundle;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -55,6 +57,30 @@ public class CodeOffHintIdeTest extends AbstractIdeTest {
         assertEquals("the key was not answered", 1, said.size());
         assertEquals("code off did not wait as one hint", 1, waiting().size());
         Services.getInstance(getProject(), Hints.class).clear(SetupStep.TEST_PROJECT_LINK);
+    }
+
+    // UC-TREE-PANEL-029, Rule-TREE-PANEL-115, Rule-INTERNAL-127
+    public void testSaveToTestinYmlOnTheHintSaysWhyWhenTheFileCannotBeRead() {
+        final @NotNull Path file = TestinYml.savePath(getProject()).orElseThrow(() -> new AssertionError("the project has no place for " + TestinYml.fileName()));
+        final @NotNull String unreadable = "testinProject: [Payments\n";
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+        try {
+            Files.createDirectories(file.getParent());
+            Files.writeString(file, unreadable);
+            TestinYml.reload(getProject());
+            assertFalse("code is on with a testin.yml that cannot be read", CodeOn.isOnOrHinted(getProject(), CodeChangeRegistry.need(getProject())));
+
+            ((ActionLink) waiting().getFirst().form().orElseThrow().get()).doClick();
+
+            assertTrue("Save to testin.yml on a file that cannot be read did not say why: " + said.shown(), said.shown().contains(Bundle.message("yml.save.disabled.unreadable")));
+            assertEquals("Save to testin.yml rewrote a file that cannot be read", unreadable, Files.readString(file));
+            Files.delete(file);
+        } catch (final IOException ex) {
+            throw new AssertionError("could not write or read " + file + ": " + ex.getMessage(), ex);
+        } finally {
+            TestinYml.reload(getProject());
+            Services.getInstance(getProject(), Hints.class).clear(SetupStep.TEST_PROJECT_LINK);
+        }
     }
 
     // Rule-CODEGEN-082, Rule-INTERNAL-127
