@@ -110,7 +110,7 @@ public class CardMouseListener extends MouseAdapter {
         actionUnder(e, index).ifPresent(button -> {
             final @NotNull TestCase testCase = list.getModel().getElementAt(index);
 
-            TestinLogger.trace(button.action().getTooltip() + ", tc: " + testCase.getDescription());
+            TestinLogger.trace(button.action().getTooltip() + ", test case: " + testCase.getDescription());
 
             if (!button.works()) {
                 notifier.softRefuse(project, button.hintText());
