@@ -79,15 +79,15 @@ record SyncWork(@NotNull Project project, @NotNull GitRepositoryService git, @No
                     }
                     hints.clear(SetupStep.GIT_REMOTE, repoPath);
 
-                    final @NotNull String branch = git.syncBranch(repoPath);
-                    if (branch.isBlank()) {
-                        throw new IllegalStateException(Bundle.message("git.error.no.sync.branch"));
-                    }
-
                     final @NotNull Optional<List<String>> unfinished = git.unfinished(repoPath);
                     if (unfinished.isPresent()) {
                         ApplicationManager.getApplication().invokeLater(() -> stopped(repoPath).offer(unfinished.orElseThrow()));
                         return;
+                    }
+
+                    final @NotNull String branch = git.syncBranch(repoPath);
+                    if (branch.isBlank()) {
+                        throw new IllegalStateException(Bundle.message("git.error.no.sync.branch"));
                     }
 
                     indicator.setText(Bundle.message("git.progress.pulling", branch));

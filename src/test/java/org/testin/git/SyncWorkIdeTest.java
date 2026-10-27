@@ -79,6 +79,21 @@ public class SyncWorkIdeTest extends AbstractGitRemoteIdeTest {
         assertTrue(git(work, "rebase", "--abort").isPresent());
     }
 
+    // UC-SHARE-017, Rule-SHARE-075, Rule-SHARE-076
+    public void testAPullStoppedBeforeTheSyncIsOfferedBackEvenWithNothingLeftConflicting() {
+        bothChangeTheNotes();
+        assertTrue("the pull did not stop on the notes", git(work, "pull", "--rebase", "origin", MAIN).isEmpty());
+        write(work, "notes.txt", "both\n");
+        mustGit(work, "add", "notes.txt");
+        final @NotNull List<Notification> said = Said.listening(getProject(), getTestRootDisposable()).notifications();
+
+        new SyncWork(getProject()).syncRepository(work);
+
+        final @NotNull Notification stopped = titled(said, Bundle.message("git.conflicts.title"));
+        assertEquals("a stopped pull with nothing left conflicting was not offered back", Bundle.message("git.conflict.unnamed"), stopped.getContent());
+        assertTrue(git(work, "rebase", "--abort").isPresent());
+    }
+
     // UC-SHARE-016, Rule-SHARE-125
     public void testARemoteThatCannotBeAskedStopsTheSyncAndSaysWhy() {
         final @NotNull String before = head(remote, MAIN);
