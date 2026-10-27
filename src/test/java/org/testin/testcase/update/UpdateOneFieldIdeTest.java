@@ -27,6 +27,7 @@ import org.testin.editor.testset.TestSetEditor;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
+import org.testin.model.status.TestCaseStatus;
 import org.testin.services.Services;
 import org.testin.setting.AppSettingsState;
 import org.testin.testcase.UpdateTestCaseAction;
@@ -39,6 +40,7 @@ import org.testin.util.JsonCodec;
 import org.testin.util.Shortcuts;
 import org.testin.view.Drawn;
 
+import javax.swing.JRadioButton;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -129,6 +131,18 @@ public class UpdateOneFieldIdeTest extends AbstractTempRootIdeTest {
         assertEquals("the dialog did not save once", 1, saved.size());
         assertEquals("the opened field was not written back", "The dashboard opens", saved.getFirst().getExpectedResult());
         assertEquals("a field the tester did not open was written back", "Log in", saved.getFirst().getDescription());
+    }
+
+    // UC-EDITOR-PANEL-006, Rule-EDITOR-PANEL-258
+    public void testPickingAnotherStatusWritesItBack() {
+        final @NotNull TestCase testCase = aTestCase("Log in", "Dashboard opens");
+        final @NotNull UpdateTestCaseDialog dialog = shown(testCase, UpdateTestCaseFields.STATUS);
+
+        Drawn.first(dialog.getTestCaseStatusSection().getWrapper(), JRadioButton.class, radio -> radio.getText().equals(TestCaseStatus.DISABLED.getLabel())).doClick();
+        save();
+
+        assertEquals("the dialog did not save once", 1, saved.size());
+        assertEquals("the status picked was not written back", TestCaseStatus.DISABLED, saved.getFirst().getStatus());
     }
 
     // Rule-EDITOR-PANEL-036
