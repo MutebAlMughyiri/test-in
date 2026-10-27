@@ -67,7 +67,7 @@ public class TestNGEventRelayTest {
     // Rule-CODEGEN-075
     @Test
     public void aFailedComparisonKeepsWhatWasExpectedAndWhatCameInstead() {
-        final @NotNull SMTestProxy test = started("comparesthetitle");
+        final @NotNull SMTestProxy test = started("comparesTheTitle");
         test.setTestComparisonFailed("the title is wrong", "at LoginTest.comparesTheTitle", "Sign in", "Log in");
 
         assertEquals(finished(test), AutomationExecutionStatus.FAILED + ": " + Bundle.message("runner.comparison", "the title is wrong", "Log in", "Sign in"), "a failed comparison lost what was expected or what came instead");
