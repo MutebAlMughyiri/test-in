@@ -312,6 +312,24 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
         assertEquals("a list that did not change was written", untouchedBefore, read(untouched));
     }
 
+    // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-042
+    public void testSavedStepsAreTrimmedAndABlankStepIsDropped() {
+        final @NotNull TestCase testCase = aTestSetWithModules("Payments", "Cart").getFirst();
+        theTestCases().putTestCaseVerbatim(testSet.getPath(), testCase.edit().steps(new ArrayList<>(List.of("Open the app", "Log in"))).build());
+        final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
+        editor.getList().setSelectionInterval(0, 1);
+        UpdateTestCaseAction.openField(getProject(), editor, UpdateTestCaseFields.STEPS);
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+        final @NotNull Document steps = editorsOf(StepsBulkDialog.class).stream().filter(values -> !values.isViewer()).findFirst().orElseThrow().getDocument();
+        final int logIn = steps.getText().indexOf("\"Log in\"") + 1;
+
+        WriteCommandAction.runWriteCommandAction(getProject(), () -> steps.replaceString(logIn, logIn + "Log in".length(), "  Log in with a password  "));
+        ShownDialog.press(getProject(), StepsBulkDialog.class, Shortcuts.AddItem.getKey());
+        ShownDialog.press(getProject(), StepsBulkDialog.class, Shortcuts.Enter.getKey());
+
+        Await.until("the edited steps were not saved trimmed with the blank one dropped", () -> List.of("Open the app", "Log in with a password").equals(theTestCases().findTestCase(testCase.getUuid()).orElseThrow().getSteps()));
+    }
+
     // Rule-EDITOR-PANEL-006
     public void testASaveThatWouldLeaveTheFilesAsTheyAreWritesNothingAndSaysNothing() {
         aTestSetWithModules("Payments", "Cart");
