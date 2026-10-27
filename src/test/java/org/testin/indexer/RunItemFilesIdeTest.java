@@ -154,7 +154,7 @@ public class RunItemFilesIdeTest extends AbstractTempRootIdeTest {
 
     public void testARunItemStatusArrivingForATestRunThatWasRemovedIsDroppedAndWritesNothing() {
         final Path testRun = aTestRun();
-        awaitFile(runItemOf(testRun, JUDGED_TEST_CASE), "the test run's results never reached disk");
+        indexedTestRuns().awaitWrites();
         nodes().removeTestRun(testRun, _ -> {
         });
         Await.until("the test run was never removed", () -> !nodes().nodeExists(testRun));
