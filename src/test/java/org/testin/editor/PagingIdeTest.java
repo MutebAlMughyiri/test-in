@@ -30,6 +30,8 @@ import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
+import org.testin.ui.framework.ShownDialog;
+import org.testin.util.Shortcuts;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -158,6 +160,8 @@ public class PagingIdeTest extends AbstractTempRootIdeTest {
         assertEquals("Next did not turn the page", 2, editor.getCurrentPage());
         editor.getStatusBar().button(PageStep.LAST).doClick();
         editor.getStatusBar().button(PageStep.FIRST).doClick();
+        ShownDialog.press(editor.getList(), Shortcuts.Next.getKey());
+        assertEquals("the Next key did not turn the page", 2, editor.getCurrentPage());
         searchForNumber1(editor);
 
         assertEquals("paging or searching said something", List.of(), balloons.shown());
