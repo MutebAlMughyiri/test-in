@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
 import org.testin.NodesOnDisk;
+import org.testin.Said;
 import org.testin.TreeGesture;
 import org.testin.config.TestinYml;
 import org.testin.explorer.toolbar.SaveTestinYmlAction;
@@ -29,6 +30,7 @@ import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
 import org.testin.ui.framework.ConfirmDialog;
 import org.testin.ui.framework.ShownDialog;
+import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
 
 import java.io.IOException;
@@ -103,5 +105,24 @@ public class RenamingNeverWritesTestinYmlIdeTest extends AbstractTempRootIdeTest
         ShownDialog.press(getProject(), ConfirmDialog.class, Shortcuts.Enter);
 
         Await.until("Save to " + TestinYml.fileName() + " did not write it", () -> bytesOf(yml()).contains("NAFATH2"));
+    }
+
+    // UC-TREE-PANEL-029
+    public void testASaveTheDiskRefusesSaysSoAndLeavesTheFileAsItWas() {
+        final @NotNull TestProjectNode testProject = new NodesOnDisk(getProject()).testProject(root.resolve("Payments"));
+        bound().choose("Payments");
+        final @NotNull String before = bytesOf(yml());
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+        assertTrue("could not make " + TestinYml.fileName() + " read-only", yml().toFile().setWritable(false));
+        try {
+            TreeGesture.pressed(getProject(), new SaveTestinYmlAction(getProject()), List.of(testProject));
+            Await.until("Save to " + TestinYml.fileName() + " asked nothing", () -> ShownDialog.isOpen(getProject(), ConfirmDialog.class));
+            ShownDialog.press(getProject(), ConfirmDialog.class, Shortcuts.Enter);
+
+            Await.until("a save the disk refused was not said: " + said.shown(), () -> said.shown().contains(Bundle.message("yml.save.failed")));
+            assertEquals("a refused save changed " + TestinYml.fileName(), before, bytesOf(yml()));
+        } finally {
+            assertTrue("could not make " + TestinYml.fileName() + " writable again", yml().toFile().setWritable(true));
+        }
     }
 }
