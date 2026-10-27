@@ -20,11 +20,13 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractOpenEditorsIdeTest;
 import org.testin.Await;
 import org.testin.NodesOnDisk;
+import org.testin.Said;
 import org.testin.TreeGesture;
 import org.testin.creator.dialogs.CreateNodeDialog;
 import org.testin.indexer.Nodes;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
+import org.testin.notifications.Refused;
 import org.testin.services.Services;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.util.Shortcuts;
@@ -52,5 +54,21 @@ public class CreateTestSetOpensIdeTest extends AbstractOpenEditorsIdeTest {
         Await.until("the test set was not created", () -> Services.getInstance(getProject(), Nodes.class).find(wanted).isPresent());
         final @NotNull AbstractNode created = Services.getInstance(getProject(), Nodes.class).find(wanted).orElseThrow();
         Await.until("the new test set did not open in its editor", () -> openOn(created).size() == 1);
+    }
+
+    // UC-TREE-PANEL-007
+    public void testANameAlreadyTakenUnderTheParentCreatesNothingAndSaysSo() {
+        final @NotNull NodesOnDisk made = new NodesOnDisk(getProject());
+        final @NotNull TestProjectNode testProject = made.testProject(root.resolve("NAFATH"));
+        made.testSet(testProject.getTestCasesFolder(), "Login");
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        TreeGesture.pressed(getProject(), new CreateTreeNodeAction(), List.of(testProject.getTestCasesFolder()));
+        ShownDialog.typed(getProject(), CreateNodeDialog.class, "Login");
+        ShownDialog.press(getProject(), CreateNodeDialog.class, Shortcuts.Enter);
+
+        Await.until("a name already taken was not said: " + said.shown(), () -> said.shown().contains(Refused.ALREADY_EXISTS.about("Login")));
+        assertFalse("the dialog stayed open over a name already taken", ShownDialog.isOpen(getProject(), CreateNodeDialog.class));
+        assertEquals("a second node was created under a name already taken", 1, Services.getInstance(getProject(), Nodes.class).getChildren(testProject.getTestCasesFolder().getPath()).size());
     }
 }
