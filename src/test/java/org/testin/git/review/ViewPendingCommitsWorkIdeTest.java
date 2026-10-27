@@ -17,12 +17,18 @@
 package org.testin.git.review;
 
 import com.intellij.notification.Notification;
+import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.application.WriteAction;
 import org.jetbrains.annotations.NotNull;
 import org.testin.Await;
 import org.testin.Notified;
 import org.testin.Said;
+import org.testin.TreeGesture;
 import org.testin.git.AbstractGitRemoteIdeTest;
+import org.testin.indexer.NodeMapper;
+import org.testin.model.node.TestProjectNode;
+import org.testin.services.Services;
 import org.testin.util.Bundle;
 
 import java.util.List;
@@ -40,6 +46,16 @@ public class ViewPendingCommitsWorkIdeTest extends AbstractGitRemoteIdeTest {
         new ViewPendingCommitsWork(getProject()).openFor(work);
 
         Await.until("nothing to commit or push was not said", () -> said.shown().contains(Bundle.message("git.no.changes")));
+    }
+
+    // UC-SHARE-010
+    public void testViewPendingCommitsOnTheTreeReviewsTheTestProjectsRepository() {
+        final @NotNull TestProjectNode testProject = WriteAction.computeAndWait(() -> Services.getInstance(getProject(), NodeMapper.class).setTestProjectNode(work));
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        TreeGesture.pressedAt(getProject(), ActionManager.getInstance().getAction("Testin.ViewPendingCommits"), List.of(testProject));
+
+        Await.until("View Pending Commits did not review the test project's repository", () -> said.shown().contains(Bundle.message("git.no.changes")));
     }
 
     // UC-SHARE-017, Rule-SHARE-076, Rule-SHARE-078
