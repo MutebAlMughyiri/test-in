@@ -203,6 +203,21 @@ public class CommitRulesIdeTest extends AbstractGitRemoteIdeTest {
         assertEquals(head(work, "HEAD"), head(remote, MAIN));
     }
 
+    // UC-SHARE-014, Rule-SHARE-064
+    public void testANameThatIsNotABranchYetStartsOneAndTheCommitLandsOnIt() {
+        write(work, "first.testcase", "{\"on\":\"the release\"}");
+        final @NotNull String mainBefore = head(work, MAIN);
+
+        final @NotNull JComponent review = theReview(work);
+        ShareGestures.typeTheBranch(review, "release");
+        ShareGestures.type(review, "the release's first change");
+        ShareGestures.commitOnly(review);
+
+        Await.until("the commit did not land on a new branch named release", () -> git(work, "rev-parse", "--verify", "--quiet", "release").filter(hash -> !hash.trim().equals(mainBefore.trim())).isPresent());
+        assertEquals("the new branch is not the one checked out", "release", mustGit(work, "branch", "--show-current").trim());
+        assertEquals("the commit on the new branch moved main", mainBefore, head(work, MAIN));
+    }
+
     // UC-SHARE-014, Rule-SHARE-065, Rule-SHARE-127
     public void testABranchThatCannotBeCheckedOutCommitsNothing() {
         mustGit(work, "checkout", "-b", "other");

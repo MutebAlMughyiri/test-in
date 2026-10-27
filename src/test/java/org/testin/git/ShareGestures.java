@@ -65,7 +65,11 @@ public final class ShareGestures {
     }
 
     public static void chooseTheOtherBranch(final @NotNull JComponent dialog) {
-        Drawn.first(dialog, ComboBox.class).getEditor().setItem("other");
+        typeTheBranch(dialog, "other");
+    }
+
+    public static void typeTheBranch(final @NotNull JComponent dialog, final @NotNull String branch) {
+        Drawn.first(dialog, ComboBox.class).getEditor().setItem(branch);
     }
 
     public static void commitOnly(final @NotNull JComponent dialog) {
