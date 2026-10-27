@@ -30,7 +30,7 @@ import org.testin.services.Services;
 import org.testin.util.Bundle;
 
 public class SetTestRunStatusAction extends AbstractBoundTestProjectAction {
-    final @NotNull SimpleTree tree;
+    private final @NotNull SimpleTree tree;
 
     private final @NotNull TestRunStatusChange testRunStatusChange = Services.getInstance(project, TestRunStatusChange.class);
 
