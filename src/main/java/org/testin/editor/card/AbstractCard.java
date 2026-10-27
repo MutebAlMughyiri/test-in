@@ -194,7 +194,7 @@ public abstract class AbstractCard extends JBPanel<AbstractCard> {
         UIUtil.uiParents(titleArea, false).takeWhile(part -> SwingUtilities.isDescendingFrom(part, this)).forEach(Component::invalidate);
     }
 
-    // Rule-INTERNAL-122, Rule-EDITOR-PANEL-267, Rule-EDITOR-PANEL-269, Rule-INTERNAL-132
+    // Rule-INTERNAL-122, Rule-EDITOR-PANEL-267, Rule-EDITOR-PANEL-269, Rule-EDITOR-PANEL-302, Rule-INTERNAL-132
     protected void updateUI(final int index, final @NotNull String title, final @NotNull List<Badge> badges, final @NotNull Map<String, String> details) {
         plainTitle = title;
 
@@ -220,7 +220,7 @@ public abstract class AbstractCard extends JBPanel<AbstractCard> {
 
             final @NotNull Optional<Icon> icon = TestSetEditorFields.iconOf(fieldName);
             label.setIcon(icon.orElse(EmptyIcon.ICON_0));
-            label.setText(Display.shortDates(icon.isPresent() ? value : fieldName + ": " + value));
+            label.setText(Display.shortDates(icon.isPresent() ? value : fieldName + ": " + value).replaceAll("\\R", " "));
             lineTooltips.put(fieldName, Display.dateTooltip(value));
             label.setVisible(true);
             spoken.add(fieldName + ": " + value);

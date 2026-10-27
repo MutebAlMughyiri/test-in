@@ -82,6 +82,17 @@ public class CardDetailIconsIdeTest extends AbstractIdeTest {
                 Objects.requireNonNullElse(card.getAccessibleContext().getAccessibleDescription(), "").contains(TestSetEditorFields.EXPECTED_RESULT.getName() + ": " + EXPECTED));
     }
 
+    // Rule-EDITOR-PANEL-302
+    public void testALineBreakInADetailIsDrawnAsASpace() {
+        final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description("Log in with a valid user").expectedResult("The page is shown\nas rc").build();
+        final @NotNull TestCaseCard card = new TestCaseCard(getProject());
+        card.updateData(0, testCase, Set.of(TestSetEditorFields.EXPECTED_RESULT), AbstractCard.titleText(1, true, testCase.getDescription()));
+        card.layOutAs(CELL);
+
+        assertEquals("the two lines ran together on the card", "The page is shown as rc.", theLineSaying(card, "The page is shown").getText());
+        assertEquals("the stored value lost its line break", "The page is shown\nas rc", testCase.getExpectedResult());
+    }
+
     // Rule-EDITOR-PANEL-269
     public void testAReferenceLineLeadsWithItsR() {
         final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description("Log in with a valid user").reference(REFERENCE).build();
