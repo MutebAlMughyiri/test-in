@@ -25,6 +25,7 @@ import org.testin.explorer.TestinStartup;
 import org.testin.help.Hints;
 import org.testin.help.SetupHint;
 import org.testin.help.SetupStep;
+import org.testin.indexer.TestProjectIndexer;
 import org.testin.services.Services;
 import org.testin.util.Bundle;
 
@@ -70,5 +71,15 @@ public class TestinFolderHintIdeTest extends AbstractTempRootIdeTest {
         settings().rootTestinPath = root.toString();
         TestinStartup.hintTestinFolder(getProject());
         assertEquals("setting the folder left its hint waiting", List.of(), waiting());
+    }
+
+    // UC-SETTING-002, Rule-SETTING-046
+    public void testAStoredFolderThatIsNotAFullPathIsReadAsNotSetAndAskedFor() {
+        settings().rootTestinPath = "Testin";
+
+        TestinStartup.execute(getProject());
+
+        assertEquals("a folder that is not a full path was not asked for again", List.of(Bundle.message("startup.setup.message")), waiting());
+        assertTrue("a folder that is not a full path was read inside the open project", Services.getInstance(getProject(), TestProjectIndexer.class).testProjects().isEmpty());
     }
 }
