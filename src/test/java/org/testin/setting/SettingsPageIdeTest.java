@@ -127,6 +127,15 @@ public class SettingsPageIdeTest extends AbstractTempRootIdeTest {
     }
 
     // Rule-SETTING-042
+    public void testTextNoFileSystemTakesAsAPathIsRefusedAsTheTestinFolder() {
+        final @NotNull String notAPath = root + "\0Testin";
+        typedOver(values("", "Sara"), values(notAPath, "Omar"));
+
+        assertEquals(HtmlChunk.text(Bundle.message("settings.no.folder", notAPath)).toString(), refused().getMessageHtml().toString());
+        assertEquals("text that is not a path was refused, and the page stored it anyway", "", settings().rootTestinPath);
+    }
+
+    // Rule-SETTING-042
     public void testAFileIsRefusedAsTheTestinFolder() {
         final @NotNull Path file = root.resolve("notes.txt");
         try {
