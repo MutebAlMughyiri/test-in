@@ -61,15 +61,20 @@ public class RightClickIdeTest extends AbstractTempRootIdeTest {
         return EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
     }
 
-    // Rule-EDITOR-PANEL-110
-    public void testRightClickingAGridRowOutsideTheSelectionMovesTheSelectionThereFirst() {
-        final @NotNull TestSetEditor editor = fourTestCases();
+    private static @NotNull JBTable theGridWithTheFirstTwoSelected(final @NotNull TestSetEditor editor) {
         editor.getToolBar().getToolbarItem(GridViewButton.class).doClick();
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
         final @NotNull JBTable table = Drawn.components(editor.getComponent()).stream().filter(JBTable.class::isInstance).map(JBTable.class::cast).findFirst().orElseThrow();
         table.setSize(1200, 600);
         table.setRowSelectionInterval(0, 1);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+        return table;
+    }
+
+    // Rule-EDITOR-PANEL-110
+    public void testRightClickingAGridRowOutsideTheSelectionMovesTheSelectionThereFirst() {
+        final @NotNull TestSetEditor editor = fourTestCases();
+        final @NotNull JBTable table = theGridWithTheFirstTwoSelected(editor);
 
         final @NotNull Rectangle row = table.getCellRect(3, table.convertColumnIndexToView(TestSetEditorFields.DESCRIPTION.column()), true);
         final @NotNull MouseEvent press = new MouseEvent(table, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), InputEvent.BUTTON3_DOWN_MASK, (int) row.getCenterX(), (int) row.getCenterY(), 1, true, MouseEvent.BUTTON3);
@@ -82,6 +87,23 @@ public class RightClickIdeTest extends AbstractTempRootIdeTest {
 
         assertTrue("right-clicking outside the selection did not move it to the row clicked", moved.getAsBoolean());
         assertEquals("the cards did not follow the grid's selection", 3, editor.getList().getSelectedIndex());
+    }
+
+    // Rule-EDITOR-PANEL-110
+    public void testWhereTheMenuOpensOnTheReleaseTheSelectionStillMovesThereFirst() {
+        final @NotNull TestSetEditor editor = fourTestCases();
+        final @NotNull JBTable table = theGridWithTheFirstTwoSelected(editor);
+
+        final @NotNull Rectangle row = table.getCellRect(2, table.convertColumnIndexToView(TestSetEditorFields.DESCRIPTION.column()), true);
+        final @NotNull MouseEvent release = new MouseEvent(table, MouseEvent.MOUSE_RELEASED, System.currentTimeMillis(), InputEvent.BUTTON3_DOWN_MASK, (int) row.getCenterX(), (int) row.getCenterY(), 1, true, MouseEvent.BUTTON3);
+        final @NotNull BooleanSupplier moved = () -> Arrays.equals(new int[]{2}, table.getSelectedRows());
+
+        rightClick(() -> {
+            for (final MouseListener listener : table.getMouseListeners())
+                if (listener instanceof GridContextMenuListener) listener.mouseReleased(release);
+        }, moved);
+
+        assertTrue("a menu raised on the release did not move the selection to the row clicked", moved.getAsBoolean());
     }
 
     // Rule-EDITOR-PANEL-110
