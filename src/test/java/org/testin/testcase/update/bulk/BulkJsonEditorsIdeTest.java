@@ -23,7 +23,6 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.impl.EditorComponentImpl;
 import com.intellij.openapi.editor.markup.HighlighterLayer;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
-import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractIdeTest;
 import org.testin.Await;
@@ -71,9 +70,9 @@ public class BulkJsonEditorsIdeTest extends AbstractIdeTest {
         return Stream.of(editor.getMarkupModel().getAllHighlighters()).filter(highlighter -> DiffColors.DIFF_INSERTED.equals(highlighter.getTextAttributesKey())).toList();
     }
 
-    private static void pressed(final @NotNull Editor editor, final int offset, final @MagicConstant(flagsFromClass = InputEvent.class) int modifiers) {
+    private static void pressed(final @NotNull Editor editor, final int offset, final boolean holdingCtrl) {
         final @NotNull Point at = editor.offsetToXY(offset);
-        editor.getContentComponent().dispatchEvent(new MouseEvent(editor.getContentComponent(), MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), modifiers | InputEvent.BUTTON1_DOWN_MASK, at.x + 1, at.y + 1, 1, false, MouseEvent.BUTTON1));
+        editor.getContentComponent().dispatchEvent(new MouseEvent(editor.getContentComponent(), MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), holdingCtrl ? InputEvent.CTRL_DOWN_MASK | InputEvent.BUTTON1_DOWN_MASK : InputEvent.BUTTON1_DOWN_MASK, at.x + 1, at.y + 1, 1, false, MouseEvent.BUTTON1));
     }
 
     @Override
@@ -152,10 +151,10 @@ public class BulkJsonEditorsIdeTest extends AbstractIdeTest {
     public void testCtrlClickAddsACursorAndCtrlClickOnItTakesItAway() {
         editors.focusValue(0);
 
-        pressed(values(), endOf(1), InputEvent.CTRL_DOWN_MASK);
+        pressed(values(), endOf(1), true);
         assertEquals("Ctrl+click did not add a cursor", 2, values().getCaretModel().getCaretCount());
 
-        pressed(values(), endOf(1), InputEvent.CTRL_DOWN_MASK);
+        pressed(values(), endOf(1), true);
         assertEquals("Ctrl+click on a cursor did not take it away", List.of(endOf(0)), caretOffsets(values()));
     }
 
@@ -163,7 +162,7 @@ public class BulkJsonEditorsIdeTest extends AbstractIdeTest {
     public void testTheLeftSideTakesNoCursorFromAClick() {
         final @NotNull List<Integer> before = caretOffsets(originals());
 
-        pressed(originals(), endOf(1), 0);
+        pressed(originals(), endOf(1), false);
 
         assertEquals("a click moved the cursor on the side that cannot be typed into", before, caretOffsets(originals()));
     }
