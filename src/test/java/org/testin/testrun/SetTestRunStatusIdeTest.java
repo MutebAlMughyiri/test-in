@@ -22,6 +22,7 @@ import com.intellij.openapi.actionSystem.impl.SimpleDataContext;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.testFramework.PlatformTestUtil;
 import com.intellij.testFramework.TestActionEvent;
+import com.intellij.ui.SimpleColoredComponent;
 import com.intellij.ui.UiInterceptors;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.treeStructure.SimpleTree;
@@ -45,6 +46,7 @@ import org.testin.view.Drawn;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -142,6 +144,10 @@ public class SetTestRunStatusIdeTest extends AbstractTempRootIdeTest {
         final @NotNull List<TestRunStatus> canFollow = Arrays.stream(TestRunStatus.values()).filter(testRunStatus -> testRunStatus.canBeSetFrom(TestRunStatus.CREATED)).toList();
         final @NotNull JBList<?> offered = Drawn.first(shown.getFirst().getContent(), JBList.class);
         assertEquals("the menu does not offer exactly the statuses that can follow Created", canFollow, IntStream.range(0, offered.getModel().getSize()).mapToObj(row -> offered.getModel().getElementAt(row)).toList());
+        for (int row = 0; row < canFollow.size(); row++) {
+            final @NotNull String drawn = ((SimpleColoredComponent) Drawn.row(offered, row)).getCharSequence(false).toString();
+            assertTrue("a status's row does not read its name and its key: " + drawn, drawn.contains(canFollow.get(row).getName()) && drawn.contains(canFollow.get(row).getShortcutText()));
+        }
 
         ShownDialog.press(shown.getFirst().getContent(), Shortcuts.Enter.getKey());
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();

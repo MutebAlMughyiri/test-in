@@ -29,7 +29,9 @@ import org.testin.view.details.DetailsTab;
 import javax.swing.AbstractButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.text.JTextComponent;
+
 import java.awt.Component;
 import java.awt.Container;
 import java.util.ArrayList;
@@ -64,6 +66,10 @@ public final class Drawn {
 
     public static <T> @NotNull T first(final @NotNull Component root, final @NotNull Class<T> kind) {
         return first(root, kind, _ -> true);
+    }
+
+    public static <T> @NotNull Component row(final @NotNull JList<T> list, final int row) {
+        return list.getCellRenderer().getListCellRendererComponent(list, list.getModel().getElementAt(row), row, false, false);
     }
 
     public static <T> @NotNull T first(final @NotNull Component root, final @NotNull Class<T> kind, final @NotNull Predicate<? super T> which) {

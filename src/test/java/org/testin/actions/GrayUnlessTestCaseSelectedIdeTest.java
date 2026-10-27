@@ -49,7 +49,6 @@ import org.testin.view.ViewDetailsAction;
 
 import javax.swing.JComponent;
 
-import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,14 +92,10 @@ public class GrayUnlessTestCaseSelectedIdeTest extends AbstractTempRootIdeTest {
             final @NotNull JBList<?> menu = Drawn.first(shown.getFirst().getContent(), JBList.class);
             assertEquals("the menu does not offer every field Update changes", UpdateTestCaseFields.values().length, menu.getModel().getSize());
             for (int row = 0; row < menu.getModel().getSize(); row++)
-                assertTrue("a row of the menu is drawn empty", drawn(menu, row) instanceof JComponent);
+                assertTrue("a row of the menu is drawn empty", Drawn.row(menu, row) instanceof JComponent);
         } finally {
             shown.forEach(Disposer::dispose);
         }
-    }
-
-    private static <T> @NotNull Component drawn(final @NotNull JBList<T> list, final int row) {
-        return list.getCellRenderer().getListCellRendererComponent(list, list.getModel().getElementAt(row), row, false, false);
     }
 
     // Rule-EDITOR-PANEL-230
