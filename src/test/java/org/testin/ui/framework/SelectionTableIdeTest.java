@@ -44,12 +44,16 @@ public class SelectionTableIdeTest extends AbstractIdeTest {
         return (JTable) review.getFocusComponent();
     }
 
-    private static @NotNull MouseEvent at(final @NotNull JTable table, final @NotNull Point point, final int type, final int modifiers, final int button) {
-        return new MouseEvent(table, type, System.currentTimeMillis(), modifiers, point.x, point.y, 1, false, button);
+    private static @NotNull MouseEvent pointedAt(final @NotNull JTable table, final @NotNull Point point) {
+        return new MouseEvent(table, MouseEvent.MOUSE_MOVED, System.currentTimeMillis(), 0, point.x, point.y, 0, false, MouseEvent.NOBUTTON);
     }
 
-    private static @NotNull Point middleOf(final @NotNull JTable table, final int row) {
-        final @NotNull Rectangle cell = table.getCellRect(row, 0, true);
+    private static @NotNull MouseEvent rightClickedAt(final @NotNull JTable table, final @NotNull Point point) {
+        return new MouseEvent(table, MouseEvent.MOUSE_RELEASED, System.currentTimeMillis(), InputEvent.BUTTON3_DOWN_MASK, point.x, point.y, 1, false, MouseEvent.BUTTON3);
+    }
+
+    private static @NotNull Point onTheMarker(final @NotNull JTable table) {
+        final @NotNull Rectangle cell = table.getCellRect(1, 0, true);
         return new Point(cell.x + cell.width / 2, cell.y + cell.height / 2);
     }
 
@@ -62,7 +66,7 @@ public class SelectionTableIdeTest extends AbstractIdeTest {
         assertFalse("a row of the review can be typed into", table.isCellEditable(1, 0));
         assertEquals("the marker row is not gray", NamedColorUtil.getInactiveTextColor(), table.prepareRenderer(table.getCellRenderer(1, 0), 1, 0).getForeground());
         assertEquals("an unticked change row painted after the marker is gray like it", table.getForeground(), table.prepareRenderer(table.getCellRenderer(0, 0), 0, 0).getForeground());
-        assertEquals("the marker row does not say why when pointed at", WHY, table.getToolTipText(at(table, middleOf(table, 1), MouseEvent.MOUSE_MOVED, 0, MouseEvent.NOBUTTON)));
+        assertEquals("the marker row does not say why when pointed at", WHY, table.getToolTipText(pointedAt(table, onTheMarker(table))));
 
         table.addRowSelectionInterval(0, 0);
         assertEquals("a ticked change row is not drawn as the table draws a selected row", table.getSelectionForeground(), table.prepareRenderer(table.getCellRenderer(0, 0), 0, 0).getForeground());
@@ -78,7 +82,7 @@ public class SelectionTableIdeTest extends AbstractIdeTest {
         final @NotNull JTable table = theTable(review);
         review.selectAll();
 
-        final @NotNull MouseEvent below = at(table, new Point(10, table.getRowHeight() * 5), MouseEvent.MOUSE_RELEASED, InputEvent.BUTTON3_DOWN_MASK, MouseEvent.BUTTON3);
+        final @NotNull MouseEvent below = rightClickedAt(table, new Point(10, table.getRowHeight() * 5));
         for (final MouseListener listener : table.getMouseListeners()) listener.mouseReleased(below);
 
         assertEquals("a right click below the rows did not untick the change, or unticked the marker", List.of(1), review.getSelectedRows());
