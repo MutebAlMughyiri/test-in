@@ -242,4 +242,15 @@ public class UpdateTestMethodIdeTest extends AbstractCodegenIdeTest {
         assertEquals("false", attributeOf(testMethod, "enabled"));
         assertTrue("undo created a method for a test case that had none", methodOf(LOGIN_TEST, withoutAMethod).isEmpty());
     }
+
+    // Rule-CODEGEN-068
+    public void testUndoingAChangeToOneTestCaseWritesItsCodeAgain() {
+        final @NotNull TestCase restored = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "b");
+
+        restored.setDescription("Sign in");
+        CodeChangeType.RECONCILE_TEST_CASE.execute(getProject(), restored);
+        settled();
+
+        assertEquals("undoing a change to one test case did not write its method again", "\"Sign in\"", attributeOf(writtenMethodOf(LOGIN_TEST, restored), "description"));
+    }
 }
