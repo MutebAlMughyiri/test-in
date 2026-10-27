@@ -23,12 +23,17 @@ import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.Await;
 import org.testin.NodesOnDisk;
+import org.testin.Said;
 import org.testin.git.AbstractGitRemoteIdeTest;
 import org.testin.git.ShareGestures;
+import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
+import org.testin.model.NodeType;
 import org.testin.model.TestCase;
+import org.testin.model.markers.TestSetMarker;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
+import org.testin.model.status.TestSetStatus;
 import org.testin.services.Services;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.undo.UndoHistories;
@@ -44,6 +49,7 @@ import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -165,6 +171,31 @@ public class ReviewRowsIdeTest extends AbstractGitRemoteIdeTest {
 
         assertEquals("the removed test case did not come back", "A wrong password is refused", onDisk(second));
         assertEquals("the test case put back belongs to no test set, so its test method has nowhere to go", login.getPath(), indexedTestCases().findTestCase(second.getUuid()).orElseThrow().getParent().getPath());
+    }
+
+    // UC-SHARE-011, Rule-SHARE-051
+    public void testANewTestCaseRevertedIsRemoved() {
+        final @NotNull TestCase added = TestCase.builder().uuid(UUID.randomUUID()).description("A locked account cannot log in").order("o").build();
+        assertTrue(indexedTestCases().putTestCaseVerbatim(login.getPath(), added));
+        final @NotNull JBTable table = theReviewTable();
+
+        revertFromTheMenuOn(table, rowNamed(table, "A locked account cannot log in"));
+
+        assertFalse("the new test case reverted is still on disk", Files.exists(login.getPath().resolve(added.getUuid() + ".testcase")));
+        assertTrue("the new test case reverted is still read", indexedTestCases().findTestCase(added.getUuid()).isEmpty());
+    }
+
+    // UC-SHARE-011, Rule-SHARE-051
+    public void testAMarkerChangeCannotBeRevertedAndSaysOnlyATestCaseCan() {
+        assertTrue("the test set was not deprecated", Services.getInstance(getProject(), Nodes.class).mark(login, TestSetStatus.DEPRECATED, "Sara"));
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+        final @NotNull JBTable table = theReviewTable();
+
+        revertFromTheMenuOn(table, rowNamed(table, "Login"));
+
+        assertEquals("reverting a marker did not say only a test case change can be", List.of(Bundle.message("dialog.pending.revert.only.test.case")), said.shown());
+        final @NotNull String marker = read(work, work.relativize(login.getPath()).resolve(NodeType.TEST_SET.getMarker()).toString());
+        assertEquals("reverting a marker changed it", TestSetStatus.DEPRECATED, Services.getInstance(getProject(), JsonCodec.class).readValue(marker, TestSetMarker.class).getStatus());
     }
 
     // UC-SHARE-011, Rule-SHARE-119
