@@ -100,6 +100,21 @@ public class RobotCodeIdeTest extends AbstractCodegenIdeTest {
         assertTrue("the other test was touched: " + text, text.contains("Sign out\n"));
     }
 
+    // UC-CODEGEN-012, Rule-CODEGEN-123
+    public void testAChangeToSeveralTestCasesAtOnceRetagsEachOfTheirTests() {
+        final @NotNull TestSetNode login = createdTestSet("Login page");
+        final @NotNull TestCase signIn = createdTestCase(login, "Sign in", "a");
+        final @NotNull TestCase signOut = createdTestCase(login, "Sign out", "b");
+        signIn.setGroups(List.of("smoke"));
+        signOut.setGroups(List.of("smoke"));
+
+        CodeChangeType.UPDATE_TEST_CASE_GROUP.executeAllNow(getProject(), List.of(signIn, signOut));
+
+        final @NotNull String text = suiteText(LOGIN_SUITE);
+        assertTrue("the first test was not retagged: " + text, text.contains("Sign in\n    [Tags]    " + signIn.getUuid() + "    smoke\n"));
+        assertTrue("the second test was not retagged: " + text, text.contains("Sign out\n    [Tags]    " + signOut.getUuid() + "    smoke\n"));
+    }
+
     // UC-CODEGEN-011, Rule-CODEGEN-126
     public void testReorderingTheTestSetMovesItsTestsInTheSuite() {
         final @NotNull TestSetNode login = createdTestSet("Login page");
