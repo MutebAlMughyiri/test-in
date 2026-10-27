@@ -36,12 +36,15 @@ import org.testin.Said;
 import org.testin.TreeGesture;
 import org.testin.creator.CreateTestRun;
 import org.testin.creator.NodeCreators;
+import org.testin.filter.FilterPopupButton;
+import org.testin.filter.Filtering;
 import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestProjectIndexer;
 import org.testin.indexer.TestRuns;
 import org.testin.model.NodeType;
+import org.testin.model.Priority;
 import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
@@ -59,6 +62,7 @@ import org.testin.model.testrun.RunItems;
 import org.testin.model.testrun.TestRunConfiguration;
 import org.testin.notifications.Refused;
 import org.testin.services.Services;
+import org.testin.testcase.TestSetEditorFields;
 import org.testin.testproject.BoundTestProject;
 import org.testin.testrun.form.TestRunConfigurationDialog;
 import org.testin.ui.framework.ShownDialog;
@@ -315,6 +319,20 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
         assertTrue("Create is gray with a test case checked", create.isEnabled());
+    }
+
+    // Rule-TREE-PANEL-130
+    public void testATickedTestCaseTheFilterHidesStaysInTheTestRunAndIsCountedAsHidden() {
+        theCreateDialogOpened();
+        final @NotNull CheckboxTree tree = theTestCaseTree();
+        tree.setNodeState((CheckedTreeNode) tree.getModel().getRoot(), false);
+        tree.setNodeState(rowOf(first), true);
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+        Filtering.choose(Drawn.first(content(), FilterPopupButton.class), TestSetEditorFields.PRIORITY.getName(), Priority.HIGH.getLabel());
+
+        final @NotNull List<String> words = Drawn.words(content());
+        assertTrue("a ticked test case the filter hides is not counted as hidden: " + words, words.contains(Bundle.message("test.run.form.tally.hidden", 1, 1, 1)));
     }
 
     // Rule-TREE-PANEL-095

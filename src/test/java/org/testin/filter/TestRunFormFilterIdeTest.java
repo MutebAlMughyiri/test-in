@@ -18,8 +18,6 @@ package org.testin.filter;
 
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.ToggleAction;
-import com.intellij.testFramework.TestActionEvent;
 import com.intellij.ui.CheckboxTree;
 import com.intellij.ui.CheckedTreeNode;
 import org.jetbrains.annotations.NotNull;
@@ -133,14 +131,9 @@ public class TestRunFormFilterIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-TREE-PANEL-129
     public void testAPriorityFilterPicksTheSameTestCasesAsInAnEditor() {
-        final @NotNull ToggleAction high = entriesOf(TestSetEditorFields.PRIORITY.getName()).stream()
-                .filter(entry -> nameOf(entry).equals(Priority.HIGH.getLabel()))
-                .map(ToggleAction.class::cast)
-                .findFirst()
-                .orElseThrow(() -> new AssertionError("the priority filter does not offer " + Priority.HIGH.getLabel()));
         assertEquals(List.of(urgent, later, paid).size(), shown().size());
 
-        high.setSelected(TestActionEvent.createTestEvent(high), true);
+        Filtering.choose(button(), TestSetEditorFields.PRIORITY.getName(), Priority.HIGH.getLabel());
 
         assertEquals("the priority filter did not pick the test cases an editor's would", TestCaseFilter.filter(List.of(urgent, later, paid), FilterAndSortChoice.of(button(), ""), _ -> Optional.empty(), _ -> Automated.UNKNOWN), shown());
         assertEquals(List.of(urgent), shown());
@@ -148,12 +141,7 @@ public class TestRunFormFilterIdeTest extends AbstractTempRootIdeTest {
 
     // Rule-TREE-PANEL-129, Rule-EDITOR-PANEL-099
     public void testResettingTheFiltersShowsEveryTestCaseAgain() {
-        final @NotNull ToggleAction high = entriesOf(TestSetEditorFields.PRIORITY.getName()).stream()
-                .filter(entry -> nameOf(entry).equals(Priority.HIGH.getLabel()))
-                .map(ToggleAction.class::cast)
-                .findFirst()
-                .orElseThrow(() -> new AssertionError("the priority filter does not offer " + Priority.HIGH.getLabel()));
-        high.setSelected(TestActionEvent.createTestEvent(high), true);
+        Filtering.choose(button(), TestSetEditorFields.PRIORITY.getName(), Priority.HIGH.getLabel());
         assertEquals(List.of(urgent), shown());
 
         button().resetToolBarFilter();
