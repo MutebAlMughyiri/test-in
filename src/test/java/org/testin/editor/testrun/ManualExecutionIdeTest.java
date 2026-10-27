@@ -44,6 +44,7 @@ import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.services.Services;
 import org.testin.testrun.RunItemRecorder;
+import org.testin.util.Bundle;
 import org.testin.util.JsonCodec;
 
 import java.io.IOException;
@@ -157,6 +158,32 @@ public class ManualExecutionIdeTest extends AbstractTempRootIdeTest {
 
             awaitWalkOn(editor, testCases.get(3));
             assertEquals("the run item status was not recorded on the test case the walk was on", RunItemStatus.PASSED, editor.runItem(testCases.get(1).getUuid()).orElseThrow().getStatus());
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
+    // UC-EDITOR-PANEL-030
+    public void testATestRunThatHoldsNoTestCasesSaysSo() {
+        final @NotNull TestRunEditor editor = opened(aTestRunOver(List.of()));
+        try {
+            assertEquals("an empty test run does not say it holds no test cases", Bundle.message("editor.test.run.empty"), editor.getList().getEmptyText().getText());
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
+    // UC-EDITOR-PANEL-031, Rule-TREE-PANEL-111
+    public void testATestRunWhoseWalkIsGoingIsBusy() {
+        final @NotNull List<TestCase> testCases = createdTestCases(2);
+        final @NotNull TestRunEditor editor = opened(aPendingTestRunOver(testCases));
+        try {
+            assertFalse("a test run nobody started is busy", editor.isBusy());
+
+            editor.onStartExecutionClicked();
+            awaitWalkOn(editor, testCases.getFirst());
+
+            assertTrue("a test run whose walk is going is not busy, so a rename or a refresh could go on under it", editor.isBusy());
         } finally {
             Disposer.dispose(editor);
         }
