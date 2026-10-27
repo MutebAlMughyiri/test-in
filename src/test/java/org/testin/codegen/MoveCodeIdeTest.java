@@ -201,6 +201,29 @@ public class MoveCodeIdeTest extends AbstractCodegenIdeTest {
         assertTrue("a class was written although there was no method to carry", generatedClass("nafath.VisaTest").isEmpty());
     }
 
+    // Rule-CODEGEN-077
+    public void testACutOfATestCaseWithNoMethodWritesNoClassWhereItGoes() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        createdTestCase(login, "Log out", "c");
+        final @NotNull TestCase withoutCode = indexedTestCase(login, "Log in with a valid user", "b");
+
+        cutInto(withoutCode, login, indexedTestSet("Visa", theTestCasesDirectory()));
+
+        assertTrue("a class was written for a test case that had no method to carry", generatedClass("nafath.VisaTest").isEmpty());
+    }
+
+    // Rule-CODEGEN-077
+    public void testACutPastedBackIntoItsOwnTestSetLeavesItsMethodWhereItIs() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull TestCase testCase = createdTestCase(login, "Log in with a valid user", "b");
+        writtenByTheTester(writtenMethodOf("nafath.LoginTest", testCase), WRITTEN_BY_THE_TESTER);
+
+        cutInto(testCase, login, login);
+
+        assertEquals("a cut pasted back into its own test set did not leave one method", 1, methodsFor("nafath.LoginTest", testCase));
+        assertTrue("the method lost the tester's body", writtenMethodOf("nafath.LoginTest", testCase).getText().contains(WRITTEN_BY_THE_TESTER));
+    }
+
     // Rule-CODEGEN-077, Rule-CODEGEN-014
     public void testACutNumbersBothTestSetsAgain() {
         final @NotNull TestSetNode login = createdTestSet("Login");
