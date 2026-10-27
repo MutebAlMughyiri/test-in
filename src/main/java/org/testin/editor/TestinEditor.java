@@ -143,9 +143,7 @@ public interface TestinEditor extends Disposable {
     void followTheIndex();
 
     // UC-EDITOR-PANEL-027, Rule-EDITOR-PANEL-119
-    default boolean isBusy() {
-        return false;
-    }
+    boolean isBusy();
 
     // UC-EDITOR-PANEL-005
     default boolean isLoading() {
