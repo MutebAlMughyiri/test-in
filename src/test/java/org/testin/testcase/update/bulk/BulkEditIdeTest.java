@@ -33,6 +33,7 @@ import org.testin.Said;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.indexer.TestCases;
+import org.testin.model.FileKind;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.notifications.Done;
@@ -284,6 +285,31 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
             ShownDialog.press(getProject(), StepsBulkDialog.class, stroke);
 
         assertEquals("not every add key added an item to the steps", lines + Shortcuts.AddItem.getKeys().size(), steps.getLineCount());
+    }
+
+    // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-041
+    public void testRemoveOnEveryCursorEmptiesTheListsAndOnlyTheListsThatChangedAreWritten() {
+        final @NotNull List<TestCase> testCases = aTestSetWithModules("Payments", "Cart", "Search");
+        final @NotNull List<List<String>> groups = List.of(List.of("smoke", "payments"), List.of("smoke"), List.of());
+        for (int i = 0; i < testCases.size(); i++)
+            theTestCases().putTestCaseVerbatim(testSet.getPath(), testCases.get(i).edit().groups(new ArrayList<>(groups.get(i))).build());
+        final @NotNull Path untouched = testSet.getPath().resolve(FileKind.TEST_CASE.fileName(testCases.getLast().getUuid()));
+        final @NotNull String untouchedBefore = read(untouched);
+        final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
+        editor.getList().setSelectionInterval(0, editor.getList().getModel().getSize() - 1);
+        UpdateTestCaseAction.openField(getProject(), editor, UpdateTestCaseFields.GROUP);
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+        final @NotNull Said balloons = Said.listening(getProject(), getTestRootDisposable());
+
+        ShownDialog.press(getProject(), GroupBulkDialog.class, Shortcuts.CaretOnEveryValue.getKey());
+        ShownDialog.press(getProject(), GroupBulkDialog.class, Shortcuts.RemoveArrayItem.getKey());
+        ShownDialog.press(getProject(), GroupBulkDialog.class, Shortcuts.Enter.getKey());
+
+        Await.until("the save never said what it did", () -> !balloons.shown().isEmpty());
+        assertEquals("the two lists that changed were not written once, with a count", List.of(Done.counted(Done.UPDATED.getOutcome(), 2)), balloons.shown());
+        assertEquals("Remove on every cursor did not empty the lists", List.of(List.of(), List.of(), List.of()),
+                testCases.stream().map(testCase -> theTestCases().findTestCase(testCase.getUuid()).orElseThrow().getGroups()).toList());
+        assertEquals("a list that did not change was written", untouchedBefore, read(untouched));
     }
 
     // Rule-EDITOR-PANEL-006
