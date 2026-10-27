@@ -28,6 +28,7 @@ import org.testin.ui.framework.TextInput;
 import org.testin.util.Bundle;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public final class CreateTestProjectDialog extends AbstractFrameworkDialog {
@@ -54,15 +55,10 @@ public final class CreateTestProjectDialog extends AbstractFrameworkDialog {
                 StatusBarShortcut.cancel(this::closeCancel));
     }
 
-    // UC-TREE-PANEL-002, UC-TREE-PANEL-003, Rule-TREE-PANEL-095, Rule-TREE-PANEL-107
-    private static boolean isNameOrUrl(final @NotNull String typed) {
-        return GitRemotes.isRepositoryUrl(typed) || NodeType.TEST_PROJECT.canTakeName(typed);
-    }
-
-    // UC-TREE-PANEL-002, Rule-TREE-PANEL-005, Rule-TREE-PANEL-095
+    // UC-TREE-PANEL-002, UC-TREE-PANEL-003, Rule-TREE-PANEL-005, Rule-TREE-PANEL-095, Rule-TREE-PANEL-107
     @Override
     protected void submit() {
-        final @NotNull String name = accepted(nameInput, CreateTestProjectDialog::isNameOrUrl, Refused.NOT_A_JAVA_NAME);
+        final @NotNull String name = accepted(nameInput, typed -> GitRemotes.isRepositoryUrl(typed) ? Optional.empty() : Refused.ofName(NodeType.TEST_PROJECT, typed));
         if (name.isEmpty()) return;
 
         onCreate.accept(name);
