@@ -38,6 +38,7 @@ import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
 import org.testin.model.TestCase;
+import org.testin.model.bug.BugIssueUrl;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.node.TestSetNode;
@@ -45,6 +46,7 @@ import org.testin.model.status.RunItemStatus;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItems;
+import org.testin.model.testrun.TestRunResultAnalysis;
 import org.testin.model.testrun.TestRunSummary;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
@@ -233,6 +235,23 @@ public class ReportFormatsIdeTest extends AbstractTempRootIdeTest {
         assertPrints("The PDF", pdf(testRun), figures);
         assertPrints("The Word document", word(testRun), figures);
         assertPrints("The spreadsheet", excel(testRun), figures);
+    }
+
+    // UC-REPORT-001, Rule-REPORT-025
+    public void testTheWordDocumentPrintsTheAnalysisWrittenTheIssueAFailureReportedAndAnEmptyDescription() {
+        final @NotNull UUID blank = UUID.randomUUID();
+        aTestCase(blank, "");
+        final @NotNull String issue = "https://github.com/mtb550/test-in/issues/412";
+        final @NotNull TestRunNode testRun = aTestRun(TEST_RUN, List.of(
+                new RunItem().setUuid(locks).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).actualResult("The account stayed open").bugIssueUrl(issue).build())),
+                new RunItem().setUuid(blank).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()))));
+        testRun.getMarker().getResultAnalysis().put(TestRunResultAnalysis.FAILED, "The lockout counter is the one to chase");
+
+        final @NotNull String document = word(testRun);
+
+        assertPrints("The Word document", document, Bundle.message("report.heading.analysis"));
+        assertPrints("The Word document", document, "The lockout counter is the one to chase");
+        assertPrints("The Word document", document, BugIssueUrl.shortReference(issue));
     }
 
     // Rule-REPORT-005
