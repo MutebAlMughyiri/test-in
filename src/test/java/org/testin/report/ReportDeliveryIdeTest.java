@@ -389,6 +389,22 @@ public class ReportDeliveryIdeTest extends AbstractTempRootIdeTest {
         assertEquals("writing a report to another folder changed the download folder the settings page owns", downloadFolder, settings().defaultDownloadFolder);
     }
 
+    // UC-REPORT-001, Rule-REPORT-003, Rule-REPORT-004
+    public void testGenerateReportOnTheSelectedTestRunWritesItWhereTheDialogSays() {
+        final @NotNull Path reports = folder("reports");
+        settings().defaultDownloadFolder = reports.toString();
+        final @NotNull GenerateReportAction action = theActionOn(theTestRun());
+        try {
+            ShownDialog.open(getProject(), GenerateReportDialog.class, () -> ActionUtil.performAction(action, TestActionEvent.createTestEvent(action, SimpleDataContext.getProjectContext(getProject()))));
+            ShownDialog.press(getProject(), GenerateReportDialog.class, Shortcuts.Enter);
+        } finally {
+            ShownDialog.close(getProject(), GenerateReportDialog.class);
+        }
+
+        theReportMessage();
+        assertEquals("Generate Report did not write one PDF into the folder its dialog named", 1, everythingUnder(reports).stream().filter(file -> file.toString().endsWith(".pdf")).count());
+    }
+
     // Rule-REPORT-009
     public void testTheDialogClosesBeforeTheWorkStarts() {
         settings().defaultDownloadFolder = folder("reports").toString();
