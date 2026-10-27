@@ -16,6 +16,7 @@
 package org.testin.view.details;
 
 import com.intellij.icons.AllIcons;
+import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.ui.components.JBPanel;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractIdeTest;
@@ -30,6 +31,10 @@ import org.testin.view.Drawn;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+
+import java.awt.Component;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
@@ -106,6 +111,24 @@ public class DetailsBandsIdeTest extends AbstractIdeTest {
         assertTrue("the test case band's name was not drawn: " + words, words.contains(TEST_CASE));
         assertFalse("a test case field was drawn while the band was folded: " + words, holds(words, "The dashboard opens"));
         assertFalse("a test case field was drawn while the band was folded: " + words, holds(words, "Accounts"));
+    }
+
+    // Rule-VIEW-PANEL-087
+    public void testOpeningTheFoldedBandIsRememberedForTheNextTestCase() {
+        final boolean wasOpen = PropertiesComponent.getInstance().getBoolean(DetailsTab.TEST_CASE_OPEN, false);
+        PropertiesComponent.getInstance().setValue(DetailsTab.TEST_CASE_OPEN, false, false);
+        try {
+            final @NotNull JBPanel<?> tab = Drawn.detailsTab(getProject(), aTestCase(), Optional.of(failed()), List.of("Demo", "Test Cases", LAST_STEP));
+            final @NotNull Component heading = Drawn.first(tab, JLabel.class, label -> TEST_CASE.equalsIgnoreCase(label.getText())).getParent();
+            final @NotNull MouseEvent click = new MouseEvent(heading, MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), 0, 1, 1, 1, false);
+
+            for (final MouseListener listener : heading.getMouseListeners()) listener.mouseClicked(click);
+
+            assertTrue("opening the band was not remembered", PropertiesComponent.getInstance().getBoolean(DetailsTab.TEST_CASE_OPEN, false));
+            assertTrue("the next test case read did not open with the band open", holds(shown(Optional.of(failed())), "The dashboard opens"));
+        } finally {
+            PropertiesComponent.getInstance().setValue(DetailsTab.TEST_CASE_OPEN, wasOpen, false);
+        }
     }
 
     // Rule-INTERNAL-133
