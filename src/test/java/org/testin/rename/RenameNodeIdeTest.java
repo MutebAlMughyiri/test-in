@@ -16,6 +16,7 @@
 
 package org.testin.rename;
 
+import com.intellij.testFramework.PlatformTestUtil;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
@@ -118,6 +119,37 @@ public class RenameNodeIdeTest extends AbstractCodegenIdeTest {
 
         Await.until("undoing the rename did not give the test set its name back", () -> nodes().nodeExists(wasAt) && !nodes().nodeExists(wasAt.resolveSibling("Sign in")));
         Await.until("undoing the rename did not give the class its name back", () -> generatedClass(loginClass()).isPresent());
+    }
+
+    // UC-TREE-PANEL-017, Rule-TREE-PANEL-037
+    public void testCtrlYRenamesAgainWhatCtrlZNamedBack() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull Path wasAt = login.getPath();
+        renamedToSignIn(login);
+        Await.until("the rename never went onto the tree's history", () -> undoHistories().canUndo(UndoScope.TREE));
+        assertTrue("undoing the rename was refused", undoHistories().undo(UndoScope.TREE));
+        Await.until("undoing the rename did not give the test set its name back", () -> nodes().nodeExists(wasAt));
+        Await.until("the undone rename was not offered to Ctrl+Y", () -> undoHistories().canRedo(UndoScope.TREE));
+
+        assertTrue("redoing the rename was refused", undoHistories().redo(UndoScope.TREE));
+
+        Await.until("redoing the rename did not name the test set Sign in again", () -> nodes().nodeExists(wasAt.resolveSibling("Sign in")) && !nodes().nodeExists(wasAt));
+        Await.until("redoing the rename did not rename its class again", () -> generatedClass(signInClass()).isPresent());
+    }
+
+    // Rule-TREE-PANEL-004, Rule-TREE-PANEL-037
+    public void testCtrlZDoesNotNameATestSetBackOntoANameAnotherNowHas() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull Path wasAt = login.getPath();
+        renamedToSignIn(login);
+        Await.until("the rename never went onto the tree's history", () -> undoHistories().canUndo(UndoScope.TREE));
+        createdTestSet("Login");
+
+        undoHistories().undo(UndoScope.TREE);
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+        assertTrue("undoing the rename took the name another test set now has", nodes().nodeExists(wasAt.resolveSibling("Sign in")));
+        assertTrue("the test set that took the old name is gone", nodes().nodeExists(wasAt));
     }
 
     // Rule-TREE-PANEL-123
