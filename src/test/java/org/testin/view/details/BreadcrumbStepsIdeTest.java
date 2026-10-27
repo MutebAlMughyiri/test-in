@@ -31,6 +31,8 @@ import java.awt.font.TextAttribute;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.Assert.assertNotEquals;
+
 public class BreadcrumbStepsIdeTest extends AbstractViewPanelIdeTest {
 
     private static void click(final @NotNull Component step) {
@@ -58,7 +60,7 @@ public class BreadcrumbStepsIdeTest extends AbstractViewPanelIdeTest {
 
         pointer(step, false);
         assertEquals("a step the pointer left kept the link color", JBUI.CurrentTheme.ContextHelp.FOREGROUND, step.getForeground());
-        assertFalse("a step the pointer left kept its underline", TextAttribute.UNDERLINE_ON.equals(step.getFont().getAttributes().get(TextAttribute.UNDERLINE)));
+        assertNotEquals("a step the pointer left kept its underline", TextAttribute.UNDERLINE_ON, step.getFont().getAttributes().get(TextAttribute.UNDERLINE));
     }
 
     // Rule-VIEW-PANEL-042
