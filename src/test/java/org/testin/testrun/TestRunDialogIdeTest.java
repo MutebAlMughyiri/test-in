@@ -30,13 +30,16 @@ import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractOpenEditorsIdeTest;
 import org.testin.Await;
+import org.testin.Said;
 import org.testin.NodesOnDisk;
 import org.testin.creator.CreateTestRun;
+import org.testin.creator.NodeCreators;
 import org.testin.indexer.NodeMapper;
 import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestProjectIndexer;
 import org.testin.indexer.TestRuns;
+import org.testin.model.NodeType;
 import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestProjectNode;
@@ -224,6 +227,37 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
 
     private @NotNull List<AbstractNode> theTestRunsUnder(final @NotNull AbstractNode parent) {
         return nodes().getChildren(parent.getPath());
+    }
+
+    // UC-TREE-PANEL-009
+    public void testNewTestRunFromTheTreeOpensCreateTestRun() {
+        NodeCreators.of(getProject(), NodeType.TEST_RUN).create(testProject.getTestRunsFolder(), testProject.getTestRunsFolder().getPath().resolve("Cycle-1"));
+
+        Await.until("New Test Run did not open the Create Test Run dialog", () -> ShownDialog.isOpen(getProject(), TestRunConfigurationDialog.class));
+    }
+
+    // UC-TREE-PANEL-009
+    public void testATestRunWhoseFolderWasRemovedWhileTheDialogWasOpenIsNotCreatedAndSaysSo() {
+        final @NotNull TestRunPackageNode release = WriteAction.computeAndWait(() -> {
+            final @NotNull TestRunPackageNode made = Services.getInstance(getProject(), NodeMapper.class).getTestRunPackageNode(testProject.getTestRunsFolder().getPath().resolve("Release 4"), testProject.getTestRunsFolder());
+            nodes().addTestRunPackage(made);
+            return made;
+        });
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+        new CreateTestRun(getProject()).configureTestRun(testProject.getTestCasesFolder(), "Cycle-1", release, Set.of(), everyQuestionAnswered());
+        Await.until("the test run dialog never opened", () -> ShownDialog.isOpen(getProject(), TestRunConfigurationDialog.class));
+        ShownDialog.sized(getProject(), TestRunConfigurationDialog.class);
+        theTestCaseTree().setNodeState(rowOf(first), true);
+        nodes().removeTestRunPackage(release.getPath(), _ -> {
+        });
+        Await.until("the test run package was never removed", () -> !nodes().nodeExists(release.getPath()));
+
+        theButton(Bundle.message("test.run.create.button")).doClick();
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+        assertEquals("a test run whose folder went away was not refused naming the folder", List.of(Bundle.message("test.run.parent.gone", "Release 4")), said.shown());
+        assertTrue("the dialog closed although nothing was created", ShownDialog.isOpen(getProject(), TestRunConfigurationDialog.class));
+        assertFalse("a test run was written where its folder had gone", Files.exists(release.getPath().resolve("Cycle-1")));
     }
 
     // Rule-TREE-PANEL-030
