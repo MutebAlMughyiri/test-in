@@ -38,6 +38,8 @@ import org.testin.util.Shortcuts;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Stream;
 
 import static org.testin.git.LocalGit.mustGit;
 
@@ -93,6 +95,14 @@ public class CreateTestProjectActionIdeTest extends AbstractReadTheRootIdeTest {
         return bare.toUri().toString().replaceFirst("/$", "");
     }
 
+    private static @NotNull List<String> foldersIn(final @NotNull Path folder) {
+        try (final Stream<Path> inside = Files.list(folder)) {
+            return inside.map(path -> String.valueOf(path.getFileName())).sorted().toList();
+        } catch (final IOException ex) {
+            throw new AssertionError("could not list " + folder + ": " + ex.getMessage(), ex);
+        }
+    }
+
     private @NotNull BoundTestProject bound() {
         return Services.getInstance(getProject(), BoundTestProject.class);
     }
@@ -111,12 +121,13 @@ public class CreateTestProjectActionIdeTest extends AbstractReadTheRootIdeTest {
     public void testANameTheTestinFolderAlreadyHoldsIsRefusedAndNothingIsCreated() {
         aTestProjectAt(root.resolve("Mobile"));
         readEverything();
+        final @NotNull List<String> before = foldersIn(root);
         final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
 
         typedAndConfirmed("Mobile");
 
         Await.until("a name the Testin folder already holds was not refused: " + said.shown(), () -> said.shown().contains(Refused.ALREADY_EXISTS.about("Mobile")));
-        assertFalse("the test project already there was chosen as if it were made", "Mobile".equals(bound().name()));
+        assertEquals("a refused name created something in the Testin folder", before, foldersIn(root));
     }
 
     // UC-TREE-PANEL-003, Rule-TREE-PANEL-107
