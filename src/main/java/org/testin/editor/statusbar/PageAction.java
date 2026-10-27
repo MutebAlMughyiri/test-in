@@ -35,7 +35,7 @@ public class PageAction extends DumbAwareAction {
         super(step.getTooltip(), step.getDescription(), step.getIcon());
         this.editor = editor;
         this.step = step;
-        setShortcutSet(step.getShortcut().getCustomShortcut());
+        registerCustomShortcutSet(step.getShortcut().getCustomShortcut(), null);
     }
 
     // UC-EDITOR-PANEL-022, Rule-EDITOR-PANEL-103
