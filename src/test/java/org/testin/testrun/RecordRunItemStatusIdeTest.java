@@ -27,6 +27,7 @@ import org.testin.OnScreen;
 import org.testin.Said;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.testrun.TestRunEditor;
+import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
 import org.testin.model.DateFormats;
 import org.testin.model.TestCase;
@@ -216,6 +217,26 @@ public class RecordRunItemStatusIdeTest extends AbstractTempRootIdeTest {
             assertEquals("a deleted test case was given the run item status", RunItemStatus.PENDING, fixture.runItemStatusOf(fixture.testCases().getFirst()));
             assertEquals(List.of(Bundle.message("run.item.status.walk.passed.deleted")), balloons);
             awaitWalkOn(editor, 1);
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
+    // UC-EDITOR-PANEL-033, Rule-EDITOR-PANEL-225
+    public void testAKeyOnATestCaseDeletedFromItsTestSetRecordsNothingAndSaysTheTestRunKeepsWhatItRecorded() {
+        final @NotNull TestRunFixture fixture = TestRunFixture.pending(getProject(), root, 2);
+        final @NotNull TestRunEditor editor = fixture.opened(getTestRootDisposable());
+        final @NotNull List<String> balloons = Said.listening(getProject(), getTestRootDisposable()).shown();
+        try {
+            final @NotNull TestCase deleted = fixture.testCases().getFirst();
+            assertTrue("the test case could not be deleted from its test set", Services.getInstance(getProject(), TestCases.class).removeTestCase(deleted.getParent().getPath(), deleted.getUuid()));
+            Await.until("the test run never saw its test case deleted", () -> fixture.runItemOf(deleted).isRemoved());
+            editor.getList().setSelectedIndex(0);
+
+            fixture.press(editor, RunItemStatus.BLOCKED);
+
+            assertEquals("a deleted test case was given the run item status", RunItemStatus.REMOVED, fixture.runItemStatusOf(deleted));
+            assertEquals(List.of(Bundle.message("run.item.status.test.case.removed")), balloons);
         } finally {
             Disposer.dispose(editor);
         }
