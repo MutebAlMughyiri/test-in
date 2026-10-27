@@ -137,6 +137,20 @@ public class RenameNodeIdeTest extends AbstractCodegenIdeTest {
         Await.until("redoing the rename did not rename its class again", () -> generatedClass(signInClass()).isPresent());
     }
 
+    // Rule-TREE-PANEL-037, Rule-INTERNAL-063
+    public void testCtrlZOnARenameWhoseTestSetWasRemovedIsRefusedAndStaysOnTheHistory() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+        final @NotNull Path renamedTo = login.getPath().resolveSibling("Sign in");
+        renamedToSignIn(login);
+        Await.until("the rename never went onto the tree's history", () -> undoHistories().canUndo(UndoScope.TREE));
+        nodes().removeTestSet(renamedTo, _ -> {
+        });
+        Await.until("the renamed test set was never removed", () -> !nodes().nodeExists(renamedTo));
+
+        assertFalse("undoing a rename whose test set is gone was not refused", undoHistories().undo(UndoScope.TREE));
+        assertTrue("the refused undo left the history", undoHistories().canUndo(UndoScope.TREE));
+    }
+
     // Rule-TREE-PANEL-004, Rule-TREE-PANEL-037
     public void testCtrlZDoesNotNameATestSetBackOntoANameAnotherNowHas() {
         final @NotNull TestSetNode login = createdTestSet("Login");
