@@ -38,9 +38,9 @@ public class ViewPendingCommitsWorkIdeTest extends AbstractGitRemoteIdeTest {
         return "{\"description\":\"" + description + "\",\"expectedResult\":\"" + expected + "\"}";
     }
 
-    private static @NotNull AnAction answer(final @NotNull Notification notification, final @NotNull String text) {
-        return notification.getActions().stream().filter(action -> text.equals(action.getTemplateText())).findFirst()
-                .orElseThrow(() -> new AssertionError("the message does not offer " + text + ": " + answers(notification)));
+    private static @NotNull AnAction resolveOn(final @NotNull Notification notification) {
+        return notification.getActions().stream().filter(action -> Bundle.message("git.conflicts.resolve").equals(action.getTemplateText())).findFirst()
+                .orElseThrow(() -> new AssertionError("the message does not offer Resolve: " + answers(notification)));
     }
 
     private void aPullStoppedOnATestCaseEachSideChangedInAnotherField() {
@@ -77,7 +77,7 @@ public class ViewPendingCommitsWorkIdeTest extends AbstractGitRemoteIdeTest {
         final @NotNull Notification stopped = titled(said, Bundle.message("git.conflicts.title"));
         assertEquals("a stopped pull does not offer its three answers", List.of(Bundle.message("git.conflicts.resolve"), Bundle.message("git.conflicts.continue.rebase"), Bundle.message("git.conflicts.abort.rebase")), answers(stopped));
 
-        Notified.press(getProject(), stopped, answer(stopped, Bundle.message("git.conflicts.resolve")));
+        Notified.press(getProject(), stopped, resolveOn(stopped));
 
         titled(said, Bundle.message("git.rebase.continued.title"));
         assertEquals("the rebased commit did not reach the remote", head(work, "HEAD"), head(remote, MAIN));

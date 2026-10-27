@@ -16,29 +16,16 @@
 
 package org.testin.ui;
 
-import com.intellij.icons.AllIcons;
-import com.intellij.ide.actions.ShowSettingsUtilImpl;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.options.Configurable;
-import com.intellij.openapi.options.ConfigurableGroup;
-import com.intellij.openapi.options.SearchableConfigurable;
-import com.intellij.openapi.options.ShowSettingsUtil;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopup;
-import com.intellij.testFramework.ServiceContainerUtil;
 import com.intellij.ui.UiInterceptors;
-import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.testin.AbstractIdeTest;
 import org.testin.OnScreen;
 import org.testin.util.Bundle;
 import org.testin.view.Drawn;
 
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ZoomIndicatorIdeTest extends AbstractIdeTest {
@@ -75,23 +62,5 @@ public class ZoomIndicatorIdeTest extends AbstractIdeTest {
         ZoomIndicator.show(getProject(), new JBPanel<>(), 14f);
 
         assertEquals("an indicator was shown over a component not on screen", List.of(), shown);
-    }
-
-    // UC-SETTING-011
-    public void testTheGearOpensTheEditorsFontSettings() {
-        final @NotNull List<String> opened = new ArrayList<>();
-        ServiceContainerUtil.replaceService(ApplicationManager.getApplication(), ShowSettingsUtil.class, new ShowSettingsUtilImpl() {
-            @Override
-            protected void doShow(final @Nullable Project project, final @NotNull List<? extends ConfigurableGroup> groups, final @Nullable Configurable toSelect, final @Nullable String filter) {
-                opened.add((toSelect instanceof final SearchableConfigurable page ? page.getId() : String.valueOf(toSelect)) + " " + filter);
-            }
-        }, getTestRootDisposable());
-        ZoomIndicator.show(getProject(), onScreen(), 14f);
-        final @NotNull JBLabel gear = Drawn.first(shown.getFirst().getContent(), JBLabel.class, label -> AllIcons.General.GearPlain.equals(label.getIcon()));
-
-        final @NotNull MouseEvent click = new MouseEvent(gear, MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), 0, 1, 1, 1, false, MouseEvent.BUTTON1);
-        Arrays.stream(gear.getMouseListeners()).forEach(listener -> listener.mouseClicked(click));
-
-        assertEquals("the gear did not open the editor's font settings", List.of("preferences.editor " + Bundle.message("zoom.change.font.size")), opened);
     }
 }

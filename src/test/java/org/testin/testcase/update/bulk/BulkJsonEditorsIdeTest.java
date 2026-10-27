@@ -23,6 +23,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.impl.EditorComponentImpl;
 import com.intellij.openapi.editor.markup.HighlighterLayer;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
+import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractIdeTest;
 import org.testin.Await;
@@ -45,21 +46,21 @@ public class BulkJsonEditorsIdeTest extends AbstractIdeTest {
 
     private BulkJsonEditors editors;
 
-    private static @NotNull List<int[]> valuesIn(final @NotNull String json) {
+    private static @NotNull List<int[]> theValues() {
         final @NotNull List<int[]> ranges = new ArrayList<>();
-        for (int at = json.indexOf(KEY); at >= 0; at = json.indexOf(KEY, at + 1)) {
+        for (int at = JSON.indexOf(KEY); at >= 0; at = JSON.indexOf(KEY, at + 1)) {
             final int start = at + KEY.length();
-            ranges.add(new int[]{start, json.indexOf('"', start)});
+            ranges.add(new int[]{start, JSON.indexOf('"', start)});
         }
         return ranges;
     }
 
-    private static int startOf(final int index) {
-        return valuesIn(JSON).get(index)[0];
+    private static int startOfTheFirstValue() {
+        return theValues().getFirst()[0];
     }
 
     private static int endOf(final int index) {
-        return valuesIn(JSON).get(index)[1];
+        return theValues().get(index)[1];
     }
 
     private static @NotNull List<Integer> caretOffsets(final @NotNull Editor editor) {
@@ -70,7 +71,7 @@ public class BulkJsonEditorsIdeTest extends AbstractIdeTest {
         return Stream.of(editor.getMarkupModel().getAllHighlighters()).filter(highlighter -> DiffColors.DIFF_INSERTED.equals(highlighter.getTextAttributesKey())).toList();
     }
 
-    private static void pressed(final @NotNull Editor editor, final int offset, final int modifiers) {
+    private static void pressed(final @NotNull Editor editor, final int offset, final @MagicConstant(flagsFromClass = InputEvent.class) int modifiers) {
         final @NotNull Point at = editor.offsetToXY(offset);
         editor.getContentComponent().dispatchEvent(new MouseEvent(editor.getContentComponent(), MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), modifiers | InputEvent.BUTTON1_DOWN_MASK, at.x + 1, at.y + 1, 1, false, MouseEvent.BUTTON1));
     }
@@ -79,7 +80,7 @@ public class BulkJsonEditorsIdeTest extends AbstractIdeTest {
     protected void setUp() {
         super.setUp();
         editors = new BulkJsonEditors(getProject());
-        editors.setContent(JSON, JSON, valuesIn(JSON));
+        editors.setContent(JSON, JSON, theValues());
         editors.setOriginalTextSource(MODULES::get);
     }
 
@@ -102,7 +103,7 @@ public class BulkJsonEditorsIdeTest extends AbstractIdeTest {
     }
 
     private void typedIntoTheFirstValue(final @NotNull String value) {
-        final int start = startOf(0);
+        final int start = startOfTheFirstValue();
         final int end = start + editors.valueAt(0).orElseThrow().length();
         WriteCommandAction.runWriteCommandAction(getProject(), () -> values().getDocument().replaceString(start, end, value));
     }
@@ -110,7 +111,7 @@ public class BulkJsonEditorsIdeTest extends AbstractIdeTest {
     // UC-EDITOR-PANEL-007
     public void testTheCursorRestsOnlyInsideAValue() {
         values().getCaretModel().moveToOffset(1);
-        assertEquals("the cursor rested outside every value", List.of(startOf(0)), caretOffsets(values()));
+        assertEquals("the cursor rested outside every value", List.of(startOfTheFirstValue()), caretOffsets(values()));
 
         values().getCaretModel().moveToOffset(JSON.length());
         assertEquals("the cursor rested outside every value", List.of(endOf(1)), caretOffsets(values()));
