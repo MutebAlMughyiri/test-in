@@ -35,7 +35,6 @@ final class SyntheticTree {
               "createdAt" : "Friday 28-08-2026 At 01:12:47 [Asia/Riyadh]",
               "updatedBy" : "Mohammed AlZamil",
               "updatedAt" : "Friday 28-08-2026 At 01:12:47 [Asia/Riyadh]",
-              "status" : "ACTIVE",
               "format" : %d
             }""".formatted(TestProjectMarker.FORMAT);
 
