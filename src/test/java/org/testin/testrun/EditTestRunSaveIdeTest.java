@@ -91,6 +91,17 @@ public class EditTestRunSaveIdeTest extends AbstractTempRootIdeTest {
         assertEquals("a test case the edit added is not Pending", RunItemStatus.PENDING, runItemStatusOf(testRun, ADDED_BY_THE_EDIT));
     }
 
+    // Rule-TREE-PANEL-076
+    public void testSavingKeepsATestCaseTheDialogDidNotShow() {
+        final @NotNull TestRunNode testRun = anOpenTestRun();
+        final @NotNull Set<UUID> shown = Set.of(JUDGED_WHILE_OPEN);
+
+        assertTrue("the edit was refused", new EditTestRunWork(getProject()).saveEdit(testRun, testRun.getName(), shown, shown, Map.of()));
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+        assertEquals("saving removed a test case the dialog did not show", Set.of(JUDGED_WHILE_OPEN, STILL_PENDING), indexedTestRuns().getRunItems(testRun.getPath()).coveredUuids());
+    }
+
     private void refusedOnceSignedOff(final @NotNull TestRunStatus testRunStatus) {
         final @NotNull TestRunNode testRun = anOpenTestRun();
         testRun.getMarker().changeStatus(testRunStatus);

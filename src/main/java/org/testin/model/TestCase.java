@@ -159,6 +159,11 @@ public final class TestCase {
         updatedAt = other.updatedAt;
     }
 
+    // Rule-TREE-PANEL-030, Rule-TREE-PANEL-138
+    public boolean canJoinATestRun() {
+        return status.isEnabled() && !parent.isRetiredOrUnderOne();
+    }
+
     // Rule-INTERNAL-117
     public @NotNull TestCaseBuilder edit() {
         return toBuilder().steps(new ArrayList<>(steps)).groups(new ArrayList<>(groups));

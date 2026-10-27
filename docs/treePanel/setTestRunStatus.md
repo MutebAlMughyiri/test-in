@@ -36,7 +36,8 @@ The status says how far the test run has got.
   something confirms nothing.
 - **Rule-TREE-PANEL-008** — A retired node keeps everything inside it. Retired
   means a **Deprecated** test set or an **Archived** package. It is drawn gray.
-  It sorts after live nodes. It is not offered when a test run is created.
+  It sorts after live nodes. In Create Test Run and Edit Test Run it is shown
+  gray, and no box in it can be changed.
 - **Rule-TREE-PANEL-009** — A test run that is **Completed** or **Closed** keeps
   its test cases and configuration: Edit Test Run refuses it. Its run item
   statuses can still be given and corrected until it is **Committed**. A

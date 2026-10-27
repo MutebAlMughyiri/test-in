@@ -24,6 +24,7 @@ import org.testin.indexer.Nodes;
 import org.testin.indexer.TestCases;
 import org.testin.indexer.TestRuns;
 import org.testin.logger.TestinLogger;
+import org.testin.model.TestCase;
 import org.testin.model.node.AbstractNode;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.testrun.RunItems;
@@ -78,11 +79,11 @@ public class CreateTestRun implements NodeCreator {
                 () -> TestinLogger.warn("Create test run: no test project is bound to " + project.getName()));
     }
 
-    // UC-TREE-PANEL-009, UC-TREE-PANEL-021, Rule-TREE-PANEL-138
+    // UC-TREE-PANEL-009, UC-TREE-PANEL-021, Rule-TREE-PANEL-030, Rule-TREE-PANEL-138
     public void configureTestRun(final @NotNull AbstractNode testCasesRoot, final @NotNull String name, final @NotNull AbstractNode parentNode, final @NotNull Set<UUID> sourceTestCases, final @NotNull Map<TestRunConfiguration, String> sourceConfiguration) {
         final @NotNull TestCases testCases = Services.getInstance(project, TestCases.class);
         final @NotNull Set<UUID> enabled = sourceTestCases.stream()
-                .filter(testCaseUuid -> testCases.findTestCase(testCaseUuid).map(testCase -> testCase.getStatus().isEnabled()).orElse(true))
+                .filter(testCaseUuid -> testCases.findTestCase(testCaseUuid).map(TestCase::canJoinATestRun).orElse(true))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
         new TestRunFormOpener(project).open(testCasesRoot, name, enabled, List.of(), sourceConfiguration,

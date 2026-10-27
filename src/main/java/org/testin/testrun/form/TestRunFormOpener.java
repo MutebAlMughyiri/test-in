@@ -132,8 +132,6 @@ public final class TestRunFormOpener {
         }
 
         for (final AbstractNode child : nodes.getChildren(folder)) {
-            if (child.isRetired()) continue;
-
             final @NotNull DefaultMutableTreeNode childNode = buildDirectoryTree(child.getPath(), child);
 
             if (childNode.getChildCount() > 0) node.add(childNode);
@@ -142,13 +140,14 @@ public final class TestRunFormOpener {
         return node;
     }
 
-    // Rule-TREE-PANEL-138, Rule-TREE-PANEL-139
+    // Rule-TREE-PANEL-008, Rule-TREE-PANEL-030, Rule-TREE-PANEL-076, Rule-TREE-PANEL-138, Rule-TREE-PANEL-139
     private @NotNull CheckedTreeNode convertToCheckedNodes(final @NotNull DefaultMutableTreeNode node) {
         final @NotNull Object userObject = node.getUserObject();
         final @NotNull CheckedTreeNode newNode = new CheckedTreeNode(userObject);
+        if (userObject instanceof AbstractNode folder) newNode.setEnabled(!folder.isRetiredOrUnderOne());
         if (userObject instanceof TestCase testCase) {
-            newNode.setEnabled(testCase.getStatus().isEnabled());
-            newNode.setChecked(testCase.getStatus().isEnabled());
+            newNode.setEnabled(testCase.canJoinATestRun());
+            newNode.setChecked(testCase.canJoinATestRun());
         }
         for (int i = 0; i < node.getChildCount(); i++) {
             newNode.add(convertToCheckedNodes((DefaultMutableTreeNode) node.getChildAt(i)));

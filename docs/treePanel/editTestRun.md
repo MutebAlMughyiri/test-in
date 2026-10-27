@@ -40,7 +40,8 @@ This changes a test run that is not signed off yet.
   something confirms nothing.
 - **Rule-TREE-PANEL-008** — A retired node keeps everything inside it. Retired
   means a **Deprecated** test set or an **Archived** package. It is drawn gray.
-  It sorts after live nodes. It is not offered when a test run is created.
+  It sorts after live nodes. In Create Test Run and Edit Test Run it is shown
+  gray, and no box in it can be changed.
 - **Rule-TREE-PANEL-009** — A test run that is **Completed** or **Closed** keeps
   its test cases and configuration: Edit Test Run refuses it. Its run item
   statuses can still be given and corrected until it is **Committed**. A
@@ -67,9 +68,10 @@ This changes a test run that is not signed off yet.
   everything that test case recorded in that test run. Adding a test case adds
   it as **Pending**.
 - **Rule-TREE-PANEL-076** — A test case this dialog does not show is not one the
-  tester chose to remove. That is a test case in a test set deprecated, or under
-  a package archived, since the test run was made. What the test run recorded
-  about it is kept, and saving the dialog never removes it.
+  tester chose to remove, and saving the dialog never removes it. A test case in
+  a test set deprecated, or under a package archived, since the test run was
+  made is shown gray and its box cannot be changed: one the test run covers
+  stays ticked, so what the test run recorded about it is kept. (Rule-TREE-PANEL-008)
 - **Rule-TREE-PANEL-093** — The dialog opens with every row saying what the test
   run actually covers, folders included. A folder is ticked only when everything
   under it is ticked, so a folder is never ticked over test cases the test run

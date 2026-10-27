@@ -27,6 +27,7 @@ import com.intellij.testFramework.TestActionEvent;
 import com.intellij.ui.CheckboxTree;
 import com.intellij.ui.CheckedTreeNode;
 import com.intellij.ui.EditorTextField;
+import com.intellij.ui.SimpleColoredComponent;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractOpenEditorsIdeTest;
@@ -75,6 +76,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import java.awt.Component;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -213,6 +215,12 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
         return rows().stream().filter(row -> row.getUserObject().equals(held)).findFirst().orElseThrow(() -> new AssertionError(held + " is not offered: " + offered()));
     }
 
+    private @NotNull String drawnRowOf(final @NotNull Object held) {
+        final @NotNull CheckboxTree tree = theTestCaseTree();
+        final @NotNull Component drawn = tree.getCellRenderer().getTreeCellRendererComponent(tree, rowOf(held), false, true, false, 0, false);
+        return Drawn.first(drawn, SimpleColoredComponent.class).getCharSequence(false).toString();
+    }
+
     private @NotNull JTextField theNameBox() {
         return Drawn.components(content()).stream()
                 .filter(JTextField.class::isInstance)
@@ -290,14 +298,45 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
     }
 
     // Rule-TREE-PANEL-030
-    public void testARetiredOrEmptyTestSetIsNotOffered() {
+    public void testAnEmptyTestSetIsNotOffered() {
         theCreateDialogOpened();
         final @NotNull List<Object> offered = offered();
 
         assertTrue("a test set that holds test cases is not offered: " + offered, offered.containsAll(List.of(login, first, second)));
-        for (final Object left : List.of(empty, old, inOld, archive, inside, inInside)) {
-            assertFalse(left + " is offered for a new test run: " + offered, offered.contains(left));
+        assertFalse("an empty test set is offered for a new test run: " + offered, offered.contains(empty));
+    }
+
+    // Rule-TREE-PANEL-008, Rule-TREE-PANEL-030
+    public void testARetiredTestSetIsShownGrayWithItsStatusAndNothingInItCanBeTicked() {
+        theCreateDialogOpened();
+
+        for (final Object retired : List.of(old, inOld, archive, inside, inInside)) {
+            assertFalse(retired + " can be ticked for a new test run", rowOf(retired).isEnabled());
         }
+        assertFalse("a test case in a Deprecated test set opens ticked", rowOf(inOld).isChecked());
+        assertFalse("a test case under an Archived package opens ticked", rowOf(inInside).isChecked());
+        assertEquals("a Deprecated test set does not show its status", "Old  " + TestSetStatus.DEPRECATED.getLabel(), drawnRowOf(old));
+        assertEquals("an Archived package does not show its status", "Archive  " + PackageStatus.ARCHIVED.getLabel(), drawnRowOf(archive));
+        assertEquals("a test set under an Archived package shows a status of its own", "Inside", drawnRowOf(inside));
+        assertEquals("a test case in a Deprecated test set shows its own status as the reason", inOld.getDescription(), drawnRowOf(inOld));
+
+        theTestCaseTree().setNodeState((CheckedTreeNode) theTestCaseTree().getModel().getRoot(), true);
+        theButton(Bundle.message("test.run.create.button")).doClick();
+
+        Await.until("the test run was not created", () -> theTestRunsUnder(testProject.getTestRunsFolder()).size() == 1);
+        final @NotNull AbstractNode made = theTestRunsUnder(testProject.getTestRunsFolder()).getFirst();
+        Await.until("the new test run holds no test case", () -> !indexedTestRuns().getRunItems(made.getPath()).coveredUuids().isEmpty());
+        assertEquals("the new test run covers a test case in a retired test set", Set.of(first.getUuid(), second.getUuid()), indexedTestRuns().getRunItems(made.getPath()).coveredUuids());
+    }
+
+    // Rule-TREE-PANEL-030
+    public void testReCreatingLeavesOutATestCaseInARetiredTestSetTheSourceTestRunCovered() {
+        new CreateTestRun(getProject()).configureTestRun(testProject.getTestCasesFolder(), "Cycle-2", testProject.getTestRunsFolder(), Set.of(first.getUuid(), inOld.getUuid()), everyQuestionAnswered());
+        Await.until("the test run dialog never opened", () -> ShownDialog.isOpen(getProject(), TestRunConfigurationDialog.class));
+        ShownDialog.sized(getProject(), TestRunConfigurationDialog.class);
+
+        assertTrue("a test case the source test run covered opens unticked", rowOf(first).isChecked());
+        assertFalse("a test case in a Deprecated test set the source test run covered opens ticked", rowOf(inOld).isChecked());
     }
 
     // Rule-TREE-PANEL-029
@@ -446,13 +485,14 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
     }
 
     // Rule-TREE-PANEL-076, Rule-TREE-PANEL-134
-    public void testSavingTheEditKeepsWhatTheDialogDoesNotShowAndTheDeletedTestCasesLeftTicked() {
+    public void testSavingTheEditKeepsARetiredTestSetsTestCaseAndTheDeletedTestCasesLeftTicked() {
         final @NotNull UUID deleted = UUID.randomUUID();
         final @NotNull TestRunNode testRun = cycle1In(testProject.getTestRunsFolder(), List.of(new RunItem().setUuid(first.getUuid()), new RunItem().setUuid(inOld.getUuid()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build())), new RunItem().setUuid(deleted).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()))));
 
         indexedTestRuns().changeTestRunMarker(testRun.getPath(), marker -> marker.configure(everyQuestionAnswered()));
         theEditDialogOpenedOn(testRun);
-        assertFalse("a test case of a deprecated test set is offered", offered().contains(inOld));
+        assertTrue("a test case of a deprecated test set the test run covers is not ticked", rowOf(inOld).isChecked());
+        assertFalse("a test case of a deprecated test set can be unticked", rowOf(inOld).isEnabled());
         final @NotNull CheckedTreeNode deletedRow = theDeletedRow(deleted);
         assertTrue("a test case deleted since is not ticked", deletedRow.isChecked());
         assertEquals("the deleted test case is not under its own folder", Bundle.message("test.run.deleted.test.cases"), ((CheckedTreeNode) deletedRow.getParent()).getUserObject());
@@ -461,7 +501,7 @@ public class TestRunDialogIdeTest extends AbstractOpenEditorsIdeTest {
 
         Await.until("saving the edit did not close the dialog", () -> !ShownDialog.isOpen(getProject(), TestRunConfigurationDialog.class));
         final @NotNull RunItems saved = indexedTestRuns().getRunItems(testRun.getPath());
-        assertEquals("saving removed what the test run recorded for a test case the dialog did not show", Set.of(first.getUuid(), inOld.getUuid(), deleted), saved.coveredUuids());
+        assertEquals("saving removed what the test run recorded for a test case of a deprecated test set", Set.of(first.getUuid(), inOld.getUuid(), deleted), saved.coveredUuids());
         assertEquals(RunItemStatus.FAILED, saved.runItemOf(inOld.getUuid()).map(RunItem::getStatus).orElseThrow());
         assertEquals(RunItemStatus.PASSED, saved.runItemOf(deleted).map(RunItem::shownExecution).map(RunItemExecution::getStatus).orElseThrow());
     }

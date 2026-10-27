@@ -34,7 +34,8 @@ A test run is one round of testing, with a run item status for each test case.
   something confirms nothing.
 - **Rule-TREE-PANEL-008** — A retired node keeps everything inside it. Retired
   means a **Deprecated** test set or an **Archived** package. It is drawn gray.
-  It sorts after live nodes. It is not offered when a test run is created.
+  It sorts after live nodes. In Create Test Run and Edit Test Run it is shown
+  gray, and no box in it can be changed.
 - **Rule-TREE-PANEL-009** — A test run that is **Completed** or **Closed** keeps
   its test cases and configuration: Edit Test Run refuses it. Its run item
   statuses can still be given and corrected until it is **Committed**. A
@@ -58,9 +59,11 @@ A test run is one round of testing, with a run item status for each test case.
   the tree is read for.
 - **Rule-TREE-PANEL-029** — A test run needs at least one test case. It cannot
   be created empty.
-- **Rule-TREE-PANEL-030** — Three things are not offered when a test run is
-  created: a retired test set, anything under an **Archived** package, and an
-  empty test set. (Rule-TREE-PANEL-008)
+- **Rule-TREE-PANEL-030** — An empty test set is not offered when a test run is
+  created. A retired test set, and everything under an **Archived** package, is
+  shown gray with its status beside its name, and nothing in it can be ticked,
+  so a new test run never covers it. Re-create leaves out a test case there
+  that the source test run covered. (Rule-TREE-PANEL-008)
 - **Rule-TREE-PANEL-031** — A new test run starts as **Created**. Every test
   case in it starts **Pending**.
 - **Rule-TREE-PANEL-100** — A test project that is not active is shown in the
@@ -224,9 +227,9 @@ with the test run's own name, test cases and settings.
 5. The **Create Test Run** dialog opens. It holds the typed name in *Test Run
    name*. It also holds the *Configuration details* form, and a tree of test
    sets with every test case ticked but a Disabled one, which is unticked and
-   cannot be ticked (Rule-TREE-PANEL-138). Three things are left out of that tree:
-   retired test sets, anything under an **Archived** package, and empty test
-   sets.
+   cannot be ticked (Rule-TREE-PANEL-138). A retired test set, and everything
+   under an **Archived** package, is shown gray with its status beside its name
+   and cannot be ticked. Empty test sets are left out (Rule-TREE-PANEL-030).
 6. The tester ticks and unticks with `Space`, moves with `Tab`, and presses **Create**.
    To build a test run for one purpose, the tester first opens **Filter**,
    chooses **Group**, then **Smoke**, and the tree shows only the Smoke test

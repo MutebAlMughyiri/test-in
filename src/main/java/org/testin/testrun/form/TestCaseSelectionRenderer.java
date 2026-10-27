@@ -19,6 +19,7 @@ package org.testin.testrun.form;
 import com.intellij.icons.AllIcons;
 import com.intellij.ui.CheckboxTree;
 import com.intellij.ui.CheckedTreeNode;
+import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -38,14 +39,13 @@ public final class TestCaseSelectionRenderer {
                 if (!(value instanceof CheckedTreeNode treeNode))
                     return;
                 if (treeNode.getUserObject() instanceof AbstractNode node) {
-                    getTextRenderer().setIcon(node.iconShownInTree());
-                    getTextRenderer().append(node.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
+                    drawNode(getTextRenderer(), node, treeNode.isEnabled());
                 } else if (treeNode.getUserObject() instanceof TestCase testCase) {
                     getTextRenderer().setIcon(Icons.TEST_CASE_LETTER);
                     // Rule-EDITOR-PANEL-294
                     getTextRenderer().append(testCase.getDescription(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, testCase.getStatus().getDescriptionColor()));
                     // Rule-TREE-PANEL-138
-                    if (!treeNode.isEnabled())
+                    if (!testCase.getStatus().isEnabled())
                         getTextRenderer().append("  " + testCase.getStatus().getLabel(), SimpleTextAttributes.GRAYED_ITALIC_ATTRIBUTES);
                 } else if (treeNode.getUserObject() instanceof String folder) {
                     // Rule-TREE-PANEL-134
@@ -54,5 +54,13 @@ public final class TestCaseSelectionRenderer {
                 }
             }
         };
+    }
+
+    // Rule-TREE-PANEL-008, Rule-TREE-PANEL-030
+    private static void drawNode(final @NotNull ColoredTreeCellRenderer text, final @NotNull AbstractNode node, final boolean canBeTicked) {
+        text.setIcon(node.iconShownInTree());
+        text.append(node.getName(), canBeTicked ? SimpleTextAttributes.REGULAR_ATTRIBUTES : SimpleTextAttributes.GRAYED_ATTRIBUTES);
+        final @NotNull String nodeStatus = node.statusShownInTree();
+        if (!nodeStatus.isEmpty()) text.append("  " + nodeStatus, SimpleTextAttributes.GRAYED_ITALIC_ATTRIBUTES);
     }
 }
