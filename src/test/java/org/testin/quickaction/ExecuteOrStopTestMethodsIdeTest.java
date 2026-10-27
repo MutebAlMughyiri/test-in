@@ -37,7 +37,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertNotEquals;
 
-public class RunTestMethodIdeTest extends AbstractCodegenIdeTest {
+public class ExecuteOrStopTestMethodsIdeTest extends AbstractCodegenIdeTest {
 
     private @NotNull AnActionEvent theMenuEntryOn(final @NotNull List<TestCase> selected) {
         final @NotNull AnAction run = ActionManager.getInstance().getAction("Testin.RunTestMethod");
