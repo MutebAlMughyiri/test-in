@@ -24,9 +24,11 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.testFramework.TestActionEvent;
 import org.jetbrains.annotations.NotNull;
 import org.testin.Await;
+import org.testin.Said;
 import org.testin.creator.dialogs.CreateTestProjectDialog;
 import org.testin.explorer.TreePanel;
 import org.testin.indexer.AbstractReadTheRootIdeTest;
+import org.testin.notifications.Refused;
 import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
 import org.testin.ui.framework.ShownDialog;
@@ -103,6 +105,18 @@ public class CreateTestProjectActionIdeTest extends AbstractReadTheRootIdeTest {
 
         Await.until("the test project typed was not made and chosen", () -> "Mobile".equals(bound().name()));
         assertTrue("the test project typed has no folder in the Testin folder", Files.isDirectory(root.resolve("Mobile")));
+    }
+
+    // UC-TREE-PANEL-002
+    public void testANameTheTestinFolderAlreadyHoldsIsRefusedAndNothingIsCreated() {
+        aTestProjectAt(root.resolve("Mobile"));
+        readEverything();
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        typedAndConfirmed("Mobile");
+
+        Await.until("a name the Testin folder already holds was not refused: " + said.shown(), () -> said.shown().contains(Refused.ALREADY_EXISTS.about("Mobile")));
+        assertFalse("the test project already there was chosen as if it were made", "Mobile".equals(bound().name()));
     }
 
     // UC-TREE-PANEL-003, Rule-TREE-PANEL-107
