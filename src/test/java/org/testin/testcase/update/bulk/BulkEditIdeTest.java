@@ -36,6 +36,7 @@ import org.testin.indexer.TestCases;
 import org.testin.model.FileKind;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
+import org.testin.model.status.TestCaseStatus;
 import org.testin.notifications.Done;
 import org.testin.services.Services;
 import org.testin.testcase.UpdateTestCaseAction;
@@ -67,14 +68,16 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull TestSetNode testSet = new TestSetNode();
 
-    private static int startOfValue(final @NotNull Document document, final int index) {
+    private @NotNull String valueKey = MODULE;
+
+    private int startOfValue(final @NotNull Document document, final int index) {
         int at = -1;
-        for (int i = 0; i <= index; i++) at = document.getText().indexOf(MODULE, at + 1);
+        for (int i = 0; i <= index; i++) at = document.getText().indexOf(valueKey, at + 1);
         assertTrue("there is no value " + index, at >= 0);
-        return at + MODULE.length();
+        return at + valueKey.length();
     }
 
-    private static int endOfValue(final @NotNull Document document, final int index) {
+    private int endOfValue(final @NotNull Document document, final int index) {
         return document.getText().indexOf('"', startOfValue(document, index));
     }
 
@@ -117,11 +120,12 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
         return made;
     }
 
-    private void bulkEditTheModules() {
+    private void bulkEdit(final @NotNull UpdateTestCaseFields field) {
+        valueKey = "\"" + field.getField().getStoredKey() + "\": \"";
         final @NotNull TestSetEditor editor = EditorFixtures.openTestSetEditor(getProject(), testSet, getTestRootDisposable());
         editor.getList().setSelectionInterval(0, editor.getList().getModel().getSize() - 1);
 
-        UpdateTestCaseAction.openField(getProject(), editor, UpdateTestCaseFields.MODULE);
+        UpdateTestCaseAction.openField(getProject(), editor, field);
         PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
     }
 
@@ -202,7 +206,7 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-040, Rule-EDITOR-PANEL-045
     public void testTheValuesAreEditedInPlaceBesideTheOriginalsAndAnEmptyOneStillGetsALine() {
         final @NotNull List<TestCase> testCases = aTestSetWithModules("Payments", "", "Cart");
-        bulkEditTheModules();
+        bulkEdit(UpdateTestCaseFields.MODULE);
 
         assertTrue("the originals can be typed into", originals().isViewer() && !originals().getDocument().isWritable());
         for (final String module : List.of("Payments", "Cart")) {
@@ -221,7 +225,7 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
     public void testOnlyTheRowsTheTesterEditedAreWrittenAndTheyAreTrimmed() {
         final @NotNull List<TestCase> testCases = aTestSetWithModules("  Payments  ", "Cart");
         final @NotNull String untouched = everyFile().stream().filter(file -> file.contains(testCases.getFirst().getUuid().toString())).findFirst().orElseThrow();
-        bulkEditTheModules();
+        bulkEdit(UpdateTestCaseFields.MODULE);
 
         type(1, "  Basket  ");
         whatTheSaveSaid();
@@ -231,10 +235,22 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
         assertTrue("a row the tester did not touch had its file written", everyFile().contains(untouched));
     }
 
+    // UC-EDITOR-PANEL-007, Rule-EDITOR-PANEL-041
+    public void testAStatusTypedInTheBulkEditorIsWrittenOnlyToItsRow() {
+        final @NotNull List<TestCase> testCases = aTestSetWithModules("Payments", "Cart");
+        bulkEdit(UpdateTestCaseFields.STATUS);
+
+        type(1, TestCaseStatus.DISABLED.getLabel());
+        whatTheSaveSaid();
+
+        assertEquals("the status typed was not written", TestCaseStatus.DISABLED, theTestCases().findTestCase(testCases.get(1).getUuid()).orElseThrow().getStatus());
+        assertEquals("a row the tester did not touch changed its status", testCases.getFirst().getStatus(), theTestCases().findTestCase(testCases.getFirst().getUuid()).orElseThrow().getStatus());
+    }
+
     // Rule-EDITOR-PANEL-043
     public void testAnEditedValueTakesAGreenBackground() {
         aTestSetWithModules("Payments", "Cart");
-        bulkEditTheModules();
+        bulkEdit(UpdateTestCaseFields.MODULE);
         assertTrue("an untouched value is marked as edited", greenIn(values()).isEmpty());
 
         type(1, "Basket");
@@ -255,7 +271,7 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
     public void testTheWholeGestureIsOneUndoEntryAndOneMessageWithACount() {
         final @NotNull List<TestCase> testCases = aTestSetWithModules("Payments", "Cart", "Search");
         final @NotNull UndoScope scope = UndoScope.of(testSet.getPath());
-        bulkEditTheModules();
+        bulkEdit(UpdateTestCaseFields.MODULE);
 
         type(0, "Billing");
         type(1, "Basket");
@@ -274,7 +290,7 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
     // Rule-EDITOR-PANEL-292
     public void testBothSidesShowTheListInJsonColors() {
         aTestSetWithModules("Payments", "Cart");
-        bulkEditTheModules();
+        bulkEdit(UpdateTestCaseFields.MODULE);
 
         assertEquals("the bulk editor is not two editors", 2, editors().size());
         for (final Editor editor : editors()) {
@@ -362,7 +378,7 @@ public class BulkEditIdeTest extends AbstractTempRootIdeTest {
     public void testASaveThatWouldLeaveTheFilesAsTheyAreWritesNothingAndSaysNothing() {
         aTestSetWithModules("Payments", "Cart");
         final @NotNull List<String> before = everyFile();
-        bulkEditTheModules();
+        bulkEdit(UpdateTestCaseFields.MODULE);
         final @NotNull Said balloons = Said.listening(getProject(), getTestRootDisposable());
 
         type(0, "Payments");
