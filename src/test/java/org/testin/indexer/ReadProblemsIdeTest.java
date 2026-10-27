@@ -187,7 +187,8 @@ public class ReadProblemsIdeTest extends AbstractReadTheRootIdeTest {
         SyntheticTree.write(login.resolve("login.testcase"), SyntheticTree.testCase("m"));
         SyntheticTree.write(login.resolve("logout.testcase"), SyntheticTree.testCase("m"));
         final @NotNull Path signUp = marked(testCases.resolve("Sign up"), NodeType.TEST_SET);
-        for (int i = 0; i < 2; i++) SyntheticTree.write(signUp.resolve(FileKind.TEST_CASE.fileName(aTestCaseIn(login))), SyntheticTree.testCase("m"));
+        for (int i = 0; i < 2; i++)
+            SyntheticTree.write(signUp.resolve(FileKind.TEST_CASE.fileName(aTestCaseIn(login))), SyntheticTree.testCase("m"));
         for (final String damaged : List.of("Cart", "Payment")) {
             SyntheticTree.write(testCases.resolve(damaged).resolve(NodeType.TEST_SET.getMarker()), "{ this is not a marker");
             aTestCaseIn(testCases.resolve(damaged));
