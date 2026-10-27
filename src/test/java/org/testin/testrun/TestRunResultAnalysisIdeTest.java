@@ -25,15 +25,19 @@ import com.intellij.testFramework.PlatformTestUtil;
 import com.intellij.ui.EditorTextField;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
+import org.testin.Await;
 import org.testin.Said;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.testrun.TestRunEditor;
 import org.testin.editor.toolbar.TestRunResultAnalysisButton;
+import org.testin.indexer.Nodes;
 import org.testin.model.TestCase;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.status.TestRunStatus;
 import org.testin.model.testrun.RunItemExecution;
+import org.testin.services.Services;
 import org.testin.ui.framework.ShownDialog;
+import org.testin.util.Bundle;
 import org.testin.util.Shortcuts;
 import org.testin.view.Drawn;
 import org.testin.view.KeyPress;
@@ -161,6 +165,31 @@ public class TestRunResultAnalysisIdeTest extends AbstractTempRootIdeTest {
 
             assertEquals("an analysis saved on a Committed test run was not refused with its reason", List.of(why), said.shown());
             assertTrue("an analysis was written onto a Committed test run", fixture.testRun().getMarker().getResultAnalysis().isEmpty());
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
+    // UC-EDITOR-PANEL-045
+    public void testAnAnalysisSavedAfterTheTestRunWasRemovedSaysSoAndSaysNotSaved() {
+        final @NotNull TestRunFixture fixture = aJudgedTestRunIn(TestRunStatus.COMPLETED);
+        final @NotNull TestRunEditor editor = fixture.opened(getTestRootDisposable());
+        try {
+            editor.getToolBar().getToolbarItem(TestRunResultAnalysisButton.class).doClick();
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+            final @NotNull JComponent dialog = ShownDialog.content(getProject(), TestRunResultAnalysisDialog.class);
+            Drawn.first(dialog, EditorTextField.class).setText("Most failures came from the payment gateway");
+            final @NotNull Nodes nodes = Services.getInstance(getProject(), Nodes.class);
+            nodes.removeTestRun(fixture.testRun().getPath(), _ -> {
+            });
+            Await.until("the test run was never removed", () -> !nodes.nodeExists(fixture.testRun().getPath()));
+            final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+            Drawn.components(dialog).stream().filter(JButton.class::isInstance).map(JButton.class::cast)
+                    .filter(button -> "Save".equals(button.getText())).findFirst().orElseThrow(() -> new AssertionError("Save is not a button: " + Drawn.words(dialog))).doClick();
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+            assertEquals("an analysis saved after its test run was removed did not say so", List.of(Bundle.message("test.run.gone", fixture.testRun().getName())), said.shown());
         } finally {
             Disposer.dispose(editor);
         }
