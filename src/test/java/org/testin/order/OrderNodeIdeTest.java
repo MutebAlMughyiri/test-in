@@ -83,8 +83,8 @@ public class OrderNodeIdeTest extends AbstractTempRootIdeTest {
         }
     }
 
-    // Rule-TREE-PANEL-103
-    public void testANewPlaceIsOnTheTreesHistoryAndUndoGivesTheOldOneBack() {
+    // Rule-TREE-PANEL-103, UC-TREE-PANEL-017
+    public void testANewPlaceIsOnTheTreesHistoryUndoGivesTheOldOneBackAndRedoTheNewOne() {
         ordered("5");
         Await.until("Order did not give the node its new place", () -> orderOfLogin() == 5);
         Await.until("the new place never went onto the tree's history", () -> undoHistories().canUndo(UndoScope.TREE));
@@ -92,6 +92,11 @@ public class OrderNodeIdeTest extends AbstractTempRootIdeTest {
         assertTrue("undoing the new place was refused", undoHistories().undo(UndoScope.TREE));
 
         Await.until("Ctrl+Z did not give the node back the place it had", () -> orderOfLogin() == 3);
+        Await.until("the undone place was not offered to Ctrl+Y", () -> undoHistories().canRedo(UndoScope.TREE));
+
+        assertTrue("redoing the new place was refused", undoHistories().redo(UndoScope.TREE));
+
+        Await.until("Ctrl+Y did not give the node its new place again", () -> orderOfLogin() == 5);
     }
 
     // Rule-TREE-PANEL-103
