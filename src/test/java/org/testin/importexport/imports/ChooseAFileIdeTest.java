@@ -17,6 +17,7 @@
 package org.testin.importexport.imports;
 
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooserDialog;
@@ -38,6 +39,7 @@ import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
 import org.testin.NodesOnDisk;
 import org.testin.Said;
+import org.testin.TreeGesture;
 import org.testin.importexport.FileFormat;
 import org.testin.indexer.TestCases;
 import org.testin.model.TestCase;
@@ -89,7 +91,7 @@ public class ChooseAFileIdeTest extends AbstractTempRootIdeTest {
     }
 
     private @NotNull JComponent openedOn(final @NotNull TestSetNode testSet) {
-        new ImportWork(getProject()).openImportDialog(testSet);
+        TreeGesture.pressed(getProject(), ActionManager.getInstance().getAction("Testin.Import"), List.of(testSet));
         Await.until("the import did not ask for a file", () -> !asked.isEmpty());
         return ShownDialog.content(getProject(), ImportDialog.class);
     }
