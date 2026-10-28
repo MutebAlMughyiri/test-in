@@ -180,6 +180,18 @@ public class HistoryTabIdeTest extends AbstractTempRootIdeTest {
         assertEquals(List.of(), Drawn.words(tab));
     }
 
+    // UC-VIEW-PANEL-007, Rule-VIEW-PANEL-101
+    public void testAHistoryLongerThanOneGroupIsDrawnWhole() {
+        final @NotNull TestProjectNode testProject = EditorFixtures.testProject(getProject(), root);
+        final @NotNull TestCase testCase = EditorFixtures.testCase(getProject(), EditorFixtures.testSet(getProject(), testProject, "Login"), "Log in with a valid user", "a");
+        for (int cycle = 0; cycle < 51; cycle++)
+            Services.getInstance(getProject(), TestRuns.class).putRunItems(testProject.getTestRunsFolder().getPath().resolve("Cycle-" + cycle), RunItems.builder().all(new ArrayList<>(List.of(failed(testCase)))).build());
+
+        new HistoryTab().load(getProject(), tab, Optional.of(testCase));
+
+        Await.until("a history of 51 bugs was not drawn whole", () -> Drawn.words(tab).stream().filter(Bundle.message("view.history.bug")::equals).count() == 51);
+    }
+
     // Rule-VIEW-PANEL-099, Rule-VIEW-PANEL-100
     public void testATestProjectNotUnderGitSaysSoInOneLineWithNoReadingLineFirst() {
         new HistoryTab().load(getProject(), tab, Optional.of(aTestCase()));
