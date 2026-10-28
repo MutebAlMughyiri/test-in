@@ -37,6 +37,7 @@ import org.testin.Await;
 import org.testin.NodesOnDisk;
 import org.testin.Said;
 import org.testin.TreeGesture;
+import org.testin.config.TestinYml;
 import org.testin.creator.CreateTestProjectAction;
 import org.testin.explorer.toolbar.CollapseTreeAction;
 import org.testin.explorer.toolbar.ExpandTreeAction;
@@ -340,16 +341,52 @@ public class TreePanelIdeTest extends AbstractReadTheRootIdeTest {
         aTestProjectAt(root.resolve("Payments"));
         readEverything();
         bound().choose("Missing");
+
+        final @NotNull String lines = theChoicesOffered();
+        assertTrue("the choices do not say the test project chosen here is not in the Testin folder: " + lines, lines.contains(Bundle.message("chosen.not.under.root", "Missing")));
+    }
+
+    // UC-TREE-PANEL-001
+    public void testATestProjectTestinYmlNamesThatIsNotInTheTestinFolderIsNamedAboveTheChoices() {
+        aTestProjectAt(root.resolve("Checkout"));
+        aTestProjectAt(root.resolve("Payments"));
+        readEverything();
+        final @NotNull Path file = TestinYml.savePath(getProject()).orElseThrow(() -> new AssertionError("the project has no place for " + TestinYml.fileName()));
+        bound().choose("");
+        try {
+            Files.createDirectories(file.getParent());
+            assertTrue("could not write " + TestinYml.fileName(), TestinYml.save(getProject(), TestinYml.lines("Missing")));
+            TestinYml.reload(getProject());
+
+            final @NotNull String lines = theChoicesOffered();
+            assertTrue("the choices do not say the test project testin.yml names is not in the Testin folder: " + lines, lines.contains(Bundle.message("bound.not.under.root", "Missing")));
+        } catch (final IOException ex) {
+            throw new AssertionError("could not write " + file + ": " + ex.getMessage(), ex);
+        } finally {
+            removed(file);
+        }
+    }
+
+    private void removed(final @NotNull Path file) {
+        try {
+            Files.deleteIfExists(file);
+        } catch (final IOException ex) {
+            throw new AssertionError("could not remove " + file + ": " + ex.getMessage(), ex);
+        } finally {
+            TestinYml.reload(getProject());
+        }
+    }
+
+    private @NotNull String theChoicesOffered() {
         final @NotNull TreePanel panel = aPanelShowingTheWelcome();
         final @NotNull StatusText offered = new JBList<String>().getEmptyText();
 
         panel.offerChoice(offered);
 
-        final @NotNull String lines = StreamSupport.stream(offered.getWrappedFragmentsIterable().spliterator(), false)
+        return StreamSupport.stream(offered.getWrappedFragmentsIterable().spliterator(), false)
                 .filter(SimpleColoredComponent.class::isInstance)
                 .map(line -> ((SimpleColoredComponent) line).getCharSequence(false).toString())
                 .collect(Collectors.joining("\n"));
-        assertTrue("the choices do not say the test project chosen here is not in the Testin folder: " + lines, lines.contains(Bundle.message("chosen.not.under.root", "Missing")));
     }
 
     // Rule-TREE-PANEL-006
