@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.fail;
 
@@ -280,6 +281,8 @@ public class RuleTraceTest {
                 
                 %s
                 """.formatted(summary, tracedByNoTest.size(), carried.size(), String.join("\n", tracedByNoTest), untraced.size(), String.join("\n", untraced), unmeasured.size(), unmeasuredLabels, String.join("\n", unmeasured)));
+
+        assertEquals(Stream.concat(tracedByNoTest.stream(), untraced.stream()).toList(), List.of(), summary + ". Each rule and use case needs a test that runs its code, and each label a test carries names code that test runs: " + REPORT);
     }
 
     private record Span(@NotNull String source, int from, int to, boolean wholeFile) {

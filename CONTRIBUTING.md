@@ -251,13 +251,20 @@ A marker is traced when that test ran at least one line of a declaration that
 the production code marks the same way.
 
 It writes `build/reports/rule-trace/untraced.md`, listing:
+- each rule and use case no test traces;
 - each marker whose test runs none of its code;
 - each marked test that saved nothing it ran.
 
-CI runs it after the tests and keeps the report. For now, it only reports. It
-fails the build once the markers it lists are fixed. A static field or an enum
-constant runs once, when its class loads, so it counts as reached when the test
-runs any line of its file.
+CI runs it after the tests and keeps the report. It fails the build on the
+first two lists; the third, the budget tests that run alone, is only listed. A
+static field or an enum constant runs once, when its class loads, so it counts
+as reached when the test runs any line of its file.
+
+A test that proves a rule by reading the code rather than running it, such as
+`ArchitectureTest` or a scan of stored names, carries no rule marker. It keeps
+running as a guard, and a test that runs the code carries the rule. A rule
+about the documentation alone has no marker in the code, so the test that
+checks it is not traced (Muteb, 28 October 2026).
 
 ### The coverage gate
 
