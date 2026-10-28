@@ -18,6 +18,8 @@ package org.testin.codegen;
 
 import com.intellij.openapi.util.Disposer;
 import com.intellij.testFramework.PlatformTestUtil;
+import com.intellij.ui.CheckboxTree;
+import com.intellij.ui.CheckedTreeNode;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.Await;
@@ -26,15 +28,19 @@ import org.testin.config.TestinYml;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.statusbar.EditorStatusBar;
 import org.testin.editor.testset.TestSetEditor;
+import org.testin.filter.FilterPopupButton;
+import org.testin.filter.Filtering;
 import org.testin.model.Automated;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
 import org.testin.services.Services;
+import org.testin.testrun.form.TestRunFormFilter;
 import org.testin.util.Bundle;
 import org.testin.view.Drawn;
 
 import javax.swing.JComponent;
 import java.awt.Container;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -98,6 +104,25 @@ public class AutomatedStateIdeTest extends AbstractCodegenIdeTest {
         assertEquals("a body holding only the tester's comment is not the tester's", Automated.WRITTEN, state().of(commented.getUuid()));
         assertEquals("a body whose TODO the tester deleted is not the tester's", Automated.WRITTEN, state().of(emptied.getUuid()));
         assertEquals("the one TODO line Testin wrote counts as automation", Automated.NONE, state().of(untouched.getUuid()));
+    }
+
+    // Rule-TREE-PANEL-129
+    public void testTheTreeOfANewTestRunPicksTheAutomatedTestCasesAsAnEditorDoes() {
+        final @NotNull List<TestCase> testCases = threeStatesOfAutomation();
+        final @NotNull CheckedTreeNode root = new CheckedTreeNode(testSet);
+        testCases.forEach(testCase -> root.add(new CheckedTreeNode(testCase)));
+        final @NotNull TestRunFormFilter form = new TestRunFormFilter(getProject(), theTestCasesDirectory().getPath(), root);
+        Await.until("the automation state never arrived", () -> testCases.stream().noneMatch(testCase -> state().of(testCase.getUuid()) == Automated.UNKNOWN));
+        settled();
+
+        Filtering.choose(Drawn.first(form.getSelection().getPanel(), FilterPopupButton.class), Bundle.message("filter.automation"), Automated.WRITTEN.getLabel());
+
+        final @NotNull CheckboxTree tree = Drawn.first(form.getSelection().getPanel(), CheckboxTree.class);
+        final @NotNull List<Object> shown = Collections.list(((CheckedTreeNode) tree.getModel().getRoot()).depthFirstEnumeration()).stream()
+                .map(row -> ((CheckedTreeNode) row).getUserObject())
+                .filter(TestCase.class::isInstance)
+                .toList();
+        assertEquals("the automation filter of a new test run's tree did not pick the automated test case alone", List.of(testCases.getFirst()), shown);
     }
 
     // Rule-EDITOR-PANEL-196
