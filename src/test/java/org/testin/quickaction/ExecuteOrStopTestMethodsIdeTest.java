@@ -54,6 +54,22 @@ public class ExecuteOrStopTestMethodsIdeTest extends AbstractCodegenIdeTest {
         ActionUtil.performAction(ActionManager.getInstance().getAction("Testin.RunTestMethod"), theMenuEntryOn(selected));
     }
 
+    // UC-CODEGEN-009, Rule-CODEGEN-036
+    public void testRunAndGoToCodeAreGrayWithNothingSelected() {
+        createdTestCase(createdTestSet("Login"), "Log in with a valid user", "a");
+
+        for (final String actionId : List.of("Testin.RunTestMethod", "Testin.NavigateToTestMethod")) {
+            final @NotNull AnAction action = ActionManager.getInstance().getAction(actionId);
+            final @NotNull AnActionEvent e = TestActionEvent.createTestEvent(action, SimpleDataContext.builder()
+                    .add(CommonDataKeys.PROJECT, getProject())
+                    .add(TestinDataKeys.SELECTED_TEST_CASES, List.of())
+                    .build());
+            ActionUtil.updateAction(action, e);
+
+            assertFalse(actionId + " works with nothing selected", e.getPresentation().isEnabled());
+        }
+    }
+
     // UC-CODEGEN-008, UC-CODEGEN-009, Rule-CODEGEN-031, Rule-CODEGEN-036
     public void testTheMenuEntryRunsTheSelectedTestCasesAsOneExecutionAndThenStopsThem() {
         final @NotNull TestSetNode login = createdTestSet("Login");
