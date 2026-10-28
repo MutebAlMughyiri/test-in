@@ -118,7 +118,7 @@ public class RightClickIdeTest extends AbstractTempRootIdeTest {
         for (final MouseListener listener : table.getMouseListeners())
             if (listener instanceof GridContextMenuListener) listener.mouseReleased(release);
 
-        assertTrue("a left release moved the selection as a right click does", Arrays.equals(new int[]{0, 1}, table.getSelectedRows()));
+        assertEquals("a left release moved the selection as a right click does", List.of(0, 1), Arrays.stream(table.getSelectedRows()).boxed().toList());
     }
 
     // Rule-EDITOR-PANEL-110
