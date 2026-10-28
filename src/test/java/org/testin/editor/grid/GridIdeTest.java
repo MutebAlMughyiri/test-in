@@ -206,8 +206,11 @@ public class GridIdeTest extends AbstractIdeTest {
         assertTrue("the description did not open", table.editCellAt(0, DESCRIPTION));
         final @NotNull JComponent cell = (JComponent) table.getEditorComponent();
 
-        press(cell, KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, Shortcuts.menuMask()));
+        final int openedAt = table.getRowHeight(0);
+        for (int line = 0; line < 4; line++)
+            press(cell, KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, Shortcuts.menuMask()));
         assertTrue("Ctrl+Enter closed the cell", table.isEditing());
+        assertTrue("the row did not grow to fit the lines Ctrl+Enter added: " + openedAt + " then " + table.getRowHeight(0), table.getRowHeight(0) > openedAt);
 
         press(cell, KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0));
 
