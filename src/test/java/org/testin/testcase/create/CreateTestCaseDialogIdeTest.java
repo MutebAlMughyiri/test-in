@@ -17,6 +17,7 @@
 package org.testin.testcase.create;
 
 import com.intellij.ui.EditorTextField;
+import com.intellij.ui.components.JBScrollPane;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
@@ -41,7 +42,13 @@ import org.testin.util.Shortcuts;
 import org.testin.view.Drawn;
 import org.testin.view.PopupsBuilt;
 
+import javax.swing.JPanel;
 import javax.swing.KeyStroke;
+import javax.swing.ScrollPaneConstants;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -228,5 +235,27 @@ public class CreateTestCaseDialogIdeTest extends AbstractTempRootIdeTest {
         Await.until("the new test case was never given a place after the others", () -> testCases.findTestCase(created.getUuid()).map(TestCase::getOrder).filter(order -> order.compareTo("m0002") > 0).isPresent());
         Await.until("the creation never confirmed itself", () -> balloons.shown().contains(Done.CREATED.getOutcome()));
         assertEquals("the creation confirmed itself more than once", 1, Collections.frequency(balloons.shown(), Done.CREATED.getOutcome()));
+    }
+
+    // Rule-INTERNAL-102
+    public void testTheFormShowsAScrollbarOnlyWhileItIsSmallerThanItsContent() {
+        final @NotNull TestCaseForm form = new TestCaseForm(JPanel::new, true);
+        final @NotNull JPanel tall = new JPanel();
+        tall.setPreferredSize(new Dimension(100, 400));
+        form.newSlot().add(tall, BorderLayout.CENTER);
+        final @NotNull JBScrollPane scroll = Drawn.first(form.getPanel(), JBScrollPane.class);
+
+        resized(scroll, 100);
+        assertEquals("a form smaller than its content shows no scrollbar", ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, scroll.getVerticalScrollBarPolicy());
+
+        resized(scroll, 1000);
+        assertEquals("a form with room for its content shows a stray scrollbar", ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER, scroll.getVerticalScrollBarPolicy());
+    }
+
+    private static void resized(final @NotNull JBScrollPane scroll, final int height) {
+        scroll.setSize(300, height);
+        scroll.doLayout();
+        for (final ComponentListener listener : scroll.getComponentListeners())
+            listener.componentResized(new ComponentEvent(scroll, ComponentEvent.COMPONENT_RESIZED));
     }
 }
