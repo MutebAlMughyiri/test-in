@@ -257,6 +257,20 @@ public class CommitRulesIdeTest extends AbstractGitRemoteIdeTest {
         assertEquals("the commit on the new branch moved main", mainBefore, head(work, MAIN));
     }
 
+    // UC-SHARE-014
+    public void testAnEmptiedBranchBoxCommitsOnTheBranchCheckedOut() {
+        write(work, "first.testcase", "{\"on\":\"main\"}");
+        final @NotNull String mainBefore = head(work, MAIN);
+
+        final @NotNull JComponent review = theReview(work);
+        ShareGestures.typeTheBranch(review, "");
+        ShareGestures.type(review, "the change on main");
+        ShareGestures.commitOnly(review);
+
+        Await.until("the commit did not land on the branch checked out", () -> !head(work, MAIN).equals(mainBefore));
+        assertEquals("an emptied branch box moved off the branch checked out", MAIN, mustGit(work, "branch", "--show-current").trim());
+    }
+
     // UC-SHARE-014, Rule-SHARE-065, Rule-SHARE-127
     public void testABranchThatCannotBeCheckedOutCommitsNothing() {
         mustGit(work, "checkout", "-b", "other");

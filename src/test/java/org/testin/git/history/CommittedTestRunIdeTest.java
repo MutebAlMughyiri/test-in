@@ -55,6 +55,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
+import java.util.stream.IntStream;
 
 import static org.testin.git.LocalGit.git;
 import static org.testin.git.LocalGit.mustGit;
@@ -594,6 +595,45 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
         Await.until("the tester's commit never landed", () -> isTheSubjectOf("HEAD", MESSAGE));
 
         assertEquals("a test run whose test case change was left out became the record", TestRunStatus.COMPLETED, theTestRunAt(completed).getMarker().getStatus());
+    }
+
+    // UC-SHARE-012, Rule-SHARE-130
+    public void testACompletedTestRunWithARunItemLeftOutOfTheCommitStaysCompleted() {
+        final @NotNull Path completed = aTestRun(COMPLETED, TestRunStatus.COMPLETED);
+        committedAsItIs();
+        write(completed.resolve(NodeType.TEST_RUN.getMarker()), aTestRunMarker(TestRunStatus.COMPLETED).replace("\"updatedBy\" : \"Sara\"", "\"updatedBy\" : \"Omar\""));
+        write(completed.resolve(FileKind.RUN_ITEM.fileName(testCaseUuid)), "{ \"default\" : 1, \"executions\" : [ { \"status\" : \"FAILED\" } ] }");
+        readEverything();
+
+        final @NotNull JComponent review = ShareGestures.theReviewOf(getProject(), testProjectPath);
+        ShareGestures.table(review).clearSelection();
+        ShareGestures.type(review, MESSAGE);
+        ShareGestures.commitOnly(review);
+        Await.until("the tester's commit never landed", () -> isTheSubjectOf("HEAD", MESSAGE));
+
+        assertEquals("a test run whose run item was left out became the record", TestRunStatus.COMPLETED, theTestRunAt(completed).getMarker().getStatus());
+    }
+
+    // UC-SHARE-012, Rule-SHARE-130
+    public void testATestCaseTheTestRunDoesNotCoverLeftOutOfTheCommitDoesNotHoldItBack() {
+        final @NotNull Path completed = aTestRun(COMPLETED, TestRunStatus.COMPLETED);
+        final @NotNull UUID notCovered = aTestCaseIn(testSet);
+        committedAsItIs();
+        theTestCaseReads("Press Pay");
+        theTestCaseReads(notCovered, "Open the cart");
+        readEverything();
+
+        final @NotNull JComponent review = ShareGestures.theReviewOf(getProject(), testProjectPath);
+        final @NotNull JTable changes = ShareGestures.table(review);
+        IntStream.range(0, changes.getRowCount())
+                .filter(row -> IntStream.range(0, changes.getColumnCount()).anyMatch(column -> String.valueOf(changes.getValueAt(row, column)).contains("Open the cart")))
+                .forEach(row -> changes.removeRowSelectionInterval(row, row));
+        ShareGestures.type(review, MESSAGE);
+        ShareGestures.commitOnly(review);
+        Await.until("no commit followed the tester's", () -> isTheSubjectOf("HEAD^", MESSAGE));
+
+        assertTrue("the test case the test run does not cover was committed", mustGit(testProjectPath, "status", "--porcelain").contains(FileKind.TEST_CASE.fileName(notCovered)));
+        assertEquals("a test case the test run does not cover held it back", TestRunStatus.COMMITTED, theTestRunAt(completed).getMarker().getStatus());
     }
 
     // Rule-PRODUCT-007
