@@ -16,7 +16,11 @@
 
 package org.testin.editor.grid;
 
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import com.intellij.testFramework.PlatformTestUtil;
+import com.intellij.testFramework.TestActionEvent;
 import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
@@ -129,6 +133,75 @@ public class GridEditIdeTest extends AbstractTempRootIdeTest {
         assertTrue("Enter on a cell that can be typed into did not open it", grid.isEditing());
         assertEquals("Enter opened another cell than the one the cursor was on", description, grid.getEditingColumn());
         grid.getCellEditor().cancelCellEditing();
+    }
+
+    private static @NotNull GridEnterAction enterOf(final @NotNull JBTable grid) {
+        return ActionUtil.getActions(grid).stream().filter(GridEnterAction.class::isInstance).map(GridEnterAction.class::cast).findFirst().orElseThrow(() -> new AssertionError("the grid has no Enter"));
+    }
+
+    private static boolean enabled(final @NotNull AnAction action) {
+        final @NotNull AnActionEvent e = TestActionEvent.createTestEvent(action);
+        ActionUtil.updateAction(action, e);
+        return e.getPresentation().isEnabled();
+    }
+
+    private static @NotNull MouseEvent clicked(final @NotNull JBTable grid, final @NotNull TestSetEditorFields field, final int clicks, final int button) {
+        final @NotNull Rectangle cell = grid.getCellRect(0, column(grid, field), true);
+        return new MouseEvent(grid, MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), 0, (int) cell.getCenterX(), (int) cell.getCenterY(), clicks, false, button);
+    }
+
+    // UC-EDITOR-PANEL-008, Rule-EDITOR-PANEL-048
+    public void testEnterIsGrayWithNoRowSelectedAndWhileACellIsOpen() {
+        final @NotNull JBTable grid = gridOf(aGridOver("Log in with a valid user"));
+        grid.clearSelection();
+        assertFalse("Enter is offered with no row selected", enabled(enterOf(grid)));
+
+        grid.setRowSelectionInterval(0, 0);
+        assertTrue("a cell did not open", grid.editCellAt(0, column(grid, TestSetEditorFields.DESCRIPTION)));
+        assertFalse("Enter is offered while a cell is open", enabled(enterOf(grid)));
+        grid.getCellEditor().cancelCellEditing();
+    }
+
+    // UC-EDITOR-PANEL-008
+    public void testEnterOnARowWithNoCellChosenOpensNothing() {
+        final @NotNull JBTable grid = gridOf(aGridOver("Log in with a valid user"));
+        grid.setRowSelectionInterval(0, 0);
+        grid.getColumnModel().getSelectionModel().clearSelection();
+
+        KeyPress.press(getProject(), grid, GridKeys.enter());
+
+        assertFalse("Enter on a row with no cell chosen opened a cell", grid.isEditing());
+    }
+
+    // UC-EDITOR-PANEL-025
+    public void testOnlyALeftDoubleClickOnTheOrderOrSequenceIsTakenFromTheTable() {
+        final @NotNull JBTable grid = gridOf(aGridOver("Log in with a valid user"));
+        grid.setSize(1200, 400);
+        final @NotNull MouseEvent once = clicked(grid, TestSetEditorFields.SEQUENCE, 1, MouseEvent.BUTTON1);
+        final @NotNull MouseEvent rightTwice = clicked(grid, TestSetEditorFields.SEQUENCE, 2, MouseEvent.BUTTON3);
+        final @NotNull MouseEvent twiceOnTheDescription = clicked(grid, TestSetEditorFields.DESCRIPTION, 2, MouseEvent.BUTTON1);
+
+        for (final MouseEvent click : List.of(once, rightTwice, twiceOnTheDescription)) {
+            for (final MouseListener listener : grid.getMouseListeners()) listener.mouseClicked(click);
+        }
+
+        assertFalse("a single click on the sequence was taken from the table", once.isConsumed());
+        assertFalse("a right double click on the sequence was taken from the table", rightTwice.isConsumed());
+        assertFalse("a double click on a description was taken from the table", twiceOnTheDescription.isConsumed());
+        if (grid.isEditing()) grid.getCellEditor().cancelCellEditing();
+    }
+
+    // Rule-EDITOR-PANEL-051
+    public void testAnAdjustedValueTooLongToReadIsCutShortInWhatTheCellSays() {
+        final @NotNull TestSetEditor editor = aGridOver("Log in");
+        final @NotNull JBTable table = gridOf(editor);
+        final @NotNull TestCase testCase = editor.getList().getModel().getElementAt(0);
+        final @NotNull Said balloons = Said.listening(getProject(), getTestRootDisposable());
+
+        typeInto(table, 0, TestSetEditorFields.GROUP, " Smoke ,  Regression ,  Payments ,  Checkout ,  Accounts ,  Reports ,  Login");
+
+        Await.until("the groups were never stored", () -> stored(testCase).getGroups().size() == 7);
+        assertTrue("an adjusted value too long to read was not cut short: " + balloons.shown(), balloons.shown().stream().anyMatch(said -> said.contains("…")));
     }
 
     // Rule-EDITOR-PANEL-050, Rule-EDITOR-PANEL-051

@@ -90,6 +90,38 @@ public class RightClickIdeTest extends AbstractTempRootIdeTest {
     }
 
     // Rule-EDITOR-PANEL-110
+    public void testARightClickOnASelectedRowOrBelowTheRowsKeepsTheSelection() {
+        final @NotNull TestSetEditor editor = fourTestCases();
+        final @NotNull JBTable table = theGridWithTheFirstTwoSelected(editor);
+        final @NotNull Rectangle row = table.getCellRect(1, table.convertColumnIndexToView(TestSetEditorFields.DESCRIPTION.column()), true);
+        final @NotNull MouseEvent onTheSelection = new MouseEvent(table, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), InputEvent.BUTTON3_DOWN_MASK, (int) row.getCenterX(), (int) row.getCenterY(), 1, true, MouseEvent.BUTTON3);
+        final @NotNull MouseEvent belowTheRows = new MouseEvent(table, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), InputEvent.BUTTON3_DOWN_MASK, (int) row.getCenterX(), (int) table.getCellRect(3, 0, true).getMaxY() + 20, 1, true, MouseEvent.BUTTON3);
+        final @NotNull BooleanSupplier kept = () -> Arrays.equals(new int[]{0, 1}, table.getSelectedRows());
+
+        rightClick(() -> {
+            for (final MouseListener listener : table.getMouseListeners())
+                if (listener instanceof GridContextMenuListener) listener.mousePressed(onTheSelection);
+        }, kept);
+        for (final MouseListener listener : table.getMouseListeners())
+            if (listener instanceof GridContextMenuListener) listener.mousePressed(belowTheRows);
+
+        assertTrue("a right click on the selection or below the rows moved the selection", kept.getAsBoolean());
+    }
+
+    // Rule-EDITOR-PANEL-110
+    public void testALeftReleaseOnARowOpensNoMenuAndMovesNothing() {
+        final @NotNull TestSetEditor editor = fourTestCases();
+        final @NotNull JBTable table = theGridWithTheFirstTwoSelected(editor);
+        final @NotNull Rectangle row = table.getCellRect(3, table.convertColumnIndexToView(TestSetEditorFields.DESCRIPTION.column()), true);
+        final @NotNull MouseEvent release = new MouseEvent(table, MouseEvent.MOUSE_RELEASED, System.currentTimeMillis(), InputEvent.BUTTON1_DOWN_MASK, (int) row.getCenterX(), (int) row.getCenterY(), 1, false, MouseEvent.BUTTON1);
+
+        for (final MouseListener listener : table.getMouseListeners())
+            if (listener instanceof GridContextMenuListener) listener.mouseReleased(release);
+
+        assertTrue("a left release moved the selection as a right click does", Arrays.equals(new int[]{0, 1}, table.getSelectedRows()));
+    }
+
+    // Rule-EDITOR-PANEL-110
     public void testWhereTheMenuOpensOnTheReleaseTheSelectionStillMovesThereFirst() {
         final @NotNull TestSetEditor editor = fourTestCases();
         final @NotNull JBTable table = theGridWithTheFirstTwoSelected(editor);

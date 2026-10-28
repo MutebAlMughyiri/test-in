@@ -31,6 +31,7 @@ import org.testin.util.Shortcuts;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
@@ -220,7 +221,7 @@ public class GridIdeTest extends AbstractIdeTest {
 
     // Rule-EDITOR-PANEL-027
     public void testAColumnTestinSizesFitsItsContentUpToFiftyCharactersOfTheGridsFont() {
-        final @NotNull JBTable table = aGrid(aRow(1, "W".repeat(400), "Short", "uuid-1"));
+        final @NotNull JBTable table = aGrid(aRow(1, "W".repeat(400), "Short", "uuid-1"), aRow(2, "Log in", "Short", "uuid-2"));
         final int widest = 50 * table.getFontMetrics(table.getFont()).charWidth('m');
 
         assertEquals("a column of long text is not stopped at 50 characters of the grid's font", widest, descriptionColumn(table).getPreferredWidth());
@@ -259,6 +260,63 @@ public class GridIdeTest extends AbstractIdeTest {
 
         assertEquals("separate runs of rows could not be taken together", List.of(0, 2, 4), Arrays.stream(table.getSelectedRows()).boxed().toList());
         assertEquals("a click on the order did not take the whole row", table.getColumnCount(), table.getSelectedColumnCount());
+    }
+
+    public void testOneClickOnACellChoosesItAndTwoOpenIt() {
+        final @NotNull JBTable table = twoRows();
+        final @NotNull TableCellEditor editor = table.getCellEditor(0, DESCRIPTION);
+
+        assertFalse("one click opened the cell", editor.isCellEditable(new MouseEvent(table, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0, 1, 1, 1, false, MouseEvent.BUTTON1)));
+        assertTrue("two clicks did not open the cell", editor.isCellEditable(new MouseEvent(table, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0, 1, 1, 2, false, MouseEvent.BUTTON1)));
+    }
+
+    public void testAGridWithNoRowIsBuilt() {
+        assertEquals("a grid with no row has rows", 0, aGrid().getRowCount());
+    }
+
+    // Rule-EDITOR-PANEL-108
+    public void testShiftOnTheOrderColumnBeforeAnyClickTakesOnlyThatRow() {
+        final @NotNull JBTable table = aGrid(aRow(1, "a", "", "1"), aRow(2, "b", "", "2"), aRow(3, "c", "", "3"));
+        table.setSize(800, 600);
+
+        clickTheSequenceOf(table, 2, InputEvent.SHIFT_DOWN_MASK);
+
+        assertEquals("Shift with no row clicked before took more than its own row", List.of(2), Arrays.stream(table.getSelectedRows()).boxed().toList());
+    }
+
+    // Rule-EDITOR-PANEL-108
+    public void testOnlyALeftPressOnARowOfTheOrderColumnTakesIt() {
+        final @NotNull JBTable table = twoRows();
+        table.setSize(800, 600);
+        final @NotNull Rectangle cell = table.getCellRect(0, SEQUENCE, true);
+        final @NotNull MouseEvent rightPress = new MouseEvent(table, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), InputEvent.BUTTON3_DOWN_MASK, (int) cell.getCenterX(), (int) cell.getCenterY(), 1, false, MouseEvent.BUTTON3);
+        final @NotNull MouseEvent belowTheRows = new MouseEvent(table, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), InputEvent.BUTTON1_DOWN_MASK, (int) cell.getCenterX(), table.getRowHeight() * 5, 1, false, MouseEvent.BUTTON1);
+
+        for (final MouseListener listener : table.getMouseListeners()) {
+            if (!(listener instanceof SequenceColumnRowSelector)) continue;
+            listener.mousePressed(rightPress);
+            listener.mousePressed(belowTheRows);
+        }
+
+        assertEquals("a right press or a press below the rows took a row", 0, table.getSelectedRowCount());
+    }
+
+    // Rule-EDITOR-PANEL-086
+    public void testWithNothingSelectedCopyAndPasteDoNothing() {
+        final @NotNull JBTable table = twoRows();
+        onClipboard("kept");
+
+        press(table, GridKeys.COPY);
+        assertEquals("copying with nothing selected changed the clipboard", "kept", clipboard());
+
+        press(table, GridKeys.PASTE);
+        assertEquals("pasting with nothing selected wrote a cell", "Log in", at(table, 0, DESCRIPTION));
+
+        table.setRowSelectionInterval(0, 0);
+        table.setColumnSelectionInterval(DESCRIPTION, DESCRIPTION);
+        onClipboard("");
+        press(table, GridKeys.PASTE);
+        assertEquals("pasting nothing emptied the cell", "Log in", at(table, 0, DESCRIPTION));
     }
 
     // Rule-EDITOR-PANEL-108

@@ -25,11 +25,14 @@ import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
 import org.testin.editor.AbstractTestinEditor;
 import org.testin.editor.EditorFixtures;
+import org.testin.editor.open.TestinEditors;
+import org.testin.editor.testrun.TestRunEditor;
 import org.testin.editor.testset.TestSetEditor;
 import org.testin.editor.toolbar.GridViewButton;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestProjectNode;
 import org.testin.model.node.TestSetNode;
+import org.testin.services.Services;
 import org.testin.testcase.TestSetEditorFields;
 import org.testin.testcase.update.UpdateTestCaseDialog;
 import org.testin.ui.framework.ShownDialog;
@@ -91,6 +94,22 @@ public class OrderCellIdeTest extends AbstractTempRootIdeTest {
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("Enter on an Order cell did not open the order dialog"));
         assertEquals("the order dialog does not hold the row's place in its test set", Integer.valueOf(3), box.getValue());
+    }
+
+    // Rule-EDITOR-PANEL-273
+    public void testEnterOnAnOrderCellOfATestRunOpensNothing() {
+        final @NotNull TestSetNode testSet = EditorFixtures.testSet(getProject(), EditorFixtures.testProject(getProject(), root), "Checkout");
+        final @NotNull TestRunEditor editor = EditorFixtures.openTestRunInTheIde(getProject(), EditorFixtures.testRunOver(getProject(), root, EditorFixtures.testCases(getProject(), testSet, 2)));
+        try {
+            final @NotNull JBTable grid = gridOf(editor);
+            onTheOrderCellOfRow(grid, 1);
+
+            KeyPress.press(getProject(), grid, GridKeys.enter());
+
+            assertFalse("Enter on a test run's Order cell opened the order dialog", ShownDialog.isOpen(getProject(), UpdateTestCaseDialog.class));
+        } finally {
+            Services.getInstance(getProject(), TestinEditors.class).closeAll();
+        }
     }
 
     // Rule-EDITOR-PANEL-273, Rule-EDITOR-PANEL-111
