@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.Await;
 import org.testin.Gestures;
+import org.testin.Said;
 import org.testin.editor.EditorFixtures;
 import org.testin.editor.toolbar.RefreshButton;
 import org.testin.indexer.NodeMapper;
@@ -38,6 +39,7 @@ import org.testin.model.node.TestSetNode;
 import org.testin.model.status.RunItemStatus;
 import org.testin.model.status.AutomationExecutionStatus;
 import org.testin.model.status.TestCaseStatus;
+import org.testin.model.status.TestRunStatus;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.RunItems;
@@ -299,6 +301,58 @@ public class AutomationFromTheTestRunIdeTest extends AbstractCodegenIdeTest {
             PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
 
             assertEquals("Run Tests ran a test case already judged, or missed one still waiting", List.of(List.of(testCases.get(1), testCases.get(3))), runner.executions());
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
+    // Rule-EDITOR-PANEL-184, Rule-EDITOR-PANEL-290
+    public void testRunTestsLeavesOutATestCaseItsOwnRunButtonIsAlreadyRunning() {
+        final @NotNull List<TestCase> testCases = automatedTestCases(2);
+        final @NotNull TestRunNode testRun = aTestRun("Cycle-1", testCases.stream().map(EditorFixtures::pending).toList());
+        final @NotNull TestRunEditor editor = opened(testRun);
+        try {
+            TestCaseQuickAction.RUN_TEST_METHOD.executeFor(editor, testCases.getFirst());
+
+            editor.runWhenLoaded();
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+            assertEquals("Run Tests ran a test case already running again", List.of(List.of(testCases.getFirst()), List.of(testCases.get(1))), runner.executions());
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
+    // Rule-EDITOR-PANEL-181
+    public void testRunningATestCaseOfACompletedTestRunLeavesItCompleted() {
+        final @NotNull List<TestCase> testCases = automatedTestCases(1);
+        final @NotNull TestRunNode testRun = aTestRun("Cycle-1", List.of(EditorFixtures.pending(testCases.getFirst()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.PASSED).build()))));
+        testRun.getMarker().changeStatus(TestRunStatus.COMPLETED);
+        final @NotNull TestRunEditor editor = opened(testRun);
+        try {
+            TestCaseQuickAction.RUN_TEST_METHOD.executeFor(editor, testCases.getFirst());
+
+            assertEquals("running a test case of a completed test run reopened it", TestRunStatus.COMPLETED, testRun.getMarker().getStatus());
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
+    // UC-EDITOR-PANEL-043, Rule-EDITOR-PANEL-008
+    public void testWhatTheTestRunRecordedIsSaidOnceTheLastTestCaseItRanReports() {
+        final @NotNull List<TestCase> testCases = automatedTestCases(2);
+        final @NotNull TestRunNode testRun = aTestRun("Cycle-1", testCases.stream().map(EditorFixtures::pending).toList());
+        final @NotNull TestRunEditor editor = opened(testRun);
+        try {
+            editor.runWhenLoaded();
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+            final @NotNull List<String> said = Said.listening(getProject(), getTestRootDisposable()).shown();
+
+            reportedPassed(testCases.getFirst());
+            assertEquals("what the test run recorded was said before its last test case reported", List.of(), said);
+
+            reportedPassed(testCases.get(1));
+            Await.until("what the test run recorded was never said", () -> !said.isEmpty());
         } finally {
             Disposer.dispose(editor);
         }
