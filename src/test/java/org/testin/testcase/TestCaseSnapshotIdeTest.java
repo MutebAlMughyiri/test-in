@@ -89,6 +89,25 @@ public class TestCaseSnapshotIdeTest extends AbstractTempRootIdeTest {
                 indexedTestCases().findTestCase(moved.getUuid()).isPresent());
     }
 
+    // Rule-EDITOR-PANEL-070
+    public void testAGestureThatChangedNothingIsNotOnTheHistory() {
+        final TestSetNode testSet = checkoutSet();
+        final TestCase untouched = TestCase.builder()
+                .uuid(UUID.randomUUID())
+                .description("Pay with a saved card")
+                .order("m")
+                .build();
+        untouched.setParent(testSet);
+        indexedTestCases().putTestCaseVerbatim(testSet.getPath(), untouched);
+        final List<UUID> testCaseUuids = List.of(untouched.getUuid());
+        final UndoScope scope = UndoScope.of(testSet.getPath());
+
+        TestCaseSnapshot.record(getProject(), scope, "Edit", List.of(TestCaseSnapshot.of(getProject(), testSet.getPath(), testCaseUuids)), List.of(TestCaseSnapshot.of(getProject(), testSet.getPath(), testCaseUuids)));
+        PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+
+        assertFalse("a gesture that changed nothing was put on the undo history", Services.getInstance(getProject(), UndoHistories.class).canUndo(scope));
+    }
+
     public void testUndoingARemovalPutsTheTestCaseBack() {
         final TestSetNode testSet = checkoutSet();
         final TestCase removed = TestCase.builder()
