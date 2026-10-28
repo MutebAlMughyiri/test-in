@@ -17,15 +17,21 @@
 
 package org.testin.codegen;
 
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import com.intellij.ui.components.ActionLink;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractIdeTest;
+import org.testin.Gestures;
 import org.testin.Said;
 import org.testin.config.TestinYml;
 import org.testin.help.Hints;
 import org.testin.help.SetupHint;
 import org.testin.help.SetupStep;
 import org.testin.model.TestCase;
+import org.testin.quickaction.NavigateToTestMethodAction;
+import org.testin.quickaction.ShownTestCaseAction;
+import org.testin.quickaction.TestCaseQuickAction;
 import org.testin.runner.CapturedRunner;
 import org.testin.runner.ExecuteTestCases;
 import org.testin.services.Services;
@@ -36,7 +42,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import javax.swing.JPanel;
 
 public class CodeOffHintIdeTest extends AbstractIdeTest {
 
@@ -121,6 +129,29 @@ public class CodeOffHintIdeTest extends AbstractIdeTest {
 
         assertEquals("a test case was started with the code off", List.of(), runner.executions());
         assertEquals("the code off was not said once", 1, said.size());
+        Services.getInstance(getProject(), Hints.class).clear(SetupStep.TEST_PROJECT_LINK);
+    }
+
+    // UC-CODEGEN-006, Rule-CODEGEN-082
+    public void testNavigatingToATestMethodWithTheCodeOffSaysWhy() {
+        final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description("Log in").build();
+
+        final @NotNull List<String> said = Said.during(getProject(), () -> NavigateToTestMethodAction.execute(getProject(), testCase));
+
+        assertEquals("the code off was not said once", 1, said.size());
+        Services.getInstance(getProject(), Hints.class).clear(SetupStep.TEST_PROJECT_LINK);
+    }
+
+    // UC-CODEGEN-009, Rule-CODEGEN-082
+    public void testTheRunKeyOnAShownTestCaseIsGrayWithTheCodeOff() {
+        final @NotNull JPanel shownOn = new JPanel();
+        final @NotNull TestCase testCase = TestCase.builder().uuid(UUID.randomUUID()).description("Log in").build();
+        ShownTestCaseAction.bind(getProject(), TestCaseQuickAction.RUN_TEST_METHOD, () -> Optional.of(testCase), (_, _) -> {
+        }, shownOn);
+
+        final @NotNull AnAction runKey = ActionUtil.getActions(shownOn).getFirst();
+
+        assertFalse("the Run key works with the code off", Gestures.updated(getProject(), runKey, shownOn).isEnabled());
         Services.getInstance(getProject(), Hints.class).clear(SetupStep.TEST_PROJECT_LINK);
     }
 }

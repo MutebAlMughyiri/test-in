@@ -29,9 +29,11 @@ import org.testin.Await;
 import org.testin.actions.TestinDataKeys;
 import org.testin.model.TestCase;
 import org.testin.model.node.TestSetNode;
+import org.testin.model.status.TestCaseStatus;
 import org.testin.runner.AutomationExecution;
 import org.testin.runner.CapturedRunner;
 import org.testin.services.Services;
+import org.testin.util.Bundle;
 
 import java.util.List;
 
@@ -87,5 +89,21 @@ public class ExecuteOrStopTestMethodsIdeTest extends AbstractCodegenIdeTest {
         pressed(selected);
 
         assertFalse("the stop left a test case running", selected.stream().anyMatch(testCase -> execution.isRunning(testCase.getUuid())));
+    }
+
+    // UC-CODEGEN-009, Rule-EDITOR-PANEL-301
+    public void testTheMenuEntryOnADisabledTestCaseIsGrayAndSaysWhy() {
+        final @NotNull TestCase disabled = createdTestCase(createdTestSet("Login"), "Log in with a valid user", "a");
+        disabled.setStatus(TestCaseStatus.DISABLED);
+        final @NotNull AnAction run = ActionManager.getInstance().getAction("Testin.RunTestMethod");
+        final @NotNull AnActionEvent e = TestActionEvent.createTestEvent(run, SimpleDataContext.builder()
+                .add(CommonDataKeys.PROJECT, getProject())
+                .add(TestinDataKeys.SELECTED_TEST_CASES, List.of(disabled))
+                .build());
+
+        ActionUtil.updateAction(run, e);
+
+        assertFalse("Run Test Method works on a disabled test case", e.getPresentation().isEnabled());
+        assertEquals("the gray entry does not say why", Bundle.message("run.test.method.disabled", TestCaseStatus.DISABLED.getLabel()), e.getPresentation().getDescription());
     }
 }

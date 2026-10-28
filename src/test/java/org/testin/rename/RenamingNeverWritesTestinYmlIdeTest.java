@@ -40,6 +40,8 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
+import static org.testin.git.LocalGit.mustGit;
+
 public class RenamingNeverWritesTestinYmlIdeTest extends AbstractTempRootIdeTest {
 
     private @NotNull Optional<String> ymlWas = Optional.empty();
@@ -117,6 +119,20 @@ public class RenamingNeverWritesTestinYmlIdeTest extends AbstractTempRootIdeTest
         final @NotNull List<String> preview = Drawn.words(ShownDialog.waitedFor(getProject(), ConfirmDialog.class));
 
         assertTrue("the preview did not say testinProject is unchanged: " + preview, Drawn.holds(preview, "testinProject: NAFATH   " + Bundle.message("yml.save.same")));
+    }
+
+    // UC-TREE-PANEL-029, Rule-TREE-PANEL-113
+    public void testATestProjectUnderGitWithARemoteSavesWhereItIsClonedFrom() {
+        final @NotNull TestProjectNode testProject = new NodesOnDisk(getProject()).testProject(root.resolve("NAFATH"));
+        bound().choose("NAFATH");
+        final @NotNull String clonedFrom = "https://github.com/acme/nafath-test-cases.git";
+        mustGit(testProject.getPath(), "init", "--initial-branch=main");
+        mustGit(testProject.getPath(), "remote", "add", "origin", clonedFrom);
+
+        TreeGesture.pressed(getProject(), new SaveTestinYmlAction(getProject()), List.of(testProject));
+        final @NotNull List<String> preview = Drawn.words(ShownDialog.waitedFor(getProject(), ConfirmDialog.class));
+
+        assertTrue("the preview does not say where the test project is cloned from: " + preview, preview.stream().anyMatch(line -> line.contains(clonedFrom)));
     }
 
     // UC-TREE-PANEL-029
