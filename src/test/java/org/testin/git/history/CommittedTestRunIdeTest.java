@@ -39,6 +39,7 @@ import org.testin.services.Services;
 import org.testin.testproject.BoundTestProject;
 import org.testin.testrun.ChangedSinceCommit;
 import org.testin.testrun.RunItemRecorder;
+import org.testin.testrun.TestRunEditorFields;
 import org.testin.testrun.TestRunStatusChange;
 import org.testin.ui.framework.ShownDialog;
 import org.testin.util.Bundle;
@@ -222,6 +223,8 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
         final @NotNull Path inProgress = aTestRun("Cycle 5", TestRunStatus.IN_PROGRESS);
         committedAsItIs();
         committedWithTheReview();
+        readEverything();
+        assertFalse("a committed test case that did not change is said to have changed", ChangedSinceCommit.of(theRunItemOf(completed)));
 
         theTestCaseReads("Press Pay now");
         readEverything();
@@ -229,6 +232,7 @@ public class CommittedTestRunIdeTest extends AbstractReadTheRootIdeTest {
         final @NotNull RunItem committed = theRunItemOf(completed);
         assertEquals("Press Pay", committed.shownTestCase().getDescription());
         assertTrue("the change since the commit is not said", ChangedSinceCommit.of(committed));
+        assertTrue("the grid does not say the test case changed since the commit", TestRunEditorFields.DESCRIPTION.gridValue(committed).endsWith(Bundle.message("test.run.changed.since.short")));
 
         final @NotNull RunItem open = theRunItemOf(inProgress);
         assertEquals("Press Pay now", open.shownTestCase().getDescription());

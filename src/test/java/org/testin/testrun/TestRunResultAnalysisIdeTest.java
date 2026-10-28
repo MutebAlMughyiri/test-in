@@ -146,6 +146,22 @@ public class TestRunResultAnalysisIdeTest extends AbstractTempRootIdeTest {
         }
     }
 
+    // UC-EDITOR-PANEL-045, Rule-EDITOR-PANEL-189
+    public void testACommittedTestRunsAnalysisIsOnlyRead() {
+        final @NotNull TestRunFixture fixture = aJudgedTestRunIn(TestRunStatus.COMMITTED);
+        final @NotNull TestRunEditor editor = fixture.opened(getTestRootDisposable());
+        try {
+            editor.getToolBar().getToolbarItem(TestRunResultAnalysisButton.class).doClick();
+            PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();
+            final @NotNull JComponent dialog = ShownDialog.content(getProject(), TestRunResultAnalysisDialog.class);
+
+            assertTrue("a committed test run's analysis can be typed into", Drawn.components(dialog).stream().noneMatch(EditorTextField.class::isInstance));
+            assertTrue("a committed test run's analysis offers Save", Drawn.components(dialog).stream().filter(JButton.class::isInstance).map(JButton.class::cast).noneMatch(button -> "Save".equals(button.getText())));
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
     // UC-EDITOR-PANEL-045, Rule-TREE-PANEL-135
     public void testAnAnalysisSavedAfterTheTestRunWasCommittedIsRefusedAndNotWritten() {
         final @NotNull TestRunFixture fixture = aJudgedTestRunIn(TestRunStatus.COMPLETED);

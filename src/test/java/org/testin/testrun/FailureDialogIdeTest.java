@@ -41,6 +41,7 @@ import org.testin.model.bug.BugPriority;
 import org.testin.model.bug.BugSeverity;
 import org.testin.model.node.TestRunNode;
 import org.testin.model.status.RunItemStatus;
+import org.testin.model.status.TestRunStatus;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.notifications.Done;
@@ -391,6 +392,25 @@ public class FailureDialogIdeTest extends AbstractTempRootIdeTest {
 
             editor.getList().setSelectedIndex(2);
             assertFalse("the entry works on a test case that passed", Gestures.updated(getProject(), entry, editor.getList()).isEnabled());
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
+    // Rule-EDITOR-PANEL-168
+    public void testTheEntryIsGrayOnASignedOffTestRunAndSaysWhy() {
+        final @NotNull List<TestCase> testCases = TestRunFixture.testCasesIn(getProject(), root, 1);
+        final @NotNull TestRunFixture fixture = TestRunFixture.of(getProject(), root, List.of(
+                EditorFixtures.pending(testCases.getFirst()).setExecutions(List.of(RunItemExecution.builder().status(RunItemStatus.FAILED).build()))), testCases);
+        fixture.testRun().getMarker().changeStatus(TestRunStatus.COMMITTED);
+        final @NotNull TestRunEditor editor = fixture.opened(getTestRootDisposable());
+        try {
+            editor.getList().setSelectedIndex(0);
+
+            final @NotNull Presentation shown = Gestures.updated(getProject(), ActionManager.getInstance().getAction("Testin.UpdateRunItem"), editor.getList());
+
+            assertFalse("the entry works on a signed-off test run", shown.isEnabled());
+            assertEquals("the entry does not say why it is gray", fixture.testRun().whySignedOff().orElseThrow(), shown.getDescription());
         } finally {
             Disposer.dispose(editor);
         }

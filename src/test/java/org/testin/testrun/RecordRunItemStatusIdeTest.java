@@ -16,6 +16,7 @@
 
 package org.testin.testrun;
 
+import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.testFramework.PlatformTestUtil;
 import com.intellij.util.TimeoutUtil;
@@ -23,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractTempRootIdeTest;
 import org.testin.Await;
 import org.testin.FilesUnder;
+import org.testin.Gestures;
 import org.testin.OnScreen;
 import org.testin.Said;
 import org.testin.editor.EditorFixtures;
@@ -34,6 +36,7 @@ import org.testin.model.TestCase;
 import org.testin.model.bug.BugPriority;
 import org.testin.model.bug.BugSeverity;
 import org.testin.model.status.RunItemStatus;
+import org.testin.model.status.TestRunStatus;
 import org.testin.model.testrun.RunItem;
 import org.testin.model.testrun.RunItemExecution;
 import org.testin.model.testrun.TestRunSummary;
@@ -239,6 +242,44 @@ public class RecordRunItemStatusIdeTest extends AbstractTempRootIdeTest {
             assertEquals(List.of(Bundle.message("run.item.status.test.case.removed")), balloons);
         } finally {
             Disposer.dispose(editor);
+        }
+    }
+
+    public void testFailingATestCaseDeletedFromItsTestSetOpensNoDialog() {
+        final @NotNull TestRunFixture fixture = TestRunFixture.pending(getProject(), root, 2);
+        final @NotNull TestRunEditor editor = fixture.opened(getTestRootDisposable());
+        final @NotNull List<String> balloons = Said.listening(getProject(), getTestRootDisposable()).shown();
+        try {
+            final @NotNull TestCase deleted = fixture.testCases().getFirst();
+            assertTrue("the test case could not be deleted from its test set", Services.getInstance(getProject(), TestCases.class).removeTestCase(deleted.getParent().getPath(), deleted.getUuid()));
+            Await.until("the test run never saw its test case deleted", () -> fixture.runItemOf(deleted).isRemoved());
+            editor.getList().setSelectedIndex(0);
+
+            fixture.press(editor, RunItemStatus.FAILED);
+
+            assertTrue("failing a deleted test case opened the failure dialog", fixture.failureDialog().isEmpty());
+            assertEquals(List.of(Bundle.message("run.item.status.test.case.removed")), balloons);
+        } finally {
+            Disposer.dispose(editor);
+        }
+    }
+
+    public void testTheKeysAreGrayOnACommittedTestRunAndWithNothingSelected() {
+        final @NotNull TestRunFixture committed = TestRunFixture.pending(getProject(), root, 1);
+        committed.testRun().getMarker().changeStatus(TestRunStatus.COMMITTED);
+        final @NotNull TestRunEditor signedOff = committed.opened(getTestRootDisposable());
+        final @NotNull TestRunEditor open = TestRunFixture.pending(getProject(), root, 1).opened(getTestRootDisposable());
+        try {
+            signedOff.getList().setSelectedIndex(0);
+            final @NotNull Presentation onTheCommitted = Gestures.updated(getProject(), TestRunFixture.keyFor(signedOff, RunItemStatus.PASSED), signedOff.getList());
+            assertFalse("a key works on a committed test run", onTheCommitted.isEnabled());
+            assertEquals("the key does not say why it is gray", committed.testRun().whySignedOff().orElseThrow(), onTheCommitted.getDescription());
+
+            open.getList().clearSelection();
+            assertFalse("a key works with nothing selected", Gestures.updated(getProject(), TestRunFixture.keyFor(open, RunItemStatus.PASSED), open.getList()).isEnabled());
+        } finally {
+            Disposer.dispose(signedOff);
+            Disposer.dispose(open);
         }
     }
 
