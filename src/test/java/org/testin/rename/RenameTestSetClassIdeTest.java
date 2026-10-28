@@ -19,6 +19,9 @@ package org.testin.rename;
 import org.jetbrains.annotations.NotNull;
 import org.testin.AbstractCodegenIdeTest;
 import org.testin.Await;
+import org.testin.codegen.CodeChangeType;
+import org.testin.codegen.event.MovedNode;
+import org.testin.codegen.event.RenamedNode;
 import org.testin.model.node.TestSetNode;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -38,5 +41,23 @@ public class RenameTestSetClassIdeTest extends AbstractCodegenIdeTest {
 
         assertTrue("the class did not take the test set's new name", generatedClass("nafath.SignInTest").isPresent());
         assertTrue("the class kept the test set's old name", generatedClass("nafath.LoginTest").isEmpty());
+    }
+
+    // UC-CODEGEN-015, Rule-CODEGEN-052
+    public void testANameThatMakesTheSameClassNameRenamesNoClass() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+
+        CodeChangeType.RENAME_TEST_SET.execute(getProject(), new RenamedNode(login, login.treePath(), "login"));
+
+        assertTrue("a rename that makes the same class name lost the class", generatedClass("nafath.LoginTest").isPresent());
+    }
+
+    // Rule-CODEGEN-053
+    public void testAClassMovedIntoThePackageItIsInStays() {
+        final @NotNull TestSetNode login = createdTestSet("Login");
+
+        CodeChangeType.MOVE_TEST_SET.execute(getProject(), new MovedNode(login, theTestCasesDirectory().getPath()));
+
+        assertTrue("a class moved into the package it is in did not stay", generatedClass("nafath.LoginTest").isPresent());
     }
 }
