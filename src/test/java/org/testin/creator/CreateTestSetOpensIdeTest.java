@@ -57,6 +57,19 @@ public class CreateTestSetOpensIdeTest extends AbstractOpenEditorsIdeTest {
     }
 
     // UC-TREE-PANEL-007
+    // UC-TREE-PANEL-007, Rule-TREE-PANEL-095
+    public void testNoNameCreatesNothingAndKeepsTheDialogOpen() {
+        final @NotNull TestProjectNode testProject = new NodesOnDisk(getProject()).testProject(root.resolve("NAFATH"));
+
+        TreeGesture.pressed(getProject(), new CreateTreeNodeAction(), List.of(testProject.getTestCasesFolder()));
+        ShownDialog.typed(getProject(), CreateNodeDialog.class, "");
+        ShownDialog.press(getProject(), CreateNodeDialog.class, Shortcuts.Enter);
+
+        assertTrue("a node with no name closed the dialog", ShownDialog.isOpen(getProject(), CreateNodeDialog.class));
+        assertEquals("a node with no name was created", List.of(), Services.getInstance(getProject(), Nodes.class).getChildren(testProject.getTestCasesFolder().getPath()));
+        ShownDialog.close(getProject(), CreateNodeDialog.class);
+    }
+
     public void testANameAlreadyTakenUnderTheParentCreatesNothingAndSaysSo() {
         final @NotNull NodesOnDisk made = new NodesOnDisk(getProject());
         final @NotNull TestProjectNode testProject = made.testProject(root.resolve("NAFATH"));

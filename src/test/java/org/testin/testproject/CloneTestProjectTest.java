@@ -34,6 +34,7 @@ public class CloneTestProjectTest {
         assertEquals(CloneTestProject.repositoryName("https://host/acme/nafath-test-cases"), "NAFATH");
         assertEquals(CloneTestProject.repositoryName("  https://host/acme/Checkout.GIT  "), "CHECKOUT");
         assertEquals(CloneTestProject.repositoryName("https://host/acme/checkout?ref=main#readme"), "CHECKOUT");
+        assertEquals(CloneTestProject.repositoryName("https://host/acme/checkout#readme"), "CHECKOUT", "a fragment with no query before it is part of the name");
     }
 
     @Test
