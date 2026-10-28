@@ -71,6 +71,24 @@ public class ImportCsvIdeTest extends AbstractTempRootIdeTest {
         assertEquals("accounts", testCases.getLast().getModule());
     }
 
+    // UC-SHARE-005, Rule-SHARE-124
+    public void testARowOfSpacesIsSkippedAndAShortRowLeavesItsMissingValuesEmpty() {
+        final @NotNull List<TestCase> testCases = imported("""
+                Description,Module
+                log in with a valid user,accounts
+                  ,
+                log out
+                """);
+
+        assertEquals("a row of spaces was imported", List.of("log in with a valid user", "log out"), testCases.stream().map(TestCase::getDescription).toList());
+        assertEquals("a row shorter than the headings has a value it never gave", "", testCases.getLast().getModule());
+    }
+
+    // UC-SHARE-005
+    public void testAnEmptyFileHoldsNoTestCase() {
+        assertEquals("an empty file gave test cases", List.of(), imported(""));
+    }
+
     // UC-SHARE-006, Rule-SHARE-106
     public void testValuesTestinCannotReadAreRefusedAndSaidOnceWithTheirCount() {
         final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
