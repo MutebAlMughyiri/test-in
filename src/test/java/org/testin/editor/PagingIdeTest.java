@@ -235,4 +235,45 @@ public class PagingIdeTest extends AbstractTempRootIdeTest {
         assertEquals("the first page does not hold the new size", 10, editor.getList().getModel().getSize());
         assertSame("the keyboard is not handed back to the list", editor.getList(), editor.getPreferredFocusedComponent());
     }
+
+    // UC-EDITOR-PANEL-023, Rule-EDITOR-PANEL-004
+    public void testAnEmptyPageSizeOrOneOfLettersGoesBackTo50AndSaysNothing() {
+        final @NotNull TestSetEditor editor = opened(aLongTestSet());
+        final @NotNull Said said = Said.listening(getProject(), getTestRootDisposable());
+
+        for (final String typed : List.of("", "ten")) {
+            editor.getStatusBar().getPageSizeField().setText("10");
+            editor.getStatusBar().getPageSizeField().postActionEvent();
+            editor.getStatusBar().getPageSizeField().setText(typed);
+            editor.getStatusBar().getPageSizeField().postActionEvent();
+
+            assertEquals("'" + typed + "' did not put 50 back in the box", String.valueOf(TestinEditor.DEFAULT_PAGE_SIZE), editor.getStatusBar().getPageSizeField().getText());
+            assertEquals("'" + typed + "' did not give a page of 50", TestinEditor.DEFAULT_PAGE_SIZE, editor.getPageSize());
+        }
+        assertEquals("a size nobody asked for was refused", List.of(), said.shown());
+    }
+
+    // Rule-EDITOR-PANEL-107
+    public void testTypingTheSizeThePageAlreadyHoldsStaysOnThePage() {
+        final @NotNull TestSetEditor editor = opened(aLongTestSet());
+        onPage(editor, 2);
+
+        editor.getStatusBar().getPageSizeField().setText(String.valueOf(PAGE));
+        editor.getStatusBar().getPageSizeField().postActionEvent();
+
+        assertEquals("typing the size the page already holds went back to the first page", 2, editor.getCurrentPage());
+        assertSame("the keyboard is not handed back to the list", editor.getList(), editor.getPreferredFocusedComponent());
+    }
+
+    // UC-EDITOR-PANEL-022, Rule-EDITOR-PANEL-102
+    public void testAStepBeforeTheFirstPageOrPastTheLastGoesNowhere() {
+        final @NotNull TestSetEditor editor = opened(aLongTestSet());
+
+        assertFalse("a step before the first page is allowed", editor.canStepPage(-1));
+        assertFalse("a step past the last page is allowed", editor.canStepPage(3));
+
+        editor.stepPage(3);
+
+        assertEquals("a step past the last page turned the page", 1, editor.getCurrentPage());
+    }
 }
